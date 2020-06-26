@@ -63,6 +63,7 @@ import io.goobi.viewer.model.viewer.StructElement;
 import io.goobi.viewer.servlets.rest.iiif.presentation.IIIFPresentationBinding;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
 
 /**
  * @author florian
@@ -150,11 +151,12 @@ public class RecordPageResource {
     @GET
     @javax.ws.rs.Path(RECORDS_PAGES_ANNOTATIONS + "/{page}")
     @Produces({ MediaType.APPLICATION_JSON })
+    @ApiResponse(responseCode="400", description="If the page number is out of bounds")
     @CORSBinding
     public AnnotationPage getAnnotationPageForRecord(
             @Parameter(description = "Page numer (1-based") @PathParam("pageNo") Integer pageNo,
             @PathParam("page") Integer page)
-            throws URISyntaxException, DAOException, JsonParseException, JsonMappingException, IOException {
+            throws URISyntaxException, DAOException, JsonParseException, JsonMappingException, IOException, IllegalRequestException {
 
         URI uri = URI.create(urls.path(RECORDS_RECORD, RECORDS_ANNOTATIONS).params(pi).build());
         return new AnnotationsResourceBuilder(urls).getWebAnnotationPageForPage(pi, pageNo, uri, page);
@@ -184,11 +186,12 @@ public class RecordPageResource {
     @GET
     @javax.ws.rs.Path(RECORDS_PAGES_COMMENTS + "/{page}")
     @Produces({ MediaType.APPLICATION_JSON })
+    @ApiResponse(responseCode="400", description="If the page number is out of bounds")
     @CORSBinding
     public AnnotationPage getCommentPageForRecord(
             @Parameter(description = "Page numer (1-based") @PathParam("pageNo") Integer pageNo,
             @PathParam("page") Integer page)
-            throws URISyntaxException, DAOException, JsonParseException, JsonMappingException, IOException {
+            throws URISyntaxException, DAOException, JsonParseException, JsonMappingException, IOException, IllegalRequestException {
 
         URI uri = URI.create(urls.path(RECORDS_RECORD, RECORDS_COMMENTS).params(pi).build());
         return new AnnotationsResourceBuilder(urls).getWebAnnotationPageForPageComments(pi, pageNo, uri, page);

@@ -79,6 +79,7 @@ import io.goobi.viewer.model.viewer.StructElement;
 import io.goobi.viewer.servlets.rest.iiif.presentation.IIIFPresentationBinding;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
 
 /**
  * @author florian
@@ -174,9 +175,10 @@ public class RecordResource {
     @GET
     @javax.ws.rs.Path(RECORDS_ANNOTATIONS + "/{page}")
     @Produces({ MediaType.APPLICATION_JSON })
+    @ApiResponse(responseCode="400", description="If the page number is out of bounds")
     @CORSBinding
     public AnnotationPage getAnnotationPageForRecord(@PathParam("page") Integer page)
-            throws URISyntaxException, DAOException, JsonParseException, JsonMappingException, IOException {
+            throws URISyntaxException, DAOException, JsonParseException, JsonMappingException, IOException, IllegalRequestException {
 
         URI uri = URI.create(urls.path(RECORDS_RECORD, RECORDS_ANNOTATIONS).params(pi).build());
         return new AnnotationsResourceBuilder(urls).getWebAnnotationPageForRecord(pi, uri, page);
@@ -205,9 +207,10 @@ public class RecordResource {
     @GET
     @javax.ws.rs.Path(RECORDS_COMMENTS + "/{page}")
     @Produces({ MediaType.APPLICATION_JSON })
+    @ApiResponse(responseCode="400", description="If the page number is out of bounds")
     @CORSBinding
     public AnnotationPage getCommentPageForRecord(@PathParam("page") Integer page)
-            throws URISyntaxException, DAOException, JsonParseException, JsonMappingException, IOException {
+            throws URISyntaxException, DAOException, JsonParseException, JsonMappingException, IOException, IllegalRequestException {
 
         URI uri = URI.create(urls.path(RECORDS_RECORD, RECORDS_COMMENTS).params(pi).build());
         return new AnnotationsResourceBuilder(urls).getWebAnnotationPageForRecordComments(pi, uri, page);

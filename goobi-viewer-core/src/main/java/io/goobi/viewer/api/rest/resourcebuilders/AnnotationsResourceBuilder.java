@@ -49,6 +49,7 @@ import de.intranda.api.annotation.wa.collection.AnnotationPage;
 import de.intranda.api.iiif.presentation.AnnotationList;
 import de.intranda.api.iiif.presentation.Canvas;
 import de.intranda.api.iiif.presentation.Manifest;
+import de.unigoettingen.sub.commons.contentlib.exceptions.IllegalRequestException;
 import io.goobi.viewer.api.rest.AbstractApiUrlManager;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.exceptions.DAOException;
@@ -80,10 +81,16 @@ public class AnnotationsResourceBuilder {
         return collection;
     }
 
-    public AnnotationPage getWebAnnotationPage(Integer page) throws DAOException {
+    public AnnotationPage getWebAnnotationPage(Integer page) throws DAOException, IllegalRequestException {
+        if(page == null || page < 1) {
+            throw new IllegalRequestException("Page number must be at least 1");
+        }
         int first = (page-1) * MAX_ANNOTATIONS_PER_PAGE;
         String sortField = "id";
         List<PersistentAnnotation> data = DataManager.getInstance().getDao().getAnnotations(first, MAX_ANNOTATIONS_PER_PAGE, sortField, true, null);
+        if(data.isEmpty()) {
+            throw new IllegalRequestException("Page number is out of bounds");
+        }
         URI uri = URI.create(urls.path(ANNOTATIONS).build());
         AnnotationCollectionBuilder builder = new AnnotationCollectionBuilder(uri, data.size());
         List<IAnnotation> annos = data.stream().map(this::getAsWebAnnotation).collect(Collectors.toList());
@@ -100,14 +107,28 @@ public class AnnotationsResourceBuilder {
     public AnnotationCollection getWebAnnotationCollectionForRecord(String pi, URI uri) throws DAOException {
         long count = DataManager.getInstance().getDao().getAnnotationCountForWork(pi);
         AnnotationCollectionBuilder builder = new AnnotationCollectionBuilder(uri, count);
-        AnnotationCollection collection = builder.setItemsPerPage(MAX_ANNOTATIONS_PER_PAGE).buildCollection();
+        AnnotationCollection collection = builder.setItemsPerPage((int) count).buildCollection();
+        if(count > 0) {            
+            try {
+                collection.setFirst(getWebAnnotationPageForRecord(pi, uri, 1));
+            } catch (IllegalRequestException e) {
+                //no items
+            }
+        }
         return collection;
     }
 
     public AnnotationCollection getWebAnnotationCollectionForPage(String pi, Integer pageNo, URI uri) throws DAOException {
         long count = DataManager.getInstance().getDao().getAnnotationCountForTarget(pi, pageNo);
         AnnotationCollectionBuilder builder = new AnnotationCollectionBuilder(uri, count);
-        AnnotationCollection collection = builder.setItemsPerPage(MAX_ANNOTATIONS_PER_PAGE).buildCollection();
+        AnnotationCollection collection = builder.setItemsPerPage((int) count).buildCollection();
+        if(count > 0) {            
+            try {
+                collection.setFirst(getWebAnnotationPageForPage(pi, pageNo, uri, 1));
+            } catch (IllegalRequestException e) {
+                //no items
+            }
+        }
         return collection;
     }
 
@@ -143,20 +164,33 @@ public class AnnotationsResourceBuilder {
      * @param page
      * @return
      * @throws DAOException
+     * @throws IllegalRequestException 
      */
-    public AnnotationPage getWebAnnotationPageForRecord(String pi, URI uri, Integer page) throws DAOException {
+    public AnnotationPage getWebAnnotationPageForRecord(String pi, URI uri, Integer page) throws DAOException, IllegalRequestException {
+        if(page == null || page < 1) {
+            throw new IllegalRequestException("Page number must be at least 1");
+        }
         List<PersistentAnnotation> data = DataManager.getInstance().getDao().getAnnotationsForWork(pi);
+        if(data.isEmpty()) {
+            throw new IllegalRequestException("Page number is out of bounds");
+        }
         AnnotationCollectionBuilder builder = new AnnotationCollectionBuilder(uri, data.size());
         List<IAnnotation> annos = data.stream().map(this::getAsWebAnnotation).collect(Collectors.toList());
-        AnnotationPage annoPage = builder.setItemsPerPage(MAX_ANNOTATIONS_PER_PAGE).buildPage(annos, page);
+        AnnotationPage annoPage = builder.setItemsPerPage(annos.size()).buildPage(annos, page);
         return annoPage;
     }
 
-    public AnnotationPage getWebAnnotationPageForPage(String pi, Integer pageNo, URI uri, Integer page) throws DAOException {
+    public AnnotationPage getWebAnnotationPageForPage(String pi, Integer pageNo, URI uri, Integer page) throws DAOException, IllegalRequestException {
+        if(page == null || page < 1) {
+            throw new IllegalRequestException("Page number must be at least 1");
+        }
         List<PersistentAnnotation> data = DataManager.getInstance().getDao().getAnnotationsForTarget(pi, pageNo);
+        if(data.isEmpty()) {
+            throw new IllegalRequestException("Page number is out of bounds");
+        }
         AnnotationCollectionBuilder builder = new AnnotationCollectionBuilder(uri, data.size());
         List<IAnnotation> annos = data.stream().map(this::getAsWebAnnotation).collect(Collectors.toList());
-        AnnotationPage annoPage = builder.setItemsPerPage(MAX_ANNOTATIONS_PER_PAGE).buildPage(annos, page);
+        AnnotationPage annoPage = builder.setItemsPerPage(annos.size()).buildPage(annos, page);
         return annoPage;
     }
 
@@ -170,16 +204,27 @@ public class AnnotationsResourceBuilder {
         List<Comment> data = DataManager.getInstance().getDao().getCommentsForWork(pi);
 
         AnnotationCollectionBuilder builder = new AnnotationCollectionBuilder(uri, data.size());
-        AnnotationCollection collection = builder.setItemsPerPage(MAX_ANNOTATIONS_PER_PAGE).buildCollection();
-
+        AnnotationCollection collection = builder.setItemsPerPage(data.size()).buildCollection();
+        if(data.size() > 0) {            
+            try {
+                collection.setFirst(getWebAnnotationPageForRecordComments(pi, uri, 1));
+            } catch (IllegalRequestException e) {
+                //no items
+            }
+        }
         return collection;
     }
 
-    public AnnotationPage getWebAnnotationPageForRecordComments(String pi, URI uri, Integer page) throws DAOException {
+    public AnnotationPage getWebAnnotationPageForRecordComments(String pi, URI uri, Integer page) throws DAOException, IllegalRequestException {
+        if(page == null || page < 1) {
+            throw new IllegalRequestException("Page number must be at least 1");
+        }
         List<Comment> data = DataManager.getInstance().getDao().getCommentsForWork(pi);
-
+        if(data.isEmpty()) {
+            throw new IllegalRequestException("Page number is out of bounds");
+        }
         AnnotationCollectionBuilder builder = new AnnotationCollectionBuilder(uri, data.size());
-        AnnotationPage annoPage = builder.setItemsPerPage(MAX_ANNOTATIONS_PER_PAGE).buildPage(
+        AnnotationPage annoPage = builder.setItemsPerPage(data.size()).buildPage(
                 data.stream()
                         .map(c -> getAsWebAnnotation(c))
                         .collect(Collectors.toList()),
@@ -209,15 +254,26 @@ public class AnnotationsResourceBuilder {
 
         AnnotationCollectionBuilder builder = new AnnotationCollectionBuilder(uri, data.size());
         AnnotationCollection collection = builder.setItemsPerPage(MAX_ANNOTATIONS_PER_PAGE).buildCollection();
-
+        if(data.size() > 0) {            
+            try {
+                collection.setFirst(getWebAnnotationPageForPageComments(pi, pageNo, uri, 1));
+            } catch (IllegalRequestException e) {
+                //no items
+            }
+        }
         return collection;
     }
 
-    public AnnotationPage getWebAnnotationPageForPageComments(String pi, Integer pageNo, URI uri, Integer page) throws DAOException {
+    public AnnotationPage getWebAnnotationPageForPageComments(String pi, Integer pageNo, URI uri, Integer page) throws DAOException, IllegalRequestException {
+        if(page == null || page < 1) {
+            throw new IllegalRequestException("Page number must be at least 1");
+        }
         List<Comment> data = DataManager.getInstance().getDao().getCommentsForPage(pi, pageNo);
-
+        if(data.isEmpty()) {
+            throw new IllegalRequestException("Page number is out of bounds");
+        }
         AnnotationCollectionBuilder builder = new AnnotationCollectionBuilder(uri, data.size());
-        AnnotationPage annoPage = builder.setItemsPerPage(MAX_ANNOTATIONS_PER_PAGE).buildPage(
+        AnnotationPage annoPage = builder.setItemsPerPage(data.size()).buildPage(
                 data.stream()
                         .map(c -> getAsWebAnnotation(c))
                         .collect(Collectors.toList()),

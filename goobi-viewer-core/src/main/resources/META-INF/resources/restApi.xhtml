@@ -21,6 +21,7 @@
         <div id="swagger-container"></div>
         
         <script>
+      //<![CDATA[
 	        fetch("#{request.contextPath}/api/v1/openapi.json")
 	        .then(res => res.json())
 	        .then(json => {
@@ -39,7 +40,7 @@
 	        	    dom_id: '#swagger-container',
 	        	    spec: json,
 	        	    requestInterceptor : request => {
-	        	        if(!request.url.endsWith("/")) {
+	        	        if(!request.url.endsWith("/") && !request.url.includes("?")) {
 	        	            request.url = request.url + "/";
 	        	        }
 		                console.log("requesting ", request);
@@ -48,7 +49,7 @@
 	        	  });
 	        })
         	
-        
+        //]]>
         </script>
         
     </ui:define>
