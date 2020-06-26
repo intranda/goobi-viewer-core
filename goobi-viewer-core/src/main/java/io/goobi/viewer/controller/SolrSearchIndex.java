@@ -44,6 +44,7 @@ import org.apache.solr.client.solrj.SolrServerException;
 import org.apache.solr.client.solrj.impl.BaseHttpSolrClient.RemoteSolrException;
 import org.apache.solr.client.solrj.impl.BinaryRequestWriter;
 import org.apache.solr.client.solrj.impl.HttpSolrClient;
+import org.apache.solr.client.solrj.impl.XMLResponseParser;
 import org.apache.solr.client.solrj.request.LukeRequest;
 import org.apache.solr.client.solrj.response.LukeResponse;
 import org.apache.solr.client.solrj.response.LukeResponse.FieldInfo;
@@ -148,6 +149,10 @@ public final class SolrSearchIndex {
         server.setFollowRedirects(false); // defaults to false
         //        server.setMaxRetries(1); // defaults to 0. > 1 not recommended.
         server.setRequestWriter(new BinaryRequestWriter());
+        // Backwards compatibility mode for Solr 4 servers
+        if (DataManager.getInstance().getConfiguration().isSolrBackwardsCompatible()) {
+            server.setParser(new XMLResponseParser());
+        }
 
         return server;
     }
@@ -231,7 +236,7 @@ public final class SolrSearchIndex {
         if (params != null && !params.isEmpty()) {
             for (String key : params.keySet()) {
                 solrQuery.set(key, params.get(key));
-                //                 logger.trace("&{}={}", key, params.get(key));
+                //logger.trace("&{}={}", key, params.get(key));
             }
         }
 
