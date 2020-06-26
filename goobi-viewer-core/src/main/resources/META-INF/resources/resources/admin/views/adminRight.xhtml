@@ -213,7 +213,7 @@
                                                         </div>
                                                     <div class="col-7 admin__form-input">
                                                         <div>
-                                                            <h:panelGroup layout="block" class="col-7" id="selected_subthemes">
+                                                            <h:panelGroup layout="block" class="overflow-hidden" id="selected_subthemes">
                                                                 <ui:repeat var="selectable" value="#{adminBean.currentLicense.selectableSubthemes}">
                                                                     <ui:fragment rendered="#{selectable.selected}">
                                                                         <div class="badge badge-dark">
@@ -261,7 +261,7 @@
                                                     </div>
                                                     <div class="col-7 admin__form-input">
                                                         <div>
-                                                            <h:panelGroup layout="block" id="selected_categories">
+                                                            <h:panelGroup layout="block" class="overflow-hidden" id="selected_categories">
                                                                 <ui:repeat var="selectable" value="#{adminBean.currentLicense.selectableCategories}">
                                                                     <ui:fragment rendered="#{selectable.selected}">
                                                                         <div class="badge badge-violet">
@@ -308,7 +308,7 @@
                                                     </div>
                                                     <div class="col-7 admin__form-input">
                                                         <div>
-                                                            <h:panelGroup layout="block" id="selected_templates">
+                                                            <h:panelGroup layout="block" class="overflow-hidden" id="selected_templates">
                                                                 <ui:repeat var="selectable" value="#{adminBean.currentLicense.selectableTemplates}">
                                                                     <ui:fragment rendered="#{selectable.selected}">
                                                                         <div class="badge badge-primary">
