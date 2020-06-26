@@ -82,7 +82,7 @@ public class AnnotationResource {
     @javax.ws.rs.Path("/{page}")
     @Produces({ MediaType.APPLICATION_JSON })
     @Operation(tags = { "annotations"}, summary = "Get a page within the annotation collection over all annotations")
-    @ApiResponse(responseCode="400", description="If the page number is out of bounds")
+    @ApiResponse(responseCode="404", description="If the page number is out of bounds")
     public AnnotationPage getAnnotationCollectionPage(
             @PathParam("page") Integer page)
             throws PresentationException, IndexUnreachableException, DAOException, ContentLibException, URISyntaxException, ViewerConfigurationException {
@@ -95,7 +95,7 @@ public class AnnotationResource {
     @javax.ws.rs.Path(ANNOTATIONS_ANNOTATION)
     @Produces({ MediaType.APPLICATION_JSON })
     @Operation(tags = { "annotations"}, summary = "Get an annotation by its identifier")
-    @ApiResponse(responseCode="400", description="If the page number is out of bounds")
+    @ApiResponse(responseCode="404", description="If the page number is out of bounds")
     public IAnnotation getAnnotation(
             @Parameter(description="Identifier of the annotation")@PathParam("id") Long id)
             throws PresentationException, IndexUnreachableException, DAOException, ContentLibException, URISyntaxException, ViewerConfigurationException {
