@@ -66,10 +66,10 @@
 	                                                <p class="col-12 mb-1">#{licenseType.description}</p>
 	                                            </ui:fragment>
 	                                            <ui:fragment rendered="#{licenseType.openAccess}">
-	                                            	<p class="col-12">#{msg.admin__license_open_access_desciption_text}</p>
+	                                            	<p class="col-12 mb-1">#{msg.admin__license_open_access_desciption_text}</p>
 	                                        	</ui:fragment>
-												<ui:fragment rendered="#{adminBean.currentLicenseType.movingWall}">
-	                                            	<p class="col-12">#{msg.admin__moving_wall_activated_info} MSG KEY Info Moving Wall an</p>
+												<ui:fragment rendered="#{licenseType.movingWall}">
+	                                            	<p class="col-12">#{msg.admin__moving_wall_activated_info}</p>
 	                                        	</ui:fragment>
 	                                            <ui:fragment rendered="#{licenseType.description eq '' and licenseType.openAccess eq ''}">
 	                                                <p class="col-12 admin__boxed-entry-description-empty" aria-disabled="true">(#{msg.admin__label__no_description_available})</p>
