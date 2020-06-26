@@ -870,7 +870,7 @@ public class AccessConditionUtils {
                 if (StringUtils.isNotEmpty(remoteAddress)) {
                     if (NetTools.isIpAddressLocalhost(remoteAddress)
                             && DataManager.getInstance().getConfiguration().isFullAccessForLocalhost()) {
-                        logger.debug("Access granted to localhost");
+                        logger.trace("Access granted to localhost");
                         accessMap.put(key, Boolean.TRUE);
                         continue;
                     }
@@ -879,7 +879,7 @@ public class AccessConditionUtils {
                         // logger.debug("ip range: " + ipRange.getSubnetMask());
                         if (ipRange.matchIp(remoteAddress)
                                 && ipRange.canSatisfyAllAccessConditions(requiredAccessConditions, relevantLicenseTypes, privilegeName, null)) {
-                            logger.debug("Access granted to {} via IP range {}", remoteAddress, ipRange.getName());
+                            logger.trace("Access granted to {} via IP range {}", remoteAddress, ipRange.getName());
                             accessMap.put(key, Boolean.TRUE);
                             continue;
                         }
@@ -943,7 +943,7 @@ public class AccessConditionUtils {
         //         logger.trace("getRelevantLicenseTypesOnly: {} | {}", query, requiredAccessConditions);
         Map<String, List<LicenseType>> ret = new HashMap<>(accessMap.size());
         for (LicenseType licenseType : allLicenseTypes) {
-            // logger.trace(licenseType.getName());
+            // logger.trace("{}, moving wall: {}", licenseType.getName(), licenseType.isMovingWall());
             if (!requiredAccessConditions.contains(licenseType.getName())) {
                 continue;
             }

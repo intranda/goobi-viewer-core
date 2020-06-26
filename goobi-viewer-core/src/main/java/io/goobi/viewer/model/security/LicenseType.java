@@ -846,7 +846,8 @@ public class LicenseType implements IPrivilegeHolder {
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder("LicenceType: ").append(getName()).append(":\t");
-        sb.append("openaccess: ").append(isOpenAccess());
+        sb.append("moving wall: ").append(isMovingWall());
+        sb.append("\topenaccess: ").append(isOpenAccess());
         sb.append("\tconditions: ").append(conditions);
         sb.append("\n\t").append("Privileges: ").append(StringUtils.join(getPrivileges(), ", "));
         return sb.toString();
