@@ -49,6 +49,7 @@ import de.unigoettingen.sub.commons.util.CacheUtils;
 import io.goobi.viewer.controller.DataFileTools;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.SolrConstants;
+import io.goobi.viewer.controller.SolrSearchIndex;
 import io.goobi.viewer.controller.StringTools;
 import io.goobi.viewer.controller.XmlTools;
 import io.goobi.viewer.exceptions.DAOException;
@@ -1655,7 +1656,7 @@ public class AdminBean implements Serializable {
     public long getNumRecordsWithAccessCondition(String accessCondition) throws IndexUnreachableException, PresentationException {
         return DataManager.getInstance()
                 .getSearchIndex()
-                .getHitCount(getQueryForAccessCondition(accessCondition));
+                .getHitCount(SolrSearchIndex.getQueryForAccessCondition(accessCondition, false));
     }
 
     /**
@@ -1664,21 +1665,12 @@ public class AdminBean implements Serializable {
      * @return
      */
     public String getUrlQueryForAccessCondition(String accessCondition) {
-        String query = getQueryForAccessCondition(accessCondition);
+        String query = SolrSearchIndex.getQueryForAccessCondition(accessCondition, true);
         try {
             return URLEncoder.encode(query, StringTools.DEFAULT_ENCODING);
         } catch (UnsupportedEncodingException e) {
             return query;
         }
-    }
-
-    /**
-     * 
-     * @param accessCondition
-     * @return
-     */
-    static String getQueryForAccessCondition(String accessCondition) {
-        return SearchHelper.ALL_RECORDS_QUERY + " AND " + SolrConstants.ACCESSCONDITION + ":\"" + accessCondition + "\"";
     }
 
     public void triggerMessage(String message) {
