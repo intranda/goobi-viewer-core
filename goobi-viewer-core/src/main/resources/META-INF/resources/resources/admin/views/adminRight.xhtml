@@ -45,9 +45,9 @@
                                             <f:passThroughAttribute name="aria-label" value="#{msg.admin__license_licensee_type_select_label}" />
 
                                             <f:selectItem itemLabel="#{msg.select}" itemValue="" noSelectionOption="true" />
-                                            <f:selectItem itemLabel="#{msg.user}" itemValue="user" />
-                                            <f:selectItem itemLabel="#{msg.userGroup}" itemValue="group" />
-                                            <f:selectItem itemLabel="#{msg.ipRange}" itemValue="iprange" />
+                                            <f:selectItem itemLabel="#{msg.admin__users}" itemValue="user" />
+                                            <f:selectItem itemLabel="#{msg.admin__groups}" itemValue="group" />
+                                            <f:selectItem itemLabel="#{msg.admin__ip_ranges}" itemValue="iprange" />
                                             <f:ajax render="licenseeGroup infoGroup licenseTypeGroup" />
                                             <!-- Reset all set licensee values so that the lower menus are reset as well -->
                                             <f:ajax listener="#{adminBean.currentLicense.setUser(null)}" />
