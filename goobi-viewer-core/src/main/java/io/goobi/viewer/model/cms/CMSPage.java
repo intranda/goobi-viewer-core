@@ -51,6 +51,7 @@ import javax.persistence.TemporalType;
 import javax.persistence.Transient;
 
 import org.apache.commons.collections4.comparators.NullComparator;
+import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.text.StringEscapeUtils;
 import org.eclipse.persistence.annotations.PrivateOwned;
@@ -1030,7 +1031,7 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable {
     private CMSPageLanguageVersion getBestLanguage(Locale locale) throws CmsElementNotFoundException {
         // logger.trace("getBestLanguage");
         CMSPageLanguageVersion language = getLanguageVersions().stream()
-                .filter(l -> l.getStatus().equals(CMSPageStatus.FINISHED))
+                .filter(l -> l.getStatus() != null && l.getStatus().equals(CMSPageStatus.FINISHED))
                 .filter(l -> !l.getLanguage().equals(GLOBAL_LANGUAGE))
                 .sorted(new CMSPageLanguageVersionComparator(locale, ViewerResourceBundle.getDefaultLocale()))
                 .findFirst()
@@ -1051,7 +1052,7 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable {
         CMSPageLanguageVersion language = getLanguageVersions().stream()
                 .filter(l -> !l.getLanguage().equals(GLOBAL_LANGUAGE))
                 .sorted(new CMSPageLanguageVersionComparator(locale, ViewerResourceBundle.getDefaultLocale()))
-                .sorted((p1, p2) -> p2.getStatus().compareTo(p1.getStatus()))
+                .sorted((p1, p2) ->  ObjectUtils.compare(p2.getStatus(), p1.getStatus()))
                 .findFirst()
                 .orElseThrow(() -> new CmsElementNotFoundException("No language version exists for page " + this.getId()));
         return language;
@@ -2035,6 +2036,14 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable {
     @Override
     public String getPi() {
         return getRelatedPI();
+    }
+
+    /**
+     * @param unusedSidebarElements2
+     */
+    public void setUnusedSidebarElements(List<CMSSidebarElement> unusedSidebarElements2) {
+        this.unusedSidebarElements = unusedSidebarElements2;
+        
     }
 
 }

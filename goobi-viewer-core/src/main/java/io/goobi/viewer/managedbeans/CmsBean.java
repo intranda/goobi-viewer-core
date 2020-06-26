@@ -1205,6 +1205,8 @@ public class CmsBean implements Serializable {
             } else {
                 this.selectedPage = currentPage;
             }
+
+            
             PageValidityStatus validityStatus = isPageValid(this.selectedPage);
             this.selectedPage.setValidityStatus(validityStatus);
             if (validityStatus.isValid()) {
