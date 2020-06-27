@@ -74,7 +74,7 @@
 		<taskManager>taskmanager_url/</taskManager>
 
 		<!-- solr: URL to the Solr index core -->
-		<solr>https://viewer.goobi.io/solr/collection1</solr>
+		<solr>https://viewer-testing-index.goobi.io/solr/collection1</solr>
 
 		<!-- contentServer: relative path to contentServer from the Goobi viewer 
 			context -->
