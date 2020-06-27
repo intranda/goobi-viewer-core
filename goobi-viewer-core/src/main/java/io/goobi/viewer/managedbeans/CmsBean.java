@@ -383,7 +383,7 @@ public class CmsBean implements Serializable {
 
     /**
      * Returns a filtered page template list for the given user, unless the user is a superuser. Other CMS admins get a list matching the template ID
-     * list attached to ther CMS license.
+     * list attached to their CMS license.
      *
      * @param user a {@link io.goobi.viewer.model.security.user.User} object.
      * @return List of CMS templates whose IDs are among allowed template IDs

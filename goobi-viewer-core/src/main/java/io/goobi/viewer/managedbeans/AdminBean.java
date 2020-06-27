@@ -49,6 +49,7 @@ import de.unigoettingen.sub.commons.util.CacheUtils;
 import io.goobi.viewer.controller.DataFileTools;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.SolrConstants;
+import io.goobi.viewer.controller.SolrSearchIndex;
 import io.goobi.viewer.controller.StringTools;
 import io.goobi.viewer.controller.XmlTools;
 import io.goobi.viewer.exceptions.DAOException;
@@ -62,6 +63,7 @@ import io.goobi.viewer.messages.Messages;
 import io.goobi.viewer.messages.ViewerResourceBundle;
 import io.goobi.viewer.model.annotation.Comment;
 import io.goobi.viewer.model.cms.CMSCategory;
+import io.goobi.viewer.model.cms.CMSPageTemplate;
 import io.goobi.viewer.model.cms.Selectable;
 import io.goobi.viewer.model.search.SearchHelper;
 import io.goobi.viewer.model.security.License;
@@ -882,9 +884,9 @@ public class AdminBean implements Serializable {
         // Sync changes made to allowed templates
         if (currentLicense.getSelectableTemplates() != null && !currentLicense.getSelectableTemplates().isEmpty()) {
             currentLicense.getAllowedCmsTemplates().clear();
-            for (Selectable<String> selectable : currentLicense.getSelectableTemplates()) {
+            for (Selectable<CMSPageTemplate> selectable : currentLicense.getSelectableTemplates()) {
                 if (selectable.isSelected()) {
-                    currentLicense.getAllowedCmsTemplates().add(selectable.getValue());
+                    currentLicense.getAllowedCmsTemplates().add(selectable.getValue().getId());
                 }
             }
         }
@@ -1655,7 +1657,7 @@ public class AdminBean implements Serializable {
     public long getNumRecordsWithAccessCondition(String accessCondition) throws IndexUnreachableException, PresentationException {
         return DataManager.getInstance()
                 .getSearchIndex()
-                .getHitCount(getQueryForAccessCondition(accessCondition));
+                .getHitCount(SolrSearchIndex.getQueryForAccessCondition(accessCondition, false));
     }
 
     /**
@@ -1664,21 +1666,12 @@ public class AdminBean implements Serializable {
      * @return
      */
     public String getUrlQueryForAccessCondition(String accessCondition) {
-        String query = getQueryForAccessCondition(accessCondition);
+        String query = SolrSearchIndex.getQueryForAccessCondition(accessCondition, true);
         try {
             return URLEncoder.encode(query, StringTools.DEFAULT_ENCODING);
         } catch (UnsupportedEncodingException e) {
             return query;
         }
-    }
-
-    /**
-     * 
-     * @param accessCondition
-     * @return
-     */
-    static String getQueryForAccessCondition(String accessCondition) {
-        return SearchHelper.ALL_RECORDS_QUERY + " AND " + SolrConstants.ACCESSCONDITION + ":\"" + accessCondition + "\"";
     }
 
     public void triggerMessage(String message) {

@@ -65,8 +65,10 @@ import io.goobi.viewer.controller.SolrConstants.DocType;
 import io.goobi.viewer.exceptions.HTTPException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
+import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.messages.ViewerResourceBundle;
 import io.goobi.viewer.model.crowdsourcing.DisplayUserGeneratedContent;
+import io.goobi.viewer.model.search.SearchHelper;
 import io.goobi.viewer.model.viewer.StringPair;
 import io.goobi.viewer.model.viewer.StructElement;
 import io.goobi.viewer.model.viewer.Tag;
@@ -1626,5 +1628,21 @@ public final class SolrSearchIndex {
         }
 
         return conditions.trim();
+    }
+    
+
+    /**
+     * 
+     * @param accessCondition
+     * @param escape
+     * @return
+     * @should build escaped query correctly
+     * @should build not escaped query correctly
+     */
+    public static String getQueryForAccessCondition(String accessCondition, boolean escape) {
+        if (escape) {
+            accessCondition = BeanUtils.escapeCriticalUrlChracters(accessCondition);
+        }
+        return SearchHelper.ALL_RECORDS_QUERY + " AND " + SolrConstants.ACCESSCONDITION + ":\"" + accessCondition + "\"";
     }
 }

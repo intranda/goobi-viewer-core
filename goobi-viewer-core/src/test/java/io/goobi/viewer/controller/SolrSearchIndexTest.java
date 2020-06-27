@@ -31,6 +31,8 @@ import org.slf4j.LoggerFactory;
 import de.intranda.metadata.multilanguage.IMetadataValue;
 import de.intranda.metadata.multilanguage.MultiLanguageMetadataValue;
 import io.goobi.viewer.AbstractSolrEnabledTest;
+import io.goobi.viewer.managedbeans.utils.BeanUtils;
+import io.goobi.viewer.model.search.SearchHelper;
 import io.goobi.viewer.model.viewer.StringPair;
 
 public class SolrSearchIndexTest extends AbstractSolrEnabledTest {
@@ -409,5 +411,27 @@ public class SolrSearchIndexTest extends AbstractSolrEnabledTest {
         Assert.assertNull(DataManager.getInstance().getSearchIndex().dataRepositoryNames.get("PPN123"));
         DataManager.getInstance().getSearchIndex().updateDataRepositoryNames("PPN123", "repo/a");
         Assert.assertEquals("repo/a", DataManager.getInstance().getSearchIndex().dataRepositoryNames.get("PPN123"));
+    }
+
+    /**
+     * @see SolrSearchIndex#getQueryForAccessCondition(String,boolean)
+     * @verifies build escaped query correctly
+     */
+    @Test
+    public void getQueryForAccessCondition_shouldBuildEscapedQueryCorrectly() throws Exception {
+        Assert.assertEquals(
+                SearchHelper.ALL_RECORDS_QUERY + " AND " + SolrConstants.ACCESSCONDITION + ":\"foo" + BeanUtils.SLASH_REPLACEMENT + "bar\"",
+                SolrSearchIndex.getQueryForAccessCondition("foo/bar", true));
+    }
+
+    /**
+     * @see SolrSearchIndex#getQueryForAccessCondition(String,boolean)
+     * @verifies build not escaped query correctly
+     */
+    @Test
+    public void getQueryForAccessCondition_shouldBuildNotEscapedQueryCorrectly() throws Exception {
+        Assert.assertEquals(
+                SearchHelper.ALL_RECORDS_QUERY + " AND " + SolrConstants.ACCESSCONDITION + ":\"foo/bar\"",
+                SolrSearchIndex.getQueryForAccessCondition("foo/bar", false));
     }
 }
