@@ -84,15 +84,11 @@
                                             <div>
                                                 <!-- EDIT -->
                                                 <h:commandLink styleClass="admin__table-action-link" action="#{crowdsourcingBean.editCampaignAction(campaign)}" title="#{msg.edit}" alt="#{msg.edit}">
-                                                    #{msg.edit}
-                                                    <f:setPropertyActionListener value="#{true}" target="#{crowdsourcingBean.editMode}" />
-                                                </h:commandLink>
+                                                    #{msg.edit}<f:setPropertyActionListener value="#{true}" target="#{crowdsourcingBean.editMode}" /></h:commandLink>
                                                 <!-- Delete link -->
                                                 <h:commandLink styleClass="admin__table-action-link -redlink"
                                                     onclick="if ( !confirm( &quot;#{msg.admin__crowdsourcing_campaign_deleteConfirmationText}&quot; ) ) { return false };" 
-                                                    action="#{crowdsourcingBean.deleteCampaignAction(campaign)}" title="#{msg.delete}" alt="#{msg.delete}">
-                                                    #{msg.delete}
-                                                </h:commandLink>
+                                                    action="#{crowdsourcingBean.deleteCampaignAction(campaign)}" title="#{msg.delete}" alt="#{msg.delete}">#{msg.delete}</h:commandLink>
                                             </div>
                                         </div>
                                     </div>

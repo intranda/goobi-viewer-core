@@ -53,19 +53,50 @@ $( document ).ready(function() {
 		$(this).closest('.form-group').children('.admin__form-input, .admin__license-functions-help').find('.admin__form-help-text').toggleClass('in');
 	});
 
-// hide license functions if open access checkbox is checked
-	// check if checkbox already checked on page load
+// hide license functions if open access toggle is yes
+	// check if toggle yes on page load
 	if ($('.openAccessToggle input:nth-of-type(1)').prop('checked')) {
 			  $('.admin__license-functions').hide();
 		  }
-	// check if checkbox status changes
+	// check if toggle status changes
 	$(".openAccessToggle input").change(function(){
 		  if ($('.openAccessToggle input:nth-of-type(1)').is(':checked'))
-		   $('.admin__license-functions').fadeOut('fast');
+		   $('.admin__license-functions').animate({
+			    height: "toggle",
+			    opacity: "toggle"
+			}, 350);
 		  else if ($('.openAccessToggle input:nth-of-type(2)').is(':checked'))
-			   $('.admin__license-functions').fadeIn('fast');
+			   $('.admin__license-functions').animate({
+				    height: "toggle",
+				    opacity: "toggle"
+				}, 350);
+	});
+
+// toggle next cms right block after radio button
+		// check if toggle yes on page load
+	$('.blockAfterRadioToggler').each(function() {
+		if ($(this).find("input:nth-of-type(2)").prop('checked')) {
+			$(this).next('.admin__license-selectable-block').hide();
+		}
+	}); 
+	
+	// check if radio button status changes
+	$('.blockAfterRadioToggler input').change(function() {
+		if ($(this).parent('.admin__radio-switch').find('input:nth-of-type(2)').is(':checked')) {
+			$(this).closest('.blockAfterRadioToggler').next('.admin__license-selectable-block').animate({
+		    height: "toggle",
+		    opacity: "toggle"
+			}, 350);
+		}
+		else if ($(this).parent('.admin__radio-switch').find('input:nth-of-type(1)').is(':checked')) {
+			$(this).closest('.blockAfterRadioToggler').next('.admin__license-selectable-block').animate({
+		    height: "toggle",
+		    opacity: "toggle"
+			}, 350);
+		}
 	});
 });
+
 
 // hiding the new tab option for cms menus if link value is '#'
 $(document).ready(function(){

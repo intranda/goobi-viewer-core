@@ -207,7 +207,7 @@
 
                                                 <!-- SUBTHEMES -->
                                                 <ui:fragment rendered="#{fn:length(adminBean.currentLicense.selectableSubthemes) > 0}">
-                                                <div class="form-group form-row">
+                                                <div class="form-group form-row blockAfterRadioToggler">
                                                     <div class="col-4">
                                                         <label for="name" class="control-label">#{msg.admin__license_allowed_subthemes_label}:</label>
                                                     </div>
@@ -215,13 +215,11 @@
                                                         <div class="admin__radio-switch">
                                                             <h:selectOneRadio group="privCmsAllSubthemes" value="#{adminBean.currentLicense.privCmsAllSubthemes}"
                                                                 immediate="true">
-                                                                <f:selectItem itemValue="#{true}" itemLabel="#{msg.admin__license_option_all}" />
-                                                                <f:ajax render="selectSubthemesGroup" />
+                                                                <f:selectItem itemValue="#{true}" itemLabel="#{msg.yes}" />
                                                             </h:selectOneRadio>
                                                             <h:selectOneRadio group="privCmsAllSubthemes" value="#{adminBean.currentLicense.privCmsAllSubthemes}"
                                                                 immediate="true">
-                                                                <f:selectItem itemValue="#{false}" itemLabel="#{msg.admin__license_option_select}" />
-                                                                <f:ajax render="selectSubthemesGroup" />
+                                                                <f:selectItem itemValue="#{false}" itemLabel="#{msg.no}" />
                                                             </h:selectOneRadio>
                                                             <span class="toggle-outside"><span class="toggle-inside"></span></span>
                                                         </div>
@@ -233,11 +231,10 @@
                                                         </button>
                                                     </div>
                                                 </div>
-                                                <h:panelGroup id="selectSubthemesGroup">
-                                                <ui:fragment rendered="#{!adminBean.currentLicense.privCmsAllSubthemes}">
-                                                <div class="form-group form-row">
+                                                <h:panelGroup id="selectSubthemesGroup" layout="block" styleClass="form-row admin__license-selectable-block">
+                                                <ui:fragment>
                                                     <div class="col-4" />
-                                                    <div class="col-7 admin__form-input">
+                                                    <div class="col-7 pb-4">
                                                         <div>
                                                             <h:panelGroup layout="block" class="overflow-hidden" id="selected_subthemes">
                                                                 <ui:repeat var="selectable" value="#{adminBean.currentLicense.selectableSubthemes}">
@@ -272,13 +269,12 @@
                                                         </div>
                                                         </div>
                                                         <div class="col-1" />
-                                                    </div>
                                                 </ui:fragment>
                                                 </h:panelGroup>
                                                 </ui:fragment>
 
                                                 <!-- CATEGORIES -->
-                                                <div class="form-group form-row">
+                                                <div class="form-group form-row blockAfterRadioToggler">
                                                     <div class="col-4">
                                                         <label for="name" class="control-label">#{msg.admin__license_allowed_categories_label}:</label>
                                                     </div>
@@ -286,13 +282,11 @@
                                                         <div class="admin__radio-switch">
                                                             <h:selectOneRadio group="privCmsAllCategories" value="#{adminBean.currentLicense.privCmsAllCategories}"
                                                                 immediate="true">
-                                                                <f:selectItem itemValue="#{true}" itemLabel="#{msg.admin__license_option_all}" />
-                                                                <f:ajax render="selectCategoriesGroup" />
+                                                                <f:selectItem itemValue="#{true}" itemLabel="#{msg.yes}" />
                                                             </h:selectOneRadio>
                                                             <h:selectOneRadio group="privCmsAllCategories" value="#{adminBean.currentLicense.privCmsAllCategories}"
                                                                 immediate="true">
-                                                                <f:selectItem itemValue="#{false}" itemLabel="#{msg.admin__license_option_select}" />
-                                                                <f:ajax render="selectCategoriesGroup" />
+                                                                <f:selectItem itemValue="#{false}" itemLabel="#{msg.no}" />
                                                             </h:selectOneRadio>
                                                             <span class="toggle-outside"><span class="toggle-inside"></span></span>
                                                         </div>
@@ -304,12 +298,10 @@
                                                         </button>
                                                     </div>
                                                 </div>
-                                                <h:panelGroup id="selectCategoriesGroup">
-                                                <ui:fragment rendered="#{!adminBean.currentLicense.privCmsAllCategories}">
-                                                <div class="form-group form-row">
+                                                <h:panelGroup layout="block" id="selectCategoriesGroup" styleClass="form-row admin__license-selectable-block">
+                                                <ui:fragment>
                                                     <div class="col-4" />
-                                                    <div class="col-7 admin__form-input">
-                                                        <div>
+                                                    <div class="col-7 pb-4">
                                                             <h:panelGroup layout="block" class="overflow-hidden" id="selected_categories">
                                                                 <ui:repeat var="selectable" value="#{adminBean.currentLicense.selectableCategories}">
                                                                     <ui:fragment rendered="#{selectable.selected}">
@@ -319,7 +311,6 @@
                                                                     </ui:fragment>
                                                                 </ui:repeat>
                                                             </h:panelGroup>
-                                                        </div>
                                                         <div>
                                                             <div class="page-metadata-item__categories-selectable-categories">
                                                                 <div class="page-metadata-item__categories-selectable-categories-select">
@@ -343,12 +334,11 @@
                                                         </div>
                                                     </div>
                                                     <div class="col-1" />
-                                                </div>
                                                 </ui:fragment>
                                                 </h:panelGroup>
 
                                                 <!-- CMS TEMPLATES -->
-                                                <div class="form-group form-row">
+                                                <div class="form-group form-row blockAfterRadioToggler">
                                                     <div class="col-4">
                                                         <label for="name" class="control-label">#{msg.admin__license_allowed_cms_templates_label}:</label>
                                                     </div>
@@ -356,13 +346,11 @@
                                                         <div class="admin__radio-switch">
                                                             <h:selectOneRadio group="privCmsAllTemplates" value="#{adminBean.currentLicense.privCmsAllTemplates}"
                                                                 immediate="true">
-                                                                <f:selectItem itemValue="#{true}" itemLabel="#{msg.admin__license_option_all}" />
-                                                                <f:ajax render="selectTemplatesGroup" />
+                                                                <f:selectItem itemValue="#{true}" itemLabel="#{msg.yes}" />
                                                             </h:selectOneRadio>
                                                             <h:selectOneRadio group="privCmsAllTemplates" value="#{adminBean.currentLicense.privCmsAllTemplates}"
                                                                 immediate="true">
-                                                                <f:selectItem itemValue="#{false}" itemLabel="#{msg.admin__license_option_select}" />
-                                                                <f:ajax render="selectTemplatesGroup" />
+                                                                <f:selectItem itemValue="#{false}" itemLabel="#{msg.no}" />
                                                             </h:selectOneRadio>
                                                             <span class="toggle-outside"><span class="toggle-inside"></span></span>
                                                         </div>
@@ -374,23 +362,20 @@
                                                         </button>
                                                     </div>
                                                 </div>
-                                                <h:panelGroup id="selectTemplatesGroup">
-                                                <ui:fragment rendered="#{!adminBean.currentLicense.privCmsAllTemplates}">
-                                                <div class="form-group form-row">
-                                                    <div class="col-4" />
-                                                    <div class="col-7 admin__form-input">
-                                                        <div>
-                                                            <h:panelGroup layout="block" class="overflow-hidden" id="selected_templates">
-                                                                <ui:repeat var="selectable" value="#{adminBean.currentLicense.selectableTemplates}">
-                                                                    <ui:fragment rendered="#{selectable.selected}">
-                                                                        <div class="badge badge-primary">
-                                                                            #{msg[selectable.value.name]}
-                                                                        </div>
-                                                                    </ui:fragment>
-                                                                </ui:repeat>
-                                                            </h:panelGroup>
-                                                        </div>
-                                                        <div>
+                                                <h:panelGroup layout="block" id="selectTemplatesGroup" styleClass="form-row admin__license-selectable-block">
+                                                <ui:fragment>
+                                                    <div class="col-4"></div>
+                                                    <div class="col-7 pb-4">
+                                                        <h:panelGroup layout="block" styleClass="overflow-hidden" id="selected_templates">
+                                                            <ui:repeat var="selectable" value="#{adminBean.currentLicense.selectableTemplates}">
+                                                                <ui:fragment rendered="#{selectable.selected}">
+                                                                    <div class="badge badge-primary">
+                                                                        #{msg[selectable.value.name]}
+                                                                    </div>
+                                                                </ui:fragment>
+                                                            </ui:repeat>
+                                                        </h:panelGroup>
+                                                        
                                                             <div class="page-metadata-item__categories-selectable-categories">
                                                                 <div class="page-metadata-item__categories-selectable-categories-select">
                                                                     <div class="cms-module__option-dropdown">
@@ -412,9 +397,8 @@
                                                                 </div>
                                                             </div>
                                                         </div>
-                                                    </div>
-                                                    <div class="col-1" />
-                                                </div>
+                                                        
+                                                    <div class="col-1"></div>
                                                 </ui:fragment>
                                                 </h:panelGroup>
 

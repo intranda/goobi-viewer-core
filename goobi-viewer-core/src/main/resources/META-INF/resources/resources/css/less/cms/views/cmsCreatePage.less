@@ -4,6 +4,12 @@
    ==============================================================*/
 /* CMS CREATE PAGE */
 .cms-create-page {
+	.ui-sortable-handle:hover {
+		cursor: grab;
+	}
+	.ui-sortable-helper:hover {
+		cursor: grabbing !important;
+	}
     position: relative;
     h2 {}
     .create-page-left {
@@ -111,7 +117,6 @@
                         background-color: #fff;
                         .sidebar-editor-widget-item {
                             .sidebar-editor-widget-item-header {
-                            	cursor: grab;
                                 position: relative;
                                 min-height: 28px;
                                 line-height: 27px;
