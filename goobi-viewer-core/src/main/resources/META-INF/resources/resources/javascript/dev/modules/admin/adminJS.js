@@ -64,16 +64,19 @@ $( document ).ready(function() {
 		   $('.admin__license-functions').animate({
 			    height: "toggle",
 			    opacity: "toggle"
-			}, 350);
+			}, 250);
 		  else if ($('.openAccessToggle input:nth-of-type(2)').is(':checked'))
 			   $('.admin__license-functions').animate({
 				    height: "toggle",
 				    opacity: "toggle"
-				}, 350);
+				}, 250);
 	});
 
 // toggle next cms right block after radio button
 		// check if toggle yes on page load
+	
+	// $("body").on("click", '[data-toggle="helptext"]', function()
+			
 	$('.blockAfterRadioToggler').each(function() {
 		if ($(this).find("input:nth-of-type(2)").prop('checked')) {
 			$(this).next('.admin__license-selectable-block').hide();
@@ -81,19 +84,21 @@ $( document ).ready(function() {
 	}); 
 	
 	// check if radio button status changes
+	$("body").one("click", '.blockAfterRadioToggler', function(event) { 
 	$('.blockAfterRadioToggler input').change(function() {
 		if ($(this).parent('.admin__radio-switch').find('input:nth-of-type(2)').is(':checked')) {
 			$(this).closest('.blockAfterRadioToggler').next('.admin__license-selectable-block').animate({
 		    height: "toggle",
 		    opacity: "toggle"
-			}, 350);
+			}, 250);
 		}
 		else if ($(this).parent('.admin__radio-switch').find('input:nth-of-type(1)').is(':checked')) {
 			$(this).closest('.blockAfterRadioToggler').next('.admin__license-selectable-block').animate({
 		    height: "toggle",
 		    opacity: "toggle"
-			}, 350);
+			}, 250);
 		}
+	});
 	});
 });
 
