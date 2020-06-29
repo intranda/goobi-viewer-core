@@ -30,6 +30,7 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.jdom2.Document;
 import org.jdom2.JDOMException;
 import org.jdom2.input.SAXBuilder;
@@ -80,10 +81,9 @@ public class RecordFileResourceTest extends AbstractRestApiTest {
                 .request()
                 .accept(MediaType.TEXT_XML)
                 .get()) {
-            assertEquals("Should return status 404", 404, response.getStatus());
-            String errorString = response.readEntity(String.class);
-            Document error = new SAXBuilder().build(IOUtils.toInputStream(errorString, "UTF-8"));
-            assertEquals("Resource not found", error.getRootElement().getChildText("message"));
+            assertEquals("Should return status 200", 404, response.getStatus());
+            String data = response.readEntity(String.class);
+            assertTrue(StringUtils.isNotBlank(data));
         }
     }
 
@@ -99,10 +99,9 @@ public class RecordFileResourceTest extends AbstractRestApiTest {
                 .request()
                 .accept(MediaType.TEXT_PLAIN)
                 .get()) {
-            assertEquals("Should return status 404", 404, response.getStatus());
-            String errorString = response.readEntity(String.class);
-            JSONObject error = new JSONObject(errorString);
-            assertEquals("Resource not found", error.getString("message"));
+            assertEquals("Should return status 200", 200, response.getStatus());
+            String data = response.readEntity(String.class);
+            assertTrue(StringUtils.isNotBlank(data));
         }
     }
 
@@ -118,10 +117,9 @@ public class RecordFileResourceTest extends AbstractRestApiTest {
                 .request()
                 .accept(MediaType.TEXT_XML)
                 .get()) {
-            assertEquals("Should return status 404", 404, response.getStatus());
-            String errorString = response.readEntity(String.class);
-            Document error = new SAXBuilder().build(IOUtils.toInputStream(errorString, "UTF-8"));
-            assertEquals("Resource not found", error.getRootElement().getChildText("message"));
+            assertEquals("Should return status 200", 200, response.getStatus());
+            String data = response.readEntity(String.class);
+            assertTrue(StringUtils.isNotBlank(data));
         }
     }
     
