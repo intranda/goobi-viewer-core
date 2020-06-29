@@ -17,7 +17,6 @@ package io.goobi.viewer.api.rest.resourcebuilders;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.net.URI;
 import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.Collections;

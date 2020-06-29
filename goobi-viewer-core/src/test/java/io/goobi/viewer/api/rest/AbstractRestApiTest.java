@@ -15,6 +15,10 @@
  */
 package io.goobi.viewer.api.rest;
 
+import java.net.URI;
+
+import javax.ws.rs.core.UriBuilder;
+
 import org.glassfish.jersey.internal.inject.AbstractBinder;
 import org.glassfish.jersey.server.ResourceConfig;
 import org.glassfish.jersey.servlet.ServletContainer;
@@ -44,6 +48,8 @@ public abstract class AbstractRestApiTest extends JerseyTest {
     private static AbstractDatabaseAndSolrEnabledTest DATA_FRAMEWORK = new AbstractDatabaseAndSolrEnabledTest() {
     };
     
+//    private static final String BASE_URL = "http://localhost:9999/";
+
     protected ObjectMapper mapper = new ObjectMapper();
     protected ApiUrls urls = new ApiUrls("");
     
@@ -76,6 +82,13 @@ public abstract class AbstractRestApiTest extends JerseyTest {
     public static void tearDownClass() throws Exception {
         AbstractDatabaseAndSolrEnabledTest.tearDownClass();
     }
+    
+//    @Override
+//    protected URI getBaseUri() {
+//        return UriBuilder.fromUri(BASE_URL).build();
+//    }
+
+    
     
     @Override
     protected TestContainerFactory getTestContainerFactory() {
