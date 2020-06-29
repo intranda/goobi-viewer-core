@@ -29,6 +29,7 @@ import static io.goobi.viewer.api.rest.v1.ApiUrls.USERS_BOOKMARKS_SHARED;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Optional;
 
 import javax.inject.Inject;
 import javax.servlet.http.HttpServletRequest;
@@ -83,14 +84,15 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 public class BookmarkResource {
 
     private AbstractBookmarkResourceBuilder builder;
-    @Context
     private HttpServletRequest servletRequest;
-    @Context
     private HttpServletResponse servletResponse;
+    
     @Inject
     AbstractApiUrlManager urls;
 
-    public BookmarkResource() {
+    public BookmarkResource(@Context HttpServletRequest servletRequest, @Context HttpServletResponse servletResponse) {
+        this.servletRequest = servletRequest;
+        this.servletResponse = servletResponse;
         UserBean bean = BeanUtils.getUserBeanFromRequest(servletRequest);
         if(bean != null) {            
             User currentUser = bean.getUser();
@@ -169,9 +171,7 @@ public class BookmarkResource {
         if(StringUtils.isNotBlank(list.getDescription())) {
             orig.setDescription(list.getDescription());
         }
-        if(list.isIsPublic() != null) {            
-            orig.setIsPublic(list.isIsPublic());
-        }
+        orig.setIsPublic(list.isIsPublic());
         if(StringUtils.isNotBlank(list.getShareKey())) {            
             orig.setShareKey(list.getShareKey());
         }
@@ -197,10 +197,11 @@ public class BookmarkResource {
     
     @POST
     @Path(USERS_BOOKMARKS_LIST)
+    @Consumes({ MediaType.APPLICATION_JSON })
     @Produces({ MediaType.APPLICATION_JSON })
     @Operation(
             tags = { "bookmarks" },
-            summary = "Add bookmark to list")
+            summary = "Add bookmark to list. Only pi, LogId and order are used")
     @ApiResponse(responseCode = "400", description = "Invalid user id")
     @ApiResponse(responseCode = "403", description = "Resource forbidden for user")
     @ApiResponse(responseCode = "404", description = "No user found for the given id")
@@ -208,7 +209,8 @@ public class BookmarkResource {
     public BookmarkList addItemToBookmarkList(
             @Parameter(description = "The id of the bookmark list") @PathParam("listId") Long id,
             Bookmark item) throws DAOException, IOException, RestApiException, IllegalRequestException {
-        builder.addBookmarkToBookmarkList(id, item.getPi(), item.getLogId(), item.getOrder().toString());
+        builder.addBookmarkToBookmarkList(id, item.getPi(), item.getLogId(), 
+                Optional.ofNullable(item.getOrder()).map(i -> i.toString()).orElse(null));
         return builder.getBookmarkListById(id);
     }
     

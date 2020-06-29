@@ -427,8 +427,8 @@ public class BookmarkList implements Serializable {
      *
      * @return the isPublic
      */
-    public Boolean isIsPublic() {
-        return isPublic;
+    public boolean isIsPublic() {
+        return isPublic == null ? false : isPublic;
     }
 
     /**
