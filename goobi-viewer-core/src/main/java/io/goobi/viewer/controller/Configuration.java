@@ -319,6 +319,15 @@ public final class Configuration extends AbstractConfiguration {
     }
 
     /**
+     * 
+     * @should return correct value
+     * @return Connector URL
+     */
+    public String getConnectorVersionUrl() {
+        return getLocalString("urls.connectorVersion", "http://localhost:8080/M2M/oai/tools?action=getVersion");
+    }
+
+    /**
      * Returns the list of configured metadata for the title bar component. TODO Allow templates and then retire this method.
      *
      * @should return all configured metadata elements
@@ -3461,7 +3470,7 @@ public final class Configuration extends AbstractConfiguration {
     public boolean isPreventProxyCaching() {
         return getLocalBoolean(("performance.preventProxyCaching"), false);
     }
-    
+
     /**
      * <p>
      * isSolrCompressionEnabled.
@@ -3473,7 +3482,7 @@ public final class Configuration extends AbstractConfiguration {
     public boolean isSolrCompressionEnabled() {
         return getLocalBoolean(("performance.solr.compressionEnabled"), true);
     }
-    
+
     /**
      * <p>
      * isSolrBackwardsCompatible.

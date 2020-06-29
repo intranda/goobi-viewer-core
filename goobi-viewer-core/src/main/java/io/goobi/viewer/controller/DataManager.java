@@ -72,6 +72,8 @@ public final class DataManager {
 
     private Map<String, List<Campaign>> recordCampaignMap = null;
 
+    private String indexerVersion = "";
+
     /**
      * <p>
      * Getter for the field <code>instance</code>.
@@ -97,7 +99,7 @@ public final class DataManager {
 
     private DataManager() {
     }
-    
+
     /**
      * Returns the application version number.
      *
@@ -410,4 +412,17 @@ public final class DataManager {
         this.recordCampaignMap = recordCampaignMap;
     }
 
+    /**
+     * @return the indexerVersion
+     */
+    public String getIndexerVersion() {
+        return indexerVersion;
+    }
+
+    /**
+     * @param indexerVersion the indexerVersion to set
+     */
+    public void setIndexerVersion(String indexerVersion) {
+        this.indexerVersion = indexerVersion;
+    }
 }

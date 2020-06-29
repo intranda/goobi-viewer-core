@@ -91,6 +91,9 @@
 		<rest>https://viewer.goobi.io/rest/</rest>
 
 		<download>https://viewer.goobi.io/download/</download>
+		
+        <!-- connectorVersion: URL to the version query on the Goobi viewer Connector -->
+        <connectorVersion>http://localhost:8081/M2M/oai/tools?action=getVersion</connectorVersion>
 	</urls>
 
 	<user>

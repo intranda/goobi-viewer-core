@@ -2794,4 +2794,14 @@ public class ConfigurationTest extends AbstractTest {
         Assert.assertEquals("maps__marker_2", marker.getName());
         Assert.assertEquals("fa-search", marker.getIcon());
     }
+
+    /**
+     * @see Configuration#getConnectorVersionUrl()
+     * @verifies return correct value
+     */
+    @Test
+    public void getConnectorVersionUrl_shouldReturnCorrectValue() throws Exception {
+        Assert.assertEquals("http://localhost:8081/M2M/oai/tools?action=getVersion",
+                DataManager.getInstance().getConfiguration().getConnectorVersionUrl());
+    }
 }
