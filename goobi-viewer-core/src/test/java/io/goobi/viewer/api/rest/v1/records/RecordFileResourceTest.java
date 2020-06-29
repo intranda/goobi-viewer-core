@@ -81,7 +81,7 @@ public class RecordFileResourceTest extends AbstractRestApiTest {
                 .request()
                 .accept(MediaType.TEXT_XML)
                 .get()) {
-            assertEquals("Should return status 200", 404, response.getStatus());
+            assertEquals("Should return status 200", 200, response.getStatus());
             String data = response.readEntity(String.class);
             assertTrue(StringUtils.isNotBlank(data));
         }
