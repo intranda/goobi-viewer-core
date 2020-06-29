@@ -61,6 +61,12 @@ public interface IPrivilegeHolder {
     // CMS privileges
     /** Constant <code>PRIV_CMS_PAGES="CMS_PAGES"</code> */
     public static final String PRIV_CMS_PAGES = "CMS_PAGES";
+    /** Constant <code>PRIV_CMS_ALL_SUBTHEMES="CMS_ALL_SUBTHEMES"</code> */
+    public static final String PRIV_CMS_ALL_SUBTHEMES = "CMS_ALL_SUBTHEMES";
+    /** Constant <code>PRIV_CMS_ALL_CATEGORIES="CMS_ALL_CATEGORIES"</code> */
+    public static final String PRIV_CMS_ALL_CATEGORIES = "CMS_ALL_CATEGORIES";
+    /** Constant <code>PRIV_CMS_ALL_TEMPLATES="CMS_ALL_TEMPLATES"</code> */
+    public static final String PRIV_CMS_ALL_TEMPLATES = "CMS_ALL_TEMPLATES";
     /** Constant <code>PRIV_CMS_MENU="CMS_MENU"</code> */
     public static final String PRIV_CMS_MENU = "CMS_MENU";
     /** Constant <code>PRIV_CMS_STATIC_PAGES="CMS_STATIC_PAGES"</code> */
@@ -126,6 +132,60 @@ public interface IPrivilegeHolder {
      * @param priv a boolean.
      */
     public void setPrivCmsMenu(boolean priv);
+
+    /**
+     * <p>
+     * isPrivCmsAllSubthemes.
+     * </p>
+     *
+     * @return a boolean.
+     */
+    public boolean isPrivCmsAllSubthemes();
+
+    /**
+     * <p>
+     * setPrivCmsAllSubthemes.
+     * </p>
+     *
+     * @param priv a boolean.
+     */
+    public void setPrivCmsAllSubthemes(boolean priv);
+
+    /**
+     * <p>
+     * isPrivCmsAllCategories.
+     * </p>
+     *
+     * @return a boolean.
+     */
+    public boolean isPrivCmsAllCategories();
+
+    /**
+     * <p>
+     * setPrivCmsAllCategories.
+     * </p>
+     *
+     * @param priv a boolean.
+     */
+    public void setPrivCmsAllCategories(boolean priv);
+
+    /**
+     * <p>
+     * isPrivCmsAllTemplates.
+     * </p>
+     *
+     * @return a boolean.
+     */
+    public boolean isPrivCmsAllTemplates();
+
+    /**
+     * <p>
+     * setPrivCmsAllTemplates.
+     * </p>
+     *
+     * @param priv a boolean.
+     */
+    public void setPrivCmsAllTemplates(boolean priv);
 
     /**
      * <p>
