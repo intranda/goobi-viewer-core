@@ -34,8 +34,6 @@ import io.goobi.viewer.api.rest.model.ner.NERTag.Type;
  * TagCount class.
  * </p>
  */
-@XmlRootElement(name = "tag")
-@XmlType(propOrder = { "value", "type", "counter", "references" })
 @JsonPropertyOrder({ "value", "type", "counter", "references" })
 @JsonInclude(Include.NON_NULL)
 public class TagCount implements Comparable<TagCount> {
@@ -91,7 +89,6 @@ public class TagCount implements Comparable<TagCount> {
      * @return the counter
      */
     @JsonProperty("counter")
-    @XmlElement(name = "counter")
     public Integer getCounter() {
         return getReferences().size();
     }

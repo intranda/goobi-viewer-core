@@ -35,8 +35,6 @@ import com.fasterxml.jackson.annotation.JsonProperty;
  * DocumentReference class.
  * </p>
  */
-@XmlRootElement
-@XmlType(propOrder = { "pi", "pages" })
 @JsonInclude(Include.NON_NULL)
 public class DocumentReference {
 
@@ -74,7 +72,6 @@ public class DocumentReference {
      *
      * @return a {@link java.lang.String} object.
      */
-    @XmlElement
     public String getPi() {
         return pi;
     }
@@ -123,8 +120,6 @@ public class DocumentReference {
      * @return a {@link java.util.List} object.
      */
     @JsonProperty("pages")
-    @XmlElementWrapper(name = "pages")
-    @XmlElement(name = "pages")
     public List<TagGroup> getPageRanges() {
         return pageRanges;
     }

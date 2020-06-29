@@ -82,7 +82,6 @@ public class ViewerImageResourceTest extends AbstractRestApiTest {
             assertEquals("Should return status 200", 200, response.getStatus());
             assertNotNull("Should return user object as json", response.getEntity());
             String responseString = response.readEntity(String.class);
-            System.out.println(responseString);
             JSONObject info = new JSONObject(responseString);
             assertTrue(info.getString("@id").endsWith(id));
         }

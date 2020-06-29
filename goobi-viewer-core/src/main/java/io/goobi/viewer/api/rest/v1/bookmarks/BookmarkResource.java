@@ -13,7 +13,7 @@
  *
  * You should have received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
-package io.goobi.viewer.api.rest.v1.users.bookmarks;
+package io.goobi.viewer.api.rest.v1.bookmarks;
 
 import static io.goobi.viewer.api.rest.v1.ApiUrls.USERS_BOOKMARKS;
 import static io.goobi.viewer.api.rest.v1.ApiUrls.USERS_BOOKMARKS_ITEM;
@@ -278,7 +278,7 @@ public class BookmarkResource {
     @Path(USERS_BOOKMARKS_LIST_MIRADOR)
     @Produces({ MediaType.APPLICATION_JSON })
     @Operation(
-            tags = { "users" },
+            tags = { "bookmarks" },
             summary = "Get a bookmarklist by its id as a Mirador viewer config")
     @ApiResponse(responseCode = "400", description = "Invalid user id")
     @ApiResponse(responseCode = "403", description = "Resource forbidden for user")

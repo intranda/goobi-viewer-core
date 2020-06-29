@@ -290,7 +290,7 @@ public class RecordResource {
             @Parameter(description = "Number of pages to combine into each group")@QueryParam("step") Integer stepSize,
             @Parameter(description = "Tag type to consider (person, coorporation, event or location)")@QueryParam("type") String type
             ) throws PresentationException, IndexUnreachableException, ViewerConfigurationException {
-        NERBuilder builder = new NERBuilder();
+        NERBuilder builder = new NERBuilder(urls);
         return builder.getNERTags(pi, type, start, end, stepSize == null ? 1 : stepSize);
     }
     

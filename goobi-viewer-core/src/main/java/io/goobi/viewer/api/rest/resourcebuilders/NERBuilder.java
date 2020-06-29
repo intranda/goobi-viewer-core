@@ -17,6 +17,8 @@ package io.goobi.viewer.api.rest.resourcebuilders;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.net.URI;
+import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
@@ -27,6 +29,7 @@ import org.apache.solr.common.SolrDocumentList;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import io.goobi.viewer.api.rest.AbstractApiUrlManager;
 import io.goobi.viewer.api.rest.model.ner.DocumentReference;
 import io.goobi.viewer.api.rest.model.ner.ElementReference;
 import io.goobi.viewer.api.rest.model.ner.MultiPageReference;
@@ -34,6 +37,7 @@ import io.goobi.viewer.api.rest.model.ner.NERTag;
 import io.goobi.viewer.api.rest.model.ner.PageReference;
 import io.goobi.viewer.api.rest.model.ner.TagCount;
 import io.goobi.viewer.api.rest.model.ner.TagGroup;
+import io.goobi.viewer.api.rest.v1.ApiUrls;
 import io.goobi.viewer.controller.ALTOTools;
 import io.goobi.viewer.controller.DataFileTools;
 import io.goobi.viewer.controller.DataManager;
@@ -52,6 +56,16 @@ import io.goobi.viewer.exceptions.ViewerConfigurationException;
 public class NERBuilder {
 
     private static final Logger logger = LoggerFactory.getLogger(NERBuilder.class);
+    
+    private final AbstractApiUrlManager urls;
+    
+    public NERBuilder() {
+        this.urls = new ApiUrls();
+    }
+    
+    public NERBuilder(AbstractApiUrlManager urls) {
+        this.urls = urls;
+    }
     
     public DocumentReference getNERTags(String pi, String type, Integer start, Integer end, int rangeSize)
             throws PresentationException, IndexUnreachableException, ViewerConfigurationException {
@@ -111,6 +125,8 @@ public class NERBuilder {
                     //TODO: Load directly from file if on same server?
                     // Load ALTO via the REST service
                     String url = DataFileTools.buildFullTextUrl(altoFileName);
+//                    String filename = Paths.get(altoFileName).getFileName().toString();
+//                    String url = urls.path(ApiUrls.RECORDS_FILES, ApiUrls.RECORDS_FILES_ALTO).params(topStructPi, filename).build();
                     try {
                         String altoString = NetTools.getWebContentGET(url);
                         Integer pageOrder = getPageOrder(solrDoc);

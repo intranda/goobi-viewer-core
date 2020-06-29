@@ -32,8 +32,6 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
  * MultiPageReference class.
  * </p>
  */
-@XmlRootElement
-@XmlType(propOrder = { "firstPage, lastPage, tags" })
 @JsonPropertyOrder({ "firstPage, lastPage, tags" })
 public class MultiPageReference implements TagGroup {
 
@@ -90,7 +88,6 @@ public class MultiPageReference implements TagGroup {
      * @return a {@link java.lang.Integer} object.
      */
     @JsonProperty("firstPage")
-    @XmlElement
     public Integer getFirstPage() {
         return firstPage;
     }
@@ -103,7 +100,6 @@ public class MultiPageReference implements TagGroup {
      * @return a {@link java.lang.Integer} object.
      */
     @JsonProperty("lastPage")
-    @XmlElement
     public Integer getLastPage() {
         return lastPage;
     }
@@ -111,8 +107,6 @@ public class MultiPageReference implements TagGroup {
     /** {@inheritDoc} */
     @Override
     @JsonProperty("tags")
-    @XmlElementWrapper(name = "tags")
-    @XmlElement(name = "tag")
     public List<TagCount> getTags() {
         return tags;
     }

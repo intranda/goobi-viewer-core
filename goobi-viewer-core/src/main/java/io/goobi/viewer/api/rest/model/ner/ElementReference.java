@@ -28,8 +28,6 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
  * ElementReference class.
  * </p>
  */
-@XmlRootElement
-@XmlType(propOrder = { "id", "content", "coordinates" })
 public class ElementReference {
 
     private final String id;
@@ -72,7 +70,6 @@ public class ElementReference {
      *
      * @return a {@link java.lang.String} object.
      */
-    @XmlElement
     public String getId() {
         return id;
     }
@@ -84,7 +81,6 @@ public class ElementReference {
      *
      * @return a {@link java.lang.String} object.
      */
-    @XmlElement
     public String getCoordinates() {
         return getAsString(coordinates);
     }
@@ -119,7 +115,6 @@ public class ElementReference {
      *
      * @return a {@link java.lang.String} object.
      */
-    @XmlElement
     public String getContent() {
         return content;
     }

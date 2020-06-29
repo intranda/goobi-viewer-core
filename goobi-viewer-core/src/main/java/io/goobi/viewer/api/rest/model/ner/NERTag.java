@@ -33,8 +33,6 @@ import com.fasterxml.jackson.annotation.JsonInclude.Include;
  * NERTag class.
  * </p>
  */
-@XmlRootElement(name = "tag")
-@XmlType(propOrder = { "id", "type", "value", "element" })
 @JsonInclude(Include.NON_NULL)
 public class NERTag {
 
@@ -108,7 +106,6 @@ public class NERTag {
      *
      * @return a {@link java.lang.String} object.
      */
-    @XmlElement
     public String getId() {
         return id;
     }
@@ -120,7 +117,6 @@ public class NERTag {
      *
      * @return a {@link java.lang.String} object.
      */
-    @XmlElement
     public String getValue() {
         return value;
     }
@@ -132,7 +128,6 @@ public class NERTag {
      *
      * @return a {@link io.goobi.viewer.servlets.rest.ner.NERTag.Type} object.
      */
-    @XmlElement
     public Type getType() {
         return type;
     }

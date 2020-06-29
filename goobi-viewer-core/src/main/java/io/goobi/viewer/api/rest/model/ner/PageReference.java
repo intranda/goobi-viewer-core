@@ -23,14 +23,18 @@ import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlRootElement;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonInclude.Include;
 
 /**
  * <p>
  * PageReference class.
  * </p>
  */
-@XmlRootElement
+@JsonInclude(Include.NON_ABSENT)
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class PageReference implements TagGroup {
 
     private final Integer pageOrder;
@@ -62,7 +66,6 @@ public class PageReference implements TagGroup {
 
     /** {@inheritDoc} */
     @Override
-    @XmlElement
     public Integer getPageOrder() {
         return pageOrder;
     }
@@ -70,8 +73,6 @@ public class PageReference implements TagGroup {
     /** {@inheritDoc} */
     @Override
     @JsonProperty("tags")
-    @XmlElementWrapper(name = "tags")
-    @XmlElement(name = "tag")
     public List<TagCount> getTags() {
         return tags;
     }
