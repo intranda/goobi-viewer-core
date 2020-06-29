@@ -207,10 +207,36 @@
 
                                                 <!-- SUBTHEMES -->
                                                 <ui:fragment rendered="#{fn:length(adminBean.currentLicense.selectableSubthemes) > 0}">
-                                                    <div class="form-group form-row">
-                                                        <div class="col-4">
-                                                            <label for="name" class="control-label">#{msg.admin__license_allowed_subthemes_label}:</label>
+                                                <div class="form-group form-row">
+                                                    <div class="col-4">
+                                                        <label for="name" class="control-label">#{msg.admin__license_allowed_subthemes_label}:</label>
+                                                    </div>
+                                                    <div class="col-7 admin__form-input">
+                                                        <div class="admin__radio-switch">
+                                                            <h:selectOneRadio group="privCmsAllSubthemes" value="#{adminBean.currentLicense.privCmsAllSubthemes}"
+                                                                immediate="true">
+                                                                <f:selectItem itemValue="#{true}" itemLabel="#{msg.admin__license_option_all}" />
+                                                                <f:ajax render="selectSubthemesGroup" />
+                                                            </h:selectOneRadio>
+                                                            <h:selectOneRadio group="privCmsAllSubthemes" value="#{adminBean.currentLicense.privCmsAllSubthemes}"
+                                                                immediate="true">
+                                                                <f:selectItem itemValue="#{false}" itemLabel="#{msg.admin__license_option_select}" />
+                                                                <f:ajax render="selectSubthemesGroup" />
+                                                            </h:selectOneRadio>
+                                                            <span class="toggle-outside"><span class="toggle-inside"></span></span>
                                                         </div>
+                                                        <span class="admin__form-help-text">#{msg.admin__license_allowed_subthemes__help}</span>
+                                                    </div>
+                                                    <div class="col-1 admin__form-help-icon">
+                                                        <button type="button" class="btn btn--clean" data-toggle="helptext" aria-label="inline help icon">
+                                                            <i class="fa fa-question-circle" aria-hidden="true"></i>
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                                <h:panelGroup id="selectSubthemesGroup">
+                                                <ui:fragment rendered="#{!adminBean.currentLicense.privCmsAllSubthemes}">
+                                                <div class="form-group form-row">
+                                                    <div class="col-4" />
                                                     <div class="col-7 admin__form-input">
                                                         <div>
                                                             <h:panelGroup layout="block" class="overflow-hidden" id="selected_subthemes">
@@ -244,14 +270,11 @@
                                                                </div>
                                                            </div>
                                                         </div>
-                                                            <span class="admin__form-help-text">#{msg.admin__license_allowed_subthemes__help}</span>
                                                         </div>
-                                                        <div class="col-1 admin__form-help-icon">
-                                                            <button type="button" class="btn btn--clean" data-toggle="helptext" aria-label="inline help icon">
-                                                                <i class="fa fa-question-circle" aria-hidden="true"></i>
-                                                            </button>
-                                                        </div>
+                                                        <div class="col-1" />
                                                     </div>
+                                                </ui:fragment>
+                                                </h:panelGroup>
                                                 </ui:fragment>
 
                                                 <!-- CATEGORIES -->
@@ -259,6 +282,32 @@
                                                     <div class="col-4">
                                                         <label for="name" class="control-label">#{msg.admin__license_allowed_categories_label}:</label>
                                                     </div>
+                                                    <div class="col-7 admin__form-input">
+                                                        <div class="admin__radio-switch">
+                                                            <h:selectOneRadio group="privCmsAllCategories" value="#{adminBean.currentLicense.privCmsAllCategories}"
+                                                                immediate="true">
+                                                                <f:selectItem itemValue="#{true}" itemLabel="#{msg.admin__license_option_all}" />
+                                                                <f:ajax render="selectCategoriesGroup" />
+                                                            </h:selectOneRadio>
+                                                            <h:selectOneRadio group="privCmsAllCategories" value="#{adminBean.currentLicense.privCmsAllCategories}"
+                                                                immediate="true">
+                                                                <f:selectItem itemValue="#{false}" itemLabel="#{msg.admin__license_option_select}" />
+                                                                <f:ajax render="selectCategoriesGroup" />
+                                                            </h:selectOneRadio>
+                                                            <span class="toggle-outside"><span class="toggle-inside"></span></span>
+                                                        </div>
+                                                        <span class="admin__form-help-text">#{msg.admin__license_allowed_categories__help}</span>
+                                                    </div>
+                                                    <div class="col-1 admin__form-help-icon">
+                                                        <button type="button" class="btn btn--clean" data-toggle="helptext" aria-label="inline help icon">
+                                                            <i class="fa fa-question-circle" aria-hidden="true"></i>
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                                <h:panelGroup id="selectCategoriesGroup">
+                                                <ui:fragment rendered="#{!adminBean.currentLicense.privCmsAllCategories}">
+                                                <div class="form-group form-row">
+                                                    <div class="col-4" />
                                                     <div class="col-7 admin__form-input">
                                                         <div>
                                                             <h:panelGroup layout="block" class="overflow-hidden" id="selected_categories">
@@ -292,7 +341,32 @@
                                                                 </div>
                                                             </div>
                                                         </div>
-                                                        <span class="admin__form-help-text">#{msg.admin__license_allowed_categories__help}</span>
+                                                    </div>
+                                                    <div class="col-1" />
+                                                </div>
+                                                </ui:fragment>
+                                                </h:panelGroup>
+
+                                                <!-- CMS TEMPLATES -->
+                                                <div class="form-group form-row">
+                                                    <div class="col-4">
+                                                        <label for="name" class="control-label">#{msg.admin__license_allowed_cms_templates_label}:</label>
+                                                    </div>
+                                                    <div class="col-7 admin__form-input">
+                                                        <div class="admin__radio-switch">
+                                                            <h:selectOneRadio group="privCmsAllTemplates" value="#{adminBean.currentLicense.privCmsAllTemplates}"
+                                                                immediate="true">
+                                                                <f:selectItem itemValue="#{true}" itemLabel="#{msg.admin__license_option_all}" />
+                                                                <f:ajax render="selectTemplatesGroup" />
+                                                            </h:selectOneRadio>
+                                                            <h:selectOneRadio group="privCmsAllTemplates" value="#{adminBean.currentLicense.privCmsAllTemplates}"
+                                                                immediate="true">
+                                                                <f:selectItem itemValue="#{false}" itemLabel="#{msg.admin__license_option_select}" />
+                                                                <f:ajax render="selectTemplatesGroup" />
+                                                            </h:selectOneRadio>
+                                                            <span class="toggle-outside"><span class="toggle-inside"></span></span>
+                                                        </div>
+                                                        <span class="admin__form-help-text">#{msg.admin__license_allowed_cms_templates__help}</span>
                                                     </div>
                                                     <div class="col-1 admin__form-help-icon">
                                                         <button type="button" class="btn btn--clean" data-toggle="helptext" aria-label="inline help icon">
@@ -300,12 +374,10 @@
                                                         </button>
                                                     </div>
                                                 </div>
-
-                                                <!-- CMS TEMPLATES -->
+                                                <h:panelGroup id="selectTemplatesGroup">
+                                                <ui:fragment rendered="#{!adminBean.currentLicense.privCmsAllTemplates}">
                                                 <div class="form-group form-row">
-                                                    <div class="col-4">
-                                                        <label for="name" class="control-label">#{msg.admin__license_allowed_cms_templates_label}:</label>
-                                                    </div>
+                                                    <div class="col-4" />
                                                     <div class="col-7 admin__form-input">
                                                         <div>
                                                             <h:panelGroup layout="block" class="overflow-hidden" id="selected_templates">
@@ -328,7 +400,7 @@
                                                                             <ui:repeat var="selectable" value="#{adminBean.currentLicense.selectableTemplates}">
                                                                                 <li>
                                                                                     <label>
-                                                                                        <h:selectBooleanCheckbox  type="checkbox" value="#{selectable.selected}">
+                                                                                        <h:selectBooleanCheckbox type="checkbox" value="#{selectable.selected}">
                                                                                             <f:ajax render="selected_templates" />
                                                                                         </h:selectBooleanCheckbox>
                                                                                         #{msg[selectable.value.name]}
@@ -340,14 +412,11 @@
                                                                 </div>
                                                             </div>
                                                         </div>
-                                                        <span class="admin__form-help-text">#{msg.admin__license_allowed_cms_templates__help}</span>
                                                     </div>
-                                                    <div class="col-1 admin__form-help-icon">
-                                                        <button type="button" class="btn btn--clean" data-toggle="helptext" aria-label="inline help icon">
-                                                            <i class="fa fa-question-circle" aria-hidden="true"></i>
-                                                        </button>
-                                                    </div>
+                                                    <div class="col-1" />
                                                 </div>
+                                                </ui:fragment>
+                                                </h:panelGroup>
 
                                                 <!-- CMS EDIT MENUS -->
                                                 <div class="form-group form-row">
