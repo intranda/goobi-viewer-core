@@ -65,8 +65,12 @@
 	                                                    <div class="badge badge-violet" title="#{msg[cat.name]}">#{msg[cat.name]}</div>
 	                                                </ui:repeat>
 	                                                <!-- Allowed CMS templates -->
-	                                                <ui:repeat var="template" value="#{license.allowedCmsTemplates}">
-	                                                    <div class="badge badge-primary" title="#{msg[template]}">#{msg[template]}</div>
+	                                                <ui:repeat var="selectable" value="#{license.selectableTemplates}">
+	                                                    <ui:fragment rendered="#{selectable.selected}">
+	                                                        <div class="badge badge-primary" title="#{msg[selectable.value.name]}">
+	                                                            #{msg[selectable.value.name]}
+	                                                        </div>
+	                                                    </ui:fragment>
 	                                                </ui:repeat>
 	                                                <!-- Added to this license -->
 	                                                <ui:repeat var="priv" value="#{license.getSortedPrivileges(license.privileges)}">

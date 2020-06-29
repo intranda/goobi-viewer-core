@@ -1,25 +1,57 @@
 /* ==============================================================
-   Admin Add User
+   Admin User Single (add user + edit user)
    style declarations for adminUser.xhtml
    ==============================================================*/
+   
 #adminUser {
-    h2 {}
-}
-
-// single tabs
-#userData {}
-
-#licenses {
-    h3 {}
-    p {
-        text-align: right;
-    }
-}
-
-/* EDIT USER */
-#editUserGeneral {
-	.btn {
-		margin-left: 5px;
+    .admin {
+	    &__title {}
+		&__user-icon {
+			margin-right: 1.5rem;
+			width: 80px;
+		}
+	    &__user-avatar {
+	        input {
+	            display: none;
+	        }
+			input[type="radio"]:checked+label {
+				background-color: #F8F8F8;
+				border: 1px solid #e8e8e8;
+			}
+			label {
+	        	border: 1px solid transparent;
+				text-align: center;
+				position: relative;
+				display: inline-block;
+				cursor: pointer;
+				transition: all .2s cubic-bezier(.165, .84, .44, 1);
+				padding: 1.2rem 1.5rem;
+				&:hover {
+					-webkit-transform: scale(1.05, 1.05);
+					transform: scale(1.05, 1.05);
+					box-shadow: 0 !important;
+					&::after {
+						opacity: 1;
+					}
+				}
+				&::after {
+					content: "";
+					position: absolute;
+					z-index: -1;
+					top: 0;
+					left: 0;
+					width: 100%;
+					height: 100%;
+					box-shadow: 0 3px 10px rgba(0, 0, 0, 0.3);
+					background-color: #F8F8F8;
+					opacity: 0;
+					transition: all 0.2s cubic-bezier(0.165, 0.84, 0.44, 1);
+				}
+	        }
+	        img {
+	            margin-right: 0;
+	        }
+	    }
 	}
 }
 

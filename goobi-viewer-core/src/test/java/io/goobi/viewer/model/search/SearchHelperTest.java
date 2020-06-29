@@ -186,7 +186,9 @@ public class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
     public void getPersonalFilterQuerySuffix_shouldConstructSuffixCorrectly() throws Exception {
         String suffix = SearchHelper.getPersonalFilterQuerySuffix(null, null);
         Assert.assertEquals(
-                " +(ACCESSCONDITION:\"OPENACCESS\" ACCESSCONDITION:\"license type 2 name\" (ACCESSCONDITION:\"restriction on access\" AND MDNUM_PUBLICRELEASEYEAR:[* TO 2020]))",
+                " +(ACCESSCONDITION:\"OPENACCESS\""
+                        + " ACCESSCONDITION:\"license type 2 name\""
+                        + " (+ACCESSCONDITION:\"restriction on access\" -(-MDNUM_PUBLICRELEASEYEAR:[* TO 2020])))",
                 suffix);
     }
 
@@ -198,10 +200,8 @@ public class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
     public void getPersonalFilterQuerySuffix_shouldConstructSuffixCorrectlyIfUserHasLicensePrivilege() throws Exception {
         User user = DataManager.getInstance().getDao().getUser(2);
         String suffix = SearchHelper.getPersonalFilterQuerySuffix(user, null);
-        Assert.assertEquals(
-                " +(ACCESSCONDITION:\"OPENACCESS\" (ACCESSCONDITION:\"license type 1 name\" AND YEAR:[* TO 3000]) ACCESSCONDITION:\"license type 2 name\""
-                        + " (ACCESSCONDITION:\"restriction on access\" AND MDNUM_PUBLICRELEASEYEAR:[* TO 2020]))",
-                suffix);
+        // User has listing privilege for 'license type 1 name'
+        Assert.assertTrue(suffix.contains("(+ACCESSCONDITION:\"license type 1 name\" +(-YEAR:[* TO 3000]))"));
     }
 
     /**
@@ -227,13 +227,22 @@ public class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
             Assert.assertEquals("", suffix);
         }
         {
-            // Regular IP address
+            // Regular IP address (has listing privilege for 'license type 3 name')
             String suffix = SearchHelper.getPersonalFilterQuerySuffix(null, "1.2.3.4");
-            Assert.assertEquals(
-                    " +(ACCESSCONDITION:\"OPENACCESS\" ACCESSCONDITION:\"license type 2 name\" ACCESSCONDITION:\"license type 3 name\""
-                            + " (ACCESSCONDITION:\"restriction on access\" AND MDNUM_PUBLICRELEASEYEAR:[* TO 2020]))",
-                    suffix);
+            Assert.assertTrue(suffix.contains("+ACCESSCONDITION:\"restriction on access\" +(-MDNUM_PUBLICRELEASEYEAR:[* TO 2020]))"));
         }
+    }
+
+    /**
+     * @see SearchHelper#getPersonalFilterQuerySuffix(User,String)
+     * @verifies construct suffix correctly if moving wall license
+     */
+    @Test
+    public void getPersonalFilterQuerySuffix_shouldConstructSuffixCorrectlyIfMovingWallLicense() throws Exception {
+        String suffix = SearchHelper.getPersonalFilterQuerySuffix(null, null);
+        // Moving wall license with negated filter query
+        Assert.assertTrue(suffix.contains(
+                "(+ACCESSCONDITION:\"restriction on access\" -(-MDNUM_PUBLICRELEASEYEAR:[* TO 2020]))"));
     }
 
     /**
@@ -1200,5 +1209,15 @@ public class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
                 previousCounts.put(term.getTerm(), term.getHitCount());
             }
         }
+    }
+
+    /**
+     * @see SearchHelper#generateQueryParams()
+     * @verifies return empty map if search hit aggregation on
+     */
+    @Test
+    public void generateQueryParams_shouldReturnEmptyMapIfSearchHitAggregationOn() throws Exception {
+        DataManager.getInstance().getConfiguration().overrideValue("search.aggregateHits", true);
+        Map<String, String> params = SearchHelper.generateQueryParams();
     }
 }

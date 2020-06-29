@@ -123,8 +123,7 @@
                                             onclick="if ( !confirm( &quot;#{navigationHelper.getTranslationWithParams(msg.userGroup_removeMemberConfirmationText, membership.user.displayName, membership.userGroup.name)}&quot; ) ) { return false };"
                                             action="#{adminBean.deleteUserRoleAction(membership)}"
                                             title="#{msg.delete}"
-                                            styleClass="admin__group-member-delete">
-                                            <div class="form-row admin__group-member-entry">
+                                            styleClass="form-row admin__group-member-delete admin__group-member-entry">
                                                 <div class="col-11">
                                                     <span class="admin__group-member-name">
                                                         #{membership.user.displayName} (#{membership.user.email})
@@ -135,7 +134,6 @@
                                                         #{msg.delete}
                                                     </span>
                                                 </div>
-                                            </div>
                                         </h:commandLink>
                                     </ui:repeat>
                                 </div>

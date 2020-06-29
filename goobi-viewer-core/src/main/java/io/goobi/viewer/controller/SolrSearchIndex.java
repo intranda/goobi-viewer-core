@@ -44,6 +44,7 @@ import org.apache.solr.client.solrj.SolrServerException;
 import org.apache.solr.client.solrj.impl.BaseHttpSolrClient.RemoteSolrException;
 import org.apache.solr.client.solrj.impl.BinaryRequestWriter;
 import org.apache.solr.client.solrj.impl.HttpSolrClient;
+import org.apache.solr.client.solrj.impl.XMLResponseParser;
 import org.apache.solr.client.solrj.request.LukeRequest;
 import org.apache.solr.client.solrj.response.LukeResponse;
 import org.apache.solr.client.solrj.response.LukeResponse.FieldInfo;
@@ -64,8 +65,10 @@ import io.goobi.viewer.controller.SolrConstants.DocType;
 import io.goobi.viewer.exceptions.HTTPException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
+import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.messages.ViewerResourceBundle;
 import io.goobi.viewer.model.crowdsourcing.DisplayUserGeneratedContent;
+import io.goobi.viewer.model.search.SearchHelper;
 import io.goobi.viewer.model.viewer.StringPair;
 import io.goobi.viewer.model.viewer.StructElement;
 import io.goobi.viewer.model.viewer.Tag;
@@ -141,13 +144,17 @@ public final class SolrSearchIndex {
                 .withBaseSolrUrl(DataManager.getInstance().getConfiguration().getSolrUrl())
                 .withSocketTimeout(TIMEOUT_SO)
                 .withConnectionTimeout(TIMEOUT_CONNECTION)
-                .allowCompression(true)
+                .allowCompression(DataManager.getInstance().getConfiguration().isSolrCompressionEnabled())
                 .build();
-//        server.setDefaultMaxConnectionsPerHost(100);
-//        server.setMaxTotalConnections(100);
+        //        server.setDefaultMaxConnectionsPerHost(100);
+        //        server.setMaxTotalConnections(100);
         server.setFollowRedirects(false); // defaults to false
-//        server.setMaxRetries(1); // defaults to 0. > 1 not recommended.
+        //        server.setMaxRetries(1); // defaults to 0. > 1 not recommended.
         server.setRequestWriter(new BinaryRequestWriter());
+        // Backwards compatibility mode for Solr 4 servers
+        if (DataManager.getInstance().getConfiguration().isSolrBackwardsCompatible()) {
+            server.setParser(new XMLResponseParser());
+        }
 
         return server;
     }
@@ -160,7 +167,7 @@ public final class SolrSearchIndex {
      * @param query a {@link java.lang.String} object.
      * @return a {@link org.apache.solr.client.solrj.response.QueryResponse} object.
      * @throws org.apache.solr.client.solrj.SolrServerException if any.
-     * @throws IOException 
+     * @throws IOException
      */
     public QueryResponse testQuery(String query) throws SolrServerException, IOException {
         SolrQuery solrQuery = new SolrQuery(query);
@@ -231,18 +238,18 @@ public final class SolrSearchIndex {
         if (params != null && !params.isEmpty()) {
             for (String key : params.keySet()) {
                 solrQuery.set(key, params.get(key));
-                // logger.trace("&{}={}", key, params.get(key));
+                //logger.trace("&{}={}", key, params.get(key));
             }
         }
 
         try {
-            // logger.trace("Solr query URL: {}", solrQuery.getQuery());
-            // logger.debug("range: {} - {}", first, first + rows);
-            // logger.debug("facetFields: {}", facetFields);
-            // logger.debug("fieldList: {}", fieldList);
+            //             logger.trace("Solr query : {}", solrQuery.getQuery());
+            //             logger.debug("range: {} - {}", first, first + rows);
+            //             logger.debug("facetFields: {}", facetFields);
+            //             logger.debug("fieldList: {}", fieldList);
             QueryResponse resp = server.query(solrQuery);
-            // logger.debug("found: {}", resp.getResults().getNumFound());
-            // logger.debug("fetched: {}", resp.getResults().size());
+            //             logger.debug("found: {}", resp.getResults().getNumFound());
+            //             logger.debug("fetched: {}", resp.getResults().size());
 
             return resp;
         } catch (SolrServerException e) {
@@ -1622,5 +1629,21 @@ public final class SolrSearchIndex {
         }
 
         return conditions.trim();
+    }
+    
+
+    /**
+     * 
+     * @param accessCondition
+     * @param escape
+     * @return
+     * @should build escaped query correctly
+     * @should build not escaped query correctly
+     */
+    public static String getQueryForAccessCondition(String accessCondition, boolean escape) {
+        if (escape) {
+            accessCondition = BeanUtils.escapeCriticalUrlChracters(accessCondition);
+        }
+        return SearchHelper.ALL_RECORDS_QUERY + " AND " + SolrConstants.ACCESSCONDITION + ":\"" + accessCondition + "\"";
     }
 }

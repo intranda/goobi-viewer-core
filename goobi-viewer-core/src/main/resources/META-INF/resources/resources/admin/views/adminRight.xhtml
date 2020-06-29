@@ -45,9 +45,9 @@
                                             <f:passThroughAttribute name="aria-label" value="#{msg.admin__license_licensee_type_select_label}" />
 
                                             <f:selectItem itemLabel="#{msg.select}" itemValue="" noSelectionOption="true" />
-                                            <f:selectItem itemLabel="#{msg.user}" itemValue="user" />
-                                            <f:selectItem itemLabel="#{msg.userGroup}" itemValue="group" />
-                                            <f:selectItem itemLabel="#{msg.ipRange}" itemValue="iprange" />
+                                            <f:selectItem itemLabel="#{msg.admin__users}" itemValue="user" />
+                                            <f:selectItem itemLabel="#{msg.admin__groups}" itemValue="group" />
+                                            <f:selectItem itemLabel="#{msg.admin__ip_ranges}" itemValue="iprange" />
                                             <f:ajax render="licenseeGroup infoGroup licenseTypeGroup" />
                                             <!-- Reset all set licensee values so that the lower menus are reset as well -->
                                             <f:ajax listener="#{adminBean.currentLicense.setUser(null)}" />
@@ -213,7 +213,7 @@
                                                         </div>
                                                     <div class="col-7 admin__form-input">
                                                         <div>
-                                                            <h:panelGroup layout="block" class="col-7" id="selected_subthemes">
+                                                            <h:panelGroup layout="block" class="overflow-hidden" id="selected_subthemes">
                                                                 <ui:repeat var="selectable" value="#{adminBean.currentLicense.selectableSubthemes}">
                                                                     <ui:fragment rendered="#{selectable.selected}">
                                                                         <div class="badge badge-dark">
@@ -261,7 +261,7 @@
                                                     </div>
                                                     <div class="col-7 admin__form-input">
                                                         <div>
-                                                            <h:panelGroup layout="block" id="selected_categories">
+                                                            <h:panelGroup layout="block" class="overflow-hidden" id="selected_categories">
                                                                 <ui:repeat var="selectable" value="#{adminBean.currentLicense.selectableCategories}">
                                                                     <ui:fragment rendered="#{selectable.selected}">
                                                                         <div class="badge badge-violet">
@@ -308,11 +308,11 @@
                                                     </div>
                                                     <div class="col-7 admin__form-input">
                                                         <div>
-                                                            <h:panelGroup layout="block" id="selected_templates">
+                                                            <h:panelGroup layout="block" class="overflow-hidden" id="selected_templates">
                                                                 <ui:repeat var="selectable" value="#{adminBean.currentLicense.selectableTemplates}">
                                                                     <ui:fragment rendered="#{selectable.selected}">
                                                                         <div class="badge badge-primary">
-                                                                            #{msg[selectable.value]}
+                                                                            #{msg[selectable.value.name]}
                                                                         </div>
                                                                     </ui:fragment>
                                                                 </ui:repeat>
@@ -331,7 +331,7 @@
                                                                                         <h:selectBooleanCheckbox  type="checkbox" value="#{selectable.selected}">
                                                                                             <f:ajax render="selected_templates" />
                                                                                         </h:selectBooleanCheckbox>
-                                                                                        #{msg[selectable.value]}
+                                                                                        #{msg[selectable.value.name]}
                                                                                     </label>
                                                                                 </li>
                                                                             </ui:repeat>

@@ -1,10 +1,10 @@
 /* ==============================================================
-   Admin 
-   global style declarations for admin_layout.xhtml
+	Global style declarations for Admin Backend
    ==============================================================*/
 /* ADMIN LAYOUT */
 
 .admin {
+	/* LAYOUT GENERAL */
 	&__content {
 		min-height: 100vh;
 		width: calc(~"100% - 250px");
@@ -44,113 +44,25 @@
 	}
 	&__content-inner-content {
 		padding: 15px;
-		.row > form {
-			width: 100%;
-			display: flex;
 		}
-		&__form_title {
-			display: flex;
-			justify-content: space-between;
-			margin-top: 3rem; 
-			h3 {
-				margin-top: 0;
-			}
-			.ajax_loader {
-				display: none;
-				img {
-					height: 2.4rem;
-				}
-			}
-		}
-		h3 {
-			font-size: 2.4rem;
-			margin-bottom: 1rem;
-		}
-		&__description {
-			display: block;
-			margin-bottom: 1rem;
-			font-size: 1.4rem;
-			font-style: normal;
-			color: #666;
-		}
-		&__input_form { 
-			border: 1px solid #ddd;
-			background: white;
-			padding: 10px;
-			display: grid;
-			grid-row-gap: 10px;
-			font-size: 1.4rem;
-		}
-		&__empty_form {
-		}
-		.tab-content {
-			.admin__content-inner-content__input_form {
-				border:none;
-				padding: 0;
-			}
-		}
-		&__controls {
-			display: flex;
-			justify-content: flex-end;
-			.btn {
-				margin-left: 10px;
-			}
-		}
-		&__entity_list {
-			.entity_list {
-				&__item {
-					border: 1px solid #ddd;
-					background: white;
-					display: flex;
-					flex-direction: row;
-					align-content: stretch;
-					font-size: 1.4rem;
-					margin-bottom: 20px;
-					min-height: 200px;
-					&__area {
-						display: grid;
-						grid-row-gap: 10px;
-						flex-grow: 1;
-						width: 100%;
-						padding: 10px;
-						&.area__right {
-							padding: 0px;
-						}
-					}
-					&__header {
-						display: flex;
-						justify-content: space-between;
-						h3 {
-							margin: 0;
-						}
-					}
-					&__content {
-						display: grid;
-						grid-template-columns: auto 90%; 
-						column-gap: 10px;
-						row-gap: 10px;
-					}
-					&__controls {
-						display: flex;
-						justify-content: flex-end;
-						align-items: flex-end;
-						visibility: hidden;
-						.btn {
-							padding: 0 5px;
-						}
-					}
-					&:hover {
-						.entity_list__item__controls {
-							visibility: visible;
-						}
-					}
-				}
-			}
-		}
+	&__title-bar {
+		display: flex;
+		align-items: center;
+		padding: 15px;
+	}
+	&__title {
+		margin: 0;
+		padding: 0;
+		font-size: 3.2rem;
+		line-height: 1;
 	}	
+	&__title-bar-action {
+		margin-left: 3rem;
+		font-size: 1.4rem;
+		padding: 0.4rem 0.8rem;
+	}
 
 	/* LINK MODIFIERS */
-
 	.rss-elem-title a {
 		color: @blue;
 		&:hover {
@@ -192,13 +104,12 @@
 		}
 		&:focus {}
 	}
-	/* Override bootstrap badges for admin backend */
+	/* BOOTSTRAP BADGES OVERRIDE FOR BACKEND */
     .badge {
         border-radius: 0;
         font-weight: normal;
         margin-right: .5rem;
         margin-bottom: .5rem;
-        /* text-transform: uppercase; */
         font-size: 1.4rem;
         background-color: transparent;
         &-violet {
@@ -257,6 +168,7 @@
 			vertical-align:middle;
 		}
 
+	/* BLOCK AND BOX STYLING */
     }
 	&__default-block {
 		margin-bottom: 3rem;
@@ -328,9 +240,9 @@
 			max-width: calc(66.6666% - 0.75rem);
 		}
 		&.-w100 {
-			flex: 0 0 calc(100% - 0.75rem);
-			width: calc(100% - 0.75rem);
-			max-width: calc(100% - 0.75rem);
+			flex: 0 0 calc(100%);
+			width: calc(100%);
+			max-width: calc(100%);
 		}
 		&.-std-bottom-pad {
 			padding-bottom: 2rem;
@@ -363,26 +275,17 @@
             }
 	    }
 	}
-	&__title-bar {
-		display: flex;
-		align-items: center;
-		padding: 15px;
+	
+	&__grab-indicator {
+		padding-top: 6rem;
 	}
-	&__title {
-		margin: 0;
-		padding: 0;
-		font-size: 3.2rem;
-		line-height: 1;
-	}	
-	&__title-bar-action {
-		margin-left: 3rem;
-		font-size: 1.4rem;
-		padding: 0.4rem 0.8rem;
-	}
+	
 	&__label-required-field {
 		padding-left: 0.5rem;
 		font-size: 1.2rem;
 	}
+	
+	/* ADMIN BACKEND FLEX TABLE */
 	&__table-tools {
 		width: 100%;
 		display: flex;
@@ -451,6 +354,9 @@
 	}
 	&__table-sorting {
 		margin-left: 2rem;
+		a:hover {
+			text-decoration: none;
+		}
 	}
 	&__table-entry {
 		/* opacity: 0;
@@ -502,100 +408,12 @@
 	&__table-email {
 		font-size: 1.4rem;
 	}
-	
 	&__table-badges {
 		overflow: hidden;
 	}
 	&__table-last-login {
 		font-size: 1.4rem;
-	}
-	&__user-icon {
-		margin-right: 1.5rem;
-		width: 80px;
-		padding: 4px;
-	}
-    &__user-avatar {
-        input {
-            display: none;
-        }
-		input[type="radio"]:checked+label {
-			background-color: #F8F8F8;
-			border: 1px solid #e8e8e8;
 		}
-		label {
-        	border: 1px solid transparent;
-			text-align: center;
-			position: relative;
-			display: inline-block;
-			cursor: pointer;
-			transition: all .2s cubic-bezier(.165, .84, .44, 1);
-			padding: 1.2rem 1.5rem;
-			&:hover {
-				-webkit-transform: scale(1.05, 1.05);
-				transform: scale(1.05, 1.05);
-				box-shadow: 0 !important;
-				&::after {
-					opacity: 1;
-				}
-			}
-			&::after {
-				content: "";
-				position: absolute;
-				z-index: -1;
-				top: 0;
-				left: 0;
-				width: 100%;
-				height: 100%;
-				box-shadow: 0 3px 10px rgba(0, 0, 0, 0.3);
-				background-color: #F8F8F8;
-				opacity: 0;
-				transition: all 0.2s cubic-bezier(0.165, 0.84, 0.44, 1);
-			}
-        }
-        img {
-            margin-right: 0;
-        }
-    }
-	&__group-member-entry {
-		transition: background 0.2s ease;
-		padding: 0.4rem 0;
-		&:hover {
-			background: @lightgray2;
-			.admin__group-member-delete-hint {
-				opacity: 1.0;
-			}
-		}
-	}
-	&__group-member-delete {
-		&:hover {
-			text-decoration: none;
-		}
-	}
-	&__group-member-delete-hint {
-		transition: opacity 0.2s ease;
-		opacity: 0.0;
-	}
-	&__group-member-name {
-		color: #212529;
-	}
-	&__ip-range-actions {
-		opacity: 1.0;
-		transition: opacity 0.2s ease;
-	}
-	&__license-action {
-		&:hover {
-			text-decoration: none;
-		}
-	}
-	&__license-unconfigured-entry {
-		transition: background .2s ease;
-		padding: 0.4rem 0.5rem;
-		margin: 0 -2rem;
-		&:hover {
-			background: @lightgray2;
-			text-decoration: none;
-		}
-	}
 	&__search-input-wrapper {
 		position: relative;
 	}
@@ -616,7 +434,9 @@
 	&__search-action {
 		font-size: 1.4rem;
 	}
-/* SIDEBAR */
+
+
+	/* SIDEBAR */
 	&__sidebar-background,
 	&__sidebar {
 		width: 250px;		
@@ -679,6 +499,9 @@
 		padding-left: 15px;
 		border-top: 1px solid @white;
 	}
+	
+	
+	/* ADMIN FORMS */
 	&__form-label {}
 	&__form-input {
 		flex-grow: 1;
@@ -713,7 +536,7 @@
 		padding: 1rem;
 		right: 15px;
 	}
-	// fancy radio switch/toggle 
+	// FANCY RADIO SWITCH/TOGGLE
 	&__radio-switch {
 	    position: relative;
 		width: 18rem;
@@ -791,12 +614,9 @@
 	 		width: 2rem;
 		}
 	}
-	.widget {
-		margin-bottom: 0;
-	}
 }
 
-// overwritten bootstrap margin for desc list elements
+// overwritten bootstrap margin for description list elements
 .admin dl dd:last-of-type {
 	margin-bottom: 0;
 }
@@ -805,122 +625,7 @@
 	margin-bottom: 0;
 }
 
-/* TODO CLEANUP AND INTEGRATE, BEM, BOOTSTRAP */
-
-.input_form {
-	background: white;
-	display: grid;
-	grid-row-gap: 10px;
-	font-size: 1.4rem;
-	&__option_group {
-		display: grid;
-		grid-template-columns: 13% 1% 81% 6%;
-		grid-row-gap: 5px;
-	}
-	&__option_label {
-		label {
-			height: auto;
-		}
-	}
-	&__option_marker {
-		visibility: hidden;
-		&.in {
-			visibility: visible;
-		}
-	}
-	&__option_control {
-		input[type="date"] {
-			line-height: inherit;
-		}
-	}
-	&__option_help {
-		text-align: center;
-	}
-	&__option_control_helptext {
-		display: none;
-		font-size: 1.2rem;
-		font-style: italic;
-		grid-column-start: 3;
-		color: #666;
-		&.in {
-			display: block;
-		}
-	} 
-	&__actions {
-		display: flex;
-		justify-content: flex-end;
-	}
-	&__geomap {
-		width: 100%;
-		height: 400px;
-	}
-	&__option-message {
-		position: relative;
-		ul {
-			.mx-list-reset;
-		}
-		li {
-			padding: 0px 5px 1px 0;
-		}
-		& + .form-control {
-			&.success {
-		    	border-color: @validSuccess;
-		    }
-		    &.warning {
-		    	border-color: @validWarning;	    	
-		    }
-		    &.danger {
-		    	border-color: @validDanger;
-		    }
-		}
-	}
-	&__option-message-status {
-	    &.success {
-	    	color: @validSuccess;
-	    }
-	    &.warning {
-	    	color: @validWarning;	    	
-	    }
-	    &.danger {
-	    	color: @validDanger;
-	    }		
-	}
-	&__option-message-mark {
-		position: absolute;
-		right: -8px;
-		bottom: -8px;
-		width: 16px;
-		height: 16px;
-		line-height: 16px;
-		font-size: @fontSmall;
-		text-align: center;
-		border-radius: 50%;
-		color:white;
-		&.success {
-		    background-color: @validSuccess;
-		    .fa-check {
-		    	display: inline-block;
-		    }
-		}
-		&.warning {
-			background-color: @validWarning;
-		    .fa-check {
-		    	display: inline-block;
-		    }
-		}
-		&.danger {
-			background-color: @validDanger;
-		    .fa-exclamation {
-		    	display: inline-block;
-		    }
-		}
-		.fa {
-			display: none;
-		}
-	}
-}
-
-/* VISUALLY CONNECTED RADIO BUTTONS */
+// VISUALLY CONNECTED RADIO BUTTONS
 .connected-top {
     background-image: url(../../images/backend/radio_choice_top.svg);
     background-repeat: no-repeat;

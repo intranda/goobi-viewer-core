@@ -791,7 +791,7 @@ public class ConfigurationTest extends AbstractTest {
      */
     @Test
     public void getSolrUrl_shouldReturnCorrectValue() throws Exception {
-        Assert.assertEquals("https://viewer.goobi.io/solr/collection1", DataManager.getInstance().getConfiguration().getSolrUrl());
+        Assert.assertEquals("https://viewer-testing-index.goobi.io/solr/collection1", DataManager.getInstance().getConfiguration().getSolrUrl());
     }
 
     /**
@@ -1291,6 +1291,24 @@ public class ConfigurationTest extends AbstractTest {
     @Test
     public void isPreventProxyCaching_shouldReturnCorrectValue() throws Exception {
         Assert.assertEquals(true, DataManager.getInstance().getConfiguration().isPreventProxyCaching());
+    }
+
+    /**
+     * @see Configuration#isSolrCompressionEnabled()
+     * @verifies return correct value
+     */
+    @Test
+    public void isSolrCompressionEnabled_shouldReturnCorrectValue() throws Exception {
+        Assert.assertFalse(DataManager.getInstance().getConfiguration().isSolrCompressionEnabled());
+    }
+
+    /**
+     * @see Configuration#isSolrBackwardsCompatible()
+     * @verifies return correct value
+     */
+    @Test
+    public void isSolrBackwardsCompatible_shouldReturnCorrectValue() throws Exception {
+        Assert.assertTrue(DataManager.getInstance().getConfiguration().isSolrBackwardsCompatible());
     }
 
     /**

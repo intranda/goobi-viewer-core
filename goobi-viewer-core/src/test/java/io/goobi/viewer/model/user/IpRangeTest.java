@@ -50,7 +50,7 @@ public class IpRangeTest extends AbstractDatabaseEnabledTest {
     public void canSatisfyAllAccessConditions_shouldReturnTrueIfIpRangeHasLicense() throws Exception {
         IpRange ipRange = DataManager.getInstance().getDao().getIpRange(1);
         Assert.assertNotNull(ipRange);
-        List<String> licences = Arrays.asList(new String[] { "license type 3 name", "license type 1 name" });
+        List<String> licences = Arrays.asList(new String[] { "license type 3 name", "restriction on access" });
         Assert.assertTrue(ipRange.canSatisfyAllAccessConditions(new HashSet<>(licences), null, IPrivilegeHolder.PRIV_LIST, "PPN123"));
     }
 

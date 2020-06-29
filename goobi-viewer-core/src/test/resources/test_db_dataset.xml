@@ -35,7 +35,7 @@
 		description="ip range 2 desc" />
 
 	<license_types license_type_id="1" name="license type 1 name"
-		description="license type 1 desc" conditions="YEAR:[* TO 3000]"
+		description="license type 1 desc" conditions="-YEAR:[* TO 3000]"
 		open_access="false" core="false" />
 	<license_type_privileges license_type_id="1"
 		privilege_name="license type 1 priv 1" />
@@ -58,14 +58,12 @@
         description="CMS role"
         open_access="false" core="true" />
         
+    <!-- This license type is used in conjunction with the test index, so don't change -->
     <license_types license_type_id="6" name="restriction on access"
         description="restricted records"
-        open_access="false" core="false"
-        conditions="MDNUM_PUBLICRELEASEYEAR:[* TO NOW/YEAR]" />
-    <license_type_privileges license_type_id="6"
-        privilege_name="LIST" />
+        open_access="false" core="false" moving_wall="true"
+        conditions="-MDNUM_PUBLICRELEASEYEAR:[* TO NOW/YEAR]" />
 
-		
 	<license_types_overriding license_type_id="4" overriding_license_type_id="1" />
 	<license_types_overriding license_type_id="1" overriding_license_type_id="4" />
 
@@ -77,7 +75,7 @@
 		description="desc license 2 desc" />
 	<license_privileges license_id="2" privilege_name="license 2 priv 1" />
 
-	<licenses license_id="3" license_type_id="3" ip_range_id="1"
+	<licenses license_id="3" license_type_id="6" ip_range_id="1"
 		description="desc license 3 desc" />
 	<license_privileges license_id="3" privilege_name="LIST" />
 

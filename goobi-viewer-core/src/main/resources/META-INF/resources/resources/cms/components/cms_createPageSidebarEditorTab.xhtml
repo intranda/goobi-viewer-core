@@ -187,140 +187,149 @@
 									</div>
 								</div>
 								<div class="col-12 col-sm-12 col-md-6 col-lg-6">
-									<div class="sidebar-editor-editor-right">
-										<h4>#{msg.cms_menu_availableComponents}</h4>
-
-										<ul id="availableItemList">
-											<ui:repeat var="element" value="#{cmsBean.selectedPage.unusedSidebarElements}">
-												<li sortposition="item_#{element.sortingId}">
-													<h:panelGroup id="availableItem" rendered="#{element.category != 'geoMap' or geoMapBean.allMaps.size() > 0}">
-														<div class="sidebar-editor-widget-item">
-															<div class="sidebar-editor-widget-item-header">
-																<h4>#{msg[element.type]}</h4>
-                                                                <i class="fa fa-pencil-square-o widget-edit" title="Widget Editor" aria-hidden="true"></i>
-															</div>
-
-															<div class="sidebar-editor-widget-item-body">
-																<div class="sidebar-editor-item-widget-editor">
-																		<ui:fragment rendered="#{element.category != 'geoMap'}">
-																		<div class="form-group">
-																			<h4>#{msg.cms_sidebarElement_widgetmode}:</h4>
-																			<h:selectOneRadio id="widgetModeRadioTable2" value="#{element.widgetMode}" layout="pageDirection" onclick="cmsJS.createPage.disablePreview();">
-																				<f:selectItem id="select_standard" itemLabel="#{msg.cms_sidebarElement_standard}" itemValue="STANDARD"></f:selectItem>
-																				<f:selectItem id="select_foldout" itemLabel="#{msg.cms_sidebarElement_foldout}" itemValue="FOLDOUT"></f:selectItem>
-																			</h:selectOneRadio>
-																		</div>
-																		</ui:fragment>
-																	<!-- WIDGET TITLE -->
-																		<ui:fragment rendered="#{element.category != 'geoMap'}">
-																		<div class="form-group">
-																			<label>#{msg.cms_sidebarElement_widgetTitle}:</label>
-																			<h:inputText value="#{element.widgetTitle}" styleClass="form-control"></h:inputText>
-																		</div>
-																		</ui:fragment>
-																	<h:panelGroup id="inputHtml" rendered="#{element.hasHtml()}">
-																		<div class="form-group">
-																			<h4>#{msg.cms_sidebarElement_html}:</h4>
-																			<h:inputTextarea value="#{element.html}" styleClass="form-control" />
-																		</div>
-																	</h:panelGroup>
-                                                                     <!-- SEARCH -->
-                                                                    <h:panelGroup id="inputSearch" rendered="#{element.category == 'search'}">
-                                                                        <div class="form-group">
-                                                                            <label>#{msg.cms_sidebarElement_additionalQuery}:</label>
-                                                                            <h:inputText value="#{element.additionalQuery}" styleClass="form-control"></h:inputText>
-                                                                        </div>
-                                                                        <div class="form-group">
-                                                                            <label>#{msg.cms_sidebarElement_searchPage}:</label>
-                                                                            <div class="custom-control custom-control--select">
-                                                                                <h:selectOneMenu value="#{element.linkedPages.page}">
-                                                                                    <f:selectItem id="default" itemLabel="#{msg.cms_sidebarElement_defaultSearchPage}" itemValue=""/>
-                                                                                    <f:selectItems value="#{cmsBean.getCMSPagesWithSearch()}" var="page" itemValue="#{page.id}" itemLabel="#{page.title}" />
-                                                                                    <f:ajax render="baseCollectionMenu" />
-                                                                                </h:selectOneMenu>
-                                                                            </div>
-                                                                        </div>
-                                                                    </h:panelGroup>
-																	<h:panelGroup id="inputQuery" rendered="#{element.category == 'fieldQuery'}">
-																		<ui:fragment rendered="#{element.type != 'widgetRssFeed'}">
-																			<div class="form-group">
-																				<label>#{msg.cms_sidebarElement_searchField}:</label>
-																				<div class="custom-control custom-control--select">
-																					<h:selectOneMenu value="#{element.searchField}">
-																						<f:selectItems value="#{cmsBean.getLuceneFields(true)}" var="field" itemValue="#{field}" itemLabel="#{field}" />
-																						<f:ajax render="baseCollectionMenu" />
-																					</h:selectOneMenu>
+									<div class="row">
+										<div class="col-2 d-flex flex-column align-items-center admin__grab-indicator">
+											<i aria-hidden="true" class="fa fa-arrow-left fa-2x mb-3"></i>
+											<i aria-hidden="true" class="fa fa-hand-rock-o fa-2x mb-3"></i>
+											<i aria-hidden="true" class="fa fa-arrow-right fa-2x"></i>
+										</div>
+										<div class="col-10">
+											<div class="sidebar-editor-editor-right">
+												<h4>#{msg.cms_menu_availableComponents}</h4>
+		
+												<ul id="availableItemList">
+													<ui:repeat var="element" value="#{cmsBean.selectedPage.unusedSidebarElements}">
+														<li sortposition="item_#{element.sortingId}">
+															<h:panelGroup id="availableItem" rendered="#{element.category != 'geoMap' or geoMapBean.allMaps.size() > 0}">
+																<div class="sidebar-editor-widget-item">
+																	<div class="sidebar-editor-widget-item-header">
+																		<h4>#{msg[element.type]}</h4>
+		                                                                <i class="fa fa-pencil-square-o widget-edit" title="Widget Editor" aria-hidden="true"></i>
+																	</div>
+		
+																	<div class="sidebar-editor-widget-item-body">
+																		<div class="sidebar-editor-item-widget-editor">
+																				<ui:fragment rendered="#{element.category != 'geoMap'}">
+																				<div class="form-group">
+																					<h4>#{msg.cms_sidebarElement_widgetmode}:</h4>
+																					<h:selectOneRadio id="widgetModeRadioTable2" value="#{element.widgetMode}" layout="pageDirection" onclick="cmsJS.createPage.disablePreview();">
+																						<f:selectItem id="select_standard" itemLabel="#{msg.cms_sidebarElement_standard}" itemValue="STANDARD"></f:selectItem>
+																						<f:selectItem id="select_foldout" itemLabel="#{msg.cms_sidebarElement_foldout}" itemValue="FOLDOUT"></f:selectItem>
+																					</h:selectOneRadio>
 																				</div>
-																			</div>
-																			<div class="form-group">
-																				<label>#{msg.cms_sidebarElement_searchResultDisplayLimit}:</label>
-																				<h:inputText value="#{element.resultDisplayLimit}" styleClass="form-control input-integer"></h:inputText>
-																			</div>
-																			<div class="form-group">
-																				<label>#{msg.cms_sidebarElement_sortOrder}:</label>
-																				<h:selectOneRadio id="sortOrderRadioTable" value="#{element.descendingOrder}" layout="pageDirection" onclick="cmsJS.createPage.disablePreview();">
-																					<f:selectItem id="select_ascending" itemLabel="#{msg.cms_sidebarElement_sortAscending}" itemValue="#{false}"></f:selectItem>
-																					<f:selectItem id="select_descending" itemLabel="#{msg.cms_sidebarElement_sortDescending}" itemValue="#{true}"></f:selectItem>
-																				</h:selectOneRadio>
-																			</div>
-																		</ui:fragment>
-																		<div class="form-group">
-																			<label>#{msg.cms_sidebarElement_additionalQuery}:</label>
-																			<h:inputText value="#{element.additionalQuery}" styleClass="form-control"></h:inputText>
-																		</div>
-																	</h:panelGroup>
-																	<!-- page links -->
-																	<h:panelGroup id="inputPageLinks" rendered="#{element.category == 'pageLinks'}">
-																		<div class="form-group selection_page_links">
-																			<label>#{msg.cms_sidebarElement_pageLinks}:</label>
-																			<h:selectManyCheckbox value="#{element.linkedPages.pages}">
-																				<f:selectItems value="#{cmsBean.validCMSPages}" var="page" itemLabel="#{page.title}" itemValue="#{page.id}"></f:selectItems>
-																			</h:selectManyCheckbox>
-																		</div>
-																	</h:panelGroup>
-																	<!-- GEO MAP -->
-																	<h:panelGroup id="inputGeoMap" rendered="#{element.category == 'geoMap'}">
-																			<div class="widget-geomap__input">
-																			
-																				<div class="row">
-																					<label>#{msg.cms__geomaps__map__title}:</label>
-																					<!-- SELECT MENU -->
-																	                <div class="custom-control custom-control--select">
-																	                    <h:selectOneMenu 
-																	                        id="geoMapSelect" 
-																	                        styleClass="form-control" 
-																	                        value="#{element.geoMapId}">
-																	                        <f:selectItem itemValue="#{-1}" itemLabel="#{msg.select}" itemDisabled="true" noSelectionOption="true"></f:selectItem>
-																	                        <f:selectItems 
-																	                            value="#{geoMapBean.allMaps}"
-																	                            var="map"
-																	                            itemValue="#{map.id}"
-																	                            itemLabel="#{map.title}" />
-																	                    </h:selectOneMenu>
-																	                </div>
+																				</ui:fragment>
+																			<!-- WIDGET TITLE -->
+																				<ui:fragment rendered="#{element.category != 'geoMap'}">
+																				<div class="form-group">
+																					<label>#{msg.cms_sidebarElement_widgetTitle}:</label>
+																					<h:inputText value="#{element.widgetTitle}" styleClass="form-control"></h:inputText>
 																				</div>
-																			</div>
-																	</h:panelGroup>
-																	<!-- CSS class -->
-																	<h:panelGroup rendered="#{element.category != 'geoMap'}" id="inputCss">
-																		<div class="form-group">
-																			<label>#{msg.cms_sidebarElement_css}:</label>
-																			<h:inputText value="#{element.cssClass}" styleClass="form-control" />
+																				</ui:fragment>
+																			<h:panelGroup id="inputHtml" rendered="#{element.hasHtml()}">
+																				<div class="form-group">
+																					<h4>#{msg.cms_sidebarElement_html}:</h4>
+																					<h:inputTextarea value="#{element.html}" styleClass="form-control" />
+																				</div>
+																			</h:panelGroup>
+		                                                                     <!-- SEARCH -->
+		                                                                    <h:panelGroup id="inputSearch" rendered="#{element.category == 'search'}">
+		                                                                        <div class="form-group">
+		                                                                            <label>#{msg.cms_sidebarElement_additionalQuery}:</label>
+		                                                                            <h:inputText value="#{element.additionalQuery}" styleClass="form-control"></h:inputText>
+		                                                                        </div>
+		                                                                        <div class="form-group">
+		                                                                            <label>#{msg.cms_sidebarElement_searchPage}:</label>
+		                                                                            <div class="custom-control custom-control--select">
+		                                                                                <h:selectOneMenu value="#{element.linkedPages.page}">
+		                                                                                    <f:selectItem id="default" itemLabel="#{msg.cms_sidebarElement_defaultSearchPage}" itemValue=""/>
+		                                                                                    <f:selectItems value="#{cmsBean.getCMSPagesWithSearch()}" var="page" itemValue="#{page.id}" itemLabel="#{page.title}" />
+		                                                                                    <f:ajax render="baseCollectionMenu" />
+		                                                                                </h:selectOneMenu>
+		                                                                            </div>
+		                                                                        </div>
+		                                                                    </h:panelGroup>
+																			<h:panelGroup id="inputQuery" rendered="#{element.category == 'fieldQuery'}">
+																				<ui:fragment rendered="#{element.type != 'widgetRssFeed'}">
+																					<div class="form-group">
+																						<label>#{msg.cms_sidebarElement_searchField}:</label>
+																						<div class="custom-control custom-control--select">
+																							<h:selectOneMenu value="#{element.searchField}">
+																								<f:selectItems value="#{cmsBean.getLuceneFields(true)}" var="field" itemValue="#{field}" itemLabel="#{field}" />
+																								<f:ajax render="baseCollectionMenu" />
+																							</h:selectOneMenu>
+																						</div>
+																					</div>
+																					<div class="form-group">
+																						<label>#{msg.cms_sidebarElement_searchResultDisplayLimit}:</label>
+																						<h:inputText value="#{element.resultDisplayLimit}" styleClass="form-control input-integer"></h:inputText>
+																					</div>
+																					<div class="form-group">
+																						<label>#{msg.cms_sidebarElement_sortOrder}:</label>
+																						<h:selectOneRadio id="sortOrderRadioTable" value="#{element.descendingOrder}" layout="pageDirection" onclick="cmsJS.createPage.disablePreview();">
+																							<f:selectItem id="select_ascending" itemLabel="#{msg.cms_sidebarElement_sortAscending}" itemValue="#{false}"></f:selectItem>
+																							<f:selectItem id="select_descending" itemLabel="#{msg.cms_sidebarElement_sortDescending}" itemValue="#{true}"></f:selectItem>
+																						</h:selectOneRadio>
+																					</div>
+																				</ui:fragment>
+																				<div class="form-group">
+																					<label>#{msg.cms_sidebarElement_additionalQuery}:</label>
+																					<h:inputText value="#{element.additionalQuery}" styleClass="form-control"></h:inputText>
+																				</div>
+																			</h:panelGroup>
+																			<!-- page links -->
+																			<h:panelGroup id="inputPageLinks" rendered="#{element.category == 'pageLinks'}">
+																				<div class="form-group selection_page_links">
+																					<label>#{msg.cms_sidebarElement_pageLinks}:</label>
+																					<h:selectManyCheckbox value="#{element.linkedPages.pages}">
+																						<f:selectItems value="#{cmsBean.validCMSPages}" var="page" itemLabel="#{page.title}" itemValue="#{page.id}"></f:selectItems>
+																					</h:selectManyCheckbox>
+																				</div>
+																			</h:panelGroup>
+																			<!-- GEO MAP -->
+																			<h:panelGroup id="inputGeoMap" rendered="#{element.category == 'geoMap'}">
+																					<div class="widget-geomap__input">
+																					
+																						<div class="row">
+																							<label>#{msg.cms__geomaps__map__title}:</label>
+																							<!-- SELECT MENU -->
+																			                <div class="custom-control custom-control--select">
+																			                    <h:selectOneMenu 
+																			                        id="geoMapSelect" 
+																			                        styleClass="form-control" 
+																			                        value="#{element.geoMapId}">
+																			                        <f:selectItem itemValue="#{-1}" itemLabel="#{msg.select}" itemDisabled="true" noSelectionOption="true"></f:selectItem>
+																			                        <f:selectItems 
+																			                            value="#{geoMapBean.allMaps}"
+																			                            var="map"
+																			                            itemValue="#{map.id}"
+																			                            itemLabel="#{map.title}" />
+																			                    </h:selectOneMenu>
+																			                </div>
+																						</div>
+																					</div>
+																			</h:panelGroup>
+																			<!-- CSS class -->
+																			<h:panelGroup rendered="#{element.category != 'geoMap'}" id="inputCss">
+																				<div class="form-group">
+																					<label>#{msg.cms_sidebarElement_css}:</label>
+																					<h:inputText value="#{element.cssClass}" styleClass="form-control" />
+																				</div>
+																			</h:panelGroup>
+																			<h:panelGroup rendered="#{element.category == 'fieldQuery' || element.hasHtml()}">
+																				<div class="sidebar-editor-item-widget-editor-action">
+																					<h:commandLink value="#{msg.save}" action="#{cmsBean.validateSidebarElement(element)}" onclick="cmsJS.createPage.disablePreview();" styleClass="btn btn--success">
+																						<f:ajax execute="inputHtml inputQuery inputGeoMap" render="inputHtml inputQuery inputGeoMap :messages" onevent="cmsJS.sortableList.save" />
+																					</h:commandLink>
+																				</div>
+																			</h:panelGroup>
 																		</div>
-																	</h:panelGroup>
-																	<h:panelGroup rendered="#{element.category == 'fieldQuery' || element.hasHtml()}">
-																		<div class="sidebar-editor-item-widget-editor-action">
-																			<h:commandLink value="#{msg.save}" action="#{cmsBean.validateSidebarElement(element)}" onclick="cmsJS.createPage.disablePreview();" styleClass="btn btn--success">
-																				<f:ajax execute="inputHtml inputQuery inputGeoMap" render="inputHtml inputQuery inputGeoMap :messages" onevent="cmsJS.sortableList.save" />
-																			</h:commandLink>
-																		</div>
-																	</h:panelGroup>
+																	</div>
 																</div>
-															</div>
-														</div>
-													</h:panelGroup></li>
-											</ui:repeat>
-										</ul>
+															</h:panelGroup></li>
+													</ui:repeat>
+												</ul>
+											</div>
+										</div>
 									</div>
 								</div>
 							</div>
@@ -336,11 +345,11 @@
 					<div class="modal-dialog">
 						<div class="modal-content">
 							<div class="modal-header">
+								<h4 class="modal-title" id="addSidebarItemModalLabel">#{msg.cms_menu_create_item_title}</h4>
 								<button type="button" class="close" data-dismiss="modal">
 									<span aria-hidden="true"> <h:outputText value="&amp;times;" escape="false" />
 									</span> <span class="sr-only">Close</span>
 								</button>
-								<h4 class="modal-title" id="addSidebarItemModalLabel">#{msg.cms_menu_create_item_title}</h4>
 							</div>
 							<div class="modal-body">
 								<h:panelGroup id="sidebar_item_editor">

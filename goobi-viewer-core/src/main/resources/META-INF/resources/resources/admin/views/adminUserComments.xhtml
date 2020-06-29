@@ -45,7 +45,7 @@
                                 <!-- COMMENT COL -->
                                 <div class="col-8 d-flex">
                                     #{msg.Comment}
-                                    <div class="sorting-wrapper admin__table-sorting">
+                                    <div class="admin__table-sorting">
                                         <h:commandLink styleClass="sort" action="#{adminBean.lazyModelComments.sortBy('text', 'ASCENDING')}">
                                             <f:passThroughAttribute name="aria-label" value="sort ascending" />
                                             <i class="fa fa-angle-down" aria-hidden="true"></i>
@@ -62,7 +62,7 @@
                                 <!-- USER COL -->
                                 <div class="col-2 d-flex">
                                     Benutzer
-                                    <div class="sorting-wrapper admin__table-sorting">
+                                    <div class="admin__table-sorting">
                                         <h:commandLink styleClass="sort" action="#{adminBean.lazyModelComments.sortBy('owner', 'ASCENDING')}">
                                             <f:passThroughAttribute name="aria-label" value="sort ascending" />
                                             <i class="fa fa-angle-down" aria-hidden="true"></i>
@@ -79,7 +79,7 @@
                                 <!-- DATE COL -->
                                 <div class="col-2 d-flex">
                                     #{msg.date}
-                                    <div class="sorting-wrapper admin__table-sorting">
+                                    <div class="admin__table-sorting">
                                         <h:commandLink styleClass="sort" action="#{adminBean.lazyModelComments.sortBy('dateCreated', 'ASCENDING')}">
                                             <f:passThroughAttribute name="aria-label" value="sort ascending" />
                                             <i class="fa fa-angle-down" aria-hidden="true"></i>

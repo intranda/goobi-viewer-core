@@ -47,7 +47,7 @@
                             <div class="col-6 d-flex">
                                 <span>#{msg.admin__users}</span>
                                 <!-- SORTING -->
-                                <div class="sorting-wrapper admin__table-sorting">
+                                <div class="admin__table-sorting">
                                     <h:commandLink styleClass="sort"
                                         action="#{adminBean.lazyModelUsers.sortBy('email', 'ASCENDING')}">
                                         <f:passThroughAttribute name="aria-label" value="sort ascending" />
@@ -66,7 +66,7 @@
                             <div class="col-3 d-flex">
                                 <span>#{msg.lastLoginDate}</span>
                                 <!-- SORTING -->
-                                <div class="sorting-wrapper admin__table-sorting">
+                                <div class="admin__table-sorting">
                                     <h:commandLink styleClass="sort"
                                         action="#{adminBean.lazyModelUsers.sortBy('lastLogin', 'ASCENDING')}">
                                         <f:passThroughAttribute name="aria-label" value="sort ascending" />
@@ -98,7 +98,7 @@
                                     </ui:fragment>
                                     <ui:fragment rendered="#{!user.useGravatar}">
                                         <div class="admin__table-img">
-                                            <img src="#{request.contextPath}/resources/themes/#{navigationHelper.theme}/images/thumbnail_goobi_person.png" alt="User avatar"/>
+                                            <img src="#{request.contextPath}/resources/images/backend/thumbnail_goobi_person.png" alt="User avatar"/>
                                         </div>
                                     </ui:fragment>
                                     <div class="admin__table-data">

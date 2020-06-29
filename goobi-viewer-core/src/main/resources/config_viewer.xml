@@ -160,6 +160,14 @@
 		<!-- If true, all HTTP responses will contain attributes preventing proxies 
 			etc. from caching contents. Default is false. -->
 		<preventProxyCaching>false</preventProxyCaching>
+		
+		<solr>
+            <!-- compressionEnabled: Enables compression for the Solr HTTP client. Default is true. -->
+            <compressionEnabled>true</compressionEnabled>
+            <!-- backwardsCompatible: If true, an XML response parser instead of binary will be used
+                to enabled Solr 4 compatibility. Default is false. -->
+            <backwardsCompatible>false</backwardsCompatible>
+        </solr>
 	</performance>
 
 	<accessConditions>
@@ -484,11 +492,12 @@
 		<!-- boostTopLevelDocstructs: If true, anchors receive a factor 10 boost, 
 			volumes and standalone records a factore 5 boost. This results in anchors 
 			appearing on top, followed by other records, followed by lower level docstructs, 
-			when sorting by relevance. Default is true. -->
+			when sorting by relevance. Does not apply if aggregateHits=true. Default is true. -->
 		<boostTopLevelDocstructs>true</boostTopLevelDocstructs>
 		<!-- groupDuplicatHits: If true, metadata doc search hits that represent 
 			the same entity will be grouped into one hit. Disable this if using a Solr 
-			schema that doesn't yet support GROUPFIELD. Default is true. -->
+			schema that doesn't yet support GROUPFIELD. Does not apply if aggregateHits=true.
+			Default is true. -->
 		<groupDuplicateHits>true</groupDuplicateHits>
 		<!-- aggregateHits: If true, only topstructs will be returned as hits, 
 			with child docstructs and pages being retrieved in an extra search. Default 

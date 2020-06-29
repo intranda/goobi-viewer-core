@@ -381,5 +381,9 @@ var viewerJS = (function () {
     viewer.tinyConfig = {};
 
     return viewer;
-
+    
 })(jQuery);
+
+	//reset global bootstrap boundary of tooltips to window
+	$.fn.tooltip.Constructor.Default.boundary = "window";
+	$.fn.dropdown.Constructor.Default.boundary = "window";
