@@ -13,7 +13,7 @@
  *
  * You should have received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
-package io.goobi.viewer.api.rest.v1.records;
+package io.goobi.viewer.api.rest.v1.index;
 
 import static io.goobi.viewer.api.rest.v1.ApiUrls.*;
 import static org.junit.Assert.assertEquals;
@@ -73,7 +73,7 @@ public class IndexResourceTest extends AbstractRestApiTest{
 
     @Test
     public void testInvalidQuery() throws JsonMappingException, JsonProcessingException {
-        params.setSortFields(SolrConstants.YEAR);
+        params.setSortFields("BLA");
         Entity<RecordsRequestParameters> entity = Entity.entity(params, MediaType.APPLICATION_JSON);
         try(Response response = target(urls.path(RECORDS_INDEX, RECORDS_QUERY).build())
                 .request()

@@ -73,8 +73,8 @@ public class ViewerImageResourceTest extends AbstractRestApiTest {
     
     @Test
     public void testGetImageInformation() throws JsonMappingException, JsonProcessingException {
-        String url = urls.path(RECORDS_FILES_IMAGE, RECORDS_FILES_IMAGE_INFO).params(PI, FILENAME).build();
-        String id = urls.path(RECORDS_FILES_IMAGE).params(PI, FILENAME).build();
+        String url = urls.path(RECORDS_FILES_IMAGE, RECORDS_FILES_IMAGE_INFO).params(PI, FILENAME + ".tif").build();
+        String id = urls.path(RECORDS_FILES_IMAGE).params(PI, FILENAME + ".tif").build();
         try(Response response = target(url)
                 .request()
                 .accept(MediaType.APPLICATION_JSON)
@@ -82,6 +82,7 @@ public class ViewerImageResourceTest extends AbstractRestApiTest {
             assertEquals("Should return status 200", 200, response.getStatus());
             assertNotNull("Should return user object as json", response.getEntity());
             String responseString = response.readEntity(String.class);
+            System.out.println(responseString);
             JSONObject info = new JSONObject(responseString);
             assertTrue(info.getString("@id").endsWith(id));
         }
@@ -105,7 +106,7 @@ public class ViewerImageResourceTest extends AbstractRestApiTest {
     
     @Test
     public void testGetImage() throws JsonMappingException, JsonProcessingException {
-        String url = urls.path(RECORDS_FILES_IMAGE, RECORDS_FILES_IMAGE_IIIF).params(PI, FILENAME, REGION, SIZE, ROTATION, QUALITY, FORMAT).build();
+        String url = urls.path(RECORDS_FILES_IMAGE, RECORDS_FILES_IMAGE_IIIF).params(PI, FILENAME + ".tif", REGION, SIZE, ROTATION, QUALITY, FORMAT).build();
         try(Response response = target(url)
                 .request()
                 .accept("image")
@@ -114,7 +115,7 @@ public class ViewerImageResourceTest extends AbstractRestApiTest {
             String contentLocation = response.getHeaderString("Content-Location");
             byte[] entity = response.readEntity(byte[].class);
             assertEquals("Should return status 200. Error message: " + new String(entity), 200, status);
-            assertEquals("file:///opt/digiverso/viewer/data/2/media/" + PI + "/" + FILENAME + ".tif", contentLocation);
+            assertEquals("file:///opt/digiverso/viewer/data/1/media/" + PI + "/" + FILENAME + ".tif", contentLocation);
             assertTrue(entity.length >= 5*5*8*3); //entity is at least as long as the image data
         }
     }

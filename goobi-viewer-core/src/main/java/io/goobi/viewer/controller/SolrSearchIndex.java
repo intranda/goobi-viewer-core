@@ -1292,6 +1292,7 @@ public final class SolrSearchIndex {
         return e.getMessage() != null && (e.getMessage().startsWith("org.apache.solr.search.SyntaxError")
                 || e.getMessage().contains("Invalid Number") 
                 || e.getMessage().contains("undefined field")
+                || e.getMessage().contains("field can't be found")
                 || e.getMessage().contains("can not sort on multivalued field"));
     }
 

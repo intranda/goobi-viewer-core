@@ -15,6 +15,21 @@
  */
 package io.goobi.viewer.api.rest.v1.users.bookmarks;
 
+import static io.goobi.viewer.api.rest.v1.ApiUrls.USERS_BOOKMARKS;
+import static io.goobi.viewer.api.rest.v1.ApiUrls.USERS_BOOKMARKS_ITEM;
+import static io.goobi.viewer.api.rest.v1.ApiUrls.USERS_BOOKMARKS_LIST;
+import static io.goobi.viewer.api.rest.v1.ApiUrls.USERS_BOOKMARKS_LIST_IIIF;
+import static io.goobi.viewer.api.rest.v1.ApiUrls.USERS_BOOKMARKS_LIST_MIRADOR;
+import static io.goobi.viewer.api.rest.v1.ApiUrls.USERS_BOOKMARKS_LIST_RSS;
+import static io.goobi.viewer.api.rest.v1.ApiUrls.USERS_BOOKMARKS_LIST_RSS_JSON;
+import static io.goobi.viewer.api.rest.v1.ApiUrls.USERS_BOOKMARKS_LIST_SHARED;
+import static io.goobi.viewer.api.rest.v1.ApiUrls.USERS_BOOKMARKS_LIST_SHARED_MIRADOR;
+import static io.goobi.viewer.api.rest.v1.ApiUrls.USERS_BOOKMARKS_PUBLIC;
+import static io.goobi.viewer.api.rest.v1.ApiUrls.USERS_BOOKMARKS_SHARED;
+
+import java.io.IOException;
+import java.util.List;
+
 import javax.inject.Inject;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -37,36 +52,27 @@ import de.intranda.api.iiif.presentation.Collection;
 import de.unigoettingen.sub.commons.contentlib.exceptions.ContentLibException;
 import de.unigoettingen.sub.commons.contentlib.exceptions.ContentNotFoundException;
 import de.unigoettingen.sub.commons.contentlib.exceptions.IllegalRequestException;
-import de.unigoettingen.sub.commons.contentlib.servlet.rest.CORSBinding;
 import io.goobi.viewer.api.rest.AbstractApiUrlManager;
 import io.goobi.viewer.api.rest.ViewerRestServiceBinding;
 import io.goobi.viewer.api.rest.model.SuccessMessage;
 import io.goobi.viewer.api.rest.resourcebuilders.AbstractBookmarkResourceBuilder;
 import io.goobi.viewer.api.rest.resourcebuilders.SessionBookmarkResourceBuilder;
 import io.goobi.viewer.api.rest.resourcebuilders.UserBookmarkResourceBuilder;
-import io.goobi.viewer.api.rest.v1.ApiUrls;
-import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.exceptions.RestApiException;
 import io.goobi.viewer.exceptions.ViewerConfigurationException;
+import io.goobi.viewer.managedbeans.UserBean;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.model.bookmark.Bookmark;
 import io.goobi.viewer.model.bookmark.BookmarkList;
 import io.goobi.viewer.model.rss.Channel;
 import io.goobi.viewer.model.rss.RSSFeed;
 import io.goobi.viewer.model.security.user.User;
-import io.goobi.viewer.model.security.user.UserGroup;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
-
-import static io.goobi.viewer.api.rest.v1.ApiUrls.*;
-
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * @author florian
@@ -76,7 +82,7 @@ import java.util.List;
 @ViewerRestServiceBinding
 public class BookmarkResource {
 
-    private final AbstractBookmarkResourceBuilder builder;
+    private AbstractBookmarkResourceBuilder builder;
     @Context
     private HttpServletRequest servletRequest;
     @Context
@@ -84,31 +90,17 @@ public class BookmarkResource {
     @Inject
     AbstractApiUrlManager urls;
 
-    public BookmarkResource(
-            @Parameter(
-                    description = "The owning user id. May be set to '-' to indicate no persistent user. Bookmarks are then stored in the server session") @PathParam("userId") String userId)
-            throws IllegalRequestException, ContentNotFoundException, DAOException, RestApiException {
-        if (StringUtils.isBlank(userId) || userId.matches("-")) {
+    public BookmarkResource() {
+        UserBean bean = BeanUtils.getUserBeanFromRequest(servletRequest);
+        if(bean != null) {            
+            User currentUser = bean.getUser();
+            if(currentUser != null) {
+                builder = new UserBookmarkResourceBuilder(currentUser);             
+            }
+        }
+        if(builder == null) {
             HttpSession session = servletRequest.getSession();
-            if (session == null) {
-                throw new RestApiException("No session available for request", HttpServletResponse.SC_FORBIDDEN);
-            } else {
-                builder = new SessionBookmarkResourceBuilder(session);
-            }
-        } else if (userId.matches("\\d+")) {
-            User currentUser = BeanUtils.getUserBeanFromRequest(servletRequest).getUser();
-            if(currentUser == null) {
-                throw new RestApiException("Not logged in as user with id " + userId, HttpServletResponse.SC_FORBIDDEN);
-            } else {                
-                Long lUserId = Long.parseLong(userId);
-                if(currentUser.getId().equals(lUserId)) {
-                    builder = new UserBookmarkResourceBuilder(currentUser);                    
-                } else {
-                    throw new RestApiException("Not logged in as user with id " + userId, HttpServletResponse.SC_FORBIDDEN);
-                }
-            }
-        } else {
-            throw new IllegalRequestException("No valid user id: " + userId);
+            builder = new SessionBookmarkResourceBuilder(session);
         }
     }
 

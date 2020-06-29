@@ -103,7 +103,7 @@ public class ApiUrls extends AbstractApiUrlManager {
     
     public static final String USERS =                                      "/users/{userId}";
     
-    public static final String USERS_BOOKMARKS =                            "/users/{userId}/bookmarks";
+    public static final String USERS_BOOKMARKS =                            "/bookmarks";
     public static final String USERS_BOOKMARKS_LIST =                       "/{listId}";
     public static final String USERS_BOOKMARKS_ITEM =                       "/{listId}/items/{bookmarkId}";
     public static final String USERS_BOOKMARKS_LIST_IIIF =                  "/{listId}/collection.json";

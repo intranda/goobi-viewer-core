@@ -25,7 +25,6 @@
 	        fetch("#{request.contextPath}/api/v1/openapi.json")
 	        .then(res => res.json())
 	        .then(json => {
-	            json.basePath = "/api/v1"
 	            json.servers = [
 	                {
 	                    url: "#{request.contextPath}",
