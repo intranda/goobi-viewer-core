@@ -290,7 +290,7 @@ public class JsonTools {
      */
     public static String formatVersionString(String json) {
         if (StringUtils.isEmpty(json)) {
-            return "";
+            return "not_available";
         }
 
         JSONObject jsonObj = new JSONObject(json);
@@ -300,7 +300,7 @@ public class JsonTools {
                     + " " + jsonObj.getString("git-revision");
         } catch (JSONException e) {
             logger.error(e.getMessage());
-            return e.getMessage();
+            return "not_available";
         }
     }
 }

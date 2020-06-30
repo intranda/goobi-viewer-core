@@ -324,7 +324,7 @@ public class StatisticsBean implements Serializable {
      * @return goobi-viewer-indexer version
      */
     public String getIndexerVersion() {
-        return DataManager.getInstance().getIndexerVersion();
+        return  JsonTools.formatVersionString(DataManager.getInstance().getIndexerVersion());
     }
 
     /**
