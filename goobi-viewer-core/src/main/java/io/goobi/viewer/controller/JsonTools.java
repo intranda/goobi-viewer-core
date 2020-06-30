@@ -240,7 +240,7 @@ public class JsonTools {
         // logger.trace("jsonObject of pi " + pi + " : " +jsonObj);
         return jsonObj;
     }
-    
+
     /**
      * 
      * @param json JSON string
@@ -253,8 +253,13 @@ public class JsonTools {
         }
 
         JSONObject jsonObj = new JSONObject(json);
-        return jsonObj.getString("application") + " " + jsonObj.getString("version")
-                + " " + jsonObj.getString("build-date")
-                + " " + jsonObj.getString("git-revision");
+        try {
+            return jsonObj.getString("application") + " " + jsonObj.getString("version")
+                    + " " + jsonObj.getString("build-date")
+                    + " " + jsonObj.getString("git-revision");
+        } catch (JSONException e) {
+            logger.error(e.getMessage());
+            return e.getMessage();
+        }
     }
 }

@@ -312,8 +312,8 @@ public class StatisticsBean implements Serializable {
             ApplicationInfo info = new ApplicationResource().getApplicationInfo();
             String json = new ObjectMapper().writeValueAsString(info);
             return JsonTools.formatVersionString(json);
-//            String output = String.format("%s (%s)", info.getVersion(), info.getGitRevision());
-//            return output;
+            //            String output = String.format("%s (%s)", info.getVersion(), info.getGitRevision());
+            //            return output;
         } catch (ContentNotFoundException | IOException e) {
             logger.error(e.getMessage());
             return "";
