@@ -274,6 +274,7 @@
                                                 </ui:fragment>
 
                                                 <!-- CATEGORIES -->
+                                                <ui:fragment rendered="#{fn:length(adminBean.currentLicense.selectableCategories) > 0}">
                                                 <div class="form-group form-row blockAfterRadioToggler">
                                                     <div class="col-4">
                                                         <label for="name" class="control-label">#{msg.admin__license_allowed_categories_label}:</label>
@@ -336,6 +337,7 @@
                                                     <div class="col-1" />
                                                 </ui:fragment>
                                                 </h:panelGroup>
+                                                </ui:fragment>
 
                                                 <!-- CMS TEMPLATES -->
                                                 <div class="form-group form-row blockAfterRadioToggler">

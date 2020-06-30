@@ -52,8 +52,7 @@
                                                    aria-label="#{msg.edit}: #{category.name}">#{msg.edit}</a>
                                                 <!-- DELETE -->
                                                 <h:commandLink rendered="#{!category.inUse}" type="button" class="admin__table-action-link -redlink"
-                                                    action="#{cmsCategoriesBean.deleteCategoryAction(category)}">
-                                                    #{msg.button__delete}
+                                                    action="#{cmsCategoriesBean.deleteCategoryAction(category)}">#{msg.button__delete}
                                                     <f:ajax render="@all" />
                                                 </h:commandLink>
                                             </div>
