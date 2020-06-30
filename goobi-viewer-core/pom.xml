@@ -109,6 +109,7 @@
 		<jsoup.version>1.13.1</jsoup.version>
 		<jstl.version>1.2</jstl.version>
 		<junit.version>4.13</junit.version>
+		<joda-time.version>2.10.6</joda-time.version>
 		<mariadb-java-client.version>2.3.0</mariadb-java-client.version>
 		<mockito.version>3.3.3</mockito.version>
 		<mockserver.version>5.10.0</mockserver.version>
@@ -350,10 +351,15 @@
 			<groupId>org.glassfish.jersey.core</groupId>
 			<artifactId>jersey-client</artifactId>
 			<version>${jersey.version}</version>
-		</dependency>
+        </dependency>
 		<dependency>
 			<groupId>org.glassfish.jersey.core</groupId>
 			<artifactId>jersey-server</artifactId>
+			<version>${jersey.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.glassfish.jersey.core</groupId>
+			<artifactId>jersey-common</artifactId>
 			<version>${jersey.version}</version>
 		</dependency>
 		<dependency>
@@ -367,9 +373,16 @@
 			<version>${jersey.version}</version>
 		</dependency>
 		<dependency>
+	    	<groupId>org.glassfish.jersey.test-framework</groupId>
+		    <artifactId>jersey-test-framework-core</artifactId>
+            <version>${jersey.version}</version>
+            <scope>test</scope>
+		</dependency>
+		<dependency>
 	    	<groupId>org.glassfish.jersey.test-framework.providers</groupId>
 		    <artifactId>jersey-test-framework-provider-grizzly2</artifactId>
-		    <version>${jersey.version}</version>
+            <version>${jersey.version}</version>
+            <scope>test</scope>
 		</dependency>
 		<dependency>
 			<groupId>com.timgroup</groupId>
@@ -542,6 +555,11 @@
           <artifactId>swagger-jaxrs2</artifactId>
           <version>${swagger.version}</version>
         </dependency>
+        <dependency>
+          <groupId>io.swagger.core.v3</groupId>
+          <artifactId>swagger-annotations</artifactId>
+          <version>${swagger.version}</version>
+        </dependency>
 <!--          <dependency> -->
 <!--             <groupId>io.swagger.core.v3</groupId> -->
 <!--             <artifactId>swagger-core</artifactId> -->
@@ -553,6 +571,12 @@
 <!--           <artifactId>swagger-jaxrs2-servlet-initializer</artifactId> -->
 <!--           <version>${swagger.version}</version> -->
 <!--         </dependency> -->
+		<dependency>
+			<groupId>joda-time</groupId>
+			<artifactId>joda-time</artifactId>
+			<version>${joda-time.version}</version>
+		</dependency>
+
 	</dependencies>
 
 

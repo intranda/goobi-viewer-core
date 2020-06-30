@@ -23,8 +23,8 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.apache.commons.collections.iterators.ArrayIterator;
-import org.apache.commons.lang.ArrayUtils;
+import org.apache.commons.collections4.iterators.ArrayIterator;
+import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 
 
