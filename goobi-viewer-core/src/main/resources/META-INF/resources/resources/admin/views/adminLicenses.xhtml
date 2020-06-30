@@ -79,7 +79,7 @@
 	                                        <dl class="row">
 	                                            <dt class="col-sm-4">#{msg.admin__licenses_record_number}:</dt>
 	                                            <dd class="col-sm-8">
-	                                               <a href="#{navigationHelper.searchUrl}/-/#{adminBean.getUrlQueryForAccessCondition(licenseType.name)}/1/-/-/" class="-textlink" target="_blank">
+                                                <a href="#{navigationHelper.searchUrl}/-/#{adminBean.getUrlQueryForAccessCondition(licenseType.name)}/1/-/-/" class="-textlink" target="_blank" aria-label="Show records for #{msg[licenseType.name]}">
 	                                                   #{adminBean.getNumRecordsWithAccessCondition(licenseType.name)}
                                                    </a>
 	                                            </dd>
