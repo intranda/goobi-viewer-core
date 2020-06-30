@@ -92,20 +92,20 @@ public class JsonTools {
                     continue;
                 }
             }
-            
+
             try {
                 String json = mapper.writeValueAsString(doc);
                 JSONObject object = new JSONObject(json);
-                if(locale != null) {
+                if (locale != null) {
                     object = translateJSONObject(locale, object);
                 }
                 jsonArray.put(object);
             } catch (JsonProcessingException e) {
-                logger.error("Error writing document to json", e);            
+                logger.error("Error writing document to json", e);
                 JSONObject jsonObj = getRecordJsonObject(doc, ServletUtils.getServletPathWithHostAsUrlFromRequest(request));
                 jsonArray.put(jsonObj);
             }
-            
+
         }
 
         return jsonArray;
@@ -123,8 +123,8 @@ public class JsonTools {
             Object value = object.get(name);
             String trName = Messages.translate(name, locale);
             Object trValue;
-            if(value instanceof String) {
-                trValue = Messages.translate((String)value, locale);
+            if (value instanceof String) {
+                trValue = Messages.translate((String) value, locale);
             } else {
                 trValue = value;
             }
@@ -289,8 +289,10 @@ public class JsonTools {
      * @should format string correctly
      */
     public static String formatVersionString(String json) {
+        final String notAvailableKey = "admin__dashboard_versions_not_available";
+
         if (StringUtils.isEmpty(json)) {
-            return "not_available";
+            return notAvailableKey;
         }
 
         JSONObject jsonObj = new JSONObject(json);
@@ -300,7 +302,7 @@ public class JsonTools {
                     + " " + jsonObj.getString("git-revision");
         } catch (JSONException e) {
             logger.error(e.getMessage());
-            return "not_available";
+            return notAvailableKey;
         }
     }
 }
