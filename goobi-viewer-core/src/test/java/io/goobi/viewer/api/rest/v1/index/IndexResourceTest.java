@@ -20,6 +20,9 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
 import javax.ws.rs.client.Entity;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
@@ -55,7 +58,7 @@ public class IndexResourceTest extends AbstractRestApiTest{
         params.setCount(5);
         params.setJsonFormat("datecentric");
         params.setRandomize(false);
-        params.setSortFields(SolrConstants.SORTNUM_YEAR);
+        params.setSortFields(Stream.of(SolrConstants.SORTNUM_YEAR, SolrConstants.LABEL).collect(Collectors.toList()));
         params.setSortOrder("desc");
         params.setQuery("{!join from=PI_TOPSTRUCT to=PI} DOCSTRCT:picture");
 
@@ -73,7 +76,7 @@ public class IndexResourceTest extends AbstractRestApiTest{
 
     @Test
     public void testInvalidQuery() throws JsonMappingException, JsonProcessingException {
-        params.setSortFields("BLA");
+        Stream.of("BLA").collect(Collectors.toList());
         Entity<RecordsRequestParameters> entity = Entity.entity(params, MediaType.APPLICATION_JSON);
         try(Response response = target(urls.path(RECORDS_INDEX, RECORDS_QUERY).build())
                 .request()

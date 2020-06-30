@@ -15,7 +15,9 @@
  */
 package io.goobi.viewer.api.rest.v1.index;
 
-import static io.goobi.viewer.api.rest.v1.ApiUrls.*;
+import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_INDEX;
+import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_QUERY;
+import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_STATISTICS;
 
 import java.net.MalformedURLException;
 import java.util.ArrayList;
@@ -39,6 +41,8 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 import de.unigoettingen.sub.commons.contentlib.exceptions.ContentNotFoundException;
 import de.unigoettingen.sub.commons.contentlib.exceptions.IllegalRequestException;
@@ -120,7 +124,7 @@ public class IndexResource {
 
         // Custom query does not filter by the sub-theme discriminator value by default, it has to be added to the custom query via #{navigationHelper.subThemeDiscriminatorValueSubQuery}
         String query =
-                new StringBuilder().append(params.getQuery()).append(SearchHelper.getAllSuffixes(servletRequest, null, true, true, false)).toString();
+                new StringBuilder().append("+").append(params.getQuery()).append(SearchHelper.getAllSuffixes(servletRequest, null, true, true, false)).toString();
         logger.trace("query: {}", query);
 
         int count = params.getCount();
@@ -129,15 +133,12 @@ public class IndexResource {
         }
 
         List<StringPair> sortFieldList = new ArrayList<>();
-        if (StringUtils.isNotEmpty(params.getSortFields())) {
-            String[] sortFieldArray = params.getSortFields().split(";");
-            for (String sortField : sortFieldArray) {
-                if (StringUtils.isNotEmpty(sortField)) {
-                    sortFieldList.add(new StringPair(sortField, params.getSortOrder()));
-                }
+        for (String sortField : params.getSortFields()) {
+            if (StringUtils.isNotEmpty(sortField)) {
+                sortFieldList.add(new StringPair(sortField, params.getSortOrder()));
             }
-            logger.trace("sortFields: {}", params.getSortFields().toString());
         }
+        logger.trace("sortFields: {}", params.getSortFields().toString());
         logger.trace("count: {}", count);
         logger.trace("offset: {}", params.getOffset());
         logger.trace("sortOrder: {}", params.getSortOrder());
@@ -151,8 +152,9 @@ public class IndexResource {
             sortFieldList.add(new StringPair("random_" + random.nextInt(Integer.MAX_VALUE), ("desc".equals(params.getSortOrder()) ? "desc" : "asc")));
         }
         try {
+            List<String> fieldList = params.getResultFields();
             SolrDocumentList result =
-                    DataManager.getInstance().getSearchIndex().search(query, params.getOffset(), count, sortFieldList, null, null).getResults();
+                    DataManager.getInstance().getSearchIndex().search(query, params.getOffset(), count, sortFieldList, null, fieldList ).getResults();
             logger.trace("hits: {}", result.size());
             JSONArray jsonArray = null;
             if (params.getJsonFormat() != null) {
@@ -161,11 +163,11 @@ public class IndexResource {
                         jsonArray = JsonTools.getDateCentricRecordJsonArray(result, servletRequest);
                         break;
                     default:
-                        jsonArray = JsonTools.getRecordJsonArray(result, servletRequest);
+                        jsonArray = JsonTools.getRecordJsonArray(result, servletRequest, params.getTranslationLanguage());
                         break;
                 }
             } else {
-                jsonArray = JsonTools.getRecordJsonArray(result, servletRequest);
+                jsonArray = JsonTools.getRecordJsonArray(result, servletRequest, params.getTranslationLanguage());
             }
             if (jsonArray == null) {
                 jsonArray = new JSONArray();

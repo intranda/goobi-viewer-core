@@ -15,18 +15,29 @@
  */
 package io.goobi.viewer.servlets.rest.content;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+
+import io.swagger.v3.oas.annotations.media.ExampleObject;
+import io.swagger.v3.oas.annotations.media.Schema;
+
 /**
  * POST request parameters for RecordsResource.
  */
+@Schema(name="SOLR request parameters", description="SOLR query and additional parameters", requiredProperties= {"query"})
 public class RecordsRequestParameters {
 
     private String query;
-    private String sortFields;
-    private String sortOrder;
-    private String jsonFormat;
-    private int count;
-    private int offset;
-    private boolean randomize;
+    private List<String> resultFields = new ArrayList<>();
+    private List<String> sortFields = new ArrayList<>();
+    private String sortOrder = "asc";
+    private String jsonFormat = "";
+    private int count = 0;
+    private int offset = 0;
+    private boolean randomize = false;
+    private String translationLanguage = "";
 
     /**
      * <p>
@@ -35,6 +46,7 @@ public class RecordsRequestParameters {
      *
      * @return the query
      */
+    @Schema(description = "Raw SOLR query", example="ISWORK:true")
     public String getQuery() {
         return query;
     }
@@ -57,7 +69,8 @@ public class RecordsRequestParameters {
      *
      * @return the sortFields
      */
-    public String getSortFields() {
+    @Schema(description = "A string list of SOLR fields used for sorting", example="[\"SORTNUM_YEAR\",\"LABEL\"]")
+    public List<String> getSortFields() {
         return sortFields;
     }
 
@@ -68,7 +81,7 @@ public class RecordsRequestParameters {
      *
      * @param sortFields the sortFields to set
      */
-    public void setSortFields(String sortFields) {
+    public void setSortFields(List<String> sortFields) {
         this.sortFields = sortFields;
     }
 
@@ -79,6 +92,7 @@ public class RecordsRequestParameters {
      *
      * @return the sortOrder
      */
+    @Schema(description = "If this has the value 'desc', the results will be sorted by the given sortFields in descending order, otherwise ascending", example="asc")
     public String getSortOrder() {
         return sortOrder;
     }
@@ -101,6 +115,7 @@ public class RecordsRequestParameters {
      *
      * @return the jsonFormat
      */
+    @Schema(description = "If this has the value 'datecentric', the results will bedelivered in a date centric format", example="recordcentric")
     public String getJsonFormat() {
         return jsonFormat;
     }
@@ -123,6 +138,7 @@ public class RecordsRequestParameters {
      *
      * @return the count
      */
+    @Schema(description = "The maximum number of results to return", example="10")
     public int getCount() {
         return count;
     }
@@ -145,6 +161,7 @@ public class RecordsRequestParameters {
      *
      * @return the offset
      */
+    @Schema(description = "The absolute index of the first result to return", example="0")
     public int getOffset() {
         return offset;
     }
@@ -167,6 +184,7 @@ public class RecordsRequestParameters {
      *
      * @return the randomize
      */
+    @Schema(description = "Set to 'true' to randomize all results. If used in conjuction with sortFields, randomization only applies to results with identical values in the sortFields", example="false")
     public boolean isRandomize() {
         return randomize;
     }
@@ -180,5 +198,35 @@ public class RecordsRequestParameters {
      */
     public void setRandomize(boolean randomize) {
         this.randomize = randomize;
+    }
+    
+    /**
+     * @return the translationLanguage
+     */
+    @Schema(description = "If this field is set, all SOLR field names and values will be translated into this language, if possible", example="en")
+    public String getTranslationLanguage() {
+        return translationLanguage;
+    }
+    
+    /**
+     * @param translationLanguage the translationLanguage to set
+     */
+    public void setTranslationLanguage(String translationLanguage) {
+        this.translationLanguage = translationLanguage;
+    }
+    
+    /**
+     * @return the resultFields
+     */
+    @Schema(description = "A string list of SOLR field names which should be included in the response, allows wildcards", example="[\"PI*\",\"IDDOC\",\"DOCTYPE\",\"DOCSTRCT\",\"LABEL\"]")
+    public List<String> getResultFields() {
+        return resultFields;
+    }
+    
+    /**
+     * @param resultFields the resultFields to set
+     */
+    public void setResultFields(List<String> resultFields) {
+        this.resultFields = resultFields;
     }
 }

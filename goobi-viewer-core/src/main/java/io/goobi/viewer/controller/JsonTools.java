@@ -17,6 +17,7 @@ package io.goobi.viewer.controller;
 
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 
@@ -31,12 +32,16 @@ import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 import io.goobi.viewer.controller.SolrConstants.DocType;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.exceptions.ViewerConfigurationException;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
+import io.goobi.viewer.messages.Messages;
 import io.goobi.viewer.model.security.AccessConditionUtils;
 import io.goobi.viewer.model.security.IPrivilegeHolder;
 import io.goobi.viewer.model.viewer.PageType;
@@ -64,9 +69,11 @@ public class JsonTools {
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
      */
-    public static JSONArray getRecordJsonArray(SolrDocumentList result, HttpServletRequest request)
+    public static JSONArray getRecordJsonArray(SolrDocumentList result, HttpServletRequest request, String languageToTranslate)
             throws IndexUnreachableException, PresentationException, DAOException, ViewerConfigurationException {
         JSONArray jsonArray = new JSONArray();
+        ObjectMapper mapper = new ObjectMapper();
+        Locale locale = StringUtils.isBlank(languageToTranslate) ? null : Locale.forLanguageTag(languageToTranslate);
 
         for (SolrDocument doc : result) {
             String pi = (String) doc.getFieldValue(SolrConstants.PI_TOPSTRUCT);
@@ -85,12 +92,46 @@ public class JsonTools {
                     continue;
                 }
             }
-
-            JSONObject jsonObj = getRecordJsonObject(doc, ServletUtils.getServletPathWithHostAsUrlFromRequest(request));
-            jsonArray.put(jsonObj);
+            
+            try {
+                String json = mapper.writeValueAsString(doc);
+                JSONObject object = new JSONObject(json);
+                if(locale != null) {
+                    object = translateJSONObject(locale, object);
+                }
+                jsonArray.put(object);
+            } catch (JsonProcessingException e) {
+                logger.error("Error writing document to json", e);            
+                JSONObject jsonObj = getRecordJsonObject(doc, ServletUtils.getServletPathWithHostAsUrlFromRequest(request));
+                jsonArray.put(jsonObj);
+            }
+            
         }
 
         return jsonArray;
+    }
+
+    /**
+     * @param locale
+     * @param object
+     * @return
+     */
+    public static JSONObject translateJSONObject(Locale locale, JSONObject object) {
+        JSONObject trObject = new JSONObject();
+        String[] names = JSONObject.getNames(object);
+        for (String name : names) {
+            Object value = object.get(name);
+            String trName = Messages.translate(name, locale);
+            Object trValue;
+            if(value instanceof String) {
+                trValue = Messages.translate((String)value, locale);
+            } else {
+                trValue = value;
+            }
+            trObject.put(trName, trValue);
+        }
+        object = trObject;
+        return object;
     }
 
     /**

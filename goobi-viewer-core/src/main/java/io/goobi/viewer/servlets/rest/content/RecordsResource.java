@@ -253,14 +253,10 @@ public class RecordsResource {
         }
 
         List<StringPair> sortFieldList = new ArrayList<>();
-        if (StringUtils.isNotEmpty(params.getSortFields())) {
-            String[] sortFieldArray = params.getSortFields().split(";");
-            for (String sortField : sortFieldArray) {
-                if (StringUtils.isNotEmpty(sortField)) {
-                    sortFieldList.add(new StringPair(sortField, params.getSortOrder()));
-                }
+        for (String sortField : params.getSortFields()) {
+            if (StringUtils.isNotEmpty(sortField)) {
+                sortFieldList.add(new StringPair(sortField, params.getSortOrder()));
             }
-            logger.trace("sortFields: {}", params.getSortFields().toString());
         }
         logger.trace("count: {}", count);
         logger.trace("offset: {}", params.getOffset());
@@ -285,11 +281,11 @@ public class RecordsResource {
                     jsonArray = JsonTools.getDateCentricRecordJsonArray(result, servletRequest);
                     break;
                 default:
-                    jsonArray = JsonTools.getRecordJsonArray(result, servletRequest);
+                    jsonArray = JsonTools.getRecordJsonArray(result, servletRequest, null);
                     break;
             }
         } else {
-            jsonArray = JsonTools.getRecordJsonArray(result, servletRequest);
+            jsonArray = JsonTools.getRecordJsonArray(result, servletRequest, null);
         }
         if (jsonArray == null) {
             jsonArray = new JSONArray();
