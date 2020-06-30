@@ -414,6 +414,6 @@ public final class DataManager {
      */
     public void setIndexerVersion(String indexerVersion) {
         this.indexerVersion = indexerVersion;
-        // logger.trace(indexerVersion);
+        logger.trace(indexerVersion);
     }
 }

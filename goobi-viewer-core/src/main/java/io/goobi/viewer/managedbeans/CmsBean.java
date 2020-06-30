@@ -240,6 +240,28 @@ public class CmsBean implements Serializable {
     }
 
     /**
+     * Returns the most recently edited CMS pages from the lazy model, which should include all restrictions placed upon the current user.
+     * 
+     * @param number Number of requested rows
+     * @return
+     */
+    public List<CMSPage> getMostRecentlyEditedPages(int number) {
+        try {
+            lazyModelPages.setSortField("dateUpdated");
+            lazyModelPages.setSortOrder(SortOrder.DESCENDING);
+            lazyModelPages.setEntriesPerPage(3);
+            lazyModelPages.update();
+
+            return lazyModelPages.getPaginatorList();
+        } finally {
+            lazyModelPages.setSortField("id");
+            lazyModelPages.setSortOrder(SortOrder.ASCENDING);
+            lazyModelPages.setEntriesPerPage(DEFAULT_ROWS_PER_PAGE);
+            lazyModelPages.update();
+        }
+    }
+
+    /**
      * Required setter for ManagedProperty injection
      *
      * @param navigationHelper navigationHelper searchBean to set
@@ -364,7 +386,7 @@ public class CmsBean implements Serializable {
      * 
      * @param enabled
      * @return
-     * @throws DAOException 
+     * @throws DAOException
      */
     public List<CMSPageTemplate> getTemplates(boolean enabled) throws DAOException {
         List<CMSPageTemplate> all = getTemplates();
@@ -388,7 +410,7 @@ public class CmsBean implements Serializable {
      *
      * @param user a {@link io.goobi.viewer.model.security.user.User} object.
      * @return List of CMS templates whose IDs are among allowed template IDs
-     * @throws DAOException 
+     * @throws DAOException
      */
     public List<CMSPageTemplate> getAllowedTemplates(User user) throws DAOException {
         logger.trace("getAllowedTemplates");
@@ -403,7 +425,7 @@ public class CmsBean implements Serializable {
      * Persists the enabled/disabled status of all CMS tempaltes in the DB.
      * 
      * @return
-     * @throws DAOException 
+     * @throws DAOException
      */
     public String saveTemplatesAction() throws DAOException {
         DataManager.getInstance().getDao().saveCMSPageTemplateEnabledStatuses(getTemplates());
@@ -1207,14 +1229,14 @@ public class CmsBean implements Serializable {
             } else {
                 this.selectedPage = currentPage;
             }
-            
+
             //Keep unused sidebar elements if page was already loaded to be able to correctly save sidebar elements
-            if(previouslySelected != null 
-                    && previouslySelected.getId() != null 
+            if (previouslySelected != null
+                    && previouslySelected.getId() != null
                     && previouslySelected.getId().equals(this.selectedPage.getId())) {
                 this.selectedPage.setUnusedSidebarElements(previouslySelected.getUnusedSidebarElements());
             }
-            
+
             PageValidityStatus validityStatus = isPageValid(this.selectedPage);
             this.selectedPage.setValidityStatus(validityStatus);
             if (validityStatus.isValid()) {
@@ -1507,7 +1529,7 @@ public class CmsBean implements Serializable {
      * @throws ViewerConfigurationException
      * @throws RecordDeletedException
      * @throws RecordNotFoundException
-     * @throws IllegalRequestException 
+     * @throws IllegalRequestException
      */
     public String cmsContextAction() throws IndexUnreachableException, DAOException, ViewerConfigurationException,
             RecordNotFoundException, RecordDeletedException, IllegalRequestException {
@@ -1528,7 +1550,7 @@ public class CmsBean implements Serializable {
      * @throws ViewerConfigurationException
      * @throws RecordDeletedException
      * @throws RecordNotFoundException
-     * @throws IllegalRequestException 
+     * @throws IllegalRequestException
      */
     public String cmsContextAction(boolean resetSearch)
             throws IndexUnreachableException, DAOException, ViewerConfigurationException, RecordNotFoundException,
@@ -1969,7 +1991,7 @@ public class CmsBean implements Serializable {
      * @return The CollectionView or null if no matching ContentItem was found
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
-     * @throws IllegalRequestException 
+     * @throws IllegalRequestException
      */
     public CollectionView getCollection(String id, CMSPage page) throws PresentationException, IndexUnreachableException, IllegalRequestException {
         String myId = page.getId() + "_" + id;
@@ -2003,7 +2025,7 @@ public class CmsBean implements Serializable {
      * @return The CollectionView or null if none was found
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
-     * @throws IllegalRequestException 
+     * @throws IllegalRequestException
      */
     public CollectionView getCollection(CMSPage page) throws PresentationException, IndexUnreachableException, IllegalRequestException {
         Optional<CMSContentItem> collectionItem =
@@ -2102,12 +2124,12 @@ public class CmsBean implements Serializable {
         }
         return null;
     }
-    
+
     /**
      * 
      * @param page
      * @return true if the given CMS page is mapped to any static page; otherwise
-     * @throws DAOException 
+     * @throws DAOException
      */
     public boolean isMappedToStaticPage(CMSPage page) throws DAOException {
         if (page == null) {
@@ -2132,7 +2154,7 @@ public class CmsBean implements Serializable {
         List<CMSStaticPage> staticPages = DataManager.getInstance().getDao().getAllStaticPages();
 
         List<PageType> pageTypesForCMS = PageType.getTypesHandledByCms();
-        
+
         List<CMSStaticPage> ret = new ArrayList<>(pageTypesForCMS.size());
         for (PageType pageType : pageTypesForCMS) {
             CMSStaticPage newPage = new CMSStaticPage(pageType.getName());
