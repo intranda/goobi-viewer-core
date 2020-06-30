@@ -43,7 +43,6 @@ public class ViewerApplication extends ResourceConfig {
         packages(true, "io.goobi.viewer.api.rest.filters");
         packages(true, "io.goobi.viewer.api.rest.exceptions");
         packages(true, "de.unigoettingen.sub.commons.contentlib.servlet.rest");
-        packages(true, "io.swagger");
 
     }
 

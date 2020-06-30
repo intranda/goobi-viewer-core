@@ -15,7 +15,14 @@
  */
 package io.goobi.viewer.api.rest.v1;
 
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
+import javax.inject.Named;
+import javax.servlet.ServletConfig;
+import javax.servlet.http.HttpServlet;
 import javax.ws.rs.ApplicationPath;
+import javax.ws.rs.core.Context;
 
 import org.glassfish.jersey.internal.inject.AbstractBinder;
 import org.glassfish.jersey.media.multipart.MultiPartFeature;
@@ -24,8 +31,14 @@ import org.glassfish.jersey.server.ResourceConfig;
 import io.goobi.viewer.api.rest.AbstractApiUrlManager;
 import io.goobi.viewer.api.rest.ViewerRestServiceBinding;
 import io.goobi.viewer.controller.DataManager;
-import io.swagger.v3.oas.annotations.Hidden;
-import io.swagger.v3.oas.annotations.servers.Server;
+import io.swagger.v3.jaxrs2.integration.JaxrsOpenApiContextBuilder;
+import io.swagger.v3.oas.integration.OpenApiConfigurationException;
+import io.swagger.v3.oas.integration.SwaggerConfiguration;
+import io.swagger.v3.oas.integration.api.OpenApiContext;
+import io.swagger.v3.oas.models.OpenAPI;
+import io.swagger.v3.oas.models.info.Contact;
+import io.swagger.v3.oas.models.info.Info;
+import io.swagger.v3.oas.models.info.License;
 
 /**
  * <p>
@@ -41,7 +54,7 @@ public class Application extends ResourceConfig {
      * Constructor for ViewerApplication.
      * </p>
      */
-    public Application() {
+    public Application(@Context ServletConfig servletConfig) {
         super();
         AbstractBinder binder = new AbstractBinder() {
             
@@ -52,7 +65,7 @@ public class Application extends ResourceConfig {
                 bind(new ApiUrls(apiUrl)).to(AbstractApiUrlManager.class);
             }
         };
-        this.init(binder);
+        this.init(binder, servletConfig);
     }
 
     /**
@@ -62,17 +75,22 @@ public class Application extends ResourceConfig {
      */
     public Application(AbstractBinder binder) {
         super();
-        this.init(binder);
+        this.init(binder, new HttpServlet() {
+        });
     }
     
-    private void init(AbstractBinder injectionBinder) {
+    private void init(AbstractBinder injectionBinder, ServletConfig servletConfig) {
+        //Allow receiving multi-part POST requests
         register(MultiPartFeature.class);
+        //inject properties into Resources classes
         register(injectionBinder);
+        //define Java packages to observe
         packages(true, "io.goobi.viewer.api.rest.v1");
         packages(true, "io.goobi.viewer.api.rest.filters");
         packages(true, "io.goobi.viewer.api.rest.exceptions");
         packages(true, "de.unigoettingen.sub.commons.contentlib.servlet.rest");
         packages(true, "io.swagger");
+        
     }
 
 }
