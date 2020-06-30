@@ -277,8 +277,12 @@ public class StatisticsBean implements Serializable {
         return true;
     }
 
+    /**
+     * 
+     * @return goobi-viewer-core version
+     */
     public String getCoreVersion() {
-        return Version.asJSON();
+        return JsonTools.formatVersionString(Version.asJSON());
     }
 
     /**
@@ -308,7 +312,6 @@ public class StatisticsBean implements Serializable {
     public String getIndexerVersion() {
         return DataManager.getInstance().getIndexerVersion();
     }
-
 
     /**
      * <p>
