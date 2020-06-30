@@ -15,6 +15,7 @@
  */
 package io.goobi.viewer.managedbeans;
 
+import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -34,8 +35,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import io.goobi.viewer.controller.DataManager;
+import io.goobi.viewer.controller.NetTools;
 import io.goobi.viewer.controller.SolrConstants;
 import io.goobi.viewer.controller.SolrConstants.DocType;
+import io.goobi.viewer.exceptions.HTTPException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.messages.ViewerResourceBundle;
@@ -270,6 +273,33 @@ public class StatisticsBean implements Serializable {
         }
 
         return true;
+    }
+
+    /**
+     * @return goobi-viewer-connector version
+     */
+    public String getConnectorVersion() {
+        String version;
+        try {
+            return  NetTools.getWebContentGET(DataManager.getInstance().getConfiguration().getConnectorVersionUrl());
+        } catch (IOException | HTTPException e) {
+            logger.error(e.getMessage());
+            return "";
+        }
+    }
+
+    /**
+     * @return intrandaContentServer version
+     */
+    public String getContentServerVersion() {
+        return "TODO";
+    }
+
+    /**
+     * @return goobi-viewer-indexer version
+     */
+    public String getIndexerVersion() {
+        return DataManager.getInstance().getIndexerVersion();
     }
 
     /**

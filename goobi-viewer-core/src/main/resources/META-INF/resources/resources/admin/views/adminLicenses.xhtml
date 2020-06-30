@@ -69,7 +69,7 @@
 	                                            	<p class="col-12 mb-1">#{msg.admin__license_open_access_activated_info}</p>
 	                                        	</ui:fragment>
 												<ui:fragment rendered="#{licenseType.movingWall}">
-	                                            	<p class="col-12">#{msg.admin__moving_wall_activated_info}</p>
+	                                            	<p class="col-12">#{msg.admin__license_moving_wall_activated_info}</p>
 	                                        	</ui:fragment>
 	                                            <ui:fragment rendered="#{licenseType.description eq '' and licenseType.openAccess eq ''}">
 	                                                <p class="col-12 admin__boxed-entry-description-empty" aria-disabled="true">(#{msg.admin__label__no_description_available})</p>
@@ -79,7 +79,7 @@
 	                                        <dl class="row">
 	                                            <dt class="col-sm-4">#{msg.admin__licenses_record_number}:</dt>
 	                                            <dd class="col-sm-8">
-	                                               <a href="#{navigationHelper.searchUrl}/-/#{adminBean.getUrlQueryForAccessCondition(licenseType.name)}/1/-/-/" class="-textlink" target="_blank">
+                                                <a href="#{navigationHelper.searchUrl}/-/#{adminBean.getUrlQueryForAccessCondition(licenseType.name)}/1/-/-/" class="-textlink" target="_blank" aria-label="Show records for #{msg[licenseType.name]}">
 	                                                   #{adminBean.getNumRecordsWithAccessCondition(licenseType.name)}
                                                    </a>
 	                                            </dd>

@@ -143,20 +143,20 @@
                                     <h3 class="col-9">#{msg.admin__dashboard_versions}</h3>
                                 </div>
                                 <dl class="row">
-                                    <dt class="col-sm-5 mb-2">Core:</dt>
+                                    <dt class="col-sm-5 mb-2">#{msg.admin__dashboard_versions_core}:</dt>
                                     <dd class="col-sm-7 mb-2">#{navigationHelper.version} (#{navigationHelper.buildVersion})</dd>
 
-                                    <dt class="col-sm-5 mb-2">Theme:</dt>
+                                    <dt class="col-sm-5 mb-2">#{msg.admin__dashboard_versions_theme}:</dt>
                                     <dd class="col-sm-7 mb-2">#{navigationHelper.theme}</dd>
 
-                                    <dt class="col-sm-5 mb-2">Connector:</dt>
-                                    <dd class="col-sm-7 mb-2">4.6.0-SNAPSHOT (ad5733b)</dd>
+                                    <dt class="col-sm-5 mb-2">#{msg.admin__dashboard_versions_connector}:</dt>
+                                    <dd class="col-sm-7 mb-2">#{statisticsBean.connectorVersion}</dd>
 
-                                    <dt class="col-sm-5 mb-2">Indexer:</dt>
-                                    <dd class="col-sm-7 mb-2">4.8.0-SNAPSHOT (aacabab)</dd>
+                                    <dt class="col-sm-5 mb-2">#{msg.admin__dashboard_versions_indexer}:</dt>
+                                    <dd class="col-sm-7 mb-2">#{statisticsBean.indexerVersion}</dd>
 
-                                    <dt class="col-sm-5 mb-2">ContentServer:</dt>
-                                    <dd class="col-sm-7 mb-2">2.0.0 (1ea159a)</dd>
+                                    <dt class="col-sm-5 mb-2">#{msg.admin__dashboard_versions_contentserver}:</dt>
+                                    <dd class="col-sm-7 mb-2">#{statisticsBean.contentServerVersion}</dd>
                                 </dl>
                             </div>
 

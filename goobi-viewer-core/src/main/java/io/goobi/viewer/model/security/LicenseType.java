@@ -562,9 +562,9 @@ public class LicenseType implements IPrivilegeHolder {
     @Override
     public void setPrivCmsAllSubthemes(boolean priv) {
         if (priv) {
-            privileges.add(IPrivilegeHolder.PRIV_CMS_ALL_SUBTHEMES);
+            privilegesCopy.add(IPrivilegeHolder.PRIV_CMS_ALL_SUBTHEMES);
         } else {
-            privileges.remove(IPrivilegeHolder.PRIV_CMS_ALL_SUBTHEMES);
+            privilegesCopy.remove(IPrivilegeHolder.PRIV_CMS_ALL_SUBTHEMES);
         }
     }
 
@@ -584,9 +584,9 @@ public class LicenseType implements IPrivilegeHolder {
     @Override
     public void setPrivCmsAllCategories(boolean priv) {
         if (priv) {
-            privileges.add(IPrivilegeHolder.PRIV_CMS_ALL_CATEGORIES);
+            privilegesCopy.add(IPrivilegeHolder.PRIV_CMS_ALL_CATEGORIES);
         } else {
-            privileges.remove(IPrivilegeHolder.PRIV_CMS_ALL_CATEGORIES);
+            privilegesCopy.remove(IPrivilegeHolder.PRIV_CMS_ALL_CATEGORIES);
         }
     }
 
@@ -606,9 +606,9 @@ public class LicenseType implements IPrivilegeHolder {
     @Override
     public void setPrivCmsAllTemplates(boolean priv) {
         if (priv) {
-            privileges.add(IPrivilegeHolder.PRIV_CMS_ALL_TEMPLATES);
+            privilegesCopy.add(IPrivilegeHolder.PRIV_CMS_ALL_TEMPLATES);
         } else {
-            privileges.remove(IPrivilegeHolder.PRIV_CMS_ALL_TEMPLATES);
+            privilegesCopy.remove(IPrivilegeHolder.PRIV_CMS_ALL_TEMPLATES);
         }
     }
 
