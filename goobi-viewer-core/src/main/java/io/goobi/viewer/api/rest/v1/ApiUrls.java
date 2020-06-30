@@ -15,9 +15,6 @@
  */
 package io.goobi.viewer.api.rest.v1;
 
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
 import org.apache.commons.lang3.StringUtils;
 
 import io.goobi.viewer.api.rest.AbstractApiUrlManager;
@@ -30,6 +27,7 @@ import io.goobi.viewer.controller.DataManager;
 public class ApiUrls extends AbstractApiUrlManager {
 
     public static final String RECORDS_INDEX =                              "/index";
+    public static final String RECORDS_INDEXER =                            "/indexer";
     public static final String RECORDS_QUERY =                              "/query";
     public static final String RECORDS_STATISTICS =                         "/statistics";
     
