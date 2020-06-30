@@ -34,6 +34,9 @@ import org.apache.solr.client.solrj.response.QueryResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import de.unigoettingen.sub.commons.contentlib.exceptions.ContentNotFoundException;
+import de.unigoettingen.sub.commons.contentlib.servlet.model.ApplicationInfo;
+import de.unigoettingen.sub.commons.contentlib.servlet.rest.ApplicationResource;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.NetTools;
 import io.goobi.viewer.controller.SolrConstants;
@@ -292,7 +295,14 @@ public class StatisticsBean implements Serializable {
      * @return intrandaContentServer version
      */
     public String getContentServerVersion() {
-        return "TODO";
+        try {
+            ApplicationInfo info = new ApplicationResource().getApplicationInfo();
+            String output = String.format("%s (%s)", info.getVersion(), info.getGitRevision());
+            return output;
+        } catch (ContentNotFoundException | IOException e) {
+            logger.error(e.getMessage());
+            return "";
+        }
     }
 
     /**
