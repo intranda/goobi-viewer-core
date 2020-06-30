@@ -43,7 +43,7 @@ import io.swagger.v3.oas.models.servers.Server;
  * @author florian
  *
  */
-@Path("/swagger")
+@Path("/openapi.json")
 public class OpenApiResource {
     
     @Context
@@ -56,7 +56,6 @@ public class OpenApiResource {
     private OpenAPI openApi;
 
     @GET
-    @Path("/openapi.json")
     @Produces(MediaType.APPLICATION_JSON)
     public OpenAPI getOpenApi() {
         this.openApi = initSwagger(servletConfig, application, urls.getApiPath());
