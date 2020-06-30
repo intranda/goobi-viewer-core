@@ -24,7 +24,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import io.goobi.viewer.Version;
 import io.goobi.viewer.controller.language.LanguageHelper;
 import io.goobi.viewer.dao.IDAO;
 import io.goobi.viewer.dao.impl.JPADAO;
@@ -415,5 +414,6 @@ public final class DataManager {
      */
     public void setIndexerVersion(String indexerVersion) {
         this.indexerVersion = indexerVersion;
+        logger.trace(indexerVersion);
     }
 }
