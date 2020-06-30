@@ -55,7 +55,6 @@ public class ApplicationResourceTest extends AbstractRestApiTest {
      */
     @Test
     public void testGetApiInfo() {
-        System.out.println(urls.path("/").build());
         try(Response response = target(urls.path().build())
                 .request()
                 .accept(MediaType.APPLICATION_JSON)
