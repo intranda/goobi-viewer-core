@@ -23,7 +23,10 @@ import static io.goobi.viewer.api.rest.v1.ApiUrls.USERS_BOOKMARKS_LIST_MIRADOR;
 import static io.goobi.viewer.api.rest.v1.ApiUrls.USERS_BOOKMARKS_LIST_RSS;
 import static io.goobi.viewer.api.rest.v1.ApiUrls.USERS_BOOKMARKS_LIST_RSS_JSON;
 import static io.goobi.viewer.api.rest.v1.ApiUrls.USERS_BOOKMARKS_LIST_SHARED;
+import static io.goobi.viewer.api.rest.v1.ApiUrls.USERS_BOOKMARKS_LIST_SHARED_IIIF;
 import static io.goobi.viewer.api.rest.v1.ApiUrls.USERS_BOOKMARKS_LIST_SHARED_MIRADOR;
+import static io.goobi.viewer.api.rest.v1.ApiUrls.USERS_BOOKMARKS_LIST_SHARED_RSS;
+import static io.goobi.viewer.api.rest.v1.ApiUrls.USERS_BOOKMARKS_LIST_SHARED_RSS_JSON;
 import static io.goobi.viewer.api.rest.v1.ApiUrls.USERS_BOOKMARKS_PUBLIC;
 import static io.goobi.viewer.api.rest.v1.ApiUrls.USERS_BOOKMARKS_SHARED;
 
@@ -51,7 +54,6 @@ import org.apache.commons.lang3.StringUtils;
 
 import de.intranda.api.iiif.presentation.Collection;
 import de.unigoettingen.sub.commons.contentlib.exceptions.ContentLibException;
-import de.unigoettingen.sub.commons.contentlib.exceptions.ContentNotFoundException;
 import de.unigoettingen.sub.commons.contentlib.exceptions.IllegalRequestException;
 import io.goobi.viewer.api.rest.AbstractApiUrlManager;
 import io.goobi.viewer.api.rest.ViewerRestServiceBinding;
@@ -110,9 +112,7 @@ public class BookmarkResource {
     @Produces({ MediaType.APPLICATION_JSON })
     @Operation(
             tags = { "bookmarks" },
-            summary = "Get all bookmark lists owned by the given user")
-    @ApiResponse(responseCode = "400", description = "Invalid user id")
-    @ApiResponse(responseCode = "404", description = "No user found for the given id")
+            summary = "Get all bookmark lists owned by the current user. If not logged in, a single temporary bookmark list is stored in the http session which is returned")
     @ApiResponse(responseCode = "500", description = "Error querying database")
     public List<BookmarkList> getOwnedBookmarkLists() throws DAOException, IOException, RestApiException {
         return builder.getAllBookmarkLists();
@@ -123,10 +123,8 @@ public class BookmarkResource {
     @Produces({ MediaType.APPLICATION_JSON })
     @Operation(
             tags = { "bookmarks" },
-            summary = "Add a new bookmark list")
-    @ApiResponse(responseCode = "400", description = "Invalid user id")
-    @ApiResponse(responseCode = "403", description = "No user set. Only persistent users may add bookmarklists")
-    @ApiResponse(responseCode = "404", description = "No user found for the given id")
+            summary = "Add a new bookmark list for the current user.")
+    @ApiResponse(responseCode = "400", description = "Not logged in, so no bookmark lists may be added")
     @ApiResponse(responseCode = "500", description = "Error querying database")
     public SuccessMessage addBookmarkList(BookmarkList list) throws DAOException, IOException, RestApiException, IllegalRequestException {
         if (StringUtils.isNotBlank(list.getName())) {
@@ -140,10 +138,8 @@ public class BookmarkResource {
     @Produces({ MediaType.APPLICATION_JSON })
     @Operation(
             tags = { "bookmarks" },
-            summary = "Get a bookmarklist by its id")
-    @ApiResponse(responseCode = "400", description = "Invalid user id")
-    @ApiResponse(responseCode = "403", description = "Resource forbidden for user")
-    @ApiResponse(responseCode = "404", description = "No user found for the given id")
+            summary = "Get a bookmarklist owned by the current user by its id. If not logged in, the single bookmark list stored in the session is always returned")
+    @ApiResponse(responseCode = "404", description = "Bookmark list not found")
     @ApiResponse(responseCode = "500", description = "Error querying database")
     public BookmarkList getBookmarkList(
             @Parameter(description = "The id of the bookmark list") @PathParam("listId") Long id)
@@ -156,10 +152,8 @@ public class BookmarkResource {
     @Produces({ MediaType.APPLICATION_JSON })
     @Operation(
             tags = { "bookmarks" },
-            summary = "Set passed attributes to the bookmarkList ")
-    @ApiResponse(responseCode = "400", description = "Invalid user id")
-    @ApiResponse(responseCode = "403", description = "Resource forbidden for user")
-    @ApiResponse(responseCode = "404", description = "No user found for the given id")
+            summary = "Set passed attributes to the bookmarkList")
+    @ApiResponse(responseCode = "400", description = "Not logged in, session bookmark list may not be patched")
     @ApiResponse(responseCode = "500", description = "Error querying database")
     public BookmarkList patchBookmarkList(
             @Parameter(description = "The id of the bookmark list") @PathParam("listId") Long id,
@@ -185,9 +179,7 @@ public class BookmarkResource {
     @Operation(
             tags = { "bookmarks" },
             summary = "Delete a bookmark list")
-    @ApiResponse(responseCode = "400", description = "Invalid user id")
-    @ApiResponse(responseCode = "403", description = "Resource forbidden for user")
-    @ApiResponse(responseCode = "404", description = "No user found for the given id")
+    @ApiResponse(responseCode = "400", description = "Not logged in, session bookmark list may not be deleted")
     @ApiResponse(responseCode = "500", description = "Error querying database")
     public SuccessMessage deleteBookmarkList(
             @Parameter(description = "The id of the bookmark list") @PathParam("listId") Long id,
@@ -202,12 +194,9 @@ public class BookmarkResource {
     @Operation(
             tags = { "bookmarks" },
             summary = "Add bookmark to list. Only pi, LogId and order are used")
-    @ApiResponse(responseCode = "400", description = "Invalid user id")
-    @ApiResponse(responseCode = "403", description = "Resource forbidden for user")
-    @ApiResponse(responseCode = "404", description = "No user found for the given id")
     @ApiResponse(responseCode = "500", description = "Error querying database")
     public BookmarkList addItemToBookmarkList(
-            @Parameter(description = "The id of the bookmark list") @PathParam("listId") Long id,
+            @Parameter(description = "The id of the bookmark list.") @PathParam("listId") Long id,
             Bookmark item) throws DAOException, IOException, RestApiException, IllegalRequestException {
         builder.addBookmarkToBookmarkList(id, item.getPi(), item.getLogId(), 
                 Optional.ofNullable(item.getOrder()).map(i -> i.toString()).orElse(null));
@@ -220,9 +209,7 @@ public class BookmarkResource {
     @Operation(
             tags = { "bookmarks" },
             summary = "Get a bookmark by its id and the id of the containing list")
-    @ApiResponse(responseCode = "400", description = "Invalid user or item id")
-    @ApiResponse(responseCode = "403", description = "Resource forbidden for user")
-    @ApiResponse(responseCode = "404", description = "No user found for the given id")
+    @ApiResponse(responseCode = "404", description = "Bookmark not found")
     @ApiResponse(responseCode = "500", description = "Error querying database")
     public Bookmark getBookmarkItem(
             @Parameter(description = "The id of the bookmark list") @PathParam("listId") Long listId,
@@ -242,9 +229,7 @@ public class BookmarkResource {
     @Operation(
             tags = { "bookmarks" },
             summary = "Delete a bookmark from a list")
-    @ApiResponse(responseCode = "400", description = "Invalid user or item id")
-    @ApiResponse(responseCode = "403", description = "Resource forbidden for user")
-    @ApiResponse(responseCode = "404", description = "No user found for the given id")
+    @ApiResponse(responseCode = "404", description = "Bookmark not found")
     @ApiResponse(responseCode = "500", description = "Error querying database")
     public SuccessMessage deleteBookmarkItem(
             @Parameter(description = "The id of the bookmark list") @PathParam("listId") Long listId,
@@ -262,11 +247,9 @@ public class BookmarkResource {
     @Path(USERS_BOOKMARKS_LIST_IIIF)
     @Produces({ MediaType.APPLICATION_JSON })
     @Operation(
-            tags = { "bookmarks" },
-            summary = "Get a bookmarklist by its id")
-    @ApiResponse(responseCode = "400", description = "Invalid user id")
-    @ApiResponse(responseCode = "403", description = "Resource forbidden for user")
-    @ApiResponse(responseCode = "404", description = "No user found for the given id")
+            tags = { "bookmarks", "iiif" },
+            summary = "Get a bookmarklist owned by the current user by its id and return it as a IIIF Presentation collection resource. If not logged in, the single bookmark list stored in the session is always returned")
+    @ApiResponse(responseCode = "404", description = "Bookmark list not found")
     @ApiResponse(responseCode = "500", description = "Error querying database")
     public Collection getBookmarkListAsIIIFCollection(
             @Parameter(description = "The id of the bookmark list") @PathParam("listId") Long id)
@@ -279,10 +262,8 @@ public class BookmarkResource {
     @Produces({ MediaType.APPLICATION_JSON })
     @Operation(
             tags = { "bookmarks" },
-            summary = "Get a bookmarklist by its id as a Mirador viewer config")
-    @ApiResponse(responseCode = "400", description = "Invalid user id")
-    @ApiResponse(responseCode = "403", description = "Resource forbidden for user")
-    @ApiResponse(responseCode = "404", description = "No user found for the given id")
+            summary = "Get a bookmarklist owned by the current user by its id and return it as a Mirador viewe config object. If not logged in, the single bookmark list stored in the session is always returned")
+    @ApiResponse(responseCode = "404", description = "Bookmark list not found")
     @ApiResponse(responseCode = "500", description = "Error querying database")
     public String getBookmarkListForMirador(
             @Parameter(description = "The id of the bookmark list") @PathParam("listId") Long id)
@@ -294,11 +275,9 @@ public class BookmarkResource {
     @Path(USERS_BOOKMARKS_LIST_RSS)
     @Produces({ MediaType.TEXT_XML })
     @Operation(
-            tags = { "bookmarks" },
-            summary = "Get the bookmark list as an RSS feed")
-    @ApiResponse(responseCode = "400", description = "Invalid user id")
-    @ApiResponse(responseCode = "403", description = "Resource forbidden for user")
-    @ApiResponse(responseCode = "404", description = "No user found for the given id")
+            tags = { "bookmarks", "rss" },
+            summary = "Get a bookmarklist owned by the current user by its id and return it as an RSS feed. If not logged in, the single bookmark list stored in the session is always returned")
+    @ApiResponse(responseCode = "404", description = "Bookmark list not found")
     @ApiResponse(responseCode = "500", description = "Error querying database")
     public String getBookmarkListAsRSS(
             @Parameter(description = "The id of the bookmark list") @PathParam("listId") Long id,
@@ -314,11 +293,9 @@ public class BookmarkResource {
     @Path(USERS_BOOKMARKS_LIST_RSS_JSON)
     @Produces({ MediaType.APPLICATION_JSON })
     @Operation(
-            tags = { "bookmarks" },
-            summary = "Get the bookmark list as an RSS feed in json format")
-    @ApiResponse(responseCode = "400", description = "Invalid user id")
-    @ApiResponse(responseCode = "403", description = "Resource forbidden for user")
-    @ApiResponse(responseCode = "404", description = "No user found for the given id")
+            tags = { "bookmarks", "rss" },
+            summary = "Get a bookmarklist owned by the current user by its id and return it as an RSS feed in json format. If not logged in, the single bookmark list stored in the session is always returned")
+    @ApiResponse(responseCode = "404", description = "Bookmark list not found")
     @ApiResponse(responseCode = "500", description = "Error querying database")
     public Channel getBookmarkListAsRSSJson(
             @Parameter(description = "The id of the bookmark list") @PathParam("listId") Long id,
@@ -336,9 +313,6 @@ public class BookmarkResource {
     @Operation(
             tags = { "bookmarks" },
             summary = "Get all public bookmark lists")
-    @ApiResponse(responseCode = "400", description = "Invalid user id")
-    @ApiResponse(responseCode = "403", description = "Resource forbidden for user")
-    @ApiResponse(responseCode = "404", description = "No user found for the given id")
     @ApiResponse(responseCode = "500", description = "Error querying database")
     public List<BookmarkList> getPublicBookmarkLists()
             throws DAOException, IOException, RestApiException, ViewerConfigurationException, IndexUnreachableException, PresentationException, ContentLibException {
@@ -348,13 +322,7 @@ public class BookmarkResource {
     @GET
     @Path(USERS_BOOKMARKS_SHARED)
     @Produces({ MediaType.APPLICATION_JSON })
-    @Operation(
-            tags = { "bookmarks" },
-            summary = "Get all bookmark lists shared with the current user")
-    @ApiResponse(responseCode = "400", description = "Invalid user id")
-    @ApiResponse(responseCode = "403", description = "Resource forbidden for user")
-    @ApiResponse(responseCode = "404", description = "No user found for the given id")
-    @ApiResponse(responseCode = "500", description = "Error querying database")
+    @Deprecated
     public List<BookmarkList> getSharedBookmarkLists()
             throws DAOException, IOException, RestApiException, ViewerConfigurationException, IndexUnreachableException, PresentationException, ContentLibException {
        return builder.getAllSharedBookmarkLists();
@@ -365,10 +333,8 @@ public class BookmarkResource {
     @Produces({ MediaType.APPLICATION_JSON })
     @Operation(
             tags = { "bookmarks" },
-            summary = "Get a  bookmark list by its share key")
-    @ApiResponse(responseCode = "400", description = "Invalid user id")
-    @ApiResponse(responseCode = "403", description = "Resource forbidden for user")
-    @ApiResponse(responseCode = "404", description = "No user found for the given id")
+            summary = "Get a public or shared bookmark list by its share key")
+    @ApiResponse(responseCode = "404", description = "Bookmark list not found")
     @ApiResponse(responseCode = "500", description = "Error querying database")
     public BookmarkList getSharedBookmarkListByKey(
             @Parameter(description = "The share key assigned to the bookmark list") @PathParam("key") String key)
@@ -381,14 +347,62 @@ public class BookmarkResource {
     @Produces({ MediaType.APPLICATION_JSON })
     @Operation(
             tags = { "bookmarks" },
-            summary = "Get a  bookmark list by its share key as a Mirador viewer config")
-    @ApiResponse(responseCode = "400", description = "Invalid user id")
-    @ApiResponse(responseCode = "403", description = "Resource forbidden for user")
-    @ApiResponse(responseCode = "404", description = "No user found for the given id")
+            summary = "Get a public or shared bookmark list by its share key as a Mirador viewer config")
+    @ApiResponse(responseCode = "404", description = "Bookmark list not found")
     @ApiResponse(responseCode = "500", description = "Error querying database")
     public String getSharedBookmarkListForMirador(
             @Parameter(description = "The share key assigned to the bookmark list") @PathParam("key") String key)
             throws DAOException, IOException, RestApiException, ViewerConfigurationException, IndexUnreachableException, PresentationException, ContentLibException {
        return builder.getSharedBookmarkListForMirador(key, urls);
+    }
+    
+    @GET
+    @Path(USERS_BOOKMARKS_LIST_SHARED_IIIF)
+    @Produces({ MediaType.APPLICATION_JSON })
+    @Operation(
+            tags = { "bookmarks", "iiif" },
+            summary = "Get a public or shared bookmark list by its share key as a Mirador viewer config")
+    @ApiResponse(responseCode = "404", description = "Bookmark list not found")
+    @ApiResponse(responseCode = "500", description = "Error querying database")
+    public Collection getSharedBookmarkListAsCollection(
+            @Parameter(description = "The share key assigned to the bookmark list") @PathParam("key") String key)
+            throws DAOException, IOException, RestApiException, ViewerConfigurationException, IndexUnreachableException, PresentationException, ContentLibException {
+       return builder.getAsCollection(key, urls);
+    }
+    
+    @GET
+    @Path(USERS_BOOKMARKS_LIST_SHARED_RSS_JSON)
+    @Produces({ MediaType.APPLICATION_JSON })
+    @Operation(
+            tags = { "bookmarks", "rss" },
+            summary = "Get a public or shared bookmark list by its share key as an RSS feed in json format")
+    @ApiResponse(responseCode = "404", description = "Bookmark list not found")
+    @ApiResponse(responseCode = "500", description = "Error querying database")
+    public Channel getSharedBookmarkListAsRSSJson(
+            @Parameter(description = "The share key assigned to the bookmark list") @PathParam("key") String key,
+            @Parameter(description="Language for RSS metadata")@QueryParam("lang")String language,
+            @Parameter(description = "Limit for results to return") @QueryParam("max") Integer maxHits)
+            throws DAOException, IOException, RestApiException, ViewerConfigurationException, IndexUnreachableException, PresentationException, ContentLibException {
+        BookmarkList list = getSharedBookmarkListByKey(key);
+        String query = list.generateSolrQueryForItems();
+        return RSSFeed.createRssResponse(language, maxHits, null, query, null, servletRequest);
+    }
+    
+    @GET
+    @Path(USERS_BOOKMARKS_LIST_SHARED_RSS)
+    @Produces({ MediaType.TEXT_XML })
+    @Operation(
+            tags = { "bookmarks", "rss" },
+            summary = "Get a  bookmark list by its share key as an RSS feed")
+    @ApiResponse(responseCode = "404", description = "Bookmark list not found")
+    @ApiResponse(responseCode = "500", description = "Error querying database")
+    public String getSharedBookmarkListAsRSS(
+            @Parameter(description = "The share key assigned to the bookmark list") @PathParam("key") String key,
+            @Parameter(description="Language for RSS metadata")@QueryParam("lang")String language,
+            @Parameter(description = "Limit for results to return") @QueryParam("max") Integer maxHits)
+            throws DAOException, IOException, RestApiException, ViewerConfigurationException, IndexUnreachableException, PresentationException, ContentLibException {
+        BookmarkList list = getSharedBookmarkListByKey(key);
+        String query = list.generateSolrQueryForItems();
+        return RSSFeed.createRssFeed(language, maxHits, null, query, null, servletRequest);
     }
 }

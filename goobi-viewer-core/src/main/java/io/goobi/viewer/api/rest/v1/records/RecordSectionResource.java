@@ -83,7 +83,7 @@ public class RecordSectionResource {
     @GET
     @javax.ws.rs.Path(RECORDS_SECTIONS_RIS_FILE)
     @Produces({ MediaType.TEXT_PLAIN })
-    @Operation(tags = { "records", "ris" }, summary = "Download ris as file")
+    @Operation(tags = { "records"}, summary = "Download ris as file")
     public String getRISAsFile()
             throws PresentationException, IndexUnreachableException, DAOException, ContentLibException {
 
@@ -109,7 +109,7 @@ public class RecordSectionResource {
     @GET
     @javax.ws.rs.Path(RECORDS_SECTIONS_RIS_TEXT)
     @Produces({ MediaType.TEXT_PLAIN })
-    @Operation(tags = { "records", "ris" }, summary = "Get ris as text")
+    @Operation(tags = { "records"}, summary = "Get ris as text")
     public String getRISAsText()
             throws PresentationException, IndexUnreachableException, ContentNotFoundException, DAOException {
 

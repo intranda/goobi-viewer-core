@@ -13,31 +13,33 @@
  *
  * You should have received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
-package io.goobi.viewer.api.rest.v1.users.bookmarks;
+package io.goobi.viewer.api.rest.v1;
 
+import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_CHANGES;
 import static org.junit.Assert.*;
+
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
 
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonMappingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-
-import io.goobi.viewer.model.bookmark.Bookmark;
+import io.goobi.viewer.api.rest.AbstractRestApiTest;
+import io.goobi.viewer.api.rest.AbstractApiUrlManager.ApiInfo;
 
 /**
  * @author florian
  *
  */
-public class BookmarkResourceTest {
+public class ApplicationResourceTest extends AbstractRestApiTest {
 
     /**
      * @throws java.lang.Exception
      */
     @Before
     public void setUp() throws Exception {
+        super.setUp();
     }
 
     /**
@@ -45,15 +47,23 @@ public class BookmarkResourceTest {
      */
     @After
     public void tearDown() throws Exception {
+        super.tearDown();
     }
 
+    /**
+     * Test method for {@link io.goobi.viewer.api.rest.v1.ApplicationResource#getApiInfo()}.
+     */
     @Test
-    public void testDeserializeBookmark() throws JsonMappingException, JsonProcessingException {
-        String jsonString = "{\"name\": \"Test Bookmark\", \"description\": \"some testing...\", \"pi\": \"PPN743674162\"}";
-        ObjectMapper mapper = new ObjectMapper();
-        Bookmark bookmark = mapper.readValue(jsonString, Bookmark.class);
-        assertNotNull(bookmark);
-        assertEquals("Test Bookmark", bookmark.getName());
+    public void testGetApiInfo() {
+        System.out.println(urls.path("/").build());
+        try(Response response = target(urls.path().build())
+                .request()
+                .accept(MediaType.APPLICATION_JSON)
+                .get()) {
+            ApiInfo info = response.readEntity(ApiInfo.class);
+            assertNotNull(info);
+            assertEquals("v1", info.version);
+        }
     }
 
 }

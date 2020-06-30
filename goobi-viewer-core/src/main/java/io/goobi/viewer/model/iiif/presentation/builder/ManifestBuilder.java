@@ -49,6 +49,8 @@ import de.unigoettingen.sub.commons.contentlib.imagelib.transform.Rotation;
 import de.unigoettingen.sub.commons.contentlib.imagelib.transform.Scale;
 import io.goobi.viewer.api.rest.AbstractApiUrlManager;
 import io.goobi.viewer.controller.DataManager;
+import io.goobi.viewer.controller.imaging.IIIFUrlHandler;
+import io.goobi.viewer.controller.imaging.ThumbnailHandler;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
@@ -81,6 +83,7 @@ public class ManifestBuilder extends AbstractBuilder {
     public ManifestBuilder(AbstractApiUrlManager apiUrlManager) {
         super(apiUrlManager);
     }
+    
 
     /**
      * <p>
@@ -200,7 +203,9 @@ public class ManifestBuilder extends AbstractBuilder {
 
             /*VIEWER*/
             try {
-                LinkingContent viewerPage = new LinkingContent(new URI(this.urls.getApplicationUrl() + "/" + ele.getUrl()));
+                String applicationUrl = this.urls.getApplicationUrl();
+                String pageUrl = ele.getUrl();
+                LinkingContent viewerPage = new LinkingContent(new URI(applicationUrl + pageUrl));
                 viewerPage.setLabel(new SimpleMetadataValue("goobi viewer"));
                 manifest.addRendering(viewerPage);
             } catch (URISyntaxException e) {

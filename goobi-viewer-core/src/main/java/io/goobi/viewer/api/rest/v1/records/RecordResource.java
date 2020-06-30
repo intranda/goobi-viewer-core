@@ -297,7 +297,7 @@ public class RecordResource {
     @GET
     @javax.ws.rs.Path(RECORDS_PLAINTEXT)
     @Produces({ MediaType.TEXT_PLAIN })
-    @Operation(tags = {"records", "fulltext"}, summary = "Get entire plaintext of record")
+    @Operation(tags = {"records"}, summary = "Get entire plaintext of record")
     @CORSBinding
     @IIIFPresentationBinding
     public String getPlaintext() throws PresentationException, IndexUnreachableException, ViewerConfigurationException, ServiceNotAllowedException, IOException, DAOException {
@@ -309,7 +309,7 @@ public class RecordResource {
     @GET
     @javax.ws.rs.Path(RECORDS_PLAINTEXT_ZIP)
     @Produces({ "application/zip" })
-    @Operation(tags = {"records", "fulltext"}, summary = "Get entire plaintext of record")
+    @Operation(tags = {"records"}, summary = "Get entire plaintext of record")
     @CORSBinding
     @IIIFPresentationBinding
     public StreamingOutput getPlaintextAsZip() throws PresentationException, IndexUnreachableException, ViewerConfigurationException, IOException, DAOException, ContentLibException {
@@ -324,7 +324,7 @@ public class RecordResource {
     @GET
     @javax.ws.rs.Path(RECORDS_ALTO)
     @Produces({ MediaType.TEXT_PLAIN })
-    @Operation(tags = {"records", "fulltext"}, summary = "Get entire alto document for record")
+    @Operation(tags = {"records"}, summary = "Get entire alto document for record")
     @CORSBinding
     @IIIFPresentationBinding
     public String getAlto() throws PresentationException, IndexUnreachableException, ViewerConfigurationException, IOException, DAOException, ContentLibException, JDOMException {
@@ -336,7 +336,7 @@ public class RecordResource {
     @GET
     @javax.ws.rs.Path(RECORDS_ALTO_ZIP)
     @Produces({ "application/zip" })
-    @Operation(tags = {"records", "fulltext"}, summary = "Get entire plaintext of record")
+    @Operation(tags = {"records"}, summary = "Get entire plaintext of record")
     @CORSBinding
     @IIIFPresentationBinding
     public StreamingOutput getAltoAsZip() throws PresentationException, IndexUnreachableException, ViewerConfigurationException, IOException, DAOException, ContentLibException {
@@ -351,7 +351,7 @@ public class RecordResource {
     @GET
     @javax.ws.rs.Path(RECORDS_TEI)
     @Produces({MediaType.TEXT_XML})
-    @Operation(tags = {"records", "fulltext"}, summary = "Get text of record in TEI format.", description ="If possible, directly read a TEI file associated with the record, otherwise convert all fulltexts to TEI documents")
+    @Operation(tags = {"records"}, summary = "Get text of record in TEI format.", description ="If possible, directly read a TEI file associated with the record, otherwise convert all fulltexts to TEI documents")
     @CORSBinding
     @IIIFPresentationBinding
     public String getTei(
@@ -371,7 +371,7 @@ public class RecordResource {
     @GET
     @javax.ws.rs.Path(RECORDS_TEI_ZIP)
     @Produces({ "application/zip" })
-    @Operation(tags = {"records", "fulltext"}, summary = "Get text of record in TEI format as a zip file.", description ="If possible, directly read a TEI file associated with the record, otherwise convert all fulltexts to TEI documents")
+    @Operation(tags = {"records"}, summary = "Get text of record in TEI format as a zip file.", description ="If possible, directly read a TEI file associated with the record, otherwise convert all fulltexts to TEI documents")
     @CORSBinding
     @IIIFPresentationBinding
     public StreamingOutput getTeiAsZip(

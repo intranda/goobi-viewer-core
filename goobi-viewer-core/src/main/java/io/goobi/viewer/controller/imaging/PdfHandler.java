@@ -26,6 +26,8 @@ import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
 
+import io.goobi.viewer.api.rest.AbstractApiUrlManager;
+import io.goobi.viewer.api.rest.v1.ApiUrls;
 import io.goobi.viewer.controller.Configuration;
 import io.goobi.viewer.controller.DataFileTools;
 import io.goobi.viewer.controller.SolrConstants;
@@ -45,6 +47,7 @@ public class PdfHandler {
 
     private final WatermarkHandler watermarkHandler;
     private final String iiifUrl;
+    private final AbstractApiUrlManager urls;
 
     /**
      * <p>
@@ -57,6 +60,21 @@ public class PdfHandler {
     public PdfHandler(WatermarkHandler watermarkHandler, Configuration configuration) {
         this.watermarkHandler = watermarkHandler;
         this.iiifUrl = configuration.getIIIFApiUrl();
+        this.urls = null;
+    }
+    
+    /**
+     * <p>
+     * Constructor for PdfHandler.
+     * </p>
+     *
+     * @param watermarkHandler a {@link io.goobi.viewer.controller.imaging.WatermarkHandler} object.
+     * @param urls
+     */
+    public PdfHandler(WatermarkHandler watermarkHandler, AbstractApiUrlManager urls) {
+        this.watermarkHandler = watermarkHandler;
+        this.iiifUrl = null;
+        this.urls = urls;
     }
 
     /**
@@ -81,22 +99,27 @@ public class PdfHandler {
      */
     public String getPdfUrl(StructElement doc, PhysicalElement[] pages) {
         final UrlParameterSeparator paramSep = new UrlParameterSeparator();
-        StringBuilder sb = new StringBuilder(this.iiifUrl);
-        sb.append("image")
-                .append("/")
-                .append(pages[0].getPi())
-                .append("/")
-                .append(Arrays.stream(pages).map(page -> page.getFileName()).collect(Collectors.joining("$")))
-                .append("/")
-                .append("full/max/0/")
-                .append(pages[0].getPi())
-                .append("_")
-                .append(pages[0].getOrder());
-        if (pages.length > 1) {
-            sb.append("-").append(pages[pages.length - 1].getOrder());
+        StringBuilder sb = new StringBuilder();
+        String filenames = Arrays.stream(pages).map(page -> page.getFileName()).collect(Collectors.joining("$"));
+        if(this.urls != null) {
+            sb.append(urls.path(ApiUrls.RECORDS_FILES, ApiUrls.RECORDS_FILES_PDF).params(pages[0].getPi(), filenames).build());
+        } else {
+            sb.append(this.iiifUrl);
+            sb.append("image")
+                    .append("/")
+                    .append(pages[0].getPi())
+                    .append("/")
+                    .append(filenames)
+                    .append("/")
+                    .append("full/max/0/")
+                    .append(pages[0].getPi())
+                    .append("_")
+                    .append(pages[0].getOrder());
+            if (pages.length > 1) {
+                sb.append("-").append(pages[pages.length - 1].getOrder());
+            }
+            sb.append(".pdf");
         }
-        sb.append(".pdf");
-
         Path indexedSourceFile = Paths.get(DataFileTools.getSourceFilePath(pages[0].getPi() + ".xml", pages[0].getDataRepository(),
                 doc != null ? doc.getSourceDocFormat() : SolrConstants._METS));
         if (Files.exists(indexedSourceFile)) {
@@ -129,12 +152,13 @@ public class PdfHandler {
      */
     public String getPdfUrl(String pi, String filename) {
 
-        final UrlParameterSeparator paramSep = new UrlParameterSeparator();
-
-        StringBuilder sb = new StringBuilder(this.iiifUrl);
-        sb.append("image").append("/").append(pi).append("/").append(filename).append("/").append("full/max/0/").append(filename);
-
-        return sb.toString();
+        if(this.urls != null) {
+            return urls.path(ApiUrls.RECORDS_FILES, ApiUrls.RECORDS_FILES_PDF).params(pi,filename).build();
+        } else {  
+            StringBuilder sb = new StringBuilder(this.iiifUrl);
+            sb.append("image").append("/").append(pi).append("/").append(filename).append("/").append("full/max/0/").append(filename);
+            return sb.toString();
+        }
     }
 
     /**
@@ -190,15 +214,24 @@ public class PdfHandler {
                 .map(l -> l.replaceAll("[\\W]", ""))
                 .map(l -> l.toLowerCase().endsWith(".pdf") ? l : (l + ".pdf"))
                 .orElse(pi + divId.map(id -> "_" + id).orElse("") + ".pdf");
-
-        StringBuilder sb = new StringBuilder(this.iiifUrl);
-        sb.append("pdf/mets/").append(pi).append(".xml").append("/");
-        divId.ifPresent(id -> sb.append(id).append("/"));
-        sb.append(filename);
-
+       
+        StringBuilder sb;
+        if(this.urls != null) {
+            if(divId.isPresent()) {
+                sb = new StringBuilder(urls.path(ApiUrls.RECORDS_SECTIONS, ApiUrls.RECORDS_SECTIONS_PDF).params(pi, divId.get()).build());
+            } else {                
+                sb = new StringBuilder(urls.path(ApiUrls.RECORDS_RECORD, ApiUrls.RECORDS_PDF).params(pi).build());
+            }
+        } else {            
+            sb = new StringBuilder(this.iiifUrl);
+            sb.append("pdf/mets/").append(pi).append(".xml").append("/");
+            divId.ifPresent(id -> sb.append(id).append("/"));
+            sb.append(filename);
+            
+        }
         watermarkText.ifPresent(text -> sb.append(paramSep.getChar()).append("watermarkText=").append(encode(text)));
         watermarkId.ifPresent(footerId -> sb.append(paramSep.getChar()).append("watermarkId=").append(footerId));
-
+        
         return sb.toString();
     }
 

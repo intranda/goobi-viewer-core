@@ -24,9 +24,16 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import javax.ws.rs.client.Client;
+import javax.ws.rs.client.ClientBuilder;
+import javax.ws.rs.client.Invocation;
+import javax.ws.rs.client.WebTarget;
+import javax.ws.rs.core.MediaType;
+
 import org.apache.commons.collections4.iterators.ArrayIterator;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.glassfish.jersey.client.ClientProperties;
 
 
 /**
@@ -84,6 +91,15 @@ public abstract class AbstractApiUrlManager {
         } else {
             return "";
         }
+    }
+    
+
+    /**
+     * @return
+     */
+    public String getApiPath() {
+        URI uri = URI.create(getApiUrl());
+        return uri.getPath();
     }
 
     /**
@@ -191,12 +207,29 @@ public abstract class AbstractApiUrlManager {
             return path;
         }
     }
+    
+    public static class ApiInfo {
+        public String name;
+        public String version;
+        public String specification;
+    }
 
     /**
-     * @return
+     * Calls the {@link #getApiUrl()} and returns a {@link ApiInfo} object if a valid response is returned. Otherwise returns null.
+     * Timeout after a maximum of 3 seconds
      */
-    public String getApiPath() {
-        URI uri = URI.create(getApiUrl());
-        return uri.getPath();
+    public ApiInfo getInfo() {
+        try {            
+            Client client = ClientBuilder.newClient();
+            client.property(ClientProperties.CONNECT_TIMEOUT, 1000);
+            client.property(ClientProperties.READ_TIMEOUT,    2000);
+            return client
+                    .target(getApiUrl())
+                    .request(MediaType.APPLICATION_JSON)
+                    .get(ApiInfo.class);
+        } catch(Throwable e) {
+            return null;
+        }
     }
+
 }

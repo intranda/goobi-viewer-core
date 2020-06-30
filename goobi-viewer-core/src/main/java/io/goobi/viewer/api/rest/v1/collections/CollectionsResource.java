@@ -65,7 +65,7 @@ public class CollectionsResource {
     
     @GET
     @Produces({ MediaType.APPLICATION_JSON })
-    @Operation(tags = { "collections", "iiif" }, summary = "Get all collections as IIIF presentation collection")
+    @Operation(tags = { "iiif" }, summary = "Get all collections as IIIF presentation collection")
     @ApiResponse(responseCode="400", description="No collections available for field")
     public Collection getAllCollections(
             @Parameter(description ="Add values of this field to response to allow grouping of results")@QueryParam("grouping")String grouping
@@ -88,7 +88,7 @@ public class CollectionsResource {
     @GET
     @javax.ws.rs.Path(COLLECTIONS_COLLECTION)
     @Produces({ MediaType.APPLICATION_JSON })
-    @Operation(tags = { "collections", "iiif" }, summary = "Get given collection as a IIIF presentation collection")
+    @Operation(tags = { "iiif" }, summary = "Get given collection as a IIIF presentation collection")
     @ApiResponse(responseCode="400", description="Invalid collection name or field")
     public Collection getCollection(
             @Parameter(description="Name of the collection. Must be a value of the SOLR field the collection is based on")@PathParam("collection")String collectionName,
@@ -113,7 +113,7 @@ public class CollectionsResource {
     @javax.ws.rs.Path(COLLECTIONS_CONTENTASSIST)
     @Produces({ MediaType.APPLICATION_JSON })
     @ApiResponse(responseCode="400", description="No collections available for field")
-    @Operation(tags = { "collections"}, summary = "Return a list of collections starting with the given input")
+//    @Operation(tags = { "collections"}, summary = "Return a list of collections starting with the given input")
     public List<String> contentAssist(
             @Parameter(description="User input for which content assist is requested")@QueryParam("query")String input) throws IndexUnreachableException, IllegalRequestException {
         ContentAssistResourceBuilder builder = new ContentAssistResourceBuilder();

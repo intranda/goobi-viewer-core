@@ -94,6 +94,7 @@ public class UserBookmarkResourceBuilder extends AbstractBookmarkResourceBuilder
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      * @throws java.io.IOException if any.
      * @throws io.goobi.viewer.exceptions.RestApiException if any.
+     * @deprecated not used anymore. Replaced by generating share key
      */
     public List<BookmarkList> getAllSharedBookmarkLists() throws DAOException, IOException, RestApiException {
         return DataManager.getInstance()
@@ -128,9 +129,6 @@ public class UserBookmarkResourceBuilder extends AbstractBookmarkResourceBuilder
 
         if (user.equals(bookmarkList.getOwner())) {
             logger.trace("Serving bookmark list " + id + " owned by user " + user);
-            return bookmarkList;
-        } else if (isSharedTo(bookmarkList, user)) {
-            logger.trace("Serving bookmark list " + id + " shared to user " + user);
             return bookmarkList;
         } else {
             throw new RestApiException("User has no access to bookmark list " + id + " - request refused", HttpServletResponse.SC_FORBIDDEN);
@@ -411,6 +409,7 @@ public class UserBookmarkResourceBuilder extends AbstractBookmarkResourceBuilder
      * @param bookmarkList
      * @param user
      * @return
+     * @deprecated  not used anymore. Replaced by assigning share key
      */
     private boolean isSharedTo(BookmarkList bookmarkList, User user) {
         return bookmarkList.getGroupShares().stream().anyMatch(group -> isInGroup(user, group));

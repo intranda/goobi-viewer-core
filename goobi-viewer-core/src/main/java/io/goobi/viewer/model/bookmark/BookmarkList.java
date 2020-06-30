@@ -219,7 +219,9 @@ public class BookmarkList implements Serializable {
      */
     public String generateSolrQueryForItems() {
         StringBuilder sb = new StringBuilder();
-
+        if(items.isEmpty()) {
+            return "-*:*";
+        }
         for (Bookmark item : items) {
             if (StringUtils.isNotEmpty(item.getPi())) {
                 if (StringUtils.isNotEmpty(item.getLogId())) {

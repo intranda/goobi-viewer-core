@@ -371,13 +371,13 @@ public class BeanUtils {
         ImageDeliveryBean bean = (ImageDeliveryBean) getBeanByName("imageDelivery", ImageDeliveryBean.class);
         if (bean == null) {
             bean = new ImageDeliveryBean();
-            bean.init(DataManager.getInstance().getConfiguration(), new ApiUrls());
+            bean.init(DataManager.getInstance().getConfiguration());
         } else {
             try {
                 bean.getThumbs();
             } catch (ContextNotActiveException e) {
                 bean = new ImageDeliveryBean();
-                bean.init(DataManager.getInstance().getConfiguration(), new ApiUrls());
+                bean.init(DataManager.getInstance().getConfiguration());
             }
         }
         return bean;

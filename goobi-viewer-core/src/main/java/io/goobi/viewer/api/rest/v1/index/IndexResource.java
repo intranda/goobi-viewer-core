@@ -80,7 +80,7 @@ public class IndexResource {
     @Path(RECORDS_STATISTICS)
     @Produces({ MediaType.APPLICATION_JSON })
     @Operation(
-            tags = { "records", "index" },
+            tags = { "index" },
             summary = "Statistics about indexed records")
     public String getStatistics(
             @Parameter(description="SOLR Query to filter results (optional)") @QueryParam("query") String query) throws MalformedURLException, ContentNotFoundException,
@@ -105,7 +105,7 @@ public class IndexResource {
     @Consumes({ MediaType.APPLICATION_JSON })
     @Produces({ MediaType.APPLICATION_JSON })
     @Operation(
-            tags = { "records", "index" },
+            tags = { "index" },
             summary = "Post a query directly the SOLR index")
     @ApiResponse(responseCode = "406", description = "Illegal query or query parameters")
     public String getRecordsForQuery(RecordsRequestParameters params) throws MalformedURLException, ContentNotFoundException,

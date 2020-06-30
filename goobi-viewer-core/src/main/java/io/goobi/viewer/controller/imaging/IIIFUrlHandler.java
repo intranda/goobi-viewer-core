@@ -23,6 +23,8 @@ import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import javax.inject.Inject;
+
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -34,9 +36,13 @@ import de.unigoettingen.sub.commons.contentlib.imagelib.transform.RegionRequest;
 import de.unigoettingen.sub.commons.contentlib.imagelib.transform.Rotation;
 import de.unigoettingen.sub.commons.contentlib.imagelib.transform.Scale;
 import de.unigoettingen.sub.commons.util.PathConverter;
+import io.goobi.viewer.api.rest.AbstractApiUrlManager;
+import io.goobi.viewer.api.rest.v1.ApiUrls;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.exceptions.ViewerConfigurationException;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
+
+import static io.goobi.viewer.api.rest.v1.ApiUrls.*;
 
 /**
  * <p>
@@ -46,19 +52,31 @@ import io.goobi.viewer.managedbeans.utils.BeanUtils;
  * @author Florian Alpers
  */
 public class IIIFUrlHandler {
-
     /**
      * 
      */
     private static final String UTF_8 = "UTF-8";
     private static final Logger logger = LoggerFactory.getLogger(IIIFUrlHandler.class);
 
+    private final AbstractApiUrlManager urls;
+    
+
+
+    public IIIFUrlHandler(AbstractApiUrlManager urls) {
+        this.urls  = urls;
+    }
+    
+    public IIIFUrlHandler() {
+        this.urls = null;
+    }
+    
     public String getIIIFImageUrl(String fileUrl, String docStructIdentifier, String region, String size, String rotation, String quality,
             String format) {
-        return getIIIFImageUrl(DataManager.getInstance().getConfiguration().getIIIFApiUrl(), fileUrl, docStructIdentifier, region, size, rotation,
+        String apiUrl = this.urls == null ? DataManager.getInstance().getConfiguration().getIIIFApiUrl() : this.urls.getApiUrl();
+        return getIIIFImageUrl(apiUrl, fileUrl, docStructIdentifier, region, size, rotation,
                 quality, format);
     }
-
+    
     /**
      * Returns a link to the actual image of the given page, delivered via IIIF api using the given parameters
      *
@@ -113,7 +131,10 @@ public class IIIFUrlHandler {
                     return sb.toString();
                 }
             } else {
-
+                if(urls != null) {                    
+                    return urls.path(RECORDS_FILES_IMAGE, RECORDS_FILES_IMAGE_IIIF).params(URLEncoder.encode(docStructIdentifier, UTF_8), URLEncoder.encode(fileUrl, UTF_8), region, size, rotation, "default", format).build();
+                } else {
+                    
                 //if the fileUrl contains a "/", then the part before that is the actual docStructIdentifier
                 int separatorIndex = fileUrl.indexOf("/");
                 if (separatorIndex > 0) {
@@ -133,6 +154,9 @@ public class IIIFUrlHandler {
                 sb.append("default.").append(format);
                 //                thumbCompression.ifPresent(compr -> sb.append("?compression=").append(thumbCompression));
                 return sb.toString();
+                }
+
+                
             }
         } catch (URISyntaxException e) {
             logger.error("Not a valid url: " + fileUrl, e.getMessage());

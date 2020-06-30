@@ -70,6 +70,15 @@ public abstract class AbstractBookmarkResourceBuilder {
     public abstract SuccessMessage deleteBookmarkFromBookmarkList(Long id, String pi)
             throws DAOException, IOException, RestApiException;
             
+    /**
+     * 
+     * @return
+     * @throws DAOException
+     * @throws IOException
+     * @throws RestApiException
+     * @throws IllegalRequestException
+     * @deprecated not used anymore. Replaced by assigning share key
+     */
     public abstract List<BookmarkList> getAllSharedBookmarkLists() throws DAOException, IOException, RestApiException, IllegalRequestException;
     
     public abstract Collection createCollection(BookmarkList list, AbstractApiUrlManager urls);
