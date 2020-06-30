@@ -364,7 +364,7 @@ var viewerJS = ( function( viewer ) {
                     
             inList: function(list, pi, page, logid) {
                     for(var item of list.items) {
-                        if(this.isTypeRecord() && item.pi == pi && item.order === null && item.logId === null) {
+                        if(this.isTypeRecord() && item.pi == pi && item.order == null && item.logId == null) {
                             return true;
                         } else if(this.isTypePage() && item.pi == pi && page == item.order ) {
                             return true;
