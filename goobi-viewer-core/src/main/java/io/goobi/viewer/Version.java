@@ -14,6 +14,7 @@ import java.util.regex.Pattern;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.json.JSONObject;
 
 /**
  * <p>
@@ -126,4 +127,23 @@ public class Version {
         return formatted;
     }
 
+    /**
+     * 
+     * @return Version info as a single string
+     */
+    public static String asString() {
+        return APPLICATION_NAME + " " + VERSION + " " + BUILDDATE + " " + BUILDVERSION;
+    }
+
+    /**
+     * 
+     * @return JSON object containing version info
+     */
+    public static String asJSON() {
+        return new JSONObject().put("application", APPLICATION_NAME)
+                .put("version", VERSION)
+                .put("build-date", BUILDDATE)
+                .put("git-revision", BUILDVERSION)
+                .toString();
+    }
 }

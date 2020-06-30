@@ -64,7 +64,7 @@ public class ContextListener implements ServletContextListener {
     /** {@inheritDoc} */
     @Override
     public void contextInitialized(ServletContextEvent sce) {
-        logger.info("Launching {}", DataManager.getVersion());
+        logger.info("Launching {}", Version.asString());
         DataManager.getInstance();
         logger.trace("Temp folder: {}", DataManager.getInstance().getConfiguration().getTempFolder());
         try {

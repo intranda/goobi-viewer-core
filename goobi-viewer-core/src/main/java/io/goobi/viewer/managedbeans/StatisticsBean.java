@@ -34,7 +34,9 @@ import org.apache.solr.client.solrj.response.QueryResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import io.goobi.viewer.Version;
 import io.goobi.viewer.controller.DataManager;
+import io.goobi.viewer.controller.JsonTools;
 import io.goobi.viewer.controller.NetTools;
 import io.goobi.viewer.controller.SolrConstants;
 import io.goobi.viewer.controller.SolrConstants.DocType;
@@ -275,16 +277,21 @@ public class StatisticsBean implements Serializable {
         return true;
     }
 
+    public String getCoreVersion() {
+        return Version.asJSON();
+    }
+
     /**
      * @return goobi-viewer-connector version
      */
     public String getConnectorVersion() {
         String version;
         try {
-            return  NetTools.getWebContentGET(DataManager.getInstance().getConfiguration().getConnectorVersionUrl());
+            String json = NetTools.getWebContentGET(DataManager.getInstance().getConfiguration().getConnectorVersionUrl());
+            return JsonTools.formatVersionString(json);
         } catch (IOException | HTTPException e) {
             logger.error(e.getMessage());
-            return "";
+            return e.getMessage();
         }
     }
 
@@ -301,6 +308,7 @@ public class StatisticsBean implements Serializable {
     public String getIndexerVersion() {
         return DataManager.getInstance().getIndexerVersion();
     }
+
 
     /**
      * <p>

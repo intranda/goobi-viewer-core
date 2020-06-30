@@ -101,15 +101,6 @@ public final class DataManager {
     }
 
     /**
-     * Returns the application version number.
-     *
-     * @return a {@link java.lang.String} object.
-     */
-    public static String getVersion() {
-        return Version.VERSION + "-" + Version.BUILDDATE + "-" + Version.BUILDVERSION;
-    }
-
-    /**
      * <p>
      * Getter for the field <code>modules</code>.
      * </p>
