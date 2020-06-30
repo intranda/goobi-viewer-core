@@ -240,4 +240,21 @@ public class JsonTools {
         // logger.trace("jsonObject of pi " + pi + " : " +jsonObj);
         return jsonObj;
     }
+    
+    /**
+     * 
+     * @param json JSON string
+     * @return Version information as a single line string
+     * @should format string correctly
+     */
+    public static String formatVersionString(String json) {
+        if (StringUtils.isEmpty(json)) {
+            return "";
+        }
+
+        JSONObject jsonObj = new JSONObject(json);
+        return jsonObj.getString("application") + " " + jsonObj.getString("version")
+                + " " + jsonObj.getString("build-date")
+                + " " + jsonObj.getString("git-revision");
+    }
 }

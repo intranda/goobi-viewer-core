@@ -40,4 +40,15 @@ public class JsonToolsTest extends AbstractSolrEnabledTest {
         Assert.assertEquals(rootUrl + "/" + PageType.viewObject.getName() + "/" + PI + "/1/LOG_0000/", json.get("url"));
         //        Assert.assertEquals(doc.getFieldValue(SolrConstants._CALENDAR_YEAR), json.get("date"));
     }
+
+    /**
+     * @see JsonTools#formatVersionString(String)
+     * @verifies format string correctly
+     */
+    @Test
+    public void formatVersionString_shouldFormatStringCorrectly() throws Exception {
+        Assert.assertEquals("goobi-viewer-core 1337 2020-06-30 abcdefg",
+                JsonTools.formatVersionString(
+                        "{\"application\": \"goobi-viewer-core\", \"version\": \"1337\", \"build-date\": \"2020-06-30\", \"git-revision\": \"abcdefg\"}"));
+    }
 }
