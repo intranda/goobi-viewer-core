@@ -78,11 +78,11 @@ $( document ).ready(function() {
 	// $("body").on("click", '[data-toggle="helptext"]', function()
 			
 	$('.blockAfterRadioToggler').each(function() {
-		if ($(this).find("input:nth-of-type(2)").prop('checked')) {
+		if ($(this).find("input:nth-of-type(1)").prop('checked')) {
 			$(this).next('.admin__license-selectable-block').hide();
 		}
 	}); 
-	
+ 
 	// check if radio button status changes
 	$("body").one("click", '.blockAfterRadioToggler', function(event) { 
 	$('.blockAfterRadioToggler input').change(function() {
