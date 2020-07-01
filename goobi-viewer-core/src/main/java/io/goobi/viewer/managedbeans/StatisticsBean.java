@@ -287,7 +287,7 @@ public class StatisticsBean implements Serializable {
      * @return goobi-viewer-core version
      */
     public String getCoreVersion() {
-        return JsonTools.formatVersionString(Version.asJSON());
+        return JsonTools.shortFormatVersionString(Version.asJSON());
     }
 
     /**
@@ -297,7 +297,7 @@ public class StatisticsBean implements Serializable {
         String version;
         try {
             String json = NetTools.getWebContentGET(DataManager.getInstance().getConfiguration().getConnectorVersionUrl());
-            return JsonTools.formatVersionString(json);
+            return JsonTools.shortFormatVersionString(json);
         } catch (IOException | HTTPException e) {
             logger.error(e.getMessage());
             return e.getMessage();
@@ -311,7 +311,7 @@ public class StatisticsBean implements Serializable {
         try {
             ApplicationInfo info = new ApplicationResource().getApplicationInfo();
             String json = new ObjectMapper().writeValueAsString(info);
-            return JsonTools.formatVersionString(json);
+            return JsonTools.shortFormatVersionString(json);
             //            String output = String.format("%s (%s)", info.getVersion(), info.getGitRevision());
             //            return output;
         } catch (ContentNotFoundException | IOException e) {
@@ -324,7 +324,7 @@ public class StatisticsBean implements Serializable {
      * @return goobi-viewer-indexer version
      */
     public String getIndexerVersion() {
-        return JsonTools.formatVersionString(DataManager.getInstance().getIndexerVersion());
+        return JsonTools.shortFormatVersionString(DataManager.getInstance().getIndexerVersion());
     }
 
     /**

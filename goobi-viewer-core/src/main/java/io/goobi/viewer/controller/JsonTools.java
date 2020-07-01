@@ -305,4 +305,26 @@ public class JsonTools {
             return notAvailableKey;
         }
     }
+
+    /**
+     *
+     * @param json JSON string
+     * @return Only version number and git hash as a single line string
+     */
+    public static String shortFormatVersionString(String json) {
+        final String notAvailableKey = "admin__dashboard_versions_not_available";
+
+        if (StringUtils.isEmpty(json)) {
+            return notAvailableKey;
+        }
+
+        JSONObject jsonObj = new JSONObject(json);
+        try {
+            return jsonObj.getString("version") + " (" + jsonObj.getString("git-revision") + ")";
+        } catch (JSONException e) {
+            logger.error(e.getMessage());
+            return notAvailableKey;
+        }
+    }
+
 }
