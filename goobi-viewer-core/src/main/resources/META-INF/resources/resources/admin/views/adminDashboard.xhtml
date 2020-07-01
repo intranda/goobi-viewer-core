@@ -61,7 +61,7 @@
 
 
                             <!-- CMS PAGES -->
-                            <div class="admin__boxed-entry -no-actions -w66">
+                            <div class="admin__boxed-entry pb-0 -no-actions -w66">
                                 <div class="row">
                                     <h3 class="col-9">#{msg.cms_overview}</h3>
                                 </div>
@@ -123,7 +123,7 @@
                                     <div class="row">
                                         <h3 class="col-9">#{msg.admin__licenses}</h3>
                                     </div>
-                                    <div class="row mb-3">
+                                    <div class="row">
                                         <div class="col-12">
                                             <!-- NOT CONFIGURED LICENSES -->
                                             <div class="row">
@@ -132,7 +132,7 @@
                                             <ui:repeat var="accessCondition" value="#{adminBean.notConfiguredAccessConditions}">
                                                 <h:commandLink action="pretty:adminLicenseNew"
                                                     actionListener="#{adminBean.newCurrentLicenseTypeAction(accessCondition)}"
-                                                    styleClass="row admin__license-unconfigured-entry">
+                                                    styleClass="row admin__license-unconfigured-entry my-3">
                                                     <div class="col-8 pl-5 -textlink">
                                                         #{accessCondition}
                                                     </div>
@@ -156,20 +156,20 @@
                                     <h3 class="col-9">#{msg.admin__dashboard_versions}</h3>
                                 </div>
                                 <dl class="row">
-                                    <dt class="col-sm-5 mb-2">#{msg.admin__dashboard_versions_core}:</dt>
-                                    <dd class="col-sm-7 mb-2">#{msg[statisticsBean.coreVersion]}</dd>
+                                    <dt class="col-sm-5 mb-3">#{msg.admin__dashboard_versions_core}:</dt>
+                                    <dd class="col-sm-7 mb-3">#{msg[statisticsBean.coreVersion]}</dd>
 
-                                    <dt class="col-sm-5 mb-2">#{msg.admin__dashboard_versions_theme}:</dt>
-                                    <dd class="col-sm-7 mb-2">#{navigationHelper.theme}</dd>
+                                    <dt class="col-sm-5 mb-3">#{msg.admin__dashboard_versions_theme}:</dt>
+                                    <dd class="col-sm-7 mb-3">#{navigationHelper.theme}</dd>
 
-                                    <dt class="col-sm-5 mb-2">#{msg.admin__dashboard_versions_connector}:</dt>
-                                    <dd class="col-sm-7 mb-2">#{msg[statisticsBean.connectorVersion]}</dd>
+                                    <dt class="col-sm-5 mb-3">#{msg.admin__dashboard_versions_connector}:</dt>
+                                    <dd class="col-sm-7 mb-3">#{msg[statisticsBean.connectorVersion]}</dd>
 
-                                    <dt class="col-sm-5 mb-2">#{msg.admin__dashboard_versions_indexer}:</dt>
-                                    <dd class="col-sm-7 mb-2">#{msg[statisticsBean.indexerVersion]}</dd>
+                                    <dt class="col-sm-5 mb-3">#{msg.admin__dashboard_versions_indexer}:</dt>
+                                    <dd class="col-sm-7 mb-3">#{msg[statisticsBean.indexerVersion]}</dd>
 
-                                    <dt class="col-sm-5 mb-2">#{msg.admin__dashboard_versions_contentserver}:</dt>
-                                    <dd class="col-sm-7 mb-2">#{msg[statisticsBean.contentServerVersion]}</dd>
+                                    <dt class="col-sm-5 mb-3">#{msg.admin__dashboard_versions_contentserver}:</dt>
+                                    <dd class="col-sm-7 mb-3">#{msg[statisticsBean.contentServerVersion]}</dd>
                                 </dl>
                             </div>
 
