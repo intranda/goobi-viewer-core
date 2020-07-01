@@ -68,22 +68,29 @@
                                 <div id="last-CMS-pages-table" class="admin__table-content -slim">
                                     <!-- TITLE ROW -->
                                     <div class="row no-gutters admin__table-title">
-                                        <div class="col-6 d-flex">
+                                        <div class="col-8 d-flex">
                                             <span>#{msg.page}</span>
                                         </div>
-                                        <div class="col-4 d-flex">
-                                            <span>#{msg.cms_pageMetadata_lastEdited}</span>
+                                        <div class="col-2 d-flex">
+                                            <span>#{msg.admin__cms_categories}</span>
                                         </div>
                                         <div class="col-2 d-flex">
-                                            <span>#{msg.admin__users}</span>
+                                            <span>#{msg.cms_pageMetadata_lastEdited}</span>
                                         </div>
                                     </div>
                                     <!-- INDIVIDUAL ENTRIES -->
                                     <ui:repeat var="page" value="#{cmsBean.getMostRecentlyEditedPages(3)}">
                                     <div class="row no-gutters admin__table-entry">
-                                        <div class="col-6 d-flex flex-column">
+                                        <div class="col-8 d-flex flex-column">
                                             <!-- PAGE TITLE -->
-                                            <span class="">#{page.title}</span>
+                                            <span class="admin__last-pages-title">#{page.title}
+                                            	<ui:fragment rendered="#{cmsBean.isMappedToStaticPage(page)}">
+		                                            <!-- TODO MESSAGE KEY -->
+		                                            <span class="badge badge-warning" data-toggle="tooltip" data-placement="top" data-original-title="Diese Seite ist auf eine statische Seite gemappt.">
+		                                                <i class="fa fa-cogs" aria-hidden="true"></i>
+		                                            </span>
+	                                        	</ui:fragment>
+	                                        </span>
                                             <!-- ACTIONS -->
                                             <div>
                                                 <!-- SHOW -->
@@ -94,13 +101,15 @@
                                                    class="admin__table-action-link" aria-label="#{msg.edit}: #{page.title}">#{msg.edit}</a>
                                             </div>
                                         </div>
-                                        <div class="col-4 d-flex">
-                                            <h:outputText value="#{page.dateUpdated}">
-                                                <f:convertDateTime pattern="dd.MM.YYYY - HH:mm" type="both" dateStyle="short" timeStyle="short" />
-                                            </h:outputText>
+                                        <div class="col-2">
+	    									<ui:repeat value="#{page.categories}" var="category">
+	                                            <div class="badge badge-violet">#{category.name}</div>
+	                                        </ui:repeat>
                                         </div>
                                         <div class="col-2 d-flex">
-                                            wird nicht gespeichert ;)
+                                        	<h:outputText value="#{page.dateUpdated}">
+                                                <f:convertDateTime pattern="dd.MM.YYYY - HH:mm" type="both" dateStyle="short" timeStyle="short" />
+                                            </h:outputText>
                                         </div>
                                     </div>
                                     </ui:repeat>
