@@ -166,13 +166,19 @@
                                     </h:outputLink>
 
                                     <!-- MULTIVOLUME -->
-                                    <h:outputLink value="#{navigationHelper.applicationUrl}#{hit.browseElement.url}" rendered="#{hit.browseElement.anchor}">
-                                        <img data-src="#{hit.browseElement.thumbnailUrl}" data-viewer-thumbnail="thumbnail"
-                                            class="#{configurationBean.anchorThumbnailMode == 'FIRSTVOLUME' ? 'stacked-thumbnail' : ''}" alt="Thumbnail" />
-                                        <h:panelGroup rendered="#{configurationBean.anchorThumbnailMode == 'FIRSTVOLUME'}">
+                                    <h:outputLink value="#{navigationHelper.applicationUrl}#{hit.browseElement.url}" rendered="#{hit.browseElement.anchor}" styleClass="stackedThumbx">
+                                       
+                                       	<div class="thumbdiv">
+                                        <img data-src="#{hit.browseElement.thumbnailUrl}" data-viewer-thumbnail="thumbnail" class="#{configurationBean.anchorThumbnailMode == 'FIRSTVOLUME' ? 'stacked-thumbnail' : ''}" alt="Thumbnail" />
+										<h:panelGroup rendered="#{configurationBean.anchorThumbnailMode == 'FIRSTVOLUME'}">
                                             <div class="stacked-thumbnail-before"></div>
                                             <div class="stacked-thumbnail-after"></div>
                                         </h:panelGroup>
+										</div>
+
+
+                                        
+                                        
                                     </h:outputLink>
 
                                     <!-- ADD TO BOOKMARKS -->

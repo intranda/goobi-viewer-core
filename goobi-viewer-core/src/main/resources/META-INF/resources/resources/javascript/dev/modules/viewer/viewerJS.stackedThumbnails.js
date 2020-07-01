@@ -60,11 +60,11 @@ var viewerJS = ( function( viewer ) {
             $.extend( true, _defaults, config );
             
             // hide stacked thumbs
-            $( _defaults.thumbs ).hide();
-            $( _defaults.thumbs ).siblings().hide();
+        //    $( _defaults.thumbs ).hide();
+        //    $( _defaults.thumbs ).siblings().hide();
             
             // iterate through thumbnails and set width and height for image stack
-            $( _defaults.thumbs ).each( function() {
+         /*   $( _defaults.thumbs ).each( function() {
                 _imgWidth = $( this ).outerWidth();
                 _imgHeight = $( this ).outerHeight();
                 
@@ -83,7 +83,7 @@ var viewerJS = ( function( viewer ) {
                 $( this ).siblings( _defaults.thumbsBefore ).fadeIn( 'slow', function() {
                     $( this ).siblings( _defaults.thumbsAfter ).fadeIn();
                 } );
-            } );
+            } );*/
             
         },
     };
@@ -91,3 +91,24 @@ var viewerJS = ( function( viewer ) {
     return viewer;
     
 } )( viewerJS || {}, jQuery );
+
+
+// fade in thumb paper stack effect on scroll
+var debounce_timer;
+
+$(window).scroll(function() {
+        if(debounce_timer) {
+                window.clearTimeout(debounce_timer);
+        }
+        debounce_timer = window.setTimeout(function() {
+            $('.stackedThumbx').each( function(i){
+                
+                var bottom_of_element = $(this).offset().top + $(this).outerHeight();
+                var bottom_of_window = $(window).scrollTop() + $(window).height();
+                
+                if( bottom_of_window > bottom_of_element + 20 ){
+                    $(this).find('.stacked-thumbnail-after, .stacked-thumbnail-before').addClass('-shown');
+                }
+            }); 
+        }, 130);
+});
