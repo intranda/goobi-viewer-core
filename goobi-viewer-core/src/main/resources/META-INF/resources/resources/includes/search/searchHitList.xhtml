@@ -166,9 +166,9 @@
                                     </h:outputLink>
 
                                     <!-- MULTIVOLUME -->
-                                    <h:outputLink value="#{navigationHelper.applicationUrl}#{hit.browseElement.url}" rendered="#{hit.browseElement.anchor}" styleClass="stackedThumbx">
+                                    <h:outputLink value="#{navigationHelper.applicationUrl}#{hit.browseElement.url}" rendered="#{hit.browseElement.anchor}" styleClass="stackedThumbEffect">
                                        
-                                       	<div class="thumbdiv">
+                                       	<div class="stackedThumbEffect-inner">
                                         <img data-src="#{hit.browseElement.thumbnailUrl}" data-viewer-thumbnail="thumbnail" class="#{configurationBean.anchorThumbnailMode == 'FIRSTVOLUME' ? 'stacked-thumbnail' : ''}" alt="Thumbnail" />
 										<h:panelGroup rendered="#{configurationBean.anchorThumbnailMode == 'FIRSTVOLUME'}">
                                             <div class="stacked-thumbnail-before"></div>

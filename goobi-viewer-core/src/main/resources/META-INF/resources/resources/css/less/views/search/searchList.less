@@ -445,14 +445,6 @@
 	top: 0;
 }
 
-.stackedThumbx {
-	position: relative;
-	width: 100%;
-	height: 100%;
-	display: block;
-}
-
-
 .stacked-thumbnail {
     border: 2px solid @white;
     -webkit-box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.3);
@@ -477,15 +469,23 @@
     }
 }
 
-.thumbdiv {
+
+.stackedThumbEffect {
+	position: relative;
+	width: 100%;
+	height: 100%;
+	display: block;
+}
+
+.stackedThumbEffect-inner {
 position: relative;
 }
 
-.thumbdiv:hover .stacked-thumbnail-before {
+.stackedThumbEffect:hover .stacked-thumbnail-before {
     transform: rotate(-7deg);
 }
 
-.thumbdiv:hover .stacked-thumbnail-after {
+.stackedThumbEffect:hover .stacked-thumbnail-after {
     transform: rotate(6deg);
 }
 
