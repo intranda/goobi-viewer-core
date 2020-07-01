@@ -249,7 +249,7 @@ public class CmsBean implements Serializable {
         try {
             lazyModelPages.setSortField("dateUpdated");
             lazyModelPages.setSortOrder(SortOrder.DESCENDING);
-            lazyModelPages.setEntriesPerPage(3);
+            lazyModelPages.setEntriesPerPage(number);
             lazyModelPages.update();
 
             return lazyModelPages.getPaginatorList();
