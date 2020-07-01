@@ -105,8 +105,7 @@
                                             <span class="admin__table-name">
                                                 #{page.title}
 												<ui:fragment rendered="#{cmsBean.isMappedToStaticPage(page)}">
-                                                    <!-- TODO MESSAGE KEY -->
-                                                    <span class="badge badge-warning" data-toggle="tooltip" data-placement="top" data-original-title="Diese Seite ist auf eine statische Seite gemappt.">
+                                                <span class="badge badge-warning" data-toggle="tooltip" data-placement="top" data-original-title="#{msg.admin__cms_overview_mapped_to_static_page}">
                                                         <i class="fa fa-cogs" aria-hidden="true"></i>
                                                     </span>
                                                 </ui:fragment>
