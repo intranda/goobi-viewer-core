@@ -684,7 +684,7 @@
 					<archive>
 						<addMavenDescriptor>false</addMavenDescriptor>
 						<manifestEntries>
-							<ApplicationName>goobi-viewer-core</ApplicationName>
+							<ApplicationName>Goobi viewer Core</ApplicationName>
 							<version>${project.version}</version>
 							<Implementation-Version>${buildNumber}</Implementation-Version>
 							<Implementation-Build-Date>${buildDate}</Implementation-Build-Date>
