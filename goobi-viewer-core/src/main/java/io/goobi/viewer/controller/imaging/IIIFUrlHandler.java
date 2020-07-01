@@ -19,6 +19,8 @@ import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URLEncoder;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -131,7 +133,12 @@ public class IIIFUrlHandler {
                     return sb.toString();
                 }
             } else {
-                if(urls != null) {                    
+                if(urls != null) {    
+                    Path filePath = Paths.get(fileUrl);
+                    if(filePath.getNameCount() == 2) {
+                        docStructIdentifier = filePath.getName(0).toString();
+                        fileUrl = filePath.getName(1).toString();
+                    }
                     return urls.path(RECORDS_FILES_IMAGE, RECORDS_FILES_IMAGE_IIIF).params(URLEncoder.encode(docStructIdentifier, UTF_8), URLEncoder.encode(fileUrl, UTF_8), region, size, rotation, "default", format).build();
                 } else {
                     
