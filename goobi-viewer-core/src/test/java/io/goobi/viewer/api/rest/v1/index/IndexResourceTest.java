@@ -77,7 +77,7 @@ public class IndexResourceTest extends AbstractRestApiTest{
 
     @Test
     public void testInvalidQuery() throws JsonMappingException, JsonProcessingException {
-        Stream.of("BLA").collect(Collectors.toList());
+        params.sortFields = Stream.of("BLA").collect(Collectors.toList());
         Entity<RecordsRequestParameters> entity = Entity.entity(params, MediaType.APPLICATION_JSON);
         try(Response response = target(urls.path(RECORDS_INDEX, RECORDS_QUERY).build())
                 .request()
