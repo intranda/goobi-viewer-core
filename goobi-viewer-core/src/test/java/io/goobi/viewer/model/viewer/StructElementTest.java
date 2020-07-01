@@ -129,7 +129,7 @@ public class StructElementTest extends AbstractSolrEnabledTest {
     @Test
     public void getImageUrl_shouldConstructUrlCorrectly() throws Exception {
         StructElement element = new StructElement(iddocKleiuniv);
-        Assert.assertEquals(ConfigurationTest.APPLICATION_ROOT_URL + "rest/image/" + PI_KLEIUNIV + "/00000001.tif/full/!600,800/0/default.jpg",
+        Assert.assertEquals(ConfigurationTest.APPLICATION_ROOT_URL + "api/v1/records/" + PI_KLEIUNIV + "/files/images/00000001.tif/full/!600,800/0/default.jpg",
                 element.getImageUrl(600, 800));
     }
 

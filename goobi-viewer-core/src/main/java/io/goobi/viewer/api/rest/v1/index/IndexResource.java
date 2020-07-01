@@ -21,7 +21,9 @@ import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_STATISTICS;
 
 import java.net.MalformedURLException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Random;
 
 import javax.servlet.http.HttpServletRequest;
@@ -37,6 +39,7 @@ import javax.ws.rs.core.MediaType;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.solr.client.solrj.io.stream.expr.StreamFactory;
+import org.apache.solr.client.solrj.response.QueryResponse;
 import org.apache.solr.common.SolrDocumentList;
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -117,58 +120,58 @@ public class IndexResource {
             ServiceNotAllowedException, IndexUnreachableException, PresentationException, ViewerConfigurationException, DAOException,
             IllegalRequestException {
         JSONObject ret = new JSONObject();
-        if (params == null || params.getQuery() == null) {
+        if (params == null || params.query == null) {
             ret.put("status", HttpServletResponse.SC_BAD_REQUEST);
             ret.put("message", "Invalid JSON request object");
             return ret.toString();
         }
         
         // Custom query does not filter by the sub-theme discriminator value by default, it has to be added to the custom query via #{navigationHelper.subThemeDiscriminatorValueSubQuery}
-        String query =
-                new StringBuilder().append("+").append(params.getQuery()).append(SearchHelper.getAllSuffixes(servletRequest, null, true, true, false)).toString();
+//        String query =
+//                new StringBuilder().append("+").append(params.getQuery()).append(SearchHelper.getAllSuffixes(servletRequest, null, true, true, false)).toString();
+        String query = SearchHelper.buildFinalQuery(params.query, params.includeChildHits);
+
         logger.trace("query: {}", query);
 
-        int count = params.getCount();
+        int count = params.count;
         if (count <= 0) {
             count = SolrSearchIndex.MAX_HITS;
         }
 
         List<StringPair> sortFieldList = new ArrayList<>();
-        for (String sortField : params.getSortFields()) {
+        for (String sortField : params.sortFields) {
             if (StringUtils.isNotEmpty(sortField)) {
-                sortFieldList.add(new StringPair(sortField, params.getSortOrder()));
+                sortFieldList.add(new StringPair(sortField, params.sortOrder));
             }
         }
-        logger.trace("sortFields: {}", params.getSortFields().toString());
-        logger.trace("count: {}", count);
-        logger.trace("offset: {}", params.getOffset());
-        logger.trace("sortOrder: {}", params.getSortOrder());
-        logger.trace("randomize: {}", params.isRandomize());
-        logger.trace("jsonFormat: {}", params.getJsonFormat());
-
-        if (params.isRandomize()) {
+        if (params.randomize) {
             sortFieldList.clear();
             // Solr supports dynamic random_* sorting fields. Each value represents one particular order, so a random number is required.
             Random random = new Random();
-            sortFieldList.add(new StringPair("random_" + random.nextInt(Integer.MAX_VALUE), ("desc".equals(params.getSortOrder()) ? "desc" : "asc")));
+            sortFieldList.add(new StringPair("random_" + random.nextInt(Integer.MAX_VALUE), ("desc".equals(params.sortOrder) ? "desc" : "asc")));
         }
         try {
-            List<String> fieldList = params.getResultFields();
-            SolrDocumentList result =
-                    DataManager.getInstance().getSearchIndex().search(query, params.getOffset(), count, sortFieldList, null, fieldList ).getResults();
+            List<String> fieldList = params.resultFields;
+            
+            Map<String, String> paramMap = new HashMap<>();
+                        QueryResponse response = DataManager.getInstance().getSearchIndex().search(query, params.offset, count, sortFieldList, null, fieldList );
+//            QueryResponse response = DataManager.getInstance().getSearchIndex().search(query, params.offset, count, sortFieldList, null, fieldList, null, paramMap );
+
+            SolrDocumentList result = response.getResults();
+            Map<String, SolrDocumentList> expanded = response.getExpandedResults();
             logger.trace("hits: {}", result.size());
             JSONArray jsonArray = null;
-            if (params.getJsonFormat() != null) {
-                switch (params.getJsonFormat()) {
+            if (params.jsonFormat != null) {
+                switch (params.jsonFormat) {
                     case "datecentric":
                         jsonArray = JsonTools.getDateCentricRecordJsonArray(result, servletRequest);
                         break;
                     default:
-                        jsonArray = JsonTools.getRecordJsonArray(result, servletRequest, params.getTranslationLanguage());
+                        jsonArray = JsonTools.getRecordJsonArray(result, expanded, servletRequest, params.language);
                         break;
                 }
             } else {
-                jsonArray = JsonTools.getRecordJsonArray(result, servletRequest, params.getTranslationLanguage());
+                jsonArray = JsonTools.getRecordJsonArray(result, expanded, servletRequest, params.language);
             }
             if (jsonArray == null) {
                 jsonArray = new JSONArray();

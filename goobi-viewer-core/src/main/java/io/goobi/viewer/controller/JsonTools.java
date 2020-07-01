@@ -57,11 +57,15 @@ public class JsonTools {
 
     private static final Logger logger = LoggerFactory.getLogger(JsonTools.class);
 
+    private static ObjectMapper mapper = new ObjectMapper();
+
+    
     /**
      * Returns a <code>JSONArray</code> containing JSON objects for every <code>SolrDocument</code> in the given result. Order remains the same as in
      * the result list.
      *
      * @param result a {@link org.apache.solr.common.SolrDocumentList} object.
+     * @param expanded 
      * @param request a {@link javax.servlet.http.HttpServletRequest} object.
      * @return a {@link org.json.JSONArray} object.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
@@ -69,10 +73,9 @@ public class JsonTools {
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
      */
-    public static JSONArray getRecordJsonArray(SolrDocumentList result, HttpServletRequest request, String languageToTranslate)
+    public static JSONArray getRecordJsonArray(SolrDocumentList result, Map<String, SolrDocumentList> expanded, HttpServletRequest request, String languageToTranslate)
             throws IndexUnreachableException, PresentationException, DAOException, ViewerConfigurationException {
         JSONArray jsonArray = new JSONArray();
-        ObjectMapper mapper = new ObjectMapper();
         Locale locale = StringUtils.isBlank(languageToTranslate) ? null : Locale.forLanguageTag(languageToTranslate);
 
         for (SolrDocument doc : result) {
@@ -94,11 +97,17 @@ public class JsonTools {
             }
 
             try {
-                String json = mapper.writeValueAsString(doc);
-                JSONObject object = new JSONObject(json);
-                if (locale != null) {
-                    object = translateJSONObject(locale, object);
+                JSONObject object = getAsJson(doc, locale);
+                
+                if(expanded != null && expanded.containsKey(pi)) {
+                    JSONArray array = new JSONArray();
+                    for (SolrDocument childDoc : expanded.get(pi)) {
+                        JSONObject child = getAsJson(childDoc, locale);
+                        array.put(child);
+                    }
+                    object.put("children", array);
                 }
+                
                 jsonArray.put(object);
             } catch (JsonProcessingException e) {
                 logger.error("Error writing document to json", e);
@@ -109,6 +118,22 @@ public class JsonTools {
         }
 
         return jsonArray;
+    }
+
+    /**
+     * @param mapper
+     * @param locale
+     * @param doc
+     * @return
+     * @throws JsonProcessingException
+     */
+    public static JSONObject getAsJson(SolrDocument doc, Locale locale) throws JsonProcessingException {
+        String json = mapper.writeValueAsString(doc);
+        JSONObject object = new JSONObject(json);
+        if (locale != null) {
+            object = translateJSONObject(locale, object);
+        }
+        return object;
     }
 
     /**
