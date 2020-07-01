@@ -720,7 +720,7 @@ public class User implements ILicensee, HttpSessionBindingListener, Serializable
             Gravatar gravatar =
                     new Gravatar().setSize(size).setRating(GravatarRating.GENERAL_AUDIENCES).setDefaultImage(GravatarDefaultImage.IDENTICON);
             String url = gravatar.getUrl(email);
-            return url;
+            return url.replace("http:", "");
         }
 
         return "//www.gravatar.com/avatar/";
