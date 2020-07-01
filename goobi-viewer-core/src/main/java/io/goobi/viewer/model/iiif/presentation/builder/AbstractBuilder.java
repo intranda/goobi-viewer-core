@@ -60,6 +60,7 @@ import de.intranda.metadata.multilanguage.IMetadataValue;
 import de.intranda.metadata.multilanguage.Metadata;
 import de.intranda.metadata.multilanguage.MultiLanguageMetadataValue;
 import de.intranda.metadata.multilanguage.SimpleMetadataValue;
+import de.unigoettingen.sub.commons.util.PathConverter;
 import io.goobi.viewer.api.rest.AbstractApiUrlManager;
 import io.goobi.viewer.api.rest.resourcebuilders.AnnotationsResourceBuilder;
 import io.goobi.viewer.api.rest.v1.ApiUrls;
@@ -125,7 +126,12 @@ public abstract class AbstractBuilder {
         if(uri.isAbsolute()) {
             return uri;
         } else {
-            return URI.create(this.urls.getApplicationUrl()).resolve(uri);
+            try {
+                return PathConverter.resolve(this.urls.getApplicationUrl(), uri.toString());
+            } catch (URISyntaxException e) {
+                logger.error(e.toString(), e);
+                return uri;
+            }
         }
     }
     

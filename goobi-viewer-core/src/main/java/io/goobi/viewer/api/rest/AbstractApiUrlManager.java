@@ -17,6 +17,7 @@ package io.goobi.viewer.api.rest;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URI;
+import java.net.URLDecoder;
 import java.net.URLEncoder;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
@@ -201,6 +202,10 @@ public abstract class AbstractApiUrlManager {
             String querySeparator = "?";
             for (String queryParam : queries.keySet()) {
                 String value = queries.get(queryParam).toString();
+                try {
+                    value = URLEncoder.encode(value, "UTF-8");
+                } catch (UnsupportedEncodingException e) {
+                }
                 path = path + querySeparator + queryParam + "=" + value;
                 querySeparator = "&";
             }
@@ -209,13 +214,13 @@ public abstract class AbstractApiUrlManager {
     }
     
     public static class ApiInfo {
-        public String name;
-        public String version;
-        public String specification;
+        public String name = "";
+        public String version = "";
+        public String specification = "";
     }
 
     /**
-     * Calls the {@link #getApiUrl()} and returns a {@link ApiInfo} object if a valid response is returned. Otherwise returns null.
+     * Calls the {@link #getApiUrl()} and returns a {@link ApiInfo} object if a valid response is returned. Otherwise an object with empty properties is returned
      * Timeout after a maximum of 3 seconds
      */
     public ApiInfo getInfo() {
@@ -228,7 +233,7 @@ public abstract class AbstractApiUrlManager {
                     .request(MediaType.APPLICATION_JSON)
                     .get(ApiInfo.class);
         } catch(Throwable e) {
-            return null;
+            return new ApiInfo();
         }
     }
 

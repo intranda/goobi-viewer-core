@@ -28,6 +28,7 @@ import java.util.stream.Collectors;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.faces.annotation.FacesConfig;
+import javax.faces.annotation.ManagedProperty;
 import javax.inject.Named;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -1261,6 +1262,13 @@ public class ConfigurationBean implements Serializable {
      */
     public String getIiifApiUrl() throws ViewerConfigurationException {
         return DataManager.getInstance().getConfiguration().getRestApiUrl();
+    }
+    
+    /**
+     * @return  The url to the /api/v1 Rest Api
+     */
+    public String getRestApiUrlV1() {
+        return DataManager.getInstance().getConfiguration().getRestApiUrl().replace("/rest", "/api/v1");
     }
 
     /**

@@ -20,6 +20,7 @@ import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_INDEXER;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.Consumes;
+import javax.ws.rs.GET;
 import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
@@ -32,6 +33,7 @@ import org.slf4j.LoggerFactory;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import de.unigoettingen.sub.commons.contentlib.exceptions.IllegalRequestException;
 import de.unigoettingen.sub.commons.contentlib.servlet.rest.CORSBinding;
 import io.goobi.viewer.api.rest.ViewerRestServiceBinding;
 import io.goobi.viewer.api.rest.model.IndexerVersionRequestParameters;
@@ -42,7 +44,6 @@ import io.goobi.viewer.controller.DataManager;
  * Resource for communicating with the indexer process.
  */
 @Path(RECORDS_INDEXER)
-@CORSBinding
 @ViewerRestServiceBinding
 public class IndexerResource {
 
@@ -57,15 +58,20 @@ public class IndexerResource {
     @Path("/version")
     @Produces({ MediaType.APPLICATION_JSON })
     @Consumes({ MediaType.APPLICATION_JSON })
-    @CORSBinding
-    public SuccessMessage setIndexerVersion(IndexerVersionRequestParameters params) {
+    public SuccessMessage setIndexerVersion(IndexerVersionRequestParameters params) throws IllegalRequestException {
         try {
             DataManager.getInstance().setIndexerVersion(new ObjectMapper().writeValueAsString(params));
             return new SuccessMessage(true);
         } catch (JsonProcessingException e) {
             logger.error(e.getMessage());
+            throw new IllegalRequestException("Cannot parse request body to json ", e);
         }
-        
-        return new SuccessMessage(false);
+    }
+    
+    @GET
+    @Path("/version")
+    @Produces({ MediaType.APPLICATION_JSON })
+    public String getIndexerVersion() {
+        return DataManager.getInstance().getIndexerVersion();
     }
 }

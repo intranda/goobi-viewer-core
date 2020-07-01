@@ -300,7 +300,6 @@ public class DownloadResource {
     @Produces({ MediaType.APPLICATION_JSON })
     @Operation(tags= {"downloads"}, summary="Get the EPUB download job for the given PI and divId, creating it if neccessary",
     description="Returns a json object with properties 'url', containing the URL to the download page, and 'job' containing job information")
-
     @DownloadBinding
     public String putEPUBDownloadJob(            
             @Parameter(description = "Persistent identifier of the record") @PathParam("pi") String pi,

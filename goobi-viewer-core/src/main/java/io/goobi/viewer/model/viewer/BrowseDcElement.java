@@ -32,6 +32,7 @@ import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.exceptions.ViewerConfigurationException;
 import io.goobi.viewer.managedbeans.SearchBean;
 import io.goobi.viewer.messages.ViewerResourceBundle;
+import io.goobi.viewer.model.search.SearchHelper;
 
 /**
  * Collection tree element.
@@ -364,6 +365,14 @@ public class BrowseDcElement implements Comparable<BrowseDcElement>, Serializabl
      */
     public String getRssUrl() throws ViewerConfigurationException {
         return buildRssUrl();
+    }
+    
+    /**
+     * 
+     * @return +({field}:{name} {field}:{name}.*) +(ISWORK:* ISANCHOR:*)
+     */
+    public String getSolrFilterQuery() {
+        return String.format("+(%s:%s %s:%s.*) +(ISWORK:* ISANCHOR:*)", field, name, field, name);
     }
 
     /**

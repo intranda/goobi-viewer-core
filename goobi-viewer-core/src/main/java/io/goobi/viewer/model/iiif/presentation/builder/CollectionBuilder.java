@@ -42,6 +42,7 @@ import de.intranda.api.iiif.presentation.enums.ViewingHint;
 import de.intranda.metadata.multilanguage.SimpleMetadataValue;
 import de.unigoettingen.sub.commons.contentlib.exceptions.IllegalRequestException;
 import io.goobi.viewer.api.rest.AbstractApiUrlManager;
+import io.goobi.viewer.api.rest.v1.ApiUrls;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.SolrConstants;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
@@ -276,9 +277,9 @@ public class CollectionBuilder extends AbstractBuilder {
                 extentService.setBaseURI(JsonLdDefinitionsResource.getUrl());
                 collection.addService(extentService);
 
-
+                String rssUrl = urls.path(ApiUrls.RECORDS_RSS).query("query", baseElement.getSolrFilterQuery()).build();
                 LinkingContent rss =
-                        new LinkingContent(absolutize(baseElement.getRssUrl()), new SimpleMetadataValue(RSS_FEED_LABEL));
+                        new LinkingContent(URI.create(rssUrl), new SimpleMetadataValue(RSS_FEED_LABEL));
                 collection.addRelated(rss);
 
                 //              if(info != null && info.getLinkURI(getRequest().orElse(null)) != null) {
