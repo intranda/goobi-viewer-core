@@ -462,10 +462,10 @@ riot.tag2('campaignitem', '<div if="{!opts.pi}" class="content"> {Crowdsourcing.
 	});
 
 	this.loadItem = function(itemConfig) {
-
+	    console.log("load item ", itemConfig);
 	    this.item = new Crowdsourcing.Item(itemConfig, 0);
 	    this.item.setReviewMode(this.opts.itemstatus && this.opts.itemstatus.toUpperCase() == "REVIEW");
-		fetch(this.item.imageSource + "simple/")
+		fetch(this.item.imageSource + "?mode=simple")
 		.then( response => response.json() )
 		.then( imageSource => this.initImageView(imageSource))
 		.then( () => {this.loading = false; this.update()})

@@ -1,0 +1,31 @@
+{
+
+    "id": "https://viewer.goobi.io/rest/iiif/manifests/1019375248/list/1/FULLTEXT/TextLine_1",
+    "type": "Annotation",
+    "motivation": "painting",
+    "target": {
+        "type": "SpecificResource",
+        "source": "https://viewer.goobi.io/rest/iiif/manifests/1019375248/canvas/1",
+        "selector": {
+            "type": "FragmentSelector",
+            "value": "xywh=-363,62,490,30"
+        }
+    },
+    "body": {
+        "type": "TextualBody",
+        "format": "text/plain",
+        "value": "GROSHERZOGLICH"
+    },
+    "created": "2018-01-28T12:00:00Z",
+    "modified": "2019-05-29T09:00:00Z",
+    "creator": {
+   		"id": "https://viewer.goobi.io/rest/users/1",
+   		"type": "Person",
+   		"name": "Beechy"
+   		},
+    "generator": {
+    	"id": "https://viewer.goobi.io/campaigns/1",
+   		"type": "Software",
+   		"name": "PostcardAllocator"
+    }
+}

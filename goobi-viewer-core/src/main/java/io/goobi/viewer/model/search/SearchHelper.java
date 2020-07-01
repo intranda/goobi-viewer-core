@@ -53,6 +53,7 @@ import org.apache.solr.client.solrj.response.QueryResponse;
 import org.apache.solr.client.solrj.util.ClientUtils;
 import org.apache.solr.common.SolrDocument;
 import org.apache.solr.common.SolrDocumentList;
+import org.apache.solr.common.params.ExpandParams;
 import org.apache.solr.common.params.GroupParams;
 import org.jsoup.Jsoup;
 import org.slf4j.Logger;
@@ -2365,6 +2366,21 @@ public final class SearchHelper {
         }
 
         return ret;
+    }
+    
+    /**
+     * @param params
+     * @param useExpandQuery
+     */
+    public static Map<String, String> getExpandQueryParams(String expandQuery) {
+        Map<String, String> params = new HashMap<>();
+        params.put(ExpandParams.EXPAND, "true");
+        params.put(ExpandParams.EXPAND_Q, expandQuery);
+        params.put(ExpandParams.EXPAND_FIELD, SolrConstants.PI_TOPSTRUCT);
+        params.put(ExpandParams.EXPAND_ROWS, String.valueOf(SolrSearchIndex.MAX_HITS));
+        params.put(ExpandParams.EXPAND_SORT, SolrConstants.ORDER + " asc");
+        params.put(ExpandParams.EXPAND_FQ, ""); // The main filter query may not apply to the expand query to produce child hits
+        return params;
     }
 
     /**

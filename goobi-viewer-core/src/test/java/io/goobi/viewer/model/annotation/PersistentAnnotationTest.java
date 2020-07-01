@@ -15,11 +15,18 @@
  */
 package io.goobi.viewer.model.annotation;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+
 import java.awt.Rectangle;
 import java.io.IOException;
 import java.net.URI;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Date;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import javax.persistence.EntityManager;
 import javax.persistence.FlushModeType;
@@ -33,10 +40,13 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 import com.fasterxml.jackson.core.JsonParseException;
+import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.JsonMappingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 import de.intranda.api.annotation.AgentType;
 import de.intranda.api.annotation.IResource;
+import de.intranda.api.annotation.oa.OpenAnnotation;
 import de.intranda.api.annotation.wa.Agent;
 import de.intranda.api.annotation.wa.FragmentSelector;
 import de.intranda.api.annotation.wa.SpecificResource;
@@ -70,12 +80,17 @@ public class PersistentAnnotationTest extends AbstractDatabaseEnabledTest {
     
     private static AbstractApiUrlManager urls;
     private static AnnotationsResourceBuilder annoBuilder;
+    
+    private static ObjectMapper mapper;
 
     @BeforeClass
     public static void setUpClass() throws Exception {
         AbstractDatabaseEnabledTest.setUpClass();
         urls = new ApiUrls(DataManager.getInstance().getConfiguration().getRestApiUrl());
         annoBuilder = new AnnotationsResourceBuilder(urls);
+        
+        mapper = new ObjectMapper();
+        mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
     }
     
     /**
@@ -203,6 +218,30 @@ public class PersistentAnnotationTest extends AbstractDatabaseEnabledTest {
 
         PersistentAnnotation fromDAO2 = DataManager.getInstance().getDao().getAnnotation(daoAnno.getId());
         Assert.assertEquals(fromDAO.getDateModified(), fromDAO2.getDateModified());
+    }
+    
+    @Test
+    public void testGetContent_fromOA() throws JsonParseException, JsonMappingException, IOException, DAOException {
+        String content ="{\n" + 
+                "        \"@type\": \"cnt:ContentAsText\",\n" + 
+                "        \"format\": \"text/plain\",\n" + 
+                "        \"chars\": \"GROSHERZOGLICH\"\n" + 
+                "    }";
+        PersistentAnnotation pAnno = new PersistentAnnotation();
+        pAnno.setBody(content);
+        assertEquals("GROSHERZOGLICH", pAnno.getContentString());
+    }
+    
+    @Test
+    public void testGetContent_fromWA() throws JsonParseException, JsonMappingException, IOException, DAOException {
+        String content ="{\n" + 
+                "        \"type\": \"TextualBody\",\n" + 
+                "        \"format\": \"text/plain\",\n" + 
+                "        \"value\": \"GROSHERZOGLICH\"\n" + 
+                "    }";
+        PersistentAnnotation pAnno = new PersistentAnnotation();
+        pAnno.setBody(content);
+        assertEquals("GROSHERZOGLICH", pAnno.getContentString());
     }
 
 }

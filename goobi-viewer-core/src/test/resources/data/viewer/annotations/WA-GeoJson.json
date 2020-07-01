@@ -1,0 +1,38 @@
+{
+	"id": "https://viewer.goobi.io/rest/annotations/36",
+	"type": "Annotation",
+	"body": {
+		"type": "Feature",
+		"format": "application/json",
+		"geometry": {
+			"coordinates": [
+				13.381475,
+				52.503516
+			],
+			"type": "Point"
+		},
+		"properties": {
+			"name": ""
+		},
+		"view": {
+			"center": [
+				52.503516406073174,
+				13.38147513900887
+			],
+			"zoom": 8.0
+		}
+	},
+	"target": "https://viewer.goobi.io/rest/iiif/manifests/02008070428708/manifest/",
+	"creator": {
+		"id": "https://viewer.goobi.io/rest/users/19",
+		"type": "Person",
+		"name": "Beechy"
+	},
+	"generator": {
+		"id": "https://viewer.goobi.io/rest/crowdsourcing/campaigns/2/questions/5",
+		"type": "Software",
+		"name": "Georeferenzierung"
+	},
+	"created": "2019-10-07T08:36:40Z",
+	"modified": "2019-10-07T08:36:40Z"
+}

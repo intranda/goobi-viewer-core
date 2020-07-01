@@ -153,9 +153,12 @@ public class IndexResource {
         try {
             List<String> fieldList = params.resultFields;
             
-            Map<String, String> paramMap = new HashMap<>();
-                        QueryResponse response = DataManager.getInstance().getSearchIndex().search(query, params.offset, count, sortFieldList, null, fieldList );
-//            QueryResponse response = DataManager.getInstance().getSearchIndex().search(query, params.offset, count, sortFieldList, null, fieldList, null, paramMap );
+            Map<String, String> paramMap = null;
+            if(params.includeChildHits) {
+                paramMap = SearchHelper.getExpandQueryParams(params.query);
+            }
+//                        QueryResponse response = DataManager.getInstance().getSearchIndex().search(query, params.offset, count, sortFieldList, null, fieldList );
+            QueryResponse response = DataManager.getInstance().getSearchIndex().search(query, params.offset, count, sortFieldList, null, fieldList, null, paramMap );
 
             SolrDocumentList result = response.getResults();
             Map<String, SolrDocumentList> expanded = response.getExpandedResults();

@@ -32,12 +32,16 @@ import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import de.intranda.api.annotation.ITypedResource;
+import de.intranda.api.annotation.oa.TextualResource;
+import de.intranda.api.annotation.oa.TypedResource;
 import de.intranda.api.annotation.wa.WebAnnotation;
 import io.goobi.viewer.controller.DataFileTools;
 import io.goobi.viewer.controller.DataManager;
@@ -517,6 +521,35 @@ public class PersistentAnnotation {
         }
 
         return count;
+    }
+
+    /**
+     * <p>
+     * getContentString.
+     * </p>
+     *
+     * @return Just the string value of the body document
+     * @throws com.fasterxml.jackson.core.JsonParseException if any.
+     * @throws com.fasterxml.jackson.databind.JsonMappingException if any.
+     * @throws java.io.IOException if any.
+     * @throws io.goobi.viewer.exceptions.DAOException if any.
+     */
+    public String getContentString() throws  IOException, DAOException {
+        
+        if(StringUtils.isNotBlank(body)) {
+            try {                
+                ITypedResource resource = new ObjectMapper().readValue(this.body, ITypedResource.class);
+                if(resource instanceof TextualResource) {
+                    return ((TextualResource) resource).getText();
+                } else if(resource instanceof de.intranda.api.annotation.wa.TextualResource) {
+                    return ((de.intranda.api.annotation.wa.TextualResource) resource).getText();
+                }
+                
+            } catch(Throwable e) {
+            }
+        }
+
+        return body;
     }
 
     /**

@@ -452,15 +452,22 @@ public class RecordResource {
      * @return
      */
     public BuildMode getBuildeMode(String mode) {
-        BuildMode buildMode = BuildMode.IIIF;
-        if(StringUtils.isNotBlank(mode)) {             
-            try {                
-                buildMode = BuildMode.valueOf(mode);
-            } catch(IllegalArgumentException e) {
-                logger.warn("Illegal query parameter value for 'mode': " + mode + ". Ignore parameter");
+        if(StringUtils.isNotBlank(mode)) {
+            switch(mode.toLowerCase()) {
+                case "iiif-simple":
+                case "iiif_simple":
+                case "simple":
+                    return BuildMode.IIIF_SIMPLE;
+                case "iiif-thumbs":
+                case "iiif_thumbs":
+                case "thumbs":
+                case "thumbnails":
+                    return BuildMode.THUMBS;
+                    default:
+                        return BuildMode.IIIF;
             }
         }
-        return buildMode;
+        return BuildMode.IIIF;
     }
 
     /**

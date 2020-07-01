@@ -128,7 +128,7 @@ public class Campaign implements CMSMediaHolder {
 
     private static final Logger logger = LoggerFactory.getLogger(Campaign.class);
 
-    private static final String URI_ID_TEMPLATE = DataManager.getInstance().getConfiguration().getRestApiUrl() + "crowdsourcing/campaigns/{id}";
+    private static final String URI_ID_TEMPLATE = DataManager.getInstance().getConfiguration().getRestApiUrl().replace("/rest", "/api/v1") + "crowdsourcing/campaigns/{id}";
     private static final String URI_ID_REGEX = ".*/crowdsourcing/campaigns/(\\d+)/?$";
 
     @Id
@@ -695,6 +695,7 @@ public class Campaign implements CMSMediaHolder {
      * @return a {@link java.lang.Long} object.
      */
     public static Long getId(URI idAsURI) {
+        
         Matcher matcher = Pattern.compile(URI_ID_REGEX).matcher(idAsURI.toString());
         if (matcher.find()) {
             String idString = matcher.group(1);

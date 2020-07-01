@@ -13,12 +13,9 @@
  *
  * You should have received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
-package io.goobi.viewer.servlets.rest.crowdsourcing;
+package io.goobi.viewer.api.rest.v1.crowdsourcing;
 
-import static io.goobi.viewer.api.rest.v1.ApiUrls.ANNOTATIONS;
-import static io.goobi.viewer.api.rest.v1.ApiUrls.ANNOTATIONS_ANNOTATION;
-import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_PAGES_ANNOTATIONS;
-import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_RECORD;
+import static io.goobi.viewer.api.rest.v1.ApiUrls.*;
 
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -88,7 +85,7 @@ public class CampaignItemResource {
 
     @Inject
     protected AbstractApiUrlManager urls;
-    protected AnnotationsResourceBuilder annoBuilder;
+    protected AnnotationsResourceBuilder annoBuilder = null;
 
     /**
      * <p>
@@ -96,12 +93,10 @@ public class CampaignItemResource {
      * </p>
      */
     public CampaignItemResource() {
-        annoBuilder = new AnnotationsResourceBuilder(urls);
     }
     
     public CampaignItemResource(AbstractApiUrlManager urls) {
         this.urls = urls;
-        annoBuilder = new AnnotationsResourceBuilder(this.urls);
     }
 
     /**
@@ -187,7 +182,7 @@ public class CampaignItemResource {
 
         List<WebAnnotation> webAnnotations = new ArrayList<>();
         for (PersistentAnnotation anno : annotations) {
-            WebAnnotation webAnno = annoBuilder.getAsWebAnnotation(anno);
+            WebAnnotation webAnno = getAnnoBuilder().getAsWebAnnotation(anno);
             webAnnotations.add(webAnno);
         }
 
@@ -217,16 +212,22 @@ public class CampaignItemResource {
         for (AnnotationPage page : pages) {
             URI targetURI = URI.create(page.getId());
             String pageOrderString = urls.parseParameter(
-                    urls.path(RECORDS_RECORD, RECORDS_PAGES_ANNOTATIONS).build(),
+                    urls.path(RECORDS_PAGES, RECORDS_PAGES_CANVAS).build(),
                     targetURI.toString(), 
                     "{pageNo}");
             Integer pageOrder = StringUtils.isBlank(pageOrderString) ? null : Integer.parseInt(pageOrderString);
 
             List<PersistentAnnotation> existingAnnotations = dao.getAnnotationsForCampaignAndTarget(campaign, pi, pageOrder);
             List<PersistentAnnotation> newAnnotations = page.annotations.stream().map(anno -> {
-                String uri = anno.getId().toString();
-                String idString = urls.parseParameter(urls.path(ANNOTATIONS, ANNOTATIONS_ANNOTATION).build(), uri, "{id}");
-                PersistentAnnotation pAnno = new PersistentAnnotation(anno, Long.parseLong(idString), pi, pageOrder);
+                Long id = null;
+                if(anno.getId() != null) {                    
+                    String uri = anno.getId().toString();
+                    String idString = urls.parseParameter(urls.path(ANNOTATIONS, ANNOTATIONS_ANNOTATION).build(), uri, "{id}");
+                    if(StringUtils.isNotBlank(idString)) {
+                        id = Long.parseLong(idString);
+                    }
+                }
+                PersistentAnnotation pAnno = new PersistentAnnotation(anno, id, pi, pageOrder);
                 return pAnno;
             }).collect(Collectors.toList());
 
@@ -264,6 +265,13 @@ public class CampaignItemResource {
                 logger.error("Error updating annotation " + exception.toString());
             }
         }
+    }
+    
+    public AnnotationsResourceBuilder getAnnoBuilder() {
+        if(this.annoBuilder == null) {
+            annoBuilder = new AnnotationsResourceBuilder(this.urls);
+        }
+        return annoBuilder;
     }
 
     /**

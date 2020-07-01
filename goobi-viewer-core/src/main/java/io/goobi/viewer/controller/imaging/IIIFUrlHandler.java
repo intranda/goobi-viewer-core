@@ -133,7 +133,10 @@ public class IIIFUrlHandler {
                     return sb.toString();
                 }
             } else {
-                if(urls != null) {    
+                if(urls != null) {
+                    //In the case of multivolume thumbnails in first-volume mode, a path consisting of both pi and filename is given. 
+                    //parse that path to get correct url for thumbnail
+                    //TODO: find a more robust solution
                     Path filePath = Paths.get(fileUrl);
                     if(filePath.getNameCount() == 2) {
                         docStructIdentifier = filePath.getName(0).toString();
