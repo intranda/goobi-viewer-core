@@ -365,9 +365,13 @@ var viewerJS = (function () {
 
     // init bootstrap 4 popovers
 	$(document).ready(function(){
-	    $('[data-toggle="popover"]').popover({
-	        trigger : 'hover'
-	    });
+	    try {	        
+	        $('[data-toggle="popover"]').popover({
+	            trigger : 'hover'
+	        });
+	    } catch(error) {
+	        //no bootstrap defined
+	    }
 	});
     
     /**
@@ -383,7 +387,10 @@ var viewerJS = (function () {
     return viewer;
     
 })(jQuery);
-
+  
 	//reset global bootstrap boundary of tooltips to window
-	$.fn.tooltip.Constructor.Default.boundary = "window";
-	$.fn.dropdown.Constructor.Default.boundary = "window";
+console.log("bootstrap")
+    if($.fn.tooltip.Constructor) {        
+        $.fn.tooltip.Constructor.Default.boundary = "window";
+        $.fn.dropdown.Constructor.Default.boundary = "window";
+    }
