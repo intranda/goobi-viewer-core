@@ -204,7 +204,7 @@ public class IndexResource {
     @ApiResponse(responseCode = "400", description = "Illegal query or query parameters")
     @ApiResponse(responseCode = "500", description = "Solr not available or unable to respond")
     public StreamingOutput stream(
-            @Schema(description = "Raw SOLR streaming expression", example="search(collection1,q=\"ISANCHOR:*\", sort=\"IDDOC asc\", fl=\"PI,DOCTYPE\",qt=\"/select\", rows=5)")
+            @Schema(description = "Raw SOLR streaming expression", example="search(collection1,q=\"+ISANCHOR:*\", sort=\"YEAR asc\", fl=\"YEAR,PI,DOCTYPE\", rows=5, qt=\"/select\")")
             String expression) throws IndexUnreachableException {
         String solrUrl = DataManager.getInstance().getSearchIndex().getSolrServerUrl();
         logger.trace("Call solr " + solrUrl);
