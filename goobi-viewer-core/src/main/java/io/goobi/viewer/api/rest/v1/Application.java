@@ -92,7 +92,7 @@ public class Application extends ResourceConfig {
         packages(true, "de.unigoettingen.sub.commons.contentlib.servlet.rest");
         packages(true, "io.swagger");
         
-        property(ServerProperties.OUTBOUND_CONTENT_LENGTH_BUFFER, 0);
+//        property(ServerProperties.OUTBOUND_CONTENT_LENGTH_BUFFER, 0);
         
     }
 
