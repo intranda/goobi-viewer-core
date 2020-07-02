@@ -71,6 +71,7 @@ import io.goobi.viewer.model.viewer.StringPair;
 import io.goobi.viewer.servlets.rest.content.RecordsRequestParameters;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 
 /**
@@ -202,7 +203,9 @@ public class IndexResource {
             summary = "Post a streaming expression to the SOLR index and forward its response")
     @ApiResponse(responseCode = "400", description = "Illegal query or query parameters")
     @ApiResponse(responseCode = "500", description = "Solr not available or unable to respond")
-    public StreamingOutput stream(String expression) throws IndexUnreachableException {
+    public StreamingOutput stream(
+            @Schema(description = "Raw SOLR streaming expression", example="search(collection1,q=\"ISANCHOR:*\", sort=\"IDDOC asc\", fl=\"PI,DOCTYPE\",qt=\"/select\", rows=5)")
+            String expression) throws IndexUnreachableException {
         String solrUrl = DataManager.getInstance().getSearchIndex().getSolrServerUrl();
         logger.trace("Call solr " + solrUrl);
         logger.trace("Streaming expression " + expression);
