@@ -25,11 +25,13 @@ import io.goobi.viewer.controller.DataManager;
  *
  */
 public class ApiUrls extends AbstractApiUrlManager {
+    
+    public static final String INDEXER =                                    "/indexer";
 
-    public static final String RECORDS_INDEX =                              "/index";
-    public static final String RECORDS_INDEXER =                            "/indexer";
-    public static final String RECORDS_QUERY =                              "/query";
-    public static final String RECORDS_STATISTICS =                         "/statistics";
+    public static final String INDEX =                                      "/index";
+    public static final String INDEX_QUERY =                                "/query";
+    public static final String INDEX_STREAM =                               "/stream";
+    public static final String INDEX_STATISTICS =                           "/statistics";
     
     public static final String RECORDS_RSS =                                "/records/rss";
     public static final String RECORDS_RSS_JSON =                           "/channel.json";

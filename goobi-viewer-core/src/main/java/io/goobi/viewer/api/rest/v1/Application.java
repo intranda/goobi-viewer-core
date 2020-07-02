@@ -27,6 +27,7 @@ import javax.ws.rs.core.Context;
 import org.glassfish.jersey.internal.inject.AbstractBinder;
 import org.glassfish.jersey.media.multipart.MultiPartFeature;
 import org.glassfish.jersey.server.ResourceConfig;
+import org.glassfish.jersey.server.ServerProperties;
 
 import io.goobi.viewer.api.rest.AbstractApiUrlManager;
 import io.goobi.viewer.api.rest.ViewerRestServiceBinding;
@@ -90,6 +91,8 @@ public class Application extends ResourceConfig {
         packages(true, "io.goobi.viewer.api.rest.exceptions");
         packages(true, "de.unigoettingen.sub.commons.contentlib.servlet.rest");
         packages(true, "io.swagger");
+        
+        property(ServerProperties.OUTBOUND_CONTENT_LENGTH_BUFFER, 0);
         
     }
 

@@ -15,7 +15,7 @@
  */
 package io.goobi.viewer.api.rest.v1.index;
 
-import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_INDEXER;
+import static io.goobi.viewer.api.rest.v1.ApiUrls.INDEXER;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -43,7 +43,7 @@ import io.goobi.viewer.controller.DataManager;
 /**
  * Resource for communicating with the indexer process.
  */
-@Path(RECORDS_INDEXER)
+@Path(INDEXER)
 @ViewerRestServiceBinding
 public class IndexerResource {
 

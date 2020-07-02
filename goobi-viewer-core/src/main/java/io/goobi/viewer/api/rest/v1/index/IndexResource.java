@@ -15,13 +15,12 @@
  */
 package io.goobi.viewer.api.rest.v1.index;
 
-import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_INDEX;
-import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_QUERY;
-import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_STATISTICS;
+import static io.goobi.viewer.api.rest.v1.ApiUrls.*;
 
+import java.io.IOException;
+import java.io.OutputStream;
 import java.net.MalformedURLException;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
@@ -34,13 +33,19 @@ import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
+import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.StreamingOutput;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.solr.client.solrj.io.stream.expr.StreamFactory;
+import org.apache.solr.client.solrj.io.Tuple;
+import org.apache.solr.client.solrj.io.stream.SolrStream;
+import org.apache.solr.client.solrj.io.stream.StreamContext;
+import org.apache.solr.client.solrj.io.stream.TupleStream;
 import org.apache.solr.client.solrj.response.QueryResponse;
 import org.apache.solr.common.SolrDocumentList;
+import org.apache.solr.common.params.ModifiableSolrParams;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.slf4j.Logger;
@@ -60,6 +65,7 @@ import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.exceptions.ViewerConfigurationException;
+import io.goobi.viewer.model.misc.NumberIterator;
 import io.goobi.viewer.model.search.SearchHelper;
 import io.goobi.viewer.model.viewer.StringPair;
 import io.goobi.viewer.servlets.rest.content.RecordsRequestParameters;
@@ -71,7 +77,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
  * @author florian
  *
  */
-@Path(RECORDS_INDEX)
+@Path(INDEX)
 @CORSBinding
 @ViewerRestServiceBinding
 public class IndexResource {
@@ -85,7 +91,7 @@ public class IndexResource {
 
     
     @GET
-    @Path(RECORDS_STATISTICS)
+    @Path(INDEX_STATISTICS)
     @Produces({ MediaType.APPLICATION_JSON })
     @Operation(
             tags = { "index" },
@@ -109,13 +115,13 @@ public class IndexResource {
     }
     
     @POST
-    @Path(RECORDS_QUERY)
+    @Path(INDEX_QUERY)
     @Consumes({ MediaType.APPLICATION_JSON })
     @Produces({ MediaType.APPLICATION_JSON })
     @Operation(
             tags = { "index" },
             summary = "Post a query directly the SOLR index")
-    @ApiResponse(responseCode = "406", description = "Illegal query or query parameters")
+    @ApiResponse(responseCode = "400", description = "Illegal query or query parameters")
     public String getRecordsForQuery(RecordsRequestParameters params) throws MalformedURLException, ContentNotFoundException,
             ServiceNotAllowedException, IndexUnreachableException, PresentationException, ViewerConfigurationException, DAOException,
             IllegalRequestException {
@@ -184,5 +190,49 @@ public class IndexResource {
         } catch (PresentationException e) {
             throw new IllegalRequestException(e.getMessage());
         }
+    }
+    
+
+    @POST
+    @Path(INDEX_STREAM)
+    @Consumes({ MediaType.TEXT_PLAIN })
+    @Produces({ MediaType.APPLICATION_JSON })
+    @Operation(
+            tags = { "index" },
+            summary = "Post a streaming expression to the SOLR index and forward its response")
+    @ApiResponse(responseCode = "400", description = "Illegal query or query parameters")
+    @ApiResponse(responseCode = "500", description = "Solr not available or unable to respond")
+    public StreamingOutput stream(String expression) throws IndexUnreachableException {
+        String solrUrl = DataManager.getInstance().getSearchIndex().getSolrServerUrl();
+        logger.trace("Call solr " + solrUrl);
+        logger.trace("Streaming expression " + expression);
+        return executeStreamingExpression(expression, solrUrl);
+    }
+    
+    private StreamingOutput executeStreamingExpression(String expr, String solrUrl) throws IndexUnreachableException {
+        return (out) -> {         
+            ObjectMapper mapper = new ObjectMapper();
+            ModifiableSolrParams paramsLoc = new ModifiableSolrParams();
+            paramsLoc.set("expr", expr);
+            paramsLoc.set("qt", "/stream");
+            // Note, the "/collection" below can be an alias.
+            try(TupleStream solrStream = new SolrStream(solrUrl, paramsLoc)) {            
+                StreamContext context = new StreamContext();
+                solrStream.setStreamContext(context);
+                solrStream.open();
+                Tuple tuple;
+                do {
+                    tuple = solrStream.read();
+                    String json = mapper.writeValueAsString(tuple);
+                    out.write((json + "\n").getBytes());
+                    out.flush();
+                } while(!tuple.EOF);
+            } catch (IOException e) {
+                if(e.getMessage() != null && e.getMessage().contains("not a proper expression clause")) {
+                    throw new WebApplicationException(new IllegalRequestException(e.getMessage()));
+                }
+                throw new WebApplicationException(new IndexUnreachableException(e.toString()));
+            }
+        };
     }
 }

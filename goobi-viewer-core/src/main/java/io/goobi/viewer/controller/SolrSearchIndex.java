@@ -1647,4 +1647,12 @@ public final class SolrSearchIndex {
         }
         return SearchHelper.ALL_RECORDS_QUERY + " AND " + SolrConstants.ACCESSCONDITION + ":\"" + accessCondition + "\"";
     }
+    
+    public String getSolrServerUrl() {
+        if(server != null && server instanceof HttpSolrClient) {
+            return ((HttpSolrClient)server).getBaseURL();
+        } else {
+            return null;
+        }
+    }
 }

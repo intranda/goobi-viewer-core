@@ -79,7 +79,7 @@ public class IndexResourceTest extends AbstractRestApiTest{
     public void testInvalidQuery() throws JsonMappingException, JsonProcessingException {
         params.sortFields = Stream.of("BLA").collect(Collectors.toList());
         Entity<RecordsRequestParameters> entity = Entity.entity(params, MediaType.APPLICATION_JSON);
-        try(Response response = target(urls.path(RECORDS_INDEX, RECORDS_QUERY).build())
+        try(Response response = target(urls.path(INDEX, INDEX_QUERY).build())
                 .request()
                 .accept(MediaType.APPLICATION_JSON)
                 .post(entity)) {
@@ -95,7 +95,7 @@ public class IndexResourceTest extends AbstractRestApiTest{
         params.count = 4;
         params.jsonFormat = "recordcentric";
         Entity<RecordsRequestParameters> entity = Entity.entity(params, MediaType.APPLICATION_JSON);
-        try(Response response = target(urls.path(RECORDS_INDEX, RECORDS_QUERY).build())
+        try(Response response = target(urls.path(INDEX, INDEX_QUERY).build())
                 .request()
                 .accept(MediaType.APPLICATION_JSON)
                 .post(entity)) {
@@ -108,7 +108,7 @@ public class IndexResourceTest extends AbstractRestApiTest{
     
     @Test
     public void testStatistics() throws JsonMappingException, JsonProcessingException {
-        String url = urls.path(RECORDS_INDEX, RECORDS_STATISTICS).build();
+        String url = urls.path(INDEX, INDEX_STATISTICS).build();
         try(Response response = target(url)
                 .request()
                 .accept(MediaType.APPLICATION_JSON)

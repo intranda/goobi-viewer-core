@@ -37,6 +37,7 @@ import de.unigoettingen.sub.commons.contentlib.exceptions.ContentNotFoundExcepti
 import de.unigoettingen.sub.commons.contentlib.servlet.rest.ContentExceptionMapper;
 import de.unigoettingen.sub.commons.contentlib.servlet.rest.ContentExceptionMapper.ErrorMessage;
 import io.goobi.viewer.api.rest.ViewerRestServiceBinding;
+import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.NotImplementedException;
 import io.goobi.viewer.exceptions.PresentationException;
 
@@ -60,6 +61,7 @@ public class WebApplicationExceptionMapper implements ExceptionMapper<WebApplica
     @Override
     public Response toResponse(WebApplicationException eParent) {
         Response.Status status = Status.INTERNAL_SERVER_ERROR;
+        boolean printStackTrace = false;
         Throwable e = eParent.getCause();
         if (e == null) {
             e = eParent;
@@ -78,14 +80,18 @@ public class WebApplicationExceptionMapper implements ExceptionMapper<WebApplica
         } else if (e instanceof PresentationException) {
             status = Status.INTERNAL_SERVER_ERROR;
             logger.error("Error on request {};\t ERROR MESSAGE: {}", request.getRequestURL(), e.getMessage());
+        } else if (e instanceof IndexUnreachableException) {
+            status = Status.INTERNAL_SERVER_ERROR;
+            logger.error("Error on request {};\t SOLR is not responding; ERROR MESSAGE: {}", request.getRequestURL(), e.getMessage());
         } else {
             //unknown error. Probably request error
             status = Status.BAD_REQUEST;
+            printStackTrace = true;
             logger.error(e.getMessage());
         }
 
         String mediaType = MediaType.APPLICATION_JSON;
-        return Response.status(status).type(mediaType).entity(new ErrorMessage(status, e, true)).build();
+        return Response.status(status).type(mediaType).entity(new ErrorMessage(status, e, printStackTrace)).build();
     }
 
     /**
