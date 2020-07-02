@@ -5,6 +5,9 @@
 /* TPL SINGLE COLLECTION */
 /* BLOCK */
 .tpl-single-collection {
+	img {
+		max-width: 100%;
+	}
     h1 {}
     /* ELEMENT */
     &__image {
@@ -12,7 +15,7 @@
     	max-height: 400px;
     	overflow: hidden;
     	img {
-    		width: 100%;	
+    		width: 100%;
     	}
     	h2 {
     		position: absolute;
@@ -20,28 +23,32 @@
     		bottom: 60px;
     		left: 0;
     		margin: 0;
-    		padding: 15px;
+    		padding: 1.5rem;
     		background-color: rgba(255,255,255,.75);
     	}
     }
     &__description {
-    	margin-bottom: 20px;
-    	padding: 15px;
+    	margin-bottom: 2rem;
+    	padding: 1.5rem;
     	color: @white;
     	background-color: @gray;
     	a {
-    		color: @white;
+    		color: @blue;
     		&:hover,
     		&:active,
     		&:focus {
-    			color: @white;
+    			color: @blue;
     		}
     	}
     }
     .search-list {
+    	position: relative;
     	/* OPTIONS */
 	    &__options {
-	    	margin-bottom: 15px;
+			position: absolute;
+			right: 0;
+			z-index: 20;
+			top: 16px;
 	        a, button {
 	            &:hover,
 	            &:focus,
@@ -85,7 +92,14 @@
 @media screen and (max-width: @largeBreakpoint) {}
 
 /* BREAKPOINT FOR DESKTOPS */
-@media screen and (max-width: @mediumBreakpoint) {}
+@media screen and (max-width: @mediumBreakpoint) {
+	.tpl-single-collection {
+		.search-list__options {
+			position: relative;
+			margin-bottom: 1rem;
+		}
+	}
+}
 
 /* BREAKPOINT FOR TABLETS */
 @media screen and (max-width: @smallBreakpoint) {}

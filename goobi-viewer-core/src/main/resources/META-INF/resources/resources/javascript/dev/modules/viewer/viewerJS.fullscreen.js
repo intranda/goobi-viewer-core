@@ -99,7 +99,7 @@ var viewerJS = ( function( viewer ) {
             }
             
             // reset tooltips for sidebar
-            $( '.widget-toc__title-expand [data-toggle="tooltip"]' ).tooltip( 'destroy' );
+            $( '.widget-toc__title-expand [data-toggle="tooltip"]' ).tooltip( 'dispose' );
             $( '.widget-toc__title-expand [data-toggle="tooltip"]' ).tooltip( {
             	placement: 'bottom'
             } );
@@ -521,7 +521,7 @@ var viewerJS = ( function( viewer ) {
     }
     
     /**
-     * @description Method to destroy the resizable view.
+     * @description Method to dispose the resizable view.
      * @method _unsetResizable
      * @param {String} selector The selector of the element which should be unset.
      * */
@@ -531,7 +531,7 @@ var viewerJS = ( function( viewer ) {
             console.log( 'selector: ', selector );
         }
 
-    	$( selector ).resizable( 'destroy' );
+    	$( selector ).resizable( 'dispose' );
     }
 
     /**

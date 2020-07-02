@@ -25,8 +25,6 @@ import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
-import javax.servlet.http.HttpServletRequest;
-
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -49,7 +47,10 @@ import de.unigoettingen.sub.commons.contentlib.imagelib.ImageType.Colortype;
 import de.unigoettingen.sub.commons.contentlib.imagelib.transform.RegionRequest;
 import de.unigoettingen.sub.commons.contentlib.imagelib.transform.Rotation;
 import de.unigoettingen.sub.commons.contentlib.imagelib.transform.Scale;
+import io.goobi.viewer.api.rest.AbstractApiUrlManager;
 import io.goobi.viewer.controller.DataManager;
+import io.goobi.viewer.controller.imaging.IIIFUrlHandler;
+import io.goobi.viewer.controller.imaging.ThumbnailHandler;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
@@ -79,21 +80,10 @@ public class ManifestBuilder extends AbstractBuilder {
      *
      * @param request a {@link javax.servlet.http.HttpServletRequest} object.
      */
-    public ManifestBuilder(HttpServletRequest request) {
-        super(request);
+    public ManifestBuilder(AbstractApiUrlManager apiUrlManager) {
+        super(apiUrlManager);
     }
-
-    /**
-     * <p>
-     * Constructor for ManifestBuilder.
-     * </p>
-     *
-     * @param servletUri a {@link java.net.URI} object.
-     * @param requestURI a {@link java.net.URI} object.
-     */
-    public ManifestBuilder(URI servletUri, URI requestURI) {
-        super(servletUri, requestURI);
-    }
+    
 
     /**
      * <p>
@@ -213,7 +203,9 @@ public class ManifestBuilder extends AbstractBuilder {
 
             /*VIEWER*/
             try {
-                LinkingContent viewerPage = new LinkingContent(new URI(getServletURI() + ele.getUrl()));
+                String applicationUrl = this.urls.getApplicationUrl();
+                String pageUrl = ele.getUrl();
+                LinkingContent viewerPage = new LinkingContent(new URI(applicationUrl + pageUrl));
                 viewerPage.setLabel(new SimpleMetadataValue("goobi viewer"));
                 manifest.addRendering(viewerPage);
             } catch (URISyntaxException e) {
@@ -229,7 +221,7 @@ public class ManifestBuilder extends AbstractBuilder {
                         .filter(page -> page.isPublished())
                         .forEach(page -> {
                             try {
-                                LinkingContent cmsPage = new LinkingContent(new URI(getServletURI() + page.getUrl()));
+                                LinkingContent cmsPage = new LinkingContent(new URI(this.urls.getApplicationUrl() + "/" + page.getUrl()));
                                 //                    cmsPage.setLabel(new MultiLanguageMetadataValue(page.getLanguageVersions().stream()
                                 //                            .filter(lang -> StringUtils.isNotBlank(lang.getTitle()))
                                 //                            .collect(Collectors.toMap(lang -> lang.getLanguage(), lang -> lang.getTitle()))));

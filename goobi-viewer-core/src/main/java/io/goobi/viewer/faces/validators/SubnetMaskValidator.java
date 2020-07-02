@@ -41,7 +41,7 @@ public class SubnetMaskValidator implements Validator<String> {
         try {
             new SubnetUtils(value);
         } catch (IllegalArgumentException e) {
-            FacesMessage msg = new FacesMessage(ViewerResourceBundle.getTranslation("ipRange_errInvalidSubnetMask", null), "");
+            FacesMessage msg = new FacesMessage(ViewerResourceBundle.getTranslation("admin__ip_range_err_invalid_subnet_mask", null), "");
             msg.setSeverity(FacesMessage.SEVERITY_ERROR);
             throw new ValidatorException(msg);
         }

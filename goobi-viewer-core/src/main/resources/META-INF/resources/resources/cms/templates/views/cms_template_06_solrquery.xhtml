@@ -55,12 +55,12 @@
 		                    <div class="solr-query-collection__thumbs">
 		                        <div class="row">
 		                            <ui:repeat var="hit" value="#{cmsBean.queryResults}">
-		                                <div class="col-xs-12 col-sm-4">
+		                                <div class="col-12 col-sm-4">
 		                                    <div class="solr-query-collection__thumb">
 		                                        <!-- IMAGE -->
 		                                        <div class="solr-query-collection__image">
 		                                            <h:outputLink value="#{navigationHelper.applicationUrl}#{hit.browseElement.url}">
-	                                                    <img data-src="#{hit.browseElement.getThumbnailUrl(360, 300)}" class="img-responsive" alt="#{hit.browseElement.label}" 
+	                                                    <img data-src="#{hit.browseElement.getThumbnailUrl(360, 300)}" class="img-fluid" alt="#{hit.browseElement.label}" 
 	                                                    data-viewer-thumbnail="thumbnail"/>
 		                                            </h:outputLink>
 		                                        </div>
@@ -85,12 +85,12 @@
 			                        <h3>#{msg[hitSet.key]}</h3>
 			                        <div class="row">
 			                            <ui:repeat var="hit" value="#{hitSet.value}">
-			                                <div class="col-xs-12 col-sm-4">
+			                                <div class="col-12 col-sm-4">
 			                                    <div class="solr-query-collection__thumb">
 			                                        <!-- IMAGE -->
 			                                        <div class="solr-query-collection__image">
 			                                            <h:outputLink value="#{navigationHelper.applicationUrl}#{hit.browseElement.url}">
-		                                                    <img data-src="#{hit.browseElement.getThumbnailUrl(360, 300)}" class="img-responsive" alt="#{hit.browseElement.label}" 
+		                                                    <img data-src="#{hit.browseElement.getThumbnailUrl(360, 300)}" class="img-fluid" alt="#{hit.browseElement.label}" 
 		                                                    data-viewer-thumbnail="thumbnail"/>
 			                                            </h:outputLink>
 			                                        </div>

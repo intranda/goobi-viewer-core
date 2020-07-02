@@ -319,6 +319,15 @@ public final class Configuration extends AbstractConfiguration {
     }
 
     /**
+     * 
+     * @should return correct value
+     * @return Connector URL
+     */
+    public String getConnectorVersionUrl() {
+        return getLocalString("urls.connectorVersion", "http://localhost:8080/M2M/oai/tools?action=getVersion");
+    }
+
+    /**
      * Returns the list of configured metadata for the title bar component. TODO Allow templates and then retire this method.
      *
      * @should return all configured metadata elements
@@ -876,24 +885,6 @@ public final class Configuration extends AbstractConfiguration {
             superlist.add(new DcSortingList(sortAfter, collectionList));
         }
         return superlist;
-    }
-
-    /**
-     * <p>
-     * getCollectionBlacklistMode.
-     * </p>
-     *
-     * @param field a {@link java.lang.String} object.
-     * @should return correct value
-     * @return a {@link java.lang.String} object.
-     */
-    public String getCollectionBlacklistMode(String field) {
-        HierarchicalConfiguration collection = getCollectionConfiguration(field);
-        if (collection == null) {
-            return "all";
-        }
-
-        return collection.getString("blacklist.mode", "all");
     }
 
     /**
@@ -1951,6 +1942,18 @@ public final class Configuration extends AbstractConfiguration {
      */
     public String getSmtpSecurity() {
         return getLocalString("user.smtpSecurity", "none");
+    }
+
+    /**
+     * <p>
+     * getAnonymousUserEmailAddress.
+     * </p>
+     *
+     * @should return correct value
+     * @return a {@link java.lang.String} object.
+     */
+    public String getAnonymousUserEmailAddress() {
+        return getLocalString("user.anonymousUserEmailAddress");
     }
 
     /**
@@ -3470,6 +3473,30 @@ public final class Configuration extends AbstractConfiguration {
 
     /**
      * <p>
+     * isSolrCompressionEnabled.
+     * </p>
+     *
+     * @should return correct value
+     * @return a boolean.
+     */
+    public boolean isSolrCompressionEnabled() {
+        return getLocalBoolean(("performance.solr.compressionEnabled"), true);
+    }
+
+    /**
+     * <p>
+     * isSolrBackwardsCompatible.
+     * </p>
+     *
+     * @should return correct value
+     * @return a boolean.
+     */
+    public boolean isSolrBackwardsCompatible() {
+        return getLocalBoolean(("performance.solr.backwardsCompatible"), false);
+    }
+
+    /**
+     * <p>
      * isUserCommentsEnabled.
      * </p>
      *
@@ -3984,18 +4011,6 @@ public final class Configuration extends AbstractConfiguration {
      */
     public String getDbPersistenceUnit() {
         return getLocalString("dbPersistenceUnit", null);
-    }
-
-    /**
-     * <p>
-     * isCmsEnabled.
-     * </p>
-     *
-     * @should return correct value
-     * @return a boolean.
-     */
-    public boolean isCmsEnabled() {
-        return getLocalBoolean("cms.enabled", false);
     }
 
     /**
@@ -4660,7 +4675,7 @@ public final class Configuration extends AbstractConfiguration {
      * @param marker
      * @return
      */
-    public GeoMapMarker readGeoMapMarker(HierarchicalConfiguration config) {
+    public static GeoMapMarker readGeoMapMarker(HierarchicalConfiguration config) {
         GeoMapMarker marker = null;
         String name = config.getString(".");
         if (StringUtils.isNotBlank(name)) {

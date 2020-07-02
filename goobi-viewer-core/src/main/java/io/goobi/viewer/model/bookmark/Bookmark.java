@@ -40,6 +40,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonInclude.Include;
 
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.SolrConstants;
@@ -60,6 +62,7 @@ import io.goobi.viewer.model.viewer.StructElement;
  */
 @Entity
 @Table(name = "bookshelf_items")
+@JsonInclude(Include.NON_NULL)
 public class Bookmark implements Serializable {
 
     private static final long serialVersionUID = 9047168382986927374L;

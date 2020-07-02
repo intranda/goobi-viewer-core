@@ -216,6 +216,7 @@ public class BookmarkBean implements Serializable {
 
     /**
      * Shares currentBookmarkList with currentUserGroup.
+     * @deprecated not used anymore. Replaced by assigning share key
      */
     public void shareCurrentBookmarkListAction() {
         UserBean userBean = BeanUtils.getUserBean();

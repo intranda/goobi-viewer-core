@@ -281,12 +281,12 @@ var viewerJS = ( function( viewer ) {
                     $thumbToggle
                         .addClass("-active")
                         .attr("title", activeTitle)
-                        .tooltip('fixTitle');
+                        .tooltip('_fixTitle');
                 } else {
                     $thumbToggle
                     .removeClass("-active")
                     .attr("title", inactiveTitle)
-                    .tooltip('fixTitle');
+                    .tooltip('_fixTitle');
                 }
                 
                 $thumbToggle.on("click", (event) => {
@@ -296,14 +296,14 @@ var viewerJS = ( function( viewer ) {
                         $thumbToggle
                             .addClass("-active")
                             .attr("title", activeTitle)
-                            .tooltip('fixTitle')
+                            .tooltip('_fixTitle')
                             .tooltip('show');
                         $(".search-list__subhit-thumbnail").show();
                     } else {
                         $thumbToggle
                             .removeClass("-active")
                             .attr("title", inactiveTitle)
-                            .tooltip('fixTitle')
+                            .tooltip('_fixTitle')
                             .tooltip('show');
                         $(".search-list__subhit-thumbnail").hide();
                     }

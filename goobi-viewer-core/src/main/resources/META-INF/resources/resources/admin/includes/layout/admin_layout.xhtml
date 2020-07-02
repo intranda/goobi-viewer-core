@@ -1,13 +1,13 @@
-<ui:composition 
-    xmlns="http://www.w3.org/1999/xhtml" 
-    xmlns:ui="http://xmlns.jcp.org/jsf/facelets" 
+<ui:composition
+    xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
     xmlns:c="http://java.sun.com/jsp/jstl/core"
-    xmlns:h="http://xmlns.jcp.org/jsf/html" 
-    xmlns:f="http://xmlns.jcp.org/jsf/core" 
+    xmlns:h="http://xmlns.jcp.org/jsf/html"
+    xmlns:f="http://xmlns.jcp.org/jsf/core"
     xmlns:jsf="http://xmlns.jcp.org/jsf"
-    xmlns:pt="http://xmlns.jcp.org/jsf/passthrough" 
+    xmlns:pt="http://xmlns.jcp.org/jsf/passthrough"
     xmlns:viewer="http://xmlns.jcp.org/jsf/composite/components/partner"
-    xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components" 
+    xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components"
     xmlns:widgetComponent="http://xmlns.jcp.org/jsf/composite/components/widgets"
     xmlns:adminWidget="http://xmlns.jcp.org/jsf/composite/admin/widgets"
     xmlns:adminComponent="http://xmlns.jcp.org/jsf/composite/admin/components">
@@ -20,7 +20,7 @@
     <div class="admin">
         <!-- SIDEBAR BACKGROUND -->
         <div class="admin__sidebar-background"></div>
-    
+
         <!-- SIDEBAR -->
         <aside id="adminSidebar" class="admin__sidebar">
             <div class="admin__sidebar-inner">
@@ -30,10 +30,11 @@
                         <span>Goobi viewer</span>
                     </a>
                 </h1>
-                
+
                 <!-- DASHBOARD -->
                 <ui:fragment rendered="#{userBean.admin}">
                     <div class="admin__sidebar-dashboard admin-widget">
+                        <div class="admin-widget__header">#{msg.admin__general_title}</div>
                         <ul>
                             <li class="#{navigationHelper.currentPage == 'adminDashboard' ? 'active' : ''}">
                                 <a href="#{request.contextPath}/admin/">
@@ -48,8 +49,8 @@
                 <!-- WIDGETS -->
                 <div class="admin__sidebar-widgets">
                     <adminWidget:widget_admin />
-			        <adminWidget:widget_crowdsourcing />
-			        <adminWidget:widget_cms />
+                    <adminWidget:widget_crowdsourcing />
+                    <adminWidget:widget_cms />
                 </div>
 
                 <!-- LOGOUT -->
@@ -68,12 +69,13 @@
             </div>
         </aside>
 
-		<!-- CONTENT BACKGROUND -->
+        <!-- CONTENT BACKGROUND -->
         <div class="admin__content-background"></div>
+
         <!-- CONTENT -->
         <main id="adminContent" class="admin__content">
             <div class="admin__content-inner">
-                <ui:insert name="content" />    
+                <ui:insert name="content" />
             </div>
         </main>
     </div>

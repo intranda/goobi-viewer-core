@@ -86,7 +86,7 @@ public class BookmarkList implements Serializable {
     private String description;
 
     @Column(name = "public")
-    private boolean isPublic = false;
+    private Boolean isPublic = false;
 
     @Column(name = "share_key", unique = true)
     public String shareKey;
@@ -219,7 +219,9 @@ public class BookmarkList implements Serializable {
      */
     public String generateSolrQueryForItems() {
         StringBuilder sb = new StringBuilder();
-
+        if(items.isEmpty()) {
+            return "-*:*";
+        }
         for (Bookmark item : items) {
             if (StringUtils.isNotEmpty(item.getPi())) {
                 if (StringUtils.isNotEmpty(item.getLogId())) {
@@ -428,7 +430,7 @@ public class BookmarkList implements Serializable {
      * @return the isPublic
      */
     public boolean isIsPublic() {
-        return isPublic;
+        return isPublic == null ? false : isPublic;
     }
 
     /**

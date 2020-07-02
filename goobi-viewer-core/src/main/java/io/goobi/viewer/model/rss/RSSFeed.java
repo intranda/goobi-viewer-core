@@ -23,6 +23,8 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
 
+import javax.servlet.http.HttpServletRequest;
+
 import org.apache.commons.lang3.StringUtils;
 import org.apache.solr.common.SolrDocument;
 import org.apache.solr.common.SolrDocumentList;
@@ -36,7 +38,10 @@ import com.rometools.rome.feed.synd.SyndEntry;
 import com.rometools.rome.feed.synd.SyndEntryImpl;
 import com.rometools.rome.feed.synd.SyndFeed;
 import com.rometools.rome.feed.synd.SyndFeedImpl;
+import com.rometools.rome.io.FeedException;
+import com.rometools.rome.io.SyndFeedOutput;
 
+import de.unigoettingen.sub.commons.contentlib.exceptions.ContentLibException;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.SolrConstants;
 import io.goobi.viewer.controller.SolrConstants.DocType;
@@ -47,9 +52,13 @@ import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.exceptions.ViewerConfigurationException;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.messages.ViewerResourceBundle;
+import io.goobi.viewer.model.bookmark.BookmarkList;
+import io.goobi.viewer.model.search.SearchFacets;
+import io.goobi.viewer.model.search.SearchHelper;
 import io.goobi.viewer.model.viewer.MimeType;
 import io.goobi.viewer.model.viewer.PageType;
 import io.goobi.viewer.model.viewer.StringPair;
+import io.goobi.viewer.servlets.utils.ServletUtils;
 
 /**
  * <p>
@@ -67,7 +76,8 @@ public class RSSFeed {
     /** Constant <code>FIELDS</code> */
     public static final String[] FIELDS = { SolrConstants.ACCESSCONDITION, SolrConstants.DATECREATED, SolrConstants.FILENAME, SolrConstants.FULLTEXT,
             SolrConstants.IDDOC, SolrConstants.LABEL, SolrConstants.TITLE, SolrConstants.DOCSTRCT, SolrConstants.DOCTYPE, SolrConstants.IDDOC_PARENT,
-            SolrConstants.ISANCHOR, SolrConstants.ISWORK, SolrConstants.LOGID, SolrConstants.MIMETYPE, SolrConstants.PERSON_ONEFIELD,
+            SolrConstants.ISANCHOR, SolrConstants.ISWORK, SolrConstants.LOGID, SolrConstants.MIMETYPE, SolrConstants.NUMVOLUMES,
+            SolrConstants.PERSON_ONEFIELD,
             SolrConstants.PI, SolrConstants.PI_TOPSTRUCT, SolrConstants.PLACEPUBLISH, SolrConstants.PUBLISHER, SolrConstants.THUMBNAIL,
             SolrConstants.URN, SolrConstants.YEARPUBLISH, "MD_SHELFMARK" };
 
@@ -84,9 +94,9 @@ public class RSSFeed {
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
      */
-    public static SyndFeed createRss(String rootPath, String query)
+    public static SyndFeed createRss(String rootPath, String query, int maxItems)
             throws PresentationException, IndexUnreachableException, DAOException, ViewerConfigurationException {
-        return createRss(rootPath, query, null, null);
+        return createRss(rootPath, query, null, null, maxItems);
     }
 
     /**
@@ -120,7 +130,7 @@ public class RSSFeed {
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
      */
-    public static SyndFeed createRss(String rootPath, String query, List<String> filterQueries, String language)
+    public static SyndFeed createRss(String rootPath, String query, List<String> filterQueries, String language, int maxItems)
             throws PresentationException, IndexUnreachableException, ViewerConfigurationException {
         String feedType = "rss_2.0";
 
@@ -152,10 +162,9 @@ public class RSSFeed {
 
         List<SyndEntry> entries = new ArrayList<>();
 
-        int rssFeedItems = DataManager.getInstance().getConfiguration().getRssFeedItems();
         SolrDocumentList docs = DataManager.getInstance()
                 .getSearchIndex()
-                .search(query, 0, rssFeedItems, Collections.singletonList(new StringPair(SolrConstants.DATECREATED, "desc")), null,
+                .search(query, 0, maxItems, Collections.singletonList(new StringPair(SolrConstants.DATECREATED, "desc")), null,
                         getFieldsWithTranslation(locale), filterQueries, null)
                 .getResults();
         if (docs == null || docs.isEmpty()) {
@@ -713,4 +722,113 @@ public class RSSFeed {
         }
         return imageUrl;
     }
+    
+    /**
+     * @param language
+     * @param maxHits
+     * @param query
+     * @param facets
+     * @param searchOperator
+     * @return
+     * @throws ContentLibException
+     */
+    public static Channel createRssResponse(String language, Integer maxHits, String subtheme, String query, String facets, HttpServletRequest servletRequest)
+            throws ContentLibException {
+        try {
+            if(maxHits == null) {
+                maxHits = DataManager.getInstance().getConfiguration().getRssFeedItems();
+            }
+            if(language == null) {
+                language = servletRequest.getLocale().getLanguage();
+            }
+            query = createQuery(query, null, subtheme, servletRequest, false);
+            if(StringUtils.isNotBlank(query)) {
+                query = SearchHelper.buildFinalQuery(query, DataManager.getInstance().getConfiguration().isAggregateHits(), BeanUtils.getNavigationHelper(), servletRequest);
+            }
+            
+            // Optional faceting
+            List<String> filterQueries = null;
+            if (StringUtils.isNotBlank(facets)) {
+                SearchFacets searchFacets = new SearchFacets();
+                searchFacets.setCurrentFacetString(facets);
+                filterQueries = searchFacets.generateFacetFilterQueries(0, true);
+            }
+            
+            Channel rss = RSSFeed.createRssFeed(ServletUtils.getServletPathWithHostAsUrlFromRequest(servletRequest),
+                    query, filterQueries, maxHits, language);
+            return rss;
+        } catch (PresentationException | IndexUnreachableException | ViewerConfigurationException | DAOException e) {
+            throw new ContentLibException(e.toString());
+        }
+    }
+    
+    public static String createRssFeed(String language, Integer maxHits, String subtheme, String query, String facets, HttpServletRequest servletRequest)
+            throws ContentLibException {
+        try {
+            if(maxHits == null) {
+                maxHits = DataManager.getInstance().getConfiguration().getRssFeedItems();
+            }
+            if(language == null) {
+                language = servletRequest.getLocale().getLanguage();
+            }
+            query = createQuery(query, null, subtheme, servletRequest, false);
+            if(StringUtils.isNotBlank(query)) {
+                query = SearchHelper.buildFinalQuery(query, DataManager.getInstance().getConfiguration().isAggregateHits(), BeanUtils.getNavigationHelper(), servletRequest);
+            }
+            
+            // Optional faceting
+            List<String> filterQueries = null;
+            if (StringUtils.isNotBlank(facets)) {
+                SearchFacets searchFacets = new SearchFacets();
+                searchFacets.setCurrentFacetString(facets);
+                filterQueries = searchFacets.generateFacetFilterQueries(0, true);
+            }
+            
+            SyndFeedOutput output = new SyndFeedOutput();
+            return output
+                    .outputString(RSSFeed.createRss(ServletUtils.getServletPathWithHostAsUrlFromRequest(servletRequest), query, filterQueries, language, maxHits));
+
+        } catch (PresentationException | IndexUnreachableException | ViewerConfigurationException | DAOException | FeedException e) {
+            throw new ContentLibException(e.toString());
+        }
+    }
+    
+    private static String createQuery(String query, Long bookshelfId, String partnerId, HttpServletRequest servletRequest, boolean addSuffixes)
+            throws IndexUnreachableException, PresentationException, DAOException {
+        // Build query, if none given
+        if (StringUtils.isEmpty(query)) {
+            if (bookshelfId != null) {
+                // Bookshelf RSS feed
+                BookmarkList bookshelf = DataManager.getInstance().getDao().getBookmarkList(bookshelfId);
+                if (bookshelf == null) {
+                    throw new PresentationException("Requested bookshelf not found: " + bookshelfId);
+                }
+                if (!bookshelf.isIsPublic()) {
+                    throw new PresentationException("Requested bookshelf not public: " + bookshelfId);
+                }
+                query = bookshelf.generateSolrQueryForItems();
+            } else {
+                // Main RSS feed
+                query = SolrConstants.ISWORK + ":true";
+            }
+        }
+
+        StringBuilder sbQuery = new StringBuilder();
+        sbQuery.append("(").append(query).append(")");
+
+        if (StringUtils.isNotBlank(partnerId)) {
+            sbQuery.append(" AND ")
+                    .append(DataManager.getInstance().getConfiguration().getSubthemeDiscriminatorField())
+                    .append(':')
+                    .append(partnerId.trim());
+        }
+
+        if (addSuffixes) {
+            sbQuery.append(
+                    SearchHelper.getAllSuffixes(servletRequest, null, true, true, DataManager.getInstance().getConfiguration().isSubthemeAddFilterQuery()));
+        }
+
+        return sbQuery.toString();
+    }
+    
 }

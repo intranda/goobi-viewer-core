@@ -22,6 +22,7 @@ import java.util.Optional;
 import org.apache.solr.common.SolrDocument;
 
 import io.goobi.viewer.controller.AbstractConfiguration;
+import io.goobi.viewer.model.security.user.User;
 import io.goobi.viewer.modules.interfaces.IURLBuilder;
 
 /**
@@ -139,6 +140,23 @@ public interface IModule {
      * @return true if successful; false otherwise
      */
     public boolean augmentResetRecord();
+
+    /**
+     * Removes content created by the given user.
+     * 
+     * @param user User whose content to delete
+     * @return Number of deleted contributions
+     */
+    public int deleteUserContributions(User user);
+
+    /**
+     * Moves all content created by the given user to a different user.
+     * 
+     * @param fromUser Source user
+     * @param toUser Destination user
+     * @return
+     */
+    public int moveUserContributions(User fromUser, User toUser);
 
     /**
      * <p>

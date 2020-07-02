@@ -777,12 +777,21 @@ public class ConfigurationTest extends AbstractTest {
     }
 
     /**
+     * @see Configuration#getAnonymousUserEmailAddress()
+     * @verifies return correct value
+     */
+    @Test
+    public void getAnonymousUserEmailAddress_shouldReturnCorrectValue() throws Exception {
+        Assert.assertEquals("we.are@anonymous.lulz", DataManager.getInstance().getConfiguration().getAnonymousUserEmailAddress());
+    }
+
+    /**
      * @see Configuration#getSolrUrl()
      * @verifies return correct value
      */
     @Test
     public void getSolrUrl_shouldReturnCorrectValue() throws Exception {
-        Assert.assertEquals("https://viewer.goobi.io/solr/collection1", DataManager.getInstance().getConfiguration().getSolrUrl());
+        Assert.assertEquals("https://viewer-testing-index.goobi.io/solr/collection1", DataManager.getInstance().getConfiguration().getSolrUrl());
     }
 
     /**
@@ -1282,6 +1291,24 @@ public class ConfigurationTest extends AbstractTest {
     @Test
     public void isPreventProxyCaching_shouldReturnCorrectValue() throws Exception {
         Assert.assertEquals(true, DataManager.getInstance().getConfiguration().isPreventProxyCaching());
+    }
+
+    /**
+     * @see Configuration#isSolrCompressionEnabled()
+     * @verifies return correct value
+     */
+    @Test
+    public void isSolrCompressionEnabled_shouldReturnCorrectValue() throws Exception {
+        Assert.assertFalse(DataManager.getInstance().getConfiguration().isSolrCompressionEnabled());
+    }
+
+    /**
+     * @see Configuration#isSolrBackwardsCompatible()
+     * @verifies return correct value
+     */
+    @Test
+    public void isSolrBackwardsCompatible_shouldReturnCorrectValue() throws Exception {
+        Assert.assertTrue(DataManager.getInstance().getConfiguration().isSolrBackwardsCompatible());
     }
 
     /**
@@ -2026,15 +2053,6 @@ public class ConfigurationTest extends AbstractTest {
     }
 
     /**
-     * @see Configuration#isCmsEnabled()
-     * @verifies return correct value
-     */
-    @Test
-    public void isCmsEnabled_shouldReturnCorrectValue() throws Exception {
-        Assert.assertEquals(true, DataManager.getInstance().getConfiguration().isCmsEnabled());
-    }
-
-    /**
      * @see Configuration#useCustomNavBar()
      * @verifies return correct value
      */
@@ -2775,5 +2793,15 @@ public class ConfigurationTest extends AbstractTest {
         Assert.assertNotNull(marker);
         Assert.assertEquals("maps__marker_2", marker.getName());
         Assert.assertEquals("fa-search", marker.getIcon());
+    }
+
+    /**
+     * @see Configuration#getConnectorVersionUrl()
+     * @verifies return correct value
+     */
+    @Test
+    public void getConnectorVersionUrl_shouldReturnCorrectValue() throws Exception {
+        Assert.assertEquals("http://localhost:8081/M2M/oai/tools?action=getVersion",
+                DataManager.getInstance().getConfiguration().getConnectorVersionUrl());
     }
 }

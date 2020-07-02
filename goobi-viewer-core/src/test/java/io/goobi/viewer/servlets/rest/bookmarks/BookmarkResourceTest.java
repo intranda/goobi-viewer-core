@@ -27,6 +27,7 @@ import org.junit.Test;
 
 import io.goobi.viewer.AbstractDatabaseAndSolrEnabledTest;
 import io.goobi.viewer.TestUtils;
+import io.goobi.viewer.api.rest.model.SuccessMessage;
 import io.goobi.viewer.controller.Configuration;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.exceptions.DAOException;
@@ -34,7 +35,6 @@ import io.goobi.viewer.exceptions.RestApiException;
 import io.goobi.viewer.managedbeans.UserBean;
 import io.goobi.viewer.model.bookmark.BookmarkList;
 import io.goobi.viewer.model.security.user.User;
-import io.goobi.viewer.servlets.rest.SuccessMessage;
 
 /**
  * @author Florian Alpers

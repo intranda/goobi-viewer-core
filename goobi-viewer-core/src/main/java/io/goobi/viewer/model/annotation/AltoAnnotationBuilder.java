@@ -21,6 +21,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.apache.commons.lang3.StringUtils;
+
 import de.intranda.api.annotation.AbstractAnnotation;
 import de.intranda.api.annotation.IAnnotation;
 import de.intranda.api.annotation.IResource;
@@ -35,6 +37,9 @@ import de.intranda.api.iiif.presentation.AnnotationList;
 import de.intranda.api.iiif.presentation.Canvas;
 import de.intranda.digiverso.ocr.alto.model.structureclasses.Page;
 import de.intranda.digiverso.ocr.alto.model.superclasses.GeometricData;
+import io.goobi.viewer.api.rest.AbstractApiUrlManager;
+import io.goobi.viewer.api.rest.AbstractApiUrlManager.ApiPath;
+import io.goobi.viewer.api.rest.v1.ApiUrls;
 
 /**
  * Creates an {@link de.intranda.api.iiif.presentation.AnnotationList} of {@link TextualAnnotation}s from the content of an ALTO document. Depending
@@ -44,6 +49,14 @@ import de.intranda.digiverso.ocr.alto.model.superclasses.GeometricData;
  */
 public class AltoAnnotationBuilder {
 
+    private AbstractApiUrlManager urls;
+    private String format;
+    
+    public AltoAnnotationBuilder(AbstractApiUrlManager urls, String format) {
+        this.urls = urls;
+        this.format = format;
+    }
+    
     /**
      * <p>
      * createAnnotations.
@@ -56,8 +69,7 @@ public class AltoAnnotationBuilder {
      * @param urlOnlyTarget a boolean.
      * @return a {@link java.util.List} object.
      */
-    public List<IAnnotation> createAnnotations(Page alto, Canvas canvas, Granularity granularity, String baseUrl, boolean urlOnlyTarget) {
-
+    public List<IAnnotation> createAnnotations(Page alto, String pi, Integer pageNo, Canvas canvas, Granularity granularity, boolean urlOnlyTarget) {
         List<GeometricData> elementsToInclude = new ArrayList<>();
         switch (granularity) {
             case PAGE:
@@ -78,7 +90,7 @@ public class AltoAnnotationBuilder {
         }
 
         List<IAnnotation> annoList =
-                elementsToInclude.stream().map(element -> createAnnotation(element, canvas, baseUrl, urlOnlyTarget)).collect(Collectors.toList());
+                elementsToInclude.stream().map(element -> createAnnotation(element, pi, pageNo, canvas, urlOnlyTarget)).collect(Collectors.toList());
         return annoList;
     }
 
@@ -93,9 +105,9 @@ public class AltoAnnotationBuilder {
      * @param urlOnlyTarget a boolean.
      * @return a {@link java.util.List} object.
      */
-    public List<IAnnotation> createAnnotations(List<GeometricData> elements, Canvas canvas, String baseUrl, boolean urlOnlyTarget) {
+    public List<IAnnotation> createAnnotations(List<GeometricData> elements, String pi, Integer pageNo, Canvas canvas, boolean urlOnlyTarget) {
         List<IAnnotation> annoList =
-                elements.stream().map(element -> createAnnotation(element, canvas, baseUrl, urlOnlyTarget)).collect(Collectors.toList());
+                elements.stream().map(element -> createAnnotation(element, pi, pageNo, canvas, urlOnlyTarget)).collect(Collectors.toList());
         return annoList;
     }
 
@@ -110,8 +122,8 @@ public class AltoAnnotationBuilder {
      * @param urlOnlyTarget a boolean.
      * @return a {@link de.intranda.api.annotation.IAnnotation} object.
      */
-    public IAnnotation createAnnotation(GeometricData element, IResource canvas, String baseUrl, boolean urlOnlyTarget) {
-        AbstractAnnotation anno = new OpenAnnotation(createAnnotationId(baseUrl, element.getId()));
+    public IAnnotation createAnnotation(GeometricData element, String pi, Integer pageNo, IResource canvas, boolean urlOnlyTarget) {
+        AbstractAnnotation anno = new OpenAnnotation(createAnnotationId(pi, pageNo, element.getId()));
         anno.setMotivation(Motivation.PAINTING);
         anno.setTarget(createSpecificResource(canvas, element.getBounds(), urlOnlyTarget));
         TextualResource body = new TextualResource(element.getContent());
@@ -142,12 +154,12 @@ public class AltoAnnotationBuilder {
      * @param id
      * @return
      */
-    private URI createAnnotationId(String baseUrl, String id) {
-        if (baseUrl.endsWith("/")) {
-            return URI.create(baseUrl + id);
-        } else {
-            return URI.create(baseUrl + "/" + id);
+    private URI createAnnotationId(String pi, Integer pageNo, String id) {
+        ApiPath path = urls.path(ApiUrls.ANNOTATIONS, ApiUrls.ANNOTATIONS_ALTO).params(pi, pageNo, id);
+        if(StringUtils.isNotBlank(format)) {
+            path = path.query("format", format);
         }
+        return URI.create(path.build());
     }
 
     public static enum Granularity {

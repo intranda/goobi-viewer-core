@@ -255,7 +255,6 @@ public class Search implements Serializable {
         if (facets == null) {
             throw new IllegalArgumentException("facets may not be null");
         }
-
         String currentQuery = SearchHelper.prepareQuery(this.query);
 
         // Collect regular and hierarchical facet field names and combine them into one list
@@ -409,12 +408,7 @@ public class Search implements Serializable {
                 String useExpandQuery = expandQuery + subElementQueryFilterSuffix;
                 if (StringUtils.isNotEmpty(useExpandQuery)) {
                     logger.trace("Expand query: {}", useExpandQuery);
-                    params.put(ExpandParams.EXPAND, "true");
-                    params.put(ExpandParams.EXPAND_Q, useExpandQuery);
-                    params.put(ExpandParams.EXPAND_FIELD, SolrConstants.PI_TOPSTRUCT);
-                    params.put(ExpandParams.EXPAND_ROWS, String.valueOf(SolrSearchIndex.MAX_HITS));
-                    params.put(ExpandParams.EXPAND_SORT, SolrConstants.ORDER + " asc");
-                    params.put(ExpandParams.EXPAND_FQ, ""); // The main filter query may not apply to the expand query to produce child hits
+                    params.putAll(SearchHelper.getExpandQueryParams(useExpandQuery));
                 }
             }
 
@@ -435,6 +429,8 @@ public class Search implements Serializable {
             this.hits.addAll(hits);
         }
     }
+
+
 
     /**
      * Constructs a search URL using the query parameters contained in this object.

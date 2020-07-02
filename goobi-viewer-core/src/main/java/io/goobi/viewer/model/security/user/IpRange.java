@@ -41,6 +41,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import io.goobi.viewer.controller.DataManager;
+import io.goobi.viewer.controller.NetTools;
 import io.goobi.viewer.controller.SolrConstants;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
@@ -151,7 +152,9 @@ public class IpRange implements ILicensee, Serializable {
             }
             return subnet.isInRange(inIp);
         } catch (IllegalArgumentException e) {
-            // logger.error(e.getMessage());
+            if (!NetTools.ADDRESS_LOCALHOST_IPV6.equals(inIp)) {
+                logger.error(e.getMessage());
+            }
         }
 
         return false;

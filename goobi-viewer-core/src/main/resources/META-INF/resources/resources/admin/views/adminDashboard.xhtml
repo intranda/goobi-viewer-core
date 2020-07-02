@@ -3,7 +3,7 @@
                 xmlns:f="http://xmlns.jcp.org/jsf/core"
                 xmlns:p="http://primefaces.org/ui"
                 xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
-                xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components"                 
+                xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components"
                 xmlns:widgetComponent="http://xmlns.jcp.org/jsf/composite/components/widgets"
                 xmlns:adminWidget="http://xmlns.jcp.org/jsf/composite/admin/widgets"
                 template="/resources/themes/#{navigationHelper.theme}/templateAdmin.html">
@@ -15,17 +15,190 @@
     </ui:define>
 
     <ui:define name="content">
-        <f:view contentType="text/html" encoding="utf-8">       
+        <f:view contentType="text/html" encoding="utf-8">
             <ui:fragment rendered="#{userBean.admin}">
-            <div id="adminDashboard">
-                <h2 class="admin__content-inner-title">#{msg.admin__dashboard}</h2>
-                
-                <div class="admin__content-inner-content">
+                <div id="adminDashboard">
+                    <div class="admin__title-bar">
+                        <h2 class="admin__title">#{msg.admin__dashboard}</h2>
+                    </div>
+                    <div class="admin__content-inner-content">
+                        <div class="admin__entry-list">
+
+
+                            <!-- WELCOME -->
+                            <div class="admin__boxed-entry -no-actions -w33">
+                                <div class="row">
+                                    <h3 class="col-9">#{msg.admin__dashboard_hello} #{userBean.user.nickName}</h3>
+                                    <div class="col-3 d-flex justify-content-end">
+                                        <!-- GRAVATAR -->
+                                        <ui:fragment rendered="#{user.useGravatar}">
+                                                <img src="#{user.getGravatarUrl(96)}" class="rounded-circle admin__dashboard-user-icon" alt="User Gravatar" />
+                                        </ui:fragment>
+                                        <!-- ICON -->
+                                        <ui:fragment rendered="#{!user.useGravatar}">
+                                            <img src="#{request.contextPath}/resources/images/backend/thumbnail_goobi_person.png" class="admin__dashboard-user-icon" alt="User avatar"/>
+                                        </ui:fragment>
+                                    </div>
+                                </div>
+                                <div class="row mb-3">
+                                    <div class="col-9">
+                                        #{msg.admin__dashboard_documentation}:<br/>
+                                        <a class="-bluelink" href="https://docs.goobi.io" target="_blank">https://docs.goobi.io</a>
+                                    </div>
+                                </div>
+                                <div class="row mb-3">
+                                    <div class="col-9">
+                                        #{msg.admin__dashboard_community_board}:<br/>
+                                        <a class="-bluelink" href="https://community.goobi.io" target="_blank">https://community.goobi.io</a>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-12">
+                                        <h:outputText value="#{msg.admin__dashboard_support}" escape="false" />
+                                    </div>
+                                </div>
+                            </div>
+
+
+                            <!-- CMS PAGES -->
+                            <div class="admin__boxed-entry pb-0 -no-actions -w66">
+                                <div class="row">
+                                    <h3 class="col-9">#{msg.cms_overview}</h3>
+                                </div>
+                                <div id="last-CMS-pages-table" class="admin__table-content -slim">
+                                    <!-- TITLE ROW -->
+                                    <div class="row no-gutters admin__table-title">
+                                        <div class="col-8 d-flex">
+                                            <span>#{msg.page}</span>
+                                        </div>
+                                        <div class="col-2 d-flex">
+                                            <span>#{msg.admin__cms_categories}</span>
+                                        </div>
+                                        <div class="col-2 d-flex">
+                                            <span>#{msg.cms_pageMetadata_lastEdited}</span>
+                                        </div>
+                                    </div>
+                                    <!-- INDIVIDUAL ENTRIES -->
+                                    <ui:repeat var="page" value="#{cmsBean.getMostRecentlyEditedPages(3)}">
+                                    <div class="row no-gutters admin__table-entry">
+                                        <div class="col-8 d-flex flex-column">
+                                            <!-- PAGE TITLE -->
+                                            <span class="admin__last-pages-title">#{page.title}
+                                            	<ui:fragment rendered="#{cmsBean.isMappedToStaticPage(page)}">
+                                                <span class="badge badge-warning" data-toggle="tooltip" data-placement="top" data-original-title="#{msg.admin__cms_overview_mapped_to_static_page}">
+		                                                <i class="fa fa-cogs" aria-hidden="true"></i>
+		                                            </span>
+	                                        	</ui:fragment>
+	                                        </span>
+                                            <!-- ACTIONS -->
+                                            <div>
+                                                <!-- SHOW -->
+                                                <a href="#{page.url}" class="admin__table-action-link" target="_blank"
+                                                    aria-label="#{msg.show}: #{page.title}">#{msg.show}</a>
+                                                <!-- EDIT -->
+                                                <a href="#{navigationHelper.applicationUrl}admin/cms/pages/edit/#{page.id}/"
+                                                   class="admin__table-action-link" aria-label="#{msg.edit}: #{page.title}">#{msg.edit}</a>
+                                            </div>
+                                        </div>
+                                        <div class="col-2">
+	    									<ui:repeat value="#{page.categories}" var="category">
+	                                            <div class="badge badge-violet">#{category.name}</div>
+	                                        </ui:repeat>
+                                        </div>
+                                        <div class="col-2 d-flex">
+                                        	<h:outputText value="#{page.dateUpdated}">
+                                                <f:convertDateTime pattern="dd.MM.YYYY - HH:mm" type="both" dateStyle="short" timeStyle="short" />
+                                            </h:outputText>
+                                        </div>
+                                    </div>
+                                    </ui:repeat>
+                                </div>
+                            </div>
+
+
+                            <!-- LICENSES -->
+                            <ui:fragment rendered="#{not empty adminBean.notConfiguredAccessConditions}">
+                                <h:form prependId="false" styleClass="admin__boxed-entry -no-actions -w33 -danger">
+                                    <div class="row">
+                                        <h3 class="col-9">#{msg.admin__licenses}</h3>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-12">
+                                            <!-- NOT CONFIGURED LICENSES -->
+                                            <div class="row">
+                                                <div class="col-12">#{msg.admin__dashboard_licenses_not_configured}:</div>
+                                            </div>
+                                            <ui:repeat var="accessCondition" value="#{adminBean.notConfiguredAccessConditions}">
+                                                <h:commandLink action="pretty:adminLicenseNew"
+                                                    actionListener="#{adminBean.newCurrentLicenseTypeAction(accessCondition)}"
+                                                    styleClass="row admin__license-unconfigured-entry my-3">
+                                                    <div class="col-8 pl-5 -textlink">
+                                                        #{accessCondition}
+                                                    </div>
+                                                    <div class="col-4 d-flex justify-content-end">
+                                                        <span>#{msg.admin__licenses_configure_license_now}</span>
+                                                    </div>
+                                                </h:commandLink>
+                                            </ui:repeat>
+                                        </div>
+                                    </div>
+                                    <div class="row mb-3">
+                                        <div class="col-12">#{msg.admin__dashboard_licenses_admin_only}</div>
+                                    </div>
+                                </h:form>
+                            </ui:fragment>
+
+
+                            <!-- VERSIONS -->
+                            <div class="admin__boxed-entry -no-actions -w33">
+                                <div class="row">
+                                    <h3 class="col-9">#{msg.admin__dashboard_versions}</h3>
+                                </div>
+                                <dl class="row">
+                                    <dt class="col-sm-5 mb-3">#{msg.admin__dashboard_versions_core}:</dt>
+                                    <dd class="col-sm-7 mb-3">#{msg[statisticsBean.coreVersion]}</dd>
+
+                                    <dt class="col-sm-5 mb-3">#{msg.admin__dashboard_versions_theme}:</dt>
+                                    <dd class="col-sm-7 mb-3">#{navigationHelper.theme}</dd>
+
+                                    <dt class="col-sm-5 mb-3">#{msg.admin__dashboard_versions_connector}:</dt>
+                                    <dd class="col-sm-7 mb-3">#{msg[statisticsBean.connectorVersion]}</dd>
+
+                                    <dt class="col-sm-5 mb-3">#{msg.admin__dashboard_versions_indexer}:</dt>
+                                    <dd class="col-sm-7 mb-3">#{msg[statisticsBean.indexerVersion]}</dd>
+
+                                    <dt class="col-sm-5 mb-3">#{msg.admin__dashboard_versions_contentserver}:</dt>
+                                    <dd class="col-sm-7 mb-3">#{msg[statisticsBean.contentServerVersion]}</dd>
+                                </dl>
+                            </div>
+
+
+                            <!-- RSS FEED -->
+                            <div class="admin__boxed-entry -no-actions -w33">
+                                <ui:include src="/resources/includes/rssFeed.xhtml" />
+                            </div>
+
+
+                            <!-- MATOMO -->
+                            <ui:fragment rendered="#{configurationBean.piwikTracking}">
+                                <div class="admin__boxed-entry -no-actions -w33">
+                                    <div class="row">
+                                        <h3 class="col-12">#{msg.admin__dashboard_matomo_title}</h3>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-12">#{msg.admin__dashboard_matomo_text}</div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-12">
+                                            <a class="-bluelink" href="//#{configurationBean.piwikBaseURL}" target="_blank">#{msg.admin__dashboard_matomo_link}</a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </ui:fragment>
+                        </div>
+                    </div>
                 </div>
-            </div>
-            </ui:fragment> 
-            
+            </ui:fragment>
         </f:view>
     </ui:define>
-
 </ui:composition>

@@ -43,6 +43,7 @@ import io.goobi.viewer.model.cms.CMSPage;
 import io.goobi.viewer.model.cms.CMSStaticPage;
 import io.goobi.viewer.model.cms.CMSTemplateManager;
 import io.goobi.viewer.model.search.SearchHit;
+import io.goobi.viewer.model.viewer.PageType;
 
 public class CmsBeanTest extends AbstractDatabaseAndSolrEnabledTest {
 
@@ -178,6 +179,20 @@ public class CmsBeanTest extends AbstractDatabaseAndSolrEnabledTest {
         hit.getBrowseElement().setLabelShort(new SimpleMetadataValue(iddoc));
         hit.setSolrDoc(doc);
         return hit;
+    }
+
+    /**
+     * @see CmsBean#createStaticPageList()
+     * @verifies return pages in specified order
+     */
+    @Test
+    public void createStaticPageList_shouldReturnPagesInSpecifiedOrder() throws Exception {
+        List<PageType> pageTypes = PageType.getTypesHandledByCms(); // Order specified in the enum
+        List<CMSStaticPage> pages = CmsBean.createStaticPageList();
+        Assert.assertEquals(pageTypes.size(), pages.size());
+        for (int i = 0; i < pageTypes.size(); ++i) {
+            Assert.assertEquals(pageTypes.get(i).getName(), pages.get(i).getPageName());
+        }
     }
 
 }

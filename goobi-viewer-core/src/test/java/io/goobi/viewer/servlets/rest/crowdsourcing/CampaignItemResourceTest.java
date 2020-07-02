@@ -15,11 +15,9 @@
  */
 package io.goobi.viewer.servlets.rest.crowdsourcing;
 
-import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
@@ -30,17 +28,18 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
 
-import com.fasterxml.jackson.core.JsonParseException;
-import com.fasterxml.jackson.databind.JsonMappingException;
-
 import de.intranda.api.annotation.AgentType;
 import de.intranda.api.annotation.SimpleResource;
 import de.intranda.api.annotation.wa.Agent;
 import de.intranda.api.annotation.wa.WebAnnotation;
 import de.unigoettingen.sub.commons.contentlib.exceptions.ContentNotFoundException;
 import io.goobi.viewer.AbstractDatabaseAndSolrEnabledTest;
+import io.goobi.viewer.api.rest.AbstractApiUrlManager;
+import io.goobi.viewer.api.rest.resourcebuilders.AnnotationsResourceBuilder;
+import io.goobi.viewer.api.rest.v1.ApiUrls;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.exceptions.DAOException;
+import io.goobi.viewer.model.annotation.PersistentAnnotation;
 import io.goobi.viewer.model.crowdsourcing.campaigns.Campaign;
 import io.goobi.viewer.model.crowdsourcing.campaigns.CampaignItem;
 import io.goobi.viewer.model.crowdsourcing.campaigns.CampaignRecordStatistic.CampaignRecordStatus;
@@ -55,17 +54,24 @@ import io.goobi.viewer.servlets.rest.crowdsourcing.CampaignItemResource.Annotati
 public class CampaignItemResourceTest extends AbstractDatabaseAndSolrEnabledTest {
 
     private CampaignItemResource resource;
+    
+    private AbstractApiUrlManager urls;
+    private AnnotationsResourceBuilder annoBuilder;
 
     /**
      * @throws java.lang.Exception
      */
+    @Override
     @Before
     public void setUp() throws Exception {
         super.setUp();
         HttpServletRequest request = Mockito.mock(HttpServletRequest.class);
         HttpServletResponse response = Mockito.mock(HttpServletResponse.class);
-
-        resource = new CampaignItemResource(request, response);
+        
+        urls = new ApiUrls();
+        annoBuilder = new AnnotationsResourceBuilder(urls);
+        
+        resource = new CampaignItemResource(urls);
     }
 
     @Test
@@ -75,7 +81,7 @@ public class CampaignItemResourceTest extends AbstractDatabaseAndSolrEnabledTest
         Assert.assertNotNull(item);
         Assert.assertEquals(campaign, item.getCampaign());
 
-        URI manifestUrl = new ManifestBuilder(URI.create(""), URI.create(DataManager.getInstance().getConfiguration().getRestApiUrl()))
+        URI manifestUrl = new ManifestBuilder(new ApiUrls())
                 .getManifestURI("PPN1234");
         Assert.assertEquals(manifestUrl, item.getSource());
     }
@@ -108,21 +114,22 @@ public class CampaignItemResourceTest extends AbstractDatabaseAndSolrEnabledTest
     }
 
     @Test
-    public void testGetAnnotationsForManifest() throws ContentNotFoundException, URISyntaxException, DAOException {
-        String pi = "PI 1";
+    public void testGetAnnotationsForManifest() throws URISyntaxException, DAOException {
+        String pi = "PI_1";
         List<WebAnnotation> annotationList = resource.getAnnotationsForManifest(1l, pi);
         Assert.assertEquals(2, annotationList.size());
     }
 
     @Test
     public void testSetAnnotationsForManifest()
-            throws ContentNotFoundException, URISyntaxException, DAOException, JsonParseException, JsonMappingException, IOException {
+            throws URISyntaxException, DAOException {
         String pi = "PI_10";
         URI manifestUrl =
-                new ManifestBuilder(URI.create(""), URI.create(DataManager.getInstance().getConfiguration().getRestApiUrl())).getManifestURI(pi);
+                new ManifestBuilder(urls).getManifestURI(pi);
         Campaign campaign = DataManager.getInstance().getDao().getCampaign(1l);
 
-        WebAnnotation anno = new WebAnnotation();
+        String annoUrl = urls.path(ApiUrls.ANNOTATIONS, ApiUrls.ANNOTATIONS_ANNOTATION).params(1l).build();
+        WebAnnotation anno = new WebAnnotation(URI.create(annoUrl));
         anno.setBody(new SimpleResource(URI.create("F")));
         anno.setTarget(new SimpleResource(manifestUrl));
         anno.setGenerator(new Agent(campaign.getQuestions().get(0).getIdAsURI(), AgentType.SOFTWARE, campaign.getTitle()));
@@ -133,7 +140,8 @@ public class CampaignItemResourceTest extends AbstractDatabaseAndSolrEnabledTest
         resource.setAnnotationsForManifest(Collections.singletonList(page), campaign.getId(), pi);
 
         Assert.assertFalse(DataManager.getInstance().getDao().getAnnotationsForCampaignAndWork(campaign, pi).isEmpty());
-        WebAnnotation anno2 = DataManager.getInstance().getDao().getAnnotationsForCampaignAndWork(campaign, pi).get(0).getAsAnnotation();
+        PersistentAnnotation pAnno2 = DataManager.getInstance().getDao().getAnnotationsForCampaignAndWork(campaign, pi).get(0);
+        WebAnnotation anno2 = annoBuilder.getAsWebAnnotation(pAnno2);
         Assert.assertEquals(anno.getBody(), anno2.getBody());
         Assert.assertEquals(anno.getTarget(), anno2.getTarget());
         Assert.assertEquals(anno.getGenerator(), anno2.getGenerator());

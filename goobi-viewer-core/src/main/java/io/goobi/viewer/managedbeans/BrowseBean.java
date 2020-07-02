@@ -36,6 +36,7 @@ import org.apache.solr.client.solrj.util.ClientUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import de.unigoettingen.sub.commons.contentlib.exceptions.IllegalRequestException;
 import io.goobi.viewer.controller.AlphanumCollatorComparator;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.SolrConstants;
@@ -182,8 +183,9 @@ public class BrowseBean implements Serializable {
      *
      * @return the dcList (Collections)
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
+     * @throws IllegalRequestException 
      */
-    public List<BrowseDcElement> getDcList() throws IndexUnreachableException {
+    public List<BrowseDcElement> getDcList() throws IndexUnreachableException, IllegalRequestException {
         return getList(SolrConstants.DC);
     }
 
@@ -195,8 +197,9 @@ public class BrowseBean implements Serializable {
      * @param field a {@link java.lang.String} object.
      * @return a {@link java.util.List} object.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
+     * @throws IllegalRequestException 
      */
-    public List<BrowseDcElement> getList(String field) throws IndexUnreachableException {
+    public List<BrowseDcElement> getList(String field) throws IndexUnreachableException, IllegalRequestException {
         return getList(field, -1);
     }
 
@@ -209,17 +212,22 @@ public class BrowseBean implements Serializable {
      * @param depth a int.
      * @return a {@link java.util.List} object.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
+     * @throws IllegalRequestException 
      */
     public List<BrowseDcElement> getList(String field, int depth) throws IndexUnreachableException {
-        if (collections.get(field) == null) {
-            initializeCollection(field, field);
-            populateCollection(field);
-        }
-        if (collections.get(field) != null) {
-            CollectionView collection = collections.get(field);
-            collection.expandAll(depth);
-            collection.calculateVisibleDcElements();
-            return new ArrayList<>(collection.getVisibleDcElements());
+        try {            
+            if (collections.get(field) == null) {
+                initializeCollection(field, field);
+                populateCollection(field);
+            }
+            if (collections.get(field) != null) {
+                CollectionView collection = collections.get(field);
+                collection.expandAll(depth);
+                collection.calculateVisibleDcElements();
+                return new ArrayList<>(collection.getVisibleDcElements());
+            }
+        } catch(IllegalRequestException e) {
+            logger.error(e.toString(), e);
         }
 
         return Collections.emptyList();
@@ -232,8 +240,9 @@ public class BrowseBean implements Serializable {
      *
      * @param field a {@link java.lang.String} object.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
+     * @throws IllegalRequestException 
      */
-    public void populateCollection(String field) throws IndexUnreachableException {
+    public void populateCollection(String field) throws IndexUnreachableException, IllegalRequestException {
         if (collections.containsKey(field)) {
             collections.get(field).populateCollectionList();
         }
@@ -294,8 +303,9 @@ public class BrowseBean implements Serializable {
      *
      * @param levels a int.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
+     * @throws IllegalRequestException 
      */
-    public void expandCollection(int levels) throws IndexUnreachableException {
+    public void expandCollection(int levels) throws IndexUnreachableException, IllegalRequestException {
         expandCollection(SolrConstants.DC, SolrConstants.FACET_DC, levels);
     }
 
@@ -308,8 +318,9 @@ public class BrowseBean implements Serializable {
      * @param facetField a {@link java.lang.String} object.
      * @param levels a int.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
+     * @throws IllegalRequestException 
      */
-    public void expandCollection(String collectionField, String facetField, int levels) throws IndexUnreachableException {
+    public void expandCollection(String collectionField, String facetField, int levels) throws IndexUnreachableException, IllegalRequestException {
         synchronized (this) {
             initializeCollection(collectionField, facetField);
             collections.get(collectionField).setBaseLevels(levels);

@@ -58,6 +58,7 @@ import org.apache.solr.common.SolrDocument;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import de.unigoettingen.sub.commons.contentlib.exceptions.IllegalRequestException;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.DateTools;
 import io.goobi.viewer.controller.SolrConstants;
@@ -1444,6 +1445,8 @@ public class SearchBean implements SearchInterface, Serializable {
             }
             currentHitIndex++;
         }
+        //if we leave the loop without returning, no hit was found and currentHitIndex should be -1
+        currentHitIndex= -1;
     }
 
     /**
@@ -1629,6 +1632,7 @@ public class SearchBean implements SearchInterface, Serializable {
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
+     * @throws IllegalRequestException 
      */
     public List<StringPair> getAdvancedSearchSelectItems(String field, String language, boolean hierarchical)
             throws PresentationException, IndexUnreachableException, DAOException {
@@ -1715,8 +1719,9 @@ public class SearchBean implements SearchInterface, Serializable {
      * This method shouldn't throw exceptions, otherwise it can cause an IllegalStateException.
      *
      * @return a {@link java.util.List} object.
+     * @throws IllegalRequestException 
      */
-    public List<StringPair> getAllCollections() {
+    public List<StringPair> getAllCollections() throws IllegalRequestException {
         //        NavigationHelper navigationHelper = BeanUtils.getNavigationHelper();
         try {
             if (navigationHelper != null) {
@@ -1743,8 +1748,9 @@ public class SearchBean implements SearchInterface, Serializable {
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
+     * @throws IllegalRequestException 
      */
-    public List<StringPair> getAllCollections(String language) throws PresentationException, IndexUnreachableException, DAOException {
+    public List<StringPair> getAllCollections(String language) throws PresentationException, IndexUnreachableException, DAOException, IllegalRequestException {
         return getAdvancedSearchSelectItems(SolrConstants.DC, language, true);
     }
 

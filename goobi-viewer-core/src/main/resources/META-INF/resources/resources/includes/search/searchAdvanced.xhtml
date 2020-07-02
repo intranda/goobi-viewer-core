@@ -56,7 +56,7 @@
                         <c:forEach var="queryItem" items="#{queryGroup.queryItems}" varStatus="status">
                             <div id="searchAdvancedInputGroup-#{statusGroup.count}-#{status.count}" class="search-advanced__input-group">
                                 <div class="row">
-                                    <div class="col-xs-12 col-sm-3">
+                                    <div class="col-12 col-sm-3 mb-3">
                                         <!-- SELECT -->
                                         <div class="search-advanced__input-col">
                                             <div class="custom-control custom-control--select">
@@ -72,7 +72,7 @@
                                             </div>
                                         </div>
                                     </div>
-                                    <div class="col-xs-12 col-sm-5">
+                                    <div class="col-12 col-sm-5 mb-3">
                                         <!-- INPUT FIELD -->
                                         <h:panelGroup id="advsearch_value_group_#{statusGroup.count}-#{status.count}">
                                             <div class="search-advanced__input-col">
@@ -85,7 +85,7 @@
                                                                 <f:passThroughAttribute name="placeholder" value="#{msg.searchFieldDemoText}" />
                                                             </h:inputText>
 
-                                                            <div class="input-group-addon">
+                                                            <div class="input-group-append">
                                                                 <button type="button" class="btn btn--clean reset" data-toggle="tooltip" data-placement="top"
                                                                     title="#{msg.searchAdvanved_resetCurrentValue}">
                                                                     <i class="fa fa-times-circle" aria-hidden="true"></i>
@@ -107,7 +107,7 @@
                                             </div>
                                         </h:panelGroup>
                                     </div>
-                                    <div class="col-xs-6 col-sm-3">
+                                    <div class="col-6 col-sm-3 mb-3">
                                         <!-- OPERATOR -->
                                         <div id="advsearch_operator_#{statusGroup.count}-#{status.count}" class="search-advanced__input-col text-center">
                                             <div class="custom-control custom-control--select">
@@ -118,7 +118,7 @@
                                             </div>
                                         </div>
                                     </div>
-                                    <div class="col-xs-6 col-sm-1">
+                                    <div class="col-6 col-sm-1 mb-3">
                                         <!-- ADD / REMOVE -->
                                         <div class="search-advanced__input-col">
                                             <h:commandLink role="button" title="#{msg.searchAdvanved_deleteSelection}" action="#{queryGroup.removeQueryItem(queryItem)}">

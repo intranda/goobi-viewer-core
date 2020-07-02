@@ -101,7 +101,7 @@ public class DownloadBean implements Serializable {
     @Deprecated
     public String checkDownloadAction(String type, String email, String pi, String logId)
             throws DAOException, PresentationException, IndexUnreachableException {
-        if (DownloadJob.checkDownload(type, email, pi, logId, DownloadJob.generateDownloadJobId(type, pi, logId), ttl)) {
+        if (DownloadJob.checkDownload(type, email, pi, logId, DownloadJob.generateDownloadJobId(type, pi, logId), ttl) != null) {
             return "pretty:download1";
         }
 

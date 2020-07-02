@@ -21,6 +21,7 @@ import java.net.URISyntaxException;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import javax.inject.Inject;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.GET;
@@ -38,10 +39,12 @@ import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 
 import de.intranda.api.annotation.IAnnotation;
-import de.intranda.api.annotation.wa.collection.AnnotationCollection;
 import de.intranda.api.annotation.wa.collection.AnnotationCollectionBuilder;
 import de.intranda.api.annotation.wa.collection.AnnotationPage;
 import de.unigoettingen.sub.commons.contentlib.servlet.rest.CORSBinding;
+import io.goobi.viewer.api.rest.AbstractApiUrlManager;
+import io.goobi.viewer.api.rest.resourcebuilders.AnnotationsResourceBuilder;
+import io.goobi.viewer.api.rest.v1.ApiUrls;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
@@ -63,7 +66,14 @@ public class AnnotationResource {
     private HttpServletRequest servletRequest;
     @Context
     private HttpServletResponse servletResponse;
-
+    @Inject
+    private AbstractApiUrlManager urls;
+    private AnnotationsResourceBuilder annoBuilder;
+    
+    public AnnotationResource() {
+        annoBuilder = new AnnotationsResourceBuilder(urls);
+    }
+    
     /**
      * <p>
      * getAnnotation.
@@ -91,14 +101,13 @@ public class AnnotationResource {
         if(data != null) {
             IAnnotation anno;
             if ("OpenAnnotation".equalsIgnoreCase(type) || "oa".equalsIgnoreCase(type)) {
-                anno = data.getAsOpenAnnotation();
+                anno = annoBuilder.getAsOpenAnnotation(data);
             } else {
-                anno = data.getAsAnnotation();
+                anno = annoBuilder.getAsWebAnnotation(data);
             }
             return anno;
         } else { 
-            AbstractBuilder builder = new AbstractBuilder(URI.create(DataManager.getInstance().getConfiguration().getRestApiUrl()),
-                    URI.create(DataManager.getInstance().getConfiguration().getRestApiUrl())) {};
+            AbstractBuilder builder = new AbstractBuilder(new ApiUrls(DataManager.getInstance().getConfiguration().getRestApiUrl())) {};
             IAnnotation anno = builder.getCrowdsourcingAnnotation(id.toString());
             if(anno != null) {                
                 return anno;
@@ -133,9 +142,9 @@ public class AnnotationResource {
 
         IAnnotation anno;
         if ("OpenAnnotation".equalsIgnoreCase(type) || "oa".equalsIgnoreCase(type)) {
-            anno = data.getAsOpenAnnotation();
+            anno = annoBuilder.getAsOpenAnnotation(data);
         } else {
-            anno = data.getAsAnnotation();
+            anno = annoBuilder.getAsWebAnnotation(data);
         }
 
         return anno;
@@ -167,7 +176,7 @@ public class AnnotationResource {
         List<PersistentAnnotation> data = DataManager.getInstance().getDao().getAnnotationsForTarget(pi, page);
 
         AnnotationCollectionBuilder builder = new AnnotationCollectionBuilder(URI.create(servletRequest.getRequestURL().toString()), data.size());
-        AnnotationPage annoPage = builder.buildPage(data.stream().map(PersistentAnnotation::getAsAnnotation).collect(Collectors.toList()), 1);
+        AnnotationPage annoPage = builder.buildPage(data.stream().map(annoBuilder::getAsOpenAnnotation).collect(Collectors.toList()), 1);
 
         return annoPage;
     }

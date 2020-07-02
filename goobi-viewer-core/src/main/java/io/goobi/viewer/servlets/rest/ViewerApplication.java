@@ -20,6 +20,8 @@ import javax.ws.rs.ApplicationPath;
 import org.glassfish.jersey.media.multipart.MultiPartFeature;
 import org.glassfish.jersey.server.ResourceConfig;
 
+import io.goobi.viewer.api.rest.ViewerRestServiceBinding;
+
 /**
  * <p>
  * ViewerApplication class.
@@ -38,8 +40,9 @@ public class ViewerApplication extends ResourceConfig {
         super();
         register(MultiPartFeature.class);
         packages(true, "io.goobi.viewer.servlets.rest");
+        packages(true, "io.goobi.viewer.api.rest.filters");
+        packages(true, "io.goobi.viewer.api.rest.exceptions");
         packages(true, "de.unigoettingen.sub.commons.contentlib.servlet.rest");
-        packages(true, "io.swagger");
 
     }
 

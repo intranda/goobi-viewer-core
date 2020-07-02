@@ -37,6 +37,7 @@ import com.ocpsoft.pretty.PrettyContext;
 import com.ocpsoft.pretty.faces.url.URL;
 
 import de.intranda.metadata.multilanguage.IMetadataValue;
+import de.unigoettingen.sub.commons.contentlib.exceptions.IllegalRequestException;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.SolrConstants;
 import io.goobi.viewer.controller.StringTools;
@@ -207,7 +208,7 @@ public class BreadcrumbBean implements Serializable {
                     tempBreadcrumbs.add(0, link);
                     // logger.trace("added cms page collection breadcrumb: {}", link.toString());
                 }
-            } catch (PresentationException | IndexUnreachableException e) {
+            } catch (PresentationException | IndexUnreachableException | IllegalRequestException e) {
                 logger.error(e.toString(), e);
             }
 

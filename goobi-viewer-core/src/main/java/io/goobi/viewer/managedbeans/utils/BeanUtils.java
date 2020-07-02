@@ -35,6 +35,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import io.goobi.viewer.api.rest.v1.ApiUrls;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.managedbeans.ActiveDocumentBean;
 import io.goobi.viewer.managedbeans.BookmarkBean;
@@ -370,15 +371,13 @@ public class BeanUtils {
         ImageDeliveryBean bean = (ImageDeliveryBean) getBeanByName("imageDelivery", ImageDeliveryBean.class);
         if (bean == null) {
             bean = new ImageDeliveryBean();
-            bean.init(DataManager.getInstance().getConfiguration(),
-                    DataManager.getInstance().getConfiguration().getIIIFApiUrl().replace("rest/", ""));
+            bean.init(DataManager.getInstance().getConfiguration());
         } else {
             try {
                 bean.getThumbs();
             } catch (ContextNotActiveException e) {
                 bean = new ImageDeliveryBean();
-                bean.init(DataManager.getInstance().getConfiguration(),
-                        DataManager.getInstance().getConfiguration().getRestApiUrl().replace("rest/", ""));
+                bean.init(DataManager.getInstance().getConfiguration());
             }
         }
         return bean;

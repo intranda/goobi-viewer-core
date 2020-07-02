@@ -47,6 +47,7 @@ import io.goobi.viewer.model.cms.CMSNavigationItem;
 import io.goobi.viewer.model.cms.CMSPage;
 import io.goobi.viewer.model.cms.CMSPageLanguageVersion;
 import io.goobi.viewer.model.cms.CMSPageLanguageVersion.CMSPageStatus;
+import io.goobi.viewer.model.cms.CMSPageTemplateEnabled;
 import io.goobi.viewer.model.cms.CMSStaticPage;
 import io.goobi.viewer.model.cms.CMSTemplateManager;
 import io.goobi.viewer.model.crowdsourcing.campaigns.Campaign;
@@ -358,6 +359,17 @@ public class JPADAOTest extends AbstractDatabaseEnabledTest {
         Assert.assertEquals(1, userRoles.size());
     }
 
+    /**
+     * @see JPADAO#getUserRoleCount(UserGroup,User,Role)
+     * @verifies return correct count
+     */
+    @Test
+    public void getUserRoleCount_shouldReturnCorrectCount() throws Exception {
+        UserGroup userGroup = DataManager.getInstance().getDao().getUserGroup(1);
+        Assert.assertNotNull(userGroup);
+        Assert.assertEquals(1, DataManager.getInstance().getDao().getUserRoleCount(userGroup, null, null));
+    }
+
     @Test
     public void getUserGroupMembershipsByUserGroupTest() throws DAOException {
         UserGroup userGroup = DataManager.getInstance().getDao().getUserGroup(1);
@@ -499,7 +511,7 @@ public class JPADAOTest extends AbstractDatabaseEnabledTest {
         Assert.assertNotNull(ipRange);
         Assert.assertEquals(Long.valueOf(1), ipRange.getId());
         Assert.assertEquals("localhost", ipRange.getName());
-        Assert.assertEquals("127.0.0.1/24", ipRange.getSubnetMask());
+        Assert.assertEquals("1.2.3.4/24", ipRange.getSubnetMask());
         Assert.assertEquals("ip range 1 desc", ipRange.getDescription());
     }
 
@@ -509,7 +521,7 @@ public class JPADAOTest extends AbstractDatabaseEnabledTest {
         Assert.assertNotNull(ipRange);
         Assert.assertEquals(Long.valueOf(1), ipRange.getId());
         Assert.assertEquals("localhost", ipRange.getName());
-        Assert.assertEquals("127.0.0.1/24", ipRange.getSubnetMask());
+        Assert.assertEquals("1.2.3.4/24", ipRange.getSubnetMask());
         Assert.assertEquals("ip range 1 desc", ipRange.getDescription());
     }
 
@@ -595,7 +607,7 @@ public class JPADAOTest extends AbstractDatabaseEnabledTest {
      * 
      * @Test public void getAnnotationByIdTest() { AnnotationElement annotation =
      * DataManager.getInstance().getDao().getAnnotation(1); Assert.assertNotNull(annotation);
-     * Assert.assertEquals(Long.valueOf(1), annotation.getId()); Assert.assertEquals("PI 1", annotation.getPi());
+     * Assert.assertEquals(Long.valueOf(1), annotation.getId()); Assert.assertEquals("PI_1", annotation.getPi());
      * Assert.assertEquals(1, annotation.getPage()); Assert.assertNotNull(annotation.getOwner());
      * Assert.assertEquals(Long.valueOf(1), annotation.getOwner().getId());
      * Assert.assertNotNull(annotation.getDateCreated()); Assert.assertNull(annotation.getDateUpdated());
@@ -603,11 +615,11 @@ public class JPADAOTest extends AbstractDatabaseEnabledTest {
      * annotation.getText()); }
      * 
      * @Test public void getAnnotationsForPageTest() { List<AnnotationElement> annotations =
-     * DataManager.getInstance().getDao().getAnnotationsForPage("PI 1", 1); Assert.assertEquals(2, annotations.size()); }
+     * DataManager.getInstance().getDao().getAnnotationsForPage("PI_1", 1); Assert.assertEquals(2, annotations.size()); }
      * 
      * @Test public void addAnnotationTest() { Assert.assertEquals(3,
      * DataManager.getInstance().getDao().getAllAnnotations().size()); AnnotationElement annotation = new
-     * AnnotationElement(); annotation.setPi("PI 2"); annotation.setPage(1); annotation.setText("new annotation text");
+     * AnnotationElement(); annotation.setPi("PI_2"); annotation.setPage(1); annotation.setText("new annotation text");
      * annotation.setOwner(DataManager.getInstance().getDao().getUser(1)); annotation.setStatus(AnnotationStatus.PRIVATE);
      * try { Assert.assertTrue(DataManager.getInstance().getDao().addAnnotation(annotation)); } catch (PresentationException
      * e) { e.printStackTrace(); } Assert.assertNotNull(annotation.getId()); Assert.assertEquals(4,
@@ -678,34 +690,32 @@ public class JPADAOTest extends AbstractDatabaseEnabledTest {
         Comment comment = DataManager.getInstance().getDao().getComment(1);
         Assert.assertNotNull(comment);
         Assert.assertEquals(Long.valueOf(1), comment.getId());
-        Assert.assertEquals("PI 1", comment.getPi());
-        Assert.assertEquals(1, comment.getPage());
+        Assert.assertEquals("PI_1", comment.getPi());
+        Assert.assertEquals(new Integer(1), comment.getPage());
         Assert.assertNotNull(comment.getOwner());
         Assert.assertEquals(Long.valueOf(1), comment.getOwner().getId());
         Assert.assertEquals("comment 1 text", comment.getText());
         Assert.assertNotNull(comment.getDateCreated());
         Assert.assertNull(comment.getDateUpdated());
-        Assert.assertNull(comment.getParent());
-        Assert.assertEquals(1, comment.getChildren().size());
+        //        Assert.assertNull(comment.getParent());
+        //        Assert.assertEquals(1, comment.getChildren().size());
 
         Comment comment2 = DataManager.getInstance().getDao().getComment(2);
-        Assert.assertEquals(comment, comment2.getParent());
-        Assert.assertEquals(1, comment2.getChildren().size());
+        //        Assert.assertEquals(comment, comment2.getParent());
+        //        Assert.assertEquals(1, comment2.getChildren().size());
     }
 
     @Test
     public void getCommentsForPageTest() throws DAOException {
-        List<Comment> comments = DataManager.getInstance().getDao().getCommentsForPage("PI 1", 1, false);
+        List<Comment> comments = DataManager.getInstance().getDao().getCommentsForPage("PI_1", 1);
         Assert.assertEquals(3, comments.size());
-        comments = DataManager.getInstance().getDao().getCommentsForPage("PI 1", 1, true);
-        Assert.assertEquals(1, comments.size());
     }
 
     @Test
     public void addCommentTest() throws DAOException {
         Assert.assertEquals(4, DataManager.getInstance().getDao().getAllComments().size());
         Comment comment = new Comment();
-        comment.setPi("PI 2");
+        comment.setPi("PI_2");
         comment.setPage(1);
         comment.setText("new comment text");
         comment.setOwner(DataManager.getInstance().getDao().getUser(1));
@@ -752,8 +762,78 @@ public class JPADAOTest extends AbstractDatabaseEnabledTest {
         Assert.assertNotNull(comment);
         Assert.assertTrue(DataManager.getInstance().getDao().deleteComment(comment));
         Assert.assertNull(DataManager.getInstance().getDao().getComment(1));
-        Assert.assertEquals(1, DataManager.getInstance().getDao().getAllComments().size()); // Should cascade to child
-                                                                                            // comments
+        Assert.assertEquals(3, DataManager.getInstance().getDao().getAllComments().size());
+    }
+
+    /**
+     * @see JPADAO#deleteComments(String,User)
+     * @verifies delete comments for pi correctly
+     */
+    @Test
+    public void deleteComments_shouldDeleteCommentsForPiCorrectly() throws Exception {
+        Assert.assertEquals(4, DataManager.getInstance().getDao().getAllComments().size());
+        User user = DataManager.getInstance().getDao().getUser(1);
+        Assert.assertNotNull(user);
+        Assert.assertEquals(4, DataManager.getInstance().getDao().deleteComments("PI_1", null));
+        Assert.assertEquals(0, DataManager.getInstance().getDao().getAllComments().size());
+    }
+
+    /**
+     * @see JPADAO#deleteComments(String,User)
+     * @verifies delete comments for user correctly
+     */
+    @Test
+    public void deleteComments_shouldDeleteCommentsForUserCorrectly() throws Exception {
+        Assert.assertEquals(4, DataManager.getInstance().getDao().getAllComments().size());
+        User user = DataManager.getInstance().getDao().getUser(1);
+        Assert.assertNotNull(user);
+        Assert.assertEquals(3, DataManager.getInstance().getDao().deleteComments(null, user));
+        Assert.assertEquals(1, DataManager.getInstance().getDao().getAllComments().size());
+    }
+
+    /**
+     * @see JPADAO#deleteComments(String,User)
+     * @verifies delete comments for pi and user correctly
+     */
+    @Test
+    public void deleteComments_shouldDeleteCommentsForPiAndUserCorrectly() throws Exception {
+        Assert.assertEquals(4, DataManager.getInstance().getDao().getAllComments().size());
+        User user = DataManager.getInstance().getDao().getUser(1);
+        Assert.assertNotNull(user);
+        Assert.assertEquals(3, DataManager.getInstance().getDao().deleteComments("PI_1", user));
+        Assert.assertEquals(1, DataManager.getInstance().getDao().getAllComments().size());
+    }
+
+    /**
+     * @see JPADAO#deleteComments(String,User)
+     * @verifies not delete anything if both pi and creator are null
+     */
+    @Test
+    public void deleteComments_shouldNotDeleteAnythingIfBothPiAndCreatorAreNull() throws Exception {
+        Assert.assertEquals(4, DataManager.getInstance().getDao().getAllComments().size());
+        Assert.assertEquals(0, DataManager.getInstance().getDao().deleteComments(null, null));
+        Assert.assertEquals(4, DataManager.getInstance().getDao().getAllComments().size());
+    }
+
+    /**
+     * @see JPADAO#changeCommentsOwner(User,User)
+     * @verifies update rows correctly
+     */
+    @Test
+    public void changeCommentsOwner_shouldUpdateRowsCorrectly() throws Exception {
+        User oldOwner = DataManager.getInstance().getDao().getUser(1);
+        Assert.assertNotNull(oldOwner);
+        User newOwner = DataManager.getInstance().getDao().getUser(3);
+        Assert.assertNotNull(newOwner);
+
+        Assert.assertEquals(3, DataManager.getInstance().getDao().changeCommentsOwner(oldOwner, newOwner));
+
+        List<Comment> comments = DataManager.getInstance().getDao().getCommentsForWork("PI_1");
+        Assert.assertEquals(4, comments.size());
+        Assert.assertEquals(newOwner, comments.get(0).getOwner());
+        Assert.assertNotEquals(newOwner, comments.get(1).getOwner());
+        Assert.assertEquals(newOwner, comments.get(2).getOwner());
+        Assert.assertEquals(newOwner, comments.get(3).getOwner());
     }
 
     // Search
@@ -854,15 +934,15 @@ public class JPADAOTest extends AbstractDatabaseEnabledTest {
     }
 
     /**
-     * @see JPADAO#getOpenAccessLicenseTypes()
+     * @see JPADAO#getRecordLicenseTypes()
      * @verifies only return non open access license types
      */
     @Test
-    public void getOpenAccessLicenseTypes_shouldOnlyReturnNonOpenAccessLicenseTypes() throws Exception {
-        List<LicenseType> licenseTypes = DataManager.getInstance().getDao().getNonOpenAccessLicenseTypes();
-        Assert.assertEquals(4, licenseTypes.size());
+    public void getRecordTypes_shouldOnlyReturnNonOpenAccessLicenseTypes() throws Exception {
+        List<LicenseType> licenseTypes = DataManager.getInstance().getDao().getRecordLicenseTypes();
+        Assert.assertEquals(5, licenseTypes.size());
         Assert.assertEquals(Long.valueOf(1), licenseTypes.get(0).getId());
-        Assert.assertEquals(Long.valueOf(3), licenseTypes.get(1).getId());
+        Assert.assertEquals(Long.valueOf(6), licenseTypes.get(4).getId());
     }
 
     @Test
@@ -873,7 +953,7 @@ public class JPADAOTest extends AbstractDatabaseEnabledTest {
             Assert.assertEquals(Long.valueOf(1), licenseType.getId());
             Assert.assertEquals("license type 1 name", licenseType.getName());
             Assert.assertEquals("license type 1 desc", licenseType.getDescription());
-            Assert.assertEquals("YEAR:[* TO 3000]", licenseType.getConditions());
+            Assert.assertEquals("-YEAR:[* TO 3000]", licenseType.getConditions());
             Assert.assertEquals(false, licenseType.isOpenAccess());
             Assert.assertEquals(1, licenseType.getPrivileges().size());
             Assert.assertEquals(1, licenseType.getOverridingLicenseTypes().size());
@@ -1211,7 +1291,7 @@ public class JPADAOTest extends AbstractDatabaseEnabledTest {
     @Test
     public void getComments_shouldFilterResultsCorrectly() throws Exception {
         Map<String, String> filterMap = new HashMap<>();
-        filterMap.put("pi", "pi 1");
+        filterMap.put("pi", "pi_1");
         filterMap.put("text", "ment 2");
         List<Comment> ret = DataManager.getInstance().getDao().getComments(0, 2, null, true, filterMap);
         Assert.assertEquals(1, ret.size());
@@ -1526,7 +1606,7 @@ public class JPADAOTest extends AbstractDatabaseEnabledTest {
     @Test
     public void getCMSPagesForRecord_shouldReturnAllPagesWithTheGivenRelatedPi() throws Exception {
         CMSCategory c = DataManager.getInstance().getDao().getCategoryByName(CMSPage.CLASSIFICATION_OVERVIEWPAGE);
-        Assert.assertEquals(1, DataManager.getInstance().getDao().getCMSPagesForRecord("PI 1", c).size());
+        Assert.assertEquals(1, DataManager.getInstance().getDao().getCMSPagesForRecord("PI_1", c).size());
     }
 
     /**
@@ -1565,11 +1645,11 @@ public class JPADAOTest extends AbstractDatabaseEnabledTest {
     public void isCMSPagesForRecordHaveUpdates_shouldReturnCorrectValue() throws Exception {
         Assert.assertTrue(DataManager.getInstance()
                 .getDao()
-                .isCMSPagesForRecordHaveUpdates("PI 1", null, new DateTime(2015, 1, 1, 0, 0).toDate(), new DateTime(2015, 12, 31, 0, 0).toDate()));
+                .isCMSPagesForRecordHaveUpdates("PI_1", null, new DateTime(2015, 1, 1, 0, 0).toDate(), new DateTime(2015, 12, 31, 0, 0).toDate()));
         Assert.assertFalse(DataManager.getInstance()
                 .getDao()
-                .isCMSPagesForRecordHaveUpdates("PI 1", null, new DateTime(2016, 1, 1, 0, 0).toDate(), new DateTime(2016, 12, 31, 0, 0).toDate()));
-        Assert.assertFalse(DataManager.getInstance().getDao().isCMSPagesForRecordHaveUpdates("PI 2", null, null, null));
+                .isCMSPagesForRecordHaveUpdates("PI_1", null, new DateTime(2016, 1, 1, 0, 0).toDate(), new DateTime(2016, 12, 31, 0, 0).toDate()));
+        Assert.assertFalse(DataManager.getInstance().getDao().isCMSPagesForRecordHaveUpdates("PI_2", null, null, null));
     }
 
     /**
@@ -1947,7 +2027,7 @@ public class JPADAOTest extends AbstractDatabaseEnabledTest {
             Assert.assertNotNull(job);
             Assert.assertEquals(PDFDownloadJob.class, job.getClass());
             Assert.assertEquals(Long.valueOf(1), job.getId());
-            Assert.assertEquals("PI 1", job.getPi());
+            Assert.assertEquals("PI_1", job.getPi());
             Assert.assertNull(job.getLogId());
             Assert.assertEquals(DownloadJob.generateDownloadJobId(job.getType(), job.getPi(), job.getLogId()), job.getIdentifier());
             Assert.assertEquals(3600, job.getTtl());
@@ -1969,11 +2049,11 @@ public class JPADAOTest extends AbstractDatabaseEnabledTest {
      */
     @Test
     public void getDownloadJobByIdentifier_shouldReturnCorrectObject() throws Exception {
-        DownloadJob job = DataManager.getInstance().getDao().getDownloadJobByIdentifier("70eef211dc8a5889578f58d88eb50b8e");
+        DownloadJob job = DataManager.getInstance().getDao().getDownloadJobByIdentifier("0afb73c418262beb2c88dc40c95831b7");
         Assert.assertNotNull(job);
         Assert.assertEquals(PDFDownloadJob.class, job.getClass());
         Assert.assertEquals(Long.valueOf(1), job.getId());
-        Assert.assertEquals("PI 1", job.getPi());
+        Assert.assertEquals("PI_1", job.getPi());
         Assert.assertNull(job.getLogId());
         Assert.assertEquals(PDFDownloadJob.generateDownloadJobId(job.getType(), job.getPi(), job.getLogId()), job.getIdentifier());
         Assert.assertEquals(3600, job.getTtl());
@@ -1989,13 +2069,13 @@ public class JPADAOTest extends AbstractDatabaseEnabledTest {
     @Test
     public void getDownloadJobByMetadata_shouldReturnCorrectObject() throws Exception {
         {
-            DownloadJob job = DataManager.getInstance().getDao().getDownloadJobByMetadata(PDFDownloadJob.TYPE, "PI 1", null);
+            DownloadJob job = DataManager.getInstance().getDao().getDownloadJobByMetadata(PDFDownloadJob.TYPE, "PI_1", null);
             Assert.assertNotNull(job);
             Assert.assertEquals(PDFDownloadJob.class, job.getClass());
             Assert.assertEquals(Long.valueOf(1), job.getId());
         }
         {
-            DownloadJob job = DataManager.getInstance().getDao().getDownloadJobByMetadata(EPUBDownloadJob.TYPE, "PI 1", "LOG_0001");
+            DownloadJob job = DataManager.getInstance().getDao().getDownloadJobByMetadata(EPUBDownloadJob.TYPE, "PI_1", "LOG_0001");
             Assert.assertNotNull(job);
             Assert.assertEquals(EPUBDownloadJob.class, job.getClass());
             Assert.assertEquals(Long.valueOf(2), job.getId());
@@ -2009,7 +2089,7 @@ public class JPADAOTest extends AbstractDatabaseEnabledTest {
     @Test
     public void addDownloadJob_shouldAddObjectCorrectly() throws Exception {
         Date now = new Date();
-        PDFDownloadJob job = new PDFDownloadJob("PI 2", "LOG_0002", now, 3600);
+        PDFDownloadJob job = new PDFDownloadJob("PI_2", "LOG_0002", now, 3600);
         job.generateDownloadIdentifier();
         job.setStatus(JobStatus.WAITING);
         Assert.assertNotNull(job.getIdentifier());
@@ -2201,9 +2281,11 @@ public class JPADAOTest extends AbstractDatabaseEnabledTest {
         Assert.assertEquals(2, campaign.getQuestions().size());
         Assert.assertEquals("English text", campaign.getQuestions().get(0).getText());
 
-        Assert.assertEquals(2, campaign.getStatistics().size());
-        Assert.assertNotNull(campaign.getStatistics().get("PI 1"));
-        Assert.assertNotNull(campaign.getStatistics().get("PI 2"));
+        Assert.assertEquals(4, campaign.getStatistics().size());
+        Assert.assertNotNull(campaign.getStatistics().get("PI_1"));
+        Assert.assertNotNull(campaign.getStatistics().get("PI_2"));
+        Assert.assertNotNull(campaign.getStatistics().get("PI_3"));
+        Assert.assertNotNull(campaign.getStatistics().get("PI_4"));
     }
 
     /**
@@ -2228,7 +2310,7 @@ public class JPADAOTest extends AbstractDatabaseEnabledTest {
      */
     @Test
     public void getCampaignStatisticsForRecord_shouldReturnCorrectRows() throws Exception {
-        Assert.assertEquals(1, DataManager.getInstance().getDao().getCampaignStatisticsForRecord("PI 1", CampaignRecordStatus.FINISHED).size());
+        Assert.assertEquals(1, DataManager.getInstance().getDao().getCampaignStatisticsForRecord("PI_1", CampaignRecordStatus.FINISHED).size());
     }
 
     /**
@@ -2267,7 +2349,7 @@ public class JPADAOTest extends AbstractDatabaseEnabledTest {
         Campaign campaign = DataManager.getInstance().getDao().getCampaign(1L);
         Assert.assertNotNull(campaign);
 
-        List<PersistentAnnotation> annotations = DataManager.getInstance().getDao().getAnnotationsForWork("PI 1");
+        List<PersistentAnnotation> annotations = DataManager.getInstance().getDao().getAnnotationsForWork("PI_1");
         Assert.assertEquals(3, annotations.size());
         Assert.assertEquals(Long.valueOf(1), annotations.get(0).getId());
         Assert.assertEquals(Long.valueOf(3), annotations.get(1).getId());
@@ -2280,8 +2362,8 @@ public class JPADAOTest extends AbstractDatabaseEnabledTest {
      */
     @Test
     public void getAnnotationCountForTarget_shouldReturnCorrectCount() throws Exception {
-        Assert.assertEquals(1, DataManager.getInstance().getDao().getAnnotationCountForTarget("PI 1", 1));
-        Assert.assertEquals(2, DataManager.getInstance().getDao().getAnnotationCountForTarget("PI 1", null));
+        Assert.assertEquals(1, DataManager.getInstance().getDao().getAnnotationCountForTarget("PI_1", 1));
+        Assert.assertEquals(2, DataManager.getInstance().getDao().getAnnotationCountForTarget("PI_1", null));
     }
 
     /**
@@ -2291,12 +2373,12 @@ public class JPADAOTest extends AbstractDatabaseEnabledTest {
     @Test
     public void getAnnotationsForTarget_shouldReturnCorrectRows() throws Exception {
         {
-            List<PersistentAnnotation> annotations = DataManager.getInstance().getDao().getAnnotationsForTarget("PI 1", 1);
+            List<PersistentAnnotation> annotations = DataManager.getInstance().getDao().getAnnotationsForTarget("PI_1", 1);
             Assert.assertEquals(1, annotations.size());
             Assert.assertEquals(Long.valueOf(1), annotations.get(0).getId());
         }
         {
-            List<PersistentAnnotation> annotations = DataManager.getInstance().getDao().getAnnotationsForTarget("PI 1", null);
+            List<PersistentAnnotation> annotations = DataManager.getInstance().getDao().getAnnotationsForTarget("PI_1", null);
             Assert.assertEquals(2, annotations.size());
             Assert.assertEquals(Long.valueOf(3), annotations.get(0).getId());
             Assert.assertEquals(Long.valueOf(4), annotations.get(1).getId());
@@ -2313,17 +2395,17 @@ public class JPADAOTest extends AbstractDatabaseEnabledTest {
         Assert.assertNotNull(campaign);
 
         {
-            List<PersistentAnnotation> annotations = DataManager.getInstance().getDao().getAnnotationsForCampaignAndTarget(campaign, "PI 1", 1);
+            List<PersistentAnnotation> annotations = DataManager.getInstance().getDao().getAnnotationsForCampaignAndTarget(campaign, "PI_1", 1);
             Assert.assertEquals(1, annotations.size());
             Assert.assertEquals(Long.valueOf(1), annotations.get(0).getId());
         }
         {
-            List<PersistentAnnotation> annotations = DataManager.getInstance().getDao().getAnnotationsForCampaignAndTarget(campaign, "PI 1", null);
+            List<PersistentAnnotation> annotations = DataManager.getInstance().getDao().getAnnotationsForCampaignAndTarget(campaign, "PI_1", null);
             Assert.assertEquals(1, annotations.size());
             Assert.assertEquals(Long.valueOf(3), annotations.get(0).getId());
         }
         {
-            List<PersistentAnnotation> annotations = DataManager.getInstance().getDao().getAnnotationsForCampaignAndTarget(campaign, "PI 2", 6);
+            List<PersistentAnnotation> annotations = DataManager.getInstance().getDao().getAnnotationsForCampaignAndTarget(campaign, "PI_2", 6);
             Assert.assertEquals(1, annotations.size());
             Assert.assertEquals(Long.valueOf(2), annotations.get(0).getId());
         }
@@ -2339,7 +2421,7 @@ public class JPADAOTest extends AbstractDatabaseEnabledTest {
         Assert.assertNotNull(campaign);
 
         {
-            List<PersistentAnnotation> annotations = DataManager.getInstance().getDao().getAnnotationsForCampaignAndWork(campaign, "PI 1");
+            List<PersistentAnnotation> annotations = DataManager.getInstance().getDao().getAnnotationsForCampaignAndWork(campaign, "PI_1");
             Assert.assertEquals(2, annotations.size());
             Assert.assertEquals(Long.valueOf(1), annotations.get(0).getId());
             Assert.assertEquals(Long.valueOf(3), annotations.get(1).getId());
@@ -2353,7 +2435,7 @@ public class JPADAOTest extends AbstractDatabaseEnabledTest {
     @Test
     public void getAnnotationCount_shouldReturnCorrectCount() throws Exception {
         Assert.assertEquals(5, DataManager.getInstance().getDao().getAnnotationCount(null));
-        Assert.assertEquals(3, DataManager.getInstance().getDao().getAnnotationCount(Collections.singletonMap("targetPI", "PI 1")));
+        Assert.assertEquals(3, DataManager.getInstance().getDao().getAnnotationCount(Collections.singletonMap("targetPI", "PI_1")));
     }
 
     /**
@@ -2364,39 +2446,188 @@ public class JPADAOTest extends AbstractDatabaseEnabledTest {
     public void getAnnotations_shouldReturnCorrectRows() throws Exception {
         Assert.assertEquals(5, DataManager.getInstance().getDao().getAnnotations(0, 10, null, false, null).size());
         Assert.assertEquals(2,
-                DataManager.getInstance().getDao().getAnnotations(0, 10, null, false, Collections.singletonMap("targetPI", "PI 2")).size());
+                DataManager.getInstance().getDao().getAnnotations(0, 10, null, false, Collections.singletonMap("targetPI", "PI_2")).size());
     }
-    
+
     @Test
     public void testGetAllGeoMaps() throws DAOException {
         List<GeoMap> maps = DataManager.getInstance().getDao().getAllGeoMaps();
         Assert.assertEquals(2, maps.size());
     }
-    
+
     @Test
     public void testGetPagesUsingMap() throws DAOException {
-        
+
         GeoMap map1 = DataManager.getInstance().getDao().getGeoMap(1l);
         GeoMap map2 = DataManager.getInstance().getDao().getGeoMap(2l);
 
         List<CMSPage> embedMap1 = DataManager.getInstance().getDao().getPagesUsingMap(map1);
         List<CMSPage> embedMap2 = DataManager.getInstance().getDao().getPagesUsingMap(map2);
-        
+
         Assert.assertEquals(2, embedMap1.size());
         Assert.assertEquals(0, embedMap2.size());
 
     }
-    
+
     @Test
-    public void testUpdateTranslations() throws Exception{
+    public void testUpdateTranslations() throws Exception {
         String newVal = "Kartenbeschreibung 2";
         GeoMap map1 = DataManager.getInstance().getDao().getGeoMap(1l);
         Assert.assertEquals("Kartenbeschreibung 1", map1.getDescription("de").getValue());
         map1.getDescription("de").setValue(newVal);
         Assert.assertEquals(newVal, map1.getDescription("de").getValue());
-        
+
         DataManager.getInstance().getDao().updateGeoMap(map1);
         map1 = DataManager.getInstance().getDao().getAllGeoMaps().stream().filter(map -> map.getId() == 1l).findAny().orElse(null);
         Assert.assertEquals(newVal, map1.getDescription("de").getValue());
+    }
+
+    /**
+     * @see JPADAO#deleteCampaignStatisticsForUser(User)
+     * @verifies remove user from creators and reviewers lists correctly
+     */
+    @Test
+    public void deleteCampaignStatisticsForUser_shouldRemoveUserFromCreatorsAndReviewersListsCorrectly() throws Exception {
+        User user = DataManager.getInstance().getDao().getUser(1);
+        Assert.assertNotNull(user);
+        {
+            Campaign campaign = DataManager.getInstance().getDao().getCampaign(1L);
+            Assert.assertNotNull(campaign);
+            Assert.assertNotNull(campaign.getStatistics().get("PI_1"));
+            Assert.assertNotNull(campaign.getStatistics().get("PI_2"));
+            Assert.assertNotNull(campaign.getStatistics().get("PI_3"));
+            Assert.assertNotNull(campaign.getStatistics().get("PI_4"));
+            Assert.assertTrue(campaign.getStatistics().get("PI_1").getAnnotators().contains(user));
+            Assert.assertTrue(campaign.getStatistics().get("PI_2").getAnnotators().contains(user));
+            Assert.assertTrue(campaign.getStatistics().get("PI_3").getReviewers().contains(user));
+            Assert.assertTrue(campaign.getStatistics().get("PI_4").getReviewers().contains(user));
+        }
+
+        int rows = DataManager.getInstance().getDao().deleteCampaignStatisticsForUser(user);
+        Assert.assertEquals(4, rows);
+        {
+            Campaign campaign = DataManager.getInstance().getDao().getCampaign(1L);
+            Assert.assertNotNull(campaign);
+            Assert.assertNotNull(campaign.getStatistics().get("PI_1"));
+            Assert.assertNotNull(campaign.getStatistics().get("PI_2"));
+            Assert.assertNotNull(campaign.getStatistics().get("PI_3"));
+            Assert.assertNotNull(campaign.getStatistics().get("PI_4"));
+            // User should no longer be among the reviewers
+            Assert.assertFalse(campaign.getStatistics().get("PI_1").getAnnotators().contains(user));
+            Assert.assertFalse(campaign.getStatistics().get("PI_2").getAnnotators().contains(user));
+            Assert.assertFalse(campaign.getStatistics().get("PI_3").getReviewers().contains(user));
+            Assert.assertFalse(campaign.getStatistics().get("PI_4").getReviewers().contains(user));
+        }
+    }
+
+    /**
+     * @see JPADAO#changeCampaignStatisticContributors(User,User)
+     * @verifies replace user in creators and reviewers lists correctly
+     */
+    @Test
+    public void changeCampaignStatisticContributors_shouldReplaceUserInCreatorsAndReviewersListsCorrectly() throws Exception {
+        User fromUser = DataManager.getInstance().getDao().getUser(1);
+        Assert.assertNotNull(fromUser);
+        User toUser = DataManager.getInstance().getDao().getUser(3);
+        Assert.assertNotNull(toUser);
+        {
+            Campaign campaign = DataManager.getInstance().getDao().getCampaign(1L);
+            Assert.assertNotNull(campaign);
+            Assert.assertNotNull(campaign.getStatistics().get("PI_1"));
+            Assert.assertNotNull(campaign.getStatistics().get("PI_2"));
+            Assert.assertNotNull(campaign.getStatistics().get("PI_3"));
+            Assert.assertNotNull(campaign.getStatistics().get("PI_4"));
+            Assert.assertTrue(campaign.getStatistics().get("PI_1").getAnnotators().contains(fromUser));
+            Assert.assertTrue(campaign.getStatistics().get("PI_2").getAnnotators().contains(fromUser));
+            Assert.assertTrue(campaign.getStatistics().get("PI_3").getReviewers().contains(fromUser));
+            Assert.assertTrue(campaign.getStatistics().get("PI_4").getReviewers().contains(fromUser));
+            Assert.assertFalse(campaign.getStatistics().get("PI_1").getAnnotators().contains(toUser));
+            Assert.assertFalse(campaign.getStatistics().get("PI_2").getAnnotators().contains(toUser));
+            Assert.assertFalse(campaign.getStatistics().get("PI_3").getReviewers().contains(toUser));
+            Assert.assertFalse(campaign.getStatistics().get("PI_4").getReviewers().contains(toUser));
+        }
+
+        int rows = DataManager.getInstance().getDao().changeCampaignStatisticContributors(fromUser, toUser);
+        Assert.assertEquals(4, rows);
+        {
+            Campaign campaign = DataManager.getInstance().getDao().getCampaign(1L);
+            Assert.assertNotNull(campaign);
+            Assert.assertNotNull(campaign.getStatistics().get("PI_1"));
+            Assert.assertNotNull(campaign.getStatistics().get("PI_2"));
+            Assert.assertNotNull(campaign.getStatistics().get("PI_3"));
+            Assert.assertNotNull(campaign.getStatistics().get("PI_4"));
+            // Only toUser should be among the reviewers
+            Assert.assertFalse(campaign.getStatistics().get("PI_1").getAnnotators().contains(fromUser));
+            Assert.assertFalse(campaign.getStatistics().get("PI_2").getAnnotators().contains(fromUser));
+            Assert.assertFalse(campaign.getStatistics().get("PI_3").getReviewers().contains(fromUser));
+            Assert.assertFalse(campaign.getStatistics().get("PI_4").getReviewers().contains(fromUser));
+            Assert.assertTrue(campaign.getStatistics().get("PI_1").getAnnotators().contains(toUser));
+            Assert.assertTrue(campaign.getStatistics().get("PI_2").getAnnotators().contains(toUser));
+            Assert.assertTrue(campaign.getStatistics().get("PI_3").getReviewers().contains(toUser));
+            Assert.assertTrue(campaign.getStatistics().get("PI_4").getReviewers().contains(toUser));
+        }
+    }
+
+    /**
+     * @see JPADAO#getUserByNickname(String)
+     * @verifies return null if nickname empty
+     */
+    @Test
+    public void getUserByNickname_shouldReturnNullIfNicknameEmpty() throws Exception {
+        Assert.assertNull(DataManager.getInstance().getDao().getUserByNickname(""));
+    }
+
+    /**
+     * @see JPADAO#getCountPagesUsingCategory(CMSCategory)
+     * @verifies return correct value
+     */
+    @Test
+    public void getCountPagesUsingCategory_shouldReturnCorrectValue() throws Exception {
+        CMSCategory cat = DataManager.getInstance().getDao().getCategory(4L);
+        Assert.assertNotNull(cat);
+        Assert.assertEquals(2, DataManager.getInstance().getDao().getCountPagesUsingCategory(cat));
+    }
+
+    /**
+     * @see JPADAO#getCountMediaItemsUsingCategory(CMSCategory)
+     * @verifies return correct value
+     */
+    @Test
+    public void getCountMediaItemsUsingCategory_shouldReturnCorrectValue() throws Exception {
+        CMSCategory cat = DataManager.getInstance().getDao().getCategory(1L);
+        Assert.assertNotNull(cat);
+        Assert.assertEquals(3, DataManager.getInstance().getDao().getCountMediaItemsUsingCategory(cat));
+    }
+
+    /**
+     * @see JPADAO#getCMSPageTemplateEnabled(String)
+     * @verifies return correct value
+     */
+    @Test
+    public void getCMSPageTemplateEnabled_shouldReturnCorrectValue() throws Exception {
+        CMSPageTemplateEnabled o = DataManager.getInstance().getDao().getCMSPageTemplateEnabled("template_disabled");
+        Assert.assertNotNull(o);
+        Assert.assertFalse(o.isEnabled());
+    }
+
+    /**
+     * @see JPADAO#createFilterQuery(String,Map,Map)
+     * @verifies build multikey filter query correctly
+     */
+    @Test
+    public void createFilterQuery_shouldBuildMultikeyFilterQueryCorrectly() throws Exception {
+        Map<String, String> filters = Collections.singletonMap("a-a_b-b_c-c_d-d", "bar");
+        Map<String, String> params = new HashMap<>();
+        for (String key : filters.keySet()) {
+            String[] keyParts = key.split(JPADAO.MULTIKEY_SEPARATOR);
+            for (String keyPart : keyParts) {
+                params.put(keyPart.replace("-", ""), " %" + filters.get(key).toUpperCase() + "%");
+            }
+
+        }
+
+        Assert.assertEquals(
+                "STATIC:query AND ( ( UPPER(a.a.a) LIKE :aabbccdd OR UPPER(a.b.b) LIKE :aabbccdd OR UPPER(a.c.c) LIKE :aabbccdd OR UPPER(a.d.d) LIKE :aabbccdd ) ",
+                JPADAO.createFilterQuery("STATIC:query", filters, params));
     }
 }

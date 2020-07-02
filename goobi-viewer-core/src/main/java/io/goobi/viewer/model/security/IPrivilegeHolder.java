@@ -47,12 +47,18 @@ public interface IPrivilegeHolder {
     public static final String PRIV_DOWNLOAD_METADATA = "DOWNLOAD_METADATA";
     /** Constant <code>PRIV_GENERATE_IIIF_MANIFEST="PRIV_GENERATE_IIIF_MANIFEST"</code> */
     public static final String PRIV_GENERATE_IIIF_MANIFEST = "GENERATE_IIIF_MANIFEST";
+    /** Constant array containing all constants for record privileges. */
+    public static final String[] PRIVS_RECORD =
+            { PRIV_LIST, PRIV_VIEW_THUMBNAILS, PRIV_VIEW_IMAGES, PRIV_VIEW_VIDEO, PRIV_VIEW_AUDIO, PRIV_VIEW_FULLTEXT, PRIV_DOWNLOAD_ORIGINAL_CONTENT,
+                    PRIV_DOWNLOAD_PAGE_PDF, PRIV_DOWNLOAD_PDF, PRIV_DOWNLOAD_METADATA, PRIV_GENERATE_IIIF_MANIFEST };
 
     // Role privileges
     /** Constant <code>PRIV_DELETE_OCR_PAGE="DELETE_OCR_PAGE"</code> */
     public static final String PRIV_DELETE_OCR_PAGE = "DELETE_OCR_PAGE";
     /** Constant <code>PRIV_SET_REPRESENTATIVE_IMAGE="SET_REPRESENTATIVE_IMAGE"</code> */
     public static final String PRIV_SET_REPRESENTATIVE_IMAGE = "SET_REPRESENTATIVE_IMAGE";
+
+    // CMS privileges
     /** Constant <code>PRIV_CMS_PAGES="CMS_PAGES"</code> */
     public static final String PRIV_CMS_PAGES = "CMS_PAGES";
     /** Constant <code>PRIV_CMS_ALL_SUBTHEMES="CMS_ALL_SUBTHEMES"</code> */
@@ -69,6 +75,11 @@ public interface IPrivilegeHolder {
     public static final String PRIV_CMS_COLLECTIONS = "CMS_COLLECTIONS";
     /** Constant <code>PRIV_CMS_CATEGORIES="CMS_CATEGORIES"</code> */
     public static final String PRIV_CMS_CATEGORIES = "CMS_CATEGORIES";
+    public static final String[] PRIVS_CMS =
+            { PRIV_CMS_PAGES, PRIV_CMS_MENU, PRIV_CMS_STATIC_PAGES,
+                    PRIV_CMS_COLLECTIONS,
+                    PRIV_CMS_CATEGORIES };
+
     /** Constant <code>PRIV_CROWDSOURCING_ALL_CAMPAIGNS="CROWDSOURCING_ALL_CAMPAIGNS"</code> */
     public static final String PRIV_CROWDSOURCING_ALL_CAMPAIGNS = "CROWDSOURCING_ALL_CAMPAIGNS";
     /** Constant <code>PRIV_CROWDSOURCING_ANNOTATE_CAMPAIGN="CROWDSOURCING_ANNOTATE_CAMPAIGN"</code> */
@@ -85,240 +96,6 @@ public interface IPrivilegeHolder {
      * @return a boolean.
      */
     public boolean hasPrivilege(String privilege);
-
-    /**
-     * <p>
-     * isPrivList.
-     * </p>
-     *
-     * @return a boolean.
-     */
-    public boolean isPrivList();
-
-    /**
-     * <p>
-     * setPrivList.
-     * </p>
-     *
-     * @param priv a boolean.
-     */
-    public void setPrivList(boolean priv);
-
-    /**
-     * <p>
-     * isPrivViewImages.
-     * </p>
-     *
-     * @return a boolean.
-     */
-    public boolean isPrivViewImages();
-
-    /**
-     * <p>
-     * setPrivViewImages.
-     * </p>
-     *
-     * @param priv a boolean.
-     */
-    public void setPrivViewImages(boolean priv);
-
-    /**
-     * <p>
-     * isPrivViewThumbnails.
-     * </p>
-     *
-     * @return a boolean.
-     */
-    public boolean isPrivViewThumbnails();
-
-    /**
-     * <p>
-     * setPrivViewThumbnails.
-     * </p>
-     *
-     * @param priv a boolean.
-     */
-    public void setPrivViewThumbnails(boolean priv);
-
-    /**
-     * <p>
-     * isPrivViewFulltext.
-     * </p>
-     *
-     * @return a boolean.
-     */
-    public boolean isPrivViewFulltext();
-
-    /**
-     * <p>
-     * setPrivViewFulltext.
-     * </p>
-     *
-     * @param priv a boolean.
-     */
-    public void setPrivViewFulltext(boolean priv);
-
-    /**
-     * <p>
-     * isPrivViewVideo.
-     * </p>
-     *
-     * @return a boolean.
-     */
-    public boolean isPrivViewVideo();
-
-    /**
-     * <p>
-     * setPrivViewVideo.
-     * </p>
-     *
-     * @param priv a boolean.
-     */
-    public void setPrivViewVideo(boolean priv);
-
-    /**
-     * <p>
-     * isPrivViewAudio.
-     * </p>
-     *
-     * @return a boolean.
-     */
-    public boolean isPrivViewAudio();
-
-    /**
-     * <p>
-     * setPrivViewAudio.
-     * </p>
-     *
-     * @param priv a boolean.
-     */
-    public void setPrivViewAudio(boolean priv);
-
-    /**
-     * <p>
-     * isPrivDownloadPdf.
-     * </p>
-     *
-     * @return a boolean.
-     */
-    public boolean isPrivDownloadPdf();
-
-    /**
-     * <p>
-     * setPrivDownloadPdf.
-     * </p>
-     *
-     * @param priv a boolean.
-     */
-    public void setPrivDownloadPdf(boolean priv);
-
-    /**
-     * <p>
-     * isPrivDownloadPagePdf.
-     * </p>
-     *
-     * @return a boolean.
-     */
-    public boolean isPrivDownloadPagePdf();
-
-    /**
-     * <p>
-     * setPrivDownloadPagePdf.
-     * </p>
-     *
-     * @param priv a boolean.
-     */
-    public void setPrivDownloadPagePdf(boolean priv);
-
-    /**
-     * <p>
-     * isPrivDownloadOriginalContent.
-     * </p>
-     *
-     * @return a boolean.
-     */
-    public boolean isPrivDownloadOriginalContent();
-
-    /**
-     * <p>
-     * setPrivDownloadOriginalContent.
-     * </p>
-     *
-     * @param priv a boolean.
-     */
-    public void setPrivDownloadOriginalContent(boolean priv);
-
-    /**
-     * <p>
-     * isPrivDownloadMetadata.
-     * </p>
-     *
-     * @return a boolean.
-     */
-    public boolean isPrivDownloadMetadata();
-
-    /**
-     * <p>
-     * setPrivDownloadMetadata.
-     * </p>
-     *
-     * @param priv a boolean.
-     */
-    public void setPrivDownloadMetadata(boolean priv);
-
-    /**
-     * <p>
-     * isPrivGenerateIiifManifest.
-     * </p>
-     *
-     * @return a boolean.
-     */
-    public boolean isPrivGenerateIiifManifest();
-
-    /**
-     * <p>
-     * setPrivGenerateIiifManifest.
-     * </p>
-     *
-     * @param priv a boolean.
-     */
-    public void setPrivGenerateIiifManifest(boolean priv);
-
-    /**
-     * <p>
-     * isPrivDeleteOcrPage.
-     * </p>
-     *
-     * @return a boolean.
-     */
-    public boolean isPrivDeleteOcrPage();
-
-    /**
-     * <p>
-     * setPrivDeleteOcrPage.
-     * </p>
-     *
-     * @param priv a boolean.
-     */
-    public void setPrivDeleteOcrPage(boolean priv);
-
-    /**
-     * <p>
-     * isPrivSetRepresentativeImage.
-     * </p>
-     *
-     * @return a boolean.
-     */
-    public boolean isPrivSetRepresentativeImage();
-
-    /**
-     * <p>
-     * setPrivSetRepresentativeImage.
-     * </p>
-     *
-     * @param priv a boolean.
-     */
-    public void setPrivSetRepresentativeImage(boolean priv);
 
     /**
      * <p>

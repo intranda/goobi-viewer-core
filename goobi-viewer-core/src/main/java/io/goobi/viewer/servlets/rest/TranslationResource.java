@@ -31,13 +31,11 @@ import org.slf4j.LoggerFactory;
 import com.fasterxml.jackson.annotation.JsonValue;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
+import io.goobi.viewer.api.rest.ViewerRestServiceBinding;
+import io.goobi.viewer.api.rest.serialization.TranslationListSerializer;
 import io.goobi.viewer.messages.MessagesTranslation;
 import io.goobi.viewer.model.misc.Translation;
-import io.goobi.viewer.servlets.rest.bookmarks.BookmarkResource;
-import io.goobi.viewer.servlets.rest.serialization.TranslationListSerializer;
-import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
-import io.swagger.v3.oas.annotations.responses.ApiResponse;
 
 /**
  * <p>

@@ -15,7 +15,12 @@
  */
 package io.goobi.viewer.model.security;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -32,12 +37,14 @@ import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.Table;
+import javax.persistence.Transient;
 
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import io.goobi.viewer.controller.DataManager;
+import io.goobi.viewer.controller.SolrConstants;
 import io.goobi.viewer.controller.SolrSearchIndex;
 import io.goobi.viewer.exceptions.DAOException;
 
@@ -86,6 +93,8 @@ public class LicenseType implements IPrivilegeHolder {
     private boolean openAccess = false;
     @Column(name = "core")
     private boolean core = false;
+    @Column(name = "moving_wall")
+    private boolean movingWall = false;
 
     /** Privileges that everyone else has (users without this license, users that are not logged in). */
     @ElementCollection(fetch = FetchType.EAGER)
@@ -98,6 +107,30 @@ public class LicenseType implements IPrivilegeHolder {
     @JoinTable(name = "license_types_overriding", joinColumns = @JoinColumn(name = "license_type_id"),
             inverseJoinColumns = @JoinColumn(name = "overriding_license_type_id"))
     private Set<LicenseType> overridingLicenseTypes = new HashSet<>();
+
+    @Transient
+    private Set<String> privilegesCopy = new HashSet<>();
+
+    /**
+     * Temporary markers for license types that are part of a moving wall configuration where the condition query no longer matches a particular
+     * record.
+     */
+    @Transient
+    private Map<String, Boolean> restrictionsExpired = new HashMap<>();
+
+    /**
+     * Empty constructor.
+     */
+    public LicenseType() {
+    }
+
+    /**
+     * 
+     * @param name License type name
+     */
+    public LicenseType(String name) {
+        this.name = name;
+    }
 
     /*
      * (non-Javadoc)
@@ -391,6 +424,20 @@ public class LicenseType implements IPrivilegeHolder {
     }
 
     /**
+     * @return the movingWall
+     */
+    public boolean isMovingWall() {
+        return movingWall;
+    }
+
+    /**
+     * @param movingWall the movingWall to set
+     */
+    public void setMovingWall(boolean movingWall) {
+        this.movingWall = movingWall;
+    }
+
+    /**
      * <p>
      * Getter for the field <code>privileges</code>.
      * </p>
@@ -399,6 +446,45 @@ public class LicenseType implements IPrivilegeHolder {
      */
     public Set<String> getPrivileges() {
         return privileges;
+    }
+
+    /**
+     * Returns the list of available privileges for adding to this license (using the working copy while editing).
+     * 
+     * @return Values in IPrivilegeHolder.PRIVS_RECORD minus the privileges already added
+     */
+    public List<String> getAvailablePrivileges() {
+        return getAvailablePrivileges(privilegesCopy);
+    }
+
+    /**
+     * Returns the list of available privileges for adding to this license (using the given privileges list).
+     * 
+     * @param privileges Privileges to be removed from the returned list
+     * @return Values in IPrivilegeHolder.PRIVS_RECORD minus the privileges already added
+     */
+    public List<String> getAvailablePrivileges(Set<String> privileges) {
+        List<String> ret = new ArrayList<>(Arrays.asList(IPrivilegeHolder.PRIVS_RECORD));
+        if (privileges != null) {
+            ret.removeAll(privileges);
+        }
+        return ret;
+    }
+
+    /**
+     * Returns a sorted list (according to PRIVS_RECORD) based on the given set of privileges.
+     * 
+     * @return Sorted list of privileges contained in <code>privileges</code>
+     */
+    public List<String> getSortedPrivileges(Set<String> privileges) {
+        List<String> ret = new ArrayList<>(IPrivilegeHolder.PRIVS_RECORD.length);
+        for (String priv : Arrays.asList(IPrivilegeHolder.PRIVS_RECORD)) {
+            if (privileges.contains(priv)) {
+                ret.add(priv);
+            }
+        }
+
+        return ret;
     }
 
     /**
@@ -412,245 +498,30 @@ public class LicenseType implements IPrivilegeHolder {
         this.privileges = privileges;
     }
 
+    /**
+     * Adds the given privilege to the working set.
+     * 
+     * @param privilege
+     * @return true if successful; false otherwise
+     */
+    public boolean addPrivilege(String privilege) {
+        return privilegesCopy.add(privilege);
+    }
+
+    /**
+     * Removes the given privilege from the working set.
+     * 
+     * @param privilege
+     * @return true if successful; false otherwise
+     */
+    public boolean removePrivilege(String privilege) {
+        return privilegesCopy.remove(privilege);
+    }
+
     /** {@inheritDoc} */
     @Override
     public boolean hasPrivilege(String privilege) {
         return privileges.contains(privilege);
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public boolean isPrivList() {
-        return hasPrivilege(IPrivilegeHolder.PRIV_LIST);
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public void setPrivList(boolean priv) {
-        if (priv) {
-            privileges.add(IPrivilegeHolder.PRIV_LIST);
-        } else {
-            privileges.remove(IPrivilegeHolder.PRIV_LIST);
-        }
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public boolean isPrivViewImages() {
-        return hasPrivilege(IPrivilegeHolder.PRIV_VIEW_IMAGES);
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public void setPrivViewImages(boolean priv) {
-        if (priv) {
-            privileges.add(IPrivilegeHolder.PRIV_VIEW_IMAGES);
-        } else {
-            privileges.remove(IPrivilegeHolder.PRIV_VIEW_IMAGES);
-        }
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public boolean isPrivViewThumbnails() {
-        return hasPrivilege(IPrivilegeHolder.PRIV_VIEW_THUMBNAILS);
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public void setPrivViewThumbnails(boolean priv) {
-        if (priv) {
-            privileges.add(IPrivilegeHolder.PRIV_VIEW_THUMBNAILS);
-        } else {
-            privileges.remove(IPrivilegeHolder.PRIV_VIEW_THUMBNAILS);
-        }
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public boolean isPrivViewFulltext() {
-        return hasPrivilege(IPrivilegeHolder.PRIV_VIEW_FULLTEXT);
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public void setPrivViewFulltext(boolean priv) {
-        if (priv) {
-            privileges.add(IPrivilegeHolder.PRIV_VIEW_FULLTEXT);
-        } else {
-            privileges.remove(IPrivilegeHolder.PRIV_VIEW_FULLTEXT);
-        }
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public boolean isPrivViewVideo() {
-        return hasPrivilege(IPrivilegeHolder.PRIV_VIEW_VIDEO);
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public void setPrivViewVideo(boolean priv) {
-        if (priv) {
-            privileges.add(IPrivilegeHolder.PRIV_VIEW_VIDEO);
-        } else {
-            privileges.remove(IPrivilegeHolder.PRIV_VIEW_VIDEO);
-        }
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public boolean isPrivViewAudio() {
-        return hasPrivilege(IPrivilegeHolder.PRIV_VIEW_AUDIO);
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public void setPrivViewAudio(boolean priv) {
-        if (priv) {
-            privileges.add(IPrivilegeHolder.PRIV_VIEW_AUDIO);
-        } else {
-            privileges.remove(IPrivilegeHolder.PRIV_VIEW_AUDIO);
-        }
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public boolean isPrivDownloadPdf() {
-        return hasPrivilege(IPrivilegeHolder.PRIV_DOWNLOAD_PDF);
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public void setPrivDownloadPdf(boolean priv) {
-        if (priv) {
-            privileges.add(IPrivilegeHolder.PRIV_DOWNLOAD_PDF);
-        } else {
-            privileges.remove(IPrivilegeHolder.PRIV_DOWNLOAD_PDF);
-        }
-    }
-
-    /* (non-Javadoc)
-     * @see io.goobi.viewer.model.security.IPrivilegeHolder#isPrivDownloadPagePdf()
-     */
-    /** {@inheritDoc} */
-    @Override
-    public boolean isPrivDownloadPagePdf() {
-        return hasPrivilege(IPrivilegeHolder.PRIV_DOWNLOAD_PAGE_PDF);
-    }
-
-    /* (non-Javadoc)
-     * @see io.goobi.viewer.model.security.IPrivilegeHolder#setPrivDownloadPagePdf(boolean)
-     */
-    /** {@inheritDoc} */
-    @Override
-    public void setPrivDownloadPagePdf(boolean priv) {
-        if (priv) {
-            privileges.add(IPrivilegeHolder.PRIV_DOWNLOAD_PAGE_PDF);
-        } else {
-            privileges.remove(IPrivilegeHolder.PRIV_DOWNLOAD_PAGE_PDF);
-        }
-    }
-
-    /* (non-Javadoc)
-     * @see io.goobi.viewer.model.user.IPrivilegeHolder#isPrivDownloadOriginalContent()
-     */
-    /** {@inheritDoc} */
-    @Override
-    public boolean isPrivDownloadOriginalContent() {
-        return hasPrivilege(IPrivilegeHolder.PRIV_DOWNLOAD_ORIGINAL_CONTENT);
-    }
-
-    /* (non-Javadoc)
-     * @see io.goobi.viewer.model.user.IPrivilegeHolder#setPrivDownloadOriginalContent(boolean)
-     */
-    /** {@inheritDoc} */
-    @Override
-    public void setPrivDownloadOriginalContent(boolean priv) {
-        if (priv) {
-            privileges.add(IPrivilegeHolder.PRIV_DOWNLOAD_ORIGINAL_CONTENT);
-        } else {
-            privileges.remove(IPrivilegeHolder.PRIV_DOWNLOAD_ORIGINAL_CONTENT);
-        }
-
-    }
-
-    /* (non-Javadoc)
-     * @see io.goobi.viewer.model.security.IPrivilegeHolder#isPrivDownloadMetadata()
-     */
-    @Override
-    public boolean isPrivDownloadMetadata() {
-        return hasPrivilege(IPrivilegeHolder.PRIV_DOWNLOAD_METADATA);
-    }
-
-    /* (non-Javadoc)
-     * @see io.goobi.viewer.model.security.IPrivilegeHolder#setPrivDownloadMetadata(boolean)
-     */
-    @Override
-    public void setPrivDownloadMetadata(boolean priv) {
-        if (priv) {
-            privileges.add(IPrivilegeHolder.PRIV_DOWNLOAD_METADATA);
-        } else {
-            privileges.remove(IPrivilegeHolder.PRIV_DOWNLOAD_METADATA);
-        }
-    }
-
-    /* (non-Javadoc)
-     * @see io.goobi.viewer.model.security.IPrivilegeHolder#isPrivGenerateIiifManifest()
-     */
-    @Override
-    public boolean isPrivGenerateIiifManifest() {
-        return hasPrivilege(IPrivilegeHolder.PRIV_GENERATE_IIIF_MANIFEST);
-    }
-
-    /* (non-Javadoc)
-     * @see io.goobi.viewer.model.security.IPrivilegeHolder#setPrivIiifManifest(boolean)
-     */
-    @Override
-    public void setPrivGenerateIiifManifest(boolean priv) {
-        if (priv) {
-            privileges.add(IPrivilegeHolder.PRIV_GENERATE_IIIF_MANIFEST);
-        } else {
-            privileges.remove(IPrivilegeHolder.PRIV_GENERATE_IIIF_MANIFEST);
-        }
-    }
-
-    /* (non-Javadoc)
-     * @see io.goobi.viewer.model.security.IPrivilegeHolder#isPrivDeleteOcrPage()
-     */
-    /** {@inheritDoc} */
-    @Override
-    public boolean isPrivDeleteOcrPage() {
-        return hasPrivilege(IPrivilegeHolder.PRIV_DELETE_OCR_PAGE);
-    }
-
-    /* (non-Javadoc)
-     * @see io.goobi.viewer.model.security.IPrivilegeHolder#setPrivDeleteOcrPage(boolean)
-     */
-    /** {@inheritDoc} */
-    @Override
-    public void setPrivDeleteOcrPage(boolean priv) {
-        if (priv) {
-            privileges.add(IPrivilegeHolder.PRIV_DELETE_OCR_PAGE);
-        } else {
-            privileges.remove(IPrivilegeHolder.PRIV_DELETE_OCR_PAGE);
-        }
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public boolean isPrivSetRepresentativeImage() {
-        return hasPrivilege(IPrivilegeHolder.PRIV_SET_REPRESENTATIVE_IMAGE);
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public void setPrivSetRepresentativeImage(boolean priv) {
-        if (priv) {
-            privileges.add(IPrivilegeHolder.PRIV_SET_REPRESENTATIVE_IMAGE);
-        } else {
-            privileges.remove(IPrivilegeHolder.PRIV_SET_REPRESENTATIVE_IMAGE);
-        }
     }
 
     /* (non-Javadoc)
@@ -669,12 +540,12 @@ public class LicenseType implements IPrivilegeHolder {
     @Override
     public void setPrivCmsPages(boolean priv) {
         if (priv) {
-            privileges.add(IPrivilegeHolder.PRIV_CMS_PAGES);
+            privilegesCopy.add(IPrivilegeHolder.PRIV_CMS_PAGES);
         } else {
-            privileges.remove(IPrivilegeHolder.PRIV_CMS_PAGES);
+            privilegesCopy.remove(IPrivilegeHolder.PRIV_CMS_PAGES);
         }
     }
-
+    
     /* (non-Javadoc)
      * @see io.goobi.viewer.model.security.IPrivilegeHolder#isPrivCmsAllSubthemes()
      */
@@ -691,9 +562,9 @@ public class LicenseType implements IPrivilegeHolder {
     @Override
     public void setPrivCmsAllSubthemes(boolean priv) {
         if (priv) {
-            privileges.add(IPrivilegeHolder.PRIV_CMS_ALL_SUBTHEMES);
+            privilegesCopy.add(IPrivilegeHolder.PRIV_CMS_ALL_SUBTHEMES);
         } else {
-            privileges.remove(IPrivilegeHolder.PRIV_CMS_ALL_SUBTHEMES);
+            privilegesCopy.remove(IPrivilegeHolder.PRIV_CMS_ALL_SUBTHEMES);
         }
     }
 
@@ -713,9 +584,9 @@ public class LicenseType implements IPrivilegeHolder {
     @Override
     public void setPrivCmsAllCategories(boolean priv) {
         if (priv) {
-            privileges.add(IPrivilegeHolder.PRIV_CMS_ALL_CATEGORIES);
+            privilegesCopy.add(IPrivilegeHolder.PRIV_CMS_ALL_CATEGORIES);
         } else {
-            privileges.remove(IPrivilegeHolder.PRIV_CMS_ALL_CATEGORIES);
+            privilegesCopy.remove(IPrivilegeHolder.PRIV_CMS_ALL_CATEGORIES);
         }
     }
 
@@ -735,9 +606,9 @@ public class LicenseType implements IPrivilegeHolder {
     @Override
     public void setPrivCmsAllTemplates(boolean priv) {
         if (priv) {
-            privileges.add(IPrivilegeHolder.PRIV_CMS_ALL_TEMPLATES);
+            privilegesCopy.add(IPrivilegeHolder.PRIV_CMS_ALL_TEMPLATES);
         } else {
-            privileges.remove(IPrivilegeHolder.PRIV_CMS_ALL_TEMPLATES);
+            privilegesCopy.remove(IPrivilegeHolder.PRIV_CMS_ALL_TEMPLATES);
         }
     }
 
@@ -757,9 +628,9 @@ public class LicenseType implements IPrivilegeHolder {
     @Override
     public void setPrivCmsMenu(boolean priv) {
         if (priv) {
-            privileges.add(IPrivilegeHolder.PRIV_CMS_MENU);
+            privilegesCopy.add(IPrivilegeHolder.PRIV_CMS_MENU);
         } else {
-            privileges.remove(IPrivilegeHolder.PRIV_CMS_MENU);
+            privilegesCopy.remove(IPrivilegeHolder.PRIV_CMS_MENU);
         }
     }
 
@@ -779,9 +650,9 @@ public class LicenseType implements IPrivilegeHolder {
     @Override
     public void setPrivCmsStaticPages(boolean priv) {
         if (priv) {
-            privileges.add(IPrivilegeHolder.PRIV_CMS_STATIC_PAGES);
+            privilegesCopy.add(IPrivilegeHolder.PRIV_CMS_STATIC_PAGES);
         } else {
-            privileges.remove(IPrivilegeHolder.PRIV_CMS_STATIC_PAGES);
+            privilegesCopy.remove(IPrivilegeHolder.PRIV_CMS_STATIC_PAGES);
         }
     }
 
@@ -801,9 +672,9 @@ public class LicenseType implements IPrivilegeHolder {
     @Override
     public void setPrivCmsCollections(boolean priv) {
         if (priv) {
-            privileges.add(IPrivilegeHolder.PRIV_CMS_COLLECTIONS);
+            privilegesCopy.add(IPrivilegeHolder.PRIV_CMS_COLLECTIONS);
         } else {
-            privileges.remove(IPrivilegeHolder.PRIV_CMS_COLLECTIONS);
+            privilegesCopy.remove(IPrivilegeHolder.PRIV_CMS_COLLECTIONS);
         }
     }
 
@@ -823,9 +694,9 @@ public class LicenseType implements IPrivilegeHolder {
     @Override
     public void setPrivCmsCategories(boolean priv) {
         if (priv) {
-            privileges.add(IPrivilegeHolder.PRIV_CMS_CATEGORIES);
+            privilegesCopy.add(IPrivilegeHolder.PRIV_CMS_CATEGORIES);
         } else {
-            privileges.remove(IPrivilegeHolder.PRIV_CMS_CATEGORIES);
+            privilegesCopy.remove(IPrivilegeHolder.PRIV_CMS_CATEGORIES);
         }
     }
 
@@ -845,9 +716,9 @@ public class LicenseType implements IPrivilegeHolder {
     @Override
     public void setPrivCrowdsourcingAllCampaigns(boolean priv) {
         if (priv) {
-            privileges.add(IPrivilegeHolder.PRIV_CROWDSOURCING_ALL_CAMPAIGNS);
+            privilegesCopy.add(IPrivilegeHolder.PRIV_CROWDSOURCING_ALL_CAMPAIGNS);
         } else {
-            privileges.remove(IPrivilegeHolder.PRIV_CROWDSOURCING_ALL_CAMPAIGNS);
+            privilegesCopy.remove(IPrivilegeHolder.PRIV_CROWDSOURCING_ALL_CAMPAIGNS);
         }
     }
 
@@ -867,9 +738,9 @@ public class LicenseType implements IPrivilegeHolder {
     @Override
     public void setPrivCrowdsourcingAnnotateCampaign(boolean priv) {
         if (priv) {
-            privileges.add(IPrivilegeHolder.PRIV_CROWDSOURCING_ANNOTATE_CAMPAIGN);
+            privilegesCopy.add(IPrivilegeHolder.PRIV_CROWDSOURCING_ANNOTATE_CAMPAIGN);
         } else {
-            privileges.remove(IPrivilegeHolder.PRIV_CROWDSOURCING_ANNOTATE_CAMPAIGN);
+            privilegesCopy.remove(IPrivilegeHolder.PRIV_CROWDSOURCING_ANNOTATE_CAMPAIGN);
         }
     }
 
@@ -889,9 +760,9 @@ public class LicenseType implements IPrivilegeHolder {
     @Override
     public void setPrivCrowdsourcingReviewCampaign(boolean priv) {
         if (priv) {
-            privileges.add(IPrivilegeHolder.PRIV_CROWDSOURCING_REVIEW_CAMPAIGN);
+            privilegesCopy.add(IPrivilegeHolder.PRIV_CROWDSOURCING_REVIEW_CAMPAIGN);
         } else {
-            privileges.remove(IPrivilegeHolder.PRIV_CROWDSOURCING_REVIEW_CAMPAIGN);
+            privilegesCopy.remove(IPrivilegeHolder.PRIV_CROWDSOURCING_REVIEW_CAMPAIGN);
         }
     }
 
@@ -915,6 +786,46 @@ public class LicenseType implements IPrivilegeHolder {
      */
     public void setOverridingLicenseTypes(Set<LicenseType> overridingLicenseTypes) {
         this.overridingLicenseTypes = overridingLicenseTypes;
+    }
+
+    /**
+     * @return the privilegesCopy
+     */
+    public Set<String> getPrivilegesCopy() {
+        return privilegesCopy;
+    }
+
+    /**
+     * @param privilegesCopy the privilegesCopy to set
+     */
+    public void setPrivilegesCopy(Set<String> privilegesCopy) {
+        this.privilegesCopy = privilegesCopy;
+    }
+
+    /**
+     * 
+     * @param query
+     * @return
+     */
+    public boolean isRestrictionsExpired(String query) {
+        if (query == null) {
+            return false;
+        }
+        return restrictionsExpired.get(query) != null && restrictionsExpired.get(query);
+    }
+
+    /**
+     * @return the restrictionsExpired
+     */
+    public Map<String, Boolean> getRestrictionsExpired() {
+        return restrictionsExpired;
+    }
+
+    /**
+     * @param restrictionsExpired the restrictionsExpired to set
+     */
+    public void setRestrictionsExpired(Map<String, Boolean> restrictionsExpired) {
+        this.restrictionsExpired = restrictionsExpired;
     }
 
     /**
@@ -971,6 +882,29 @@ public class LicenseType implements IPrivilegeHolder {
         }
     }
 
+    /**
+     * 
+     * @return
+     */
+    public String getFilterQueryPart(boolean negateFilterQuery) {
+        String processedConditions = getProcessedConditions();
+        if (StringUtils.isNotBlank(processedConditions)) {
+            // Do not append empty sub-query
+            return new StringBuilder().append(" (+")
+                    .append(SolrConstants.ACCESSCONDITION)
+                    .append(":\"")
+                    .append(name)
+                    .append("\" ")
+                    .append(negateFilterQuery ? '-' : '+')
+                    .append('(')
+                    .append(processedConditions)
+                    .append("))")
+                    .toString();
+        }
+
+        return new StringBuilder().append(" ").append(SolrConstants.ACCESSCONDITION).append(":\"").append(name).append('"').toString();
+    }
+
     /* (non-Javadoc)
      * @see java.lang.Object#toString()
      */
@@ -978,7 +912,8 @@ public class LicenseType implements IPrivilegeHolder {
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder("LicenceType: ").append(getName()).append(":\t");
-        sb.append("openaccess: ").append(isOpenAccess());
+        sb.append("moving wall: ").append(isMovingWall());
+        sb.append("\topenaccess: ").append(isOpenAccess());
         sb.append("\tconditions: ").append(conditions);
         sb.append("\n\t").append("Privileges: ").append(StringUtils.join(getPrivileges(), ", "));
         return sb.toString();

@@ -58,18 +58,18 @@
 						<h3>#{cmsPage.getContent('A1')}</h3>
 						
 						<div class="row">
-                            <div class="col-xs-12 col-sm-3">
+                            <div class="col-12 col-sm-3">
 								<!-- IMAGE -->
 			                    <h:panelGroup rendered="#{cmsPage.getContent('image01') != ''}">
 			                        <figure class="tpl-news-detail__image">
-			                            <img title="#{cmsPage.getMediaName('image01')}" src="#{cmsPage.getContent('image01')}" class="img-responsive" alt="#{cmsPage.getMediaName('image01')}" />
+			                            <img title="#{cmsPage.getMediaName('image01')}" src="#{cmsPage.getContent('image01')}" class="img-fluid" alt="#{cmsPage.getMediaName('image01')}" />
 			                            <figcaption>
 			                                #{cmsPage.getMediaDescription('image01')}
 			                            </figcaption>
 			                        </figure>
 								</h:panelGroup>
 							</div>
-							<div class="col-xs-12 col-sm-9">	                    
+							<div class="col-12 col-sm-9">	                    
 			                    <!-- TEXT -->
 			                    <div class="tpl-news-detail__text">
 			    					<ui:include src="#{cmsPage.getContent('A2')}" />
@@ -85,16 +85,16 @@
 	                    <h3>#{cmsPage.getContent('B1')}</h3>
 						
 						<div class="row">
-							<div class="col-xs-12 col-sm-3">
+							<div class="col-12 col-sm-3">
 								<!-- IMAGE -->
 								<h:panelGroup rendered="#{cmsPage.getContent('image02') != ''}">
 									<figure class="tpl-news-detail__image">
-										<img title="#{cmsPage.getMediaName('image02')}" src="#{cmsPage.getContent('image02')}" class="img-responsive" alt="#{cmsPage.getMediaName('image02')}" />
+										<img title="#{cmsPage.getMediaName('image02')}" src="#{cmsPage.getContent('image02')}" class="img-fluid" alt="#{cmsPage.getMediaName('image02')}" />
 										<figcaption>#{cmsPage.getMediaDescription('image02')}</figcaption>
 									</figure>
 								</h:panelGroup>
 							</div>
-							<div class="col-xs-12 col-sm-9">
+							<div class="col-12 col-sm-9">
 								<!-- TEXT -->
 								<div class="tpl-news-detail__text">
 									<ui:include src="#{cmsPage.getContent('B2')}" />
@@ -110,18 +110,18 @@
 	                    <h3>#{cmsPage.getContent('C1')}</h3>
 	                    
 	                    <div class="row">
-							<div class="col-xs-12 col-sm-3">
+							<div class="col-12 col-sm-3">
 			                    <!-- IMAGE -->
 			                    <h:panelGroup rendered="#{cmsPage.getContent('image03') != ''}">
 			                        <figure class="tpl-news-detail__image">
-			                            <img title="#{cmsPage.getMediaName('image03')}" src="#{cmsPage.getContent('image03')}" class="img-responsive" alt="#{cmsPage.getMediaName('image03')}" />
+			                            <img title="#{cmsPage.getMediaName('image03')}" src="#{cmsPage.getContent('image03')}" class="img-fluid" alt="#{cmsPage.getMediaName('image03')}" />
 			                            <figcaption>
 			                                #{cmsPage.getMediaDescription('image03')}
 			                            </figcaption>
 			                        </figure>
 			                    </h:panelGroup>
 							</div>
-							<div class="col-xs-12 col-sm-9">
+							<div class="col-12 col-sm-9">
 			                    <!-- TEXT -->
 			                    <div class="tpl-news-detail__text">
 			                        <ui:include src="#{cmsPage.getContent('C2')}" />
@@ -137,18 +137,18 @@
 	                    <h3>#{cmsPage.getContent('D1')}</h3>
 	                    
 	                    <div class="row">
-							<div class="col-xs-12 col-sm-3">
+							<div class="col-12 col-sm-3">
 			                    <!-- IMAGE -->
 			                    <h:panelGroup rendered="#{cmsPage.getContent('image04') != ''}">
 			                        <figure class="tpl-news-detail__image">
-			                            <img title="#{cmsPage.getMediaName('image04')}" src="#{cmsPage.getContent('image04')}" class="img-responsive" alt="#{cmsPage.getMediaName('image04')}" />
+			                            <img title="#{cmsPage.getMediaName('image04')}" src="#{cmsPage.getContent('image04')}" class="img-fluid" alt="#{cmsPage.getMediaName('image04')}" />
 			                            <figcaption>
 			                                #{cmsPage.getMediaDescription('image04')}
 			                            </figcaption>
 			                        </figure>
 			                    </h:panelGroup>
 							</div>
-							<div class="col-xs-12 col-sm-9">
+							<div class="col-12 col-sm-9">
 			                    <!-- TEXT -->
 			                    <div class="tpl-news-detail__text">
 			                        <ui:include src="#{cmsPage.getContent('D2')}" />
@@ -164,12 +164,12 @@
 	                    <div class="solr-query-collection__thumbs">
 	                        <div class="row">
 	        					<ui:repeat var="hit" value="#{cmsBean.getQueryResults()}">
-	                                <div class="col-xs-12 col-sm-4">
+	                                <div class="col-12 col-sm-4">
 	            						<div class="solr-query-collection__thumb">
 	            							<!-- IMAGE -->
 	                                        <div class="solr-query-collection__image">
 	            								<h:outputLink value="#{navigationHelper.applicationUrl}#{hit.browseElement.url}">
-	            									<img data-src="#{hit.browseElement.thumbnailUrl}" class="img-responsive" 
+	            									<img data-src="#{hit.browseElement.thumbnailUrl}" class="img-fluid" 
 	            									data-viewer-thumbnail="thumbnail"
 	            									alt="#{hit.browseElement.label}" />
 	            								</h:outputLink>

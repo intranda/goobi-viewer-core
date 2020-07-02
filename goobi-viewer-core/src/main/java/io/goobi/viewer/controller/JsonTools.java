@@ -17,6 +17,7 @@ package io.goobi.viewer.controller;
 
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 
@@ -31,12 +32,16 @@ import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 import io.goobi.viewer.controller.SolrConstants.DocType;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.exceptions.ViewerConfigurationException;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
+import io.goobi.viewer.messages.Messages;
 import io.goobi.viewer.model.security.AccessConditionUtils;
 import io.goobi.viewer.model.security.IPrivilegeHolder;
 import io.goobi.viewer.model.viewer.PageType;
@@ -52,11 +57,15 @@ public class JsonTools {
 
     private static final Logger logger = LoggerFactory.getLogger(JsonTools.class);
 
+    private static ObjectMapper mapper = new ObjectMapper();
+
+    
     /**
      * Returns a <code>JSONArray</code> containing JSON objects for every <code>SolrDocument</code> in the given result. Order remains the same as in
      * the result list.
      *
      * @param result a {@link org.apache.solr.common.SolrDocumentList} object.
+     * @param expanded 
      * @param request a {@link javax.servlet.http.HttpServletRequest} object.
      * @return a {@link org.json.JSONArray} object.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
@@ -64,9 +73,10 @@ public class JsonTools {
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
      */
-    public static JSONArray getRecordJsonArray(SolrDocumentList result, HttpServletRequest request)
+    public static JSONArray getRecordJsonArray(SolrDocumentList result, Map<String, SolrDocumentList> expanded, HttpServletRequest request, String languageToTranslate)
             throws IndexUnreachableException, PresentationException, DAOException, ViewerConfigurationException {
         JSONArray jsonArray = new JSONArray();
+        Locale locale = StringUtils.isBlank(languageToTranslate) ? null : Locale.forLanguageTag(languageToTranslate);
 
         for (SolrDocument doc : result) {
             String pi = (String) doc.getFieldValue(SolrConstants.PI_TOPSTRUCT);
@@ -79,18 +89,74 @@ public class JsonTools {
                     requiredAccessConditionSet.add((String) o);
                 }
                 boolean access = AccessConditionUtils.checkAccessPermission(requiredAccessConditionSet, IPrivilegeHolder.PRIV_LIST,
-                        new StringBuilder(SolrConstants.PI_TOPSTRUCT).append(':').append(pi).toString(), request);
+                        "+" + SolrConstants.PI_TOPSTRUCT + ":" + pi, request);
                 if (!access) {
                     logger.trace("User may not list {}", pi);
                     continue;
                 }
             }
 
-            JSONObject jsonObj = getRecordJsonObject(doc, ServletUtils.getServletPathWithHostAsUrlFromRequest(request));
-            jsonArray.put(jsonObj);
+            try {
+                JSONObject object = getAsJson(doc, locale);
+                
+                if(expanded != null && expanded.containsKey(pi)) {
+                    JSONArray array = new JSONArray();
+                    for (SolrDocument childDoc : expanded.get(pi)) {
+                        JSONObject child = getAsJson(childDoc, locale);
+                        array.put(child);
+                    }
+                    object.put("children", array);
+                }
+                
+                jsonArray.put(object);
+            } catch (JsonProcessingException e) {
+                logger.error("Error writing document to json", e);
+                JSONObject jsonObj = getRecordJsonObject(doc, ServletUtils.getServletPathWithHostAsUrlFromRequest(request));
+                jsonArray.put(jsonObj);
+            }
+
         }
 
         return jsonArray;
+    }
+
+    /**
+     * @param mapper
+     * @param locale
+     * @param doc
+     * @return
+     * @throws JsonProcessingException
+     */
+    public static JSONObject getAsJson(SolrDocument doc, Locale locale) throws JsonProcessingException {
+        String json = mapper.writeValueAsString(doc);
+        JSONObject object = new JSONObject(json);
+        if (locale != null) {
+            object = translateJSONObject(locale, object);
+        }
+        return object;
+    }
+
+    /**
+     * @param locale
+     * @param object
+     * @return
+     */
+    public static JSONObject translateJSONObject(Locale locale, JSONObject object) {
+        JSONObject trObject = new JSONObject();
+        String[] names = JSONObject.getNames(object);
+        for (String name : names) {
+            Object value = object.get(name);
+            String trName = Messages.translate(name, locale);
+            Object trValue;
+            if (value instanceof String) {
+                trValue = Messages.translate((String) value, locale);
+            } else {
+                trValue = value;
+            }
+            trObject.put(trName, trValue);
+        }
+        object = trObject;
+        return object;
     }
 
     /**
@@ -120,7 +186,7 @@ public class JsonTools {
                     requiredAccessConditionSet.add((String) o);
                 }
                 boolean access = AccessConditionUtils.checkAccessPermission(requiredAccessConditionSet, IPrivilegeHolder.PRIV_LIST,
-                        new StringBuilder(SolrConstants.PI_TOPSTRUCT).append(':').append(pi).toString(), request);
+                        "+" + SolrConstants.PI_TOPSTRUCT + ":" + pi.toString(), request);
                 if (!access) {
                     logger.debug("User may not list {}", pi);
                     continue;
@@ -240,4 +306,50 @@ public class JsonTools {
         // logger.trace("jsonObject of pi " + pi + " : " +jsonObj);
         return jsonObj;
     }
+
+    /**
+     * 
+     * @param json JSON string
+     * @return Version information as a single line string
+     * @should format string correctly
+     */
+    public static String formatVersionString(String json) {
+        final String notAvailableKey = "admin__dashboard_versions_not_available";
+
+        if (StringUtils.isEmpty(json)) {
+            return notAvailableKey;
+        }
+
+        JSONObject jsonObj = new JSONObject(json);
+        try {
+            return jsonObj.getString("application") + " " + jsonObj.getString("version")
+                    + " " + jsonObj.getString("build-date")
+                    + " " + jsonObj.getString("git-revision");
+        } catch (JSONException e) {
+            logger.error(e.getMessage());
+            return notAvailableKey;
+        }
+    }
+
+    /**
+     *
+     * @param json JSON string
+     * @return Only version number and git hash as a single line string
+     */
+    public static String shortFormatVersionString(String json) {
+        final String notAvailableKey = "admin__dashboard_versions_not_available";
+
+        if (StringUtils.isEmpty(json)) {
+            return notAvailableKey;
+        }
+
+        JSONObject jsonObj = new JSONObject(json);
+        try {
+            return jsonObj.getString("version") + " (" + jsonObj.getString("git-revision") + ")";
+        } catch (JSONException e) {
+            logger.error(e.getMessage());
+            return notAvailableKey;
+        }
+    }
+
 }

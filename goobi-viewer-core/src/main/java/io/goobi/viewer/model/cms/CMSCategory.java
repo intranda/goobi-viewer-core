@@ -22,6 +22,9 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
+import io.goobi.viewer.controller.DataManager;
+import io.goobi.viewer.exceptions.DAOException;
+
 /**
  * <p>
  * CMSCategory class.
@@ -79,6 +82,16 @@ public class CMSCategory implements Comparable<CMSCategory> {
         this.id = keepId ? blueprint.id : null;
         this.name = blueprint.name;
         this.description = blueprint.description;
+    }
+
+    /**
+     * 
+     * @return true if there are CMS pages or media using this category; false otherwise
+     * @throws DAOException
+     */
+    public boolean isInUse() throws DAOException {
+        return DataManager.getInstance().getDao().getCountPagesUsingCategory(this) > 0
+                || DataManager.getInstance().getDao().getCountMediaItemsUsingCategory(this) > 0;
     }
 
     /**

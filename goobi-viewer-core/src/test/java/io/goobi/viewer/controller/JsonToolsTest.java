@@ -33,11 +33,22 @@ public class JsonToolsTest extends AbstractSolrEnabledTest {
         Assert.assertEquals(doc.getFieldValue(SolrConstants.DC), json.get("collection"));
         // URL root depends on the current config state and may variate, so only compare the args
         Assert.assertTrue("Thumbnail url was " + ((String) json.get("thumbnailUrl")), ((String) json.get("thumbnailUrl"))
-                .contains("image/" + PI + "/" + doc.getFieldValue(SolrConstants.THUMBNAIL) + "/full/!100,120/0/default.jpg"));
+                .contains("records/" + PI + "/files/images/" + doc.getFieldValue(SolrConstants.THUMBNAIL) + "/full/!100,120/0/default.jpg"));
         // URL root depends on the current config state and may variate, so only compare the args
         Assert.assertTrue("Image url was " + ((String) json.get("thumbnailUrl")), ((String) json.get("mediumimage"))
-                .contains("image/" + PI + "/" + doc.getFieldValue(SolrConstants.THUMBNAIL) + "/full/!600,500/0/default.jpg"));
+                .contains("records/" + PI + "/files/images/" + doc.getFieldValue(SolrConstants.THUMBNAIL) + "/full/!600,500/0/default.jpg"));
         Assert.assertEquals(rootUrl + "/" + PageType.viewObject.getName() + "/" + PI + "/1/LOG_0000/", json.get("url"));
         //        Assert.assertEquals(doc.getFieldValue(SolrConstants._CALENDAR_YEAR), json.get("date"));
+    }
+
+    /**
+     * @see JsonTools#formatVersionString(String)
+     * @verifies format string correctly
+     */
+    @Test
+    public void formatVersionString_shouldFormatStringCorrectly() throws Exception {
+        Assert.assertEquals("goobi-viewer-core 1337 2020-06-30 abcdefg",
+                JsonTools.formatVersionString(
+                        "{\"application\": \"goobi-viewer-core\", \"version\": \"1337\", \"build-date\": \"2020-06-30\", \"git-revision\": \"abcdefg\"}"));
     }
 }

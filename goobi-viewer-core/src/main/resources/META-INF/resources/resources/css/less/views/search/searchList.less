@@ -112,6 +112,7 @@
 	            }
 	            a, button {
 	            	height: 100%;
+	            	width: 100%;
 	            }
 	            input[type="submit"] {
 		            background-image: url("@{images}/icons/icon-search.png");
@@ -124,6 +125,8 @@
 	            &.reset {
 	            	flex: 0 0 4rem;
 	                background-color: @lightgray;
+					justify-content: center;
+					border: 1px solid #ccc;
 	                a, button {}
 	                &.focus {
 	                	border-color: @blue;
@@ -135,7 +138,6 @@
 	                background-color: @blue;
 	                border-color: @blue;
 	                display: inherit;
-	                height: 3.4rem;
 	                a {
 	                    display: block;
 	                    color: @white;
@@ -192,7 +194,8 @@
     &__adv-search-info {
         margin-bottom: 10px;
         padding: 10px;
-        background-color: @lightgray;
+        background-color: @white;
+        border: 1px solid @middlegray;
     }
     &__adv-search-info-back {
         font-size: @fontMedium;
@@ -221,13 +224,13 @@
     }
     &__hit-thumbnail {
     	position: relative;
-    	min-height: 120px;
+		width: 100%;
 		text-align: right;
         img {
             display: inline;
 		    padding: 0;
 		    margin: 0;
-            max-width: 80px;
+            max-width: 100%;
             max-height: 100%;
 		    line-height: normal;
             border: 2px solid @white;
@@ -434,12 +437,12 @@
 }
 
 /* STACKED MULTIVOLUME THUMBNAIL */
-.stacked-thumbnail,
 .stacked-thumbnail-before,
 .stacked-thumbnail-after {
-    position: absolute;
-    top: 0;
-    right: 0;
+	position: absolute;
+	width: 101%;
+	height: 101%;
+	top: 0;
 }
 
 .stacked-thumbnail {
@@ -449,36 +452,67 @@
     box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.3);
     background: @white;
     z-index: 10;
+    position: relative;
+
 }
 
 .stacked-thumbnail-before,
 .stacked-thumbnail-after {
-	max-height: 100%;
+	opacity: 0;
     border: 2px solid @white;
-    -webkit-box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.3);
-    -moz-box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.3);
     box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.3);
-    -webkit-transform: rotate(-5deg);
-    -moz-transform: rotate(-5deg);
-    -o-transform: rotate(-5deg);
-    -ms-transform: rotate(-5deg);
-    transform: rotate(-5deg);
     background: #eff4de;
     z-index: 9;
+    transition: transform 0.12s linear, opacity 0.5s linear;
+    &.-shown {
+    	opacity: 1.0;
+    }
+}
+
+
+.stackedThumbEffect {
+	position: relative;
+	width: 100%;
+	height: 100%;
+	display: block;
+	margin-left: -2px;
+}
+
+.stackedThumbEffect-inner {
+position: relative;
+}
+
+.stackedThumbEffect:hover .stacked-thumbnail-before {
+    transform: rotate(-7deg);
+}
+
+.stackedThumbEffect:hover .stacked-thumbnail-after {
+    transform: rotate(6deg);
 }
 
 .stacked-thumbnail-after {
-    -webkit-transform: rotate(4deg);
-    -moz-transform: rotate(4deg);
-    -o-transform: rotate(4deg);
-    -ms-transform: rotate(4deg);
-    transform: rotate(4deg);
-    background: #768590;
+	transform: rotate(4deg);
+	background: #768590;
+	margin-left: -5px;
+	margin-top: 0px;
+	height: 105%;
+	width: 106%;
+}
+
+.stacked-thumbnail-before {
+	transform: rotate(-4deg);
+	margin-left: -6px;
+	margin-top: 0px;
+	width: 106%;
+	height: calc(100% + 3px);
+	background: #ececec;
 }
 
 .stacked-thumbnail a img {
     display: block;
 }
+
+
 
 /* BREAKPOINT FOR LARGE DESKTOPS */
 @media screen and (max-width: @largeBreakpoint) {} 
@@ -487,7 +521,11 @@
 @media screen and (max-width: @mediumBreakpoint) {}
 
 /* BREAKPOINT FOR TABLETS */
-@media screen and (max-width: @smallBreakpoint) {}
+@media screen and (max-width: @smallBreakpoint) {
+	.search-list__hit-thumbnail  {
+    	width: auto;
+	}
+}
 
 /* BREAKPOINT FOR SMARTPHONES */
 @media screen and (max-width: @xSmallBreakpoint) {

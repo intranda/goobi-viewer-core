@@ -21,6 +21,7 @@ import javax.faces.component.UIViewRoot;
 import javax.faces.context.ExternalContext;
 import javax.faces.context.FacesContext;
 
+import org.apache.solr.common.SolrDocument;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -128,7 +129,7 @@ public class StructElementTest extends AbstractSolrEnabledTest {
     @Test
     public void getImageUrl_shouldConstructUrlCorrectly() throws Exception {
         StructElement element = new StructElement(iddocKleiuniv);
-        Assert.assertEquals(ConfigurationTest.APPLICATION_ROOT_URL + "rest/image/" + PI_KLEIUNIV + "/00000001.tif/full/!600,800/0/default.jpg",
+        Assert.assertEquals(ConfigurationTest.APPLICATION_ROOT_URL + "api/v1/records/" + PI_KLEIUNIV + "/files/images/00000001.tif/full/!600,800/0/default.jpg",
                 element.getImageUrl(600, 800));
     }
 
@@ -166,7 +167,9 @@ public class StructElementTest extends AbstractSolrEnabledTest {
      */
     @Test
     public void getFirstVolumeFieldValue_shouldReturnCorrectValue() throws Exception {
-        StructElement element = new StructElement(1591177104955L);
+        SolrDocument doc = DataManager.getInstance().getSearchIndex().getFirstDoc(SolrConstants.PI + ":306653648", null);
+        Assert.assertNotNull(doc);
+        StructElement element = new StructElement(Long.valueOf((String) doc.getFieldValue(SolrConstants.IDDOC)), doc);
         Assert.assertEquals("306653648_1891", element.getFirstVolumeFieldValue(SolrConstants.PI));
     }
 

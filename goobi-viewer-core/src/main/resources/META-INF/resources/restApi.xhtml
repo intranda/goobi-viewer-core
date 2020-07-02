@@ -21,24 +21,26 @@
         <div id="swagger-container"></div>
         
         <script>
-	        fetch("#{request.contextPath}/rest/openapi.json")
+      //<![CDATA[
+	        fetch("#{request.contextPath}/api/v1/openapi.json")
 	        .then(res => res.json())
 	        .then(json => {
-	            json.servers = [
-	                {
-	                    url: "#{request.contextPath}"
-	                }
-	            ]
-	          return json;
-	        })
-	        .then(json => {
+	            console.log("init SwaggerUIBundle with ", json);
 	            const ui = SwaggerUIBundle({
 	        	    dom_id: '#swagger-container',
 	        	    spec: json,
+	        	    //all POST request need to end with "/". Otherwise they won't work because of request forwarding
+	        	    requestInterceptor : request => {
+	        	        if(!request.url.endsWith("/") && !request.url.includes("?")) {
+	        	            request.url = request.url + "/";
+	        	        }
+		                console.log("requesting ", request);
+		                return request;
+		            },
 	        	  });
 	        })
         	
-        
+        //]]>
         </script>
         
     </ui:define>

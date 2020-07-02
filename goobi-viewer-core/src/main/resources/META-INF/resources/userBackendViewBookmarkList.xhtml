@@ -31,11 +31,11 @@
             id="viewBookmarkList"
             class="view-bookmark">
             <h:panelGroup rendered="#{bookmarkBean.currentBookmarkListShared or (userBean.loggedIn and bookmarkBean.currentBookmarkList.isMayView(userBean.user))}">
-                <div class="row">
-                    <div class="col-xs-10">
+                <div class="row no-gutters">
+                    <div class="col-10">
                         <h2>#{bookmarkBean.currentBookmarkList.name}</h2>
                     </div>
-                    <div class="col-xs-2">
+                    <div class="col-2">
                         <!-- ACTION -->
                         <div class="view-bookmark__action text-right">
                             <h:form
@@ -98,7 +98,7 @@
                                     value="#{bookmarkBean.currentBookmarkList.items}"
                                     var="item"
                                     varStatus="status">
-                                    <div class="col-xs-12 col-sm-6">
+                                    <div class="col-12 col-sm-6">
                                         <h:form
                                             id="viewBookmarkForm"
                                             prependId="false">

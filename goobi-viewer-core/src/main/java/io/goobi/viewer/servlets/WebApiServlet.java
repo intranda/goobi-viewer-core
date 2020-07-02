@@ -276,7 +276,7 @@ public class WebApiServlet extends HttpServlet implements Serializable {
                                 jsonArray = JsonTools.getDateCentricRecordJsonArray(result, request);
                                 break;
                             default:
-                                jsonArray = JsonTools.getRecordJsonArray(result, request);
+                                jsonArray = JsonTools.getRecordJsonArray(result, null, request, null);
                                 break;
                         }
                         if (jsonArray == null) {

@@ -9,11 +9,9 @@
 
     <!-- EDIT CMS PAGE -->
     <div class="cms-page__edit-page">
-        <h:form>
-            <h:commandLink action="#{cmsBean.editPage(cmsPage)}">
-                <i class="fa fa-pencil" aria-hidden="true"></i> #{msg.cms_editPage}
-            </h:commandLink>
-        </h:form>
+        <a href="#{navigationHelper.applicationUrl}admin/cms/pages/edit/#{cmsBean.currentPageId}/">
+            <i class="fa fa-pencil" aria-hidden="true"></i> #{msg.cms_editPage}
+        </a>
     </div>
 </ui:composition>
 

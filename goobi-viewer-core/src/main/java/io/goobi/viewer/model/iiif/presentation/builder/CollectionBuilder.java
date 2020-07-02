@@ -22,8 +22,6 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
-import javax.servlet.http.HttpServletRequest;
-
 import org.apache.commons.lang3.StringUtils;
 import org.apache.solr.client.solrj.SolrServerException;
 import org.apache.solr.common.SolrDocument;
@@ -42,6 +40,9 @@ import de.intranda.api.iiif.presentation.content.ImageContent;
 import de.intranda.api.iiif.presentation.content.LinkingContent;
 import de.intranda.api.iiif.presentation.enums.ViewingHint;
 import de.intranda.metadata.multilanguage.SimpleMetadataValue;
+import de.unigoettingen.sub.commons.contentlib.exceptions.IllegalRequestException;
+import io.goobi.viewer.api.rest.AbstractApiUrlManager;
+import io.goobi.viewer.api.rest.v1.ApiUrls;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.SolrConstants;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
@@ -88,21 +89,10 @@ public class CollectionBuilder extends AbstractBuilder {
      * @param request a {@link javax.servlet.http.HttpServletRequest} object.
      * @throws java.net.URISyntaxException if any.
      */
-    public CollectionBuilder(HttpServletRequest request) throws URISyntaxException {
-        super(request);
+    public CollectionBuilder(AbstractApiUrlManager apiUrlManager) throws URISyntaxException {
+        super(apiUrlManager);
     }
 
-    /**
-     * <p>
-     * Constructor for CollectionBuilder.
-     * </p>
-     *
-     * @param servletUri a {@link java.net.URI} object.
-     * @param requestURI a {@link java.net.URI} object.
-     */
-    public CollectionBuilder(URI servletUri, URI requestURI) {
-        super(servletUri, requestURI);
-    }
 
     /**
      * <p>
@@ -118,13 +108,13 @@ public class CollectionBuilder extends AbstractBuilder {
      * @throws java.net.URISyntaxException if any.
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
+     * @throws IllegalRequestException if the top element is not empty and is not a collection
      */
     public Collection generateCollection(String collectionField, final String topElement, final String facetField, final String splittingChar)
-            throws IndexUnreachableException, URISyntaxException, PresentationException, ViewerConfigurationException {
+            throws IndexUnreachableException, URISyntaxException, PresentationException, ViewerConfigurationException, IllegalRequestException {
         
         CollectionView collectionView = getCollectionView(collectionField, facetField, splittingChar);
 //        CollectionView collectionView = createCollectionView(collectionField, facetField, splittingChar);
-
         if (StringUtils.isNotBlank(topElement) && !"-".equals(topElement)) {
             collectionView.setTopVisibleElement(topElement);
             collectionView.setDisplayParentCollections(false);
@@ -287,9 +277,9 @@ public class CollectionBuilder extends AbstractBuilder {
                 extentService.setBaseURI(JsonLdDefinitionsResource.getUrl());
                 collection.addService(extentService);
 
-
+                String rssUrl = urls.path(ApiUrls.RECORDS_RSS).query("query", baseElement.getSolrFilterQuery()).build();
                 LinkingContent rss =
-                        new LinkingContent(absolutize(baseElement.getRssUrl(getRequest().orElse(null))), new SimpleMetadataValue(RSS_FEED_LABEL));
+                        new LinkingContent(URI.create(rssUrl), new SimpleMetadataValue(RSS_FEED_LABEL));
                 collection.addRelated(rss);
 
                 //              if(info != null && info.getLinkURI(getRequest().orElse(null)) != null) {
@@ -312,7 +302,7 @@ public class CollectionBuilder extends AbstractBuilder {
         }
         return collection;
     }
-    
+
     /**
      * Add a taglist service to the collection and all subcollections. 
      * The taglist service provides a list of
@@ -321,8 +311,9 @@ public class CollectionBuilder extends AbstractBuilder {
      * @param collectionField
      * @param groupingField
      * @throws IndexUnreachableException
+     * @throws IllegalRequestException 
      */
-    public void addTagListService(Collection collection, String collectionField, final String facetField, String label) throws IndexUnreachableException {
+    public void addTagListService(Collection collection, String collectionField, final String facetField, String label) throws IndexUnreachableException, IllegalRequestException {
         CollectionView view = getCollectionView(collectionField, facetField, "");
         addTagListService(collection, view, label);
         collection.collections.forEach(c -> addTagListService(c, view, label));
@@ -355,9 +346,10 @@ public class CollectionBuilder extends AbstractBuilder {
      * @param splittingChar a {@link java.lang.String} object.
      * @return a {@link io.goobi.viewer.model.viewer.CollectionView} object.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
+     * @throws IllegalRequestException 
      */
     public CollectionView getCollectionView(String collectionField, final String groupingField, final String splittingChar)
-            throws IndexUnreachableException {
+            throws IndexUnreachableException, IllegalRequestException {
 
         String key = collectionField + "::" + groupingField;
         synchronized (collectionViewMap) {
@@ -377,9 +369,10 @@ public class CollectionBuilder extends AbstractBuilder {
      * @param splittingChar
      * @return
      * @throws IndexUnreachableException
+     * @throws IllegalRequestException 
      */
     public CollectionView createCollectionView(String collectionField, final String facetField, final String splittingChar)
-            throws IndexUnreachableException {
+            throws IndexUnreachableException, IllegalRequestException {
         CollectionView view = new CollectionView(collectionField,
                 () -> SearchHelper.findAllCollectionsFromField(collectionField, facetField, null, true, true, splittingChar));
         view.populateCollectionList();

@@ -63,6 +63,8 @@ import io.goobi.viewer.model.cms.CMSMediaItem;
 import io.goobi.viewer.model.cms.CMSNavigationItem;
 import io.goobi.viewer.model.cms.CMSPage;
 import io.goobi.viewer.model.cms.CMSPageLanguageVersion;
+import io.goobi.viewer.model.cms.CMSPageTemplate;
+import io.goobi.viewer.model.cms.CMSPageTemplateEnabled;
 import io.goobi.viewer.model.cms.CMSSidebarElement;
 import io.goobi.viewer.model.cms.CMSStaticPage;
 import io.goobi.viewer.model.crowdsourcing.campaigns.Campaign;
@@ -72,6 +74,7 @@ import io.goobi.viewer.model.crowdsourcing.questions.Question;
 import io.goobi.viewer.model.download.DownloadJob;
 import io.goobi.viewer.model.maps.GeoMap;
 import io.goobi.viewer.model.search.Search;
+import io.goobi.viewer.model.security.License;
 import io.goobi.viewer.model.security.LicenseType;
 import io.goobi.viewer.model.security.Role;
 import io.goobi.viewer.model.security.user.IpRange;
@@ -92,7 +95,7 @@ public class JPADAO implements IDAO {
     /** Logger for this class. */
     private static final Logger logger = LoggerFactory.getLogger(JPADAO.class);
     private static final String DEFAULT_PERSISTENCE_UNIT_NAME = "intranda_viewer_tomcat";
-    private static final String MULTIKEY_SEPARATOR = "_";
+    static final String MULTIKEY_SEPARATOR = "_";
 
     private final EntityManagerFactory factory;
     private EntityManager em;
@@ -350,19 +353,20 @@ public class JPADAO implements IDAO {
         }
     }
 
-    /*
-     * (non-Javadoc)
+    /**
      *
      * @see io.goobi.viewer.dao.IDAO#getUserByNickname(java.lang.String)
+     * @should return null if nickname empty
      */
-    /** {@inheritDoc} */
     @Override
     public User getUserByNickname(String nickname) throws DAOException {
+        if (StringUtils.isBlank(nickname)) {
+            return null;
+        }
+
         preQuery();
         Query q = em.createQuery("SELECT u FROM User u WHERE UPPER(u.nickName) = :nickname");
-        if (nickname != null) {
-            q.setParameter("nickname", nickname.trim().toUpperCase());
-        }
+        q.setParameter("nickname", nickname.trim().toUpperCase());
         q.setHint("javax.persistence.cache.storeMode", "REFRESH");
         try {
             User o = (User) q.getSingleResult();
@@ -383,7 +387,6 @@ public class JPADAO implements IDAO {
      *
      * @see io.goobi.viewer.dao.IDAO#addUser(io.goobi.viewer.model.user.User)
      */
-    /** {@inheritDoc} */
     @Override
     public boolean addUser(User user) throws DAOException {
         preQuery();
@@ -992,6 +995,53 @@ public class JPADAO implements IDAO {
         return q.getResultList();
     }
 
+    /**
+     * @see io.goobi.viewer.dao.IDAO#getUserRoleCount(io.goobi.viewer.model.security.user.UserGroup, io.goobi.viewer.model.security.user.User,
+     *      io.goobi.viewer.model.security.Role)
+     * @should return correct count
+     */
+    @Override
+    public long getUserRoleCount(UserGroup userGroup, User user, Role role) throws DAOException {
+        preQuery();
+        StringBuilder sbQuery = new StringBuilder("SELECT COUNT(ur) FROM UserRole ur");
+        if (userGroup != null || user != null || role != null) {
+            sbQuery.append(" WHERE ");
+            int args = 0;
+            if (userGroup != null) {
+                sbQuery.append("ur.userGroup = :userGroup");
+                args++;
+            }
+            if (user != null) {
+                if (args > 0) {
+                    sbQuery.append(" AND ");
+                }
+                sbQuery.append("ur.user = :user");
+                args++;
+            }
+            if (role != null) {
+                if (args > 0) {
+                    sbQuery.append(" AND ");
+                }
+                sbQuery.append("ur.role = :role");
+                args++;
+            }
+        }
+        Query q = em.createQuery(sbQuery.toString());
+        // logger.debug(sbQuery.toString());
+        if (userGroup != null) {
+            q.setParameter("userGroup", userGroup);
+        }
+        if (user != null) {
+            q.setParameter("user", user);
+        }
+        if (role != null) {
+            q.setParameter("role", role);
+        }
+        q.setFlushMode(FlushModeType.COMMIT);
+
+        return (long) q.getSingleResult();
+    }
+
     /*
      * (non-Javadoc)
      *
@@ -1120,15 +1170,16 @@ public class JPADAO implements IDAO {
         return q.getResultList();
     }
 
-    /** {@inheritDoc} */
+    /**
+     * @should only return non open access license types
+     */
     @SuppressWarnings("unchecked")
     @Override
-    public List<LicenseType> getNonOpenAccessLicenseTypes() throws DAOException {
+    public List<LicenseType> getRecordLicenseTypes() throws DAOException {
         preQuery();
         EntityManager em = factory.createEntityManager();
         try {
-            Query q = em.createQuery("SELECT lt FROM LicenseType lt WHERE lt.openAccess = :openAccess AND lt.core = false");
-            q.setParameter("openAccess", false);
+            Query q = em.createQuery("SELECT lt FROM LicenseType lt WHERE lt.core = false");
             q.setFlushMode(FlushModeType.COMMIT);
             // q.setHint("javax.persistence.cache.storeMode", "REFRESH");
             return q.getResultList();
@@ -1320,6 +1371,36 @@ public class JPADAO implements IDAO {
         }
     }
 
+    /* (non-Javadoc)
+     * @see io.goobi.viewer.dao.IDAO#getAllLicenses()
+     */
+    @SuppressWarnings("unchecked")
+    @Override
+    public List<License> getAllLicenses() throws DAOException {
+        preQuery();
+        Query q = em.createQuery("SELECT o FROM License o");
+        q.setFlushMode(FlushModeType.COMMIT);
+        // q.setHint("javax.persistence.cache.storeMode", "REFRESH");
+        return q.getResultList();
+    }
+
+    /* (non-Javadoc)
+     * @see io.goobi.viewer.dao.IDAO#getLicense(java.lang.Long)
+     */
+    @Override
+    public License getLicense(Long id) throws DAOException {
+        preQuery();
+        try {
+            License o = em.find(License.class, id);
+            if (o != null) {
+                em.refresh(o);
+            }
+            return o;
+        } catch (EntityNotFoundException e) {
+            return null;
+        }
+    }
+
     /*
      * (non-Javadoc)
      *
@@ -1503,37 +1584,21 @@ public class JPADAO implements IDAO {
     @Override
     public List<Comment> getComments(int first, int pageSize, String sortField, boolean descending, Map<String, String> filters) throws DAOException {
         preQuery();
-        StringBuilder sbQuery = new StringBuilder("SELECT o FROM Comment o");
+        StringBuilder sbQuery = new StringBuilder("SELECT a FROM Comment a");
         List<String> filterKeys = new ArrayList<>();
-        if (filters != null && !filters.isEmpty()) {
-            sbQuery.append(" WHERE ");
-            filterKeys.addAll(filters.keySet());
-            Collections.sort(filterKeys);
-            int count = 0;
-            for (String key : filterKeys) {
-                if (count > 0) {
-                    sbQuery.append(" AND ");
-                }
-                sbQuery.append("UPPER(o.").append(key).append(") LIKE :").append(key);
-                count++;
-            }
-        }
+        Map<String, String> params = new HashMap<>();
+        sbQuery.append(createFilterQuery(null, filters, params));
         if (StringUtils.isNotEmpty(sortField)) {
-            sbQuery.append(" ORDER BY o.").append(sortField);
+            sbQuery.append(" ORDER BY a.").append(sortField);
             if (descending) {
                 sbQuery.append(" DESC");
             }
         }
-        Query q = em.createQuery(sbQuery.toString());
-        for (String key : filterKeys) {
-            q.setParameter(key, "%" + filters.get(key).toUpperCase() + "%");
-        }
-        q.setFirstResult(first);
-        q.setMaxResults(pageSize);
-        q.setFlushMode(FlushModeType.COMMIT);
-        // q.setHint("javax.persistence.cache.storeMode", "REFRESH");
 
-        return q.getResultList();
+        Query q = em.createQuery(sbQuery.toString());
+        params.entrySet().forEach(entry -> q.setParameter(entry.getKey(), entry.getValue()));
+        // q.setHint("javax.persistence.cache.storeMode", "REFRESH");
+        return q.setFirstResult(first).setMaxResults(pageSize).setFlushMode(FlushModeType.COMMIT).getResultList();
     }
 
     /* (non-Javadoc)
@@ -1542,13 +1607,10 @@ public class JPADAO implements IDAO {
     /** {@inheritDoc} */
     @SuppressWarnings("unchecked")
     @Override
-    public List<Comment> getCommentsForPage(String pi, int page, boolean topLevelOnly) throws DAOException {
+    public List<Comment> getCommentsForPage(String pi, int page) throws DAOException {
         preQuery();
         StringBuilder sbQuery = new StringBuilder(80);
         sbQuery.append("SELECT o FROM Comment o WHERE o.pi = :pi AND o.page = :page");
-        if (topLevelOnly) {
-            sbQuery.append(" AND o.parent IS NULL");
-        }
         Query q = em.createQuery(sbQuery.toString());
         q.setParameter("pi", pi);
         q.setParameter("page", page);
@@ -1560,13 +1622,10 @@ public class JPADAO implements IDAO {
     /** {@inheritDoc} */
     @SuppressWarnings("unchecked")
     @Override
-    public List<Comment> getCommentsForWork(String pi, boolean topLevelOnly) throws DAOException {
+    public List<Comment> getCommentsForWork(String pi) throws DAOException {
         preQuery();
         StringBuilder sbQuery = new StringBuilder(80);
         sbQuery.append("SELECT o FROM Comment o WHERE o.pi = :pi");
-        if (topLevelOnly) {
-            sbQuery.append(" AND o.parent IS NULL");
-        }
         Query q = em.createQuery(sbQuery.toString());
         q.setParameter("pi", pi);
         q.setFlushMode(FlushModeType.COMMIT);
@@ -1644,6 +1703,87 @@ public class JPADAO implements IDAO {
             return true;
         } finally {
             em.close();
+        }
+    }
+
+    /**
+     * @see io.goobi.viewer.dao.IDAO#changeCommentsOwner(io.goobi.viewer.model.security.user.User, io.goobi.viewer.model.security.user.User)
+     * @should update rows correctly
+     */
+    @Override
+    public int changeCommentsOwner(User fromUser, User toUser) throws DAOException {
+        if (fromUser == null || fromUser.getId() == null) {
+            throw new IllegalArgumentException("fromUser may not be null or not yet persisted");
+        }
+        if (toUser == null || toUser.getId() == null) {
+            throw new IllegalArgumentException("fromUser may not be null or not yet persisted");
+        }
+
+        preQuery();
+        EntityManager emLocal = factory.createEntityManager();
+        try {
+            emLocal.getTransaction().begin();
+            int rows = emLocal.createQuery("UPDATE Comment o set o.owner = :newOwner WHERE o.owner = :oldOwner")
+                    .setParameter("oldOwner", fromUser)
+                    .setParameter("newOwner", toUser)
+                    .executeUpdate();
+            emLocal.getTransaction().commit();
+
+            // Refresh objects in context
+            em.createQuery("SELECT o FROM Comment o WHERE o.owner = :owner")
+                    .setParameter("owner", toUser)
+                    .setHint("javax.persistence.cache.storeMode", "REFRESH")
+                    .getResultList();
+
+            return rows;
+        } finally {
+            emLocal.close();
+        }
+    }
+
+    /**
+     * @see io.goobi.viewer.dao.IDAO#deleteComments(java.lang.String, io.goobi.viewer.model.security.user.User)
+     * @should delete comments for pi correctly
+     * @should delete comments for user correctly
+     * @should delete comments for pi and user correctly
+     * @should not delete anything if both pi and creator are null
+     */
+    @Override
+    public int deleteComments(String pi, User owner) throws DAOException {
+        if (StringUtils.isEmpty(pi) && owner == null) {
+            return 0;
+        }
+
+        preQuery();
+
+        // Fetch relevant IDs
+        StringBuilder sbQuery = new StringBuilder();
+        sbQuery.append("DELETE FROM Comment o WHERE ");
+        if (StringUtils.isNotEmpty(pi)) {
+            sbQuery.append("o.pi = :pi");
+        }
+        if (owner != null) {
+            if (StringUtils.isNotEmpty(pi)) {
+                sbQuery.append(" AND ");
+            }
+            sbQuery.append("o.owner = :owner");
+        }
+
+        EntityManager emLocal = factory.createEntityManager();
+        try {
+            Query q = emLocal.createQuery(sbQuery.toString());
+            if (StringUtils.isNotEmpty(pi)) {
+                q.setParameter("pi", pi);
+            }
+            if (owner != null) {
+                q.setParameter("owner", owner);
+            }
+            emLocal.getTransaction().begin();
+            int rows = q.executeUpdate();
+            emLocal.getTransaction().commit();
+            return rows;
+        } finally {
+            emLocal.close();
         }
     }
 
@@ -2000,6 +2140,93 @@ public class JPADAO implements IDAO {
         }
     }
 
+    /**
+     * @see io.goobi.viewer.dao.IDAO#getCMSTemplateEnabled(java.lang.String)
+     * @should return correct value
+     */
+    @Override
+    public CMSPageTemplateEnabled getCMSPageTemplateEnabled(String templateId) throws DAOException {
+        preQuery();
+        Query q = em.createQuery("SELECT o FROM CMSPageTemplateEnabled o where o.templateId = :templateId");
+        q.setParameter("templateId", templateId);
+        q.setFlushMode(FlushModeType.COMMIT);
+        try {
+            CMSPageTemplateEnabled o = (CMSPageTemplateEnabled) q.getSingleResult();
+            if (o != null) {
+                em.refresh(o);
+            }
+            return o;
+        } catch (NoResultException e) {
+            return null;
+        } catch (NonUniqueResultException e) {
+            logger.error(e.getMessage());
+            return null;
+        }
+    }
+
+    /* (non-Javadoc)
+     * @see io.goobi.viewer.dao.IDAO#addCMSTemplateEnabled(io.goobi.viewer.model.cms.CMSPageTemplateEnabled)
+     */
+    @Override
+    public boolean addCMSPageTemplateEnabled(CMSPageTemplateEnabled o) throws DAOException {
+        preQuery();
+        EntityManager em = factory.createEntityManager();
+        try {
+            em.getTransaction().begin();
+            em.persist(o);
+            em.getTransaction().commit();
+        } finally {
+            em.close();
+        }
+
+        return true;
+    }
+
+    /* (non-Javadoc)
+     * @see io.goobi.viewer.dao.IDAO#updateCMSTemplateEnabled(io.goobi.viewer.model.cms.CMSPageTemplateEnabled)
+     */
+    @Override
+    public boolean updateCMSPageTemplateEnabled(CMSPageTemplateEnabled o) throws DAOException {
+        preQuery();
+        EntityManager em = factory.createEntityManager();
+        try {
+            em.getTransaction().begin();
+            em.merge(o);
+            em.getTransaction().commit();
+            // Refresh the object from the DB
+            if (this.em.contains(o)) {
+                this.em.refresh(o);
+            }
+            return true;
+        } finally {
+            em.close();
+        }
+    }
+
+    /**
+     * @throws DAOException
+     * @see io.goobi.viewer.dao.IDAO#saveCMSTemplateEnabledStatuses(java.util.List)
+     * @should update rows correctly
+     */
+    @Override
+    public int saveCMSPageTemplateEnabledStatuses(List<CMSPageTemplate> templates) throws DAOException {
+        if (templates == null) {
+            return 0;
+        }
+
+        int count = 0;
+        for (CMSPageTemplate template : templates) {
+            if (template.getEnabled().getId() != null) {
+                updateCMSPageTemplateEnabled(template.getEnabled());
+            } else {
+                addCMSPageTemplateEnabled(template.getEnabled());
+            }
+            count++;
+        }
+
+        return count;
+    }
+
     /** {@inheritDoc} */
     @SuppressWarnings("unchecked")
     @Override
@@ -2072,6 +2299,7 @@ public class JPADAO implements IDAO {
                 }
                 sbQuery.append(filterString).append(rightsFilterString).append(order);
 
+                logger.trace("CMS page query: {}", sbQuery.toString());
                 Query q = em.createQuery(sbQuery.toString());
                 params.entrySet().forEach(entry -> q.setParameter(entry.getKey(), entry.getValue()));
                 //            q.setParameter("lang", BeanUtils.getLocale().getLanguage());
@@ -2095,8 +2323,9 @@ public class JPADAO implements IDAO {
      * @param filters The filters to use
      * @param params Empty map which will be filled with the used query parameters. These to be added to the query
      * @return A string consisting of a WHERE and possibly JOIN clause of a query
+     * @should build multikey filter query correctly
      */
-    private static String createFilterQuery(String staticFilterQuery, Map<String, String> filters, Map<String, String> params) {
+    static String createFilterQuery(String staticFilterQuery, Map<String, String> filters, Map<String, String> params) {
         StringBuilder join = new StringBuilder();
 
         List<String> filterKeys = new ArrayList<>();
@@ -2139,14 +2368,17 @@ public class JPADAO implements IDAO {
                             where.append(tableKey).append(" LIKE :").append(key.replaceAll(MULTIKEY_SEPARATOR, ""));
 
                         } else {
-                            where.append("UPPER(" + tableKey + ".").append(keyPart).append(") LIKE :").append(key.replaceAll(MULTIKEY_SEPARATOR, ""));
+                            where.append("UPPER(" + tableKey + ".")
+                                    .append(keyPart.replace("-", "."))
+                                    .append(") LIKE :")
+                                    .append(key.replaceAll(MULTIKEY_SEPARATOR, "").replace("-", ""));
                         }
                         keyPartCount++;
                     }
                     where.append(" ) ");
                     count++;
 
-                    //apply join table if neccessary
+                    //apply join table if necessary
                     if ("CMSPageLanguageVersion".equalsIgnoreCase(joinTable) || "CMSSidebarElement".equalsIgnoreCase(joinTable)) {
                         join.append(" JOIN ")
                                 .append(joinTable)
@@ -2166,7 +2398,7 @@ public class JPADAO implements IDAO {
                         join.append(" JOIN ").append(pageKey).append(".").append(joinTable).append(" ").append(tableKey);
                         //                            .append(" ON ").append(" (").append(pageKey).append(".id = ").append(tableKey).append(".ownerPage.id)");
                     }
-                    params.put(key.replaceAll(MULTIKEY_SEPARATOR, ""), "%" + value.toUpperCase() + "%");
+                    params.put(key.replaceAll(MULTIKEY_SEPARATOR, "").replace("-", ""), "%" + value.toUpperCase() + "%");
                 }
                 if (count > 1) {
                     where.append(" )");
@@ -2391,7 +2623,7 @@ public class JPADAO implements IDAO {
         CMSPage o = null;
         try {
             o = this.em.getReference(CMSPage.class, id);
-            this.em.refresh(o);  
+            this.em.refresh(o);
             return true;
         } catch (IllegalArgumentException e) {
             logger.error("CMSPage with ID '{}' has an invalid type, or is not persisted: {}", id, e.getMessage());
@@ -2971,7 +3203,7 @@ public class JPADAO implements IDAO {
                 em.getTransaction().begin();
                 em.merge(campaign);
                 em.getTransaction().commit();
-                return updateFromDatabase(campaign.getId(), Campaign.class);
+                return true;
             } finally {
                 em.close();
             }
@@ -3000,6 +3232,233 @@ public class JPADAO implements IDAO {
                 em.close();
             }
         }
+    }
+
+    /**
+     * @throws DAOException
+     * @see io.goobi.viewer.dao.IDAO#deleteCampaignStatisticsForUser(io.goobi.viewer.model.security.user.User)
+     * @should remove user from creators and reviewers lists correctly
+     */
+    @Override
+    public int deleteCampaignStatisticsForUser(User user) throws DAOException {
+        if (user == null) {
+            return 0;
+        }
+
+        //        List<Campaign> campaigns = new ArrayList<>();
+        //        Set<CampaignRecordStatistic> statistics = new HashSet<>();
+        //        {
+        //            StringBuilder sbQuery =
+        //                    new StringBuilder();
+        //            List<CampaignRecordStatistic> result =
+        //                    em.createQuery("SELECT o FROM CampaignRecordStatistic o WHERE :user MEMBER OF o.annotators")
+        //                            .setParameter("user", user)
+        //                            .getResultList();
+        //            statistics.addAll(result);
+        //        }
+        //        {
+        //            StringBuilder sbQuery =
+        //                    new StringBuilder();
+        //            List<CampaignRecordStatistic> result =
+        //                    em.createQuery("SELECT o FROM CampaignRecordStatistic o WHERE :user MEMBER OF o.reviewers")
+        //                            .setParameter("user", user)
+        //                            .getResultList();
+        //            statistics.addAll(result);
+        //        }
+        //        for (CampaignRecordStatistic statistic : statistics) {
+        //            boolean annotator = false;
+        //            boolean reviewer = false;
+        //            while (statistic.getAnnotators().contains(user)) {
+        //                annotator = true;
+        //                statistic.getAnnotators().remove(user);
+        //            }
+        //            while (statistic.getReviewers().contains(user)) {
+        //                reviewer = true;
+        //                statistic.getReviewers().remove(user);
+        //            }
+        //            if (!campaigns.contains(statistic.getOwner())) {
+        //                campaigns.add(statistic.getOwner());
+        //            }
+        //            // Lazy load the lists where the user was removed, otherwise they won't be updated when saving the campaign
+        //            if (annotator) {
+        //                statistic.getOwner().getStatistics().get(statistic.getPi()).getAnnotators();
+        //            }
+        //            if (reviewer) {
+        //                statistic.getOwner().getStatistics().get(statistic.getPi()).getReviewers();
+        //            }
+        //        }
+        //
+        //        int count = 0;
+        //        if (!campaigns.isEmpty()) {
+        //            for (Campaign campaign : campaigns) {
+        //                if (updateCampaign(campaign)) {
+        //                    count++;
+        //                }
+        //            }
+        //        }
+        //
+        //        return count;
+
+        EntityManager emLocal = factory.createEntityManager();
+        try {
+            emLocal.getTransaction().begin();
+            int rows = emLocal
+                    .createNativeQuery(
+                            "DELETE FROM cs_campaign_record_statistic_annotators WHERE user_id=" + user.getId())
+                    .executeUpdate();
+            rows += emLocal
+                    .createNativeQuery(
+                            "DELETE FROM cs_campaign_record_statistic_reviewers WHERE user_id=" + user.getId())
+                    .executeUpdate();
+            emLocal.getTransaction().commit();
+            return rows;
+        } finally {
+            emLocal.close();
+        }
+    }
+
+    /**
+     * @see io.goobi.viewer.dao.IDAO#changeCampaignStatisticContributors(io.goobi.viewer.model.security.user.User,
+     *      io.goobi.viewer.model.security.user.User)
+     * @should replace user in creators and reviewers lists correctly
+     */
+    @Override
+    public int changeCampaignStatisticContributors(User fromUser, User toUser) throws DAOException {
+        if (fromUser == null || toUser == null) {
+            return 0;
+        }
+
+        List<Campaign> campaignsToUpdate = new ArrayList<>();
+        Set<CampaignRecordStatistic> statistics = new HashSet<>();
+
+        //        List<Campaign> allCampaigns = DataManager.getInstance().getDao().getAllCampaigns();
+        //        for (Campaign campaign : allCampaigns) {
+        //            logger.trace("");
+        //            for (String pi : campaign.getStatistics().keySet()) {
+        //                CampaignRecordStatistic statistic = campaign.getStatistics().get(pi);
+        //                boolean annotator = false;
+        //                boolean reviewer = false;
+        //                if (statistic.getPi().equals("mnha16210")) {
+        //                    for (User user : statistic.getAnnotators()) {
+        //                        logger.trace("annotator: " + user.getId());
+        //                    }
+        //                    for (User user : statistic.getReviewers()) {
+        //                        logger.trace("reviewer: " + user.getId());
+        //                    }
+        //                }
+        //                while (statistic.getAnnotators().contains(fromUser)) {
+        //                    annotator = true;
+        //                    int index = statistic.getAnnotators().indexOf(fromUser);
+        //                    statistic.getAnnotators().remove(index);
+        //                    logger.trace("removed annotator {} from statistic {}", fromUser.getId(), statistic.getId());
+        //                    if (!statistic.getAnnotators().contains(toUser)) {
+        //                        statistic.getAnnotators().add(index, toUser);
+        //                        logger.trace("added annotator {} to statistic {}", toUser.getId(), statistic.getId());
+        //                    }
+        //                }
+        //                while (statistic.getReviewers().contains(fromUser)) {
+        //                    reviewer = true;
+        //                    int index = statistic.getReviewers().indexOf(fromUser);
+        //                    statistic.getReviewers().remove(index);
+        //                    logger.trace("removed reviewer {} from statistic {}", fromUser.getId(), statistic.getId());
+        //                    if (!statistic.getReviewers().contains(toUser)) {
+        //                        statistic.getReviewers().add(index, toUser);
+        //                        logger.trace("added reviewer {} to statistic {}", toUser.getId(), statistic.getId());
+        //                    }
+        //                }
+        //                if ((annotator || reviewer) && !campaignsToUpdate.contains(statistic.getOwner())) {
+        //                    logger.trace("statistic contains user: {}", statistic.getId());
+        //                    campaignsToUpdate.add(statistic.getOwner());
+        //                }
+        //            }
+        //        }
+
+        //        {
+        //            List<CampaignRecordStatistic> result =
+        //                    em.createQuery(
+        //                            "SELECT DISTINCT o FROM CampaignRecordStatistic o WHERE :fromUser MEMBER OF o.annotators")
+        //                            .setParameter("fromUser", fromUser)
+        //                            .getResultList();
+        //            statistics.addAll(result);
+        //        }
+        //        {
+        //            List<CampaignRecordStatistic> result =
+        //                    em.createQuery(
+        //                            "SELECT DISTINCT o FROM CampaignRecordStatistic o WHERE :fromUser MEMBER OF o.reviewers")
+        //                            .setParameter("fromUser", fromUser)
+        //                            .getResultList();
+        //            statistics.addAll(result);
+        //        }
+        //        logger.trace("found {} campaign statistic rows with user {}", statistics.size(), fromUser.getId());
+        //        for (CampaignRecordStatistic statistic : statistics) {
+        //            logger.trace("statistic {}", statistic.getId());
+        //            boolean annotator = false;
+        //            boolean reviewer = false;
+        //            while (statistic.getAnnotators().contains(fromUser)) {
+        //                annotator = true;
+        //                int index = statistic.getAnnotators().indexOf(fromUser);
+        //                statistic.getAnnotators().remove(index);
+        //                logger.trace("removed annotator {} from statistic {}", fromUser.getId(), statistic.getId());
+        //                if (!statistic.getAnnotators().contains(toUser)) {
+        //                    statistic.getAnnotators().add(index, toUser);
+        //                    logger.trace("added annotator {} to statistic {}", toUser.getId(), statistic.getId());
+        //                }
+        //            }
+        //            while (statistic.getReviewers().contains(fromUser)) {
+        //                reviewer = true;
+        //                int index = statistic.getReviewers().indexOf(fromUser);
+        //                statistic.getReviewers().remove(index);
+        //                logger.trace("removed reviewer {} from statistic {}", fromUser.getId(), statistic.getId());
+        //                if (!statistic.getReviewers().contains(toUser)) {
+        //                    statistic.getReviewers().add(index, toUser);
+        //                    logger.trace("added reviewer {} to statistic {}", toUser.getId(), statistic.getId());
+        //                }
+        //            }
+        //            if ((annotator || reviewer) && !campaignsToUpdate.contains(statistic.getOwner())) {
+        //                campaignsToUpdate.add(statistic.getOwner());
+        //            }
+        //            // Lazy load the lists where the user was replaced, otherwise they won't be updated when saving the campaign
+        //            if (annotator) {
+        //                logger.trace("lazy loading annotators");
+        //                statistic.getOwner().getStatistics().get(statistic.getPi()).getAnnotators();
+        //            }
+        //            if (reviewer) {
+        //                logger.trace("lazy loading reviewers");
+        //                statistic.getOwner().getStatistics().get(statistic.getPi()).getReviewers();
+        //            }
+        //        }
+
+        // Refresh objects in context
+        //        em.createQuery("SELECT o FROM CampaignRecordStatistic o WHERE :user MEMBER OF o.annotators")
+        //                .setParameter("user", toUser)
+        //                .setHint("javax.persistence.cache.storeMode", "REFRESH")
+        //                .getResultList()
+        //                .size();
+        //        em.createQuery("SELECT o FROM CampaignRecordStatistic o WHERE  :user MEMBER OF o.reviewers")
+        //                .setParameter("user", toUser)
+        //                .setHint("javax.persistence.cache.storeMode", "REFRESH")
+        //                .getResultList()
+        //                .size();
+
+        //        return count;
+
+        EntityManager emLocal = factory.createEntityManager();
+        try {
+            emLocal.getTransaction().begin();
+            int rows = emLocal
+                    .createNativeQuery(
+                            "UPDATE cs_campaign_record_statistic_annotators SET user_id=" + toUser.getId() + " WHERE user_id=" + fromUser.getId())
+                    .executeUpdate();
+            rows += emLocal
+                    .createNativeQuery(
+                            "UPDATE cs_campaign_record_statistic_reviewers SET user_id=" + toUser.getId() + " WHERE user_id=" + fromUser.getId())
+                    .executeUpdate();
+            emLocal.getTransaction().commit();
+            return rows;
+        } finally {
+            emLocal.close();
+        }
+
     }
 
     /*
@@ -3477,6 +3936,44 @@ public class JPADAO implements IDAO {
     }
 
     /**
+     * @see io.goobi.viewer.dao.IDAO#getCountPagesUsingCategory(io.goobi.viewer.model.cms.CMSCategory)
+     * @should return correct value
+     */
+    @Override
+    public long getCountPagesUsingCategory(CMSCategory category) throws DAOException {
+        preQuery();
+        Query q = em.createQuery("SELECT COUNT(o) FROM CMSPage o WHERE :category MEMBER OF o.categories");
+        q.setParameter("category", category);
+
+        Object o = q.getResultList().get(0);
+        // MySQL
+        if (o instanceof BigInteger) {
+            return ((BigInteger) q.getResultList().get(0)).longValue();
+        }
+        // H2
+        return (long) q.getResultList().get(0);
+    }
+
+    /**
+     * @see io.goobi.viewer.dao.IDAO#getCountMediaItemsUsingCategory(io.goobi.viewer.model.cms.CMSCategory)
+     * @should return correct value
+     */
+    @Override
+    public long getCountMediaItemsUsingCategory(CMSCategory category) throws DAOException {
+        preQuery();
+        Query q = em.createQuery("SELECT COUNT(o) FROM CMSMediaItem o WHERE :category MEMBER OF o.categories");
+        q.setParameter("category", category);
+
+        Object o = q.getResultList().get(0);
+        // MySQL
+        if (o instanceof BigInteger) {
+            return ((BigInteger) q.getResultList().get(0)).longValue();
+        }
+        // H2
+        return (long) q.getResultList().get(0);
+    }
+
+    /**
      * {@inheritDoc}
      *
      * Persist a new {@link CMSCategory} object
@@ -3652,7 +4149,24 @@ public class JPADAO implements IDAO {
         // q.setHint("javax.persistence.cache.storeMode", "REFRESH");
         return q.getResultList();
     }
+    
+    /** {@inheritDoc} */
+    @Override
+    public long getAnnotationCountForWork(String pi) throws DAOException {
+        preQuery();
+        String query = "SELECT COUNT(a) FROM PersistentAnnotation a WHERE a.targetPI = :pi";
+        Query q = em.createQuery(query);
+        q.setParameter("pi", pi);
 
+        Object o = q.getResultList().get(0);
+        // MySQL
+        if (o instanceof BigInteger) {
+            return ((BigInteger) q.getResultList().get(0)).longValue();
+        }
+        // H2
+        return (long) q.getResultList().get(0);
+    }
+    
     /** {@inheritDoc} */
     @SuppressWarnings("unchecked")
     @Override
@@ -3911,7 +4425,7 @@ public class JPADAO implements IDAO {
      */
     @Override
     public GeoMap getGeoMap(Long mapId) throws DAOException {
-        if(mapId == null) {
+        if (mapId == null) {
             return null;
         }
         preQuery();
@@ -3967,7 +4481,7 @@ public class JPADAO implements IDAO {
      */
     @Override
     public boolean updateGeoMap(GeoMap map) throws DAOException {
-        if(map.getId() == null) {
+        if (map.getId() == null) {
             return false;
         }
         preQuery();
@@ -3989,7 +4503,7 @@ public class JPADAO implements IDAO {
      */
     @Override
     public boolean deleteGeoMap(GeoMap map) throws DAOException {
-        if(map.getId() == null) {
+        if (map.getId() == null) {
             return false;
         }
         preQuery();
@@ -4010,31 +4524,31 @@ public class JPADAO implements IDAO {
     /* (non-Javadoc)
      * @see io.goobi.viewer.dao.IDAO#getPagesUsingMap(io.goobi.viewer.model.maps.GeoMap)
      */
+    @SuppressWarnings("unchecked")
     @Override
     public List<CMSPage> getPagesUsingMap(GeoMap map) throws DAOException {
         preQuery();
-        
+
         Query qItems = em.createQuery(
                 "SELECT item FROM CMSContentItem item WHERE item.geoMap = :map");
         qItems.setParameter("map", map);
         List<CMSContentItem> itemList = qItems.getResultList();
-        
+
         Query qWidgets = em.createQuery(
                 "SELECT ele FROM CMSSidebarElement ele WHERE ele.geoMapId = :mapId");
         qWidgets.setParameter("mapId", map.getId());
         List<CMSSidebarElement> widgetList = qWidgets.getResultList();
-         
+
         Stream<CMSPage> itemPages = itemList.stream()
                 .map(CMSContentItem::getOwnerPageLanguageVersion)
                 .map(CMSPageLanguageVersion::getOwnerPage);
-        
+
         Stream<CMSPage> widgetPages = widgetList.stream()
                 .map(CMSSidebarElement::getOwnerPage);
-        
+
         List<CMSPage> pageList = Stream.concat(itemPages, widgetPages)
                 .distinct()
                 .collect(Collectors.toList());
         return pageList;
     }
-
 }

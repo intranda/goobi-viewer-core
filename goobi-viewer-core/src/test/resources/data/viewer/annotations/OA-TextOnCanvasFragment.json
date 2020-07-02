@@ -1,0 +1,20 @@
+{
+
+    "@id": "https://viewer.goobi.io/rest/iiif/manifests/1019375248/list/1/FULLTEXT/TextLine_1",
+    "@type": "oa:Annotation",
+    "motivation": "sc:painting",
+    "on": {
+        "@type": "oa:SpecificResource",
+        "full": "https://viewer.goobi.io/rest/iiif/manifests/1019375248/canvas/1",
+        "selector": {
+            "@type": "oa:FragmentSelector",
+            "value": "xywh=363,62,490,30"
+        }
+    },
+    "resource": {
+        "@type": "cnt:ContentAsText",
+        "format": "text/plain",
+        "chars": "GROSHERZOGLICH"
+    }
+
+}

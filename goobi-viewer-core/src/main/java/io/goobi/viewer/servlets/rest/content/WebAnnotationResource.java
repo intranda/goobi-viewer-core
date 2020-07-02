@@ -44,6 +44,8 @@ import de.intranda.api.annotation.wa.collection.AnnotationCollectionBuilder;
 import de.intranda.api.annotation.wa.collection.AnnotationPage;
 import de.unigoettingen.sub.commons.contentlib.exceptions.ContentNotFoundException;
 import de.unigoettingen.sub.commons.contentlib.servlet.rest.CORSBinding;
+import io.goobi.viewer.api.rest.ViewerRestServiceBinding;
+import io.goobi.viewer.api.rest.v1.ApiUrls;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.StringTools;
 import io.goobi.viewer.exceptions.DAOException;
@@ -54,7 +56,6 @@ import io.goobi.viewer.messages.ViewerResourceBundle;
 import io.goobi.viewer.model.annotation.Comment;
 import io.goobi.viewer.model.iiif.presentation.builder.SequenceBuilder;
 import io.goobi.viewer.model.security.user.User;
-import io.goobi.viewer.servlets.rest.ViewerRestServiceBinding;
 import io.goobi.viewer.servlets.utils.ServletUtils;
 
 /**
@@ -134,7 +135,7 @@ public class WebAnnotationResource {
                 + comment.getPage() + "/" + comment.getId());
         WebAnnotation anno = new WebAnnotation(resourceId);
         anno.setBody(new TextualResource(comment.getText()));
-        anno.setTarget(new SimpleResource(new SequenceBuilder(servletRequest).getCanvasURI(comment.getPi(), comment.getPage())));
+        anno.setTarget(new SimpleResource(new SequenceBuilder(new ApiUrls(DataManager.getInstance().getConfiguration().getRestApiUrl())).getCanvasURI(comment.getPi(), comment.getPage())));
         anno.setCreated(comment.getDateCreated());
         anno.setModified(comment.getDateUpdated());
         anno.setCreator(createAgent(comment.getOwner()));
@@ -178,7 +179,7 @@ public class WebAnnotationResource {
             servletResponse.setCharacterEncoding(StringTools.DEFAULT_ENCODING);
         }
 
-        List<Comment> comments = DataManager.getInstance().getDao().getCommentsForPage(pi, page, false);
+        List<Comment> comments = DataManager.getInstance().getDao().getCommentsForPage(pi, page);
 
         URI resourceId = URI.create(DataManager.getInstance().getConfiguration().getRestApiUrl() + "webannotation/comments/" + pi + "/" + page);
 
@@ -219,7 +220,7 @@ public class WebAnnotationResource {
             servletResponse.setCharacterEncoding(StringTools.DEFAULT_ENCODING);
         }
 
-        List<Comment> comments = DataManager.getInstance().getDao().getCommentsForWork(pi, false);
+        List<Comment> comments = DataManager.getInstance().getDao().getCommentsForWork(pi);
 
         URI resourceId = URI.create(DataManager.getInstance().getConfiguration().getRestApiUrl() + "webannotation/comments/" + pi);
 

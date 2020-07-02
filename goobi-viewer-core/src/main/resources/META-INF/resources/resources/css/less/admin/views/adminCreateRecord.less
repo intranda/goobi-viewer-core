@@ -1,17 +1,26 @@
+/* ==============================================================
+   Admin Create Data Record
+   style declarations for adminCreateRecord.xhtml
+   ==============================================================*/
 
 #adminCreateRecord {
-
-	.admin {
-		&__content-inner-content {
-			&__upload_form {
-				.admin-cms-media {
-					&__upload-wrapper {					
-					}
-					&__upload {
-						background: white;
-					}
-				}
-			}
+	.admin-cms-media {
+		&__upload-wrapper {		
+		}
+		&__upload {
+		background: white;
 		}
 	}
 }
+
+/* BREAKPOINT FOR LARGE DESKTOPS */
+@media screen and (max-width: @largeBreakpoint) {} 
+
+/* BREAKPOINT FOR DESKTOPS */
+@media screen and (max-width: @mediumBreakpoint) {}
+
+/* BREAKPOINT FOR TABLETS */
+@media screen and (max-width: @smallBreakpoint) {}
+
+/* BREAKPOINT FOR SMARTPHONES */
+@media screen and (max-width: @xSmallBreakpoint) {}

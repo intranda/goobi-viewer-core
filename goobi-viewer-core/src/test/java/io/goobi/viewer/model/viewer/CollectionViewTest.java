@@ -28,6 +28,7 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
+import de.unigoettingen.sub.commons.contentlib.exceptions.IllegalRequestException;
 import io.goobi.viewer.AbstractDatabaseEnabledTest;
 import io.goobi.viewer.controller.Configuration;
 import io.goobi.viewer.controller.DataManager;
@@ -70,7 +71,7 @@ public class CollectionViewTest extends AbstractDatabaseEnabledTest {
     }
 
     @Test
-    public void test() throws IndexUnreachableException {
+    public void test() throws IndexUnreachableException, IllegalRequestException {
         CollectionView collection = new CollectionView(SolrConstants.DC, getTestProvider());
         collection.populateCollectionList();
         List<HierarchicalBrowseDcElement> topElements = new ArrayList<>(collection.getVisibleDcElements());
@@ -92,7 +93,7 @@ public class CollectionViewTest extends AbstractDatabaseEnabledTest {
     }
 
     @Test
-    public void testExpandCollection() throws IndexUnreachableException {
+    public void testExpandCollection() throws IndexUnreachableException, IllegalRequestException {
         CollectionView collection = new CollectionView(SolrConstants.DC, getTestProvider());
         collection.setBaseElementName("c.c");
         collection.populateCollectionList();

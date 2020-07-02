@@ -51,7 +51,7 @@ public class HttpResponseFilter implements Filter {
 
         //rest calls should not carry character encoding
         String path = httpRequest.getServletPath();
-        if (!path.equals("/rest")) {
+        if (!path.equals("/rest") && !path.equals("/api/v1")) {
             request.setCharacterEncoding("UTF-8");
             response.setCharacterEncoding("UTF-8");
         }

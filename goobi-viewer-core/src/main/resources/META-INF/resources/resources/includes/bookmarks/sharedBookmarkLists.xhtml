@@ -17,9 +17,9 @@
 			<ui:param name="owned" value="#{bookmarkList.isOwnedBy(userBean.user)}"></ui:param>	
 			
 			<ui:fragment rendered="#{!(hideOwned and owned)}">
-				<div class="user-bookmark__panel">
-					<div class="user-bookmark__panel-header">
-						<div class="col-xs-8 col-sm-9">
+				<div class="col-12 user-bookmark__panel">
+					<div class="user-bookmark__panel-header d-flex">
+						<div class="col-8 col-sm-9">
 							<h4>
 								<ui:fragment rendered="#{userList}">
 									<a href="#{request.contextPath}/user/bookmarks/show/#{bookmarkList.id}/">
@@ -41,7 +41,7 @@
 								</ui:fragment>
 							</h4>
 						</div>
-						<div class="col-xs-4 col-sm-3 user-bookmark__panel-action text-right">
+						<div class="col-4 col-sm-3 user-bookmark__panel-action text-right">
 							
 							<h:panelGroup rendered="#{userList}" id="isPublicMarker">
 								<ui:fragment rendered="#{bookmarkList.isPublic}">
@@ -67,14 +67,14 @@
 						
 					<!-- DESCRIPTION -->
 					<ui:fragment rendered="#{bookmarkList.hasDescription()}">
-						<div class="col-xs-12">
+						<div class="col-12">
 							<div class="user-bookmark__panel-body">
 								<p>#{bookmarkList.description}</p>
 							</div>
 						</div>
 					</ui:fragment>
 	
-					<div class="col-xs-12 col-sm-12">
+					<div class="col-12 col-sm-12">
 						<div class="user-bookmark__items-image-preview">
 							<ui:repeat value="#{bookmarkList.items}" var="item"
 								varStatus="status">
@@ -92,7 +92,7 @@
 					</div>
 	
 						<!-- ACTIONS - share, search, compare -->
-	                    <div class="col-xs-12 col-sm-12">
+	                    <div class="col-12 col-sm-12">
 							<!-- ACTION -->
 							<div class="user-bookmark__panel-action text-center">
 								<ui:fragment rendered="#{userList}">
@@ -125,7 +125,7 @@
 										<span>#{msg.action__share}</span>
 									</a>
 					
-									<popover id="sharePopover_#{status.index}"> 
+									<div id="sharePopover_#{status.index}" class="viewerPopover"> 
 										<h:panelGroup id="editBookmarkListPublicWrapper">
 											<ui:fragment rendered="#{!bookmarkList.isPublic}">
 												<h:commandLink action="#{bookmarkBean.setPublic(bookmarkList, true)}">
@@ -144,7 +144,8 @@
 										
 											<ui:fragment rendered="#{!bookmarkList.hasShareKey()}">
 												<h:commandLink action="#{bookmarkBean.getShareLink(bookmarkList)}">
-													<i class="fa fa-share-alt" aria-hidden="true"></i><span>#{msg.action__create_boookmarklist_sharelink}</span>
+													<i class="fa fa-share-alt" aria-hidden="true"></i>
+													<span>#{msg.action__create_bookmarklist_sharelink}</span>
 													<f:ajax execute="@this" render="editBookmarkListPublicWrapper isPublicMarker"></f:ajax>
 												</h:commandLink>
 											</ui:fragment>
@@ -164,17 +165,17 @@
 													data-clipboard-text="#{bookmarkBean.getShareLink(bookmarkList)}"
 													data-copy-done="#{msg.copyUrlDone}">
 													<i class="fa fa-share-alt" aria-hidden="true"></i>
-													<span>#{msg.action__copy_boookmarklist_sharelink}</span>
+													<span>#{msg.action__copy_bookmarklist_sharelink}</span>
 												</a>
 												<h:commandLink rendered="#{!bookmarkList.isPublic}" action="#{bookmarkBean.resetShareLink(bookmarkList)}">
 													<i class="fa fa-trash" aria-hidden="true"></i>
-													<span>#{msg.action__delete_boookmarklist_sharelink}</span>
+													<span>#{msg.action__delete_bookmarklist_sharelink}</span>
 													<f:ajax execute="@this" render="editBookmarkListPublicWrapper isPublicMarker"></f:ajax>
 												</h:commandLink>
 											</ui:fragment>
 										</h:panelGroup>
 									
-									</popover>
+									</div>
 		
 									<h:commandLink action="#{bookmarkBean.editBookmarkListAction(bookmarkList)}">
 										<i class="fa fa-pencil" aria-hidden="true"></i>
@@ -214,7 +215,7 @@
 										data-clipboard-text="#{bookmarkBean.getShareLink(bookmarkList)}"
 										data-copy-done="#{msg.copyUrlDone}">
 										<i class="fa fa-share-alt" aria-hidden="true"></i>
-										<span>#{msg.action__copy_boookmarklist_sharelink}</span>
+										<span>#{msg.action__copy_bookmarklist_sharelink}</span>
 									</a>
 								
 								</ui:fragment>

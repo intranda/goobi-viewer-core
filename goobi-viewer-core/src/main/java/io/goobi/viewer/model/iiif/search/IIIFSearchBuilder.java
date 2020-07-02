@@ -38,6 +38,11 @@ import de.intranda.api.iiif.search.SearchHit;
 import de.intranda.api.iiif.search.SearchResult;
 import de.intranda.api.iiif.search.SearchResultLayer;
 import de.intranda.digiverso.ocr.alto.model.structureclasses.logical.AltoDocument;
+import io.goobi.viewer.api.rest.AbstractApiUrlManager;
+import io.goobi.viewer.api.rest.AbstractApiUrlManager.ApiPath;
+import io.goobi.viewer.api.rest.AbstractApiUrlManager.ApiPathParams;
+import io.goobi.viewer.api.rest.AbstractApiUrlManager.ApiPathQueries;
+import io.goobi.viewer.api.rest.v1.ApiUrls;
 import io.goobi.viewer.controller.DataFileTools;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.SolrConstants;
@@ -73,8 +78,7 @@ public class IIIFSearchBuilder {
     private String min = null;
     private int page = 1;
     private int hitsPerPage = 20;
-
-    private final String requestURI;
+    private AbstractApiUrlManager urls;
 
     /**
      * Initializes the builder with all required parameters
@@ -83,15 +87,14 @@ public class IIIFSearchBuilder {
      * @param query the query string
      * @param pi the pi of the manifest to search
      */
-    public IIIFSearchBuilder(URI requestURI, String query, String pi) {
-        this.requestURI = requestURI.toString().replaceAll("&page=\\d+", "");
+    public IIIFSearchBuilder(AbstractApiUrlManager urls, String query, String pi) {
         if (query != null) {
             query = query.replace("+", " ");
         }
         this.query = query;
         this.pi = pi;
-        this.converter = new SearchResultConverter(URI.create(this.requestURI),
-                URI.create(DataManager.getInstance().getConfiguration().getIIIFApiUrl()), pi, 0);
+        this.urls = urls;
+        this.converter = new SearchResultConverter(urls, pi, 0);
     }
 
     /**
@@ -141,6 +144,14 @@ public class IIIFSearchBuilder {
      */
     public List<String> getMotivation() {
         return motivation;
+    }
+    
+    public String getMotivationAsString() {
+        if(this.motivation.isEmpty()) {
+            return "";
+        } else {            
+            return StringUtils.join(this.motivation, "+");
+        }
     }
 
     /**
@@ -387,7 +398,7 @@ public class IIIFSearchBuilder {
         String queryRegex = AbstractSearchParser.getQueryRegex(query);
 
         try {
-            List<Comment> comments = DataManager.getInstance().getDao().getCommentsForWork(pi, false);
+            List<Comment> comments = DataManager.getInstance().getDao().getCommentsForWork(pi);
             comments = comments.stream()
                     .filter(c -> c.getText().matches(AbstractSearchParser.getContainedWordRegex(queryRegex)))
                     .collect(Collectors.toList());
@@ -409,7 +420,7 @@ public class IIIFSearchBuilder {
         String queryRegex = AbstractSearchParser.getAutoSuggestRegex(query);
 
         try {
-            List<Comment> comments = DataManager.getInstance().getDao().getCommentsForWork(pi, false);
+            List<Comment> comments = DataManager.getInstance().getDao().getCommentsForWork(pi);
             comments = comments.stream()
                     .filter(c -> c.getText().matches(AbstractSearchParser.getContainedWordRegex(queryRegex)))
                     .collect(Collectors.toList());
@@ -667,7 +678,23 @@ public class IIIFSearchBuilder {
     /**
      * @return
      */
-    private URI getURI(int page) {
-        return URI.create(requestURI + "&page=" + page);
+    private URI getURI(Integer page) {
+        ApiPath path = urls.path(ApiUrls.RECORDS_RECORD, ApiUrls.RECORDS_MANIFEST_SEARCH).params(this.pi);
+        if(StringUtils.isNotBlank(getQuery())) {
+            path = path.query("q", getQuery());
+        }
+        if(StringUtils.isNotBlank(getMotivationAsString())) {
+            path = path.query("motivation", getMotivationAsString());
+        }
+        if(StringUtils.isNotBlank(getDate())) {
+            path = path.query("date", getDate());
+        }
+        if(StringUtils.isNotBlank(getUser())) {
+            path = path.query("user", getUser());
+        }
+        if(page != null) {            
+            path = path.query("page", page);
+        }
+        return URI.create(path.build());
     }
 }

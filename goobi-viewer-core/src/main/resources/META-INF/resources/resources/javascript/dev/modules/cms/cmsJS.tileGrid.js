@@ -90,7 +90,7 @@ var cmsJS = ( function( cms ) {
                 $gridItem.addClass( item.size );
             }
             $gridItemImage.attr( 'src', item.name );
-            // $gridItemImage.attr( 'class', 'img-responsive' );
+            // $gridItemImage.attr( 'class', 'img-fluid' );
             $gridItemImage.attr( 'alt', item.title );
             if ( item.url !== '' ) {
                 $gridItemLink.attr( 'href', item.url );
