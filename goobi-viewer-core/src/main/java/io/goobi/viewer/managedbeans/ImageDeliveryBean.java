@@ -130,10 +130,10 @@ public class ImageDeliveryBean implements Serializable {
         
         AbstractApiUrlManager dataUrlManager = new ApiUrls(DataManager.getInstance().getConfiguration().getRestApiUrl().replace("/rest", "/api/v1"));
         AbstractApiUrlManager contentUrlManager = new ApiUrls(DataManager.getInstance().getConfiguration().getIIIFApiUrl().replace("/rest", "/api/v1"));
-//        ApiInfo info = contentUrlManager.getInfo();
-//        if(info == null || !info.version.equalsIgnoreCase("v1")) {
-//            contentUrlManager = null;
-//        }
+        ApiInfo info = contentUrlManager.getInfo();
+        if(info == null || !info.version.equalsIgnoreCase("v1")) {
+            contentUrlManager = null;
+        }
         
         
         this.staticImagesURI = getStaticImagesPath(dataUrlManager.getApplicationUrl(), config.getTheme());
