@@ -68,7 +68,7 @@ public class ImageInformationRequestFilter implements ContainerRequestFilter {
     public void filter(ContainerRequestContext request) throws IOException {
         try {
             String requestPath = servletRequest.getRequestURI();
-            requestPath = requestPath.substring(requestPath.indexOf("image/") + 6);
+            requestPath = requestPath.substring(requestPath.indexOf("records/") + 8);
             logger.trace("Filtering request " + requestPath);
             StringTokenizer tokenizer = new StringTokenizer(requestPath, "/");
             List<String> pathSegments = tokenizer.getTokenList();
