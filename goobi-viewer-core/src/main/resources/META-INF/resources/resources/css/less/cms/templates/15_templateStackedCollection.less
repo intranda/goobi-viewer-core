@@ -14,8 +14,12 @@
     	width: 100%;
     	margin: 0 auto;
     }
+    &__collection-list {
+    	margin-bottom: 4rem;
+    	display: block;
+    }
     .card-group {
-    	margin: 0 auto 20px auto;
+    	margin: 0 auto 1.5rem auto;
     }
     .card {
     	border: 1px solid @middlegray;
@@ -29,6 +33,7 @@
     	display: flex;
     	align-items: center;
     	height: 64px;
+    	border-bottom: 0;
     }
     .card-thumbnail,
     .card-title,
@@ -39,6 +44,7 @@
 		flex: 0 0 64px;
     	background-image: url("../../images/icons/icon_goobilogo-transparent_512.png");
 		background-size: cover;
+		height: 100%;
     	img {
 	    	width: 64px;
 			height: 64px;

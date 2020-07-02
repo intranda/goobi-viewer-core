@@ -1,4 +1,4 @@
-<collectionList>
+<collectionList class="tpl-stacked-collection__collection-list">
 
 
 	<div if="{collections}" each="{collection, index in collections}" class="card-group">
