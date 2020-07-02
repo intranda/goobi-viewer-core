@@ -30,7 +30,7 @@ fetchCollections() {
         url += this.opts.baseCollection + "/";
     }
     if(this.opts.grouping) {
-        url += "grouping/" + this.opts.grouping + "/";
+        url += "?grouping=" + this.opts.grouping;
     }
     return fetch(url)
     .then( result => result.json())

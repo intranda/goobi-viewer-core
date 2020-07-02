@@ -36,11 +36,11 @@
 	                <h:panelGroup rendered="#{downloadBean.downloadJob!= null}">
 	                    <!-- ERROR MESSAGE -->
 	                    <h:panelGroup rendered="#{downloadBean.downloadJob.status == 'ERROR'}">
-	                    	<div class="panel panel-danger">
-	                    		<div class="panel-heading">
-	                                <h3 class="panel-title">#{msg.downloadQueueTitle}</h3>
+	                    	<div class="card card-danger">
+	                    		<div class="card-header">
+	                                <h3 class="card-title">#{msg.downloadQueueTitle}</h3>
 	                            </div>
-	                            <div class="panel-body">
+	                            <div class="card-body">
 	                            	#{downloadBean.downloadJob.message}
 	                            </div>
 	                    	</div>
@@ -48,11 +48,11 @@
 	
 	                    <!-- DOWNLOAD QUEUE -->
 	                    <h:panelGroup rendered="#{downloadBean.downloadJob.status == 'WAITING' or downloadBean.downloadJob.status == 'UNDEFINED'}">
-	                        <div class="panel panel-info">
-	                            <div class="panel-heading">
-	                                <h3 class="panel-title">#{msg.downloadQueueTitle}</h3>
+	                        <div class="card card-info">
+	                            <div class="card-header">
+	                                <h3 class="card-title">#{msg.downloadQueueTitle}</h3>
 	                            </div>
-	                            <div class="panel-body">
+	                            <div class="card-body">
 	                            	<div class="row">
 	                            		<div class="col-10">
 			                                <h:outputFormat value="#{msg.downloadQueuePosition}">
@@ -75,11 +75,11 @@
 	                    <!-- DOWNLOAD -->
 	                    <h:panelGroup rendered="#{downloadBean.downloadJob.status == 'READY'}">
 	                        <!-- LICENSE TEXT -->
-	                        <div class="panel panel-success">
-	                            <div class="panel-heading">
-	                                <h3 class="panel-title">#{msg.downloadLicenseHeading}</h3>
+	                        <div class="card card-success">
+	                            <div class="card-header">
+	                                <h3 class="card-title">#{msg.downloadLicenseHeading}</h3>
 	                            </div>
-	                            <div class="panel-body">
+	                            <div class="card-body">
 			                        <div class="download__status-license-text">
 			                            <h:outputText value="#{msg.downloadLicenseText}" escape="false" />
 			                        </div>
