@@ -82,20 +82,26 @@ public class ImageInformationFilter implements ContainerResponseFilter {
 
             Path requestPath = Paths.get(request.getUriInfo().getPath());
 
-            switch (requestPath.getName(0).toString().toLowerCase()) {
-                case "readingmode":
-                case "fullscreen":
-                    pageType = PageType.viewFullscreen;
-                    break;
-                case "image":
-                    pageType = PageType.viewImage;
-                    break;
-                case "crowdsourcing":
-                    pageType = PageType.editContent;
-                    break;
-                default:
-                    pageType = PageType.getByName(requestPath.getName(0).toString());
+            if (request.getUriInfo().getQueryParameters().containsKey("pageType")) {
+                String pageType = request.getUriInfo().getQueryParameters().get("pageType").stream().findAny().orElse("image");
+                this.pageType = PageType.getByName(pageType);
+            } else {
 
+                switch (requestPath.getName(0).toString().toLowerCase()) {
+                    case "readingmode":
+                    case "fullscreen":
+                        pageType = PageType.viewFullscreen;
+                        break;
+                    case "image":
+                        pageType = PageType.viewImage;
+                        break;
+                    case "crowdsourcing":
+                        pageType = PageType.editContent;
+                        break;
+                    default:
+                        pageType = PageType.getByName(requestPath.getName(0).toString());
+
+                }
             }
 
             imageType = getImageType((ImageInformation) responseObject);
@@ -207,8 +213,7 @@ public class ImageInformationFilter implements ContainerResponseFilter {
     }
 
     /**
-     * Set the IIIF image info property "sizes". Create one size object per entry of imageSizes.
-     * Values of imageSizes are interpreted as width
+     * Set the IIIF image info property "sizes". Create one size object per entry of imageSizes. Values of imageSizes are interpreted as width
      * 
      * @param responseObject
      * @param imageSizes
@@ -217,8 +222,8 @@ public class ImageInformationFilter implements ContainerResponseFilter {
 
         List<Dimension> dimensions = new ArrayList<>();
         for (Integer size : imageSizes) {
-            float ratio = imageInfo.getHeight()/(float)imageInfo.getWidth();
-            dimensions.add(new Dimension(size, Math.round(size*ratio)));
+            float ratio = imageInfo.getHeight() / (float) imageInfo.getWidth();
+            dimensions.add(new Dimension(size, Math.round(size * ratio)));
         }
         if (dimensions.isEmpty()) {
             dimensions.add(new Dimension(imageInfo.getWidth(), imageInfo.getHeight()));
