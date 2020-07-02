@@ -602,7 +602,7 @@ public class TocMaker {
                                     .getTocVolumeSortFieldsForTemplate(SolrSearchIndex.getSingleFieldStringValue(doc, SolrConstants.DOCSTRCT)),
                             null);
             boolean addSiblings = addAllSiblings && mainDocumentChain.contains(iddoc);
-            logger.info("Loose children of {}: {}; add siblings: {}", queryValue, childDocs.size(), addSiblings);
+            logger.trace("Loose children of {}: {}; add siblings: {}", queryValue, childDocs.size(), addSiblings);
             if (!childDocs.isEmpty()) {
                 for (SolrDocument childDoc : childDocs) {
                     // Add child, if either all siblings are requested or the path leads to the main record
