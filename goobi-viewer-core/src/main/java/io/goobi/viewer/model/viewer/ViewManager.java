@@ -225,10 +225,10 @@ public class ViewManager implements Serializable {
         if (representative == null) {
             return "";
         }
-
-        StringBuilder urlBuilder = new StringBuilder(DataManager.getInstance().getConfiguration().getIIIFApiUrl());
-        urlBuilder.append("image/").append(pi).append('/').append(representative.getFileName()).append("/info.json");
-        return urlBuilder.toString();
+        return imageDeliveryBean.getImages().getImageUrl(null, pi, representative.getFileName());
+//        StringBuilder urlBuilder = new StringBuilder(DataManager.getInstance().getConfiguration().getIIIFApiUrl());
+//        urlBuilder.append("image/").append(pi).append('/').append(representative.getFileName()).append("/info.json");
+//        return urlBuilder.toString();
     }
 
     /**

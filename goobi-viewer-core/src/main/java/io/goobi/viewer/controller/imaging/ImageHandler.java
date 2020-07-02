@@ -18,6 +18,8 @@ package io.goobi.viewer.controller.imaging;
 import java.io.FileNotFoundException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Collections;
 import java.util.regex.Pattern;
 
@@ -32,6 +34,9 @@ import de.unigoettingen.sub.commons.contentlib.imagelib.ImageManager;
 import de.unigoettingen.sub.commons.contentlib.imagelib.ImageType;
 import de.unigoettingen.sub.commons.util.datasource.media.PageSource;
 import de.unigoettingen.sub.commons.util.datasource.media.PageSource.IllegalPathSyntaxException;
+import io.goobi.viewer.api.rest.AbstractApiUrlManager;
+import io.goobi.viewer.api.rest.AbstractApiUrlManager.ApiPath;
+import io.goobi.viewer.api.rest.v1.ApiUrls;
 import io.goobi.viewer.controller.DataFileTools;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
@@ -49,6 +54,19 @@ public class ImageHandler {
 
     private static final Logger logger = LoggerFactory.getLogger(ImageHandler.class);
 
+    private final AbstractApiUrlManager urls;
+
+    public ImageHandler() {
+        this.urls = null;
+    }
+
+    /**
+     * @param contentUrlManager
+     */
+    public ImageHandler(AbstractApiUrlManager contentUrlManager) {
+        this.urls = contentUrlManager;
+    }
+
     /**
      * Returns the image link for the given page and pageType. For external images, this links to the IIIF image information json+ls For external
      * images, this may either also be a IIIF image information or the image itself
@@ -65,32 +83,67 @@ public class ImageHandler {
             throw new IllegalArgumentException("Cannot get image url: PageType is null");
         }
 
-        String pageName;
-        switch (pageType) {
-            case viewFullscreen:
-                pageName = "fullscreen/image";
-                break;
-            case editContent:
-            case editOcr:
-            case editHistory:
-                pageName = "crowdsourcing/image";
-                break;
-            default:
-                pageName = "image";
+        String pi = page.getPi();
+        String filepath = page.getFilepath();
+        String filename = page.getFileName();
+        
+        return getImageUrl(pageType, pi, filepath, filename);
 
-        }
-        if (isRestrictedUrl(page.getFilepath())) {
-            StringBuilder sb = new StringBuilder(DataManager.getInstance().getConfiguration().getIIIFApiUrl());
-            sb.append(pageName).append("/-/").append(BeanUtils.escapeCriticalUrlChracters(page.getFilepath(), true)).append("/info.json");
-            return sb.toString();
-        } else if (isExternalUrl(page.getFilepath())) {
-            return page.getFilepath();
+    }
+    
+    public String getImageUrl(PageType pageType, String pi, String filepath) {
+        Path path = Paths.get(filepath);
+        return getImageUrl(pageType, pi, filepath, path.getFileName().toString());
+    }
+
+
+    /**
+     * @param pageType
+     * @param pi
+     * @param filepath
+     * @param filename
+     * @return
+     */
+    public String getImageUrl(PageType pageType, String pi, String filepath, String filename) {
+        if (this.urls != null) {
+            ApiPath path = this.urls.path(ApiUrls.RECORDS_FILES_IMAGE, ApiUrls.RECORDS_FILES_IMAGE_INFO).params(pi, filename);
+            if(pageType != null) {
+                path = path.query("pageType", pageType.name());
+            }
+            return path.build();
         } else {
-            StringBuilder sb = new StringBuilder(DataManager.getInstance().getConfiguration().getIIIFApiUrl());
-            sb.append(pageName).append("/").append(page.getPi()).append("/").append(page.getFileName()).append("/info.json");
-            return sb.toString();
-        }
 
+            String pageName;
+            if(pageType != null) {                
+                switch (pageType) {
+                    case viewFullscreen:
+                        pageName = "fullscreen/image";
+                        break;
+                    case editContent:
+                    case editOcr:
+                    case editHistory:
+                        pageName = "crowdsourcing/image";
+                        break;
+                    default:
+                        pageName = "image";
+                        
+                }
+            } else {
+                pageName = "image";
+            }
+            
+            if (isRestrictedUrl(filepath)) {
+                StringBuilder sb = new StringBuilder(DataManager.getInstance().getConfiguration().getIIIFApiUrl());
+                sb.append(pageName).append("/-/").append(BeanUtils.escapeCriticalUrlChracters(filepath, true)).append("/info.json");
+                return sb.toString();
+            } else if (isExternalUrl(filepath)) {
+                return filepath;
+            } else {
+                StringBuilder sb = new StringBuilder(DataManager.getInstance().getConfiguration().getIIIFApiUrl());
+                sb.append(pageName).append("/").append(pi).append("/").append(filename).append("/info.json");
+                return sb.toString();
+            }
+        }
     }
 
     /**

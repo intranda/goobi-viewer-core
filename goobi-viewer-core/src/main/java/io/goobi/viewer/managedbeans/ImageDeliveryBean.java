@@ -143,7 +143,7 @@ public class ImageDeliveryBean implements Serializable {
                 DataManager.getInstance().getConfiguration().getViewerHome() + DataManager.getInstance().getConfiguration().getTempMediaFolder();
 
         iiif = new IIIFUrlHandler(contentUrlManager);
-        images = new ImageHandler();
+        images = new ImageHandler(contentUrlManager);
         objects3d = new Object3DHandler(config);
         footer = new WatermarkHandler(config, DataManager.getInstance().getConfiguration().getIIIFApiUrl());
         thumbs = new ThumbnailHandler(iiif, config, this.staticImagesURI);
