@@ -84,7 +84,7 @@ var adminJS = ( function( admin ) {
     		} else if(diffContent <= 0) {
     		    $( '#adminContent' ).removeClass( 'fixed-bottom' ).addClass( 'fixed-top' );
     		} else if(sidebarHeight <= contentHeight) {
-    		    console.log("sidebar smaller content")
+    		   // console.log("sidebar smaller content")
     		    if ( scrollPos >= diffSidebar && windowHeight < sidebarHeight ) {
                     $( '#adminSidebar' ).removeClass( 'fixed-top' ).addClass( 'fixed-bottom' );
                 } else if ( windowHeight > sidebarHeight ) {
@@ -93,7 +93,7 @@ var adminJS = ( function( admin ) {
                     $( '#adminSidebar, #adminContent' ).removeClass( 'fixed-top, fixed-bottom' );
                 }
     		} else {
-    		    console.log("sidebar larger content")
+    		   // console.log("sidebar larger content")
     		    if ( scrollPos >= diffContent && windowHeight < contentHeight ) {
     		        $( '#adminContent' ).removeClass( 'fixed-top' ).addClass( 'fixed-bottom' );
     		    } else if ( windowHeight > contentHeight ) {
