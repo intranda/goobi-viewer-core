@@ -136,8 +136,8 @@
             border: 1px solid #343a40;
         }
         &-danger {
-            color: #dc3545;
-            border: 1px solid #dc3545;
+            color: @white;
+            background-color: #dc3545;
         }
         &-success {
             color: #008a00;
@@ -147,6 +147,10 @@
             color: #74422B;
             border: 1px solid #74422B;
         }
+		&.-warning {
+			background-color:#ffc107;
+			color:#212529;
+		}
         &-hover {
             .badge-success {
 	            &:hover {
@@ -170,9 +174,6 @@
 		.badge-warning {
 			background-color:#ffc107;
 			color:#212529;
-			border-radius:5px;
-			font-size:1.2rem;
-			vertical-align:middle;
 		}
 
 	/* BLOCK AND BOX STYLING */
