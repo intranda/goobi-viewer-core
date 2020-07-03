@@ -93,24 +93,25 @@ public final class SolrSearchIndex {
     private static final int TIMEOUT_CONNECTION = 30000;
 
     public boolean initialized = false;
+    private long lastPing = 0;
 
     /** Application-scoped map containing already looked up data repository names of records. */
     Map<String, String> dataRepositoryNames = new HashMap<>();
 
-    private SolrClient server;
+    private SolrClient client;
 
     /**
      * <p>
      * Constructor for SolrSearchIndex.
      * </p>
      *
-     * @param server a {@link org.apache.solr.client.solrj.SolrServer} object.
+     * @param client a {@link org.apache.solr.client.solrj.SolrClient} object.
      */
-    public SolrSearchIndex(SolrClient server) {
-        if (server == null) {
-            this.server = getNewHttpSolrServer();
+    public SolrSearchIndex(SolrClient client) {
+        if (client == null) {
+            this.client = getNewHttpSolrClient();
         } else {
-            this.server = server;
+            this.client = client;
         }
     }
 
@@ -118,29 +119,45 @@ public final class SolrSearchIndex {
      * Checks whether the server's configured URL matches that in the config file. If not, a new server instance is created.
      */
     public void checkReloadNeeded() {
-        if (server != null && server instanceof HttpSolrClient) {
-            HttpSolrClient httpSolrServer = (HttpSolrClient) server;
-            if (!DataManager.getInstance().getConfiguration().getSolrUrl().equals(httpSolrServer.getBaseURL())) {
-                logger.info("Solr URL has changed, re-initializing SolrHelper...");
-                try {
-                    httpSolrServer.close();
-                } catch (IOException e) {
-                    logger.error(e.getMessage(), e);
-                }
-                server = getNewHttpSolrServer();
+        if (client == null || !(client instanceof HttpSolrClient)) {
+            return;
+        }
+
+        HttpSolrClient httpSolrClient = (HttpSolrClient) client;
+        if (!DataManager.getInstance().getConfiguration().getSolrUrl().equals(httpSolrClient.getBaseURL())) {
+            // Re-init Solr client if the configured Solr URL has been changed
+            logger.info("Solr URL has changed, re-initializing Solr client...");
+            try {
+                httpSolrClient.close();
+            } catch (IOException e) {
+                logger.error(e.getMessage(), e);
             }
+            client = getNewHttpSolrClient();
+        } else if (lastPing == 0 || lastPing - System.currentTimeMillis() > 60000) {
+            // Check whether the HTTP connection pool of the Solr client has been shut down and re-init
+            try {
+                httpSolrClient.ping();
+            } catch (Exception e) {
+                logger.warn("HTTP client was closed, re-initializing Sorl client...");
+                try {
+                    httpSolrClient.close();
+                } catch (IOException e1) {
+                }
+                client = getNewHttpSolrClient();
+            }
+            lastPing = System.currentTimeMillis();
         }
     }
 
     /**
      * <p>
-     * getNewHttpSolrServer.
+     * getNewHttpSolrClient.
      * </p>
      *
      * @return a {@link org.apache.solr.client.solrj.impl.HttpSolrServer} object.
      */
-    public static HttpSolrClient getNewHttpSolrServer() {
-        HttpSolrClient server = new HttpSolrClient.Builder()
+    public static HttpSolrClient getNewHttpSolrClient() {
+        HttpSolrClient client = new HttpSolrClient.Builder()
                 .withBaseSolrUrl(DataManager.getInstance().getConfiguration().getSolrUrl())
                 .withSocketTimeout(TIMEOUT_SO)
                 .withConnectionTimeout(TIMEOUT_CONNECTION)
@@ -148,15 +165,15 @@ public final class SolrSearchIndex {
                 .build();
         //        server.setDefaultMaxConnectionsPerHost(100);
         //        server.setMaxTotalConnections(100);
-        server.setFollowRedirects(false); // defaults to false
+        client.setFollowRedirects(false); // defaults to false
         //        server.setMaxRetries(1); // defaults to 0. > 1 not recommended.
-        server.setRequestWriter(new BinaryRequestWriter());
+        client.setRequestWriter(new BinaryRequestWriter());
         // Backwards compatibility mode for Solr 4 servers
         if (DataManager.getInstance().getConfiguration().isSolrBackwardsCompatible()) {
-            server.setParser(new XMLResponseParser());
+            client.setParser(new XMLResponseParser());
         }
 
-        return server;
+        return client;
     }
 
     /**
@@ -174,7 +191,7 @@ public final class SolrSearchIndex {
         solrQuery.setStart(0);
         solrQuery.setRows(0);
 
-        return server.query(solrQuery);
+        return client.query(solrQuery);
     }
 
     /**
@@ -247,7 +264,7 @@ public final class SolrSearchIndex {
             //             logger.debug("range: {} - {}", first, first + rows);
             //             logger.debug("facetFields: {}", facetFields);
             //             logger.debug("fieldList: {}", fieldList);
-            QueryResponse resp = server.query(solrQuery);
+            QueryResponse resp = client.query(solrQuery);
             //             logger.debug("found: {}", resp.getResults().getNumFound());
             //             logger.debug("fetched: {}", resp.getResults().size());
 
@@ -504,7 +521,7 @@ public final class SolrSearchIndex {
         SolrQuery solrQuery =
                 new SolrQuery(query).setRows(DataManager.getInstance().getConfiguration().getTagCloudSampleSize(fieldName)).addField(fieldName);
         try {
-            QueryResponse resp = server.query(solrQuery);
+            QueryResponse resp = client.query(solrQuery);
             logger.trace("query done");
             for (SolrDocument doc : resp.getResults()) {
                 Collection<Object> values = doc.getFieldValues(fieldName);
@@ -610,7 +627,7 @@ public final class SolrSearchIndex {
         SolrQuery solrQuery = new SolrQuery(new StringBuilder(SolrConstants.IDDOC).append(":").append(iddoc).toString());
         solrQuery.setRows(1);
         try {
-            QueryResponse resp = server.query(solrQuery);
+            QueryResponse resp = client.query(solrQuery);
             if (resp.getResults().getNumFound() > 0) {
                 return (String) resp.getResults().get(0).getFieldValue(SolrConstants.PI);
             }
@@ -990,7 +1007,7 @@ public final class SolrSearchIndex {
         solrQuery.setFields(SolrConstants.DATAREPOSITORY);
 
         try {
-            QueryResponse resp = server.query(solrQuery);
+            QueryResponse resp = client.query(solrQuery);
             if (!resp.getResults().isEmpty()) {
                 return (String) resp.getResults().get(0).getFieldValue(SolrConstants.DATAREPOSITORY);
             }
@@ -1019,14 +1036,14 @@ public final class SolrSearchIndex {
     }
 
     private static Document getSolrSchemaDocument() {
-        StringReader sr = null;
         try {
             NetTools.getWebContentGET(
                     DataManager.getInstance().getConfiguration().getSolrUrl() + "/admin/file/?contentType=text/xml;charset=utf-8&file=schema.xml");
             String responseBody = NetTools.getWebContentGET(
                     DataManager.getInstance().getConfiguration().getSolrUrl() + "/admin/file/?contentType=text/xml;charset=utf-8&file=schema.xml");
-            sr = new StringReader(responseBody);
-            return new SAXBuilder().build(sr);
+            try (StringReader sr = new StringReader(responseBody)) {
+                return new SAXBuilder().build(sr);
+            }
         } catch (ClientProtocolException e) {
             logger.error(e.getMessage(), e);
         } catch (IOException e) {
@@ -1035,10 +1052,6 @@ public final class SolrSearchIndex {
             logger.error(e.getMessage(), e);
         } catch (HTTPException e) {
             logger.error(e.getMessage(), e);
-        } finally {
-            if (sr != null) {
-                sr.close();
-            }
         }
 
         return null;
@@ -1159,7 +1172,7 @@ public final class SolrSearchIndex {
         }
         solrQuery.setFacetLimit(-1); // no limit
         try {
-            QueryResponse resp = server.query(solrQuery);
+            QueryResponse resp = client.query(solrQuery);
             return resp;
         } catch (SolrServerException e) {
             if (e.getMessage().startsWith("Server refused connection")) {
@@ -1290,7 +1303,7 @@ public final class SolrSearchIndex {
      */
     public static boolean isQuerySyntaxError(Exception e) {
         return e.getMessage() != null && (e.getMessage().startsWith("org.apache.solr.search.SyntaxError")
-                || e.getMessage().contains("Invalid Number") 
+                || e.getMessage().contains("Invalid Number")
                 || e.getMessage().contains("undefined field")
                 || e.getMessage().contains("field can't be found")
                 || e.getMessage().contains("can not sort on multivalued field"));
@@ -1308,7 +1321,7 @@ public final class SolrSearchIndex {
     public List<String> getAllFieldNames() throws SolrServerException, IOException {
         LukeRequest lukeRequest = new LukeRequest();
         lukeRequest.setNumTerms(0);
-        LukeResponse lukeResponse = lukeRequest.process(server);
+        LukeResponse lukeResponse = lukeRequest.process(client);
         Map<String, FieldInfo> fieldInfoMap = lukeResponse.getFieldInfo();
 
         List<String> list = new ArrayList<>();
@@ -1335,7 +1348,7 @@ public final class SolrSearchIndex {
     public List<String> getAllSortFieldNames() throws SolrServerException, IOException {
         LukeRequest lukeRequest = new LukeRequest();
         lukeRequest.setNumTerms(0);
-        LukeResponse lukeResponse = lukeRequest.process(server);
+        LukeResponse lukeResponse = lukeRequest.process(client);
         Map<String, FieldInfo> fieldInfoMap = lukeResponse.getFieldInfo();
 
         List<String> list = new ArrayList<>();
@@ -1357,7 +1370,7 @@ public final class SolrSearchIndex {
     public List<String> getAllGroupFieldNames() throws SolrServerException, IOException {
         LukeRequest lukeRequest = new LukeRequest();
         lukeRequest.setNumTerms(0);
-        LukeResponse lukeResponse = lukeRequest.process(server);
+        LukeResponse lukeResponse = lukeRequest.process(client);
         Map<String, FieldInfo> fieldInfoMap = lukeResponse.getFieldInfo();
 
         List<String> keys = new ArrayList<>(fieldInfoMap.keySet());
@@ -1631,7 +1644,6 @@ public final class SolrSearchIndex {
 
         return conditions.trim();
     }
-    
 
     /**
      * 
@@ -1647,12 +1659,12 @@ public final class SolrSearchIndex {
         }
         return SearchHelper.ALL_RECORDS_QUERY + " AND " + SolrConstants.ACCESSCONDITION + ":\"" + accessCondition + "\"";
     }
-    
+
     public String getSolrServerUrl() {
-        if(server != null && server instanceof HttpSolrClient) {
-            return ((HttpSolrClient)server).getBaseURL();
-        } else {
-            return null;
+        if (client != null && client instanceof HttpSolrClient) {
+            return ((HttpSolrClient) client).getBaseURL();
         }
+
+        return null;
     }
 }

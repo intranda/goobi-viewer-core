@@ -43,7 +43,7 @@ public abstract class AbstractSolrEnabledTest extends AbstractTest {
 
     @Before
     public void setUp() throws Exception {
-        server = SolrSearchIndex.getNewHttpSolrServer();
+        server = SolrSearchIndex.getNewHttpSolrClient();
         DataManager.getInstance().injectSearchIndex(new SolrSearchIndex(server));
 
         // Load current IDDOC for PPN517154005, which is used in many tests
