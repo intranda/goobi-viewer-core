@@ -83,13 +83,7 @@
                                     <div class="row no-gutters admin__table-entry">
                                         <div class="col-8 d-flex flex-column">
                                             <!-- PAGE TITLE -->
-                                            <span class="admin__last-pages-title">#{page.title}
-                                            	<ui:fragment rendered="#{cmsBean.isMappedToStaticPage(page)}">
-                                                <span class="badge badge-warning" data-toggle="tooltip" data-placement="top" data-original-title="#{msg.admin__cms_overview_mapped_to_static_page}">
-		                                                <i class="fa fa-cogs" aria-hidden="true"></i>
-		                                            </span>
-	                                        	</ui:fragment>
-	                                        </span>
+                                            <span class="admin__last-pages-title">#{page.title}</span>
                                             <!-- ACTIONS -->
                                             <div>
                                                 <!-- SHOW -->
@@ -101,6 +95,9 @@
                                             </div>
                                         </div>
                                         <div class="col-2">
+                                            <ui:fragment rendered="#{cmsBean.isMappedToStaticPage(page)}">
+                                                <span class="badge badge-warning">#{msg.admin__cms_static_page</span>
+                                            </ui:fragment>
 	    									<ui:repeat value="#{page.categories}" var="category">
 	                                            <div class="badge badge-violet">#{category.name}</div>
 	                                        </ui:repeat>
