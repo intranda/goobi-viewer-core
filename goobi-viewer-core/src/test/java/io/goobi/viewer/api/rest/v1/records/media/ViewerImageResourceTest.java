@@ -93,7 +93,7 @@ public class ViewerImageResourceTest extends AbstractRestApiTest {
             assertNotNull("Should return user object as json", response.getEntity());
             String responseString = response.readEntity(String.class);
             JSONObject info = new JSONObject(responseString);
-            assertTrue(info.getString("@id").endsWith(id));
+            assertTrue("@id should end with '" + id + "' but was: " + info.getString("@id"), info.getString("@id").endsWith(id));
         }
     }
 
