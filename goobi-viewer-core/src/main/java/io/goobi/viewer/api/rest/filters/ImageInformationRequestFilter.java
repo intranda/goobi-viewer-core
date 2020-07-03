@@ -72,9 +72,9 @@ public class ImageInformationRequestFilter implements ContainerRequestFilter {
             StringTokenizer tokenizer = new StringTokenizer(requestPath, "/");
             List<String> pathSegments = tokenizer.getTokenList();
             String pi = pathSegments.get(0);
-            String imageName = pathSegments.size() > 3 ? pathSegments.get(3) : "1";
+            String imageName = pathSegments.size() > 3 ? pathSegments.get(3) : "";
             imageName = StringTools.decodeUrl(imageName);
-//            logger.trace("image: {}", imageName);
+            // logger.trace("image: {}", imageName);
             if (forwardToCanonicalUrl(pi, imageName, servletRequest, servletResponse)) {
                 //if page order is given for image filename, forward to url with correct filename
                 return;
@@ -116,7 +116,7 @@ public class ImageInformationRequestFilter implements ContainerRequestFilter {
             try {
                 Optional<String> filename = DataManager.getInstance().getSearchIndex().getFilename(pi, Integer.parseInt(imageName));
                 if (filename.isPresent()) {
-                    String redirectURI = request.getRequestURI().replace("/" + imageName + "/", "/" + filename.get() + "/");
+                    String redirectURI = request.getRequestURI().replace("/" + imageName, "/" + filename.get());
                     response.sendRedirect(redirectURI);
                     return true;
                 }
