@@ -63,27 +63,26 @@ public class ImageInformationRequestFilter implements ContainerRequestFilter {
     private HttpServletResponse servletResponse;
 
     /** {@inheritDoc} */
-    @SuppressWarnings("unchecked")
     @Override
     public void filter(ContainerRequestContext request) throws IOException {
         try {
             String requestPath = servletRequest.getRequestURI();
             requestPath = requestPath.substring(requestPath.indexOf("records/") + 8);
-            logger.trace("Filtering request " + requestPath);
+            logger.trace("Filtering request: {}", requestPath);
             StringTokenizer tokenizer = new StringTokenizer(requestPath, "/");
             List<String> pathSegments = tokenizer.getTokenList();
             String pi = pathSegments.get(0);
-            String imageName = pathSegments.get(1);
+            String imageName = pathSegments.get(3);
             imageName = StringTools.decodeUrl(imageName);
+            logger.trace("image: {}", imageName);
             if (forwardToCanonicalUrl(pi, imageName, servletRequest, servletResponse)) {
                 //if page order is given for image filename, forward to url with correct filename
                 return;
-            } else {
-                //only for actual image requests, no info requests
-                if (!BeanUtils.getImageDeliveryBean().isExternalUrl(imageName) && !BeanUtils.getImageDeliveryBean().isPublicUrl(imageName)
-                        && !BeanUtils.getImageDeliveryBean().isStaticImageUrl(imageName)) {
-                    filterForAccessConditions(request, pi, imageName);
-                }
+            }
+            //only for actual image requests, no info requests
+            if (!BeanUtils.getImageDeliveryBean().isExternalUrl(imageName) && !BeanUtils.getImageDeliveryBean().isPublicUrl(imageName)
+                    && !BeanUtils.getImageDeliveryBean().isStaticImageUrl(imageName)) {
+                filterForAccessConditions(request, pi, imageName);
             }
         } catch (ServiceNotAllowedException e) {
             String mediaType = MediaType.APPLICATION_JSON;
@@ -136,7 +135,7 @@ public class ImageInformationRequestFilter implements ContainerRequestFilter {
      * @throws IndexUnreachableException
      */
     private void filterForAccessConditions(ContainerRequestContext request, String pi, String contentFileName) throws ServiceNotAllowedException {
-        logger.trace("filterForAccessConditions: " + servletRequest.getSession().getId());
+        logger.trace("filterForAccessConditions: {}", servletRequest.getSession().getId());
 
         boolean access = false;
         try {

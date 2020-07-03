@@ -4,14 +4,21 @@ import org.apache.solr.client.solrj.response.QueryResponse;
 import org.apache.solr.common.SolrDocument;
 import org.json.JSONObject;
 import org.junit.Assert;
+import org.junit.BeforeClass;
 import org.junit.Test;
 
 import io.goobi.viewer.AbstractSolrEnabledTest;
+import io.goobi.viewer.AbstractTest;
 import io.goobi.viewer.model.viewer.PageType;
 
 public class JsonToolsTest extends AbstractSolrEnabledTest {
 
     private static final String PI = PI_KLEIUNIV;
+
+    @BeforeClass
+    public static void setUpClass() throws Exception {
+        AbstractTest.setUpClass();
+    }
 
     /**
      * @see JsonTools#getRecordJsonObject(SolrDocument,String)

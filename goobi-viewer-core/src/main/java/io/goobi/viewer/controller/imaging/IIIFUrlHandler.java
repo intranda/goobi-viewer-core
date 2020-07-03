@@ -61,24 +61,22 @@ public class IIIFUrlHandler {
     private static final Logger logger = LoggerFactory.getLogger(IIIFUrlHandler.class);
 
     private final AbstractApiUrlManager urls;
-    
-
 
     public IIIFUrlHandler(AbstractApiUrlManager urls) {
-        this.urls  = urls;
+        this.urls = urls;
     }
-    
+
     public IIIFUrlHandler() {
         this.urls = null;
     }
-    
+
     public String getIIIFImageUrl(String fileUrl, String docStructIdentifier, String region, String size, String rotation, String quality,
             String format) {
         String apiUrl = this.urls == null ? DataManager.getInstance().getConfiguration().getIIIFApiUrl() : this.urls.getApiUrl();
         return getIIIFImageUrl(apiUrl, fileUrl, docStructIdentifier, region, size, rotation,
                 quality, format);
     }
-    
+
     /**
      * Returns a link to the actual image of the given page, delivered via IIIF api using the given parameters
      *
@@ -113,7 +111,7 @@ public class IIIFUrlHandler {
                     return IIIFUrlResolver.getModifiedIIIFFUrl(fileUrl, region, size, rotation, quality, format);
                 } else if (ImageHandler.isImageUrl(fileUrl, false)) {
                     StringBuilder sb = new StringBuilder(apiUrl);
-                    if(!apiUrl.endsWith("/")) {
+                    if (!apiUrl.endsWith("/")) {
                         sb.append("/");
                     }
                     sb.append("image/-/").append(BeanUtils.escapeCriticalUrlChracters(fileUrl, true)).append("/");
@@ -136,18 +134,20 @@ public class IIIFUrlHandler {
                     return sb.toString();
                 }
             } else {
-                if(urls != null) {
+                if (urls != null) {
                     //In the case of multivolume thumbnails in first-volume mode, a path consisting of both pi and filename is given. 
                     //parse that path to get correct url for thumbnail
                     //TODO: find a more robust solution
                     Path filePath = Paths.get(fileUrl);
-                    if(filePath.getNameCount() == 2) {
+                    if (filePath.getNameCount() == 2) {
                         docStructIdentifier = filePath.getName(0).toString();
                         fileUrl = filePath.getName(1).toString();
                     }
-                    return urls.path(RECORDS_FILES_IMAGE, RECORDS_FILES_IMAGE_IIIF).params(URLEncoder.encode(docStructIdentifier, UTF_8), URLEncoder.encode(fileUrl, UTF_8), region, size, rotation, "default", format).build();
-                } else {
-                    
+                    return urls.path(RECORDS_FILES_IMAGE, RECORDS_FILES_IMAGE_IIIF)
+                            .params(URLEncoder.encode(docStructIdentifier, UTF_8), URLEncoder.encode(fileUrl, UTF_8), region, size, rotation,
+                                    "default", format)
+                            .build();
+                }
                 //if the fileUrl contains a "/", then the part before that is the actual docStructIdentifier
                 int separatorIndex = fileUrl.indexOf("/");
                 if (separatorIndex > 0) {
@@ -167,9 +167,6 @@ public class IIIFUrlHandler {
                 sb.append("default.").append(format);
                 //                thumbCompression.ifPresent(compr -> sb.append("?compression=").append(thumbCompression));
                 return sb.toString();
-                }
-
-                
             }
         } catch (URISyntaxException e) {
             logger.error("Not a valid url: " + fileUrl, e.getMessage());

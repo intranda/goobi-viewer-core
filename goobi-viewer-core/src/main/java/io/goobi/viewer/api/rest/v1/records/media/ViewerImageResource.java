@@ -73,6 +73,7 @@ public class ViewerImageResource extends ImageResource {
             @Parameter(description = "Persistent identifier of the record") @PathParam("pi") String pi,
             @Parameter(description = "Filename of the image") @PathParam("filename") String filename) {
         super(context, request, response, pi, filename);
+        System.out.println("ViewerImageResource");
         request.setAttribute("pi", pi);
         request.setAttribute("filename", filename);
         String accept = request.getHeader("Accept");
@@ -116,6 +117,7 @@ public class ViewerImageResource extends ImageResource {
     
     @Override
     public void createResourceURI(HttpServletRequest request, String directory, String filename) throws IllegalRequestException {
+        System.out.println("createResourceURI");
         super.createResourceURI(request, directory, filename);
         try {
             String toReplace = URLEncoder.encode("{pi}", "UTF-8");
