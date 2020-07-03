@@ -509,8 +509,15 @@ public final class SearchHelper {
                 Collection<Object> fieldList = doc.getFieldValues(luceneField);
                 if (fieldList != null) {
                     for (Object o : fieldList) {
-                        String dc = SolrSearchIndex.getAsString(o);
                         String pi = (String) doc.getFieldValue(SolrConstants.PI);
+                        Collection<Object> accessConditions = doc.getFieldValues(SolrConstants.ACCESSCONDITION);
+                        if (!AccessConditionUtils.checkAccessPermissionByIdentifierAndLogId(pi, null, IPrivilegeHolder.PRIV_LIST,
+                                BeanUtils.getRequest())) {
+                            // TODO check whether users with permissions still skip over such records
+                            logger.trace("Record '{}' does not allow listing, skipping...", pi);
+                            continue;
+                        }
+                        // String dc = SolrSearchIndex.getAsString(o);
                         String url = "/ppnresolver?id=" + pi;
                         return url;
                     }
@@ -922,7 +929,7 @@ public final class SearchHelper {
             if (usedLicenseTypes.contains(licenseType.getName())) {
                 continue;
             }
-            
+
             // Moving wall license type, use negated filter query
             if (licenseType.isMovingWall() && StringUtils.isNotBlank(licenseType.getProcessedConditions())) {
                 logger.trace("License type '{}' is a moving wall", licenseType.getName());
@@ -2367,7 +2374,7 @@ public final class SearchHelper {
 
         return ret;
     }
-    
+
     /**
      * @param params
      * @param useExpandQuery
