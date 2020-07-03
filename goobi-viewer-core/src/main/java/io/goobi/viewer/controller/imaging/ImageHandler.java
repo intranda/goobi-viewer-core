@@ -105,45 +105,24 @@ public class ImageHandler {
      * @return
      */
     public String getImageUrl(PageType pageType, String pi, String filepath, String filename) {
-        if (this.urls != null) {
-            ApiPath path = this.urls.path(ApiUrls.RECORDS_FILES_IMAGE, ApiUrls.RECORDS_FILES_IMAGE_INFO).params(pi, filename);
-            if(pageType != null) {
-                path = path.query("pageType", pageType.name());
-            }
-            return path.build();
-        } else {
-
-            String pageName;
-            if(pageType != null) {                
-                switch (pageType) {
-                    case viewFullscreen:
-                        pageName = "fullscreen/image";
-                        break;
-                    case editContent:
-                    case editOcr:
-                    case editHistory:
-                        pageName = "crowdsourcing/image";
-                        break;
-                    default:
-                        pageName = "image";
-                        
-                }
-            } else {
-                pageName = "image";
-            }
             
             if (isRestrictedUrl(filepath)) {
                 StringBuilder sb = new StringBuilder(DataManager.getInstance().getConfiguration().getIIIFApiUrl());
-                sb.append(pageName).append("/-/").append(BeanUtils.escapeCriticalUrlChracters(filepath, true)).append("/info.json");
+                sb.append("image").append("/-/").append(BeanUtils.escapeCriticalUrlChracters(filepath, true)).append("/info.json");
                 return sb.toString();
             } else if (isExternalUrl(filepath)) {
                 return filepath;
+            } else if(urls != null) {
+                ApiPath path = this.urls.path(ApiUrls.RECORDS_FILES_IMAGE, ApiUrls.RECORDS_FILES_IMAGE_INFO).params(pi, filename);
+                if(pageType != null) {
+                    path = path.query("pageType", pageType.name());
+                }
+                return path.build();
             } else {
                 StringBuilder sb = new StringBuilder(DataManager.getInstance().getConfiguration().getIIIFApiUrl());
-                sb.append(pageName).append("/").append(pi).append("/").append(filename).append("/info.json");
+                sb.append("image").append("/").append(pi).append("/").append(filename).append("/info.json");
                 return sb.toString();
             }
-        }
     }
 
     /**

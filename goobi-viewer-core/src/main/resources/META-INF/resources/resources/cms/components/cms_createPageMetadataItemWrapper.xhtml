@@ -157,13 +157,13 @@
                                 <div class="modal-content">
                                     <h:panelGroup rendered="#{!cmsBean.isLinkedFromNavBar(cmsBean.selectedPage) and !cmsBean.isLinkedToStaticPage(cmsBean.selectedPage)}">
                                         <div class="modal-header">
+                                            <h4 class="modal-title">#{msg.cms_deletePage_agree}</h4>
                                             <button type="button" class="close" data-dismiss="modal">
                                                 <span aria-hidden="true">
                                                     <h:outputText value="&amp;times;" escape="false" />
                                                 </span>
                                                 <span class="sr-only">Close</span>
                                             </button>
-                                            <h4 class="modal-title">#{msg.cms_deletePage_agree}</h4>
                                         </div>
                                         <div class="modal-body">#{msg.cms_deletePage_confirmation}</div>
                                         <div class="modal-footer">

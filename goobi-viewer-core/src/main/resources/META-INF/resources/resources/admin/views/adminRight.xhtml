@@ -527,7 +527,7 @@
                                                             <h:commandLink styleClass="admin__license-action" action="#{adminBean.currentLicense.removePrivilege(priv)}" title="#{msg.remove}">
                                                                 <div class="badge badge-success">
                                                                     #{msg[adminBean.getMessageKeyForPrivilege(priv)]}
-                                                                    <i class="fa fa-trash" aria-hidden="true"></i>
+                                                                    <i class="fa fa-trash-o" aria-hidden="true"></i>
                                                                 </div>
                                                             </h:commandLink>
                                                         </ui:repeat>
@@ -539,7 +539,7 @@
                                                             <h:commandLink styleClass="admin__license-action" action="#{adminBean.currentLicense.addPrivilege(priv)}" title="#{msg.add}">
                                                                 <div class="badge badge-dark">
                                                                     #{msg[adminBean.getMessageKeyForPrivilege(priv)]}
-                                                                    <i class="fa fa-plus" aria-hidden="true"></i>
+                                                                    <i class="fa fa-plus-circle" aria-hidden="true"></i>
                                                                 </div>
                                                             </h:commandLink>
                                                         </ui:repeat>

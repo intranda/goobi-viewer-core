@@ -113,6 +113,9 @@ public class IIIFUrlHandler {
                     return IIIFUrlResolver.getModifiedIIIFFUrl(fileUrl, region, size, rotation, quality, format);
                 } else if (ImageHandler.isImageUrl(fileUrl, false)) {
                     StringBuilder sb = new StringBuilder(apiUrl);
+                    if(!apiUrl.endsWith("/")) {
+                        sb.append("/");
+                    }
                     sb.append("image/-/").append(BeanUtils.escapeCriticalUrlChracters(fileUrl, true)).append("/");
                     sb.append(region).append("/");
                     sb.append(size).append("/");

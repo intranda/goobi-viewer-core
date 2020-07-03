@@ -163,6 +163,7 @@
                                 <div class="modal-dialog">
                                     <div class="modal-content">
                                         <div class="modal-header">
+                                            <h4 class="modal-title">#{msg.cms_deletePage_agree}</h4>
                                             <h:commandLink action="#{cmsBean.setSelectedPage(null)}" styleClass="close">
                                                 <f:passThroughAttribute name="data-dismiss" value="modal" />
                                                 <span aria-hidden="true">
@@ -171,7 +172,6 @@
                                                 <span class="sr-only">Close</span>
                                                 <f:ajax render="@none" />
                                             </h:commandLink>
-                                            <h4 class="modal-title">#{msg.cms_deletePage_agree}</h4>
                                         </div>
                                         <div class="modal-body">#{msg.cms_deletePage_confirmation}</div>
                                         <div class="modal-footer">
