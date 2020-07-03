@@ -72,9 +72,9 @@ public class ImageInformationRequestFilter implements ContainerRequestFilter {
             StringTokenizer tokenizer = new StringTokenizer(requestPath, "/");
             List<String> pathSegments = tokenizer.getTokenList();
             String pi = pathSegments.get(0);
-            String imageName = pathSegments.get(3);
+            String imageName = pathSegments.size() > 3 ? pathSegments.get(3) : "1";
             imageName = StringTools.decodeUrl(imageName);
-            logger.trace("image: {}", imageName);
+//            logger.trace("image: {}", imageName);
             if (forwardToCanonicalUrl(pi, imageName, servletRequest, servletResponse)) {
                 //if page order is given for image filename, forward to url with correct filename
                 return;
