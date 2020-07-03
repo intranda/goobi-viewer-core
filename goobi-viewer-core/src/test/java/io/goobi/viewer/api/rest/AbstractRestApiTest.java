@@ -15,10 +15,6 @@
  */
 package io.goobi.viewer.api.rest;
 
-import java.net.URI;
-
-import javax.ws.rs.core.UriBuilder;
-
 import org.glassfish.jersey.internal.inject.AbstractBinder;
 import org.glassfish.jersey.server.ResourceConfig;
 import org.glassfish.jersey.servlet.ServletContainer;
@@ -61,6 +57,7 @@ public abstract class AbstractRestApiTest extends JerseyTest {
     /**
      * @throws java.lang.Exception
      */
+    @Override
     @Before 
     public void setUp() throws Exception {
         super.setUp();
@@ -72,6 +69,7 @@ public abstract class AbstractRestApiTest extends JerseyTest {
     /**
      * @throws java.lang.Exception
      */
+    @Override
     @After
     public void tearDown() throws Exception {
         super.tearDown();

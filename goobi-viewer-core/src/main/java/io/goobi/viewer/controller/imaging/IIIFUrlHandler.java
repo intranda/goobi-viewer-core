@@ -91,7 +91,6 @@ public class IIIFUrlHandler {
      */
     public String getIIIFImageUrl(String apiUrl, String fileUrl, String docStructIdentifier, String region, String size, String rotation,
             String quality, String format) {
-
         try {
             if (PathConverter.isInternalUrl(fileUrl) || ImageHandler.isRestrictedUrl(fileUrl)) {
                 try {
@@ -156,10 +155,10 @@ public class IIIFUrlHandler {
                 }
 
                 StringBuilder sb = new StringBuilder(apiUrl);
-                sb.append("image/")
-                        .append(URLEncoder.encode(docStructIdentifier, UTF_8))
-                        .append("/")
-                        .append(URLEncoder.encode(fileUrl, UTF_8))
+                sb.append(RECORDS_FILES_IMAGE.substring(1)
+                        .replace("{pi}", URLEncoder.encode(docStructIdentifier, UTF_8))
+                        .replace("{filename}",
+                                URLEncoder.encode(fileUrl, UTF_8)))
                         .append("/");
                 sb.append(region).append("/");
                 sb.append(size).append("/");

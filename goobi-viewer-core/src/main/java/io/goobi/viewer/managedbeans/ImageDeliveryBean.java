@@ -15,7 +15,6 @@
  */
 package io.goobi.viewer.managedbeans;
 
-import java.io.IOException;
 import java.io.Serializable;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -33,7 +32,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import de.unigoettingen.sub.commons.contentlib.imagelib.transform.Region;
 import de.unigoettingen.sub.commons.util.PathConverter;
 import io.goobi.viewer.api.rest.AbstractApiUrlManager;
 import io.goobi.viewer.api.rest.AbstractApiUrlManager.ApiInfo;
@@ -56,7 +54,6 @@ import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.model.viewer.PageType;
 import io.goobi.viewer.model.viewer.PhysicalElement;
 import io.goobi.viewer.model.viewer.StructElement;
-import io.goobi.viewer.model.viewer.ViewManager;
 import io.goobi.viewer.servlets.utils.ServletUtils;
 
 /**
@@ -127,15 +124,14 @@ public class ImageDeliveryBean implements Serializable {
      * @param apiUrls a {@link java.lang.String} object.
      */
     public void init(Configuration config) {
-        
         AbstractApiUrlManager dataUrlManager = new ApiUrls(DataManager.getInstance().getConfiguration().getRestApiUrl().replace("/rest", "/api/v1"));
-        AbstractApiUrlManager contentUrlManager = new ApiUrls(DataManager.getInstance().getConfiguration().getIIIFApiUrl().replace("/rest", "/api/v1"));
+        AbstractApiUrlManager contentUrlManager =
+                new ApiUrls(DataManager.getInstance().getConfiguration().getIIIFApiUrl().replace("/rest", "/api/v1"));
         ApiInfo info = contentUrlManager.getInfo();
-        if(info == null || !info.version.equalsIgnoreCase("v1")) {
+        if (info == null || !info.version.equalsIgnoreCase("v1")) {
             contentUrlManager = null;
         }
-        
-        
+
         this.staticImagesURI = getStaticImagesPath(dataUrlManager.getApplicationUrl(), config.getTheme());
         this.cmsMediaPath =
                 DataManager.getInstance().getConfiguration().getViewerHome() + DataManager.getInstance().getConfiguration().getCmsMediaFolder();
@@ -147,9 +143,9 @@ public class ImageDeliveryBean implements Serializable {
         objects3d = new Object3DHandler(config);
         footer = new WatermarkHandler(config, DataManager.getInstance().getConfiguration().getIIIFApiUrl());
         thumbs = new ThumbnailHandler(iiif, config, this.staticImagesURI);
-        if(contentUrlManager != null) {
+        if (contentUrlManager != null) {
             pdf = new PdfHandler(footer, contentUrlManager);
-        } else {            
+        } else {
             pdf = new PdfHandler(footer, config);
         }
         media = new MediaHandler(config);
@@ -504,7 +500,7 @@ public class ImageDeliveryBean implements Serializable {
         }
         return false;
     }
-    
+
     /**
      * Tests whether the given url points to a temporary media file - i.e. any file within the configured temp media path
      *
@@ -528,11 +524,11 @@ public class ImageDeliveryBean implements Serializable {
         }
         return false;
     }
-    
+
     /**
      * @param imageName
      * @return
-     * @throws ViewerConfigurationException 
+     * @throws ViewerConfigurationException
      */
     public boolean isPublicUrl(String url) throws ViewerConfigurationException {
         return isCmsUrl(url) || isTempUrl(url);
@@ -573,7 +569,7 @@ public class ImageDeliveryBean implements Serializable {
         }
         return cmsMediaPath;
     }
-    
+
     private String getTempMediaPath() throws ViewerConfigurationException {
         if (tempMediaPath == null) {
             init();
@@ -625,7 +621,5 @@ public class ImageDeliveryBean implements Serializable {
     public void setPdf(PdfHandler pdf) {
         this.pdf = pdf;
     }
-
-
 
 }

@@ -8,7 +8,6 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 import io.goobi.viewer.AbstractSolrEnabledTest;
-import io.goobi.viewer.AbstractTest;
 import io.goobi.viewer.model.viewer.PageType;
 
 public class JsonToolsTest extends AbstractSolrEnabledTest {
@@ -17,7 +16,7 @@ public class JsonToolsTest extends AbstractSolrEnabledTest {
 
     @BeforeClass
     public static void setUpClass() throws Exception {
-        AbstractTest.setUpClass();
+        AbstractSolrEnabledTest.setUpClass();
     }
 
     /**

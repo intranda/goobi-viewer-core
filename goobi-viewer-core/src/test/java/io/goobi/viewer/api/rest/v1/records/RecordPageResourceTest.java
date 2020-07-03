@@ -15,8 +15,14 @@
  */
 package io.goobi.viewer.api.rest.v1.records;
 
-import static io.goobi.viewer.api.rest.v1.ApiUrls.*;
-import static org.junit.Assert.*;
+import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_PAGES;
+import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_PAGES_ANNOTATIONS;
+import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_PAGES_CANVAS;
+import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_PAGES_COMMENTS;
+import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_PAGES_NER_TAGS;
+import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_PAGES_SEQUENCE;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 
 import java.net.URI;
 
@@ -34,7 +40,6 @@ import com.fasterxml.jackson.databind.JsonMappingException;
 import de.intranda.api.annotation.wa.collection.AnnotationCollection;
 import de.intranda.api.annotation.wa.collection.AnnotationPage;
 import de.intranda.api.iiif.presentation.Canvas;
-import de.intranda.api.iiif.presentation.Layer;
 import de.intranda.api.iiif.presentation.Sequence;
 import io.goobi.viewer.api.rest.AbstractRestApiTest;
 
@@ -52,6 +57,7 @@ public class RecordPageResourceTest extends AbstractRestApiTest {
     /**
      * @throws java.lang.Exception
      */
+    @Override
     @Before
     public void setUp() throws Exception {
         super.setUp();
@@ -60,6 +66,7 @@ public class RecordPageResourceTest extends AbstractRestApiTest {
     /**
      * @throws java.lang.Exception
      */
+    @Override
     @After
     public void tearDown() throws Exception {
         super.tearDown();
