@@ -24,6 +24,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import de.unigoettingen.sub.commons.contentlib.imagelib.transform.Scale;
+import io.goobi.viewer.AbstractTest;
 import io.goobi.viewer.controller.Configuration;
 import io.goobi.viewer.controller.ConfigurationTest;
 import io.goobi.viewer.controller.DataManager;
@@ -38,7 +39,7 @@ import io.goobi.viewer.model.viewer.StructElement;
  * @author Florian Alpers
  *
  */
-public class ThumbnailHandlerTest {
+public class ThumbnailHandlerTest extends AbstractTest {
 
     private static final String STATIC_IMAGES_PATH = "http://localhost:8080/viewer/resources/images";
     private ThumbnailHandler handler;
@@ -66,7 +67,7 @@ public class ThumbnailHandlerTest {
                 new PhysicalElement("PHYS_0001", "00000001.tif", 1, "Seite 1", "urn:234235:3423", "http://purl", "1234", "image/tiff", null);
 
         String url = handler.getThumbnailUrl(page, 200, 300);
-        Assert.assertEquals(ConfigurationTest.APPLICATION_ROOT_URL + "rest/image/1234/00000001.tif/full/!200,300/0/default.jpg", url);
+        Assert.assertEquals(ConfigurationTest.APPLICATION_ROOT_URL + "rest/records/1234/files/images/00000001.tif/full/!200,300/0/default.jpg", url);
     }
 
     @Test
@@ -95,14 +96,18 @@ public class ThumbnailHandlerTest {
         PhysicalElement page = new PhysicalElement("PHYS_0001", fileUrl, 1, "Seite 1", "urn:234235:3423", "http://purl", "1234", "image/tiff", null);
 
         String urlMax = handler.getFullImageUrl(page, Scale.MAX);
-        Assert.assertEquals(DataManager.getInstance().getConfiguration().getRestApiUrl() + "image/1234/00000001.tif/full/max/0/default.tif", urlMax);
+        Assert.assertEquals(
+                DataManager.getInstance().getConfiguration().getRestApiUrl() + "records/1234/files/images/00000001.tif/full/max/0/default.tif",
+                urlMax);
 
         String urlBox = handler.getFullImageUrl(page, new Scale.ScaleToBox(1500, 1500));
-        Assert.assertEquals(DataManager.getInstance().getConfiguration().getRestApiUrl() + "image/1234/00000001.tif/full/!1500,1500/0/default.tif",
+        Assert.assertEquals(
+                DataManager.getInstance().getConfiguration().getRestApiUrl() + "records/1234/files/images/00000001.tif/full/!1500,1500/0/default.tif",
                 urlBox);
 
         String urlFraction = handler.getFullImageUrl(page, new Scale.ScaleToFraction(0.5));
-        Assert.assertEquals(DataManager.getInstance().getConfiguration().getRestApiUrl() + "image/1234/00000001.tif/full/pct:50/0/default.tif",
+        Assert.assertEquals(
+                DataManager.getInstance().getConfiguration().getRestApiUrl() + "records/1234/files/images/00000001.tif/full/pct:50/0/default.tif",
                 urlFraction);
     }
 
@@ -112,10 +117,13 @@ public class ThumbnailHandlerTest {
         PhysicalElement page = new PhysicalElement("PHYS_0001", fileUrl, 1, "Seite 1", "urn:234235:3423", "http://purl", "1234", "image/tiff", null);
 
         String urlMax = handler.getThumbnailUrl(page, 0, 0);
-        Assert.assertEquals(DataManager.getInstance().getConfiguration().getRestApiUrl() + "image/1234/00000001.tif/full/max/0/default.jpg", urlMax);
+        Assert.assertEquals(
+                DataManager.getInstance().getConfiguration().getRestApiUrl() + "records/1234/files/images/00000001.tif/full/max/0/default.jpg",
+                urlMax);
 
         String urlBox = handler.getThumbnailUrl(page, 1500, 1500);
-        Assert.assertEquals(DataManager.getInstance().getConfiguration().getRestApiUrl() + "image/1234/00000001.tif/full/!1500,1500/0/default.jpg",
+        Assert.assertEquals(
+                DataManager.getInstance().getConfiguration().getRestApiUrl() + "records/1234/files/images/00000001.tif/full/!1500,1500/0/default.jpg",
                 urlBox);
 
     }
@@ -134,7 +142,7 @@ public class ThumbnailHandlerTest {
         StructElement doc = new StructElement(1, solrDoc);
 
         String url = handler.getThumbnailUrl(doc, 200, 300);
-        Assert.assertEquals(ConfigurationTest.APPLICATION_ROOT_URL + "rest/image/1234/00000001.tif/full/!200,300/0/default.jpg", url);
+        Assert.assertEquals(ConfigurationTest.APPLICATION_ROOT_URL + "rest/records/1234/files/images/00000001.tif/full/!200,300/0/default.jpg", url);
     }
 
     /**
