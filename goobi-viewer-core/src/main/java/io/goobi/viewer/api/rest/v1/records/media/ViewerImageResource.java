@@ -15,7 +15,8 @@
  */
 package io.goobi.viewer.api.rest.v1.records.media;
 
-import static io.goobi.viewer.api.rest.v1.ApiUrls.*;
+import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_FILES_IMAGE;
+import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_FILES_IMAGE_PDF;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URI;
@@ -39,12 +40,10 @@ import javax.ws.rs.core.StreamingOutput;
 import org.apache.commons.lang3.StringUtils;
 import org.primefaces.shaded.commons.io.FilenameUtils;
 
-import de.intranda.api.iiif.image.ImageInformation;
 import de.unigoettingen.sub.commons.contentlib.exceptions.ContentLibException;
 import de.unigoettingen.sub.commons.contentlib.exceptions.IllegalRequestException;
 import de.unigoettingen.sub.commons.contentlib.servlet.rest.CORSBinding;
 import de.unigoettingen.sub.commons.contentlib.servlet.rest.ContentServerBinding;
-import de.unigoettingen.sub.commons.contentlib.servlet.rest.ContentServerImageBinding;
 import de.unigoettingen.sub.commons.contentlib.servlet.rest.ContentServerImageInfoBinding;
 import de.unigoettingen.sub.commons.contentlib.servlet.rest.ContentServerPdfBinding;
 import de.unigoettingen.sub.commons.contentlib.servlet.rest.ImageResource;
@@ -73,7 +72,6 @@ public class ViewerImageResource extends ImageResource {
             @Parameter(description = "Persistent identifier of the record") @PathParam("pi") String pi,
             @Parameter(description = "Filename of the image") @PathParam("filename") String filename) {
         super(context, request, response, pi, filename);
-        System.out.println("ViewerImageResource");
         request.setAttribute("pi", pi);
         request.setAttribute("filename", filename);
         String accept = request.getHeader("Accept");
@@ -117,7 +115,6 @@ public class ViewerImageResource extends ImageResource {
     
     @Override
     public void createResourceURI(HttpServletRequest request, String directory, String filename) throws IllegalRequestException {
-        System.out.println("createResourceURI");
         super.createResourceURI(request, directory, filename);
         try {
             String toReplace = URLEncoder.encode("{pi}", "UTF-8");
