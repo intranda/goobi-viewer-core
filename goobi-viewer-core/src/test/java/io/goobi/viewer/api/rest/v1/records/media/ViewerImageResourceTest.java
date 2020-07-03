@@ -15,11 +15,13 @@
  */
 package io.goobi.viewer.api.rest.v1.records.media;
 
-import static io.goobi.viewer.api.rest.v1.ApiUrls.*;
-import static org.junit.Assert.*;
-
-import java.nio.file.Path;
-import java.nio.file.Paths;
+import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_FILES_IMAGE;
+import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_FILES_IMAGE_IIIF;
+import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_FILES_IMAGE_INFO;
+import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_FILES_IMAGE_PDF;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
@@ -29,13 +31,6 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonMappingException;
-
-import de.intranda.api.iiif.discovery.Activity;
-import de.intranda.api.iiif.discovery.OrderedCollection;
-import de.intranda.api.iiif.image.ImageInformation;
-import de.unigoettingen.sub.commons.contentlib.servlet.model.ContentServerConfiguration;
 import io.goobi.viewer.api.rest.AbstractRestApiTest;
 
 /**
@@ -52,11 +47,10 @@ public class ViewerImageResourceTest extends AbstractRestApiTest {
     private static final String QUALITY = "default";
     private static final String FORMAT = "jpg";
 
-
-    
     /**
      * @throws java.lang.Exception
      */
+    @Override
     @Before
     public void setUp() throws Exception {
         super.setUp();
@@ -65,17 +59,17 @@ public class ViewerImageResourceTest extends AbstractRestApiTest {
     /**
      * @throws java.lang.Exception
      */
+    @Override
     @After
     public void tearDown() throws Exception {
         super.tearDown();
     }
 
-    
     @Test
-    public void testGetImageInformation() throws JsonMappingException, JsonProcessingException {
+    public void testGetImageInformation() {
         String url = urls.path(RECORDS_FILES_IMAGE, RECORDS_FILES_IMAGE_INFO).params(PI, FILENAME + ".tif").build();
         String id = urls.path(RECORDS_FILES_IMAGE).params(PI, FILENAME + ".tif").build();
-        try(Response response = target(url)
+        try (Response response = target(url)
                 .request()
                 .accept(MediaType.APPLICATION_JSON)
                 .get()) {
@@ -86,12 +80,12 @@ public class ViewerImageResourceTest extends AbstractRestApiTest {
             assertTrue(info.getString("@id").endsWith(id));
         }
     }
-    
+
     @Test
-    public void testGetImageInformationFromBaseUrl() throws JsonMappingException, JsonProcessingException {
+    public void testGetImageInformationFromBaseUrl() {
         String url = urls.path(RECORDS_FILES_IMAGE).params(PI, FILENAME).build();
         String id = urls.path(RECORDS_FILES_IMAGE).params(PI, FILENAME).build();
-        try(Response response = target(url)
+        try (Response response = target(url)
                 .request()
                 .accept(MediaType.APPLICATION_JSON)
                 .get()) {
@@ -102,11 +96,13 @@ public class ViewerImageResourceTest extends AbstractRestApiTest {
             assertTrue(info.getString("@id").endsWith(id));
         }
     }
-    
+
     @Test
-    public void testGetImage() throws JsonMappingException, JsonProcessingException {
-        String url = urls.path(RECORDS_FILES_IMAGE, RECORDS_FILES_IMAGE_IIIF).params(PI, FILENAME + ".tif", REGION, SIZE, ROTATION, QUALITY, FORMAT).build();
-        try(Response response = target(url)
+    public void testGetImage() {
+        String url = urls.path(RECORDS_FILES_IMAGE, RECORDS_FILES_IMAGE_IIIF)
+                .params(PI, FILENAME + ".tif", REGION, SIZE, ROTATION, QUALITY, FORMAT)
+                .build();
+        try (Response response = target(url)
                 .request()
                 .accept("image")
                 .get()) {
@@ -115,21 +111,21 @@ public class ViewerImageResourceTest extends AbstractRestApiTest {
             byte[] entity = response.readEntity(byte[].class);
             assertEquals("Should return status 200. Error message: " + new String(entity), 200, status);
             assertEquals("file:///opt/digiverso/viewer/data/1/media/" + PI + "/" + FILENAME + ".tif", contentLocation);
-            assertTrue(entity.length >= 5*5*8*3); //entity is at least as long as the image data
+            assertTrue(entity.length >= 5 * 5 * 8 * 3); //entity is at least as long as the image data
         }
     }
-    
+
     @Test
-    public void testGetPdf() throws JsonMappingException, JsonProcessingException {
+    public void testGetPdf() {
         String url = urls.path(RECORDS_FILES_IMAGE, RECORDS_FILES_IMAGE_PDF).params(PI, FILENAME).build();
-        try(Response response = target(url)
+        try (Response response = target(url)
                 .request()
                 .accept("application/pdf")
                 .get()) {
             assertEquals("Should return status 200", 200, response.getStatus());
             assertNotNull("Should return user object as json", response.getEntity());
             byte[] entity = response.readEntity(byte[].class);
-            assertTrue(entity.length >= 5*5*8*3); //entity is at least as long as the image data
+            assertTrue(entity.length >= 5 * 5 * 8 * 3); //entity is at least as long as the image data
         }
     }
 
