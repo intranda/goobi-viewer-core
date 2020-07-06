@@ -127,23 +127,27 @@ public final class SolrSearchIndex {
         if (!DataManager.getInstance().getConfiguration().getSolrUrl().equals(httpSolrClient.getBaseURL())) {
             // Re-init Solr client if the configured Solr URL has been changed
             logger.info("Solr URL has changed, re-initializing Solr client...");
-            try {
-                httpSolrClient.close();
-            } catch (IOException e) {
-                logger.error(e.getMessage(), e);
+            synchronized (this) {
+                try {
+                    httpSolrClient.close();
+                } catch (IOException e) {
+                    logger.error(e.getMessage(), e);
+                }
+                client = getNewHttpSolrClient();
             }
-            client = getNewHttpSolrClient();
-        } else if (lastPing == 0 || lastPing - System.currentTimeMillis() > 60000) {
+        } else if (lastPing == 0 || System.currentTimeMillis() - lastPing > 60000) {
             // Check whether the HTTP connection pool of the Solr client has been shut down and re-init
             try {
                 httpSolrClient.ping();
             } catch (Exception e) {
                 logger.warn("HTTP client was closed, re-initializing Sorl client...");
-                try {
-                    httpSolrClient.close();
-                } catch (IOException e1) {
+                synchronized (this) {
+                    try {
+                        httpSolrClient.close();
+                    } catch (IOException e1) {
+                    }
+                    client = getNewHttpSolrClient();
                 }
-                client = getNewHttpSolrClient();
             }
             lastPing = System.currentTimeMillis();
         }
