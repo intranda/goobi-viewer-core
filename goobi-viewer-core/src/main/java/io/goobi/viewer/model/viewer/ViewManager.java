@@ -2239,7 +2239,7 @@ public class ViewManager implements Serializable {
                             .toString());
         }
         double percentage = pagesWithFulltext * 100.0 / pageLoader.getNumPages();
-        logger.trace("{}% of pages have full-text", percentage);
+        // logger.trace("{}% of pages have full-text", percentage);
         if (percentage < threshold) {
             return true;
         }

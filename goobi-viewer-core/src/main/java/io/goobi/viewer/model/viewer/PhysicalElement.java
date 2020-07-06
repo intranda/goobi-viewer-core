@@ -852,16 +852,12 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
                 fulltextAccessPermission = true;
             } catch (AccessDeniedException e) {
                 fulltextAccessPermission = false;
-                fullText = e.getMessage();
+                fullText = ViewerResourceBundle.getTranslation(e.getMessage(), null);
             } catch (FileNotFoundException e) {
                 logger.error(e.getMessage());
             } catch (IOException | IndexUnreachableException | DAOException e) {
                 logger.error(e.getMessage(), e);
             }
-        }
-
-        if (fullText != null && fullText.length() < 30) {
-            return ViewerResourceBundle.getTranslation(fullText, null);
         }
 
         return fullText;
@@ -990,18 +986,24 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
         }
 
         try {
-            altoText = DataFileTools.loadFulltext(altoFileName, null, false, BeanUtils.getRequest());
             TextResourceBuilder builder = new TextResourceBuilder(BeanUtils.getRequest(), null);
+            altoText = builder.getAltoDocument(FileTools.getBottomFolderFromPathString(altoFileName),
+                    FileTools.getFilenameFromPathString(altoFileName));
             //Text from alto is always plain text
             textContentType = "text/plain";
             if (altoText != null) {
                 wordCoordsFormat = CoordsFormat.ALTO;
             }
             return altoText;
-        } catch (FileNotFoundException e) {
+        } catch (ContentNotFoundException e) {
             logger.error(e.getMessage());
-            return "";
+        } catch (ServiceNotAllowedException e) {
+            throw new AccessDeniedException("fulltextAccessDenied");
+        } catch (PresentationException e) {
+            logger.error(e.getMessage());
         }
+
+        return "";
     }
 
     /**
