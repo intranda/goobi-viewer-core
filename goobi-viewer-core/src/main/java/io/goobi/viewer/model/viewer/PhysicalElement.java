@@ -45,6 +45,8 @@ import org.slf4j.LoggerFactory;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import de.unigoettingen.sub.commons.contentlib.exceptions.ContentNotFoundException;
+import de.unigoettingen.sub.commons.contentlib.exceptions.ServiceNotAllowedException;
 import de.unigoettingen.sub.commons.contentlib.imagelib.ImageFileFormat;
 import de.unigoettingen.sub.commons.contentlib.imagelib.ImageType;
 import de.unigoettingen.sub.commons.contentlib.imagelib.ImageType.Colortype;
@@ -52,12 +54,12 @@ import de.unigoettingen.sub.commons.contentlib.imagelib.transform.RegionRequest;
 import de.unigoettingen.sub.commons.contentlib.imagelib.transform.Rotation;
 import de.unigoettingen.sub.commons.contentlib.imagelib.transform.Scale;
 import de.unigoettingen.sub.commons.contentlib.servlet.model.ContentServerConfiguration;
+import io.goobi.viewer.api.rest.resourcebuilders.TextResourceBuilder;
 import io.goobi.viewer.controller.ALTOTools;
 import io.goobi.viewer.controller.Configuration;
 import io.goobi.viewer.controller.DataFileTools;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.FileTools;
-import io.goobi.viewer.controller.NetTools;
 import io.goobi.viewer.controller.SolrConstants;
 import io.goobi.viewer.controller.SolrSearchIndex;
 import io.goobi.viewer.controller.imaging.IIIFUrlHandler;
@@ -65,7 +67,6 @@ import io.goobi.viewer.controller.imaging.PdfHandler;
 import io.goobi.viewer.controller.imaging.ThumbnailHandler;
 import io.goobi.viewer.exceptions.AccessDeniedException;
 import io.goobi.viewer.exceptions.DAOException;
-import io.goobi.viewer.exceptions.HTTPException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.exceptions.ViewerConfigurationException;
@@ -722,7 +723,7 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
 
     /**
      * @return the fulltextAccessPermission
-     * @throws ViewerConfigurationException 
+     * @throws ViewerConfigurationException
      */
     public Boolean isFulltextAccessPermission() throws ViewerConfigurationException {
         if (fulltextAccessPermission == null) {
@@ -907,19 +908,10 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
         logger.trace("Loading full-text for page {}", fulltextFileName);
         String url = DataFileTools.buildFullTextUrl(fulltextFileName);
         try {
-            String text = NetTools.getWebContentGET(url);
-            textContentType = FileTools.probeContentType(text);
-            fulltextAccessPermission = true;
-            return text;
-        } catch (HTTPException e) {
-            logger.error("Could not retrieve file from {}", url);
+            return DataFileTools.loadFulltext(null, fulltextFileName, false, BeanUtils.getRequest());
+        } catch (FileNotFoundException e) {
             logger.error(e.getMessage());
-            if (e.getCode() == 403) {
-                logger.debug("Access denied for full-text file {}", fulltextFileName);
-                fulltextAccessPermission = false;
-                throw new AccessDeniedException("fulltextAccessDenied");
-            }
-            return null;
+            return "";
         }
     }
 
@@ -990,27 +982,18 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
             return null;
         }
 
-        if (!AccessConditionUtils.checkAccessPermissionByIdentifierAndFilePathWithSessionMap(BeanUtils.getRequest(), altoFileName,
-                IPrivilegeHolder.PRIV_VIEW_FULLTEXT)) {
-            logger.debug("Access denied for ALTO file {}", altoFileName);
-            fulltextAccessPermission = false;
-            throw new AccessDeniedException("fulltextAccessDenied");
-        }
-        fulltextAccessPermission = true;
-        String url = DataFileTools.buildFullTextUrl(altoFileName);
-        logger.trace("ALTO URL: {}", url);
         try {
-            altoText = NetTools.getWebContentGET(url);
+            altoText = DataFileTools.loadFulltext(altoFileName, null, false, BeanUtils.getRequest());
+            TextResourceBuilder builder = new TextResourceBuilder(BeanUtils.getRequest(), null);
             //Text from alto is always plain text
             textContentType = "text/plain";
             if (altoText != null) {
                 wordCoordsFormat = CoordsFormat.ALTO;
             }
             return altoText;
-        } catch (HTTPException e) {
-            logger.error("Could not retrieve file from {}", url);
+        } catch (FileNotFoundException e) {
             logger.error(e.getMessage());
-            return null;
+            return "";
         }
     }
 

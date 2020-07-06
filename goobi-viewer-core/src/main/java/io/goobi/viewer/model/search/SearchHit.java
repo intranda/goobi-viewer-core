@@ -62,7 +62,6 @@ import io.goobi.viewer.messages.ViewerResourceBundle;
 import io.goobi.viewer.model.cms.CMSContentItem;
 import io.goobi.viewer.model.cms.CMSPage;
 import io.goobi.viewer.model.metadata.Metadata;
-import io.goobi.viewer.model.search.SearchHit.HitType;
 import io.goobi.viewer.model.viewer.StringPair;
 import io.goobi.viewer.model.viewer.StructElement;
 
@@ -550,12 +549,12 @@ public class SearchHit implements Comparable<SearchHit> {
                 switch (docType) {
                     case PAGE:
                         try {
-                            fulltext = DataFileTools.loadFulltext(browseElement.getDataRepository(),
+                            fulltext = DataFileTools.loadFulltext(
                                     (String) childDoc.getFirstValue(SolrConstants.FILENAME_ALTO),
                                     (String) childDoc.getFirstValue(SolrConstants.FILENAME_FULLTEXT), true, request);
                         } catch (AccessDeniedException e) {
                             acccessDeniedType = true;
-                            fulltext = ViewerResourceBundle.getTranslation(e.getMessage(), locale);
+                            // fulltext = ViewerResourceBundle.getTranslation(e.getMessage(), locale);
                         } catch (FileNotFoundException e) {
                             logger.error(e.getMessage());
                         } catch (IOException e) {
@@ -749,7 +748,7 @@ public class SearchHit implements Comparable<SearchHit> {
                                         break;
                                 }
                             }
-                            
+
                             String highlightedValue = SearchHelper.applyHighlightingToPhrase(fieldValue, searchTerms.get(termsFieldName));
                             if (!highlightedValue.equals(fieldValue)) {
                                 // Translate values for certain fields, keeping the highlighting

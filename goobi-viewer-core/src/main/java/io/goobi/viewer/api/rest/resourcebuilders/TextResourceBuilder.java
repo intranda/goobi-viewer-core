@@ -20,9 +20,6 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.MalformedURLException;
-import java.net.URI;
-import java.net.URISyntaxException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -41,7 +38,6 @@ import java.util.stream.Stream;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.ws.rs.PathParam;
 import javax.ws.rs.core.StreamingOutput;
 
 import org.apache.commons.io.FileUtils;
@@ -114,7 +110,7 @@ public class TextResourceBuilder {
         checkAccess(pi, IPrivilegeHolder.PRIV_VIEW_FULLTEXT);
         String filename = pi + "_plaintext.zip";
         String foldername = DataManager.getInstance().getConfiguration().getFulltextFolder();
-        List<Path> files = this.getFiles(pi, foldername, foldername + "_crowd", null);
+        List<Path> files = getFiles(pi, foldername, foldername + "_crowd", null);
         return writeZipFile(files, filename);
 
     }
@@ -124,7 +120,7 @@ public class TextResourceBuilder {
         checkAccess(pi, IPrivilegeHolder.PRIV_VIEW_FULLTEXT);
         String filename = pi + "_alto.zip";
         String foldername = DataManager.getInstance().getConfiguration().getAltoFolder();
-        List<Path> files = this.getFiles(pi, foldername, foldername + "_crowd", null);
+        List<Path> files = getFiles(pi, foldername, foldername + "_crowd", null);
         return writeZipFile(files, filename);
     }
 
@@ -132,7 +128,7 @@ public class TextResourceBuilder {
             throws IOException, PresentationException, IndexUnreachableException, ContentLibException, DAOException, JDOMException {
         checkAccess(pi, IPrivilegeHolder.PRIV_VIEW_FULLTEXT);
         String foldername = DataManager.getInstance().getConfiguration().getAltoFolder();
-        List<Path> files = this.getFiles(pi, foldername, foldername + "_crowd", null);
+        List<Path> files = getFiles(pi, foldername, foldername + "_crowd", null);
         AltoDocument doc = new AltoDocument();
         doc.addChild(new Chapter());
         for (Path path : files) {
@@ -145,7 +141,7 @@ public class TextResourceBuilder {
     }
 
     public String getAltoDocument(String pi, String fileName) throws PresentationException,
-            IndexUnreachableException, DAOException, MalformedURLException, ContentNotFoundException, ServiceNotAllowedException {
+            IndexUnreachableException, DAOException, ContentNotFoundException, ServiceNotAllowedException {
 
         checkAccess(pi, fileName, IPrivilegeHolder.PRIV_VIEW_FULLTEXT);
 
@@ -154,9 +150,9 @@ public class TextResourceBuilder {
 
         if (file != null && Files.isRegularFile(file)) {
             try {
-                return  FileTools.getStringFromFile(file.toFile(), StringTools.DEFAULT_ENCODING);
-//                Document doc = XmlTools.readXmlFile(file);
-//                return new XMLOutputter().outputString(doc);
+                return FileTools.getStringFromFile(file.toFile(), StringTools.DEFAULT_ENCODING);
+                //                Document doc = XmlTools.readXmlFile(file);
+                //                return new XMLOutputter().outputString(doc);
             } catch (FileNotFoundException e) {
                 logger.debug(e.getMessage());
             } catch (IOException e) {
@@ -264,42 +260,40 @@ public class TextResourceBuilder {
         if (filePath != null && Files.isRegularFile(filePath)) {
             String filename = pi + "_tei.zip";
             return writeZipFile(Collections.singletonList(filePath), filename);
-        } else {
-            // All full-text pages as TEI
-            SolrDocument solrDoc = DataManager.getInstance().getSearchIndex().getDocumentByPI(pi);
-            if (solrDoc == null) {
-                throw new ContentNotFoundException("No document found with pi " + pi);
+        }
+        // All full-text pages as TEI
+        SolrDocument solrDoc = DataManager.getInstance().getSearchIndex().getDocumentByPI(pi);
+        if (solrDoc == null) {
+            throw new ContentNotFoundException("No document found with pi " + pi);
+        }
+
+        Map<java.nio.file.Path, String> fulltexts = getFulltextMap(pi);
+        if (fulltexts.isEmpty()) {
+            throw new ContentNotFoundException("Resource not found");
+        }
+
+        TEIBuilder builder = new TEIBuilder();
+        TEIHeaderBuilder header = createTEIHeader(solrDoc);
+        HtmlToTEIConvert textConverter = new HtmlToTEIConvert();
+        Map<java.nio.file.Path, String> teis = new LinkedHashMap<>();
+
+        try {
+            for (Entry<Path, String> entry : fulltexts.entrySet()) {
+                String filename = entry.getKey().getFileName().toString();
+                filename = FilenameUtils.removeExtension(filename) + ".xml";
+                String content = entry.getValue();
+                content = convert(textConverter, content, filename);
+                Document xmlDoc;
+                xmlDoc = builder.build(header, content);
+                String tei = DocumentReader.getAsString(xmlDoc, Format.getPrettyFormat());
+                teis.put(Paths.get(filename), tei);
             }
-
-            Map<java.nio.file.Path, String> fulltexts = getFulltextMap(pi);
-            if (fulltexts.isEmpty()) {
-                throw new ContentNotFoundException("Resource not found");
-            }
-
-            TEIBuilder builder = new TEIBuilder();
-            TEIHeaderBuilder header = createTEIHeader(solrDoc);
-            HtmlToTEIConvert textConverter = new HtmlToTEIConvert();
-            Map<java.nio.file.Path, String> teis = new LinkedHashMap<>();
-
-            try {
-                for (Entry<Path, String> entry : fulltexts.entrySet()) {
-                    String filename = entry.getKey().getFileName().toString();
-                    filename = FilenameUtils.removeExtension(filename) + ".xml";
-                    String content = entry.getValue();
-                    content = convert(textConverter, content, filename);
-                    Document xmlDoc;
-                    xmlDoc = builder.build(header, content);
-                    String tei = DocumentReader.getAsString(xmlDoc, Format.getPrettyFormat());
-                    teis.put(Paths.get(filename), tei);
-                }
-                String filename = pi + "_tei.zip";
-                return writeZipFile(teis, filename);
-            } catch (JDOMException e) {
-                throw new ContentLibException("Unable to parse xml from tei content in " + pi, e);
-            } catch (UncheckedPresentationException e) {
-                throw new ContentLibException(e);
-            }
-
+            String filename = pi + "_tei.zip";
+            return writeZipFile(teis, filename);
+        } catch (JDOMException e) {
+            throw new ContentLibException("Unable to parse xml from tei content in " + pi, e);
+        } catch (UncheckedPresentationException e) {
+            throw new ContentLibException(e);
         }
 
     }
@@ -331,7 +325,7 @@ public class TextResourceBuilder {
 
     public String getContentAsText(String contentFolder, String pi, String fileName)
             throws PresentationException, IndexUnreachableException, DAOException,
-            MalformedURLException, ContentNotFoundException, ServiceNotAllowedException {
+            ContentNotFoundException, ServiceNotAllowedException {
         checkAccess(pi, fileName, IPrivilegeHolder.PRIV_VIEW_FULLTEXT);
 
         java.nio.file.Path file = DataFileTools.getDataFilePath(pi, contentFolder, null, fileName);
@@ -398,11 +392,15 @@ public class TextResourceBuilder {
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws de.unigoettingen.sub.commons.contentlib.exceptions.ContentNotFoundException if any.
+     * @throws DAOException
+     * @throws ServiceNotAllowedException
      */
-    public String getFulltext(String pi, String fileName) throws PresentationException, IndexUnreachableException, ContentNotFoundException {
+    public String getFulltext(String pi, String fileName)
+            throws PresentationException, IndexUnreachableException, ContentNotFoundException, ServiceNotAllowedException, DAOException {
+        checkAccess(pi, fileName, IPrivilegeHolder.PRIV_VIEW_FULLTEXT);
+
         java.nio.file.Path file = DataFileTools.getDataFilePath(pi, DataManager.getInstance().getConfiguration().getFulltextFolder() + "_crowd",
                 DataManager.getInstance().getConfiguration().getFulltextFolder(), fileName);
-
         if (file != null && Files.isRegularFile(file)) {
             try {
                 return FileTools.getStringFromFile(file.toFile(), StringTools.DEFAULT_ENCODING);
@@ -481,7 +479,7 @@ public class TextResourceBuilder {
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      */
-    private List<java.nio.file.Path> getFiles(String pi, String foldername, String altFoldername, String filter)
+    private static List<java.nio.file.Path> getFiles(String pi, String foldername, String altFoldername, String filter)
             throws IOException, PresentationException, IndexUnreachableException {
 
         java.nio.file.Path folder1 = DataFileTools.getDataFilePath(pi, foldername, null, null);
@@ -501,7 +499,7 @@ public class TextResourceBuilder {
      * @return a {@link java.util.List} object.
      * @throws java.io.IOException if any.
      */
-    private List<java.nio.file.Path> getFiles(java.nio.file.Path folder, java.nio.file.Path altFolder, String filter) throws IOException {
+    private static List<java.nio.file.Path> getFiles(java.nio.file.Path folder, java.nio.file.Path altFolder, String filter) throws IOException {
 
         List<java.nio.file.Path> files = new ArrayList<>();
 
@@ -538,7 +536,7 @@ public class TextResourceBuilder {
      * @param solrDoc a {@link org.apache.solr.common.SolrDocument} object.
      * @return a {@link de.intranda.digiverso.ocr.tei.header.TEIHeaderBuilder} object.
      */
-    private TEIHeaderBuilder createTEIHeader(SolrDocument solrDoc) {
+    private static TEIHeaderBuilder createTEIHeader(SolrDocument solrDoc) {
         TEIHeaderBuilder header = new TEIHeaderBuilder();
 
         Optional.ofNullable(solrDoc.getFieldValue(SolrConstants.LABEL))
@@ -576,7 +574,7 @@ public class TextResourceBuilder {
      * @return Path of the requested file; null if not found
      * @throws IOException
      */
-    private java.nio.file.Path getDocumentLanguageVersion(java.nio.file.Path folder, Language language) throws IOException {
+    private static java.nio.file.Path getDocumentLanguageVersion(java.nio.file.Path folder, Language language) throws IOException {
         if (language == null) {
             throw new IllegalArgumentException("language may not be null");
         }
@@ -724,7 +722,7 @@ public class TextResourceBuilder {
         return Collections.emptyList();
     }
 
-    private StreamingOutput writeFile(Path file) throws ContentLibException {
+    private static StreamingOutput writeFile(Path file) throws ContentLibException {
         if (!Files.exists(file)) {
             throw new ContentNotFoundException("No file found at " + file);
         }
@@ -740,7 +738,7 @@ public class TextResourceBuilder {
         };
     }
 
-    private StreamingOutput writeZipFile(Map<Path, String> contentMap, String filename) throws ContentLibException {
+    private static StreamingOutput writeZipFile(Map<Path, String> contentMap, String filename) throws ContentLibException {
         File tempFile = new File(DataManager.getInstance().getConfiguration().getTempFolder(), filename);
         try {
             if (!tempFile.getParentFile().exists() && !tempFile.getParentFile().mkdirs()) {
@@ -769,7 +767,7 @@ public class TextResourceBuilder {
         }
     }
 
-    private StreamingOutput writeZipFile(List<Path> files, String filename) throws ContentLibException {
+    private static StreamingOutput writeZipFile(List<Path> files, String filename) throws ContentLibException {
         File tempFile = new File(DataManager.getInstance().getConfiguration().getTempFolder(), filename);
         try {
             if (!tempFile.getParentFile().exists() && !tempFile.getParentFile().mkdirs()) {
@@ -798,7 +796,7 @@ public class TextResourceBuilder {
         }
     }
 
-    private String convert(AbstractTEIConvert converter, String input, String identifier) throws UncheckedPresentationException {
+    private static String convert(AbstractTEIConvert converter, String input, String identifier) throws UncheckedPresentationException {
         try {
             return converter.convert(input);
         } catch (Throwable e) {
@@ -814,7 +812,7 @@ public class TextResourceBuilder {
      * @param filename a {@link java.lang.String} object.
      * @return a {@link java.util.Optional} object.
      */
-    private Optional<String> getLanguage(String filename) {
+    private static Optional<String> getLanguage(String filename) {
         String regex = "([a-z]{1,3})\\.[a-z]+";
         Matcher matcher = Pattern.compile(regex).matcher(filename);
         if (matcher.find()) {
