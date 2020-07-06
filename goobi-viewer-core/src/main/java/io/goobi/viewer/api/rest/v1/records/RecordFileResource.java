@@ -15,9 +15,14 @@
  */
 package io.goobi.viewer.api.rest.v1.records;
 
-import static io.goobi.viewer.api.rest.v1.ApiUrls.*;
+import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_FILES;
+import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_FILES_ALTO;
+import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_FILES_IMAGE;
+import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_FILES_IMAGE_PDF;
+import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_FILES_PDF;
+import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_FILES_PLAINTEXT;
+import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_FILES_TEI;
 
-import java.net.MalformedURLException;
 import java.net.URISyntaxException;
 
 import javax.inject.Inject;
@@ -35,7 +40,6 @@ import org.slf4j.LoggerFactory;
 
 import de.unigoettingen.sub.commons.contentlib.exceptions.ContentLibException;
 import de.unigoettingen.sub.commons.contentlib.exceptions.ContentNotFoundException;
-import de.unigoettingen.sub.commons.contentlib.exceptions.IllegalRequestException;
 import de.unigoettingen.sub.commons.contentlib.exceptions.ServiceNotAllowedException;
 import de.unigoettingen.sub.commons.contentlib.servlet.rest.CORSBinding;
 import de.unigoettingen.sub.commons.util.PathConverter;
@@ -45,7 +49,6 @@ import io.goobi.viewer.api.rest.resourcebuilders.TextResourceBuilder;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
-import io.goobi.viewer.exceptions.ViewerConfigurationException;
 import io.goobi.viewer.servlets.rest.iiif.presentation.IIIFPresentationBinding;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -80,7 +83,7 @@ public class RecordFileResource {
     @Operation(tags = { "records" }, summary = "Get Alto fulltext for a single page")
     public String getAlto(
             @Parameter(description = "Filename of the alto document") @PathParam("filename") String filename)
-            throws PresentationException, IndexUnreachableException, ViewerConfigurationException, MalformedURLException, ContentNotFoundException,
+            throws PresentationException, IndexUnreachableException, ContentNotFoundException,
             ServiceNotAllowedException, DAOException {
         TextResourceBuilder builder = new TextResourceBuilder(servletRequest, servletResponse);
         return builder.getAltoDocument(pi, filename);
@@ -92,8 +95,7 @@ public class RecordFileResource {
     @Operation(tags = { "records" }, summary = "Get plaintext for a single page")
     public String getPlaintext(
             @Parameter(description = "Filename containing the text") @PathParam("filename") String filename)
-            throws ContentNotFoundException, PresentationException, IndexUnreachableException, URISyntaxException,
-            ViewerConfigurationException, DAOException, IllegalRequestException {
+            throws ContentNotFoundException, PresentationException, IndexUnreachableException, DAOException, ServiceNotAllowedException {
         TextResourceBuilder builder = new TextResourceBuilder(servletRequest, servletResponse);
         return builder.getFulltext(pi, filename);
     }
@@ -104,8 +106,7 @@ public class RecordFileResource {
     @Operation(tags = { "records" }, summary = "Get fulltext for a single page in TEI format")
     public String getTEI(
             @Parameter(description = "Filename containing the text") @PathParam("filename") String filename)
-            throws PresentationException, IndexUnreachableException, URISyntaxException,
-            ViewerConfigurationException, DAOException, ContentLibException {
+            throws PresentationException, IndexUnreachableException, DAOException, ContentLibException {
         TextResourceBuilder builder = new TextResourceBuilder(servletRequest, servletResponse);
         return builder.getFulltextAsTEI(pi, filename);
     }
@@ -116,8 +117,7 @@ public class RecordFileResource {
     @Operation(tags = { "records" }, summary = "Non-canonical URL to PDF file")
     public Response getPDF(
             @Parameter(description = "Filename containing the text") @PathParam("filename") String filename)
-            throws PresentationException, IndexUnreachableException, URISyntaxException,
-            ViewerConfigurationException, DAOException, ContentLibException {
+            throws ContentLibException {
         String url = urls.path(RECORDS_FILES_IMAGE, RECORDS_FILES_IMAGE_PDF).params(pi, filename).build();
         try {
             Response resp = Response.seeOther(PathConverter.toURI(url)).build();

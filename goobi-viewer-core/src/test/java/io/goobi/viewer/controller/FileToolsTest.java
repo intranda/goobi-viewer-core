@@ -20,7 +20,6 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.URI;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
@@ -30,11 +29,10 @@ import org.junit.After;
 import org.junit.Assert;
 import org.junit.Test;
 
-import de.intranda.monitoring.timer.Time;
-import de.intranda.monitoring.timer.TimeAnalysis;
 import de.unigoettingen.sub.commons.util.PathConverter;
+import io.goobi.viewer.AbstractTest;
 
-public class FileToolsTest {
+public class FileToolsTest extends AbstractTest {
 
     private File tempDir = new File("target/temp");
 
@@ -151,33 +149,60 @@ public class FileToolsTest {
             Assert.assertEquals("UTF-8", FileTools.getCharset(fis));
         }
     }
-    
+
     @Test
     public void testProbeContentType() throws FileNotFoundException, IOException {
         Path resourceFolder = Paths.get("src/test/resources/data/viewer/fulltext");
-        
-        Assert.assertEquals("text/plain", FileTools.probeContentType(FileTools.getStringFromFilePath(resourceFolder.resolve("ascii.txt").toString())));
-        Assert.assertEquals("text/html", FileTools.probeContentType(FileTools.getStringFromFilePath(resourceFolder.resolve("html_ascii_crlf.txt").toString())));
-        Assert.assertEquals("text/html", FileTools.probeContentType(FileTools.getStringFromFilePath(resourceFolder.resolve("html_ascii.txt").toString())));
-        Assert.assertEquals("application/xml", FileTools.probeContentType(FileTools.getStringFromFilePath(resourceFolder.resolve("xml_utf8_crlf.txt").toString())));
-        Assert.assertEquals("text/plain", FileTools.probeContentType(FileTools.getStringFromFilePath(resourceFolder.resolve("IZT_Text_4-2018_Fairphone.txt").toString())));
-        
+
+        Assert.assertEquals("text/plain",
+                FileTools.probeContentType(FileTools.getStringFromFilePath(resourceFolder.resolve("ascii.txt").toString())));
+        Assert.assertEquals("text/html",
+                FileTools.probeContentType(FileTools.getStringFromFilePath(resourceFolder.resolve("html_ascii_crlf.txt").toString())));
+        Assert.assertEquals("text/html",
+                FileTools.probeContentType(FileTools.getStringFromFilePath(resourceFolder.resolve("html_ascii.txt").toString())));
+        Assert.assertEquals("application/xml",
+                FileTools.probeContentType(FileTools.getStringFromFilePath(resourceFolder.resolve("xml_utf8_crlf.txt").toString())));
+        Assert.assertEquals("text/plain",
+                FileTools.probeContentType(FileTools.getStringFromFilePath(resourceFolder.resolve("IZT_Text_4-2018_Fairphone.txt").toString())));
+
         Assert.assertEquals("text/plain", FileTools.probeContentType((PathConverter.toURI(resourceFolder.resolve("ascii.txt")))));
         Assert.assertEquals("text/html", FileTools.probeContentType((PathConverter.toURI(resourceFolder.resolve("html_ascii_crlf.txt")))));
         Assert.assertEquals("text/html", FileTools.probeContentType((PathConverter.toURI(resourceFolder.resolve("html_ascii.txt")))));
         Assert.assertEquals("application/xml", FileTools.probeContentType((PathConverter.toURI(resourceFolder.resolve("xml_utf8_crlf.txt")))));
         Assert.assertEquals("text/plain", FileTools.probeContentType((PathConverter.toURI(resourceFolder.resolve("IZT_Text_4-2018_Fairphone.txt")))));
 
-//        Assert.assertEquals("text/plain", FileTools.probeContentType(URI.create("https://viewer.goobi.io/rest/content/fulltext/AC03343066/00000001.txt")));
-//        Assert.assertEquals("application/xml", FileTools.probeContentType(URI.create("https://viewer.goobi.io/rest/content/alto/AC03343066/00000001.xml")));
-//        
-//        Assert.assertEquals("text/plain", FileTools.probeContentType(URI.create("http://localhost:8082/viewer/rest/content/document/fulltext/02008070428708/00000013.txt")));
-//        Assert.assertEquals("application/xml", FileTools.probeContentType(URI.create("http://localhost:8082/viewer/rest/content/document/alto/AC03343066/00000012.xml")));
-        
-        
-        
-        
+        //        Assert.assertEquals("text/plain", FileTools.probeContentType(URI.create("https://viewer.goobi.io/rest/content/fulltext/AC03343066/00000001.txt")));
+        //        Assert.assertEquals("application/xml", FileTools.probeContentType(URI.create("https://viewer.goobi.io/rest/content/alto/AC03343066/00000001.xml")));
+        //        
+        //        Assert.assertEquals("text/plain", FileTools.probeContentType(URI.create("http://localhost:8082/viewer/rest/content/document/fulltext/02008070428708/00000013.txt")));
+        //        Assert.assertEquals("application/xml", FileTools.probeContentType(URI.create("http://localhost:8082/viewer/rest/content/document/alto/AC03343066/00000012.xml")));
+
     }
 
+    /**
+     * @see FileTools#getBottomFolderFromPathString(String)
+     * @verifies return folder name correctly
+     */
+    @Test
+    public void getBottomFolderFromPathString_shouldReturnFolderNameCorrectly() throws Exception {
+        Assert.assertEquals("PPN123", FileTools.getBottomFolderFromPathString("data/1/alto/PPN123/00000001.xml"));
+    }
 
+    /**
+     * @see FileTools#getBottomFolderFromPathString(String)
+     * @verifies return empty string if no folder in path
+     */
+    @Test
+    public void getBottomFolderFromPathString_shouldReturnEmptyStringIfNoFolderInPath() throws Exception {
+        Assert.assertEquals("", FileTools.getBottomFolderFromPathString("00000001.xml"));
+    }
+
+    /**
+     * @see FileTools#getFilenameFromPathString(String)
+     * @verifies return file name correctly
+     */
+    @Test
+    public void getFilenameFromPathString_shouldReturnFileNameCorrectly() throws Exception {
+        Assert.assertEquals("00000001.xml", FileTools.getFilenameFromPathString("data/1/alto/PPN123/00000001.xml"));
+    }
 }

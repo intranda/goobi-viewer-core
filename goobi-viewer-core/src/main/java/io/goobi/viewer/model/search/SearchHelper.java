@@ -212,7 +212,7 @@ public final class SearchHelper {
 
                 // Load full-text
                 try {
-                    fulltext = DataFileTools.loadFulltext((String) doc.getFirstValue(SolrConstants.DATAREPOSITORY),
+                    fulltext = DataFileTools.loadFulltext(
                             (String) doc.getFirstValue(SolrConstants.FILENAME_ALTO), (String) doc.getFirstValue(SolrConstants.FILENAME_FULLTEXT),
                             false, request);
                 } catch (AccessDeniedException e) {

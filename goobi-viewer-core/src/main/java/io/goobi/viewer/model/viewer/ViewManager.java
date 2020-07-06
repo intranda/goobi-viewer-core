@@ -2000,7 +2000,9 @@ public class ViewManager implements Serializable {
      */
     public boolean isDisplayFulltextViewLink() throws IndexUnreachableException, DAOException, PresentationException, ViewerConfigurationException {
         return DataManager.getInstance().getConfiguration().isSidebarFulltextLinkVisible() && topDocument != null && topDocument.isFulltextAvailable()
-                && !isFilesOnly() && getCurrentPage() != null && getCurrentPage().isFulltextAccessPermission();
+                && !isFilesOnly()
+                && getCurrentPage() != null
+                && getCurrentPage().isFulltextAccessPermission();
     }
 
     /**
@@ -2237,7 +2239,7 @@ public class ViewManager implements Serializable {
                             .toString());
         }
         double percentage = pagesWithFulltext * 100.0 / pageLoader.getNumPages();
-        logger.trace("{}% of pages have full-text", percentage);
+        // logger.trace("{}% of pages have full-text", percentage);
         if (percentage < threshold) {
             return true;
         }
