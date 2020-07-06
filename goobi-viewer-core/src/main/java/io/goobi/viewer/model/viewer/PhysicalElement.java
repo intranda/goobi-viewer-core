@@ -729,7 +729,7 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
         if (fulltextAccessPermission == null) {
             getFullText();
         }
-        return fulltextAccessPermission;
+        return fulltextAccessPermission != null ? fulltextAccessPermission : false;
     }
 
     /**
@@ -832,7 +832,9 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
             // Load XML document
             try {
                 altoText = loadAlto();
+                fulltextAccessPermission = true;
             } catch (AccessDeniedException e) {
+                fulltextAccessPermission = false;
                 fullText = ViewerResourceBundle.getTranslation(e.getMessage(), null);
             } catch (JDOMException | IOException | IndexUnreachableException | DAOException e) {
                 logger.error(e.getMessage(), e);
@@ -847,7 +849,9 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
         if (fullText == null) {
             try {
                 fullText = loadFullText();
+                fulltextAccessPermission = true;
             } catch (AccessDeniedException e) {
+                fulltextAccessPermission = false;
                 fullText = e.getMessage();
             } catch (FileNotFoundException e) {
                 logger.error(e.getMessage());
@@ -908,7 +912,8 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
         logger.trace("Loading full-text for page {}", fulltextFileName);
         String url = DataFileTools.buildFullTextUrl(fulltextFileName);
         try {
-            return DataFileTools.loadFulltext(null, fulltextFileName, false, BeanUtils.getRequest());
+            String text = DataFileTools.loadFulltext(null, fulltextFileName, false, BeanUtils.getRequest());
+            return text;
         } catch (FileNotFoundException e) {
             logger.error(e.getMessage());
             return "";
@@ -947,7 +952,9 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
             // Load XML document
             try {
                 loadAlto();
+                fulltextAccessPermission = true;
             } catch (AccessDeniedException e) {
+                fulltextAccessPermission = false;
                 fullText = ViewerResourceBundle.getTranslation(e.getMessage(), null);
             } catch (JDOMException | IOException | IndexUnreachableException | DAOException e) {
                 logger.error(e.getMessage(), e);

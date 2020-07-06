@@ -2000,7 +2000,9 @@ public class ViewManager implements Serializable {
      */
     public boolean isDisplayFulltextViewLink() throws IndexUnreachableException, DAOException, PresentationException, ViewerConfigurationException {
         return DataManager.getInstance().getConfiguration().isSidebarFulltextLinkVisible() && topDocument != null && topDocument.isFulltextAvailable()
-                && !isFilesOnly() && getCurrentPage() != null && getCurrentPage().isFulltextAccessPermission();
+                && !isFilesOnly()
+                && getCurrentPage() != null
+                && getCurrentPage().isFulltextAccessPermission();
     }
 
     /**
