@@ -87,6 +87,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
  */
 @javax.ws.rs.Path(RECORDS_RECORD)
 @ViewerRestServiceBinding
+@CORSBinding
 public class RecordResource {
 
     private static final Logger logger = LoggerFactory.getLogger(RecordResource.class);
@@ -154,7 +155,6 @@ public class RecordResource {
     @GET
     @javax.ws.rs.Path(RECORDS_ANNOTATIONS)
     @Produces({ MediaType.APPLICATION_JSON })
-    @CORSBinding
     @Operation(tags = { "records", "annotations"}, summary = "List annotations for a record")
     public IAnnotationCollection getAnnotationsForRecord(
             @Parameter(
@@ -176,7 +176,6 @@ public class RecordResource {
     @javax.ws.rs.Path(RECORDS_ANNOTATIONS + "/{page}")
     @Produces({ MediaType.APPLICATION_JSON })
     @ApiResponse(responseCode="400", description="If the page number is out of bounds")
-    @CORSBinding
     public AnnotationPage getAnnotationPageForRecord(@PathParam("page") Integer page)
             throws URISyntaxException, DAOException, JsonParseException, JsonMappingException, IOException, IllegalRequestException {
 
@@ -187,7 +186,6 @@ public class RecordResource {
     @GET
     @javax.ws.rs.Path(RECORDS_COMMENTS)
     @Produces({ MediaType.APPLICATION_JSON })
-    @CORSBinding
     @Operation(tags = { "records", "annotations"}, summary = "List comments for a record")
     public IAnnotationCollection getCommentsForRecord(
             @Parameter(
@@ -208,7 +206,6 @@ public class RecordResource {
     @javax.ws.rs.Path(RECORDS_COMMENTS + "/{page}")
     @Produces({ MediaType.APPLICATION_JSON })
     @ApiResponse(responseCode="400", description="If the page number is out of bounds")
-    @CORSBinding
     public AnnotationPage getCommentPageForRecord(@PathParam("page") Integer page)
             throws URISyntaxException, DAOException, JsonParseException, JsonMappingException, IOException, IllegalRequestException {
 
@@ -221,7 +218,6 @@ public class RecordResource {
     @javax.ws.rs.Path(RECORDS_METADATA_SOURCE)
     @Produces({ MediaType.TEXT_XML })
     @Operation(tags = {"records"}, summary = "Get record metadata source file")
-    @CORSBinding
     public StreamingOutput getSource()
             throws URISyntaxException, DAOException, JsonParseException, JsonMappingException, IOException, ContentNotFoundException,
             PresentationException, IndexUnreachableException {
@@ -255,7 +251,6 @@ public class RecordResource {
     @javax.ws.rs.Path(RECORDS_MANIFEST)
     @Produces({ MediaType.APPLICATION_JSON })
     @Operation(tags = {"records", "iiif"}, summary = "Get IIIF manifest for record")
-    @CORSBinding
     @IIIFPresentationBinding
     public IPresentationModelElement getManifest(
             @Parameter(description = "Build mode for manifest to select type of resources to include. Default is 'iiif' which returns the full IIIF manifest with all resources. 'thumbs' Does not read width and height of canvas resources and 'iiif_simple' ignores all resources from files")@QueryParam("mode") String mode) throws ContentNotFoundException, PresentationException, IndexUnreachableException, URISyntaxException, ViewerConfigurationException, DAOException {
@@ -268,7 +263,6 @@ public class RecordResource {
     @javax.ws.rs.Path(RECORDS_LAYER)
     @Produces({ MediaType.APPLICATION_JSON })
     @Operation(tags = {"records", "iiif"}, summary = "Get a layer within a IIIF manifest")
-    @CORSBinding
     @IIIFPresentationBinding
     public IPresentationModelElement getLayer(
             @Parameter(description = "Name of the manifest layer") @PathParam("name") String layerName,
@@ -282,8 +276,6 @@ public class RecordResource {
     @javax.ws.rs.Path(RECORDS_NER_TAGS)
     @Produces({ MediaType.APPLICATION_JSON })
     @Operation(tags = {"records"}, summary = "Get NER tags for a record")
-    @CORSBinding
-    @IIIFPresentationBinding
     public DocumentReference getNERTags(
             @Parameter(description = "First page to get tags for")@QueryParam("start") Integer start,
             @Parameter(description = "Last page to get tags for")@QueryParam("end") Integer end,
@@ -311,8 +303,6 @@ public class RecordResource {
     @javax.ws.rs.Path(RECORDS_PLAINTEXT_ZIP)
     @Produces({ "application/zip" })
     @Operation(tags = {"records"}, summary = "Get entire plaintext of record")
-    @CORSBinding
-    @IIIFPresentationBinding
     public StreamingOutput getPlaintextAsZip() throws PresentationException, IndexUnreachableException, ViewerConfigurationException, IOException, DAOException, ContentLibException {
         
         String filename = pi + "_plaintext.zip";
@@ -322,13 +312,10 @@ public class RecordResource {
         return builder.getFulltextAsZip(pi);
     }
     
-    //disabled. Max cause oom
-//    @GET
-//    @javax.ws.rs.Path(RECORDS_ALTO)
-//    @Produces({ MediaType.TEXT_XML })
-//    @Operation(tags = {"records"}, summary = "Get entire alto document for record")
-//    @CORSBinding
-//    @IIIFPresentationBinding
+    @GET
+    @javax.ws.rs.Path(RECORDS_ALTO)
+    @Produces({ MediaType.TEXT_XML })
+    @Operation(tags = {"records"}, summary = "Get entire alto document for record")
     public String getAlto() throws PresentationException, IndexUnreachableException, ViewerConfigurationException, IOException, DAOException, ContentLibException, JDOMException {
 
         TextResourceBuilder builder = new TextResourceBuilder(servletRequest, servletResponse);
@@ -339,8 +326,6 @@ public class RecordResource {
     @javax.ws.rs.Path(RECORDS_ALTO_ZIP)
     @Produces({ "application/zip" })
     @Operation(tags = {"records"}, summary = "Get entire plaintext of record")
-    @CORSBinding
-    @IIIFPresentationBinding
     public StreamingOutput getAltoAsZip() throws PresentationException, IndexUnreachableException, ViewerConfigurationException, IOException, DAOException, ContentLibException {
         
         String filename = pi + "_alto.zip";
@@ -350,13 +335,10 @@ public class RecordResource {
         return builder.getAltoAsZip(pi);
     }
     
-    //disabled; may cause oom
-//    @GET
-//    @javax.ws.rs.Path(RECORDS_TEI)
-//    @Produces({MediaType.TEXT_XML})
-//    @Operation(tags = {"records"}, summary = "Get text of record in TEI format.", description ="If possible, directly read a TEI file associated with the record, otherwise convert all fulltexts to TEI documents")
-//    @CORSBinding
-//    @IIIFPresentationBinding
+    @GET
+    @javax.ws.rs.Path(RECORDS_TEI)
+    @Produces({MediaType.TEXT_XML})
+    @Operation(tags = {"records"}, summary = "Get text of record in TEI format.", description ="If possible, directly read a TEI file associated with the record, otherwise convert all fulltexts to TEI documents")
     public String getTei(
             @Parameter(description="perferred language for the TEI file, in ISO-639 format")@QueryParam("lang") String language) throws PresentationException, IndexUnreachableException, ViewerConfigurationException, IOException, DAOException, ContentLibException {
         
@@ -375,8 +357,6 @@ public class RecordResource {
     @javax.ws.rs.Path(RECORDS_TEI_ZIP)
     @Produces({ "application/zip" })
     @Operation(tags = {"records"}, summary = "Get text of record in TEI format as a zip file.", description ="If possible, directly read a TEI file associated with the record, otherwise convert all fulltexts to TEI documents")
-    @CORSBinding
-    @IIIFPresentationBinding
     public StreamingOutput getTeiAsZip(
             @Parameter(description="perferred language for the TEI file, in ISO-639 format")@QueryParam("lang") String language) throws PresentationException, IndexUnreachableException, ViewerConfigurationException, IOException, DAOException, ContentLibException {
         

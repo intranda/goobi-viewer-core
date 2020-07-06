@@ -56,6 +56,7 @@ import io.swagger.v3.oas.annotations.Parameter;
  */
 @javax.ws.rs.Path(RECORDS_FILES)
 @ViewerRestServiceBinding
+@CORSBinding
 public class RecordFileResource {
 
     private static final Logger logger = LoggerFactory.getLogger(RecordResource.class);
@@ -89,8 +90,6 @@ public class RecordFileResource {
     @javax.ws.rs.Path(RECORDS_FILES_PLAINTEXT)
     @Produces({ MediaType.TEXT_PLAIN })
     @Operation(tags = { "records" }, summary = "Get plaintext for a single page")
-    @CORSBinding
-    @IIIFPresentationBinding
     public String getPlaintext(
             @Parameter(description = "Filename containing the text") @PathParam("filename") String filename)
             throws ContentNotFoundException, PresentationException, IndexUnreachableException, URISyntaxException,
@@ -103,8 +102,6 @@ public class RecordFileResource {
     @javax.ws.rs.Path(RECORDS_FILES_TEI)
     @Produces({ MediaType.TEXT_XML })
     @Operation(tags = { "records" }, summary = "Get fulltext for a single page in TEI format")
-    @CORSBinding
-    @IIIFPresentationBinding
     public String getTEI(
             @Parameter(description = "Filename containing the text") @PathParam("filename") String filename)
             throws PresentationException, IndexUnreachableException, URISyntaxException,
@@ -117,8 +114,6 @@ public class RecordFileResource {
     @javax.ws.rs.Path(RECORDS_FILES_PDF)
     @Produces({ "application/pdf" })
     @Operation(tags = { "records" }, summary = "Non-canonical URL to PDF file")
-    @CORSBinding
-    @IIIFPresentationBinding
     public Response getPDF(
             @Parameter(description = "Filename containing the text") @PathParam("filename") String filename)
             throws PresentationException, IndexUnreachableException, URISyntaxException,

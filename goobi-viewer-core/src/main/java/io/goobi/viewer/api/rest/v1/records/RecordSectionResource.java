@@ -60,6 +60,7 @@ import io.swagger.v3.oas.annotations.Parameter;
  */
 @javax.ws.rs.Path(RECORDS_SECTIONS)
 @ViewerRestServiceBinding
+@CORSBinding
 public class RecordSectionResource {
 
     private static final Logger logger = LoggerFactory.getLogger(RecordResource.class);
@@ -121,7 +122,6 @@ public class RecordSectionResource {
     @javax.ws.rs.Path(RECORDS_SECTIONS_RANGE)
     @Produces({ MediaType.APPLICATION_JSON })
     @Operation(tags = {"records", "iiif"}, summary = "Get IIIF range for section")
-    @CORSBinding
     @IIIFPresentationBinding
     public IPresentationModelElement getRange() throws ContentNotFoundException, PresentationException, IndexUnreachableException, URISyntaxException, ViewerConfigurationException, DAOException {
         IIIFPresentationResourceBuilder builder = new IIIFPresentationResourceBuilder(urls);

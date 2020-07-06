@@ -71,6 +71,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
  */
 @javax.ws.rs.Path(RECORDS_PAGES)
 @ViewerRestServiceBinding
+@CORSBinding
 public class RecordPageResource {
 
     private static final Logger logger = LoggerFactory.getLogger(RecordResource.class);
@@ -104,7 +105,6 @@ public class RecordPageResource {
     @javax.ws.rs.Path(RECORDS_PAGES_SEQUENCE)
     @Produces({ MediaType.APPLICATION_JSON })
     @Operation(tags = { "records", "iiif" }, summary = "Get IIIF base sequence")
-    @CORSBinding
     @IIIFPresentationBinding
     public IPresentationModelElement getSequence()
             throws ContentNotFoundException, PresentationException, IndexUnreachableException, URISyntaxException,
@@ -117,7 +117,6 @@ public class RecordPageResource {
     @javax.ws.rs.Path(RECORDS_PAGES_CANVAS)
     @Produces({ MediaType.APPLICATION_JSON })
     @Operation(tags = { "records", "iiif" }, summary = "Get IIIF canvas for a page")
-    @CORSBinding
     @IIIFPresentationBinding
     public IPresentationModelElement getCanvas(
             @Parameter(description = "Page numer (1-based") @PathParam("pageNo") Integer pageNo)
@@ -130,7 +129,6 @@ public class RecordPageResource {
     @GET
     @javax.ws.rs.Path(RECORDS_PAGES_ANNOTATIONS)
     @Produces({ MediaType.APPLICATION_JSON })
-    @CORSBinding
     @Operation(tags = { "records", "annotations"}, summary = "List annotations for a page")
     public IAnnotationCollection getAnnotationsForRecord(
             @Parameter(description = "Page numer (1-based") @PathParam("pageNo") Integer pageNo,
@@ -152,7 +150,6 @@ public class RecordPageResource {
     @javax.ws.rs.Path(RECORDS_PAGES_ANNOTATIONS + "/{page}")
     @Produces({ MediaType.APPLICATION_JSON })
     @ApiResponse(responseCode="400", description="If the page number is out of bounds")
-    @CORSBinding
     public AnnotationPage getAnnotationPageForRecord(
             @Parameter(description = "Page numer (1-based") @PathParam("pageNo") Integer pageNo,
             @PathParam("page") Integer page)
@@ -165,7 +162,6 @@ public class RecordPageResource {
     @GET
     @javax.ws.rs.Path(RECORDS_PAGES_COMMENTS)
     @Produces({ MediaType.APPLICATION_JSON })
-    @CORSBinding
     @Operation(tags = { "records", "annotations"}, summary = "List comments for a page")
     public IAnnotationCollection getCommentsForPage(
             @Parameter(description = "Page numer (1-based") @PathParam("pageNo") Integer pageNo,
@@ -187,7 +183,6 @@ public class RecordPageResource {
     @javax.ws.rs.Path(RECORDS_PAGES_COMMENTS + "/{page}")
     @Produces({ MediaType.APPLICATION_JSON })
     @ApiResponse(responseCode="400", description="If the page number is out of bounds")
-    @CORSBinding
     public AnnotationPage getCommentPageForRecord(
             @Parameter(description = "Page numer (1-based") @PathParam("pageNo") Integer pageNo,
             @PathParam("page") Integer page)
