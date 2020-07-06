@@ -214,7 +214,7 @@ public final class SearchHelper {
                 try {
                     fulltext = DataFileTools.loadFulltext((String) doc.getFirstValue(SolrConstants.DATAREPOSITORY),
                             (String) doc.getFirstValue(SolrConstants.FILENAME_ALTO), (String) doc.getFirstValue(SolrConstants.FILENAME_FULLTEXT),
-                            true, request);
+                            false, request);
                 } catch (AccessDeniedException e) {
                     fulltext = ViewerResourceBundle.getTranslation(e.getMessage(), null);
                 } catch (FileNotFoundException e) {

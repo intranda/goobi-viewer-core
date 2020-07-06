@@ -21,14 +21,20 @@ import java.awt.Dimension;
 import java.awt.Rectangle;
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Collections;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Stream;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.xml.stream.XMLStreamException;
 
 import org.apache.commons.io.FileUtils;
+import org.jdom2.JDOMException;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Assert;
@@ -213,4 +219,24 @@ public class ALTOToolsTest extends AbstractTest {
         Assert.assertNotNull(text);
         Assert.assertTrue(text.length() > 100);
     }
+    
+//    @Test
+//    public void testAlto2Txt_testMany() throws IOException {
+//        Path folder = Paths.get("/opt/digiverso/viewer/data/1/alto/PPN782445853");
+//        try(Stream<Path> files = Files.list(folder)) {
+//            files.parallel().forEach(file -> {
+//                try {
+//                    String alto = FileUtils.readFileToString(file.toFile(), "UTF-8");
+//                    String text = ALTOTools.alto2Txt(alto, true, null);
+//                    System.out.println(text);
+//                } catch (IOException e) {
+//                    e.printStackTrace();
+//                } catch (XMLStreamException e) {
+//                    e.printStackTrace();
+//                } catch (JDOMException e) {
+//                    e.printStackTrace();
+//                }
+//            });
+//        }
+//    }
 }
