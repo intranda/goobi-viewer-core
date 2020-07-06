@@ -154,13 +154,12 @@ public class TextResourceBuilder {
 
         if (file != null && Files.isRegularFile(file)) {
             try {
-                Document doc = XmlTools.readXmlFile(file);
-                return new XMLOutputter().outputString(doc);
+                return  FileTools.getStringFromFile(file.toFile(), StringTools.DEFAULT_ENCODING);
+//                Document doc = XmlTools.readXmlFile(file);
+//                return new XMLOutputter().outputString(doc);
             } catch (FileNotFoundException e) {
                 logger.debug(e.getMessage());
             } catch (IOException e) {
-                logger.error(e.getMessage(), e);
-            } catch (JDOMException e) {
                 logger.error(e.getMessage(), e);
             }
         }

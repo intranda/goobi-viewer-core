@@ -294,12 +294,13 @@ public class RecordResource {
         return builder.getNERTags(pi, type, start, end, stepSize == null ? 1 : stepSize);
     }
     
-    @GET
-    @javax.ws.rs.Path(RECORDS_PLAINTEXT)
-    @Produces({ MediaType.TEXT_PLAIN })
-    @Operation(tags = {"records"}, summary = "Get entire plaintext of record")
-    @CORSBinding
-    @IIIFPresentationBinding
+    //disabled; may cause oom
+//    @GET
+//    @javax.ws.rs.Path(RECORDS_PLAINTEXT)
+//    @Produces({ MediaType.TEXT_PLAIN })
+//    @Operation(tags = {"records"}, summary = "Get entire plaintext of record")
+//    @CORSBinding
+//    @IIIFPresentationBinding
     public String getPlaintext() throws PresentationException, IndexUnreachableException, ViewerConfigurationException, ServiceNotAllowedException, IOException, DAOException {
 
         TextResourceBuilder builder = new TextResourceBuilder(servletRequest, servletResponse);
@@ -321,12 +322,13 @@ public class RecordResource {
         return builder.getFulltextAsZip(pi);
     }
     
-    @GET
-    @javax.ws.rs.Path(RECORDS_ALTO)
-    @Produces({ MediaType.TEXT_PLAIN })
-    @Operation(tags = {"records"}, summary = "Get entire alto document for record")
-    @CORSBinding
-    @IIIFPresentationBinding
+    //disabled. Max cause oom
+//    @GET
+//    @javax.ws.rs.Path(RECORDS_ALTO)
+//    @Produces({ MediaType.TEXT_XML })
+//    @Operation(tags = {"records"}, summary = "Get entire alto document for record")
+//    @CORSBinding
+//    @IIIFPresentationBinding
     public String getAlto() throws PresentationException, IndexUnreachableException, ViewerConfigurationException, IOException, DAOException, ContentLibException, JDOMException {
 
         TextResourceBuilder builder = new TextResourceBuilder(servletRequest, servletResponse);
@@ -348,12 +350,13 @@ public class RecordResource {
         return builder.getAltoAsZip(pi);
     }
     
-    @GET
-    @javax.ws.rs.Path(RECORDS_TEI)
-    @Produces({MediaType.TEXT_XML})
-    @Operation(tags = {"records"}, summary = "Get text of record in TEI format.", description ="If possible, directly read a TEI file associated with the record, otherwise convert all fulltexts to TEI documents")
-    @CORSBinding
-    @IIIFPresentationBinding
+    //disabled; may cause oom
+//    @GET
+//    @javax.ws.rs.Path(RECORDS_TEI)
+//    @Produces({MediaType.TEXT_XML})
+//    @Operation(tags = {"records"}, summary = "Get text of record in TEI format.", description ="If possible, directly read a TEI file associated with the record, otherwise convert all fulltexts to TEI documents")
+//    @CORSBinding
+//    @IIIFPresentationBinding
     public String getTei(
             @Parameter(description="perferred language for the TEI file, in ISO-639 format")@QueryParam("lang") String language) throws PresentationException, IndexUnreachableException, ViewerConfigurationException, IOException, DAOException, ContentLibException {
         
