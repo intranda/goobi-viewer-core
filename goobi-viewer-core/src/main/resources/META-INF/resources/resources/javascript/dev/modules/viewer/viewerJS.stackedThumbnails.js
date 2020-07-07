@@ -113,7 +113,7 @@ var viewerJS = ( function( viewer ) {
             });
             
             // trigger thumb paper stack effect if page has no scroll
-            $(window).load(function() {
+            $(window).on('load', function(){
 	            $('.stacked-thumbnail-before, .stacked-thumbnail-after').each( function(i){
 	                if ($(this).isInViewport()) {
 	                    $(this).addClass('-shown');
