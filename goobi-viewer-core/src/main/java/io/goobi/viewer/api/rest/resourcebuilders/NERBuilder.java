@@ -15,6 +15,7 @@
  */
 package io.goobi.viewer.api.rest.resourcebuilders;
 
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.nio.file.Paths;
@@ -28,6 +29,7 @@ import org.apache.solr.common.SolrDocumentList;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import de.unigoettingen.sub.commons.contentlib.exceptions.ContentNotFoundException;
 import io.goobi.viewer.api.rest.AbstractApiUrlManager;
 import io.goobi.viewer.api.rest.model.ner.DocumentReference;
 import io.goobi.viewer.api.rest.model.ner.ElementReference;
@@ -43,6 +45,8 @@ import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.NetTools;
 import io.goobi.viewer.controller.SolrConstants;
 import io.goobi.viewer.controller.SolrSearchIndex;
+import io.goobi.viewer.exceptions.AccessDeniedException;
+import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.HTTPException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
@@ -121,13 +125,13 @@ public class NERBuilder {
                                 SolrConstants.FILENAME_ALTO);
                         continue;
                     }
-                    //TODO: Load directly from file if on same server?
-                    // Load ALTO via the REST service
-                    String url = DataFileTools.buildFullTextUrl(altoFileName);
-//                    String filename = Paths.get(altoFileName).getFileName().toString();
-//                    String url = urls.path(ApiUrls.RECORDS_FILES, ApiUrls.RECORDS_FILES_ALTO).params(topStructPi, filename).build();
+                    
                     try {
-                        String altoString = NetTools.getWebContentGET(url);
+                        if(!altoFileName.contains("/")) {
+                            altoFileName = topStructPi + "/" + altoFileName;
+                            
+                        }
+                        String altoString = DataFileTools.loadAlto(altoFileName);
                         Integer pageOrder = getPageOrder(solrDoc);
                         List<TagCount> tags = ALTOTools.getNERTags(altoString, type);
                         for (TagCount tagCount : tags) {
@@ -136,12 +140,12 @@ public class NERBuilder {
                             }
                         }
                         range.addTags(tags);
-                    } catch (FileNotFoundException e) {
-                        logger.error(e.getMessage());
-                    } catch (IOException e) {
-                        logger.error(e.getMessage(), e);
-                    } catch (HTTPException e) {
-                        logger.error(e.getMessage());
+                    } catch (ContentNotFoundException e) {
+                        logger.error(e.toString());
+                    } catch (AccessDeniedException e) {
+                        logger.error(e.toString());
+                    } catch (DAOException e) {
+                        logger.error(e.toString());
                     }
                 }
                 Collections.sort(range.getTags());

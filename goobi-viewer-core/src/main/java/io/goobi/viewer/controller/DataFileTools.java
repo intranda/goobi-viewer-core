@@ -420,6 +420,23 @@ public class DataFileTools {
 
         return null;
     }
+    
+    public static String loadAlto(String altoFilePath)
+            throws  ContentNotFoundException, AccessDeniedException, IndexUnreachableException, DAOException, PresentationException {
+        TextResourceBuilder builder = new TextResourceBuilder(BeanUtils.getRequest(), null);
+        if (altoFilePath != null) {
+            // ALTO file
+            try {
+                String alto = builder.getAltoDocument(FileTools.getBottomFolderFromPathString(altoFilePath),
+                        FileTools.getFilenameFromPathString(altoFilePath));
+                return alto;
+            } catch (ServiceNotAllowedException e) {
+                throw new AccessDeniedException("fulltextAccessDenied");
+            }
+        } else throw new ContentNotFoundException("Alto file " + altoFilePath + " not found");
+        
+
+    }
 
     /**
      * <p>

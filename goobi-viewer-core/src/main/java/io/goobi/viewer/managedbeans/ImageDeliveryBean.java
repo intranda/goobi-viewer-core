@@ -117,7 +117,7 @@ public class ImageDeliveryBean implements Serializable {
         } else if (BeanUtils.hasJsfContext()) {
             path = BeanUtils.getServletPathWithHostAsUrlFromJsfContext();
         } else {
-            logger.error("Failed to initialize ImageDeliveryBean: No servlet request and no jsf context found");
+            logger.trace("Failed to initialize ImageDeliveryBean: No servlet request and no jsf context found");
             path = "";
         }
         return path;
