@@ -155,7 +155,7 @@ public class IIIFUrlHandler {
                 }
 
                 StringBuilder sb = new StringBuilder(apiUrl);
-                sb.append(RECORDS_FILES_IMAGE.substring(1)
+                sb.append("image/{pi}/{filename}"
                         .replace("{pi}", URLEncoder.encode(docStructIdentifier, UTF_8))
                         .replace("{filename}",
                                 URLEncoder.encode(fileUrl, UTF_8)))
