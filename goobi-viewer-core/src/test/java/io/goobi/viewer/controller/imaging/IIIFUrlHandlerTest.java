@@ -70,12 +70,12 @@ public class IIIFUrlHandlerTest extends AbstractTest {
         String url;
 
         url = handler.getIIIFImageUrl(fileUrl, pi, region, size, rotation, quality, format);
-        Assert.assertEquals(ConfigurationTest.APPLICATION_ROOT_URL + "rest/records/1234/files/images/filename.tif/full/max/0/default.jpg", url);
+        Assert.assertEquals(ConfigurationTest.APPLICATION_ROOT_URL + "api/v1/records/1234/files/images/filename.tif/full/max/0/default.jpg", url);
 
         fileUrl = "http://localhost/image/filename.tif";
         url = handler.getIIIFImageUrl(fileUrl, pi, region, size, rotation, quality, format);
         Assert.assertEquals(
-                ConfigurationTest.APPLICATION_ROOT_URL + "rest/image/-/http:U002FU002FlocalhostU002FimageU002Ffilename.tif/full/max/0/default.jpg",
+                ConfigurationTest.APPLICATION_ROOT_URL + "api/v1/image/-/http:U002FU002FlocalhostU002FimageU002Ffilename.tif/full/max/0/default.jpg",
                 url);
 
         fileUrl = "http://rosdok.uni-rostock.de/iiif/image-api/rosdok%252Fppn740913301%252Fphys_0001/full/full/0/native.jpg";
@@ -84,13 +84,13 @@ public class IIIFUrlHandlerTest extends AbstractTest {
 
         fileUrl = "file:///image/filename.tif";
         url = handler.getIIIFImageUrl(fileUrl, pi, region, size, rotation, quality, format);
-        Assert.assertEquals(ConfigurationTest.APPLICATION_ROOT_URL + "rest/image/-/file:U002FU002FU002FimageU002Ffilename.tif/full/max/0/default.jpg",
+        Assert.assertEquals(ConfigurationTest.APPLICATION_ROOT_URL + "api/v1/image/-/file:U002FU002FU002FimageU002Ffilename.tif/full/max/0/default.jpg",
                 url);
 
         fileUrl = "file:///image/filename 01.tif";
         url = handler.getIIIFImageUrl(fileUrl, pi, region, size, rotation, quality, format);
         Assert.assertEquals(
-                ConfigurationTest.APPLICATION_ROOT_URL + "rest/image/-/file:U002FU002FU002FimageU002Ffilename%2001.tif/full/max/0/default.jpg", url);
+                ConfigurationTest.APPLICATION_ROOT_URL + "api/v1/image/-/file:U002FU002FU002FimageU002Ffilename%2001.tif/full/max/0/default.jpg", url);
 
         // TODO
         //        fileUrl = "/image/filename.tif";
@@ -100,13 +100,13 @@ public class IIIFUrlHandlerTest extends AbstractTest {
         fileUrl = "http://localhost/image/filename.tif";
         url = handler.getIIIFImageUrl(fileUrl, pi, region, size, rotation, quality, format);
         Assert.assertEquals(
-                ConfigurationTest.APPLICATION_ROOT_URL + "rest/image/-/http:U002FU002FlocalhostU002FimageU002Ffilename.tif/full/max/0/default.jpg",
+                ConfigurationTest.APPLICATION_ROOT_URL + "api/v1/image/-/http:U002FU002FlocalhostU002FimageU002Ffilename.tif/full/max/0/default.jpg",
                 url);
 
         fileUrl = "file:///C:/opt/digiverso/viewer/cms_media/filename.tif";
         url = handler.getIIIFImageUrl(fileUrl, pi, region, size, rotation, quality, format);
         Assert.assertEquals(ConfigurationTest.APPLICATION_ROOT_URL
-                + "rest/image/-/file:U002FU002FU002FC:U002FoptU002FdigiversoU002FviewerU002Fcms_mediaU002Ffilename.tif/full/max/0/default.jpg", url);
+                + "api/v1/image/-/file:U002FU002FU002FC:U002FoptU002FdigiversoU002FviewerU002Fcms_mediaU002Ffilename.tif/full/max/0/default.jpg", url);
 
     }
 

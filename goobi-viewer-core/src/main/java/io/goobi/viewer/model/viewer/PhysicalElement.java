@@ -906,7 +906,6 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
         }
 
         logger.trace("Loading full-text for page {}", fulltextFileName);
-        String url = DataFileTools.buildFullTextUrl(fulltextFileName);
         try {
             String text = DataFileTools.loadFulltext(null, fulltextFileName, false, BeanUtils.getRequest());
             return text;

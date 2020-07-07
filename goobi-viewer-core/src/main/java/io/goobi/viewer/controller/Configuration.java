@@ -1065,19 +1065,6 @@ public final class Configuration extends AbstractConfiguration {
 
     /**
      * <p>
-     * getContentRestApiUrl.
-     * </p>
-     *
-     * @should return correct value
-     * @return a {@link java.lang.String} object.
-     */
-    public String getContentRestApiUrl() {
-        return getIIIFApiUrl() + "content/";
-
-    }
-
-    /**
-     * <p>
      * getRestApiUrl.
      * </p>
      *

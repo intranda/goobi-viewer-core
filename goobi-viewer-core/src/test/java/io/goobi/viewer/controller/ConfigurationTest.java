@@ -188,15 +188,6 @@ public class ConfigurationTest extends AbstractTest {
     }
 
     /**
-     * @see Configuration#getContentRestApiUrl()
-     * @verifies return correct value
-     */
-    @Test
-    public void getContentRestApiUrl_shouldReturnCorrectValue() throws Exception {
-        Assert.assertEquals("https://viewer.goobi.io/rest/content/", DataManager.getInstance().getConfiguration().getContentRestApiUrl());
-    }
-
-    /**
      * @see Configuration#getDataRepositoriesHome()
      * @verifies return correct value
      */

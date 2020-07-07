@@ -65,26 +65,6 @@ public class DataFileToolsTest extends AbstractTest {
     }
 
     /**
-     * @see DataFileTools#buildFullTextUrl(String)
-     * @verifies build url correctly
-     */
-    @Test
-    public void buildFullTextUrl_shouldBuildUrlCorrectly() throws Exception {
-        Assert.assertEquals(DataManager.getInstance().getConfiguration().getContentRestApiUrl() + "document/alto/PPN123/00000001.xml/",
-                DataFileTools.buildFullTextUrl("alto/PPN123/00000001.xml"));
-    }
-
-    /**
-     * @see DataFileTools#buildFullTextUrl(String)
-     * @verifies escape spaces correctly
-     */
-    @Test
-    public void buildFullTextUrl_shouldEscapeSpacesCorrectly() throws Exception {
-        Assert.assertEquals(DataManager.getInstance().getConfiguration().getContentRestApiUrl() + "document/alto/PPN123/00000001%20(1).xml/",
-                DataFileTools.buildFullTextUrl("alto/PPN123/00000001 (1).xml"));
-    }
-
-    /**
      * @see DataFileTools#getDataFolder(String,String,String)
      * @verifies return correct folder if no data repository used
      */
