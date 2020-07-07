@@ -149,7 +149,7 @@ public class ImageDeliveryBean implements Serializable {
         } else {
             pdf = new PdfHandler(footer, config);
         }
-        media = new MediaHandler(config);
+        media = new MediaHandler(contentUrlManager);
         try {
             presentation = new IIIFPresentationAPIHandler(dataUrlManager, config);
         } catch (URISyntaxException e) {
@@ -297,26 +297,6 @@ public class ImageDeliveryBean implements Serializable {
             return "";
         }
         return getCurrentPageIfExists().map(page -> getImages().getImageUrl(page, type)).orElse("");
-    }
-
-    /**
-     * returns The media url for the current page in the fist available format
-     *
-     * @return The media url for the current page in the fist available format
-     */
-    public String getCurrentMedia() {
-        return getCurrentPageIfExists().map(page -> getMedia().getMediaUrl(page.getMimeType(), page.getPi(), page.getFilename())).orElse("");
-    }
-
-    /**
-     * returns The media url for the current page in the given format
-     *
-     * @param format The requested format. Format is the part of the Solr field name after the underscore, generally the second part of the mime type
-     * @return The media url for the current page in the given format
-     */
-    public String getCurrentMedia(String format) {
-        return getCurrentPageIfExists().map(page -> getMedia().getMediaUrl(page.getMimeType(), page.getPi(), page.getFileNameForFormat(format)))
-                .orElse("");
     }
 
     /**
