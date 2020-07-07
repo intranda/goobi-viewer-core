@@ -103,18 +103,24 @@ public class ImageDeliveryBean implements Serializable {
     private void init() {
         try {
             Configuration config = DataManager.getInstance().getConfiguration();
-            if (servletRequest != null) {
-                this.servletPath = ServletUtils.getServletPathWithHostAsUrlFromRequest(servletRequest);
-            } else if (BeanUtils.hasJsfContext()) {
-                this.servletPath = BeanUtils.getServletPathWithHostAsUrlFromJsfContext();
-            } else {
-                logger.error("Failed to initialize ImageDeliveryBean: No servlet request and no jsf context found");
-                servletPath = "";
-            }
+            this.servletPath = getServletPathFromContext();
             init(config);
         } catch (NullPointerException e) {
             logger.error("Failed to initialize ImageDeliveryBean: Resources misssing");
         }
+    }
+    
+    private String getServletPathFromContext() {
+        String path;
+        if (servletRequest != null) {
+            path = ServletUtils.getServletPathWithHostAsUrlFromRequest(servletRequest);
+        } else if (BeanUtils.hasJsfContext()) {
+            path = BeanUtils.getServletPathWithHostAsUrlFromJsfContext();
+        } else {
+            logger.error("Failed to initialize ImageDeliveryBean: No servlet request and no jsf context found");
+            path = "";
+        }
+        return path;
     }
 
     /**
@@ -124,24 +130,19 @@ public class ImageDeliveryBean implements Serializable {
      * @param apiUrls a {@link java.lang.String} object.
      */
     public void init(Configuration config) {
-        AbstractApiUrlManager dataUrlManager = new ApiUrls(DataManager.getInstance().getConfiguration().getRestApiUrl().replace("/rest", "/api/v1"));
-        AbstractApiUrlManager contentUrlManager =
-                new ApiUrls(DataManager.getInstance().getConfiguration().getIIIFApiUrl().replace("/rest", "/api/v1"));
-        ApiInfo info = contentUrlManager.getInfo();
-        if (info == null || !info.version.equalsIgnoreCase("v1")) {
-            contentUrlManager = null;
-        }
-
-        this.staticImagesURI = getStaticImagesPath(dataUrlManager.getApplicationUrl(), config.getTheme());
+        AbstractApiUrlManager dataUrlManager = DataManager.getInstance().getRestApiManager().getDataApiManager();
+        AbstractApiUrlManager contentUrlManager = DataManager.getInstance().getRestApiManager().getContentApiManager();
+        
+        this.staticImagesURI = getStaticImagesPath(this.servletPath, config.getTheme());
         this.cmsMediaPath =
-                DataManager.getInstance().getConfiguration().getViewerHome() + DataManager.getInstance().getConfiguration().getCmsMediaFolder();
+                config.getViewerHome() + config.getCmsMediaFolder();
         this.tempMediaPath =
-                DataManager.getInstance().getConfiguration().getViewerHome() + DataManager.getInstance().getConfiguration().getTempMediaFolder();
+                config.getViewerHome() + config.getTempMediaFolder();
 
         iiif = new IIIFUrlHandler(contentUrlManager);
         images = new ImageHandler(contentUrlManager);
         objects3d = new Object3DHandler(config);
-        footer = new WatermarkHandler(config, DataManager.getInstance().getConfiguration().getIIIFApiUrl());
+        footer = new WatermarkHandler(config, config.getIIIFApiUrl());
         thumbs = new ThumbnailHandler(iiif, config, this.staticImagesURI);
         if (contentUrlManager != null) {
             pdf = new PdfHandler(footer, contentUrlManager);

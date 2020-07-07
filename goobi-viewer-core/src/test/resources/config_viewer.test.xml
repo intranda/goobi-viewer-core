@@ -87,7 +87,8 @@
 		<!-- urnResolver: Resolver URL for URN-based PURLs displayed in the title 
 			widget, etc. Default is the current application URL + "/resolver?urn=" -->
 		<urnResolver>urnResolver_value</urnResolver>
-
+		
+ 		<iiif useForCmsMedia="true">https://viewer.goobi.io/api/v1/</iiif>
 		<rest>https://viewer.goobi.io/rest/</rest>
 
 		<download>https://viewer.goobi.io/download/</download>

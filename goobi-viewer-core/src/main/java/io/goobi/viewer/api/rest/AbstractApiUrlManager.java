@@ -96,7 +96,7 @@ public abstract class AbstractApiUrlManager {
     
 
     /**
-     * @return
+     * @return the path part of the {@link #getApiUrl()}
      */
     public String getApiPath() {
         URI uri = URI.create(getApiUrl());

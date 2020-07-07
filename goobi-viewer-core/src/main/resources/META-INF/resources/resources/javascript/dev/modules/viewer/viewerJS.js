@@ -389,7 +389,6 @@ var viewerJS = (function () {
 })(jQuery);
   
 	//reset global bootstrap boundary of tooltips to window
-console.log("bootstrap")
     if($.fn.tooltip.Constructor) {        
         $.fn.tooltip.Constructor.Default.boundary = "window";
         $.fn.dropdown.Constructor.Default.boundary = "window";
