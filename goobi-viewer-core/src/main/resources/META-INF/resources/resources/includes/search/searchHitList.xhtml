@@ -47,7 +47,7 @@
                             <select id="sortSelect">
                                 <option
                                     value="#{search.currentSearchUrlRoot}/-/#{search.exactSearchString}/#{search.currentPage}/-/#{search.facets.currentFacetString}/"
-                                    data-sortField="#{msg.searchSortingDropdown_relevance}">#{msg.searchSortingDropdown_relevance}
+                                    data-sortField="#gDropdown_relevance}">#{msg.searchSortingDropdown_relevance}
                                 </option>
                                 <ui:repeat var="sortField" value="#{configurationBean.sortFields}">
                                     <option
@@ -85,7 +85,7 @@
                     <!-- HEADER -->
                     <header class="search-list__hit-header">
                         <div class="row">
-                            <div class="col-xs-12 col-sm-#{hit.browseElement.showThumbnail ? '10' : '12'}">
+                            <div class="col-12 col-sm-#{hit.browseElement.showThumbnail ? '10' : '12'}">
                                 <!-- TITLE -->
                                 <div class="search-list__hit-title">
                                     <h4>
@@ -150,7 +150,7 @@
                                 </h:panelGroup>
                             </div>
                             <ui:fragment rendered="#{hit.browseElement.showThumbnail}">
-                                <div class="col-xs-12 col-sm-2">
+                                <div class="col-12 col-sm-2 d-flex justify-content-center justify-content-md-end mt-3 mt-md-0 mb-3 mb-sm-0">
                                 <!-- THUMBNAIL -->
                                 <figure class="search-list__hit-thumbnail">
                                     <!-- SINGLEVOLUME -->
@@ -166,13 +166,19 @@
                                     </h:outputLink>
 
                                     <!-- MULTIVOLUME -->
-                                    <h:outputLink value="#{navigationHelper.applicationUrl}#{hit.browseElement.url}" rendered="#{hit.browseElement.anchor}">
-                                        <img data-src="#{hit.browseElement.thumbnailUrl}" data-viewer-thumbnail="thumbnail"
-                                            class="#{configurationBean.anchorThumbnailMode == 'FIRSTVOLUME' ? 'stacked-thumbnail' : ''}" alt="Thumbnail" />
-                                        <h:panelGroup rendered="#{configurationBean.anchorThumbnailMode == 'FIRSTVOLUME'}">
+                                    <h:outputLink value="#{navigationHelper.applicationUrl}#{hit.browseElement.url}" rendered="#{hit.browseElement.anchor}" styleClass="stackedThumbEffect">
+                                       
+                                       	<div class="stackedThumbEffect-inner">
+                                        <img data-src="#{hit.browseElement.thumbnailUrl}" data-viewer-thumbnail="thumbnail" class="#{configurationBean.anchorThumbnailMode == 'FIRSTVOLUME' ? 'stacked-thumbnail' : ''}" alt="Thumbnail" />
+										<h:panelGroup rendered="#{configurationBean.anchorThumbnailMode == 'FIRSTVOLUME'}">
                                             <div class="stacked-thumbnail-before"></div>
                                             <div class="stacked-thumbnail-after"></div>
                                         </h:panelGroup>
+										</div>
+
+
+                                        
+                                        
                                     </h:outputLink>
 
                                     <!-- ADD TO BOOKMARKS -->
@@ -223,7 +229,7 @@
                             
                             <!-- LOADER -->
                             <span class="search-list__loader">
-                                <img src="#{request.contextPath}/resources/images/ajax_preloader.gif" class="img-responsive" alt="Search List Loader" />
+                                <img src="#{request.contextPath}/resources/images/ajax_preloader.gif" class="img-fluid" alt="Search List Loader" />
                             </span>
                         </button>
                     </h:panelGroup>

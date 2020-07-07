@@ -30,14 +30,16 @@ import io.goobi.viewer.model.security.LicenseType;
  * </p>
  */
 @FacesConverter("licenseTypeConverter")
-public class LicenseTypeConverter implements Converter {
+public class LicenseTypeConverter implements Converter<Object> {
 
     /** {@inheritDoc} */
     @Override
     public final Object getAsObject(final FacesContext context, final UIComponent component, final String value) {
-        int id = Integer.valueOf(value);
         try {
+            long id = Long.valueOf(value);
             return DataManager.getInstance().getDao().getLicenseType(id);
+        } catch (NumberFormatException e) {
+            return null;
         } catch (DAOException e) {
             return null;
         }

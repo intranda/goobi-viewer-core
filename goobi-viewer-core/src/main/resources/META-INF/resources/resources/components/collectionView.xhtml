@@ -21,7 +21,7 @@
                 		<ui:repeat var="browseDcElement" value="#{collection.visibleDcElements}">
                             <li class="collection__item collection__item--level-#{browseDcElement.level}" style="padding-left: #{browseDcElement.level * 32}px">
                 				<div class="row">
-                                    <div class="col-xs-2 col-sm-1 collection__structure-col">
+                                    <div class="col-2 col-sm-1 collection__structure-col">
                                         <!-- STRUCTURE -->
                                         <h:panelGroup rendered="#{browseDcElement.hasSubelements and !browseDcElement.opensInNewWindow}">
                                             <div class="collection__structure text-center">
@@ -37,11 +37,11 @@
                                             </div>
                                         </h:panelGroup>
                                     </div>
-                                    <div class="col-xs-7 col-sm-9">
+                                    <div class="col-7 col-sm-9">
 										<div class="collection__title">
 
 												<div class="row">
-                                                    <div class="col-xs-12">
+                                                    <div class="col-12">
 														<!-- TITLE -->
 														<h:outputLink value="#{collection.getCollectionUrl(browseDcElement)}" styleClass="#{collection.isTopVisibleElement(browseDcElement) ? 'collection__top-element' : ''}">
                                                             <h:outputText rendered="#{browseDcElement.displayNumberOfVolumes}" value="#{msg[browseDcElement.label]} (#{browseDcElement.numberOfVolumes})" />
@@ -52,7 +52,7 @@
 												</div>
 										</div>
 									</div>
-                                    <div class="col-xs-3 col-sm-2">
+                                    <div class="col-3 col-sm-2">
 										<!-- TOGGLE DESCRIPTION -->
 										<h:panelGroup rendered="#{msg[browseDcElement.description] != browseDcElement.description || browseDcElement.hasCMSDescription()}">
 											<div class="collection__description-toggle pull-left">
@@ -83,12 +83,12 @@
 
     								<!-- DESCRIPTION -->
                                     <h:panelGroup rendered="#{browseDcElement.showDescription}">
-                                        <div class="col-xs-12 col-sm-11 col-sm-offset-1">
+                                        <div class="col-12 col-sm-11 col-sm-offset-1">
                                             <div class="collection__description">
                                                 <h:outputText value="#{msg[browseDcElement.description]}" escape="false" />
                                             </div>
                                             <h:panelGroup rendered="#{browseDcElement.hasIcon()}">
-                                                <img data-src="#{browseDcElement.icon}" alt="" class="img-responsive" 
+                                                <img data-src="#{browseDcElement.icon}" alt="" class="img-fluid" 
                                                 data-viewer-thumbnail="thumbnail"/>
                                             </h:panelGroup>
                                         </div>
@@ -98,11 +98,11 @@
                                 <!-- CMS-INFO -->
 <!--                                 <h:panelGroup rendered="#{browseDcElement.hasCMSDescription()}"> -->
 <!--                                 	<div class="row"> -->
-<!--                                 		<div class="col-xs-12 col-sm-11 col-sm-offset-1"> -->
+<!--                                 		<div class="col-12 col-sm-11 col-sm-offset-1"> -->
 <!-- 		                                    <div class="collection__description"> -->
 <!-- 		                                        <h:outputText value="#{msg[browseDcElement.info.description]}" escape="false" rendered="#{browseDcElement.showDescription}" /> -->
 <!-- 		                                    </div> -->
-<!-- 		                                  	  <img src="#{browseDcElement.info.iconURI}" alt="" class="img-responsive" /> -->
+<!-- 		                                  	  <img src="#{browseDcElement.info.iconURI}" alt="" class="img-fluid" /> -->
 <!--                                 		</div> -->
 <!--                                 	</div> -->
 <!--                                 </h:panelGroup> -->

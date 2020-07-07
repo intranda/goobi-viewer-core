@@ -11,126 +11,107 @@
     <ui:define name="metadata">
         <f:metadata>
             <f:event type="preRenderView" listener="#{navigationHelper.setCurrentPageAdmin('adminCrowdCampagins')}" />
-            <f:event type="preRenderView" listener="#{adminBean.resetCurrentLicenseAction}" />
             <f:event type="preRenderView" listener="#{cmsBean.init()}" />
         </f:metadata>
     </ui:define>
-    
-    <ui:define name="breadcrumbs">
-        <ui:include src="/resources/includes/breadcrumbs.xhtml" />
-    </ui:define>
 
-	<ui:define name="content">
+    <ui:define name="content">
         <h:panelGroup id="crowdCampaignOverview" rendered="#{userBean.user.superuser}">
             <div id="crowdCampaigns">
-                    <h:form id="csCampaignsForm" prependId="false">
-                    <h2 class="admin__content-inner-title">#{msg.admin__crowdsourcing_campaigns}
-                        <h:commandButton styleClass="btn btn--default" action="#{crowdsourcingBean.createNewCampaignAction}" value="#{msg.add}" title="#{msg.add}" alt="#{msg.add}">
+                <h:form id="csCampaignsForm" prependId="false">
+                    <div class="admin__title-bar">
+                        <!-- TITLE -->
+                        <h2 class="admin__title">#{msg.admin__crowdsourcing_campaigns}</h2>
+
+                        <!-- ADD CAMPAIGN -->
+                        <h:commandButton styleClass="btn btn--default admin__title-bar-action" action="#{crowdsourcingBean.createNewCampaignAction}" value="#{msg.add}">
                             <f:setPropertyActionListener value="#{false}" target="#{crowdsourcingBean.editMode}" />
                         </h:commandButton>
-                    
-                    </h2>
-                                                
+                    </div>
 
-                        <div class="admin__content-inner-content">
-                            <div id="csCampaignsWrapper" class="sortable-table-wrapper">
-                            
-                            	<div class="admin__content-inner-content__above">
-	                            	<div class="admin__content-inner-content__facet_links">
-		                                <!-- all -->
-		                                <h:commandLink rendered="#{crowdsourcingBean.lazyModelCampaigns.getFilter('visibility') != null}"
-		                                    action="#{crowdsourcingBean.filterCampaignsAction(null)}">
-		                                    #{msg.admin__crowdsourcing_campaign_visibility_ALL}
-		                                </h:commandLink>
-		                                <h:outputText rendered="#{crowdsourcingBean.lazyModelCampaigns.getFilter('visibility') == null}"
-		                                    value="#{msg.admin__crowdsourcing_campaign_visibility_ALL}" /> (#{crowdsourcingBean.getCampaignCount(null)}) |
-		                                <!-- restricted -->
-		                                <h:commandLink rendered="#{crowdsourcingBean.lazyModelCampaigns.getFilter('visibility').value != 'RESTRICTED'}"
-		                                    action="#{crowdsourcingBean.filterCampaignsAction('RESTRICTED')}">
-		                                    #{msg.admin__crowdsourcing_campaign_visibility_RESTRICTED}
-		                                </h:commandLink>
-		                                <h:outputText rendered="#{crowdsourcingBean.lazyModelCampaigns.getFilter('visibility').value == 'RESTRICTED'}"
-		                                    value="#{msg.admin__crowdsourcing_campaign_visibility_RESTRICTED}" /> (#{crowdsourcingBean.getCampaignCount('RESTRICTED')}) |
-		                                <!-- public -->
-		                                <h:commandLink rendered="#{crowdsourcingBean.lazyModelCampaigns.getFilter('visibility').value != 'PUBLIC'}"
-		                                    action="#{crowdsourcingBean.filterCampaignsAction('PUBLIC')}">
-		                                    #{msg.admin__crowdsourcing_campaign_visibility_PUBLIC}
-		                                </h:commandLink>
-		                                <h:outputText rendered="#{crowdsourcingBean.lazyModelCampaigns.getFilter('visibility').value == 'PUBLIC'}"
-		                                    value="#{msg.admin__crowdsourcing_campaign_visibility_PUBLIC}" /> (#{crowdsourcingBean.getCampaignCount('PUBLIC')}) |
-		                                <!-- finished -->
-		                                <h:commandLink rendered="#{crowdsourcingBean.lazyModelCampaigns.getFilter('visibility').value != 'FINISHED'}"
-		                                    action="#{crowdsourcingBean.filterCampaignsAction('FINISHED')}">
-		                                    #{msg.admin__crowdsourcing_campaign_visibility_FINISHED}
-		                                </h:commandLink>
-		                                <h:outputText rendered="#{crowdsourcingBean.lazyModelCampaigns.getFilter('visibility').value == 'FINISHED'}"
-		                                    value="#{msg.admin__crowdsourcing_campaign_visibility_FINISHED}" /> (#{crowdsourcingBean.getCampaignCount('FINISHED')})
-									</div>
-									
-	                                <!-- paginator -->
-	                                <viewerComponent:dataTablePaginator tableValues="#{crowdsourcingBean.lazyModelCampaigns}" />
-								</div>
+                    <div class="admin__content-inner-content">
+                        <div class="admin__table-tools">
+                            <!-- PAGINATOR -->
+                            <div class="admin__table-paginator">
+                                <viewerComponent:dataTablePaginator tableValues="#{crowdsourcingBean.lazyModelCampaigns}" />
+                            </div>
+                            <!-- FILTER -->
+                            <div class="admin__table-filter d-flex justify-content-end align-self-center">
+                                <!-- all -->
+                                <h:commandLink rendered="#{crowdsourcingBean.lazyModelCampaigns.getFilter('visibility') != null}"
+                                    action="#{crowdsourcingBean.filterCampaignsAction(null)}">
+                                    #{msg.admin__crowdsourcing_campaign_visibility_ALL}
+                                </h:commandLink>
+                                <h:outputText rendered="#{crowdsourcingBean.lazyModelCampaigns.getFilter('visibility') == null}"
+                                    value="#{msg.admin__crowdsourcing_campaign_visibility_ALL}" /> (#{crowdsourcingBean.getCampaignCount(null)}) |
+                                <!-- restricted -->
+                                <h:commandLink rendered="#{crowdsourcingBean.lazyModelCampaigns.getFilter('visibility').value != 'RESTRICTED'}"
+                                    action="#{crowdsourcingBean.filterCampaignsAction('RESTRICTED')}">
+                                    #{msg.admin__crowdsourcing_campaign_visibility_RESTRICTED}
+                                </h:commandLink>
+                                <h:outputText rendered="#{crowdsourcingBean.lazyModelCampaigns.getFilter('visibility').value == 'RESTRICTED'}"
+                                    value="#{msg.admin__crowdsourcing_campaign_visibility_RESTRICTED}" /> (#{crowdsourcingBean.getCampaignCount('RESTRICTED')}) |
+                                <!-- public -->
+                                <h:commandLink rendered="#{crowdsourcingBean.lazyModelCampaigns.getFilter('visibility').value != 'PUBLIC'}"
+                                    action="#{crowdsourcingBean.filterCampaignsAction('PUBLIC')}">
+                                    #{msg.admin__crowdsourcing_campaign_visibility_PUBLIC}
+                                </h:commandLink>
+                                <h:outputText rendered="#{crowdsourcingBean.lazyModelCampaigns.getFilter('visibility').value == 'PUBLIC'}"
+                                    value="#{msg.admin__crowdsourcing_campaign_visibility_PUBLIC}" /> (#{crowdsourcingBean.getCampaignCount('PUBLIC')}) |
+                                <!-- finished -->
+                                <h:commandLink rendered="#{crowdsourcingBean.lazyModelCampaigns.getFilter('visibility').value != 'FINISHED'}"
+                                    action="#{crowdsourcingBean.filterCampaignsAction('FINISHED')}">
+                                    #{msg.admin__crowdsourcing_campaign_visibility_FINISHED}
+                                </h:commandLink>
+                                <h:outputText rendered="#{crowdsourcingBean.lazyModelCampaigns.getFilter('visibility').value == 'FINISHED'}"
+                                    value="#{msg.admin__crowdsourcing_campaign_visibility_FINISHED}" /> (#{crowdsourcingBean.getCampaignCount('FINISHED')})
 
-                                <table id="csCampaignsTable" class="table table-striped table-bordered admin-table">
-                                    <thead>
-                                        <tr>
-                                            <th class="column_title">
-                                                #{msg.admin__crowdsourcing_campaign}
-                                            </th>
-                                            <th class="column_visibility">
-                                                #{msg.admin__crowdsourcing_campaign_visibility}
-                                            </th>
-                                            <th class="column_duration">
-                                                #{msg.admin__crowdsourcing_campaign_duration}
-                                            </th>
-                                            <th class="column_statistics">#{msg.statistics}</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <ui:repeat var="campaign" value="#{crowdsourcingBean.lazyModelCampaigns.paginatorList}">
-                                            <tr>
-                                                <td class="column_title">
-                                                    <span class="column_title__main_title">#{campaign.getTitle(navigationHelper.locale, true)}</span>
-                                                    <br />
-                                                    <!-- Edit link -->
-                                                    <div class="cms-module__actions">
-                                                    <h:commandLink styleClass="btn btn--clean" action="#{crowdsourcingBean.editCampaignAction(campaign)}" title="#{msg.edit}" alt="#{msg.edit}">
-                                                        #{msg.edit}
-                                                        <f:setPropertyActionListener value="#{true}" target="#{crowdsourcingBean.editMode}" />
-                                                    </h:commandLink>
-                                                    <!-- Delete link -->
-                                                    <h:commandLink styleClass="btn btn--clean delete"
-                                                        onclick="if ( !confirm( &quot;#{msg.admin__crowdsourcing_campaign_deleteConfirmationText}&quot; ) ) { return false };" 
-                                                        action="#{crowdsourcingBean.deleteCampaignAction(campaign)}" title="#{msg.delete}" alt="#{msg.delete}">
-                                                        #{msg.delete}
-                                                    </h:commandLink>
-                                                    </div>
-                                                </td>
-                                                <td class="column_visibility">
-                                                    <h:outputText value="#{msg['admin__crowdsourcing_campaign_visibility_' += campaign.visibility]} " />
-                                                </td>
-                                                <td class="column_duration">
-                                                    <h:outputText rendered="#{campaign.dateStart != null}" value="#{campaign.dateStart}">
-                                                        #{msg.admin__crowdsourcing_campaign_duration_from}: <f:convertDateTime type="date" dateStyle="medium" timeStyle="short" />
-                                                    </h:outputText>
-                                                    <br />
-                                                    <h:outputText rendered="#{campaign.dateEnd != null}" value="#{campaign.dateEnd}">
-                                                        #{msg.admin__crowdsourcing_campaign_duration_until}: <f:convertDateTime type="date" dateStyle="medium" timeStyle="short" />
-                                                    </h:outputText>
-                                                </td>
-                                                <td class="column_statistics">
-                                                   <ui:include src="/resources/crowdsourcing/includes/campaignStatistics.xhtml"/>
-                                                </td>
-                                            </tr>
-                                        </ui:repeat>
-                                    </tbody>
-                                </table>
-
-                                <!-- paginator -->
-<!--                                 <viewerComponent:dataTablePaginator tableValues="#{crowdsourcingBean.lazyModelCampaigns}" /> -->
                             </div>
                         </div>
-                    </h:form>
+                        <div class="admin__table-content">
+                            <div class="row no-gutters admin__table-title">
+                                <div class="col-4 d-flex">#{msg.admin__crowdsourcing_campaign}</div>
+                                <div class="col-2 d-flex">#{msg.admin__crowdsourcing_campaign_visibility}</div>
+                                <div class="col-2 d-flex">#{msg.admin__crowdsourcing_campaign_duration}</div>
+                                <div class="col-4 d-flex">#{msg.statistics}</div>
+                            </div>
+
+                            <ui:repeat var="campaign" value="#{crowdsourcingBean.lazyModelCampaigns.paginatorList}">
+                                <div class="row no-gutters admin__table-entry">
+                                    <div class="col-4 d-flex">
+                                        <div class="admin__table-data justify-content-start">
+                                            <span>#{campaign.getTitle(navigationHelper.locale, true)}</span>
+                                            <div>
+                                                <!-- EDIT -->
+                                                <h:commandLink styleClass="admin__table-action-link" action="#{crowdsourcingBean.editCampaignAction(campaign)}" title="#{msg.edit}" alt="#{msg.edit}">
+                                                    #{msg.edit}<f:setPropertyActionListener value="#{true}" target="#{crowdsourcingBean.editMode}" /></h:commandLink>
+                                                <!-- Delete link -->
+                                                <h:commandLink styleClass="admin__table-action-link -redlink"
+                                                    onclick="if ( !confirm( &quot;#{msg.admin__crowdsourcing_campaign_deleteConfirmationText}&quot; ) ) { return false };" 
+                                                    action="#{crowdsourcingBean.deleteCampaignAction(campaign)}" title="#{msg.delete}" alt="#{msg.delete}">#{msg.delete}</h:commandLink>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-2 d-flex">
+                                        <h:outputText value="#{msg['admin__crowdsourcing_campaign_visibility_' += campaign.visibility]} " />
+                                    </div>
+                                    <div class="col-2 d-flex">
+                                        <h:outputText rendered="#{campaign.dateStart != null}" value="#{campaign.dateStart}">
+                                            #{msg.admin__crowdsourcing_campaign_duration_from}: <f:convertDateTime type="date" dateStyle="medium" timeStyle="short" />
+                                        </h:outputText>
+                                        <br />
+                                        <h:outputText rendered="#{campaign.dateEnd != null}" value="#{campaign.dateEnd}">
+                                            #{msg.admin__crowdsourcing_campaign_duration_until}: <f:convertDateTime type="date" dateStyle="medium" timeStyle="short" />
+                                        </h:outputText>
+                                    </div>
+                                    <div class="col-4 d-flex">
+                                       <ui:include src="/resources/crowdsourcing/includes/campaignStatistics.xhtml"/>
+                                    </div>
+                                </div>
+                            </ui:repeat>
+                        </div>
+                    </div>
+                </h:form>
             </div>
 
             <script type="text/javascript">
@@ -150,15 +131,8 @@
                     
                     viewerJS.dataTable.init( dataTableConfig );
                 } );
-        		riot.mount("progressBar");
+                        riot.mount("progressBar");
             </script>
         </h:panelGroup>
-    </ui:define>
-
-	<!-- SIDEBAR -->
-    <ui:define name="sidebar">
-        <adminWidget:widget_admin />
-        <adminWidget:widget_crowdsourcing />
-    	<adminWidget:widget_cms />
     </ui:define>
 </ui:composition>

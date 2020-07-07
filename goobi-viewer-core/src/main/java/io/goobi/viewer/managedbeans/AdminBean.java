@@ -19,17 +19,23 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.Serializable;
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.SessionScoped;
+import javax.faces.model.SelectItem;
+import javax.faces.model.SelectItemGroup;
 import javax.inject.Named;
 
+import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.jdom2.Attribute;
 import org.jdom2.Document;
@@ -43,16 +49,22 @@ import de.unigoettingen.sub.commons.util.CacheUtils;
 import io.goobi.viewer.controller.DataFileTools;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.SolrConstants;
+import io.goobi.viewer.controller.SolrSearchIndex;
+import io.goobi.viewer.controller.StringTools;
 import io.goobi.viewer.controller.XmlTools;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
+import io.goobi.viewer.faces.validators.EmailValidator;
 import io.goobi.viewer.managedbeans.tabledata.TableDataProvider;
 import io.goobi.viewer.managedbeans.tabledata.TableDataProvider.SortOrder;
 import io.goobi.viewer.managedbeans.tabledata.TableDataSource;
 import io.goobi.viewer.messages.Messages;
 import io.goobi.viewer.messages.ViewerResourceBundle;
 import io.goobi.viewer.model.annotation.Comment;
+import io.goobi.viewer.model.cms.CMSCategory;
+import io.goobi.viewer.model.cms.CMSPageTemplate;
+import io.goobi.viewer.model.cms.Selectable;
 import io.goobi.viewer.model.search.SearchHelper;
 import io.goobi.viewer.model.security.License;
 import io.goobi.viewer.model.security.LicenseType;
@@ -61,6 +73,7 @@ import io.goobi.viewer.model.security.user.IpRange;
 import io.goobi.viewer.model.security.user.User;
 import io.goobi.viewer.model.security.user.UserGroup;
 import io.goobi.viewer.model.security.user.UserRole;
+import io.goobi.viewer.model.security.user.UserTools;
 
 /**
  * Administration backend functions.
@@ -77,10 +90,6 @@ public class AdminBean implements Serializable {
     private static final int DEFAULT_ROWS_PER_PAGE = 15;
 
     private TableDataProvider<User> lazyModelUsers;
-    private TableDataProvider<UserGroup> lazyModelUserGroups;
-    private TableDataProvider<LicenseType> lazyModelLicenseTypes;
-    private TableDataProvider<LicenseType> lazyModelCoreLicenseTypes;
-    private TableDataProvider<IpRange> lazyModelIpRanges;
     private TableDataProvider<Comment> lazyModelComments;
 
     private User currentUser = null;
@@ -94,6 +103,9 @@ public class AdminBean implements Serializable {
 
     private String passwordOne = "";
     private String passwordTwo = "";
+    private String emailConfirmation = "";
+    private boolean deleteUserContributions =
+            EmailValidator.validateEmailAddress(DataManager.getInstance().getConfiguration().getAnonymousUserEmailAddress()) ? false : true;
 
     /**
      * <p>
@@ -146,141 +158,6 @@ public class AdminBean implements Serializable {
         lazyModelUsers.setEntriesPerPage(DEFAULT_ROWS_PER_PAGE);
         lazyModelUsers.setFilters("firstName_lastName_nickName_email");
 
-        lazyModelUserGroups = new TableDataProvider<>(new TableDataSource<UserGroup>() {
-
-            @Override
-            public List<UserGroup> getEntries(int first, int pageSize, String sortField, SortOrder sortOrder, Map<String, String> filters) {
-                if (StringUtils.isEmpty(sortField)) {
-                    sortField = "name";
-                }
-                try {
-                    return DataManager.getInstance().getDao().getUserGroups(first, pageSize, sortField, sortOrder.asBoolean(), filters);
-                } catch (DAOException e) {
-                    logger.error(e.getMessage());
-                }
-
-                return Collections.emptyList();
-            }
-
-            @Override
-            public long getTotalNumberOfRecords(Map<String, String> filters) {
-                try {
-                    return DataManager.getInstance().getDao().getUserGroupCount(filters);
-                } catch (DAOException e) {
-                    logger.error(e.getMessage(), e);
-                    return 0;
-                }
-            }
-
-            @Override
-            public void resetTotalNumberOfRecords() {
-            }
-        });
-        lazyModelUserGroups.setEntriesPerPage(DEFAULT_ROWS_PER_PAGE);
-        lazyModelUserGroups.setFilters("name");
-
-        // License types
-        lazyModelLicenseTypes = new TableDataProvider<>(new TableDataSource<LicenseType>() {
-
-            @Override
-            public List<LicenseType> getEntries(int first, int pageSize, String sortField, SortOrder sortOrder, Map<String, String> filters) {
-                if (StringUtils.isEmpty(sortField)) {
-                    sortField = "name";
-                }
-                try {
-                    return DataManager.getInstance().getDao().getLicenseTypes(first, pageSize, sortField, sortOrder.asBoolean(), filters);
-                } catch (DAOException e) {
-                    logger.error(e.getMessage());
-                }
-
-                return Collections.emptyList();
-            }
-
-            @Override
-            public long getTotalNumberOfRecords(Map<String, String> filters) {
-                try {
-                    return DataManager.getInstance().getDao().getLicenseTypeCount(filters);
-                } catch (DAOException e) {
-                    logger.error(e.getMessage(), e);
-                    return 0;
-                }
-            }
-
-            @Override
-            public void resetTotalNumberOfRecords() {
-            }
-        });
-        lazyModelLicenseTypes.setEntriesPerPage(DEFAULT_ROWS_PER_PAGE);
-        lazyModelLicenseTypes.setFilters("name");
-
-        // Core license types
-        lazyModelCoreLicenseTypes = new TableDataProvider<>(new TableDataSource<LicenseType>() {
-
-            @Override
-            public List<LicenseType> getEntries(int first, int pageSize, String sortField, SortOrder sortOrder, Map<String, String> filters) {
-                if (StringUtils.isEmpty(sortField)) {
-                    sortField = "name";
-                }
-                try {
-                    return DataManager.getInstance().getDao().getCoreLicenseTypes(first, pageSize, sortField, sortOrder.asBoolean(), filters);
-                } catch (DAOException e) {
-                    logger.error(e.getMessage());
-                }
-
-                return Collections.emptyList();
-            }
-
-            @Override
-            public long getTotalNumberOfRecords(Map<String, String> filters) {
-                try {
-                    return DataManager.getInstance().getDao().getCoreLicenseTypeCount(filters);
-                } catch (DAOException e) {
-                    logger.error(e.getMessage(), e);
-                    return 0;
-                }
-            }
-
-            @Override
-            public void resetTotalNumberOfRecords() {
-            }
-        });
-        lazyModelCoreLicenseTypes.setEntriesPerPage(DEFAULT_ROWS_PER_PAGE);
-        lazyModelCoreLicenseTypes.setFilters("name");
-
-        // IP ranges
-        lazyModelIpRanges = new TableDataProvider<>(new TableDataSource<IpRange>() {
-
-            @Override
-            public List<IpRange> getEntries(int first, int pageSize, String sortField, SortOrder sortOrder, Map<String, String> filters) {
-                if (StringUtils.isEmpty(sortField)) {
-                    sortField = "name";
-                }
-                try {
-                    return DataManager.getInstance().getDao().getIpRanges(first, pageSize, sortField, sortOrder.asBoolean(), filters);
-                } catch (DAOException e) {
-                    logger.error(e.getMessage());
-                }
-
-                return Collections.emptyList();
-            }
-
-            @Override
-            public long getTotalNumberOfRecords(Map<String, String> filters) {
-                try {
-                    return DataManager.getInstance().getDao().getIpRangeCount(filters);
-                } catch (DAOException e) {
-                    logger.error(e.getMessage(), e);
-                    return 0;
-                }
-            }
-
-            @Override
-            public void resetTotalNumberOfRecords() {
-            }
-        });
-        lazyModelIpRanges.setEntriesPerPage(DEFAULT_ROWS_PER_PAGE);
-        lazyModelIpRanges.setFilters("name", "subnetMask", "description");
-
         lazyModelComments = new TableDataProvider<>(new TableDataSource<Comment>() {
 
             @Override
@@ -312,7 +189,7 @@ public class AdminBean implements Serializable {
             }
         });
         lazyModelComments.setEntriesPerPage(DEFAULT_ROWS_PER_PAGE);
-        lazyModelComments.setFilters("pi", "text");
+        lazyModelComments.setFilters("text_owner-nickName_owner-email");
     }
 
     // User
@@ -360,12 +237,15 @@ public class AdminBean implements Serializable {
         // Copy of the copy contains the previous nickname, in case the chosen one is already taken
         copy.setCopy(currentUser.getCopy().clone());
         // Do not allow the same nickname being used for multiple users
+        if (currentUser.getNickName() != null) {
+            currentUser.setNickName(currentUser.getNickName().trim());
+        }
         User nicknameOwner = DataManager.getInstance().getDao().getUserByNickname(currentUser.getNickName()); // This basically resets all changes
         if (nicknameOwner != null && nicknameOwner.getId() != currentUser.getId()) {
             Messages.error(ViewerResourceBundle.getTranslation("user_nicknameTaken", null).replace("{0}", currentUser.getNickName().trim()));
             currentUser = copy;
             currentUser.setNickName(copy.getCopy().getNickName());
-            return "adminUser";
+            return "";
         }
         currentUser = copy;
         if (getCurrentUser().getId() != null) {
@@ -373,7 +253,7 @@ public class AdminBean implements Serializable {
             if (StringUtils.isNotEmpty(passwordOne) || StringUtils.isNotEmpty(passwordTwo)) {
                 if (!passwordOne.equals(passwordTwo)) {
                     Messages.error("user_passwordMismatch");
-                    return "adminUser";
+                    return "";
                 }
                 currentUser.setNewPassword(passwordOne);
             }
@@ -381,7 +261,7 @@ public class AdminBean implements Serializable {
                 Messages.info("user_saveSuccess");
             } else {
                 Messages.error("errSave");
-                return "adminUser";
+                return "";
             }
         } else {
             // New user
@@ -389,14 +269,14 @@ public class AdminBean implements Serializable {
                 // Do not allow the same email address being used for multiple users
                 Messages.error("newUserExist");
                 logger.debug("User account already exists for '" + currentUser.getEmail() + "'.");
-                return "adminUser";
+                return "";
             }
             if (StringUtils.isEmpty(passwordOne) || StringUtils.isEmpty(passwordTwo)) {
                 Messages.error("newUserPasswordOneRequired");
-                return "adminUser";
+                return "";
             } else if (!passwordOne.equals(passwordTwo)) {
                 Messages.error("user_passwordMismatch");
-                return "adminUser";
+                return "";
             } else {
                 getCurrentUser().setNewPassword(passwordOne);
 
@@ -405,12 +285,12 @@ public class AdminBean implements Serializable {
                 Messages.info("newUserCreated");
             } else {
                 Messages.info("errSave");
-                return "adminUser";
+                return "";
             }
         }
         setCurrentUser(null);
 
-        return "adminAllUsers";
+        return "pretty:adminUsers";
     }
 
     /**
@@ -418,16 +298,51 @@ public class AdminBean implements Serializable {
      * deleteUserAction.
      * </p>
      *
-     * @param user a {@link io.goobi.viewer.model.security.user.User} object.
+     * @param user User to be deleted
+     * @param deleteContributions If true, all content created by this user will also be deleted
      * @throws io.goobi.viewer.exceptions.DAOException if any.
+     * @should delete all user public content correctly
+     * @should anonymize all user public content correctly
      */
-    public void deleteUserAction(User user) throws DAOException {
-        logger.debug("Deleting user: " + user.getDisplayName());
-        if (DataManager.getInstance().getDao().deleteUser(user)) {
-            Messages.info("deletedSuccessfully");
-        } else {
-            Messages.error("deleteFailure");
+    public String deleteUserAction(User user, boolean deleteContributions) throws DAOException {
+        if (user == null) {
+            return "";
         }
+        if (StringUtils.isBlank(emailConfirmation) || !emailConfirmation.equals(user.getEmail())) {
+            Messages.error("admin__error_email_mismatch");
+            return "";
+        }
+
+        // Prevent deletion if user owns user groups
+        if (!user.getUserGroupOwnerships().isEmpty()) {
+            Messages.error("admin__error_delete_user_group_ownerships");
+            return "";
+        }
+
+        logger.debug("Deleting user: {} (delete contributions: {})", user.getDisplayName(), deleteContributions);
+        if (deleteContributions) {
+            // Delete all public content created by this user
+            UserTools.deleteUserPublicContributions(user);
+        } else if (EmailValidator.validateEmailAddress(DataManager.getInstance().getConfiguration().getAnonymousUserEmailAddress())) {
+            // Move all public content to an anonymous user
+            if (!UserTools.anonymizeUserPublicContributions(user)) {
+                Messages.error("deleteFailure");
+                return "";
+            }
+        } else {
+            logger.error("Anonymous user e-mail address not configured.");
+            Messages.error("deleteFailure");
+            return "";
+        }
+
+        // Finally, delete user (and any user-created data that's not publicly visible)
+        if (UserTools.deleteUser(user)) {
+            Messages.info("deletedSuccessfully");
+            return "pretty:adminUsers";
+        }
+
+        Messages.error("deleteFailure");
+        return "";
     }
 
     /**
@@ -437,6 +352,19 @@ public class AdminBean implements Serializable {
      */
     public void resetCurrentUserAction() {
         currentUser = new User();
+        emailConfirmation = "";
+        deleteUserContributions = false;
+    }
+
+    /**
+     * Returns all user groups in the DB. Needed for getting a list of users (e.g for adding user group members).
+     *
+     * @return a {@link java.util.List} object.
+     * @throws io.goobi.viewer.exceptions.DAOException if any.
+     */
+    public List<UserGroup> getAllUserGroups() throws DAOException {
+        logger.trace("getAllUserGroups");
+        return DataManager.getInstance().getDao().getAllUserGroups();
     }
 
     /**
@@ -444,23 +372,29 @@ public class AdminBean implements Serializable {
      *
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
-    public void saveUserGroupAction() throws DAOException {
-        if (currentUserGroup != null) {
-            if (getCurrentUserGroup().getId() != null) {
-                if (DataManager.getInstance().getDao().updateUserGroup(getCurrentUserGroup())) {
-                    Messages.info("updatedSuccessfully");
-                } else {
-                    Messages.info("errSave");
-                }
+    public String saveUserGroupAction() throws DAOException {
+        if (currentUserGroup == null) {
+            return "pretty:adminGroups";
+        }
+
+        if (getCurrentUserGroup().getId() != null) {
+            if (DataManager.getInstance().getDao().updateUserGroup(getCurrentUserGroup())) {
+                Messages.info("updatedSuccessfully");
             } else {
-                if (DataManager.getInstance().getDao().addUserGroup(getCurrentUserGroup())) {
-                    Messages.info("addedSuccessfully");
-                } else {
-                    Messages.info("errSave");
-                }
+                Messages.info("errSave");
+                return "pretty:adminGroupEdit";
+            }
+        } else {
+            if (DataManager.getInstance().getDao().addUserGroup(getCurrentUserGroup())) {
+                Messages.info("addedSuccessfully");
+            } else {
+                Messages.info("errSave");
+                return "pretty:adminGroupNew";
             }
         }
         setCurrentUserGroup(null);
+
+        return "pretty:adminGroups";
     }
 
     /**
@@ -575,6 +509,13 @@ public class AdminBean implements Serializable {
         }
 
         logger.trace("saveUserRoleAction: {}, {}, {}", currentUserRole.getUserGroup(), currentUserRole.getUser(), currentUserRole);
+        // If this the user group is not yet persisted, add it to DB first
+        if (currentUserRole.getUserGroup() != null && currentUserRole.getUserGroup().getId() == null) {
+            if (!DataManager.getInstance().getDao().addUserGroup(currentUserRole.getUserGroup())) {
+                Messages.info("errSave");
+                return;
+            }
+        }
         if (getCurrentUserRole().getId() != null) {
             // existing
             if (DataManager.getInstance().getDao().updateUserRole(getCurrentUserRole())) {
@@ -624,6 +565,51 @@ public class AdminBean implements Serializable {
 
     /**
      * 
+     * @return Two SelectItemGroups for core and regular license types
+     * @throws DAOException
+     * @should group license types in select item groups correctly
+     */
+    public List<SelectItem> getGroupedLicenseTypeSelectItems() throws DAOException {
+        List<LicenseType> licenseTypes = getAllLicenseTypes();
+        if (licenseTypes.isEmpty()) {
+            return Collections.emptyList();
+        }
+
+        List<LicenseType> list1 = new ArrayList<>();
+        List<LicenseType> list2 = new ArrayList<>();
+        for (LicenseType licenseType : licenseTypes) {
+            if (licenseType.isCore()) {
+                list1.add(licenseType);
+            } else {
+                list2.add(licenseType);
+            }
+        }
+
+        List<SelectItem> ret = new ArrayList<>(licenseTypes.size());
+        {
+            SelectItemGroup group1 = new SelectItemGroup(ViewerResourceBundle.getTranslation("admin__license_function", null));
+            SelectItem[] array1 = new SelectItem[list1.size()];
+            for (int i = 0; i < array1.length; ++i) {
+                array1[i] = new SelectItem(list1.get(i), ViewerResourceBundle.getTranslation(list1.get(i).getName(), null));
+            }
+            group1.setSelectItems(array1);
+            ret.add(group1);
+        }
+        {
+            SelectItemGroup group2 = new SelectItemGroup(ViewerResourceBundle.getTranslation("admin__license", null));
+            SelectItem[] array2 = new SelectItem[list2.size()];
+            for (int i = 0; i < array2.length; ++i) {
+                array2[i] = new SelectItem(list2.get(i), ViewerResourceBundle.getTranslation(list2.get(i).getName(), null));
+            }
+            group2.setSelectItems(array2);
+            ret.add(group2);
+        }
+
+        return ret;
+    }
+
+    /**
+     * 
      * @param core
      * @return all license types in the database where this.core=core
      * @throws DAOException
@@ -646,13 +632,13 @@ public class AdminBean implements Serializable {
 
     /**
      * <p>
-     * getAllRoleLicenseTypes.
+     * getAllCoreLicenseTypes.
      * </p>
      *
      * @return all license types in the database where core=true
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
-    public List<LicenseType> getAllRoleLicenseTypes() throws DAOException {
+    public List<LicenseType> getAllCoreLicenseTypes() throws DAOException {
         return getFilteredLicenseTypes(true);
     }
 
@@ -669,7 +655,7 @@ public class AdminBean implements Serializable {
     }
 
     /**
-     * Returns all existing non-core license types minus this one. Required for admin tabs.
+     * Returns all existing non-core license types minus <code>currentLicenseType</code>. Used for overriding license type selection.
      *
      * @return a {@link java.util.List} object.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
@@ -699,24 +685,36 @@ public class AdminBean implements Serializable {
      * @return a {@link java.lang.String} object.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
-    public String saveLicenseTypeAction() throws DAOException {
-        // String name = getCurrentLicenseType().getName();
-        if (getCurrentLicenseType().getId() != null) {
-            if (DataManager.getInstance().getDao().updateLicenseType(getCurrentLicenseType())) {
+    public String saveCurrentLicenseTypeAction() throws DAOException {
+        if (currentLicenseType == null) {
+            Messages.error("errSave");
+            return "licenseTypes";
+        }
+
+        // Adopt changes made to the privileges
+        if (!currentLicenseType.getPrivileges().equals(currentLicenseType.getPrivilegesCopy())) {
+            logger.trace("Saving changes to privileges");
+            currentLicenseType.setPrivileges(new HashSet<>(currentLicenseType.getPrivilegesCopy()));
+        }
+
+        if (currentLicenseType.getId() != null) {
+            if (DataManager.getInstance().getDao().updateLicenseType(currentLicenseType)) {
+                logger.trace("License type '{}' updated successfully", currentLicenseType.getName());
                 Messages.info("updatedSuccessfully");
             } else {
-                Messages.info("errSave");
+                Messages.error("errSave");
+                return "pretty:adminLicenseEdit";
             }
         } else {
-            if (DataManager.getInstance().getDao().addLicenseType(getCurrentLicenseType())) {
+            if (DataManager.getInstance().getDao().addLicenseType(currentLicenseType)) {
                 Messages.info("addedSuccessfully");
             } else {
-                Messages.info("errSave");
+                Messages.error("errSave");
+                return "pretty:adminLicenseNew";
             }
         }
-        setCurrentLicenseType(null);
 
-        return "licenseTypes";
+        return "pretty:adminLicenses";
     }
 
     /**
@@ -727,22 +725,29 @@ public class AdminBean implements Serializable {
      * @param licenseType a {@link io.goobi.viewer.model.security.LicenseType} object.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
-    public void deleteLicenseTypeAction(LicenseType licenseType) throws DAOException {
+    public String deleteLicenseTypeAction(LicenseType licenseType) throws DAOException {
+        if (licenseType == null) {
+            return "";
+        }
+
         if (DataManager.getInstance().getDao().deleteLicenseType(licenseType)) {
             Messages.info("deletedSuccessfully");
+
         } else {
             Messages.error("deleteFailure");
         }
+
+        return licenseType.isCore() ? "pretty:adminRoles" : "pretty:adminLicenseTypes";
     }
 
     /**
      * <p>
-     * resetCurrentLicenseTypeAction.
+     * newCurrentLicenseTypeAction.
      * </p>
      */
-    public void resetCurrentLicenseTypeAction() {
-        logger.trace("resetCurrentLicenseTypeAction");
-        currentLicenseType = new LicenseType();
+    public void newCurrentLicenseTypeAction(String name) {
+        logger.trace("newCurrentLicenseTypeAction({})", name);
+        currentLicenseType = new LicenseType(name);
     }
 
     /**
@@ -755,7 +760,22 @@ public class AdminBean implements Serializable {
         currentLicenseType.setCore(true);
     }
 
+    // License
+
+    public List<License> getAllLicenses() throws DAOException {
+        return DataManager.getInstance().getDao().getAllLicenses();
+    }
+
     // IpRange
+
+    /**
+     * 
+     * @return all IpRanges from the database
+     * @throws DAOException
+     */
+    public List<IpRange> getAllIpRanges() throws DAOException {
+        return DataManager.getInstance().getDao().getAllIpRanges();
+    }
 
     /**
      * <p>
@@ -764,22 +784,26 @@ public class AdminBean implements Serializable {
      *
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
-    public void saveIpRangeAction() throws DAOException {
+    public String saveIpRangeAction() throws DAOException {
         // String name = getCurrentIpRange().getName();
         if (getCurrentIpRange().getId() != null) {
             if (DataManager.getInstance().getDao().updateIpRange(getCurrentIpRange())) {
                 Messages.info("updatedSuccessfully");
             } else {
                 Messages.info("errSave");
+                return "pretty:adminIpRangeEdit";
             }
         } else {
             if (DataManager.getInstance().getDao().addIpRange(getCurrentIpRange())) {
                 Messages.info("addedSuccessfully");
             } else {
                 Messages.info("errSave");
+                return "pretty:adminIpRangeNew";
             }
         }
         setCurrentIpRange(null);
+
+        return "pretty:adminIpRanges";
     }
 
     /**
@@ -809,60 +833,12 @@ public class AdminBean implements Serializable {
 
     /**
      * <p>
-     * resetCurrentLicenseAction.
+     * Creates <code>currentLicense</code> to a new instance.
      * </p>
      */
-    public void resetCurrentLicenseAction() {
-        logger.trace("resetCurrentLicenseAction");
-        setCurrentLicense(null);
-    }
-
-    /**
-     * <p>
-     * resetCurrentLicenseForUserAction.
-     * </p>
-     */
-    public void resetCurrentLicenseForUserAction() {
-        logger.trace("resetCurrentLicenseForUserAction");
-        currentLicense = new License();
-        currentLicense.setUser(getCurrentUser());
-    }
-
-    /**
-     * <p>
-     * resetCurrentLicenseForUserGroupAction.
-     * </p>
-     */
-    public void resetCurrentLicenseForUserGroupAction() {
-        logger.trace("resetCurrentLicenseForUserGroupAction");
-        currentLicense = new License();
-        currentLicense.setUserGroup(getCurrentUserGroup());
-    }
-
-    /**
-     * <p>
-     * resetCurrentLicenseForIpRangeAction.
-     * </p>
-     */
-    public void resetCurrentLicenseForIpRangeAction() {
-        logger.trace("resetCurrentLicenseForIpRangeAction");
-        currentLicense = new License();
-        currentLicense.setIpRange(getCurrentIpRange());
-    }
-
-    /**
-     * <p>
-     * saveCurrentLicenseAction.
-     * </p>
-     *
-     * @return a {@link java.lang.String} object.
-     * @throws io.goobi.viewer.exceptions.DAOException if any.
-     */
-    public String saveCurrentLicenseAction() throws DAOException {
-        logger.trace("saveCurrentLicenseAction");
-        String ret = saveLicenseAction(currentLicense);
-        resetCurrentLicenseAction();
-        return ret;
+    public void newCurrentLicenseAction() {
+        logger.trace("newCurrentLicenseAction");
+        setCurrentLicense(new License());
     }
 
     /**
@@ -872,43 +848,92 @@ public class AdminBean implements Serializable {
      * @param license a {@link io.goobi.viewer.model.security.License} object.
      * @return a {@link java.lang.String} object.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
+     * @throws DAOException
+     * @throws IndexUnreachableException
+     * @throws PresentationException
      */
-    public String saveLicenseAction(License license) throws DAOException {
-        logger.trace("saveLicenseAction");
-        if (license == null) {
+    public String saveCurrentLicenseAction() throws DAOException, IndexUnreachableException, PresentationException {
+        logger.trace("saveCurrentLicenseAction");
+        if (currentLicense == null) {
             throw new IllegalArgumentException("license may not be null");
         }
-        if (license.getUser() != null) {
+
+        // Sync changes made to the privileges
+        if (!currentLicense.getPrivileges().equals(currentLicense.getPrivilegesCopy())) {
+            logger.trace("Saving changes to privileges");
+            currentLicense.setPrivileges(new HashSet<>(currentLicense.getPrivilegesCopy()));
+        }
+        // Sync changes made to allowed subthemes
+        if (currentLicense.getSelectableSubthemes() != null && !currentLicense.getSelectableSubthemes().isEmpty()) {
+            currentLicense.getSubthemeDiscriminatorValues().clear();
+            for (Selectable<String> selectable : currentLicense.getSelectableSubthemes()) {
+                if (selectable.isSelected()) {
+                    currentLicense.getSubthemeDiscriminatorValues().add(selectable.getValue());
+                }
+            }
+        }
+        // Sync changes made to allowed categories
+        if (currentLicense.getSelectableCategories() != null && !currentLicense.getSelectableCategories().isEmpty()) {
+            currentLicense.getAllowedCategories().clear();
+            for (Selectable<CMSCategory> selectable : currentLicense.getSelectableCategories()) {
+                if (selectable.isSelected()) {
+                    currentLicense.getAllowedCategories().add(selectable.getValue());
+                }
+            }
+        }
+        // Sync changes made to allowed templates
+        if (currentLicense.getSelectableTemplates() != null && !currentLicense.getSelectableTemplates().isEmpty()) {
+            currentLicense.getAllowedCmsTemplates().clear();
+            for (Selectable<CMSPageTemplate> selectable : currentLicense.getSelectableTemplates()) {
+                if (selectable.isSelected()) {
+                    currentLicense.getAllowedCmsTemplates().add(selectable.getValue().getId());
+                }
+            }
+        }
+
+        boolean error = false;
+        if (currentLicense.getUser() != null) {
             // User
-            license.getUser().addLicense(license);
-            if (DataManager.getInstance().getDao().updateUser(license.getUser())) {
+            currentLicense.getUser().addLicense(currentLicense);
+            if (DataManager.getInstance().getDao().updateUser(currentLicense.getUser())) {
                 Messages.info("license_licenseSaveSuccess");
             } else {
                 Messages.error("license_licenseSaveFailure");
+                error = true;
             }
-        } else if (license.getUserGroup() != null) {
+        } else if (currentLicense.getUserGroup() != null) {
             // UserGroup
-            license.getUserGroup().addLicense(license);
-            if (DataManager.getInstance().getDao().updateUserGroup(license.getUserGroup())) {
+            currentLicense.getUserGroup().addLicense(currentLicense);
+            if (DataManager.getInstance().getDao().updateUserGroup(currentLicense.getUserGroup())) {
                 Messages.info("license_licenseSaveSuccess");
             } else {
                 Messages.error("license_licenseSaveFailure");
+                error = true;
             }
-        } else if (license.getIpRange() != null) {
+        } else if (currentLicense.getIpRange() != null) {
             // IpRange
-            logger.trace("ip range id:{} ", license.getIpRange().getId());
-            license.getIpRange().addLicense(license);
-            if (DataManager.getInstance().getDao().updateIpRange(license.getIpRange())) {
+            logger.trace("ip range id:{} ", currentLicense.getIpRange().getId());
+            currentLicense.getIpRange().addLicense(currentLicense);
+            if (DataManager.getInstance().getDao().updateIpRange(currentLicense.getIpRange())) {
                 Messages.info("license_licenseSaveSuccess");
             } else {
                 Messages.error("license_licenseSaveFailure");
+                error = true;
             }
         } else {
             logger.trace("nothing");
             Messages.error("license_licenseSaveFailure");
+            error = true;
         }
 
-        return "";
+        if (error) {
+            if (currentLicense.getId() != null) {
+                return "pretty:adminRightsEdit";
+            }
+            return "pretty:adminRightsNew";
+        }
+
+        return "pretty:adminRights";
     }
 
     /**
@@ -924,20 +949,18 @@ public class AdminBean implements Serializable {
         if (license == null) {
             throw new IllegalArgumentException("license may not be null");
         }
+
         boolean success = false;
-        String ret = "adminUser";
-        logger.debug("removing license: " + license.getLicenseType().getName());
+        logger.debug("removing license: {}", license.getLicenseType().getName());
         if (license.getUser() != null) {
             license.getUser().removeLicense(license);
             success = DataManager.getInstance().getDao().updateUser(license.getUser());
         } else if (license.getUserGroup() != null) {
             license.getUserGroup().removeLicense(license);
             success = DataManager.getInstance().getDao().updateUserGroup(license.getUserGroup());
-            ret = "adminUserGroup";
         } else if (license.getIpRange() != null) {
             license.getIpRange().removeLicense(license);
             success = DataManager.getInstance().getDao().updateIpRange(license.getIpRange());
-            ret = "adminIpRange";
         }
 
         if (success) {
@@ -945,9 +968,8 @@ public class AdminBean implements Serializable {
         } else {
             Messages.error("license_deleteFailure");
         }
-        setCurrentLicense(null);
 
-        return ret;
+        return "pretty:adminRights";
     }
 
     // Comments
@@ -1034,6 +1056,29 @@ public class AdminBean implements Serializable {
     }
 
     /**
+     * Returns the user ID of <code>currentUser/code>.
+     * 
+     * return <code>currentUser.id</code> if loaded and has ID; null if not
+     */
+    public Long getCurrentUserId() {
+        if (currentUser != null && currentUser.getId() != null) {
+            return currentUser.getId();
+        }
+
+        return null;
+    }
+
+    /**
+     * Sets the current user by loading them from the DB via the given user ID.
+     * 
+     * @param id
+     * @throws DAOException
+     */
+    public void setCurrentUserId(Long id) throws DAOException {
+        this.currentUser = DataManager.getInstance().getDao().getUser(id);
+    }
+
+    /**
      * <p>
      * Getter for the field <code>currentUserGroup</code>.
      * </p>
@@ -1053,6 +1098,29 @@ public class AdminBean implements Serializable {
      */
     public void setCurrentUserGroup(UserGroup userGroup) {
         this.currentUserGroup = userGroup;
+    }
+
+    /**
+     * Returns the user ID of <code>currentUserGroup/code>.
+     * 
+     * return <code>currentUserGroup.id</code> if loaded and has ID; null if not
+     */
+    public Long getCurrentUserGroupId() {
+        if (currentUserGroup != null && currentUserGroup.getId() != null) {
+            return currentUserGroup.getId();
+        }
+
+        return null;
+    }
+
+    /**
+     * Sets <code>currentUserGroup/code> by loading it from the DB via the given ID.
+     * 
+     * @param id
+     * @throws DAOException
+     */
+    public void setCurrentUserGroupId(Long id) throws DAOException {
+        this.currentUserGroup = DataManager.getInstance().getDao().getUserGroup(id);
     }
 
     /**
@@ -1119,9 +1187,36 @@ public class AdminBean implements Serializable {
      */
     public void setCurrentLicenseType(LicenseType currentLicenseType) {
         if (currentLicenseType != null) {
-            logger.debug("setCurrentLicenseType: " + currentLicenseType.getName());
+            logger.trace("setCurrentLicenseType: {}", currentLicenseType.getName());
+            // Prepare privileges working copy (but only if the same license type is not already set)
+            if (!currentLicenseType.equals(this.currentLicenseType)) {
+                currentLicenseType.setPrivilegesCopy(new HashSet<>(currentLicenseType.getPrivileges()));
+            }
         }
         this.currentLicenseType = currentLicenseType;
+    }
+
+    /**
+     * Returns the user ID of <code>currentLicenseType/code>.
+     * 
+     * return <code>currentLicenseType.id</code> if loaded and has ID; null if not
+     */
+    public Long getCurrentLicenseTypeId() {
+        if (currentLicenseType != null && currentLicenseType.getId() != null) {
+            return currentLicenseType.getId();
+        }
+
+        return null;
+    }
+
+    /**
+     * Sets <code>currentUserGroup</code> by loading it from the DB via the given ID.
+     * 
+     * @param id
+     * @throws DAOException
+     */
+    public void setCurrentLicenseTypeId(Long id) throws DAOException {
+        setCurrentLicenseType(DataManager.getInstance().getDao().getLicenseType(id));
     }
 
     /**
@@ -1143,8 +1238,40 @@ public class AdminBean implements Serializable {
      * @param currentLicense the currentLicense to set
      */
     public void setCurrentLicense(License currentLicense) {
-        logger.trace("setCurrentLicense: {}", currentLicense);
+        if (currentLicense != null) {
+            logger.trace("setCurrentLicense: {}", currentLicense.toString());
+            // Prepare privileges working copy (but only if the same license is not already set)
+            currentLicense.resetTempData();
+            if (!currentLicense.equals(this.currentLicense)) {
+                currentLicense.setPrivilegesCopy(new HashSet<>(currentLicense.getPrivileges()));
+            }
+        }
         this.currentLicense = currentLicense;
+    }
+
+    /**
+     * Returns the user ID of <code>currentLicense/code>.
+     * 
+     * return <code>currentLicense.id</code> if loaded and has ID; null if not
+     */
+    public Long getCurrentLicenseId() {
+        if (currentLicense != null && currentLicense.getId() != null) {
+            return currentLicense.getId();
+        }
+
+        return null;
+    }
+
+    /**
+     * Sets <code>currentLicense/code> by loading it from the DB via the given ID.
+     * 
+     * @param id
+     * @throws DAOException
+     */
+    public void setCurrentLicenseId(Long id) throws DAOException {
+        if (ObjectUtils.notEqual(getCurrentLicenseId(), id)) {
+            setCurrentLicense(DataManager.getInstance().getDao().getLicense(id));
+        }
     }
 
     /**
@@ -1167,6 +1294,29 @@ public class AdminBean implements Serializable {
      */
     public void setCurrentIpRange(IpRange currentIpRange) {
         this.currentIpRange = currentIpRange;
+    }
+
+    /**
+     * Returns the user ID of <code>currentIpRange/code>.
+     * 
+     * return <code>currentIpRange.id</code> if loaded and has ID; null if not
+     */
+    public Long getCurrentIpRangeId() {
+        if (currentIpRange != null && currentIpRange.getId() != null) {
+            return currentIpRange.getId();
+        }
+
+        return null;
+    }
+
+    /**
+     * Sets <code>currentIpRange/code> by loading it from the DB via the given ID.
+     * 
+     * @param id
+     * @throws DAOException
+     */
+    public void setCurrentIpRangeId(Long id) throws DAOException {
+        this.currentIpRange = DataManager.getInstance().getDao().getIpRange(id);
     }
 
     /**
@@ -1213,94 +1363,6 @@ public class AdminBean implements Serializable {
      */
     public List<User> getPageUsers() {
         return lazyModelUsers.getPaginatorList();
-    }
-
-    /**
-     * <p>
-     * Getter for the field <code>lazyModelUserGroups</code>.
-     * </p>
-     *
-     * @return the lazyModelUserGroups
-     */
-    public TableDataProvider<UserGroup> getLazyModelUserGroups() {
-        return lazyModelUserGroups;
-    }
-
-    /**
-     * <p>
-     * getPageUserGroups.
-     * </p>
-     *
-     * @return a {@link java.util.List} object.
-     */
-    public List<UserGroup> getPageUserGroups() {
-        return lazyModelUserGroups.getPaginatorList();
-    }
-
-    /**
-     * <p>
-     * Getter for the field <code>lazyModelLicenseTypes</code>.
-     * </p>
-     *
-     * @return the lazyModelLicenseTypes
-     */
-    public TableDataProvider<LicenseType> getLazyModelLicenseTypes() {
-        return lazyModelLicenseTypes;
-    }
-
-    /**
-     * <p>
-     * Getter for the field <code>lazyModelCoreLicenseTypes</code>.
-     * </p>
-     *
-     * @return the lazyModelCoreLicenseTypes
-     */
-    public TableDataProvider<LicenseType> getLazyModelCoreLicenseTypes() {
-        return lazyModelCoreLicenseTypes;
-    }
-
-    /**
-     * <p>
-     * getPageLicenseTypes.
-     * </p>
-     *
-     * @return a {@link java.util.List} object.
-     */
-    public List<LicenseType> getPageLicenseTypes() {
-        return lazyModelLicenseTypes.getPaginatorList();
-    }
-
-    /**
-     * <p>
-     * getPageCoreLicenseTypes.
-     * </p>
-     *
-     * @return a {@link java.util.List} object.
-     */
-    public List<LicenseType> getPageCoreLicenseTypes() {
-        return lazyModelCoreLicenseTypes.getPaginatorList();
-    }
-
-    /**
-     * <p>
-     * Getter for the field <code>lazyModelIpRanges</code>.
-     * </p>
-     *
-     * @return the lazyModelIpRanges
-     */
-    public TableDataProvider<IpRange> getLazyModelIpRanges() {
-        return lazyModelIpRanges;
-    }
-
-    /**
-     * <p>
-     * getPageIpRanges.
-     * </p>
-     *
-     * @return a {@link java.util.List} object.
-     */
-    public List<IpRange> getPageIpRanges() {
-        return lazyModelIpRanges.getPaginatorList();
     }
 
     /**
@@ -1367,6 +1429,35 @@ public class AdminBean implements Serializable {
      */
     public void setPasswordTwo(String passwordTwo) {
         this.passwordTwo = passwordTwo;
+    }
+
+    /**
+     * @return the emailConfirmation
+     */
+    public String getEmailConfirmation() {
+        return emailConfirmation;
+    }
+
+    /**
+     * @param emailConfirmation the emailConfirmation to set
+     */
+    public void setEmailConfirmation(String emailConfirmation) {
+        this.emailConfirmation = emailConfirmation;
+    }
+
+    /**
+     * @return the deleteUserContributions
+     */
+    public boolean isDeleteUserContributions() {
+        return deleteUserContributions;
+    }
+
+    /**
+     * @param deleteUserContributions the deleteUserContributions to set
+     */
+    public void setDeleteUserContributions(boolean deleteUserContributions) {
+        logger.trace("setDeleteUserContributions: {}", deleteUserContributions);
+        this.deleteUserContributions = deleteUserContributions;
     }
 
     /**
@@ -1506,22 +1597,94 @@ public class AdminBean implements Serializable {
     }
 
     /**
-     * Querys solr for a list of all values of the set ACCESSCONDITION
+     * Queries Solr for a list of all values of the set ACCESSCONDITION
      *
      * @return A list of all indexed ACCESSCONDITIONs
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      */
     public List<String> getPossibleAccessConditions() throws IndexUnreachableException, PresentationException {
-
-        List<String> accessConditions = SearchHelper.getFacetValues(SolrConstants.ACCESSCONDITION + ":[* TO *]", SolrConstants.ACCESSCONDITION, 0);
+        List<String> accessConditions = SearchHelper.getFacetValues(
+                "+" + SolrConstants.ACCESSCONDITION + ":[* TO *] -" + SolrConstants.ACCESSCONDITION + ":" + SolrConstants.OPEN_ACCESS_VALUE,
+                SolrConstants.ACCESSCONDITION, 1);
         Collections.sort(accessConditions);
         return accessConditions;
+    }
+
+    /**
+     * 
+     * @return List of access condition values that have no corresponding license type in the database
+     * @throws IndexUnreachableException
+     * @throws PresentationException
+     * @throws DAOException
+     */
+    public List<String> getNotConfiguredAccessConditions() throws IndexUnreachableException, PresentationException, DAOException {
+        List<String> accessConditions = getPossibleAccessConditions();
+        if (accessConditions.isEmpty()) {
+            return Collections.emptyList();
+        }
+
+        List<LicenseType> licenseTypes = getAllLicenseTypes();
+        if (licenseTypes.isEmpty()) {
+            return accessConditions;
+        }
+
+        List<String> ret = new ArrayList<>();
+        for (String accessCondition : accessConditions) {
+            boolean found = false;
+            for (LicenseType licenseType : licenseTypes) {
+                if (licenseType.getName().equals(accessCondition)) {
+                    found = true;
+                    break;
+                }
+            }
+            if (!found) {
+                ret.add(accessCondition);
+            }
+        }
+
+        return ret;
+
+    }
+
+    /**
+     * 
+     * @param accessCondition
+     * @return Number of records containing the given access condition value
+     * @throws PresentationException
+     * @throws IndexUnreachableException
+     */
+    public long getNumRecordsWithAccessCondition(String accessCondition) throws IndexUnreachableException, PresentationException {
+        return DataManager.getInstance()
+                .getSearchIndex()
+                .getHitCount(SolrSearchIndex.getQueryForAccessCondition(accessCondition, false));
+    }
+
+    /**
+     * 
+     * @param accessCondition
+     * @return
+     */
+    public String getUrlQueryForAccessCondition(String accessCondition) {
+        String query = SolrSearchIndex.getQueryForAccessCondition(accessCondition, true);
+        try {
+            return URLEncoder.encode(query, StringTools.DEFAULT_ENCODING);
+        } catch (UnsupportedEncodingException e) {
+            return query;
+        }
     }
 
     public void triggerMessage(String message) {
         logger.debug("Show message " + message);
         Messages.info(ViewerResourceBundle.getTranslation(message, null));
+    }
 
+    /**
+     * 
+     * @param privilege
+     * @return
+     */
+    public String getMessageKeyForPrivilege(String privilege) {
+        return "license_priv_" + privilege.toLowerCase();
     }
 }

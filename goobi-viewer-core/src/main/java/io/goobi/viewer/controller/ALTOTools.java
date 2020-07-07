@@ -21,7 +21,6 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
-import java.text.Normalizer;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -46,16 +45,15 @@ import org.slf4j.LoggerFactory;
 
 import de.intranda.digiverso.ocr.alto.model.structureclasses.Line;
 import de.intranda.digiverso.ocr.alto.model.structureclasses.Page;
-import de.intranda.digiverso.ocr.alto.model.structureclasses.lineelements.LineElement;
 import de.intranda.digiverso.ocr.alto.model.structureclasses.lineelements.Word;
 import de.intranda.digiverso.ocr.alto.model.structureclasses.logical.AltoDocument;
 import de.intranda.digiverso.ocr.alto.model.structureclasses.logical.Tag;
 import de.intranda.digiverso.ocr.alto.model.superclasses.GeometricData;
 import de.intranda.digiverso.ocr.alto.utils.HyphenationLinker;
-import io.goobi.viewer.servlets.rest.ner.ElementReference;
-import io.goobi.viewer.servlets.rest.ner.NERTag;
-import io.goobi.viewer.servlets.rest.ner.NERTag.Type;
-import io.goobi.viewer.servlets.rest.ner.TagCount;
+import io.goobi.viewer.api.rest.model.ner.ElementReference;
+import io.goobi.viewer.api.rest.model.ner.NERTag;
+import io.goobi.viewer.api.rest.model.ner.NERTag.Type;
+import io.goobi.viewer.api.rest.model.ner.TagCount;
 
 /**
  * <p>

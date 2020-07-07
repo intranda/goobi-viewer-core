@@ -69,7 +69,7 @@ var viewerJS = ( function( viewer ) {
                         html: true
                     };
                     
-                    $( _defaults.popoverTriggerSelector ).popover( 'destroy' );
+                    $( _defaults.popoverTriggerSelector ).popover( 'dispose' );
                     _this.popover( _popoverConfig );
                     _this.popover( 'show' );
                 } );
@@ -81,7 +81,7 @@ var viewerJS = ( function( viewer ) {
                     return;
                 }
                 else {
-                    $( _defaults.popoverTriggerSelector ).popover( 'destroy' );
+                    $( _defaults.popoverTriggerSelector ).popover( 'dispose' );
                 }
             } );
         }

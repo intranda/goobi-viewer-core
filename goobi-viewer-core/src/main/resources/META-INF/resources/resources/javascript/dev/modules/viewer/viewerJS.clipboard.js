@@ -44,10 +44,10 @@ var viewerJS = ( function( viewer ) {
                        }
                        $trigger
                        .attr('data-original-title', tooltipText)
-                       .tooltip('fixTitle')
+                       .tooltip('_fixTitle')
                        .tooltip('show')
                        .attr('data-original-title', $trigger.attr('data-original-original-title'))
-                       .tooltip('fixTitle');
+                       .tooltip('_fixTitle');
                    }
         
                 })

@@ -16,7 +16,6 @@
 package io.goobi.viewer.managedbeans;
 
 import java.io.Serializable;
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Stream;
@@ -40,7 +39,7 @@ import io.goobi.viewer.model.cms.CMSCategory;
  *
  * @author florian
  */
-@Named("categories")
+@Named("cmsCategoriesBean")
 @SessionScoped
 public class CmsCategoriesBean implements Serializable {
 
@@ -77,9 +76,9 @@ public class CmsCategoriesBean implements Serializable {
                 stream = stream.filter(cat -> !getSelectedCategory().equals(cat));
             }
             return !stream.anyMatch(cat -> cat.getName().equalsIgnoreCase(getCategoryName()));
-        } else {
-            return false;
         }
+
+        return false;
     }
 
     /**
@@ -101,21 +100,36 @@ public class CmsCategoriesBean implements Serializable {
      *
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
-    public void save() throws DAOException {
-        if (isValid()) {
-            if (isEditing()) {
-                this.selectedCategory.setName(getCategoryName());
-                this.selectedCategory.setDescription(getCategoryDescription());
-                DataManager.getInstance().getDao().updateCategory(this.selectedCategory);
-            } else {
-                CMSCategory category = new CMSCategory();
-                category.setName(getCategoryName());
-                category.setDescription(getCategoryDescription());
-                DataManager.getInstance().getDao().addCategory(category);
+    public String saveCategoryAction() {
+        try {
+            if (isValid()) {
+                if (isEditing()) {
+                    this.selectedCategory.setName(getCategoryName());
+                    this.selectedCategory.setDescription(getCategoryDescription());
+                    DataManager.getInstance().getDao().updateCategory(this.selectedCategory);
+                    Messages.info("updatedSuccessfully");
+                } else {
+                    CMSCategory category = new CMSCategory();
+                    category.setName(getCategoryName());
+                    category.setDescription(getCategoryDescription());
+                    DataManager.getInstance().getDao().addCategory(category);
+                    Messages.info("addedSuccessfully");
+                }
+
+                BeanUtils.getCmsMediaBean().resetData();
+                endEditing();
+                return "pretty:adminCmsCategories";
             }
-            BeanUtils.getCmsMediaBean().resetData();
-            endEditing();
+        } catch (DAOException e) {
+            logger.error(e.getMessage(), e);
+            Messages.error("errSave");
         }
+
+        if (isEditing()) {
+            return "pretty:adminCmsEditCategory";
+        }
+
+        return "pretty:adminCmsNewCategory";
     }
 
     /**
@@ -123,7 +137,7 @@ public class CmsCategoriesBean implements Serializable {
      *
      * @param category a {@link io.goobi.viewer.model.cms.CMSCategory} object.
      */
-    public void delete(CMSCategory category) {
+    public String deleteCategoryAction(CMSCategory category) {
         if (getSelectedCategory() != null && getSelectedCategory().equals(category)) {
             endEditing();
         }
@@ -140,14 +154,18 @@ public class CmsCategoriesBean implements Serializable {
         } catch (DAOException e) {
             logger.error("Error deleting category ", e);
             Messages.error("admin__category_delete_error");
+
         }
+
+        return "pretty:adminCmsCategories";
     }
 
     /**
      * End the editing mode if active without persisting anything. Also clear categoryName and categoryDescription
      */
-    public void cancel() {
+    public String cancelAction() {
         endEditing();
+        return "pretty:adminCmsCategories";
     }
 
     /**
@@ -159,7 +177,7 @@ public class CmsCategoriesBean implements Serializable {
         return getSelectedCategory() != null;
     }
 
-    private void endEditing() {
+    public void endEditing() {
         this.selectedCategory = null;
         setCategoryName("");
         setCategoryDescription("");
@@ -172,7 +190,7 @@ public class CmsCategoriesBean implements Serializable {
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
     public List<CMSCategory> getAllCategories() throws DAOException {
-        return new ArrayList<CMSCategory>(DataManager.getInstance().getDao().getAllCategories());
+        return new ArrayList<>(DataManager.getInstance().getDao().getAllCategories());
     }
 
     /**
@@ -229,5 +247,25 @@ public class CmsCategoriesBean implements Serializable {
     public CMSCategory getSelectedCategory() {
         return selectedCategory;
     }
-
+    
+    /**
+     * 
+     * @return
+     */
+    public Long getSelectedCategoryId() {
+        if(selectedCategory != null) {
+            return selectedCategory.getId();
+        }
+        
+        return null;
+    }
+    
+    /**
+     * 
+     * @param id
+     * @throws DAOException
+     */
+    public void setSelectedCategoryId(Long id) throws DAOException {
+        edit(DataManager.getInstance().getDao().getCategory(id));
+    }
 }

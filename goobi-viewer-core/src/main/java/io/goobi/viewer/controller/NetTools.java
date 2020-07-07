@@ -465,4 +465,17 @@ public class NetTools {
 
         return address;
     }
+
+    /**
+     * 
+     * @param address
+     * @return
+     */
+    public static boolean isIpAddressLocalhost(String address) {
+        if (address == null) {
+            return false;
+        }
+
+        return ADDRESS_LOCALHOST_IPV6.equals(address) || ADDRESS_LOCALHOST_IPV4.equals(address);
+    }
 }

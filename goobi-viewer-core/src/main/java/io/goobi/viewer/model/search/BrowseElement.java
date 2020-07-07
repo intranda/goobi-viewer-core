@@ -246,7 +246,7 @@ public class BrowseElement implements Serializable {
                     }
                     this.metadataList.add(position,
                             new Metadata(topStructElement.getDocStructType(), null, new MetadataParameter().setType(MetadataParameterType.FIELD)
-                                    .setKey(anchorStructElement.getDocStructType()),
+                                    .setKey(topStructElement.getDocStructType()),
                                     StringTools.intern(topstructLabel)));
                 }
             }

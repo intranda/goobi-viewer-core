@@ -38,6 +38,7 @@ import de.unigoettingen.sub.commons.contentlib.servlet.model.ContentServerConfig
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.model.security.LicenseType;
 import io.goobi.viewer.model.security.Role;
+import io.goobi.viewer.model.security.user.UserTools;
 
 /**
  * <p>
@@ -63,18 +64,21 @@ public class ContextListener implements ServletContextListener {
     /** {@inheritDoc} */
     @Override
     public void contextInitialized(ServletContextEvent sce) {
-        logger.info("Launching {}", DataManager.getVersion());
+        logger.info("Launching {}", Version.asString());
         DataManager.getInstance();
         logger.trace("Temp folder: {}", DataManager.getInstance().getConfiguration().getTempFolder());
-        // Add a "member" role, if not yet in the database
         try {
+            // Add a "member" role, if not yet in the database
             if (DataManager.getInstance().getDao().getRole("member") == null) {
                 logger.info("Role 'member' does not exist yet, adding...");
                 if (!DataManager.getInstance().getDao().addRole(new Role("member"))) {
                     logger.error("Could not add static role 'member'.");
                 }
             }
+            // Add core license type
             LicenseType.addCoreLicenseTypesToDB();
+            // Add anonymous user
+            UserTools.checkAndCreateAnonymousUser();
         } catch (Throwable e) {
             logger.error(e.getMessage());
         }

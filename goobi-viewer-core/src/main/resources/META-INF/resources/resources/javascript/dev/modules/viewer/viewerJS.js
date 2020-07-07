@@ -268,7 +268,17 @@ var viewerJS = (function () {
                 break;
             case 'Safari':
                 break;
-        }
+        } 
+        
+        // hide second scrollbar if modal is too long, bootstrap adaption
+		$(document.body).on("show.bs.modal", function () {
+			$(window.document).find("html").addClass("modal-open");
+		});
+		$(document.body).on("hide.bs.modal", function () {
+			$(window.document).find("html").removeClass("modal-open");
+		});
+     
+	// EOL viewerJS function
     };
 
     viewer.initFragmentNavigation = function () {
@@ -352,6 +362,17 @@ var viewerJS = (function () {
             var filter = new viewerJS.listFilter(filterConfig);
         });
     }
+
+    // init bootstrap 4 popovers
+	$(document).ready(function(){
+	    try {	        
+	        $('[data-toggle="popover"]').popover({
+	            trigger : 'hover'
+	        });
+	    } catch(error) {
+	        //no bootstrap defined
+	    }
+	});
     
     /**
      * Check if a variable is a string
@@ -364,5 +385,12 @@ var viewerJS = (function () {
     viewer.tinyConfig = {};
 
     return viewer;
-
+    
 })(jQuery);
+  
+	//reset global bootstrap boundary of tooltips to window
+console.log("bootstrap")
+    if($.fn.tooltip.Constructor) {        
+        $.fn.tooltip.Constructor.Default.boundary = "window";
+        $.fn.dropdown.Constructor.Default.boundary = "window";
+    }

@@ -41,6 +41,8 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.sun.faces.config.rules.ApplicationRule;
+
 import de.intranda.api.annotation.oa.Motivation;
 import de.intranda.api.annotation.oa.OpenAnnotation;
 import de.intranda.api.iiif.presentation.AnnotationList;
@@ -57,7 +59,11 @@ import de.intranda.api.iiif.search.SearchResult;
 import de.unigoettingen.sub.commons.contentlib.exceptions.ContentNotFoundException;
 import de.unigoettingen.sub.commons.contentlib.exceptions.IllegalRequestException;
 import de.unigoettingen.sub.commons.contentlib.servlet.rest.CORSBinding;
+import io.goobi.viewer.api.rest.ViewerRestServiceBinding;
+import io.goobi.viewer.api.rest.v1.ApiUrls;
+import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.SolrConstants;
+import io.goobi.viewer.controller.SolrSearchIndex;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
@@ -72,7 +78,6 @@ import io.goobi.viewer.model.iiif.search.IIIFSearchBuilder;
 import io.goobi.viewer.model.viewer.PageType;
 import io.goobi.viewer.model.viewer.PhysicalElement;
 import io.goobi.viewer.model.viewer.StructElement;
-import io.goobi.viewer.servlets.rest.ViewerRestServiceBinding;
 import io.goobi.viewer.servlets.rest.content.ContentResource;
 
 /**
@@ -183,7 +188,7 @@ public class ManifestResource extends AbstractResource {
     public SearchResult searchInManifest(@PathParam("pi") String pi, @QueryParam("q") String query, @QueryParam("motivation") String motivation,
             @QueryParam("date") String date, @QueryParam("user") String user, @QueryParam("page") Integer page)
             throws IndexUnreachableException, PresentationException {
-        return new IIIFSearchBuilder(getRequestURI(), query, pi).setMotivation(motivation).setDate(date).setUser(user).setPage(page).build();
+        return new IIIFSearchBuilder(new ApiUrls(), query, pi).setMotivation(motivation).setDate(date).setUser(user).setPage(page).build();
     }
 
     /**
@@ -207,7 +212,7 @@ public class ManifestResource extends AbstractResource {
     public AutoSuggestResult autoCompleteInManifest(@PathParam("pi") String pi, @QueryParam("q") String query,
             @QueryParam("motivation") String motivation, @QueryParam("date") String date, @QueryParam("user") String user,
             @QueryParam("page") Integer page) throws IndexUnreachableException, PresentationException {
-        return new IIIFSearchBuilder(getRequestURI(), query, pi).setMotivation(motivation)
+        return new IIIFSearchBuilder(new ApiUrls(), query, pi).setMotivation(motivation)
                 .setDate(date)
                 .setUser(user)
                 .setPage(page)
@@ -232,7 +237,6 @@ public class ManifestResource extends AbstractResource {
     @Produces({ MediaType.APPLICATION_JSON })
     public IPresentationModelElement getManifestSimple(@PathParam("pi") String pi) throws PresentationException, IndexUnreachableException,
             URISyntaxException, ViewerConfigurationException, DAOException, ContentNotFoundException {
-
         return createManifest(pi, BuildMode.IIIF_SIMPLE);
     }
 
@@ -400,11 +404,11 @@ public class ManifestResource extends AbstractResource {
         List<StructElement> docs = getStructureBuilder().getDocumentWithChildren(pi);
 
         if (docs.isEmpty()) {
-            throw new ContentNotFoundException("Not document with PI = " + pi + " and logId = " + logId + " found");
+            throw new ContentNotFoundException("No document with PI = " + pi + " and logId = " + logId + " found");
         }
         List<Range> ranges = getStructureBuilder().generateStructure(docs, pi, false);
-        Optional<Range> range = ranges.stream().filter(r -> r.getId().toString().endsWith(logId + "/")).findFirst();
-        return range.orElseThrow(() -> new ContentNotFoundException("Not document with PI = " + pi + " and logId = " + logId + " found"));
+        Optional<Range> range = ranges.stream().filter(r -> r.getId().toString().contains(logId)).findFirst();
+        return range.orElseThrow(() -> new ContentNotFoundException("No document with PI = " + pi + " and logId = " + logId + " found"));
     }
 
     /**
@@ -601,7 +605,7 @@ public class ManifestResource extends AbstractResource {
 
     private StructureBuilder getStructureBuilder() {
         if (this.structureBuilder == null) {
-            this.structureBuilder = new StructureBuilder(this.servletRequest);
+            this.structureBuilder = new StructureBuilder(new ApiUrls(DataManager.getInstance().getConfiguration().getRestApiUrl()));
         }
         return this.structureBuilder;
     }
@@ -615,7 +619,7 @@ public class ManifestResource extends AbstractResource {
      */
     public ManifestBuilder getManifestBuilder() {
         if (this.manifestBuilder == null) {
-            this.manifestBuilder = new ManifestBuilder(servletRequest);
+            this.manifestBuilder = new ManifestBuilder(new ApiUrls(DataManager.getInstance().getConfiguration().getRestApiUrl()));
         }
         return manifestBuilder;
     }
@@ -629,7 +633,7 @@ public class ManifestResource extends AbstractResource {
      */
     public SequenceBuilder getSequenceBuilder() {
         if (this.sequenceBuilder == null) {
-            this.sequenceBuilder = new SequenceBuilder(servletRequest);
+            this.sequenceBuilder = new SequenceBuilder(new ApiUrls(DataManager.getInstance().getConfiguration().getRestApiUrl()));
         }
         return sequenceBuilder;
     }
@@ -643,7 +647,7 @@ public class ManifestResource extends AbstractResource {
      */
     public LayerBuilder getLayerBuilder() {
         if (this.layerBuilder == null) {
-            this.layerBuilder = new LayerBuilder(servletRequest);
+            this.layerBuilder = new LayerBuilder(new ApiUrls(DataManager.getInstance().getConfiguration().getRestApiUrl()));
         }
         return layerBuilder;
     }

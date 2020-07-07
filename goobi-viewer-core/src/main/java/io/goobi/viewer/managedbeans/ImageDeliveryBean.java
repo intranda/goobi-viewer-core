@@ -15,7 +15,6 @@
  */
 package io.goobi.viewer.managedbeans;
 
-import java.io.IOException;
 import java.io.Serializable;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -33,8 +32,10 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import de.unigoettingen.sub.commons.contentlib.imagelib.transform.Region;
 import de.unigoettingen.sub.commons.util.PathConverter;
+import io.goobi.viewer.api.rest.AbstractApiUrlManager;
+import io.goobi.viewer.api.rest.AbstractApiUrlManager.ApiInfo;
+import io.goobi.viewer.api.rest.v1.ApiUrls;
 import io.goobi.viewer.controller.Configuration;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.StringTools;
@@ -53,7 +54,6 @@ import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.model.viewer.PageType;
 import io.goobi.viewer.model.viewer.PhysicalElement;
 import io.goobi.viewer.model.viewer.StructElement;
-import io.goobi.viewer.model.viewer.ViewManager;
 import io.goobi.viewer.servlets.utils.ServletUtils;
 
 /**
@@ -111,7 +111,7 @@ public class ImageDeliveryBean implements Serializable {
                 logger.error("Failed to initialize ImageDeliveryBean: No servlet request and no jsf context found");
                 servletPath = "";
             }
-            init(config, servletPath);
+            init(config);
         } catch (NullPointerException e) {
             logger.error("Failed to initialize ImageDeliveryBean: Resources misssing");
         }
@@ -121,24 +121,36 @@ public class ImageDeliveryBean implements Serializable {
      * Initialize for testing
      *
      * @param config a {@link io.goobi.viewer.controller.Configuration} object.
-     * @param servletPath a {@link java.lang.String} object.
+     * @param apiUrls a {@link java.lang.String} object.
      */
-    public void init(Configuration config, String servletPath) {
-        this.staticImagesURI = getStaticImagesPath(servletPath, config.getTheme());
+    public void init(Configuration config) {
+        AbstractApiUrlManager dataUrlManager = new ApiUrls(DataManager.getInstance().getConfiguration().getRestApiUrl().replace("/rest", "/api/v1"));
+        AbstractApiUrlManager contentUrlManager =
+                new ApiUrls(DataManager.getInstance().getConfiguration().getIIIFApiUrl().replace("/rest", "/api/v1"));
+        ApiInfo info = contentUrlManager.getInfo();
+        if (info == null || !info.version.equalsIgnoreCase("v1")) {
+            contentUrlManager = null;
+        }
+
+        this.staticImagesURI = getStaticImagesPath(dataUrlManager.getApplicationUrl(), config.getTheme());
         this.cmsMediaPath =
                 DataManager.getInstance().getConfiguration().getViewerHome() + DataManager.getInstance().getConfiguration().getCmsMediaFolder();
         this.tempMediaPath =
                 DataManager.getInstance().getConfiguration().getViewerHome() + DataManager.getInstance().getConfiguration().getTempMediaFolder();
 
-        iiif = new IIIFUrlHandler();
-        images = new ImageHandler();
+        iiif = new IIIFUrlHandler(contentUrlManager);
+        images = new ImageHandler(contentUrlManager);
         objects3d = new Object3DHandler(config);
-        footer = new WatermarkHandler(config, servletPath);
+        footer = new WatermarkHandler(config, DataManager.getInstance().getConfiguration().getIIIFApiUrl());
         thumbs = new ThumbnailHandler(iiif, config, this.staticImagesURI);
-        pdf = new PdfHandler(footer, config);
+        if (contentUrlManager != null) {
+            pdf = new PdfHandler(footer, contentUrlManager);
+        } else {
+            pdf = new PdfHandler(footer, config);
+        }
         media = new MediaHandler(config);
         try {
-            presentation = new IIIFPresentationAPIHandler(servletPath, config);
+            presentation = new IIIFPresentationAPIHandler(dataUrlManager, config);
         } catch (URISyntaxException e) {
             logger.error("Failed to initalize presentation api handler", e.toString());
         }
@@ -488,7 +500,7 @@ public class ImageDeliveryBean implements Serializable {
         }
         return false;
     }
-    
+
     /**
      * Tests whether the given url points to a temporary media file - i.e. any file within the configured temp media path
      *
@@ -512,11 +524,11 @@ public class ImageDeliveryBean implements Serializable {
         }
         return false;
     }
-    
+
     /**
      * @param imageName
      * @return
-     * @throws ViewerConfigurationException 
+     * @throws ViewerConfigurationException
      */
     public boolean isPublicUrl(String url) throws ViewerConfigurationException {
         return isCmsUrl(url) || isTempUrl(url);
@@ -557,7 +569,7 @@ public class ImageDeliveryBean implements Serializable {
         }
         return cmsMediaPath;
     }
-    
+
     private String getTempMediaPath() throws ViewerConfigurationException {
         if (tempMediaPath == null) {
             init();
@@ -609,7 +621,5 @@ public class ImageDeliveryBean implements Serializable {
     public void setPdf(PdfHandler pdf) {
         this.pdf = pdf;
     }
-
-
 
 }

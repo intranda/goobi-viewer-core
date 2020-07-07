@@ -1,0 +1,30 @@
+/* ==============================================================
+   Admin Licences
+   style declarations for adminLicenses.xhtml
+   ==============================================================*/
+
+#adminLicenses {
+	.admin {
+		&__license-unconfigured-entry {
+			transition: background .2s ease;
+			padding: 0.4rem 0.5rem;
+			margin: 0 -2rem;
+			&:hover {
+				background: @lightgray2;
+				text-decoration: none;
+			}
+		}
+	}
+}
+
+/* BREAKPOINT FOR LARGE DESKTOPS */
+@media screen and (max-width: @largeBreakpoint) {} 
+
+/* BREAKPOINT FOR DESKTOPS */
+@media screen and (max-width: @mediumBreakpoint) {}
+
+/* BREAKPOINT FOR TABLETS */
+@media screen and (max-width: @smallBreakpoint) {}
+
+/* BREAKPOINT FOR SMARTPHONES */
+@media screen and (max-width: @xSmallBreakpoint) {}

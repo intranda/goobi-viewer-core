@@ -9,23 +9,58 @@
     <!-- interface options -->
     <composite:interface>
         <composite:attribute name="filter" required="true" />
+        <composite:attribute name="key" required="false" default="empty" />
     </composite:interface>
 
     <!-- component content -->
     <composite:implementation>
-        <div class="column-filter-wrapper">
-            <div class="form-group">
+        <div class="admin__table-filter-inner">
+            <div class="form-group mb-0">
                 <label class="sr-only" for="#{cc.attrs.filter.column}">Filter</label>
                 <div class="input-group">
-                    <h:inputText id="#{cc.attrs.filter.column}Col" styleClass="form-control filter-input" value="#{cc.attrs.filter.value}" />
-                    <div class="input-group-addon">
-                        <h:commandLink id="#{cc.attrs.filter.column}Btn" styleClass="btn btn--icon btn-filter">
-                            <i class="fa fa-filter" aria-hidden="true"></i>
-                            <f:ajax execute="@form" render="@form" />
-                        </h:commandLink>
+                	<div class="admin__search-input-wrapper">
+	                    <h:inputText id="#{cc.attrs.filter.column}" styleClass="form-control filter-input admin__search-input" value="#{cc.attrs.filter.value}">
+	                        <f:passThroughAttribute name="aria-label" value="#{msg[cc.attrs.key]}" />
+	                    </h:inputText>
+	                    <div class="admin__search-clear">x</div>
+                    </div>
+                    <div class="input-group-append admin__search-action">
+                        <!-- MESSAGE KEY GIVEN -->
+                        <ui:fragment rendered="#{cc.attrs.key != 'empty'}">
+                            <h:commandLink id="#{cc.attrs.filter.column}BtnText" styleClass="btn btn--icon btn-filter">
+                                #{msg[cc.attrs.key]}
+                                <f:ajax execute="@form" render="@form" />
+                            </h:commandLink>
+                        </ui:fragment>
+                        <!-- NO MESSAGE KEY, USE ICON INSTEAD -->
+                        <ui:fragment rendered="#{cc.attrs.key == 'empty'}">
+                            <h:commandLink id="#{cc.attrs.filter.column}BtnIcon" styleClass="btn btn--icon btn-filter">
+                                <i class="fa fa-filter" aria-hidden="true"></i>
+                                <f:ajax execute="@form" render="@form" />
+                            </h:commandLink>
+                        </ui:fragment>
                     </div>
                 </div>
             </div>
         </div>
+        <!-- FILTER INPUT SCRIPT - ADDED HERE BECAUSE OF COMPONENT RELOAD-->
+        <script type="text/javascript">
+		$( document ).ready(function() {
+			/* check for input value and show clear button */
+	        if(!$('.admin__search-input').val() == ''){
+				$('.admin__search-clear').show();
+	        }
+			$('.admin__search-clear').click(function(){
+				/* clear value on click*/
+		    $('.admin__search-input').val("");
+			    /* trigger empty search on click */
+			    $('.admin__search-action a').click();
+			});
+			if($('.admin__table-entry').length == 0) {
+				$('.admin__table-content').append('<br/><p class="">#{msg.hitsZero}</p>');
+			}
+		});
+		</script>
     </composite:implementation>
 </ui:composition>
+

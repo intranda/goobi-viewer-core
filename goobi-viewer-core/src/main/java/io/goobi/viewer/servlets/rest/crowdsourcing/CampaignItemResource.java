@@ -15,6 +15,11 @@
  */
 package io.goobi.viewer.servlets.rest.crowdsourcing;
 
+import static io.goobi.viewer.api.rest.v1.ApiUrls.ANNOTATIONS;
+import static io.goobi.viewer.api.rest.v1.ApiUrls.ANNOTATIONS_ANNOTATION;
+import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_PAGES_ANNOTATIONS;
+import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_RECORD;
+
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
@@ -22,6 +27,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import javax.inject.Inject;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.Consumes;
@@ -33,12 +39,16 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import de.intranda.api.annotation.wa.WebAnnotation;
 import de.unigoettingen.sub.commons.contentlib.exceptions.ContentNotFoundException;
 import de.unigoettingen.sub.commons.contentlib.servlet.rest.CORSBinding;
+import io.goobi.viewer.api.rest.AbstractApiUrlManager;
+import io.goobi.viewer.api.rest.ViewerRestServiceBinding;
+import io.goobi.viewer.api.rest.resourcebuilders.AnnotationsResourceBuilder;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.IndexerTools;
 import io.goobi.viewer.dao.IDAO;
@@ -50,8 +60,6 @@ import io.goobi.viewer.model.crowdsourcing.campaigns.CampaignItem;
 import io.goobi.viewer.model.crowdsourcing.campaigns.CampaignRecordStatistic.CampaignRecordStatus;
 import io.goobi.viewer.model.iiif.presentation.builder.ManifestBuilder;
 import io.goobi.viewer.model.security.user.User;
-import io.goobi.viewer.servlets.rest.ViewerRestServiceBinding;
-import io.goobi.viewer.servlets.utils.ServletUtils;
 
 /**
  * Rest resources to create a frontend-view for a campaign to annotate or review a work, and to process the created annotations and/or changes to the
@@ -78,7 +86,9 @@ public class CampaignItemResource {
     @Context
     private HttpServletResponse servletResponse;
 
-    private final URI requestURI;
+    @Inject
+    protected AbstractApiUrlManager urls;
+    protected AnnotationsResourceBuilder annoBuilder;
 
     /**
      * <p>
@@ -86,19 +96,12 @@ public class CampaignItemResource {
      * </p>
      */
     public CampaignItemResource() {
-        this.requestURI = URI.create(DataManager.getInstance().getConfiguration().getIIIFApiUrl());
+        annoBuilder = new AnnotationsResourceBuilder(urls);
     }
-
-    /**
-     * For testing
-     *
-     * @param request a {@link javax.servlet.http.HttpServletRequest} object.
-     * @param response a {@link javax.servlet.http.HttpServletResponse} object.
-     */
-    public CampaignItemResource(HttpServletRequest request, HttpServletResponse response) {
-        this.servletRequest = request;
-        this.servletResponse = response;
-        this.requestURI = URI.create(DataManager.getInstance().getConfiguration().getRestApiUrl());
+    
+    public CampaignItemResource(AbstractApiUrlManager urls) {
+        this.urls = urls;
+        annoBuilder = new AnnotationsResourceBuilder(this.urls);
     }
 
     /**
@@ -118,8 +121,7 @@ public class CampaignItemResource {
     @CORSBinding
     public CampaignItem getItemForManifest(@PathParam("campaignId") Long campaignId, @PathParam("pi") String pi)
             throws URISyntaxException, DAOException, ContentNotFoundException {
-        URI servletURI = URI.create(ServletUtils.getServletPathWithHostAsUrlFromRequest(servletRequest));
-        URI manifestURI = new ManifestBuilder(servletURI, requestURI).getManifestURI(pi);
+        URI manifestURI = new ManifestBuilder(urls).getManifestURI(pi);
 
         Campaign campaign = DataManager.getInstance().getDao().getCampaign(campaignId);
         if (campaign != null) {
@@ -185,7 +187,7 @@ public class CampaignItemResource {
 
         List<WebAnnotation> webAnnotations = new ArrayList<>();
         for (PersistentAnnotation anno : annotations) {
-            WebAnnotation webAnno = anno.getAsAnnotation();
+            WebAnnotation webAnno = annoBuilder.getAsWebAnnotation(anno);
             webAnnotations.add(webAnno);
         }
 
@@ -214,9 +216,19 @@ public class CampaignItemResource {
 
         for (AnnotationPage page : pages) {
             URI targetURI = URI.create(page.getId());
-            Integer pageOrder = PersistentAnnotation.parsePageOrder(targetURI);
+            String pageOrderString = urls.parseParameter(
+                    urls.path(RECORDS_RECORD, RECORDS_PAGES_ANNOTATIONS).build(),
+                    targetURI.toString(), 
+                    "{pageNo}");
+            Integer pageOrder = StringUtils.isBlank(pageOrderString) ? null : Integer.parseInt(pageOrderString);
+
             List<PersistentAnnotation> existingAnnotations = dao.getAnnotationsForCampaignAndTarget(campaign, pi, pageOrder);
-            List<PersistentAnnotation> newAnnotations = page.annotations.stream().map(PersistentAnnotation::new).collect(Collectors.toList());
+            List<PersistentAnnotation> newAnnotations = page.annotations.stream().map(anno -> {
+                String uri = anno.getId().toString();
+                String idString = urls.parseParameter(urls.path(ANNOTATIONS, ANNOTATIONS_ANNOTATION).build(), uri, "{id}");
+                PersistentAnnotation pAnno = new PersistentAnnotation(anno, Long.parseLong(idString), pi, pageOrder);
+                return pAnno;
+            }).collect(Collectors.toList());
 
             //delete existing annotations not in the new annotations list
             List persistenceExceptions = existingAnnotations.stream()

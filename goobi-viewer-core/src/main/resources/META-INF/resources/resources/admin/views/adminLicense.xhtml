@@ -1,0 +1,187 @@
+<ui:composition
+    xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:h="http://xmlns.jcp.org/jsf/html"
+    xmlns:f="http://xmlns.jcp.org/jsf/core"
+    xmlns:p="http://primefaces.org/ui"
+    xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+    xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components"
+    xmlns:adminWidget="http://xmlns.jcp.org/jsf/composite/admin/widgets"
+    template="/resources/themes/#{navigationHelper.theme}/templateAdmin.html">
+
+    <ui:define name="metadata">
+        <f:metadata>
+            <f:event type="preRenderView" listener="#{navigationHelper.setCurrentPageAdmin('adminLicenseType')}" />
+        </f:metadata>
+    </ui:define>
+
+    <ui:define name="content">
+        <f:view contentType="text/html" encoding="utf-8">
+            <div id="adminLicense">
+                <h:panelGroup rendered="#{userBean.admin  and adminBean.currentLicenseType != null}">
+                    <h:form id="editLicenseTypeForm" styleClass="form-horizontal" role="form" prependId="false">
+                        <div class="admin__title-bar">
+                            <h2 class="admin__title">
+                                <h:outputText value="#{msg.admin__license_new}"  rendered="#{adminBean.currentLicenseType.id == null}" />
+                                <h:outputText value="#{msg.admin__license_edit}" rendered="#{adminBean.currentLicenseType.id != null}" />
+                            </h2>
+                        </div>
+
+                        <div class="admin__content-inner-content">
+                            <h3>#{msg.general}</h3>
+                            <div class="admin__default-block">
+                                <div class="form-group form-row">
+                                    <h:outputLabel for="name" styleClass="col-sm-2 control-label" value="#{msg.name}:" />
+                                    <div class="col-sm-10">
+                                        #{adminBean.currentLicenseType.name}
+                                    </div>
+                                </div>
+                                <div class="form-group form-row">
+                                    <div class="col-2 control-label admin__form-label">
+                                        <label for="conditions">#{msg.license_conditions}:</label>
+                                    </div>
+                                    <div class="col-9 admin__form-input">
+                                        <h:inputText value="#{adminBean.currentLicenseType.conditions}" id="conditions" styleClass="form-control" />
+                                        <span class="admin__form-help-text">#{msg.admin__license_conditions__help}</span>
+                                    </div>
+                                    <div class="col-1 admin__form-help-icon">
+                                        <button type="button" class="btn btn--clean" data-toggle="helptext" aria-label="inline help icon">
+                                            <i class="fa fa-question-circle" aria-hidden="true"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                                <div class="form-group form-row">
+                                    <div class="col-2 control-label admin__form-label">
+                                        <label for="description">#{msg.description}:</label>
+                                    </div>
+                                    <div class="col-9 admin__form-input">
+                                        <h:inputTextarea value="#{adminBean.currentLicenseType.description}" id="description" styleClass="form-control" />
+                                        <span class="admin__form-help-text">#{msg.admin__license_description__help}</span>
+                                    </div>
+                                    <div class="col-1 admin__form-help-icon">
+                                        <button type="button" class="btn btn--clean" data-toggle="helptext" aria-label="inline help icon">
+                                            <i class="fa fa-question-circle" aria-hidden="true"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+ 
+                            <!-- FUNCTIONS -->
+                            <h3>#{msg.admin__license_functions}</h3>
+                            <div class="admin__default-block pb-0">
+                                <div class="form-group form-row mb-3">
+                                    <div class="col-2 control-label admin__form-label">
+                                        <span>#{msg.openAccess}:</span>
+                                    </div>
+                                    <div class="col-9 admin__form-input">
+	                   	                <div class="admin__radio-switch openAccessToggle">
+	                                        <h:selectOneRadio group="openAccessToggle" value="#{adminBean.currentLicenseType.openAccess}"
+	                                            immediate="true" checked="#{visibleItem.openInNewWindow ? 'true' : null}">
+	                                            <f:selectItem itemValue="#{true}" itemLabel="#{msg.yes}" />
+	                                        </h:selectOneRadio>
+	                                        <h:selectOneRadio group="openAccessToggle" value="#{adminBean.currentLicenseType.openAccess}"
+	                                            immediate="true" checked="#{visibleItem.openInNewWindow ? null : 'false'}">
+	                                            <f:selectItem itemValue="#{false}" itemLabel="#{msg.no}" />
+	                                        </h:selectOneRadio>
+	                                        <span class="toggle-outside"><span class="toggle-inside"></span></span>
+	                                    </div>
+                                        <span class="admin__form-help-text in">#{msg.admin__license_functions_open_access_desc}</span>
+                                    </div>
+                                </div>
+                                
+                                <div class="form-group form-row admin__license-functions mb-0">
+                                    <div class="col-2 control-label admin__form-label">
+                                        <span>#{msg.movingWall}:</span>
+                                    </div>
+                                    <div class="col-9 admin__form-input">
+                                        <div class="admin__radio-switch movingWallToggle">
+                                            <h:selectOneRadio group="movingWallToggle" value="#{adminBean.currentLicenseType.movingWall}"
+                                                immediate="true" checked="#{visibleItem.openInNewWindow ? 'true' : null}">
+                                                <f:selectItem itemValue="#{true}" itemLabel="#{msg.yes}" />
+                                            </h:selectOneRadio>
+                                            <h:selectOneRadio group="movingWallToggle" value="#{adminBean.currentLicenseType.movingWall}"
+                                                immediate="true" checked="#{visibleItem.openInNewWindow ? null : 'false'}">
+                                                <f:selectItem itemValue="#{false}" itemLabel="#{msg.no}" />
+                                            </h:selectOneRadio>
+                                            <span class="toggle-outside"><span class="toggle-inside"></span></span>
+                                        </div>
+                                        <span class="admin__form-help-text in">#{msg.admin__license_functions_moving_wall_desc}</span>
+                                    </div>
+                                </div>
+
+                                <div class="admin__license-functions">
+                                    <hr />
+                                    <div class="form-group form-row pb-3">
+                                        <div class="col-5 pb-3">#{msg.admin__license_functions_added}</div>
+                                        <div class="col-1 pb-3"></div>
+                                        <div class="col-5 pb-3">#{msg.admin__license_functions_available}</div>
+                                        <div class="col-1 admin__form-help-icon">
+                                            <button type="button" class="btn btn--clean" data-toggle="helptext" aria-label="inline help icon">
+                                                <i class="fa fa-question-circle" aria-hidden="true"></i>
+                                            </button>
+                                        </div>
+                                        <div class="col-5 badge-hover">
+                                            <ui:repeat var="priv" value="#{adminBean.currentLicenseType.getSortedPrivileges(adminBean.currentLicenseType.privilegesCopy)}">
+                                                <h:commandLink styleClass="admin__license-action" action="#{adminBean.currentLicenseType.removePrivilege(priv)}" title="#{msg.remove}">
+                                                    <div class="badge badge-success">
+                                                        #{msg[adminBean.getMessageKeyForPrivilege(priv)]}
+                                                        <!-- remove button -->
+                                                        <i class="fa fa-trash-o" aria-hidden="true"></i>
+                                                    </div>
+                                                </h:commandLink>
+                                            </ui:repeat>
+                                        </div>
+                                        <div class="col-1"></div>
+                                        <div class="col-5 badge-hover">
+                                            <ui:repeat var="priv" value="#{adminBean.currentLicenseType.availablePrivileges}">
+                                                <h:commandLink styleClass="admin__license-action" action="#{adminBean.currentLicenseType.addPrivilege(priv)}" title="#{msg.add}">
+                                                    <div class="badge badge-dark">
+                                                        #{msg[adminBean.getMessageKeyForPrivilege(priv)]}
+                                                        <!-- add button -->
+                                                        <i class="fa fa-plus-circle" aria-hidden="true"></i>
+                                                    </div>
+                                                </h:commandLink>
+                                            </ui:repeat>
+                                        </div>
+	                                    <div class="col-12 admin__license-functions-help">
+	                                        <h:outputText value="#{msg.admin__license_functions__help}" styleClass="admin__form-help-text" escape="false" />
+	                                    </div>
+									</div>
+                                    
+                                </div>
+                            </div>
+
+                            <h3>#{msg.admin__license_overriding}</h3>
+
+                            <div class="admin__default-block">
+                                <div class="form-group form-row">
+                                    <div class="col-2 control-label admin__form-label">
+                                        <label for="overridindlicense">#{msg.admin__licenses}:</label>
+                                    </div>
+                                    <div class="col-9 admin__form-input">
+                                        <h:selectManyListbox id="overriding" styleClass="form-control" converter="licenseTypeConverter" value="#{adminBean.currentLicenseType.overridingLicenseTypes}">
+                                            <f:passThroughAttribute name="aria-label" value="overriding licenses" />
+                                            <f:selectItems value="#{adminBean.otherLicenseTypes}" var="licenseType" itemLabel="#{msg[licenseType.name]}" />
+                                            <f:ajax render="@none" />
+                                        </h:selectManyListbox>
+                                        <span class="admin__form-help-text">#{msg.admin__license_overriding__help}</span>
+                                    </div>
+                                    <div class="col-1 admin__form-help-icon">
+                                        <button type="button" class="btn btn--clean" data-toggle="helptext" aria-label="inline help icon">
+                                            <i class="fa fa-question-circle" aria-hidden="true"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="row no-gutters justify-content-end admin__final-actions">
+                                <h:commandLink action="pretty:adminLicenses" value="#{msg.cancel}" styleClass="btn" immediate="true" />
+                                <h:commandLink action="#{adminBean.saveCurrentLicenseTypeAction}" value="#{msg.save}" styleClass="btn btn--success" />
+                            </div>
+                        </div>
+                    </h:form>
+                </h:panelGroup>
+            </div>
+        </f:view>
+    </ui:define>
+
+</ui:composition>

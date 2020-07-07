@@ -2,12 +2,31 @@
    Admin User Group
    style declarations for adminUserGroup.xhtml
    ==============================================================*/
+   
 #adminUserGroup {
-    h2 {}
+	.admin {
+		&__title {}
+    	&__group-member-entry {
+		transition: background 0.2s ease;
+		padding: 0.4rem 1.4rem;
+		margin: 0 -2rem 0 -2rem;
+			&:hover {
+				text-decoration: none;				
+				background: @lightgray2;
+				.admin__group-member-delete-hint {
+					opacity: 1.0;
+				}
+			}
+		}
+		&__group-member-delete-hint {
+			transition: opacity 0.2s ease;
+			opacity: 0.0;
+		}
+		&__group-member-name {
+			color: #212529;
+		}
+    }
 }
-
-// single tabs
-#userGroupGeneral {}
 
 /* BREAKPOINT FOR LARGE DESKTOPS */
 @media screen and (max-width: @largeBreakpoint) {} 

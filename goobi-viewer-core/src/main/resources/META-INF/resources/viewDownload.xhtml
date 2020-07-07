@@ -36,11 +36,11 @@
 	                <h:panelGroup rendered="#{downloadBean.downloadJob!= null}">
 	                    <!-- ERROR MESSAGE -->
 	                    <h:panelGroup rendered="#{downloadBean.downloadJob.status == 'ERROR'}">
-	                    	<div class="panel panel-danger">
-	                    		<div class="panel-heading">
-	                                <h3 class="panel-title">#{msg.downloadQueueTitle}</h3>
+	                    	<div class="card card-danger">
+	                    		<div class="card-header">
+	                                <h3 class="card-title">#{msg.downloadQueueTitle}</h3>
 	                            </div>
-	                            <div class="panel-body">
+	                            <div class="card-body">
 	                            	#{downloadBean.downloadJob.message}
 	                            </div>
 	                    	</div>
@@ -48,21 +48,21 @@
 	
 	                    <!-- DOWNLOAD QUEUE -->
 	                    <h:panelGroup rendered="#{downloadBean.downloadJob.status == 'WAITING' or downloadBean.downloadJob.status == 'UNDEFINED'}">
-	                        <div class="panel panel-info">
-	                            <div class="panel-heading">
-	                                <h3 class="panel-title">#{msg.downloadQueueTitle}</h3>
+	                        <div class="card card-info">
+	                            <div class="card-header">
+	                                <h3 class="card-title">#{msg.downloadQueueTitle}</h3>
 	                            </div>
-	                            <div class="panel-body">
+	                            <div class="card-body">
 	                            	<div class="row">
-	                            		<div class="col-xs-10">
+	                            		<div class="col-10">
 			                                <h:outputFormat value="#{msg.downloadQueuePosition}">
 			                                    <f:param value="#{downloadBean.downloadJob.displayName}" />
 			                                </h:outputFormat>
 	                            		</div>
-	                            		<div class="col-xs-1">
+	                            		<div class="col-1">
 			                                <span class="label label-primary">#{downloadBean.downloadJob.queuePosition}</span>
 	                            		</div>
-	                            		<div class="col-xs-1">
+	                            		<div class="col-1">
 	                            			<div class="download__status-loader">
 		                            			<img src="#{request.contextPath}/resources/images/ajax_preloader.gif" class="img-responsive" alt="Download Queue Loader" />
 	                            			</div>
@@ -75,25 +75,25 @@
 	                    <!-- DOWNLOAD -->
 	                    <h:panelGroup rendered="#{downloadBean.downloadJob.status == 'READY'}">
 	                        <!-- LICENSE TEXT -->
-	                        <div class="panel panel-success">
-	                            <div class="panel-heading">
-	                                <h3 class="panel-title">#{msg.downloadLicenseHeading}</h3>
+	                        <div class="card card-success">
+	                            <div class="card-header">
+	                                <h3 class="card-title">#{msg.downloadLicenseHeading}</h3>
 	                            </div>
-	                            <div class="panel-body">
+	                            <div class="card-body">
 			                        <div class="download__status-license-text">
 			                            <h:outputText value="#{msg.downloadLicenseText}" escape="false" />
 			                        </div>
 			
 			                        <h:form prependId="false">
 			                        	<div class="row">
-			                        		<div class="col-xs-9">
+			                        		<div class="col-9">
 					                            <div class="checkbox">
 					                                <label>
 					                                	<input id="agreeLicense" type="checkbox" /> #{msg.downloadAgreeLicense}
 					                                </label>
 					                            </div>
 			                        		</div>
-			                        		<div class="col-xs-3 text-right">
+			                        		<div class="col-3 text-right">
 					                            <h:commandButton action="#{downloadBean.downloadFileAction}" id="downloadBtn" styleClass="btn btn--success" value="#{msg.downloadButton}" />
 			                        		</div>
 			                        	</div>

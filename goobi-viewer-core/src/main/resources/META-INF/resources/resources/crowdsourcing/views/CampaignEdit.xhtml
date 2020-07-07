@@ -33,7 +33,7 @@
         <f:view contentType="text/html" encoding="utf-8">
                 <ui:fragment
                     rendered="#{crowdsourcingBean.targetCampaign.isUserAllowedAction(userBean.user, crowdsourcingBean.targetRecordStatus)}">
-                    <campaignItem restapiurl="#{configurationBean.restApiUrl}" 
+                    <campaignItem restapiurl="#{request.contextPath}/api/v1/" 
                         campaign="#{crowdsourcingBean.targetCampaignId}"
                         pi="#{crowdsourcingBean.targetIdentifier}"
                         loaderimageurl="#{request.contextPath}/resources/images/infinity_loader.svg"

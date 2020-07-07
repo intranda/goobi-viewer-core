@@ -47,12 +47,12 @@
                     <ui:repeat var="hit" value="#{cmsBean.getQueryResults(cmsPage.getContentItem('queryList01'))}">
                         <div class="row">
                             <div class="tpl-search-list-custom__list-element clearfix">
-                                <div class="col-xs-4 col-sm-2">
+                                <div class="col-4 col-sm-2">
                                     <div class="tpl-search-list-custom__list-image">
                                         <img data-src="#{hit.browseElement.getThumbnailUrl(50, 150)}" alt="#{hit.browseElement.label}" data-viewer-thumbnail="thumbnail"/>
                                     </div>
                                 </div>
-                                <div class="col-xs-8 col-sm-10">
+                                <div class="col-8 col-sm-10">
                                     <div class="tpl-search-list-custom__list-text">
                                         <dl class="dl-horizontal">
                                             <dt>#{msg.MD_TITLE}:</dt>

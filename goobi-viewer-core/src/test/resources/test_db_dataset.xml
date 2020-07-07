@@ -10,7 +10,7 @@
 		use_gravatar="0" />
     <users user_id="3" email="3@users.org" password_hash="abcdef3"
         active="true" suspended="true" superuser="false" last_name="last 3"
-        first_name="first 3" nickname="nick 3" comments="no comments 3" score="-1"
+        first_name="first 3" comments="no comments 3" score="-1"
         use_gravatar="0" />
 
 	<openid_accounts user_id="1" claimed_identifier="user_1_claimed_identifier_1" />
@@ -29,13 +29,13 @@
 	<user_role user_role_id="1" user_id="2" user_group_id="1"
 		role_id="1" />
 
-	<ip_ranges ip_range_id="1" name="localhost" subnet_mask="127.0.0.1/24"
+	<ip_ranges ip_range_id="1" name="localhost" subnet_mask="1.2.3.4/24"
 		description="ip range 1 desc" />
 	<ip_ranges ip_range_id="2" name="localhost2" subnet_mask="127.0.0.1/8"
 		description="ip range 2 desc" />
 
 	<license_types license_type_id="1" name="license type 1 name"
-		description="license type 1 desc" conditions="YEAR:[* TO 3000]"
+		description="license type 1 desc" conditions="-YEAR:[* TO 3000]"
 		open_access="false" core="false" />
 	<license_type_privileges license_type_id="1"
 		privilege_name="license type 1 priv 1" />
@@ -58,11 +58,12 @@
         description="CMS role"
         open_access="false" core="true" />
         
+    <!-- This license type is used in conjunction with the test index, so don't change -->
     <license_types license_type_id="6" name="restriction on access"
         description="restricted records"
-        open_access="false" core="false"
+        open_access="false" core="false" moving_wall="true"
         conditions="-MDNUM_PUBLICRELEASEYEAR:[* TO NOW/YEAR]" />
-		
+
 	<license_types_overriding license_type_id="4" overriding_license_type_id="1" />
 	<license_types_overriding license_type_id="1" overriding_license_type_id="4" />
 
@@ -74,7 +75,7 @@
 		description="desc license 2 desc" />
 	<license_privileges license_id="2" privilege_name="license 2 priv 1" />
 
-	<licenses license_id="3" license_type_id="3" ip_range_id="1"
+	<licenses license_id="3" license_type_id="6" ip_range_id="1"
 		description="desc license 3 desc" />
 	<license_privileges license_id="3" privilege_name="LIST" />
 
@@ -93,25 +94,23 @@
         pi="AC123456789" logid="LOG_1111" urn="urn:nbn:bookmark2"
         main_title="bookmark 2 main title"/>
 
-	<!-- <annotations annotation_id="1" pi="PI 1" page="1" owner_id="1" -->
+	<!-- <annotations annotation_id="1" pi="PI_1" page="1" owner_id="1" -->
 	<!-- date_created="2013-07-15 00:00:00.000000000" status="PUBLIC" -->
 	<!-- text="annotation 1 text" /> -->
-	<!-- <annotations annotation_id="2" pi="PI 1" page="1" owner_id="2" -->
+	<!-- <annotations annotation_id="2" pi="PI_1" page="1" owner_id="2" -->
 	<!-- date_created="2013-07-15 00:01:00.000000000" status="PUBLIC" -->
 	<!-- text="annotation 2 text" /> -->
-	<!-- <annotations annotation_id="3" pi="PI 1" page="2" owner_id="1" -->
+	<!-- <annotations annotation_id="3" pi="PI_1" page="2" owner_id="1" -->
 	<!-- date_created="2013-07-15 12:00:00.000000000" status="PUBLIC" -->
 	<!-- text="annotation 3 text" /> -->
 
-	<comments comment_id="1" pi="PI 1" page="1" owner_id="1"
+	<comments comment_id="1" pi="PI_1" page="1" owner_id="1"
 		date_created="2013-07-15 00:00:00.000000000" text="comment 1 text" />
-	<comments comment_id="2" pi="PI 1" page="1" owner_id="2"
-		date_created="2013-07-15 00:01:00.000000000" text="comment 2 text"
-		parent_id="1" />
-	<comments comment_id="3" pi="PI 1" page="1" owner_id="1"
-		date_created="2013-07-15 12:00:00.000000000" text="comment 3 text"
-		parent_id="2" />
-	<comments comment_id="4" pi="PI 1" page="2" owner_id="1"
+	<comments comment_id="2" pi="PI_1" page="1" owner_id="2"
+		date_created="2013-07-15 00:01:00.000000000" text="comment 2 text" />
+	<comments comment_id="3" pi="PI_1" page="1" owner_id="1"
+		date_created="2013-07-15 12:00:00.000000000" text="comment 3 text" />
+	<comments comment_id="4" pi="PI_1" page="2" owner_id="1"
 		date_created="2013-07-15 12:00:00.000000000" text="comment 4 text" />
 
 	<searches search_id="1" owner_id="1" name="search 1" query="query 1"
@@ -166,7 +165,7 @@
 	<cms_pages cms_page_id="2" template_id="template_simple" date_created="2015-01-13 14:40:00.000000000" date_updated="2015-01-13 14:40:00.000000000"
         published="false" use_default_sidebar="true"/>
     <cms_pages cms_page_id="3" template_id="template_simple" date_created="2015-01-13 14:40:00.000000000" date_updated="2015-01-13 14:40:00.000000000"
-        published="true" use_default_sidebar="true" related_pi="PI 1"/>
+        published="true" use_default_sidebar="true" related_pi="PI_1"/>
         
     <cms_properties id="1" property_key="DISPLAY_CHILD_TAGS_AS_HEADERS" property_value="false" owner_page_id="3"/>  
         
@@ -209,9 +208,11 @@
         parent_item_id="1" cms_page_id="2" />
     <cms_navigation_items cms_navigation_item_id="4" item_label="item 4" page_url="url 4" item_order="2" />
     
-    <download_jobs download_job_id="1" type="pdf" identifier="70eef211dc8a5889578f58d88eb50b8e" pi="PI 1"
+    <cms_page_template_enabled cms_page_template_enabled_id="1" template_id="template_disabled" enabled="false" />
+    
+    <download_jobs download_job_id="1" type="pdf" identifier="0afb73c418262beb2c88dc40c95831b7" pi="PI_1"
         status="WAITING" last_requested="2016-06-01 00:00:00" ttl="3600" />
-    <download_jobs download_job_id="2" type="epub" identifier="f0ea4764cef8658faa6deb78cd994091" pi="PI 1" logid="LOG_0001"
+    <download_jobs download_job_id="2" type="epub" identifier="ae469e5e54cd18ce6f0a4fae0d6b6bcc" pi="PI_1" logid="LOG_0001"
         status="READY" last_requested="2016-06-06 12:00:00" ttl="3600" />
     
     <download_job_observers download_job_id="1" observer="viewer@intranda.com" />
@@ -232,18 +233,24 @@
     
     <cs_question_translations translation_id="1" owner_id="1" language="en" tag="text" value="English text" />
 
-    <cs_campaign_record_statistics campaign_record_statistic_id="1" owner_id="1" pi="PI 1" status="FINISHED" date_created="2019-08-30 00:00:00.000000000" />
-    <cs_campaign_record_statistics campaign_record_statistic_id="2" owner_id="1" pi="PI 2" status="REVIEW" date_created="2019-08-30 00:00:00.000000000" />
-    <cs_campaign_record_statistics campaign_record_statistic_id="3" owner_id="2" pi="PI 3" status="REVIEW" date_created="2019-08-30 00:00:00.000000000" />
+
+    <cs_campaign_record_statistics campaign_record_statistic_id="1" owner_id="1" pi="PI_1" status="FINISHED" date_created="2019-08-30 00:00:00.000000000" />
+    <cs_campaign_record_statistics campaign_record_statistic_id="2" owner_id="1" pi="PI_2" status="REVIEW" date_created="2019-08-30 00:00:00.000000000" />
+    <cs_campaign_record_statistics campaign_record_statistic_id="3" owner_id="1" pi="PI_3" status="REVIEW" date_created="2019-08-30 00:00:00.000000000" />
+    <cs_campaign_record_statistics campaign_record_statistic_id="4" owner_id="1" pi="PI_4" status="REVIEW" date_created="2019-08-30 00:00:00.000000000" />
+    <cs_campaign_record_statistics campaign_record_statistic_id="5" owner_id="2" pi="PI_3" status="REVIEW" date_created="2019-08-30 00:00:00.000000000" />
     
     <cs_campaign_record_statistic_annotators campaign_record_statistic_id="1" user_id="1"/>
+    <cs_campaign_record_statistic_annotators campaign_record_statistic_id="2" user_id="1"/>
+    <cs_campaign_record_statistic_reviewers campaign_record_statistic_id="3" user_id="1"/>
+    <cs_campaign_record_statistic_reviewers campaign_record_statistic_id="4" user_id="1"/>
     <cs_campaign_record_statistic_reviewers campaign_record_statistic_id="1" user_id="2"/>
     
-    <annotations annotation_id="1" body="&quot;a&quot;" date_created="2019-09-19 00:00:00.000000000" generator_id="1" target="&quot;aa&quot;" target_pi="PI 1" target_page="1" />
-    <annotations annotation_id="2" body="&quot;b&quot;" date_created="2019-09-19 00:00:00.000000000" generator_id="1" target="&quot;bb&quot;" target_pi="PI 2" target_page="6" />
-    <annotations annotation_id="3" body="&quot;c&quot;" date_created="2019-09-19 00:00:00.000000000" generator_id="2" target="&quot;cc&quot;" target_pi="PI 1" />
-    <annotations annotation_id="4" body="&quot;d&quot;" date_created="2019-09-19 00:00:00.000000000" generator_id="3" target="&quot;dd&quot;" target_pi="PI 1" />
-    <annotations annotation_id="5" body="&quot;e&quot;" date_created="2019-09-19 00:00:00.000000000" generator_id="3" target="&quot;ee&quot;" target_pi="PI 2" />
+    <annotations annotation_id="1" body="&quot;a&quot;" date_created="2019-09-19 00:00:00.000000000" generator_id="1" target="&quot;aa&quot;" target_pi="PI_1" target_page="1" />
+    <annotations annotation_id="2" body="&quot;b&quot;" date_created="2019-09-19 00:00:00.000000000" generator_id="1" target="&quot;bb&quot;" target_pi="PI_2" target_page="6" />
+    <annotations annotation_id="3" body="&quot;c&quot;" date_created="2019-09-19 00:00:00.000000000" generator_id="2" target="&quot;cc&quot;" target_pi="PI_1" />
+    <annotations annotation_id="4" body="&quot;d&quot;" date_created="2019-09-19 00:00:00.000000000" generator_id="3" target="&quot;dd&quot;" target_pi="PI_1" />
+    <annotations annotation_id="5" body="&quot;e&quot;" date_created="2019-09-19 00:00:00.000000000" generator_id="3" target="&quot;ee&quot;" target_pi="PI_2" />
     
 </dataset>
 

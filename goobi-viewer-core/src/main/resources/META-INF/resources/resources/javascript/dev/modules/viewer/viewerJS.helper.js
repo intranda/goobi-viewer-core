@@ -323,7 +323,7 @@ var viewerJS = ( function( viewer ) {
                 trigger : 'hover'
             } );
             if ( window.matchMedia( '(max-width: 768px)' ).matches ) {
-            	$( '[data-toggle="tooltip"]' ).tooltip( 'destroy' );
+            	$( '[data-toggle="tooltip"]' ).tooltip( 'dispose' );
             }
             
             // enable BS popovers

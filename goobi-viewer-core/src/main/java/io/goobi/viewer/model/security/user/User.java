@@ -189,11 +189,10 @@ public class User implements ILicensee, HttpSessionBindingListener, Serializable
         // the emptiness inside
     }
 
-    public User(String firstName, String lastName) {
-        this.firstName = firstName;
-        this.lastName = lastName;
-    }
-
+    /**
+     * 
+     * @param nickname
+     */
     public User(String nickname) {
         this.nickName = nickname;
     }
@@ -282,7 +281,7 @@ public class User implements ILicensee, HttpSessionBindingListener, Serializable
      * @return a {@link java.lang.String} object.
      */
     public String getDisplayName() {
-        if (StringUtils.isNotEmpty(nickName)) {
+        if (StringUtils.isNotBlank(nickName)) {
             return nickName;
         }
         if (BeanUtils.getUserBean() != null && BeanUtils.getUserBean().isAdmin()) {
@@ -607,6 +606,15 @@ public class User implements ILicensee, HttpSessionBindingListener, Serializable
     }
 
     /**
+     * 
+     * @return true if there are CMS pages or campaigns created by this user; false otherwise
+     */
+    public boolean isCmsCreator() {
+
+        return false;
+    }
+
+    /**
      *
      * @param licenseType
      * @param privilegeName
@@ -655,9 +663,7 @@ public class User implements ILicensee, HttpSessionBindingListener, Serializable
     }
 
     /**
-     * <p>
-     * getAvatarUrl.
-     * </p>
+     * Used by the crowdsourcing module.
      *
      * @return a {@link java.lang.String} object.
      */
@@ -670,9 +676,7 @@ public class User implements ILicensee, HttpSessionBindingListener, Serializable
     }
 
     /**
-     * <p>
-     * getAvatarUrl.
-     * </p>
+     * Used by the crowdsourcing module.
      *
      * @param size a int.
      * @return a {@link java.lang.String} object.
@@ -697,7 +701,7 @@ public class User implements ILicensee, HttpSessionBindingListener, Serializable
     }
 
     /**
-     * Emptry setter so that HTML pages do not throw missing property errors.
+     * Empty setter so that HTML pages do not throw missing property errors.
      *
      * @param gravatarUrl a {@link java.lang.String} object.
      */
@@ -712,19 +716,14 @@ public class User implements ILicensee, HttpSessionBindingListener, Serializable
      * @return Gravatar URL
      */
     public String getGravatarUrl(int size) {
-        if (useGravatar && StringUtils.isNotEmpty(email)) {
-            Gravatar gravatar = new Gravatar();
-            gravatar.setSize(size);
-            gravatar.setRating(GravatarRating.GENERAL_AUDIENCES);
-            gravatar.setDefaultImage(GravatarDefaultImage.GRAVATAR_ICON);
+        if (StringUtils.isNotEmpty(email)) {
+            Gravatar gravatar =
+                    new Gravatar().setSize(size).setRating(GravatarRating.GENERAL_AUDIENCES).setDefaultImage(GravatarDefaultImage.IDENTICON);
             String url = gravatar.getUrl(email);
-            if (url != null) {
-                url = url.replace("http:", "");
-            }
-            return url;
+            return url.replace("http:", "");
         }
 
-        return null;
+        return "//www.gravatar.com/avatar/";
     }
 
     /**

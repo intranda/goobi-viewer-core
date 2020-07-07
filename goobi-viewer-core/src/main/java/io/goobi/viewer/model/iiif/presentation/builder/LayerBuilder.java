@@ -27,8 +27,6 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.function.BiFunction;
 
-import javax.servlet.http.HttpServletRequest;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -41,6 +39,7 @@ import de.intranda.api.iiif.presentation.content.LinkingContent;
 import de.intranda.api.iiif.presentation.enums.AnnotationType;
 import de.intranda.api.iiif.presentation.enums.DcType;
 import de.intranda.api.iiif.presentation.enums.Format;
+import io.goobi.viewer.api.rest.AbstractApiUrlManager;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.messages.ViewerResourceBundle;
@@ -64,20 +63,8 @@ public class LayerBuilder extends AbstractBuilder {
      *
      * @param request a {@link javax.servlet.http.HttpServletRequest} object.
      */
-    public LayerBuilder(HttpServletRequest request) {
-        super(request);
-    }
-
-    /**
-     * <p>
-     * Constructor for LayerBuilder.
-     * </p>
-     *
-     * @param servletUri a {@link java.net.URI} object.
-     * @param requestURI a {@link java.net.URI} object.
-     */
-    public LayerBuilder(URI servletUri, URI requestURI) {
-        super(servletUri, requestURI);
+    public LayerBuilder(AbstractApiUrlManager apiUrlManager) {
+        super(apiUrlManager);
     }
 
     /**
@@ -169,31 +156,6 @@ public class LayerBuilder extends AbstractBuilder {
         return annoList;
     }
 
-    /**
-     * <p>
-     * generateContentLayer.
-     * </p>
-     *
-     * @param pi a {@link java.lang.String} object.
-     * @param annoLists a {@link java.util.Map} object.
-     * @param logId a {@link java.lang.String} object.
-     * @return a {@link de.intranda.api.iiif.presentation.Layer} object.
-     * @throws java.net.URISyntaxException if any.
-     */
-    public Layer generateContentLayer(String pi, Map<AnnotationType, List<AnnotationList>> annoLists, String logId) throws URISyntaxException {
-        Layer layer = new Layer(getLayerURI(pi, logId));
-        for (AnnotationType annoType : annoLists.keySet()) {
-            AnnotationList content = new AnnotationList(getAnnotationListURI(pi, annoType));
-            content.setLabel(ViewerResourceBundle.getTranslations(annoType.name()));
-            annoLists.get(annoType)
-                    .stream()
-                    .filter(al -> al.getResources() != null)
-                    .flatMap(al -> al.getResources().stream())
-                    .forEach(annotation -> content.addResource(annotation));
-            layer.addOtherContent(content);
-        }
-        return layer;
-    }
 
     /**
      * <p>

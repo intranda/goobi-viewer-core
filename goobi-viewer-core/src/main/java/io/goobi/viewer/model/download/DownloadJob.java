@@ -215,7 +215,7 @@ public abstract class DownloadJob implements Serializable {
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      */
-    public static boolean checkDownload(String type, final String email, String pi, String logId, String downloadIdentifier, long ttl)
+    public static DownloadJob checkDownload(String type, final String email, String pi, String logId, String downloadIdentifier, long ttl)
             throws DAOException, PresentationException, IndexUnreachableException {
         if (type == null) {
             throw new IllegalArgumentException("type may not be null");
@@ -284,10 +284,16 @@ public abstract class DownloadJob implements Serializable {
             }
 
             /*Add or update job in database*/
+            boolean updated = false;
             if (newJob) {
-                return DataManager.getInstance().getDao().addDownloadJob(downloadJob);
+                updated = DataManager.getInstance().getDao().addDownloadJob(downloadJob);
             }
-            return DataManager.getInstance().getDao().updateDownloadJob(downloadJob);
+            updated = DataManager.getInstance().getDao().updateDownloadJob(downloadJob);
+            if(updated) {                
+                return downloadJob;
+            } else {
+                return null;
+            }
         } finally {
             // Clean up expired jobs AFTER updating the one in use
             cleanupExpiredDownloads();

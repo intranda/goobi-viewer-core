@@ -6,7 +6,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>io.goobi.viewer</groupId>
 	<artifactId>viewer-core</artifactId>
-	<version>4.7.1</version>
+	<version>4.8.0-SNAPSHOT</version>
 	<packaging>jar</packaging>
 
 
@@ -69,10 +69,10 @@
 
 		<!-- intranda libraries -->
 		<alto.version>1.4.0</alto.version>
-		<contentserver.version>2.2.0</contentserver.version>
+		<contentserver.version>2.3.0</contentserver.version>
 		<tei-conversion.version>1.0.1-SNAPSHOT</tei-conversion.version>
-		<iiif-api-model.version>1.7.0-SNAPSHOT</iiif-api-model.version>
-		<normdataimporter.version>1.3.0-SNAPSHOT</normdataimporter.version>
+		<iiif-api-model.version>1.7.0</iiif-api-model.version>
+		<normdataimporter.version>1.3.0</normdataimporter.version>
 
 		<!-- other libraries -->
 		<cdi.version>2.0.SP1</cdi.version>
@@ -87,13 +87,14 @@
 		<commons-net.version>3.6</commons-net.version>
 		<commons-text.version>1.8</commons-text.version>
 		<dbunit.version>2.7.0</dbunit.version>
+        <eclipselink.version>2.7.7</eclipselink.version>
 		<h2.version>1.4.200</h2.version>
 		<httpclient.version>4.5.12</httpclient.version>
 		<httpcore.version>4.4.13</httpcore.version>
 		<httpunit.version>1.7.3</httpunit.version>
 		<icu.version>67.1</icu.version>
 		<inject.version>1</inject.version>
-		<jackson.version>2.11.0</jackson.version>
+		<jackson.version>2.11.1</jackson.version>
 		<jakarta.annotation-api.version>1.3.5</jakarta.annotation-api.version>
 		<jakarta.xml.bind-api.version>2.3.3</jakarta.xml.bind-api.version>
 		<javax.faces.version>2.4.0</javax.faces.version>
@@ -104,28 +105,28 @@
 		<jersey.version>2.31</jersey.version>
 		<jersey-guava.version>2.26-b03</jersey-guava.version>
 		<jgravatar.version>1.2</jgravatar.version>
-		<joda-time.version>2.10.6</joda-time.version>
-		<jpa.version>2.7.7</jpa.version>
 		<json.version>20200518</json.version>
 		<jsoup.version>1.13.1</jsoup.version>
 		<jstl.version>1.2</jstl.version>
 		<junit.version>4.13</junit.version>
+		<joda-time.version>2.10.6</joda-time.version>
 		<mariadb-java-client.version>2.3.0</mariadb-java-client.version>
 		<mockito.version>3.3.3</mockito.version>
 		<mockserver.version>5.10.0</mockserver.version>
 		<oauth.version>1.0.2</oauth.version>
-		<openpdf.version>1.3.18</openpdf.version>
+		<openpdf.version>1.3.20</openpdf.version>
 		<poi.version>4.1.2</poi.version>
 		<prettyfaces.version>3.3.4-20120314</prettyfaces.version>
-		<primefaces.version>7.0</primefaces.version>
-		<rome.version>1.13.0</rome.version>
+		<primefaces.version>8.0</primefaces.version>
+		<rome.version>1.14.1</rome.version>
 		<rs-api.version>2.1.1</rs-api.version>
 		<servlet-api.version>4.0.1</servlet-api.version>
 		<slf4j.version>1.7.30</slf4j.version>
-		<solr.version>4.10.4</solr.version>
+		<solr.version>8.5.2</solr.version>
 		<saml-client.version>4.0.0</saml-client.version>
 		<stax-api.version>1.0-2</stax-api.version>
-		<tomcat.version>9.0.35</tomcat.version>
+        <swagger.version>2.1.3</swagger.version>
+		<tomcat.version>9.0.36</tomcat.version>
 		<!-- Using a weld.version >3.0.5.Final will result in problems with the hotswap agent -->
 		<weld-servlet-shaded.version>3.0.5.Final</weld-servlet-shaded.version>
 		<!-- This needs to be added explicitly because otherwise Solr will use
@@ -350,10 +351,15 @@
 			<groupId>org.glassfish.jersey.core</groupId>
 			<artifactId>jersey-client</artifactId>
 			<version>${jersey.version}</version>
-		</dependency>
+        </dependency>
 		<dependency>
 			<groupId>org.glassfish.jersey.core</groupId>
 			<artifactId>jersey-server</artifactId>
+			<version>${jersey.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.glassfish.jersey.core</groupId>
+			<artifactId>jersey-common</artifactId>
 			<version>${jersey.version}</version>
 		</dependency>
 		<dependency>
@@ -367,24 +373,31 @@
 			<version>${jersey.version}</version>
 		</dependency>
 		<dependency>
+	    	<groupId>org.glassfish.jersey.test-framework</groupId>
+		    <artifactId>jersey-test-framework-core</artifactId>
+            <version>${jersey.version}</version>
+            <scope>test</scope>
+		</dependency>
+		<dependency>
+	    	<groupId>org.glassfish.jersey.test-framework.providers</groupId>
+		    <artifactId>jersey-test-framework-provider-grizzly2</artifactId>
+            <version>${jersey.version}</version>
+            <scope>test</scope>
+		</dependency>
+		<dependency>
 			<groupId>com.timgroup</groupId>
 			<artifactId>jgravatar</artifactId>
 			<version>${jgravatar.version}</version>
 		</dependency>
 		<dependency>
-			<groupId>joda-time</groupId>
-			<artifactId>joda-time</artifactId>
-			<version>${joda-time.version}</version>
-		</dependency>
-		<dependency>
 			<groupId>org.eclipse.persistence</groupId>
 			<artifactId>org.eclipse.persistence.jpa</artifactId>
-			<version>${jpa.version}</version>
+			<version>${eclipselink.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.eclipse.persistence</groupId>
 			<artifactId>org.eclipse.persistence.core</artifactId>
-			<version>${jpa.version}</version>
+			<version>${eclipselink.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.json</groupId>
@@ -407,7 +420,7 @@
 			<version>${junit.version}</version>
 			<scope>test</scope>
 		</dependency>
-		<dependency>
+        <dependency>
 			<groupId>org.mariadb.jdbc</groupId>
 			<artifactId>mariadb-java-client</artifactId>
 			<version>${mariadb-java-client.version}</version>
@@ -503,12 +516,6 @@
 		</dependency>
 		<dependency>
 			<groupId>org.apache.solr</groupId>
-			<artifactId>solr-core</artifactId>
-			<version>${solr.version}</version>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.apache.solr</groupId>
 			<artifactId>solr-solrj</artifactId>
 			<version>${solr.version}</version>
 		</dependency>
@@ -543,6 +550,33 @@
 			<artifactId>saml-client</artifactId>
 			<version>${saml-client.version}</version>
 		</dependency>
+        <dependency>
+          <groupId>io.swagger.core.v3</groupId>
+          <artifactId>swagger-jaxrs2</artifactId>
+          <version>${swagger.version}</version>
+        </dependency>
+        <dependency>
+          <groupId>io.swagger.core.v3</groupId>
+          <artifactId>swagger-annotations</artifactId>
+          <version>${swagger.version}</version>
+        </dependency>
+         <dependency>
+            <groupId>io.swagger.core.v3</groupId>
+            <artifactId>swagger-models</artifactId>
+            <version>${swagger.version}</version>
+            <scope>compile</scope>
+        </dependency>
+        <dependency>
+          <groupId>io.swagger.core.v3</groupId>
+          <artifactId>swagger-integration</artifactId>
+          <version>${swagger.version}</version>
+        </dependency>
+		<dependency>
+			<groupId>joda-time</groupId>
+			<artifactId>joda-time</artifactId>
+			<version>${joda-time.version}</version>
+		</dependency>
+
 	</dependencies>
 
 
@@ -633,7 +667,13 @@
 					<skipTests>${skipTests}</skipTests>
 					<excludes>
 						<exclude>**/Abstract*.java</exclude>
-					</excludes>
+                    </excludes>
+                    <systemProperties>
+                        <property>
+                            <name>java.util.logging.config.file</name>
+                            <value>src/test/resources/log4j2.test.xml</value>
+                        </property>
+                    </systemProperties>
 				</configuration>
 			</plugin>
 			<plugin>
@@ -644,7 +684,7 @@
 					<archive>
 						<addMavenDescriptor>false</addMavenDescriptor>
 						<manifestEntries>
-							<ApplicationName>goobi-viewer-core</ApplicationName>
+							<ApplicationName>Goobi viewer Core</ApplicationName>
 							<version>${project.version}</version>
 							<Implementation-Version>${buildNumber}</Implementation-Version>
 							<Implementation-Build-Date>${buildDate}</Implementation-Build-Date>

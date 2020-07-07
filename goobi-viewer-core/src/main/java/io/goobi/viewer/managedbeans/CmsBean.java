@@ -46,6 +46,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import de.unigoettingen.sub.commons.contentlib.exceptions.ContentNotFoundException;
+import de.unigoettingen.sub.commons.contentlib.exceptions.IllegalRequestException;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.IndexerTools;
 import io.goobi.viewer.controller.SolrConstants;
@@ -233,9 +234,31 @@ public class CmsBean implements Serializable {
             });
             lazyModelPages.setEntriesPerPage(DEFAULT_ROWS_PER_PAGE);
             lazyModelPages.addFilter("CMSPageLanguageVersion", "title_menuTitle");
-            lazyModelPages.addFilter("classifications", "classification");
+            lazyModelPages.addFilter("CMSCategory", "name");
         }
         selectedLocale = getDefaultLocale();
+    }
+
+    /**
+     * Returns the most recently edited CMS pages from the lazy model, which should include all restrictions placed upon the current user.
+     * 
+     * @param number Number of requested rows
+     * @return
+     */
+    public List<CMSPage> getMostRecentlyEditedPages(int number) {
+        try {
+            lazyModelPages.setSortField("dateUpdated");
+            lazyModelPages.setSortOrder(SortOrder.DESCENDING);
+            lazyModelPages.setEntriesPerPage(number);
+            lazyModelPages.update();
+
+            return lazyModelPages.getPaginatorList();
+        } finally {
+            lazyModelPages.setSortField("id");
+            lazyModelPages.setSortOrder(SortOrder.ASCENDING);
+            lazyModelPages.setEntriesPerPage(DEFAULT_ROWS_PER_PAGE);
+            lazyModelPages.update();
+        }
     }
 
     /**
@@ -360,19 +383,53 @@ public class CmsBean implements Serializable {
     }
 
     /**
+     * 
+     * @param enabled
+     * @return
+     * @throws DAOException
+     */
+    public List<CMSPageTemplate> getTemplates(boolean enabled) throws DAOException {
+        List<CMSPageTemplate> all = getTemplates();
+        if (all.isEmpty()) {
+            return all;
+        }
+
+        List<CMSPageTemplate> ret = new ArrayList<>(all.size());
+        for (CMSPageTemplate template : getTemplates()) {
+            if (template.getEnabled().isEnabled() == enabled) {
+                ret.add(template);
+            }
+        }
+
+        return ret;
+    }
+
+    /**
      * Returns a filtered page template list for the given user, unless the user is a superuser. Other CMS admins get a list matching the template ID
-     * list attached to ther CMS license.
+     * list attached to their CMS license.
      *
      * @param user a {@link io.goobi.viewer.model.security.user.User} object.
      * @return List of CMS templates whose IDs are among allowed template IDs
+     * @throws DAOException
      */
-    public List<CMSPageTemplate> getAllowedTemplates(User user) {
+    public List<CMSPageTemplate> getAllowedTemplates(User user) throws DAOException {
         logger.trace("getAllowedTemplates");
         if (user == null) {
             return Collections.emptyList();
         }
 
-        return user.getAllowedTemplates(getTemplates());
+        return user.getAllowedTemplates(getTemplates(true));
+    }
+
+    /**
+     * Persists the enabled/disabled status of all CMS tempaltes in the DB.
+     * 
+     * @return
+     * @throws DAOException
+     */
+    public String saveTemplatesAction() throws DAOException {
+        DataManager.getInstance().getDao().saveCMSPageTemplateEnabledStatuses(getTemplates());
+        return "pretty:adminCmsSelectTemplate";
     }
 
     /**
@@ -1166,11 +1223,20 @@ public class CmsBean implements Serializable {
      */
     public void setSelectedPage(CMSPage currentPage) throws DAOException {
         if (currentPage != null) {
+            CMSPage previouslySelected = this.selectedPage;
             if (currentPage.getId() != null) {
                 this.selectedPage = DataManager.getInstance().getDao().getCMSPageForEditing(currentPage.getId());
             } else {
                 this.selectedPage = currentPage;
             }
+
+            //Keep unused sidebar elements if page was already loaded to be able to correctly save sidebar elements
+            if (previouslySelected != null
+                    && previouslySelected.getId() != null
+                    && previouslySelected.getId().equals(this.selectedPage.getId())) {
+                this.selectedPage.setUnusedSidebarElements(previouslySelected.getUnusedSidebarElements());
+            }
+
             PageValidityStatus validityStatus = isPageValid(this.selectedPage);
             this.selectedPage.setValidityStatus(validityStatus);
             if (validityStatus.isValid()) {
@@ -1183,6 +1249,29 @@ public class CmsBean implements Serializable {
             this.selectedPage = null;
         }
 
+    }
+
+    /**
+     * 
+     * @return
+     */
+    public String getSelectedPageId() {
+        if (selectedPage == null) {
+            return null;
+        }
+
+        return String.valueOf(selectedPage.getId());
+    }
+
+    /**
+     * 
+     * @param id
+     * @throws DAOException
+     */
+    public void setSelectedPageId(String id) throws DAOException {
+        logger.trace("setSelectedPageId: {}", id);
+        CMSPage page = findPage(id);
+        setSelectedPage(page);
     }
 
     /**
@@ -1440,9 +1529,10 @@ public class CmsBean implements Serializable {
      * @throws ViewerConfigurationException
      * @throws RecordDeletedException
      * @throws RecordNotFoundException
+     * @throws IllegalRequestException
      */
     public String cmsContextAction() throws IndexUnreachableException, DAOException, ViewerConfigurationException,
-            RecordNotFoundException, RecordDeletedException {
+            RecordNotFoundException, RecordDeletedException, IllegalRequestException {
         return cmsContextAction(true);
     }
 
@@ -1460,10 +1550,11 @@ public class CmsBean implements Serializable {
      * @throws ViewerConfigurationException
      * @throws RecordDeletedException
      * @throws RecordNotFoundException
+     * @throws IllegalRequestException
      */
     public String cmsContextAction(boolean resetSearch)
             throws IndexUnreachableException, DAOException, ViewerConfigurationException, RecordNotFoundException,
-            RecordDeletedException {
+            RecordDeletedException, IllegalRequestException {
         logger.trace("cmsContextAction: {}", resetSearch);
         if (currentPage == null) {
             return "";
@@ -1900,8 +1991,9 @@ public class CmsBean implements Serializable {
      * @return The CollectionView or null if no matching ContentItem was found
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
+     * @throws IllegalRequestException
      */
-    public CollectionView getCollection(String id, CMSPage page) throws PresentationException, IndexUnreachableException {
+    public CollectionView getCollection(String id, CMSPage page) throws PresentationException, IndexUnreachableException, IllegalRequestException {
         String myId = page.getId() + "_" + id;
         CollectionView collection = collections.get(myId);
         if (collection == null) {
@@ -1933,8 +2025,9 @@ public class CmsBean implements Serializable {
      * @return The CollectionView or null if none was found
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
+     * @throws IllegalRequestException
      */
-    public CollectionView getCollection(CMSPage page) throws PresentationException, IndexUnreachableException {
+    public CollectionView getCollection(CMSPage page) throws PresentationException, IndexUnreachableException, IllegalRequestException {
         Optional<CMSContentItem> collectionItem =
                 page.getGlobalContentItems().stream().filter(item -> CMSContentItemType.COLLECTION.equals(item.getType())).findFirst();
         if (collectionItem.isPresent()) {
@@ -2033,21 +2126,46 @@ public class CmsBean implements Serializable {
     }
 
     /**
-     * @return
+     * 
+     * @param page
+     * @return true if the given CMS page is mapped to any static page; otherwise
      * @throws DAOException
      */
-    private static List<CMSStaticPage> createStaticPageList() throws DAOException {
-        List<CMSStaticPage> staticPages = DataManager.getInstance().getDao().getAllStaticPages();
+    public boolean isMappedToStaticPage(CMSPage page) throws DAOException {
+        if (page == null) {
+            throw new IllegalArgumentException("page may not be null");
+        }
 
-        List<PageType> pageTypesForCMS = PageType.getTypesHandledByCms();
-        for (PageType pageType : pageTypesForCMS) {
-            CMSStaticPage newPage = new CMSStaticPage(pageType.getName());
-            if (!staticPages.contains(newPage)) {
-                staticPages.add(newPage);
+        for (CMSStaticPage staticPage : getStaticPages()) {
+            if (staticPage.isHasCmsPage() && staticPage.getCmsPage().equals(page)) {
+                return true;
             }
         }
 
-        return staticPages;
+        return false;
+    }
+
+    /**
+     * @return List of static pages in the order specified in the PageType enum
+     * @throws DAOException
+     * @should return pages in specified order
+     */
+    static List<CMSStaticPage> createStaticPageList() throws DAOException {
+        List<CMSStaticPage> staticPages = DataManager.getInstance().getDao().getAllStaticPages();
+
+        List<PageType> pageTypesForCMS = PageType.getTypesHandledByCms();
+
+        List<CMSStaticPage> ret = new ArrayList<>(pageTypesForCMS.size());
+        for (PageType pageType : pageTypesForCMS) {
+            CMSStaticPage newPage = new CMSStaticPage(pageType.getName());
+            if (staticPages.contains(newPage)) {
+                ret.add(staticPages.get(staticPages.indexOf(newPage)));
+            } else {
+                ret.add(newPage);
+            }
+        }
+
+        return ret;
     }
 
     /**

@@ -15,170 +15,39 @@
  */
 package io.goobi.viewer.servlets.rest.content;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+
+import io.swagger.v3.oas.annotations.media.ExampleObject;
+import io.swagger.v3.oas.annotations.media.Schema;
+
 /**
  * POST request parameters for RecordsResource.
  */
+@Schema(name="SOLR request parameters", description="SOLR query and additional parameters", requiredProperties= {"query"})
 public class RecordsRequestParameters {
 
-    private String query;
-    private String sortFields;
-    private String sortOrder;
-    private String jsonFormat;
-    private int count;
-    private int offset;
-    private boolean randomize;
+    @Schema(description = "Raw SOLR query", example="ISWORK:true")
+    public String query;
+    @Schema(description = "A string list of SOLR field names which should be included in the response, allows wildcards", example="[\"PI*\",\"IDDOC\",\"DOCTYPE\",\"DOCSTRCT\",\"LABEL\"]")
+    public List<String> resultFields = new ArrayList<>();
+    @Schema(description = "A string list of SOLR fields used for sorting", example="[\"SORTNUM_YEAR\",\"LABEL\"]")
+    public List<String> sortFields = new ArrayList<>();
+    @Schema(description = "If this has the value 'desc', the results will be sorted by the given sortFields in descending order, otherwise ascending", example="asc")
+    public String sortOrder = "asc";
+    @Schema(description = "If this has the value 'datecentric', the results will bedelivered in a date centric format", example="recordcentric")
+    public String jsonFormat = "";
+    @Schema(description = "The maximum number of results to return", example="10")
+    public int count = 0;
+    @Schema(description = "The absolute index of the first result to return", example="0")
+    public int offset = 0;
+    @Schema(description = "Set to 'true' to randomize all results. If used in conjuction with sortFields, randomization only applies to results with identical values in the sortFields", example="false")
+    public boolean randomize = false;
+    @Schema(description = "If this field is set, all SOLR field names and values will be translated into this language, if possible", example="en")
+    public String language = "";
+    @Schema(description = "Set to 'true' to include all child documents (sections, pages) that match the query. Child documents are appended in the 'children' property", example="false")
+    public boolean includeChildHits = false;
 
-    /**
-     * <p>
-     * Getter for the field <code>query</code>.
-     * </p>
-     *
-     * @return the query
-     */
-    public String getQuery() {
-        return query;
-    }
-
-    /**
-     * <p>
-     * Setter for the field <code>query</code>.
-     * </p>
-     *
-     * @param query the query to set
-     */
-    public void setQuery(String query) {
-        this.query = query;
-    }
-
-    /**
-     * <p>
-     * Getter for the field <code>sortFields</code>.
-     * </p>
-     *
-     * @return the sortFields
-     */
-    public String getSortFields() {
-        return sortFields;
-    }
-
-    /**
-     * <p>
-     * Setter for the field <code>sortFields</code>.
-     * </p>
-     *
-     * @param sortFields the sortFields to set
-     */
-    public void setSortFields(String sortFields) {
-        this.sortFields = sortFields;
-    }
-
-    /**
-     * <p>
-     * Getter for the field <code>sortOrder</code>.
-     * </p>
-     *
-     * @return the sortOrder
-     */
-    public String getSortOrder() {
-        return sortOrder;
-    }
-
-    /**
-     * <p>
-     * Setter for the field <code>sortOrder</code>.
-     * </p>
-     *
-     * @param sortOrder the sortOrder to set
-     */
-    public void setSortOrder(String sortOrder) {
-        this.sortOrder = sortOrder;
-    }
-
-    /**
-     * <p>
-     * Getter for the field <code>jsonFormat</code>.
-     * </p>
-     *
-     * @return the jsonFormat
-     */
-    public String getJsonFormat() {
-        return jsonFormat;
-    }
-
-    /**
-     * <p>
-     * Setter for the field <code>jsonFormat</code>.
-     * </p>
-     *
-     * @param jsonFormat the jsonFormat to set
-     */
-    public void setJsonFormat(String jsonFormat) {
-        this.jsonFormat = jsonFormat;
-    }
-
-    /**
-     * <p>
-     * Getter for the field <code>count</code>.
-     * </p>
-     *
-     * @return the count
-     */
-    public int getCount() {
-        return count;
-    }
-
-    /**
-     * <p>
-     * Setter for the field <code>count</code>.
-     * </p>
-     *
-     * @param count the count to set
-     */
-    public void setCount(int count) {
-        this.count = count;
-    }
-
-    /**
-     * <p>
-     * Getter for the field <code>offset</code>.
-     * </p>
-     *
-     * @return the offset
-     */
-    public int getOffset() {
-        return offset;
-    }
-
-    /**
-     * <p>
-     * Setter for the field <code>offset</code>.
-     * </p>
-     *
-     * @param offset the offset to set
-     */
-    public void setOffset(int offset) {
-        this.offset = offset;
-    }
-
-    /**
-     * <p>
-     * isRandomize.
-     * </p>
-     *
-     * @return the randomize
-     */
-    public boolean isRandomize() {
-        return randomize;
-    }
-
-    /**
-     * <p>
-     * Setter for the field <code>randomize</code>.
-     * </p>
-     *
-     * @param randomize the randomize to set
-     */
-    public void setRandomize(boolean randomize) {
-        this.randomize = randomize;
-    }
 }

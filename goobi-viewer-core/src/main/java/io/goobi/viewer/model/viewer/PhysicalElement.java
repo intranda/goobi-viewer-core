@@ -45,6 +45,8 @@ import org.slf4j.LoggerFactory;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import de.unigoettingen.sub.commons.contentlib.exceptions.ContentNotFoundException;
+import de.unigoettingen.sub.commons.contentlib.exceptions.ServiceNotAllowedException;
 import de.unigoettingen.sub.commons.contentlib.imagelib.ImageFileFormat;
 import de.unigoettingen.sub.commons.contentlib.imagelib.ImageType;
 import de.unigoettingen.sub.commons.contentlib.imagelib.ImageType.Colortype;
@@ -52,12 +54,12 @@ import de.unigoettingen.sub.commons.contentlib.imagelib.transform.RegionRequest;
 import de.unigoettingen.sub.commons.contentlib.imagelib.transform.Rotation;
 import de.unigoettingen.sub.commons.contentlib.imagelib.transform.Scale;
 import de.unigoettingen.sub.commons.contentlib.servlet.model.ContentServerConfiguration;
+import io.goobi.viewer.api.rest.resourcebuilders.TextResourceBuilder;
 import io.goobi.viewer.controller.ALTOTools;
 import io.goobi.viewer.controller.Configuration;
 import io.goobi.viewer.controller.DataFileTools;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.FileTools;
-import io.goobi.viewer.controller.NetTools;
 import io.goobi.viewer.controller.SolrConstants;
 import io.goobi.viewer.controller.SolrSearchIndex;
 import io.goobi.viewer.controller.imaging.IIIFUrlHandler;
@@ -65,7 +67,6 @@ import io.goobi.viewer.controller.imaging.PdfHandler;
 import io.goobi.viewer.controller.imaging.ThumbnailHandler;
 import io.goobi.viewer.exceptions.AccessDeniedException;
 import io.goobi.viewer.exceptions.DAOException;
-import io.goobi.viewer.exceptions.HTTPException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.exceptions.ViewerConfigurationException;
@@ -132,6 +133,8 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
     private boolean hasImage = false;
     /** Whether or not full-text is available for this page. */
     private boolean fulltextAvailable = false;
+
+    private Boolean fulltextAccessPermission;
     /** File name of the full-text document in the file system. */
     private String fulltextFileName;
     /** File name of the ALTO document in the file system. */
@@ -719,6 +722,17 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
     }
 
     /**
+     * @return the fulltextAccessPermission
+     * @throws ViewerConfigurationException
+     */
+    public Boolean isFulltextAccessPermission() throws ViewerConfigurationException {
+        if (fulltextAccessPermission == null) {
+            getFullText();
+        }
+        return fulltextAccessPermission != null ? fulltextAccessPermission : false;
+    }
+
+    /**
      * <p>
      * Setter for the field <code>fulltextAvailable</code>.
      * </p>
@@ -747,7 +761,7 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
         return AccessConditionUtils.checkAccessPermissionByIdentifierAndFileNameWithSessionMap(BeanUtils.getRequest(), getPi(), filename,
                 IPrivilegeHolder.PRIV_VIEW_FULLTEXT);
     }
-    
+
     /**
      * <p>
      * isTeiAvailableForPage.
@@ -760,7 +774,6 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
     public boolean isTeiAvailable() throws IndexUnreachableException, DAOException {
         return isDisplayFulltext();
     }
-
 
     /**
      * <p>
@@ -819,7 +832,9 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
             // Load XML document
             try {
                 altoText = loadAlto();
+                fulltextAccessPermission = true;
             } catch (AccessDeniedException e) {
+                fulltextAccessPermission = false;
                 fullText = ViewerResourceBundle.getTranslation(e.getMessage(), null);
             } catch (JDOMException | IOException | IndexUnreachableException | DAOException e) {
                 logger.error(e.getMessage(), e);
@@ -834,8 +849,10 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
         if (fullText == null) {
             try {
                 fullText = loadFullText();
+                fulltextAccessPermission = true;
             } catch (AccessDeniedException e) {
-                fullText = e.getMessage();
+                fulltextAccessPermission = false;
+                fullText = ViewerResourceBundle.getTranslation(e.getMessage(), null);
             } catch (FileNotFoundException e) {
                 logger.error(e.getMessage());
             } catch (IOException | IndexUnreachableException | DAOException e) {
@@ -843,20 +860,16 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
             }
         }
 
-        if (fullText != null && fullText.length() < 30) {
-            return ViewerResourceBundle.getTranslation(fullText, null);
-        }
-
         return fullText;
     }
-    
+
     /**
      * 
-     * @return  The probable mimeType of the fulltext. If the fulltext is not yet loaded, it is loaded first
+     * @return The probable mimeType of the fulltext. If the fulltext is not yet loaded, it is loaded first
      * @throws ViewerConfigurationException
      */
     public String getFulltextMimeType() throws ViewerConfigurationException {
-        if(textContentType == null) {
+        if (textContentType == null) {
             getFullText();
         }
         return textContentType;
@@ -895,17 +908,11 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
         logger.trace("Loading full-text for page {}", fulltextFileName);
         String url = DataFileTools.buildFullTextUrl(fulltextFileName);
         try {
-            String text = NetTools.getWebContentGET(url);
-            textContentType = FileTools.probeContentType(text);
+            String text = DataFileTools.loadFulltext(null, fulltextFileName, false, BeanUtils.getRequest());
             return text;
-        } catch (HTTPException e) {
-            logger.error("Could not retrieve file from {}", url);
+        } catch (FileNotFoundException e) {
             logger.error(e.getMessage());
-            if (e.getCode() == 403) {
-                logger.debug("Access denied for full-text file {}", fulltextFileName);
-                throw new AccessDeniedException("fulltextAccessDenied");
-            }
-            return null;
+            return "";
         }
     }
 
@@ -941,7 +948,9 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
             // Load XML document
             try {
                 loadAlto();
+                fulltextAccessPermission = true;
             } catch (AccessDeniedException e) {
+                fulltextAccessPermission = false;
                 fullText = ViewerResourceBundle.getTranslation(e.getMessage(), null);
             } catch (JDOMException | IOException | IndexUnreachableException | DAOException e) {
                 logger.error(e.getMessage(), e);
@@ -976,26 +985,25 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
             return null;
         }
 
-        if (!AccessConditionUtils.checkAccessPermissionByIdentifierAndFilePathWithSessionMap(BeanUtils.getRequest(), altoFileName,
-                IPrivilegeHolder.PRIV_VIEW_FULLTEXT)) {
-            logger.debug("Access denied for ALTO file {}", altoFileName);
-            throw new AccessDeniedException("fulltextAccessDenied");
-        }
-        String url = DataFileTools.buildFullTextUrl(altoFileName);
-        logger.trace("ALTO URL: {}", url);
         try {
-            altoText = NetTools.getWebContentGET(url);
+            TextResourceBuilder builder = new TextResourceBuilder(BeanUtils.getRequest(), null);
+            altoText = builder.getAltoDocument(FileTools.getBottomFolderFromPathString(altoFileName),
+                    FileTools.getFilenameFromPathString(altoFileName));
             //Text from alto is always plain text
             textContentType = "text/plain";
             if (altoText != null) {
                 wordCoordsFormat = CoordsFormat.ALTO;
             }
             return altoText;
-        } catch (HTTPException e) {
-            logger.error("Could not retrieve file from {}", url);
+        } catch (ContentNotFoundException e) {
             logger.error(e.getMessage());
-            return null;
+        } catch (ServiceNotAllowedException e) {
+            throw new AccessDeniedException("fulltextAccessDenied");
+        } catch (PresentationException e) {
+            logger.error(e.getMessage());
         }
+
+        return "";
     }
 
     /**
@@ -1516,7 +1524,7 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
     public List<Comment> getComments() throws DAOException {
-        List<Comment> comments = DataManager.getInstance().getDao().getCommentsForPage(pi, order, true);
+        List<Comment> comments = DataManager.getInstance().getDao().getCommentsForPage(pi, order);
         Collections.sort(comments);
         //        Collections.reverse(comments);
         return comments;

@@ -74,7 +74,7 @@
 		<taskManager>taskmanager_url/</taskManager>
 
 		<!-- solr: URL to the Solr index core -->
-		<solr>https://viewer.goobi.io/solr/collection1</solr>
+		<solr>https://viewer-testing-index.goobi.io/solr/collection1</solr>
 
 		<!-- contentServer: relative path to contentServer from the Goobi viewer 
 			context -->
@@ -91,6 +91,9 @@
 		<rest>https://viewer.goobi.io/rest/</rest>
 
 		<download>https://viewer.goobi.io/download/</download>
+		
+        <!-- connectorVersion: URL to the version query on the Goobi viewer Connector -->
+        <connectorVersion>http://localhost:8081/M2M/oai/tools?action=getVersion</connectorVersion>
 	</urls>
 
 	<user>
@@ -135,6 +138,10 @@
 		<smtpSecurity>smtpSecurity_value</smtpSecurity>
 		<feedbackEmailAddress>feedbackEmailAddress_value
 		</feedbackEmailAddress>
+		
+        <!-- anonymousUserEmailAddress: A user with this email address will be automatically created by the application.
+            It will as an anonymous owner of user-created date in case the original user is deleted and their public data is kept. -->
+        <anonymousUserEmailAddress>we.are@anonymous.lulz</anonymousUserEmailAddress>
 	</user>
 
 	<performance>
@@ -145,6 +152,14 @@
 		<!-- If true, all HTTP responses will contain attributes preventing proxies 
 			etc. from caching contents. Default is false. -->
 		<preventProxyCaching>true</preventProxyCaching>
+		
+        <solr>
+            <!-- compressionEnabled: Enables compression for the Solr HTTP client. Default is true. -->
+            <compressionEnabled>false</compressionEnabled>
+            <!-- backwardsCompatible: If true, an XML response parser instead of binary will be used
+                to enabled Solr 4 compatibility. Default is false. -->
+            <backwardsCompatible>true</backwardsCompatible>
+        </solr>
 	</performance>
 
 	<accessConditions>
@@ -452,12 +467,12 @@
 		<!-- boostTopLevelDocstructs: If true, anchors receive a factor 10 boost, 
 			volumes and standalone records a factor 5 boost. This results in anchors 
 			appearing on top, followed by other records, followed by lower level docstructs, 
-			when sorting by relevance. Default is true. -->
+			when sorting by relevance. Does not apply if aggregateHits=true. Default is true. -->
 		<boostTopLevelDocstructs>false</boostTopLevelDocstructs>
-		<boostTopLevelDocstructs>true</boostTopLevelDocstructs>
 		<!-- groupDuplicatHits: If true, metadata doc search hits that represent 
 			the same entity will be grouped into one hit. Disable this if using a Solr 
-			schema that doesn't yet support GROUPFIELD. Default is true. -->
+			schema that doesn't yet support GROUPFIELD. Does not apply if aggregateHits=true.
+			Default is true. -->
 		<groupDuplicateHits>false</groupDuplicateHits>
 		<!-- aggregateHits: If true, only topstructs will be returned as hits, 
 			with child docstructs and pages being retrieved in an extra search. Default 
@@ -732,6 +747,12 @@
 			<!-- hitsPerPage: defines the maximum number of hits that are displayed 
 				per page -->
 			<hitsPerPage>19</hitsPerPage>
+			
+            <sorting>
+                <!-- ignoreLeadingChars: All leading characters to be ignored when comparing browsing terms.
+                    If empty, only the first non-alphanumeric char will be removed. -->
+                <ignoreLeadingChars>.[]</ignoreLeadingChars>
+            </sorting>
 
 			<!-- luceneField: defines index fields that are available for browsing. 
 				Only untokenized fields should be used. -->
@@ -1042,8 +1063,6 @@
 	</userComments>
 
 	<cms>
-		<!-- enabled: enables cms functionality globally (default is false) -->
-		<enabled>true</enabled>
 		<!-- useCustomNavBar: enables the use of a custom navigation navigation 
 			menu, configurable with cms-functionality -->
 		<useCustomNavBar>true</useCustomNavBar>

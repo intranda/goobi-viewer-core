@@ -9,7 +9,7 @@
             name="widget"
             type="io.goobi.viewer.model.cms.CMSSidebarElement"
             required="true" />
-        <composite:attribute name="filterQuery" required="false" default="#{cc.attrs.widget.widgetType == 'CMSSidebarElementWithQuery' ? '&amp;filterQuery='.concat(cc.attrs.widget.additionalQuery) : ''}"/>
+        <composite:attribute name="filterQuery" required="false" default="#{cc.attrs.widget.widgetType == 'CMSSidebarElementWithQuery' ? cc.attrs.widget.additionalQuery : ''}"/>
     </composite:interface>
     <composite:implementation>
         <h:panelGroup rendered="#{(cc.attrs.widget.type == 'widgetRssFeed' or cc.attrs.widget.type == null)}">
@@ -21,7 +21,7 @@
                     <h3>
                         #{cc.attrs.widget.widgetTitle == '' ? msg.lastImports : cc.attrs.widget.widgetTitle}
                         <a
-                            href="#{navigationHelper.applicationUrl}#{navigationHelper.rssUrl}#{cc.attrs.filterQuery}"
+                            href="#{navigationHelper.applicationUrl}api/v1/records/rss?query=#{cc.attrs.filterQuery}"
                             title="#{msg.rssSubscribe}"
                             target="_blank">
                             <i class="fa fa-rss" aria-hidden="true"></i>
@@ -30,7 +30,7 @@
                     <div
                         class="rss-wrapp"
                         rssnum="5"
-                        rss_url="#{navigationHelper.applicationUrl}#{navigationHelper.rssUrl}#{cc.attrs.filterQuery}"
+                        rss_url="#{navigationHelper.applicationUrl}api/v1/records/rss?max=5&amp;query=#{cc.attrs.filterQuery}"
                         lastImportsMsg="#{msg.importdate}:"
                         weekDayNames="#{msg.weekDayNames}"
                         monthNames="#{msg.monthNames}"></div>

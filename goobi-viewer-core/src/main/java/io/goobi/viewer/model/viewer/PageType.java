@@ -40,38 +40,40 @@ public enum PageType {
     viewThumbs("thumbs"),
     viewMetadata("metadata"),
     viewFulltext("fulltext"),
-    //    viewOverview("overview"),
     viewFullscreen("fullscreen"),
     viewObject("object"),
     viewCalendar("calendar"),
-    search("search", PageTypeHandling.cms),
     searchlist("searchlist"),
-    advancedSearch("searchadvanced", PageTypeHandling.cms),
     calendarsearch("searchcalendar"),
     term("term"),
-    browse("browse", PageTypeHandling.cms),
     expandCollection("expandCollection"),
     firstWorkInCollection("rest/redirect/toFirstWork"),
     sitelinks("sitelinks"),
+    user("user"),
     //admin
     admin("admin"),
-    adminAllUsers("admin/users"),
-    adminUser("admin/user"),
-    adminAllUserGroups("admin/groups"),
-    adminUserGroup("admin/group"),
-    adminIpRanges("admin/networks"),
-    adminIpRange("admin/network"),
-    adminAllLicenseTypes("admin/licenses"),
+    adminUsers("admin/users"),
+    adminUser("admin/users"),
+    adminUserNew("admin/users/new"),
+    adminUserGroups("admin/groups"),
+    adminUserGroup("admin/groups"),
+    adminUserGroupNew("admin/groups/new"),
+    adminIpRanges("admin/ipranges"),
+    adminIpRange("admin/ipranges"),
+    adminIpRangeNew("admin/ipranges/new"),
+    adminLicenseTypes("admin/licenses"),
     adminLicenseType("admin/license"),
-    adminRoles("admin/roles"),
+    adminRights("admin/rights"),
+    adminRightsNew("admin/rights/new"),
     adminUserComments("admin/comments"),
     adminCreateRecord("admin/record/new"),
     //admin/cms
     adminCms("admin/cms"),
     adminCmsOverview("admin/cms/pages"),
-    adminCmsSelectTemplate("admin/cms/pages/new"),
-    adminCmsCreatePage("admin/cms/pages/create"),
+    adminCmsSelectTemplate("admin/cms/pages/templates"),
+    adminCmsNewPage("admin/cms/pages/new"),
     adminCmsCategories("admin/cms/categories"),
+    adminCmsNewCategory("admin/cms/categories/new"),
     adminCmsStaticPages("admin/cms/pages/mapping"),
     adminCmsMedia("admin/cms/media"),
     adminCmsMenuItems("admin/cms/menus"),
@@ -79,25 +81,30 @@ public enum PageType {
     adminCmsEditCollection("admin/cms/collections/edit"),
     adminCmsGeoMaps("admin/cms/maps"),
     adminCmsGeoMapEdit("admin/cms/maps/edit"),
+    adminCmsGeoMapNew("admin/cms/maps/new"),
     cmsPageOfWork("page"),
     cmsPage("cms"),
     //admin/crowdsourcing
     adminCrowdsourcingAnnotations("admin/crowdsourcing/annotations"),
     adminCrowdsourcingCampaigns("admin/crowdsourcing/campaigns"),
     adminUserActivity("admin/user/activity/"),
-    //crowdsourcing/annotation
-    crowsourcingCampaigns("campaigns", PageTypeHandling.cms),
-    crowsourcingAnnotation("campaigns/.../annotate"),
-    crowsourcingReview("campaigns/.../review"),
     // TODO remove
     editContent("crowd/editContent"),
     editOcr("crowd/editOcr"),
     editHistory("crowd/editHistory"),
+    
+    // The order of page types handled by CMS here determines the listing order of static pages
     index("index", PageTypeHandling.cms),
-    bookmarks("bookmarks", PageTypeHandling.cms),
-    user("user"),
+    search("search", PageTypeHandling.cms),
+    advancedSearch("searchadvanced", PageTypeHandling.cms),
+    browse("browse", PageTypeHandling.cms),
     privacy("privacy", PageTypeHandling.cms),
     feedback("feedback", PageTypeHandling.cms),
+    crowsourcingCampaigns("campaigns", PageTypeHandling.cms),
+    bookmarks("bookmarks", PageTypeHandling.cms),
+    crowsourcingAnnotation("campaigns/.../annotate"),
+    crowsourcingReview("campaigns/.../review"),
+    
     other(""); //unknown page type name in Navigationhelper. Probably a cms-page
 
     /** Logger for this class. */
@@ -155,7 +162,6 @@ public enum PageType {
             case viewFulltext:
             case viewImage:
             case viewMetadata:
-                //            case viewOverview:
             case viewThumbs:
             case viewToc:
                 return true;
@@ -181,7 +187,6 @@ public enum PageType {
             case viewFulltext:
             case viewImage:
             case viewMetadata:
-                //            case viewOverview:
             case viewThumbs:
             case viewToc:
             case viewObject:
@@ -387,30 +392,35 @@ public enum PageType {
     public boolean isRestricted() {
         switch (this) {
             case admin:
-            case adminAllLicenseTypes:
-            case adminAllUserGroups:
-            case adminAllUsers:
+            case adminLicenseTypes:
+            case adminUserGroups:
+            case adminUsers:
             case adminCms:
             case adminCmsCategories:
+            case adminCmsNewCategory:
             case adminCmsCollections:
-            case adminCmsCreatePage:
+            case adminCmsNewPage:
             case adminCmsEditCollection:
             case adminCmsMedia:
             case adminCmsMenuItems:
             case adminCmsOverview:
             case adminCmsSelectTemplate:
             case adminCmsStaticPages:
-	    case adminCreateRecord:
+            case adminCreateRecord:
             case adminCrowdsourcingAnnotations:
             case adminCrowdsourcingCampaigns:
             case adminIpRange:
             case adminIpRanges:
+            case adminIpRangeNew:
             case adminLicenseType:
-            case adminRoles:
+            case adminRights:
+            case adminRightsNew:
             case adminUser:
+            case adminUserNew:
             case adminUserActivity:
             case adminUserComments:
             case adminUserGroup:
+            case adminUserGroupNew:
             case editContent:
             case editHistory:
             case editOcr:

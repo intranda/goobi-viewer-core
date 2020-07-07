@@ -24,7 +24,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import io.goobi.viewer.Version;
 import io.goobi.viewer.controller.language.LanguageHelper;
 import io.goobi.viewer.dao.IDAO;
 import io.goobi.viewer.dao.impl.JPADAO;
@@ -72,6 +71,8 @@ public final class DataManager {
 
     private Map<String, List<Campaign>> recordCampaignMap = null;
 
+    private String indexerVersion = "";
+
     /**
      * <p>
      * Getter for the field <code>instance</code>.
@@ -96,15 +97,6 @@ public final class DataManager {
     }
 
     private DataManager() {
-    }
-    
-    /**
-     * Returns the application version number.
-     *
-     * @return a {@link java.lang.String} object.
-     */
-    public static String getVersion() {
-        return Version.VERSION + "-" + Version.BUILDDATE + "-" + Version.BUILDVERSION;
     }
 
     /**
@@ -408,6 +400,21 @@ public final class DataManager {
      */
     public void setRecordCampaignMap(Map<String, List<Campaign>> recordCampaignMap) {
         this.recordCampaignMap = recordCampaignMap;
+    }
+
+    /**
+     * @return the indexerVersion
+     */
+    public String getIndexerVersion() {
+        return indexerVersion;
+    }
+
+    /**
+     * @param indexerVersion the indexerVersion to set
+     */
+    public void setIndexerVersion(String indexerVersion) {
+        this.indexerVersion = indexerVersion;
+        logger.trace(indexerVersion);
     }
 
 }

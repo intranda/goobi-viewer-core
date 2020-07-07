@@ -64,7 +64,7 @@
 		and 'A4Box' * sample: <defaultPdfConfig alwaysUseRenderedImage="true" alwaysCompressToJPEG="true" 
 		metsFileGroup="DEFAULT" writeAsPdfA="true" pagesize="A4"/> *~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ -->
 	<defaultPdfConfig alwaysUseRenderedImage="true"
-		alwaysCompressToJPEG="true" metsFileGroup="PRESENTATION" writeAsPdfA="true"
+		alwaysCompressToJPEG="true" metsFileGroup="PRESENTATION" writeAsPdfA="false"
 		pagesize="original" />
 
 	<!--########################################################## *############################################################# 

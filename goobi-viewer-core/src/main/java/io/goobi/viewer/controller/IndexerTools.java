@@ -34,6 +34,9 @@ import org.slf4j.LoggerFactory;
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 
+import io.goobi.viewer.api.rest.AbstractApiUrlManager;
+import io.goobi.viewer.api.rest.resourcebuilders.AnnotationsResourceBuilder;
+import io.goobi.viewer.api.rest.v1.ApiUrls;
 import io.goobi.viewer.controller.SolrConstants.DocType;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
@@ -179,6 +182,8 @@ public class IndexerTools {
         List<CampaignRecordStatistic> statistics =
                 DataManager.getInstance().getDao().getCampaignStatisticsForRecord(pi, CampaignRecordStatus.FINISHED);
         if (!statistics.isEmpty()) {
+            AbstractApiUrlManager urls = new ApiUrls(DataManager.getInstance().getConfiguration().getRestApiUrl());
+            AnnotationsResourceBuilder annoBuilder = new AnnotationsResourceBuilder(urls);
             for (CampaignRecordStatistic statistic : statistics) {
                 Campaign campaign = statistic.getOwner();
                 List<PersistentAnnotation> annotations = DataManager.getInstance().getDao().getAnnotationsForCampaignAndWork(campaign, pi);
@@ -188,7 +193,7 @@ public class IndexerTools {
                             new File(DataManager.getInstance().getConfiguration().getHotfolder(), sbNamingScheme.toString() + SUFFIX_ANNOTATIONS);
                     for (PersistentAnnotation annotation : annotations) {
                         try {
-                            String json = annotation.getAsAnnotation().toString();
+                            String json = annoBuilder.getAsWebAnnotation(annotation).toString();
                             String jsonFileName = annotation.getTargetPI() + "_" + annotation.getId() + ".json";
                             FileUtils.writeStringToFile(new File(annotationDir, jsonFileName), json, Charset.forName(StringTools.DEFAULT_ENCODING));
                         } catch (JsonParseException e) {

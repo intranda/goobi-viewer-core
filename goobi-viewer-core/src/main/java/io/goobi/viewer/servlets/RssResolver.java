@@ -68,6 +68,12 @@ public class RssResolver extends HttpServlet {
         if (request.getParameterMap().get("language") != null && request.getParameterMap().get("language").length > 0) {
             language = request.getParameterMap().get("language")[0];
         }
+        int maxHits;
+        if (request.getParameterMap().get("max") != null && request.getParameterMap().get("max").length > 0) {
+            maxHits = Integer.parseInt(request.getParameterMap().get("max")[0]);
+        } else {            
+            maxHits = DataManager.getInstance().getConfiguration().getRssFeedItems();
+        }
         logger.trace("RSS request language: {}", language);
         
         String filterQuery = "";
@@ -117,7 +123,7 @@ public class RssResolver extends HttpServlet {
                         RSSFeed.createRss(ServletUtils.getServletPathWithHostAsUrlFromRequest(request),
                                 query + SearchHelper.getAllSuffixes(request, null, true, true,
                                         DataManager.getInstance().getConfiguration().isSubthemeAddFilterQuery()),
-                                Collections.singletonList(filterQuery), language),
+                                Collections.singletonList(filterQuery), language, maxHits),
                         new OutputStreamWriter(response.getOutputStream(), "utf-8"));
             } else {
                 response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Insufficient parameters");

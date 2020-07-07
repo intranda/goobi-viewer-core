@@ -105,7 +105,7 @@ var cmsJS = ( function( cms ) {
                     else {
                         $( this ).removeClass( 'fa-times' ).addClass( 'fa-pencil-square-o' );
                     }
-                    $( this ).parent( '.sidebar-editor-widget-item-header' ).next( '.sidebar-editor-widget-item-body' ).slideToggle( 'slow' );
+                    $( this ).parent( '.sidebar-editor-widget-item-header' ).next( '.sidebar-editor-widget-item-body' ).slideToggle();
                 } );
                 
                 config.sortablesConfig.availableItemList.on( 'sortbeforestop', function( event, ui ) {

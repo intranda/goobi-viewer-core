@@ -30,12 +30,16 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import de.unigoettingen.sub.commons.contentlib.exceptions.ContentNotFoundException;
+import de.unigoettingen.sub.commons.contentlib.exceptions.ServiceNotAllowedException;
+import io.goobi.viewer.api.rest.resourcebuilders.TextResourceBuilder;
 import io.goobi.viewer.exceptions.AccessDeniedException;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.HTTPException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.exceptions.ViewerConfigurationException;
+import io.goobi.viewer.managedbeans.utils.BeanUtils;
 
 /**
  * Utility class for retrieving data folders, data files and source files.
@@ -363,7 +367,6 @@ public class DataFileTools {
     /**
      * Loads plain full-text via the REST service. ALTO is preferred (and converted to plain text, with a plain text fallback.
      *
-     * @param dataRepository a {@link java.lang.String} object.
      * @param altoFilePath ALTO file path relative to the repository root (e.g. "alto/PPN123/00000001.xml")
      * @param fulltextFilePath plain full-text file path relative to the repository root (e.g. "fulltext/PPN123/00000001.xml")
      * @param mergeLineBreakWords a boolean.
@@ -378,57 +381,40 @@ public class DataFileTools {
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
      */
-    public static String loadFulltext(String dataRepository, String altoFilePath, String fulltextFilePath, boolean mergeLineBreakWords,
+    public static String loadFulltext(String altoFilePath, String fulltextFilePath, boolean mergeLineBreakWords,
             HttpServletRequest request)
             throws AccessDeniedException, FileNotFoundException, IOException, IndexUnreachableException, DAOException, ViewerConfigurationException {
+        TextResourceBuilder builder = new TextResourceBuilder(BeanUtils.getRequest(), null);
         if (altoFilePath != null) {
             // ALTO file
-            String alto = loadFulltext(altoFilePath, request);
-            if (alto != null) {
-                return ALTOTools.getFullText(alto, mergeLineBreakWords, request);
-
+            try {
+                String alto = builder.getAltoDocument(FileTools.getBottomFolderFromPathString(altoFilePath),
+                        FileTools.getFilenameFromPathString(altoFilePath));
+                if (alto != null) {
+                    return ALTOTools.getFullText(alto, mergeLineBreakWords, request);
+                }
+            } catch (ContentNotFoundException e) {
+                throw new FileNotFoundException(e.getMessage());
+            } catch (ServiceNotAllowedException e) {
+                throw new AccessDeniedException("fulltextAccessDenied");
+            } catch (PresentationException e) {
+                logger.error(e.getMessage());
             }
         }
         if (fulltextFilePath != null) {
             // Plain full-text file
-            String fulltext = loadFulltext(fulltextFilePath, request);
-            if (fulltext != null) {
-                return fulltext;
-            }
-        }
-
-        return null;
-    }
-
-    /**
-     * Loads given text file path as a string, if the client has full-text access permission.
-     *
-     * @param filePath File path consisting of three party (datafolder/pi/filename); There must be two separators in the path!
-     * @param request a {@link javax.servlet.http.HttpServletRequest} object.
-     * @should return file content correctly
-     * @return a {@link java.lang.String} object.
-     * @throws io.goobi.viewer.exceptions.AccessDeniedException if any.
-     * @throws java.io.FileNotFoundException if any.
-     * @throws java.io.IOException if any.
-     * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
-     * @throws io.goobi.viewer.exceptions.DAOException if any.
-     * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
-     */
-    public static String loadFulltext(String filePath, HttpServletRequest request)
-            throws AccessDeniedException, FileNotFoundException, IOException, IndexUnreachableException, DAOException, ViewerConfigurationException {
-        if (filePath == null) {
-            return null;
-        }
-
-        String url = buildFullTextUrl(filePath);
-        try {
-            return NetTools.getWebContentGET(url);
-        } catch (HTTPException e) {
-            //            logger.error("Could not retrieve file from {}", url);
-            //            logger.error(e.getMessage());
-            if (e.getCode() == 403) {
-                logger.debug("Access denied for text file {}", filePath);
+            try {
+                String fulltext = builder.getFulltext(FileTools.getBottomFolderFromPathString(fulltextFilePath),
+                        FileTools.getFilenameFromPathString(fulltextFilePath));
+                if (fulltext != null) {
+                    return fulltext;
+                }
+            } catch (ContentNotFoundException e) {
+                throw new FileNotFoundException(e.getMessage());
+            } catch (ServiceNotAllowedException e) {
                 throw new AccessDeniedException("fulltextAccessDenied");
+            } catch (PresentationException e) {
+                logger.error(e.getMessage());
             }
         }
 

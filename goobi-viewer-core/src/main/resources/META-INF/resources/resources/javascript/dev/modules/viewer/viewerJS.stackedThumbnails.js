@@ -60,11 +60,11 @@ var viewerJS = ( function( viewer ) {
             $.extend( true, _defaults, config );
             
             // hide stacked thumbs
-            $( _defaults.thumbs ).hide();
-            $( _defaults.thumbs ).siblings().hide();
+        //    $( _defaults.thumbs ).hide();
+        //    $( _defaults.thumbs ).siblings().hide();
             
             // iterate through thumbnails and set width and height for image stack
-            $( _defaults.thumbs ).each( function() {
+         /*   $( _defaults.thumbs ).each( function() {
                 _imgWidth = $( this ).outerWidth();
                 _imgHeight = $( this ).outerHeight();
                 
@@ -83,8 +83,41 @@ var viewerJS = ( function( viewer ) {
                 $( this ).siblings( _defaults.thumbsBefore ).fadeIn( 'slow', function() {
                     $( this ).siblings( _defaults.thumbsAfter ).fadeIn();
                 } );
-            } );
+            } );*/
             
+
+            // fade in thumb paper stack effect on scroll
+            $.fn.isInViewport = function () {
+                let elementTop = $(this).offset().top;
+                let elementBottom = elementTop + $(this).outerHeight();
+
+                let viewportTop = $(window).scrollTop();
+                let viewportBottom = viewportTop + $(window).height();
+
+                return elementBottom > viewportTop && elementTop < viewportBottom;
+            };
+            
+            var debounce_timer;
+
+            $(window).scroll(function() {
+                    if(debounce_timer) {
+                            window.clearTimeout(debounce_timer);
+                    }
+                    debounce_timer = window.setTimeout(function() {
+                        $('.stacked-thumbnail-after, .stacked-thumbnail-before').each( function(i){
+                            if ($(this).isInViewport()) {
+                                $(this).addClass('-shown');
+                            }
+                        }); 
+                    }, 100);
+            });
+            // trigger thumb paper stack effect if page has no scroll
+            $('.stacked-thumbnail-before, .stacked-thumbnail-after').each( function(i){
+                if ($(this).isInViewport()) {
+                    $(this).addClass('-shown');
+                }
+            }); 
+                
         },
     };
     

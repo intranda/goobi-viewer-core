@@ -571,7 +571,7 @@ public class CMSSidebarElement {
      * @return the sortingId
      */
     public int getSortingId() {
-        return sortingId;
+        return this.id == null ? sortingId : this.id.intValue();
     }
 
     /**

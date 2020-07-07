@@ -501,39 +501,39 @@ public class SearchBeanTest extends AbstractDatabaseAndSolrEnabledTest {
         SearchBean sb = new SearchBean();
         sb.setCurrentSearch(new Search());
         sb.getCurrentSearch().setPage(1);
-        sb.getCurrentSearch().setQuery("DC:dcimage* AND NOT IDDOC_PARENT:*");
+        sb.getCurrentSearch().setQuery("+DC:dcimage* +ISWORK:true -IDDOC_PARENT:*");
         sb.getCurrentSearch().setSortString("SORT_TITLE");
         sb.getCurrentSearch().execute(new SearchFacets(), null, 10, 0, null, true);
-        Assert.assertEquals(21, sb.getCurrentSearch().getHitsCount());
+        Assert.assertEquals(17, sb.getCurrentSearch().getHitsCount());
 
         sb.findCurrentHitIndex("PPN9462", 1, true);
         Assert.assertEquals(0, sb.getCurrentHitIndex());
 
-        sb.findCurrentHitIndex("133563847", 1, true);
+        sb.findCurrentHitIndex("633114553", 1, true);
         Assert.assertEquals(1, sb.getCurrentHitIndex());
 
-        sb.findCurrentHitIndex("213369540", 1, true);
+        sb.findCurrentHitIndex("PPN407465633d27302e312e312e27_40636c6173736e756d3d27312e27_407369673d27313527", 1, true);
         Assert.assertEquals(2, sb.getCurrentHitIndex());
 
-        sb.findCurrentHitIndex("34115495", 1, true);
+        sb.findCurrentHitIndex("808996762", 1, true);
         Assert.assertEquals(3, sb.getCurrentHitIndex());
 
-        sb.findCurrentHitIndex("605302278", 1, true);
+        sb.findCurrentHitIndex("02008011811811", 1, true);
         Assert.assertEquals(4, sb.getCurrentHitIndex());
 
-        sb.findCurrentHitIndex("2014203", 1, true);
+        sb.findCurrentHitIndex("iiif_test_image", 1, true);
         Assert.assertEquals(5, sb.getCurrentHitIndex());
 
-        sb.findCurrentHitIndex("PPN407465633d27302e312e312e27_40636c6173736e756d3d27312e27_407369673d27313527", 1, true);
+        sb.findCurrentHitIndex("339471409", 1, true);
         Assert.assertEquals(6, sb.getCurrentHitIndex());
 
-        sb.findCurrentHitIndex("808996762", 1, true);
+        sb.findCurrentHitIndex("02008012412069", 1, true);
         Assert.assertEquals(7, sb.getCurrentHitIndex());
 
-        sb.findCurrentHitIndex("02008011811811", 1, true);
+        sb.findCurrentHitIndex("02008012412076", 1, true);
         Assert.assertEquals(8, sb.getCurrentHitIndex());
 
-        sb.findCurrentHitIndex("iiif_test_image", 1, true);
+        sb.findCurrentHitIndex("b18029048", 1, true);
         Assert.assertEquals(9, sb.getCurrentHitIndex());
 
     }

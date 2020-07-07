@@ -28,6 +28,7 @@ import java.util.stream.Collectors;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.faces.annotation.FacesConfig;
+import javax.faces.annotation.ManagedProperty;
 import javax.inject.Named;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -50,6 +51,7 @@ import io.goobi.viewer.controller.language.Language;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.exceptions.ViewerConfigurationException;
+import io.goobi.viewer.faces.validators.EmailValidator;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.model.search.SearchHelper;
 import io.goobi.viewer.model.viewer.PageType;
@@ -338,35 +340,13 @@ public class ConfigurationBean implements Serializable {
 
     /**
      * <p>
-     * isCmsEnabledStatic.
-     * </p>
-     *
-     * @return a boolean.
-     */
-    public static boolean isCmsEnabledStatic() {
-        return DataManager.getInstance().getConfiguration().isCmsEnabled();
-    }
-
-    /**
-     * <p>
-     * isCmsEnabled.
-     * </p>
-     *
-     * @return a boolean.
-     */
-    public boolean isCmsEnabled() {
-        return isCmsEnabledStatic();
-    }
-
-    /**
-     * <p>
      * isUseCustomNavBar.
      * </p>
      *
      * @return a boolean.
      */
     public boolean isUseCustomNavBar() {
-        return isCmsEnabledStatic() && DataManager.getInstance().getConfiguration().useCustomNavBar();
+        return DataManager.getInstance().getConfiguration().useCustomNavBar();
     }
 
     /**
@@ -724,13 +704,13 @@ public class ConfigurationBean implements Serializable {
 
     /**
      * <p>
-     * isSidebarTocVisible.
+     * isSidebarTocWidgetVisible.
      * </p>
      *
      * @return a boolean.
      */
-    public boolean isSidebarTocVisible() {
-        return DataManager.getInstance().getConfiguration().isSidebarTocVisible();
+    public boolean isSidebarTocWidgetVisible() {
+        return DataManager.getInstance().getConfiguration().isSidebarTocWidgetVisible();
     }
 
     /**
@@ -775,19 +755,7 @@ public class ConfigurationBean implements Serializable {
      * @return a boolean.
      */
     public boolean isSidebarPageLinkVisible() {
-        return DataManager.getInstance().getConfiguration().isSidebarPageLinkVisible();
-    }
-
-    /**
-     * <p>
-     * isSidebarTocLinkVisible.
-     * </p>
-     *
-     * @should return correct value
-     * @return a boolean.
-     */
-    public boolean isSidebarTocLinkVisible() {
-        return DataManager.getInstance().getConfiguration().isSidebarTocLinkVisible();
+        return DataManager.getInstance().getConfiguration().isSidebarPageViewLinkVisible();
     }
 
     /**
@@ -799,7 +767,7 @@ public class ConfigurationBean implements Serializable {
      * @return a boolean.
      */
     public boolean isSidebarCalendarLinkVisible() {
-        return DataManager.getInstance().getConfiguration().isSidebarCalendarLinkVisible();
+        return DataManager.getInstance().getConfiguration().isSidebarCalendarViewLinkVisible();
     }
 
     /**
@@ -811,7 +779,7 @@ public class ConfigurationBean implements Serializable {
      * @return a boolean.
      */
     public boolean isSidebarMetadataLinkVisible() {
-        return DataManager.getInstance().getConfiguration().isSidebarMetadataLinkVisible();
+        return DataManager.getInstance().getConfiguration().isSidebarMetadataViewLinkVisible();
     }
 
     /**
@@ -823,7 +791,7 @@ public class ConfigurationBean implements Serializable {
      * @return a boolean.
      */
     public boolean isSidebarThumbsLinkVisible() {
-        return DataManager.getInstance().getConfiguration().isSidebarThumbsLinkVisible();
+        return DataManager.getInstance().getConfiguration().isSidebarThumbsViewLinkVisible();
     }
 
     /**
@@ -1295,6 +1263,13 @@ public class ConfigurationBean implements Serializable {
     public String getIiifApiUrl() throws ViewerConfigurationException {
         return DataManager.getInstance().getConfiguration().getRestApiUrl();
     }
+    
+    /**
+     * @return  The url to the /api/v1 Rest Api
+     */
+    public String getRestApiUrlV1() {
+        return DataManager.getInstance().getConfiguration().getRestApiUrl().replace("/rest", "/api/v1");
+    }
 
     /**
      * <p>
@@ -1467,4 +1442,11 @@ public class ConfigurationBean implements Serializable {
         return DataManager.getInstance().getConfiguration().getSearchHitsPerPageValues();
     }
 
+    /**
+     * 
+     * @return true if user.anonymousUserEmailAddress is configured and valid; false otherwise
+     */
+    public boolean isAnonymousUserEmailAddressValid() {
+        return EmailValidator.validateEmailAddress(DataManager.getInstance().getConfiguration().getAnonymousUserEmailAddress());
+    }
 }

@@ -15,87 +15,85 @@
         
         <h:form id="collectionTiledForm" prependId="false">
             <div class="collection-tiled">
-                <div class="row">
-                    <div class="collection-tiled__tiles">
-                        <ui:repeat var="browseDcElement" value="#{collection.visibleDcElements}">
-                            <div class="col-xs-12 col-sm-4">
-                                <div class="collection-tiled__tile">
-    	                            <h:panelGroup rendered="#{browseDcElement.opensInNewWindow}">
-    	                          	    <div class="collection-tiled__header">
-    										<h:commandLink action="#{collection.expand(browseDcElement)}" styleClass="#{collection.isTopVisibleElement(browseDcElement) ? 'top-collection-elem' : ''}">
-    											<h:outputText
-    												rendered="#{browseDcElement.displayNumberOfVolumes}"
-    												value="#{msg[browseDcElement.label]} (#{browseDcElement.numberOfVolumes})"
-    												title="#{msg[browseDcElement.label]}" />
-    											<h:outputText
-    												rendered="#{!browseDcElement.displayNumberOfVolumes}"
-    												value="#{msg[browseDcElement.label]}"
-    												title="#{msg[browseDcElement.label]}" />
-    											<f:ajax render="@form" />
-    										</h:commandLink>
-    									</div>
-    	                                <div class="collection-tiled__body">
-    	                                    <!-- WITH DESCRIPTION -->
-    	                                    <ui:fragment rendered="#{browseDcElement.info.hasDescription()}">
-	    	                                    <a href="#{collection.getCollectionUrl(browseDcElement)}"
-	    	                                    	data-toggle="popover"
-	    	                                    	data-placement="top"
-	    	                                    	data-container="body"
-	    	                                    	data-trigger="hover"
-	    	                                    	data-html="true"
-	    	                                    	data-content="#{browseDcElement.info.description}">
-	    	                                    	<img data-src="#{browseDcElement.info.iconURI}" alt="" class="img-responsive" data-viewer-thumbnail="thumbnail"/>
-	    	                                    </a>
-    	                                    </ui:fragment>
-    	                                    
-    	                                    <!-- WITHOUT DESCRIPTION -->
-    	                                    <ui:fragment rendered="#{!browseDcElement.info.hasDescription()}">
-	    	                                    <a href="#{collection.getCollectionUrl(browseDcElement)}">
-	    	                                    	<img data-src="#{browseDcElement.info.iconURI}" alt="" class="img-responsive" data-viewer-thumbnail="thumbnail" />
-	    	                                    </a>
-    	                                    </ui:fragment>
-    	                                </div>
-    	                            </h:panelGroup>
-    	                            <h:panelGroup rendered="#{!browseDcElement.opensInNewWindow}">
-    	                                <div class="collection-tiled__header">
-    	                                    <a href="#{collection.getCollectionUrl(browseDcElement)}" title="#{msg[browseDcElement.label]}">
-    	                                       <h:outputText
-    												rendered="#{browseDcElement.displayNumberOfVolumes}"
-    												value="#{msg[browseDcElement.label]} (#{browseDcElement.numberOfVolumes})"
-    												title="#{msg[browseDcElement.label]}" />
-    											<h:outputText
-    												rendered="#{!browseDcElement.displayNumberOfVolumes}"
-    												value="#{msg[browseDcElement.label]}"
-    												title="#{msg[browseDcElement.label]}" />
-    										</a>
-    	                                </div>
-    	                                <div class="collection-tiled__body">
-    	                                    <!-- WITH DESCRIPTION -->
-    	                                    <ui:fragment rendered="#{browseDcElement.info.hasDescription()}">
-	    	                                    <a href="#{collection.getCollectionUrl(browseDcElement)}"
-	    	                                    	data-toggle="popover"
-	    	                                    	data-placement="top"
-	    	                                    	data-container="body"
-	    	                                    	data-trigger="hover"
-	    	                                    	data-html="true"
-	    	                                    	data-content="#{browseDcElement.info.description}">
-	    	                                    	<img data-src="#{browseDcElement.info.iconURI}" alt="" class="img-responsive" data-viewer-thumbnail="thumbnail"/>
-	    	                                    </a>
-    	                                    </ui:fragment>
-    	                                    
-    	                                    <!-- WITHOUT DESCRIPTION -->
-    	                                    <ui:fragment rendered="#{!browseDcElement.info.hasDescription()}">
-	    	                                    <a href="#{collection.getCollectionUrl(browseDcElement)}">
-	    	                                    	<img data-src="#{browseDcElement.info.iconURI}" alt="" class="img-responsive" data-viewer-thumbnail="thumbnail" />
-	    	                                    </a>
-    	                                    </ui:fragment>
-    	                                </div>
-                                    </h:panelGroup>
-                                </div>
-                            </div>
-                        </ui:repeat>
-                    </div>
-                </div>
+                 <div class="row collection-tiled__tiles">
+                     <ui:repeat var="browseDcElement" value="#{collection.visibleDcElements}">
+                         <div class="col-12 col-sm-4">
+                             <div class="collection-tiled__tile">
+ 	                            <h:panelGroup rendered="#{browseDcElement.opensInNewWindow}">
+ 	                          	    <div class="collection-tiled__header">
+ 										<h:commandLink action="#{collection.expand(browseDcElement)}" styleClass="#{collection.isTopVisibleElement(browseDcElement) ? 'top-collection-elem' : ''}">
+ 											<h:outputText
+ 												rendered="#{browseDcElement.displayNumberOfVolumes}"
+ 												value="#{msg[browseDcElement.label]} (#{browseDcElement.numberOfVolumes})"
+ 												title="#{msg[browseDcElement.label]}" />
+ 											<h:outputText
+ 												rendered="#{!browseDcElement.displayNumberOfVolumes}"
+ 												value="#{msg[browseDcElement.label]}"
+ 												title="#{msg[browseDcElement.label]}" />
+ 											<f:ajax render="@form" />
+ 										</h:commandLink>
+ 									</div>
+ 	                                <div class="collection-tiled__body">
+ 	                                    <!-- WITH DESCRIPTION -->
+ 	                                    <ui:fragment rendered="#{browseDcElement.info.hasDescription()}">
+  	                                    <a href="#{collection.getCollectionUrl(browseDcElement)}"
+  	                                    	data-toggle="popover"
+  	                                    	data-placement="top"
+  	                                    	data-container="body"
+  	                                    	data-trigger="hover"
+  	                                    	data-html="true"
+  	                                    	data-content="#{browseDcElement.info.description}">
+  	                                    	<img data-src="#{browseDcElement.info.iconURI}" alt="" class="img-fluid" data-viewer-thumbnail="thumbnail"/>
+  	                                    </a>
+ 	                                    </ui:fragment>
+ 	                                    
+ 	                                    <!-- WITHOUT DESCRIPTION -->
+ 	                                    <ui:fragment rendered="#{!browseDcElement.info.hasDescription()}">
+  	                                    <a href="#{collection.getCollectionUrl(browseDcElement)}">
+  	                                    	<img data-src="#{browseDcElement.info.iconURI}" alt="" class="img-fluid" data-viewer-thumbnail="thumbnail" />
+  	                                    </a>
+ 	                                    </ui:fragment>
+ 	                                </div>
+ 	                            </h:panelGroup>
+ 	                            <h:panelGroup rendered="#{!browseDcElement.opensInNewWindow}">
+ 	                                <div class="collection-tiled__header">
+ 	                                    <a href="#{collection.getCollectionUrl(browseDcElement)}" title="#{msg[browseDcElement.label]}">
+ 	                                       <h:outputText
+ 												rendered="#{browseDcElement.displayNumberOfVolumes}"
+ 												value="#{msg[browseDcElement.label]} (#{browseDcElement.numberOfVolumes})"
+ 												title="#{msg[browseDcElement.label]}" />
+ 											<h:outputText
+ 												rendered="#{!browseDcElement.displayNumberOfVolumes}"
+ 												value="#{msg[browseDcElement.label]}"
+ 												title="#{msg[browseDcElement.label]}" />
+ 										</a>
+ 	                                </div>
+ 	                                <div class="collection-tiled__body">
+ 	                                    <!-- WITH DESCRIPTION -->
+ 	                                    <ui:fragment rendered="#{browseDcElement.info.hasDescription()}">
+  	                                    <a href="#{collection.getCollectionUrl(browseDcElement)}"
+  	                                    	data-toggle="popover"
+  	                                    	data-placement="top"
+  	                                    	data-container="body"
+  	                                    	data-trigger="hover"
+  	                                    	data-html="true"
+  	                                    	data-content="#{browseDcElement.info.description}">
+  	                                    	<img data-src="#{browseDcElement.info.iconURI}" alt="" class="img-fluid" data-viewer-thumbnail="thumbnail"/>
+  	                                    </a>
+ 	                                    </ui:fragment>
+ 	                                    
+ 	                                    <!-- WITHOUT DESCRIPTION -->
+ 	                                    <ui:fragment rendered="#{!browseDcElement.info.hasDescription()}">
+  	                                    <a href="#{collection.getCollectionUrl(browseDcElement)}">
+  	                                    	<img data-src="#{browseDcElement.info.iconURI}" alt="" class="img-fluid" data-viewer-thumbnail="thumbnail" />
+  	                                    </a>
+ 	                                    </ui:fragment>
+ 	                                </div>
+                                 </h:panelGroup>
+                             </div>
+                         </div>
+                     </ui:repeat>
+                 </div>
             </div>
         </h:form>
 

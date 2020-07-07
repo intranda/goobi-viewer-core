@@ -32,6 +32,8 @@ import io.goobi.viewer.model.cms.CMSCollection;
 import io.goobi.viewer.model.cms.CMSMediaItem;
 import io.goobi.viewer.model.cms.CMSNavigationItem;
 import io.goobi.viewer.model.cms.CMSPage;
+import io.goobi.viewer.model.cms.CMSPageTemplate;
+import io.goobi.viewer.model.cms.CMSPageTemplateEnabled;
 import io.goobi.viewer.model.cms.CMSSidebarElement;
 import io.goobi.viewer.model.cms.CMSStaticPage;
 import io.goobi.viewer.model.crowdsourcing.campaigns.Campaign;
@@ -41,6 +43,7 @@ import io.goobi.viewer.model.crowdsourcing.questions.Question;
 import io.goobi.viewer.model.download.DownloadJob;
 import io.goobi.viewer.model.maps.GeoMap;
 import io.goobi.viewer.model.search.Search;
+import io.goobi.viewer.model.security.License;
 import io.goobi.viewer.model.security.LicenseType;
 import io.goobi.viewer.model.security.Role;
 import io.goobi.viewer.model.security.user.IpRange;
@@ -543,6 +546,19 @@ public interface IDAO {
 
     /**
      * <p>
+     * getUserRoleCount.
+     * </p>
+     *
+     * @param userGroup a {@link io.goobi.viewer.model.security.user.UserGroup} object.
+     * @param user a {@link io.goobi.viewer.model.security.user.User} object.
+     * @param role a {@link io.goobi.viewer.model.security.Role} object.
+     * @return Row count
+     * @throws io.goobi.viewer.exceptions.DAOException if any.
+     */
+    public long getUserRoleCount(UserGroup userGroup, User user, Role role) throws DAOException;
+
+    /**
+     * <p>
      * getUserRoles.
      * </p>
      *
@@ -623,13 +639,13 @@ public interface IDAO {
 
     /**
      * <p>
-     * getNonOpenAccessLicenseTypes.
+     * getRecordLicenseTypes.
      * </p>
      *
      * @return a {@link java.util.List} object.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
-    public List<LicenseType> getNonOpenAccessLicenseTypes() throws DAOException;
+    public List<LicenseType> getRecordLicenseTypes() throws DAOException;
 
     /**
      * <p>
@@ -717,6 +733,29 @@ public interface IDAO {
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
     public boolean deleteLicenseType(LicenseType licenseType) throws DAOException;
+
+    // License
+
+    /**
+     * <p>
+     * getAllLicenses.
+     * </p>
+     *
+     * @return a {@link java.util.List} object.
+     * @throws io.goobi.viewer.exceptions.DAOException if any.
+     */
+    public List<License> getAllLicenses() throws DAOException;
+
+    /**
+     * <p>
+     * getLicense.
+     * </p>
+     *
+     * @param id a long.
+     * @return a {@link io.goobi.viewer.model.security.getLicense} object.
+     * @throws io.goobi.viewer.exceptions.DAOException if any.
+     */
+    public License getLicense(Long id) throws DAOException;
 
     // IpRange
 
@@ -856,11 +895,10 @@ public interface IDAO {
      *
      * @param pi a {@link java.lang.String} object.
      * @param page a int.
-     * @param topLevelOnly a boolean.
      * @return a {@link java.util.List} object.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
-    public List<Comment> getCommentsForPage(String pi, int page, boolean topLevelOnly) throws DAOException;
+    public List<Comment> getCommentsForPage(String pi, int page) throws DAOException;
 
     /**
      * <p>
@@ -868,11 +906,10 @@ public interface IDAO {
      * </p>
      *
      * @param pi a {@link java.lang.String} object.
-     * @param topLevelOnly a boolean.
      * @return a {@link java.util.List} object.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
-    public List<Comment> getCommentsForWork(String pi, boolean topLevelOnly) throws DAOException;
+    public List<Comment> getCommentsForWork(String pi) throws DAOException;
 
     /**
      * <p>
@@ -917,6 +954,25 @@ public interface IDAO {
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
     public boolean deleteComment(Comment comment) throws DAOException;
+
+    /**
+     * 
+     * @param pi Record identifier
+     * @param owner Comment creator
+     * @return Number of affected rows
+     * @throws io.goobi.viewer.exceptions.DAOException if any.
+     */
+    public int deleteComments(String pi, User owner) throws DAOException;
+
+    /**
+     * Changes ownership of all comments from <code>fromUser</code> to <code>toUser</code>.
+     * 
+     * @param fromUser
+     * @param toUser
+     * @return
+     * @throws io.goobi.viewer.exceptions.DAOException if any.
+     */
+    public int changeCommentsOwner(User fromUser, User toUser) throws DAOException;
 
     // Search
 
@@ -1095,6 +1151,14 @@ public interface IDAO {
     public boolean deleteDownloadJob(DownloadJob downloadJob) throws DAOException;
 
     // CMS
+
+    public CMSPageTemplateEnabled getCMSPageTemplateEnabled(String templateId) throws DAOException;
+
+    public boolean addCMSPageTemplateEnabled(CMSPageTemplateEnabled o) throws DAOException;
+
+    public boolean updateCMSPageTemplateEnabled(CMSPageTemplateEnabled o) throws DAOException;
+
+    public int saveCMSPageTemplateEnabledStatuses(List<CMSPageTemplate> templates) throws DAOException;
 
     /**
      * <p>
@@ -1496,6 +1560,22 @@ public interface IDAO {
     public List<CMSCategory> getAllCategories() throws DAOException;
 
     /**
+     * 
+     * @param category
+     * @return
+     * @throws DAOException
+     */
+    public long getCountPagesUsingCategory(CMSCategory category) throws DAOException;
+
+    /**
+     * 
+     * @param category
+     * @return
+     * @throws DAOException
+     */
+    public long getCountMediaItemsUsingCategory(CMSCategory category) throws DAOException;
+
+    /**
      * <p>
      * addCategory.
      * </p>
@@ -1712,6 +1792,24 @@ public interface IDAO {
      */
     public boolean deleteCampaign(Campaign campaign) throws DAOException;
 
+    /**
+     * Deletes given user from the lists of annotators and reviewers an all campaign statistics.
+     * 
+     * @param user
+     * @return Number of affected campaigns
+     * @throws DAOException
+     */
+    public int deleteCampaignStatisticsForUser(User user) throws DAOException;
+    
+    /**
+     * Replaced <code>fromUser</code> with <code>toUser</code> in the lists of annotators and reviewers an all campaign statistics.
+     * @param fromUser
+     * @param toUser
+     * @return
+     * @throws DAOException
+     */
+    public int changeCampaignStatisticContributors(User fromUser, User toUser) throws DAOException;
+
     // Misc
 
     /**
@@ -1830,6 +1928,13 @@ public interface IDAO {
      */
     public List<PersistentAnnotation> getAnnotationsForWork(String pi) throws DAOException;
 
+    /**
+     * @param pi
+     * @return
+     * @throws DAOException
+     */
+    long getAnnotationCountForWork(String pi) throws DAOException;
+    
     /**
      * <p>
      * getAnnotationsForCampaignAndWork.
@@ -1963,41 +2068,41 @@ public interface IDAO {
      * Get the {@link GeoMap} of the given mapId
      * 
      * @param mapId
-     * @return  The GeoMap of the given id or else null
+     * @return The GeoMap of the given id or else null
      */
     public GeoMap getGeoMap(Long mapId) throws DAOException;
-    
+
     /**
      * Get all {@link GeoMap}s in database
      * 
-     * @return  A list of all stored GeoMaps
+     * @return A list of all stored GeoMaps
      * @throws DAOException
      */
     public List<GeoMap> getAllGeoMaps() throws DAOException;
-    
+
     /**
      * Add the given map to the database if no map of the same id already exists
      * 
      * @param map
-     * @return  true if successfull
+     * @return true if successfull
      * @throws DAOException
      */
     public boolean addGeoMap(GeoMap map) throws DAOException;
-    
+
     /**
      * Update the given {@link GeoMap} in the database
      * 
      * @param map
-     * @return  true if successfull
+     * @return true if successfull
      * @throws DAOException
      */
     public boolean updateGeoMap(GeoMap map) throws DAOException;
-    
+
     /**
      * Delete the given {@link GeoMap} from the database
      * 
      * @param map
-     * @return  true if successfull
+     * @return true if successfull
      * @throws DAOException
      */
     public boolean deleteGeoMap(GeoMap map) throws DAOException;
@@ -2010,4 +2115,6 @@ public interface IDAO {
      * @throws DAOException
      */
     public List<CMSPage> getPagesUsingMap(GeoMap map) throws DAOException;
+
+
 }

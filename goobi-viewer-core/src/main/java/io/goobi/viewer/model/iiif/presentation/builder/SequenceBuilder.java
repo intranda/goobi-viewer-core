@@ -25,8 +25,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import javax.servlet.http.HttpServletRequest;
-
 import org.apache.commons.lang3.StringUtils;
 import org.jdom2.JDOMException;
 import org.slf4j.Logger;
@@ -53,6 +51,7 @@ import de.intranda.api.iiif.presentation.enums.Format;
 import de.intranda.digiverso.ocr.alto.model.structureclasses.logical.AltoDocument;
 import de.intranda.metadata.multilanguage.SimpleMetadataValue;
 import de.unigoettingen.sub.commons.contentlib.exceptions.ContentLibException;
+import io.goobi.viewer.api.rest.AbstractApiUrlManager;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.exceptions.AccessDeniedException;
 import io.goobi.viewer.exceptions.DAOException;
@@ -90,7 +89,7 @@ public class SequenceBuilder extends AbstractBuilder {
     protected ImageDeliveryBean imageDelivery = BeanUtils.getImageDeliveryBean();
     private BuildMode buildMode = BuildMode.IIIF;
     private PageType preferredView = PageType.viewObject;
-
+    
     /**
      * <p>
      * Constructor for SequenceBuilder.
@@ -98,20 +97,8 @@ public class SequenceBuilder extends AbstractBuilder {
      *
      * @param request a {@link javax.servlet.http.HttpServletRequest} object.
      */
-    public SequenceBuilder(HttpServletRequest request) {
-        super(request);
-    }
-
-    /**
-     * <p>
-     * Constructor for SequenceBuilder.
-     * </p>
-     *
-     * @param servletUri a {@link java.net.URI} object.
-     * @param requestURI a {@link java.net.URI} object.
-     */
-    public SequenceBuilder(URI servletUri, URI requestURI) {
-        super(servletUri, requestURI);
+    public SequenceBuilder(AbstractApiUrlManager apiUrlManager) {
+        super(apiUrlManager);
     }
 
     /**
@@ -150,7 +137,7 @@ public class SequenceBuilder extends AbstractBuilder {
                 merge(annotationMap, content);
                 canvasMap.put(i, canvas);
             }
-            if(canvas != null) {                
+            if (canvas != null) {
                 sequence.addCanvas(canvas);
             }
         }
@@ -162,7 +149,7 @@ public class SequenceBuilder extends AbstractBuilder {
             }
         }
 
-        if(sequence.getCanvases() != null) {            
+        if (sequence.getCanvases() != null) {
             addCrowdourcingAnnotations(sequence.getCanvases(), this.getCrowdsourcingAnnotations(doc.getPi(), false), annotationMap);
         }
 
@@ -234,9 +221,9 @@ public class SequenceBuilder extends AbstractBuilder {
                 AnnotationList annoList = new AnnotationList(getAnnotationListURI(pi, order, AnnotationType.COMMENT));
                 annoList.setLabel(ViewerResourceBundle.getTranslations(AnnotationType.COMMENT.name()));
                 if (populate) {
-                    List<Comment> comments = DataManager.getInstance().getDao().getCommentsForPage(pi, order, false);
+                    List<Comment> comments = DataManager.getInstance().getDao().getCommentsForPage(pi, order);
                     for (Comment comment : comments) {
-                        OpenAnnotation anno = new OpenAnnotation(getCommentAnnotationURI(pi, order, comment.getId()));
+                        OpenAnnotation anno = new OpenAnnotation(getCommentAnnotationURI(comment.getId()));
                         anno.setMotivation(Motivation.COMMENTING);
                         anno.setTarget(createSpecificResource(canvas, 0, 0, canvas.getWidth(), canvas.getHeight()));
                         TextualResource body = new TextualResource(comment.getText());
@@ -400,8 +387,8 @@ public class SequenceBuilder extends AbstractBuilder {
                         String altoText = page.loadAlto();
                         AltoDocument alto = AltoDocument.getDocumentFromString(altoText);
                         if (alto.getFirstPage() != null && StringUtils.isNotBlank(alto.getFirstPage().getContent())) {
-                            List<IAnnotation> annos = new AltoAnnotationBuilder().createAnnotations(alto.getFirstPage(), canvas,
-                                    AltoAnnotationBuilder.Granularity.LINE, annoList.getId().toString(), false);
+                            List<IAnnotation> annos = new AltoAnnotationBuilder(urls, "oa").createAnnotations(alto.getFirstPage(), doc.getPi(), page.getOrder(), canvas,
+                                    AltoAnnotationBuilder.Granularity.LINE, false);
                             for (IAnnotation annotation : annos) {
                                 annoList.addResource(annotation);
                             }
@@ -520,13 +507,13 @@ public class SequenceBuilder extends AbstractBuilder {
                                 continue;
                             }
                         }
-                        OpenAnnotation openAnnotation = annotation.getAsOpenAnnotation();
+                        OpenAnnotation openAnnotation = annoBuilder.getAsOpenAnnotation(annotation);
                         openAnnotation.setMotivation(Motivation.convertFromWebAnnotationMotivation(annotation.getMotivation()));
                         crowdList.addResource(openAnnotation);
                     }
                 }
             }
-        } catch (DAOException | IOException e) {
+        } catch (DAOException e) {
             logger.error("Error creating crowdsourcing annotations ", e);
         }
     }

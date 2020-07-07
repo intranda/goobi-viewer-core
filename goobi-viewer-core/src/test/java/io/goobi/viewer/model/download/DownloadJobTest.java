@@ -51,7 +51,7 @@ public class DownloadJobTest extends AbstractDatabaseAndSolrEnabledTest {
     public void cleanupExpiredDownloads_shouldDeleteExpiredJobsCorrectly() throws Exception {
         Assert.assertEquals(2, DataManager.getInstance().getDao().getAllDownloadJobs().size());
 
-        DownloadJob job = new PDFDownloadJob("PI 3", null, new Date(), 3000000);
+        DownloadJob job = new PDFDownloadJob("PI_3", null, new Date(), 3000000);
         Assert.assertTrue(DataManager.getInstance().getDao().addDownloadJob(job));
         Assert.assertEquals(3, DataManager.getInstance().getDao().getAllDownloadJobs().size());
         Long id = job.getId();
@@ -69,7 +69,7 @@ public class DownloadJobTest extends AbstractDatabaseAndSolrEnabledTest {
      */
     @Test
     public void isExpired_shouldReturnCorrectValue() throws Exception {
-        DownloadJob job = new PDFDownloadJob("PI 3", null, new Date(), 0);
+        DownloadJob job = new PDFDownloadJob("PI_3", null, new Date(), 0);
         Thread.sleep(5);
         Assert.assertTrue(job.isExpired());
         job.setTtl(30000);

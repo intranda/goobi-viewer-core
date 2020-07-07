@@ -22,7 +22,6 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import javax.mail.FetchProfile.Item;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
@@ -44,6 +43,9 @@ import de.intranda.api.iiif.presentation.Manifest;
 import de.intranda.api.iiif.presentation.content.ImageContent;
 import de.intranda.metadata.multilanguage.SimpleMetadataValue;
 import de.unigoettingen.sub.commons.contentlib.exceptions.ContentNotFoundException;
+import io.goobi.viewer.api.rest.ViewerRestServiceBinding;
+import io.goobi.viewer.api.rest.model.SuccessMessage;
+import io.goobi.viewer.api.rest.v1.ApiUrls;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
@@ -58,8 +60,6 @@ import io.goobi.viewer.model.bookmark.SessionStoreBookmarkManager;
 import io.goobi.viewer.model.iiif.presentation.builder.ManifestBuilder;
 import io.goobi.viewer.model.security.user.User;
 import io.goobi.viewer.model.security.user.UserGroup;
-import io.goobi.viewer.servlets.rest.SuccessMessage;
-import io.goobi.viewer.servlets.rest.ViewerRestServiceBinding;
 import io.goobi.viewer.servlets.rest.iiif.presentation.IIIFPresentationBinding;
 import io.goobi.viewer.servlets.utils.ServletUtils;
 
@@ -983,8 +983,7 @@ public class BookmarkResource {
      * @return
      */
     public Collection createCollection(BookmarkList list) {
-        ManifestBuilder builder = new ManifestBuilder(URI.create(DataManager.getInstance().getConfiguration().getRestApiUrl()),
-                URI.create(DataManager.getInstance().getConfiguration().getRestApiUrl()));
+        ManifestBuilder builder = new ManifestBuilder(new ApiUrls(DataManager.getInstance().getConfiguration().getRestApiUrl()));
         Collection collection = new Collection(getCollectionURI(), list.getName());
         collection.setLabel(new SimpleMetadataValue(list.getName()));
         collection.setDescription(new SimpleMetadataValue(list.getDescription()));

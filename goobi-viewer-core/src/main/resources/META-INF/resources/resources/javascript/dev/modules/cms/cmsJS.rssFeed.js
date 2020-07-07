@@ -101,17 +101,17 @@ var cmsJS = ( function( cms ) {
             rssItemRow = $( '<div />' ).addClass( 'row' );
             
             // left
-            rssItemColLeft = $( '<div />' ).addClass( 'col-xs-3' );
-            rssItemDocTypeH3 = $( '<h3 />' ).text( item.docType );
+            rssItemColLeft = $( '<div />' ).addClass( 'col-12 col-md-4' );
+            // rssItemDocTypeH3 = $( '<h3 />' ).text( item.docType );
             rssItemImageWrapper = $( '<div />' ).addClass( 'tpl-rss__item-image' );
             rssItemImageLink = $( '<a />' ).attr( 'href', item.link );
-            rssItemImage = $( '<img />' ).attr( 'src', item.description.image ).addClass( 'img-responsive' );
+            rssItemImage = $( '<img />' ).attr( 'src', item.description.image ).addClass( 'img-fluid' );
             rssItemImageLink.append( rssItemImage );
             rssItemImageWrapper.append( rssItemImageLink );
             rssItemColLeft.append( rssItemDocTypeH3 ).append( rssItemImageWrapper );
             
             // right
-            rssItemColRight = $( '<div />' ).addClass( 'col-xs-9' );
+            rssItemColRight = $( '<div />' ).addClass( 'col-12 col-md-8' );
             
             // create item title
             rssItemTitle = $( '<div />' ).addClass( 'tpl-rss__item-title' );
@@ -129,7 +129,7 @@ var cmsJS = ( function( cms ) {
             } );
             // link to work
             rssItemLinkWrapper = $( '<div />' ).addClass( 'tpl-rss__item-link' );
-            rssItemLink = $( '<a />' ).attr( 'href', item.link ).addClass( 'btn btn--full' ).text( _defaults.msg.continueReading );
+            // rssItemLink = $( '<a />' ).attr( 'href', item.link ).addClass( 'btn btn--full' ).text( _defaults.msg.continueReading );
             rssItemLinkWrapper.append( rssItemLink );
 
             // append to col right

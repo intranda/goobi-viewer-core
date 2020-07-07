@@ -15,14 +15,14 @@
  */
 package io.goobi.viewer.controller.imaging;
 
-import java.net.URI;
 import java.net.URISyntaxException;
 
 import de.intranda.api.iiif.presentation.enums.AnnotationType;
+import io.goobi.viewer.api.rest.AbstractApiUrlManager;
+import io.goobi.viewer.api.rest.v1.ApiUrls;
 import io.goobi.viewer.controller.Configuration;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.SolrConstants;
-import io.goobi.viewer.exceptions.ViewerConfigurationException;
 import io.goobi.viewer.model.iiif.presentation.builder.AbstractBuilder;
 
 /**
@@ -43,9 +43,8 @@ public class IIIFPresentationAPIHandler {
      * @param configuration a {@link io.goobi.viewer.controller.Configuration} object.
      * @throws java.net.URISyntaxException if any.
      */
-    public IIIFPresentationAPIHandler(String servletPath, Configuration configuration) throws URISyntaxException {
-        this.builder = new AbstractBuilder(new URI(servletPath), new URI(DataManager.getInstance().getConfiguration().getIIIFApiUrl())) {
-        };
+    public IIIFPresentationAPIHandler(AbstractApiUrlManager urls, Configuration configuration) throws URISyntaxException {
+        this.builder = new AbstractBuilder(urls) {};
     }
 
     /**

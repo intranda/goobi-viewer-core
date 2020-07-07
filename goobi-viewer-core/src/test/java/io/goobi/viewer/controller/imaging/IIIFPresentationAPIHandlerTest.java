@@ -8,6 +8,8 @@ import org.junit.Before;
 import org.junit.Test;
 
 import io.goobi.viewer.AbstractTest;
+import io.goobi.viewer.api.rest.AbstractApiUrlManager;
+import io.goobi.viewer.api.rest.v1.ApiUrls;
 import io.goobi.viewer.controller.Configuration;
 import io.goobi.viewer.controller.ConfigurationTest;
 import io.goobi.viewer.controller.DataManager;
@@ -15,11 +17,17 @@ import io.goobi.viewer.controller.DataManager;
 public class IIIFPresentationAPIHandlerTest extends AbstractTest {
 
     private IIIFPresentationAPIHandler handler;
+    private AbstractApiUrlManager urls;
+    
+    private String PI = "PI-SAMPLE";
+    private String DC = "DC";
+    private String COLLECTION = "sonstige.ocr";
 
     @Before
     public void setUp() throws Exception {
+        this.urls = new ApiUrls();
         DataManager.getInstance().injectConfiguration(new Configuration("src/test/resources/config_viewer.test.xml"));
-        handler = new IIIFPresentationAPIHandler("", DataManager.getInstance().getConfiguration());
+        handler = new IIIFPresentationAPIHandler(urls, DataManager.getInstance().getConfiguration());
     }
 
     @After
@@ -28,52 +36,52 @@ public class IIIFPresentationAPIHandlerTest extends AbstractTest {
 
     @Test
     public void testGetManifestUrl() throws URISyntaxException {
-        Assert.assertEquals(ConfigurationTest.APPLICATION_ROOT_URL + "rest/iiif/manifests/PI-SAMPLE/manifest/", handler.getManifestUrl("PI-SAMPLE"));
+        Assert.assertEquals(ConfigurationTest.APPLICATION_ROOT_URL + "rest/records/PI-SAMPLE/manifest", handler.getManifestUrl("PI-SAMPLE"));
     }
 
     @Test
     public void testGetCollectionUrl() throws URISyntaxException {
-        Assert.assertEquals(ConfigurationTest.APPLICATION_ROOT_URL + "rest/iiif/collections/DC/", handler.getCollectionUrl());
+        Assert.assertEquals(ConfigurationTest.APPLICATION_ROOT_URL + "rest/collections/DC", handler.getCollectionUrl());
 
     }
 
     @Test
     public void testGetCollectionUrlString() throws URISyntaxException {
-        Assert.assertEquals(ConfigurationTest.APPLICATION_ROOT_URL + "rest/iiif/collections/DC/", handler.getCollectionUrl("DC"));
+        Assert.assertEquals(ConfigurationTest.APPLICATION_ROOT_URL + "rest/collections/DC", handler.getCollectionUrl("DC"));
 
     }
 
     @Test
     public void testGetCollectionUrlStringString() throws URISyntaxException {
-        Assert.assertEquals(ConfigurationTest.APPLICATION_ROOT_URL + "rest/iiif/collections/DC/sonstige.ocr/",
+        Assert.assertEquals(ConfigurationTest.APPLICATION_ROOT_URL + "rest/collections/DC/sonstige.ocr",
                 handler.getCollectionUrl("DC", "sonstige.ocr"));
 
     }
 
     @Test
     public void testGetLayerUrl() throws URISyntaxException {
-        Assert.assertEquals(ConfigurationTest.APPLICATION_ROOT_URL + "rest/iiif/manifests/PI-SAMPLE/layer/FULLTEXT/",
+        Assert.assertEquals(ConfigurationTest.APPLICATION_ROOT_URL + "rest/records/PI-SAMPLE/layers/FULLTEXT",
                 handler.getLayerUrl("PI-SAMPLE", "fulltext"));
 
     }
 
     @Test
     public void testGetAnnotationsUrl() throws URISyntaxException {
-        Assert.assertEquals(ConfigurationTest.APPLICATION_ROOT_URL + "rest/iiif/manifests/PI-SAMPLE/list/12/PDF/",
+        Assert.assertEquals(ConfigurationTest.APPLICATION_ROOT_URL + "rest/records/PI-SAMPLE/pages/12/annotations?type=PDF",
                 handler.getAnnotationsUrl("PI-SAMPLE", 12, "pdf"));
 
     }
 
     @Test
     public void testGetCanvasUrl() throws URISyntaxException {
-        Assert.assertEquals(ConfigurationTest.APPLICATION_ROOT_URL + "rest/iiif/manifests/PI-SAMPLE/canvas/12/",
+        Assert.assertEquals(ConfigurationTest.APPLICATION_ROOT_URL + "rest/records/PI-SAMPLE/pages/12/canvas",
                 handler.getCanvasUrl("PI-SAMPLE", 12));
 
     }
 
     @Test
     public void testGetRangeUrl() throws URISyntaxException {
-        Assert.assertEquals(ConfigurationTest.APPLICATION_ROOT_URL + "rest/iiif/manifests/PI-SAMPLE/range/LOG_0007/",
+        Assert.assertEquals(ConfigurationTest.APPLICATION_ROOT_URL + "rest/records/PI-SAMPLE/sections/LOG_0007/range",
                 handler.getRangeUrl("PI-SAMPLE", "LOG_0007"));
 
     }

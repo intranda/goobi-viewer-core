@@ -91,9 +91,11 @@ public class PpnResolver extends HttpServlet implements Serializable {
 
         // 3. evaluate the search
         try {
+            String query = "+" + SolrConstants.PI + ":\"" + identifier + "\"" + SearchHelper.getAllSuffixes(request, null, false, false, false);
             SolrDocumentList hits = DataManager.getInstance()
                     .getSearchIndex()
-                    .search(SolrConstants.PI + ":\"" + identifier + "\"" + SearchHelper.getAllSuffixes(request, null, false, false, false));
+                    .search(query);
+            logger.trace("Resolver query: {}", query);
             if (hits.getNumFound() == 0) {
                 response.sendError(HttpServletResponse.SC_NOT_FOUND, ERRTXT_DOC_NOT_FOUND);
                 return;
@@ -104,9 +106,10 @@ public class PpnResolver extends HttpServlet implements Serializable {
             }
 
             // If the user has no listing privilege for this record, act as if it does not exist
-            boolean access = AccessConditionUtils.checkAccessPermissionByIdentifierAndLogId(identifier, null, IPrivilegeHolder.PRIV_LIST, request);
+            boolean access = AccessConditionUtils.checkAccessPermissionByIdentifierAndLogId(identifier, null, IPrivilegeHolder.PRIV_LIST,
+                    request);
             if (!access) {
-                logger.debug("User may not list " + identifier);
+                logger.debug("User may not list {}", identifier);
                 response.sendError(HttpServletResponse.SC_NOT_FOUND, ERRTXT_DOC_NOT_FOUND);
                 return;
             }

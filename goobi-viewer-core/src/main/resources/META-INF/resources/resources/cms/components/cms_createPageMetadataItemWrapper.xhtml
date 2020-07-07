@@ -19,10 +19,10 @@
                 </h3>
 
                 <div class="row">
-                    <div class="col-xs-6 col-sm-3 col-md-12 col-lg-12">
+                    <div class="col-6 col-sm-3 col-md-12 col-lg-12">
                         <img alt="Template Icon" src="#{cmsBean.getIconUrlByTemplateId(cmsBean.selectedPage.template.id)}" title="#{msg.label__cms_template_id}: #{cmsBean.selectedPage.template.id}"/>
                     </div>
-                    <div class="col-xs-6 col-sm-9 col-md-12 col-lg-12">
+                    <div class="col-6 col-sm-9 col-md-12 col-lg-12">
                         <p>
                             <h:outputText value="#{msg[cmsBean.selectedPage.template.name]}" />
                         </p>
@@ -91,7 +91,7 @@
                         <div class="page-metadata-item__categories-selected-categories">
                             <ui:repeat var="category" value="#{cmsBean.selectedPage.selectableCategories}">
                                 <ui:fragment rendered="#{category.selected}">
-                                    <span class="label label-default">#{category.value.name}</span>
+                                    <div class="badge badge-violet">#{category.value.name}</div>
                                 </ui:fragment>
                             </ui:repeat>
                         </div>
@@ -157,13 +157,13 @@
                                 <div class="modal-content">
                                     <h:panelGroup rendered="#{!cmsBean.isLinkedFromNavBar(cmsBean.selectedPage) and !cmsBean.isLinkedToStaticPage(cmsBean.selectedPage)}">
                                         <div class="modal-header">
+                                            <h4 class="modal-title">#{msg.cms_deletePage_agree}</h4>
                                             <button type="button" class="close" data-dismiss="modal">
                                                 <span aria-hidden="true">
                                                     <h:outputText value="&amp;times;" escape="false" />
                                                 </span>
                                                 <span class="sr-only">Close</span>
                                             </button>
-                                            <h4 class="modal-title">#{msg.cms_deletePage_agree}</h4>
                                         </div>
                                         <div class="modal-body">#{msg.cms_deletePage_confirmation}</div>
                                         <div class="modal-footer">

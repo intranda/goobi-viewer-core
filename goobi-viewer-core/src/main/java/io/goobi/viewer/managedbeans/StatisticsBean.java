@@ -15,6 +15,7 @@
  */
 package io.goobi.viewer.managedbeans;
 
+import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -33,9 +34,18 @@ import org.apache.solr.client.solrj.response.QueryResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+
+import io.goobi.viewer.Version;
+import de.unigoettingen.sub.commons.contentlib.exceptions.ContentNotFoundException;
+import de.unigoettingen.sub.commons.contentlib.servlet.model.ApplicationInfo;
+import de.unigoettingen.sub.commons.contentlib.servlet.rest.ApplicationResource;
 import io.goobi.viewer.controller.DataManager;
+import io.goobi.viewer.controller.JsonTools;
+import io.goobi.viewer.controller.NetTools;
 import io.goobi.viewer.controller.SolrConstants;
 import io.goobi.viewer.controller.SolrConstants.DocType;
+import io.goobi.viewer.exceptions.HTTPException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.messages.ViewerResourceBundle;
@@ -270,6 +280,51 @@ public class StatisticsBean implements Serializable {
         }
 
         return true;
+    }
+
+    /**
+     * 
+     * @return goobi-viewer-core version
+     */
+    public String getCoreVersion() {
+        return JsonTools.shortFormatVersionString(Version.asJSON());
+    }
+
+    /**
+     * @return goobi-viewer-connector version
+     */
+    public String getConnectorVersion() {
+        String version;
+        try {
+            String json = NetTools.getWebContentGET(DataManager.getInstance().getConfiguration().getConnectorVersionUrl());
+            return JsonTools.shortFormatVersionString(json);
+        } catch (IOException | HTTPException e) {
+            logger.error(e.getMessage());
+            return e.getMessage();
+        }
+    }
+
+    /**
+     * @return intrandaContentServer version
+     */
+    public String getContentServerVersion() {
+        try {
+            ApplicationInfo info = new ApplicationResource().getApplicationInfo();
+            String json = new ObjectMapper().writeValueAsString(info);
+            return JsonTools.shortFormatVersionString(json);
+            //            String output = String.format("%s (%s)", info.getVersion(), info.getGitRevision());
+            //            return output;
+        } catch (ContentNotFoundException | IOException e) {
+            logger.error(e.getMessage());
+            return "";
+        }
+    }
+
+    /**
+     * @return goobi-viewer-indexer version
+     */
+    public String getIndexerVersion() {
+        return JsonTools.shortFormatVersionString(DataManager.getInstance().getIndexerVersion());
     }
 
     /**

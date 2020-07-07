@@ -51,6 +51,7 @@ import de.unigoettingen.sub.commons.contentlib.exceptions.ContentLibException;
 import de.unigoettingen.sub.commons.contentlib.exceptions.ContentNotFoundException;
 import de.unigoettingen.sub.commons.contentlib.exceptions.ServiceNotAllowedException;
 import de.unigoettingen.sub.commons.contentlib.servlet.rest.CORSBinding;
+import io.goobi.viewer.api.rest.ViewerRestServiceBinding;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.FileTools;
 import io.goobi.viewer.controller.JsonTools;
@@ -71,7 +72,6 @@ import io.goobi.viewer.model.toc.export.pdf.TocWriter;
 import io.goobi.viewer.model.viewer.StringPair;
 import io.goobi.viewer.model.viewer.StructElement;
 import io.goobi.viewer.model.viewer.ViewManager;
-import io.goobi.viewer.servlets.rest.ViewerRestServiceBinding;
 import io.goobi.viewer.servlets.utils.ServletUtils;
 
 /**
@@ -215,90 +215,6 @@ public class RecordsResource {
     }
 
     /**
-     * <p>
-     * getRecordsForQuery.
-     * </p>
-     *
-     * @return JSON array
-     * @param params a {@link io.goobi.viewer.servlets.rest.content.RecordsRequestParameters} object.
-     * @throws java.net.MalformedURLException if any.
-     * @throws de.unigoettingen.sub.commons.contentlib.exceptions.ContentNotFoundException if any.
-     * @throws de.unigoettingen.sub.commons.contentlib.exceptions.ServiceNotAllowedException if any.
-     * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
-     * @throws io.goobi.viewer.exceptions.PresentationException if any.
-     * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
-     * @throws io.goobi.viewer.exceptions.DAOException if any.
-     */
-    @POST
-    @Path("/q")
-    @Consumes({ MediaType.APPLICATION_JSON })
-    @Produces({ MediaType.APPLICATION_JSON })
-    public String getRecordsForQuery(RecordsRequestParameters params) throws MalformedURLException, ContentNotFoundException,
-            ServiceNotAllowedException, IndexUnreachableException, PresentationException, ViewerConfigurationException, DAOException {
-        JSONObject ret = new JSONObject();
-        if (params == null || params.getQuery() == null) {
-            ret.put("status", HttpServletResponse.SC_BAD_REQUEST);
-            ret.put("message", "Invalid JSON request object");
-            return ret.toString();
-        }
-
-        // Custom query does not filter by the sub-theme discriminator value by default, it has to be added to the custom query via #{navigationHelper.subThemeDiscriminatorValueSubQuery}
-        String query =
-                new StringBuilder().append(params.getQuery()).append(SearchHelper.getAllSuffixes(servletRequest, null, true, true, false)).toString();
-        logger.trace("query: {}", query);
-
-        int count = params.getCount();
-        if (count <= 0) {
-            count = SolrSearchIndex.MAX_HITS;
-        }
-
-        List<StringPair> sortFieldList = new ArrayList<>();
-        if (StringUtils.isNotEmpty(params.getSortFields())) {
-            String[] sortFieldArray = params.getSortFields().split(";");
-            for (String sortField : sortFieldArray) {
-                if (StringUtils.isNotEmpty(sortField)) {
-                    sortFieldList.add(new StringPair(sortField, params.getSortOrder()));
-                }
-            }
-            logger.trace("sortFields: {}", params.getSortFields().toString());
-        }
-        logger.trace("count: {}", count);
-        logger.trace("offset: {}", params.getOffset());
-        logger.trace("sortOrder: {}", params.getSortOrder());
-        logger.trace("randomize: {}", params.isRandomize());
-        logger.trace("jsonFormat: {}", params.getJsonFormat());
-
-        if (params.isRandomize()) {
-            sortFieldList.clear();
-            // Solr supports dynamic random_* sorting fields. Each value represents one particular order, so a random number is required.
-            Random random = new Random();
-            sortFieldList.add(new StringPair("random_" + random.nextInt(Integer.MAX_VALUE), ("desc".equals(params.getSortOrder()) ? "desc" : "asc")));
-        }
-
-        SolrDocumentList result =
-                DataManager.getInstance().getSearchIndex().search(query, params.getOffset(), count, sortFieldList, null, null).getResults();
-        logger.trace("hits: {}", result.size());
-        JSONArray jsonArray = null;
-        if (params.getJsonFormat() != null) {
-            switch (params.getJsonFormat()) {
-                case "datecentric":
-                    jsonArray = JsonTools.getDateCentricRecordJsonArray(result, servletRequest);
-                    break;
-                default:
-                    jsonArray = JsonTools.getRecordJsonArray(result, servletRequest);
-                    break;
-            }
-        } else {
-            jsonArray = JsonTools.getRecordJsonArray(result, servletRequest);
-        }
-        if (jsonArray == null) {
-            jsonArray = new JSONArray();
-        }
-
-        return jsonArray.toString();
-    }
-
-    /**
      * Returns the hit count for the given query in a JSON object.
      *
      * @return JSON object containing the count
@@ -313,14 +229,14 @@ public class RecordsResource {
     @Consumes({ MediaType.APPLICATION_JSON })
     public String getCount(RecordsRequestParameters params) throws ContentNotFoundException, IndexUnreachableException, PresentationException {
         JSONObject ret = new JSONObject();
-        if (params == null || params.getQuery() == null) {
+        if (params == null || params.query == null) {
             ret.put("status", HttpServletResponse.SC_BAD_REQUEST);
             ret.put("message", "Invalid JSON request object");
             return ret.toString();
         }
         // Solr supports dynamic random_* sorting fields. Each value represents one particular order, so a random number is required.
         String query =
-                new StringBuilder().append(params.getQuery()).append(SearchHelper.getAllSuffixes(servletRequest, null, true, true, false)).toString();
+                new StringBuilder().append(params.query).append(SearchHelper.getAllSuffixes(servletRequest, null, true, true, false)).toString();
         logger.debug("q: {}", query);
         long count = DataManager.getInstance().getSearchIndex().search(query, 0, 0, null, null, null).getResults().getNumFound();
         ret.put("count", count);

@@ -56,7 +56,6 @@ var viewerJS = ( function( viewer ) {
     }
     
     function _loadImage(element, source) {
-        console.log("load image from ", source);
         $.ajax({
             url: source,
             cache: true,

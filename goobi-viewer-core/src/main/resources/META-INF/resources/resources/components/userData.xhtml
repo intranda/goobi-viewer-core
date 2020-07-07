@@ -16,7 +16,7 @@
         <div class="userdata">	        
         	<h:form id="userDataForm" prependId="false">
         		<div class="row">
-        			<div class="col-xs-12 col-sm-2">
+        			<div class="col-12 col-sm-2">
         				<!-- GRAVATAR -->
         				<div class="userdata__gravatar">
         					<h:panelGroup rendered="#{user.useGravatar}">
@@ -27,7 +27,7 @@
         					</h:panelGroup>
         				</div>
         			</div>
-        			<div class="col-xs-12 col-sm-10">
+        			<div class="col-12 col-sm-10">
         				<!-- USERDATA -->
         				<div class="userdata__data">
                             <table class="table table-bordered">
@@ -68,12 +68,12 @@
 				<div class="modal-content">
 					<h:form id="userEditDataForm" styleClass="form-horizontal" prependId="false">
 						<div class="modal-header">
+							<h4 class="modal-title" id="editUserdataModalLabel">#{msg.changeUserData}</h4>
 							<button type="button" class="close" data-dismiss="modal" aria-label="Close">
 								<span aria-hidden="true"> 
 									<h:outputText value="&amp;times;" escape="false" />
 								</span>
-							</button>
-							<h4 class="modal-title" id="editUserdataModalLabel">#{msg.changeUserData}</h4>
+							</button>							
 						</div>
 						<div class="modal-body">
 							<!-- prevent autocomplete in IE, Chrome and Firefox -->
@@ -84,55 +84,51 @@
 
 							<h3>#{msg.userCP}</h3>
 
-							<div class="form-group">
-								<h:outputLabel value="#{msg.nameNick}*:" styleClass="col-xs-12 col-sm-5 control-label" />
-								<div class="col-xs-12 col-sm-7">
+							<div class="form-group form-row">
+								<h:outputLabel value="#{msg.nameNick}*:" styleClass="col-12 col-sm-5 control-label" />
+								<div class="col-12 col-sm-7">
                                     <h:inputText value="#{userBean.user.nickName}" required="true" requiredMessage="#{msg.loginEnterNickName}" styleClass="form-control" disabled="#{!userBean.allowNickNameChange}">
                                     	<f:validator validatorId="nicknameValidator" />
                                     </h:inputText>
 								</div>
 							</div>
-							<div class="form-group">
-								<h:outputLabel value="#{msg.nameFirst}:" styleClass="col-xs-12 col-sm-5 control-label" />
-								<div class="col-xs-12 col-sm-7">
+							<div class="form-group form-row">
+								<h:outputLabel value="#{msg.nameFirst}:" styleClass="col-12 col-sm-5 control-label" />
+								<div class="col-12 col-sm-7">
 									<h:inputText value="#{userBean.user.firstName}" styleClass="form-control" />
 								</div>
 							</div>
-							<div class="form-group">
-								<h:outputLabel value="#{msg.nameLast}:" styleClass="col-xs-12 col-sm-5 control-label" />
-								<div class="col-xs-12 col-sm-7">
+							<div class="form-group form-row">
+								<h:outputLabel value="#{msg.nameLast}:" styleClass="col-12 col-sm-5 control-label" />
+								<div class="col-12 col-sm-7">
 									<h:inputText value="#{userBean.user.lastName}" styleClass="form-control" />
 								</div>
 							</div>
-							<div class="form-group">
-								<h:outputLabel value="#{msg.email}:" styleClass="col-xs-12 col-sm-5 control-label" />
-								<div class="col-xs-12 col-sm-7">
+							<div class="form-group form-row">
+								<h:outputLabel value="#{msg.email}:" styleClass="col-12 col-sm-5 control-label" />
+								<div class="col-12 col-sm-7">
 									<h:inputText value="#{userBean.user.email}" styleClass="form-control" disabled="#{!userBean.allowEmailChange}">
                                     	<f:validator validatorId="emailValidator" />
                                         <f:validator validatorId="emailAvailableValidator"></f:validator>
                                     </h:inputText>
 								</div>
 							</div>
-							<div class="form-group">
-								<h:outputLabel value="#{msg.user_useGravatar}:" styleClass="col-xs-12 col-sm-5 control-label" />
-								<div class="col-xs-12 col-sm-7">
-									<div class="checkbox">
-										<label> 
-											<h:selectBooleanCheckbox value="#{userBean.user.useGravatar}" />
-										</label>
-									</div>
+							<div class="form-group form-row">
+								<h:outputLabel value="#{msg.user_useGravatar}:" styleClass="col-5 control-label" />
+								<div class="col-7 align-self-center">
+									<h:selectBooleanCheckbox value="#{userBean.user.useGravatar}" />
 								</div>
 							</div>
 							<h:panelGroup rendered="#{userBean.allowPasswordChange}">
-								<div class="form-group">
-									<h:outputLabel value="#{msg.user_newPasswordOne}:" styleClass="col-xs-12 col-sm-5 control-label" />
-									<div class="col-xs-12 col-sm-7">
+								<div class="form-group form-row">
+									<h:outputLabel value="#{msg.user_newPasswordOne}:" styleClass="col-12 col-sm-5 control-label" />
+									<div class="col-12 col-sm-7">
 										<h:inputSecret value="#{userBean.passwordOne}" styleClass="form-control" />
 									</div>
 								</div>
-								<div class="form-group">
-									<h:outputLabel value="#{msg.user_newPasswordTwo}:" styleClass="col-xs-12 col-sm-5 control-label" />
-									<div class="col-xs-12 col-sm-7">
+								<div class="form-group form-row">
+									<h:outputLabel value="#{msg.user_newPasswordTwo}:" styleClass="col-12 col-sm-5 control-label" />
+									<div class="col-12 col-sm-7">
 										<h:inputSecret value="#{userBean.passwordTwo}" styleClass="form-control" />
 									</div>
 								</div>

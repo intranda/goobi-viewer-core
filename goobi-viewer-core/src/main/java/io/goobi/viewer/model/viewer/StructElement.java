@@ -200,14 +200,13 @@ public class StructElement extends StructElementStub implements Comparable<Struc
                     logger.warn(
                             "{} not found on anchor record '{}', retrieving the number of volumes by counting the indexed volume records. Re-index the record for faster loading.",
                             SolrConstants.NUMVOLUMES, pi);
-                    SolrDocumentList resp = DataManager.getInstance()
+                    numVolumes = DataManager.getInstance()
                             .getSearchIndex()
-                            .search(new StringBuilder(SolrConstants.ISWORK).append(":true AND ")
+                            .getHitCount(new StringBuilder(SolrConstants.ISWORK).append(":true AND ")
                                     .append(SolrConstants.PI_PARENT)
                                     .append(':')
                                     .append(getPi())
-                                    .toString(), 0, null, null);
-                    numVolumes = resp.getNumFound();
+                                    .toString());
                 }
                 // logger.debug("Volumes found for " + pi + ": " + numVolumes);
             }

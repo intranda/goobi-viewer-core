@@ -63,6 +63,7 @@ import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
+import io.goobi.viewer.api.rest.serialization.TranslationListSerializer;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.DateTools;
 import io.goobi.viewer.controller.SolrConstants;
@@ -80,7 +81,6 @@ import io.goobi.viewer.model.crowdsourcing.questions.Question;
 import io.goobi.viewer.model.misc.Translation;
 import io.goobi.viewer.model.security.IPrivilegeHolder;
 import io.goobi.viewer.model.security.user.User;
-import io.goobi.viewer.servlets.rest.serialization.TranslationListSerializer;
 
 /**
  *
@@ -128,7 +128,7 @@ public class Campaign implements CMSMediaHolder {
 
     private static final Logger logger = LoggerFactory.getLogger(Campaign.class);
 
-    private static final String URI_ID_TEMPLATE = DataManager.getInstance().getConfiguration().getRestApiUrl() + "crowdsourcing/campaigns/{id}";
+    private static final String URI_ID_TEMPLATE = DataManager.getInstance().getConfiguration().getRestApiUrl().replace("/rest", "/api/v1") + "crowdsourcing/campaigns/{id}";
     private static final String URI_ID_REGEX = ".*/crowdsourcing/campaigns/(\\d+)/?$";
 
     @Id
@@ -695,6 +695,7 @@ public class Campaign implements CMSMediaHolder {
      * @return a {@link java.lang.Long} object.
      */
     public static Long getId(URI idAsURI) {
+        
         Matcher matcher = Pattern.compile(URI_ID_REGEX).matcher(idAsURI.toString());
         if (matcher.find()) {
             String idString = matcher.group(1);

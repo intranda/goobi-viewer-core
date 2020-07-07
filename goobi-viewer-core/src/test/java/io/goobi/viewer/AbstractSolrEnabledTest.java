@@ -15,10 +15,7 @@
  */
 package io.goobi.viewer;
 
-import java.io.File;
-
-import org.apache.solr.client.solrj.impl.HttpSolrServer;
-import org.apache.solr.core.CoreContainer;
+import org.apache.solr.client.solrj.impl.HttpSolrClient;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Assert;
@@ -33,54 +30,35 @@ import io.goobi.viewer.controller.SolrSearchIndex;
  */
 public abstract class AbstractSolrEnabledTest extends AbstractTest {
 
-    private static final String CORE_NAME = "test-viewer-2020";
-
     protected static final String PI_KLEIUNIV = "PPN517154005";
     protected static long iddocKleiuniv = -1;
 
-    private static String solrPath = "/opt/digiverso/viewer/apache-solr/";
-    private static CoreContainer coreContainer;
+    private HttpSolrClient server;
 
     @BeforeClass
     public static void setUpClass() throws Exception {
         AbstractTest.setUpClass();
 
-        String os = System.getProperty("os.name").toLowerCase();
-        if (os.indexOf("win") >= 0) {
-            solrPath = "C:/digiverso/viewer/apache-solr-test/";
-        }
-        File solrDir = new File(solrPath);
-        Assert.assertTrue("Solr folder not found in " + solrPath, solrDir.isDirectory());
-
-        coreContainer = new CoreContainer(solrPath);
-        coreContainer.load();
-
     }
 
     @Before
     public void setUp() throws Exception {
-        // EmbeddedSolrServer server = new EmbeddedSolrServer(coreContainer, CORE_NAME);
-        HttpSolrServer server = SolrSearchIndex.getNewHttpSolrServer();
+        server = SolrSearchIndex.getNewHttpSolrClient();
         DataManager.getInstance().injectSearchIndex(new SolrSearchIndex(server));
 
         // Load current IDDOC for PPN517154005, which is used in many tests
         if (iddocKleiuniv == -1) {
             iddocKleiuniv = DataManager.getInstance().getSearchIndex().getIddocFromIdentifier(PI_KLEIUNIV);
         }
-        Assert.assertNotEquals(1, iddocKleiuniv);
+        Assert.assertNotEquals(0, iddocKleiuniv);
     }
 
     @After
     public void tearDown() throws Exception {
-        if (coreContainer != null) {
-            coreContainer.getClass(); // random call so that there is no red PMD warning
-        }
+        server.close();
     }
 
     @AfterClass
     public static void tearDownClass() throws Exception {
-        if (coreContainer != null) {
-            coreContainer.shutdown();
-        }
     }
 }

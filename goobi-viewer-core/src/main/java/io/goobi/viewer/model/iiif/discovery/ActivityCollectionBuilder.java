@@ -15,16 +15,17 @@
  */
 package io.goobi.viewer.model.iiif.discovery;
 
+import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_CHANGES;
+import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_CHANGES_PAGE;
+import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_MANIFEST;
+import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_RECORD;
+
 import java.net.URI;
-import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
-
-import javax.servlet.http.HttpServletRequest;
 
 import org.apache.solr.client.solrj.response.FacetField.Count;
 import org.apache.solr.client.solrj.response.QueryResponse;
@@ -37,13 +38,14 @@ import de.intranda.api.iiif.discovery.OrderedCollection;
 import de.intranda.api.iiif.discovery.OrderedCollectionPage;
 import de.intranda.api.iiif.presentation.IPresentationModelElement;
 import de.intranda.api.iiif.presentation.Manifest;
+import io.goobi.viewer.api.rest.AbstractApiUrlManager;
+import io.goobi.viewer.api.rest.v1.ApiUrls;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.SolrConstants;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
-import io.goobi.viewer.model.iiif.presentation.builder.ManifestBuilder;
 import io.goobi.viewer.model.search.SearchHelper;
-import io.goobi.viewer.servlets.utils.ServletUtils;
+
 
 /**
  * Builder for both {@link de.intranda.api.iiif.discovery.OrderedCollection} and {@link de.intranda.api.iiif.discovery.OrderedCollectionPage} of
@@ -56,36 +58,15 @@ public class ActivityCollectionBuilder {
     private final static String[] SOLR_FIELDS = { SolrConstants.PI, SolrConstants.DATEUPDATED, SolrConstants.DATECREATED, SolrConstants.DATEDELETED };
     private final static String[] FACET_FIELDS = { SolrConstants.DATEUPDATED, SolrConstants.DATECREATED };
 
-    private final URI servletURI;
-    private final URI requestURI;
-    private final Optional<HttpServletRequest> request;
     private final int activitiesPerPage = DataManager.getInstance().getConfiguration().getIIIFDiscoveryAvtivitiesPerPage();
     private Integer numActivities = null;
     private Date startDate = null;
+    private final AbstractApiUrlManager urls;
 
-    /**
-     * Constructs the builder from a {@link javax.servlet.http.HttpServletRequest}
-     *
-     * @param request The request to which to respond (for URI creation)
-     */
-    public ActivityCollectionBuilder(HttpServletRequest request) {
-        this.request = Optional.ofNullable(request);
-        this.servletURI = URI.create(ServletUtils.getServletPathWithHostAsUrlFromRequest(request));
-        this.requestURI = URI.create(ServletUtils.getServletPathWithoutHostAsUrlFromRequest(request) + request.getRequestURI());
+    public ActivityCollectionBuilder(AbstractApiUrlManager apiUrlManager) {
+        this.urls = apiUrlManager;
     }
-
-    /**
-     * Constructs the builder from specific URIs; used to testing
-     *
-     * @param servletUri The URI of the containing server
-     * @param requestURI The URI called by the request
-     */
-    public ActivityCollectionBuilder(URI servletUri, URI requestURI) {
-        this.request = Optional.empty();
-        this.servletURI = servletUri;
-        this.requestURI = requestURI;
-    }
-
+    
     /**
      * Creates a An {@link de.intranda.api.iiif.discovery.OrderedCollection} of {@link Activity Acvitities}, linking to the first and last contained
      * {@link de.intranda.api.iiif.discovery.OrderedCollectionPage} as well as counting the total number of Activities
@@ -196,8 +177,8 @@ public class ActivityCollectionBuilder {
      * @return the URI for the collection request
      */
     public URI getCollectionURI() {
-        StringBuilder sb = new StringBuilder(getBaseUrl().toString()).append("iiif/discovery/activities");
-        return URI.create(sb.toString());
+        String urlString = this.urls.path(ApiUrls.RECORDS_CHANGES).build();
+        return URI.create(urlString);
     }
 
     /**
@@ -207,8 +188,8 @@ public class ActivityCollectionBuilder {
      * @return the URI to request a specific collection page
      */
     public URI getPageURI(int no) {
-        StringBuilder sb = new StringBuilder(getBaseUrl().toString()).append("iiif/discovery/activities/").append(no);
-        return URI.create(sb.toString());
+        String urlString = this.urls.path(RECORDS_CHANGES, RECORDS_CHANGES_PAGE).params(no).build();
+        return URI.create(urlString);
     }
 
     private int getLastPageNo() throws PresentationException, IndexUnreachableException {
@@ -254,27 +235,9 @@ public class ActivityCollectionBuilder {
 
     private IPresentationModelElement createObject(SolrDocument doc) {
         String pi = (String) doc.getFieldValue(SolrConstants.PI);
-        URI uri = new ManifestBuilder(servletURI, requestURI).getManifestURI(pi);
+        URI uri = URI.create(this.urls.path(RECORDS_RECORD, RECORDS_MANIFEST).params(pi).build());
         Manifest manifest = new Manifest(uri);
         return manifest;
-    }
-
-    /**
-     * @return The requested url before any presentation specific parts. Generally the rest api url. Includes a trailing slash
-     */
-    private URI getBaseUrl() {
-
-        String request = requestURI.toString();
-        if (!request.contains("/iiif/")) {
-            return requestURI;
-        }
-        request = request.substring(0, request.indexOf("/iiif/") + 1);
-        try {
-            return new URI(request);
-        } catch (URISyntaxException e) {
-            return requestURI;
-        }
-
     }
 
     private int getNumberOfActivities(Date startDate) throws PresentationException, IndexUnreachableException {
