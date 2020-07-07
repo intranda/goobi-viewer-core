@@ -557,7 +557,7 @@
 	        cursor: pointer;
 			height: 2.5rem;
 			width: 6rem;
-			left: 3rem;
+			left: 3.5rem;
 			margin: 0;
 			& ~ input:checked ~ .toggle-outside {
 				background: #ccc;
@@ -596,7 +596,7 @@
 		  	text-align: left;
 		  	user-select: none;
 		  	&:last-of-type {
-				margin-left: 6rem;
+				margin-left: 6.5rem;
 				width: 4.8rem;
 				text-align: right;
 			}
@@ -610,7 +610,7 @@
 			background: #3365a9;
 			position: absolute;
 			width: 6rem;
-			left: 3rem;
+			left: 3.5rem;
 		}
 		.toggle-inside {
 			border-radius: 5rem;
@@ -622,6 +622,48 @@
 		}
 	}
 }
+
+// language specific positioning for fancy toggle
+	// DE
+	html[lang="de"] .admin__radio-switch {
+		.toggle-outside {
+			left: 3.5rem;
+			}
+		label {
+			&:first-of-type {
+				width: 3rem;
+			}
+			&:last-of-type {
+				margin-left: 7rem;
+				width: 4.8rem;
+			}
+		}
+		input {
+		    width: 6rem;
+		    left: 3.5rem;
+		}
+	}
+	
+	// EN
+	html[lang="en"] .admin__radio-switch {
+		.toggle-outside {
+			left: 4.0rem;
+			}
+		label {
+			&:first-of-type {
+				width: 3rem;
+			}
+			&:last-of-type {
+				margin-left: 7rem;
+				width: 3.8rem;
+			}
+		}
+		input {
+		    width: 6rem;
+		    left: 4rem;
+		}
+	}
+	
 
 // overwritten bootstrap margin for description list elements
 .admin dl dd:last-of-type {
