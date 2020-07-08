@@ -46,7 +46,7 @@ import io.swagger.v3.oas.models.info.License;
  * ViewerApplication class.
  * </p>
  */
-@ApplicationPath("/api/v1")
+@ApplicationPath(ApiUrls.API)
 @ViewerRestServiceBinding
 public class Application extends ResourceConfig {
 

@@ -26,6 +26,8 @@ import io.goobi.viewer.controller.DataManager;
  */
 public class ApiUrls extends AbstractApiUrlManager {
     
+    public static final String API =                                        "/api/v1";
+
     public static final String INDEXER =                                    "/indexer";
 
     public static final String INDEX =                                      "/index";
@@ -60,6 +62,9 @@ public class ApiUrls extends AbstractApiUrlManager {
     public static final String RECORDS_TEI_ZIP =                            "/tei.zip";
     public static final String RECORDS_PDF =                                "/pdf";
     public static final String RECORDS_PDF_INFO =                           "/pdf/info.json";
+    public static final String RECORDS_IMAGE =                              "/image";
+    public static final String RECORDS_IMAGE_INFO =                         "/image/info.json";
+    public static final String RECORDS_IMAGE_IIIF =                         "/image/{region}/{size}/{rotation}/{quality}.{format}";
     
     public static final String RECORDS_SECTIONS =                           "/records/{pi}/sections/{divId}";
     public static final String RECORDS_SECTIONS_RIS_TEXT =                  "/ris.txt";
