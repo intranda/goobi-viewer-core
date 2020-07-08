@@ -8,10 +8,10 @@
 	h3 {
 		display: flex;
 		justify-content: space-between;
-		.btn--icon {
-			color: white;
-			padding: 0;
-		}
+	}
+	&__expand {
+		color: inherit;
+		padding: 0;
 	}
 	.geomap {
 		min-height: 350px;
@@ -21,10 +21,15 @@
 		.leaflet-popup-content {
 	    	max-width: 200px;
 		}
+		.leaflet-control-zoom  {
+			a {
+				padding: 0;
+				display: block;
+			}
+		}
 		.leaflet-control-container {
 			.leaflet-top {
 				a {					
-					line-height: 22px;
 				}
 			}
 			.leaflet-bottom {
