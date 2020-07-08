@@ -25,6 +25,7 @@ import org.junit.Test;
 
 import de.unigoettingen.sub.commons.contentlib.imagelib.transform.Scale;
 import io.goobi.viewer.AbstractTest;
+import io.goobi.viewer.api.rest.v1.ApiUrls;
 import io.goobi.viewer.controller.Configuration;
 import io.goobi.viewer.controller.ConfigurationTest;
 import io.goobi.viewer.controller.DataManager;
@@ -51,7 +52,8 @@ public class ThumbnailHandlerTest extends AbstractTest {
     public void setUp() throws Exception {
         DataManager.getInstance().injectConfiguration(new Configuration("src/test/resources/config_viewer.test.xml"));
         Configuration configuration = DataManager.getInstance().getConfiguration();
-        handler = new ThumbnailHandler(new IIIFUrlHandler(), configuration, STATIC_IMAGES_PATH);
+        IIIFUrlHandler iiifHandler = new IIIFUrlHandler(new ApiUrls(ApiUrls.API));
+        handler = new ThumbnailHandler(iiifHandler, configuration, STATIC_IMAGES_PATH);
     }
 
     /**
@@ -67,7 +69,7 @@ public class ThumbnailHandlerTest extends AbstractTest {
                 new PhysicalElement("PHYS_0001", "00000001.tif", 1, "Seite 1", "urn:234235:3423", "http://purl", "1234", "image/tiff", null);
 
         String url = handler.getThumbnailUrl(page, 200, 300);
-        Assert.assertEquals(ConfigurationTest.APPLICATION_ROOT_URL + "api/v1/records/1234/files/images/00000001.tif/full/!200,300/0/default.jpg", url);
+        Assert.assertEquals("/api/v1/records/1234/files/images/00000001.tif/full/!200,300/0/default.jpg", url);
     }
 
     @Test
@@ -96,18 +98,15 @@ public class ThumbnailHandlerTest extends AbstractTest {
         PhysicalElement page = new PhysicalElement("PHYS_0001", fileUrl, 1, "Seite 1", "urn:234235:3423", "http://purl", "1234", "image/tiff", null);
 
         String urlMax = handler.getFullImageUrl(page, Scale.MAX);
-        Assert.assertEquals(
-                DataManager.getInstance().getConfiguration().getIIIFApiUrl() + "records/1234/files/images/00000001.tif/full/max/0/default.tif",
+        Assert.assertEquals("/api/v1/records/1234/files/images/00000001.tif/full/max/0/default.tif",
                 urlMax);
 
         String urlBox = handler.getFullImageUrl(page, new Scale.ScaleToBox(1500, 1500));
-        Assert.assertEquals(
-                DataManager.getInstance().getConfiguration().getIIIFApiUrl() + "records/1234/files/images/00000001.tif/full/!1500,1500/0/default.tif",
+        Assert.assertEquals("/api/v1/records/1234/files/images/00000001.tif/full/!1500,1500/0/default.tif",
                 urlBox);
 
         String urlFraction = handler.getFullImageUrl(page, new Scale.ScaleToFraction(0.5));
-        Assert.assertEquals(
-                DataManager.getInstance().getConfiguration().getIIIFApiUrl() + "records/1234/files/images/00000001.tif/full/pct:50/0/default.tif",
+        Assert.assertEquals("/api/v1/records/1234/files/images/00000001.tif/full/pct:50/0/default.tif",
                 urlFraction);
     }
 
@@ -117,13 +116,11 @@ public class ThumbnailHandlerTest extends AbstractTest {
         PhysicalElement page = new PhysicalElement("PHYS_0001", fileUrl, 1, "Seite 1", "urn:234235:3423", "http://purl", "1234", "image/tiff", null);
 
         String urlMax = handler.getThumbnailUrl(page, 0, 0);
-        Assert.assertEquals(
-                DataManager.getInstance().getConfiguration().getIIIFApiUrl() + "records/1234/files/images/00000001.tif/full/max/0/default.jpg",
+        Assert.assertEquals("/api/v1/records/1234/files/images/00000001.tif/full/max/0/default.jpg",
                 urlMax);
 
         String urlBox = handler.getThumbnailUrl(page, 1500, 1500);
-        Assert.assertEquals(
-                DataManager.getInstance().getConfiguration().getIIIFApiUrl() + "records/1234/files/images/00000001.tif/full/!1500,1500/0/default.jpg",
+        Assert.assertEquals("/api/v1/records/1234/files/images/00000001.tif/full/!1500,1500/0/default.jpg",
                 urlBox);
 
     }
@@ -142,7 +139,7 @@ public class ThumbnailHandlerTest extends AbstractTest {
         StructElement doc = new StructElement(1, solrDoc);
 
         String url = handler.getThumbnailUrl(doc, 200, 300);
-        Assert.assertEquals(ConfigurationTest.APPLICATION_ROOT_URL + "api/v1/records/1234/files/images/00000001.tif/full/!200,300/0/default.jpg", url);
+        Assert.assertEquals("/api/v1/records/1234/files/images/00000001.tif/full/!200,300/0/default.jpg", url);
     }
 
     /**
@@ -189,8 +186,7 @@ public class ThumbnailHandlerTest extends AbstractTest {
         StructElement doc = new StructElement(1, solrDoc);
 
         String url = handler.getThumbnailUrl(doc, 200, 300);
-        Assert.assertEquals(ConfigurationTest.APPLICATION_ROOT_URL
-                + "api/v1/image/-/http:U002FU002FexternalU002FiiifU002FimageU002F00000001.tif/full/!200,300/0/default.jpg", url);
+        Assert.assertEquals("/api/v1/image/-/http:U002FU002FexternalU002FiiifU002FimageU002F00000001.tif/full/!200,300/0/default.jpg", url);
     }
 
     @Test

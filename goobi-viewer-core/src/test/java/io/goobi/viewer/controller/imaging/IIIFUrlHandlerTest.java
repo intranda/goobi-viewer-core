@@ -22,6 +22,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import io.goobi.viewer.AbstractTest;
+import io.goobi.viewer.api.rest.v1.ApiUrls;
 import io.goobi.viewer.controller.Configuration;
 import io.goobi.viewer.controller.ConfigurationTest;
 import io.goobi.viewer.controller.DataManager;
@@ -33,6 +34,13 @@ import io.goobi.viewer.controller.DataManager;
 public class IIIFUrlHandlerTest extends AbstractTest {
 
     IIIFUrlHandler handler;
+    String fileUrl = "filename.tif";
+    String pi = "1234";
+    String region = "full";
+    String size = "max";
+    String rotation = "0";
+    String quality = "default";
+    String format = "jpg";
 
     /**
      * @throws java.lang.Exception
@@ -40,7 +48,9 @@ public class IIIFUrlHandlerTest extends AbstractTest {
     @Before
     public void setUp() throws Exception {
         DataManager.getInstance().injectConfiguration(new Configuration("src/test/resources/config_viewer.test.xml"));
-        handler = new IIIFUrlHandler();
+        
+        ApiUrls urls = new ApiUrls(ApiUrls.API);
+        handler = new IIIFUrlHandler(urls);
     }
 
     /**
@@ -57,56 +67,46 @@ public class IIIFUrlHandlerTest extends AbstractTest {
      * @throws ConfigurationException
      */
     @Test
-    public void testGetIIIFImageUrl() {
-
-        String fileUrl = "filename.tif";
-        String pi = "1234";
-        String region = "full";
-        String size = "max";
-        String rotation = "0";
-        String quality = "default";
-        String format = "jpg";
-
-        String url;
-
-        url = handler.getIIIFImageUrl(fileUrl, pi, region, size, rotation, quality, format);
-        Assert.assertEquals(ConfigurationTest.APPLICATION_ROOT_URL + "api/v1/records/1234/files/images/filename.tif/full/max/0/default.jpg", url);
-
+    public void testUrlFromFile() {
+        String url = handler.getIIIFImageUrl(fileUrl, pi, region, size, rotation, quality, format);
+        Assert.assertEquals("/api/v1/records/1234/files/images/filename.tif/full/max/0/default.jpg", url);
+    }
+    
+    @Test
+    public void testUrlFromLocalUrl() {
         fileUrl = "http://localhost/image/filename.tif";
-        url = handler.getIIIFImageUrl(fileUrl, pi, region, size, rotation, quality, format);
-        Assert.assertEquals(
-                ConfigurationTest.APPLICATION_ROOT_URL + "api/v1/image/-/http:U002FU002FlocalhostU002FimageU002Ffilename.tif/full/max/0/default.jpg",
+        String url = handler.getIIIFImageUrl(fileUrl, pi, region, size, rotation, quality, format);
+        Assert.assertEquals("/api/v1/image/-/http:U002FU002FlocalhostU002FimageU002Ffilename.tif/full/max/0/default.jpg",
                 url);
-
+    }
+    
+    @Test
+    public void testUrlFromExternalImageUrl() {
         fileUrl = "http://rosdok.uni-rostock.de/iiif/image-api/rosdok%252Fppn740913301%252Fphys_0001/full/full/0/native.jpg";
-        url = handler.getIIIFImageUrl(fileUrl, pi, region, size, rotation, quality, format);
+        String url = handler.getIIIFImageUrl(fileUrl, pi, region, size, rotation, quality, format);
         Assert.assertEquals("http://rosdok.uni-rostock.de/iiif/image-api/rosdok%252Fppn740913301%252Fphys_0001/full/max/0/default.jpg", url);
-
+    }
+    
+    @Test
+    public void testUrlFromLocalFileUrl() {
         fileUrl = "file:///image/filename.tif";
-        url = handler.getIIIFImageUrl(fileUrl, pi, region, size, rotation, quality, format);
-        Assert.assertEquals(ConfigurationTest.APPLICATION_ROOT_URL + "api/v1/image/-/file:U002FU002FU002FimageU002Ffilename.tif/full/max/0/default.jpg",
+        String url = handler.getIIIFImageUrl(fileUrl, pi, region, size, rotation, quality, format);
+        Assert.assertEquals("/api/v1/image/-/file:U002FU002FU002FimageU002Ffilename.tif/full/max/0/default.jpg",
                 url);
-
+    }
+    
+    @Test
+    public void testUrlFromLocalFileUrlWithSpace() {
         fileUrl = "file:///image/filename 01.tif";
-        url = handler.getIIIFImageUrl(fileUrl, pi, region, size, rotation, quality, format);
-        Assert.assertEquals(
-                ConfigurationTest.APPLICATION_ROOT_URL + "api/v1/image/-/file:U002FU002FU002FimageU002Ffilename%2001.tif/full/max/0/default.jpg", url);
+        String url = handler.getIIIFImageUrl(fileUrl, pi, region, size, rotation, quality, format);
+        Assert.assertEquals("/api/v1/image/-/file:U002FU002FU002FimageU002Ffilename%2001.tif/full/max/0/default.jpg", url);
+    }
 
-        // TODO
-        //        fileUrl = "/image/filename.tif";
-        //        url = handler.getIIIFImageUrl(fileUrl, pi, region, size, rotation, quality, format);
-        //        Assert.assertEquals(ConfigurationTest.APPLICATION_ROOT_URL + "rest/image/-/file:U002FimageU002Ffilename.tif/full/max/0/default.jpg", url);
-
-        fileUrl = "http://localhost/image/filename.tif";
-        url = handler.getIIIFImageUrl(fileUrl, pi, region, size, rotation, quality, format);
-        Assert.assertEquals(
-                ConfigurationTest.APPLICATION_ROOT_URL + "api/v1/image/-/http:U002FU002FlocalhostU002FimageU002Ffilename.tif/full/max/0/default.jpg",
-                url);
-
+    @Test
+    public void testUrlFromWindowsFileUrl() {
         fileUrl = "file:///C:/opt/digiverso/viewer/cms_media/filename.tif";
-        url = handler.getIIIFImageUrl(fileUrl, pi, region, size, rotation, quality, format);
-        Assert.assertEquals(ConfigurationTest.APPLICATION_ROOT_URL
-                + "api/v1/image/-/file:U002FU002FU002FC:U002FoptU002FdigiversoU002FviewerU002Fcms_mediaU002Ffilename.tif/full/max/0/default.jpg", url);
+        String url = handler.getIIIFImageUrl(fileUrl, pi, region, size, rotation, quality, format);
+        Assert.assertEquals("/api/v1/image/-/file:U002FU002FU002FC:U002FoptU002FdigiversoU002FviewerU002Fcms_mediaU002Ffilename.tif/full/max/0/default.jpg", url);
 
     }
 

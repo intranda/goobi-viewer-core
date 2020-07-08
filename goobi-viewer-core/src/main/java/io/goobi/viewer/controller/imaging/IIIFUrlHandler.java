@@ -72,7 +72,7 @@ public class IIIFUrlHandler {
 
     public String getIIIFImageUrl(String fileUrl, String docStructIdentifier, String region, String size, String rotation, String quality,
             String format) {
-        String apiUrl = this.urls == null ? DataManager.getInstance().getConfiguration().getIIIFApiUrl() : this.urls.getApiUrl();
+        String apiUrl = this.urls == null ? DataManager.getInstance().getConfiguration().getIIIFApiUrl() : this.urls.getApiUrl() + "/";
         return getIIIFImageUrl(apiUrl, fileUrl, docStructIdentifier, region, size, rotation,
                 quality, format);
     }
