@@ -2,6 +2,9 @@
    Widget Geo Locations
    style declarations for widget_geoLocations.xhtml
    ==============================================================*/
+   
+// No padding for 
+
 .widget-geomap {
 	position: relative;
 	display: none;
@@ -12,6 +15,15 @@
 	&__expand {
 		color: inherit;
 		padding: 0;
+		background: transparent;
+		border: none;
+		&:hover,
+		&:active,
+		&:focus {
+			text-decoration: none;
+			color: inherit;
+			background: none;
+			}	
 	}
 	.geomap {
 		min-height: 350px;

@@ -19,7 +19,7 @@
                 <div id="widgetGeoMap_#{cc.attrs.widget.geoMapId}" class="widget widget-geomap #{cc.attrs.widget.cssClass}">
                     <h3>
                         #{cc.attrs.widget.geoMap.title}
-                        <button id="expandMap_#{cc.attrs.widget.geoMapId}" class="widget-geomap__expand btn btn--icon">
+                        <button id="expandMap_#{cc.attrs.widget.geoMapId}" data-toggle="tooltip" title="#{msg.fullscreen_enter}" class="widget-geomap__expand">
                         	<i class="fa fa-expand"/>
                         </button>
                     </h3>

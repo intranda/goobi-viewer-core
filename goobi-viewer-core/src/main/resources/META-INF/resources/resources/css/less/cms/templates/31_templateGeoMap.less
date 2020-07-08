@@ -1,15 +1,25 @@
 /* ==============================================================
-   CMS Template "Bookmark Lists"
-   style declarations for cms_template_28_bookmarkLists.xhtml
+   CMS Template "Geo Map"
+   style declarations for cms_template_31_GeoMap.xhtml
    ==============================================================*/
-
-.tpl-bookmarklists {
+.tpl-geomap {
     /* ELEMENT */
-    &__text {
-    	margin-bottom: 30px;
-    }
-    &__lists {
+    &__text,
+    &__image {
         margin-bottom: 15px;
+    }
+    &__text {}
+    &__image {
+        figcaption {
+            padding: 5px 0;
+            font-style: italic;
+            font-size: @fontMedium;
+            color: @middlegray;
+        }
+    }
+    .geomap {
+    	width: 100%;
+    	height: 600px;
     }
 }
 
