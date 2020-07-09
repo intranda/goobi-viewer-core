@@ -343,8 +343,8 @@ public class JsonTools {
             return notAvailableKey;
         }
 
-        JSONObject jsonObj = new JSONObject(json);
         try {
+            JSONObject jsonObj = new JSONObject(json);
             return jsonObj.getString("version") + " (" + jsonObj.getString("git-revision") + ")";
         } catch (JSONException e) {
             logger.error(e.getMessage());
