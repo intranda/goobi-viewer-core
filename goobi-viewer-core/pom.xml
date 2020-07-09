@@ -576,7 +576,11 @@
 			<artifactId>joda-time</artifactId>
 			<version>${joda-time.version}</version>
 		</dependency>
-
+		<dependency>
+		    <groupId>net.bull.javamelody</groupId>
+		    <artifactId>javamelody-core</artifactId>
+		    <version>1.83.0</version>
+		</dependency>
 	</dependencies>
 
 
