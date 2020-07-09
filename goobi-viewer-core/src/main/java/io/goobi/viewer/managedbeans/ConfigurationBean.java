@@ -712,6 +712,17 @@ public class ConfigurationBean implements Serializable {
     public boolean isSidebarTocWidgetVisible() {
         return DataManager.getInstance().getConfiguration().isSidebarTocWidgetVisible();
     }
+    
+    /**
+     * <p>
+     * isSidebarTocWidgetVisibleInFullscreen.
+     * </p>
+     *
+     * @return a boolean.
+     */
+    public boolean isSidebarTocWidgetVisibleInFullscreen() {
+        return DataManager.getInstance().getConfiguration().isSidebarTocWidgetVisibleInFullscreen();
+    }
 
     /**
      * <p>

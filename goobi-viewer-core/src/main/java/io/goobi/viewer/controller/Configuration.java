@@ -2206,6 +2206,19 @@ public final class Configuration extends AbstractConfiguration {
     public boolean isSidebarTocWidgetVisible() {
         return this.getLocalBoolean("sidebar.sidebarToc.visible", true);
     }
+    
+    /**
+     * <p>
+     * This method checks whether the TOC <strong>widget</strong> is enabled. To check whether the sidebar TOC <strong>link</strong> in the views
+     * widget is enabled, use <code>isSidebarTocVisible()</code>.
+     * </p>
+     *
+     * @should return correct value
+     * @return a boolean.
+     */
+    public boolean isSidebarTocWidgetVisibleInFullscreen() {
+        return this.getLocalBoolean("sidebar.sidebarToc.visibleInFullscreen", true);
+    }
 
     /**
      * <p>

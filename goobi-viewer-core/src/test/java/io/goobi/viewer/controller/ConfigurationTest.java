@@ -1391,6 +1391,15 @@ public class ConfigurationTest extends AbstractTest {
     public void isSidebarTocVisible_shouldReturnCorrectValue() throws Exception {
         Assert.assertEquals(false, DataManager.getInstance().getConfiguration().isSidebarTocWidgetVisible());
     }
+    
+    /**
+     * @see Configuration#isSidebarTocWidgetVisibleInFullscreen()
+     * @verifies return correct value
+     */
+    @Test
+    public void isSidebarTocVisibleInFullscreen_shouldReturnCorrectValue() throws Exception {
+        Assert.assertEquals(false, DataManager.getInstance().getConfiguration().isSidebarTocWidgetVisibleInFullscreen());
+    }
 
     /**
      * @see Configuration#isSortingEnabled()
