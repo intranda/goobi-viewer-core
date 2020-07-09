@@ -312,6 +312,7 @@ public class JsonTools {
      * @param json JSON string
      * @return Version information as a single line string
      * @should format string correctly
+     * @should return notAvailableKey if json invalid
      */
     public static String formatVersionString(String json) {
         final String notAvailableKey = "admin__dashboard_versions_not_available";
@@ -320,8 +321,8 @@ public class JsonTools {
             return notAvailableKey;
         }
 
-        JSONObject jsonObj = new JSONObject(json);
         try {
+            JSONObject jsonObj = new JSONObject(json);
             return jsonObj.getString("application") + " " + jsonObj.getString("version")
                     + " " + jsonObj.getString("build-date")
                     + " " + jsonObj.getString("git-revision");
@@ -335,6 +336,8 @@ public class JsonTools {
      *
      * @param json JSON string
      * @return Only version number and git hash as a single line string
+     * @should format string correctly
+     * @should return notAvailableKey if json invalid
      */
     public static String shortFormatVersionString(String json) {
         final String notAvailableKey = "admin__dashboard_versions_not_available";
@@ -351,5 +354,4 @@ public class JsonTools {
             return notAvailableKey;
         }
     }
-
 }
