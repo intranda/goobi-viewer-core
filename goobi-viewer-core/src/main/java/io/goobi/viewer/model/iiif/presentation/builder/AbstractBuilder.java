@@ -634,9 +634,11 @@ public abstract class AbstractBuilder {
      *
      * @return the configured attribution
      */
-    protected IMetadataValue getAttribution() {
-        String message = DataManager.getInstance().getConfiguration().getIIIFAttribution();
-        return ViewerResourceBundle.getTranslations(message);
+    protected List<IMetadataValue> getAttributions() {
+        List<IMetadataValue> messages = DataManager.getInstance().getConfiguration().getIIIFAttribution()
+                .stream().map(ViewerResourceBundle::getTranslations).collect(Collectors.toList());
+        
+        return messages;
     }
 
     /**

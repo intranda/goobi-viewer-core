@@ -307,7 +307,7 @@ public class SequenceBuilder extends AbstractBuilder {
         URI canvasId = getCanvasURI(doc.getPi(), page.getOrder());
         Canvas canvas = new Canvas(canvasId);
         canvas.setLabel(new SimpleMetadataValue(page.getOrderLabel()));
-        canvas.setThumbnail(new ImageContent(new URI(imageDelivery.getThumbs().getThumbnailUrl(page))));
+        canvas.addThumbnail(new ImageContent(new URI(imageDelivery.getThumbs().getThumbnailUrl(page))));
 
         Sequence parent = new Sequence(getSequenceURI(doc.getPi(), null));
         canvas.addWithin(parent);

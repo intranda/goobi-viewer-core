@@ -566,6 +566,16 @@ public class ViewerResourceBundle extends ResourceBundle {
         return allLocales;
     }
 
+    public static List<Locale> getFacesLocales() {
+        List<Locale> locales = new ArrayList<>();
+        try {            
+            FacesContext.getCurrentInstance().getApplication().getSupportedLocales().forEachRemaining(locales::add);
+        } catch(NullPointerException e) {
+            logger.warn("No faces context instance available");
+        }
+        return locales;
+    }
+    
     /**
      * Returns a Multilanguage metadata value containing all found translations for the {@code key}, or the key itself if not translations were found
      *

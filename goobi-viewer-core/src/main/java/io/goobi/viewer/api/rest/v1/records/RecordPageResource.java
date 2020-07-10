@@ -15,7 +15,15 @@
  */
 package io.goobi.viewer.api.rest.v1.records;
 
-import static io.goobi.viewer.api.rest.v1.ApiUrls.*;
+import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_ANNOTATIONS;
+import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_COMMENTS;
+import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_PAGES;
+import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_PAGES_ANNOTATIONS;
+import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_PAGES_CANVAS;
+import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_PAGES_COMMENTS;
+import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_PAGES_NER_TAGS;
+import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_PAGES_SEQUENCE;
+import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_RECORD;
 
 import java.io.IOException;
 import java.net.URI;
@@ -31,7 +39,6 @@ import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 
-import org.apache.solr.common.SolrDocument;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -41,26 +48,21 @@ import com.fasterxml.jackson.databind.JsonMappingException;
 import de.intranda.api.annotation.IAnnotationCollection;
 import de.intranda.api.annotation.wa.collection.AnnotationPage;
 import de.intranda.api.iiif.presentation.IPresentationModelElement;
-import de.unigoettingen.sub.commons.contentlib.exceptions.ContentLibException;
 import de.unigoettingen.sub.commons.contentlib.exceptions.ContentNotFoundException;
 import de.unigoettingen.sub.commons.contentlib.exceptions.IllegalRequestException;
 import de.unigoettingen.sub.commons.contentlib.servlet.rest.CORSBinding;
 import io.goobi.viewer.api.rest.AbstractApiUrlManager;
-import io.goobi.viewer.api.rest.ViewerRestServiceBinding;
 import io.goobi.viewer.api.rest.AbstractApiUrlManager.ApiPath;
+import io.goobi.viewer.api.rest.IIIFPresentationBinding;
+import io.goobi.viewer.api.rest.ViewerRestServiceBinding;
 import io.goobi.viewer.api.rest.model.ner.DocumentReference;
 import io.goobi.viewer.api.rest.resourcebuilders.AnnotationsResourceBuilder;
 import io.goobi.viewer.api.rest.resourcebuilders.IIIFPresentationResourceBuilder;
 import io.goobi.viewer.api.rest.resourcebuilders.NERBuilder;
-import io.goobi.viewer.api.rest.resourcebuilders.RisResourceBuilder;
-import io.goobi.viewer.controller.DataManager;
-import io.goobi.viewer.controller.SolrConstants;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.exceptions.ViewerConfigurationException;
-import io.goobi.viewer.model.viewer.StructElement;
-import io.goobi.viewer.servlets.rest.iiif.presentation.IIIFPresentationBinding;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;

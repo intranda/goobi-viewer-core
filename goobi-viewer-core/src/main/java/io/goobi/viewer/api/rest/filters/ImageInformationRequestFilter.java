@@ -66,13 +66,21 @@ public class ImageInformationRequestFilter implements ContainerRequestFilter {
     @Override
     public void filter(ContainerRequestContext request) throws IOException {
         try {
-            String requestPath = servletRequest.getRequestURI();
-            requestPath = requestPath.substring(requestPath.indexOf("records/") + 8);
-            logger.trace("Filtering request: {}", requestPath);
-            StringTokenizer tokenizer = new StringTokenizer(requestPath, "/");
-            List<String> pathSegments = tokenizer.getTokenList();
-            String pi = pathSegments.get(0);
-            String imageName = pathSegments.size() > 3 ? pathSegments.get(3) : "";
+            String pi;
+            String imageName;
+            if(servletRequest.getAttribute("filename") != null) {
+                //read parameters 
+                pi = (String) servletRequest.getAttribute("pi");
+                imageName = (String) servletRequest.getAttribute("filename");
+            } else {
+                String requestPath = servletRequest.getRequestURI();
+                requestPath = requestPath.substring(requestPath.indexOf("records/") + 8);
+                logger.trace("Filtering request: {}", requestPath);
+                StringTokenizer tokenizer = new StringTokenizer(requestPath, "/");
+                List<String> pathSegments = tokenizer.getTokenList();
+                pi = pathSegments.get(0);
+                imageName = pathSegments.size() > 3 ? pathSegments.get(3) : "";
+            }
             imageName = StringTools.decodeUrl(imageName);
             // logger.trace("image: {}", imageName);
             if (forwardToCanonicalUrl(pi, imageName, servletRequest, servletResponse)) {
