@@ -1,0 +1,66 @@
+/* ==============================================================
+   style declarations for sidebarMenu component
+   ==============================================================*/
+
+.sidebar-menu {
+	margin-bottom: 20px;
+	button, a {
+		display: block;
+		color: @lowerblack;
+	    &:hover, 
+	    &:focus, 
+	    &:active {
+	    	color: @lowerblack;
+	    }
+	}
+	button {
+		border: none;
+		background: transparent;
+		padding: 0;
+		span::after {
+			content: '';
+			width: 0;
+			height: 0;
+			margin-left: 5px;
+			vertical-align: middle;
+			border-top: 4px dashed;
+			border-top: 4px solid\9;
+			border-right: 4px solid transparent;
+			border-left: 4px solid transparent;
+			vertical-align: middle;
+			display: inline-block;
+		}
+	}
+	ul {}
+	li {}
+	a {}
+	span {}
+	&__submenu-container {}
+	&__submenu-button {
+		&.-active {
+			font-weight: 700;
+		}
+	}
+	&__submenu {
+		font-size: 1.4rem;
+		display: none;
+		ul {}
+		li {}
+		a {
+			padding-left: 1.5rem;
+		}
+		span {}
+	}
+}
+	
+/* BREAKPOINT FOR LARGE DESKTOPS */
+@media screen and (max-width: @largeBreakpoint) {} 
+
+/* BREAKPOINT FOR DESKTOPS */
+@media screen and (max-width: @mediumBreakpoint) {}
+
+/* BREAKPOINT FOR TABLETS */
+@media screen and (max-width: @smallBreakpoint) {}
+
+/* BREAKPOINT FOR SMARTPHONES */
+@media screen and (max-width: @xSmallBreakpoint) {}
