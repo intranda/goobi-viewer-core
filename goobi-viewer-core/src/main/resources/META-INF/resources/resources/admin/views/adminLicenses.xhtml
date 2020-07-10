@@ -41,7 +41,7 @@
                                             actionListener="#{adminBean.newCurrentLicenseTypeAction(accessCondition)}"
                                             styleClass="row admin__license-unconfigured-entry">
                                             <div class="col-10 -textlink">
-                                                #{accessCondition} (#{adminBean.getNumRecordsWithAccessCondition(accessCondition)} #{msg.admin__licenses_record_number})
+                                                #{accessCondition} (#{msg.admin__licenses_record_number}: #{adminBean.getNumRecordsWithAccessCondition(accessCondition)})
                                             </div>
                                             <div class="col-2 d-flex justify-content-end">
                                                 <span>#{msg.admin__licenses_configure_license_now}</span>

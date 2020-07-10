@@ -49,6 +49,7 @@
 				rendered="#{cmsBean.relatedWorkLoaded}">
 	
 				<widgetComponent:widget_views pageName="#{cmsPage.title}" />
+				
 				<widgetComponent:widget_searchInCurrentItem />
 	
 				<widgetComponent:widget_nerFacetting />
@@ -61,7 +62,7 @@
 	
 				<widgetComponent:widget_relatedGroups />
 	
-				<widgetComponent:widget_toc />
+				<widgetComponent:widget_toc visible="#{configurationBean.sidebarTocWidgetVisible}" />
 	
 				<widgetComponent:widget_download />
 	
