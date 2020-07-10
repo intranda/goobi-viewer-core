@@ -4342,6 +4342,10 @@ public final class Configuration extends AbstractConfiguration {
         return getLocalList("viewer.externalContent.restrictedUrls.url", Collections.emptyList());
     }
 
+    public List<String> getIIIFLicenses() {
+        return getLocalList("webapi.iiif.license", Collections.emptyList());
+    }
+    
     /**
      * <p>
      * getIIIFMetadataFields.
@@ -4405,8 +4409,8 @@ public final class Configuration extends AbstractConfiguration {
      *
      * @return a {@link java.lang.String} object.
      */
-    public String getIIIFLogo() {
-        return getLocalString("webapi.iiif.logo", null);
+    public List<String> getIIIFLogo() {
+        return getLocalList("webapi.iiif.logo", new ArrayList<>());
     }
 
     /**
@@ -4427,8 +4431,8 @@ public final class Configuration extends AbstractConfiguration {
      *
      * @return a {@link java.lang.String} object.
      */
-    public String getIIIFAttribution() {
-        return getLocalString("webapi.iiif.attribution", "provided by Goobi viewer");
+    public List<String> getIIIFAttribution() {
+        return getLocalList("webapi.iiif.attribution", new ArrayList<>());
     }
 
     /**
@@ -4439,7 +4443,7 @@ public final class Configuration extends AbstractConfiguration {
      * @return a {@link java.util.List} object.
      */
     public List<String> getIIIFDescriptionFields() {
-        return getLocalList("webapi.iiif.descriptionFields.field", Collections.singletonList("MD_CONTENTDESCRIPTION"));
+        return getLocalList("webapi.iiif.descriptionFields.field", new ArrayList<>());
 
     }
 

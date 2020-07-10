@@ -103,7 +103,7 @@ public class StructureBuilder extends AbstractBuilder {
                 if (structElement.isWork()) {
                     IMetadataValue label = ViewerResourceBundle.getTranslations(BASE_RANGE_LABEL);
                     range.setLabel(label);
-                    range.setViewingHint(ViewingHint.top);
+                    range.addViewingHint(ViewingHint.top);
                 } else {
                     IMetadataValue label = structElement.getMultiLanguageDisplayLabel();
                     range.setLabel(label);
@@ -159,7 +159,7 @@ public class StructureBuilder extends AbstractBuilder {
             String thumbUrl = imageDelivery.getThumbs().getThumbnailUrl(ele, pi);
             if (StringUtils.isNotBlank(thumbUrl)) {
                 ImageContent thumb = new ImageContent(new URI(thumbUrl));
-                range.setThumbnail(thumb);
+                range.addThumbnail(thumb);
                 if (IIIFUrlResolver.isIIIFImageUrl(thumbUrl)) {
                     URI imageInfoURI = new URI(IIIFUrlResolver.getIIIFImageBaseUrl(thumbUrl));
                     thumb.setService(new ImageInformation(imageInfoURI.toString()));

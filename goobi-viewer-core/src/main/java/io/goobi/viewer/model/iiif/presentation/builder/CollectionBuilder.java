@@ -193,7 +193,7 @@ public class CollectionBuilder extends AbstractBuilder {
                 URI uri = getManifestURI(pi);
                 if (Boolean.TRUE.equals(anchor)) {
                     work = new Collection(uri, pi);
-                    work.setViewingHint(ViewingHint.multipart);
+                    work.addViewingHint(ViewingHint.multipart);
                     collection.addCollection((Collection) work);
                 } else {
                     work = new Manifest(uri);
@@ -248,10 +248,9 @@ public class CollectionBuilder extends AbstractBuilder {
      */
     public Collection createCollection(CollectionView collectionView, HierarchicalBrowseDcElement baseElement, URI uri)
             throws URISyntaxException, ViewerConfigurationException {
-        Collection collection = null;
         try {
-            collection = new Collection(uri, baseElement == null ? null : baseElement.getName());
-            collection.setAttribution(getAttribution());
+            Collection collection = new Collection(uri, baseElement == null ? null : baseElement.getName());
+            this.getAttributions().forEach(attr -> collection.addAttribution(attr));
             if (baseElement != null) {
 
                 BrowseElementInfo info = baseElement.getInfo();
@@ -264,7 +263,7 @@ public class CollectionBuilder extends AbstractBuilder {
                 URI thumbURI = absolutize(baseElement.getInfo().getIconURI());
                 if (thumbURI != null) {
                     ImageContent thumb = new ImageContent(thumbURI);
-                    collection.setThumbnail(thumb);
+                    collection.addThumbnail(thumb);
                     if (IIIFUrlResolver.isIIIFImageUrl(thumbURI.toString())) {
                         URI imageInfoURI = new URI(IIIFUrlResolver.getIIIFImageBaseUrl(thumbURI.toString()));
                         thumb.setService(new ImageInformation(imageInfoURI.toString()));
@@ -293,14 +292,15 @@ public class CollectionBuilder extends AbstractBuilder {
                 //                collection.addRendering(viewer);
 
             } else {
-                collection.setViewingHint(ViewingHint.top);
+                collection.addViewingHint(ViewingHint.top);
                 //                collection.addService(new CollectionExtent(collectionView.getVisibleDcElements().size(), 0));
             }
+            return collection;
 
         } catch (URISyntaxException e) {
             logger.error(e.toString(), e);
         }
-        return collection;
+        return null;
     }
 
     /**

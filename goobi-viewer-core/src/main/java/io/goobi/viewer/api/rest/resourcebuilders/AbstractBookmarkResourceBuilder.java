@@ -165,7 +165,7 @@ public abstract class AbstractBookmarkResourceBuilder {
                 URI manifestURI = builder.getManifestURI(item.getPi());
                 Manifest manifest = new Manifest(manifestURI);
                 manifest.setLabel(new SimpleMetadataValue(item.getName()));
-                manifest.setThumbnail(new ImageContent(URI.create(item.getRepresentativeImageUrl())));
+                manifest.addThumbnail(new ImageContent(URI.create(item.getRepresentativeImageUrl())));
                 collection.addManifest(manifest);
             } catch (PresentationException | IndexUnreachableException | ViewerConfigurationException | DAOException e) {
                 logger.error("Failed to add item " + item.getId() + " to manifest");

@@ -82,7 +82,7 @@ public class ImageRequestFilter implements ContainerRequestFilter {
             String rotation;
             String pi;
             String imageName;
-            if(servletRequest.getAttribute("pi") != null) {
+            if(servletRequest.getAttribute("filename") != null) {
                 //read parameters 
                 pi = (String) servletRequest.getAttribute("pi");
                 imageName = (String) servletRequest.getAttribute("filename");

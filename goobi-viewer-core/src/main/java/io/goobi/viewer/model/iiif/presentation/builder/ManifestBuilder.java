@@ -21,6 +21,7 @@ import java.time.Instant;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.time.format.DateTimeParseException;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
@@ -105,7 +106,7 @@ public class ManifestBuilder extends AbstractBuilder {
 
         if (ele.isAnchor()) {
             manifest = new Collection(getManifestURI(ele.getPi()), ele.getPi());
-            manifest.setViewingHint(ViewingHint.multipart);
+            manifest.addViewingHint(ViewingHint.multipart);
         } else {
             manifest = new Manifest(getManifestURI(ele.getPi()));
             SearchService search = new SearchService(getSearchServiceURI(manifest.getId()));
@@ -134,7 +135,7 @@ public class ManifestBuilder extends AbstractBuilder {
      */
     public void populate(StructElement ele, final AbstractPresentationModelElement manifest)
             throws ViewerConfigurationException, IndexUnreachableException, DAOException, PresentationException {
-        manifest.setAttribution(getAttribution());
+        this.getAttributions().forEach(attr -> manifest.addAttribution(attr));
         manifest.setLabel(new SimpleMetadataValue(ele.getLabel()));
         getDescription(ele).ifPresent(desc -> manifest.setDescription(desc));
 
@@ -144,7 +145,7 @@ public class ManifestBuilder extends AbstractBuilder {
             String thumbUrl = imageDelivery.getThumbs().getThumbnailUrl(ele);
             if (StringUtils.isNotBlank(thumbUrl)) {
                 ImageContent thumb = new ImageContent(new URI(thumbUrl));
-                manifest.setThumbnail(thumb);
+                manifest.addThumbnail(thumb);
                 if (IIIFUrlResolver.isIIIFImageUrl(thumbUrl)) {
                     String imageInfoURI = IIIFUrlResolver.getIIIFImageBaseUrl(thumbUrl);
                     thumb.setService(new ImageInformation(imageInfoURI));
@@ -155,18 +156,29 @@ public class ManifestBuilder extends AbstractBuilder {
         }
 
         if (getBuildMode().equals(BuildMode.IIIF)) {
-            Optional<String> logoUrl = getLogoUrl();
-            if (!logoUrl.isPresent()) {
-                logoUrl = BeanUtils.getImageDeliveryBean().getFooter().getWatermarkUrl(Optional.empty(), Optional.ofNullable(ele), Optional.empty());
+            List<String> logoUrl = getLogoUrl();
+            if(logoUrl.isEmpty()) {
+                Optional<String> url = BeanUtils.getImageDeliveryBean().getFooter().getWatermarkUrl(Optional.empty(), Optional.ofNullable(ele), Optional.empty());
+                url.ifPresent(l -> logoUrl.add(l));
             }
-            logoUrl.ifPresent(url -> {
+            for (String url : logoUrl) {
+                ImageContent logo;
                 try {
-                    ImageContent logo = new ImageContent(new URI(url));
-                    manifest.setLogo(logo);
+                    logo = new ImageContent(new URI(url));
+                    manifest.addLogo(logo);
                 } catch (URISyntaxException e) {
-                    logger.warn("Unable to retrieve logo url", e);
+                    logger.error("Error adding manifest logo from " + url, e);
                 }
-            });
+            }
+            
+            for(String license : DataManager.getInstance().getConfiguration().getIIIFLicenses()) {
+                try {
+                    URI uri = new URI(license);
+                    manifest.addLicense(uri);
+                } catch(URISyntaxException e) {
+                    logger.error("Configured license '" + license + "' is not a URI");
+                }
+            }
 
             String navDateField = DataManager.getInstance().getConfiguration().getIIIFNavDateField();
             if (StringUtils.isNotBlank(navDateField) && StringUtils.isNotBlank(ele.getMetadataValue(navDateField))) {
@@ -321,35 +333,35 @@ public class ManifestBuilder extends AbstractBuilder {
      * @return An optional containing the configured logo url, or an empty optional if no logo was configured
      * @throws ViewerConfigurationException
      */
-    private Optional<String> getLogoUrl() throws ViewerConfigurationException {
-        String urlString = DataManager.getInstance().getConfiguration().getIIIFLogo();
-        if (urlString != null) {
+    private List<String> getLogoUrl() throws ViewerConfigurationException {
+        List<String> urlStrings = DataManager.getInstance().getConfiguration().getIIIFLogo();
+        List<String> logos = new ArrayList<>();
+        for (String urlString : urlStrings) {
             try {
                 URI url = new URI(urlString);
                 if (url.isAbsolute() && url.getScheme().toLowerCase().startsWith("http")) {
-                    //fall through
+                    logos.add(urlString);
                 } else if (url.isAbsolute()) {
                     try {
-                        urlString = imageDelivery.getIiif()
+                        String logo = imageDelivery.getIiif()
                                 .getIIIFImageUrl(urlString, "-", RegionRequest.FULL.toString(), Scale.MAX.toString(), Rotation.NONE.toString(),
                                         Colortype.DEFAULT.toString(),
                                         ImageFileFormat.getMatchingTargetFormat(ImageFileFormat.getImageFileFormatFromFileExtension(url.getPath()))
                                                 .toString());
+                        logos.add(logo);
                     } catch (NullPointerException e) {
                         logger.error("Value '{}' configured in webapi.iiif.logo is not a valid uri", urlString);
-                        urlString = null;
                     }
                 } else if (!StringUtils.isBlank(urlString)) {
-                    urlString = imageDelivery.getThumbs().getThumbnailPath(urlString).toString();
-                } else {
-                    urlString = null;
+                    logos.add(imageDelivery.getThumbs().getThumbnailPath(urlString).toString());
                 }
             } catch (URISyntaxException e) {
                 logger.error("Value '{}' configured in webapi.iiif.logo is not a valid uri", urlString);
                 urlString = null;
             }
+            
         }
-        return Optional.ofNullable(urlString);
+        return logos;
     }
 
     /**
