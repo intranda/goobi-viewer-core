@@ -62,9 +62,9 @@ public class ApiUrls extends AbstractApiUrlManager {
     public static final String RECORDS_TEI_ZIP =                            "/tei.zip";
     public static final String RECORDS_PDF =                                "/pdf";
     public static final String RECORDS_PDF_INFO =                           "/pdf/info.json";
-    public static final String RECORDS_IMAGE =                              "/image";
-    public static final String RECORDS_IMAGE_INFO =                         "/image/info.json";
-    public static final String RECORDS_IMAGE_IIIF =                         "/image/{region}/{size}/{rotation}/{quality}.{format}";
+    public static final String RECORDS_IMAGE =                              "/representative";
+    public static final String RECORDS_IMAGE_INFO =                         "/representative/info.json";
+    public static final String RECORDS_IMAGE_IIIF =                         "/representative/{region}/{size}/{rotation}/{quality}.{format}";
     
     public static final String RECORDS_SECTIONS =                           "/records/{pi}/sections/{divId}";
     public static final String RECORDS_SECTIONS_RIS_TEXT =                  "/ris.txt";
