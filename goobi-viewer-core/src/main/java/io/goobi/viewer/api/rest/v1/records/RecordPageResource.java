@@ -47,7 +47,10 @@ import com.fasterxml.jackson.databind.JsonMappingException;
 
 import de.intranda.api.annotation.IAnnotationCollection;
 import de.intranda.api.annotation.wa.collection.AnnotationPage;
+import de.intranda.api.iiif.presentation.CollectionExtent;
 import de.intranda.api.iiif.presentation.IPresentationModelElement;
+import de.intranda.api.iiif.presentation.Manifest;
+import de.intranda.api.iiif.presentation.Sequence;
 import de.unigoettingen.sub.commons.contentlib.exceptions.ContentNotFoundException;
 import de.unigoettingen.sub.commons.contentlib.exceptions.IllegalRequestException;
 import de.unigoettingen.sub.commons.contentlib.servlet.rest.CORSBinding;
@@ -112,7 +115,8 @@ public class RecordPageResource {
             throws ContentNotFoundException, PresentationException, IndexUnreachableException, URISyntaxException,
             ViewerConfigurationException, DAOException, IllegalRequestException {
         IIIFPresentationResourceBuilder builder = new IIIFPresentationResourceBuilder(urls);
-        return builder.getBaseSequence(pi);
+        Sequence sequence = builder.getBaseSequence(pi);
+        return sequence;
     }
 
     @GET
@@ -194,4 +198,5 @@ public class RecordPageResource {
         return new AnnotationsResourceBuilder(urls).getWebAnnotationPageForPageComments(pi, pageNo, uri, page);
     }
 
+    
 }

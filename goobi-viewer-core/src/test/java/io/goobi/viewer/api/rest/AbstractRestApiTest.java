@@ -80,13 +80,7 @@ public abstract class AbstractRestApiTest extends JerseyTest {
     public static void tearDownClass() throws Exception {
         AbstractDatabaseAndSolrEnabledTest.tearDownClass();
     }
-    
-//    @Override
-//    protected URI getBaseUri() {
-//        return UriBuilder.fromUri(BASE_URL).build();
-//    }
 
-    
     
     @Override
     protected TestContainerFactory getTestContainerFactory() {
