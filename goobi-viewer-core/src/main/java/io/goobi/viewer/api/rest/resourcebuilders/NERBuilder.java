@@ -141,7 +141,7 @@ public class NERBuilder {
                         }
                         range.addTags(tags);
                     } catch (ContentNotFoundException e) {
-                        logger.error(e.toString());
+                        logger.error("Failed to find alto file " + altoFileName);
                     } catch (AccessDeniedException e) {
                         logger.error(e.toString());
                     } catch (DAOException e) {
