@@ -74,9 +74,8 @@ public class CollectionsResourceTest extends AbstractRestApiTest{
                 .request()
                 .accept(MediaType.APPLICATION_JSON)
                 .get()) {
-            assertEquals("Should return status 200", 200, response.getStatus());
-            assertNotNull("Should return user object as json", response.getEntity());
             String entity = response.readEntity(String.class);
+            assertEquals("Should return status 200; answer; " + entity, 200, response.getStatus());
             assertNotNull(entity);
             JSONObject collection = new JSONObject(entity);
             assertEquals(url, collection.getString("@id"));
@@ -94,9 +93,8 @@ public class CollectionsResourceTest extends AbstractRestApiTest{
                 .request()
                 .accept(MediaType.APPLICATION_JSON)
                 .get()) {
-            assertEquals("Should return status 200", 200, response.getStatus());
-            assertNotNull("Should return user object as json", response.getEntity());
             String entity = response.readEntity(String.class);
+            assertEquals("Should return status 200; answer; " + entity, 200, response.getStatus());
             assertNotNull(entity);
             JSONObject collection = new JSONObject(entity);
             assertEquals(url, collection.getString("@id"));
