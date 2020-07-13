@@ -15,6 +15,16 @@
 	}
 	/* ELEMENT */
 	&__item {
+		&__input {
+			width: 4em;
+			border: none;
+			text-align: inherit;
+			&:focus {
+				background-color: @neutralgray;
+				border: 0px solid @middlegray;
+				border-radius: 3px;
+			}
+		}
 		&.chronology-slider-label,
 		&.chronology-slider-actions {
 			display: flex;

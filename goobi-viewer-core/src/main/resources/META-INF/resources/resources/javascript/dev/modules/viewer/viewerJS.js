@@ -76,6 +76,8 @@ var viewerJS = (function () {
 
         // init save scroll positions
         viewerJS.scrollPositions.init();
+        
+        viewerJS.helper.initNumberOnlyInput();
 
         // init user login
         viewerJS.userLogin.init();

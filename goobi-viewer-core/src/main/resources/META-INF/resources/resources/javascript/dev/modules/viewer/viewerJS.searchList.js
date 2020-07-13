@@ -25,7 +25,7 @@
 var viewerJS = ( function( viewer ) {
     'use strict';
     
-    var _debug = true;
+    var _debug = false;
     var _promise = null;
     var _childHits = null;
     var _searchListStyle = '';
@@ -273,7 +273,6 @@ var viewerJS = ( function( viewer ) {
                     sessionStorage.setItem( 'searchListShowThumbs', false );
                 }
                 _searchListShowThumbs = sessionStorage.getItem( 'searchListShowThumbs' ).toLowerCase() === "true" ? true : false;
-                console.log("_searchListShowThumbs", _searchListShowThumbs);
                 
                 let activeTitle = $thumbToggle.attr("data-title-active");
                 let inactiveTitle = $thumbToggle.attr("data-title-inactive");
