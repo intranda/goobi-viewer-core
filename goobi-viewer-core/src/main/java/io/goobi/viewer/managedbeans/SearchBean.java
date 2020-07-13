@@ -225,7 +225,7 @@ public class SearchBean implements SearchInterface, Serializable {
      */
     @Override
     public String searchSimple() {
-        return searchSimple(true, true);
+        return searchSimple(true, false);
     }
 
     /**
@@ -266,7 +266,7 @@ public class SearchBean implements SearchInterface, Serializable {
      */
     public String searchSimpleResetCollections() {
         facets.resetCurrentFacetString();
-        return searchSimple();
+        return searchSimple(true, true);
     }
 
     /**
