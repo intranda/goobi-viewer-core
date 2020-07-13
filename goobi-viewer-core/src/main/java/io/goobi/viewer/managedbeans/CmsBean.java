@@ -1224,27 +1224,24 @@ public class CmsBean implements Serializable {
     public void setSelectedPage(CMSPage currentPage) throws DAOException {
         if (currentPage != null) {
             CMSPage previouslySelected = this.selectedPage;
-            if (currentPage.getId() != null) {
-                this.selectedPage = DataManager.getInstance().getDao().getCMSPageForEditing(currentPage.getId());
+            if(currentPage.getId() == null || (this.selectedPage != null && currentPage.getId().equals(this.selectedPage.getId()))) {
+//                this.selectedPage = currentPage;
             } else {
-                this.selectedPage = currentPage;
+                this.selectedPage = DataManager.getInstance().getDao().getCMSPageForEditing(currentPage.getId());
+                //Keep unused sidebar elements if page was already loaded to be able to correctly save sidebar elements
+                if (previouslySelected != null
+                        && previouslySelected.getId() != null
+                        && previouslySelected.getId().equals(this.selectedPage.getId())) {
+                    this.selectedPage.setUnusedSidebarElements(previouslySelected.getUnusedSidebarElements());
+                }
+                PageValidityStatus validityStatus = isPageValid(this.selectedPage);
+                this.selectedPage.setValidityStatus(validityStatus);
+                if (validityStatus.isValid()) {
+                    this.selectedPage.getSidebarElements().forEach(element -> element.deSerialize());
+                }
+                this.selectedPage.createMissingLanguageVersions(getAllLocales());
+                logger.debug("Selected page: {}", currentPage);
             }
-
-            //Keep unused sidebar elements if page was already loaded to be able to correctly save sidebar elements
-            if (previouslySelected != null
-                    && previouslySelected.getId() != null
-                    && previouslySelected.getId().equals(this.selectedPage.getId())) {
-                this.selectedPage.setUnusedSidebarElements(previouslySelected.getUnusedSidebarElements());
-            }
-
-            PageValidityStatus validityStatus = isPageValid(this.selectedPage);
-            this.selectedPage.setValidityStatus(validityStatus);
-            if (validityStatus.isValid()) {
-                this.selectedPage.getSidebarElements().forEach(element -> element.deSerialize());
-            }
-            this.selectedPage.createMissingLanguageVersions(getAllLocales());
-            logger.debug("Selected page: {}", currentPage);
-
         } else {
             this.selectedPage = null;
         }
