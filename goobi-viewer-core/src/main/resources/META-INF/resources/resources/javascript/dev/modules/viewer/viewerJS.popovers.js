@@ -89,7 +89,6 @@ var viewerJS = ( function( viewer ) {
                 }
                 
                 $trigger.popover(config);
-                console.log("init popover done", config);
             },
             
             fromEvent(anchor, event, popoverSelector, config) {

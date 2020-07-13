@@ -25,7 +25,7 @@
 var viewerJS = ( function( viewer ) {
     'use strict';
     
-    var _debug = true;
+    var _debug = false;
     var _fadeout;
     var _sidebarWidth;
     var _sidebarLeft;
@@ -304,7 +304,6 @@ var viewerJS = ( function( viewer ) {
     			_hideSidebar( $( '#fullscreenViewSidebar' ).outerWidth() );
     		} else {
     			sessionStorage.setItem( 'fsSidebarStatus', true );    
-    			console.log("show sidebar")
     		}
     	} else {
     			// hide sidebar
@@ -405,7 +404,6 @@ var viewerJS = ( function( viewer ) {
     	} else {
     	    panelStatus = undefined;
     	}
-        console.log("panelStatus", panelStatus);
         
     	if ( !panelStatus ) {
     		panelStatus = {};
