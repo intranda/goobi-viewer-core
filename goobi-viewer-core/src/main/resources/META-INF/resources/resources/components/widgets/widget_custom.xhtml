@@ -9,17 +9,17 @@
     </composite:interface>
 
 	<composite:implementation>
+	
 		<h:panelGroup rendered="#{cc.attrs.widget != null and cc.attrs.widget.hasHtml()}">
-			<div id="widgetCustom-#{cc.attrs.widget.order}" class="widget #{cc.attrs.widget.cssClass}">
+			<div id="widgetCustom-#{cc.attrs.widget.order}" class="widget widget-custom #{cc.attrs.widget.cssClass}">
 			
 				<h:panelGroup rendered="#{cc.attrs.widget.widgetMode == 'STANDARD'}">
-						
-							<ui:fragment rendered="#{cc.attrs.widget.hasWidgetTitle}">
-								<h3>#{msg[cc.attrs.widget.widgetTitle]}</h3>
-							</ui:fragment>
-							<ui:fragment rendered="#{!cc.attrs.widget.hasWidgetTitle}">						
-								<h3>#{msg[cc.attrs.widget.type]}</h3>
-							</ui:fragment>
+					<ui:fragment rendered="#{cc.attrs.widget.hasWidgetTitle}">
+						<h3>#{msg[cc.attrs.widget.widgetTitle]}</h3>
+					</ui:fragment>
+					<ui:fragment rendered="#{!cc.attrs.widget.hasWidgetTitle}">						
+						<h3>#{msg[cc.attrs.widget.type]}</h3>
+					</ui:fragment>
 					<ui:include src="#{cc.attrs.widget.content}" />
 				</h:panelGroup>
 				
@@ -34,7 +34,9 @@
 						<ui:include src="#{cc.attrs.widget.content}" />
 					</div>
 				</h:panelGroup>
+				
 			</div>
 		</h:panelGroup>
+		
 	</composite:implementation>
 </ui:composition>
