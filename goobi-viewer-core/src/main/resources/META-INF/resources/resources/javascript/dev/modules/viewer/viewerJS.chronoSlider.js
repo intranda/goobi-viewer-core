@@ -176,8 +176,8 @@ var viewerJS = ( function( viewer ) {
 		
 		$( '[id*="chronologySliderInput"]' ).val( '[' + years[ 0 ] + ' TO ' + years[years.length - 1] + ']' );
 		$( '[id*="chronologySliderForm"] input[type="submit"]' ).click();
-	}
-    
+	}  
+
     return viewer;
     
 } )( viewerJS || {}, jQuery );

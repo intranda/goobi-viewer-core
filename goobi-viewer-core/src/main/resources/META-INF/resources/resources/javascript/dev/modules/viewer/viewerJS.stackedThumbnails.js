@@ -111,9 +111,9 @@ var viewerJS = ( function( viewer ) {
                         }); 
                     }, 100);
             });
-            
+
             // trigger thumb paper stack effect if page has no scroll
-            $(window).on('load', function(){
+            $('.stacked-thumbnail').on('load', function(){
 	            $('.stacked-thumbnail-before, .stacked-thumbnail-after').each( function(i){
 	                if ($(this).isInViewport()) {
 	                    $(this).addClass('-shown');

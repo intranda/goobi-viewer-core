@@ -279,6 +279,17 @@ var viewerJS = (function () {
 		$(document.body).on("hide.bs.modal", function () {
 			$(window.document).find("html").removeClass("modal-open");
 		});
+
+		// Method to select widget chronology input data and hide tooltip on click on input
+		$('.widget-chronology-slider__item-input').click(function() {
+			$('[data-toggle="tooltip"]').tooltip('hide');
+			$(this).select();
+		});	
+		$('.widget-chronology-slider__item-input').focus(function(){
+			$('.widget-chronology-slider__item-input[data-toggle="tooltip"]').tooltip('disable');
+		}).blur(function(){
+			$('.widget-chronology-slider__item-input[data-toggle="tooltip"]').tooltip('enable');
+		});
      
 	// EOL viewerJS function
     };
