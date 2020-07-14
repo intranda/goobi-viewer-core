@@ -28,6 +28,7 @@ import javax.ws.rs.core.StreamingOutput;
 
 import de.unigoettingen.sub.commons.contentlib.exceptions.ContentLibException;
 import de.unigoettingen.sub.commons.contentlib.servlet.model.PdfInformation;
+import de.unigoettingen.sub.commons.contentlib.servlet.rest.ContentServerBinding;
 import de.unigoettingen.sub.commons.contentlib.servlet.rest.ContentServerPdfBinding;
 import de.unigoettingen.sub.commons.contentlib.servlet.rest.ContentServerPdfInfoBinding;
 import de.unigoettingen.sub.commons.contentlib.servlet.rest.MetsPdfResource;
@@ -41,9 +42,11 @@ import io.swagger.v3.oas.annotations.Parameter;
  *
  */
 @Path(ApiUrls.RECORDS_SECTIONS)
+@ContentServerBinding
 public class ViewerSectionPDFResource extends MetsPdfResource {
 
     private final String divId;
+    private String filename;
     
     /**
      * @param request
@@ -58,6 +61,9 @@ public class ViewerSectionPDFResource extends MetsPdfResource {
             @Parameter(description = "Logical div ID of METS section") @PathParam("divId") String divId) throws ContentLibException {
         super(context, request, response, "pdf", pi + ".xml");
         this.divId = divId;
+        this.filename = pi + "_" + divId + ".pdf";
+        request.setAttribute("pi", pi);
+        request.setAttribute("divId", divId);
     }
     
     @GET
@@ -66,6 +72,7 @@ public class ViewerSectionPDFResource extends MetsPdfResource {
     @ContentServerPdfBinding
     @Operation(tags = { "records"}, summary = "Get PDF for section of record")
     public StreamingOutput getPdf() throws ContentLibException {
+        response.addHeader("Content-Disposition", "attachment; filename=\"" + filename + "\"");
         return super.getPdf(divId);
     }
     

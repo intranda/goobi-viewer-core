@@ -102,6 +102,8 @@ public class RecordsFilesImageResource extends ImageResource {
         String pi = request.getAttribute("pi").toString();
         String filename = request.getAttribute("filename").toString();
         filename = FilenameUtils.getBaseName(filename);
+        filename = pi + "_" + filename + ".pdf";
+        response.addHeader("Content-Disposition", "attachment; filename=\"" + filename + "\"");
         return super.getPdf("full", "max", "0", pi + "_" + filename + ".pdf");
     }
     

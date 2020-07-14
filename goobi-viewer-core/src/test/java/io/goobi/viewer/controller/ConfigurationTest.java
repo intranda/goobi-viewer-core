@@ -1182,7 +1182,7 @@ public class ConfigurationTest extends AbstractTest {
      */
     @Test
     public void isPdfApiDisabled_shouldReturnCorrectValue() throws Exception {
-        Assert.assertEquals(true, DataManager.getInstance().getConfiguration().isPdfApiDisabled());
+        Assert.assertEquals(false, DataManager.getInstance().getConfiguration().isPdfApiDisabled());
     }
 
     /**
