@@ -1223,17 +1223,22 @@ public class CmsBean implements Serializable {
      */
     public void setSelectedPage(CMSPage currentPage) throws DAOException {
         if (currentPage != null) {
-            CMSPage previouslySelected = this.selectedPage;
-            if(currentPage.getId() == null || (this.selectedPage != null && currentPage.getId().equals(this.selectedPage.getId()))) {
-//                this.selectedPage = currentPage;
+            
+            if(this.selectedPage != null && currentPage.getId() != null && currentPage.getId().equals(this.selectedPage.getId())) {
+                //same page, don't change
             } else {
-                this.selectedPage = DataManager.getInstance().getDao().getCMSPageForEditing(currentPage.getId());
-                //Keep unused sidebar elements if page was already loaded to be able to correctly save sidebar elements
-                if (previouslySelected != null
-                        && previouslySelected.getId() != null
-                        && previouslySelected.getId().equals(this.selectedPage.getId())) {
-                    this.selectedPage.setUnusedSidebarElements(previouslySelected.getUnusedSidebarElements());
+                if(currentPage.getId() != null) {
+                    //get page from DAO
+                    this.selectedPage = DataManager.getInstance().getDao().getCMSPageForEditing(currentPage.getId());
+                } else {
+                    this.selectedPage = currentPage;
                 }
+                //Keep unused sidebar elements if page was already loaded to be able to correctly save sidebar elements
+//                if (previouslySelected != null
+//                        && previouslySelected.getId() != null
+//                        && previouslySelected.getId().equals(this.selectedPage.getId())) {
+//                    this.selectedPage.setUnusedSidebarElements(previouslySelected.getUnusedSidebarElements());
+//                }
                 PageValidityStatus validityStatus = isPageValid(this.selectedPage);
                 this.selectedPage.setValidityStatus(validityStatus);
                 if (validityStatus.isValid()) {
