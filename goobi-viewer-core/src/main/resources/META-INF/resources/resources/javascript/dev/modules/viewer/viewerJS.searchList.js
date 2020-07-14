@@ -25,7 +25,7 @@
 var viewerJS = ( function( viewer ) {
     'use strict';
     
-    var _debug = true;
+    var _debug = false;
     var _promise = null;
     var _childHits = null;
     var _searchListStyle = '';
@@ -233,7 +233,6 @@ var viewerJS = ( function( viewer ) {
                 
                 // get data and render hits if data is valid
                 _promise.then( function( data ) {
-                    console.log("load data ", data);
                     if(data.hitsDisplayed == 0) {
                         //any hits are hidden. Hide whole subhits section
                         currBtn.hide();
@@ -273,7 +272,6 @@ var viewerJS = ( function( viewer ) {
                     sessionStorage.setItem( 'searchListShowThumbs', false );
                 }
                 _searchListShowThumbs = sessionStorage.getItem( 'searchListShowThumbs' ).toLowerCase() === "true" ? true : false;
-                console.log("_searchListShowThumbs", _searchListShowThumbs);
                 
                 let activeTitle = $thumbToggle.attr("data-title-active");
                 let inactiveTitle = $thumbToggle.attr("data-title-inactive");
@@ -367,12 +365,10 @@ var viewerJS = ( function( viewer ) {
             
             // build child hits
             if ( child.hasChildren ) {
-                console.log("children", child.children);
                 $.each( child.children, function( subChildren, subChild ) {
                     hitSetText.append( _renderSubChildHits( subChild.browseElement, subChild.type, subChild.translatedType ) );
                 } );
             } else {
-                console.log("no children ", child);
                 hitSetText.append( _renderSubChildHits( child.browseElement, child.type, child.translatedType ) );
             }
             
@@ -496,7 +492,7 @@ var viewerJS = ( function( viewer ) {
             console.log( '---------- _renderSubChildHits() ----------' );
             console.log( '_renderSubChildHits: data = ', data );
             console.log( '_renderSubChildHits: type = ', type );
-            console.log( '_renderSubChildHits: title = ', title );
+            console.log( '_renderSubChildHits: title = ', title ); 
         }
         
         var hitSetChildren = null;

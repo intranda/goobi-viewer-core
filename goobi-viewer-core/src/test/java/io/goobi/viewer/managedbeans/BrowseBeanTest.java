@@ -51,4 +51,15 @@ public class BrowseBeanTest extends AbstractTest {
         Assert.assertEquals("MD_TITLE_LANG_EN_UNTOKENIZED", result.get(1));
         Assert.assertEquals("MD_SHELFMARK", result.get(2));
     }
+
+    /**
+     * @see BrowseBean#getCollectionHierarchy(String,String)
+     * @verifies return hierarchy correctly
+     */
+    @Test
+    public void getCollectionHierarchy_shouldReturnHierarchyCorrectly() throws Exception {
+        BrowseBean bb = new BrowseBean();
+        Assert.assertEquals("foo", bb.getCollectionHierarchy("x", "foo"));
+        Assert.assertEquals("foo / bar", bb.getCollectionHierarchy("x", "foo.bar"));
+    }
 }

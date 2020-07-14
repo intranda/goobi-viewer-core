@@ -169,7 +169,7 @@
 		<unconditionalImageAccessMaxWidth>1</unconditionalImageAccessMaxWidth>
 		<!-- fullAccessForLocalhost: If true, users on localhost will be granted 
 			superuser access. Default is false. -->
-		<fullAccessForLocalhost>true</fullAccessForLocalhost>
+		<fullAccessForLocalhost>false</fullAccessForLocalhost>
 	</accessConditions>
 
 	<reCaptcha show="false">
@@ -180,7 +180,7 @@
 		<!-- externalPdfGeneration: Create pdfs in an external intranda TaskManager. Default is false. -->
 		<externalPdfGeneration>true</externalPdfGeneration>
 		<!-- pdfApiDisabled: if true, the content servlet will reject PDF queries -->
-		<pdfApiDisabled>true</pdfApiDisabled>
+		<pdfApiDisabled>false</pdfApiDisabled>
 		<!-- titlePdfEnabled: if true, PDF a download link for the entire record 
 			is displayed in the title bar (where enabled in the XHTML) (default is true) -->
 		<titlePdfEnabled>false</titlePdfEnabled>

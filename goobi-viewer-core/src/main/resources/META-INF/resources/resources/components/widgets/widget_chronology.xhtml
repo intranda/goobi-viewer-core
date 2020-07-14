@@ -38,9 +38,15 @@
 			</div>
 
 				<!-- START/END YEAR -->
-            <div class="widget-chronology-slider__item chronology-slider-start">#{searchBean.facets.getCurrentMinRangeValue("YEAR")}</div>
-            <div class="widget-chronology-slider__item chronology-slider-end">#{searchBean.facets.getCurrentMaxRangeValue("YEAR")}</div>
-            
+			<div class="widget-chronology-slider__item chronology-slider-start" >
+	            <input data-input='number' class="widget-chronology-slider__item__input"
+	            	value="#{searchBean.facets.getCurrentMinRangeValue('YEAR')}"></input>
+			</div>
+			<div class="widget-chronology-slider__item chronology-slider-end" >
+	            <input data-input='number' class="widget-chronology-slider__item__input"
+	            	value="#{searchBean.facets.getCurrentMaxRangeValue('YEAR')}"></input>
+            </div>
+            	            
             <!-- RANGE SLIDER -->
             <div class="widget-chronology-slider__item chronology-slider">
                 <div id="chronoSlider"></div>
@@ -55,8 +61,8 @@
             <script type="text/javascript">
             	var chronoSliderConfig = {
                 	yearList: #{searchBean.facets.getValueRange("YEAR")},            		
-                	startValue: parseInt( $( ".chronology-slider-start" ).text() ),
-                	endValue: parseInt( $( ".chronology-slider-end" ).text() ),
+                	startValue: parseInt( $( ".chronology-slider-start input" ).val() ),
+                	endValue: parseInt( $( ".chronology-slider-end input" ).val() ),
                 	currentMinRangeValue: #{searchBean.facets.getCurrentMinRangeValue("YEAR")},
                     currentMaxRangeValue: #{searchBean.facets.getCurrentMaxRangeValue("YEAR")},
             	};
