@@ -417,7 +417,7 @@ public class RecordResource {
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      */
     @GET
-    @javax.ws.rs.Path(RECORDS_MANIFEST_AUTOSUGGEST)
+    @javax.ws.rs.Path(RECORDS_MANIFEST_AUTOCOMPLETE)
     @Produces({ MediaType.APPLICATION_JSON })
     public AutoSuggestResult autoCompleteInManifest(@PathParam("pi") String pi, @QueryParam("q") String query,
             @QueryParam("motivation") String motivation, @QueryParam("date") String date, @QueryParam("user") String user,
