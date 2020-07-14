@@ -905,6 +905,7 @@ public abstract class AbstractBuilder {
      *
      * @param target a {@link java.net.URI} object.
      * @return a {@link java.net.URI} object.
+     * @deprecated use {@link #getSearchServiceURI(String)} instead
      */
     public URI getSearchServiceURI(URI target) {
         String baseURI = target.toString();
@@ -913,6 +914,17 @@ public abstract class AbstractBuilder {
         }
         return URI.create(baseURI + "search");
     }
+    
+    /**
+     * Get URL to search service from {@link ApiUrls}
+     * 
+     * @param pi    The persistent identifier of the work to search
+     * @return  the service URI
+     */
+    public URI getSearchServiceURI(String pi) {
+        return URI.create(urls.path(RECORDS_RECORD, RECORDS_MANIFEST_SEARCH).params(pi).build());
+    }
+
 
     /**
      * <p>
@@ -921,6 +933,7 @@ public abstract class AbstractBuilder {
      *
      * @param target a {@link java.net.URI} object.
      * @return a {@link java.net.URI} object.
+     * @deprecated use {@link #getAutoCompleteServiceURI(String)} instead
      */
     public URI getAutoSuggestServiceURI(URI target) {
         String baseURI = target.toString();
@@ -928,6 +941,16 @@ public abstract class AbstractBuilder {
             baseURI += "/";
         }
         return URI.create(baseURI + "autocomplete");
+    }
+    
+    /**
+     * Get URL to auto complete service from {@link ApiUrls}
+     * 
+     * @param pi    The persistent identifier of the work to search for autocomplete
+     * @return  the service URI
+     */
+    public URI getAutoCompleteServiceURI(String pi) {
+        return URI.create(urls.path(RECORDS_RECORD, RECORDS_MANIFEST_AUTOCOMPLETE).params(pi).build());
     }
 
     /**

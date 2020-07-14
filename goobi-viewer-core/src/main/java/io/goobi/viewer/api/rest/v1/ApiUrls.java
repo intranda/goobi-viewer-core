@@ -50,7 +50,7 @@ public class ApiUrls extends AbstractApiUrlManager {
     public static final String RECORDS_COMMENTS_COMMENT =                   "/comments/{id}";
     public static final String RECORDS_METADATA_SOURCE =                    "/metadata/source";
     public static final String RECORDS_MANIFEST =                           "/manifest";    
-    public static final String RECORDS_MANIFEST_AUTOSUGGEST =               "/manifest/autosuggest";
+    public static final String RECORDS_MANIFEST_AUTOCOMPLETE =               "/manifest/autocomplete";
     public static final String RECORDS_MANIFEST_SEARCH =                    "/manifest/search";
     public static final String RECORDS_LAYER =                              "/layers/{name}";
     public static final String RECORDS_NER_TAGS =                           "/ner/tags";
