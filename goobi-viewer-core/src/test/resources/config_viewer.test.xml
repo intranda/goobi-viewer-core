@@ -169,7 +169,7 @@
 		<unconditionalImageAccessMaxWidth>1</unconditionalImageAccessMaxWidth>
 		<!-- fullAccessForLocalhost: If true, users on localhost will be granted 
 			superuser access. Default is false. -->
-		<fullAccessForLocalhost>false</fullAccessForLocalhost>
+		<fullAccessForLocalhost>true</fullAccessForLocalhost>
 	</accessConditions>
 
 	<reCaptcha show="false">

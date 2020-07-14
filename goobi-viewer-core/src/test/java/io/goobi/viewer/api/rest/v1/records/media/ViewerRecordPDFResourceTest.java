@@ -61,6 +61,7 @@ public class ViewerRecordPDFResourceTest extends AbstractRestApiTest{
         String url = urls.path(RECORDS_RECORD, RECORDS_PDF).params(PI).build();
         try (Response response = target(url)
                 .request()
+                .header("x-forwarded-for", "1.2.3.4")
                 .accept("application/pdf")
                 .get()) {
             assertEquals("Should return status 200", 200, response.getStatus());
@@ -77,6 +78,7 @@ public class ViewerRecordPDFResourceTest extends AbstractRestApiTest{
         String url = urls.path(RECORDS_RECORD, RECORDS_PDF).params(PI_ACCESS_RESTRICTED).build();
         try (Response response = target(url)
                 .request()
+                .header("x-forwarded-for", "1.2.3.4")
                 .accept("application/pdf")
                 .get()) {
             assertEquals("Should return status 403", 403, response.getStatus());
