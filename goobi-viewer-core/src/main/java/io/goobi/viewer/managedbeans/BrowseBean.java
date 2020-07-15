@@ -897,13 +897,16 @@ public class BrowseBean implements Serializable {
             return ViewerResourceBundle.getTranslation(collectionValue, null);
         }
         logger.trace("valuesplit: " + Arrays.asList(valueSplit));
+        
         StringBuilder sb = new StringBuilder();
-
+        String collectionName = "";
         for (String value : valueSplit) {
             if (sb.length() > 0) {
                 sb.append(" / ");
-            }
-            sb.append(ViewerResourceBundle.getTranslation(value, null));
+                collectionName += ".";
+            } 
+            collectionName += value;
+            sb.append(ViewerResourceBundle.getTranslation(collectionName, null));
         }
 
         return sb.toString();
