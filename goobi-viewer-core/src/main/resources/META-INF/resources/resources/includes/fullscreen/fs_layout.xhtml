@@ -14,8 +14,8 @@
     <div id="fullscreenView" class="fullscreen__view">
         <!-- SIDEBAR PANEL CONTROLS -->
         <div id="fullscreenSidebarPanelControls" class="fullscreen__view-sidebar-panel-controls">
-            <button class="btn btn--clean" data-close="all-tabs"></button>
-            <button class="btn btn--clean" data-open="all-tabs"></button>
+            <button class="btn btn--clean" data-close="all-tabs" title="#{msg.allClose}" data-toggle="tooltip" data-placement="top"></button>
+            <button class="btn btn--clean" data-open="all-tabs" title="#{msg.allOpen}" data-toggle="tooltip" data-placement="top"></button>
         </div>
         
         <!-- SIDEBAR -->
@@ -213,7 +213,7 @@
         </section>
     </div>
     
-	<script type="text/javascript">                
+	<script type="text/javascript">
        $(function () {
                $('[data-toggle="popover"]').popover()
              })

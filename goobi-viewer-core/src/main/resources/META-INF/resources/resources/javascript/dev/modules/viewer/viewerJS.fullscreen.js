@@ -99,12 +99,6 @@ var viewerJS = ( function( viewer ) {
                 } );   
             }
             
-            // reset tooltips for sidebar
-            $( '.widget-toc__title-expand [data-toggle="tooltip"]' ).tooltip( 'dispose' );
-            $( '.widget-toc__title-expand [data-toggle="tooltip"]' ).tooltip( {
-            	placement: 'bottom'
-            } );
-            
             // set sidebar panel, status and width
             _getSidebarWidth();
             _setPanelStatus();
