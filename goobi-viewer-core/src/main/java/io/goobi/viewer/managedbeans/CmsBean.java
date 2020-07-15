@@ -537,7 +537,7 @@ public class CmsBean implements Serializable {
 
                 setSelectedPage(page);
 
-                return "pretty:adminCmsCreatePage";
+                return "pretty:adminCmsNewPage";
 
             } catch (PresentationException | IndexUnreachableException | DAOException e) {
                 logger.error("Error creating new page", e);
