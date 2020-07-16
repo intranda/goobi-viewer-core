@@ -106,7 +106,7 @@
                                             <ui:fragment rendered="#{page.title != page.menuTitle}">
                                                 <span>#{page.menuTitle}</span>
                                             </ui:fragment>
-                                            <ui:fragment rendered="#{page.subThemeDiscriminatorValue != ''}">
+                                            <ui:fragment rendered="#{page.subThemeDiscriminatorValue != '' and page.subThemeDiscriminatorValue != null}">
                                                 <span class="font-italic">(#{page.subThemeDiscriminatorValue})</span>
                                             </ui:fragment>
                                             <div>
