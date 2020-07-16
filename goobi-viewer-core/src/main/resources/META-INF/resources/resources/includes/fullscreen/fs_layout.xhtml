@@ -56,7 +56,7 @@
                     </div>
 
                     <!-- TOC -->
-                    <ui:fragment rendered="#{configurationBean.sidebarTocWidgetVisibleInFullscreen}">
+					<ui:fragment rendered="#{configurationBean.sidebarTocWidgetVisibleInFullscreen and (activeDocumentBean.toc.hasChildren or configurationBean.displayEmptyTocInSidebar)}">
                         <div id="panel-2" class="fullscreen__view-sidebar-accordeon-panel fs-toc">
                             <h3 class="fullscreen__view-sidebar-accordeon-panel-title">
                                 <span>#{msg.sidebarToc}</span>
