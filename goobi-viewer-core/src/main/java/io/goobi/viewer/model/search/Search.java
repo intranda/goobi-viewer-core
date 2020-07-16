@@ -146,6 +146,30 @@ public class Search implements Serializable {
      */
     public Search() {
     }
+    
+    /**
+     * cloning constructor. Creates a new search in a state as it might be loaded from database, i.e. without any transient 
+     * fields set. In particular with  empty {@link #hits}
+     * @param blueprint
+     */
+    public Search(Search blueprint) {
+        this.id = blueprint.id;
+        this.owner = blueprint.owner;
+        this.name = blueprint.name;
+        this.userInput = blueprint.userInput;
+        this.searchType = blueprint.searchType;
+        this.query = blueprint.query;
+        this.expandQuery = blueprint.expandQuery;
+        this.searchFilter = blueprint.searchFilter;
+        this.page = blueprint.page;
+        this.facetString = blueprint.facetString;
+        this.sortString = blueprint.sortString;
+        this.sortFields = SearchHelper.parseSortString(blueprint.sortString, null);
+        this.dateUpdated = blueprint.dateUpdated;
+        this.lastHitsCount = blueprint.lastHitsCount;
+        this.newHitsNotification = blueprint.newHitsNotification;
+                
+    }
 
     /**
      * <p>
@@ -859,12 +883,13 @@ public class Search implements Serializable {
      */
     public int getLastPage(int hitsPerPage) {
         int answer = 0;
-        int hitsPerPageLocal = hitsPerPage;
-        answer = new Double(Math.floor(hitsCount / hitsPerPageLocal)).intValue();
-        if (hitsCount % hitsPerPageLocal != 0 || answer == 0) {
-            answer++;
+        if(hitsPerPage > 0) {            
+            int hitsPerPageLocal = hitsPerPage;
+            answer = new Double(Math.floor(hitsCount / hitsPerPageLocal)).intValue();
+            if (hitsCount % hitsPerPageLocal != 0 || answer == 0) {
+                answer++;
+            }
         }
-
         return answer;
     }
 
