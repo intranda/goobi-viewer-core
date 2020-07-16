@@ -21,7 +21,7 @@
 	                <h:panelGroup rendered="#{cc.attrs.megaMenu == false}">
 	                    <ui:repeat var="navItem" value="#{cmsBean.navigationMenuItems}">
 	                        <h:panelGroup rendered="#{navItem.valid and navItem.shouldDisplay}">
-	                            <li class="#{!navItem.childItems.isEmpty() ? 'navigation__submenu-trigger' : ''} #{navigationHelper.currentPage == navItem.itemLabel or navigationHelper.currentPage == navItem.pageUrl  ? 'active' : ''}">
+	                            <li class="#{!navItem.childItems.isEmpty() ? 'navigation__submenu-trigger' : ''}#{navigationHelper.currentPage == navItem.itemLabel or navigationHelper.currentPage == navItem.pageUrl  ? 'active' : ''}">
 	                                <!-- WITHOUT SUBMENU -->
 	                                <h:panelGroup rendered="#{navItem.childItems.isEmpty()}">
 	                                    <component:navigationLink navItem="#{navItem}" />
@@ -41,7 +41,7 @@
 	                                        <ul>
 	                                            <ui:repeat varStatus="count" var="child" value="#{parentItem.childItems}">
 	                                                <h:panelGroup rendered="#{child.valid and child.shouldDisplay}">
-	                                                    <li class="#{!navItem.childItems.isEmpty() ? 'navigation__submenu-trigger' : ''} #{navigationHelper.currentPage == navItem.itemLabel or navigationHelper.currentPage == navItem.pageUrl  ? 'active' : ''}">
+	                                                    <li class="#{!navItem.childItems.isEmpty() ? 'navigation__submenu-trigger' : ''}#{navigationHelper.currentPage == navItem.itemLabel or navigationHelper.currentPage == navItem.pageUrl  ? 'active' : ''}">
 	                                                        <!-- WITHOUT SUBMENU -->
 	                                                        <h:panelGroup rendered="#{child.childItems.isEmpty()}">
 	                                                            <component:navigationLink navItem="#{child}" />

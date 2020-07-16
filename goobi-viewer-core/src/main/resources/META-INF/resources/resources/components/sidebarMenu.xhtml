@@ -1,0 +1,56 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:composite="http://xmlns.jcp.org/jsf/composite"
+      xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components" 
+      xmlns:widgetComponent="http://xmlns.jcp.org/jsf/composite/components/widgets"
+      xmlns:component="http://xmlns.jcp.org/jsf/composite/components">
+
+    <!-- INTERFACE OPTIONS -->
+    <composite:interface>
+	</composite:interface>
+
+    <!-- COMPONENT CONTENT -->
+    <composite:implementation>
+			<nav id="sidebarMenu" class="sidebar-menu">
+	        <h:form id="sidebarMenuForm" prependId="false">
+	            <ul>
+	                <h:panelGroup>
+	                    <ui:repeat var="navItem" value="#{cmsBean.navigationMenuItems}">
+	                        <h:panelGroup rendered="#{navItem.valid and navItem.shouldDisplay}">
+	                            <li class="#{!navItem.childItems.isEmpty() ? 'sidebar-menu__submenu-container' : ''}#{navigationHelper.currentPage == navItem.itemLabel or navigationHelper.currentPage == navItem.pageUrl  ? 'active' : ''}">
+	                                <!-- WITHOUT SUBMENU -->
+	                                <h:panelGroup rendered="#{navItem.childItems.isEmpty()}">
+	                                    <component:navigationLink navItem="#{navItem}" />
+	                                </h:panelGroup>
+	                                <!-- WITH SUBMENU -->
+	                                <h:panelGroup rendered="#{!navItem.childItems.isEmpty()}">
+	                                    <button type="button" class="sidebar-menu__submenu-button" data-toggle="submenu">
+	                                        <span>#{msg[navItem.itemLabel]}</span>
+	                                    </button>
+	                                </h:panelGroup>
+	                                <h:panelGroup rendered="#{!navItem.childItems.isEmpty()}">
+	                                    <ui:param name="parentItem" value="#{navItem}" />
+	                                    <!-- SUBMENU -->
+	                                    <div class="sidebar-menu__submenu">
+	                                        <ul>
+	                                            <ui:repeat varStatus="count" var="child" value="#{parentItem.childItems}">
+	                                                <h:panelGroup rendered="#{child.valid and child.shouldDisplay}">
+	                                                    <li class="#{navigationHelper.currentPage == navItem.itemLabel or navigationHelper.currentPage == navItem.pageUrl  ? 'active' : ''}">
+	                                                        <component:navigationLink navItem="#{child}" />
+	                                                    </li>
+	                                                </h:panelGroup>
+	                                            </ui:repeat>
+	                                        </ul>
+	                                    </div>
+	                                </h:panelGroup>
+	                            </li>
+	                        </h:panelGroup>
+	                    </ui:repeat>
+	                </h:panelGroup>
+	            </ul>
+	        </h:form>
+	    </nav>
+	</composite:implementation>
+</ui:composition>

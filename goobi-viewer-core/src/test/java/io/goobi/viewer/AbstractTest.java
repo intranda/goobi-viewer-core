@@ -18,8 +18,10 @@ package io.goobi.viewer;
 
 import org.junit.BeforeClass;
 
+import io.goobi.viewer.api.rest.v1.ApiUrls;
 import io.goobi.viewer.controller.Configuration;
 import io.goobi.viewer.controller.DataManager;
+import io.goobi.viewer.controller.RestApiManager;
 
 /**
  * JUnit test classes that extend this class will have test-specific logging and config configurations.
@@ -31,5 +33,11 @@ public abstract class AbstractTest {
         System.setProperty("log4j.configurationFile", "src/test/resources/log4j2.test.xml");
 
         DataManager.getInstance().injectConfiguration(new Configuration("src/test/resources/config_viewer.test.xml"));
+        
+        //init rest urls
+        ApiUrls dataUrls = new ApiUrls(DataManager.getInstance().getConfiguration().getRestApiUrl());
+        ApiUrls contentUrls = new ApiUrls(DataManager.getInstance().getConfiguration().getIIIFApiUrl());
+        DataManager.getInstance().setRestApiManager(new RestApiManager(dataUrls, contentUrls));
     }
+
 }

@@ -7,11 +7,12 @@
     <composite:interface>
         <composite:attribute name="pageNummbers" required="false" default="true" />
         <composite:attribute name="pdfIcon" required="false" default="true" />
+        <composite:attribute name="visible" required="false" default="true" />
     </composite:interface>
 
     <composite:implementation>
 		<ui:fragment
-		    rendered="#{configurationBean.sidebarTocWidgetVisible and (activeDocumentBean.toc.hasChildren or configurationBean.displayEmptyTocInSidebar)}">
+		    rendered="#{cc.attrs.visible and (activeDocumentBean.toc.hasChildren or configurationBean.displayEmptyTocInSidebar)}">
 			<div id="widgetToc" class="widget widget-toc">
                 <!-- OVERLAY -->
                 <div class="widget-toc__overlay"></div>

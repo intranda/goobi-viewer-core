@@ -59,14 +59,14 @@ import io.swagger.v3.oas.annotations.Parameter;
 @Path(RECORDS_FILES_IMAGE)
 @ContentServerBinding
 @CORSBinding
-public class ViewerImageResource extends ImageResource {
+public class RecordsFilesImageResource extends ImageResource {
     
     /**
      * @param request
      * @param directory
      * @param filename
      */
-    public ViewerImageResource(
+    public RecordsFilesImageResource(
             @Context ContainerRequestContext context, @Context HttpServletRequest request, @Context HttpServletResponse response,
             @Context AbstractApiUrlManager urls,
             @Parameter(description = "Persistent identifier of the record") @PathParam("pi") String pi,
@@ -102,6 +102,8 @@ public class ViewerImageResource extends ImageResource {
         String pi = request.getAttribute("pi").toString();
         String filename = request.getAttribute("filename").toString();
         filename = FilenameUtils.getBaseName(filename);
+        filename = pi + "_" + filename + ".pdf";
+        response.addHeader("Content-Disposition", "attachment; filename=\"" + filename + "\"");
         return super.getPdf("full", "max", "0", pi + "_" + filename + ".pdf");
     }
     

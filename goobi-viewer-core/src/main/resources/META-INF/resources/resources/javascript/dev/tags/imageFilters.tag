@@ -115,7 +115,6 @@
 			    apply: "Apply"
 			}
 		}
-		console.log("config ", this.opts.config);
 		this.config = $.extend(true, {}, defaultConfig, this.opts.config);
 		
 		this.on("mount", function() {

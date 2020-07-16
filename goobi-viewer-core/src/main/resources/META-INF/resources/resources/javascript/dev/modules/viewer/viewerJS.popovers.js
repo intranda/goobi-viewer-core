@@ -89,7 +89,6 @@ var viewerJS = ( function( viewer ) {
                 }
                 
                 $trigger.popover(config);
-                console.log("init popover done", config);
             },
             
             fromEvent(anchor, event, popoverSelector, config) {
@@ -145,7 +144,7 @@ var viewerJS = ( function( viewer ) {
             
             addCloseHandler : function($trigger) {
                 $('body').on("click.popover", event => {
-                    if($(event.target).closest(".viewerPopover").length == 0) {
+                    if($(event.target).closest(".popover").length == 0) {
                         $trigger.popover("hide");
                         $('body').off("click.popover");
                     }

@@ -15,6 +15,7 @@
  */
 package io.goobi.viewer.api.rest.exceptions;
 
+import java.io.FileNotFoundException;
 import java.util.Collections;
 import java.util.stream.Collectors;
 
@@ -68,7 +69,7 @@ public class WebApplicationExceptionMapper implements ExceptionMapper<WebApplica
         }
         if(e instanceof WebApplicationException) {
             status = ((WebApplicationException) e).getResponse().getStatusInfo().toEnum();
-        } else if (e instanceof NotFoundException) {
+        } else if (e instanceof NotFoundException || e instanceof FileNotFoundException) {
             status = Status.NOT_FOUND;
         } else if (e instanceof NotImplementedException) {
             status = Status.NOT_IMPLEMENTED;

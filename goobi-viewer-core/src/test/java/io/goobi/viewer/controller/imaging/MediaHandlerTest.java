@@ -20,6 +20,7 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
+import de.unigoettingen.sub.commons.contentlib.exceptions.IllegalRequestException;
 import io.goobi.viewer.controller.Configuration;
 import io.goobi.viewer.controller.ConfigurationTest;
 import io.goobi.viewer.controller.DataManager;
@@ -38,7 +39,7 @@ public class MediaHandlerTest {
     @Before
     public void setUp() throws Exception {
         DataManager.getInstance().injectConfiguration(new Configuration("src/test/resources/config_viewer.test.xml"));
-        handler = new MediaHandler(DataManager.getInstance().getConfiguration());
+        handler = new MediaHandler();
     }
 
     /**
@@ -49,9 +50,9 @@ public class MediaHandlerTest {
     }
 
     @Test
-    public void testGetMediaUrl() {
-        String mediaUrl = handler.getMediaUrl("audio/ogg", "1234", "audio.ogg");
-        Assert.assertEquals(ConfigurationTest.APPLICATION_ROOT_URL + "rest/media/audio/ogg/1234/audio.ogg", mediaUrl);
+    public void testGetMediaUrl() throws IllegalRequestException {
+        String mediaUrl = handler.getMediaUrl("audio","ogg", "1234", "audio.ogg");
+        Assert.assertEquals(ConfigurationTest.APPLICATION_ROOT_URL + "api/v1/records/1234/files/audio/ogg/audio.ogg", mediaUrl);
     }
 
 }

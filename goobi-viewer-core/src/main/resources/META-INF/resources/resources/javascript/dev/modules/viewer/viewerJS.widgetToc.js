@@ -52,6 +52,9 @@ var viewerJS = (function(viewer) {
 	                		$( '[data-iddoc*="iddoc"]' ).removeClass( 'active' );
 	                		$( '.widget-toc__loader, .widget-toc__overlay' ).show();
 	                		
+	                		// hide all tooltips on ajax load
+	                		$('[data-toggle="tooltip"]').tooltip('dispose');
+	                		
 	                		break;
 	                	case 'success':
 	                		if ( iddoc !== undefined ) {

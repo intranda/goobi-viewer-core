@@ -57,6 +57,7 @@ import de.unigoettingen.sub.commons.contentlib.exceptions.ServiceNotAllowedExcep
 import de.unigoettingen.sub.commons.contentlib.servlet.rest.CORSBinding;
 import io.goobi.viewer.api.rest.AbstractApiUrlManager;
 import io.goobi.viewer.api.rest.AbstractApiUrlManager.ApiPath;
+import io.goobi.viewer.api.rest.IIIFPresentationBinding;
 import io.goobi.viewer.api.rest.ViewerRestServiceBinding;
 import io.goobi.viewer.api.rest.model.ner.DocumentReference;
 import io.goobi.viewer.api.rest.resourcebuilders.AnnotationsResourceBuilder;
@@ -76,7 +77,6 @@ import io.goobi.viewer.exceptions.ViewerConfigurationException;
 import io.goobi.viewer.model.iiif.presentation.builder.BuildMode;
 import io.goobi.viewer.model.iiif.search.IIIFSearchBuilder;
 import io.goobi.viewer.model.viewer.StructElement;
-import io.goobi.viewer.servlets.rest.iiif.presentation.IIIFPresentationBinding;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -417,7 +417,7 @@ public class RecordResource {
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      */
     @GET
-    @javax.ws.rs.Path(RECORDS_MANIFEST_AUTOSUGGEST)
+    @javax.ws.rs.Path(RECORDS_MANIFEST_AUTOCOMPLETE)
     @Produces({ MediaType.APPLICATION_JSON })
     public AutoSuggestResult autoCompleteInManifest(@PathParam("pi") String pi, @QueryParam("q") String query,
             @QueryParam("motivation") String motivation, @QueryParam("date") String date, @QueryParam("user") String user,

@@ -203,7 +203,7 @@ public class CMSPageTest extends AbstractDatabaseEnabledTest {
                 htmlUrlPath.subpath(4, 5).toString(), htmlUrlPath.subpath(5, 6).toString());
         Assert.assertEquals("<span>" + htmlContent + "</span>", htmlResponse);
 
-        String contentServerUrl = DataManager.getInstance().getConfiguration().getRestApiUrl();
+        String contentServerUrl = DataManager.getInstance().getConfiguration().getIIIFApiUrl();
 
         String filePath = media.getImageURI();
         filePath = BeanUtils.escapeCriticalUrlChracters(filePath, false);

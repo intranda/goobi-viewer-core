@@ -59,10 +59,10 @@ var viewerJS = ( function( viewer ) {
             // TRIGGER STANDARD MENU
             $( _defaults.subMenuSelector ).on( 'click', function() {
                 var currTrigger = $( this ); 
-                if( $(this).next( '.navigation__submenu' ).hasClass( 'in' ) ) {
+                if( $(currTrigger).next( '.navigation__submenu' ).hasClass( 'in' ) ) {
                     //child menu is open
-                    $(this).next( '.navigation__submenu' ).removeClass( 'in' )
-                }else if ( $( this ).parents( '.navigation__submenu' ).hasClass( 'in' ) ) {
+                    $(currTrigger).next( '.navigation__submenu' ).removeClass( 'in' )
+                }else if ( $( currTrigger ).parents( '.navigation__submenu' ).hasClass( 'in' ) ) {
                     _resetSubMenus();
                     currTrigger.parent().addClass( 'active' );
                     currTrigger.next( '.navigation__submenu' ).addClass( 'in' );

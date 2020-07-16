@@ -2,16 +2,32 @@
    Widget Geo Locations
    style declarations for widget_geoLocations.xhtml
    ==============================================================*/
+   
+// No padding for geomap widget
+.widget.widget-geomap {
+	padding: 0;
+}
+
 .widget-geomap {
 	position: relative;
 	display: none;
 	h3 {
 		display: flex;
 		justify-content: space-between;
-		.btn--icon {
-			color: white;
-			padding: 0;
-		}
+		padding: 2rem 2rem 0 2rem;
+	}
+	&__expand {
+		color: inherit;
+		padding: 0;
+		background: transparent;
+		border: none;
+		&:hover,
+		&:active,
+		&:focus {
+			text-decoration: none;
+			color: inherit;
+			background: none;
+			}	
 	}
 	.geomap {
 		min-height: 350px;
@@ -21,10 +37,15 @@
 		.leaflet-popup-content {
 	    	max-width: 200px;
 		}
+		.leaflet-control-zoom  {
+			a {
+				padding: 0;
+				display: block;
+			}
+		}
 		.leaflet-control-container {
 			.leaflet-top {
 				a {					
-					line-height: 22px;
 				}
 			}
 			.leaflet-bottom {

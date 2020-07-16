@@ -21,6 +21,7 @@ import java.net.URLDecoder;
 import java.net.URLEncoder;
 import java.text.Collator;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -183,7 +184,7 @@ public class BrowseBean implements Serializable {
      *
      * @return the dcList (Collections)
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
-     * @throws IllegalRequestException 
+     * @throws IllegalRequestException
      */
     public List<BrowseDcElement> getDcList() throws IndexUnreachableException, IllegalRequestException {
         return getList(SolrConstants.DC);
@@ -197,7 +198,7 @@ public class BrowseBean implements Serializable {
      * @param field a {@link java.lang.String} object.
      * @return a {@link java.util.List} object.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
-     * @throws IllegalRequestException 
+     * @throws IllegalRequestException
      */
     public List<BrowseDcElement> getList(String field) throws IndexUnreachableException, IllegalRequestException {
         return getList(field, -1);
@@ -212,10 +213,10 @@ public class BrowseBean implements Serializable {
      * @param depth a int.
      * @return a {@link java.util.List} object.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
-     * @throws IllegalRequestException 
+     * @throws IllegalRequestException
      */
     public List<BrowseDcElement> getList(String field, int depth) throws IndexUnreachableException {
-        try {            
+        try {
             if (collections.get(field) == null) {
                 initializeCollection(field, field);
                 populateCollection(field);
@@ -226,7 +227,7 @@ public class BrowseBean implements Serializable {
                 collection.calculateVisibleDcElements();
                 return new ArrayList<>(collection.getVisibleDcElements());
             }
-        } catch(IllegalRequestException e) {
+        } catch (IllegalRequestException e) {
             logger.error(e.toString(), e);
         }
 
@@ -240,7 +241,7 @@ public class BrowseBean implements Serializable {
      *
      * @param field a {@link java.lang.String} object.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
-     * @throws IllegalRequestException 
+     * @throws IllegalRequestException
      */
     public void populateCollection(String field) throws IndexUnreachableException, IllegalRequestException {
         if (collections.containsKey(field)) {
@@ -303,7 +304,7 @@ public class BrowseBean implements Serializable {
      *
      * @param levels a int.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
-     * @throws IllegalRequestException 
+     * @throws IllegalRequestException
      */
     public void expandCollection(int levels) throws IndexUnreachableException, IllegalRequestException {
         expandCollection(SolrConstants.DC, SolrConstants.FACET_DC, levels);
@@ -318,7 +319,7 @@ public class BrowseBean implements Serializable {
      * @param facetField a {@link java.lang.String} object.
      * @param levels a int.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
-     * @throws IllegalRequestException 
+     * @throws IllegalRequestException
      */
     public void expandCollection(String collectionField, String facetField, int levels) throws IndexUnreachableException, IllegalRequestException {
         synchronized (this) {
@@ -394,7 +395,8 @@ public class BrowseBean implements Serializable {
                         if (StringUtils.isNotEmpty(DataManager.getInstance().getConfiguration().getBrowsingMenuSortingIgnoreLeadingChars())) {
                             // Exclude leading characters from filters explicitly configured to be ignored
                             firstChar = BrowseTermComparator.normalizeString(rawTerm,
-                                    DataManager.getInstance().getConfiguration().getBrowsingMenuSortingIgnoreLeadingChars()).trim()
+                                    DataManager.getInstance().getConfiguration().getBrowsingMenuSortingIgnoreLeadingChars())
+                                    .trim()
                                     .substring(0, 1)
                                     .toUpperCase();
                         } else {
@@ -873,5 +875,40 @@ public class BrowseBean implements Serializable {
      */
     public void setCollectionField(String collectionField) {
         this.collectionField = collectionField;
+    }
+
+    /**
+     * 
+     * @param colletionField
+     * @param collectionValue
+     * @return
+     * @should return hierarchy correctly
+     */
+    public String getCollectionHierarchy(String collectionField, String collectionValue) {
+        if (StringUtils.isEmpty(collectionField) || StringUtils.isEmpty(collectionValue)) {
+            return "";
+        }
+        String separator = DataManager.getInstance().getConfiguration().getCollectionSplittingChar(collectionField);
+        if (separator.equals(".")) {
+            separator = "\\.";
+        }
+        String[] valueSplit = collectionValue.split(separator);
+        if (valueSplit.length == 0) {
+            return ViewerResourceBundle.getTranslation(collectionValue, null);
+        }
+        logger.trace("valuesplit: " + Arrays.asList(valueSplit));
+        
+        StringBuilder sb = new StringBuilder();
+        String collectionName = "";
+        for (String value : valueSplit) {
+            if (sb.length() > 0) {
+                sb.append(" / ");
+                collectionName += ".";
+            } 
+            collectionName += value;
+            sb.append(ViewerResourceBundle.getTranslation(collectionName, null));
+        }
+
+        return sb.toString();
     }
 }

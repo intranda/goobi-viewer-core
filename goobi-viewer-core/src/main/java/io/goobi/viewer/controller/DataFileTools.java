@@ -30,8 +30,10 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import de.unigoettingen.sub.commons.contentlib.exceptions.ContentLibException;
 import de.unigoettingen.sub.commons.contentlib.exceptions.ContentNotFoundException;
 import de.unigoettingen.sub.commons.contentlib.exceptions.ServiceNotAllowedException;
+import io.goobi.viewer.api.rest.AbstractApiUrlManager;
 import io.goobi.viewer.api.rest.resourcebuilders.TextResourceBuilder;
 import io.goobi.viewer.exceptions.AccessDeniedException;
 import io.goobi.viewer.exceptions.DAOException;
@@ -49,25 +51,6 @@ public class DataFileTools {
 
     private static final Logger logger = LoggerFactory.getLogger(DataFileTools.class);
 
-    /**
-     * Builds full-text document REST URL.
-     *
-     * @param filePath a {@link java.lang.String} object.
-     * @return Full REST URL
-     * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
-     * @should build url correctly
-     * @should escape spaces correctly
-     */
-    public static String buildFullTextUrl(String filePath) throws ViewerConfigurationException {
-        if (filePath == null) {
-            throw new IllegalArgumentException("filePath may not be null");
-        }
-
-        return new StringBuilder(DataManager.getInstance().getConfiguration().getContentRestApiUrl()).append("document/")
-                .append(filePath.replace(" ", "%20"))
-                .append('/')
-                .toString();
-    }
 
     /**
      * Retrieves the path to viewer home or repositories root, depending on the record. Used to generate a specific task client query parameter.
@@ -420,6 +403,23 @@ public class DataFileTools {
 
         return null;
     }
+    
+    public static String loadAlto(String altoFilePath)
+            throws  ContentNotFoundException, AccessDeniedException, IndexUnreachableException, DAOException, PresentationException {
+        TextResourceBuilder builder = new TextResourceBuilder(BeanUtils.getRequest(), null);
+        if (altoFilePath != null) {
+            // ALTO file
+            try {
+                String alto = builder.getAltoDocument(FileTools.getBottomFolderFromPathString(altoFilePath),
+                        FileTools.getFilenameFromPathString(altoFilePath));
+                return alto;
+            } catch (ServiceNotAllowedException e) {
+                throw new AccessDeniedException("fulltextAccessDenied");
+            }
+        } else throw new ContentNotFoundException("Alto file " + altoFilePath + " not found");
+        
+
+    }
 
     /**
      * <p>
@@ -440,24 +440,12 @@ public class DataFileTools {
         if (pi == null) {
             return null;
         }
-
-        String url = new StringBuilder(DataManager.getInstance().getConfiguration().getContentRestApiUrl()).append("tei/")
-                .append(pi)
-                .append('/')
-                .append(language)
-                .append('/')
-                .toString();
+        TextResourceBuilder builder = new TextResourceBuilder(BeanUtils.getRequest(), null);
         try {
-            return NetTools.getWebContentGET(url);
-        } catch (HTTPException e) {
-            logger.error("Could not retrieve file from {}", url);
-            logger.error(e.getMessage());
-            if (e.getCode() == 403) {
-                logger.debug("Access denied for TEI file {}/{}", pi, language);
-                throw new AccessDeniedException("fulltextAccessDenied");
-            }
+            return builder.getTeiDocument(pi, language);
+        } catch (PresentationException | IndexUnreachableException | DAOException | ContentLibException e) {
+            logger.error(e.toString());
+            return null;
         }
-
-        return null;
     }
 }

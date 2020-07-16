@@ -77,7 +77,7 @@ public class ImageHandlerTest {
                 new PhysicalElement("PHYS_0001", "00000001.tif", 1, "Seite 1", "urn:234235:3423", "http://purl", "1234", "image/tiff", null);
 
         String url = handler.getImageUrl(page);
-        Assert.assertEquals(ConfigurationTest.APPLICATION_ROOT_URL + "rest/image/1234/00000001.tif/info.json", url);
+        Assert.assertEquals(ConfigurationTest.APPLICATION_ROOT_URL + "api/v1/image/1234/00000001.tif/info.json", url);
     }
 
     @Test
@@ -96,7 +96,7 @@ public class ImageHandlerTest {
 
         String url = handler.getImageUrl(page);
         Assert.assertEquals(
-                ConfigurationTest.APPLICATION_ROOT_URL + "rest/image/-/http:U002FU002FexteralU002FrestrictedU002FimagesU002F00000001.tif/info.json",
+                ConfigurationTest.APPLICATION_ROOT_URL + "api/v1/image/-/http:U002FU002FexteralU002FrestrictedU002FimagesU002F00000001.tif/info.json",
                 url);
     }
 

@@ -45,7 +45,7 @@ public class PdfHandlerTest {
     public void setUp() throws Exception {
         DataManager.getInstance().injectConfiguration(new Configuration("src/test/resources/config_viewer.test.xml"));
         Configuration configuration = DataManager.getInstance().getConfiguration();
-        handler = new PdfHandler(new WatermarkHandler(configuration, "http://localhost:8080/viewer/"), configuration);
+        handler = new PdfHandler(new WatermarkHandler(configuration, "http://localhost:8080/viewer/"), DataManager.getInstance().getRestApiManager().getContentApiManager());
     }
 
     /**
@@ -65,6 +65,6 @@ public class PdfHandlerTest {
 
         String url = handler.getPdfUrl(pi, divId, watermarkId, watermarkText, label);
         Assert.assertEquals(ConfigurationTest.APPLICATION_ROOT_URL
-                + "rest/pdf/mets/1234.xml/LOG_0003/outputfilenamepdf.pdf?watermarkText=watermark+text&watermarkId=footerId", url);
+                + "api/v1/records/1234/sections/LOG_0003/pdf?watermarkText=watermark+text&watermarkId=footerId", url);
     }
 }

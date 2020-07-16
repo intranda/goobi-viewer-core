@@ -56,7 +56,7 @@ var viewerJS = (function () {
         }
 
         $.extend(true, _defaults, config);
-        console.log("init ", _defaults);
+        if(_debug)console.log("init ", _defaults);
         // detect current browser
         _defaults.browser = viewerJS.helper.getCurrentBrowser();
 
@@ -76,6 +76,8 @@ var viewerJS = (function () {
 
         // init save scroll positions
         viewerJS.scrollPositions.init();
+        
+        viewerJS.helper.initNumberOnlyInput();
 
         // init user login
         viewerJS.userLogin.init();
@@ -277,6 +279,17 @@ var viewerJS = (function () {
 		$(document.body).on("hide.bs.modal", function () {
 			$(window.document).find("html").removeClass("modal-open");
 		});
+
+		// Method to select widget chronology input data and hide tooltip on click on input
+		$('.widget-chronology-slider__item-input').click(function() {
+			$('[data-toggle="tooltip"]').tooltip('hide');
+			$(this).select();
+		});	
+		$('.widget-chronology-slider__item-input').focus(function(){
+			$('.widget-chronology-slider__item-input[data-toggle="tooltip"]').tooltip('disable');
+		}).blur(function(){
+			$('.widget-chronology-slider__item-input[data-toggle="tooltip"]').tooltip('enable');
+		});
      
 	// EOL viewerJS function
     };
@@ -389,7 +402,6 @@ var viewerJS = (function () {
 })(jQuery);
   
 	//reset global bootstrap boundary of tooltips to window
-console.log("bootstrap")
     if($.fn.tooltip.Constructor) {        
         $.fn.tooltip.Constructor.Default.boundary = "window";
         $.fn.dropdown.Constructor.Default.boundary = "window";

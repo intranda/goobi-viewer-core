@@ -54,27 +54,26 @@
                     <!-- THUMBNAIL -->
                     <div class="view-thumbs__thumbnail">
                         <!-- THUMBNAIL IMAGE -->
-                        <figure class="view-thumbs__thumbnail-image">
-                            <a href="#{navigationHelper.imageActiveUrl}#{image.purlPart}">
+                        <a href="#{navigationHelper.imageActiveUrl}#{image.purlPart}">
+                        	<figure class="view-thumbs__thumbnail-image">
 <!--                                 <img src="#{image.thumbnailUrl}" alt="#{image.order}:#{image.orderLabel}" title="#{image.order}:#{image.orderLabel}" /> -->
                                 <img src="#{image.thumbnailUrl}" 
                                 alt="#{image.order}:#{image.orderLabel}" 
                                 title="#{image.order}:#{image.orderLabel}" 
                                 data-viewer-thumbnail="thumbnail"/>
-                            </a>
-                            
-                            <figcaption>
-                                <!-- THUMBNAIL IMAGE ORDER -->
-                                <div class="view-thumbs__thumbnail-image-order">#{image.order}:#{image.orderLabel}</div>
-                                
-                                <!-- THUMBNAIL IMAGE FULLTEXT -->
-                                <ui:fragment rendered="#{activeDocumentBean.viewManager.belowFulltextThreshold and image.fulltextAvailable}">
-                                    <div class="view-thumbs__thumbnail-image-fulltext">
-                                        <i class="fa fa-file-text-o" aria-hidden="true"></i>
-                                    </div>
-                                </ui:fragment>
-                            </figcaption>
-                        </figure>
+	                            <figcaption>
+	                                <!-- THUMBNAIL IMAGE ORDER -->
+	                                <div class="view-thumbs__thumbnail-image-order">#{image.order}:#{image.orderLabel}</div>
+	                                
+	                                <!-- THUMBNAIL IMAGE FULLTEXT -->
+	                                <ui:fragment rendered="#{activeDocumentBean.viewManager.belowFulltextThreshold and image.fulltextAvailable}">
+	                                    <div class="view-thumbs__thumbnail-image-fulltext">
+	                                        <i class="fa fa-file-text-o" aria-hidden="true"></i>
+	                                    </div>
+	                                </ui:fragment>
+	                            </figcaption>
+	                        </figure>
+                    	</a>
                     </div>
                 </ui:repeat>
             </h:panelGroup>
@@ -137,7 +136,7 @@
         
         <widgetComponent:widget_relatedGroups />
         
-        <widgetComponent:widget_toc />
+        <widgetComponent:widget_toc visible="#{configurationBean.sidebarTocWidgetVisible}" />
         
         <widgetComponent:widget_download />
         

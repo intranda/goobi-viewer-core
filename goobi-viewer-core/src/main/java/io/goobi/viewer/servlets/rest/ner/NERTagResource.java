@@ -39,6 +39,7 @@ import org.apache.solr.common.SolrDocumentList;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import de.unigoettingen.sub.commons.contentlib.exceptions.ContentNotFoundException;
 import io.goobi.viewer.api.rest.ViewerRestServiceBinding;
 import io.goobi.viewer.api.rest.model.ner.DocumentReference;
 import io.goobi.viewer.api.rest.model.ner.ElementReference;
@@ -53,6 +54,8 @@ import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.NetTools;
 import io.goobi.viewer.controller.SolrConstants;
 import io.goobi.viewer.controller.SolrSearchIndex;
+import io.goobi.viewer.exceptions.AccessDeniedException;
+import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.HTTPException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
@@ -440,11 +443,8 @@ public class NERTagResource {
                                 SolrConstants.FILENAME_ALTO);
                         continue;
                     }
-                    //TODO: Load directly from file if on same server?
-                    // Load ALTO via the REST service
-                    String url = DataFileTools.buildFullTextUrl(altoFileName);
                     try {
-                        String altoString = NetTools.getWebContentGET(url);
+                        String altoString = DataFileTools.loadAlto(altoFileName);
                         Integer pageOrder = getPageOrder(solrDoc);
                         List<TagCount> tags = ALTOTools.getNERTags(altoString, type);
                         for (TagCount tagCount : tags) {
@@ -453,11 +453,11 @@ public class NERTagResource {
                             }
                         }
                         range.addTags(tags);
-                    } catch (FileNotFoundException e) {
+                    } catch (ContentNotFoundException e) {
                         logger.error(e.getMessage());
-                    } catch (IOException e) {
-                        logger.error(e.getMessage(), e);
-                    } catch (HTTPException e) {
+                    } catch (AccessDeniedException e) {
+                        logger.error(e.getMessage());
+                    } catch (DAOException e) {
                         logger.error(e.getMessage());
                     }
                 }

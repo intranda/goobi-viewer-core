@@ -26,6 +26,8 @@ import io.goobi.viewer.controller.DataManager;
  */
 public class ApiUrls extends AbstractApiUrlManager {
     
+    public static final String API =                                        "/api/v1";
+
     public static final String INDEXER =                                    "/indexer";
 
     public static final String INDEX =                                      "/index";
@@ -48,7 +50,7 @@ public class ApiUrls extends AbstractApiUrlManager {
     public static final String RECORDS_COMMENTS_COMMENT =                   "/comments/{id}";
     public static final String RECORDS_METADATA_SOURCE =                    "/metadata/source";
     public static final String RECORDS_MANIFEST =                           "/manifest";    
-    public static final String RECORDS_MANIFEST_AUTOSUGGEST =               "/manifest/autosuggest";
+    public static final String RECORDS_MANIFEST_AUTOCOMPLETE =               "/manifest/autocomplete";
     public static final String RECORDS_MANIFEST_SEARCH =                    "/manifest/search";
     public static final String RECORDS_LAYER =                              "/layers/{name}";
     public static final String RECORDS_NER_TAGS =                           "/ner/tags";
@@ -60,6 +62,9 @@ public class ApiUrls extends AbstractApiUrlManager {
     public static final String RECORDS_TEI_ZIP =                            "/tei.zip";
     public static final String RECORDS_PDF =                                "/pdf";
     public static final String RECORDS_PDF_INFO =                           "/pdf/info.json";
+    public static final String RECORDS_IMAGE =                              "/representative";
+    public static final String RECORDS_IMAGE_INFO =                         "/representative/info.json";
+    public static final String RECORDS_IMAGE_IIIF =                         "/representative/{region}/{size}/{rotation}/{quality}.{format}";
     
     public static final String RECORDS_SECTIONS =                           "/records/{pi}/sections/{divId}";
     public static final String RECORDS_SECTIONS_RIS_TEXT =                  "/ris.txt";
@@ -81,8 +86,9 @@ public class ApiUrls extends AbstractApiUrlManager {
     public static final String RECORDS_FILES_ALTO =                         "/alto/{filename}";
     public static final String RECORDS_FILES_TEI =                          "/tei/{filename}";
     public static final String RECORDS_FILES_PDF =                          "/pdf/{filename}";
+    public static final String RECORDS_FILES_AUDIO =                        "/audio/{mimetype}/{filename}";
+    public static final String RECORDS_FILES_VIDEO =                        "/video/{mimetype}/{filename}";
 
-    
     public static final String RECORDS_FILES_IMAGE =                        "/records/{pi}/files/images/{filename}";
     public static final String RECORDS_FILES_IMAGE_PDF =                    "/full.pdf";
     public static final String RECORDS_FILES_IMAGE_INFO =                   "/info.json";

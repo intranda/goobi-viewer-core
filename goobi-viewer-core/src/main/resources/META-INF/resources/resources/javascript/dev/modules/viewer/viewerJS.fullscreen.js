@@ -36,6 +36,7 @@ var viewerJS = ( function( viewer ) {
     var _defaults = {
     	resizeSelector: '#fullscreenViewSidebar',
     	openPanel: "panel-1",
+    	sidebarOpen: true,
     	msg: {}
     };
     
@@ -98,12 +99,6 @@ var viewerJS = ( function( viewer ) {
                 } );   
             }
             
-            // reset tooltips for sidebar
-            $( '.widget-toc__title-expand [data-toggle="tooltip"]' ).tooltip( 'dispose' );
-            $( '.widget-toc__title-expand [data-toggle="tooltip"]' ).tooltip( {
-            	placement: 'bottom'
-            } );
-            
             // set sidebar panel, status and width
             _getSidebarWidth();
             _setPanelStatus();
@@ -115,7 +110,6 @@ var viewerJS = ( function( viewer ) {
             	// set global variables
             	_sidebarWidth = $( '#fullscreenViewSidebar' ).outerWidth();
             	_sidebarLeft = $( '#fullscreenViewSidebar' ).css( 'left' );
-            	
             	// save sidebar width
             	_setSidebarWidth( _sidebarWidth );
             	
@@ -123,7 +117,7 @@ var viewerJS = ( function( viewer ) {
             	$( '#fullscreenViewSidebar' ).css( 'left', 'inherit' );
             	
             	// reset resizable
-            	if ( window.matchMedia( '(min-width: 769px)' ).matches ) {
+            	if ( window.matchMedia( '(min-width: 769px)' ).matches) {
             		_unsetResizable( _defaults.resizeSelector );
             	}
 
@@ -290,27 +284,28 @@ var viewerJS = ( function( viewer ) {
     		console.log( 'EXECUTE: _setSidebarStatus' );
     	}
     	
-    	if ( sessionStorage.getItem( 'fsSidebarStatus' ) == undefined || sessionStorage.getItem( 'fsSidebarStatus' ) === null ) {
-    		if ( window.matchMedia( '(max-width: 480px)' ).matches ) {
-    			sessionStorage.setItem( 'fsSidebarStatus', false );
-    			
-    			// hide sidebar
-    			_hideSidebar( $( '#fullscreenViewSidebar' ).outerWidth() );
-    		}
-    		else {
-    			sessionStorage.setItem( 'fsSidebarStatus', true );    			
-    		}
+    	let sidebarOpen = sessionStorage.getItem( 'fsSidebarStatus' );
+    	if(sidebarOpen == undefined) {
+    	    sidebarOpen = _defaults.sidebarOpen;
+    	    sessionStorage.setItem( 'fsSidebarStatus', sidebarOpen );
+    	} else {    	    
+    	    sidebarOpen = (sidebarOpen == 'true');
     	}
-    	else {
-    		if ( sessionStorage.getItem( 'fsSidebarStatus' ) === 'false'  ) {
+
+    	if(sidebarOpen) {
+    		if ( window.matchMedia( '(max-width: 480px)' ).matches ) {
     			// hide sidebar
     			_hideSidebar( $( '#fullscreenViewSidebar' ).outerWidth() );
-    			
+    		} else {
+    			sessionStorage.setItem( 'fsSidebarStatus', true );    
+    		}
+    	} else {
+    			// hide sidebar
+    			_hideSidebar( $( '#fullscreenViewSidebar' ).outerWidth() );
     			// reset resizable
     			if ( window.matchMedia( '(min-width: 769px)' ).matches ) {
     				_unsetResizable( _defaults.resizeSelector );
     			}
-    		}
     	}
     	
     	// show sidebar
@@ -403,7 +398,6 @@ var viewerJS = ( function( viewer ) {
     	} else {
     	    panelStatus = undefined;
     	}
-        console.log("panelStatus", panelStatus);
         
     	if ( !panelStatus ) {
     		panelStatus = {};
@@ -531,7 +525,7 @@ var viewerJS = ( function( viewer ) {
             console.log( 'selector: ', selector );
         }
 
-    	$( selector ).resizable( 'dispose' );
+    	$( selector ).resizable( 'destroy' );
     }
 
     /**

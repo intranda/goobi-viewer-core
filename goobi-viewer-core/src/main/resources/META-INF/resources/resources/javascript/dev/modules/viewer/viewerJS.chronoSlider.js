@@ -64,8 +64,8 @@ var viewerJS = ( function( viewer ) {
         		max: _defaults.yearList.length - 1,
 				values: [ _defaults.yearList.indexOf( _defaults.currentMinRangeValue ), _defaults.yearList.indexOf( _defaults.currentMaxRangeValue) ],
         		slide: function( event, ui ) {
-        			$( '.chronology-slider-start' ).html( _defaults.yearList[ ui.values[ 0 ] ] );
-        			$( '.chronology-slider-end' ).html( _defaults.yearList[ ui.values[ 1 ] ] );
+        			$( '.chronology-slider-start input' ).val( _defaults.yearList[ ui.values[ 0 ] ] );
+        			$( '.chronology-slider-end input' ).val( _defaults.yearList[ ui.values[ 1 ] ] );
 
         			// set handler position
         			if ( ui.values[ 0 ] == ui.values[ 1 ] ) {
@@ -76,20 +76,44 @@ var viewerJS = ( function( viewer ) {
         				$( "#chronoSlider .ui-slider-handle:last" ).css('margin-left', '-10px');
         			}
         		},
-        		stop: function( event, ui ) {
-        			var startDate = parseInt( $( '.chronology-slider-start' ).text() );
-        			var endDate = parseInt( $( '.chronology-slider-end' ).text() );
+        		change: function( event, ui ) {
+        			var startDate = parseInt( $( '.chronology-slider-start input' ).val() );
+        			var endDate = parseInt( $( '.chronology-slider-end input' ).val() );
         			
-        			// show loader
-        			$( '.chronology-slider-action-loader' ).addClass( 'active' );
+        			startDate =  _defaults.yearList[ui.values[0]];
+        			endDate =  _defaults.yearList[ui.values[1]];
+//        			console.log("move to ", startDate, endDate);
         			
-        			// set query to hidden input
-        			$( '[id*="chronologySliderInput"]' ).val( '[' + startDate + ' TO ' + endDate + ']' );
-        			
-        			// submit form
-        			$( '[id*="chronologySliderForm"] input[type="submit"]' ).click();
+        			if(endDate >= startDate) {        			    
+        			    // show loader
+        			    $( '.chronology-slider-action-loader' ).addClass( 'active' );
+        			    
+        			    // set query to hidden input
+        			    let value = '[' + startDate + ' TO ' + endDate + ']' ;
+        			    $( '[id*="chronologySliderInput"]' ).val(value);
+//        			   console.log("set slider value ", value)
+        			    // submit form
+        			    $( '[id*="chronologySliderForm"] input[type="submit"]' ).click();
+        			}
         		},
         	});
+            $( '.chronology-slider-start input' ).on("change", (event) => {
+//                console.log("change event ", event);
+                let value = parseInt(event.target.value);
+                if(!isNaN(value)) {                    
+                    let yearIndex = _getClosestYearIndexAbove(value, _defaults.yearList);
+//                    console.log("changed start ", value, yearIndex);
+                    $( "#chronoSlider" ).slider( "values", 0, yearIndex );
+                }
+            })
+            $( '.chronology-slider-end input' ).on("change", (event) => {
+                let value = parseInt(event.target.value);
+                if(!isNaN(value)) {                    
+                    let yearIndex = _getClosestYearIndexBelow(value, _defaults.yearList);
+//                    console.log("changed end ", value, yearIndex);
+                    $( "#chronoSlider" ).slider( "values", 1, yearIndex );
+                }
+            })
             
             // set handler position
         	_firstHandlePos = parseInt( $( "#chronoSlider .ui-slider-handle:first" ).css('left') );
@@ -110,6 +134,26 @@ var viewerJS = ( function( viewer ) {
         	} 
         }
     };
+    
+    function _getClosestYearIndexAbove(value, years) {
+        for (var i = 0; i < years.length; i++) {
+            let year = years[i];
+            if(year >= value) {
+                return i;
+            }
+        }
+        return years.length-1;
+    }
+    
+    function _getClosestYearIndexBelow(value, years) {
+        for (var i = years.length; i > -1 ; i--) {
+            let year = years[i];
+            if(year <= value) {
+                return i;
+            }
+        }
+        return 0;
+    }
     
     /**
      * Method to reset the chronology slider.
@@ -132,8 +176,8 @@ var viewerJS = ( function( viewer ) {
 		
 		$( '[id*="chronologySliderInput"]' ).val( '[' + years[ 0 ] + ' TO ' + years[years.length - 1] + ']' );
 		$( '[id*="chronologySliderForm"] input[type="submit"]' ).click();
-	}
-    
+	}  
+
     return viewer;
     
 } )( viewerJS || {}, jQuery );

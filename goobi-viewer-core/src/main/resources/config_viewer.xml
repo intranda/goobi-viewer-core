@@ -1242,10 +1242,13 @@
 			<visible>true</visible>
 		</fulltext>
 
-		<!-- sidebarTo/opt configuration of the sidebar TOC component -->
+		<!-- sidebarToc: configuration of the sidebar TOC component -->
 		<sidebarToc>
 			<!-- visible: if false, the sidebar toc is hidden -->
 			<visible>true</visible>
+			
+			<!-- visibleInFullscreen: If false, the sidebar TOC element won't be visible in the full-screen sidebar accordion -->
+			<visibleInFullscreen>true</visibleInFullscreen>
 
 			<visibleIfEmpty>true</visibleIfEmpty>
 

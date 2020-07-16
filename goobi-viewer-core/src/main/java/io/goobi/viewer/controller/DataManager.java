@@ -72,7 +72,12 @@ public final class DataManager {
     private Map<String, List<Campaign>> recordCampaignMap = null;
 
     private String indexerVersion = "";
+    
+    private RestApiManager restApiManager;
+    
+    
 
+    
     /**
      * <p>
      * Getter for the field <code>instance</code>.
@@ -415,6 +420,23 @@ public final class DataManager {
     public void setIndexerVersion(String indexerVersion) {
         this.indexerVersion = indexerVersion;
         logger.trace(indexerVersion);
+    }
+    
+    /**
+     * @return the restApiManager
+     */
+    public RestApiManager getRestApiManager() {
+        if(this.restApiManager == null) {
+            this.restApiManager = new RestApiManager(getConfiguration());
+        }
+        return restApiManager;
+    }
+    
+    /**
+     * @param restApiManager the restApiManager to set
+     */
+    public void setRestApiManager(RestApiManager restApiManager) {
+        this.restApiManager = restApiManager;
     }
 
 }

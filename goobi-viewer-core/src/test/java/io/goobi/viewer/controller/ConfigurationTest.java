@@ -188,15 +188,6 @@ public class ConfigurationTest extends AbstractTest {
     }
 
     /**
-     * @see Configuration#getContentRestApiUrl()
-     * @verifies return correct value
-     */
-    @Test
-    public void getContentRestApiUrl_shouldReturnCorrectValue() throws Exception {
-        Assert.assertEquals("https://viewer.goobi.io/rest/content/", DataManager.getInstance().getConfiguration().getContentRestApiUrl());
-    }
-
-    /**
      * @see Configuration#getDataRepositoriesHome()
      * @verifies return correct value
      */
@@ -1191,7 +1182,7 @@ public class ConfigurationTest extends AbstractTest {
      */
     @Test
     public void isPdfApiDisabled_shouldReturnCorrectValue() throws Exception {
-        Assert.assertEquals(true, DataManager.getInstance().getConfiguration().isPdfApiDisabled());
+        Assert.assertEquals(false, DataManager.getInstance().getConfiguration().isPdfApiDisabled());
     }
 
     /**
@@ -1399,6 +1390,15 @@ public class ConfigurationTest extends AbstractTest {
     @Test
     public void isSidebarTocVisible_shouldReturnCorrectValue() throws Exception {
         Assert.assertEquals(false, DataManager.getInstance().getConfiguration().isSidebarTocWidgetVisible());
+    }
+    
+    /**
+     * @see Configuration#isSidebarTocWidgetVisibleInFullscreen()
+     * @verifies return correct value
+     */
+    @Test
+    public void isSidebarTocVisibleInFullscreen_shouldReturnCorrectValue() throws Exception {
+        Assert.assertEquals(false, DataManager.getInstance().getConfiguration().isSidebarTocWidgetVisibleInFullscreen());
     }
 
     /**

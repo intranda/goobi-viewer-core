@@ -537,7 +537,7 @@ public class CmsBean implements Serializable {
 
                 setSelectedPage(page);
 
-                return "pretty:adminCmsCreatePage";
+                return "pretty:adminCmsNewPage";
 
             } catch (PresentationException | IndexUnreachableException | DAOException e) {
                 logger.error("Error creating new page", e);
@@ -1223,28 +1223,30 @@ public class CmsBean implements Serializable {
      */
     public void setSelectedPage(CMSPage currentPage) throws DAOException {
         if (currentPage != null) {
-            CMSPage previouslySelected = this.selectedPage;
-            if (currentPage.getId() != null) {
-                this.selectedPage = DataManager.getInstance().getDao().getCMSPageForEditing(currentPage.getId());
+            
+            if(this.selectedPage != null && currentPage.getId() != null && currentPage.getId().equals(this.selectedPage.getId())) {
+                //same page, don't change
             } else {
-                this.selectedPage = currentPage;
+                if(currentPage.getId() != null) {
+                    //get page from DAO
+                    this.selectedPage = DataManager.getInstance().getDao().getCMSPageForEditing(currentPage.getId());
+                } else {
+                    this.selectedPage = currentPage;
+                }
+                //Keep unused sidebar elements if page was already loaded to be able to correctly save sidebar elements
+//                if (previouslySelected != null
+//                        && previouslySelected.getId() != null
+//                        && previouslySelected.getId().equals(this.selectedPage.getId())) {
+//                    this.selectedPage.setUnusedSidebarElements(previouslySelected.getUnusedSidebarElements());
+//                }
+                PageValidityStatus validityStatus = isPageValid(this.selectedPage);
+                this.selectedPage.setValidityStatus(validityStatus);
+                if (validityStatus.isValid()) {
+                    this.selectedPage.getSidebarElements().forEach(element -> element.deSerialize());
+                }
+                this.selectedPage.createMissingLanguageVersions(getAllLocales());
+                logger.debug("Selected page: {}", currentPage);
             }
-
-            //Keep unused sidebar elements if page was already loaded to be able to correctly save sidebar elements
-            if (previouslySelected != null
-                    && previouslySelected.getId() != null
-                    && previouslySelected.getId().equals(this.selectedPage.getId())) {
-                this.selectedPage.setUnusedSidebarElements(previouslySelected.getUnusedSidebarElements());
-            }
-
-            PageValidityStatus validityStatus = isPageValid(this.selectedPage);
-            this.selectedPage.setValidityStatus(validityStatus);
-            if (validityStatus.isValid()) {
-                this.selectedPage.getSidebarElements().forEach(element -> element.deSerialize());
-            }
-            this.selectedPage.createMissingLanguageVersions(getAllLocales());
-            logger.debug("Selected page: {}", currentPage);
-
         } else {
             this.selectedPage = null;
         }

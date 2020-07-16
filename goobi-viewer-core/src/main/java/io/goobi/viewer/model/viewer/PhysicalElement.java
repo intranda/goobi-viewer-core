@@ -46,6 +46,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import de.unigoettingen.sub.commons.contentlib.exceptions.ContentNotFoundException;
+import de.unigoettingen.sub.commons.contentlib.exceptions.IllegalRequestException;
 import de.unigoettingen.sub.commons.contentlib.exceptions.ServiceNotAllowedException;
 import de.unigoettingen.sub.commons.contentlib.imagelib.ImageFileFormat;
 import de.unigoettingen.sub.commons.contentlib.imagelib.ImageType;
@@ -906,7 +907,6 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
         }
 
         logger.trace("Loading full-text for page {}", fulltextFileName);
-        String url = DataFileTools.buildFullTextUrl(fulltextFileName);
         try {
             String text = DataFileTools.loadFulltext(null, fulltextFileName, false, BeanUtils.getRequest());
             return text;
@@ -1075,7 +1075,12 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
      */
     public String getMediaUrl(String format) throws IndexUnreachableException {
 
-        String url = BeanUtils.getImageDeliveryBean().getMedia().getMediaUrl(mimeType + "/" + format, pi, getFileNameForFormat(format));
+        String url;
+        try {
+            url = BeanUtils.getImageDeliveryBean().getMedia().getMediaUrl(mimeType, format, pi, getFileNameForFormat(format));
+        } catch (IllegalRequestException e) {
+            throw new IllegalStateException("media type must be either audio or video, but is " + mimeType);
+        }
 
         logger.trace("currentMediaUrl: {}", url.toString());
         return url.toString();

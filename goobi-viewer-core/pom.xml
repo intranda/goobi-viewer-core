@@ -6,7 +6,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>io.goobi.viewer</groupId>
 	<artifactId>viewer-core</artifactId>
-	<version>4.8.0</version>
+	<version>4.9.0-SNAPSHOT</version>
 	<packaging>jar</packaging>
 
 
@@ -71,8 +71,8 @@
 		<alto.version>1.4.0</alto.version>
 		<contentserver.version>2.3.0</contentserver.version>
 		<tei-conversion.version>1.0.1-SNAPSHOT</tei-conversion.version>
-		<iiif-api-model.version>1.7.0</iiif-api-model.version>
-		<normdataimporter.version>1.3.0</normdataimporter.version>
+		<iiif-api-model.version>1.8.0-SNAPSHOT</iiif-api-model.version>
+		<normdataimporter.version>1.4.0-SNAPSHOT</normdataimporter.version>
 
 		<!-- other libraries -->
 		<cdi.version>2.0.SP1</cdi.version>
@@ -111,8 +111,8 @@
 		<junit.version>4.13</junit.version>
 		<joda-time.version>2.10.6</joda-time.version>
 		<mariadb-java-client.version>2.3.0</mariadb-java-client.version>
-		<mockito.version>3.3.3</mockito.version>
-		<mockserver.version>5.10.0</mockserver.version>
+		<mockito.version>3.4.0</mockito.version>
+		<mockserver.version>5.11.0</mockserver.version>
 		<oauth.version>1.0.2</oauth.version>
 		<openpdf.version>1.3.20</openpdf.version>
 		<poi.version>4.1.2</poi.version>
@@ -126,7 +126,7 @@
 		<saml-client.version>4.0.0</saml-client.version>
 		<stax-api.version>1.0-2</stax-api.version>
         <swagger.version>2.1.3</swagger.version>
-		<tomcat.version>9.0.36</tomcat.version>
+		<tomcat.version>9.0.37</tomcat.version>
 		<!-- Using a weld.version >3.0.5.Final will result in problems with the hotswap agent -->
 		<weld-servlet-shaded.version>3.0.5.Final</weld-servlet-shaded.version>
 		<!-- This needs to be added explicitly because otherwise Solr will use
@@ -576,7 +576,11 @@
 			<artifactId>joda-time</artifactId>
 			<version>${joda-time.version}</version>
 		</dependency>
-
+		<dependency>
+		    <groupId>net.bull.javamelody</groupId>
+		    <artifactId>javamelody-core</artifactId>
+		    <version>1.85.0</version>
+		</dependency>
 	</dependencies>
 
 

@@ -236,8 +236,12 @@ public class RecordResourceTest extends AbstractRestApiTest{
             assertNotNull("Should return user object as json", response.getEntity());
             String entity = response.readEntity(String.class);
             assertNotNull(entity);
-            Manifest manifest = mapper.readValue(entity, Manifest.class);
-            assertEquals(URI.create(url), manifest.getId());
+            JSONObject manifest = new JSONObject(entity);
+            String id = manifest.getString("@id");
+            assertEquals(url, id);
+
+//            Manifest manifest = mapper.readValue(entity, Manifest.class);
+//            assertEquals(URI.create(url), manifest.getId());
         }
     }
     

@@ -333,6 +333,26 @@ var viewerJS = ( function( viewer ) {
 	            html: true
             } );
         },
+        
+        initNumberOnlyInput: function() {
+            $("body").on("keypress", "[data-input='number']", (event) => {
+                if(!validateNumber(event)) {
+                    event.preventDefault();
+                }
+            })
+            
+            function validateNumber(event) {
+                var key = window.event ? event.keyCode : event.which;
+                if (event.keyCode === 8 || event.keyCode === 46 || event.keyCode === 13) {
+                    return true;
+                } else if ( key < 48 || key > 57 ) {
+                    return false;
+                } else {
+                    return true;
+                }
+            };
+        },
+        
         /**
          * @description Method to get the current year.
          * @method getCurrentYear
