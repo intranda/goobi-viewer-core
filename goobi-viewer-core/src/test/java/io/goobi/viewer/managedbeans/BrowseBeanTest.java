@@ -60,6 +60,6 @@ public class BrowseBeanTest extends AbstractTest {
     public void getCollectionHierarchy_shouldReturnHierarchyCorrectly() throws Exception {
         BrowseBean bb = new BrowseBean();
         Assert.assertEquals("foo", bb.getCollectionHierarchy("x", "foo"));
-        Assert.assertEquals("foo / bar", bb.getCollectionHierarchy("x", "foo.bar"));
+        Assert.assertEquals("foo / foo.bar", bb.getCollectionHierarchy("x", "foo.bar"));
     }
 }
