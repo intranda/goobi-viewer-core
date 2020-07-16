@@ -16,6 +16,7 @@
 package io.goobi.viewer.servlets.rest.search;
 
 import java.io.UnsupportedEncodingException;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -46,6 +47,7 @@ import io.goobi.viewer.messages.ViewerResourceBundle;
 import io.goobi.viewer.model.search.Search;
 import io.goobi.viewer.model.search.SearchFacets;
 import io.goobi.viewer.model.search.SearchHit;
+import io.goobi.viewer.model.security.user.User;
 import io.goobi.viewer.servlets.rest.security.AuthenticationBinding;
 
 /**
@@ -96,52 +98,86 @@ public class SearchHitsNotificationResource {
             List<Search> searches = DataManager.getInstance().getDao().getSearches(null, i, pageSize, null, false, filters);
             for (Search search : searches) {
                 // TODO access condition filters for each user
-                SearchFacets facets = new SearchFacets();
-                facets.setCurrentFacetString(search.getFacetString());
-                String oldSortString = search.getSortString();
-                search.setSortString('!' + SolrConstants.DATECREATED);
-                search.execute(facets, null, 100, 0, null, DataManager.getInstance().getConfiguration().isAggregateHits());
-                // TODO what if there're >100 new hits?
-                if (search.getHitsCount() > search.getLastHitsCount()) {
-                    List<SearchHit> newHits = search.getHits().subList(0, (int) (search.getHitsCount() - search.getLastHitsCount()));
-                    StringBuilder sb = new StringBuilder();
-                    sb.append("<table>");
-                    int count = 0;
-                    for (SearchHit newHit : newHits) {
-                        logger.trace("New hit: {}", newHit.getBrowseElement().getPi());
-                        count++;
-                        sb.append(newHit.generateNotificationFragment(count));
-                    }
-                    sb.append("</table>");
-
-                    // TODO Send notification
-                    String subject = ViewerResourceBundle.getTranslation("user_mySearches_notificationMailSubject", null);
-                    subject = subject.replace("{0}", search.getName());
-                    String body = ViewerResourceBundle.getTranslation("user_mySearches_notificationMailBody", null);
-                    body = body.replace("{0}", search.getName());
-                    body = body.replace("{1}", sb.toString());
-                    body = body.replace("{2}", "Goobi viewer");
-
-                    String address = search.getOwner().getEmail();
-                    if (StringUtils.isNotEmpty(address)) {
-                        try {
-                            NetTools.postMail(Collections.singletonList(address), subject, body);
-                        } catch (UnsupportedEncodingException | MessagingException e) {
-                            logger.error(e.getMessage(), e);
-                        }
-                    }
-
-                    //                    sbDebug.append(body)
-                    //                            .append("<br /><br />");
-
-                    // Update last count in DB
-                    search.setLastHitsCount(search.getHitsCount());
-                    search.setSortString(oldSortString);
+                List<SearchHit> newHits = getNewHits(search);
+                if(newHits.size() > 0) {        
+                    sendEmailNotification(newHits, search.getName(), search.getOwner().getEmail());
                     DataManager.getInstance().getDao().updateSearch(search);
                 }
             }
         }
 
         return sbDebug.toString();
+    }
+
+    /**
+     * @param newHits
+     * @param owner
+     */
+    private void sendEmailNotification(List<SearchHit> newHits, String searchName, String address) {
+        StringBuilder sb = new StringBuilder();
+        sb.append("<table>");
+        int count = 0;
+        for (SearchHit newHit : newHits) {
+            logger.trace("New hit: {}", newHit.getBrowseElement().getPi());
+            count++;
+            sb.append(newHit.generateNotificationFragment(count));
+        }
+        sb.append("</table>");
+
+        // TODO Send notification
+        String subject = ViewerResourceBundle.getTranslation("user_mySearches_notificationMailSubject", null);
+        subject = subject.replace("{0}", searchName);
+        String body = ViewerResourceBundle.getTranslation("user_mySearches_notificationMailBody", null);
+        body = body.replace("{0}", searchName);
+        body = body.replace("{1}", sb.toString());
+        body = body.replace("{2}", "Goobi viewer");
+
+        if (StringUtils.isNotEmpty(address)) {
+            try {
+                NetTools.postMail(Collections.singletonList(address), subject, body);
+            } catch (UnsupportedEncodingException | MessagingException e) {
+                logger.error(e.getMessage(), e);
+            }
+        }
+        
+    }
+
+    /**
+     * Executes the given search. If after {@link Search#execute(SearchFacets, Map, int, int, java.util.Locale, boolean, boolean) execution} 
+     * the {@link Search#getHitsCount()} is larger than {@link Search#getLastHitsCount()}
+     * the newest (hitsCount - lastHitsCount) hits are returned and the lastHitsCount of the search is updated
+     * 
+     * 
+     * @param search
+     * @return  A list of new hits (based on {@link Search#getLastHitsCount()}
+     * @throws PresentationException
+     * @throws IndexUnreachableException
+     * @throws DAOException
+     * @throws ViewerConfigurationException
+     */
+    public List<SearchHit> getNewHits(Search search)
+            throws PresentationException, IndexUnreachableException, DAOException, ViewerConfigurationException {
+        //clone the search so any alterations are discarded later
+        Search tempSearch = new Search(search);
+        SearchFacets facets = new SearchFacets();
+        facets.setCurrentFacetString(tempSearch.getFacetString());
+        tempSearch.execute(facets, null, 0, 0, null, DataManager.getInstance().getConfiguration().isAggregateHits());
+        // TODO what if there're >100 new hits?
+        if (tempSearch.getHitsCount() > tempSearch.getLastHitsCount()) {
+            int newHitsCount = (int) (tempSearch.getHitsCount() - tempSearch.getLastHitsCount());
+            //sort so newest hits come first
+            tempSearch.setSortString('!' + SolrConstants.DATECREATED);
+            //after last execution, page is 0, set back to 1 to actually get some results
+            tempSearch.setPage(1);
+            //reset hits count to 0 to actually perform search
+            tempSearch.setHitsCount(0);
+            tempSearch.execute(facets, null, newHitsCount, 0, null, DataManager.getInstance().getConfiguration().isAggregateHits());
+            List<SearchHit> newHits = tempSearch.getHits();
+
+            // Update last count
+            search.setLastHitsCount(tempSearch.getHitsCount());
+            return newHits;
+        }
+        return new ArrayList<>();
     }
 }
