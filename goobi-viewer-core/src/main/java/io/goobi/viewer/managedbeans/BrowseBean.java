@@ -896,7 +896,6 @@ public class BrowseBean implements Serializable {
         if (valueSplit.length == 0) {
             return ViewerResourceBundle.getTranslation(collectionValue, null);
         }
-        logger.trace("valuesplit: " + Arrays.asList(valueSplit));
         
         StringBuilder sb = new StringBuilder();
         String collectionName = "";

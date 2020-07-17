@@ -15,6 +15,7 @@
  */
 package io.goobi.viewer.managedbeans;
 
+import java.net.URLEncoder;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
@@ -536,5 +537,29 @@ public class SearchBeanTest extends AbstractDatabaseAndSolrEnabledTest {
         sb.findCurrentHitIndex("b18029048", 1, true);
         Assert.assertEquals(9, sb.getCurrentHitIndex());
 
+    }
+
+    /**
+     * @see SearchBean#searchSimple()
+     * @verifies not reset facets
+     */
+    @Test
+    public void searchSimple_shouldNotResetFacets() throws Exception {
+        SearchBean sb = new SearchBean();
+        sb.getFacets().setCurrentFacetString("foo:bar");
+        sb.searchSimple();
+        Assert.assertEquals(URLEncoder.encode("foo:bar;;", SearchBean.URL_ENCODING), sb.getFacets().getCurrentFacetString());
+    }
+
+    /**
+     * @see SearchBean#searchSimple(boolean,boolean)
+     * @verifies not reset facets if resetFacets false
+     */
+    @Test
+    public void searchSimple_shouldNotResetFacetsIfResetFacetsFalse() throws Exception {
+        SearchBean sb = new SearchBean();
+        sb.getFacets().setCurrentFacetString("foo:bar");
+        sb.searchSimple(true, false);
+        Assert.assertEquals(URLEncoder.encode("foo:bar;;", SearchBean.URL_ENCODING), sb.getFacets().getCurrentFacetString());
     }
 }

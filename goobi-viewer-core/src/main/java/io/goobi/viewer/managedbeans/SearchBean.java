@@ -222,6 +222,7 @@ public class SearchBean implements SearchInterface, Serializable {
      * {@inheritDoc}
      *
      * Action method for search buttons (simple search).
+     * @should not reset facets
      */
     @Override
     public String searchSimple() {
@@ -244,6 +245,7 @@ public class SearchBean implements SearchInterface, Serializable {
      * @param resetParameters a boolean.
      * @param resetFacets a boolean.
      * @return Target URL
+     * @should not reset facets if resetFacets false
      */
     public String searchSimple(boolean resetParameters, boolean resetFacets) {
         logger.trace("searchSimple");
