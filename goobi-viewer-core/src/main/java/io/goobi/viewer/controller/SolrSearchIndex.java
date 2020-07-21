@@ -263,7 +263,7 @@ public final class SolrSearchIndex {
             }
         }
 
-        try {
+        try{
             //             logger.trace("Solr query : {}", solrQuery.getQuery());
             //             logger.debug("range: {} - {}", first, first + rows);
             //             logger.debug("facetFields: {}", facetFields);

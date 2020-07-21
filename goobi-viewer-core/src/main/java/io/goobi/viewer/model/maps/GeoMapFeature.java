@@ -27,6 +27,7 @@ public class GeoMapFeature {
     
     private String title;
     private String description;
+    private String groupField;
     private String json;
     
     public GeoMapFeature() {
@@ -118,6 +119,20 @@ public class GeoMapFeature {
     @Override
     public String toString() {
         return this.json;
+    }
+    
+    /**
+     * @return the groupField
+     */
+    public String getGroupField() {
+        return groupField;
+    }
+    
+    /**
+     * @param groupField the groupField to set
+     */
+    public void setGroupField(String groupField) {
+        this.groupField = groupField;
     }
 
 }

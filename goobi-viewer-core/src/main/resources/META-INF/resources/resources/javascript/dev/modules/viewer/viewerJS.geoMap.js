@@ -152,11 +152,21 @@ var viewerJS = ( function( viewer ) {
                 marker.bindPopup(() => this.createPopup(marker),{closeButton: !this.config.popoverOnHover});
                 
                 this.markers.push(marker);    
-                
+                if(this.cluster) {
+                    this.cluster.addLayer(marker);
+                }
                 return marker;
             }.bind(this)
-        }).addTo(this.map);
-
+        });
+        
+        if(this.config.clusterMarkers) {            
+            this.cluster = this.createMarkerCluster();
+            this.map.addLayer(this.cluster);
+        } else {
+            this.map.addLayer(this.locations);
+        }
+        
+        
         if(features && features.length > 0) {
             features.forEach(feature => {
                 this.addMarker(feature);
@@ -168,6 +178,37 @@ var viewerJS = ( function( viewer ) {
         }
         
     }
+    
+    viewer.GeoMap.prototype.createMarkerCluster = function() {
+        let cluster = L.markerClusterGroup({
+            maxClusterRadius: 80,
+            iconCreateFunction: function(cluster) {
+                return this.getClusterIcon(cluster.getChildCount());
+            }.bind(this)
+        });
+        cluster.on('clustermouseover', function (a) {
+            this.removePolygon();
+
+//            a.layer.setOpacity(0.2);
+            this.shownLayer = a.layer;
+            this.polygon = L.polygon(a.layer.getConvexHull());
+            this.map.addLayer(this.polygon);
+        }.bind(this));
+        cluster.on('clustermouseout', () => this.removePolygon());
+        this.map.on('zoomend', () => this.removePolygon());
+        return cluster;
+    }
+    
+    viewer.GeoMap.prototype.removePolygon = function() {
+        if (this.shownLayer) {
+            this.shownLayer.setOpacity(1);
+            this.shownLayer = null;
+        }
+        if (this.polygon) {
+            this.map.removeLayer(this.polygon);
+            this.polygon = null;
+        }
+    };
     
     viewer.GeoMap.prototype.openPopup = function(marker) {
         try{
@@ -182,6 +223,21 @@ var viewerJS = ( function( viewer ) {
         if(this.markerIcon) {            
             this.markerIcon.name = "";
         }
+    }
+    
+    viewer.GeoMap.prototype.getClusterIcon = function(num) {
+        let iconConfig = {
+            icon: "fa-number",
+            number: num,
+            svg: true,
+            prefix: "fa",
+            iconRotate: 0
+        };
+        if(this.markerIcon) {
+            iconConfig = $.extend(true, {}, this.markerIcon, iconConfig);
+        }
+        let icon = L.ExtraMarkers.icon(iconConfig);
+        return icon;
     }
     
     viewer.GeoMap.prototype.getMarkerIcon = function() {

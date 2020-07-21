@@ -283,12 +283,14 @@
 						            	        mapEditor.geoMap.config.popover = undefined;
 						            	    }
 					            	    }
-					            	    mapEditor.init();
+					            	    //cluster icons for non-editable maps
+					            	    mapEditor.geoMap.config.clusterMarkers = !editable;
 					            	    mapEditor.geoMap.config.popoverOnHover = !editable;
 					            	    mapEditor.setAllowEditFeatures(editable);
 					            	    mapEditor.setMarkerIcon(#{geoMapBean.currentMap.markerAsJSON});
-					            	    mapEditor.updateFeatures();
-					            	    mapEditor.updateView(window.storedView);
+					            	    mapEditor.init(window.storedView);
+// 					            	    mapEditor.updateFeatures();
+// 					            	    mapEditor.updateView(window.storedView);
 					            	    
 					            	    viewerJS.jsfAjax.begin.subscribe((e) => {
 					            	        if(e.source.id === "mapMarker" || e.source.id === "popupContent") {					            	            
