@@ -1401,6 +1401,30 @@ public class JPADAO implements IDAO {
         }
     }
 
+    /**
+     * @see io.goobi.viewer.dao.IDAO#getLicenseCount(io.goobi.viewer.model.security.LicenseType)
+     * @should return correct value
+     */
+    @Override
+    public long getLicenseCount(LicenseType licenseType) throws DAOException {
+        if (licenseType == null) {
+            throw new IllegalArgumentException("licenseType may not be null");
+        }
+
+        preQuery();
+        String query = "SELECT COUNT(a) FROM License a WHERE a.licenseType = :licenseType";
+        Query q = em.createQuery(query);
+        q.setParameter("licenseType", licenseType);
+
+        Object o = q.getResultList().get(0);
+        // MySQL
+        if (o instanceof BigInteger) {
+            return ((BigInteger) q.getResultList().get(0)).longValue();
+        }
+        // H2
+        return (long) q.getResultList().get(0);
+    }
+
     /*
      * (non-Javadoc)
      *
@@ -4149,7 +4173,7 @@ public class JPADAO implements IDAO {
         // q.setHint("javax.persistence.cache.storeMode", "REFRESH");
         return q.getResultList();
     }
-    
+
     /** {@inheritDoc} */
     @Override
     public long getAnnotationCountForWork(String pi) throws DAOException {
@@ -4166,7 +4190,7 @@ public class JPADAO implements IDAO {
         // H2
         return (long) q.getResultList().get(0);
     }
-    
+
     /** {@inheritDoc} */
     @SuppressWarnings("unchecked")
     @Override
