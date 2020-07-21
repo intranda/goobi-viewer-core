@@ -1439,6 +1439,18 @@ public class JPADAOTest extends AbstractDatabaseEnabledTest {
         Assert.assertEquals(1, ret.size());
         Assert.assertEquals("license type 2 name", ret.get(0).getName());
     }
+    
+
+    /**
+     * @see JPADAO#getLicenseCount(LicenseType)
+     * @verifies return correct value
+     */
+    @Test
+    public void getLicenseCount_shouldReturnCorrectValue() throws Exception {
+        LicenseType licenseType = DataManager.getInstance().getDao().getLicenseType(1);
+        Assert.assertNotNull(licenseType);
+        Assert.assertEquals(2, DataManager.getInstance().getDao().getLicenseCount(licenseType));
+    }
 
     /**
      * @see JPADAO#getIpRanges(int,int,String,boolean,Map)

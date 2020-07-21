@@ -751,6 +751,20 @@ public class AdminBean implements Serializable {
     }
 
     /**
+     * 
+     * @param licenseType
+     * @return true if at least one license uses the given license type; false otherwise
+     * @throws DAOException
+     */
+    public boolean isLicenseTypeInUse(LicenseType licenseType) throws DAOException {
+        if (licenseType == null) {
+            return false;
+        }
+
+        return DataManager.getInstance().getDao().getLicenseCount(licenseType) > 0;
+    }
+
+    /**
      * <p>
      * resetCurrentRoleLicenseAction.
      * </p>

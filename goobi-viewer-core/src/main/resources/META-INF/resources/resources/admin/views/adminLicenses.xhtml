@@ -111,7 +111,7 @@
 	                                                <a href="#{navigationHelper.applicationUrl}admin/licenses/edit/#{licenseType.id}/" class="admin__boxed-entry-actions-edit" aria-label="#{msg.edit}: #{licenseType.name}">#{msg.edit}</a>
 	
 	                                                <!-- DELETE -->
-	                                                <h:commandLink
+	                                                <h:commandLink rendered="#{!adminBean.isLicenseTypeInUse(licenseType)}"
 	                                                    styleClass="admin__boxed-entry-actions-delete -redlink"
 	                                                    onclick="if ( !confirm( &quot;#{msg.license_licenseType_deleteConfirmationText}&quot; ) ) { return false };"
 	                                                    action="#{adminBean.deleteLicenseTypeAction(licenseType)}">
