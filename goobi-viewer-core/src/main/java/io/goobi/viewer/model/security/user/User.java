@@ -1458,6 +1458,15 @@ public class User implements ILicensee, HttpSessionBindingListener, Serializable
     public void setUseGravatar(boolean useGravatar) {
         this.useGravatar = useGravatar;
     }
+    
+    /**
+     * 
+     * @return true if user email address equals the configured anonymous user address; false otherwise
+     */
+    public boolean isAnonymous() {
+        String anonymousAddress = DataManager.getInstance().getConfiguration().getAnonymousUserEmailAddress();
+        return StringUtils.isNotEmpty(anonymousAddress) && anonymousAddress.equals(email);
+    }
 
     /**
      * <p>

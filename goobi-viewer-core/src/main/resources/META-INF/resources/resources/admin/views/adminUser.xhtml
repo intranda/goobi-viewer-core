@@ -77,7 +77,8 @@
                                                      <i class="fa fa-exclamation" aria-hidden="true"></i>
                                                  </div>
                                              </div>
-                                             <h:inputText value="#{adminBean.currentUser.email}" id="email" label="email" immediate="true" required="true"
+                                             <h:inputText disabled="#{adminBean.currentUser.anonymous}" value="#{adminBean.currentUser.email}"
+                                                 id="email" label="email" immediate="true" required="true"
                                                  styleClass="form-control">
                                                  <f:validator validatorId="emailValidator" for="email" />
                                                  <f:ajax render="emailGroup" />
@@ -196,7 +197,7 @@
                             </ui:fragment>
 
                             <!-- PASSWORD CHANGE FOR EXISTING USER -->
-                            <ui:fragment rendered="#{adminBean.currentUser.id != null}">
+                            <ui:fragment rendered="#{adminBean.currentUser.id != null and !adminBean.currentUser.anonymous}">
                                 <h3>#{msg.changePassword}</h3>
                                 <div class="admin__default-block">
                                     <p>#{msg.admin__user_password_info_text}</p>
@@ -226,7 +227,7 @@
                             </ui:fragment>
 
                             <!-- ACCOUNT ACTIVATION -->
-                            <ui:fragment rendered="#{!adminBean.currentUser.active}">
+                            <ui:fragment rendered="#{!adminBean.currentUser.active and !adminBean.currentUser.anonymous}">
                                 <h3>#{msg.admin__user_activation}</h3>
                                    <div class="admin__default-block -warning">
                                        <p>#{msg.admin__user_activation_description}</p>
@@ -248,7 +249,7 @@
                         </h:form>
 
                         <!-- DELETE USER -->
-                        <ui:fragment rendered="#{adminBean.currentUser.id != null}">
+                        <ui:fragment rendered="#{adminBean.currentUser.id != null and !adminBean.currentUser.anonymous}">
                             <h:form id="deleteUser" styleClass="form-horizontal" role="form" prependId="false">
                                 <h3>#{msg.admin__user_delete}</h3>
                                 <div class="admin__default-block -danger">
