@@ -55,9 +55,6 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
-import de.intranda.monitoring.timer.Time;
-import de.intranda.monitoring.timer.TimeAnalysis;
-import de.intranda.monitoring.timer.Timer;
 import io.goobi.viewer.api.rest.serialization.TranslationListSerializer;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.SolrSearchIndex;
