@@ -61,6 +61,8 @@ import org.slf4j.LoggerFactory;
 
 import de.intranda.metadata.multilanguage.IMetadataValue;
 import de.intranda.metadata.multilanguage.MultiLanguageMetadataValue;
+import de.intranda.monitoring.timer.Timer;
+import de.intranda.monitoring.timer.TimerOutput;
 import io.goobi.viewer.controller.SolrConstants.DocType;
 import io.goobi.viewer.exceptions.HTTPException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
@@ -263,7 +265,7 @@ public final class SolrSearchIndex {
             }
         }
 
-        try {
+        try(Timer timer = new Timer(TimerOutput.SIMPLE)) {
             //             logger.trace("Solr query : {}", solrQuery.getQuery());
             //             logger.debug("range: {} - {}", first, first + rows);
             //             logger.debug("facetFields: {}", facetFields);

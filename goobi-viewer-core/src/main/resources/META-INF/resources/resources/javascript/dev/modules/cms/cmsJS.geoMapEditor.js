@@ -98,8 +98,9 @@ var cmsJS = ( function( cms ) {
         }
     }
     
-    cms.GeoMapEditor.prototype.init = function() {
-        this.geoMap.init();
+    cms.GeoMapEditor.prototype.init = function(defaultView) {
+        let features = JSON.parse($(this.config.featuresInput).val());
+        this.geoMap.init(this.getView(defaultView), features);
         if($("metadataEditor").length > 0) {  
             if(this.metadataEditor) {
                 this.metadataEditor.forEach(component => {
@@ -198,8 +199,24 @@ var cmsJS = ( function( cms ) {
         }
     }
     
+    cms.GeoMapEditor.prototype.getView = function(view) {
+        if(!view) {
+            view = $(this.config.viewInput).val();
+            if(!view) {
+                view = this.geoMap.config.initialView;
+            } else {                
+                view = JSON.parse(view);
+            }
+            if(this.geoMap.getFeatures().length > 0) {            
+                return this.geoMap.getViewAroundFeatures(view.zoom);
+            } else {           
+                return view;
+            }
+        } else {
+            return view;
+        }
+    }
 
-    
     cms.GeoMapEditor.prototype.updateView = function(view) {
         if(!view) {
             view = $(this.config.viewInput).val();

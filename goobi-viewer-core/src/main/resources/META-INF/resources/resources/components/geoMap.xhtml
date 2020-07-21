@@ -31,6 +31,7 @@
            		popover: "#popoverTemplate_#{cc.attrs.mapId}",
            		language: "#{navigationHelper.localeString}",
            		popoverOnHover: #{cc.attrs.geoMap.type == 'SOLR_QUERY'},
+           		clusterMarkers: #{cc.attrs.geoMap.type == 'SOLR_QUERY'},
            	});
         	if(#{cc.attrs.geoMap.type == 'SOLR_QUERY'}) {
                 let searchUrlTemplate = '#{geoMapBean.getCoordinateSearchQueryTemplate()}';

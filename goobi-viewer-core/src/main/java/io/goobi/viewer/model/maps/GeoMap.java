@@ -19,6 +19,7 @@ import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.net.URLEncoder;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashSet;
@@ -54,6 +55,9 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
+import de.intranda.monitoring.timer.Time;
+import de.intranda.monitoring.timer.TimeAnalysis;
+import de.intranda.monitoring.timer.Timer;
 import io.goobi.viewer.api.rest.serialization.TranslationListSerializer;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.SolrSearchIndex;
@@ -349,7 +353,9 @@ public class GeoMap {
     }
 
     public Collection<GeoMapFeature> getFeaturesFromSolrQuery(String query) throws PresentationException, IndexUnreachableException {
-        List<SolrDocument> docs = DataManager.getInstance().getSearchIndex().search(query);
+        List<SolrDocument> docs;
+        List<String> fieldList = Arrays.asList(new String[]{"MD_GEOJSON_POINT", "NORM_COORDS_GEOJSON", getMarkerTitleField()});
+            docs = DataManager.getInstance().getSearchIndex().search(query, SolrSearchIndex.MAX_HITS, null, fieldList);
         Set<GeoMapFeature> features = new HashSet<>();
         for (SolrDocument doc : docs) {
             //            List<JSONObject> docFeatures = new ArrayList<>();
@@ -365,8 +371,9 @@ public class GeoMap {
      * @param docFeatures
      */
     public static Collection<GeoMapFeature> getGeojsonPoints(SolrDocument doc, String metadataField, String titleField, String descriptionField) {
+                
         String title = StringUtils.isBlank(titleField) ? null : SolrSearchIndex.getSingleFieldStringValue(doc, titleField);
-        String desc = StringUtils.isBlank(descriptionField) ? null : SolrSearchIndex.getSingleFieldStringValue(doc, titleField);
+        String desc = StringUtils.isBlank(descriptionField) ? null : SolrSearchIndex.getSingleFieldStringValue(doc, descriptionField);
         Set<GeoMapFeature> docFeatures = new HashSet<>();
         List<String> points = SolrSearchIndex.getMetadataValues(doc, metadataField);
         for (String point : points) {
