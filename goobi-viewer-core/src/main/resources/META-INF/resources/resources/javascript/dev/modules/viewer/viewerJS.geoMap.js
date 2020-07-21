@@ -159,9 +159,14 @@ var viewerJS = ( function( viewer ) {
             }.bind(this)
         });
         
-        if(this.config.clusterMarkers) {            
-            this.cluster = this.createMarkerCluster();
-            this.map.addLayer(this.cluster);
+        if(this.config.clusterMarkers) {        
+            try {                
+                this.cluster = this.createMarkerCluster();
+                this.map.addLayer(this.cluster);
+            } catch(error) {
+                console.warn(error);
+                this.map.addLayer(this.locations);
+            }
         } else {
             this.map.addLayer(this.locations);
         }
