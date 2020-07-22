@@ -118,4 +118,15 @@ public class DataFileToolsTest extends AbstractTest {
     public void getDataRepositoryPath_shouldReturnCorrectPathForAbsoluteDataRepositoryPath() throws Exception {
         Assert.assertEquals("/opt/digiverso/viewer/1/", DataFileTools.getDataRepositoryPath("/opt/digiverso/viewer/1"));
     }
+
+    /**
+     * @see DataFileTools#sanitizeFileName(String)
+     * @verifies remove everything but the file name from given path
+     */
+    @Test
+    public void sanitizeFileName_shouldRemoveEverythingButTheFileNameFromGivenPath() throws Exception {
+        Assert.assertEquals("foo.bar", DataFileTools.sanitizeFileName("/opt/digiverso/foo.bar"));
+        Assert.assertEquals("foo.bar", DataFileTools.sanitizeFileName("../../foo.bar"));
+        Assert.assertEquals("foo.bar", DataFileTools.sanitizeFileName("/foo.bar"));
+    }
 }
