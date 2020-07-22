@@ -28,7 +28,7 @@
 	<mediaFolder>media</mediaFolder>
 	<!-- sourceContentFolder: contains born-digital material that was uploaded 
 		in the Goobi viewer (see <content> also) -->
-	<origContentFolder>src</origContentFolder>
+	<origContentFolder>source</origContentFolder>
     <!-- pdfFolder: contains pre-generated PDFs -->
     <pdfFolder>PDF</pdfFolder>
     <!-- cmsTextFolder: contains extracted CMS page texts for indexing-->

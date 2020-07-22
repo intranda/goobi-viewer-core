@@ -546,7 +546,7 @@ public class ConfigurationTest extends AbstractTest {
      */
     @Test
     public void getOrigContentFolder_shouldReturnCorrectValue() throws Exception {
-        Assert.assertEquals("src", DataManager.getInstance().getConfiguration().getOrigContentFolder());
+        Assert.assertEquals("source", DataManager.getInstance().getConfiguration().getOrigContentFolder());
     }
 
     /**

@@ -48,6 +48,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import de.unigoettingen.sub.commons.contentlib.imagelib.transform.Scale;
+import io.goobi.viewer.api.rest.AbstractApiUrlManager;
+import io.goobi.viewer.api.rest.v1.ApiUrls;
 import io.goobi.viewer.controller.AlphanumCollatorComparator;
 import io.goobi.viewer.controller.DataFileTools;
 import io.goobi.viewer.controller.DataManager;
@@ -2555,12 +2557,14 @@ public class ViewManager implements Serializable {
                 Collections.sort(sourcesList, filenameComparator);
                 Map<String, Boolean> fileAccess = AccessConditionUtils.checkContentFileAccessPermission(getPi(), BeanUtils.getRequest(),
                         sourcesList.stream().map(file -> file.toPath()).collect(Collectors.toList()));
+                AbstractApiUrlManager apiUrls = DataManager.getInstance().getRestApiManager().getContentApiManager();
                 for (File file : sourcesList) {
                     if (file.isFile()) {
                         Boolean access = fileAccess.get(file.toPath().toString());
-                        if (access != null && access) {
-                            String url = BeanUtils.getServletPathWithHostAsUrlFromJsfContext() + "/file?pi=" + getPi() + "&file="
-                                    + URLEncoder.encode(file.getName(), StringTools.DEFAULT_ENCODING);
+                        if (Boolean.TRUE.equals(access)) {
+                            String pi = getPi();
+                            String filename = URLEncoder.encode(file.getName(), StringTools.DEFAULT_ENCODING);
+                            String url = apiUrls.path(ApiUrls.RECORDS_FILES, ApiUrls.RECORDS_FILES_SOURCE).params(pi, filename).build();
                             ret.add(new LabeledLink(file.getName(), url, 0));
                         }
                         ;
@@ -2584,51 +2588,6 @@ public class ViewManager implements Serializable {
         }
 
     };
-
-    /**
-     * Returns a list of original content file download links (name+url) for the current page. CURRENTLY NOT SUPPORTED
-     *
-     * @return a {@link java.util.List} object.
-     * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
-     * @throws io.goobi.viewer.exceptions.DAOException if any.
-     * @throws io.goobi.viewer.exceptions.PresentationException if any.
-     */
-    public List<LabeledLink> getContentDownloadLinksForPage() throws IndexUnreachableException, DAOException, PresentationException {
-        List<LabeledLink> ret = new ArrayList<>();
-
-        String page = String.valueOf(currentImageOrder);
-        Path sourceFileDir = Paths
-                .get(DataFileTools.getDataFolder(pi, DataManager.getInstance().getConfiguration().getOrigContentFolder()).toAbsolutePath().toString(),
-                        page);
-        if (!Files.isDirectory(sourceFileDir)) {
-            return Collections.emptyList();
-        }
-
-        try {
-            List<File> files = Arrays.asList(sourceFileDir.toFile().listFiles());
-            Map<String, Boolean> fileAccessMap = AccessConditionUtils.checkContentFileAccessPermission(getPi(), BeanUtils.getRequest(),
-                    files.stream().map(File::toPath).collect(Collectors.toList()));
-            for (File file : files) {
-                if (file.isFile()) {
-                    Boolean access = fileAccessMap.get(file.toPath().toString());
-                    if (access != null && access) {
-                        String url = new StringBuilder(BeanUtils.getServletPathWithHostAsUrlFromJsfContext()).append("/file?pi=")
-                                .append(getPi())
-                                .append("&page=")
-                                .append(page)
-                                .append("&file=")
-                                .append(URLEncoder.encode(file.getName(), StringTools.DEFAULT_ENCODING))
-                                .toString();
-                        ret.add(new LabeledLink(file.getName(), url, 0));
-                    }
-                }
-            }
-        } catch (UnsupportedEncodingException e) {
-            logger.error(e.getMessage(), e);
-        }
-
-        return ret;
-    }
 
     /**
      * <p>
