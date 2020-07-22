@@ -417,7 +417,7 @@
 		</sorting>
 		<drillDown>
 			<hierarchicalField initialElementNumber="4" priorityValues="collection2;collection1">DC</hierarchicalField>
-			<field sortOrder="numerical">YEAR</field>
+			<field labelField="MD_FIELDLABEL" sortOrder="numerical">YEAR</field>
 			<hierarchicalField sortOrder="alphabetical">MD_CREATOR</hierarchicalField>
 			<field initialElementNumber="16" priorityValues="val1;val2;val3">MD_PLACEPUBLISH</field>
 			<!-- initialElementNumber: sets the initial number of drill-down elements 

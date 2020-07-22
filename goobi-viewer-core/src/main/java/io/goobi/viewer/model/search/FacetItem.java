@@ -34,6 +34,8 @@ import org.slf4j.LoggerFactory;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.SolrConstants;
 import io.goobi.viewer.controller.StringTools;
+import io.goobi.viewer.exceptions.IndexUnreachableException;
+import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.managedbeans.SearchBean;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.messages.ViewerResourceBundle;
@@ -197,16 +199,33 @@ public class FacetItem implements Comparable<FacetItem>, Serializable {
         List<FacetItem> retList = new ArrayList<>();
         List<String> priorityValues = DataManager.getInstance().getConfiguration().getPriorityValuesForDrillDownField(field);
         Map<String, FacetItem> priorityValueMap = new HashMap<>(priorityValues.size());
+
+        // If label field configured for fieldName, retrieve label field from index (DOCTYPE:METADATA)
+        String labelField = DataManager.getInstance().getConfiguration().getLabelFieldForDrillDownField(field);
+        Map<String, String> labelMap = Collections.emptyMap();
+        if (labelField != null) {
+            try {
+                labelMap = DataManager.getInstance()
+                        .getSearchIndex()
+                        .getLabelValuesForDrillDownField(field, labelField, values.keySet());
+            } catch (PresentationException e) {
+                logger.debug(e.getMessage());
+            } catch (IndexUnreachableException e) {
+                logger.error(e.getMessage(), e);
+            }
+        }
+
         for (String value : values.keySet()) {
             // Skip reversed values
             if (value.charAt(0) == 1) {
                 continue;
             }
             String label = value;
-            
-            // TODO If label field configured for fieldName, retrieve label field from index (DOCTYPE:METADATA)
-            DataManager.getInstance().getConfiguration().getDrillDownFields();
-            
+
+            if (labelMap != null && labelMap.containsKey(value)) {
+                label = labelMap.get(value);
+            }
+
             if (StringUtils.isEmpty(field)) {
                 label = new StringBuilder(value).append(SolrConstants._DRILLDOWN_SUFFIX).toString();
             }

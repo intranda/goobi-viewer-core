@@ -18,6 +18,7 @@ package io.goobi.viewer.controller;
 import java.io.IOException;
 import java.io.StringReader;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.Collections;
@@ -263,7 +264,7 @@ public final class SolrSearchIndex {
             }
         }
 
-        try{
+        try {
             //             logger.trace("Solr query : {}", solrQuery.getQuery());
             //             logger.debug("range: {} - {}", first, first + rows);
             //             logger.debug("facetFields: {}", facetFields);
@@ -1664,6 +1665,50 @@ public final class SolrSearchIndex {
         return SearchHelper.ALL_RECORDS_QUERY + " AND " + SolrConstants.ACCESSCONDITION + ":\"" + accessCondition + "\"";
     }
 
+    /**
+     * 
+     * @param field
+     * @param labelField
+     * @param values
+     * @return
+     * @throws PresentationException
+     * @throws IndexUnreachableException
+     * @should return correct values
+     */
+    public Map<String, String> getLabelValuesForDrillDownField(String field, String labelField, Set<String> values)
+            throws PresentationException, IndexUnreachableException {
+        if (field == null || labelField == null || values == null || values.isEmpty()) {
+            return Collections.emptyMap();
+        }
+
+        StringBuilder sbQuery = new StringBuilder().append("+").append(SolrConstants.LABEL).append(":").append(field).append(" +(");
+        for (String value : values) {
+            sbQuery.append(" MD_VALUE:\"").append(value).append('"');
+        }
+        sbQuery.append(')');
+        logger.trace(sbQuery.toString());
+        String[] fields = new String[] { "MD_VALUE", labelField };
+        SolrDocumentList result = search(sbQuery.toString(), Arrays.asList(fields));
+        if (result.isEmpty()) {
+            return Collections.emptyMap();
+        }
+
+        Map<String, String> ret = new HashMap<>(result.size());
+        for (SolrDocument doc : result) {
+            String value = (String) doc.getFieldValue("MD_VALUE");
+            String label = String.valueOf(doc.getFirstValue(labelField));
+            if (StringUtils.isNotEmpty(value) || StringUtils.isNotEmpty(labelField)) {
+                ret.put(value, label);
+            }
+        }
+        
+        return ret;
+    }
+
+    /**
+     * 
+     * @return
+     */
     public String getSolrServerUrl() {
         if (client != null && client instanceof HttpSolrClient) {
             return ((HttpSolrClient) client).getBaseURL();

@@ -19,13 +19,9 @@ import java.util.Locale;
 
 import javax.enterprise.context.ContextNotActiveException;
 import javax.enterprise.context.spi.CreationalContext;
-import javax.enterprise.inject.spi.AnnotatedType;
 import javax.enterprise.inject.spi.Bean;
-import javax.enterprise.inject.spi.BeanAttributes;
 import javax.enterprise.inject.spi.BeanManager;
 import javax.enterprise.inject.spi.CDI;
-import javax.enterprise.inject.spi.InjectionTarget;
-import javax.enterprise.inject.spi.InjectionTargetFactory;
 import javax.faces.application.Application;
 import javax.faces.context.FacesContext;
 import javax.faces.el.ValueBinding;
@@ -39,7 +35,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import io.goobi.viewer.api.rest.v1.ApiUrls;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.managedbeans.ActiveDocumentBean;
 import io.goobi.viewer.managedbeans.BookmarkBean;

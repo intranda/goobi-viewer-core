@@ -1391,7 +1391,7 @@ public class ConfigurationTest extends AbstractTest {
     public void isSidebarTocVisible_shouldReturnCorrectValue() throws Exception {
         Assert.assertEquals(false, DataManager.getInstance().getConfiguration().isSidebarTocWidgetVisible());
     }
-    
+
     /**
      * @see Configuration#isSidebarTocWidgetVisibleInFullscreen()
      * @verifies return correct value
@@ -1759,6 +1759,25 @@ public class ConfigurationTest extends AbstractTest {
         Assert.assertEquals(2, result.size());
         Assert.assertEquals("collection2", result.get(0));
         Assert.assertEquals("collection1", result.get(1));
+    }
+
+    /**
+     * @see Configuration#getLabelFieldForDrillDownField(String)
+     * @verifies return correct value
+     */
+    @Test
+    public void getLabelFieldForDrillDownField_shouldReturnCorrectValue() throws Exception {
+        Assert.assertEquals("MD_FIELDLABEL", DataManager.getInstance().getConfiguration().getLabelFieldForDrillDownField(SolrConstants.YEAR));
+    }
+    
+
+    /**
+     * @see Configuration#getLabelFieldForDrillDownField(String)
+     * @verifies return null if no value found
+     */
+    @Test
+    public void getLabelFieldForDrillDownField_shouldReturnNullIfNoValueFound() throws Exception {
+        Assert.assertNull(DataManager.getInstance().getConfiguration().getLabelFieldForDrillDownField("MD_PLACEPUBLISH"));
     }
 
     @Test

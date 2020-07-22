@@ -2545,6 +2545,51 @@ public final class Configuration extends AbstractConfiguration {
 
         return Collections.emptyList();
     }
+    
+    /**
+     * 
+     * @param facetField
+     * @return
+     * @should return correct value
+     * @should return null if no value found
+     */
+    public String getLabelFieldForDrillDownField(String facetField) {
+        if (StringUtils.isBlank(facetField)) {
+            return null;
+        }
+
+        String facetifiedField = SearchHelper.facetifyField(facetField);
+        // Regular fields
+        List<HierarchicalConfiguration> drillDownFields = getLocalConfigurationsAt("search.drillDown.field");
+        if (drillDownFields != null && !drillDownFields.isEmpty()) {
+            for (HierarchicalConfiguration fieldConfig : drillDownFields) {
+                if (fieldConfig.getRootNode().getValue().equals(facetField)
+                        || fieldConfig.getRootNode().getValue().equals(facetField + SolrConstants._UNTOKENIZED)
+                        || fieldConfig.getRootNode().getValue().equals(facetifiedField)) {
+                    try {
+                        return fieldConfig.getString("[@labelField]");
+                    } catch (ConversionException | NoSuchElementException e) {
+                    }
+                }
+            }
+        }
+        // Hierarchical fields
+        drillDownFields = getLocalConfigurationsAt("search.drillDown.hierarchicalField");
+        if (drillDownFields != null && !drillDownFields.isEmpty()) {
+            for (HierarchicalConfiguration fieldConfig : drillDownFields) {
+                if (fieldConfig.getRootNode().getValue().equals(facetField)
+                        || fieldConfig.getRootNode().getValue().equals(facetField + SolrConstants._UNTOKENIZED)
+                        || fieldConfig.getRootNode().getValue().equals(facetifiedField)) {
+                    try {
+                        return fieldConfig.getString("[@labelField]");
+                    } catch (ConversionException | NoSuchElementException e) {
+                    }
+                }
+            }
+        }
+
+        return null;
+    }
 
     /**
      * <p>
