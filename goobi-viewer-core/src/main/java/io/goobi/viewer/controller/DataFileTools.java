@@ -187,7 +187,9 @@ public class DataFileTools {
     public static Path getDataFilePath(String pi, String dataFolderName, String altDataFolderName, String fileName)
             throws PresentationException, IndexUnreachableException {
         //make sure fileName is a pure filename and not a path
-        fileName = Paths.get(fileName).getFileName().toString();
+        if(StringUtils.isNotBlank(fileName)) {            
+            fileName = Paths.get(fileName).getFileName().toString();
+        }
         java.nio.file.Path dataFolderPath = getDataFolder(pi, dataFolderName);
         if (StringUtils.isNotBlank(fileName)) {
             dataFolderPath = dataFolderPath.resolve(fileName);
@@ -197,6 +199,20 @@ public class DataFileTools {
         }
 
         return dataFolderPath;
+    }
+    
+    public static void main(String[] args) {
+        
+        String sourcePath = "/a/b/c/d/e/f/";
+        String filePath = "file.txt";
+        Path path = Paths.get(sourcePath).resolve(filePath);
+        System.out.println(path);
+        
+        String passwd = "/../../../../../../etc/passwd";
+        Path pwPath = Paths.get(sourcePath).resolve(passwd);
+        System.out.println(pwPath);
+                
+        
     }
 
     /**
