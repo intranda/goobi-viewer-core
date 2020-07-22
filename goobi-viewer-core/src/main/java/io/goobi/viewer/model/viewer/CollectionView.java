@@ -24,6 +24,7 @@ import java.util.stream.Collectors;
 
 import org.apache.commons.collections4.ListUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.primefaces.expression.SearchExpressionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -57,6 +58,7 @@ public class CollectionView {
     private int baseLevels = 0;
     private boolean showAllHierarchyLevels = false;
     private boolean displayParentCollections = true;
+    private String searchUrl = "";
 
     private List<String> ignoreList = new ArrayList<>();
 
@@ -86,6 +88,7 @@ public class CollectionView {
         this.field = blueprint.field;
         this.splittingChar = blueprint.splittingChar;
         this.dataProvider = blueprint.dataProvider;
+        this.searchUrl = blueprint.searchUrl;
     }
 
     /**
@@ -915,7 +918,7 @@ public class CollectionView {
      * @return a {@link java.lang.String} object.
      */
     public String getCollectionUrl(HierarchicalBrowseDcElement collection) {
-        return getCollectionUrl(collection, field);
+        return getCollectionUrl(collection, field, getSearchUrl());
     }
 
     /**
@@ -927,7 +930,12 @@ public class CollectionView {
      * @param field a {@link java.lang.String} object.
      * @return a {@link java.lang.String} object.
      */
-    public static String getCollectionUrl(HierarchicalBrowseDcElement collection, String field) {
+    public static String getCollectionUrl(HierarchicalBrowseDcElement collection, String field, String baseSearchUrl) {
+        
+        if(StringUtils.isBlank(baseSearchUrl)) {
+            baseSearchUrl = BeanUtils.getServletPathWithHostAsUrlFromJsfContext() + PageType.browse.getName() + "/";
+        }
+        
         if (collection.getInfo().getLinkURI(BeanUtils.getRequest()) != null) {
             String ret = collection.getInfo().getLinkURI(BeanUtils.getRequest()).toString();
             logger.trace("COLLECTION static url: {}", ret);
@@ -949,9 +957,8 @@ public class CollectionView {
                     + collection.getLuceneName() + "/";
             return ret;
         } else {
-            String ret = new StringBuilder(BeanUtils.getServletPathWithHostAsUrlFromJsfContext()).append('/')
-                    .append(PageType.browse.getName())
-                    .append("/-/1/")
+            String ret = new StringBuilder(baseSearchUrl)
+                    .append("-/1/")
                     .append(collection.getSortField())
                     .append('/')
                     .append(field)
@@ -1058,6 +1065,20 @@ public class CollectionView {
      */
     public String getField() {
         return field;
+    }
+    
+    /**
+     * @return the searchUrl
+     */
+    public String getSearchUrl() {
+        return searchUrl;
+    }
+    
+    /**
+     * @param searchUrl the searchUrl to set
+     */
+    public void setSearchUrl(String searchUrl) {
+        this.searchUrl = searchUrl;
     }
 
 }

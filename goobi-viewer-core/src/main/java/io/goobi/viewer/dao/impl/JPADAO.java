@@ -3848,6 +3848,16 @@ public class JPADAO implements IDAO {
         List<CMSPage> pageList = q.getResultList();
         return pageList;
     }
+    
+    @Override
+    @SuppressWarnings("unchecked")
+    public List<CMSPage> getCMSPagesForSubtheme(String subtheme) throws DAOException {
+        preQuery();
+        Query q = em.createQuery("SELECT DISTINCT page FROM CMSPage page WHERE page.subThemeDiscriminatorValue = :subtheme");
+        q.setParameter("subtheme", subtheme);
+        List<CMSPage> pageList = q.getResultList();
+        return pageList;
+    }
 
     /* (non-Javadoc)
      * @see io.goobi.viewer.dao.IDAO#getCMSPagesForRecord(java.lang.String, io.goobi.viewer.model.cms.Category)

@@ -100,7 +100,7 @@ public class CompoundLabeledLink extends LabeledLink {
             int subLinkWeight = weight;
             // Add collection hierarchy links with the same weight
             for (HierarchicalBrowseDcElement collectionElement : collectionElements) {
-                links.add(new LabeledLink(collectionElement.getName(), CollectionView.getCollectionUrl(collectionElement, field), subLinkWeight));
+                links.add(new LabeledLink(collectionElement.getName(), CollectionView.getCollectionUrl(collectionElement, field, null), subLinkWeight));
             }
         } catch (PresentationException e) {
         } catch (DAOException e) {

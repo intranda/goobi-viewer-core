@@ -2126,4 +2126,11 @@ public interface IDAO {
      */
     public List<CMSPage> getPagesUsingMap(GeoMap map) throws DAOException;
 
+    /**
+     * @param subtheme
+     * @return
+     * @throws DAOException
+     */
+    List<CMSPage> getCMSPagesForSubtheme(String subtheme) throws DAOException;
+
 }
