@@ -200,20 +200,6 @@ public class DataFileTools {
 
         return dataFolderPath;
     }
-    
-    public static void main(String[] args) {
-        
-        String sourcePath = "/a/b/c/d/e/f/";
-        String filePath = "file.txt";
-        Path path = Paths.get(sourcePath).resolve(filePath);
-        System.out.println(path);
-        
-        String passwd = "/../../../../../../etc/passwd";
-        Path pwPath = Paths.get(sourcePath).resolve(passwd);
-        System.out.println(pwPath);
-                
-        
-    }
 
     /**
      * <p>
