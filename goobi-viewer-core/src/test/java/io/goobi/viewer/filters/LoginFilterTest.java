@@ -92,7 +92,7 @@ public class LoginFilterTest {
      */
     @Test
     public void isRestrictedUri_shouldReturnFalseForBookmarksSessionUris() throws Exception {
-        Assert.assertFalse(LoginFilter.isRestrictedUri("bookmarks/session/foo"));
+        Assert.assertFalse(LoginFilter.isRestrictedUri("/bookmarks/session/foo"));
     }
 
     /**
@@ -101,7 +101,7 @@ public class LoginFilterTest {
      */
     @Test
     public void isRestrictedUri_shouldReturnFalseForBookmarksShareKeyUris() throws Exception {
-        Assert.assertFalse(LoginFilter.isRestrictedUri("bookmarks/key/somesharekey/"));
+        Assert.assertFalse(LoginFilter.isRestrictedUri("/bookmarks/key/somesharekey/"));
     }
 
     /**
@@ -110,7 +110,7 @@ public class LoginFilterTest {
      */
     @Test
     public void isRestrictedUri_shouldReturnFalseForBookmarksSendListUris() throws Exception {
-        Assert.assertFalse(LoginFilter.isRestrictedUri("bookmarks/send/"));
+        Assert.assertFalse(LoginFilter.isRestrictedUri("/bookmarks/send/"));
     }
 
     /**
@@ -119,6 +119,15 @@ public class LoginFilterTest {
      */
     @Test
     public void isRestrictedUri_shouldReturnFalseForUserAccountActivationUris() throws Exception {
-        Assert.assertFalse(LoginFilter.isRestrictedUri("user/activate/foo@bar.com/abcde/"));
+        Assert.assertFalse(LoginFilter.isRestrictedUri("/user/activate/foo@bar.com/abcde/"));
+    }
+
+    /**
+     * @see LoginFilter#isRestrictedUri(String)
+     * @verifies return false for user password reset uris
+     */
+    @Test
+    public void isRestrictedUri_shouldReturnFalseForUserPasswordResetUris() throws Exception {
+        Assert.assertFalse(LoginFilter.isRestrictedUri("/user/resetpw/foo@bar.com/abcde/"));
     }
 }
