@@ -203,6 +203,10 @@ public class FacetItem implements Comparable<FacetItem>, Serializable {
                 continue;
             }
             String label = value;
+            
+            // TODO If label field configured for fieldName, retrieve label field from index (DOCTYPE:METADATA)
+            DataManager.getInstance().getConfiguration().getDrillDownFields();
+            
             if (StringUtils.isEmpty(field)) {
                 label = new StringBuilder(value).append(SolrConstants._DRILLDOWN_SUFFIX).toString();
             }

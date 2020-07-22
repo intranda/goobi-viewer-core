@@ -2206,7 +2206,7 @@ public final class Configuration extends AbstractConfiguration {
     public boolean isSidebarTocWidgetVisible() {
         return this.getLocalBoolean("sidebar.sidebarToc.visible", true);
     }
-    
+
     /**
      * <p>
      * This method checks whether the TOC <strong>widget</strong> is enabled. To check whether the sidebar TOC <strong>link</strong> in the views
@@ -4358,7 +4358,7 @@ public final class Configuration extends AbstractConfiguration {
     public List<String> getIIIFLicenses() {
         return getLocalList("webapi.iiif.license", Collections.emptyList());
     }
-    
+
     /**
      * <p>
      * getIIIFMetadataFields.
