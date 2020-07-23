@@ -29,6 +29,9 @@ import org.primefaces.expression.SearchExpressionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.ocpsoft.pretty.PrettyContext;
+import com.ocpsoft.pretty.faces.url.URL;
+
 import de.unigoettingen.sub.commons.contentlib.exceptions.IllegalRequestException;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.StringTools;
@@ -954,10 +957,12 @@ public class CollectionView {
             logger.trace("COLLECTION new window url: {}", ret);
             return ret;
         } else if (DataManager.getInstance().getConfiguration().isAllowRedirectCollectionToWork() && collection.getNumberOfVolumes() == 1) {
-            //            return collection.getRepresentativeUrl();
-            String ret = BeanUtils.getServletPathWithHostAsUrlFromJsfContext() + "/" + PageType.firstWorkInCollection.getName() + "/" + field + "/"
-                    + collection.getLuceneName() + "/";
-            return ret;
+            
+            String url = new StringBuilder(BeanUtils.getServletPathWithHostAsUrlFromJsfContext())
+            .append("/browse/")
+            .append(collection.getLuceneName())
+            .append("/record/").toString();
+            return url;
         } else {
             String facetString = field + ":" + collection.getLuceneName();
             String encFacetString = StringTools.encodeUrl(facetString);

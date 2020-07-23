@@ -519,7 +519,7 @@ public final class SearchHelper {
                         }
                         // String dc = SolrSearchIndex.getAsString(o);
                         String url = "/ppnresolver?id=" + pi;
-                        return url;
+                        return pi;
                     }
                 }
             }
