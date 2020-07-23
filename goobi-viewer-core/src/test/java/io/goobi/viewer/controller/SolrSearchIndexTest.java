@@ -446,10 +446,10 @@ public class SolrSearchIndexTest extends AbstractSolrEnabledTest {
         String[] values = new String[] { "Groos, Karl", "Schubert, Otto", "Heinse, Gottlob Heinrich" };
         Map<String, String> result = DataManager.getInstance()
                 .getSearchIndex()
-                .getLabelValuesForDrillDownField("MD_AUTHOR", SolrConstants.DC, new HashSet<>(Arrays.asList(values)));
+                .getLabelValuesForDrillDownField("MD_AUTHOR", "MD_FIRSTNAME", new HashSet<>(Arrays.asList(values)));
         Assert.assertEquals(3, result.size());
-        Assert.assertEquals("dcrelations", result.get("Groos, Karl"));
-        Assert.assertEquals("dcaccesscondition.movingwall", result.get("Schubert, Otto"));
-        Assert.assertEquals("dcauthoritydata.gnd", result.get("Heinse, Gottlob Heinrich"));
+        Assert.assertEquals("Karl", result.get("MD_AUTHOR:Groos, Karl"));
+        Assert.assertEquals("Otto", result.get("MD_AUTHOR:Schubert, Otto"));
+        Assert.assertEquals("Gottlob Heinrich", result.get("MD_AUTHOR:Heinse, Gottlob Heinrich"));
     }
 }
