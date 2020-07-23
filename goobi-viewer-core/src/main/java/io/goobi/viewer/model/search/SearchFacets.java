@@ -544,7 +544,6 @@ public class SearchFacets implements Serializable {
         if (labelCache == null) {
             labelCache = Collections.emptyMap();
         }
-        logger.trace("labelCache: " + labelCache.toString());
         try {
             facetString = URLDecoder.decode(facetString, "utf-8");
             facetString = BeanUtils.unescapeCriticalUrlChracters(facetString);
