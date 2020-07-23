@@ -162,6 +162,17 @@ public class RecordFileResourceTest extends AbstractRestApiTest {
     }
     
     @Test
+    public void testGetMissingSourceFile() {
+        String url = urls.path(RECORDS_FILES, RECORDS_FILES_SOURCE).params(PI, "bla.txt").build();
+        try(Response response = target(url)
+                .request()
+                .get()) {
+            assertEquals("Should return status 404", 404, response.getStatus());
+
+        }
+    }
+    
+    @Test
     public void testGetSourceFilePathTraversalAttack() {
         String url = urls.path(RECORDS_FILES, RECORDS_FILES_SOURCE).params(PI, "/../../../../..//etc/passwd").build();
         try(Response response = target(url)
