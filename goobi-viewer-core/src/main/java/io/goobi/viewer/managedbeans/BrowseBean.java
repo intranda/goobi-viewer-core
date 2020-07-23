@@ -43,6 +43,7 @@ import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.SolrConstants;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
+import io.goobi.viewer.exceptions.RecordNotFoundException;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.messages.Messages;
 import io.goobi.viewer.messages.ViewerResourceBundle;
@@ -800,8 +801,15 @@ public class BrowseBean implements Serializable {
         }
         String url = SearchHelper.getFirstWorkUrlWithFieldValue(SolrConstants.DC, getTargetCollection(), true, true,
                 DataManager.getInstance().getConfiguration().getCollectionSplittingChar(SolrConstants.DC), BeanUtils.getLocale());
-        url = url.replace("http://localhost:8082/viewer/", "");
-        return "pretty:" + url;
+//        url = BeanUtils.getServletPathWithHostAsUrlFromJsfContext() + url;
+//        return url;
+        try {
+            BeanUtils.getActiveDocumentBean().setPersistentIdentifier(url);
+            return "pretty:object1";
+        } catch (RecordNotFoundException e) {
+            logger.error("No record found for id " + url);
+            return null;
+        }
     }
 
     /**

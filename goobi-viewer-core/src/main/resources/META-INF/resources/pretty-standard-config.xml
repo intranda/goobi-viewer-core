@@ -74,6 +74,12 @@
 		<!-- <action onPostback="false">#{browseBean.expandCollection(2)}</action> -->
 		<!-- <action onPostback="false">#{browseBean.collection.showAll()}</action> -->
 	</url-mapping>	
+	<url-mapping id="browseFirstRecord">
+		<pattern value="/browse/#{browseBean.targetCollection}/record/" />
+		<view-id value="/browse.xhtml" />
+		<action onPostback="false">#{navigationHelper.resetTheme}</action>
+		<action onPostback="false">#{browseBean.openWorkInTargetCollection()}</action>
+	</url-mapping>
 	
 	<!-- STATISTICS -->
 	<url-mapping id="statistics">
