@@ -1697,7 +1697,7 @@ public final class SolrSearchIndex {
             String value = (String) doc.getFieldValue("MD_VALUE");
             String label = String.valueOf(doc.getFirstValue(labelField));
             if (StringUtils.isNotEmpty(value) || StringUtils.isNotEmpty(labelField)) {
-                ret.put(value, label);
+                ret.put(field + ":" + value, label);
             }
         }
         

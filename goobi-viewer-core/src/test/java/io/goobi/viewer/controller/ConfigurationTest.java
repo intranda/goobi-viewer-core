@@ -1768,8 +1768,8 @@ public class ConfigurationTest extends AbstractTest {
     @Test
     public void getLabelFieldForDrillDownField_shouldReturnCorrectValue() throws Exception {
         Assert.assertEquals("MD_FIELDLABEL", DataManager.getInstance().getConfiguration().getLabelFieldForDrillDownField(SolrConstants.YEAR));
+        Assert.assertEquals("MD_FIRSTNAME", DataManager.getInstance().getConfiguration().getLabelFieldForDrillDownField("MD_CREATOR"));
     }
-    
 
     /**
      * @see Configuration#getLabelFieldForDrillDownField(String)

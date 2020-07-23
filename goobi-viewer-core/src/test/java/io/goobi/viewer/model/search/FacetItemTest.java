@@ -15,7 +15,10 @@
  */
 package io.goobi.viewer.model.search;
 
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.TreeMap;
 
@@ -219,5 +222,18 @@ public class FacetItemTest extends AbstractTest {
             FacetItem facetItem2 = new FacetItem("field:foo", false).setLabel("foo").setCount(1);
             Assert.assertEquals(0, facetItem1.compareTo(facetItem2));
         }
+    }
+
+    /**
+     * @see FacetItem#generateFilterLinkList(String,Map,boolean,Locale,Map)
+     * @verifies set label from separate field if configured and found
+     */
+    @Test
+    public void generateFilterLinkList_shouldSetLabelFromSeparateFieldIfConfiguredAndFound() throws Exception {
+        Map<String, String> labelMap = new HashMap<>(1);
+        List<FacetItem> facetItems =
+                FacetItem.generateFilterLinkList("MD_CREATOR", Collections.singletonMap("Groos, Karl", 1L), false, null, labelMap);
+        Assert.assertEquals(1, facetItems.size());
+        Assert.assertEquals("Karl", facetItems.get(0).getLabel());
     }
 }

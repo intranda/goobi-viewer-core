@@ -206,25 +206,25 @@ public class FacetItem implements Comparable<FacetItem>, Serializable {
      * @param values a {@link java.util.Map} object.
      * @param hierarchical a boolean.
      * @param locale a {@link java.util.Locale} object.
-     * @param labelCache Optional map for storing alternate labels for later use by the client
+     * @param labelMap Optional map for storing alternate labels for later use by the client
      * @return {@link java.util.ArrayList} of {@link io.goobi.viewer.model.search.FacetItem}
      * @should add priority values first
+     * @should set label from separate field if configured and found
      */
     public static List<FacetItem> generateFilterLinkList(String field, Map<String, Long> values, boolean hierarchical, Locale locale,
-            Map<String, String> labelCache) {
-        logger.trace("generateFilterLinkList: {}", field);
+            Map<String, String> labelMap) {
+        // logger.trace("generateFilterLinkList: {}", field);
         List<FacetItem> retList = new ArrayList<>();
         List<String> priorityValues = DataManager.getInstance().getConfiguration().getPriorityValuesForDrillDownField(field);
         Map<String, FacetItem> priorityValueMap = new HashMap<>(priorityValues.size());
 
-        // If label field configured for fieldName, retrieve label field from index (DOCTYPE:METADATA)
+        // If a separate label field configured for fieldName, load all values and add them to labelMap
         String labelField = DataManager.getInstance().getConfiguration().getLabelFieldForDrillDownField(field);
-        Map<String, String> labelMap = Collections.emptyMap();
-        if (labelField != null) {
+        if (labelField != null && labelMap != null) {
             try {
-                labelMap = DataManager.getInstance()
+                labelMap.putAll(DataManager.getInstance()
                         .getSearchIndex()
-                        .getLabelValuesForDrillDownField(field, labelField, values.keySet());
+                        .getLabelValuesForDrillDownField(field, labelField, values.keySet()));
             } catch (PresentationException e) {
                 logger.debug(e.getMessage());
             } catch (IndexUnreachableException e) {
@@ -239,11 +239,9 @@ public class FacetItem implements Comparable<FacetItem>, Serializable {
             }
             String label = value;
 
-            if (labelMap != null && labelMap.containsKey(value)) {
-                label = labelMap.get(value);
-                if (labelCache != null) {
-                    labelCache.put(field + ":" + value, label);
-                }
+            String key = field + ":" + value;
+            if (labelMap != null && labelMap.containsKey(key)) {
+                label = labelMap.get(key);
             }
 
             if (StringUtils.isEmpty(field)) {

@@ -63,7 +63,7 @@ public class SearchFacets implements Serializable {
 
     private final Map<String, List<Integer>> valueRanges = new HashMap<>();
     /** Map storing labels from separate label fields that were already retrieved from the index. */
-    private final Map<String, String> labelCache = new HashMap<>();
+    private final Map<String, String> labelMap = new HashMap<>();
 
     private String tempValue;
 
@@ -495,7 +495,7 @@ public class SearchFacets implements Serializable {
      */
     public void setCurrentFacetString(String currentFacetString) {
         logger.trace("setCurrentFacetString: {}", currentFacetString);
-        parseFacetString(currentFacetString, currentFacets, labelCache);
+        parseFacetString(currentFacetString, currentFacets, labelMap);
     }
 
     /**
@@ -529,6 +529,7 @@ public class SearchFacets implements Serializable {
      * @should empty list before filling
      * @should add DC field prefix if no field name is given
      * @should set hierarchical status correctly
+     * @should use label from labelMap if available
      */
     static void parseFacetString(String facetString, List<FacetItem> facetItems, Map<String, String> labelCache) {
         if (facetItems == null) {
@@ -1109,9 +1110,9 @@ public class SearchFacets implements Serializable {
     }
 
     /**
-     * @return the labelCache
+     * @return the labelMap
      */
-    public Map<String, String> getLabelCache() {
-        return labelCache;
+    public Map<String, String> getLabelMap() {
+        return labelMap;
     }
 }
