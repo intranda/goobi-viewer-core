@@ -15,6 +15,7 @@
  */
 package io.goobi.viewer.model.viewer;
 
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -24,11 +25,16 @@ import java.util.stream.Collectors;
 
 import org.apache.commons.collections4.ListUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.primefaces.expression.SearchExpressionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.ocpsoft.pretty.PrettyContext;
+import com.ocpsoft.pretty.faces.url.URL;
+
 import de.unigoettingen.sub.commons.contentlib.exceptions.IllegalRequestException;
 import io.goobi.viewer.controller.DataManager;
+import io.goobi.viewer.controller.StringTools;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
@@ -57,6 +63,7 @@ public class CollectionView {
     private int baseLevels = 0;
     private boolean showAllHierarchyLevels = false;
     private boolean displayParentCollections = true;
+    private String searchUrl = "";
 
     private List<String> ignoreList = new ArrayList<>();
 
@@ -86,6 +93,7 @@ public class CollectionView {
         this.field = blueprint.field;
         this.splittingChar = blueprint.splittingChar;
         this.dataProvider = blueprint.dataProvider;
+        this.searchUrl = blueprint.searchUrl;
     }
 
     /**
@@ -915,7 +923,7 @@ public class CollectionView {
      * @return a {@link java.lang.String} object.
      */
     public String getCollectionUrl(HierarchicalBrowseDcElement collection) {
-        return getCollectionUrl(collection, field);
+        return getCollectionUrl(collection, field, getSearchUrl());
     }
 
     /**
@@ -927,7 +935,12 @@ public class CollectionView {
      * @param field a {@link java.lang.String} object.
      * @return a {@link java.lang.String} object.
      */
-    public static String getCollectionUrl(HierarchicalBrowseDcElement collection, String field) {
+    public static String getCollectionUrl(HierarchicalBrowseDcElement collection, String field, String baseSearchUrl) {
+        
+        if(StringUtils.isBlank(baseSearchUrl)) {
+            baseSearchUrl = BeanUtils.getServletPathWithHostAsUrlFromJsfContext() + "/" + PageType.browse.getName() + "/";
+        }
+        
         if (collection.getInfo().getLinkURI(BeanUtils.getRequest()) != null) {
             String ret = collection.getInfo().getLinkURI(BeanUtils.getRequest()).toString();
             logger.trace("COLLECTION static url: {}", ret);
@@ -944,19 +957,20 @@ public class CollectionView {
             logger.trace("COLLECTION new window url: {}", ret);
             return ret;
         } else if (DataManager.getInstance().getConfiguration().isAllowRedirectCollectionToWork() && collection.getNumberOfVolumes() == 1) {
-            //            return collection.getRepresentativeUrl();
-            String ret = BeanUtils.getServletPathWithHostAsUrlFromJsfContext() + "/" + PageType.firstWorkInCollection.getName() + "/" + field + "/"
-                    + collection.getLuceneName() + "/";
-            return ret;
+            
+            String url = new StringBuilder(BeanUtils.getServletPathWithHostAsUrlFromJsfContext())
+            .append("/browse/")
+            .append(collection.getLuceneName())
+            .append("/record/").toString();
+            return url;
         } else {
-            String ret = new StringBuilder(BeanUtils.getServletPathWithHostAsUrlFromJsfContext()).append('/')
-                    .append(PageType.browse.getName())
-                    .append("/-/1/")
+            String facetString = field + ":" + collection.getLuceneName();
+//            String encFacetString = StringTools.encodeUrl(facetString);
+            String ret = new StringBuilder(baseSearchUrl)
+                    .append("-/-/1/")
                     .append(collection.getSortField())
                     .append('/')
-                    .append(field)
-                    .append(':')
-                    .append(collection.getLuceneName())
+                    .append(facetString)
                     .append('/')
                     .toString();
             return ret;
@@ -1058,6 +1072,20 @@ public class CollectionView {
      */
     public String getField() {
         return field;
+    }
+    
+    /**
+     * @return the searchUrl
+     */
+    public String getSearchUrl() {
+        return searchUrl;
+    }
+    
+    /**
+     * @param searchUrl the searchUrl to set
+     */
+    public void setSearchUrl(String searchUrl) {
+        this.searchUrl = searchUrl;
     }
 
 }

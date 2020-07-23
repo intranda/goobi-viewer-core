@@ -197,15 +197,6 @@
         <url-pattern>/epnresolver</url-pattern>
     </servlet-mapping>
     <servlet>
-        <display-name>FileServlet</display-name>
-        <servlet-name>FileServlet</servlet-name>
-        <servlet-class>io.goobi.viewer.servlets.FileServlet</servlet-class>
-    </servlet>
-    <servlet-mapping>
-        <servlet-name>FileServlet</servlet-name>
-        <url-pattern>/file</url-pattern>
-    </servlet-mapping>
-    <servlet>
         <display-name>WebApiServlet</display-name>
         <servlet-name>WebApiServlet</servlet-name>
         <servlet-class>io.goobi.viewer.servlets.WebApiServlet</servlet-class>

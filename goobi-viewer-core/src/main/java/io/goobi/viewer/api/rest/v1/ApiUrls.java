@@ -86,6 +86,7 @@ public class ApiUrls extends AbstractApiUrlManager {
     public static final String RECORDS_FILES_ALTO =                         "/alto/{filename}";
     public static final String RECORDS_FILES_TEI =                          "/tei/{filename}";
     public static final String RECORDS_FILES_PDF =                          "/pdf/{filename}";
+    public static final String RECORDS_FILES_SOURCE =                          "/source/{filename}";
     public static final String RECORDS_FILES_AUDIO =                        "/audio/{mimetype}/{filename}";
     public static final String RECORDS_FILES_VIDEO =                        "/video/{mimetype}/{filename}";
 
