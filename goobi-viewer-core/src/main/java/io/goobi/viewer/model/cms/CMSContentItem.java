@@ -1152,7 +1152,9 @@ public class CMSContentItem implements Comparable<CMSContentItem>, CMSMediaHolde
         String subtheme = getOwnerPageLanguageVersion().getOwnerPage().getSubThemeDiscriminatorValue();
         if(StringUtils.isNotBlank(subtheme)) {
             try {
-                Optional<CMSPage> searchPage = DataManager.getInstance().getDao().getCMSPagesForSubtheme(subtheme).stream()
+                Optional<CMSPage> searchPage = DataManager.getInstance().getDao().getCMSPagesForSubtheme(subtheme)
+                .stream()
+                .filter(p -> p.isPublished())
                 .filter(p -> p.hasSearchFunctionality()).findFirst();
                 searchPage.ifPresent(p -> {
                     collection.setSearchUrl(p.getPageUrl());

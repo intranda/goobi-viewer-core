@@ -15,6 +15,7 @@
  */
 package io.goobi.viewer.model.viewer;
 
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -30,6 +31,7 @@ import org.slf4j.LoggerFactory;
 
 import de.unigoettingen.sub.commons.contentlib.exceptions.IllegalRequestException;
 import io.goobi.viewer.controller.DataManager;
+import io.goobi.viewer.controller.StringTools;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
@@ -933,7 +935,7 @@ public class CollectionView {
     public static String getCollectionUrl(HierarchicalBrowseDcElement collection, String field, String baseSearchUrl) {
         
         if(StringUtils.isBlank(baseSearchUrl)) {
-            baseSearchUrl = BeanUtils.getServletPathWithHostAsUrlFromJsfContext() + PageType.browse.getName() + "/";
+            baseSearchUrl = BeanUtils.getServletPathWithHostAsUrlFromJsfContext() + "/" + PageType.browse.getName() + "/";
         }
         
         if (collection.getInfo().getLinkURI(BeanUtils.getRequest()) != null) {
@@ -957,13 +959,13 @@ public class CollectionView {
                     + collection.getLuceneName() + "/";
             return ret;
         } else {
+            String facetString = field + ":" + collection.getLuceneName();
+            String encFacetString = StringTools.encodeUrl(facetString);
             String ret = new StringBuilder(baseSearchUrl)
-                    .append("-/1/")
+                    .append("-/-/1/")
                     .append(collection.getSortField())
                     .append('/')
-                    .append(field)
-                    .append(':')
-                    .append(collection.getLuceneName())
+                    .append(encFacetString)
                     .append('/')
                     .toString();
             return ret;
