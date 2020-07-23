@@ -965,12 +965,12 @@ public class CollectionView {
             return url;
         } else {
             String facetString = field + ":" + collection.getLuceneName();
-            String encFacetString = StringTools.encodeUrl(facetString);
+//            String encFacetString = StringTools.encodeUrl(facetString);
             String ret = new StringBuilder(baseSearchUrl)
                     .append("-/-/1/")
                     .append(collection.getSortField())
                     .append('/')
-                    .append(encFacetString)
+                    .append(facetString)
                     .append('/')
                     .toString();
             return ret;
