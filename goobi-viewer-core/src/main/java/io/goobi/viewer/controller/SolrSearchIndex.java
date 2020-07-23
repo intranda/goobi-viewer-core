@@ -25,6 +25,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.EnumSet;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -1693,14 +1694,26 @@ public final class SolrSearchIndex {
         }
 
         Map<String, String> ret = new HashMap<>(result.size());
+        Set<String> used = new HashSet<>();
         for (SolrDocument doc : result) {
             String value = (String) doc.getFieldValue("MD_VALUE");
             String label = String.valueOf(doc.getFirstValue(labelField));
+            if (used.contains(value + label)) {
+                continue;
+            }
             if (StringUtils.isNotEmpty(value) || StringUtils.isNotEmpty(labelField)) {
-                ret.put(field + ":" + value, label);
+                String key = field + ":" + value;
+                if (ret.get(key) != null) {
+                    // Add all found labels for each value to the string
+                    ret.put(key, ret.get(key) + " / " + label);
+                    // TODO truncate at certain length?
+                } else {
+                    ret.put(key, label);
+                }
+                used.add(value + label);
             }
         }
-        
+
         return ret;
     }
 
