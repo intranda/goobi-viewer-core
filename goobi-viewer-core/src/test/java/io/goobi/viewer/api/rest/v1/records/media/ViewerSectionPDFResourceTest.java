@@ -33,8 +33,8 @@ import io.goobi.viewer.api.rest.AbstractRestApiTest;
 public class ViewerSectionPDFResourceTest extends AbstractRestApiTest {
     private static final String PI_ACCESS_PAST_MOVING_WALL = "13473260X";
     private static final String PI_ACCESS_RESTRICTED = "557335825";
-    private static final String PI = "PPN782445853";
-    private static final String LOGID = "LOG_0002";
+    private static final String PI = "02008031921530";
+    private static final String LOGID = "LOG_0000";
 
 
     /**
