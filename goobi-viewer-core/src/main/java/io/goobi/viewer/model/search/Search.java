@@ -354,7 +354,7 @@ public class Search implements Serializable {
                         String fieldName = SearchHelper.defacetifyField(facetField.getName());
                         facets.getAvailableFacets()
                                 .put(fieldName, FacetItem.generateFilterLinkList(fieldName, facetResult, hierarchicalFacetFields.contains(fieldName),
-                                        locale));
+                                        locale, facets.getLabelCache()));
                         //                        allFacetFields.remove("FACET_" + SolrConstants.DOCSTRCT_SUB);
                         allFacetFields.remove(facetField.getName());
                     }
@@ -417,7 +417,8 @@ public class Search implements Serializable {
             String fieldName = SearchHelper.defacetifyField(facetField.getName());
             facets.getAvailableFacets()
                     .put(fieldName,
-                            FacetItem.generateFilterLinkList(fieldName, facetResult, hierarchicalFacetFields.contains(fieldName), locale));
+                            FacetItem.generateFilterLinkList(fieldName, facetResult, hierarchicalFacetFields.contains(fieldName), locale,
+                                    facets.getLabelCache()));
         }
 
         int lastPage = getLastPage(hitsPerPage);

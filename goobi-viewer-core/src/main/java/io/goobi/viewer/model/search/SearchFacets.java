@@ -62,6 +62,8 @@ public class SearchFacets implements Serializable {
     private final Map<String, String> maxValues = new HashMap<>();
 
     private final Map<String, List<Integer>> valueRanges = new HashMap<>();
+    /** Map storing labels from separate label fields that were already retrieved from the index. */
+    private final Map<String, String> labelCache = new HashMap<>();
 
     private String tempValue;
 
@@ -493,7 +495,7 @@ public class SearchFacets implements Serializable {
      */
     public void setCurrentFacetString(String currentFacetString) {
         logger.trace("setCurrentFacetString: {}", currentFacetString);
-        parseFacetString(currentFacetString, currentFacets);
+        parseFacetString(currentFacetString, currentFacets, labelCache);
     }
 
     /**
@@ -522,31 +524,39 @@ public class SearchFacets implements Serializable {
      * 
      * @param facetString
      * @param facetItems
+     * @param labelCache
      * @should fill list correctly
      * @should empty list before filling
      * @should add DC field prefix if no field name is given
      * @should set hierarchical status correctly
      */
-    static void parseFacetString(String facetString, List<FacetItem> facetItems) {
+    static void parseFacetString(String facetString, List<FacetItem> facetItems, Map<String, String> labelCache) {
         if (facetItems == null) {
             facetItems = new ArrayList<>();
         } else {
             facetItems.clear();
         }
-        if (StringUtils.isNotEmpty(facetString) && !"-".equals(facetString)) {
-            try {
-                facetString = URLDecoder.decode(facetString, "utf-8");
-                facetString = BeanUtils.unescapeCriticalUrlChracters(facetString);
-            } catch (UnsupportedEncodingException e) {
-            }
-            String[] facetStringSplit = facetString.split(";;");
-            for (String facetLink : facetStringSplit) {
-                if (StringUtils.isNotEmpty(facetLink)) {
-                    if (!facetLink.contains(":")) {
-                        facetLink = new StringBuilder(SolrConstants.DC).append(':').append(facetLink).toString();
-                    }
-                    facetItems.add(new FacetItem(facetLink, isFieldHierarchical(facetLink.substring(0, facetLink.indexOf(":")))));
+        if (StringUtils.isEmpty(facetString) || "-".equals(facetString)) {
+            return;
+        }
+
+        if (labelCache == null) {
+            labelCache = Collections.emptyMap();
+        }
+        logger.trace("labelCache: " + labelCache.toString());
+        try {
+            facetString = URLDecoder.decode(facetString, "utf-8");
+            facetString = BeanUtils.unescapeCriticalUrlChracters(facetString);
+        } catch (UnsupportedEncodingException e) {
+        }
+        String[] facetStringSplit = facetString.split(";;");
+        for (String facetLink : facetStringSplit) {
+            if (StringUtils.isNotEmpty(facetLink)) {
+                if (!facetLink.contains(":")) {
+                    facetLink = new StringBuilder(SolrConstants.DC).append(':').append(facetLink).toString();
                 }
+                facetItems.add(
+                        new FacetItem(facetLink, labelCache.get(facetLink), isFieldHierarchical(facetLink.substring(0, facetLink.indexOf(":")))));
             }
         }
     }
@@ -1096,5 +1106,12 @@ public class SearchFacets implements Serializable {
             name = facet.getValue();
         }
         return name;
+    }
+
+    /**
+     * @return the labelCache
+     */
+    public Map<String, String> getLabelCache() {
+        return labelCache;
     }
 }

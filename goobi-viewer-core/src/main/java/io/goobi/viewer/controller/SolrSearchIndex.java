@@ -1686,7 +1686,6 @@ public final class SolrSearchIndex {
             sbQuery.append(" MD_VALUE:\"").append(value).append('"');
         }
         sbQuery.append(')');
-        logger.trace(sbQuery.toString());
         String[] fields = new String[] { "MD_VALUE", labelField };
         SolrDocumentList result = search(sbQuery.toString(), Arrays.asList(fields));
         if (result.isEmpty()) {
