@@ -124,7 +124,6 @@ public class NormdataResource {
         // logger.debug("norm data locale: {}", locale.toString());
 
         url = BeanUtils.unescapeCriticalUrlChracters(url.trim());
-        logger.trace("url: {}", url);
         String secondUrl = null;
         if (url.contains("$")) {
             String[] urlSplit = url.split("[$]");

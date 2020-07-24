@@ -34,6 +34,8 @@ import org.slf4j.LoggerFactory;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.SolrConstants;
 import io.goobi.viewer.controller.StringTools;
+import io.goobi.viewer.exceptions.IndexUnreachableException;
+import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.managedbeans.SearchBean;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.messages.ViewerResourceBundle;
@@ -72,11 +74,25 @@ public class FacetItem implements Comparable<FacetItem>, Serializable {
      * @should split field and value range correctly
      */
     public FacetItem(String link, boolean hierarchical) {
+        this(link, null, hierarchical);
+    }
+
+    /**
+     * Constructor for active facets received via the URL. The Solr query is split into individual field/value.
+     *
+     * @param link a {@link java.lang.String} object.
+     * @param label
+     * @param hierarchical a boolean.
+     * @should split field and value correctly
+     * @should split field and value range correctly
+     */
+    public FacetItem(String link, String label, boolean hierarchical) {
         int colonIndex = link.indexOf(':');
         if (colonIndex == -1) {
             throw new IllegalArgumentException(new StringBuilder().append("Field and value are not colon-separated: ").append(link).toString());
         }
         this.link = link;
+        this.label = label;
         this.hierarchial = hierarchical;
         parseLink(link);
     }
@@ -186,23 +202,48 @@ public class FacetItem implements Comparable<FacetItem>, Serializable {
     /**
      * Constructs Lucene queries for the drill-down. Always sorted by the label translation.
      *
-     * @return {@link java.util.ArrayList} of {@link io.goobi.viewer.model.search.FacetItem}
-     * @should add priority values first
      * @param field a {@link java.lang.String} object.
      * @param values a {@link java.util.Map} object.
      * @param hierarchical a boolean.
      * @param locale a {@link java.util.Locale} object.
+     * @param labelMap Optional map for storing alternate labels for later use by the client
+     * @return {@link java.util.ArrayList} of {@link io.goobi.viewer.model.search.FacetItem}
+     * @should add priority values first
+     * @should set label from separate field if configured and found
      */
-    public static List<FacetItem> generateFilterLinkList(String field, Map<String, Long> values, boolean hierarchical, Locale locale) {
+    public static List<FacetItem> generateFilterLinkList(String field, Map<String, Long> values, boolean hierarchical, Locale locale,
+            Map<String, String> labelMap) {
+        // logger.trace("generateFilterLinkList: {}", field);
         List<FacetItem> retList = new ArrayList<>();
         List<String> priorityValues = DataManager.getInstance().getConfiguration().getPriorityValuesForDrillDownField(field);
         Map<String, FacetItem> priorityValueMap = new HashMap<>(priorityValues.size());
+
+        // If a separate label field configured for fieldName, load all values and add them to labelMap
+        String labelField = DataManager.getInstance().getConfiguration().getLabelFieldForDrillDownField(field);
+        if (labelField != null && labelMap != null) {
+            try {
+                labelMap.putAll(DataManager.getInstance()
+                        .getSearchIndex()
+                        .getLabelValuesForDrillDownField(field, labelField, values.keySet()));
+            } catch (PresentationException e) {
+                logger.debug(e.getMessage());
+            } catch (IndexUnreachableException e) {
+                logger.error(e.getMessage(), e);
+            }
+        }
+
         for (String value : values.keySet()) {
             // Skip reversed values
             if (value.charAt(0) == 1) {
                 continue;
             }
             String label = value;
+
+            String key = field + ":" + value;
+            if (labelMap != null && labelMap.containsKey(key)) {
+                label = labelMap.get(key);
+            }
+
             if (StringUtils.isEmpty(field)) {
                 label = new StringBuilder(value).append(SolrConstants._DRILLDOWN_SUFFIX).toString();
             }
