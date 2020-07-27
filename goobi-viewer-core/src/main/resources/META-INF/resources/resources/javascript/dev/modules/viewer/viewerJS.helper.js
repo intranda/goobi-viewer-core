@@ -206,8 +206,8 @@ var viewerJS = ( function( viewer ) {
         checkLocalStorage: function() {
             if ( typeof localStorage === 'object' ) {
                 try {
-                    localStorage.setItem( 'testLocalStorage', 1 );
-                    localStorage.removeItem( 'testLocalStorage' );
+                    sessionStorage.setItem( 'testLocalStorage', 1 );
+                    sessionStorage.removeItem( 'testLocalStorage' );
                     
                     return true;
                 }

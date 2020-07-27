@@ -196,7 +196,7 @@ var viewerJS = ( function( viewer ) {
             console.log( '_parseFontSize: size = ', size );
         }
         
-        localStorage.setItem( 'currentFontSize', size );
+        sessionStorage.setItem( 'currentFontSize', size );
     }
     
     /**
@@ -208,10 +208,10 @@ var viewerJS = ( function( viewer ) {
         if ( _debug ) {
             console.log( '---------- _setFontSize() ----------' );
         }
-        var fontSize = localStorage.getItem( 'currentFontSize' );
+        var fontSize = sessionStorage.getItem( 'currentFontSize' );
         
         if ( fontSize === null || fontSize === '' ) {
-            localStorage.setItem( 'currentFontSize', _defaults.baseFontSize );
+            sessionStorage.setItem( 'currentFontSize', _defaults.baseFontSize );
         }
         else {
             $( 'html' ).css( 'font-size', fontSize );
@@ -228,7 +228,7 @@ var viewerJS = ( function( viewer ) {
         if ( _debug ) {
             console.log( '---------- _setButtonState() ----------' );
         }
-        var fontSize = localStorage.getItem( 'currentFontSize' );
+        var fontSize = sessionStorage.getItem( 'currentFontSize' );
         var newFontSize = _parseFontSize( fontSize );
         
         if ( newFontSize === _defaults.minFontSize ) {

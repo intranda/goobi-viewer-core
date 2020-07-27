@@ -348,7 +348,7 @@
                      var currIdDoc = $( this ).parents( "li" ).attr( "data-iddoc" );
                      var currUrl = $( this ).attr( "href" );
                      
-                     localStorage.setItem( "currIdDoc", currIdDoc );
+                     sessionStorage.setItem( "currIdDoc", currIdDoc );
                      location.href = currUrl;
                  } );
             

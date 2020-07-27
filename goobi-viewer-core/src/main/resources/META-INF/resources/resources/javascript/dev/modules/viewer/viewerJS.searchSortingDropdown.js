@@ -55,7 +55,7 @@ var viewerJS = ( function( viewer ) {
             $.extend( true, _defaults, config );
             
             if ( viewer.localStoragePossible ) {
-                _selectedSorting = localStorage.dataSortField;
+                _selectedSorting = sessionStorage.dataSortField;
                 _currUrl = location.href;
                 
                 // get selected sorting type from local storage an set the menu option to
@@ -79,7 +79,7 @@ var viewerJS = ( function( viewer ) {
                     if ( _valueUrl !== '' ) {
                         // save current sorting state to local storage
                         if ( typeof ( Storage ) !== "undefined" ) {
-                            localStorage.dataSortField = _dataSortField;
+                            sessionStorage.dataSortField = _dataSortField;
                         }
                         else {
                             console.info( 'Local Storage is not defined. Current sorting state could not be saved.' );

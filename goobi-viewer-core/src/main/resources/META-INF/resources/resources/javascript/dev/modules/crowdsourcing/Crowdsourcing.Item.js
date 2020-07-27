@@ -241,11 +241,11 @@ var Crowdsourcing = ( function(crowdsourcing) {
     }
 
     crowdsourcing.Item.prototype.saveToLocalStorage = function(save) {
-        localStorage.setItem(LOCAL_STORAGE_ITEM, JSON.stringify(save));
+        sessionStorage.setItem(LOCAL_STORAGE_ITEM, JSON.stringify(save));
     }
     
     crowdsourcing.Item.prototype.getFromLocalStorage = function() {
-        let jsonString = localStorage.getItem(LOCAL_STORAGE_ITEM);
+        let jsonString = sessionStorage.getItem(LOCAL_STORAGE_ITEM);
         let json = JSON.parse(jsonString);
         return json;
     }

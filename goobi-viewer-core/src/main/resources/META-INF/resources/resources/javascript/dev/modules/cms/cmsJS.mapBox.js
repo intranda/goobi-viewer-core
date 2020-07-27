@@ -107,10 +107,10 @@ var cmsJS = ( function( cms ) {
                         var collection = $( this ).attr( 'data-collection' );
                         
                         if ( collection === 'false' ) {
-                            localStorage.setItem( 'sliderImagesFrom', 0 );
+                            sessionStorage.setItem( 'sliderImagesFrom', 0 );
                         }
                         else {
-                            localStorage.setItem( 'sliderImagesFrom', collection );
+                            sessionStorage.setItem( 'sliderImagesFrom', collection );
                         }
                         window.location.href = url;
                     } );
