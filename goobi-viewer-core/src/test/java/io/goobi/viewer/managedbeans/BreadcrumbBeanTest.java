@@ -27,10 +27,10 @@ public class BreadcrumbBeanTest extends AbstractDatabaseEnabledTest {
         Assert.assertEquals("a.b.c", bb.getBreadcrumbs().get(4).getName());
         Assert.assertEquals("a.b.c.d", bb.getBreadcrumbs().get(5).getName());
 
-        Assert.assertTrue(bb.getBreadcrumbs().get(2).getUrl().contains("/FOO:a/"));
-        Assert.assertTrue(bb.getBreadcrumbs().get(3).getUrl().contains("/FOO:a.b/"));
-        Assert.assertTrue(bb.getBreadcrumbs().get(4).getUrl().contains("/FOO:a.b.c/"));
-        Assert.assertTrue(bb.getBreadcrumbs().get(5).getUrl().contains("/FOO:a.b.c.d/"));
+        Assert.assertTrue(bb.getBreadcrumbs().get(2).getUrl().contains("/FOO%3Aa/"));
+        Assert.assertTrue(bb.getBreadcrumbs().get(3).getUrl().contains("/FOO%3Aa.b/"));
+        Assert.assertTrue(bb.getBreadcrumbs().get(4).getUrl().contains("/FOO%3Aa.b.c/"));
+        Assert.assertTrue(bb.getBreadcrumbs().get(5).getUrl().contains("/FOO%3Aa.b.c.d/"));
     }
 
     /**

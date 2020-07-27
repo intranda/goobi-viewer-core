@@ -372,7 +372,7 @@ public class BrowseDcElement implements Comparable<BrowseDcElement>, Serializabl
      * @return +({field}:{name} {field}:{name}.*) +(ISWORK:* ISANCHOR:*)
      */
     public String getSolrFilterQuery() {
-        return String.format("+(%s:%s %s:%s.*) +(ISWORK:* ISANCHOR:*)", field, name, field, name);
+        return String.format("+(%s:\"%s\" %s:\"%s.*\") +(ISWORK:* ISANCHOR:*)", field, name, field, name);
     }
 
     /**

@@ -18,6 +18,7 @@ package io.goobi.viewer.model.iiif.presentation.builder;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.net.URLEncoder;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
@@ -226,7 +227,7 @@ public class CollectionBuilder extends AbstractBuilder {
     public String createCollectionQuery(String collectionField, final String topElement) {
         String query;
         if (topElement != null) {
-            query = collectionField + ":" + topElement + " OR " + collectionField + ":" + topElement + ".*";
+            query = collectionField + ":\"" + topElement + "\" OR " + collectionField + ":\"" + topElement + ".*\"";
         } else {
             query = collectionField + ":*";
         }
