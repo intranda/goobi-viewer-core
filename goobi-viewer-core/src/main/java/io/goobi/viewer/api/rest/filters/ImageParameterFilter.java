@@ -62,13 +62,15 @@ public class ImageParameterFilter implements ContainerRequestFilter {
     public void filter(ContainerRequestContext request) throws IOException {
         String uri = request.getUriInfo().getPath();
         String pi;
-        if (uri.contains("image/") || uri.contains("pdf/mets/")) {
+        if (uri.contains("image/") || uri.contains("pdf/mets/") || uri.contains("epub/mets/")) {
 
             String requestPath;
             if (uri.contains("image/")) {
                 requestPath = uri.substring(uri.indexOf("image/") + 6);
-            } else {
+            } else if(uri.contains("pdf/")){
                 requestPath = uri.substring(uri.indexOf("pdf/mets/") + 9);
+            } else {
+                requestPath = uri.substring(uri.indexOf("epub/mets/") + 10);
             }
 
             // logger.trace("Filtering request {}", requestPath);
