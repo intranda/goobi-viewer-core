@@ -102,7 +102,7 @@ public class StringTools {
                 encodedString = URLDecoder.decode(string, "utf-8");
             } while (!encodedString.equals(string));
             return BeanUtils.unescapeCriticalUrlChracters(string);
-        } catch (UnsupportedEncodingException e) {
+        } catch (NullPointerException | UnsupportedEncodingException e) {
             return string;
         }
     }
