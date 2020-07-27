@@ -95,6 +95,7 @@ public class OpenApiResource {
         Info info = new Info()
                 .title("Goobi viewer API.")
                 .description("This documentation describes the Goobi viewer API.")
+                .version("v1")
                 .contact(new Contact()
                         .email("info@intranda.com"))
                 .license(new License()

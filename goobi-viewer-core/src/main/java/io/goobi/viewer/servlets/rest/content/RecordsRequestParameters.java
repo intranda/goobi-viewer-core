@@ -26,7 +26,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 /**
  * POST request parameters for RecordsResource.
  */
-@Schema(name="SOLR request parameters", description="SOLR query and additional parameters", requiredProperties= {"query"})
+@Schema(name="SolrRequestParameters", description="SOLR query and additional parameters", requiredProperties= {"query"})
 public class RecordsRequestParameters {
 
     @Schema(description = "Raw SOLR query", example="ISWORK:true")

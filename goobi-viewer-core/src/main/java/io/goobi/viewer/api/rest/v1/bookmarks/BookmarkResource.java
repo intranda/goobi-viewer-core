@@ -182,8 +182,7 @@ public class BookmarkResource {
     @ApiResponse(responseCode = "400", description = "Not logged in, session bookmark list may not be deleted")
     @ApiResponse(responseCode = "500", description = "Error querying database")
     public SuccessMessage deleteBookmarkList(
-            @Parameter(description = "The id of the bookmark list") @PathParam("listId") Long id,
-            Bookmark item) throws DAOException, IOException, RestApiException, IllegalRequestException {
+            @Parameter(description = "The id of the bookmark list") @PathParam("listId") Long id) throws DAOException, IOException, RestApiException, IllegalRequestException {
         return builder.deleteBookmarkList(id);
     }
     
