@@ -15,11 +15,22 @@
  */
 package io.goobi.viewer.messages;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assume.assumeTrue;
+
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.List;
 import java.util.Locale;
 
+import org.jdom2.JDOMException;
 import org.junit.Assert;
 import org.junit.Test;
+
 
 import io.goobi.viewer.AbstractTest;
 
@@ -52,5 +63,15 @@ public class ViewerResourceBundleTest extends AbstractTest {
         List<Locale> locales = ViewerResourceBundle.getAllLocales();
         Assert.assertEquals(1, locales.size());
         Assert.assertEquals(Locale.ENGLISH, locales.get(0));
+    }
+    
+    @Test
+    public void testGetLocalesFromFile() throws FileNotFoundException, IOException, JDOMException {
+        Path configPath = Paths.get("src/test/resources/localConfig/faces-config.xml");
+        assumeTrue(Files.isRegularFile(configPath));
+        List<Locale> locales = ViewerResourceBundle.getLocalesFromFile(configPath);
+        assertEquals(6, locales.size());
+        assertEquals(Locale.ENGLISH, locales.get(1));
+        assertEquals(Locale.FRENCH, locales.get(3));
     }
 }

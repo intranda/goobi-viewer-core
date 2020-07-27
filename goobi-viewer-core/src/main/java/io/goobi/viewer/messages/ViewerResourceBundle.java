@@ -16,6 +16,7 @@
 package io.goobi.viewer.messages;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.URL;
 import java.net.URLClassLoader;
@@ -28,6 +29,7 @@ import java.nio.file.WatchEvent;
 import java.nio.file.WatchKey;
 import java.nio.file.WatchService;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Enumeration;
 import java.util.HashMap;
@@ -43,17 +45,24 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import javax.faces.context.FacesContext;
+import javax.servlet.ServletContext;
 
 import org.apache.commons.lang3.StringUtils;
+import org.jdom2.Document;
+import org.jdom2.Element;
+import org.jdom2.JDOMException;
+import org.jdom2.Namespace;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import de.intranda.api.iiif.presentation.Collection;
 import de.intranda.metadata.multilanguage.IMetadataValue;
 import de.intranda.metadata.multilanguage.MultiLanguageMetadataValue;
 import de.intranda.metadata.multilanguage.SimpleMetadataValue;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.SolrConstants;
 import io.goobi.viewer.controller.StringTools;
+import io.goobi.viewer.controller.XmlTools;
 
 /**
  * <p>
@@ -597,6 +606,42 @@ public class ViewerResourceBundle extends ResourceBundle {
         }
 
         return new MultiLanguageMetadataValue(translations);
+    }
+    
+    /**
+     * Get locales configured in faces-config, ordered by apprearance in file
+     * @return a list of Locale objects, or null if the list could not be retrieved
+     */
+    public static List<Locale> getLocalesFromFacesConfig() {
+        try {
+            ServletContext servletContext = (ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext();
+            String webContentRoot = servletContext.getRealPath("resources/themes");
+            Path facesConfigPath = Paths.get(webContentRoot).resolve("faces-config.xml");
+            if(Files.exists(facesConfigPath)) {                
+                return getLocalesFromFile(facesConfigPath);
+            } else {
+                throw new FileNotFoundException("Unable to locate faces-config at " + facesConfigPath);
+            }
+        } catch(Throwable e) {
+            logger.error("Error getting locales from faces-config" , e);
+            return getAllLocales();
+        }
+    }
+
+    /**
+     * @param facesConfigPath
+     * @return
+     * @throws FileNotFoundException
+     * @throws IOException
+     * @throws JDOMException
+     */
+    public static List<Locale> getLocalesFromFile(Path facesConfigPath) throws FileNotFoundException, IOException, JDOMException {
+        Document doc = XmlTools.readXmlFile(facesConfigPath);
+        Namespace xsi = Namespace.getNamespace("xsi", "http://www.w3.org/2001/XMLSchema-instance");
+        Namespace javaee = Namespace.getNamespace("ee", "http://java.sun.com/xml/ns/javaee");
+        List<Namespace> namespaces = Arrays.asList(xsi, javaee);//doc.getNamespacesInScope();
+        List<Element> localeElements = XmlTools.evaluateToElements("//ee:locale-config/ee:supported-locale", doc.getRootElement(),namespaces);
+        return localeElements.stream().map(ele -> ele.getText()).map(Locale::forLanguageTag).collect(Collectors.toList());
     }
 
 }
