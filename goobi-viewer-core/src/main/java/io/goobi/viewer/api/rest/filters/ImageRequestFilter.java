@@ -197,7 +197,7 @@ public class ImageRequestFilter implements ContainerRequestFilter {
     private void filterForAccessConditions(ContainerRequestContext request, String pi, String contentFileName, boolean isThumb)
             throws ServiceNotAllowedException {
         // logger.trace("filterForAccessConditions: {}", servletRequest.getSession().getId());
-
+        contentFileName = StringTools.decodeUrl(contentFileName);
         boolean access = false;
         try {
             if (isThumb) {

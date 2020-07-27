@@ -144,7 +144,7 @@ public class ImageInformationRequestFilter implements ContainerRequestFilter {
      */
     private void filterForAccessConditions(ContainerRequestContext request, String pi, String contentFileName) throws ServiceNotAllowedException {
         logger.trace("filterForAccessConditions: {}", servletRequest.getSession().getId());
-
+        contentFileName = StringTools.decodeUrl(contentFileName);
         boolean access = false;
         try {
             access = AccessConditionUtils.checkAccessPermissionByIdentifierAndLogId(pi, null, IPrivilegeHolder.PRIV_LIST, servletRequest);
