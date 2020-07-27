@@ -751,6 +751,22 @@ public class AdminBean implements Serializable {
     }
 
     /**
+     * <p>
+     * resetCurrentRoleLicenseAction.
+     * </p>
+     */
+    public void resetCurrentRoleLicenseAction() {
+        currentLicenseType = new LicenseType();
+        currentLicenseType.setCore(true);
+    }
+
+    // License
+
+    public List<License> getAllLicenses() throws DAOException {
+        return DataManager.getInstance().getDao().getAllLicenses();
+    }
+
+    /**
      * 
      * @param licenseType
      * @return true if at least one license uses the given license type; false otherwise
@@ -765,19 +781,13 @@ public class AdminBean implements Serializable {
     }
 
     /**
-     * <p>
-     * resetCurrentRoleLicenseAction.
-     * </p>
+     * 
+     * @param licenseType
+     * @return
+     * @throws DAOException 
      */
-    public void resetCurrentRoleLicenseAction() {
-        currentLicenseType = new LicenseType();
-        currentLicenseType.setCore(true);
-    }
-
-    // License
-
-    public List<License> getAllLicenses() throws DAOException {
-        return DataManager.getInstance().getDao().getAllLicenses();
+    public List<License> getLicenses(LicenseType licenseType) throws DAOException {
+        return DataManager.getInstance().getDao().getLicenses(licenseType);
     }
 
     // IpRange

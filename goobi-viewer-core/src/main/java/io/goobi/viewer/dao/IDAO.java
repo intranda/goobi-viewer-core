@@ -756,6 +756,14 @@ public interface IDAO {
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
     public License getLicense(Long id) throws DAOException;
+    
+    /**
+     * 
+     * @param licenseType
+     * @return
+     * @throws DAOException
+     */
+    public List<License> getLicenses(LicenseType licenseType) throws DAOException;
 
     /**
      * Returns the number of licenses that use the given license type.

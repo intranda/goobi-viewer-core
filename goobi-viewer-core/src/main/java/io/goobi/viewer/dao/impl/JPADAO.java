@@ -1400,6 +1400,25 @@ public class JPADAO implements IDAO {
             return null;
         }
     }
+    
+
+    /**
+     * @see io.goobi.viewer.dao.IDAO#getLicenses(io.goobi.viewer.model.security.LicenseType)
+     * @should return correct values
+     */
+    @SuppressWarnings("unchecked")
+    @Override
+    public List<License> getLicenses(LicenseType licenseType) throws DAOException {
+        if (licenseType == null) {
+            throw new IllegalArgumentException("licenseType may not be null");
+        }
+
+        preQuery();
+        String query = "SELECT a FROM License a WHERE a.licenseType = :licenseType";
+        Query q = em.createQuery(query);
+        q.setParameter("licenseType", licenseType);
+        return q.getResultList();
+    }
 
     /**
      * @see io.goobi.viewer.dao.IDAO#getLicenseCount(io.goobi.viewer.model.security.LicenseType)
