@@ -159,11 +159,11 @@
                                         </div>
                                         <div class="col-9 admin__form-input">
 	                                        <div class="admin__radio-switch openAccessToggle">
+												<h:selectOneRadio group="superUserToggle" value="#{adminBean.currentUser.superuser}" immediate="true" checked="#{adminBean.currentUser.superuser ? null : 'false'}">
+		                                            <f:selectItem itemValue="#{false}" itemLabel="#{msg.no}" />
+		                                        </h:selectOneRadio>
 		                                        <h:selectOneRadio group="superUserToggle" value="#{adminBean.currentUser.superuser}" immediate="true" checked="#{adminBean.currentUser.superuser ? 'true' : null}">
 		                                            <f:selectItem itemValue="#{true}" itemLabel="#{msg.yes}" />
-		                                        </h:selectOneRadio>
-		                                        <h:selectOneRadio group="superUserToggle" value="#{adminBean.currentUser.superuser}" immediate="true" checked="#{adminBean.currentUser.superuser ? null : 'false'}">
-		                                            <f:selectItem itemValue="#{false}" itemLabel="#{msg.no}" />
 		                                        </h:selectOneRadio>
 		                                        <span class="toggle-outside"><span class="toggle-inside"></span></span>
 		                                    </div>
