@@ -87,7 +87,7 @@ public class StatisticsBean implements Serializable {
         try {
             QueryResponse resp = DataManager.getInstance()
                     .getSearchIndex()
-                    .search(new StringBuilder(SolrConstants.PI).append(":*").append(SearchHelper.getAllSuffixes(false)).toString(), 0, 0, null,
+                    .search(new StringBuilder(SolrConstants.PI).append(":*").append(SearchHelper.getAllSuffixes()).toString(), 0, 0, null,
                             Collections.singletonList(SolrConstants.DATECREATED), "count", Collections.singletonList(SolrConstants.DATECREATED), null,
                             null);
             if (resp != null && resp.getFacetField(SolrConstants.DATECREATED) != null
@@ -168,7 +168,7 @@ public class StatisticsBean implements Serializable {
                             .append(":true OR ")
                             .append(SolrConstants.ISANCHOR)
                             .append(":true)")
-                            .append(SearchHelper.getAllSuffixes(false))
+                            .append(SearchHelper.getAllSuffixes())
                             .toString(), 0, 0, null, Collections.singletonList(SolrConstants.DOCSTRCT), "count",
                             Collections.singletonList(SolrConstants.DOCSTRCT), null, null);
             if (resp != null && resp.getFacetField(SolrConstants.DOCSTRCT) != null
@@ -208,12 +208,12 @@ public class StatisticsBean implements Serializable {
                 // TODO filter query might not work for PAGE documents
                 long pages = DataManager.getInstance()
                         .getSearchIndex()
-                        .getHitCount(SolrConstants.DOCTYPE + ":" + DocType.PAGE.name() + SearchHelper.getAllSuffixes(false));
+                        .getHitCount(SolrConstants.DOCTYPE + ":" + DocType.PAGE.name() + SearchHelper.getAllSuffixes());
                 // Fallback for older indexes that do not have the DOCTYPE field (slower)
                 if (pages == 0) {
                     pages = DataManager.getInstance()
                             .getSearchIndex()
-                            .getHitCount(SolrConstants.FILENAME + ":['' TO *]" + SearchHelper.getAllSuffixes(false));
+                            .getHitCount(SolrConstants.FILENAME + ":['' TO *]" + SearchHelper.getAllSuffixes());
                 }
                 valueMap.put("getImportedPages", pages);
                 lastUpdateMap.put("getImportedPages", now);
@@ -244,12 +244,12 @@ public class StatisticsBean implements Serializable {
                 long pages = DataManager.getInstance()
                         .getSearchIndex()
                         .getHitCount(SolrConstants.DOCTYPE + ":" + SolrConstants.DocType.PAGE.name() + " AND " + SolrConstants.FULLTEXTAVAILABLE
-                                + ":true" + SearchHelper.getAllSuffixes(false));
+                                + ":true" + SearchHelper.getAllSuffixes());
                 // Fallback for older indexes that do not have the DOCTYPE and/or FULLTEXTAVAILABLE fields (WAY slower)
                 if (pages == 0) {
                     pages = DataManager.getInstance()
                             .getSearchIndex()
-                            .getHitCount(SolrConstants.FULLTEXT + ":['' TO *]" + SearchHelper.getAllSuffixes(false));
+                            .getHitCount(SolrConstants.FULLTEXT + ":['' TO *]" + SearchHelper.getAllSuffixes());
                 }
                 valueMap.put("getImportedFullTexts", pages);
                 lastUpdateMap.put("getImportedFullTexts", now);

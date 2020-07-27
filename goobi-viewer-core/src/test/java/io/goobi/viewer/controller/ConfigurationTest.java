@@ -892,24 +892,6 @@ public class ConfigurationTest extends AbstractTest {
         Assert.assertEquals("FACET_VIEWERSUBTHEME", DataManager.getInstance().getConfiguration().getSubthemeDiscriminatorField());
     }
 
-    /**
-     * @see Configuration#isSubthemeAddFilterQuery()
-     * @verifies return correct value
-     */
-    @Test
-    public void isSubthemeAddFilterQuery_shouldReturnCorrectValue() throws Exception {
-        Assert.assertTrue(DataManager.getInstance().getConfiguration().isSubthemeAddFilterQuery());
-    }
-
-    /**
-     * @see ConfigurationHelper#isSubthemeFilterQueryVisible()
-     * @verifies return correct value
-     */
-    @Test
-    public void isSubthemeFilterQueryVisible_shouldReturnCorrectValue() throws Exception {
-        Assert.assertTrue(DataManager.getInstance().getConfiguration().isSubthemeFilterQueryVisible());
-    }
-
     //    /**
     //     * @see ConfigurationHelper#getSubthemeMap()
     //     * @verifies return all configured elements

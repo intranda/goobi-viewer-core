@@ -3638,35 +3638,6 @@ public final class Configuration extends AbstractConfiguration {
         return getLocalString("viewer.theme[@discriminatorField]", "");
     }
 
-    /**
-     * <p>
-     * isSubthemeAddFilterQuery.
-     * </p>
-     *
-     * @should return correct value
-     * @return true if search should generally be filtered by {@link NavigationHelper#getSubThemeDiscriminatorValue()}
-     * 
-     * @deprecated should always return false since search filtering should be done via dedicated cms search pages
-     */
-    @Deprecated
-    public boolean isSubthemeAddFilterQuery() {
-        return getLocalBoolean("viewer.theme[@addFilterQuery]", false);
-    }
-
-    /**
-     * <p>
-     * isSubthemeFilterQueryVisible.
-     * </p>
-     *
-     * @should return correct value
-     * @return a boolean.
-     * 
-     * @deprecated should always return false since search filtering should be done via dedicated cms search pages
-     */
-    @Deprecated
-    public boolean isSubthemeFilterQueryVisible() {
-        return getLocalBoolean("viewer.theme[@filterQueryVisible]", false);
-    }
 
     /**
      * <p>

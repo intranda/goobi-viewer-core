@@ -136,7 +136,7 @@ public class RecordsResource {
         query = new StringBuilder().append('(')
                 .append(query)
                 .append(')')
-                .append(SearchHelper.getAllSuffixes(DataManager.getInstance().getConfiguration().isSubthemeAddFilterQuery()))
+                .append(SearchHelper.getAllSuffixes())
                 .toString();
         logger.debug("query: {}", query);
 
@@ -235,7 +235,7 @@ public class RecordsResource {
         }
         // Solr supports dynamic random_* sorting fields. Each value represents one particular order, so a random number is required.
         String query =
-                new StringBuilder().append(params.query).append(SearchHelper.getAllSuffixes(servletRequest, null, true, true, false)).toString();
+                new StringBuilder().append(params.query).append(SearchHelper.getAllSuffixes(servletRequest, null, true, true)).toString();
         logger.debug("q: {}", query);
         long count = DataManager.getInstance().getSearchIndex().search(query, 0, 0, null, null, null).getResults().getNumFound();
         ret.put("count", count);

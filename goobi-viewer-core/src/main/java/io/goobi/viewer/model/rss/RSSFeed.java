@@ -825,7 +825,7 @@ public class RSSFeed {
 
         if (addSuffixes) {
             sbQuery.append(
-                    SearchHelper.getAllSuffixes(servletRequest, null, true, true, DataManager.getInstance().getConfiguration().isSubthemeAddFilterQuery()));
+                    SearchHelper.getAllSuffixes(servletRequest, null, true, true));
         }
 
         return sbQuery.toString();

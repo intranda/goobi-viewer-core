@@ -107,7 +107,7 @@ public class IndexResource {
         }
         
         String finalQuery =
-                new StringBuilder().append(query).append(SearchHelper.getAllSuffixes(servletRequest, null, true, true, false)).toString();
+                new StringBuilder().append(query).append(SearchHelper.getAllSuffixes(servletRequest, null, true, true)).toString();
         logger.debug("q: {}", finalQuery);
         long count = DataManager.getInstance().getSearchIndex().search(query, 0, 0, null, null, null).getResults().getNumFound();
         JSONObject json = new JSONObject();

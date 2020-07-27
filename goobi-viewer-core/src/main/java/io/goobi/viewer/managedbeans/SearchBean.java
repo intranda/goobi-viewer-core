@@ -651,21 +651,6 @@ public class SearchBean implements SearchInterface, Serializable {
             facets.setCurrentFacetString("-");
         }
 
-        // Add discriminator subquery, if set and configured to be part of the visible query
-        if (DataManager.getInstance().getConfiguration().isSubthemeAddFilterQuery()
-                && DataManager.getInstance().getConfiguration().isSubthemeFilterQueryVisible()) {
-            try {
-                String discriminatorValueSubQuery = SearchHelper.getDiscriminatorFieldFilterSuffix(navigationHelper,
-                        DataManager.getInstance().getConfiguration().getSubthemeDiscriminatorField());
-                if (StringUtils.isNotEmpty(discriminatorValueSubQuery)) {
-                    sb.insert(0, '(');
-                    sb.append(')').append(discriminatorValueSubQuery);
-                }
-            } catch (IndexUnreachableException e) {
-                logger.debug("IndexUnreachableException thrown here: {}", e.getMessage());
-            }
-        }
-
         advancedSearchQueryInfo = sbInfo.toString();
         // Quickfix for single hierarchical item query info having an opening parenthesis only
         if (advancedSearchQueryInfo.startsWith("(") && !advancedSearchQueryInfo.endsWith(")")) {
@@ -1068,21 +1053,6 @@ public class SearchBean implements SearchInterface, Serializable {
                 searchString = searchString.substring(0, searchString.length() - 4);
             } else if (searchString.endsWith(" AND ")) {
                 searchString = searchString.substring(0, searchString.length() - 5);
-            }
-
-            // Add discriminator subquery, if set and configurated to be part of the visible query
-            if (DataManager.getInstance().getConfiguration().isSubthemeAddFilterQuery()
-                    && DataManager.getInstance().getConfiguration().isSubthemeFilterQueryVisible()) {
-                try {
-                    String discriminatorValueSubQuery = SearchHelper.getDiscriminatorFieldFilterSuffix(navigationHelper,
-                            DataManager.getInstance().getConfiguration().getSubthemeDiscriminatorField());
-                    if (StringUtils.isNotEmpty(discriminatorValueSubQuery)) {
-                        searchString = new StringBuilder("(").append(searchString).append(')').append(discriminatorValueSubQuery).toString();
-                    }
-                } catch (IndexUnreachableException e) {
-                    logger.debug("IndexUnreachableException thrown here: {}", e.getMessage());
-                }
-
             }
 
             logger.trace("search string: {}", searchString);
@@ -1701,7 +1671,7 @@ public class SearchBean implements SearchInterface, Serializable {
             }
             advancedSearchSelectItems.put(key, ret);
         } else {
-            String suffix = SearchHelper.getAllSuffixes(DataManager.getInstance().getConfiguration().isSubthemeAddFilterQuery());
+            String suffix = SearchHelper.getAllSuffixes();
 
             List<String> values = SearchHelper.getFacetValues(field + ":[* TO *]" + suffix, field, 0);
             for (String value : values) {
@@ -2354,8 +2324,7 @@ public class SearchBean implements SearchInterface, Serializable {
             throws PresentationException, IndexUnreachableException {
         StringBuilder sbQuery = new StringBuilder(100);
         sbQuery.append(SearchHelper.ALL_RECORDS_QUERY)
-                .append(SearchHelper.getAllSuffixes(BeanUtils.getRequest(), BeanUtils.getNavigationHelper(), true, true,
-                        DataManager.getInstance().getConfiguration().isSubthemeAddFilterQuery()));
+                .append(SearchHelper.getAllSuffixes(BeanUtils.getRequest(), BeanUtils.getNavigationHelper(), true, true));
 
         if (StringUtils.isNotEmpty(subQuery)) {
             if (subQuery.startsWith(" AND ")) {
