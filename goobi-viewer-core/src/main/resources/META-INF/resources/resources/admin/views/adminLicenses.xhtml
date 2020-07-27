@@ -77,13 +77,27 @@
                                       		</div>
 	                                        <!-- DATA -->
 	                                        <dl class="row">
+	                                            <!-- NUMBER OF RECORDS -->
 	                                            <dt class="col-sm-4">#{msg.admin__licenses_record_number}:</dt>
 	                                            <dd class="col-sm-8">
                                                 <a href="#{navigationHelper.searchUrl}/-/#{adminBean.getUrlQueryForAccessCondition(licenseType.name)}/1/-/-/" class="-textlink" target="_blank" aria-label="Show records for #{msg[licenseType.name]}">
 	                                                   #{adminBean.getNumRecordsWithAccessCondition(licenseType.name)}
                                                    </a>
 	                                            </dd>
-	
+	                                            
+                                                <ui:fragment rendered="#{adminBean.isLicenseTypeInUse(licenseType)}">
+                                                    <dt class="col-sm-4">#{msg.admin__license_licensee}:</dt>
+                                                    <dd class="col-sm-8">
+                                                        <ui:repeat var="license" value="#{adminBean.getLicenses(licenseType)}">
+                                                            <ui:fragment rendered="#{license.user != null}">#{license.user.displayName}</ui:fragment>
+                                                            <ui:fragment rendered="#{license.userGroup != null}">#{license.userGroup.name}</ui:fragment>
+                                                            <ui:fragment
+                                                                rendered="#{license.ipRange != null}">#{license.ipRange.name} (#{license.ipRange.subnetMask})</ui:fragment>
+                                                        </ui:repeat>
+                                                    </dd>
+                                                </ui:fragment>
+
+	                                            <!-- CONDITIONS -->
 	                                            <ui:fragment rendered="#{licenseType.conditions != null and licenseType.conditions != ''}">
 	                                                <dt class="col-sm-4">#{msg.license_conditions}:</dt>
 	                                                <dd class="col-sm-8">#{licenseType.conditions}</dd>
