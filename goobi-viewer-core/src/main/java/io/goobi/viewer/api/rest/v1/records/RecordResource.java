@@ -70,6 +70,7 @@ import io.goobi.viewer.controller.DataFileTools;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.FileTools;
 import io.goobi.viewer.controller.SolrConstants;
+import io.goobi.viewer.controller.StringTools;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
@@ -108,7 +109,7 @@ public class RecordResource {
     @GET
     @javax.ws.rs.Path(RECORDS_RIS_FILE)
     @Produces({ MediaType.TEXT_PLAIN })
-    @Operation(tags = { "records"}, summary = "Download ris as file")
+    @Operation(tags = { "records" }, summary = "Download ris as file")
     public String getRISAsFile()
             throws PresentationException, IndexUnreachableException, DAOException, ContentLibException {
 
@@ -134,10 +135,12 @@ public class RecordResource {
     @GET
     @javax.ws.rs.Path(RECORDS_RIS_TEXT)
     @Produces({ MediaType.TEXT_PLAIN })
-    @Operation(tags = { "records"}, summary = "Get ris as text")
+    @Operation(tags = { "records" }, summary = "Get ris as text")
     public String getRISAsText()
             throws PresentationException, IndexUnreachableException, ContentNotFoundException, DAOException {
-
+        if (servletResponse != null) {
+            servletResponse.setCharacterEncoding(StringTools.DEFAULT_ENCODING);
+        }
         StructElement se = getStructElement(pi);
         return new RisResourceBuilder(servletRequest, servletResponse).getRIS(se);
     }
@@ -148,14 +151,16 @@ public class RecordResource {
     @Operation(tags = { "records" }, summary = "Get table of contents of records")
     public String getTOCAsText()
             throws PresentationException, IndexUnreachableException, ContentNotFoundException, DAOException, ViewerConfigurationException {
-
+        if (servletResponse != null) {
+            servletResponse.setCharacterEncoding(StringTools.DEFAULT_ENCODING);
+        }
         return new TocResourceBuilder(servletRequest, servletResponse).getToc(pi);
     }
 
     @GET
     @javax.ws.rs.Path(RECORDS_ANNOTATIONS)
     @Produces({ MediaType.APPLICATION_JSON })
-    @Operation(tags = { "records", "annotations"}, summary = "List annotations for a record")
+    @Operation(tags = { "records", "annotations" }, summary = "List annotations for a record")
     public IAnnotationCollection getAnnotationsForRecord(
             @Parameter(
                     description = "annotation format of the response. If it is 'oa' the comments will be delivered as OpenAnnotations, otherwise as W3C-Webannotations") @QueryParam("format") String format)
@@ -175,18 +180,18 @@ public class RecordResource {
     @GET
     @javax.ws.rs.Path(RECORDS_ANNOTATIONS + "/{page}")
     @Produces({ MediaType.APPLICATION_JSON })
-    @ApiResponse(responseCode="400", description="If the page number is out of bounds")
+    @ApiResponse(responseCode = "400", description = "If the page number is out of bounds")
     public AnnotationPage getAnnotationPageForRecord(@PathParam("page") Integer page)
             throws URISyntaxException, DAOException, JsonParseException, JsonMappingException, IOException, IllegalRequestException {
 
         URI uri = URI.create(urls.path(RECORDS_RECORD, RECORDS_ANNOTATIONS).params(pi).build());
         return new AnnotationsResourceBuilder(urls).getWebAnnotationPageForRecord(pi, uri, page);
     }
-    
+
     @GET
     @javax.ws.rs.Path(RECORDS_COMMENTS)
     @Produces({ MediaType.APPLICATION_JSON })
-    @Operation(tags = { "records", "annotations"}, summary = "List comments for a record")
+    @Operation(tags = { "records", "annotations" }, summary = "List comments for a record")
     public IAnnotationCollection getCommentsForRecord(
             @Parameter(
                     description = "annotation format of the response. If it is 'oa' the comments will be delivered as OpenAnnotations, otherwise as W3C-Webannotations") @QueryParam("format") String format)
@@ -201,11 +206,11 @@ public class RecordResource {
             return new AnnotationsResourceBuilder(urls).getWebAnnotationCollectionForRecordComments(pi, uri);
         }
     }
-    
+
     @GET
     @javax.ws.rs.Path(RECORDS_COMMENTS + "/{page}")
     @Produces({ MediaType.APPLICATION_JSON })
-    @ApiResponse(responseCode="400", description="If the page number is out of bounds")
+    @ApiResponse(responseCode = "400", description = "If the page number is out of bounds")
     public AnnotationPage getCommentPageForRecord(@PathParam("page") Integer page)
             throws URISyntaxException, DAOException, JsonParseException, JsonMappingException, IOException, IllegalRequestException {
 
@@ -213,11 +218,10 @@ public class RecordResource {
         return new AnnotationsResourceBuilder(urls).getWebAnnotationPageForRecordComments(pi, uri, page);
     }
 
-
     @GET
     @javax.ws.rs.Path(RECORDS_METADATA_SOURCE)
     @Produces({ MediaType.TEXT_XML })
-    @Operation(tags = {"records"}, summary = "Get record metadata source file")
+    @Operation(tags = { "records" }, summary = "Get record metadata source file")
     public StreamingOutput getSource()
             throws URISyntaxException, DAOException, JsonParseException, JsonMappingException, IOException, ContentNotFoundException,
             PresentationException, IndexUnreachableException {
@@ -246,131 +250,145 @@ public class RecordResource {
             throw new ContentNotFoundException("No source file found for " + pi);
         }
     }
-    
+
     @GET
     @javax.ws.rs.Path(RECORDS_MANIFEST)
     @Produces({ MediaType.APPLICATION_JSON })
-    @Operation(tags = {"records", "iiif"}, summary = "Get IIIF manifest for record")
+    @Operation(tags = { "records", "iiif" }, summary = "Get IIIF manifest for record")
     @IIIFPresentationBinding
     public IPresentationModelElement getManifest(
-            @Parameter(description = "Build mode for manifest to select type of resources to include. Default is 'iiif' which returns the full IIIF manifest with all resources. 'thumbs' Does not read width and height of canvas resources and 'iiif_simple' ignores all resources from files")@QueryParam("mode") String mode) throws ContentNotFoundException, PresentationException, IndexUnreachableException, URISyntaxException, ViewerConfigurationException, DAOException {
+            @Parameter(
+                    description = "Build mode for manifest to select type of resources to include. Default is 'iiif' which returns the full IIIF manifest with all resources. 'thumbs' Does not read width and height of canvas resources and 'iiif_simple' ignores all resources from files") @QueryParam("mode") String mode)
+            throws ContentNotFoundException, PresentationException, IndexUnreachableException, URISyntaxException, ViewerConfigurationException,
+            DAOException {
         IIIFPresentationResourceBuilder builder = new IIIFPresentationResourceBuilder(urls);
         BuildMode buildMode = getBuildeMode(mode);
         return builder.getManifest(pi, buildMode);
     }
-    
+
     @GET
     @javax.ws.rs.Path(RECORDS_LAYER)
     @Produces({ MediaType.APPLICATION_JSON })
-    @Operation(tags = {"records", "iiif"}, summary = "Get a layer within a IIIF manifest")
+    @Operation(tags = { "records", "iiif" }, summary = "Get a layer within a IIIF manifest")
     @IIIFPresentationBinding
     public IPresentationModelElement getLayer(
             @Parameter(description = "Name of the manifest layer") @PathParam("name") String layerName,
-            @Parameter(description = "Build mode for manifes to select type of resources to include. Default is 'iiif' which returns the full IIIF manifest with all resources. 'thumbs' Does not read width and height of canvas resources and 'iiif_simple' ignores all resources from files")@QueryParam("mode") String mode) throws ContentNotFoundException, PresentationException, IndexUnreachableException, URISyntaxException, ViewerConfigurationException, DAOException, IllegalRequestException, IOException {
+            @Parameter(
+                    description = "Build mode for manifes to select type of resources to include. Default is 'iiif' which returns the full IIIF manifest with all resources. 'thumbs' Does not read width and height of canvas resources and 'iiif_simple' ignores all resources from files") @QueryParam("mode") String mode)
+            throws ContentNotFoundException, PresentationException, IndexUnreachableException, URISyntaxException, ViewerConfigurationException,
+            DAOException, IllegalRequestException, IOException {
         IIIFPresentationResourceBuilder builder = new IIIFPresentationResourceBuilder(urls);
         BuildMode buildMode = getBuildeMode(mode);
         return builder.getLayer(pi, layerName);
     }
-    
+
     @GET
     @javax.ws.rs.Path(RECORDS_NER_TAGS)
     @Produces({ MediaType.APPLICATION_JSON })
-    @Operation(tags = {"records"}, summary = "Get NER tags for a record")
+    @Operation(tags = { "records" }, summary = "Get NER tags for a record")
     public DocumentReference getNERTags(
-            @Parameter(description = "First page to get tags for")@QueryParam("start") Integer start,
-            @Parameter(description = "Last page to get tags for")@QueryParam("end") Integer end,
-            @Parameter(description = "Number of pages to combine into each group")@QueryParam("step") Integer stepSize,
-            @Parameter(description = "Tag type to consider (person, coorporation, event or location)")@QueryParam("type") String type
-            ) throws PresentationException, IndexUnreachableException, ViewerConfigurationException {
+            @Parameter(description = "First page to get tags for") @QueryParam("start") Integer start,
+            @Parameter(description = "Last page to get tags for") @QueryParam("end") Integer end,
+            @Parameter(description = "Number of pages to combine into each group") @QueryParam("step") Integer stepSize,
+            @Parameter(description = "Tag type to consider (person, coorporation, event or location)") @QueryParam("type") String type)
+            throws PresentationException, IndexUnreachableException, ViewerConfigurationException {
         NERBuilder builder = new NERBuilder(urls);
         return builder.getNERTags(pi, type, start, end, stepSize == null ? 1 : stepSize);
     }
-    
+
     //disabled; may cause oom
-//    @GET
-//    @javax.ws.rs.Path(RECORDS_PLAINTEXT)
-//    @Produces({ MediaType.TEXT_PLAIN })
-//    @Operation(tags = {"records"}, summary = "Get entire plaintext of record")
-//    @CORSBinding
-//    @IIIFPresentationBinding
-    public String getPlaintext() throws PresentationException, IndexUnreachableException, ViewerConfigurationException, ServiceNotAllowedException, IOException, DAOException {
+    //    @GET
+    //    @javax.ws.rs.Path(RECORDS_PLAINTEXT)
+    //    @Produces({ MediaType.TEXT_PLAIN })
+    //    @Operation(tags = {"records"}, summary = "Get entire plaintext of record")
+    //    @CORSBinding
+    //    @IIIFPresentationBinding
+    public String getPlaintext() throws PresentationException, IndexUnreachableException, ViewerConfigurationException, ServiceNotAllowedException,
+            IOException, DAOException {
 
         TextResourceBuilder builder = new TextResourceBuilder(servletRequest, servletResponse);
         return builder.getFulltext(pi);
     }
-    
+
     @GET
     @javax.ws.rs.Path(RECORDS_PLAINTEXT_ZIP)
     @Produces({ "application/zip" })
-    @Operation(tags = {"records"}, summary = "Get entire plaintext of record")
-    public StreamingOutput getPlaintextAsZip() throws PresentationException, IndexUnreachableException, ViewerConfigurationException, IOException, DAOException, ContentLibException {
-        
+    @Operation(tags = { "records" }, summary = "Get entire plaintext of record")
+    public StreamingOutput getPlaintextAsZip()
+            throws PresentationException, IndexUnreachableException, ViewerConfigurationException, IOException, DAOException, ContentLibException {
+
         String filename = pi + "_plaintext.zip";
         servletResponse.addHeader("Content-Disposition", "attachment; filename=\"" + filename + "\"");
-        
+
         TextResourceBuilder builder = new TextResourceBuilder(servletRequest, servletResponse);
         return builder.getFulltextAsZip(pi);
     }
-    
+
     @GET
     @javax.ws.rs.Path(RECORDS_ALTO)
     @Produces({ MediaType.TEXT_XML })
-    @Operation(tags = {"records"}, summary = "Get entire alto document for record")
-    public String getAlto() throws PresentationException, IndexUnreachableException, ViewerConfigurationException, IOException, DAOException, ContentLibException, JDOMException {
+    @Operation(tags = { "records" }, summary = "Get entire alto document for record")
+    public String getAlto() throws PresentationException, IndexUnreachableException, ViewerConfigurationException, IOException, DAOException,
+            ContentLibException, JDOMException {
 
         TextResourceBuilder builder = new TextResourceBuilder(servletRequest, servletResponse);
         return builder.getAltoDocument(pi);
     }
-    
+
     @GET
     @javax.ws.rs.Path(RECORDS_ALTO_ZIP)
     @Produces({ "application/zip" })
-    @Operation(tags = {"records"}, summary = "Get entire plaintext of record")
-    public StreamingOutput getAltoAsZip() throws PresentationException, IndexUnreachableException, ViewerConfigurationException, IOException, DAOException, ContentLibException {
-        
+    @Operation(tags = { "records" }, summary = "Get entire plaintext of record")
+    public StreamingOutput getAltoAsZip()
+            throws PresentationException, IndexUnreachableException, ViewerConfigurationException, IOException, DAOException, ContentLibException {
+
         String filename = pi + "_alto.zip";
         servletResponse.addHeader("Content-Disposition", "attachment; filename=\"" + filename + "\"");
-        
+
         TextResourceBuilder builder = new TextResourceBuilder(servletRequest, servletResponse);
         return builder.getAltoAsZip(pi);
     }
-    
+
     @GET
     @javax.ws.rs.Path(RECORDS_TEI)
-    @Produces({MediaType.TEXT_XML})
-    @Operation(tags = {"records"}, summary = "Get text of record in TEI format.", description ="If possible, directly read a TEI file associated with the record, otherwise convert all fulltexts to TEI documents")
+    @Produces({ MediaType.TEXT_XML })
+    @Operation(tags = { "records" }, summary = "Get text of record in TEI format.",
+            description = "If possible, directly read a TEI file associated with the record, otherwise convert all fulltexts to TEI documents")
     public String getTei(
-            @Parameter(description="perferred language for the TEI file, in ISO-639 format")@QueryParam("lang") String language) throws PresentationException, IndexUnreachableException, ViewerConfigurationException, IOException, DAOException, ContentLibException {
-        
+            @Parameter(description = "perferred language for the TEI file, in ISO-639 format") @QueryParam("lang") String language)
+            throws PresentationException, IndexUnreachableException, ViewerConfigurationException, IOException, DAOException, ContentLibException {
+
         String filename = pi + "_tei.zip";
         servletResponse.addHeader("Content-Disposition", "attachment; filename=\"" + filename + "\"");
-        
-        if(language == null) {
+
+        if (language == null) {
             language = servletRequest.getLocale().getLanguage();
         }
-        
+
         TextResourceBuilder builder = new TextResourceBuilder(servletRequest, servletResponse);
         return builder.getTeiDocument(pi, language);
     }
-    
+
     @GET
     @javax.ws.rs.Path(RECORDS_TEI_ZIP)
     @Produces({ "application/zip" })
-    @Operation(tags = {"records"}, summary = "Get text of record in TEI format as a zip file.", description ="If possible, directly read a TEI file associated with the record, otherwise convert all fulltexts to TEI documents")
+    @Operation(tags = { "records" }, summary = "Get text of record in TEI format as a zip file.",
+            description = "If possible, directly read a TEI file associated with the record, otherwise convert all fulltexts to TEI documents")
     public StreamingOutput getTeiAsZip(
-            @Parameter(description="perferred language for the TEI file, in ISO-639 format")@QueryParam("lang") String language) throws PresentationException, IndexUnreachableException, ViewerConfigurationException, IOException, DAOException, ContentLibException {
-        
+            @Parameter(description = "perferred language for the TEI file, in ISO-639 format") @QueryParam("lang") String language)
+            throws PresentationException, IndexUnreachableException, ViewerConfigurationException, IOException, DAOException, ContentLibException {
+
         String filename = pi + "_tei.zip";
         servletResponse.addHeader("Content-Disposition", "attachment; filename=\"" + filename + "\"");
-        
-        if(language == null) {
+
+        if (language == null) {
             language = servletRequest.getLocale().getLanguage();
         }
-        
+
         TextResourceBuilder builder = new TextResourceBuilder(servletRequest, servletResponse);
         return builder.getTeiAsZip(pi, language);
     }
-    
+
     /**
      * Endpoint for IIIF Search API service in a manifest. Depending on the given motivation parameters, fulltext (motivation=painting), user comments
      * (motivation=commenting) and general (crowdsourcing-) annotations (motivation=describing) may be searched.
@@ -429,14 +447,13 @@ public class RecordResource {
                 .buildAutoSuggest();
     }
 
-
     /**
      * @param mode
      * @return
      */
     public BuildMode getBuildeMode(String mode) {
-        if(StringUtils.isNotBlank(mode)) {
-            switch(mode.toLowerCase()) {
+        if (StringUtils.isNotBlank(mode)) {
+            switch (mode.toLowerCase()) {
                 case "iiif-simple":
                 case "iiif_simple":
                 case "simple":
@@ -446,8 +463,8 @@ public class RecordResource {
                 case "thumbs":
                 case "thumbnails":
                     return BuildMode.THUMBS;
-                    default:
-                        return BuildMode.IIIF;
+                default:
+                    return BuildMode.IIIF;
             }
         }
         return BuildMode.IIIF;
@@ -461,7 +478,7 @@ public class RecordResource {
      */
     private StructElement getStructElement(String pi) throws PresentationException, IndexUnreachableException {
         SolrDocument doc = DataManager.getInstance().getSearchIndex().getFirstDoc("PI:" + pi, null);
-        StructElement struct = new StructElement(Long.valueOf((String)doc.getFieldValue(SolrConstants.IDDOC)), doc);
+        StructElement struct = new StructElement(Long.valueOf((String) doc.getFieldValue(SolrConstants.IDDOC)), doc);
         return struct;
     }
 }
