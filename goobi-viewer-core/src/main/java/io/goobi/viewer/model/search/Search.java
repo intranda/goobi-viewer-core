@@ -146,10 +146,11 @@ public class Search implements Serializable {
      */
     public Search() {
     }
-    
+
     /**
-     * cloning constructor. Creates a new search in a state as it might be loaded from database, i.e. without any transient 
-     * fields set. In particular with  empty {@link #hits}
+     * cloning constructor. Creates a new search in a state as it might be loaded from database, i.e. without any transient fields set. In particular
+     * with empty {@link #hits}
+     * 
      * @param blueprint
      */
     public Search(Search blueprint) {
@@ -168,7 +169,7 @@ public class Search implements Serializable {
         this.dateUpdated = blueprint.dateUpdated;
         this.lastHitsCount = blueprint.lastHitsCount;
         this.newHitsNotification = blueprint.newHitsNotification;
-                
+
     }
 
     /**
@@ -231,7 +232,7 @@ public class Search implements Serializable {
         }
         return true;
     }
-    
+
     /**
      * <p>
      * execute.
@@ -252,7 +253,6 @@ public class Search implements Serializable {
             boolean aggregateHits) throws PresentationException, IndexUnreachableException, DAOException, ViewerConfigurationException {
         execute(facets, searchTerms, hitsPerPage, advancedSearchGroupOperator, locale, aggregateHits, false);
     }
-    
 
     /**
      * <p>
@@ -354,7 +354,7 @@ public class Search implements Serializable {
                         String fieldName = SearchHelper.defacetifyField(facetField.getName());
                         facets.getAvailableFacets()
                                 .put(fieldName, FacetItem.generateFilterLinkList(fieldName, facetResult, hierarchicalFacetFields.contains(fieldName),
-                                        locale));
+                                        locale, facets.getLabelMap()));
                         //                        allFacetFields.remove("FACET_" + SolrConstants.DOCSTRCT_SUB);
                         allFacetFields.remove(facetField.getName());
                     }
@@ -366,7 +366,7 @@ public class Search implements Serializable {
             resp = DataManager.getInstance()
                     .getSearchIndex()
                     .search(finalQuery, 0, 0, null, allFacetFields, Collections.singletonList(SolrConstants.IDDOC), activeFacetFilterQueries, params);
-            if (resp != null && resp.getResults() != null) {
+            if (resp.getResults() != null) {
                 hitsCount = resp.getResults().getNumFound();
                 logger.trace("Pre-grouping search hits: {}", hitsCount);
                 // Check for duplicate values in the GROUPFIELD facet and subtract the number from the total hits.
@@ -382,77 +382,79 @@ public class Search implements Serializable {
                 logger.debug("Total search hits: {}", hitsCount);
             }
         }
-        if (hitsCount > 0 && resp != null) {
-            // Collect available facets
-            String language = null;
-            if (locale != null) {
-                language = locale.getLanguage().toUpperCase();
+
+        if (hitsCount == 0) {
+            return;
+        }
+
+        // Collect available facets
+        String language = null;
+        if (locale != null) {
+            language = locale.getLanguage().toUpperCase();
+        }
+        for (FacetField facetField : resp.getFacetFields()) {
+            if (SolrConstants.GROUPFIELD.equals(facetField.getName()) || facetField.getValues() == null) {
+                continue;
             }
-            for (FacetField facetField : resp.getFacetFields()) {
-                if (SolrConstants.GROUPFIELD.equals(facetField.getName()) || facetField.getValues() == null) {
+            //                // Skip top element docstrct faceting if sub-element docstrct faceting is active
+            //                if (("FACET_" + SolrConstants.DOCSTRCT).equals(facetField.getName()) && subElementQueryFilterSuffix.contains(facetField.getName())) {
+            //                    continue;
+            //                }
+            //                // Skip language-specific facet fields if they don't match the given language
+            //                if (facetField.getName().contains(SolrConstants._LANG_)
+            //                        && (language == null || !facetField.getName().contains(SolrConstants._LANG_ + language))) {
+            //                    continue;
+            //                }
+            Map<String, Long> facetResult = new TreeMap<>();
+            for (Count count : facetField.getValues()) {
+                if (StringUtils.isEmpty(count.getName())) {
+                    logger.warn("Facet for {} has no name, skipping...", facetField.getName());
                     continue;
                 }
-                //                // Skip top element docstrct faceting if sub-element docstrct faceting is active
-                //                if (("FACET_" + SolrConstants.DOCSTRCT).equals(facetField.getName()) && subElementQueryFilterSuffix.contains(facetField.getName())) {
-                //                    continue;
-                //                }
-                //                // Skip language-specific facet fields if they don't match the given language
-                //                if (facetField.getName().contains(SolrConstants._LANG_)
-                //                        && (language == null || !facetField.getName().contains(SolrConstants._LANG_ + language))) {
-                //                    continue;
-                //                }
-                Map<String, Long> facetResult = new TreeMap<>();
-                for (Count count : facetField.getValues()) {
-                    if (StringUtils.isEmpty(count.getName())) {
-                        logger.warn("Facet for {} has no name, skipping...", facetField.getName());
-                        continue;
-                    }
-                    facetResult.put(count.getName(), count.getCount());
-                }
-                // Use non-FACET_ field names outside of the actual faceting query
-                String fieldName = SearchHelper.defacetifyField(facetField.getName());
-                facets.getAvailableFacets()
-                        .put(fieldName,
-                                FacetItem.generateFilterLinkList(fieldName, facetResult, hierarchicalFacetFields.contains(fieldName), locale));
+                facetResult.put(count.getName(), count.getCount());
             }
-
-            int lastPage = getLastPage(hitsPerPage);
-            if (page > lastPage) {
-                page = lastPage;
-                logger.trace(" page = getLastPage()");
-            }
-
-            // Hits for the current page
-            int from = (page - 1) * hitsPerPage;
-
-            // Search for child hits only if initial search query is not empty (empty query means collection listing)
-            if (StringUtils.isNotEmpty(expandQuery)) {
-                String useExpandQuery = expandQuery + subElementQueryFilterSuffix;
-                if (StringUtils.isNotEmpty(useExpandQuery)) {
-                    logger.trace("Expand query: {}", useExpandQuery);
-                    params.putAll(SearchHelper.getExpandQueryParams(useExpandQuery));
-                }
-            }
-
-            List<String> staticSortFields = DataManager.getInstance().getConfiguration().getStaticSortFields();
-            List<StringPair> useSortFields = new ArrayList<>(staticSortFields.size() + sortFields.size());
-            if (!staticSortFields.isEmpty()) {
-                for (String s : staticSortFields) {
-                    useSortFields.add(new StringPair(s, "asc"));
-                    logger.trace("Added static sort field: {}", s);
-                }
-            }
-            useSortFields.addAll(sortFields);
-            List<SearchHit> hits = aggregateHits
-                    ? SearchHelper.searchWithAggregation(finalQuery, from, hitsPerPage, useSortFields, null, activeFacetFilterQueries, params,
-                            searchTerms, null, BeanUtils.getLocale(), keepSolrDoc)
-                    : SearchHelper.searchWithFulltext(finalQuery, from, hitsPerPage, useSortFields, null, activeFacetFilterQueries, params,
-                            searchTerms, null, BeanUtils.getLocale(), BeanUtils.getRequest(), keepSolrDoc);
-            this.hits.addAll(hits);
+            // Use non-FACET_ field names outside of the actual faceting query
+            String fieldName = SearchHelper.defacetifyField(facetField.getName());
+            facets.getAvailableFacets()
+                    .put(fieldName,
+                            FacetItem.generateFilterLinkList(fieldName, facetResult, hierarchicalFacetFields.contains(fieldName), locale,
+                                    facets.getLabelMap()));
         }
+
+        int lastPage = getLastPage(hitsPerPage);
+        if (page > lastPage) {
+            page = lastPage;
+            logger.trace(" page = getLastPage()");
+        }
+
+        // Hits for the current page
+        int from = (page - 1) * hitsPerPage;
+
+        // Search for child hits only if initial search query is not empty (empty query means collection listing)
+        if (StringUtils.isNotEmpty(expandQuery)) {
+            String useExpandQuery = expandQuery + subElementQueryFilterSuffix;
+            if (StringUtils.isNotEmpty(useExpandQuery)) {
+                logger.trace("Expand query: {}", useExpandQuery);
+                params.putAll(SearchHelper.getExpandQueryParams(useExpandQuery));
+            }
+        }
+
+        List<String> staticSortFields = DataManager.getInstance().getConfiguration().getStaticSortFields();
+        List<StringPair> useSortFields = new ArrayList<>(staticSortFields.size() + sortFields.size());
+        if (!staticSortFields.isEmpty()) {
+            for (String s : staticSortFields) {
+                useSortFields.add(new StringPair(s, "asc"));
+                logger.trace("Added static sort field: {}", s);
+            }
+        }
+        useSortFields.addAll(sortFields);
+        List<SearchHit> hits = aggregateHits
+                ? SearchHelper.searchWithAggregation(finalQuery, from, hitsPerPage, useSortFields, null, activeFacetFilterQueries, params,
+                        searchTerms, null, BeanUtils.getLocale(), keepSolrDoc)
+                : SearchHelper.searchWithFulltext(finalQuery, from, hitsPerPage, useSortFields, null, activeFacetFilterQueries, params,
+                        searchTerms, null, BeanUtils.getLocale(), BeanUtils.getRequest(), keepSolrDoc);
+        this.hits.addAll(hits);
     }
-
-
 
     /**
      * Constructs a search URL using the query parameters contained in this object.
@@ -883,7 +885,7 @@ public class Search implements Serializable {
      */
     public int getLastPage(int hitsPerPage) {
         int answer = 0;
-        if(hitsPerPage > 0) {            
+        if (hitsPerPage > 0) {
             int hitsPerPageLocal = hitsPerPage;
             answer = new Double(Math.floor(hitsCount / hitsPerPageLocal)).intValue();
             if (hitsCount % hitsPerPageLocal != 0 || answer == 0) {

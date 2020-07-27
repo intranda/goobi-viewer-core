@@ -19,6 +19,7 @@ import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 import org.junit.Assert;
@@ -61,7 +62,7 @@ public class SearchFacetsTest extends AbstractSolrEnabledTest {
     @Test
     public void parseFacetString_shouldFillListCorrectly() throws Exception {
         List<FacetItem> facetItems = new ArrayList<>();
-        SearchFacets.parseFacetString("DC:a;;DC:b;;MD_TITLE:word;;", facetItems);
+        SearchFacets.parseFacetString("DC:a;;DC:b;;MD_TITLE:word;;", facetItems, null);
         Assert.assertEquals(3, facetItems.size());
         Assert.assertEquals("DC", facetItems.get(0).getField());
         Assert.assertEquals("a", facetItems.get(0).getValue());
@@ -78,9 +79,9 @@ public class SearchFacetsTest extends AbstractSolrEnabledTest {
     @Test
     public void parseFacetString_shouldEmptyListBeforeFilling() throws Exception {
         List<FacetItem> facetItems = new ArrayList<>();
-        SearchFacets.parseFacetString("DC:a;;", facetItems);
+        SearchFacets.parseFacetString("DC:a;;", facetItems, null);
         Assert.assertEquals(1, facetItems.size());
-        SearchFacets.parseFacetString("DC:b;;MD_TITLE:word;;", facetItems);
+        SearchFacets.parseFacetString("DC:b;;MD_TITLE:word;;", facetItems, null);
         Assert.assertEquals(2, facetItems.size());
         Assert.assertEquals("DC", facetItems.get(0).getField());
         Assert.assertEquals("b", facetItems.get(0).getValue());
@@ -94,8 +95,8 @@ public class SearchFacetsTest extends AbstractSolrEnabledTest {
      */
     @Test
     public void parseFacetString_shouldAddDCFieldPrefixIfNoFieldNameIsGiven() throws Exception {
-        List<FacetItem> facetItems = new ArrayList<>();
-        SearchFacets.parseFacetString("collection", facetItems);
+        List<FacetItem> facetItems = new ArrayList<>(1);
+        SearchFacets.parseFacetString("collection", facetItems, null);
         Assert.assertEquals(1, facetItems.size());
         Assert.assertEquals(SolrConstants.DC, facetItems.get(0).getField());
         Assert.assertEquals("collection", facetItems.get(0).getValue());
@@ -107,12 +108,22 @@ public class SearchFacetsTest extends AbstractSolrEnabledTest {
      */
     @Test
     public void parseFacetString_shouldSetHierarchicalStatusCorrectly() throws Exception {
-        {
-            List<FacetItem> facetItems = new ArrayList<>();
-            SearchFacets.parseFacetString("DC:a;;", facetItems);
-            Assert.assertEquals(1, facetItems.size());
-            Assert.assertTrue(facetItems.get(0).isHierarchial());
-        }
+        List<FacetItem> facetItems = new ArrayList<>(1);
+        SearchFacets.parseFacetString("DC:a;;", facetItems, null);
+        Assert.assertEquals(1, facetItems.size());
+        Assert.assertTrue(facetItems.get(0).isHierarchial());
+    }
+
+    /**
+     * @see SearchFacets#parseFacetString(String,List,Map)
+     * @verifies use label from labelMap if available
+     */
+    @Test
+    public void parseFacetString_shouldUseLabelFromLabelMapIfAvailable() throws Exception {
+        List<FacetItem> facetItems = new ArrayList<>(1);
+        SearchFacets.parseFacetString("FOO:bar;;", facetItems, Collections.singletonMap("FOO:bar", "new label"));
+        Assert.assertEquals(1, facetItems.size());
+        Assert.assertEquals("new label", facetItems.get(0).getLabel());
     }
 
     /**
