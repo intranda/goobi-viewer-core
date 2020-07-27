@@ -89,10 +89,9 @@
                                                     <dt class="col-sm-4">#{msg.admin__license_licensee}:</dt>
                                                     <dd class="col-sm-8">
                                                         <ui:repeat var="license" value="#{adminBean.getLicenses(licenseType)}">
-                                                            <ui:fragment rendered="#{license.user != null}">#{license.user.displayName}</ui:fragment>
-                                                            <ui:fragment rendered="#{license.userGroup != null}">#{license.userGroup.name}</ui:fragment>
-                                                            <ui:fragment
-                                                                rendered="#{license.ipRange != null}">#{license.ipRange.name} (#{license.ipRange.subnetMask})</ui:fragment>
+                                                            <ui:fragment rendered="#{license.user != null}"><span class="admin__license-user">#{license.user.displayName}</span></ui:fragment>
+                                                            <ui:fragment rendered="#{license.userGroup != null}"><span class="admin__license-user">#{license.userGroup.name}</span></ui:fragment>
+                                                            <ui:fragment rendered="#{license.ipRange != null}"><span class="admin__license-user">#{license.ipRange.name} (#{license.ipRange.subnetMask})</span></ui:fragment>
                                                         </ui:repeat>
                                                     </dd>
                                                 </ui:fragment>
