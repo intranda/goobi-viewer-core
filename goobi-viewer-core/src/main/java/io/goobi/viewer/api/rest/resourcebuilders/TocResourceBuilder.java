@@ -22,6 +22,7 @@ import de.unigoettingen.sub.commons.contentlib.exceptions.ContentNotFoundExcepti
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
+import io.goobi.viewer.exceptions.RecordNotFoundException;
 import io.goobi.viewer.exceptions.ViewerConfigurationException;
 import io.goobi.viewer.model.security.AccessConditionUtils;
 import io.goobi.viewer.model.security.IPrivilegeHolder;
@@ -49,7 +50,12 @@ public class TocResourceBuilder {
             throw new ContentNotFoundException("Resource not found");
         }
 
-        ViewManager viewManager = ViewManager.createViewManager(pi);
+        ViewManager viewManager;
+        try {
+            viewManager = ViewManager.createViewManager(pi);
+        } catch (RecordNotFoundException e) {
+            throw new ContentNotFoundException("Resource not found: " + pi);
+        }
         TOC toc = new TOC();
         toc.generate(viewManager.getTopDocument(), viewManager.isListAllVolumesInTOC(), viewManager.getMainMimeType(), 1);
         TocWriter writer = new TocWriter("", viewManager.getTopDocument().getLabel().toUpperCase());

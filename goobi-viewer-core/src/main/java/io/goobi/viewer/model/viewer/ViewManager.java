@@ -23,7 +23,6 @@ import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -228,9 +227,9 @@ public class ViewManager implements Serializable {
             return "";
         }
         return imageDeliveryBean.getImages().getImageUrl(null, pi, representative.getFileName());
-//        StringBuilder urlBuilder = new StringBuilder(DataManager.getInstance().getConfiguration().getIIIFApiUrl());
-//        urlBuilder.append("image/").append(pi).append('/').append(representative.getFileName()).append("/info.json");
-//        return urlBuilder.toString();
+        //        StringBuilder urlBuilder = new StringBuilder(DataManager.getInstance().getConfiguration().getIIIFApiUrl());
+        //        urlBuilder.append("image/").append(pi).append('/').append(representative.getFileName()).append("/info.json");
+        //        return urlBuilder.toString();
     }
 
     /**
@@ -1885,7 +1884,7 @@ public class ViewManager implements Serializable {
      * @throws DAOException
      * @throws IndexUnreachableException
      * @throws PresentationException
-     * @throws ViewerConfigurationException 
+     * @throws ViewerConfigurationException
      */
     public boolean isMetadataViewOnly() throws IndexUnreachableException, DAOException, PresentationException, ViewerConfigurationException {
         if (metadataViewOnly == null) {
@@ -1998,7 +1997,7 @@ public class ViewManager implements Serializable {
      * @throws IndexUnreachableException
      * @throws DAOException
      * @throws PresentationException
-     * @throws ViewerConfigurationException 
+     * @throws ViewerConfigurationException
      */
     public boolean isDisplayFulltextViewLink() throws IndexUnreachableException, DAOException, PresentationException, ViewerConfigurationException {
         return DataManager.getInstance().getConfiguration().isSidebarFulltextLinkVisible() && topDocument != null && topDocument.isFulltextAvailable()
@@ -2015,9 +2014,11 @@ public class ViewManager implements Serializable {
      * @throws PresentationException
      * @throws ViewerConfigurationException
      */
-    public boolean isDisplayExternalFulltextLink() throws IndexUnreachableException, DAOException, PresentationException, ViewerConfigurationException {
+    public boolean isDisplayExternalFulltextLink()
+            throws IndexUnreachableException, DAOException, PresentationException, ViewerConfigurationException {
         return topDocument != null
-                && topDocument.getMetadataValue("MD_LOCATION_URL_EXTERNALFULLTEXT") != null  && getCurrentPage() != null && getCurrentPage().isFulltextAccessPermission();
+                && topDocument.getMetadataValue("MD_LOCATION_URL_EXTERNALFULLTEXT") != null && getCurrentPage() != null
+                && getCurrentPage().isFulltextAccessPermission();
     }
 
     /**
@@ -3424,16 +3425,17 @@ public class ViewManager implements Serializable {
      * @throws IndexUnreachableException
      * @throws ViewerConfigurationException
      * @throws DAOException
+     * @throws RecordNotFoundException
      */
     public static ViewManager createViewManager(String pi)
-            throws PresentationException, IndexUnreachableException, DAOException, ViewerConfigurationException {
+            throws PresentationException, IndexUnreachableException, DAOException, ViewerConfigurationException, RecordNotFoundException {
         if (pi == null) {
             throw new IllegalArgumentException("pi may not be null");
         }
 
         SolrDocument doc = DataManager.getInstance().getSearchIndex().getFirstDoc(SolrConstants.PI + ":" + pi, null);
         if (doc == null) {
-            return null;
+            throw new RecordNotFoundException(pi);
         }
 
         long iddoc = Long.valueOf((String) doc.getFieldValue(SolrConstants.IDDOC));
