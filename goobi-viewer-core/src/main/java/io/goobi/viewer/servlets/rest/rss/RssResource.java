@@ -413,7 +413,7 @@ public class RssResource {
 
         if (addSuffixes) {
             sbQuery.append(
-                    SearchHelper.getAllSuffixes(servletRequest, null, true, true));
+                    SearchHelper.getAllSuffixes(servletRequest, true, true));
         }
 
         return sbQuery.toString();

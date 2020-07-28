@@ -129,7 +129,7 @@ public class SearchDownloadResource {
         List<StringPair> sortFields = searchBean.getCurrentSearch().getSortFields();
         Map<String, Set<String>> searchTerms = searchBean.getSearchTerms();
 
-        final String query = SearchHelper.buildFinalQuery(currentQuery, DataManager.getInstance().getConfiguration().isAggregateHits(),BeanUtils.getNavigationHelper(), request);
+        final String query = SearchHelper.buildFinalQuery(currentQuery, DataManager.getInstance().getConfiguration().isAggregateHits(), request);
 
         response.setContentType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
         response.setHeader("Content-Disposition",

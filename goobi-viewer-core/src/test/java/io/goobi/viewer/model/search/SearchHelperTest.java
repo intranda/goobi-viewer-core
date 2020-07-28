@@ -663,7 +663,7 @@ public class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
      */
     @Test
     public void getAllSuffixes_shouldAddStaticSuffix() throws Exception {
-        String suffix = SearchHelper.getAllSuffixes(null, null, true, false);
+        String suffix = SearchHelper.getAllSuffixes(null, true, false);
         Assert.assertNotNull(suffix);
         Assert.assertTrue(suffix.contains(DataManager.getInstance().getConfiguration().getStaticQuerySuffix()));
     }
@@ -674,7 +674,7 @@ public class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
      */
     @Test
     public void getAllSuffixes_shouldNotAddStaticSuffixIfNotRequested() throws Exception {
-        String suffix = SearchHelper.getAllSuffixes(null, null, false, false);
+        String suffix = SearchHelper.getAllSuffixes(null, false, false);
         Assert.assertNotNull(suffix);
         Assert.assertFalse(suffix.contains(DataManager.getInstance().getConfiguration().getStaticQuerySuffix()));
     }
@@ -686,7 +686,7 @@ public class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
     @Test
     public void getAllSuffixes_shouldAddCollectionBlacklistSuffix() throws Exception {
 
-        String suffix = SearchHelper.getAllSuffixes(null);
+        String suffix = SearchHelper.getAllSuffixes();
         Assert.assertNotNull(suffix);
         Assert.assertTrue(suffix.contains(" -" + SolrConstants.DC + ":collection1 -" + SolrConstants.DC + ":collection2"));
     }
@@ -1171,18 +1171,16 @@ public class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
      */
     @Test
     public void testBuildFinalQuery() throws IndexUnreachableException, PresentationException {
-        NavigationHelper nh = new NavigationHelper();
         String query = "DC:dctei";
 
-        String finalQuery = SearchHelper.buildFinalQuery(query, false, nh, null);
+        String finalQuery = SearchHelper.buildFinalQuery(query, false, null);
         SolrDocumentList docs = DataManager.getInstance().getSearchIndex().search(finalQuery);
         Assert.assertEquals(65, docs.size());
 
-        nh.setSubThemeDiscriminatorValue("subtheme1");
-        finalQuery = SearchHelper.buildFinalQuery(query, false, nh,
+        finalQuery = SearchHelper.buildFinalQuery(query, false,
                 null);
         docs = DataManager.getInstance().getSearchIndex().search(finalQuery);
-        Assert.assertEquals(4, docs.size());
+        Assert.assertEquals(65, docs.size());
     }
 
     /**

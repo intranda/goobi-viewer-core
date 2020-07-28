@@ -401,7 +401,7 @@ public class BeanUtils {
      * @return a {@link io.goobi.viewer.managedbeans.UserBean} object.
      */
     public static UserBean getUserBeanFromRequest(HttpServletRequest request) {
-        if (request != null) {
+        if (request != null && request.getSession() != null) {
             return (UserBean) request.getSession().getAttribute("userBean");
         }
 

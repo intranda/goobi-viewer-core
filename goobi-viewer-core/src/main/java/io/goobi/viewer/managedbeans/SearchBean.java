@@ -2324,7 +2324,7 @@ public class SearchBean implements SearchInterface, Serializable {
             throws PresentationException, IndexUnreachableException {
         StringBuilder sbQuery = new StringBuilder(100);
         sbQuery.append(SearchHelper.ALL_RECORDS_QUERY)
-                .append(SearchHelper.getAllSuffixes(BeanUtils.getRequest(), BeanUtils.getNavigationHelper(), true, true));
+                .append(SearchHelper.getAllSuffixes(BeanUtils.getRequest(), true, true));
 
         if (StringUtils.isNotEmpty(subQuery)) {
             if (subQuery.startsWith(" AND ")) {

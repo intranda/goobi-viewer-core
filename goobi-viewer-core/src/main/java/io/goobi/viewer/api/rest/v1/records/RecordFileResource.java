@@ -197,7 +197,7 @@ public class RecordFileResource {
     private void checkFulltextAccessConditions(String pi, String filename) throws ServiceNotAllowedException {
         boolean access = false;
         try {
-            access = AccessConditionUtils.checkAccess(servletRequest, "test", pi, filename, false);
+            access = AccessConditionUtils.checkAccess(servletRequest, "text", pi, filename, false);
         } catch (IndexUnreachableException | DAOException e) {
             logger.error(String.format("Cannot check fulltext access for pi %s and file %s: %s", pi, filename, e.toString()));
         }
