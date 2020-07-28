@@ -18,7 +18,6 @@ package io.goobi.viewer.model.viewer;
 import org.junit.Assert;
 import org.junit.Test;
 
-import io.goobi.viewer.controller.SolrConstants;
 import io.goobi.viewer.model.search.SearchHelper;
 import io.goobi.viewer.model.termbrowsing.BrowsingMenuFieldConfig;
 

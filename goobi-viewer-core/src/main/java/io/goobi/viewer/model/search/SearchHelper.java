@@ -215,16 +215,16 @@ public final class SearchHelper {
                     String altoFilename = (String) doc.getFirstValue(SolrConstants.FILENAME_ALTO);
                     String plaintextFilename = (String) doc.getFirstValue(SolrConstants.FILENAME_FULLTEXT);
                     String pi = (String) doc.getFirstValue(SolrConstants.PI_TOPSTRUCT);
-                    if(StringUtils.isNotBlank(plaintextFilename)) {
+                    if (StringUtils.isNotBlank(plaintextFilename)) {
                         boolean access = AccessConditionUtils.checkAccess(BeanUtils.getRequest(), "text", pi, plaintextFilename, false);
-                        if(access) {
+                        if (access) {
                             fulltext = DataFileTools.loadFulltext(null, plaintextFilename, false, request);
                         } else {
                             fulltext = ViewerResourceBundle.getTranslation("fulltextAccessDenied", null);
                         }
-                    } else if(StringUtils.isNotBlank(altoFilename)) {
+                    } else if (StringUtils.isNotBlank(altoFilename)) {
                         boolean access = AccessConditionUtils.checkAccess(BeanUtils.getRequest(), "text", pi, altoFilename, false);
-                        if(access) {
+                        if (access) {
                             fulltext = DataFileTools.loadFulltext(altoFilename, null, false, request);
                         } else {
                             fulltext = ViewerResourceBundle.getTranslation("fulltextAccessDenied", null);
@@ -402,9 +402,8 @@ public final class SearchHelper {
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      */
     public static String getAllSuffixes() throws IndexUnreachableException {
-        return getAllSuffixes(BeanUtils.getRequest(),  true, true);
+        return getAllSuffixes(BeanUtils.getRequest(), true, true);
     }
-
 
     /**
      * Returns all suffixes relevant to search filtering.
@@ -1427,8 +1426,13 @@ public final class SearchHelper {
         }
 
         int rows = SolrSearchIndex.MAX_HITS;
+        String facetField = SearchHelper.facetifyField(bmfc.getField());
         List<String> facetFields = new ArrayList<>();
-        facetFields.add(bmfc.getField());
+        // If only browsing top level documents, use faceting for faster performance
+        if (bmfc.isRecordsAndAnchorsOnly()) {
+            rows = 0;
+            facetFields.add(facetField);
+        }
 
         try {
             Map<String, String> params = new HashMap<>();
@@ -1441,7 +1445,6 @@ public final class SearchHelper {
                     StringUtils.isEmpty(bmfc.getSortField()) ? null : Collections.singletonList(new StringPair(bmfc.getSortField(), "asc"));
             QueryResponse resp =
                     DataManager.getInstance().getSearchIndex().search(query, 0, rows, sortFields, facetFields, fields, filterQueries, params);
-            
             logger.debug("getFilteredTerms hits: {}", resp.getResults().getNumFound());
             if ("0-9".equals(startsWith)) {
                 // Numerical filtering
@@ -1479,14 +1482,28 @@ public final class SearchHelper {
                     }
                 }
             } else {
-                // Without filtering or using alphabetical filtering
-                // Parallel processing of hits (if sorting field is provided), requires compiler level 1.8
-                //                ((List<SolrDocument>) resp.getResults()).parallelStream()
-                //                        .forEach(doc -> processSolrResult(doc, bmfc, startsWith, terms, aggregateHits));
+                if (bmfc.isRecordsAndAnchorsOnly() && resp.getFacetField(facetField) != null) {
+                    // If only browsing records and anchors, use faceting
+                    logger.trace("using faceting: {}", facetField);
+                    for (Count count : resp.getFacetField(facetField).getValues()) {
+                        if (count.getCount() == 0) {
+                            continue;
+                        }
+                        terms.put(count.getName(),
+                                new BrowseTerm(count.getName(), null,
+                                        bmfc.isTranslate() ? ViewerResourceBundle.getTranslations(count.getName()) : null)
+                                                .setHitCount(count.getCount()));
+                    }
+                } else {
+                    // Without filtering or using alphabetical filtering
+                    // Parallel processing of hits (if sorting field is provided), requires compiler level 1.8
+                    //                ((List<SolrDocument>) resp.getResults()).parallelStream()
+                    //                        .forEach(doc -> processSolrResult(doc, bmfc, startsWith, terms, aggregateHits));
 
-                // Sequential processing (doesn't break the sorting done by Solr)
-                for (SolrDocument doc : resp.getResults()) {
-                    processSolrResult(doc, bmfc, startsWith, terms, aggregateHits);
+                    // Sequential processing (doesn't break the sorting done by Solr)
+                    for (SolrDocument doc : resp.getResults()) {
+                        processSolrResult(doc, bmfc, startsWith, terms, aggregateHits);
+                    }
                 }
             }
         } catch (PresentationException e) {
@@ -1522,6 +1539,7 @@ public final class SearchHelper {
         if (termList == null) {
             return;
         }
+
         String pi = (String) doc.getFieldValue(SolrConstants.PI_TOPSTRUCT);
         String sortTerm = (String) doc.getFieldValue(bmfc.getSortField());
         Set<String> usedTermsInCurrentDoc = new HashSet<>();
