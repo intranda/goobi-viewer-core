@@ -556,14 +556,14 @@ public class SearchHit implements Comparable<SearchHit> {
                             String altoFilename = (String) childDoc.getFirstValue(SolrConstants.FILENAME_ALTO);
                             String plaintextFilename = (String) childDoc.getFirstValue(SolrConstants.FILENAME_FULLTEXT);
                             if(StringUtils.isNotBlank(plaintextFilename)) {
-                                boolean access = AccessConditionUtils.checkAccess(BeanUtils.getRequest(), "text", pi, plaintextFilename, false);
+                                boolean access = AccessConditionUtils.checkAccess(request, "text", pi, plaintextFilename, false);
                                 if(access) {
                                     fulltext = DataFileTools.loadFulltext(null, plaintextFilename, false, request);
                                 } else {
                                     acccessDeniedType = true;
                                 }
                             } else if(StringUtils.isNotBlank(altoFilename)) {
-                                boolean access = AccessConditionUtils.checkAccess(BeanUtils.getRequest(), "text", pi, altoFilename, false);
+                                boolean access = AccessConditionUtils.checkAccess(request, "text", pi, altoFilename, false);
                                 if(access) {
                                     fulltext = DataFileTools.loadFulltext(altoFilename, null, false, request);
                                 } else {
