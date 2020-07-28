@@ -70,6 +70,7 @@ import io.goobi.viewer.controller.DataFileTools;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.FileTools;
 import io.goobi.viewer.controller.SolrConstants;
+import io.goobi.viewer.controller.StringTools;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
@@ -141,7 +142,9 @@ public class RecordResource {
     @Operation(tags = { "records"}, summary = "Get ris as text")
     public String getRISAsText()
             throws PresentationException, IndexUnreachableException, ContentNotFoundException, DAOException {
-
+        if (servletResponse != null) {
+            servletResponse.setCharacterEncoding(StringTools.DEFAULT_ENCODING);
+        }
         StructElement se = getStructElement(pi);
         return new RisResourceBuilder(servletRequest, servletResponse).getRIS(se);
     }
@@ -152,7 +155,9 @@ public class RecordResource {
     @Operation(tags = { "records" }, summary = "Get table of contents of records")
     public String getTOCAsText()
             throws PresentationException, IndexUnreachableException, ContentNotFoundException, DAOException, ViewerConfigurationException {
-
+        if (servletResponse != null) {
+            servletResponse.setCharacterEncoding(StringTools.DEFAULT_ENCODING);
+        }
         return new TocResourceBuilder(servletRequest, servletResponse).getToc(pi);
     }
 
@@ -297,7 +302,9 @@ public class RecordResource {
     @CORSBinding
     @IIIFPresentationBinding
     public String getPlaintext() throws PresentationException, IndexUnreachableException, ViewerConfigurationException, ServiceNotAllowedException, IOException, DAOException {
-
+        if (servletResponse != null) {
+            servletResponse.setCharacterEncoding(StringTools.DEFAULT_ENCODING);
+        }
         TextResourceBuilder builder = new TextResourceBuilder();
         return builder.getFulltext(pi);
     }
@@ -308,6 +315,9 @@ public class RecordResource {
     @Operation(tags = {"records"}, summary = "Get entire plaintext of record")
     public StreamingOutput getPlaintextAsZip() throws PresentationException, IndexUnreachableException, ViewerConfigurationException, IOException, DAOException, ContentLibException {
         checkFulltextAccessConditions(pi);
+        if (servletResponse != null) {
+            servletResponse.setCharacterEncoding(StringTools.DEFAULT_ENCODING);
+        }
         String filename = pi + "_plaintext.zip";
         servletResponse.addHeader("Content-Disposition", "attachment; filename=\"" + filename + "\"");
         
@@ -320,6 +330,9 @@ public class RecordResource {
     @Operation(tags = {"records"}, summary = "Get entire alto document for record")
     public String getAlto() throws PresentationException, IndexUnreachableException, ViewerConfigurationException, IOException, DAOException, ContentLibException, JDOMException {
         checkFulltextAccessConditions(pi);
+        if (servletResponse != null) {
+            servletResponse.setCharacterEncoding(StringTools.DEFAULT_ENCODING);
+        }
         return builder.getAltoDocument(pi);
     }
     
@@ -329,6 +342,9 @@ public class RecordResource {
     @Operation(tags = {"records"}, summary = "Get entire plaintext of record")
     public StreamingOutput getAltoAsZip() throws PresentationException, IndexUnreachableException, ViewerConfigurationException, IOException, DAOException, ContentLibException {
         checkFulltextAccessConditions(pi);
+        if (servletResponse != null) {
+            servletResponse.setCharacterEncoding(StringTools.DEFAULT_ENCODING);
+        }
         String filename = pi + "_alto.zip";
         servletResponse.addHeader("Content-Disposition", "attachment; filename=\"" + filename + "\"");
         
@@ -342,6 +358,9 @@ public class RecordResource {
     public String getTei(
             @Parameter(description="perferred language for the TEI file, in ISO-639 format")@QueryParam("lang") String language) throws PresentationException, IndexUnreachableException, ViewerConfigurationException, IOException, DAOException, ContentLibException {
         checkFulltextAccessConditions(pi);
+        if (servletResponse != null) {
+            servletResponse.setCharacterEncoding(StringTools.DEFAULT_ENCODING);
+        }
         String filename = pi + "_tei.zip";
         servletResponse.addHeader("Content-Disposition", "attachment; filename=\"" + filename + "\"");
         
@@ -359,6 +378,9 @@ public class RecordResource {
     public StreamingOutput getTeiAsZip(
             @Parameter(description="perferred language for the TEI file, in ISO-639 format")@QueryParam("lang") String language) throws PresentationException, IndexUnreachableException, ViewerConfigurationException, IOException, DAOException, ContentLibException {
         checkFulltextAccessConditions(pi);
+        if (servletResponse != null) {
+            servletResponse.setCharacterEncoding(StringTools.DEFAULT_ENCODING);
+        }
         String filename = pi + "_tei.zip";
         servletResponse.addHeader("Content-Disposition", "attachment; filename=\"" + filename + "\"");
         

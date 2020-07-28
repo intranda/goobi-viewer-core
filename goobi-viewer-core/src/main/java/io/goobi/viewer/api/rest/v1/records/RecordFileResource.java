@@ -57,6 +57,7 @@ import io.goobi.viewer.api.rest.ViewerRestServiceBinding;
 import io.goobi.viewer.api.rest.resourcebuilders.TextResourceBuilder;
 import io.goobi.viewer.controller.DataFileTools;
 import io.goobi.viewer.controller.DataManager;
+import io.goobi.viewer.controller.StringTools;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
@@ -100,6 +101,9 @@ public class RecordFileResource {
             throws PresentationException, IndexUnreachableException, ContentNotFoundException,
             ServiceNotAllowedException, DAOException {
         checkFulltextAccessConditions(pi, filename);
+        if (servletResponse != null) {
+            servletResponse.setCharacterEncoding(StringTools.DEFAULT_ENCODING);
+        }
         return builder.getAltoDocument(pi, filename);
     }
 
@@ -113,6 +117,9 @@ public class RecordFileResource {
             @Parameter(description = "Filename containing the text") @PathParam("filename") String filename)
             throws ContentNotFoundException, PresentationException, IndexUnreachableException, DAOException, ServiceNotAllowedException {
         checkFulltextAccessConditions(pi, filename);
+        if (servletResponse != null) {
+            servletResponse.setCharacterEncoding(StringTools.DEFAULT_ENCODING);
+        }
         return builder.getFulltext(pi, filename);
     }
 
@@ -124,6 +131,9 @@ public class RecordFileResource {
             @Parameter(description = "Filename containing the text") @PathParam("filename") String filename)
             throws PresentationException, IndexUnreachableException, DAOException, ContentLibException {
         checkFulltextAccessConditions(pi, filename);
+        if (servletResponse != null) {
+            servletResponse.setCharacterEncoding(StringTools.DEFAULT_ENCODING);
+        }
         return builder.getFulltextAsTEI(pi, filename);
     }
 
