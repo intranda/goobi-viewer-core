@@ -29,9 +29,10 @@ public class BrowsingMenuFieldConfigTest {
      */
     @Test
     public void setDocstructFilterString_shouldCreateFilterQueryCorrectly() throws Exception {
-        BrowsingMenuFieldConfig bmfc = new BrowsingMenuFieldConfig("MD_TITLE", "SORT_TITLE", null, false, "monograph;manuscript", false);
+        BrowsingMenuFieldConfig bmfc =
+                new BrowsingMenuFieldConfig("MD_TITLE", "SORT_TITLE", "+(DOCSTRCT:monograph DOCSTRCT:manuscript)", false, false);
         Assert.assertEquals(1, bmfc.getFilterQueries().size());
-        Assert.assertEquals(SolrConstants.DOCSTRCT + ":monograph " + SolrConstants.DOCSTRCT + ":manuscript", bmfc.getFilterQueries().get(0));
+        Assert.assertEquals("+(DOCSTRCT:monograph DOCSTRCT:manuscript)", bmfc.getFilterQueries().get(0));
     }
 
     /**
@@ -40,7 +41,7 @@ public class BrowsingMenuFieldConfigTest {
      */
     @Test
     public void setRecordsAndAnchorsOnly_shouldCreateFilterQueryCorrectly() throws Exception {
-        BrowsingMenuFieldConfig bmfc = new BrowsingMenuFieldConfig("MD_TITLE", "SORT_TITLE", null, false, null, true);
+        BrowsingMenuFieldConfig bmfc = new BrowsingMenuFieldConfig("MD_TITLE", "SORT_TITLE", null, false, true);
         Assert.assertEquals(1, bmfc.getFilterQueries().size());
         Assert.assertEquals(SearchHelper.ALL_RECORDS_QUERY, bmfc.getFilterQueries().get(0));
     }

@@ -48,7 +48,7 @@ public class BrowsingMenuFieldConfig implements Serializable {
      * @param docstructFilterString a {@link java.lang.String} object.
      * @param recordsAndAnchorsOnly a boolean.
      */
-    public BrowsingMenuFieldConfig(String field, String sortField, String filterQuery, boolean translate, @Deprecated String docstructFilterString,
+    public BrowsingMenuFieldConfig(String field, String sortField, String filterQuery, boolean translate,
             @Deprecated boolean recordsAndAnchorsOnly) {
         this.field = field;
         this.sortField = sortField;
@@ -57,7 +57,6 @@ public class BrowsingMenuFieldConfig implements Serializable {
         }
         this.translate = translate;
 
-        setDocstructFilterString(docstructFilterString);
         setRecordsAndAnchorsOnly(recordsAndAnchorsOnly);
     }
 
@@ -100,23 +99,13 @@ public class BrowsingMenuFieldConfig implements Serializable {
     public boolean isTranslate() {
         return translate;
     }
-
+    
     /**
      * 
-     * @param docstructFilterString
-     * @should create filter query correctly
+     * @return
      */
-    void setDocstructFilterString(String docstructFilterString) {
-        if (StringUtils.isNotEmpty(docstructFilterString)) {
-            String[] docstrcutFilterStringSplit = docstructFilterString.split(";");
-            StringBuilder sb = new StringBuilder();
-            for (String filter : docstrcutFilterStringSplit) {
-                if (StringUtils.isNotEmpty(filter)) {
-                    sb.append(SolrConstants.DOCSTRCT).append(':').append(filter).append(' ');
-                }
-            }
-            filterQueries.add(sb.toString().trim());
-        }
+    boolean isRecordsAndAnchorsOnly() {
+        return filterQueries.contains(SearchHelper.ALL_RECORDS_QUERY);
     }
 
     /**

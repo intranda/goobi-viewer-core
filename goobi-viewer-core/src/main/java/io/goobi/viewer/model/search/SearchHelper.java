@@ -1441,8 +1441,7 @@ public final class SearchHelper {
                     StringUtils.isEmpty(bmfc.getSortField()) ? null : Collections.singletonList(new StringPair(bmfc.getSortField(), "asc"));
             QueryResponse resp =
                     DataManager.getInstance().getSearchIndex().search(query, 0, rows, sortFields, facetFields, fields, filterQueries, params);
-            // QueryResponse resp = DataManager.getInstance().getSolrHelper().searchFacetsAndStatistics(sbQuery.toString(),
-            // facetFields, false);
+            
             logger.debug("getFilteredTerms hits: {}", resp.getResults().getNumFound());
             if ("0-9".equals(startsWith)) {
                 // Numerical filtering

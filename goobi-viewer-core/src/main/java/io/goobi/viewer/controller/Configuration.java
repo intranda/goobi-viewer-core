@@ -47,7 +47,6 @@ import org.slf4j.LoggerFactory;
 import de.unigoettingen.sub.commons.contentlib.imagelib.ImageType;
 import de.unigoettingen.sub.commons.contentlib.imagelib.transform.Scale;
 import io.goobi.viewer.exceptions.ViewerConfigurationException;
-import io.goobi.viewer.managedbeans.NavigationHelper;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.model.maps.GeoMapMarker;
 import io.goobi.viewer.model.metadata.Metadata;
@@ -789,10 +788,9 @@ public final class Configuration extends AbstractConfiguration {
             String sortField = sub.getString("[@sortField]");
             String filterQuery = sub.getString("[@filterQuery]");
             boolean translate = sub.getBoolean("[@translate]", false);
-            String docstructFilterString = sub.getString("[@docstructFilters]");
             boolean recordsAndAnchorsOnly = sub.getBoolean("[@recordsAndAnchorsOnly]", false);
             BrowsingMenuFieldConfig bmfc =
-                    new BrowsingMenuFieldConfig(field, sortField, filterQuery, translate, docstructFilterString, recordsAndAnchorsOnly);
+                    new BrowsingMenuFieldConfig(field, sortField, filterQuery, translate,  recordsAndAnchorsOnly);
             ret.add(bmfc);
         }
 
