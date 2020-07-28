@@ -212,11 +212,24 @@ public final class SearchHelper {
 
                 // Load full-text
                 try {
-                    fulltext = DataFileTools.loadFulltext(
-                            (String) doc.getFirstValue(SolrConstants.FILENAME_ALTO), (String) doc.getFirstValue(SolrConstants.FILENAME_FULLTEXT),
-                            false, request);
-                } catch (AccessDeniedException e) {
-                    fulltext = ViewerResourceBundle.getTranslation(e.getMessage(), null);
+                    String altoFilename = (String) doc.getFirstValue(SolrConstants.FILENAME_ALTO);
+                    String plaintextFilename = (String) doc.getFirstValue(SolrConstants.FILENAME_FULLTEXT);
+                    String pi = (String) doc.getFirstValue(SolrConstants.PI_TOPSTRUCT);
+                    if(StringUtils.isNotBlank(plaintextFilename)) {
+                        boolean access = AccessConditionUtils.checkAccess(BeanUtils.getRequest(), "text", pi, plaintextFilename, false);
+                        if(access) {
+                            fulltext = DataFileTools.loadFulltext(null, plaintextFilename, false, request);
+                        } else {
+                            fulltext = ViewerResourceBundle.getTranslation("fulltextAccessDenied", null);
+                        }
+                    } else if(StringUtils.isNotBlank(altoFilename)) {
+                        boolean access = AccessConditionUtils.checkAccess(BeanUtils.getRequest(), "text", pi, altoFilename, false);
+                        if(access) {
+                            fulltext = DataFileTools.loadFulltext(altoFilename, null, false, request);
+                        } else {
+                            fulltext = ViewerResourceBundle.getTranslation("fulltextAccessDenied", null);
+                        }
+                    }
                 } catch (FileNotFoundException e) {
                     logger.error(e.getMessage());
                 } catch (IOException e) {

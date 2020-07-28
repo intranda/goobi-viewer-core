@@ -76,6 +76,8 @@ import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.exceptions.ViewerConfigurationException;
 import io.goobi.viewer.model.iiif.presentation.builder.BuildMode;
 import io.goobi.viewer.model.iiif.search.IIIFSearchBuilder;
+import io.goobi.viewer.model.security.AccessConditionUtils;
+import io.goobi.viewer.model.security.IPrivilegeHolder;
 import io.goobi.viewer.model.viewer.StructElement;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -99,6 +101,8 @@ public class RecordResource {
     private AbstractApiUrlManager urls;
 
     private final String pi;
+    private final TextResourceBuilder builder = new TextResourceBuilder();
+
 
     public RecordResource(
             @Parameter(description = "Persistent identifier of the record") @PathParam("pi") String pi) {
@@ -283,19 +287,18 @@ public class RecordResource {
             @Parameter(description = "Tag type to consider (person, coorporation, event or location)")@QueryParam("type") String type
             ) throws PresentationException, IndexUnreachableException, ViewerConfigurationException {
         NERBuilder builder = new NERBuilder(urls);
-        return builder.getNERTags(pi, type, start, end, stepSize == null ? 1 : stepSize);
+        return builder.getNERTags(pi, type, start, end, stepSize == null ? 1 : stepSize, servletRequest);
     }
     
-    //disabled; may cause oom
-//    @GET
-//    @javax.ws.rs.Path(RECORDS_PLAINTEXT)
-//    @Produces({ MediaType.TEXT_PLAIN })
-//    @Operation(tags = {"records"}, summary = "Get entire plaintext of record")
-//    @CORSBinding
-//    @IIIFPresentationBinding
+    @GET
+    @javax.ws.rs.Path(RECORDS_PLAINTEXT)
+    @Produces({ MediaType.TEXT_PLAIN })
+    @Operation(tags = {"records"}, summary = "Get entire plaintext of record")
+    @CORSBinding
+    @IIIFPresentationBinding
     public String getPlaintext() throws PresentationException, IndexUnreachableException, ViewerConfigurationException, ServiceNotAllowedException, IOException, DAOException {
 
-        TextResourceBuilder builder = new TextResourceBuilder(servletRequest, servletResponse);
+        TextResourceBuilder builder = new TextResourceBuilder();
         return builder.getFulltext(pi);
     }
     
@@ -304,11 +307,10 @@ public class RecordResource {
     @Produces({ "application/zip" })
     @Operation(tags = {"records"}, summary = "Get entire plaintext of record")
     public StreamingOutput getPlaintextAsZip() throws PresentationException, IndexUnreachableException, ViewerConfigurationException, IOException, DAOException, ContentLibException {
-        
+        checkFulltextAccessConditions(pi);
         String filename = pi + "_plaintext.zip";
         servletResponse.addHeader("Content-Disposition", "attachment; filename=\"" + filename + "\"");
         
-        TextResourceBuilder builder = new TextResourceBuilder(servletRequest, servletResponse);
         return builder.getFulltextAsZip(pi);
     }
     
@@ -317,8 +319,7 @@ public class RecordResource {
     @Produces({ MediaType.TEXT_XML })
     @Operation(tags = {"records"}, summary = "Get entire alto document for record")
     public String getAlto() throws PresentationException, IndexUnreachableException, ViewerConfigurationException, IOException, DAOException, ContentLibException, JDOMException {
-
-        TextResourceBuilder builder = new TextResourceBuilder(servletRequest, servletResponse);
+        checkFulltextAccessConditions(pi);
         return builder.getAltoDocument(pi);
     }
     
@@ -327,11 +328,10 @@ public class RecordResource {
     @Produces({ "application/zip" })
     @Operation(tags = {"records"}, summary = "Get entire plaintext of record")
     public StreamingOutput getAltoAsZip() throws PresentationException, IndexUnreachableException, ViewerConfigurationException, IOException, DAOException, ContentLibException {
-        
+        checkFulltextAccessConditions(pi);
         String filename = pi + "_alto.zip";
         servletResponse.addHeader("Content-Disposition", "attachment; filename=\"" + filename + "\"");
         
-        TextResourceBuilder builder = new TextResourceBuilder(servletRequest, servletResponse);
         return builder.getAltoAsZip(pi);
     }
     
@@ -341,7 +341,7 @@ public class RecordResource {
     @Operation(tags = {"records"}, summary = "Get text of record in TEI format.", description ="If possible, directly read a TEI file associated with the record, otherwise convert all fulltexts to TEI documents")
     public String getTei(
             @Parameter(description="perferred language for the TEI file, in ISO-639 format")@QueryParam("lang") String language) throws PresentationException, IndexUnreachableException, ViewerConfigurationException, IOException, DAOException, ContentLibException {
-        
+        checkFulltextAccessConditions(pi);
         String filename = pi + "_tei.zip";
         servletResponse.addHeader("Content-Disposition", "attachment; filename=\"" + filename + "\"");
         
@@ -349,7 +349,6 @@ public class RecordResource {
             language = servletRequest.getLocale().getLanguage();
         }
         
-        TextResourceBuilder builder = new TextResourceBuilder(servletRequest, servletResponse);
         return builder.getTeiDocument(pi, language);
     }
     
@@ -359,7 +358,7 @@ public class RecordResource {
     @Operation(tags = {"records"}, summary = "Get text of record in TEI format as a zip file.", description ="If possible, directly read a TEI file associated with the record, otherwise convert all fulltexts to TEI documents")
     public StreamingOutput getTeiAsZip(
             @Parameter(description="perferred language for the TEI file, in ISO-639 format")@QueryParam("lang") String language) throws PresentationException, IndexUnreachableException, ViewerConfigurationException, IOException, DAOException, ContentLibException {
-        
+        checkFulltextAccessConditions(pi);
         String filename = pi + "_tei.zip";
         servletResponse.addHeader("Content-Disposition", "attachment; filename=\"" + filename + "\"");
         
@@ -367,7 +366,6 @@ public class RecordResource {
             language = servletRequest.getLocale().getLanguage();
         }
         
-        TextResourceBuilder builder = new TextResourceBuilder(servletRequest, servletResponse);
         return builder.getTeiAsZip(pi, language);
     }
     
@@ -463,5 +461,21 @@ public class RecordResource {
         SolrDocument doc = DataManager.getInstance().getSearchIndex().getFirstDoc("PI:" + pi, null);
         StructElement struct = new StructElement(Long.valueOf((String)doc.getFieldValue(SolrConstants.IDDOC)), doc);
         return struct;
+    }
+    
+    /**
+     * Throw an AccessDenied error if the request doesn't satisfy the access conditions
+     * @throws ServiceNotAllowedException 
+     */
+    private void checkFulltextAccessConditions(String pi) throws ServiceNotAllowedException {
+        boolean access = false;
+        try {
+            access = AccessConditionUtils.checkAccessPermissionByIdentifierAndLogId(pi, null, IPrivilegeHolder.PRIV_VIEW_FULLTEXT, servletRequest);
+        } catch (IndexUnreachableException | DAOException e) {
+            logger.error(String.format("Cannot check fulltext access for pi %s: %s", pi, e.toString()));
+        }
+        if(!access) {            
+            throw new ServiceNotAllowedException("Access to fulltext of " + pi + " not allowed");
+        }
     }
 }

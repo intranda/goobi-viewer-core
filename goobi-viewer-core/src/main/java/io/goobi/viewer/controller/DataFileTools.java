@@ -381,8 +381,8 @@ public class DataFileTools {
      */
     public static String loadFulltext(String altoFilePath, String fulltextFilePath, boolean mergeLineBreakWords,
             HttpServletRequest request)
-            throws AccessDeniedException, FileNotFoundException, IOException, IndexUnreachableException, DAOException, ViewerConfigurationException {
-        TextResourceBuilder builder = new TextResourceBuilder(BeanUtils.getRequest(), null);
+            throws FileNotFoundException, IOException, IndexUnreachableException, DAOException, ViewerConfigurationException {
+        TextResourceBuilder builder = new TextResourceBuilder();
         if (altoFilePath != null) {
             // ALTO file
             try {
@@ -393,8 +393,6 @@ public class DataFileTools {
                 }
             } catch (ContentNotFoundException e) {
                 throw new FileNotFoundException(e.getMessage());
-            } catch (ServiceNotAllowedException e) {
-                throw new AccessDeniedException("fulltextAccessDenied");
             } catch (PresentationException e) {
                 logger.error(e.getMessage());
             }
@@ -409,8 +407,6 @@ public class DataFileTools {
                 }
             } catch (ContentNotFoundException e) {
                 throw new FileNotFoundException(e.getMessage());
-            } catch (ServiceNotAllowedException e) {
-                throw new AccessDeniedException("fulltextAccessDenied");
             } catch (PresentationException e) {
                 logger.error(e.getMessage());
             }
@@ -420,17 +416,13 @@ public class DataFileTools {
     }
 
     public static String loadAlto(String altoFilePath)
-            throws ContentNotFoundException, AccessDeniedException, IndexUnreachableException, DAOException, PresentationException {
-        TextResourceBuilder builder = new TextResourceBuilder(BeanUtils.getRequest(), null);
+            throws ContentNotFoundException, IndexUnreachableException, DAOException, PresentationException {
+        TextResourceBuilder builder = new TextResourceBuilder();
         if (altoFilePath != null) {
             // ALTO file
-            try {
                 String alto = builder.getAltoDocument(FileTools.getBottomFolderFromPathString(altoFilePath),
                         FileTools.getFilenameFromPathString(altoFilePath));
                 return alto;
-            } catch (ServiceNotAllowedException e) {
-                throw new AccessDeniedException("fulltextAccessDenied");
-            }
         } else
             throw new ContentNotFoundException("Alto file " + altoFilePath + " not found");
 
@@ -450,12 +442,12 @@ public class DataFileTools {
      * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
      */
     public static String loadTei(String pi, String language)
-            throws AccessDeniedException, FileNotFoundException, IOException, ViewerConfigurationException {
+            throws FileNotFoundException, IOException, ViewerConfigurationException {
         logger.trace("loadTei: {}/{}", pi, language);
         if (pi == null) {
             return null;
         }
-        TextResourceBuilder builder = new TextResourceBuilder(BeanUtils.getRequest(), null);
+        TextResourceBuilder builder = new TextResourceBuilder();
         try {
             return builder.getTeiDocument(pi, language);
         } catch (PresentationException | IndexUnreachableException | DAOException | ContentLibException e) {

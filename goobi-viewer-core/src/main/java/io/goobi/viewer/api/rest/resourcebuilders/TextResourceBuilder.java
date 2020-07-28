@@ -51,8 +51,6 @@ import org.jdom2.output.XMLOutputter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import de.intranda.digiverso.ocr.alto.model.structureclasses.logical.AltoDocument;
-import de.intranda.digiverso.ocr.alto.model.structureclasses.logical.Chapter;
 import de.intranda.digiverso.ocr.tei.TEIBuilder;
 import de.intranda.digiverso.ocr.tei.convert.AbstractTEIConvert;
 import de.intranda.digiverso.ocr.tei.convert.HtmlToTEIConvert;
@@ -64,6 +62,7 @@ import de.intranda.digiverso.ocr.xml.DocumentReader;
 import de.unigoettingen.sub.commons.contentlib.exceptions.ContentLibException;
 import de.unigoettingen.sub.commons.contentlib.exceptions.ContentNotFoundException;
 import de.unigoettingen.sub.commons.contentlib.exceptions.ServiceNotAllowedException;
+import io.goobi.viewer.controller.ALTOTools;
 import io.goobi.viewer.controller.DataFileTools;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.FileTools;
@@ -86,17 +85,12 @@ public class TextResourceBuilder {
 
     private static final Logger logger = LoggerFactory.getLogger(TextResourceBuilder.class);
 
-    HttpServletRequest request;
-    HttpServletResponse response;
 
-    public TextResourceBuilder(HttpServletRequest request, HttpServletResponse response) {
-        this.request = request;
-        this.response = response;
+    public TextResourceBuilder() {
     }
 
     public String getFulltext(String pi)
             throws IOException, PresentationException, IndexUnreachableException, ServiceNotAllowedException, DAOException {
-        checkAccess(pi, IPrivilegeHolder.PRIV_VIEW_FULLTEXT);
         Map<Path, String> map = this.getFulltextMap(pi);
         StringBuilder sb = new StringBuilder();
         for (String pageText : map.values()) {
@@ -107,7 +101,6 @@ public class TextResourceBuilder {
 
     public StreamingOutput getFulltextAsZip(String pi)
             throws IOException, PresentationException, IndexUnreachableException, ContentLibException, DAOException {
-        checkAccess(pi, IPrivilegeHolder.PRIV_VIEW_FULLTEXT);
         String filename = pi + "_plaintext.zip";
         String foldername = DataManager.getInstance().getConfiguration().getFulltextFolder();
         List<Path> files = getFiles(pi, foldername, foldername + "_crowd", null);
@@ -117,7 +110,6 @@ public class TextResourceBuilder {
 
     public StreamingOutput getAltoAsZip(String pi)
             throws IOException, PresentationException, IndexUnreachableException, ContentLibException, DAOException {
-        checkAccess(pi, IPrivilegeHolder.PRIV_VIEW_FULLTEXT);
         String filename = pi + "_alto.zip";
         String foldername = DataManager.getInstance().getConfiguration().getAltoFolder();
         List<Path> files = getFiles(pi, foldername, foldername + "_crowd", null);
@@ -126,24 +118,21 @@ public class TextResourceBuilder {
 
     public String getAltoDocument(String pi)
             throws IOException, PresentationException, IndexUnreachableException, ContentLibException, DAOException, JDOMException {
-        checkAccess(pi, IPrivilegeHolder.PRIV_VIEW_FULLTEXT);
         String foldername = DataManager.getInstance().getConfiguration().getAltoFolder();
         List<Path> files = getFiles(pi, foldername, foldername + "_crowd", null);
-        AltoDocument doc = new AltoDocument();
-        doc.addChild(new Chapter());
+
+        StringBuilder sb = new StringBuilder();
         for (Path path : files) {
-            AltoDocument pageDoc = AltoDocument.getDocumentFromFile(path.toFile());
-            doc.getFirstChild().addChild(pageDoc.getFirstPage());
+            String xmlString = FileTools.getStringFromFile(path.toFile(), "utf-8");
+            sb.append(xmlString).append("\n");
         }
-        Document jdom = new Document();
-        jdom.setRootElement(doc.writeToDom());
-        return new XMLOutputter().outputString(jdom);
+        return sb.toString().trim();
+
     }
 
     public String getAltoDocument(String pi, String fileName) throws PresentationException,
-            IndexUnreachableException, DAOException, ContentNotFoundException, ServiceNotAllowedException {
+            IndexUnreachableException, DAOException, ContentNotFoundException {
 
-        checkAccess(pi, fileName, IPrivilegeHolder.PRIV_VIEW_FULLTEXT);
 
         java.nio.file.Path file = DataFileTools.getDataFilePath(pi, DataManager.getInstance().getConfiguration().getAltoFolder() + "_crowd",
                 DataManager.getInstance().getConfiguration().getAltoFolder(), fileName);
@@ -166,7 +155,6 @@ public class TextResourceBuilder {
     public String getFulltextAsTEI(String pi, String filename)
             throws PresentationException, ContentLibException, IndexUnreachableException, DAOException {
 
-        checkAccess(pi, filename, IPrivilegeHolder.PRIV_VIEW_FULLTEXT);
 
         SolrDocument solrDoc = DataManager.getInstance().getSearchIndex().getDocumentByPI(pi);
         if (solrDoc != null) {
@@ -195,7 +183,6 @@ public class TextResourceBuilder {
     public String getTeiDocument(String pi, String langCode)
             throws PresentationException, IndexUnreachableException, DAOException, IOException, ContentLibException {
 
-        checkAccess(pi, IPrivilegeHolder.PRIV_VIEW_FULLTEXT);
 
         final Language language = DataManager.getInstance().getLanguageHelper().getLanguage(langCode);
         java.nio.file.Path teiPath = DataFileTools.getDataFilePath(pi, DataManager.getInstance().getConfiguration().getTeiFolder(), null, null);
@@ -251,7 +238,6 @@ public class TextResourceBuilder {
     public StreamingOutput getTeiAsZip(String pi, String langCode)
             throws PresentationException, IndexUnreachableException, DAOException, IOException, ContentLibException {
 
-        checkAccess(pi, IPrivilegeHolder.PRIV_VIEW_FULLTEXT);
 
         final Language language = DataManager.getInstance().getLanguageHelper().getLanguage(langCode);
         java.nio.file.Path teiPath = DataFileTools.getDataFilePath(pi, DataManager.getInstance().getConfiguration().getTeiFolder(), null, null);
@@ -300,7 +286,6 @@ public class TextResourceBuilder {
 
     public String getCmdiDocument(String pi, String langCode)
             throws PresentationException, IndexUnreachableException, DAOException, ContentNotFoundException, IOException, ServiceNotAllowedException {
-        checkAccess(pi, IPrivilegeHolder.PRIV_VIEW_FULLTEXT);
 
         final Language language = DataManager.getInstance().getLanguageHelper().getLanguage(langCode);
         java.nio.file.Path cmdiPath = DataFileTools.getDataFolder(pi, DataManager.getInstance().getConfiguration().getCmdiFolder());
@@ -326,7 +311,6 @@ public class TextResourceBuilder {
     public String getContentAsText(String contentFolder, String pi, String fileName)
             throws PresentationException, IndexUnreachableException, DAOException,
             ContentNotFoundException, ServiceNotAllowedException {
-        checkAccess(pi, fileName, IPrivilegeHolder.PRIV_VIEW_FULLTEXT);
 
         java.nio.file.Path file = DataFileTools.getDataFilePath(pi, contentFolder, null, fileName);
         if (file != null && Files.isRegularFile(file)) {
@@ -345,44 +329,6 @@ public class TextResourceBuilder {
 
     /**
      * <p>
-     * checkAccess.
-     * </p>
-     *
-     * @param pi a {@link java.lang.String} object.
-     * @param fileName a {@link java.lang.String} object.
-     * @param privilegeType a {@link java.lang.String} object.
-     * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
-     * @throws io.goobi.viewer.exceptions.DAOException if any.
-     * @throws de.unigoettingen.sub.commons.contentlib.exceptions.ServiceNotAllowedException if any.
-     */
-    private void checkAccess(String pi, String fileName, String privilegeType)
-            throws IndexUnreachableException, DAOException, ServiceNotAllowedException {
-        boolean access = AccessConditionUtils.checkAccessPermissionByIdentifierAndFileNameWithSessionMap(request, pi, fileName, privilegeType);
-        if (!access) {
-            throw new ServiceNotAllowedException("No permission found");
-        }
-    }
-
-    /**
-     * <p>
-     * checkAccess.
-     * </p>
-     *
-     * @param pi a {@link java.lang.String} object.
-     * @param privilegeType a {@link java.lang.String} object.
-     * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
-     * @throws io.goobi.viewer.exceptions.DAOException if any.
-     * @throws de.unigoettingen.sub.commons.contentlib.exceptions.ServiceNotAllowedException if any.
-     */
-    private void checkAccess(String pi, String privilegeType) throws IndexUnreachableException, DAOException, ServiceNotAllowedException {
-        boolean access = AccessConditionUtils.checkAccessPermissionByIdentifierAndLogId(pi, null, privilegeType, request);
-        if (!access) {
-            throw new ServiceNotAllowedException("No permission found");
-        }
-    }
-
-    /**
-     * <p>
      * getFulltext.
      * </p>
      *
@@ -395,9 +341,7 @@ public class TextResourceBuilder {
      * @throws DAOException
      * @throws ServiceNotAllowedException
      */
-    public String getFulltext(String pi, String fileName)
-            throws PresentationException, IndexUnreachableException, ContentNotFoundException, ServiceNotAllowedException, DAOException {
-        checkAccess(pi, fileName, IPrivilegeHolder.PRIV_VIEW_FULLTEXT);
+    public String getFulltext(String pi, String fileName) throws PresentationException, IndexUnreachableException, ContentNotFoundException{
 
         java.nio.file.Path file = DataFileTools.getDataFilePath(pi, DataManager.getInstance().getConfiguration().getFulltextFolder() + "_crowd",
                 DataManager.getInstance().getConfiguration().getFulltextFolder(), fileName);
@@ -414,9 +358,8 @@ public class TextResourceBuilder {
                     DataManager.getInstance().getConfiguration().getAltoFolder(), fileName.replaceAll("(i?)\\.txt", ".xml"));
             if (file != null && Files.isRegularFile(file)) {
                 try {
-                    AltoDocument alto = AltoDocument.getDocumentFromFile(file.toFile());
-                    return alto.getContent();
-                } catch (IOException | JDOMException e) {
+                    return ALTOTools.getFulltext(file, "utf-8");
+                } catch (IOException e) {
                     logger.error(e.getMessage(), e);
                 }
             }
@@ -453,14 +396,16 @@ public class TextResourceBuilder {
         } else {
             List<java.nio.file.Path> altoFiles = getFiles(pi, DataManager.getInstance().getConfiguration().getAltoFolder() + "_crowd",
                     DataManager.getInstance().getConfiguration().getAltoFolder(), "(i?).*\\.(alto|xml)");
-            fileMap = altoFiles.stream().collect(Collectors.toMap(p -> Paths.get(p.toString().replaceAll("(i?)\\.(alto|xml)", ".txt")), p -> {
-                try {
-                    return AltoDocument.getDocumentFromFile(p.toFile()).getContent();
-                } catch (IOException | JDOMException e) {
-                    logger.error("Error reading file " + p, e);
-                    return "";
-                }
-            }));
+            fileMap = altoFiles.stream().collect(Collectors.toMap(
+                            p -> Paths.get(p.toString().replaceAll("(i?)\\.(alto|xml)", ".txt")),
+                            p -> {
+                                try {
+                                    return ALTOTools.getFulltext(p, "utf-8");
+                                } catch (IOException e) {
+                                    logger.error("Error reading file " + p, e);
+                                    return "";
+                                }
+                            }));
         }
         return fileMap;
     }

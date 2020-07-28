@@ -55,7 +55,6 @@ import org.jdom2.output.XMLOutputter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import de.intranda.digiverso.ocr.alto.model.structureclasses.logical.AltoDocument;
 import de.intranda.digiverso.ocr.tei.TEIBuilder;
 import de.intranda.digiverso.ocr.tei.convert.AbstractTEIConvert;
 import de.intranda.digiverso.ocr.tei.convert.HtmlToTEIConvert;
@@ -69,6 +68,7 @@ import de.unigoettingen.sub.commons.contentlib.exceptions.ContentNotFoundExcepti
 import de.unigoettingen.sub.commons.contentlib.exceptions.ServiceNotAllowedException;
 import de.unigoettingen.sub.commons.contentlib.servlet.rest.CORSBinding;
 import io.goobi.viewer.api.rest.ViewerRestServiceBinding;
+import io.goobi.viewer.controller.ALTOTools;
 import io.goobi.viewer.controller.DataFileTools;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.FileTools;
@@ -637,9 +637,8 @@ public class ContentResource {
                     DataManager.getInstance().getConfiguration().getAltoFolder(), fileName.replaceAll("(i?)\\.txt", ".xml"));
             if (file != null && Files.isRegularFile(file)) {
                 try {
-                    AltoDocument alto = AltoDocument.getDocumentFromFile(file.toFile());
-                    return alto.getContent();
-                } catch (IOException | JDOMException e) {
+                    return ALTOTools.getFulltext(file, "utf-8");
+                } catch (IOException e) {
                     logger.error(e.getMessage(), e);
                 }
             }
@@ -678,8 +677,8 @@ public class ContentResource {
                     DataManager.getInstance().getConfiguration().getAltoFolder(), "(i?).*\\.(alto|xml)");
             fileMap = altoFiles.stream().collect(Collectors.toMap(p -> Paths.get(p.toString().replaceAll("(i?)\\.(alto|xml)", ".txt")), p -> {
                 try {
-                    return AltoDocument.getDocumentFromFile(p.toFile()).getContent();
-                } catch (IOException | JDOMException e) {
+                    return ALTOTools.getFulltext(p, "utf-8");
+                } catch (IOException  e) {
                     logger.error("Error reading file " + p, e);
                     return "";
                 }

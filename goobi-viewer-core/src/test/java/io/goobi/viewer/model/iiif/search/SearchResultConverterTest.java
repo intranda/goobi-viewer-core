@@ -15,12 +15,14 @@
  */
 package io.goobi.viewer.model.iiif.search;
 
+import java.io.IOException;
 import java.net.URI;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.solr.common.SolrDocument;
+import org.jdom2.JDOMException;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
@@ -55,7 +57,6 @@ public class SearchResultConverterTest extends AbstractSolrEnabledTest {
     String restUrl;
 
     Path altoFile = Paths.get("src/test/resources/data/sample_alto.xml");
-    AltoDocument doc;
 
     ApiUrls urls = new ApiUrls();
     /**
@@ -68,7 +69,6 @@ public class SearchResultConverterTest extends AbstractSolrEnabledTest {
         DataManager.getInstance().injectConfiguration(new Configuration("src/test/resources/config_viewer.test.xml"));
         restUrl = DataManager.getInstance().getConfiguration().getRestApiUrl();
         converter = new SearchResultConverter(urls, pi, pageNo);
-        doc = AltoDocument.getDocumentFromFile(altoFile.toFile());
 
     }
 
@@ -169,19 +169,21 @@ public class SearchResultConverterTest extends AbstractSolrEnabledTest {
     /**
      * Test method for
      * {@link io.goobi.viewer.model.iiif.search.SearchResultConverter#getAnnotationsFromAlto(de.intranda.digiverso.ocr.alto.model.structureclasses.logical.AltoDocument, java.lang.String)}.
+     * @throws JDOMException 
+     * @throws IOException 
      */
     @Test
-    public void testGetAnnotationsFromAlto() {
+    public void testGetAnnotationsFromAlto() throws IOException, JDOMException {
 
         
         String query = "Hollywood";
         String queryRegex = AbstractSearchParser.getQueryRegex(query);
 
         Assert.assertNotNull("Converter is null", converter);
-        Assert.assertNotNull("Alto doc is null", doc);
+        Assert.assertNotNull("Alto file is null", altoFile);
         Assert.assertTrue("Query regex is Blank", StringUtils.isNotBlank(queryRegex));
 
-        AnnotationResultList results = converter.getAnnotationsFromAlto(doc, queryRegex);
+        AnnotationResultList results = converter.getAnnotationsFromAlto(altoFile, queryRegex);
         Assert.assertEquals(9, results.hits.size());
 
         SearchHit hit1 = results.hits.get(0);

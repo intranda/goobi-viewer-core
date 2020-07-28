@@ -728,7 +728,13 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
      */
     public Boolean isFulltextAccessPermission() throws ViewerConfigurationException {
         if (fulltextAccessPermission == null) {
-            getFullText();
+            boolean access = false;
+            try {
+                access = AccessConditionUtils.checkAccessPermissionByIdentifierAndLogId(pi, null, IPrivilegeHolder.PRIV_VIEW_FULLTEXT, BeanUtils.getRequest());
+            } catch (IndexUnreachableException | DAOException e) {
+                logger.error(String.format("Cannot check fulltext access for pi %s and pageNo %d: %s", pi, order, e.toString()));
+            }
+            return access;
         }
         return fulltextAccessPermission != null ? fulltextAccessPermission : false;
     }
@@ -904,6 +910,8 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
             throws AccessDeniedException, FileNotFoundException, IOException, IndexUnreachableException, DAOException, ViewerConfigurationException {
         if (fulltextFileName == null) {
             return null;
+        }else if(!isFulltextAccessPermission()) {
+            throw new AccessDeniedException(String.format("Fulltext access denied for pi %s and pageNo %d", pi, order));
         }
 
         logger.trace("Loading full-text for page {}", fulltextFileName);
@@ -983,10 +991,12 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
         logger.trace("loadAlto: {}", altoFileName);
         if (altoFileName == null) {
             return null;
+        }else if(!isFulltextAccessPermission()) {
+            throw new AccessDeniedException(String.format("Fulltext access denied for pi %s and pageNo %d", pi, order));
         }
 
         try {
-            TextResourceBuilder builder = new TextResourceBuilder(BeanUtils.getRequest(), null);
+            TextResourceBuilder builder = new TextResourceBuilder();
             altoText = builder.getAltoDocument(FileTools.getBottomFolderFromPathString(altoFileName),
                     FileTools.getFilenameFromPathString(altoFileName));
             //Text from alto is always plain text
@@ -997,8 +1007,6 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
             return altoText;
         } catch (ContentNotFoundException e) {
             logger.error(e.getMessage());
-        } catch (ServiceNotAllowedException e) {
-            throw new AccessDeniedException("fulltextAccessDenied");
         } catch (PresentationException e) {
             logger.error(e.getMessage());
         }

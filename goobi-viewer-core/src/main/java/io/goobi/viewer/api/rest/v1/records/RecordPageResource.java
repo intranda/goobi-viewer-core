@@ -103,7 +103,7 @@ public class RecordPageResource {
             @Parameter(description = "Tag type to consider (person, coorporation, event or location)") @QueryParam("type") String type)
             throws PresentationException, IndexUnreachableException, ViewerConfigurationException {
         NERBuilder builder = new NERBuilder(urls);
-        return builder.getNERTags(pi, type, pageNo, pageNo, 1);
+        return builder.getNERTags(pi, type, pageNo, pageNo, 1, servletRequest);
     }
 
     @GET

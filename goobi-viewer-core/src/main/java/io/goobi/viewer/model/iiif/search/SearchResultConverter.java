@@ -24,7 +24,9 @@ import static io.goobi.viewer.api.rest.v1.ApiUrls.ANNOTATIONS_UGC;
 
 import java.awt.Dimension;
 import java.awt.Rectangle;
+import java.io.IOException;
 import java.net.URI;
+import java.nio.file.Path;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -35,6 +37,7 @@ import java.util.stream.Collectors;
 import org.apache.commons.lang3.Range;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.solr.common.SolrDocument;
+import org.jdom2.JDOMException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -287,10 +290,13 @@ public class SearchResultConverter {
      * @param query a regex; each match of the query within the alto document creates a {@link de.intranda.api.iiif.search.SearchHit} with one or more
      *            annotations referencing alto word or line elements
      * @return A result list containing hits for each mach of the query and annotations containing the hits
+     * @throws JDOMException 
+     * @throws IOException 
      */
-    public AnnotationResultList getAnnotationsFromAlto(AltoDocument doc, String query) {
+    public AnnotationResultList getAnnotationsFromAlto(Path path, String query) throws IOException, JDOMException {
         AnnotationResultList results = new AnnotationResultList();
         AltoSearchParser parser = new AltoSearchParser();
+        AltoDocument doc = AltoDocument.getDocumentFromFile(path.toFile());
         List<Word> words = parser.getWords(doc);
         if (!words.isEmpty()) {
             List<List<Word>> matches = parser.findWordMatches(words, query);
