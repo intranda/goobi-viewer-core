@@ -142,7 +142,7 @@ public class AccessConditionUtils {
         String[] ret = new String[2];
         StringBuilder sbQuery = new StringBuilder();
         String useFileField = SolrConstants.FILENAME;
-        String useFileName = fileName;
+        String useFileName = Paths.get(fileName).getFileName().toString();
         boolean wildcard = false;
         // Different media types have the file name in different fields
         String extension = FilenameUtils.getExtension(fileName).toLowerCase();
@@ -163,11 +163,10 @@ public class AccessConditionUtils {
                 break;
             case "txt":
             case "xml":
-                useFileName = fileName.replace("." + extension, "");
+                useFileName = useFileName.replace("." + extension, "");
                 wildcard = true;
                 break;
             case "":
-                useFileName = fileName;
                 wildcard = true;
             default:
                 break;
