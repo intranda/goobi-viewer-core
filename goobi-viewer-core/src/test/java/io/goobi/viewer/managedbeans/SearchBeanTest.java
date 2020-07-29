@@ -505,7 +505,7 @@ public class SearchBeanTest extends AbstractDatabaseAndSolrEnabledTest {
         sb.getCurrentSearch().setQuery("+DC:dcimage* +ISWORK:true -IDDOC_PARENT:*");
         sb.getCurrentSearch().setSortString("SORT_TITLE");
         sb.getCurrentSearch().execute(new SearchFacets(), null, 10, 0, null, true);
-        Assert.assertEquals(17, sb.getCurrentSearch().getHitsCount());
+        Assert.assertEquals(18, sb.getCurrentSearch().getHitsCount());
 
         sb.findCurrentHitIndex("PPN9462", 1, true);
         Assert.assertEquals(0, sb.getCurrentHitIndex());
@@ -523,20 +523,16 @@ public class SearchBeanTest extends AbstractDatabaseAndSolrEnabledTest {
         Assert.assertEquals(4, sb.getCurrentHitIndex());
 
         sb.findCurrentHitIndex("iiif_test_image", 1, true);
-        Assert.assertEquals(5, sb.getCurrentHitIndex());
-
-        sb.findCurrentHitIndex("339471409", 1, true);
         Assert.assertEquals(6, sb.getCurrentHitIndex());
 
-        sb.findCurrentHitIndex("02008012412069", 1, true);
+        sb.findCurrentHitIndex("339471409", 1, true);
         Assert.assertEquals(7, sb.getCurrentHitIndex());
 
-        sb.findCurrentHitIndex("02008012412076", 1, true);
+        sb.findCurrentHitIndex("02008012412069", 1, true);
         Assert.assertEquals(8, sb.getCurrentHitIndex());
 
-        sb.findCurrentHitIndex("b18029048", 1, true);
+        sb.findCurrentHitIndex("02008012412076", 1, true);
         Assert.assertEquals(9, sb.getCurrentHitIndex());
-
     }
 
     /**
