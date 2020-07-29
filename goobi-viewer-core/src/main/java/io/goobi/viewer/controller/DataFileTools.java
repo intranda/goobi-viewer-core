@@ -32,14 +32,11 @@ import org.slf4j.LoggerFactory;
 
 import de.unigoettingen.sub.commons.contentlib.exceptions.ContentLibException;
 import de.unigoettingen.sub.commons.contentlib.exceptions.ContentNotFoundException;
-import de.unigoettingen.sub.commons.contentlib.exceptions.ServiceNotAllowedException;
 import io.goobi.viewer.api.rest.resourcebuilders.TextResourceBuilder;
-import io.goobi.viewer.exceptions.AccessDeniedException;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.exceptions.ViewerConfigurationException;
-import io.goobi.viewer.managedbeans.utils.BeanUtils;
 
 /**
  * Utility class for retrieving data folders, data files and source files.
@@ -423,9 +420,9 @@ public class DataFileTools {
                 String alto = builder.getAltoDocument(FileTools.getBottomFolderFromPathString(altoFilePath),
                         FileTools.getFilenameFromPathString(altoFilePath));
                 return alto;
-        } else
-            throw new ContentNotFoundException("Alto file " + altoFilePath + " not found");
-
+        }
+        
+        throw new ContentNotFoundException("ALTO file " + altoFilePath + " not found");
     }
 
     /**
@@ -450,7 +447,7 @@ public class DataFileTools {
         TextResourceBuilder builder = new TextResourceBuilder();
         try {
             return builder.getTeiDocument(pi, language);
-        } catch (PresentationException | IndexUnreachableException | DAOException | ContentLibException e) {
+        } catch (PresentationException | IndexUnreachableException |  ContentLibException e) {
             logger.error(e.toString());
             return null;
         }
