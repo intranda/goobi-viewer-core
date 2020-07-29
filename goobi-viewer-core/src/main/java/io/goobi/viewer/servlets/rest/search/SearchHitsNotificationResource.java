@@ -99,8 +99,9 @@ public class SearchHitsNotificationResource {
             for (Search search : searches) {
                 // TODO access condition filters for each user
                 List<SearchHit> newHits = getNewHits(search);
-                if(newHits.size() > 0) {        
-                    sendEmailNotification(newHits, search.getName(), search.getOwner().getEmail());
+                if(newHits.size() > 0) {   
+                    String email = search.getOwner().getEmail();
+                    sendEmailNotification(newHits, search.getName(), email);
                     DataManager.getInstance().getDao().updateSearch(search);
                 }
             }
@@ -165,6 +166,7 @@ public class SearchHitsNotificationResource {
         // TODO what if there're >100 new hits?
         if (tempSearch.getHitsCount() > tempSearch.getLastHitsCount()) {
             int newHitsCount = (int) (tempSearch.getHitsCount() - tempSearch.getLastHitsCount());
+            newHitsCount = Math.min(100, newHitsCount);  //don't query more than 100 hits
             //sort so newest hits come first
             tempSearch.setSortString('!' + SolrConstants.DATECREATED);
             //after last execution, page is 0, set back to 1 to actually get some results
