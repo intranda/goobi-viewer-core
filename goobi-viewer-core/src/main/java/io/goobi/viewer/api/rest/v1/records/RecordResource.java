@@ -361,9 +361,7 @@ public class RecordResource {
         if (servletResponse != null) {
             servletResponse.setCharacterEncoding(StringTools.DEFAULT_ENCODING);
         }
-        String filename = pi + "_tei.zip";
-        servletResponse.addHeader("Content-Disposition", "attachment; filename=\"" + filename + "\"");
-        
+
         if(language == null) {
             language = servletRequest.getLocale().getLanguage();
         }
