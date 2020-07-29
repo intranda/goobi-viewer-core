@@ -21,7 +21,6 @@ import java.net.URLDecoder;
 import java.net.URLEncoder;
 import java.text.Collator;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -377,11 +376,12 @@ public class BrowseBean implements Serializable {
                 Messages.error(ViewerResourceBundle.getTranslation("browse_errFieldNotConfigured", null).replace("{0}", browsingMenuField));
                 return "searchTermList";
             }
-            if (StringUtils.isEmpty(currentStringFilter) || availableStringFilters.get(browsingMenuField) == null) {
-                terms = SearchHelper.getFilteredTerms(currentBmfc, "", filterQuery, new BrowseTermComparator(locale),
-                        DataManager.getInstance().getConfiguration().isAggregateHits());
 
-                // Populate the list of available starting characters with ones that actually exist in the complete terms list
+            // Populate the list of available starting characters with ones that actually exist in the complete terms list
+            if (StringUtils.isEmpty(currentStringFilter) || availableStringFilters.get(browsingMenuField) == null) {
+                // TODO Populate available filters without retrieving all terms
+                terms = SearchHelper.getFilteredTerms(currentBmfc, "", filterQuery, 0, 0, new BrowseTermComparator(locale),
+                        DataManager.getInstance().getConfiguration().isAggregateHits());
                 if (availableStringFilters.get(browsingMenuField) == null || filterQuery != null) {
                     logger.trace("Populating search term filters for field '{}'...", browsingMenuField);
                     availableStringFilters.put(browsingMenuField, new ArrayList<String>());
@@ -413,12 +413,7 @@ public class BrowseBean implements Serializable {
                 // logger.debug(availableStringFilters.toString());
             }
 
-            // Get the terms again, this time using the requested filter. The search over all terms the first time is necessary to get the list of available filters.
-            if (StringUtils.isNotEmpty(currentStringFilter)) {
-                terms = SearchHelper.getFilteredTerms(currentBmfc, currentStringFilter, filterQuery, new BrowseTermComparator(locale),
-                        DataManager.getInstance().getConfiguration().isAggregateHits());
-            }
-            hitsCount = terms.size();
+            hitsCount = SearchHelper.getFilteredTermsCount(currentBmfc, currentStringFilter, filterQuery);
             if (hitsCount == 0) {
                 resetTerms();
                 return "searchTermList";
@@ -427,16 +422,20 @@ public class BrowseBean implements Serializable {
             if (currentPage > getLastPage()) {
                 currentPage = getLastPage();
             }
-
             int start = (currentPage - 1) * browsingMenuHitsPerPage;
             int end = currentPage * browsingMenuHitsPerPage;
             if (end > terms.size()) {
                 end = terms.size();
             }
-
             browseTermList = new ArrayList<>(end - start);
             browseTermListEscaped = new ArrayList<>(browseTermList.size());
             browseTermHitCountList = new ArrayList<>(browseTermList.size());
+
+            // Get terms for the current page
+            terms = SearchHelper.getFilteredTerms(currentBmfc, currentStringFilter, filterQuery, start, end - start,
+                    new BrowseTermComparator(locale),
+                    DataManager.getInstance().getConfiguration().isAggregateHits());
+
             for (int i = start; i < end; ++i) {
                 BrowseTerm term = terms.get(i);
                 if (term.getTranslations() != null && term.getTranslations().getValue(locale).isPresent()) {
@@ -801,8 +800,8 @@ public class BrowseBean implements Serializable {
         }
         String url = SearchHelper.getFirstWorkUrlWithFieldValue(SolrConstants.DC, getTargetCollection(), true, true,
                 DataManager.getInstance().getConfiguration().getCollectionSplittingChar(SolrConstants.DC), BeanUtils.getLocale());
-//        url = BeanUtils.getServletPathWithHostAsUrlFromJsfContext() + url;
-//        return url;
+        //        url = BeanUtils.getServletPathWithHostAsUrlFromJsfContext() + url;
+        //        return url;
         try {
             BeanUtils.getActiveDocumentBean().setPersistentIdentifier(url);
             return "pretty:object1";
@@ -904,14 +903,14 @@ public class BrowseBean implements Serializable {
         if (valueSplit.length == 0) {
             return ViewerResourceBundle.getTranslation(collectionValue, null);
         }
-        
+
         StringBuilder sb = new StringBuilder();
         String collectionName = "";
         for (String value : valueSplit) {
             if (sb.length() > 0) {
                 sb.append(" / ");
                 collectionName += ".";
-            } 
+            }
             collectionName += value;
             sb.append(ViewerResourceBundle.getTranslation(collectionName, null));
         }
