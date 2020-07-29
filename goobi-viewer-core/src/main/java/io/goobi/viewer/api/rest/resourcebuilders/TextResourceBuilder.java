@@ -85,7 +85,6 @@ public class TextResourceBuilder {
 
     private static final Logger logger = LoggerFactory.getLogger(TextResourceBuilder.class);
 
-
     public TextResourceBuilder() {
     }
 
@@ -133,7 +132,6 @@ public class TextResourceBuilder {
     public String getAltoDocument(String pi, String fileName) throws PresentationException,
             IndexUnreachableException, DAOException, ContentNotFoundException {
 
-
         java.nio.file.Path file = DataFileTools.getDataFilePath(pi, DataManager.getInstance().getConfiguration().getAltoFolder() + "_crowd",
                 DataManager.getInstance().getConfiguration().getAltoFolder(), fileName);
 
@@ -154,7 +152,6 @@ public class TextResourceBuilder {
 
     public String getFulltextAsTEI(String pi, String filename)
             throws PresentationException, ContentLibException, IndexUnreachableException, DAOException {
-
 
         SolrDocument solrDoc = DataManager.getInstance().getSearchIndex().getDocumentByPI(pi);
         if (solrDoc != null) {
@@ -181,8 +178,7 @@ public class TextResourceBuilder {
     }
 
     public String getTeiDocument(String pi, String langCode)
-            throws PresentationException, IndexUnreachableException, DAOException, IOException, ContentLibException {
-
+            throws PresentationException, IndexUnreachableException, IOException, ContentLibException {
 
         final Language language = DataManager.getInstance().getLanguageHelper().getLanguage(langCode);
         java.nio.file.Path teiPath = DataFileTools.getDataFilePath(pi, DataManager.getInstance().getConfiguration().getTeiFolder(), null, null);
@@ -238,7 +234,6 @@ public class TextResourceBuilder {
     public StreamingOutput getTeiAsZip(String pi, String langCode)
             throws PresentationException, IndexUnreachableException, DAOException, IOException, ContentLibException {
 
-
         final Language language = DataManager.getInstance().getLanguageHelper().getLanguage(langCode);
         java.nio.file.Path teiPath = DataFileTools.getDataFilePath(pi, DataManager.getInstance().getConfiguration().getTeiFolder(), null, null);
         java.nio.file.Path filePath = getDocumentLanguageVersion(teiPath, language);
@@ -284,9 +279,19 @@ public class TextResourceBuilder {
 
     }
 
+    /**
+     * 
+     * @param pi
+     * @param langCode
+     * @return
+     * @throws PresentationException
+     * @throws IndexUnreachableException
+     * @throws ContentNotFoundException
+     * @throws IOException
+     */
     public String getCmdiDocument(String pi, String langCode)
-            throws PresentationException, IndexUnreachableException, DAOException, ContentNotFoundException, IOException, ServiceNotAllowedException {
-
+            throws PresentationException, IndexUnreachableException, ContentNotFoundException, IOException {
+        logger.trace("getCmdiDocument({}, {})", pi, langCode);
         final Language language = DataManager.getInstance().getLanguageHelper().getLanguage(langCode);
         java.nio.file.Path cmdiPath = DataFileTools.getDataFolder(pi, DataManager.getInstance().getConfiguration().getCmdiFolder());
         java.nio.file.Path filePath = getDocumentLanguageVersion(cmdiPath, language);
@@ -309,8 +314,7 @@ public class TextResourceBuilder {
     }
 
     public String getContentAsText(String contentFolder, String pi, String fileName)
-            throws PresentationException, IndexUnreachableException, DAOException,
-            ContentNotFoundException, ServiceNotAllowedException {
+            throws PresentationException, IndexUnreachableException, ContentNotFoundException {
 
         java.nio.file.Path file = DataFileTools.getDataFilePath(pi, contentFolder, null, fileName);
         if (file != null && Files.isRegularFile(file)) {
@@ -341,7 +345,7 @@ public class TextResourceBuilder {
      * @throws DAOException
      * @throws ServiceNotAllowedException
      */
-    public String getFulltext(String pi, String fileName) throws PresentationException, IndexUnreachableException, ContentNotFoundException{
+    public String getFulltext(String pi, String fileName) throws PresentationException, IndexUnreachableException, ContentNotFoundException {
 
         java.nio.file.Path file = DataFileTools.getDataFilePath(pi, DataManager.getInstance().getConfiguration().getFulltextFolder() + "_crowd",
                 DataManager.getInstance().getConfiguration().getFulltextFolder(), fileName);
@@ -396,7 +400,8 @@ public class TextResourceBuilder {
         } else {
             List<java.nio.file.Path> altoFiles = getFiles(pi, DataManager.getInstance().getConfiguration().getAltoFolder() + "_crowd",
                     DataManager.getInstance().getConfiguration().getAltoFolder(), "(i?).*\\.(alto|xml)");
-            fileMap = altoFiles.stream().collect(Collectors.toMap(
+            fileMap = altoFiles.stream()
+                    .collect(Collectors.toMap(
                             p -> Paths.get(p.toString().replaceAll("(i?)\\.(alto|xml)", ".txt")),
                             p -> {
                                 try {
@@ -625,6 +630,7 @@ public class TextResourceBuilder {
         final Language language = DataManager.getInstance().getLanguageHelper().getLanguage(langCode);
         java.nio.file.Path cmdiPath = DataFileTools.getDataFolder(pi, DataManager.getInstance().getConfiguration().getCmdiFolder());
         java.nio.file.Path filePath = null;
+        logger.trace("CMDI: " + cmdiPath.toAbsolutePath().toString());
         if (Files.exists(cmdiPath)) {
             // This will return the file with the requested language or alternatively the first file in the CMDI folder
             try (Stream<java.nio.file.Path> cmdiFiles = Files.list(cmdiPath)) {

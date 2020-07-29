@@ -136,7 +136,7 @@ public class RecordFileResource {
         }
         return builder.getFulltextAsTEI(pi, filename);
     }
-
+    
     @GET
     @javax.ws.rs.Path(RECORDS_FILES_PDF)
     @Produces({ "application/pdf" })
