@@ -1489,6 +1489,9 @@ public final class SearchHelper {
                         if (count.getCount() == 0) {
                             continue;
                         }
+                        if (StringUtils.isNotEmpty(startsWith) && !StringUtils.startsWithIgnoreCase(count.getName(), startsWith.toLowerCase())) {
+                            continue;
+                        }
                         terms.put(count.getName(),
                                 new BrowseTerm(count.getName(), null,
                                         bmfc.isTranslate() ? ViewerResourceBundle.getTranslations(count.getName()) : null)
