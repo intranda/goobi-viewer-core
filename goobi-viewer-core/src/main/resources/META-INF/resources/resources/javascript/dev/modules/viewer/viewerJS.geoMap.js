@@ -86,6 +86,7 @@ var viewerJS = ( function( viewer ) {
         
         this.map = new L.Map(this.config.mapId, {
             zoomControl: !this.config.fixed,
+            doubleClickZoom: !this.config.fixed,
             scrollWheelZoom: !this.config.fixed,
             dragging: !this.config.fixed,    
             keyboard: !this.config.fixed
@@ -187,20 +188,23 @@ var viewerJS = ( function( viewer ) {
     viewer.GeoMap.prototype.createMarkerCluster = function() {
         let cluster = L.markerClusterGroup({
             maxClusterRadius: 80,
+            zoomToBoundsOnClick: !this.config.fixed,
             iconCreateFunction: function(cluster) {
                 return this.getClusterIcon(cluster.getChildCount());
             }.bind(this)
         });
-        cluster.on('clustermouseover', function (a) {
-            this.removePolygon();
-
+        if(!this.config.fixed) {            
+            cluster.on('clustermouseover', function (a) {
+                this.removePolygon();
+                
 //            a.layer.setOpacity(0.2);
-            this.shownLayer = a.layer;
-            this.polygon = L.polygon(a.layer.getConvexHull());
-            this.map.addLayer(this.polygon);
-        }.bind(this));
-        cluster.on('clustermouseout', () => this.removePolygon());
-        this.map.on('zoomend', () => this.removePolygon());
+                this.shownLayer = a.layer;
+                this.polygon = L.polygon(a.layer.getConvexHull());
+                this.map.addLayer(this.polygon);
+            }.bind(this));
+            cluster.on('clustermouseout', () => this.removePolygon());
+            this.map.on('zoomend', () => this.removePolygon());
+        }
         return cluster;
     }
     
