@@ -55,6 +55,7 @@ var viewerJS = ( function( viewer ) {
             this.fragmentSelect.stopSelect();
         }
         this.$links.hide();
+        this.hideImageFragmentLinks();
         this.$instructions.show();
     },
 
@@ -73,6 +74,7 @@ var viewerJS = ( function( viewer ) {
             this.toggleImageShare($panel);
         });
         $(".share-image-area [data-popover='close']").on("click", (e) => {
+            this.endFragmentSelect();
             $(e.target).closest(".fullscreen__view-sidebar-accordeon-panel").find("h3").click();
         })
         
@@ -91,7 +93,6 @@ var viewerJS = ( function( viewer ) {
         } catch(error) {
             console.error("Error initializing area select: ", error);
         }
-        
         this.toggleImageShare($(".share-image-area h3"));
         this.$fragmentSelectButton.on("shown.bs.popover", () => this.startFragmentSelect());
         this.$fragmentSelectButton.on("hidden.bs.popover", () => this.endFragmentSelect());
@@ -110,12 +111,18 @@ var viewerJS = ( function( viewer ) {
             $wrapper.show();
         }
     }
+    
+    viewer.ShareImageFragment.prototype.hideImageFragmentLinks = function() {
+        let $wrapper = $(".widget-usage__image-fragment__wrapper");
+        $wrapper.hide();
+    }
+    
 
     viewer.ShareImageFragment.prototype.toggleImageShare = function($panel) {
         if($panel.closest(".fullscreen__view-sidebar-accordeon-panel").hasClass("share-image-area") && $panel.hasClass("in")) {
             this.startFragmentSelect();
         } else {
-            this.endFragmentSelect();
+//            this.endFragmentSelect();
         }
     }
 

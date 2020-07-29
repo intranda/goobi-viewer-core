@@ -450,7 +450,7 @@ public class DataFileTools {
         TextResourceBuilder builder = new TextResourceBuilder();
         try {
             return builder.getTeiDocument(pi, language);
-        } catch (PresentationException | IndexUnreachableException | DAOException | ContentLibException e) {
+        } catch (PresentationException | IndexUnreachableException | ContentLibException e) {
             logger.error(e.toString());
             return null;
         }
