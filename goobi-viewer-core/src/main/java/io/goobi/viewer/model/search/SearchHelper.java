@@ -1390,7 +1390,7 @@ public final class SearchHelper {
         List<StringPair> sortFields =
                 StringUtils.isEmpty(bmfc.getSortField()) ? null : Collections.singletonList(new StringPair(bmfc.getSortField(), "asc"));
         QueryResponse resp = getFilteredTermsFromIndex(bmfc, startsWith, filterQuery, sortFields, 0, 0);
-        logger.trace("getFilteredTermsCount hits: {}", resp.getResults().getNumFound());
+        // logger.trace("getFilteredTermsCount hits: {}", resp.getResults().getNumFound());
 
         if (bmfc.getField() == null) {
             return 0;
@@ -1445,8 +1445,9 @@ public final class SearchHelper {
             List<StringPair> sortFields =
                     StringUtils.isEmpty(bmfc.getSortField()) ? null : Collections.singletonList(new StringPair(bmfc.getSortField(), "asc"));
             QueryResponse resp = getFilteredTermsFromIndex(bmfc, startsWith, filterQuery, sortFields, start, rows);
-            logger.debug("getFilteredTerms hits: {}", resp.getResults().getNumFound());
+            // logger.debug("getFilteredTerms hits: {}", resp.getResults().getNumFound());
             if ("0-9".equals(startsWith)) {
+                // TODO Is this still necessary?
                 // Numerical filtering
                 Pattern p = Pattern.compile("[\\d]");
                 // Use hits (if sorting field is provided)
@@ -1487,12 +1488,6 @@ public final class SearchHelper {
                     // If only browsing records and anchors, use faceting
                     logger.trace("using faceting: {}", facetField);
                     for (Count count : resp.getFacetField(facetField).getValues()) {
-                        if (count.getCount() == 0) {
-                            continue;
-                        }
-                        if (StringUtils.isNotEmpty(startsWith) && !StringUtils.startsWithIgnoreCase(count.getName(), startsWith.toLowerCase())) {
-                            continue;
-                        }
                         terms.put(count.getName(),
                                 new BrowseTerm(count.getName(), null,
                                         bmfc.isTranslate() ? ViewerResourceBundle.getTranslations(count.getName()) : null)
@@ -1555,7 +1550,8 @@ public final class SearchHelper {
         } else {
             sbQuery.append(bmfc.getField());
         }
-        sbQuery.append(":[* TO *]");
+        sbQuery.append(":[* TO *] ");
+        sbQuery.append(ALL_RECORDS_QUERY);
 
         List<String> filterQueries = new ArrayList<>();
         if (StringUtils.isNotEmpty(filterQuery)) {
@@ -1587,6 +1583,12 @@ public final class SearchHelper {
             params.put(GroupParams.GROUP_FIELD, SolrConstants.GROUPFIELD);
         }
 
+        // Facets
+        if (rows == 0) {
+            return DataManager.getInstance().getSearchIndex().searchFacetsAndStatistics(query, facetFields, 1, startsWith, false);
+        }
+
+        // Docs
         return DataManager.getInstance().getSearchIndex().search(query, start, rows, sortFields, facetFields, fields, filterQueries, params);
     }
 

@@ -255,7 +255,7 @@ public final class SolrSearchIndex {
         if (filterQueries != null && !filterQueries.isEmpty()) {
             for (String fq : filterQueries) {
                 solrQuery.addFilterQuery(fq);
-                // logger.trace("adding filter query: {}", fq);
+                logger.trace("adding filter query: {}", fq);
             }
         }
         if (params != null && !params.isEmpty()) {

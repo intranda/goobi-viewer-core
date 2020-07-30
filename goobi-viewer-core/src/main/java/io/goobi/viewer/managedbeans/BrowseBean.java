@@ -436,7 +436,7 @@ public class BrowseBean implements Serializable {
                     new BrowseTermComparator(locale),
                     DataManager.getInstance().getConfiguration().isAggregateHits());
 
-            for (int i = 0; i < terms.size(); ++i) {
+            for (int i = start; i < end; ++i) {
                 BrowseTerm term = terms.get(i);
                 if (term.getTranslations() != null && term.getTranslations().getValue(locale).isPresent()) {
                     // Use translated label, if present
