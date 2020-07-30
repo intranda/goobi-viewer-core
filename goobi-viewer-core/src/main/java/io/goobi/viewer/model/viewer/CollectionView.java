@@ -938,7 +938,7 @@ public class CollectionView {
     public static String getCollectionUrl(HierarchicalBrowseDcElement collection, String field, String baseSearchUrl) {
         
         if(StringUtils.isBlank(baseSearchUrl)) {
-            baseSearchUrl = BeanUtils.getServletPathWithHostAsUrlFromJsfContext() + "/" + PageType.browse.getName() + "/";
+            baseSearchUrl = BeanUtils.getServletPathWithHostAsUrlFromJsfContext() + "/" + PageType.search.getName() + "/";
         }
         
         if (collection.getInfo().getLinkURI(BeanUtils.getRequest()) != null) {
