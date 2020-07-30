@@ -772,8 +772,8 @@ public final class Configuration extends AbstractConfiguration {
     /**
      * Returns the list of index fields to be used for term browsing.
      *
-     * @should return all configured elements
      * @return a {@link java.util.List} object.
+     * @should return all configured elements
      */
     public List<BrowsingMenuFieldConfig> getBrowsingMenuFields() {
         List<HierarchicalConfiguration> fields = getLocalConfigurationsAt("metadata.browsingMenu.luceneField");
@@ -789,8 +789,9 @@ public final class Configuration extends AbstractConfiguration {
             String filterQuery = sub.getString("[@filterQuery]");
             boolean translate = sub.getBoolean("[@translate]", false);
             boolean recordsAndAnchorsOnly = sub.getBoolean("[@recordsAndAnchorsOnly]", false);
+            boolean alwaysApplyFilter = sub.getBoolean("[@alwaysApplyFilter]", false);
             BrowsingMenuFieldConfig bmfc =
-                    new BrowsingMenuFieldConfig(field, sortField, filterQuery, translate,  recordsAndAnchorsOnly);
+                    new BrowsingMenuFieldConfig(field, sortField, filterQuery, translate, recordsAndAnchorsOnly, alwaysApplyFilter);
             ret.add(bmfc);
         }
 
@@ -2543,7 +2544,7 @@ public final class Configuration extends AbstractConfiguration {
 
         return Collections.emptyList();
     }
-    
+
     /**
      * 
      * @param facetField
@@ -3636,7 +3637,6 @@ public final class Configuration extends AbstractConfiguration {
         return getLocalString("viewer.theme[@discriminatorField]", "");
     }
 
-
     /**
      * <p>
      * getTagCloudSampleSize.
@@ -4214,7 +4214,7 @@ public final class Configuration extends AbstractConfiguration {
         List<Integer> intList = new ArrayList<>();
         for (String s : stringList) {
             try {
-                intList.add(new Integer(s));
+                intList.add(Integer.valueOf(s));
             } catch (NullPointerException | NumberFormatException e) {
                 logger.error("Illegal config at 'viewer.pageBrowse.pageBrowseStep': " + s);
             }

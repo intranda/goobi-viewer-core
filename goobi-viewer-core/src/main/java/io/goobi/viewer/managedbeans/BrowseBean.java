@@ -413,6 +413,15 @@ public class BrowseBean implements Serializable {
                 // logger.debug(availableStringFilters.toString());
             }
 
+            // If no filter is set, redirect to first available filter (if so configured)
+            if (StringUtils.isEmpty(currentStringFilter) && currentBmfc.isAlwaysApplyFilter()
+                    && availableStringFilters.get(browsingMenuField) != null
+                    && !availableStringFilters.get(browsingMenuField).isEmpty()) {
+                currentStringFilter = availableStringFilters.get(browsingMenuField).get(0);
+                logger.trace("Redirecting to filter: {}", currentStringFilter);
+                return "pretty:searchTerm4";
+            }
+
             hitsCount = SearchHelper.getFilteredTermsCount(currentBmfc, currentStringFilter, filterQuery);
             if (hitsCount == 0) {
                 resetTerms();
