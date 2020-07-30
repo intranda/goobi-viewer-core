@@ -524,14 +524,14 @@ public class SearchFacets implements Serializable {
      * 
      * @param facetString
      * @param facetItems
-     * @param labelCache
+     * @param labelMap
      * @should fill list correctly
      * @should empty list before filling
      * @should add DC field prefix if no field name is given
      * @should set hierarchical status correctly
      * @should use label from labelMap if available
      */
-    static void parseFacetString(String facetString, List<FacetItem> facetItems, Map<String, String> labelCache) {
+    static void parseFacetString(String facetString, List<FacetItem> facetItems, Map<String, String> labelMap) {
         if (facetItems == null) {
             facetItems = new ArrayList<>();
         } else {
@@ -541,8 +541,8 @@ public class SearchFacets implements Serializable {
             return;
         }
 
-        if (labelCache == null) {
-            labelCache = Collections.emptyMap();
+        if (labelMap == null) {
+            labelMap = Collections.emptyMap();
         }
         try {
             facetString = URLDecoder.decode(facetString, "utf-8");
@@ -555,8 +555,9 @@ public class SearchFacets implements Serializable {
                 if (!facetLink.contains(":")) {
                     facetLink = new StringBuilder(SolrConstants.DC).append(':').append(facetLink).toString();
                 }
+                String label = labelMap.containsKey(facetLink) ? labelMap.get(facetLink) : null;
                 facetItems.add(
-                        new FacetItem(facetLink, labelCache.get(facetLink), isFieldHierarchical(facetLink.substring(0, facetLink.indexOf(":")))));
+                        new FacetItem(facetLink, label, isFieldHierarchical(facetLink.substring(0, facetLink.indexOf(":")))));
             }
         }
     }
