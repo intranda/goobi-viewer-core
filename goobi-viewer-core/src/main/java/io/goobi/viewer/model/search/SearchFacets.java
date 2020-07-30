@@ -521,17 +521,18 @@ public class SearchFacets implements Serializable {
     }
 
     /**
+     * Constructs a list of facet items out of the given facet string.
      * 
-     * @param facetString
-     * @param facetItems
-     * @param labelCache
+     * @param facetString String containing field:value pairs
+     * @param facetItems List of facet items to which to add the parsed items
+     * @param labelMap Map containing labels for a field:value pair if the facet field uses separate labels
      * @should fill list correctly
      * @should empty list before filling
      * @should add DC field prefix if no field name is given
      * @should set hierarchical status correctly
      * @should use label from labelMap if available
      */
-    static void parseFacetString(String facetString, List<FacetItem> facetItems, Map<String, String> labelCache) {
+    static void parseFacetString(String facetString, List<FacetItem> facetItems, Map<String, String> labelMap) {
         if (facetItems == null) {
             facetItems = new ArrayList<>();
         } else {
@@ -541,8 +542,8 @@ public class SearchFacets implements Serializable {
             return;
         }
 
-        if (labelCache == null) {
-            labelCache = Collections.emptyMap();
+        if (labelMap == null) {
+            labelMap = Collections.emptyMap();
         }
         try {
             facetString = URLDecoder.decode(facetString, "utf-8");
@@ -555,8 +556,10 @@ public class SearchFacets implements Serializable {
                 if (!facetLink.contains(":")) {
                     facetLink = new StringBuilder(SolrConstants.DC).append(':').append(facetLink).toString();
                 }
+                // If there is a cached pre-generated label for this facet link (separate label field), use it so that there's no empty label
+                String label = labelMap.containsKey(facetLink) ? labelMap.get(facetLink) : null;
                 facetItems.add(
-                        new FacetItem(facetLink, labelCache.get(facetLink), isFieldHierarchical(facetLink.substring(0, facetLink.indexOf(":")))));
+                        new FacetItem(facetLink, label, isFieldHierarchical(facetLink.substring(0, facetLink.indexOf(":")))));
             }
         }
     }

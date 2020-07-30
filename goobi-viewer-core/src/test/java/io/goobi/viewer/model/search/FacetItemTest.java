@@ -236,4 +236,17 @@ public class FacetItemTest extends AbstractTest {
         Assert.assertEquals(1, facetItems.size());
         Assert.assertEquals("Karl", facetItems.get(0).getLabel());
     }
+
+    /**
+     * @see FacetItem#parseLink(String)
+     * @verifies set label to value if label empty
+     */
+    @Test
+    public void parseLink_shouldSetLabelToValueIfLabelEmpty() throws Exception {
+       FacetItem item = new FacetItem(false);
+       Assert.assertNull(item.getLabel());
+       item.setLink("foo:bar");
+       item.parseLink();
+       Assert.assertEquals("bar", item.getLabel());
+    }
 }

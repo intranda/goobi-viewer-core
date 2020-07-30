@@ -679,7 +679,7 @@ public class SearchHit implements Comparable<SearchHit> {
      * @should translate configured field values correctly
      */
     public void populateFoundMetadata(SolrDocument doc, Set<String> ownerAlreadyHasFields, Set<String> ignoreFields, Set<String> translateFields) {
-        logger.trace("populateFoundMetadata: {}", searchTerms);
+        // logger.trace("populateFoundMetadata: {}", searchTerms);
         if (searchTerms == null) {
             return;
         }
