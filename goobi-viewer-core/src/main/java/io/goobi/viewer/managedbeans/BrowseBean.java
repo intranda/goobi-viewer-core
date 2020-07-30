@@ -378,8 +378,7 @@ public class BrowseBean implements Serializable {
             }
 
             // Populate the list of available starting characters with ones that actually exist in the complete terms list
-            if (StringUtils.isEmpty(currentStringFilter) || availableStringFilters.get(browsingMenuField) == null) {
-                // TODO Populate available filters without retrieving all terms
+            if (availableStringFilters.get(browsingMenuField) == null) {
                 terms = SearchHelper.getFilteredTerms(currentBmfc, "", filterQuery, 0, 0, new BrowseTermComparator(locale),
                         DataManager.getInstance().getConfiguration().isAggregateHits());
                 if (availableStringFilters.get(browsingMenuField) == null || filterQuery != null) {
@@ -424,8 +423,8 @@ public class BrowseBean implements Serializable {
             }
             int start = (currentPage - 1) * browsingMenuHitsPerPage;
             int end = currentPage * browsingMenuHitsPerPage;
-            if (end > terms.size()) {
-                end = terms.size();
+            if (end > hitsCount) {
+                end = hitsCount;
             }
             browseTermList = new ArrayList<>(end - start);
             browseTermListEscaped = new ArrayList<>(browseTermList.size());

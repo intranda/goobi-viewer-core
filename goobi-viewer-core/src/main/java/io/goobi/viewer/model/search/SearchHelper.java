@@ -1382,13 +1382,23 @@ public final class SearchHelper {
      */
     public static int getFilteredTermsCount(BrowsingMenuFieldConfig bmfc, String startsWith, String filterQuery)
             throws PresentationException, IndexUnreachableException {
+        if (bmfc == null) {
+            throw new IllegalArgumentException("bmfc may not be null");
+        }
+
+        logger.trace("getFilteredTermsCount: {}", bmfc.getField());
         List<StringPair> sortFields =
                 StringUtils.isEmpty(bmfc.getSortField()) ? null : Collections.singletonList(new StringPair(bmfc.getSortField(), "asc"));
         QueryResponse resp = getFilteredTermsFromIndex(bmfc, startsWith, filterQuery, sortFields, 0, 0);
-        logger.debug("getFilteredTermsCount hits: {}", resp.getResults().getNumFound());
+        logger.trace("getFilteredTermsCount hits: {}", resp.getResults().getNumFound());
+
+        if (bmfc.getField() == null) {
+            return 0;
+        }
 
         int ret = 0;
-        for (Count count : resp.getFacetField(bmfc.getField()).getValues()) {
+        String facetField = SearchHelper.facetifyField(bmfc.getField());
+        for (Count count : resp.getFacetField(facetField).getValues()) {
             if (count.getCount() == 0) {
                 continue;
             }
@@ -1398,6 +1408,7 @@ public final class SearchHelper {
             ret++;
 
         }
+        logger.debug("getFilteredTermsCount result: {}", resp.getResults().getNumFound());
         return ret;
     }
 
@@ -1417,6 +1428,11 @@ public final class SearchHelper {
      */
     public static List<BrowseTerm> getFilteredTerms(BrowsingMenuFieldConfig bmfc, String startsWith, String filterQuery, int start, int rows,
             Comparator<BrowseTerm> comparator, boolean aggregateHits) throws PresentationException, IndexUnreachableException {
+        if (bmfc == null) {
+            throw new IllegalArgumentException("bmfc may not be null");
+        }
+
+        logger.trace("getFilteredTerms: {}", bmfc.getField());
         List<BrowseTerm> ret = new ArrayList<>();
         ConcurrentMap<String, BrowseTerm> terms = new ConcurrentHashMap<>();
 
@@ -1466,10 +1482,11 @@ public final class SearchHelper {
                     }
                 }
             } else {
-                if (resp.getResults().isEmpty() && resp.getFacetField(bmfc.getField()) != null) {
+                String facetField = SearchHelper.facetifyField(bmfc.getField());
+                if (resp.getResults().isEmpty() && resp.getFacetField(facetField) != null) {
                     // If only browsing records and anchors, use faceting
-                    logger.trace("using faceting: {}", bmfc.getField());
-                    for (Count count : resp.getFacetField(bmfc.getField()).getValues()) {
+                    logger.trace("using faceting: {}", facetField);
+                    for (Count count : resp.getFacetField(facetField).getValues()) {
                         if (count.getCount() == 0) {
                             continue;
                         }
@@ -1520,6 +1537,7 @@ public final class SearchHelper {
      * @return
      * @throws PresentationException
      * @throws IndexUnreachableException
+     * @should contain facets for the main field
      */
     static QueryResponse getFilteredTermsFromIndex(BrowsingMenuFieldConfig bmfc, String startsWith, String filterQuery, List<StringPair> sortFields,
             int start, int rows)
@@ -1549,14 +1567,14 @@ public final class SearchHelper {
             filterQueries.addAll(bmfc.getFilterQueries());
         }
 
-        logger.debug("getFilteredTerms startsWith: {}", startsWith);
+        // logger.trace("getFilteredTermsFromIndex startsWith: {}", startsWith);
         String query = buildFinalQuery(sbQuery.toString(), false);
-        logger.debug("getFilteredTerms query: {}", query);
-        if (logger.isTraceEnabled()) {
-            for (String fq : filterQueries) {
-                logger.trace("getFilteredTerms filter query: {}", fq);
-            }
-        }
+        // logger.trace("getFilteredTermsFromIndex query: {}", query);
+        //        if (logger.isTraceEnabled()) {
+        //            for (String fq : filterQueries) {
+        //                logger.trace("getFilteredTermsFromIndex filter query: {}", fq);
+        //            }
+        //        }
 
         String facetField = SearchHelper.facetifyField(bmfc.getField());
         List<String> facetFields = new ArrayList<>();
