@@ -128,10 +128,7 @@
 		<stax-api.version>1.0-2</stax-api.version>
         <swagger.version>2.1.4</swagger.version>
 		<tomcat.version>9.0.37</tomcat.version>
-		<!-- Using a weld.version >3.0.5.Final will result in problems with the hotswap agent -->
 		<weld-servlet-shaded.version>3.1.4.Final</weld-servlet-shaded.version>
-		<!-- This needs to be added explicitly because otherwise Solr will use
-			an older version that's incompatible -->
 		<xerces.version>2.12.0</xerces.version>
 		<xmlParserAPIs.version>2.6.2</xmlParserAPIs.version>
 	</properties>
@@ -619,7 +616,7 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-dependency-plugin</artifactId>
-				<version>3.1.1</version>
+				<version>3.1.2</version>
 				<executions>
 					<execution>
 						<id>analyze</id>
@@ -729,7 +726,7 @@
 			<plugin>
 				<groupId>pl.project13.maven</groupId>
 				<artifactId>git-commit-id-plugin</artifactId>
-				<version>4.0.0</version>
+				<version>4.0.1</version>
 				<configuration>
 					<commitIdGenerationMode>flat</commitIdGenerationMode>
 					<gitDescribe>
@@ -764,7 +761,7 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-javadoc-plugin</artifactId>
-				<version>3.1.1</version>
+				<version>3.2.0</version>
 				<configuration>
 					<doclint>none</doclint>
 					<fixTags>link,throws,return,param</fixTags>
