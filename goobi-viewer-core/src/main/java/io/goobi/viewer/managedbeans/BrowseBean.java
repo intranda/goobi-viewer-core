@@ -40,6 +40,7 @@ import de.unigoettingen.sub.commons.contentlib.exceptions.IllegalRequestExceptio
 import io.goobi.viewer.controller.AlphanumCollatorComparator;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.SolrConstants;
+import io.goobi.viewer.controller.SolrSearchIndex;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.exceptions.RecordNotFoundException;
@@ -432,7 +433,7 @@ public class BrowseBean implements Serializable {
 
             // Get terms for the current page 
             logger.trace("Fetching terms for page {} ({} - {})", currentPage, start, end - 1);
-            terms = SearchHelper.getFilteredTerms(currentBmfc, currentStringFilter, filterQuery, start, end - start,
+            terms = SearchHelper.getFilteredTerms(currentBmfc, currentStringFilter, filterQuery, 0, SolrSearchIndex.MAX_HITS,
                     new BrowseTermComparator(locale),
                     DataManager.getInstance().getConfiguration().isAggregateHits());
 
