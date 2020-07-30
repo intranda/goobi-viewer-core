@@ -426,16 +426,17 @@ public class BrowseBean implements Serializable {
             if (end > hitsCount) {
                 end = hitsCount;
             }
-            browseTermList = new ArrayList<>(end - start);
+            browseTermList = new ArrayList<>(browsingMenuHitsPerPage);
             browseTermListEscaped = new ArrayList<>(browseTermList.size());
             browseTermHitCountList = new ArrayList<>(browseTermList.size());
 
-            // Get terms for the current page
+            // Get terms for the current page 
+            logger.trace("Fetching terms for page {} ({} - {})", currentPage, start, end - 1);
             terms = SearchHelper.getFilteredTerms(currentBmfc, currentStringFilter, filterQuery, start, end - start,
                     new BrowseTermComparator(locale),
                     DataManager.getInstance().getConfiguration().isAggregateHits());
 
-            for (int i = start; i < end; ++i) {
+            for (int i = 0; i < terms.size(); ++i) {
                 BrowseTerm term = terms.get(i);
                 if (term.getTranslations() != null && term.getTranslations().getValue(locale).isPresent()) {
                     // Use translated label, if present
@@ -661,31 +662,6 @@ public class BrowseBean implements Serializable {
 
     /**
      * <p>
-     * getCurrentPageResetFilter.
-     * </p>
-     *
-     * @return a int.
-     */
-    public int getCurrentPageResetFilter() {
-        return currentPage;
-    }
-
-    /**
-     * This is used when a term search query doesn't contain a filter value. In this case, the value is reset.
-     *
-     * @param currentPage a int.
-     * @deprecated Reset the currentStringFilter value in the PrettyFaces mapping
-     */
-    @Deprecated
-    public void setCurrentPageResetFilter(int currentPage) {
-        synchronized (this) {
-            currentStringFilter = null;
-            this.currentPage = currentPage;
-        }
-    }
-
-    /**
-     * <p>
      * Getter for the field <code>currentPage</code>.
      * </p>
      *
@@ -717,7 +693,7 @@ public class BrowseBean implements Serializable {
      */
     public int getLastPage() {
         int hitsPerPageLocal = browsingMenuHitsPerPage;
-        int answer = new Double(Math.floor(hitsCount / hitsPerPageLocal)).intValue();
+        int answer = Double.valueOf(Math.floor(hitsCount / hitsPerPageLocal)).intValue();
         if (hitsCount % hitsPerPageLocal != 0 || answer == 0) {
             answer++;
         }
