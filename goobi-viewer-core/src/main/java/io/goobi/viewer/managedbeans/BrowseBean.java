@@ -44,6 +44,7 @@ import io.goobi.viewer.controller.SolrSearchIndex;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.exceptions.RecordNotFoundException;
+import io.goobi.viewer.exceptions.RedirectException;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.messages.Messages;
 import io.goobi.viewer.messages.ViewerResourceBundle;
@@ -333,6 +334,22 @@ public class BrowseBean implements Serializable {
     }
 
     /**
+     * Action method for JSF.
+     * 
+     * @return
+     * @throws PresentationException
+     * @throws IndexUnreachableException
+     */
+    public String searchTermsAction() throws PresentationException, IndexUnreachableException {
+        try {
+            return searchTerms();
+        } catch (RedirectException e) {
+            // Redirect to filter URL requested
+            return "searchTermList";
+        }
+    }
+
+    /**
      * <p>
      * searchTerms.
      * </p>
@@ -340,8 +357,9 @@ public class BrowseBean implements Serializable {
      * @return a {@link java.lang.String} object.
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
+     * @throws RedirectException
      */
-    public String searchTerms() throws PresentationException, IndexUnreachableException {
+    public String searchTerms() throws PresentationException, IndexUnreachableException, RedirectException {
         synchronized (this) {
             logger.trace("searchTerms");
             if (breadcrumbBean != null) {
@@ -375,7 +393,7 @@ public class BrowseBean implements Serializable {
                 logger.error("No configuration found for term field '{}'.", browsingMenuField);
                 resetTerms();
                 Messages.error(ViewerResourceBundle.getTranslation("browse_errFieldNotConfigured", null).replace("{0}", browsingMenuField));
-                return "searchTermList";
+                throw new RedirectException("");
             }
 
             // Populate the list of available starting characters with ones that actually exist in the complete terms list

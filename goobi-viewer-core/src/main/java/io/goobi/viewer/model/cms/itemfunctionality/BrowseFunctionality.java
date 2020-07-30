@@ -17,6 +17,7 @@ package io.goobi.viewer.model.cms.itemfunctionality;
 
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
+import io.goobi.viewer.exceptions.RedirectException;
 import io.goobi.viewer.managedbeans.BrowseBean;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
 
@@ -27,9 +28,9 @@ import io.goobi.viewer.managedbeans.utils.BeanUtils;
 public class BrowseFunctionality implements Functionality {
 
     private BrowseBean bean = BeanUtils.getBrowseBean();
-    
+
     private String browseField = "";
-    
+
     /**
      * @param collectionField
      */
@@ -52,49 +53,60 @@ public class BrowseFunctionality implements Functionality {
     public int getPageNo() {
         return bean.getCurrentPage();
     }
-    
+
     /**
      * Set the SOLR field which to browse to create the list
+     * 
      * @param field
      */
     public void setBrowseField(String field) {
-       this.browseField = field;
+        this.browseField = field;
     }
-    
+
     /**
      * Get the SOLR field which to browse to create the list
+     * 
      * @return
      */
     public String getBrowseField() {
         return this.browseField;
     }
-    
+
     /**
      * Set an additionl filter to restrict the list to a subset of all records
+     * 
      * @param field
      * @param value
      */
     public void setFilter(String field, String value) {
         bean.setFilterQuery(field + ":" + value);
     }
-    
+
     /**
      * Set the start character for which results should be displayed
+     * 
      * @param start
      */
     public void setStartingCharacter(String start) {
         bean.setCurrentStringFilter(start);
     }
-    
+
     /**
      * Get the start character for which results should be displayed
+     * 
      * @return
      */
     public String getStartingCharacter() {
         return bean.getCurrentStringFilter();
     }
-    
-    public void searchTerms() throws PresentationException, IndexUnreachableException {
+
+    /**
+     * 
+     * @throws PresentationException
+     * @throws IndexUnreachableException
+     * @throws RedirectException 
+     */
+    public void searchTerms() throws PresentationException, IndexUnreachableException, RedirectException {
         bean.setBrowsingMenuField(getBrowseField());
         bean.searchTerms();
     }
@@ -103,8 +115,8 @@ public class BrowseFunctionality implements Functionality {
      * Resets the current browse page and the current string filter
      */
     public void reset() {
-       bean.setCurrentStringFilter("");
-       bean.setCurrentPage(1);
+        bean.setCurrentStringFilter("");
+        bean.setCurrentPage(1);
     }
-    
+
 }
