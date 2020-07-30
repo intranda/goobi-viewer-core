@@ -62,11 +62,11 @@ public class SearchHitsNotificationResourceTest {
         SearchHitsNotificationResource resource = new SearchHitsNotificationResource();
         Search search = new Search();
         search.setQuery("ISWORK:*");
-        search.setLastHitsCount(2);
+        search.setLastHitsCount(200);
         search.setPage(1);
         List<SearchHit> newHits = resource.getNewHits(search);
         assertFalse(newHits.isEmpty());
-        assertEquals(newHits.size(), search.getLastHitsCount() - 2);
+        assertEquals(newHits.size(), Math.min(search.getLastHitsCount() - 200, 100));
     }
 
 }
