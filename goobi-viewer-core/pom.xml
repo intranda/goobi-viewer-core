@@ -593,7 +593,8 @@
 
 
 	<build>
-		<plugins>
+        <plugins>
+            <!-- used for mvn versions:display-plugin-updates -->
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-enforcer-plugin</artifactId>
@@ -613,7 +614,8 @@
 						</configuration>
 					</execution>
 				</executions>
-			</plugin>
+            </plugin>
+            <!-- used for mvn verify-->
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-dependency-plugin</artifactId>
@@ -761,24 +763,6 @@
 			</plugin>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-site-plugin</artifactId>
-				<version>3.8.2</version>
-				<dependencies>
-					<dependency>
-						<groupId>org.apache.maven.wagon</groupId>
-						<artifactId>wagon-webdav-jackrabbit</artifactId>
-						<!-- Updating to 3.3.4 results in errors during mvn site:deploy -->
-						<version>2.6</version>
-					</dependency>
-				</dependencies>
-			</plugin>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-project-info-reports-plugin</artifactId>
-				<version>3.0.0</version>
-			</plugin>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-javadoc-plugin</artifactId>
 				<version>3.1.1</version>
 				<configuration>
@@ -791,7 +775,8 @@
 						</tag>
 					</tags>
 				</configuration>
-			</plugin>
+            </plugin>
+            <!-- used for test coverage report in Jenkins -->
 			<plugin>
 				<groupId>org.jacoco</groupId>
 				<artifactId>jacoco-maven-plugin</artifactId>
@@ -810,7 +795,8 @@
 						</goals>
 					</execution>
 				</executions>
-			</plugin>
+            </plugin>
+            <!-- used for mvn versions:display-dependency-updates -->
 			<plugin>
 				<groupId>org.codehaus.mojo</groupId>
 				<artifactId>versions-maven-plugin</artifactId>
@@ -824,25 +810,6 @@
 
 	<reporting>
 		<plugins>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-project-info-reports-plugin</artifactId>
-				<version>3.0.0</version>
-				<reportSets>
-					<reportSet>
-						<reports>
-							<report>team</report>
-							<report>mailing-lists</report>
-							<report>ci-management</report>
-							<report>issue-management</report>
-							<report>licenses</report>
-							<report>scm</report>
-							<report>distribution-management</report>
-							<report>index</report>
-						</reports>
-					</reportSet>
-				</reportSets>
-			</plugin>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-javadoc-plugin</artifactId>

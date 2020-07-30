@@ -28,32 +28,12 @@ pipeline {
     stage('deployment of artifacts to maven repository') {
       when {
         anyOf {
-        branch 'master'
-        branch 'develop'
+          branch 'master'
+          branch 'develop'
         }
       }
       steps {
         sh 'mvn -f goobi-viewer-core/pom.xml deploy'
-      }
-    }
-    stage('maven site generation') {
-      when {
-        anyOf {
-        branch 'master'
-        }
-      }
-      steps {
-        sh 'mvn -f goobi-viewer-core/pom.xml site'
-      }
-    }
-    stage('deployment of site to maven repository') {
-      when {
-        anyOf {
-        branch 'master'
-        }
-      }
-      steps {
-        sh 'mvn -f goobi-viewer-core/pom.xml site:deploy'
       }
     }
   }
