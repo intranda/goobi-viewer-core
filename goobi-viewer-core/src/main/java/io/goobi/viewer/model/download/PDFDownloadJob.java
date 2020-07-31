@@ -20,6 +20,7 @@ import java.util.Date;
 
 import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
+import javax.ws.rs.core.Response;
 
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.ResponseHandler;
@@ -159,39 +160,35 @@ public class PDFDownloadJob extends DownloadJob {
             throws PresentationException, IndexUnreachableException, DownloadException {
         File targetFolder = new File(DataManager.getInstance().getConfiguration().getDownloadFolder(PDFDownloadJob.TYPE));
         if (!targetFolder.isDirectory() && !targetFolder.mkdir()) {
-            //            logger.error("Cannot create download folder: {}", targetFolder);
             throw new DownloadException("Cannot create download folder: " + targetFolder);
         }
         String title = pi + "_" + logId;
         logger.debug("Trigger pdf generation for " + title);
 
-        int priority = 10;
-        HttpClient client = HttpClients.createDefault();
         String taskManagerUrl = DataManager.getInstance().getConfiguration().getTaskManagerServiceUrl();
         String mediaRepository = DataFileTools.getDataRepositoryPathForRecord(pi);
         logger.debug("Calling taskManager at " + taskManagerUrl);
-        File metsFile = new File(mediaRepository + "/" + DataManager.getInstance().getConfiguration().getIndexedMetsFolder(), pi + ".xml");
-        HttpPost post = TaskClient.createPost(taskManagerUrl, metsFile.getAbsolutePath(), targetFolder.getAbsolutePath(), "", "", priority, logId,
-                title, mediaRepository, "VIEWERPDF", downloadIdentifier, "noServerTypeInTaskClient", "", "", "", "", false);
+
+        TaskManagerPDFRequest requestObject = new TaskManagerPDFRequest();
+        requestObject.pi = pi;
+        requestObject.logId = logId;
+        requestObject.goobiId = downloadIdentifier;
+        requestObject.sourceDir = mediaRepository;
         try {
-            JSONObject response = TaskClient.getJsonResponse(client, post);
-            logger.trace(response.toString());
-            if (response.has("STATUS") && response.get("STATUS").equals("ERROR")) {
-                if (response.get("ERRORMESSAGE").equals("Job already in DB, not adding it!")) {
+            Response response = postJobRequest(taskManagerUrl, requestObject);
+            String entity = (String)response.readEntity(String.class);
+            JSONObject entityJson = new JSONObject(entity);
+            if (entityJson.has("STATUS") && entityJson.get("STATUS").equals("ERROR")) {
+                if (entityJson.get("ERRORMESSAGE").equals("Job already in DB, not adding it!")) {
                     logger.debug("Job is already being processed");
                 } else {
                     throw new DownloadException("Failed to start pdf creation for PI=" + pi + " and LOGID=" + logId + ": TaskManager returned error "
-                            + response.get("ERRORMESSAGE"));
-                    //                    logger.error("Failed to start pdf creation for PI={} and LOGID={}: TaskManager returned error", pi, logId);
-                    //                    return false;
+                            + entityJson.get("ERRORMESSAGE"));
                 }
             }
         } catch (Exception e) {
             // Had to catch generic exception here because a ParseException triggered by Tomcat error HTML getting parsed as JSON cannot be caught
             throw new DownloadException("Failed to start pdf creation for PI=" + pi + " and LOGID=" + logId + ": " + e.getMessage());
-            //            logger.error("Failed to start pdf creation for PI={} and LOGID={}: {}", pi, logId, e.getMessage());
-            //            logger.error(e.getMessage(), e);
-            //            return false;
         }
     }
 

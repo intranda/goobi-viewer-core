@@ -45,6 +45,10 @@ import javax.persistence.JoinColumn;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
+import javax.ws.rs.client.Client;
+import javax.ws.rs.client.ClientBuilder;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.client.ResponseHandler;
@@ -53,6 +57,7 @@ import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.BasicResponseHandler;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
+import org.glassfish.jersey.client.ClientProperties;
 import org.joda.time.MutableDateTime;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -64,6 +69,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 
+import io.goobi.viewer.api.rest.AbstractApiUrlManager.ApiInfo;
 import io.goobi.viewer.controller.DataFileTools;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.DateTools;
@@ -795,6 +801,20 @@ public abstract class DownloadJob implements Serializable {
      */
     public void setMessage(String message) {
         this.message = message;
+    }
+    
+    public static Response postJobRequest(String url, AbstractTaskManagerRequest body) throws IOException {
+            try {            
+                Client client = ClientBuilder.newClient();
+                client.property(ClientProperties.CONNECT_TIMEOUT, 4000);
+                client.property(ClientProperties.READ_TIMEOUT,    10000);
+                return client
+                    .target(url)
+                    .request(MediaType.APPLICATION_JSON)
+                    .post(javax.ws.rs.client.Entity.entity(body, MediaType.APPLICATION_JSON));
+            } catch(Throwable e) {
+               throw new IOException("Error connecting to " + url, e);
+            }
     }
 
     /**

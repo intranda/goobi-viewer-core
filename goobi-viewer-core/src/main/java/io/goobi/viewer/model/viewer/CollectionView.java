@@ -949,10 +949,6 @@ public class CollectionView {
             String baseUri = ViewHistory.getCurrentView(BeanUtils.getRequest())
                     .map(view -> view.getApplicationUrl() + "/" + view.getPagePath().toString())
                     .orElse("");// BeanUtils.getRequest().getRequestURL().toString();
-            //            int cutoffIndex = baseUri.indexOf(PageType.expandCollection.getName());
-            //            if (cutoffIndex > 0) {
-            //                baseUri = baseUri.substring(0, cutoffIndex - 1);
-            //            }
             String ret = baseUri + "/" + PageType.expandCollection.getName() + "/" + collection.getName() + "/";
             logger.trace("COLLECTION new window url: {}", ret);
             return ret;
