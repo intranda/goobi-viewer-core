@@ -1018,6 +1018,9 @@
 		<browsingMenu>
 			<!-- enabled: if false, the browsing section is hidden -->
 			<enabled>true</enabled>
+			
+			<!-- alwaysApplyFilter: If true, selecting a facet will automatically apply the first available filter (e.g. "A"). Default is false. -->
+			<alwaysApplyFilter>false</alwaysApplyFilter>
 
 			<!-- hitsPerPage: defines the maximum number of hits that are displayed 
 				per page -->
@@ -1031,8 +1034,7 @@
 
 			<!-- luceneField: defines index fields that are available for browsing. 
 				Only untokenized fields should be used. -->
-			<luceneField sortField="SORT_AUTHOR">MD_AUTHOR_UNTOKENIZED
-			</luceneField>
+			<luceneField sortField="SORT_AUTHOR" alwaysApplyFilter="false">MD_AUTHOR_UNTOKENIZED</luceneField>
 			<luceneField>MD_TITLE_UNTOKENIZED</luceneField>
 			<!-- <luceneField sortField="SORT_TITLE" recordsAndAnchorsOnly="true">MD_TITLE_UNTOKENIZED</luceneField> -->
 			<!-- <luceneField>MD_SHELFMARK_UNTOKENIZED</luceneField> -->

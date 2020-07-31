@@ -43,7 +43,6 @@ import io.goobi.viewer.model.security.authentication.IAuthenticationProvider;
 import io.goobi.viewer.model.security.authentication.OpenIdProvider;
 import io.goobi.viewer.model.viewer.PageType;
 import io.goobi.viewer.model.viewer.StringPair;
-import net.sf.ehcache.config.ConfigurationHelper;
 
 public class ConfigurationTest extends AbstractTest {
 

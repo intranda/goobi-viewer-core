@@ -67,7 +67,6 @@ import io.goobi.viewer.controller.SolrConstants.DocType;
 import io.goobi.viewer.controller.SolrSearchIndex;
 import io.goobi.viewer.controller.StringTools;
 import io.goobi.viewer.controller.language.LocaleComparator;
-import io.goobi.viewer.exceptions.AccessDeniedException;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
@@ -1373,6 +1372,47 @@ public final class SearchHelper {
     }
 
     /**
+     * 
+     * @param bmfc
+     * @param startsWith
+     * @param filterQuery
+     * @return
+     * @throws PresentationException
+     * @throws IndexUnreachableException
+     */
+    public static int getFilteredTermsCount(BrowsingMenuFieldConfig bmfc, String startsWith, String filterQuery)
+            throws PresentationException, IndexUnreachableException {
+        if (bmfc == null) {
+            throw new IllegalArgumentException("bmfc may not be null");
+        }
+
+        logger.trace("getFilteredTermsCount: {}", bmfc.getField());
+        List<StringPair> sortFields =
+                StringUtils.isEmpty(bmfc.getSortField()) ? null : Collections.singletonList(new StringPair(bmfc.getSortField(), "asc"));
+        QueryResponse resp = getFilteredTermsFromIndex(bmfc, startsWith, filterQuery, sortFields, 0, 0);
+        // logger.trace("getFilteredTermsCount hits: {}", resp.getResults().getNumFound());
+
+        if (bmfc.getField() == null) {
+            return 0;
+        }
+
+        int ret = 0;
+        String facetField = SearchHelper.facetifyField(bmfc.getField());
+        for (Count count : resp.getFacetField(facetField).getValues()) {
+            if (count.getCount() == 0) {
+                continue;
+            }
+            if (StringUtils.isNotEmpty(startsWith) && !StringUtils.startsWithIgnoreCase(count.getName(), startsWith.toLowerCase())) {
+                continue;
+            }
+            ret++;
+
+        }
+        logger.debug("getFilteredTermsCount result: {}", resp.getResults().getNumFound());
+        return ret;
+    }
+
+    /**
      * Returns a list of index terms for the given field name. This method uses the slower doc search instead of term search, but can be filtered with
      * a query.
      *
@@ -1386,67 +1426,28 @@ public final class SearchHelper {
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @should be thread safe when counting terms
      */
-    public static List<BrowseTerm> getFilteredTerms(BrowsingMenuFieldConfig bmfc, String startsWith, String filterQuery,
+    public static List<BrowseTerm> getFilteredTerms(BrowsingMenuFieldConfig bmfc, String startsWith, String filterQuery, int start, int rows,
             Comparator<BrowseTerm> comparator, boolean aggregateHits) throws PresentationException, IndexUnreachableException {
+        if (bmfc == null) {
+            throw new IllegalArgumentException("bmfc may not be null");
+        }
+
+        logger.trace("getFilteredTerms: {}", bmfc.getField());
         List<BrowseTerm> ret = new ArrayList<>();
         ConcurrentMap<String, BrowseTerm> terms = new ConcurrentHashMap<>();
 
-        List<String> fields = new ArrayList<>(3);
-        fields.add(SolrConstants.PI_TOPSTRUCT);
-        fields.add(bmfc.getField());
-
-        StringBuilder sbQuery = new StringBuilder();
-        sbQuery.append('+');
-        // Only search via the sorting field if not doing a wildcard search
-        if (StringUtils.isNotEmpty(bmfc.getSortField())) {
-            sbQuery.append(bmfc.getSortField());
-            fields.add(bmfc.getSortField());
-        } else {
-            sbQuery.append(bmfc.getField());
-        }
-        sbQuery.append(":[* TO *]");
-
-        List<String> filterQueries = new ArrayList<>();
-        if (StringUtils.isNotEmpty(filterQuery)) {
-            filterQueries.add(filterQuery);
-        }
-
-        // Add configured filter queries
-        if (!bmfc.getFilterQueries().isEmpty()) {
-            filterQueries.addAll(bmfc.getFilterQueries());
-        }
-
-        logger.debug("getFilteredTerms startsWith: {}", startsWith);
-        String query = buildFinalQuery(sbQuery.toString(), false);
-        logger.debug("getFilteredTerms query: {}", query);
-        if (logger.isTraceEnabled()) {
-            for (String fq : filterQueries) {
-                logger.trace("getFilteredTerms filter query: {}", fq);
-            }
-        }
-
-        int rows = SolrSearchIndex.MAX_HITS;
-        String facetField = SearchHelper.facetifyField(bmfc.getField());
-        List<String> facetFields = new ArrayList<>();
         // If only browsing top level documents, use faceting for faster performance
         if (bmfc.isRecordsAndAnchorsOnly()) {
             rows = 0;
-            facetFields.add(facetField);
         }
 
         try {
-            Map<String, String> params = new HashMap<>();
-            if (DataManager.getInstance().getConfiguration().isGroupDuplicateHits()) {
-                params.put(GroupParams.GROUP, "true");
-                params.put(GroupParams.GROUP_MAIN, "true");
-                params.put(GroupParams.GROUP_FIELD, SolrConstants.GROUPFIELD);
-            }
             List<StringPair> sortFields =
                     StringUtils.isEmpty(bmfc.getSortField()) ? null : Collections.singletonList(new StringPair(bmfc.getSortField(), "asc"));
-            QueryResponse resp =
-                    DataManager.getInstance().getSearchIndex().search(query, 0, rows, sortFields, facetFields, fields, filterQueries, params);
-            logger.debug("getFilteredTerms hits: {}", resp.getResults().getNumFound());
+            QueryResponse resp = getFilteredTermsFromIndex(bmfc, startsWith, filterQuery, sortFields, start, rows);
+            // logger.debug("getFilteredTerms hits: {}", resp.getResults().getNumFound());
             if ("0-9".equals(startsWith)) {
+                // TODO Is this still necessary?
                 // Numerical filtering
                 Pattern p = Pattern.compile("[\\d]");
                 // Use hits (if sorting field is provided)
@@ -1482,16 +1483,11 @@ public final class SearchHelper {
                     }
                 }
             } else {
-                if (bmfc.isRecordsAndAnchorsOnly() && resp.getFacetField(facetField) != null) {
+                String facetField = SearchHelper.facetifyField(bmfc.getField());
+                if (resp.getResults().isEmpty() && resp.getFacetField(facetField) != null) {
                     // If only browsing records and anchors, use faceting
                     logger.trace("using faceting: {}", facetField);
                     for (Count count : resp.getFacetField(facetField).getValues()) {
-                        if (count.getCount() == 0) {
-                            continue;
-                        }
-                        if (StringUtils.isNotEmpty(startsWith) && !StringUtils.startsWithIgnoreCase(count.getName(), startsWith.toLowerCase())) {
-                            continue;
-                        }
                         terms.put(count.getName(),
                                 new BrowseTerm(count.getName(), null,
                                         bmfc.isTranslate() ? ViewerResourceBundle.getTranslations(count.getName()) : null)
@@ -1523,6 +1519,77 @@ public final class SearchHelper {
 
         logger.debug("getFilteredTerms end: {} terms found.", ret.size());
         return ret;
+    }
+
+    /**
+     * 
+     * @param bmfc
+     * @param startsWith
+     * @param filterQuery
+     * @param sortFields
+     * @param start
+     * @param rows
+     * @return
+     * @throws PresentationException
+     * @throws IndexUnreachableException
+     * @should contain facets for the main field
+     */
+    static QueryResponse getFilteredTermsFromIndex(BrowsingMenuFieldConfig bmfc, String startsWith, String filterQuery, List<StringPair> sortFields,
+            int start, int rows)
+            throws PresentationException, IndexUnreachableException {
+        List<String> fields = new ArrayList<>(3);
+        fields.add(SolrConstants.PI_TOPSTRUCT);
+        fields.add(bmfc.getField());
+
+        StringBuilder sbQuery = new StringBuilder();
+        sbQuery.append('+');
+        // Only search via the sorting field if not doing a wildcard search
+        if (StringUtils.isNotEmpty(bmfc.getSortField())) {
+            sbQuery.append(bmfc.getSortField());
+            fields.add(bmfc.getSortField());
+        } else {
+            sbQuery.append(bmfc.getField());
+        }
+        sbQuery.append(":[* TO *] ");
+        sbQuery.append(ALL_RECORDS_QUERY);
+
+        List<String> filterQueries = new ArrayList<>();
+        if (StringUtils.isNotEmpty(filterQuery)) {
+            filterQueries.add(filterQuery);
+        }
+
+        // Add configured filter queries
+        if (!bmfc.getFilterQueries().isEmpty()) {
+            filterQueries.addAll(bmfc.getFilterQueries());
+        }
+
+        // logger.trace("getFilteredTermsFromIndex startsWith: {}", startsWith);
+        String query = buildFinalQuery(sbQuery.toString(), false);
+        // logger.trace("getFilteredTermsFromIndex query: {}", query);
+        //        if (logger.isTraceEnabled()) {
+        //            for (String fq : filterQueries) {
+        //                logger.trace("getFilteredTermsFromIndex filter query: {}", fq);
+        //            }
+        //        }
+
+        String facetField = SearchHelper.facetifyField(bmfc.getField());
+        List<String> facetFields = new ArrayList<>();
+        facetFields.add(facetField);
+
+        Map<String, String> params = new HashMap<>();
+        if (DataManager.getInstance().getConfiguration().isGroupDuplicateHits()) {
+            params.put(GroupParams.GROUP, "true");
+            params.put(GroupParams.GROUP_MAIN, "true");
+            params.put(GroupParams.GROUP_FIELD, SolrConstants.GROUPFIELD);
+        }
+
+        // Facets
+        if (rows == 0) {
+            return DataManager.getInstance().getSearchIndex().searchFacetsAndStatistics(query, facetFields, 1, startsWith, false);
+        }
+
+        // Docs
+        return DataManager.getInstance().getSearchIndex().search(query, start, rows, sortFields, facetFields, fields, filterQueries, params);
     }
 
     /**
