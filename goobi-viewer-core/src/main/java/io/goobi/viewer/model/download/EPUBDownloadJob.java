@@ -20,6 +20,7 @@ import java.util.Date;
 
 import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
+import javax.ws.rs.core.Response;
 
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.ResponseHandler;
@@ -231,35 +232,31 @@ public class EPUBDownloadJob extends DownloadJob {
         if (!targetFolder.isDirectory() && !targetFolder.mkdir()) {
             throw new DownloadException("Cannot create download folder: " + targetFolder);
         }
-        String title = pi;
 
-        int priority = 10;
-        HttpClient client = HttpClients.createDefault();
         String taskManagerUrl = DataManager.getInstance().getConfiguration().getTaskManagerServiceUrl();
-        File metsFile = new File(DataFileTools.getSourceFilePath(pi + ".xml", SolrConstants._METS));
         String mediaRepository = DataFileTools.getDataRepositoryPathForRecord(pi);
-        HttpPost post = TaskClient.createPost(taskManagerUrl, metsFile.getAbsolutePath(), targetFolder.getAbsolutePath(),
-                CmsBean.getCurrentLocale().getLanguage(), "", priority, "", title, mediaRepository, "VIEWEREPUB", downloadIdentifier,
-                "noServerTypeInTaskClient", "", "", "", CmsBean.getCurrentLocale().getLanguage(), false);
+        
+        TaskManagerEPUBRequest requestObject = new TaskManagerEPUBRequest();
+        requestObject.pi = pi;
+        requestObject.goobiId = downloadIdentifier;
+        requestObject.sourceDir = mediaRepository;
+        requestObject.language = CmsBean.getCurrentLocale().getLanguage();
+        
         try {
-            JSONObject response = TaskClient.getJsonResponse(client, post);
-            logger.trace(response.toString());
-            if (response.has("STATUS") && response.get("STATUS").equals("ERROR")) {
-                if (response.get("ERRORMESSAGE").equals("Job already in DB, not adding it!")) {
+            Response response = postJobRequest(taskManagerUrl, requestObject);
+            String entity = (String)response.readEntity(String.class);
+            JSONObject entityJson = new JSONObject(entity);
+            if (entityJson.has("STATUS") && entityJson.get("STATUS").equals("ERROR")) {
+                if (entityJson.get("ERRORMESSAGE").equals("Job already in DB, not adding it!")) {
                     logger.debug("Job is already being processed");
                 } else {
-                    throw new DownloadException(
-                            "Failed to start pdf creation for PI=" + pi + ": TaskManager returned error " + response.get("ERRORMESSAGE"));
-                    //                    logger.error("Failed to start pdf creation for PI={} and LOGID={}: TaskManager returned error", pi, logId);
-                    //                    return false;
+                    throw new DownloadException("Failed to start epub creation for PI=" + pi + ": TaskManager returned error "
+                            + entityJson.get("ERRORMESSAGE"));
                 }
             }
         } catch (Exception e) {
             // Had to catch generic exception here because a ParseException triggered by Tomcat error HTML getting parsed as JSON cannot be caught
             throw new DownloadException("Failed to start pdf creation for PI=" + pi + ": " + e.getMessage());
-            //            logger.error("Failed to start epub creation for PI={}: {}", pi, e.getMessage());
-            //            logger.error(e.getMessage(), e);
-            //            return false;
         }
     }
 }
