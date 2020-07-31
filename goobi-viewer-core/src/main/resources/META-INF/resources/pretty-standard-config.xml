@@ -204,7 +204,7 @@
         <action onPostback="false">#{browseBean.setFilterQuery(null)}</action>
         <action onPostback="false">#{searchBean.setActiveSearchType(0)}</action>
         <action onPostback="false">#{searchBean.facets.resetCurrentFacetString}</action>
-		<action onPostback="false">#{browseBean.searchTerms}</action>
+		<action onPostback="false">#{browseBean.searchTermsAction}</action>
 	</url-mapping>
 	<url-mapping id="searchTerm3">
 		<pattern value="/term/#{field:browseBean.browsingMenuField}/#{filter:browseBean.currentStringFilter}/#{page:browseBean.currentPage}/" />
@@ -213,13 +213,13 @@
 		<action onPostback="false">#{browseBean.setFilterQuery(null)}</action>
 		<action onPostback="false">#{searchBean.setActiveSearchType(0)}</action>
 		<action onPostback="false">#{searchBean.facets.resetCurrentFacetString}</action>>
-		<action onPostback="false">#{browseBean.searchTerms}</action>
+		<action onPostback="false">#{browseBean.searchTermsAction}</action>
 	</url-mapping>
     <url-mapping id="searchTerm4">
         <pattern value="/term/#{field:browseBean.browsingMenuField}/#{filterQuery:browseBean.filterQuery}/#{filter:browseBean.currentStringFilter}/#{page:browseBean.currentPage}/" />
         <view-id value="/searchTermsList.xhtml" />
         <action onPostback="false">#{navigationHelper.resetTheme}</action>
-        <action onPostback="false">#{browseBean.searchTerms}</action>
+        <action onPostback="false">#{browseBean.searchTermsAction}</action>
         <action onPostback="false">#{searchBean.setActiveSearchType(0)}</action>
         <action onPostback="false">#{searchBean.facets.resetCurrentFacetString}</action>
     </url-mapping>
