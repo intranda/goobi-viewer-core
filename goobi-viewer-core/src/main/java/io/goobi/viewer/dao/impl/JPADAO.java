@@ -96,6 +96,7 @@ public class JPADAO implements IDAO {
     private static final Logger logger = LoggerFactory.getLogger(JPADAO.class);
     private static final String DEFAULT_PERSISTENCE_UNIT_NAME = "intranda_viewer_tomcat";
     static final String MULTIKEY_SEPARATOR = "_";
+    static final String KEY_FIELD_SEPARATOR = "-";
 
     private final EntityManagerFactory factory;
     private EntityManager em;
@@ -2322,7 +2323,10 @@ public class JPADAO implements IDAO {
 
                 Map<String, String> params = new HashMap<>();
 
-                String filterString = createFilterQuery(null, filters, params);
+                String filterString = createFilterQuery2(null, filters, params);
+//                String filterString = " JOIN  a.categories c JOIN a.languageVersions d WHERE c.name LIKE :news AND d.title LIKE :title";
+//                params.put("news", "%news%");
+//                params.put("title", "%Abenteuer%");
                 String rightsFilterString;
                 try {
                     rightsFilterString = createCMSPageFilter(params, "a", allowedTemplates, allowedSubthemes, allowedCategories);
@@ -2345,11 +2349,9 @@ public class JPADAO implements IDAO {
                 logger.trace("CMS page query: {}", sbQuery.toString());
                 Query q = em.createQuery(sbQuery.toString());
                 params.entrySet().forEach(entry -> q.setParameter(entry.getKey(), entry.getValue()));
-                //            q.setParameter("lang", BeanUtils.getLocale().getLanguage());
                 q.setFirstResult(first);
                 q.setMaxResults(pageSize);
                 q.setFlushMode(FlushModeType.COMMIT);
-                // q.setHint("javax.persistence.cache.storeMode", "REFRESH");
 
                 List<CMSPage> list = q.getResultList();
                 return list;
@@ -2359,6 +2361,59 @@ public class JPADAO implements IDAO {
             }
         }
     }
+    
+    static String createFilterQuery2(String staticFilterQuery, Map<String, String> filters, Map<String, String> params) {
+
+        StringBuilder q = new StringBuilder(" ");
+        List<String> filterKeys = new ArrayList<>();
+        
+        if (StringUtils.isNotEmpty(staticFilterQuery)) {
+            q.append(staticFilterQuery);
+        }
+        if (filters != null && !filters.isEmpty()) {
+            AlphabetIterator abc = new AlphabetIterator();
+            String mainTableKey = abc.next(); // = a
+            
+            //get list of all keys of filter map
+            filterKeys.addAll(filters.keySet());
+            Collections.sort(filterKeys);
+            
+            for (String key : filterKeys) {
+                if(StringUtils.isBlank(filters.get(key))) {
+                    continue;
+                }
+                String keyValueParam = key.replaceAll("[" + MULTIKEY_SEPARATOR + KEY_FIELD_SEPARATOR + "]", "");
+                params.put(keyValueParam, "%" + filters.get(key).toUpperCase() + "%");
+                
+                List<String> joinStatements = new ArrayList<>();
+                List<String> whereStatements = new ArrayList<>();
+                
+                //subkeys = all keys this filter applies to, each of the form [field] or [table]-[field]
+                String[] subKeys = key.split(MULTIKEY_SEPARATOR);
+                for (String subKey : subKeys) {
+                    if(StringUtils.isBlank(subKey)) {
+                        continue;
+                    } else if(subKey.contains(KEY_FIELD_SEPARATOR)) {
+                        String tableKey = abc.next();
+                        String table = subKey.substring(0, subKey.indexOf(KEY_FIELD_SEPARATOR));
+                        String field = subKey.substring(subKey.indexOf(KEY_FIELD_SEPARATOR)+1);
+                        String join = " JOIN " + mainTableKey + "." + table + " " + tableKey; 
+                        subKey = tableKey + "." + field;
+                        joinStatements.add(join); // JOIN mainTable.joinTable b
+                    }
+                    String where = "UPPER(" + subKey + ") LIKE :" + keyValueParam;
+                    whereStatements.add(where); // joinTable.field LIKE :param | field LIKE :param
+                }
+                String filterQuery = joinStatements.stream().collect(Collectors.joining(" "));
+                if(!whereStatements.isEmpty()) {
+                    filterQuery += " WHERE (" + whereStatements.stream().collect(Collectors.joining(" OR ")) + ")";
+                }
+                q.append(filterQuery);
+            }
+        }
+        return q.toString();
+    }
+
 
     /**
      * Builds a query string to filter a query across several tables
@@ -2405,17 +2460,17 @@ public class JPADAO implements IDAO {
                         if (keyPartCount > 0) {
                             where.append(" OR ");
                         }
-                        if ("CMSPageLanguageVersion".equalsIgnoreCase(joinTable) || "CMSSidebarElement".equalsIgnoreCase(joinTable)) {
-                            where.append("UPPER(" + tableKey + ".").append(keyPart).append(") LIKE :").append(key.replaceAll(MULTIKEY_SEPARATOR, ""));
-                        } else if ("categories".equals(joinTable)) {
-                            where.append(tableKey).append(" LIKE :").append(key.replaceAll(MULTIKEY_SEPARATOR, ""));
-
-                        } else {
+//                        if ("CMSPageLanguageVersion".equalsIgnoreCase(joinTable) || "CMSSidebarElement".equalsIgnoreCase(joinTable)) {
+//                            where.append("UPPER(" + tableKey + ".").append(keyPart).append(") LIKE :").append(key.replaceAll(MULTIKEY_SEPARATOR, ""));
+//                        } else if ("categories".equals(joinTable)) {
+//                            where.append(tableKey).append(" LIKE :").append(key.replaceAll(MULTIKEY_SEPARATOR, ""));
+//
+//                        } else {
                             where.append("UPPER(" + tableKey + ".")
                                     .append(keyPart.replace("-", "."))
                                     .append(") LIKE :")
                                     .append(key.replaceAll(MULTIKEY_SEPARATOR, "").replace("-", ""));
-                        }
+//                        }
                         keyPartCount++;
                     }
                     where.append(" ) ");
@@ -3591,9 +3646,9 @@ public class JPADAO implements IDAO {
     public long getCMSPageCount(Map<String, String> filters, List<String> allowedTemplates, List<String> allowedSubthemes,
             List<String> allowedCategories) throws DAOException {
         preQuery();
-        StringBuilder sbQuery = new StringBuilder("SELECT count(a) FROM CMSPage").append(" a");
+        StringBuilder sbQuery = new StringBuilder("SELECT count(DISTINCT a) FROM CMSPage").append(" a");
         Map<String, String> params = new HashMap<>();
-        sbQuery.append(createFilterQuery(null, filters, params));
+        sbQuery.append( createFilterQuery2(null, filters, params));
         try {
             String rightsFilter = createCMSPageFilter(params, "a", allowedTemplates, allowedSubthemes, allowedCategories);
             if (!rightsFilter.isEmpty()) {

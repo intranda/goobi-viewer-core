@@ -42,7 +42,7 @@
                             <!-- TODO add categories and subtheme to this filter, too -->
                             <div class="admin__table-filter">
                                 <viewerComponent:dataTableColumnFilter key="admin__cms_page_search" 
-                                filter="#{cmsBean.lazyModelPages.getFilter('CMSPageLanguageVersion', 'title_menuTitle')}"/>
+                                filter="#{cmsBean.lazyModelPages.getFilter(cmsBean.cmsPagesFilter)}"/>
                             </div>
                         </div>
 

@@ -105,6 +105,11 @@ import io.goobi.viewer.model.viewer.PageType;
 @SessionScoped
 public class CmsBean implements Serializable {
 
+    /**
+     * 
+     */
+    public static final String CMSPAGES_FILTER = "languageVersions-title_languageVersions-menuTitle_categories-name";
+
     private static final long serialVersionUID = -2021732230593473827L;
 
     private static final Logger logger = LoggerFactory.getLogger(CmsBean.class);
@@ -233,8 +238,8 @@ public class CmsBean implements Serializable {
                 }
             });
             lazyModelPages.setEntriesPerPage(DEFAULT_ROWS_PER_PAGE);
-            lazyModelPages.addFilter("CMSPageLanguageVersion", "title_menuTitle");
-            lazyModelPages.addFilter("CMSCategory", "name");
+            lazyModelPages.addFilter(CMSPAGES_FILTER);
+//            lazyModelPages.addFilter("CMSCategory", "name");
         }
         selectedLocale = getDefaultLocale();
     }
@@ -2796,6 +2801,14 @@ public class CmsBean implements Serializable {
         }
 
         return "";
+    }
+    
+    /**
+     * getter for jsf
+     * @return
+     */
+    public String getCmsPagesFilter() {
+        return CMSPAGES_FILTER;
     }
 
 }
