@@ -88,7 +88,7 @@ public class BrowseBean implements Serializable {
     /** Escaped term list for the current result page (browsing menu). Used for URL construction. */
     private List<String> browseTermListEscaped;
     private List<Long> browseTermHitCountList;
-    private Map<String, List<String>> availableStringFilters = new HashMap<>();
+    Map<String, List<String>> availableStringFilters = new HashMap<>();
     /** This is used for filtering term browsing by the starting letter. */
     private String currentStringFilter = "";
     /** Optional filter query */
@@ -345,7 +345,7 @@ public class BrowseBean implements Serializable {
             return searchTerms();
         } catch (RedirectException e) {
             // Redirect to filter URL requested
-            return "searchTermList";
+            return "pretty:searchTerm4";
         }
     }
 
@@ -435,9 +435,9 @@ public class BrowseBean implements Serializable {
             if (StringUtils.isEmpty(currentStringFilter) && currentBmfc.isAlwaysApplyFilter()
                     && availableStringFilters.get(browsingMenuField) != null
                     && !availableStringFilters.get(browsingMenuField).isEmpty()) {
-                currentStringFilter = availableStringFilters.get(browsingMenuField).get(0);
+                currentStringFilter = selectRedirectFilter();
                 logger.trace("Redirecting to filter: {}", currentStringFilter);
-                return "pretty:searchTerm4";
+                throw new RedirectException("");
             }
 
             hitsCount = SearchHelper.getFilteredTermsCount(currentBmfc, currentStringFilter, filterQuery);
@@ -486,6 +486,43 @@ public class BrowseBean implements Serializable {
             }
 
             return "searchTermList";
+        }
+    }
+
+    /**
+     * Selects a filter string for automatic redirecting, prioritizing letters, followed by numbers and finally by the first available filter.
+     * 
+     * @return Selected filter string
+     * @should return first available alphabetical filter if available
+     * @should return numerical filter if available
+     * @should return first filter if no other available
+     */
+    String selectRedirectFilter() {
+        if (availableStringFilters.isEmpty()) {
+            return null;
+        }
+
+        String numericalFilter = null;
+        String alphaFilter = null;
+        for (String filter : availableStringFilters.get(browsingMenuField)) {
+            switch (filter) {
+                case "0-9":
+                    numericalFilter = filter;
+                    break;
+                default:
+                    if (filter.matches(".*[A-Z].*") && alphaFilter == null) {
+                        alphaFilter = filter;
+                    }
+                    break;
+            }
+        }
+
+        if (alphaFilter != null) {
+            return alphaFilter;
+        } else if (numericalFilter != null) {
+            return numericalFilter;
+        } else {
+            return availableStringFilters.get(browsingMenuField).get(0);
         }
     }
 
