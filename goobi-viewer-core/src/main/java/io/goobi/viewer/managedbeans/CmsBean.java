@@ -1611,7 +1611,7 @@ public class CmsBean implements Serializable {
                         try {
                             browse.searchTerms();
                         } catch (RedirectException e) {
-                            return currentPage.getPageUrl() + browse.getStartingCharacter() + "/1/";
+                            return "pretty:cmsBrowse3";
                         }
                     default:
                         break;
