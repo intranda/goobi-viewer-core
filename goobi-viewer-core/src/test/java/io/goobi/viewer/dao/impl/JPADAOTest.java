@@ -2655,7 +2655,7 @@ public class JPADAOTest extends AbstractDatabaseEnabledTest {
         Map<String, String> filters = Collections.singletonMap("b-B_c-C", "bar");
         Map<String, String> params = new HashMap<>();
 
-        String expectedFilterString = " JOIN a.b b JOIN a.c c WHERE UPPER(b.B) LIKE :bBcC OR UPPER(c.C) LIKE :bBcC";
+        String expectedFilterString = "JOIN a.b b JOIN a.c c WHERE UPPER(b.B) LIKE :bBcC OR UPPER(c.C) LIKE :bBcC";
         String filterString = JPADAO.createFilterQuery2("", filters, params);
             
         Assert.assertEquals(expectedFilterString, filterString);
@@ -2667,7 +2667,7 @@ public class JPADAOTest extends AbstractDatabaseEnabledTest {
         Map<String, String> filters = Collections.singletonMap("B_c-C", "bar");
         Map<String, String> params = new HashMap<>();
 
-        String expectedFilterString = " JOIN a.c b WHERE UPPER(B) LIKE :BcC OR UPPER(b.C) LIKE :BcC";
+        String expectedFilterString = "JOIN a.c b WHERE UPPER(B) LIKE :BcC OR UPPER(b.C) LIKE :BcC";
         String filterString = JPADAO.createFilterQuery2("", filters, params);
             
         Assert.assertEquals(expectedFilterString, filterString);
