@@ -63,6 +63,12 @@
 		<jdk.version>1.8</jdk.version>
 		<skipTests>true</skipTests>
 
+        <!-- Sonar -->
+        <sonar.projectKey>intranda_goobi-viewer-core</sonar.projectKey>
+        <sonar.organization>intranda</sonar.organization>
+        <sonar.host.url>https://sonarcloud.io</sonar.host.url>
+        <sonar.exclusions>src/main/resources/**/*</sonar.exclusions>
+
 		<!-- Manifest information -->
 		<maven.build.timestamp.format>yyyy-MM-dd HH:mm</maven.build.timestamp.format>
 		<buildDate>${maven.build.timestamp}</buildDate>
@@ -102,6 +108,8 @@
 		<javax.mail.version>1.6.2</javax.mail.version>
 		<javax.persistence.version>2.2.1</javax.persistence.version>
 		<jaxb-api.version>2.4.0-b180830.0359</jaxb-api.version>
+		<jaxb-impl.version>2.4.0-b180830.0438</jaxb-impl.version>
+        <jaxb-core.version>2.3.0.1</jaxb-core.version>
 		<jdom2.version>2.0.6</jdom2.version>
 		<jersey.version>2.31</jersey.version>
 		<jersey-guava.version>2.26-b03</jersey-guava.version>
@@ -344,7 +352,17 @@
 			<groupId>javax.xml.bind</groupId>
 			<artifactId>jaxb-api</artifactId>
 			<version>${jaxb-api.version}</version>
-		</dependency>
+        </dependency>
+        <dependency>
+            <groupId>com.sun.xml.bind</groupId>
+            <artifactId>jaxb-impl</artifactId>
+            <version>${jaxb-impl.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.sun.xml.bind</groupId>
+            <artifactId>jaxb-core</artifactId>
+            <version>${jaxb-core.version}</version>
+        </dependency>
 		<dependency>
 			<groupId>org.jdom</groupId>
 			<artifactId>jdom2</artifactId>
@@ -650,7 +668,13 @@
 								<ignoredUnusedDeclaredDependency>org.mariadb.jdbc:mariadb-java-client</ignoredUnusedDeclaredDependency>
 
 								<!-- The lib is used with annotations and the byte code analysis does not detect it -->
-								<ignoredUnusedDeclaredDependency>javax.xml.bind:jaxb-api</ignoredUnusedDeclaredDependency>
+                                <ignoredUnusedDeclaredDependency>javax.xml.bind:jaxb-api</ignoredUnusedDeclaredDependency>
+
+                                <!-- This is not part of Java 11 anymore
+                                     If it is missing the following two tests will fail: ViewerSectionPDFResourceTest#testGetPdf_refuseAccess, ViewerRecordPDFResourceTest.testGetPdf#refuseAcces
+									 The error is: Implementation of JAXB-API has not been found on module path or classpath. -->
+                                <ignoredUnusedDeclaredDependency>com.sun.xml.bind:jaxb-impl</ignoredUnusedDeclaredDependency>
+                                <ignoredUnusedDeclaredDependency>com.sun.xml.bind:jaxb-core</ignoredUnusedDeclaredDependency>
 
 								<!-- EclipseLink Java Persistence API for database management -->
                                 <ignoredUnusedDeclaredDependency>org.eclipse.persistence:org.eclipse.persistence.jpa</ignoredUnusedDeclaredDependency>
