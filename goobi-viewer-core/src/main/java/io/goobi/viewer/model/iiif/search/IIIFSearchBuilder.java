@@ -64,7 +64,7 @@ public class IIIFSearchBuilder {
     private static final Logger logger = LoggerFactory.getLogger(IIIFSearchBuilder.class);
 
     private static final List<String> FULLTEXTFIELDLIST =
-            Arrays.asList(new String[] { SolrConstants.FILENAME_ALTO, SolrConstants.FILENAME_FULLTEXT, SolrConstants.ORDER });
+            Arrays.asList(SolrConstants.FILENAME_ALTO, SolrConstants.FILENAME_FULLTEXT, SolrConstants.ORDER);
 
     private final String query;
     private final String pi;
