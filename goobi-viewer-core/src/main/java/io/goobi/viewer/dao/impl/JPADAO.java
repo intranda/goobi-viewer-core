@@ -2370,7 +2370,6 @@ public class JPADAO implements IDAO {
                 q.setFirstResult(first);
                 q.setMaxResults(pageSize);
                 q.setFlushMode(FlushModeType.COMMIT);
-                q.setHint("eclipselink.join-fetch", "a.categories");
 
                 List<CMSPage> list = q.getResultList();
                 return list;
