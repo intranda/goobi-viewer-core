@@ -233,7 +233,14 @@ public class JPADAO implements IDAO {
     /** {@inheritDoc} */
     @Override
     public long getUserCount(Map<String, String> filters) throws DAOException {
-        return getRowCount("User", null, filters);
+        String filterValue = filters.values().stream().findFirst().orElse("");
+        String filterQuery = "";
+        Map<String, String> params = new HashMap<>();
+        if(StringUtils.isNotBlank(filterValue)) {
+            filterQuery = getUsersFilterQuery("value");
+            params.put("value", sanitizeQueryParam(filterValue, true));
+        }
+        return getFilteredRowCount("User", filterQuery, params);
     }
 
     /** {@inheritDoc} */
@@ -246,10 +253,9 @@ public class JPADAO implements IDAO {
         
         String filterValue = filters.values().stream().findFirst().orElse("");
         if(StringUtils.isNotBlank(filterValue)) {
-            String filterQueryNames = "(UPPER(a.firstName) LIKE :value OR UPPER(a.lastName) LIKE :value OR UPPER(a.nickName) LIKE :value OR UPPER(a.email) LIKE :value)";
-            String filterQueryGroup = "EXISTS (SELECT role FROM UserRole role LEFT JOIN role.userGroup group WHERE role.user = a AND UPPER(group.name) LIKE :value)";
-            sbQuery.append(" WHERE " + filterQueryNames + " OR " + filterQueryGroup);
+            String filterQuery = getUsersFilterQuery("value");
             params.put("value", sanitizeQueryParam(filterValue, true));
+            sbQuery.append(filterQuery);
         }
 
         if (StringUtils.isNotEmpty(sortField)) {
@@ -268,6 +274,18 @@ public class JPADAO implements IDAO {
         q.setHint("javax.persistence.cache.storeMode", "REFRESH");
 
         return q.getResultList();
+    }
+
+    /**
+     * @param param
+     * @return
+     */
+    public String getUsersFilterQuery(String param) {
+        String filterQuery;
+        String filterQueryNames = "(UPPER(a.firstName) LIKE :%s OR UPPER(a.lastName) LIKE :%s OR UPPER(a.nickName) LIKE :%s OR UPPER(a.email) LIKE :%s)";
+        String filterQueryGroup = "EXISTS (SELECT role FROM UserRole role LEFT JOIN role.userGroup group WHERE role.user = a AND UPPER(group.name) LIKE :%s)";
+        filterQuery = " WHERE " + filterQueryNames.replace("%s", param) + " OR " + filterQueryGroup.replace("%s", param);
+        return filterQuery;
     }
 
     /**
@@ -3677,6 +3695,23 @@ public class JPADAO implements IDAO {
         return (long) q.getSingleResult();
     }
 
+    /**
+     * Universal method for returning the row count for the given class and filter string.
+     * 
+     * @param className
+     * @param filter    Filter query string
+     * @return
+     * @throws DAOException
+     */
+    private long getFilteredRowCount(String className, String filter, Map<String, String> params) throws DAOException {
+        preQuery();
+        StringBuilder sbQuery = new StringBuilder("SELECT count(DISTINCT a) FROM ").append(className).append(" a").append(" ").append(filter);
+        Query q = em.createQuery(sbQuery.toString());
+        params.entrySet().forEach(entry -> q.setParameter(entry.getKey(), entry.getValue()));
+
+        return (long) q.getSingleResult();
+    }
+    
     /**
      * Universal method for returning the row count for the given class and filters.
      * 
