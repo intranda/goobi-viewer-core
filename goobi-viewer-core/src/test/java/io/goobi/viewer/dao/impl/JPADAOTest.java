@@ -1344,7 +1344,6 @@ public class JPADAOTest extends AbstractDatabaseEnabledTest {
     public void getUsers_shouldFilterResultsCorrectly() throws Exception {
         Map<String, String> filterMap = new HashMap<>();
         filterMap.put("email", "1@users.org");
-        filterMap.put("comments", "comments");
         List<User> ret = DataManager.getInstance().getDao().getUsers(0, 2, null, true, filterMap);
         Assert.assertEquals(1, ret.size());
         Assert.assertEquals("1@users.org", ret.get(0).getEmail());
@@ -1987,14 +1986,16 @@ public class JPADAOTest extends AbstractDatabaseEnabledTest {
     }
 
     /**
+     * Should return 2 results: user1 by its name and user 2 by its user group
+     * 
      * @see JPADAO#getUserCount(Map)
      * @verifies filter correctly
      */
     @Test
     public void getUserCount_shouldFilterCorrectly() throws Exception {
         Map<String, String> filters = new HashMap<>();
-        filters.put("firstName", "1");
-        Assert.assertEquals(1L, DataManager.getInstance().getDao().getUserCount(filters));
+        filters.put("filter", "1");
+        Assert.assertEquals(2L, DataManager.getInstance().getDao().getUserCount(filters));
     }
 
     /**
