@@ -233,12 +233,14 @@ public class JPADAO implements IDAO {
     /** {@inheritDoc} */
     @Override
     public long getUserCount(Map<String, String> filters) throws DAOException {
-        String filterValue = filters.values().stream().findFirst().orElse("");
         String filterQuery = "";
         Map<String, String> params = new HashMap<>();
-        if(StringUtils.isNotBlank(filterValue)) {
-            filterQuery = getUsersFilterQuery("value");
-            params.put("value", sanitizeQueryParam(filterValue, true));
+        if(filters != null) {            
+            String filterValue = filters.values().stream().findFirst().orElse("");
+            if(StringUtils.isNotBlank(filterValue)) {
+                filterQuery = getUsersFilterQuery("value");
+                params.put("value", sanitizeQueryParam(filterValue, true));
+            }
         }
         return getFilteredRowCount("User", filterQuery, params);
     }
@@ -251,11 +253,13 @@ public class JPADAO implements IDAO {
         StringBuilder sbQuery = new StringBuilder("SELECT a FROM User a");
         Map<String, String> params = new HashMap<>();
         
-        String filterValue = filters.values().stream().findFirst().orElse("");
-        if(StringUtils.isNotBlank(filterValue)) {
-            String filterQuery = getUsersFilterQuery("value");
-            params.put("value", sanitizeQueryParam(filterValue, true));
-            sbQuery.append(filterQuery);
+        if(filters != null) {
+            String filterValue = filters.values().stream().findFirst().orElse("");
+            if(StringUtils.isNotBlank(filterValue)) {
+                String filterQuery = getUsersFilterQuery("value");
+                params.put("value", sanitizeQueryParam(filterValue, true));
+                sbQuery.append(filterQuery);
+            }
         }
 
         if (StringUtils.isNotEmpty(sortField)) {
@@ -2418,7 +2422,7 @@ public class JPADAO implements IDAO {
                         if(!tableKeys.containsKey(table)) {
                             tableKey = abc.next();
                             tableKeys.put(table, tableKey);
-                            String join = " LEFT JOIN " + mainTableKey + "." + table + " " + tableKey; 
+                            String join = "LEFT JOIN " + mainTableKey + "." + table + " " + tableKey; 
                             joinStatements.add(join); // JOIN mainTable.joinTable b
                         } else {
                             tableKey = tableKeys.get(table);

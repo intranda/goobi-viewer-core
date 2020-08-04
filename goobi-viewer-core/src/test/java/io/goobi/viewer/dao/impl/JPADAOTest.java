@@ -2650,24 +2650,24 @@ public class JPADAOTest extends AbstractDatabaseEnabledTest {
                 JPADAO.createFilterQuery("STATIC:query", filters, params));
     }
     
-//    @Test
+    @Test
     public void createFilterQuery_twoJoinedTables() throws Exception {
         Map<String, String> filters = Collections.singletonMap("b-B_c-C", "bar");
         Map<String, String> params = new HashMap<>();
 
-        String expectedFilterString = "JOIN a.b b JOIN a.c c WHERE UPPER(b.B) LIKE :bBcC OR UPPER(c.C) LIKE :bBcC";
+        String expectedFilterString = " LEFT JOIN a.b b LEFT JOIN a.c c WHERE (UPPER(b.B) LIKE :bBcC OR UPPER(c.C) LIKE :bBcC)";
         String filterString = JPADAO.createFilterQuery2("", filters, params);
             
         Assert.assertEquals(expectedFilterString, filterString);
         Assert.assertTrue(params.get("bBcC").equals("%BAR%"));
     }
     
-//    @Test
+    @Test
     public void createFilterQuery_joinedTableAndField() throws Exception {
         Map<String, String> filters = Collections.singletonMap("B_c-C", "bar");
         Map<String, String> params = new HashMap<>();
 
-        String expectedFilterString = "JOIN a.c b WHERE UPPER(B) LIKE :BcC OR UPPER(b.C) LIKE :BcC";
+        String expectedFilterString = " LEFT JOIN a.c b WHERE (UPPER(a.B) LIKE :BcC OR UPPER(b.C) LIKE :BcC)";
         String filterString = JPADAO.createFilterQuery2("", filters, params);
             
         Assert.assertEquals(expectedFilterString, filterString);
