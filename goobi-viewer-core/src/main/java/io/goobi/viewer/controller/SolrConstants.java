@@ -103,6 +103,8 @@ public class SolrConstants {
 
     /** Constant <code>ACCESSCONDITION="ACCESSCONDITION"</code> */
     public static final String ACCESSCONDITION = "ACCESSCONDITION";
+    /** Constant <code>ACCESSCONDITION_PDFPERCENTAGEQUOTA="ACCESSCONDITION_PDFPERCENTAGEQUOTA"</code> */
+    public static final String ACCESSCONDITION_PDFPERCENTAGEQUOTA = "ACCESSCONDITION_PDFPERCENTAGEQUOTA";
     /** Constant <code>BOOKMARKS="BOOKMARKS"</code> */
     public static final String BOOKMARKS = "BOOKMARKS"; // not an index field, just a constant
     /** Constant <code>CMS_TEXT_ALL="CMS_TEXT_ALL"</code> */

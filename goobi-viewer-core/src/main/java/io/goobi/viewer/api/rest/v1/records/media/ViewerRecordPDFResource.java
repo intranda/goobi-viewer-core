@@ -15,7 +15,6 @@
  */
 package io.goobi.viewer.api.rest.v1.records.media;
 
-
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.GET;
@@ -27,6 +26,10 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.StreamingOutput;
 
+import org.apache.commons.io.FilenameUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import de.unigoettingen.sub.commons.contentlib.exceptions.ContentLibException;
 import de.unigoettingen.sub.commons.contentlib.servlet.model.PdfInformation;
 import de.unigoettingen.sub.commons.contentlib.servlet.rest.ContentServerBinding;
@@ -35,6 +38,12 @@ import de.unigoettingen.sub.commons.contentlib.servlet.rest.ContentServerPdfInfo
 import de.unigoettingen.sub.commons.contentlib.servlet.rest.MetsPdfResource;
 import io.goobi.viewer.api.rest.AbstractApiUrlManager;
 import io.goobi.viewer.api.rest.v1.ApiUrls;
+import io.goobi.viewer.exceptions.DAOException;
+import io.goobi.viewer.exceptions.IndexUnreachableException;
+import io.goobi.viewer.exceptions.PresentationException;
+import io.goobi.viewer.exceptions.RecordNotFoundException;
+import io.goobi.viewer.model.security.AccessConditionUtils;
+import io.goobi.viewer.model.security.IPrivilegeHolder;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 
@@ -45,33 +54,60 @@ import io.swagger.v3.oas.annotations.Parameter;
 @Path(ApiUrls.RECORDS_RECORD)
 @ContentServerBinding
 public class ViewerRecordPDFResource extends MetsPdfResource {
-    
+
+    private static final Logger logger = LoggerFactory.getLogger(ViewerRecordPDFResource.class);
+
     private String filename;
 
     public ViewerRecordPDFResource(
             @Context ContainerRequestContext context, @Context HttpServletRequest request, @Context HttpServletResponse response,
             @Context AbstractApiUrlManager urls,
             @Parameter(description = "Persistent identifier of the record") @PathParam("pi") String pi) throws ContentLibException {
-       super(context, request, response, "pdf", pi + ".xml");
-       this.filename = pi + ".pdf";
-       request.setAttribute("pi", pi);
+        super(context, request, response, "pdf", pi + ".xml");
+        this.filename = pi + ".pdf";
+        request.setAttribute("pi", pi);
     }
-    
+
+    @Override
     @GET
     @Path(ApiUrls.RECORDS_PDF)
     @Produces("application/pdf")
     @ContentServerPdfBinding
-    @Operation(tags = { "records"}, summary = "Get PDF for entire record")
+    @Operation(tags = { "records" }, summary = "Get PDF for entire record")
     public StreamingOutput getPdf() throws ContentLibException {
+        logger.trace("getPdf: {}", filename);
+        String pi = FilenameUtils.getBaseName(filename);
+        try {
+            // Access condition check
+            if (!AccessConditionUtils.checkAccessPermissionByIdentifierAndLogId(pi, null,
+                    IPrivilegeHolder.PRIV_DOWNLOAD_PDF, request)) {
+                throw new ContentLibException("Access denied for: " + pi);
+            }
+            // Reject if PDF quota set for this record
+            int quota = AccessConditionUtils.getPdfDownloadQuotaForRecord(pi);
+            if (quota < 100) {
+                throw new ContentLibException("Insufficient download quota for record '" + pi + "': " + quota);
+            }
+        } catch (IndexUnreachableException e) {
+            logger.error(e.getMessage(), e);
+        } catch (DAOException e) {
+            logger.error(e.getMessage(), e);
+        } catch (PresentationException e) {
+            logger.error(e.getMessage(), e);
+        } catch (RecordNotFoundException e) {
+            throw new ContentLibException("Access denied for: " + pi);
+        }
+
         response.addHeader("Content-Disposition", "attachment; filename=\"" + filename + "\"");
         return super.getPdf();
     }
-    
+
+    @Override
     @GET
     @Path(ApiUrls.RECORDS_PDF_INFO)
     @Produces({ MediaType.APPLICATION_JSON })
     @ContentServerPdfInfoBinding
-    @Operation(tags = { "records"}, summary = "Get information about PDF for entire record")
+    @Operation(tags = { "records" }, summary = "Get information about PDF for entire record")
     public PdfInformation getInfoAsJson() throws ContentLibException {
         return super.getInfoAsJson();
     }

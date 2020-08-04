@@ -702,6 +702,15 @@ public interface IDAO {
     public LicenseType getLicenseType(String name) throws DAOException;
 
     /**
+     * Returns all license types that match the given name list.
+     * 
+     * @param names
+     * @return a {@link io.goobi.viewer.model.security.LicenseType} object.
+     * @throws DAOException in case of errors
+     */
+    public List<LicenseType> getLicenseTypes(List<String> names) throws DAOException;
+
+    /**
      * <p>
      * addLicenseType.
      * </p>
@@ -756,7 +765,7 @@ public interface IDAO {
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
     public License getLicense(Long id) throws DAOException;
-    
+
     /**
      * 
      * @param licenseType

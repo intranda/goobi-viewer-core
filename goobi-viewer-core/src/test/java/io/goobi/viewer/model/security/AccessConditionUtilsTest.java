@@ -30,6 +30,7 @@ import io.goobi.viewer.AbstractDatabaseAndSolrEnabledTest;
 import io.goobi.viewer.controller.Configuration;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.SolrConstants;
+import io.goobi.viewer.exceptions.RecordNotFoundException;
 import io.goobi.viewer.model.search.SearchHelper;
 import io.goobi.viewer.model.security.user.User;
 
@@ -342,5 +343,32 @@ public class AccessConditionUtilsTest extends AbstractDatabaseAndSolrEnabledTest
             Assert.assertEquals("+" + SolrConstants.PI_TOPSTRUCT + ":PPN123456789 +" + SolrConstants.FILENAME + ":00000001\\ \\(1\\).*", result[0]);
             Assert.assertEquals(SolrConstants.FILENAME, result[1]);
         }
+    }
+
+    /**
+     * @see AccessConditionUtils#getPdfDownloadQuotaForRecord(String)
+     * @verifies throw RecordNotFoundException if record not found
+     */
+    @Test (expected = RecordNotFoundException.class)
+    public void getPdfDownloadQuotaForRecord_shouldThrowRecordNotFoundExceptionIfRecordNotFound() throws Exception {
+        AccessConditionUtils.getPdfDownloadQuotaForRecord("notfound");
+    }
+
+    /**
+     * @see AccessConditionUtils#getPdfDownloadQuotaForRecord(String)
+     * @verifies return 100 if record has no quota value
+     */
+    @Test
+    public void getPdfDownloadQuotaForRecord_shouldReturn100IfRecordHasNoQuotaValue() throws Exception {
+        Assert.assertEquals(100, AccessConditionUtils.getPdfDownloadQuotaForRecord("51419376X"));
+    }
+
+    /**
+     * @see AccessConditionUtils#getPdfDownloadQuotaForRecord(String)
+     * @verifies return 100 if record open access
+     */
+    @Test
+    public void getPdfDownloadQuotaForRecord_shouldReturn100IfRecordOpenAccess() throws Exception {
+        Assert.assertEquals(100, AccessConditionUtils.getPdfDownloadQuotaForRecord("PPN517154005"));
     }
 }

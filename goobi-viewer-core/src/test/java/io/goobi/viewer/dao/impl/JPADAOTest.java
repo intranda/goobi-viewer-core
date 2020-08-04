@@ -691,7 +691,7 @@ public class JPADAOTest extends AbstractDatabaseEnabledTest {
         Assert.assertNotNull(comment);
         Assert.assertEquals(Long.valueOf(1), comment.getId());
         Assert.assertEquals("PI_1", comment.getPi());
-        Assert.assertEquals(new Integer(1), comment.getPage());
+        Assert.assertEquals(Integer.valueOf(1), comment.getPage());
         Assert.assertNotNull(comment.getOwner());
         Assert.assertEquals(Long.valueOf(1), comment.getOwner().getId());
         Assert.assertEquals("comment 1 text", comment.getText());
@@ -975,6 +975,20 @@ public class JPADAOTest extends AbstractDatabaseEnabledTest {
         Assert.assertEquals("license type 2 (unused)", licenseType.getDescription());
         Assert.assertEquals(true, licenseType.isOpenAccess());
         Assert.assertEquals(1, licenseType.getPrivileges().size());
+    }
+
+    /**
+     * @see JPADAO#getLicenseTypes(List)
+     * @verifies return all matching rows
+     */
+    @Test
+    public void getLicenseTypes_shouldReturnAllMatchingRows() throws Exception {
+        String[] names = new String[] { "license type 1 name", "license type 2 name" };
+        List<LicenseType> result = DataManager.getInstance().getDao().getLicenseTypes(Arrays.asList(names));
+        Assert.assertNotNull(result);
+        Assert.assertEquals(2, result.size());
+        Assert.assertEquals("license type 1 name", result.get(0).getName());
+        Assert.assertEquals("license type 2 name", result.get(1).getName());
     }
 
     @Test
@@ -1439,7 +1453,6 @@ public class JPADAOTest extends AbstractDatabaseEnabledTest {
         Assert.assertEquals(1, ret.size());
         Assert.assertEquals("license type 2 name", ret.get(0).getName());
     }
-    
 
     /**
      * @see JPADAO#getLicenses(LicenseType)
@@ -2649,30 +2662,28 @@ public class JPADAOTest extends AbstractDatabaseEnabledTest {
                 "STATIC:query AND ( ( UPPER(a.a.a) LIKE :aabbccdd OR UPPER(a.b.b) LIKE :aabbccdd OR UPPER(a.c.c) LIKE :aabbccdd OR UPPER(a.d.d) LIKE :aabbccdd ) ",
                 JPADAO.createFilterQuery("STATIC:query", filters, params));
     }
-    
-//    @Test
+
+    //    @Test
     public void createFilterQuery_twoJoinedTables() throws Exception {
         Map<String, String> filters = Collections.singletonMap("b-B_c-C", "bar");
         Map<String, String> params = new HashMap<>();
 
         String expectedFilterString = "JOIN a.b b JOIN a.c c WHERE UPPER(b.B) LIKE :bBcC OR UPPER(c.C) LIKE :bBcC";
         String filterString = JPADAO.createFilterQuery2("", filters, params);
-            
+
         Assert.assertEquals(expectedFilterString, filterString);
         Assert.assertTrue(params.get("bBcC").equals("%BAR%"));
     }
-    
-//    @Test
+
+    //    @Test
     public void createFilterQuery_joinedTableAndField() throws Exception {
         Map<String, String> filters = Collections.singletonMap("B_c-C", "bar");
         Map<String, String> params = new HashMap<>();
 
         String expectedFilterString = "JOIN a.c b WHERE UPPER(B) LIKE :BcC OR UPPER(b.C) LIKE :BcC";
         String filterString = JPADAO.createFilterQuery2("", filters, params);
-            
+
         Assert.assertEquals(expectedFilterString, filterString);
         Assert.assertTrue(params.get("BcC").equals("%BAR%"));
     }
-    
-
 }
