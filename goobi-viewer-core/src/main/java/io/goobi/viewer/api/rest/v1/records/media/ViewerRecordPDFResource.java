@@ -26,7 +26,6 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.StreamingOutput;
 
-import org.apache.commons.io.FilenameUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -38,12 +37,6 @@ import de.unigoettingen.sub.commons.contentlib.servlet.rest.ContentServerPdfInfo
 import de.unigoettingen.sub.commons.contentlib.servlet.rest.MetsPdfResource;
 import io.goobi.viewer.api.rest.AbstractApiUrlManager;
 import io.goobi.viewer.api.rest.v1.ApiUrls;
-import io.goobi.viewer.exceptions.DAOException;
-import io.goobi.viewer.exceptions.IndexUnreachableException;
-import io.goobi.viewer.exceptions.PresentationException;
-import io.goobi.viewer.exceptions.RecordNotFoundException;
-import io.goobi.viewer.model.security.AccessConditionUtils;
-import io.goobi.viewer.model.security.IPrivilegeHolder;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 
@@ -76,28 +69,6 @@ public class ViewerRecordPDFResource extends MetsPdfResource {
     @Operation(tags = { "records" }, summary = "Get PDF for entire record")
     public StreamingOutput getPdf() throws ContentLibException {
         logger.trace("getPdf: {}", filename);
-        String pi = FilenameUtils.getBaseName(filename);
-        try {
-            // Access condition check
-            if (!AccessConditionUtils.checkAccessPermissionByIdentifierAndLogId(pi, null,
-                    IPrivilegeHolder.PRIV_DOWNLOAD_PDF, request)) {
-                throw new ContentLibException("Access denied for: " + pi);
-            }
-            // Reject if PDF quota set for this record
-            int quota = AccessConditionUtils.getPdfDownloadQuotaForRecord(pi);
-            if (quota < 100) {
-                throw new ContentLibException("Insufficient download quota for record '" + pi + "': " + quota);
-            }
-        } catch (IndexUnreachableException e) {
-            logger.error(e.getMessage(), e);
-        } catch (DAOException e) {
-            logger.error(e.getMessage(), e);
-        } catch (PresentationException e) {
-            logger.error(e.getMessage(), e);
-        } catch (RecordNotFoundException e) {
-            throw new ContentLibException("Access denied for: " + pi);
-        }
-
         response.addHeader("Content-Disposition", "attachment; filename=\"" + filename + "\"");
         return super.getPdf();
     }

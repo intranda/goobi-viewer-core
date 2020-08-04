@@ -39,6 +39,8 @@ import javax.ws.rs.core.StreamingOutput;
 
 import org.apache.commons.lang3.StringUtils;
 import org.primefaces.shaded.commons.io.FilenameUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import de.unigoettingen.sub.commons.contentlib.exceptions.ContentLibException;
 import de.unigoettingen.sub.commons.contentlib.exceptions.IllegalRequestException;
@@ -60,6 +62,8 @@ import io.swagger.v3.oas.annotations.Parameter;
 @ContentServerBinding
 @CORSBinding
 public class RecordsFilesImageResource extends ImageResource {
+    
+    private static final Logger logger = LoggerFactory.getLogger(RecordsFilesImageResource.class);
     
     /**
      * @param request
@@ -101,12 +105,14 @@ public class RecordsFilesImageResource extends ImageResource {
     public StreamingOutput getPdf() throws ContentLibException {
         String pi = request.getAttribute("pi").toString();
         String filename = request.getAttribute("filename").toString();
+        logger.trace("getPdf: {}/{}", pi, filename);
         filename = FilenameUtils.getBaseName(filename);
         filename = pi + "_" + filename + ".pdf";
         response.addHeader("Content-Disposition", "attachment; filename=\"" + filename + "\"");
         return super.getPdf("full", "max", "0", pi + "_" + filename + ".pdf");
     }
     
+    @Override
     @GET
     @Produces({ MediaType.APPLICATION_JSON, MEDIA_TYPE_APPLICATION_JSONLD })
     @ContentServerImageInfoBinding

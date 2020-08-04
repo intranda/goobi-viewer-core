@@ -20,7 +20,6 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.container.ContainerRequestContext;
 import javax.ws.rs.container.ContainerRequestFilter;
 import javax.ws.rs.core.Context;
@@ -29,18 +28,21 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.ext.Provider;
 
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import de.unigoettingen.sub.commons.contentlib.exceptions.ServiceNotAllowedException;
 import de.unigoettingen.sub.commons.contentlib.servlet.rest.ContentExceptionMapper.ErrorMessage;
+import de.unigoettingen.sub.commons.contentlib.servlet.rest.ContentServerPdfBinding;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.StringTools;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
+import io.goobi.viewer.exceptions.PresentationException;
+import io.goobi.viewer.exceptions.RecordNotFoundException;
 import io.goobi.viewer.model.security.AccessConditionUtils;
 import io.goobi.viewer.model.security.IPrivilegeHolder;
-import de.unigoettingen.sub.commons.contentlib.servlet.rest.ContentServerPdfBinding;
 
 /**
  * <p>
@@ -76,7 +78,7 @@ public class PdfRequestFilter implements ContainerRequestFilter {
             if (servletRequest.getAttribute("pi") != null) {
                 pi = (String) servletRequest.getAttribute("pi");
                 divId = (String) servletRequest.getAttribute("divId");
-                if(servletRequest.getAttribute("filename") != null) {
+                if (servletRequest.getAttribute("filename") != null) {
                     privName = IPrivilegeHolder.PRIV_DOWNLOAD_PAGE_PDF;
                     imageName = (String) servletRequest.getAttribute("filename");
                 }
@@ -95,6 +97,7 @@ public class PdfRequestFilter implements ContainerRequestFilter {
                 }
             }
             filterForAccessConditions(pi, divId, imageName, privName);
+            filterForDownloadQuota(pi, divId, imageName, servletRequest);
         } catch (ServiceNotAllowedException e) {
             String mediaType = MediaType.TEXT_XML;
             if (request.getUriInfo() != null && request.getUriInfo().getPath().endsWith("json")) {
@@ -102,6 +105,37 @@ public class PdfRequestFilter implements ContainerRequestFilter {
             }
             Response response = Response.status(Status.FORBIDDEN).type(mediaType).entity(new ErrorMessage(Status.FORBIDDEN, e, false)).build();
             request.abortWith(response);
+        }
+    }
+
+    /**
+     * 
+     * @param pi Record identifiers
+     * @param divId Structure element ID
+     * @param contentFileName
+     * @param request Servlet request
+     * @throws ServiceNotAllowedException
+     */
+    void filterForDownloadQuota(String pi, String divId, String contentFileName, HttpServletRequest request)
+            throws ServiceNotAllowedException {
+        try {
+            int quota = AccessConditionUtils.getPdfDownloadQuotaForRecord(pi);
+            if (StringUtils.isEmpty(divId) && StringUtils.isEmpty(contentFileName)) {
+                // Full record PDF
+                if (quota < 100) {
+                    throw new ServiceNotAllowedException("Insufficient download quota for record '" + pi + "': " + quota + "%");
+                }
+            } else if (StringUtils.isNotEmpty(divId) && StringUtils.isEmpty(contentFileName)) {
+                // Chapter PDF
+                // TODO check session storage
+            } else if (StringUtils.isEmpty(divId) && StringUtils.isNotEmpty(contentFileName)) {
+                // Page PDF
+                // TODO check session storage
+            }
+        } catch (PresentationException | IndexUnreachableException | DAOException |
+
+                RecordNotFoundException e) {
+            throw new ServiceNotAllowedException(e.getMessage());
         }
     }
 
@@ -114,7 +148,7 @@ public class PdfRequestFilter implements ContainerRequestFilter {
      * @throws IndexUnreachableException
      */
     private void filterForAccessConditions(String pi, String divId, String contentFileName, String privName) throws ServiceNotAllowedException {
-        logger.trace("filterForAccessConditions: " + servletRequest.getSession().getId() + " " + contentFileName);
+        logger.trace("filterForAccessConditions: {} {}", servletRequest.getSession().getId(), contentFileName);
         contentFileName = StringTools.decodeUrl(contentFileName);
         boolean access = false;
         try {
