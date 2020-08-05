@@ -24,6 +24,8 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
@@ -60,6 +62,8 @@ import io.goobi.viewer.exceptions.HTTPException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.exceptions.ViewerConfigurationException;
+import io.goobi.viewer.model.security.AccessConditionUtils;
+import io.goobi.viewer.model.security.IPrivilegeHolder;
 
 /**
  * <p>
@@ -74,6 +78,10 @@ public class NERTagResource {
 
     @Context
     private ResourceContext resourceContext;
+    @Context
+    private HttpServletRequest servletRequest;
+    @Context
+    private HttpServletResponse servletResponse;
 
     /**
      * <p>
@@ -201,7 +209,7 @@ public class NERTagResource {
         return getNERTags(pi, null, order, order, 1);
     }
 
-    private static DocumentReference getNERTags(String pi, String type, Integer start, Integer end, int rangeSize)
+    private DocumentReference getNERTags(String pi, String type, Integer start, Integer end, int rangeSize)
             throws PresentationException, IndexUnreachableException, ViewerConfigurationException {
         StringBuilder query = new StringBuilder();
         query.append(SolrConstants.PI_TOPSTRUCT).append(':').append(pi);
@@ -417,7 +425,7 @@ public class NERTagResource {
      * @throws IndexUnreachableException if the index cannot be reached
      * @throws ViewerConfigurationException
      */
-    private static DocumentReference getNERTagsByQuery(String query, String typeString, int rangeSize)
+    private DocumentReference getNERTagsByQuery(String query, String typeString, int rangeSize)
             throws PresentationException, IndexUnreachableException, ViewerConfigurationException {
         final List<String> fieldList = Arrays.asList(new String[] { SolrConstants.PI, SolrConstants.PI_TOPSTRUCT, SolrConstants.IDDOC,
                 SolrConstants.IDDOC_TOPSTRUCT, SolrConstants.ORDER, SolrConstants.FILENAME_ALTO });
@@ -444,18 +452,18 @@ public class NERTagResource {
                         continue;
                     }
                     try {
-                        String altoString = DataFileTools.loadAlto(altoFileName);
-                        Integer pageOrder = getPageOrder(solrDoc);
-                        List<TagCount> tags = ALTOTools.getNERTags(altoString, type);
-                        for (TagCount tagCount : tags) {
-                            for (ElementReference reference : tagCount.getReferences()) {
-                                reference.setPage(pageOrder);
+                        if (AccessConditionUtils.checkAccess(servletRequest, "text", topStructPi, altoFileName, false)) {
+                            String altoString = DataFileTools.loadAlto(altoFileName);
+                            Integer pageOrder = getPageOrder(solrDoc);
+                            List<TagCount> tags = ALTOTools.getNERTags(altoString, type);
+                            for (TagCount tagCount : tags) {
+                                for (ElementReference reference : tagCount.getReferences()) {
+                                    reference.setPage(pageOrder);
+                                }
                             }
+                            range.addTags(tags);
                         }
-                        range.addTags(tags);
                     } catch (ContentNotFoundException e) {
-                        logger.error(e.getMessage());
-                    } catch (AccessDeniedException e) {
                         logger.error(e.getMessage());
                     } catch (DAOException e) {
                         logger.error(e.getMessage());

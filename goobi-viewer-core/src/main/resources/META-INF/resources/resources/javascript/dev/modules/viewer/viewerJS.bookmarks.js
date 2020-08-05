@@ -60,11 +60,13 @@ var viewerJS = ( function( viewer ) {
                 this.listsUpdated.subscribe( (list) => {
                     this.updateAddedStatus();
                 })
-                this.renderBookmarksNavigationList();
-                this.renderCounter();
-                this.prepareBookmarksPopup();
                 this.translator = new viewerJS.Translator(_messageKeys, this.config.rest, this.config.language);
-                this.translator.init();
+                this.translator.init()
+                .then(() => {                    
+                    this.prepareBookmarksPopup();
+                    this.renderBookmarksNavigationList();
+                    this.renderCounter();
+                })
             },
             
             updateAddedStatus: function() {

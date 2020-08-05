@@ -38,7 +38,7 @@ import io.goobi.viewer.exceptions.DAOException;
 public class ViewerRecordPDFResourceTest extends AbstractRestApiTest{
     private static final String PI_ACCESS_PAST_MOVING_WALL = "13473260X";
     private static final String PI_ACCESS_RESTRICTED = "557335825";
-    private static final String PI = "PPN782445853";
+    private static final String PI = "02008031921530";
 
     /**
      * @throws java.lang.Exception

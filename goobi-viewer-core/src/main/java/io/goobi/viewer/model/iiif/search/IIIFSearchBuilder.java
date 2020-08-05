@@ -37,11 +37,8 @@ import de.intranda.api.iiif.search.AutoSuggestResult;
 import de.intranda.api.iiif.search.SearchHit;
 import de.intranda.api.iiif.search.SearchResult;
 import de.intranda.api.iiif.search.SearchResultLayer;
-import de.intranda.digiverso.ocr.alto.model.structureclasses.logical.AltoDocument;
 import io.goobi.viewer.api.rest.AbstractApiUrlManager;
 import io.goobi.viewer.api.rest.AbstractApiUrlManager.ApiPath;
-import io.goobi.viewer.api.rest.AbstractApiUrlManager.ApiPathParams;
-import io.goobi.viewer.api.rest.AbstractApiUrlManager.ApiPathQueries;
 import io.goobi.viewer.api.rest.v1.ApiUrls;
 import io.goobi.viewer.controller.DataFileTools;
 import io.goobi.viewer.controller.DataManager;
@@ -67,7 +64,7 @@ public class IIIFSearchBuilder {
     private static final Logger logger = LoggerFactory.getLogger(IIIFSearchBuilder.class);
 
     private static final List<String> FULLTEXTFIELDLIST =
-            Arrays.asList(new String[] { SolrConstants.FILENAME_ALTO, SolrConstants.FILENAME_FULLTEXT, SolrConstants.ORDER });
+            Arrays.asList(SolrConstants.FILENAME_ALTO, SolrConstants.FILENAME_FULLTEXT, SolrConstants.ORDER);
 
     private final String query;
     private final String pi;
@@ -600,8 +597,7 @@ public class IIIFSearchBuilder {
             converter.setPageNo(pageNo);
             try {
                 if (altoFile != null && Files.exists(altoFile)) {
-                    AltoDocument altoDoc = AltoDocument.getDocumentFromFile(altoFile.toFile());
-                    results.add(converter.getAnnotationsFromAlto(altoDoc, queryRegex));
+                    results.add(converter.getAnnotationsFromAlto(altoFile, queryRegex));
                 } else if (fulltextFile != null && Files.exists(fulltextFile)) {
                     String text = new String(Files.readAllBytes(fulltextFile), "utf-8");
                     results.add(converter.getAnnotationsFromFulltext(text, pi, pageNo, queryRegex, results.numHits, firstIndex, numHits));

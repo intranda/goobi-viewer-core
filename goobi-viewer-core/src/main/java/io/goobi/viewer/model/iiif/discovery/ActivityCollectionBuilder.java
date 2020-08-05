@@ -242,7 +242,7 @@ public class ActivityCollectionBuilder {
 
     private int getNumberOfActivities(Date startDate) throws PresentationException, IndexUnreachableException {
         String query = "ISWORK:true";
-        query += " " + SearchHelper.getAllSuffixes(false);
+        query += " " + SearchHelper.getAllSuffixes();
         if (startDate != null) {
             query += " AND (DATEUPDATED:[" + startDate + " TO*] OR DATECREATED:[" + startDate + " TO *])";
         }
@@ -272,7 +272,7 @@ public class ActivityCollectionBuilder {
 
     private List<Long> getActivities(Date startDate) throws PresentationException, IndexUnreachableException {
         String query = "ISWORK:true";
-        query += " " + SearchHelper.getAllSuffixes(false);
+        query += " " + SearchHelper.getAllSuffixes();
         if (startDate != null) {
             query += " AND (DATEUPDATED:[" + startDate + " TO *] OR DATECREATED:[" + startDate + " TO *])";
         }
@@ -294,7 +294,7 @@ public class ActivityCollectionBuilder {
 
     private SolrDocumentList getDocs(Long startDate, Long endDate) throws PresentationException, IndexUnreachableException {
         String query = "ISWORK:true";
-        query += " " + SearchHelper.getAllSuffixes(false);
+        query += " " + SearchHelper.getAllSuffixes();
         if (startDate != null && endDate != null) {
             query = "(" + query + ") AND (DATEUPDATED:[" + startDate + " TO " + endDate + "] OR DATECREATED:[" + startDate + " TO " + endDate + "])";
         }

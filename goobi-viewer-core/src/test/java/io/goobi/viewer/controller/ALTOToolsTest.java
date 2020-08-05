@@ -213,30 +213,9 @@ public class ALTOToolsTest extends AbstractTest {
     public void getFullText_shouldExtractFulltextCorrectly() throws Exception {
         File file = new File("src/test/resources/data/viewer/data/1/alto/00000010.xml");
         Assert.assertTrue(file.isFile());
-        String alto = FileTools.getStringFromFile(file, "utf-8");
-        Assert.assertNotNull(alto);
-        String text = ALTOTools.getFullText(alto, true, null);
+        String text = ALTOTools.getFulltext(file.toPath(), "utf-8");
         Assert.assertNotNull(text);
         Assert.assertTrue(text.length() > 100);
     }
     
-//    @Test
-//    public void testAlto2Txt_testMany() throws IOException {
-//        Path folder = Paths.get("/opt/digiverso/viewer/data/1/alto/PPN782445853");
-//        try(Stream<Path> files = Files.list(folder)) {
-//            files.parallel().forEach(file -> {
-//                try {
-//                    String alto = FileUtils.readFileToString(file.toFile(), "UTF-8");
-//                    String text = ALTOTools.alto2Txt(alto, true, null);
-//                    System.out.println(text);
-//                } catch (IOException e) {
-//                    e.printStackTrace();
-//                } catch (XMLStreamException e) {
-//                    e.printStackTrace();
-//                } catch (JDOMException e) {
-//                    e.printStackTrace();
-//                }
-//            });
-//        }
-//    }
 }

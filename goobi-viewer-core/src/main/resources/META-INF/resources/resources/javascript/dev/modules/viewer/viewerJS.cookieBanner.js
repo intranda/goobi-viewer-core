@@ -52,13 +52,13 @@ var viewerJS = ( function( viewer ) {
             $.extend( true, _defaults, config );
             
             // set global variables
-            _bannerStatus = localStorage.getItem( 'cookieBannerStatus' );
-            _bannerHash = localStorage.getItem( 'cookieBannerHash' );
+            _bannerStatus = sessionStorage.getItem( 'cookieBannerStatus' );
+            _bannerHash = sessionStorage.getItem( 'cookieBannerHash' );
             
             // set last edit hash
             if ( _bannerHash == undefined || _bannerHash == '' ) {
-            	localStorage.setItem( 'cookieBannerHash', _defaults.lastEditedHash );
-            	_bannerHash = localStorage.getItem( 'cookieBannerHash' );
+            	sessionStorage.setItem( 'cookieBannerHash', _defaults.lastEditedHash );
+            	_bannerHash = sessionStorage.getItem( 'cookieBannerHash' );
             }
             
             // hide banner if page is on whitelist
@@ -75,8 +75,8 @@ var viewerJS = ( function( viewer ) {
             if ( !_isWhitelisted ) {
             	// get/set banner status
             	if ( _bannerStatus == undefined || _bannerStatus == '' ) {
-            		localStorage.setItem( 'cookieBannerStatus', true );
-            		_bannerStatus = localStorage.getItem( 'cookieBannerStatus' );
+            		sessionStorage.setItem( 'cookieBannerStatus', true );
+            		_bannerStatus = sessionStorage.getItem( 'cookieBannerStatus' );
             		$( '#cookieBanner' ).show();
             		_hideBanner();
             	}
@@ -93,7 +93,7 @@ var viewerJS = ( function( viewer ) {
             			}            			
             		}
             		else {
-            			localStorage.setItem( 'cookieBannerStatus', true );
+            			sessionStorage.setItem( 'cookieBannerStatus', true );
             			$( '#cookieBanner' ).show();
         				_hideBanner();
             		}
@@ -115,10 +115,10 @@ var viewerJS = ( function( viewer ) {
     	$( '[data-set="cookie-banner"]' ).off().on( 'click', function() {
 			$( '.cookie-banner__info' ).slideUp( function() {
 				$( '#cookieBanner' ).fadeOut( 'fast' );
-				localStorage.setItem( 'cookieBannerStatus', false );
-				localStorage.setItem( 'cookieBannerHash', _defaults.lastEditedHash );
-				_bannerStatus = localStorage.getItem( 'cookieBannerStatus' );
-				_bannerHash = localStorage.getItem( 'cookieBannerHash' );
+				sessionStorage.setItem( 'cookieBannerStatus', false );
+				sessionStorage.setItem( 'cookieBannerHash', _defaults.lastEditedHash );
+				_bannerStatus = sessionStorage.getItem( 'cookieBannerStatus' );
+				_bannerHash = sessionStorage.getItem( 'cookieBannerHash' );
 			} );            			
 		} );
     }

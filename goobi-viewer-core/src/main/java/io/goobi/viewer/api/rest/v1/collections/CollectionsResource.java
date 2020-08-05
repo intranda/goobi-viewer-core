@@ -36,6 +36,7 @@ import io.goobi.viewer.api.rest.AbstractApiUrlManager;
 import io.goobi.viewer.api.rest.ViewerRestServiceBinding;
 import io.goobi.viewer.api.rest.resourcebuilders.ContentAssistResourceBuilder;
 import io.goobi.viewer.api.rest.resourcebuilders.IIIFPresentationResourceBuilder;
+import io.goobi.viewer.controller.StringTools;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
@@ -96,6 +97,7 @@ public class CollectionsResource {
             )
             throws PresentationException, IndexUnreachableException, DAOException, ContentLibException, URISyntaxException, ViewerConfigurationException {
         IIIFPresentationResourceBuilder builder = new IIIFPresentationResourceBuilder(urls);
+        collectionName = StringTools.decodeUrl(collectionName);
         Collection collection;
         if(StringUtils.isBlank(grouping)) {                   
             collection = builder.getCollection(solrField, collectionName);

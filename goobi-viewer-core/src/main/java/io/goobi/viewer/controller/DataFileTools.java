@@ -32,16 +32,11 @@ import org.slf4j.LoggerFactory;
 
 import de.unigoettingen.sub.commons.contentlib.exceptions.ContentLibException;
 import de.unigoettingen.sub.commons.contentlib.exceptions.ContentNotFoundException;
-import de.unigoettingen.sub.commons.contentlib.exceptions.ServiceNotAllowedException;
-import io.goobi.viewer.api.rest.AbstractApiUrlManager;
 import io.goobi.viewer.api.rest.resourcebuilders.TextResourceBuilder;
-import io.goobi.viewer.exceptions.AccessDeniedException;
 import io.goobi.viewer.exceptions.DAOException;
-import io.goobi.viewer.exceptions.HTTPException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.exceptions.ViewerConfigurationException;
-import io.goobi.viewer.managedbeans.utils.BeanUtils;
 
 /**
  * Utility class for retrieving data folders, data files and source files.
@@ -50,7 +45,6 @@ import io.goobi.viewer.managedbeans.utils.BeanUtils;
 public class DataFileTools {
 
     private static final Logger logger = LoggerFactory.getLogger(DataFileTools.class);
-
 
     /**
      * Retrieves the path to viewer home or repositories root, depending on the record. Used to generate a specific task client query parameter.
@@ -172,33 +166,47 @@ public class DataFileTools {
     }
 
     /**
-     * <p>
-     * getDataFilePath.
-     * </p>
+     * Returns the path to the data file (if file name given) or data folder for the given record identifier.
      *
      * @param pi Record identifier
      * @param dataFolderName Name of the data folder (e.g. 'alto') - first choice
      * @param altDataFolderName Name of the data folder - second choice
-     * @param fileName Name of the content file
-     * @return Path to the requested file
+     * @param fileName Optional name of the content file
+     * @return Path to the requested file or folder
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      */
     public static Path getDataFilePath(String pi, String dataFolderName, String altDataFolderName, String fileName)
             throws PresentationException, IndexUnreachableException {
-        //make sure fileName is a pure filename and not a path
-        if(StringUtils.isNotBlank(fileName)) {            
-            fileName = Paths.get(fileName).getFileName().toString();
-        }
+        // Make sure fileName is a pure file name and not a path
+        fileName = sanitizeFileName(fileName);
+
         java.nio.file.Path dataFolderPath = getDataFolder(pi, dataFolderName);
         if (StringUtils.isNotBlank(fileName)) {
             dataFolderPath = dataFolderPath.resolve(fileName);
         }
+
+        // If selected path doesn't exist in the primary data folder, call again with alternative data folder
         if (StringUtils.isNotBlank(altDataFolderName) && !Files.exists(dataFolderPath)) {
             return getDataFilePath(pi, altDataFolderName, null, fileName);
         }
 
         return dataFolderPath;
+    }
+
+    /**
+     * Removes any path elements from the given file name.
+     * 
+     * @param fileName
+     * @return Lowest level file name
+     * @should remove everything but the file name from given path
+     */
+    static String sanitizeFileName(String fileName) {
+        if (StringUtils.isBlank(fileName)) {
+            return fileName;
+        }
+
+        return Paths.get(fileName).getFileName().toString();
     }
 
     /**
@@ -370,8 +378,8 @@ public class DataFileTools {
      */
     public static String loadFulltext(String altoFilePath, String fulltextFilePath, boolean mergeLineBreakWords,
             HttpServletRequest request)
-            throws AccessDeniedException, FileNotFoundException, IOException, IndexUnreachableException, DAOException, ViewerConfigurationException {
-        TextResourceBuilder builder = new TextResourceBuilder(BeanUtils.getRequest(), null);
+            throws FileNotFoundException, IOException, IndexUnreachableException, DAOException, ViewerConfigurationException {
+        TextResourceBuilder builder = new TextResourceBuilder();
         if (altoFilePath != null) {
             // ALTO file
             try {
@@ -382,8 +390,6 @@ public class DataFileTools {
                 }
             } catch (ContentNotFoundException e) {
                 throw new FileNotFoundException(e.getMessage());
-            } catch (ServiceNotAllowedException e) {
-                throw new AccessDeniedException("fulltextAccessDenied");
             } catch (PresentationException e) {
                 logger.error(e.getMessage());
             }
@@ -398,8 +404,6 @@ public class DataFileTools {
                 }
             } catch (ContentNotFoundException e) {
                 throw new FileNotFoundException(e.getMessage());
-            } catch (ServiceNotAllowedException e) {
-                throw new AccessDeniedException("fulltextAccessDenied");
             } catch (PresentationException e) {
                 logger.error(e.getMessage());
             }
@@ -407,22 +411,18 @@ public class DataFileTools {
 
         return null;
     }
-    
+
     public static String loadAlto(String altoFilePath)
-            throws  ContentNotFoundException, AccessDeniedException, IndexUnreachableException, DAOException, PresentationException {
-        TextResourceBuilder builder = new TextResourceBuilder(BeanUtils.getRequest(), null);
+            throws ContentNotFoundException, IndexUnreachableException, DAOException, PresentationException {
+        TextResourceBuilder builder = new TextResourceBuilder();
         if (altoFilePath != null) {
             // ALTO file
-            try {
                 String alto = builder.getAltoDocument(FileTools.getBottomFolderFromPathString(altoFilePath),
                         FileTools.getFilenameFromPathString(altoFilePath));
                 return alto;
-            } catch (ServiceNotAllowedException e) {
-                throw new AccessDeniedException("fulltextAccessDenied");
-            }
-        } else throw new ContentNotFoundException("Alto file " + altoFilePath + " not found");
+        }
         
-
+        throw new ContentNotFoundException("ALTO file " + altoFilePath + " not found");
     }
 
     /**
@@ -439,15 +439,15 @@ public class DataFileTools {
      * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
      */
     public static String loadTei(String pi, String language)
-            throws AccessDeniedException, FileNotFoundException, IOException, ViewerConfigurationException {
+            throws FileNotFoundException, IOException, ViewerConfigurationException {
         logger.trace("loadTei: {}/{}", pi, language);
         if (pi == null) {
             return null;
         }
-        TextResourceBuilder builder = new TextResourceBuilder(BeanUtils.getRequest(), null);
+        TextResourceBuilder builder = new TextResourceBuilder();
         try {
             return builder.getTeiDocument(pi, language);
-        } catch (PresentationException | IndexUnreachableException | DAOException | ContentLibException e) {
+        } catch (PresentationException | IndexUnreachableException |  ContentLibException e) {
             logger.error(e.toString());
             return null;
         }

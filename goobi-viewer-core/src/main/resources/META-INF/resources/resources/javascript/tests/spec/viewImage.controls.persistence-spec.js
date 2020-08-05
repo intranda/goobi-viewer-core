@@ -12,7 +12,7 @@ describe( 'ImageView zoom/rotation persistence Tests', function() {
 		
 		$('<span id="test"><style> #map { width: 800px; }</style><form id="tagListForm"><div id="map"></div></form></span>').appendTo('body');
 //		jasmine.getFixtures().load("viewImage.html");
-		localStorage.imageLocation = "";
+		sessionStorage.imageLocation = "";
 //		viewImage.getConfig().image.location = null;
 		config = {
 				    global: {
@@ -49,8 +49,8 @@ describe( 'ImageView zoom/rotation persistence Tests', function() {
 
 		it(" zooms and rotates the image using config settings", function(done) {
 			
-			localStorage.imageLocation = '{"x":0.2,"y":0.8,"zoom":4.5,"rotation":180,"persistenceId":"a"}';
-			var expectedLocation = JSON.parse(localStorage.imageLocation);
+		    sessionStorage.imageLocation = '{"x":0.2,"y":0.8,"zoom":4.5,"rotation":180,"persistenceId":"a"}';
+			var expectedLocation = JSON.parse(sessionStorage.imageLocation);
 			
 			config.image.tileSource = "http://www.intranda.com/wp-content/uploads/2014/01/banner_digitisation_small.jpg";
 			var viewImage = new ImageView.Image(config);
@@ -110,7 +110,7 @@ describe( 'ImageView zoom/rotation persistence Tests', function() {
 //				$(window).trigger('beforeunload');
 			})
 			.do(function(osViewer) {
-				expect(JSON.parse(localStorage.imageLocation)).toEqual(expectedLocation)				
+				expect(JSON.parse(sessionStorage.imageLocation)).toEqual(expectedLocation)				
 			})
 			.catch(function(error){
 			    	console.log(error);

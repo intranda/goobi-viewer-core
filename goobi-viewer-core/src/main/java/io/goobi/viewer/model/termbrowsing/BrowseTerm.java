@@ -157,6 +157,15 @@ public class BrowseTerm implements Serializable {
     }
 
     /**
+     * @param hitCount the hitCount to set
+     * @return this
+     */
+    public BrowseTerm setHitCount(long hitCount) {
+        this.hitCount = hitCount;
+        return this;
+    }
+
+    /**
      * <p>
      * Getter for the field <code>piList</code>.
      * </p>

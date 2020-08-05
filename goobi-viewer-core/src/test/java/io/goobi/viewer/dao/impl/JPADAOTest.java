@@ -1344,7 +1344,6 @@ public class JPADAOTest extends AbstractDatabaseEnabledTest {
     public void getUsers_shouldFilterResultsCorrectly() throws Exception {
         Map<String, String> filterMap = new HashMap<>();
         filterMap.put("email", "1@users.org");
-        filterMap.put("comments", "comments");
         List<User> ret = DataManager.getInstance().getDao().getUsers(0, 2, null, true, filterMap);
         Assert.assertEquals(1, ret.size());
         Assert.assertEquals("1@users.org", ret.get(0).getEmail());
@@ -1438,6 +1437,32 @@ public class JPADAOTest extends AbstractDatabaseEnabledTest {
         List<LicenseType> ret = DataManager.getInstance().getDao().getLicenseTypes(0, 2, null, true, filterMap);
         Assert.assertEquals(1, ret.size());
         Assert.assertEquals("license type 2 name", ret.get(0).getName());
+    }
+    
+
+    /**
+     * @see JPADAO#getLicenses(LicenseType)
+     * @verifies return correct values
+     */
+    @Test
+    public void getLicenses_shouldReturnCorrectValues() throws Exception {
+        LicenseType licenseType = DataManager.getInstance().getDao().getLicenseType(1);
+        Assert.assertNotNull(licenseType);
+        List<License> result = DataManager.getInstance().getDao().getLicenses(licenseType);
+        Assert.assertEquals(2, result.size());
+        Assert.assertEquals(Long.valueOf(1), result.get(0).getId());
+        Assert.assertEquals(Long.valueOf(2), result.get(1).getId());
+    }
+
+    /**
+     * @see JPADAO#getLicenseCount(LicenseType)
+     * @verifies return correct value
+     */
+    @Test
+    public void getLicenseCount_shouldReturnCorrectValue() throws Exception {
+        LicenseType licenseType = DataManager.getInstance().getDao().getLicenseType(1);
+        Assert.assertNotNull(licenseType);
+        Assert.assertEquals(2, DataManager.getInstance().getDao().getLicenseCount(licenseType));
     }
 
     /**
@@ -1961,14 +1986,16 @@ public class JPADAOTest extends AbstractDatabaseEnabledTest {
     }
 
     /**
+     * Should return 2 results: user1 by its name and user 2 by its user group
+     * 
      * @see JPADAO#getUserCount(Map)
      * @verifies filter correctly
      */
     @Test
     public void getUserCount_shouldFilterCorrectly() throws Exception {
         Map<String, String> filters = new HashMap<>();
-        filters.put("firstName", "1");
-        Assert.assertEquals(1L, DataManager.getInstance().getDao().getUserCount(filters));
+        filters.put("filter", "1");
+        Assert.assertEquals(2L, DataManager.getInstance().getDao().getUserCount(filters));
     }
 
     /**
@@ -2618,16 +2645,35 @@ public class JPADAOTest extends AbstractDatabaseEnabledTest {
     public void createFilterQuery_shouldBuildMultikeyFilterQueryCorrectly() throws Exception {
         Map<String, String> filters = Collections.singletonMap("a-a_b-b_c-c_d-d", "bar");
         Map<String, String> params = new HashMap<>();
-        for (String key : filters.keySet()) {
-            String[] keyParts = key.split(JPADAO.MULTIKEY_SEPARATOR);
-            for (String keyPart : keyParts) {
-                params.put(keyPart.replace("-", ""), " %" + filters.get(key).toUpperCase() + "%");
-            }
-
-        }
 
         Assert.assertEquals(
                 "STATIC:query AND ( ( UPPER(a.a.a) LIKE :aabbccdd OR UPPER(a.b.b) LIKE :aabbccdd OR UPPER(a.c.c) LIKE :aabbccdd OR UPPER(a.d.d) LIKE :aabbccdd ) ",
                 JPADAO.createFilterQuery("STATIC:query", filters, params));
     }
+    
+    @Test
+    public void createFilterQuery_twoJoinedTables() throws Exception {
+        Map<String, String> filters = Collections.singletonMap("b-B_c-C", "bar");
+        Map<String, String> params = new HashMap<>();
+
+        String expectedFilterString = " LEFT JOIN a.b b LEFT JOIN a.c c WHERE (UPPER(b.B) LIKE :bBcC OR UPPER(c.C) LIKE :bBcC)";
+        String filterString = JPADAO.createFilterQuery2("", filters, params);
+            
+        Assert.assertEquals(expectedFilterString, filterString);
+        Assert.assertTrue(params.get("bBcC").equals("%BAR%"));
+    }
+    
+    @Test
+    public void createFilterQuery_joinedTableAndField() throws Exception {
+        Map<String, String> filters = Collections.singletonMap("B_c-C", "bar");
+        Map<String, String> params = new HashMap<>();
+
+        String expectedFilterString = " LEFT JOIN a.c b WHERE (UPPER(a.B) LIKE :BcC OR UPPER(b.C) LIKE :BcC)";
+        String filterString = JPADAO.createFilterQuery2("", filters, params);
+            
+        Assert.assertEquals(expectedFilterString, filterString);
+        Assert.assertTrue(params.get("BcC").equals("%BAR%"));
+    }
+    
+
 }

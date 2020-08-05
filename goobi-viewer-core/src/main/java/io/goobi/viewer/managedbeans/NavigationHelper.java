@@ -58,6 +58,7 @@ import io.goobi.viewer.controller.StringTools;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
+import io.goobi.viewer.exceptions.RedirectException;
 import io.goobi.viewer.exceptions.ViewerConfigurationException;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.messages.ViewerResourceBundle;
@@ -594,7 +595,8 @@ public class NavigationHelper implements Serializable {
      */
     public Iterator<Locale> getSupportedLocales() {
         if (FacesContext.getCurrentInstance() != null && FacesContext.getCurrentInstance().getApplication() != null) {
-            return FacesContext.getCurrentInstance().getApplication().getSupportedLocales();
+            return ViewerResourceBundle.getLocalesFromFacesConfig().iterator();
+            //            return FacesContext.getCurrentInstance().getApplication().getSupportedLocales();
         }
 
         return null;
@@ -654,6 +656,8 @@ public class NavigationHelper implements Serializable {
                     logger.error(e.getMessage(), e);
                 } catch (IndexUnreachableException e) {
                     logger.error(e.getMessage(), e);
+                } catch (RedirectException e) {
+                    // TODO
                 }
             }
         }

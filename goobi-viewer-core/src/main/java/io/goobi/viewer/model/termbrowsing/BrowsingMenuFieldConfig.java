@@ -37,6 +37,7 @@ public class BrowsingMenuFieldConfig implements Serializable {
     private final String sortField;
     private final List<String> filterQueries = new ArrayList<>(3);
     private final boolean translate;
+    private final boolean alwaysApplyFilter;
 
     /**
      * Constructor.
@@ -47,17 +48,17 @@ public class BrowsingMenuFieldConfig implements Serializable {
      * @param translate
      * @param docstructFilterString a {@link java.lang.String} object.
      * @param recordsAndAnchorsOnly a boolean.
+     * @param alwaysApplyFilter If true, no unfiltered browsing will be allowed
      */
-    public BrowsingMenuFieldConfig(String field, String sortField, String filterQuery, boolean translate, @Deprecated String docstructFilterString,
-            @Deprecated boolean recordsAndAnchorsOnly) {
+    public BrowsingMenuFieldConfig(String field, String sortField, String filterQuery, boolean translate,
+            @Deprecated boolean recordsAndAnchorsOnly, boolean alwaysApplyFilter) {
         this.field = field;
         this.sortField = sortField;
         if (StringUtils.isNotEmpty(filterQuery)) {
             filterQueries.add(filterQuery);
         }
         this.translate = translate;
-
-        setDocstructFilterString(docstructFilterString);
+        this.alwaysApplyFilter = alwaysApplyFilter;
         setRecordsAndAnchorsOnly(recordsAndAnchorsOnly);
     }
 
@@ -102,21 +103,18 @@ public class BrowsingMenuFieldConfig implements Serializable {
     }
 
     /**
-     * 
-     * @param docstructFilterString
-     * @should create filter query correctly
+     * @return the alwaysApplyFilter
      */
-    void setDocstructFilterString(String docstructFilterString) {
-        if (StringUtils.isNotEmpty(docstructFilterString)) {
-            String[] docstrcutFilterStringSplit = docstructFilterString.split(";");
-            StringBuilder sb = new StringBuilder();
-            for (String filter : docstrcutFilterStringSplit) {
-                if (StringUtils.isNotEmpty(filter)) {
-                    sb.append(SolrConstants.DOCSTRCT).append(':').append(filter).append(' ');
-                }
-            }
-            filterQueries.add(sb.toString().trim());
-        }
+    public boolean isAlwaysApplyFilter() {
+        return alwaysApplyFilter;
+    }
+
+    /**
+     * 
+     * @return
+     */
+    public boolean isRecordsAndAnchorsOnly() {
+        return filterQueries.contains(SearchHelper.ALL_RECORDS_QUERY);
     }
 
     /**

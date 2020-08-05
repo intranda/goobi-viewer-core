@@ -15,6 +15,7 @@
  */
 package io.goobi.viewer.managedbeans;
 
+import java.net.URLEncoder;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
@@ -504,7 +505,7 @@ public class SearchBeanTest extends AbstractDatabaseAndSolrEnabledTest {
         sb.getCurrentSearch().setQuery("+DC:dcimage* +ISWORK:true -IDDOC_PARENT:*");
         sb.getCurrentSearch().setSortString("SORT_TITLE");
         sb.getCurrentSearch().execute(new SearchFacets(), null, 10, 0, null, true);
-        Assert.assertEquals(17, sb.getCurrentSearch().getHitsCount());
+        Assert.assertEquals(18, sb.getCurrentSearch().getHitsCount());
 
         sb.findCurrentHitIndex("PPN9462", 1, true);
         Assert.assertEquals(0, sb.getCurrentHitIndex());
@@ -522,19 +523,39 @@ public class SearchBeanTest extends AbstractDatabaseAndSolrEnabledTest {
         Assert.assertEquals(4, sb.getCurrentHitIndex());
 
         sb.findCurrentHitIndex("iiif_test_image", 1, true);
-        Assert.assertEquals(5, sb.getCurrentHitIndex());
-
-        sb.findCurrentHitIndex("339471409", 1, true);
         Assert.assertEquals(6, sb.getCurrentHitIndex());
 
-        sb.findCurrentHitIndex("02008012412069", 1, true);
+        sb.findCurrentHitIndex("339471409", 1, true);
         Assert.assertEquals(7, sb.getCurrentHitIndex());
 
-        sb.findCurrentHitIndex("02008012412076", 1, true);
+        sb.findCurrentHitIndex("02008012412069", 1, true);
         Assert.assertEquals(8, sb.getCurrentHitIndex());
 
-        sb.findCurrentHitIndex("b18029048", 1, true);
+        sb.findCurrentHitIndex("02008012412076", 1, true);
         Assert.assertEquals(9, sb.getCurrentHitIndex());
+    }
 
+    /**
+     * @see SearchBean#searchSimple()
+     * @verifies not reset facets
+     */
+    @Test
+    public void searchSimple_shouldNotResetFacets() throws Exception {
+        SearchBean sb = new SearchBean();
+        sb.getFacets().setCurrentFacetString("foo:bar");
+        sb.searchSimple();
+        Assert.assertEquals(URLEncoder.encode("foo:bar;;", SearchBean.URL_ENCODING), sb.getFacets().getCurrentFacetString());
+    }
+
+    /**
+     * @see SearchBean#searchSimple(boolean,boolean)
+     * @verifies not reset facets if resetFacets false
+     */
+    @Test
+    public void searchSimple_shouldNotResetFacetsIfResetFacetsFalse() throws Exception {
+        SearchBean sb = new SearchBean();
+        sb.getFacets().setCurrentFacetString("foo:bar");
+        sb.searchSimple(true, false);
+        Assert.assertEquals(URLEncoder.encode("foo:bar;;", SearchBean.URL_ENCODING), sb.getFacets().getCurrentFacetString());
     }
 }

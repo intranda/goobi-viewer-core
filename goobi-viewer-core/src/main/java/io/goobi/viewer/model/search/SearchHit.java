@@ -17,6 +17,7 @@ package io.goobi.viewer.model.search;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -62,6 +63,7 @@ import io.goobi.viewer.messages.ViewerResourceBundle;
 import io.goobi.viewer.model.cms.CMSContentItem;
 import io.goobi.viewer.model.cms.CMSPage;
 import io.goobi.viewer.model.metadata.Metadata;
+import io.goobi.viewer.model.security.AccessConditionUtils;
 import io.goobi.viewer.model.viewer.StringPair;
 import io.goobi.viewer.model.viewer.StructElement;
 
@@ -454,7 +456,10 @@ public class SearchHit implements Comparable<SearchHit> {
         }
 
         try {
-            String fulltext = DataFileTools.loadTei((String) doc.getFieldValue(SolrConstants.PI), language);
+            String fulltext = null;
+            if(AccessConditionUtils.checkAccess(BeanUtils.getRequest(), "text", browseElement.getPi(), teiFilename, false)) {
+                fulltext = DataFileTools.loadTei((String) doc.getFieldValue(SolrConstants.PI), language);
+            }
             if (fulltext != null) {
                 fulltext = TEITools.getTeiFulltext(fulltext);
                 fulltext = Jsoup.parse(fulltext).text();
@@ -480,7 +485,6 @@ public class SearchHit implements Comparable<SearchHit> {
                 int oldCount = hit.getHitTypeCounts().get(HitType.PAGE) != null ? hit.getHitTypeCounts().get(HitType.PAGE) : 0;
                 hitTypeCounts.put(HitType.PAGE, oldCount + count);
             }
-        } catch (AccessDeniedException e) {
         } catch (FileNotFoundException e) {
             logger.error(e.getMessage());
         } catch (IOException e) {
@@ -549,12 +553,23 @@ public class SearchHit implements Comparable<SearchHit> {
                 switch (docType) {
                     case PAGE:
                         try {
-                            fulltext = DataFileTools.loadFulltext(
-                                    (String) childDoc.getFirstValue(SolrConstants.FILENAME_ALTO),
-                                    (String) childDoc.getFirstValue(SolrConstants.FILENAME_FULLTEXT), false, request);
-                        } catch (AccessDeniedException e) {
-                            acccessDeniedType = true;
-                            // fulltext = ViewerResourceBundle.getTranslation(e.getMessage(), locale);
+                            String altoFilename = (String) childDoc.getFirstValue(SolrConstants.FILENAME_ALTO);
+                            String plaintextFilename = (String) childDoc.getFirstValue(SolrConstants.FILENAME_FULLTEXT);
+                            if(StringUtils.isNotBlank(plaintextFilename)) {
+                                boolean access = AccessConditionUtils.checkAccess(request, "text", pi, plaintextFilename, false);
+                                if(access) {
+                                    fulltext = DataFileTools.loadFulltext(null, plaintextFilename, false, request);
+                                } else {
+                                    acccessDeniedType = true;
+                                }
+                            } else if(StringUtils.isNotBlank(altoFilename)) {
+                                boolean access = AccessConditionUtils.checkAccess(request, "text", pi, altoFilename, false);
+                                if(access) {
+                                    fulltext = DataFileTools.loadFulltext(altoFilename, null, false, request);
+                                } else {
+                                    acccessDeniedType = true;
+                                }
+                            }
                         } catch (FileNotFoundException e) {
                             logger.error(e.getMessage());
                         } catch (IOException e) {
@@ -664,7 +679,7 @@ public class SearchHit implements Comparable<SearchHit> {
      * @should translate configured field values correctly
      */
     public void populateFoundMetadata(SolrDocument doc, Set<String> ownerAlreadyHasFields, Set<String> ignoreFields, Set<String> translateFields) {
-        logger.trace("populateFoundMetadata: {}", searchTerms);
+        // logger.trace("populateFoundMetadata: {}", searchTerms);
         if (searchTerms == null) {
             return;
         }

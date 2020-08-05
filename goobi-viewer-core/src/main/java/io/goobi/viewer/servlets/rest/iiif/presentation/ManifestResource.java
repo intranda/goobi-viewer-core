@@ -68,6 +68,7 @@ import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.exceptions.ViewerConfigurationException;
+import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.messages.ViewerResourceBundle;
 import io.goobi.viewer.model.iiif.presentation.builder.BuildMode;
 import io.goobi.viewer.model.iiif.presentation.builder.LayerBuilder;
@@ -75,6 +76,8 @@ import io.goobi.viewer.model.iiif.presentation.builder.ManifestBuilder;
 import io.goobi.viewer.model.iiif.presentation.builder.SequenceBuilder;
 import io.goobi.viewer.model.iiif.presentation.builder.StructureBuilder;
 import io.goobi.viewer.model.iiif.search.IIIFSearchBuilder;
+import io.goobi.viewer.model.security.AccessConditionUtils;
+import io.goobi.viewer.model.security.IPrivilegeHolder;
 import io.goobi.viewer.model.viewer.PageType;
 import io.goobi.viewer.model.viewer.PhysicalElement;
 import io.goobi.viewer.model.viewer.StructElement;
@@ -473,26 +476,38 @@ public class ManifestResource extends AbstractResource {
             Canvas canvas = getSequenceBuilder().generateCanvas(doc, page);
             if (canvas != null) {
                 Map<AnnotationType, AnnotationList> annotations;
-                if (AnnotationType.COMMENT.equals(type)) {
-                    annotations = new HashMap<>();
-                    List<AnnotationList> comments = getSequenceBuilder().addComments(Collections.singletonMap(physPageNo, canvas), pi, true);
-                    if (!comments.isEmpty()) {
-                        annotations.put(AnnotationType.COMMENT, comments.get(0));
-                    }
-                } else if (AnnotationType.CROWDSOURCING.equals(type)) {
-                    annotations = new HashMap<>();
-                    Map<AnnotationType, List<AnnotationList>> annoTempMap = new HashMap<>();
-                    getSequenceBuilder().addCrowdourcingAnnotations(Collections.singletonList(canvas),
-                            getSequenceBuilder().getCrowdsourcingAnnotations(pi, false), annoTempMap);
-                    AnnotationList annoList = null;
-                    if (annoTempMap.get(AnnotationType.CROWDSOURCING) != null) {
-                        annoList = annoTempMap.get(AnnotationType.CROWDSOURCING).stream().findFirst().orElse(null);
-                    }
-                    if (annoList != null) {
-                        annotations.put(AnnotationType.CROWDSOURCING, annoList);
-                    }
-                } else {
-                    annotations = getSequenceBuilder().addOtherContent(doc, page, canvas, true);
+                switch(type) {
+                    case COMMENT:
+                        annotations = new HashMap<>();
+                        List<AnnotationList> comments = getSequenceBuilder().addComments(Collections.singletonMap(physPageNo, canvas), pi, true);
+                        if (!comments.isEmpty()) {
+                            annotations.put(AnnotationType.COMMENT, comments.get(0));
+                        }
+                        break;
+                    case CROWDSOURCING:
+                        annotations = new HashMap<>();
+                        Map<AnnotationType, List<AnnotationList>> annoTempMap = new HashMap<>();
+                        getSequenceBuilder().addCrowdourcingAnnotations(Collections.singletonList(canvas),
+                                getSequenceBuilder().getCrowdsourcingAnnotations(pi, false), annoTempMap);
+                        AnnotationList annoList = null;
+                        if (annoTempMap.get(AnnotationType.CROWDSOURCING) != null) {
+                            annoList = annoTempMap.get(AnnotationType.CROWDSOURCING).stream().findFirst().orElse(null);
+                        }
+                        if (annoList != null) {
+                            annotations.put(AnnotationType.CROWDSOURCING, annoList);
+                        }
+                        break;
+                    case ALTO:
+                    case FULLTEXT:
+                        boolean access = AccessConditionUtils.checkAccessPermissionByIdentifierAndLogId(pi, null, IPrivilegeHolder.PRIV_VIEW_FULLTEXT, servletRequest);
+                        if(access) {                            
+                            annotations = getSequenceBuilder().addOtherContent(doc, page, canvas, true);
+                        } else {
+                            annotations = new HashMap<>();
+                        }
+                        break;
+                    default:
+                        annotations = new HashMap<>();
                 }
                 if (annotations.get(type) != null) {
                     AnnotationList al = annotations.get(type);

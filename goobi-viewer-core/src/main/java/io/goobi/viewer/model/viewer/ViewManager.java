@@ -23,7 +23,6 @@ import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -48,6 +47,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import de.unigoettingen.sub.commons.contentlib.imagelib.transform.Scale;
+import io.goobi.viewer.api.rest.AbstractApiUrlManager;
+import io.goobi.viewer.api.rest.v1.ApiUrls;
 import io.goobi.viewer.controller.AlphanumCollatorComparator;
 import io.goobi.viewer.controller.DataFileTools;
 import io.goobi.viewer.controller.DataManager;
@@ -226,9 +227,9 @@ public class ViewManager implements Serializable {
             return "";
         }
         return imageDeliveryBean.getImages().getImageUrl(null, pi, representative.getFileName());
-//        StringBuilder urlBuilder = new StringBuilder(DataManager.getInstance().getConfiguration().getIIIFApiUrl());
-//        urlBuilder.append("image/").append(pi).append('/').append(representative.getFileName()).append("/info.json");
-//        return urlBuilder.toString();
+        //        StringBuilder urlBuilder = new StringBuilder(DataManager.getInstance().getConfiguration().getIIIFApiUrl());
+        //        urlBuilder.append("image/").append(pi).append('/').append(representative.getFileName()).append("/info.json");
+        //        return urlBuilder.toString();
     }
 
     /**
@@ -1883,7 +1884,7 @@ public class ViewManager implements Serializable {
      * @throws DAOException
      * @throws IndexUnreachableException
      * @throws PresentationException
-     * @throws ViewerConfigurationException 
+     * @throws ViewerConfigurationException
      */
     public boolean isMetadataViewOnly() throws IndexUnreachableException, DAOException, PresentationException, ViewerConfigurationException {
         if (metadataViewOnly == null) {
@@ -1996,7 +1997,7 @@ public class ViewManager implements Serializable {
      * @throws IndexUnreachableException
      * @throws DAOException
      * @throws PresentationException
-     * @throws ViewerConfigurationException 
+     * @throws ViewerConfigurationException
      */
     public boolean isDisplayFulltextViewLink() throws IndexUnreachableException, DAOException, PresentationException, ViewerConfigurationException {
         return DataManager.getInstance().getConfiguration().isSidebarFulltextLinkVisible() && topDocument != null && topDocument.isFulltextAvailable()
@@ -2013,9 +2014,11 @@ public class ViewManager implements Serializable {
      * @throws PresentationException
      * @throws ViewerConfigurationException
      */
-    public boolean isDisplayExternalFulltextLink() throws IndexUnreachableException, DAOException, PresentationException, ViewerConfigurationException {
+    public boolean isDisplayExternalFulltextLink()
+            throws IndexUnreachableException, DAOException, PresentationException, ViewerConfigurationException {
         return topDocument != null
-                && topDocument.getMetadataValue("MD_LOCATION_URL_EXTERNALFULLTEXT") != null  && getCurrentPage() != null && getCurrentPage().isFulltextAccessPermission();
+                && topDocument.getMetadataValue("MD_LOCATION_URL_EXTERNALFULLTEXT") != null && getCurrentPage() != null
+                && getCurrentPage().isFulltextAccessPermission();
     }
 
     /**
@@ -2555,12 +2558,14 @@ public class ViewManager implements Serializable {
                 Collections.sort(sourcesList, filenameComparator);
                 Map<String, Boolean> fileAccess = AccessConditionUtils.checkContentFileAccessPermission(getPi(), BeanUtils.getRequest(),
                         sourcesList.stream().map(file -> file.toPath()).collect(Collectors.toList()));
+                AbstractApiUrlManager apiUrls = DataManager.getInstance().getRestApiManager().getContentApiManager();
                 for (File file : sourcesList) {
                     if (file.isFile()) {
                         Boolean access = fileAccess.get(file.toPath().toString());
-                        if (access != null && access) {
-                            String url = BeanUtils.getServletPathWithHostAsUrlFromJsfContext() + "/file?pi=" + getPi() + "&file="
-                                    + URLEncoder.encode(file.getName(), StringTools.DEFAULT_ENCODING);
+                        if (Boolean.TRUE.equals(access)) {
+                            String pi = getPi();
+                            String filename = URLEncoder.encode(file.getName(), StringTools.DEFAULT_ENCODING);
+                            String url = apiUrls.path(ApiUrls.RECORDS_FILES, ApiUrls.RECORDS_FILES_SOURCE).params(pi, filename).build();
                             ret.add(new LabeledLink(file.getName(), url, 0));
                         }
                         ;
@@ -2584,51 +2589,6 @@ public class ViewManager implements Serializable {
         }
 
     };
-
-    /**
-     * Returns a list of original content file download links (name+url) for the current page. CURRENTLY NOT SUPPORTED
-     *
-     * @return a {@link java.util.List} object.
-     * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
-     * @throws io.goobi.viewer.exceptions.DAOException if any.
-     * @throws io.goobi.viewer.exceptions.PresentationException if any.
-     */
-    public List<LabeledLink> getContentDownloadLinksForPage() throws IndexUnreachableException, DAOException, PresentationException {
-        List<LabeledLink> ret = new ArrayList<>();
-
-        String page = String.valueOf(currentImageOrder);
-        Path sourceFileDir = Paths
-                .get(DataFileTools.getDataFolder(pi, DataManager.getInstance().getConfiguration().getOrigContentFolder()).toAbsolutePath().toString(),
-                        page);
-        if (!Files.isDirectory(sourceFileDir)) {
-            return Collections.emptyList();
-        }
-
-        try {
-            List<File> files = Arrays.asList(sourceFileDir.toFile().listFiles());
-            Map<String, Boolean> fileAccessMap = AccessConditionUtils.checkContentFileAccessPermission(getPi(), BeanUtils.getRequest(),
-                    files.stream().map(File::toPath).collect(Collectors.toList()));
-            for (File file : files) {
-                if (file.isFile()) {
-                    Boolean access = fileAccessMap.get(file.toPath().toString());
-                    if (access != null && access) {
-                        String url = new StringBuilder(BeanUtils.getServletPathWithHostAsUrlFromJsfContext()).append("/file?pi=")
-                                .append(getPi())
-                                .append("&page=")
-                                .append(page)
-                                .append("&file=")
-                                .append(URLEncoder.encode(file.getName(), StringTools.DEFAULT_ENCODING))
-                                .toString();
-                        ret.add(new LabeledLink(file.getName(), url, 0));
-                    }
-                }
-            }
-        } catch (UnsupportedEncodingException e) {
-            logger.error(e.getMessage(), e);
-        }
-
-        return ret;
-    }
 
     /**
      * <p>
@@ -3465,16 +3425,17 @@ public class ViewManager implements Serializable {
      * @throws IndexUnreachableException
      * @throws ViewerConfigurationException
      * @throws DAOException
+     * @throws RecordNotFoundException
      */
     public static ViewManager createViewManager(String pi)
-            throws PresentationException, IndexUnreachableException, DAOException, ViewerConfigurationException {
+            throws PresentationException, IndexUnreachableException, DAOException, ViewerConfigurationException, RecordNotFoundException {
         if (pi == null) {
             throw new IllegalArgumentException("pi may not be null");
         }
 
         SolrDocument doc = DataManager.getInstance().getSearchIndex().getFirstDoc(SolrConstants.PI + ":" + pi, null);
         if (doc == null) {
-            return null;
+            throw new RecordNotFoundException(pi);
         }
 
         long iddoc = Long.valueOf((String) doc.getFieldValue(SolrConstants.IDDOC));

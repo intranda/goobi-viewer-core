@@ -124,7 +124,7 @@ public class Sitemap {
                 .append(":* AND NOT(")
                 .append(SolrConstants.DATEDELETED)
                 .append(":*)")
-                .append(SearchHelper.getAllSuffixes(false));
+                .append(SearchHelper.getAllSuffixes());
         logger.debug("Sitemap: sitemap query: {}", sbQuery.toString());
         String[] fields = { SolrConstants.PI, SolrConstants.DATECREATED, SolrConstants.DATEUPDATED, SolrConstants.FULLTEXTAVAILABLE,
                 SolrConstants.DOCTYPE, SolrConstants.ISANCHOR, SolrConstants.THUMBPAGENO };

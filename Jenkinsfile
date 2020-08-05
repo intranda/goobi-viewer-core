@@ -3,7 +3,7 @@ pipeline {
   agent {
     docker {
       image 'nexus.intranda.com:4443/goobi-viewer-testing-index:latest'
-      args '-v $HOME/.m2:/var/maven/.m2:z -u 1000 -ti -e _JAVA_OPTIONS=-Duser.home=/var/maven -e MAVEN_CONFIG=/var/maven/.m2'
+      args '-v $HOME/.m2:/var/maven/.m2:z -v $HOME/.config:/var/maven/.config -v $HOME/.sonar:/var/maven/.sonar -u 1000 -ti -e _JAVA_OPTIONS=-Duser.home=/var/maven -e MAVEN_CONFIG=/var/maven/.m2'
       registryUrl 'https://nexus.intranda.com:4443/'
       registryCredentialsId 'jenkins-docker'
     }
@@ -25,35 +25,27 @@ pipeline {
               recordIssues enabledForFailure: true, aggregatingResults: true, tools: [java(), javaDoc()]
       }
     }
+    stage('sonarcloud') {
+      when {
+        anyOf {
+          branch 'sonar_*'
+        }
+      }
+      steps {
+        withCredentials([string(credentialsId: 'jenkins-sonarcloud', variable: 'TOKEN')]) {
+          sh 'mvn -f goobi-viewer-core/pom.xml verify sonar:sonar -Dsonar.login=$TOKEN'
+        }
+      }
+    }
     stage('deployment of artifacts to maven repository') {
       when {
         anyOf {
-        branch 'master'
-        branch 'develop'
+          branch 'master'
+          branch 'develop'
         }
       }
       steps {
         sh 'mvn -f goobi-viewer-core/pom.xml deploy'
-      }
-    }
-    stage('maven site generation') {
-      when {
-        anyOf {
-        branch 'master'
-        }
-      }
-      steps {
-        sh 'mvn -f goobi-viewer-core/pom.xml site'
-      }
-    }
-    stage('deployment of site to maven repository') {
-      when {
-        anyOf {
-        branch 'master'
-        }
-      }
-      steps {
-        sh 'mvn -f goobi-viewer-core/pom.xml site:deploy'
       }
     }
   }

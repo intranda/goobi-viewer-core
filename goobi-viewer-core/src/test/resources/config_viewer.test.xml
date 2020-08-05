@@ -28,7 +28,7 @@
 	<mediaFolder>media</mediaFolder>
 	<!-- sourceContentFolder: contains born-digital material that was uploaded 
 		in the Goobi viewer (see <content> also) -->
-	<origContentFolder>src</origContentFolder>
+	<origContentFolder>source</origContentFolder>
     <!-- pdfFolder: contains pre-generated PDFs -->
     <pdfFolder>PDF</pdfFolder>
     <!-- cmsTextFolder: contains extracted CMS page texts for indexing-->
@@ -354,9 +354,8 @@
 		</useViewerLocaleAsRecordLanguage>
 
 		<!-- theme: defines the theme that shall be used -->
-		<theme subTheme="true" mainTheme="mainTheme_value"
-			discriminatorField="FACET_VIEWERSUBTHEME" autoSwitch="true"
-			addFilterQuery="true" filterQueryVisible="true">
+		<theme mainTheme="mainTheme_value"
+			discriminatorField="FACET_VIEWERSUBTHEME">
             <!-- rootPath: If the theme is localed externally, the CMS template loading
                  mechanism needs the root path of the theme. The path must be defined down
                  to the /themes folder, just above the folder named like the theme. -->
@@ -417,8 +416,8 @@
 		</sorting>
 		<drillDown>
 			<hierarchicalField initialElementNumber="4" priorityValues="collection2;collection1">DC</hierarchicalField>
-			<field sortOrder="numerical">YEAR</field>
-			<hierarchicalField sortOrder="alphabetical">MD_CREATOR</hierarchicalField>
+			<field labelField="MD_FIELDLABEL" sortOrder="numerical">YEAR</field>
+			<hierarchicalField labelField="MD_FIRSTNAME" sortOrder="alphabetical">MD_CREATOR</hierarchicalField>
 			<field initialElementNumber="16" priorityValues="val1;val2;val3">MD_PLACEPUBLISH</field>
 			<!-- initialElementNumber: sets the initial number of drill-down elements 
 				to be displayed (any field including DC). Default is 20. -->
@@ -757,7 +756,7 @@
 
 			<!-- luceneField: defines index fields that are available for browsing. 
 				Only untokenized fields should be used. -->
-			<luceneField sortField="SORT_AUTHOR" filterQuery="+DOCTYPE:DOCSTRCT">MD_AUTHOR_UNTOKENIZED</luceneField>
+			<luceneField sortField="SORT_AUTHOR" filterQuery="+DOCTYPE:DOCSTRCT" alwaysApplyFilter="true">MD_AUTHOR_UNTOKENIZED</luceneField>
 			<luceneField sortField="SORT_TITLE">MD_TITLE_LANG_DE_UNTOKENIZED</luceneField>
 			<luceneField sortField="SORT_TITLE">MD_TITLE_LANG_EN_UNTOKENIZED</luceneField>
 			<!-- TODO: describe in the manual -->

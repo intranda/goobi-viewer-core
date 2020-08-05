@@ -348,7 +348,7 @@
                      var currIdDoc = $( this ).parents( "li" ).attr( "data-iddoc" );
                      var currUrl = $( this ).attr( "href" );
                      
-                     localStorage.setItem( "currIdDoc", currIdDoc );
+                     sessionStorage.setItem( "currIdDoc", currIdDoc );
                      location.href = currUrl;
                  } );
             
@@ -392,6 +392,8 @@
         <widgetComponent:widget_searchResultNavigation />
         
         <widgetComponent:widget_metadata />
+        
+        <widgetComponent:widget_geoMap widget="#{activeDocumentBean.mapWidget}" title="#{msg.NORM_LOCATION}" allowFullscreen="false" linkToSearch="false" />
         
         <widgetComponent:widget_usage />
 

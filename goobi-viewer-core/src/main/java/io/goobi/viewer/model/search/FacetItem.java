@@ -34,6 +34,8 @@ import org.slf4j.LoggerFactory;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.SolrConstants;
 import io.goobi.viewer.controller.StringTools;
+import io.goobi.viewer.exceptions.IndexUnreachableException;
+import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.managedbeans.SearchBean;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.messages.ViewerResourceBundle;
@@ -52,8 +54,6 @@ public class FacetItem implements Comparable<FacetItem>, Serializable {
     private static final Comparator<FacetItem> NUMERIC_COMPARATOR = new FacetItem.NumericComparator();
     private static final Comparator<FacetItem> ALPHABETIC_COMPARATOR = new FacetItem.AlphabeticComparator();
 
-    //    private static AlphanumCollatorComparator comparator = new AlphanumCollatorComparator(null);
-
     private String field;
     private String value;
     private String value2;
@@ -64,6 +64,15 @@ public class FacetItem implements Comparable<FacetItem>, Serializable {
     private final boolean hierarchial;
 
     /**
+     * Constructor that doesn't parse the link; for testing purposes.
+     * 
+     * @param hierarchical
+     */
+    FacetItem(boolean hierarchical) {
+        this.hierarchial = hierarchical;
+    }
+
+    /**
      * Constructor for active facets received via the URL. The Solr query is split into individual field/value.
      *
      * @param link a {@link java.lang.String} object.
@@ -72,17 +81,28 @@ public class FacetItem implements Comparable<FacetItem>, Serializable {
      * @should split field and value range correctly
      */
     public FacetItem(String link, boolean hierarchical) {
-        int colonIndex = link.indexOf(':');
-        if (colonIndex == -1) {
-            throw new IllegalArgumentException(new StringBuilder().append("Field and value are not colon-separated: ").append(link).toString());
-        }
-        this.link = link;
-        this.hierarchial = hierarchical;
-        parseLink(link);
+        this(link, null, hierarchical);
     }
 
     /**
+     * Constructor for active facets received via the URL. The Solr query is split into individual field/value.
      *
+     * @param link a {@link java.lang.String} object.
+     * @param label
+     * @param hierarchical a boolean.
+     * @should split field and value correctly
+     * @should split field and value range correctly
+     * @should set label to value if no label value given
+     */
+    public FacetItem(String link, String label, boolean hierarchical) {
+        this.label = label;
+        this.hierarchial = hierarchical;
+        setLink(link.trim());
+    }
+
+    /**
+     * Internal constructor.
+     * 
      * @param link {@link String}
      * @param label {@link String}
      * @param translatedLabel {@link String}
@@ -91,12 +111,11 @@ public class FacetItem implements Comparable<FacetItem>, Serializable {
      */
     private FacetItem(String field, String link, String label, String translatedLabel, long count, boolean hierarchical) {
         this.field = field;
-        this.link = link.trim();
-        parseLink(link);
         this.label = label;
         this.translatedLabel = translatedLabel;
         this.count = count;
         this.hierarchial = hierarchical;
+        setLink(link.trim());
     }
 
     /* (non-Javadoc)
@@ -160,9 +179,9 @@ public class FacetItem implements Comparable<FacetItem>, Serializable {
     /**
      * Extracts field name and value(s) from the given link string.
      * 
-     * @param link
+     * @should set label to value if label empty
      */
-    void parseLink(String link) {
+    void parseLink() {
         if (link == null) {
             return;
         }
@@ -181,28 +200,57 @@ public class FacetItem implements Comparable<FacetItem>, Serializable {
         } else {
             value = fullValue;
         }
+        if (StringUtils.isEmpty(label)) {
+            label = value;
+        }
     }
 
     /**
-     * Constructs Lucene queries for the drill-down. Always sorted by the label translation.
+     * Constructs facet items from thelist of given field:value combinations. Always sorted by the label translation.
      *
+     * @param field Facet field
+     * @param values Map containing facet values and their counts
+     * @param hierarchical true if facet field is hierarchical; false otherwise
+     * @param locale Optional locale for translation
+     * @param labelMap Optional map for storing alternate labels for later use by the client
      * @return {@link java.util.ArrayList} of {@link io.goobi.viewer.model.search.FacetItem}
      * @should add priority values first
-     * @param field a {@link java.lang.String} object.
-     * @param values a {@link java.util.Map} object.
-     * @param hierarchical a boolean.
-     * @param locale a {@link java.util.Locale} object.
+     * @should set label from separate field if configured and found
      */
-    public static List<FacetItem> generateFilterLinkList(String field, Map<String, Long> values, boolean hierarchical, Locale locale) {
+    public static List<FacetItem> generateFilterLinkList(String field, Map<String, Long> values, boolean hierarchical, Locale locale,
+            Map<String, String> labelMap) {
+        // logger.trace("generateFilterLinkList: {}", field);
         List<FacetItem> retList = new ArrayList<>();
         List<String> priorityValues = DataManager.getInstance().getConfiguration().getPriorityValuesForDrillDownField(field);
         Map<String, FacetItem> priorityValueMap = new HashMap<>(priorityValues.size());
+
+        // If a separate label field configured for fieldName, load all values and add them to labelMap
+        String labelField = DataManager.getInstance().getConfiguration().getLabelFieldForDrillDownField(field);
+        if (labelField != null && labelMap != null) {
+            try {
+                labelMap.putAll(DataManager.getInstance()
+                        .getSearchIndex()
+                        .getLabelValuesForDrillDownField(field, labelField, values.keySet()));
+            } catch (PresentationException e) {
+                logger.debug(e.getMessage());
+            } catch (IndexUnreachableException e) {
+                logger.error(e.getMessage(), e);
+            }
+        }
+
         for (String value : values.keySet()) {
             // Skip reversed values
             if (value.charAt(0) == 1) {
                 continue;
             }
             String label = value;
+
+            String key = field + ":" + value;
+            if (labelMap != null && labelMap.containsKey(key)) {
+                label = labelMap.get(key);
+                logger.trace("using label from map: {}", label);
+            }
+
             if (StringUtils.isEmpty(field)) {
                 label = new StringBuilder(value).append(SolrConstants._DRILLDOWN_SUFFIX).toString();
             }
@@ -338,25 +386,6 @@ public class FacetItem implements Comparable<FacetItem>, Serializable {
     public String getQueryEscapedLink() {
         String field = SearchHelper.facetifyField(this.field);
         String escapedValue = getEscapedValue(value);
-        //        if (field.startsWith(SolrConstants.WKT_)) {
-        //            String[] valueSplit = value.split(",");
-        //            if (valueSplit.length > 1) {
-        //                // Polygon
-        //                escapedValue = new StringBuilder()
-        //                        .append("\"IsWithin(POLYGON((")
-        //                        .append(value)
-        //                        .append("))) distErrPct=0\"")
-        //                        .toString();
-        //            } else if (valueSplit.length == 1) {
-        //                // Point
-        //                escapedValue = new StringBuilder()
-        //                        .append("\"IsWithin(POINT(")
-        //                        .append(value)
-        //                        .append(")) distErrPct=0\"")
-        //                        .toString();
-        //            }
-        //        }
-
         if (hierarchial) {
             return new StringBuilder("(").append(field)
                     .append(':')
@@ -526,8 +555,13 @@ public class FacetItem implements Comparable<FacetItem>, Serializable {
      * @param link the link to set
      */
     public void setLink(String link) {
+        // TODO move logic out of the setter
+        int colonIndex = link.indexOf(':');
+        if (colonIndex == -1) {
+            throw new IllegalArgumentException(new StringBuilder().append("Field and value are not colon-separated: ").append(link).toString());
+        }
         this.link = link;
-        parseLink(link);
+        parseLink();
     }
 
     /**

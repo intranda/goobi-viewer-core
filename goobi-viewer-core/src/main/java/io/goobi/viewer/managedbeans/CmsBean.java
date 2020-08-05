@@ -59,6 +59,7 @@ import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.exceptions.RecordDeletedException;
 import io.goobi.viewer.exceptions.RecordNotFoundException;
+import io.goobi.viewer.exceptions.RedirectException;
 import io.goobi.viewer.exceptions.ViewerConfigurationException;
 import io.goobi.viewer.managedbeans.tabledata.TableDataProvider;
 import io.goobi.viewer.managedbeans.tabledata.TableDataProvider.SortOrder;
@@ -104,6 +105,11 @@ import io.goobi.viewer.model.viewer.PageType;
 @Named
 @SessionScoped
 public class CmsBean implements Serializable {
+
+    /**
+     * 
+     */
+    public static final String CMSPAGES_FILTER = "languageVersions-title_languageVersions-menuTitle_categories-name";
 
     private static final long serialVersionUID = -2021732230593473827L;
 
@@ -233,8 +239,8 @@ public class CmsBean implements Serializable {
                 }
             });
             lazyModelPages.setEntriesPerPage(DEFAULT_ROWS_PER_PAGE);
-            lazyModelPages.addFilter("CMSPageLanguageVersion", "title_menuTitle");
-            lazyModelPages.addFilter("CMSCategory", "name");
+            lazyModelPages.addFilter(CMSPAGES_FILTER);
+//            lazyModelPages.addFilter("CMSCategory", "name");
         }
         selectedLocale = getDefaultLocale();
     }
@@ -1223,22 +1229,22 @@ public class CmsBean implements Serializable {
      */
     public void setSelectedPage(CMSPage currentPage) throws DAOException {
         if (currentPage != null) {
-            
-            if(this.selectedPage != null && currentPage.getId() != null && currentPage.getId().equals(this.selectedPage.getId())) {
+
+            if (this.selectedPage != null && currentPage.getId() != null && currentPage.getId().equals(this.selectedPage.getId())) {
                 //same page, don't change
             } else {
-                if(currentPage.getId() != null) {
+                if (currentPage.getId() != null) {
                     //get page from DAO
                     this.selectedPage = DataManager.getInstance().getDao().getCMSPageForEditing(currentPage.getId());
                 } else {
                     this.selectedPage = currentPage;
                 }
                 //Keep unused sidebar elements if page was already loaded to be able to correctly save sidebar elements
-//                if (previouslySelected != null
-//                        && previouslySelected.getId() != null
-//                        && previouslySelected.getId().equals(this.selectedPage.getId())) {
-//                    this.selectedPage.setUnusedSidebarElements(previouslySelected.getUnusedSidebarElements());
-//                }
+                //                if (previouslySelected != null
+                //                        && previouslySelected.getId() != null
+                //                        && previouslySelected.getId().equals(this.selectedPage.getId())) {
+                //                    this.selectedPage.setUnusedSidebarElements(previouslySelected.getUnusedSidebarElements());
+                //                }
                 PageValidityStatus validityStatus = isPageValid(this.selectedPage);
                 this.selectedPage.setValidityStatus(validityStatus);
                 if (validityStatus.isValid()) {
@@ -1607,7 +1613,11 @@ public class CmsBean implements Serializable {
                             browse.setFilter(DataManager.getInstance().getConfiguration().getSubthemeDiscriminatorField(),
                                     currentPage.getSubThemeDiscriminatorValue());
                         }
-                        browse.searchTerms();
+                        try {
+                            browse.searchTerms();
+                        } catch (RedirectException e) {
+                            return "pretty:cmsBrowse3";
+                        }
                     default:
                         break;
                 }
@@ -2796,6 +2806,14 @@ public class CmsBean implements Serializable {
         }
 
         return "";
+    }
+    
+    /**
+     * getter for jsf
+     * @return
+     */
+    public String getCmsPagesFilter() {
+        return CMSPAGES_FILTER;
     }
 
 }

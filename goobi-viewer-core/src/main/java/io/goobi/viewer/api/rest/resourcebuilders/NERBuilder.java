@@ -24,6 +24,8 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
+import javax.servlet.http.HttpServletRequest;
+
 import org.apache.solr.common.SolrDocument;
 import org.apache.solr.common.SolrDocumentList;
 import org.slf4j.Logger;
@@ -51,6 +53,7 @@ import io.goobi.viewer.exceptions.HTTPException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.exceptions.ViewerConfigurationException;
+import io.goobi.viewer.model.security.AccessConditionUtils;
 
 /**
  * @author florian
@@ -70,7 +73,7 @@ public class NERBuilder {
         this.urls = urls;
     }
     
-    public DocumentReference getNERTags(String pi, String type, Integer start, Integer end, int rangeSize)
+    public DocumentReference getNERTags(String pi, String type, Integer start, Integer end, int rangeSize, HttpServletRequest request)
             throws PresentationException, IndexUnreachableException, ViewerConfigurationException {
         StringBuilder query = new StringBuilder();
         query.append(SolrConstants.PI_TOPSTRUCT).append(':').append(pi);
@@ -85,7 +88,7 @@ public class NERBuilder {
             query.append(" AND ").append(SolrConstants.DOCTYPE).append(":PAGE");
         }
 
-        return getNERTagsByQuery(query.toString(), type, rangeSize);
+        return getNERTagsByQuery(request, query.toString(), type, rangeSize);
     }
     
     /**
@@ -99,7 +102,7 @@ public class NERBuilder {
      * @throws IndexUnreachableException if the index cannot be reached
      * @throws ViewerConfigurationException
      */
-    private DocumentReference getNERTagsByQuery(String query, String typeString, int rangeSize)
+    private DocumentReference getNERTagsByQuery(HttpServletRequest request, String query, String typeString, int rangeSize)
             throws PresentationException, IndexUnreachableException, ViewerConfigurationException {
         final List<String> fieldList = Arrays.asList(new String[] { SolrConstants.PI, SolrConstants.PI_TOPSTRUCT, SolrConstants.IDDOC,
                 SolrConstants.IDDOC_TOPSTRUCT, SolrConstants.ORDER, SolrConstants.FILENAME_ALTO });
@@ -131,6 +134,8 @@ public class NERBuilder {
                             altoFileName = topStructPi + "/" + altoFileName;
                             
                         }
+                        if (AccessConditionUtils.checkAccess(request, "text", topStructPi, altoFileName, false)) {
+
                         String altoString = DataFileTools.loadAlto(altoFileName);
                         Integer pageOrder = getPageOrder(solrDoc);
                         List<TagCount> tags = ALTOTools.getNERTags(altoString, type);
@@ -140,10 +145,9 @@ public class NERBuilder {
                             }
                         }
                         range.addTags(tags);
+                        }
                     } catch (ContentNotFoundException e) {
                         logger.trace("No alto file " + altoFileName);
-                    } catch (AccessDeniedException e) {
-                        logger.error(e.toString());
                     } catch (DAOException e) {
                         logger.error(e.toString());
                     }

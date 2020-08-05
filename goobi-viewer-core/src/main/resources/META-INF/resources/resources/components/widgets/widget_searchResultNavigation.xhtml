@@ -48,12 +48,20 @@
 				</div>
 
 				<div class="search-result-navigation-back-to-collection">
-					<h:outputLink rendered="#{activeDocumentBean.nextHit != null}" value="#{navigationHelper.applicationUrl}search#{searchBean.currentSearchUrlPart}">
+					<h:outputLink rendered="#{searchBean.activeSearchType != 1 and activeDocumentBean.nextHit != null}"
+					    value="#{navigationHelper.applicationUrl}search#{searchBean.currentSearchUrlPart}">
 						<img 
 							src="#{request.contextPath}/resources/themes/#{navigationHelper.theme}/images/navigate/backToHitlist.png"
 							title="#{msg.returnToHitlist}"
 							alt="#{msg.returnToHitlist}" />#{msg.returnToHitlist}
 		            </h:outputLink>
+                    <h:outputLink rendered="#{searchBean.activeSearchType == 1 and activeDocumentBean.nextHit != null}"
+                        value="#{navigationHelper.applicationUrl}searchadvanced#{searchBean.currentSearchUrlPart}">
+                        <img 
+                            src="#{request.contextPath}/resources/themes/#{navigationHelper.theme}/images/navigate/backToHitlist.png"
+                            title="#{msg.returnToHitlist}"
+                            alt="#{msg.returnToHitlist}" />#{msg.returnToHitlist}
+                    </h:outputLink>
 				</div>
 			</div>
 		</h:panelGroup>

@@ -29,18 +29,21 @@
                                     styleClass="form-control"
                                     value="#{searchBean.invisibleSearchString}"> 
                                     <f:passThroughAttribute name="placeholder" value="#{cc.attrs.widget.hasWidgetTitle ? msg[cc.attrs.widget.widgetTitle] : msg.search}" />
+                                    <f:passThroughAttribute name="aria-label" value="searchField" />
                                 </h:inputText>
                                 <div class="input-group-addon">
                                     <ui:fragment rendered="#{!cc.attrs.widget.hasLinkedPages}">
                                         <h:commandButton id="widgetSearchFieldBtn" action="#{searchBean.searchSimpleSetFacets(cc.attrs.widget.additionalQuery)}">
                                             <f:setPropertyActionListener target="#{searchBean.activeSearchType}" value="0" />
                                             <f:setPropertyActionListener target="#{searchBean.facets.currentFacetString}" value="#{cc.attrs.widget.additionalQuery}" />
+                                            <f:passThroughAttribute name="aria-label" value="#{msg.search}" />
                                         </h:commandButton>
                                     </ui:fragment>
                                     <ui:fragment rendered="#{cc.attrs.widget.hasLinkedPages}">
                                         <h:commandButton id="widgetSearchFieldBtn_cms" action="#{cc.attrs.widget.linkedPages.search.searchSimple}">
                                             <f:setPropertyActionListener target="#{searchBean.activeSearchType}" value="0" />
                                             <f:setPropertyActionListener target="#{searchBean.facets.currentFacetString}" value="#{cc.attrs.widget.additionalQuery}" />
+                                            <f:passThroughAttribute name="aria-label" value="#{msg.search}" />
                                         </h:commandButton>
                                     </ui:fragment>
                                 </div>

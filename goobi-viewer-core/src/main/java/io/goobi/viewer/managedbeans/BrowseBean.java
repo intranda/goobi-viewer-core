@@ -21,7 +21,6 @@ import java.net.URLDecoder;
 import java.net.URLEncoder;
 import java.text.Collator;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -41,8 +40,11 @@ import de.unigoettingen.sub.commons.contentlib.exceptions.IllegalRequestExceptio
 import io.goobi.viewer.controller.AlphanumCollatorComparator;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.SolrConstants;
+import io.goobi.viewer.controller.SolrSearchIndex;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
+import io.goobi.viewer.exceptions.RecordNotFoundException;
+import io.goobi.viewer.exceptions.RedirectException;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.messages.Messages;
 import io.goobi.viewer.messages.ViewerResourceBundle;
@@ -86,7 +88,7 @@ public class BrowseBean implements Serializable {
     /** Escaped term list for the current result page (browsing menu). Used for URL construction. */
     private List<String> browseTermListEscaped;
     private List<Long> browseTermHitCountList;
-    private Map<String, List<String>> availableStringFilters = new HashMap<>();
+    Map<String, List<String>> availableStringFilters = new HashMap<>();
     /** This is used for filtering term browsing by the starting letter. */
     private String currentStringFilter = "";
     /** Optional filter query */
@@ -332,6 +334,22 @@ public class BrowseBean implements Serializable {
     }
 
     /**
+     * Action method for JSF.
+     * 
+     * @return
+     * @throws PresentationException
+     * @throws IndexUnreachableException
+     */
+    public String searchTermsAction() throws PresentationException, IndexUnreachableException {
+        try {
+            return searchTerms();
+        } catch (RedirectException e) {
+            // Redirect to filter URL requested
+            return "pretty:searchTerm4";
+        }
+    }
+
+    /**
      * <p>
      * searchTerms.
      * </p>
@@ -339,8 +357,9 @@ public class BrowseBean implements Serializable {
      * @return a {@link java.lang.String} object.
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
+     * @throws RedirectException
      */
-    public String searchTerms() throws PresentationException, IndexUnreachableException {
+    public String searchTerms() throws PresentationException, IndexUnreachableException, RedirectException {
         synchronized (this) {
             logger.trace("searchTerms");
             if (breadcrumbBean != null) {
@@ -374,13 +393,13 @@ public class BrowseBean implements Serializable {
                 logger.error("No configuration found for term field '{}'.", browsingMenuField);
                 resetTerms();
                 Messages.error(ViewerResourceBundle.getTranslation("browse_errFieldNotConfigured", null).replace("{0}", browsingMenuField));
-                return "searchTermList";
+                throw new RedirectException("");
             }
-            if (StringUtils.isEmpty(currentStringFilter) || availableStringFilters.get(browsingMenuField) == null) {
-                terms = SearchHelper.getFilteredTerms(currentBmfc, "", filterQuery, new BrowseTermComparator(locale),
-                        DataManager.getInstance().getConfiguration().isAggregateHits());
 
-                // Populate the list of available starting characters with ones that actually exist in the complete terms list
+            // Populate the list of available starting characters with ones that actually exist in the complete terms list
+            if (availableStringFilters.get(browsingMenuField) == null) {
+                terms = SearchHelper.getFilteredTerms(currentBmfc, "", filterQuery, 0, 0, new BrowseTermComparator(locale),
+                        DataManager.getInstance().getConfiguration().isAggregateHits());
                 if (availableStringFilters.get(browsingMenuField) == null || filterQuery != null) {
                     logger.trace("Populating search term filters for field '{}'...", browsingMenuField);
                     availableStringFilters.put(browsingMenuField, new ArrayList<String>());
@@ -412,12 +431,16 @@ public class BrowseBean implements Serializable {
                 // logger.debug(availableStringFilters.toString());
             }
 
-            // Get the terms again, this time using the requested filter. The search over all terms the first time is necessary to get the list of available filters.
-            if (StringUtils.isNotEmpty(currentStringFilter)) {
-                terms = SearchHelper.getFilteredTerms(currentBmfc, currentStringFilter, filterQuery, new BrowseTermComparator(locale),
-                        DataManager.getInstance().getConfiguration().isAggregateHits());
+            // If no filter is set, redirect to first available filter (if so configured)
+            if (StringUtils.isEmpty(currentStringFilter) && currentBmfc.isAlwaysApplyFilter()
+                    && availableStringFilters.get(browsingMenuField) != null
+                    && !availableStringFilters.get(browsingMenuField).isEmpty()) {
+                currentStringFilter = selectRedirectFilter();
+                logger.trace("Redirecting to filter: {}", currentStringFilter);
+                throw new RedirectException("");
             }
-            hitsCount = terms.size();
+
+            hitsCount = SearchHelper.getFilteredTermsCount(currentBmfc, currentStringFilter, filterQuery);
             if (hitsCount == 0) {
                 resetTerms();
                 return "searchTermList";
@@ -426,16 +449,21 @@ public class BrowseBean implements Serializable {
             if (currentPage > getLastPage()) {
                 currentPage = getLastPage();
             }
-
             int start = (currentPage - 1) * browsingMenuHitsPerPage;
             int end = currentPage * browsingMenuHitsPerPage;
-            if (end > terms.size()) {
-                end = terms.size();
+            if (end > hitsCount) {
+                end = hitsCount;
             }
-
-            browseTermList = new ArrayList<>(end - start);
+            browseTermList = new ArrayList<>(browsingMenuHitsPerPage);
             browseTermListEscaped = new ArrayList<>(browseTermList.size());
             browseTermHitCountList = new ArrayList<>(browseTermList.size());
+
+            // Get terms for the current page 
+            logger.trace("Fetching terms for page {} ({} - {})", currentPage, start, end - 1);
+            terms = SearchHelper.getFilteredTerms(currentBmfc, currentStringFilter, filterQuery, 0, SolrSearchIndex.MAX_HITS,
+                    new BrowseTermComparator(locale),
+                    DataManager.getInstance().getConfiguration().isAggregateHits());
+
             for (int i = start; i < end; ++i) {
                 BrowseTerm term = terms.get(i);
                 if (term.getTranslations() != null && term.getTranslations().getValue(locale).isPresent()) {
@@ -458,6 +486,43 @@ public class BrowseBean implements Serializable {
             }
 
             return "searchTermList";
+        }
+    }
+
+    /**
+     * Selects a filter string for automatic redirecting, prioritizing letters, followed by numbers and finally by the first available filter.
+     * 
+     * @return Selected filter string
+     * @should return first available alphabetical filter if available
+     * @should return numerical filter if available
+     * @should return first filter if no other available
+     */
+    String selectRedirectFilter() {
+        if (availableStringFilters.isEmpty()) {
+            return null;
+        }
+
+        String numericalFilter = null;
+        String alphaFilter = null;
+        for (String filter : availableStringFilters.get(browsingMenuField)) {
+            switch (filter) {
+                case "0-9":
+                    numericalFilter = filter;
+                    break;
+                default:
+                    if (filter.matches(".*[A-Z].*") && alphaFilter == null) {
+                        alphaFilter = filter;
+                    }
+                    break;
+            }
+        }
+
+        if (alphaFilter != null) {
+            return alphaFilter;
+        } else if (numericalFilter != null) {
+            return numericalFilter;
+        } else {
+            return availableStringFilters.get(browsingMenuField).get(0);
         }
     }
 
@@ -662,31 +727,6 @@ public class BrowseBean implements Serializable {
 
     /**
      * <p>
-     * getCurrentPageResetFilter.
-     * </p>
-     *
-     * @return a int.
-     */
-    public int getCurrentPageResetFilter() {
-        return currentPage;
-    }
-
-    /**
-     * This is used when a term search query doesn't contain a filter value. In this case, the value is reset.
-     *
-     * @param currentPage a int.
-     * @deprecated Reset the currentStringFilter value in the PrettyFaces mapping
-     */
-    @Deprecated
-    public void setCurrentPageResetFilter(int currentPage) {
-        synchronized (this) {
-            currentStringFilter = null;
-            this.currentPage = currentPage;
-        }
-    }
-
-    /**
-     * <p>
      * Getter for the field <code>currentPage</code>.
      * </p>
      *
@@ -718,7 +758,7 @@ public class BrowseBean implements Serializable {
      */
     public int getLastPage() {
         int hitsPerPageLocal = browsingMenuHitsPerPage;
-        int answer = new Double(Math.floor(hitsCount / hitsPerPageLocal)).intValue();
+        int answer = Double.valueOf(Math.floor(hitsCount / hitsPerPageLocal)).intValue();
         if (hitsCount % hitsPerPageLocal != 0 || answer == 0) {
             answer++;
         }
@@ -800,8 +840,15 @@ public class BrowseBean implements Serializable {
         }
         String url = SearchHelper.getFirstWorkUrlWithFieldValue(SolrConstants.DC, getTargetCollection(), true, true,
                 DataManager.getInstance().getConfiguration().getCollectionSplittingChar(SolrConstants.DC), BeanUtils.getLocale());
-        url = url.replace("http://localhost:8082/viewer/", "");
-        return "pretty:" + url;
+        //        url = BeanUtils.getServletPathWithHostAsUrlFromJsfContext() + url;
+        //        return url;
+        try {
+            BeanUtils.getActiveDocumentBean().setPersistentIdentifier(url);
+            return "pretty:object1";
+        } catch (RecordNotFoundException e) {
+            logger.error("No record found for id " + url);
+            return null;
+        }
     }
 
     /**
@@ -896,15 +943,14 @@ public class BrowseBean implements Serializable {
         if (valueSplit.length == 0) {
             return ViewerResourceBundle.getTranslation(collectionValue, null);
         }
-        logger.trace("valuesplit: " + Arrays.asList(valueSplit));
-        
+
         StringBuilder sb = new StringBuilder();
         String collectionName = "";
         for (String value : valueSplit) {
             if (sb.length() > 0) {
                 sb.append(" / ");
                 collectionName += ".";
-            } 
+            }
             collectionName += value;
             sb.append(ViewerResourceBundle.getTranslation(collectionName, null));
         }

@@ -6,7 +6,8 @@
 
     <composite:interface>
         <composite:attribute name="geoMap" required="true" type="io.goobi.viewer.model.maps.GeoMap" />
-    	<composite:attribute name="mapId" required="false" default="geomap" />
+    	<composite:attribute name="mapId" required="false" default="geomap" /><composite:attribute name="linkTarget" required="false" default="_self" />
+    	<composite:attribute name="linkToSearch" required="false" default="true" />
     	<composite:attribute name="linkTarget" required="false" default="_self" />
     </composite:interface>
     
@@ -20,7 +21,7 @@
 		<span data-metadata="description"></span> </popover>
 		<script>
 		/**
-		* put this code in anonymous function and execute it limit the scope of declared variables to 
+		* put this code in anonymous function and execute it to limit the scope of declared variables to 
 		* this script only
 		**/
 		(() => {
@@ -28,11 +29,12 @@
         	let geoMap = new viewerJS.GeoMap({
         	    mapId: "#{cc.attrs.mapId}",
            		allowMovingFeatures: false,
-           		popover: "#popoverTemplate_#{cc.attrs.mapId}",
+           		popover: #{cc.attrs.geoMap.showPopover} ? "#popoverTemplate_#{cc.attrs.mapId}" : undefined,
            		language: "#{navigationHelper.localeString}",
            		popoverOnHover: #{cc.attrs.geoMap.type == 'SOLR_QUERY'},
+           		clusterMarkers: #{cc.attrs.geoMap.type == 'SOLR_QUERY'},
            	});
-        	if(#{cc.attrs.geoMap.type == 'SOLR_QUERY'}) {
+        	if(#{cc.attrs.linkToSearch and cc.attrs.geoMap.type == 'SOLR_QUERY'}) {
                 let searchUrlTemplate = '#{geoMapBean.getCoordinateSearchQueryTemplate()}';
                 geoMap.onFeatureClick.subscribe( (feature) => {
                     let queryUrl = searchUrlTemplate.replace("{lng}", feature.geometry.coordinates[0]);

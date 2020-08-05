@@ -18,8 +18,10 @@ package io.goobi.viewer.model.iiif.presentation.builder;
 import static io.goobi.viewer.api.rest.v1.ApiUrls.*;
 
 import java.awt.Rectangle;
+import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -67,6 +69,7 @@ import io.goobi.viewer.api.rest.v1.ApiUrls;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.SolrConstants;
 import io.goobi.viewer.controller.SolrSearchIndex;
+import io.goobi.viewer.controller.StringTools;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.messages.Messages;
@@ -675,6 +678,7 @@ public abstract class AbstractBuilder {
     public URI getCollectionURI(String collectionField, String baseCollectionName) {
         String urlString;
         if (StringUtils.isNotBlank(baseCollectionName)) {
+            baseCollectionName = StringTools.encodeUrl(baseCollectionName);
             urlString = this.urls.path(COLLECTIONS, COLLECTIONS_COLLECTION).params(collectionField, baseCollectionName).build();
         } else {
             urlString = this.urls.path(COLLECTIONS).params(collectionField).build();

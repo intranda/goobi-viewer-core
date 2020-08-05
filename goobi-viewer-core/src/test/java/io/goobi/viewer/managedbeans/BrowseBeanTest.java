@@ -15,13 +15,13 @@
  */
 package io.goobi.viewer.managedbeans;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.junit.Assert;
 import org.junit.Test;
 
 import io.goobi.viewer.AbstractTest;
-import io.goobi.viewer.managedbeans.BrowseBean;
 
 public class BrowseBeanTest extends AbstractTest {
 
@@ -61,5 +61,49 @@ public class BrowseBeanTest extends AbstractTest {
         BrowseBean bb = new BrowseBean();
         Assert.assertEquals("foo", bb.getCollectionHierarchy("x", "foo"));
         Assert.assertEquals("foo / foo.bar", bb.getCollectionHierarchy("x", "foo.bar"));
+    }
+
+    /**
+     * @see BrowseBean#selectRedirectFilter()
+     * @verifies return first available alphabetical filter if available
+     */
+    @Test
+    public void selectRedirectFilter_shouldReturnFirstAvailableAlphabeticalFilterIfAvailable() throws Exception {
+        BrowseBean bb = new BrowseBean();
+        bb.setBrowsingMenuField("foo");
+        bb.availableStringFilters.put("foo", new ArrayList<>(4));
+        bb.getAvailableStringFilters().add("!");
+        bb.getAvailableStringFilters().add("0-9");
+        bb.getAvailableStringFilters().add("A");
+        bb.getAvailableStringFilters().add("B");
+        Assert.assertEquals("A", bb.selectRedirectFilter());
+    }
+
+    /**
+     * @see BrowseBean#selectRedirectFilter()
+     * @verifies return numerical filter if available
+     */
+    @Test
+    public void selectRedirectFilter_shouldReturnNumericalFilterIfAvailable() throws Exception {
+        BrowseBean bb = new BrowseBean();
+        bb.setBrowsingMenuField("foo");
+        bb.availableStringFilters.put("foo", new ArrayList<>(2));
+        bb.getAvailableStringFilters().add("!");
+        bb.getAvailableStringFilters().add("0-9");
+        Assert.assertEquals("0-9", bb.selectRedirectFilter());
+    }
+
+    /**
+     * @see BrowseBean#selectRedirectFilter()
+     * @verifies return first filter if no other available
+     */
+    @Test
+    public void selectRedirectFilter_shouldReturnFirstFilterIfNoOtherAvailable() throws Exception {
+        BrowseBean bb = new BrowseBean();
+        bb.setBrowsingMenuField("foo");
+        bb.availableStringFilters.put("foo", new ArrayList<>(2));
+        bb.getAvailableStringFilters().add("!");
+        bb.getAvailableStringFilters().add("?");
+        Assert.assertEquals("!", bb.selectRedirectFilter());
     }
 }

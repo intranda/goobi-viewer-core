@@ -27,6 +27,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -96,6 +97,7 @@ public class JPADAO implements IDAO {
     private static final Logger logger = LoggerFactory.getLogger(JPADAO.class);
     private static final String DEFAULT_PERSISTENCE_UNIT_NAME = "intranda_viewer_tomcat";
     static final String MULTIKEY_SEPARATOR = "_";
+    static final String KEY_FIELD_SEPARATOR = "-";
 
     private final EntityManagerFactory factory;
     private EntityManager em;
@@ -231,7 +233,16 @@ public class JPADAO implements IDAO {
     /** {@inheritDoc} */
     @Override
     public long getUserCount(Map<String, String> filters) throws DAOException {
-        return getRowCount("User", null, filters);
+        String filterQuery = "";
+        Map<String, String> params = new HashMap<>();
+        if(filters != null) {            
+            String filterValue = filters.values().stream().findFirst().orElse("");
+            if(StringUtils.isNotBlank(filterValue)) {
+                filterQuery = getUsersFilterQuery("value");
+                params.put("value", sanitizeQueryParam(filterValue, true));
+            }
+        }
+        return getFilteredRowCount("User", filterQuery, params);
     }
 
     /** {@inheritDoc} */
@@ -239,48 +250,63 @@ public class JPADAO implements IDAO {
     @Override
     public List<User> getUsers(int first, int pageSize, String sortField, boolean descending, Map<String, String> filters) throws DAOException {
         preQuery();
-        StringBuilder sbQuery = new StringBuilder("SELECT o FROM User o");
-        List<String> filterKeys = new ArrayList<>();
-        if (filters != null && !filters.isEmpty()) {
-            sbQuery.append(" WHERE ");
-            filterKeys.addAll(filters.keySet());
-            Collections.sort(filterKeys);
-            int count = 0;
-            for (String key : filterKeys) {
-                if (count > 0) {
-                    sbQuery.append(" AND ");
-                }
-
-                String[] keyParts = key.split(MULTIKEY_SEPARATOR);
-                int keyPartCount = 0;
-                sbQuery.append(" ( ");
-                for (String keyPart : keyParts) {
-                    if (keyPartCount > 0) {
-                        sbQuery.append(" OR ");
-                    }
-                    sbQuery.append("UPPER(o.").append(keyPart).append(") LIKE :").append(key.replaceAll(MULTIKEY_SEPARATOR, ""));
-                    keyPartCount++;
-                }
-                sbQuery.append(" ) ");
-                count++;
+        StringBuilder sbQuery = new StringBuilder("SELECT a FROM User a");
+        Map<String, String> params = new HashMap<>();
+        
+        if(filters != null) {
+            String filterValue = filters.values().stream().findFirst().orElse("");
+            if(StringUtils.isNotBlank(filterValue)) {
+                String filterQuery = getUsersFilterQuery("value");
+                params.put("value", sanitizeQueryParam(filterValue, true));
+                sbQuery.append(filterQuery);
             }
         }
+
         if (StringUtils.isNotEmpty(sortField)) {
-            sbQuery.append(" ORDER BY o.").append(sortField);
+            sbQuery.append(" ORDER BY a.").append(sortField);
             if (descending) {
                 sbQuery.append(" DESC");
             }
         }
         logger.trace(sbQuery.toString());
         Query q = em.createQuery(sbQuery.toString());
-        for (String key : filterKeys) {
-            q.setParameter(key.replaceAll(MULTIKEY_SEPARATOR, ""), "%" + filters.get(key).toUpperCase() + "%");
+        for (String param : params.keySet()) {
+            q.setParameter(param, params.get(param));
         }
-        q.setFirstResult(first);
+
         q.setMaxResults(pageSize);
         q.setHint("javax.persistence.cache.storeMode", "REFRESH");
 
         return q.getResultList();
+    }
+
+    /**
+     * @param param
+     * @return
+     */
+    public String getUsersFilterQuery(String param) {
+        String filterQuery;
+        String filterQueryNames = "(UPPER(a.firstName) LIKE :%s OR UPPER(a.lastName) LIKE :%s OR UPPER(a.nickName) LIKE :%s OR UPPER(a.email) LIKE :%s)";
+        String filterQueryGroup = "EXISTS (SELECT role FROM UserRole role LEFT JOIN role.userGroup group WHERE role.user = a AND UPPER(group.name) LIKE :%s)";
+        filterQuery = " WHERE " + filterQueryNames.replace("%s", param) + " OR " + filterQueryGroup.replace("%s", param);
+        return filterQuery;
+    }
+
+    /**
+     * 
+     * Remove characters from the parameter that may be used to modify the sql query itself.
+     * Also puts the parameter to upper case
+     * @param param     The parameter to sanitize
+     * @param addWildCards  if true, add '%' to the beginning and end of param
+     * @return  the sanitized parameter
+     */
+    private String sanitizeQueryParam(String param, boolean addWildCards) {
+        param = param.replaceAll("['\"\\(\\)]", "");
+        param = param.toUpperCase();
+        if(addWildCards) {
+            param = "%" + param + "%";
+        }
+        return param;
     }
 
     /*
@@ -1400,6 +1426,49 @@ public class JPADAO implements IDAO {
             return null;
         }
     }
+    
+
+    /**
+     * @see io.goobi.viewer.dao.IDAO#getLicenses(io.goobi.viewer.model.security.LicenseType)
+     * @should return correct values
+     */
+    @SuppressWarnings("unchecked")
+    @Override
+    public List<License> getLicenses(LicenseType licenseType) throws DAOException {
+        if (licenseType == null) {
+            throw new IllegalArgumentException("licenseType may not be null");
+        }
+
+        preQuery();
+        String query = "SELECT a FROM License a WHERE a.licenseType = :licenseType";
+        Query q = em.createQuery(query);
+        q.setParameter("licenseType", licenseType);
+        return q.getResultList();
+    }
+
+    /**
+     * @see io.goobi.viewer.dao.IDAO#getLicenseCount(io.goobi.viewer.model.security.LicenseType)
+     * @should return correct value
+     */
+    @Override
+    public long getLicenseCount(LicenseType licenseType) throws DAOException {
+        if (licenseType == null) {
+            throw new IllegalArgumentException("licenseType may not be null");
+        }
+
+        preQuery();
+        String query = "SELECT COUNT(a) FROM License a WHERE a.licenseType = :licenseType";
+        Query q = em.createQuery(query);
+        q.setParameter("licenseType", licenseType);
+
+        Object o = q.getResultList().get(0);
+        // MySQL
+        if (o instanceof BigInteger) {
+            return ((BigInteger) q.getResultList().get(0)).longValue();
+        }
+        // H2
+        return (long) q.getResultList().get(0);
+    }
 
     /*
      * (non-Javadoc)
@@ -2279,8 +2348,8 @@ public class JPADAO implements IDAO {
 
                 Map<String, String> params = new HashMap<>();
 
-                String filterString = createFilterQuery(null, filters, params);
-                String rightsFilterString;
+                String filterString = createFilterQuery2(null, filters, params);
+                String rightsFilterString = "";
                 try {
                     rightsFilterString = createCMSPageFilter(params, "a", allowedTemplates, allowedSubthemes, allowedCategories);
                     if (!rightsFilterString.isEmpty()) {
@@ -2302,11 +2371,9 @@ public class JPADAO implements IDAO {
                 logger.trace("CMS page query: {}", sbQuery.toString());
                 Query q = em.createQuery(sbQuery.toString());
                 params.entrySet().forEach(entry -> q.setParameter(entry.getKey(), entry.getValue()));
-                //            q.setParameter("lang", BeanUtils.getLocale().getLanguage());
                 q.setFirstResult(first);
                 q.setMaxResults(pageSize);
                 q.setFlushMode(FlushModeType.COMMIT);
-                // q.setHint("javax.persistence.cache.storeMode", "REFRESH");
 
                 List<CMSPage> list = q.getResultList();
                 return list;
@@ -2316,6 +2383,67 @@ public class JPADAO implements IDAO {
             }
         }
     }
+    
+    static String createFilterQuery2(String staticFilterQuery, Map<String, String> filters, Map<String, String> params) {
+
+        StringBuilder q = new StringBuilder(" ");
+        //placeholder keys (a,b,c,...) for all tables to query
+        Map<String, String> tableKeys = new HashMap<>();
+        
+        if (StringUtils.isNotEmpty(staticFilterQuery)) {
+            q.append(staticFilterQuery);
+        }
+        if (filters != null && !filters.isEmpty()) {
+            AlphabetIterator abc = new AlphabetIterator();
+            String mainTableKey = abc.next(); // = a
+            
+            
+            for (Entry<String, String> entry : filters.entrySet()) {
+                String key = entry.getKey();
+                String filterValue = entry.getValue();
+                if(StringUtils.isBlank(filterValue)) {
+                    continue;
+                }
+                String keyValueParam = key.replaceAll("[" + MULTIKEY_SEPARATOR + KEY_FIELD_SEPARATOR + "]", "");
+                params.put(keyValueParam, "%" + filterValue.toUpperCase() + "%");
+                
+                List<String> joinStatements = new ArrayList<>();
+                List<String> whereStatements = new ArrayList<>();
+                
+                //subkeys = all keys this filter applies to, each of the form [field] or [table]-[field]
+                String[] subKeys = key.split(MULTIKEY_SEPARATOR);
+                for (String subKey : subKeys) {
+                    if(StringUtils.isBlank(subKey)) {
+                        continue;
+                    } else if(subKey.contains(KEY_FIELD_SEPARATOR)) {
+                        String table = subKey.substring(0, subKey.indexOf(KEY_FIELD_SEPARATOR));
+                        String field = subKey.substring(subKey.indexOf(KEY_FIELD_SEPARATOR)+1);
+                        String tableKey;
+                        if(!tableKeys.containsKey(table)) {
+                            tableKey = abc.next();
+                            tableKeys.put(table, tableKey);
+                            String join = "LEFT JOIN " + mainTableKey + "." + table + " " + tableKey; 
+                            joinStatements.add(join); // JOIN mainTable.joinTable b
+                        } else {
+                            tableKey = tableKeys.get(table);
+                        }
+                        subKey = tableKey + "." + field;
+                    } else {
+                        subKey = mainTableKey + "." + subKey;
+                    }
+                    String where = "UPPER(" + subKey + ") LIKE :" + keyValueParam;
+                    whereStatements.add(where); // joinTable.field LIKE :param | field LIKE :param
+                }
+                String filterQuery = joinStatements.stream().collect(Collectors.joining(" "));
+                if(!whereStatements.isEmpty()) {
+                    filterQuery += " WHERE (" + whereStatements.stream().collect(Collectors.joining(" OR ")) + ")";
+                }
+                q.append(filterQuery);
+            }
+        }
+        return q.toString();
+    }
+
 
     /**
      * Builds a query string to filter a query across several tables
@@ -2362,17 +2490,17 @@ public class JPADAO implements IDAO {
                         if (keyPartCount > 0) {
                             where.append(" OR ");
                         }
-                        if ("CMSPageLanguageVersion".equalsIgnoreCase(joinTable) || "CMSSidebarElement".equalsIgnoreCase(joinTable)) {
-                            where.append("UPPER(" + tableKey + ".").append(keyPart).append(") LIKE :").append(key.replaceAll(MULTIKEY_SEPARATOR, ""));
-                        } else if ("categories".equals(joinTable)) {
-                            where.append(tableKey).append(" LIKE :").append(key.replaceAll(MULTIKEY_SEPARATOR, ""));
-
-                        } else {
+//                        if ("CMSPageLanguageVersion".equalsIgnoreCase(joinTable) || "CMSSidebarElement".equalsIgnoreCase(joinTable)) {
+//                            where.append("UPPER(" + tableKey + ".").append(keyPart).append(") LIKE :").append(key.replaceAll(MULTIKEY_SEPARATOR, ""));
+//                        } else if ("categories".equals(joinTable)) {
+//                            where.append(tableKey).append(" LIKE :").append(key.replaceAll(MULTIKEY_SEPARATOR, ""));
+//
+//                        } else {
                             where.append("UPPER(" + tableKey + ".")
                                     .append(keyPart.replace("-", "."))
                                     .append(") LIKE :")
                                     .append(key.replaceAll(MULTIKEY_SEPARATOR, "").replace("-", ""));
-                        }
+//                        }
                         keyPartCount++;
                     }
                     where.append(" ) ");
@@ -3548,9 +3676,9 @@ public class JPADAO implements IDAO {
     public long getCMSPageCount(Map<String, String> filters, List<String> allowedTemplates, List<String> allowedSubthemes,
             List<String> allowedCategories) throws DAOException {
         preQuery();
-        StringBuilder sbQuery = new StringBuilder("SELECT count(a) FROM CMSPage").append(" a");
+        StringBuilder sbQuery = new StringBuilder("SELECT count(DISTINCT a) FROM CMSPage").append(" a");
         Map<String, String> params = new HashMap<>();
-        sbQuery.append(createFilterQuery(null, filters, params));
+        sbQuery.append( createFilterQuery2(null, filters, params));
         try {
             String rightsFilter = createCMSPageFilter(params, "a", allowedTemplates, allowedSubthemes, allowedCategories);
             if (!rightsFilter.isEmpty()) {
@@ -3570,6 +3698,23 @@ public class JPADAO implements IDAO {
         return (long) q.getSingleResult();
     }
 
+    /**
+     * Universal method for returning the row count for the given class and filter string.
+     * 
+     * @param className
+     * @param filter    Filter query string
+     * @return
+     * @throws DAOException
+     */
+    private long getFilteredRowCount(String className, String filter, Map<String, String> params) throws DAOException {
+        preQuery();
+        StringBuilder sbQuery = new StringBuilder("SELECT count(DISTINCT a) FROM ").append(className).append(" a").append(" ").append(filter);
+        Query q = em.createQuery(sbQuery.toString());
+        params.entrySet().forEach(entry -> q.setParameter(entry.getKey(), entry.getValue()));
+
+        return (long) q.getSingleResult();
+    }
+    
     /**
      * Universal method for returning the row count for the given class and filters.
      * 
@@ -3821,6 +3966,16 @@ public class JPADAO implements IDAO {
         preQuery();
         Query q = em.createQuery("SELECT DISTINCT page FROM CMSPage page JOIN page.categories category WHERE category.id = :id");
         q.setParameter("id", category.getId());
+        List<CMSPage> pageList = q.getResultList();
+        return pageList;
+    }
+    
+    @Override
+    @SuppressWarnings("unchecked")
+    public List<CMSPage> getCMSPagesForSubtheme(String subtheme) throws DAOException {
+        preQuery();
+        Query q = em.createQuery("SELECT DISTINCT page FROM CMSPage page WHERE page.subThemeDiscriminatorValue = :subtheme");
+        q.setParameter("subtheme", subtheme);
         List<CMSPage> pageList = q.getResultList();
         return pageList;
     }
@@ -4149,7 +4304,7 @@ public class JPADAO implements IDAO {
         // q.setHint("javax.persistence.cache.storeMode", "REFRESH");
         return q.getResultList();
     }
-    
+
     /** {@inheritDoc} */
     @Override
     public long getAnnotationCountForWork(String pi) throws DAOException {
@@ -4166,7 +4321,7 @@ public class JPADAO implements IDAO {
         // H2
         return (long) q.getResultList().get(0);
     }
-    
+
     /** {@inheritDoc} */
     @SuppressWarnings("unchecked")
     @Override

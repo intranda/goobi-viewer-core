@@ -41,6 +41,8 @@ public class ViewerImageResourceTest extends AbstractRestApiTest {
 
     private static final String PI = "PPN743674162";
     private static final String FILENAME = "00000010";
+    private static final String PI_SPECIAL_CHARACTERS = "ARVIErdm5";
+    private static final String FILENAME_SPECIAL_CHARACTERS = "erdmagnetisches observatorium vi_blatt_5.tif";
     private static final String REGION = "full";
     private static final String SIZE = "5,5";
     private static final String ROTATION = "0";
@@ -94,6 +96,40 @@ public class ViewerImageResourceTest extends AbstractRestApiTest {
             String responseString = response.readEntity(String.class);
             JSONObject info = new JSONObject(responseString);
             assertTrue("@id should end with '" + id + ".tif' but was: " + info.getString("@id"), info.getString("@id").endsWith(id + ".tif"));
+        }
+    }
+    
+    @Test
+    public void testGetImageInformationSpecialCharacters() {
+        String url = urls.path(RECORDS_FILES_IMAGE, RECORDS_FILES_IMAGE_INFO).params(PI_SPECIAL_CHARACTERS, FILENAME_SPECIAL_CHARACTERS).build();
+        String id = urls.path(RECORDS_FILES_IMAGE).params(PI_SPECIAL_CHARACTERS, FILENAME_SPECIAL_CHARACTERS).build();
+        try (Response response = target(url)
+                .request()
+                .accept(MediaType.APPLICATION_JSON)
+                .get()) {
+            assertEquals("Should return status 200", 200, response.getStatus());
+            assertNotNull("Should return user object as json", response.getEntity());
+            String responseString = response.readEntity(String.class);
+            JSONObject info = new JSONObject(responseString);
+            assertTrue(info.getString("@id").endsWith(id.replace(" ", "+")));
+        }
+    }
+    
+    @Test
+    public void testGetImageSpecialCharacters() {
+        String url = urls.path(RECORDS_FILES_IMAGE, RECORDS_FILES_IMAGE_IIIF)
+                .params(PI_SPECIAL_CHARACTERS, FILENAME_SPECIAL_CHARACTERS, REGION, SIZE, ROTATION, QUALITY, FORMAT)
+                .build();
+        try (Response response = target(url)
+                .request()
+                .accept("image")
+                .get()) {
+            int status = response.getStatus();
+            String contentLocation = response.getHeaderString("Content-Location");
+            byte[] entity = response.readEntity(byte[].class);
+            assertEquals("Should return status 200. Error message: " + new String(entity), 200, status);
+            assertEquals("file:///opt/digiverso/viewer/data/3/media/" + PI_SPECIAL_CHARACTERS.replace(" ", "%20") + "/" + FILENAME_SPECIAL_CHARACTERS.replace(" ", "%20"), contentLocation);
+            assertTrue(entity.length >= 5 * 5 * 8 * 3); //entity is at least as long as the image data
         }
     }
 

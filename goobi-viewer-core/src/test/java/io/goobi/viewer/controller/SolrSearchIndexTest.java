@@ -17,8 +17,10 @@ package io.goobi.viewer.controller;
 
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.apache.solr.client.solrj.response.FieldStatsInfo;
 import org.apache.solr.client.solrj.response.QueryResponse;
@@ -433,5 +435,21 @@ public class SolrSearchIndexTest extends AbstractSolrEnabledTest {
         Assert.assertEquals(
                 SearchHelper.ALL_RECORDS_QUERY + " AND " + SolrConstants.ACCESSCONDITION + ":\"foo/bar\"",
                 SolrSearchIndex.getQueryForAccessCondition("foo/bar", false));
+    }
+
+    /**
+     * @see SolrSearchIndex#getLabelValuesForDrillDownField(String,String,Set)
+     * @verifies return correct values
+     */
+    @Test
+    public void getLabelValuesForDrillDownField_shouldReturnCorrectValues() throws Exception {
+        String[] values = new String[] { "Groos, Karl", "Schubert, Otto", "Heinse, Gottlob Heinrich" };
+        Map<String, String> result = DataManager.getInstance()
+                .getSearchIndex()
+                .getLabelValuesForDrillDownField("MD_AUTHOR", "MD_FIRSTNAME", new HashSet<>(Arrays.asList(values)));
+        Assert.assertEquals(3, result.size());
+        Assert.assertEquals("Karl", result.get("MD_AUTHOR:Groos, Karl"));
+        Assert.assertEquals("Otto", result.get("MD_AUTHOR:Schubert, Otto"));
+        Assert.assertEquals("Gottlob Heinrich", result.get("MD_AUTHOR:Heinse, Gottlob Heinrich"));
     }
 }

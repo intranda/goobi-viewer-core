@@ -19,6 +19,7 @@ import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.net.URLEncoder;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashSet;
@@ -125,7 +126,10 @@ public class GeoMap {
     private GeoMapType type = null;
 
     @Column(name = "initial_view")
-    private String initialView = "";
+    private String initialView = "{" + 
+            "zoom: 5," + 
+            "center: [11.073397, 49.451993]" + 
+        "}";
 
     @Column(name = "marker")
     private String marker = null;
@@ -135,6 +139,10 @@ public class GeoMap {
      */
     @Column(name = "marker_title_field")
     private String markerTitleField = "MD_VALUE";
+    
+    private String featuresAsString = null;
+    
+    private boolean showPopover = true;
 
     /**
      * Empty Constructor
@@ -283,7 +291,7 @@ public class GeoMap {
         }
         return title;
     }
-
+    
     /**
      * @return the type
      */
@@ -310,9 +318,30 @@ public class GeoMap {
      */
     public void setFeatures(List<String> features) {
         this.features = features;
+        this.featuresAsString = null;
     }
 
     public String getFeaturesAsString() throws PresentationException, IndexUnreachableException {
+        if(this.featuresAsString == null) {
+            this.featuresAsString = createFeaturesAsString();
+        }
+        return this.featuresAsString;
+    }
+
+    public void setFeaturesAsString(String features) {
+        if (GeoMapType.MANUAL.equals(getType())) {
+            JSONArray array = new JSONArray(features);
+            this.features = new ArrayList<>();
+            for (Object object : array) {
+                this.features.add(object.toString());
+            }
+        } else {
+            this.features = new ArrayList<>();
+        }
+        this.featuresAsString = null;
+    }
+    
+    private String createFeaturesAsString() throws PresentationException, IndexUnreachableException {
         if (getType() != null) {
             switch (getType()) {
                 case MANUAL:
@@ -336,20 +365,10 @@ public class GeoMap {
         }
     }
 
-    public void setFeaturesAsString(String features) {
-        if (GeoMapType.MANUAL.equals(getType())) {
-            JSONArray array = new JSONArray(features);
-            this.features = new ArrayList<>();
-            for (Object object : array) {
-                this.features.add(object.toString());
-            }
-        } else {
-            this.features = new ArrayList<>();
-        }
-    }
-
     public Collection<GeoMapFeature> getFeaturesFromSolrQuery(String query) throws PresentationException, IndexUnreachableException {
-        List<SolrDocument> docs = DataManager.getInstance().getSearchIndex().search(query);
+        List<SolrDocument> docs;
+        List<String> fieldList = Arrays.asList(new String[]{"MD_GEOJSON_POINT", "NORM_COORDS_GEOJSON", getMarkerTitleField()});
+            docs = DataManager.getInstance().getSearchIndex().search(query, SolrSearchIndex.MAX_HITS, null, fieldList);
         Set<GeoMapFeature> features = new HashSet<>();
         for (SolrDocument doc : docs) {
             //            List<JSONObject> docFeatures = new ArrayList<>();
@@ -365,8 +384,9 @@ public class GeoMap {
      * @param docFeatures
      */
     public static Collection<GeoMapFeature> getGeojsonPoints(SolrDocument doc, String metadataField, String titleField, String descriptionField) {
+                
         String title = StringUtils.isBlank(titleField) ? null : SolrSearchIndex.getSingleFieldStringValue(doc, titleField);
-        String desc = StringUtils.isBlank(descriptionField) ? null : SolrSearchIndex.getSingleFieldStringValue(doc, titleField);
+        String desc = StringUtils.isBlank(descriptionField) ? null : SolrSearchIndex.getSingleFieldStringValue(doc, descriptionField);
         Set<GeoMapFeature> docFeatures = new HashSet<>();
         List<String> points = SolrSearchIndex.getMetadataValues(doc, metadataField);
         for (String point : points) {
@@ -422,6 +442,7 @@ public class GeoMap {
      */
     public void setSolrQuery(String solrQuery) {
         this.solrQuery = solrQuery;
+        this.featuresAsString = null;
     }
 
     public boolean hasSolrQuery() {
@@ -495,4 +516,17 @@ public class GeoMap {
         this.markerTitleField = markerTitleField;
     }
 
+    /**
+     * @param showPopover the showPopover to set
+     */
+    public void setShowPopover(boolean showPopover) {
+        this.showPopover = showPopover;
+    }
+    
+    /**
+     * @return the showPopover
+     */
+    public boolean isShowPopover() {
+        return showPopover;
+    }
 }

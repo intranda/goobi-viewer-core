@@ -756,6 +756,23 @@ public interface IDAO {
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
     public License getLicense(Long id) throws DAOException;
+    
+    /**
+     * 
+     * @param licenseType
+     * @return
+     * @throws DAOException
+     */
+    public List<License> getLicenses(LicenseType licenseType) throws DAOException;
+
+    /**
+     * Returns the number of licenses that use the given license type.
+     * 
+     * @param licenseType
+     * @return
+     * @throws DAOException
+     */
+    public long getLicenseCount(LicenseType licenseType) throws DAOException;
 
     // IpRange
 
@@ -1800,9 +1817,10 @@ public interface IDAO {
      * @throws DAOException
      */
     public int deleteCampaignStatisticsForUser(User user) throws DAOException;
-    
+
     /**
      * Replaced <code>fromUser</code> with <code>toUser</code> in the lists of annotators and reviewers an all campaign statistics.
+     * 
      * @param fromUser
      * @param toUser
      * @return
@@ -1934,7 +1952,7 @@ public interface IDAO {
      * @throws DAOException
      */
     long getAnnotationCountForWork(String pi) throws DAOException;
-    
+
     /**
      * <p>
      * getAnnotationsForCampaignAndWork.
@@ -2116,5 +2134,11 @@ public interface IDAO {
      */
     public List<CMSPage> getPagesUsingMap(GeoMap map) throws DAOException;
 
+    /**
+     * @param subtheme
+     * @return
+     * @throws DAOException
+     */
+    List<CMSPage> getCMSPagesForSubtheme(String subtheme) throws DAOException;
 
 }

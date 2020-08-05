@@ -560,7 +560,7 @@
 			left: 3.5rem;
 			margin: 0;
 			& ~ input:checked ~ .toggle-outside {
-				background: #ccc;
+				background: #3365a9;
 			}
 			& ~ input:checked ~ .toggle-outside .toggle-inside {
 				left: 3.5rem;
@@ -597,7 +597,7 @@
 		  	user-select: none;
 		  	&:last-of-type {
 				margin-left: 6.5rem;
-				width: 4.8rem;
+				width: 3.2rem;
 				text-align: right;
 			}
 		}
@@ -607,7 +607,7 @@
 			padding: 0.25rem;
 			overflow: hidden; 
 			transition: 0.25s ease all;
-			background: #3365a9;
+			background: #ccc;
 			position: absolute;
 			width: 6rem;
 			left: 3.5rem;
@@ -627,20 +627,20 @@
 	// DE
 	html[lang="de"] .admin__radio-switch {
 		.toggle-outside {
-			left: 3.5rem;
+			left: 4.7rem;
 			}
 		label {
 			&:first-of-type {
-				width: 3rem;
+				width: 5rem;
 			}
 			&:last-of-type {
-				margin-left: 7rem;
-				width: 4.8rem;
+				margin-left: 5.5rem;
+				width: 3.2rem;
 			}
 		}
 		input {
 		    width: 6rem;
-		    left: 3.5rem;
+		    left: 4.7rem;
 		}
 	}
 	
@@ -651,11 +651,11 @@
 			}
 		label {
 			&:first-of-type {
-				width: 3rem;
+				width: 4rem;
 			}
 			&:last-of-type {
-				margin-left: 7rem;
-				width: 3.8rem;
+				margin-left: 6rem;
+				width: 4.0rem;
 			}
 		}
 		input {
@@ -664,6 +664,25 @@
 		}
 	}
 	
+	// ES
+	html[lang="es"] .admin__radio-switch {
+		.toggle-outside {
+			left: 4.0rem;
+			}
+		label {
+			&:first-of-type {
+				width: 4rem;
+			}
+			&:last-of-type {
+				margin-left: 6rem;
+				width: 3.2rem;
+			}
+		}
+		input {
+		    width: 6rem;
+		    left: 4rem;
+		}
+	}
 
 // overwritten bootstrap margin for description list elements
 .admin dl dd:last-of-type {

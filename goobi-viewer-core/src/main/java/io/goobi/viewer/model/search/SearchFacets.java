@@ -62,6 +62,8 @@ public class SearchFacets implements Serializable {
     private final Map<String, String> maxValues = new HashMap<>();
 
     private final Map<String, List<Integer>> valueRanges = new HashMap<>();
+    /** Map storing labels from separate label fields that were already retrieved from the index. */
+    private final Map<String, String> labelMap = new HashMap<>();
 
     private String tempValue;
 
@@ -493,7 +495,7 @@ public class SearchFacets implements Serializable {
      */
     public void setCurrentFacetString(String currentFacetString) {
         logger.trace("setCurrentFacetString: {}", currentFacetString);
-        parseFacetString(currentFacetString, currentFacets);
+        parseFacetString(currentFacetString, currentFacets, labelMap);
     }
 
     /**
@@ -519,34 +521,45 @@ public class SearchFacets implements Serializable {
     }
 
     /**
+     * Constructs a list of facet items out of the given facet string.
      * 
-     * @param facetString
-     * @param facetItems
+     * @param facetString String containing field:value pairs
+     * @param facetItems List of facet items to which to add the parsed items
+     * @param labelMap Map containing labels for a field:value pair if the facet field uses separate labels
      * @should fill list correctly
      * @should empty list before filling
      * @should add DC field prefix if no field name is given
      * @should set hierarchical status correctly
+     * @should use label from labelMap if available
      */
-    static void parseFacetString(String facetString, List<FacetItem> facetItems) {
+    static void parseFacetString(String facetString, List<FacetItem> facetItems, Map<String, String> labelMap) {
         if (facetItems == null) {
             facetItems = new ArrayList<>();
         } else {
             facetItems.clear();
         }
-        if (StringUtils.isNotEmpty(facetString) && !"-".equals(facetString)) {
-            try {
-                facetString = URLDecoder.decode(facetString, "utf-8");
-                facetString = BeanUtils.unescapeCriticalUrlChracters(facetString);
-            } catch (UnsupportedEncodingException e) {
-            }
-            String[] facetStringSplit = facetString.split(";;");
-            for (String facetLink : facetStringSplit) {
-                if (StringUtils.isNotEmpty(facetLink)) {
-                    if (!facetLink.contains(":")) {
-                        facetLink = new StringBuilder(SolrConstants.DC).append(':').append(facetLink).toString();
-                    }
-                    facetItems.add(new FacetItem(facetLink, isFieldHierarchical(facetLink.substring(0, facetLink.indexOf(":")))));
+        if (StringUtils.isEmpty(facetString) || "-".equals(facetString)) {
+            return;
+        }
+
+        if (labelMap == null) {
+            labelMap = Collections.emptyMap();
+        }
+        try {
+            facetString = URLDecoder.decode(facetString, "utf-8");
+            facetString = BeanUtils.unescapeCriticalUrlChracters(facetString);
+        } catch (UnsupportedEncodingException e) {
+        }
+        String[] facetStringSplit = facetString.split(";;");
+        for (String facetLink : facetStringSplit) {
+            if (StringUtils.isNotEmpty(facetLink)) {
+                if (!facetLink.contains(":")) {
+                    facetLink = new StringBuilder(SolrConstants.DC).append(':').append(facetLink).toString();
                 }
+                // If there is a cached pre-generated label for this facet link (separate label field), use it so that there's no empty label
+                String label = labelMap.containsKey(facetLink) ? labelMap.get(facetLink) : null;
+                facetItems.add(
+                        new FacetItem(facetLink, label, isFieldHierarchical(facetLink.substring(0, facetLink.indexOf(":")))));
             }
         }
     }
@@ -1096,5 +1109,12 @@ public class SearchFacets implements Serializable {
             name = facet.getValue();
         }
         return name;
+    }
+
+    /**
+     * @return the labelMap
+     */
+    public Map<String, String> getLabelMap() {
+        return labelMap;
     }
 }

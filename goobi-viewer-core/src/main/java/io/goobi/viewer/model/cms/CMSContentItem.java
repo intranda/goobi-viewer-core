@@ -27,6 +27,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.SortedMap;
 import java.util.TreeMap;
 import java.util.stream.Collectors;
@@ -1138,7 +1139,7 @@ public class CMSContentItem implements Comparable<CMSContentItem>, CMSMediaHolde
      * @param sortField
      * @param filterQuery
      */
-    private static CollectionView initializeCollection(final String collectionField, final String facetField, final String filterQuery) {
+    private CollectionView initializeCollection(final String collectionField, final String facetField, final String filterQuery) {
         CollectionView collection = new CollectionView(collectionField, new BrowseDataProvider() {
             @Override
             public Map<String, CollectionResult> getData() throws IndexUnreachableException {
@@ -1148,6 +1149,20 @@ public class CMSContentItem implements Comparable<CMSContentItem>, CMSMediaHolde
                 return dcStrings;
             }
         });
+        String subtheme = getOwnerPageLanguageVersion().getOwnerPage().getSubThemeDiscriminatorValue();
+        if(StringUtils.isNotBlank(subtheme)) {
+            try {
+                Optional<CMSPage> searchPage = DataManager.getInstance().getDao().getCMSPagesForSubtheme(subtheme)
+                .stream()
+                .filter(p -> p.isPublished())
+                .filter(p -> p.hasSearchFunctionality()).findFirst();
+                searchPage.ifPresent(p -> {
+                    collection.setSearchUrl(p.getPageUrl());
+                });
+            } catch (DAOException e) {
+                logger.debug("Error getting subtheme search page: " + e.toString());
+            }
+        }
         return collection;
     }
 

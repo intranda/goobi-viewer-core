@@ -20,6 +20,7 @@ import java.awt.Rectangle;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -51,8 +52,12 @@ import de.intranda.api.iiif.presentation.enums.Format;
 import de.intranda.digiverso.ocr.alto.model.structureclasses.logical.AltoDocument;
 import de.intranda.metadata.multilanguage.SimpleMetadataValue;
 import de.unigoettingen.sub.commons.contentlib.exceptions.ContentLibException;
+import de.unigoettingen.sub.commons.contentlib.exceptions.ContentNotFoundException;
+import de.unigoettingen.sub.commons.contentlib.exceptions.ServiceNotAllowedException;
 import io.goobi.viewer.api.rest.AbstractApiUrlManager;
+import io.goobi.viewer.api.rest.resourcebuilders.TextResourceBuilder;
 import io.goobi.viewer.controller.DataManager;
+import io.goobi.viewer.controller.FileTools;
 import io.goobi.viewer.exceptions.AccessDeniedException;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
@@ -376,6 +381,7 @@ public class SequenceBuilder extends AbstractBuilder {
             throws URISyntaxException, IndexUnreachableException, ViewerConfigurationException {
 
         Map<AnnotationType, AnnotationList> annotationMap = new HashMap<>();
+        TextResourceBuilder builder = new TextResourceBuilder();
 
         if (StringUtils.isNotBlank(page.getFulltextFileName()) || StringUtils.isNotBlank(page.getAltoFileName())) {
             AnnotationList annoList = new AnnotationList(getAnnotationListURI(page.getPi(), page.getOrder(), AnnotationType.FULLTEXT));
@@ -384,7 +390,8 @@ public class SequenceBuilder extends AbstractBuilder {
             if (populate) {
                 if (StringUtils.isNotBlank(page.getAltoFileName())) {
                     try {
-                        String altoText = page.loadAlto();
+                        String altoFilename = Paths.get(page.getAltoFileName()).getFileName().toString();
+                        String altoText = builder.getAltoDocument(doc.getPi(), altoFilename);
                         AltoDocument alto = AltoDocument.getDocumentFromString(altoText);
                         if (alto.getFirstPage() != null && StringUtils.isNotBlank(alto.getFirstPage().getContent())) {
                             List<IAnnotation> annos = new AltoAnnotationBuilder(urls, "oa").createAnnotations(alto.getFirstPage(), doc.getPi(), page.getOrder(), canvas,
@@ -393,17 +400,24 @@ public class SequenceBuilder extends AbstractBuilder {
                                 annoList.addResource(annotation);
                             }
                         }
-                    } catch (AccessDeniedException | JDOMException | IOException | DAOException e) {
+                    } catch (ContentNotFoundException | PresentationException | DAOException | IOException | JDOMException e) {
                         logger.error("Error loading alto text from " + page.getAltoFileName(), e);
                     }
 
-                } else {
+                } else if (StringUtils.isNotBlank(page.getFulltextFileName())) {
+                    try {
                     OpenAnnotation anno = new OpenAnnotation(URI.create(annoList.getId().toString() + "/text"));
                     anno.setMotivation(Motivation.PAINTING);
                     anno.setTarget(createSpecificResource(canvas, 0, 0, canvas.getWidth(), canvas.getHeight()));
-                    TextualResource body = new TextualResource(page.getFullText());
-                    anno.setBody(body);
-                    annoList.addResource(anno);
+                    String fulltextFilename = Paths.get(page.getFulltextFileName()).getFileName().toString();
+                    String fulltext = builder.getFulltext(doc.getPi(), fulltextFilename);
+                        TextualResource body = new TextualResource(fulltext);
+                        anno.setBody(body);
+                        annoList.addResource(anno);
+                    } catch (ContentNotFoundException | PresentationException e) {
+                        logger.error("Error loading fulltext from " + page.getFulltextFileName(), e);
+
+                    }
                 }
             }
         }

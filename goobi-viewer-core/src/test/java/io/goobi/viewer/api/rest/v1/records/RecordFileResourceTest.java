@@ -15,11 +15,7 @@
  */
 package io.goobi.viewer.api.rest.v1.records;
 
-import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_FILES;
-import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_FILES_ALTO;
-import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_FILES_PDF;
-import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_FILES_PLAINTEXT;
-import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_FILES_TEI;
+import static io.goobi.viewer.api.rest.v1.ApiUrls.*;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
@@ -148,6 +144,41 @@ public class RecordFileResourceTest extends AbstractRestApiTest {
             assertNotNull("Should return user object as json", response.getEntity());
             byte[] entity = response.readEntity(byte[].class);
             assertTrue(entity.length >= 5*5*8*3); //entity is at least as long as the image data
+        }
+    }
+    
+    @Test
+    public void testGetSourceFile() {
+        String url = urls.path(RECORDS_FILES, RECORDS_FILES_SOURCE).params(PI, "text.txt").build();
+        try(Response response = target(url)
+                .request()
+                .get()) {
+            assertEquals("Should return status 200", 200, response.getStatus());
+            String contentType = response.getHeaderString("Content-Type");
+            String entity = response.readEntity(String.class);
+            assertEquals("application/octet-stream", contentType);
+            assertEquals("apples", entity.trim());
+        }
+    }
+    
+    @Test
+    public void testGetMissingSourceFile() {
+        String url = urls.path(RECORDS_FILES, RECORDS_FILES_SOURCE).params(PI, "bla.txt").build();
+        try(Response response = target(url)
+                .request()
+                .get()) {
+            assertEquals("Should return status 404", 404, response.getStatus());
+
+        }
+    }
+    
+    @Test
+    public void testGetSourceFilePathTraversalAttack() {
+        String url = urls.path(RECORDS_FILES, RECORDS_FILES_SOURCE).params(PI, "/../../../../..//etc/passwd").build();
+        try(Response response = target(url)
+                .request()
+                .get()) {
+            assertEquals("Should return status 404", 404, response.getStatus());
         }
     }
 

@@ -191,7 +191,7 @@ public class AdminBean implements Serializable {
         lazyModelComments.setEntriesPerPage(DEFAULT_ROWS_PER_PAGE);
         lazyModelComments.setFilters("text_owner-nickName_owner-email");
     }
-
+    
     // User
 
     /**
@@ -764,6 +764,30 @@ public class AdminBean implements Serializable {
 
     public List<License> getAllLicenses() throws DAOException {
         return DataManager.getInstance().getDao().getAllLicenses();
+    }
+
+    /**
+     * 
+     * @param licenseType
+     * @return true if at least one license uses the given license type; false otherwise
+     * @throws DAOException
+     */
+    public boolean isLicenseTypeInUse(LicenseType licenseType) throws DAOException {
+        if (licenseType == null) {
+            return false;
+        }
+
+        return DataManager.getInstance().getDao().getLicenseCount(licenseType) > 0;
+    }
+
+    /**
+     * 
+     * @param licenseType
+     * @return
+     * @throws DAOException 
+     */
+    public List<License> getLicenses(LicenseType licenseType) throws DAOException {
+        return DataManager.getInstance().getDao().getLicenses(licenseType);
     }
 
     // IpRange

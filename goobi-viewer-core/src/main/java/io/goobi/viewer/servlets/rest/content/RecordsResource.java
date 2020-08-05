@@ -20,10 +20,8 @@ import java.io.IOException;
 import java.net.MalformedURLException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.LinkedList;
-import java.util.List;
 import java.util.Random;
 
 import javax.servlet.http.HttpServletRequest;
@@ -61,6 +59,7 @@ import io.goobi.viewer.controller.StringTools;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
+import io.goobi.viewer.exceptions.RecordNotFoundException;
 import io.goobi.viewer.exceptions.ViewerConfigurationException;
 import io.goobi.viewer.model.metadata.CompareYearSolrDocWrapper;
 import io.goobi.viewer.model.metadata.MetadataTools;
@@ -137,7 +136,7 @@ public class RecordsResource {
         query = new StringBuilder().append('(')
                 .append(query)
                 .append(')')
-                .append(SearchHelper.getAllSuffixes(DataManager.getInstance().getConfiguration().isSubthemeAddFilterQuery()))
+                .append(SearchHelper.getAllSuffixes())
                 .toString();
         logger.debug("query: {}", query);
 
@@ -236,7 +235,7 @@ public class RecordsResource {
         }
         // Solr supports dynamic random_* sorting fields. Each value represents one particular order, so a random number is required.
         String query =
-                new StringBuilder().append(params.query).append(SearchHelper.getAllSuffixes(servletRequest, null, true, true, false)).toString();
+                new StringBuilder().append(params.query).append(SearchHelper.getAllSuffixes(servletRequest, true, true)).toString();
         logger.debug("q: {}", query);
         long count = DataManager.getInstance().getSearchIndex().search(query, 0, 0, null, null, null).getResults().getNumFound();
         ret.put("count", count);
@@ -337,6 +336,7 @@ public class RecordsResource {
      * @throws ContentNotFoundException
      * @throws DAOException
      * @throws ViewerConfigurationException
+     * @throws RecordNotFoundException
      */
     @GET
     @Path("/toc/{pi}")
@@ -349,7 +349,12 @@ public class RecordsResource {
             throw new ContentNotFoundException("Resource not found");
         }
 
-        ViewManager viewManager = ViewManager.createViewManager(pi);
+        ViewManager viewManager;
+        try {
+            viewManager = ViewManager.createViewManager(pi);
+        } catch (RecordNotFoundException e) {
+            throw new ContentNotFoundException("Resource not found: " + pi);
+        }
         TOC toc = new TOC();
         toc.generate(viewManager.getTopDocument(), viewManager.isListAllVolumesInTOC(), viewManager.getMainMimeType(), 1);
         TocWriter writer = new TocWriter("", viewManager.getTopDocument().getLabel().toUpperCase());

@@ -43,7 +43,6 @@ import io.goobi.viewer.model.security.authentication.IAuthenticationProvider;
 import io.goobi.viewer.model.security.authentication.OpenIdProvider;
 import io.goobi.viewer.model.viewer.PageType;
 import io.goobi.viewer.model.viewer.StringPair;
-import net.sf.ehcache.config.ConfigurationHelper;
 
 public class ConfigurationTest extends AbstractTest {
 
@@ -546,7 +545,7 @@ public class ConfigurationTest extends AbstractTest {
      */
     @Test
     public void getOrigContentFolder_shouldReturnCorrectValue() throws Exception {
-        Assert.assertEquals("src", DataManager.getInstance().getConfiguration().getOrigContentFolder());
+        Assert.assertEquals("source", DataManager.getInstance().getConfiguration().getOrigContentFolder());
     }
 
     /**
@@ -890,24 +889,6 @@ public class ConfigurationTest extends AbstractTest {
     @Test
     public void getSubthemeDiscriminatorField_shouldReturnCorrectValue() throws Exception {
         Assert.assertEquals("FACET_VIEWERSUBTHEME", DataManager.getInstance().getConfiguration().getSubthemeDiscriminatorField());
-    }
-
-    /**
-     * @see Configuration#isSubthemeAddFilterQuery()
-     * @verifies return correct value
-     */
-    @Test
-    public void isSubthemeAddFilterQuery_shouldReturnCorrectValue() throws Exception {
-        Assert.assertTrue(DataManager.getInstance().getConfiguration().isSubthemeAddFilterQuery());
-    }
-
-    /**
-     * @see ConfigurationHelper#isSubthemeFilterQueryVisible()
-     * @verifies return correct value
-     */
-    @Test
-    public void isSubthemeFilterQueryVisible_shouldReturnCorrectValue() throws Exception {
-        Assert.assertTrue(DataManager.getInstance().getConfiguration().isSubthemeFilterQueryVisible());
     }
 
     //    /**
@@ -1391,7 +1372,7 @@ public class ConfigurationTest extends AbstractTest {
     public void isSidebarTocVisible_shouldReturnCorrectValue() throws Exception {
         Assert.assertEquals(false, DataManager.getInstance().getConfiguration().isSidebarTocWidgetVisible());
     }
-    
+
     /**
      * @see Configuration#isSidebarTocWidgetVisibleInFullscreen()
      * @verifies return correct value
@@ -1759,6 +1740,25 @@ public class ConfigurationTest extends AbstractTest {
         Assert.assertEquals(2, result.size());
         Assert.assertEquals("collection2", result.get(0));
         Assert.assertEquals("collection1", result.get(1));
+    }
+
+    /**
+     * @see Configuration#getLabelFieldForDrillDownField(String)
+     * @verifies return correct value
+     */
+    @Test
+    public void getLabelFieldForDrillDownField_shouldReturnCorrectValue() throws Exception {
+        Assert.assertEquals("MD_FIELDLABEL", DataManager.getInstance().getConfiguration().getLabelFieldForDrillDownField(SolrConstants.YEAR));
+        Assert.assertEquals("MD_FIRSTNAME", DataManager.getInstance().getConfiguration().getLabelFieldForDrillDownField("MD_CREATOR"));
+    }
+
+    /**
+     * @see Configuration#getLabelFieldForDrillDownField(String)
+     * @verifies return null if no value found
+     */
+    @Test
+    public void getLabelFieldForDrillDownField_shouldReturnNullIfNoValueFound() throws Exception {
+        Assert.assertNull(DataManager.getInstance().getConfiguration().getLabelFieldForDrillDownField("MD_PLACEPUBLISH"));
     }
 
     @Test

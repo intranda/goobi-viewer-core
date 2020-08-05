@@ -18,9 +18,11 @@ package io.goobi.viewer.controller;
 import java.awt.Dimension;
 import java.awt.Rectangle;
 import java.io.ByteArrayInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -79,6 +81,19 @@ public class ALTOTools {
     public static final String TAG_LABEL_IGNORE_REGEX = "^\\W+|\\W+$";
 
     /**
+     * Read the plain fulltext from an alto file. Don't merge linebreaks
+     * 
+     * @param path
+     * @return
+     * @throws IOException 
+     * @throws  
+     */
+    public static String getFulltext(Path path, String encoding) throws IOException {
+        String altoString = FileTools.getStringFromFile(path.toFile(), encoding);
+        return getFullText(altoString, false, null);
+    }
+    
+    /**
      * <p>
      * getFullText.
      * </p>
@@ -92,8 +107,6 @@ public class ALTOTools {
     public static String getFullText(String alto, boolean mergeLineBreakWords, HttpServletRequest request) {
         try {
             return alto2Txt(alto, mergeLineBreakWords, request);
-            //            AltoDocument altoDoc = AltoDocument.getDocumentFromString(alto);
-            //            return altoDoc.getContent();
         } catch (IOException | XMLStreamException | JDOMException e) {
             logger.error(e.getMessage(), e);
         }

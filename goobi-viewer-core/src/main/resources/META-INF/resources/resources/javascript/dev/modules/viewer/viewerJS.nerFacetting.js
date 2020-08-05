@@ -179,16 +179,16 @@ var viewerJS = ( function( viewer ) {
                     
                     if ( _defaults.currentPage === 'nerfacetting' ) {
                         $( _defaults.setTagRangeOverview ).find( 'option[value="1"]' ).prop( 'selected', true );
-                        localStorage.setItem( 'currentNerPageRange', '1' );
+                        sessionStorage.setItem( 'currentNerPageRange', '1' );
                     }
                     else {
                         $( _defaults.setTagRangeOverview ).find( 'option[value="10"]' ).prop( 'selected', true );
-                        localStorage.setItem( 'currentNerPageRange', '10' );
+                        sessionStorage.setItem( 'currentNerPageRange', '10' );
                     }
-                    _currentNerPageRange = localStorage.getItem( 'currentNerPageRange' );
+                    _currentNerPageRange = sessionStorage.getItem( 'currentNerPageRange' );
                     
-                    localStorage.setItem( 'currentNerType', '-' );
-                    _currentNerType = localStorage.getItem( 'currentNerType' );
+                    sessionStorage.setItem( 'currentNerType', '-' );
+                    _currentNerType = sessionStorage.getItem( 'currentNerType' );
                     
                     _resetFacettingIcons();
                     
@@ -240,14 +240,14 @@ var viewerJS = ( function( viewer ) {
 
                     // set local storage value
                     if ( _defaults.currentPage === 'nerfacetting' ) {
-                        localStorage.setItem( 'currentNerPageRange', 5 );
+                        sessionStorage.setItem( 'currentNerPageRange', 5 );
                     }
                     else {
-                        localStorage.setItem( 'currentNerPageRange', 10 );
+                        sessionStorage.setItem( 'currentNerPageRange', 10 );
                     }
-                    _currentNerPageRange = localStorage.getItem( 'currentNerPageRange' );
-                    localStorage.setItem( 'currentNerType', '-' );
-                    _currentNerType = localStorage.getItem( 'currentNerType' );
+                    _currentNerPageRange = sessionStorage.getItem( 'currentNerPageRange' );
+                    sessionStorage.setItem( 'currentNerType', '-' );
+                    _currentNerType = sessionStorage.getItem( 'currentNerType' );
                     
                     // check if tab is active
                     if ( $( this ).parent().hasClass( 'active' ) ) {
@@ -266,14 +266,14 @@ var viewerJS = ( function( viewer ) {
                  */
                 $( _defaults.setTagRange ).on( 'change', function() {
                     var currVal = $( this ).val();
-                    _currentNerType = localStorage.getItem( 'currentNerType' );
+                    _currentNerType = sessionStorage.getItem( 'currentNerType' );
                     
                     // show loader
                     $( _defaults.loader ).show();
                     
                     // save current value in local storage
-                    localStorage.setItem( 'currentNerPageRange', currVal );
-                    _currentNerPageRange = localStorage.getItem( 'currentNerPageRange' );
+                    sessionStorage.setItem( 'currentNerPageRange', currVal );
+                    _currentNerPageRange = sessionStorage.getItem( 'currentNerPageRange' );
                     
                     // render overview
                     if ( $( this ).hasClass( 'overview' ) ) {
@@ -304,8 +304,8 @@ var viewerJS = ( function( viewer ) {
                     // render section
                     else {
                         // setup values
-                        localStorage.setItem( 'currentNerPageRange', currVal );
-                        _currentNerPageRange = localStorage.getItem( 'currentNerPageRange' );
+                        sessionStorage.setItem( 'currentNerPageRange', currVal );
+                        _currentNerPageRange = sessionStorage.getItem( 'currentNerPageRange' );
                         
                         _renderSection();
                         
@@ -336,20 +336,20 @@ var viewerJS = ( function( viewer ) {
                     $( _defaults.loader ).show();
                     
                     // set values
-                    localStorage.setItem( 'currentNerType', currType );
-                    _currentNerType = localStorage.getItem( 'currentNerType' );
+                    sessionStorage.setItem( 'currentNerType', currType );
+                    _currentNerType = sessionStorage.getItem( 'currentNerType' );
                     
                     if ( _defaults.currentPage === 'nerfacetting' ) {
                         if ( _currentNerPageRange == null || _currentNerPageRange === '' ) {
-                            _currentNerPageRange = localStorage.setItem( 'currentNerPageRange', 1 );
+                            _currentNerPageRange = sessionStorage.setItem( 'currentNerPageRange', 1 );
                         }
                     }
                     else {
                         if ( _currentNerPageRange == null || _currentNerPageRange === '' ) {
-                            _currentNerPageRange = localStorage.setItem( 'currentNerPageRange', 10 );
+                            _currentNerPageRange = sessionStorage.setItem( 'currentNerPageRange', 10 );
                         }
                     }
-                    _currentNerPageRange = localStorage.getItem( 'currentNerPageRange' );
+                    _currentNerPageRange = sessionStorage.getItem( 'currentNerPageRange' );
                     
                     // activate icons
                     $( '.facetting-trigger' ).removeClass( 'active' );
@@ -573,10 +573,10 @@ var viewerJS = ( function( viewer ) {
             _pageCount = _getPageCount( workCall );
             
             if ( _currentNerPageRange === null || _currentNerPageRange === '' ) {
-                _currentNerPageRange = localStorage.getItem( 'currentNerPageRange' );
+                _currentNerPageRange = sessionStorage.getItem( 'currentNerPageRange' );
             }
             if ( _currentNerType === null || _currentNerType === '' ) {
-                _currentNerType = localStorage.getItem( 'currentNerType' )
+                _currentNerType = sessionStorage.getItem( 'currentNerType' )
             }
             
             // render page count to scale
@@ -612,7 +612,7 @@ var viewerJS = ( function( viewer ) {
                     _movedSliderHandlePosition = _sliderHandlePosition.top;
                 },
                 stop: function( event, ui ) {
-                    _currentNerType = localStorage.getItem( 'currentNerType' );
+                    _currentNerType = sessionStorage.getItem( 'currentNerType' );
                     _sliderScaleHeight = $( _defaults.sliderScale ).height();
                     
                     // set position of section stripe
@@ -945,8 +945,8 @@ var viewerJS = ( function( viewer ) {
             console.log( '---------- _cleanUpLocalStorage() ----------' );
         }
         
-        localStorage.removeItem( 'currentNerPageRange' );
-        localStorage.removeItem( 'currentNerType' );
+        sessionStorage.removeItem( 'currentNerPageRange' );
+        sessionStorage.removeItem( 'currentNerType' );
     }
     
     /**

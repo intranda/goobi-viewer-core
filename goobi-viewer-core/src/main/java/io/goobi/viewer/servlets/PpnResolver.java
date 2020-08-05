@@ -91,7 +91,7 @@ public class PpnResolver extends HttpServlet implements Serializable {
 
         // 3. evaluate the search
         try {
-            String query = "+" + SolrConstants.PI + ":\"" + identifier + "\"" + SearchHelper.getAllSuffixes(request, null, false, false, false);
+            String query = "+" + SolrConstants.PI + ":\"" + identifier + "\"" + SearchHelper.getAllSuffixes(request, false, false);
             SolrDocumentList hits = DataManager.getInstance()
                     .getSearchIndex()
                     .search(query);

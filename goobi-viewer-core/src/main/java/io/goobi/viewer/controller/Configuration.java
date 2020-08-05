@@ -47,7 +47,6 @@ import org.slf4j.LoggerFactory;
 import de.unigoettingen.sub.commons.contentlib.imagelib.ImageType;
 import de.unigoettingen.sub.commons.contentlib.imagelib.transform.Scale;
 import io.goobi.viewer.exceptions.ViewerConfigurationException;
-import io.goobi.viewer.managedbeans.NavigationHelper;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.model.maps.GeoMapMarker;
 import io.goobi.viewer.model.metadata.Metadata;
@@ -773,8 +772,8 @@ public final class Configuration extends AbstractConfiguration {
     /**
      * Returns the list of index fields to be used for term browsing.
      *
-     * @should return all configured elements
      * @return a {@link java.util.List} object.
+     * @should return all configured elements
      */
     public List<BrowsingMenuFieldConfig> getBrowsingMenuFields() {
         List<HierarchicalConfiguration> fields = getLocalConfigurationsAt("metadata.browsingMenu.luceneField");
@@ -789,10 +788,10 @@ public final class Configuration extends AbstractConfiguration {
             String sortField = sub.getString("[@sortField]");
             String filterQuery = sub.getString("[@filterQuery]");
             boolean translate = sub.getBoolean("[@translate]", false);
-            String docstructFilterString = sub.getString("[@docstructFilters]");
             boolean recordsAndAnchorsOnly = sub.getBoolean("[@recordsAndAnchorsOnly]", false);
+            boolean alwaysApplyFilter = sub.getBoolean("[@alwaysApplyFilter]", false);
             BrowsingMenuFieldConfig bmfc =
-                    new BrowsingMenuFieldConfig(field, sortField, filterQuery, translate, docstructFilterString, recordsAndAnchorsOnly);
+                    new BrowsingMenuFieldConfig(field, sortField, filterQuery, translate, recordsAndAnchorsOnly, alwaysApplyFilter);
             ret.add(bmfc);
         }
 
@@ -2206,7 +2205,7 @@ public final class Configuration extends AbstractConfiguration {
     public boolean isSidebarTocWidgetVisible() {
         return this.getLocalBoolean("sidebar.sidebarToc.visible", true);
     }
-    
+
     /**
      * <p>
      * This method checks whether the TOC <strong>widget</strong> is enabled. To check whether the sidebar TOC <strong>link</strong> in the views
@@ -2544,6 +2543,51 @@ public final class Configuration extends AbstractConfiguration {
         }
 
         return Collections.emptyList();
+    }
+
+    /**
+     * 
+     * @param facetField
+     * @return
+     * @should return correct value
+     * @should return null if no value found
+     */
+    public String getLabelFieldForDrillDownField(String facetField) {
+        if (StringUtils.isBlank(facetField)) {
+            return null;
+        }
+
+        String facetifiedField = SearchHelper.facetifyField(facetField);
+        // Regular fields
+        List<HierarchicalConfiguration> drillDownFields = getLocalConfigurationsAt("search.drillDown.field");
+        if (drillDownFields != null && !drillDownFields.isEmpty()) {
+            for (HierarchicalConfiguration fieldConfig : drillDownFields) {
+                if (fieldConfig.getRootNode().getValue().equals(facetField)
+                        || fieldConfig.getRootNode().getValue().equals(facetField + SolrConstants._UNTOKENIZED)
+                        || fieldConfig.getRootNode().getValue().equals(facetifiedField)) {
+                    try {
+                        return fieldConfig.getString("[@labelField]");
+                    } catch (ConversionException | NoSuchElementException e) {
+                    }
+                }
+            }
+        }
+        // Hierarchical fields
+        drillDownFields = getLocalConfigurationsAt("search.drillDown.hierarchicalField");
+        if (drillDownFields != null && !drillDownFields.isEmpty()) {
+            for (HierarchicalConfiguration fieldConfig : drillDownFields) {
+                if (fieldConfig.getRootNode().getValue().equals(facetField)
+                        || fieldConfig.getRootNode().getValue().equals(facetField + SolrConstants._UNTOKENIZED)
+                        || fieldConfig.getRootNode().getValue().equals(facetifiedField)) {
+                    try {
+                        return fieldConfig.getString("[@labelField]");
+                    } catch (ConversionException | NoSuchElementException e) {
+                    }
+                }
+            }
+        }
+
+        return null;
     }
 
     /**
@@ -3595,36 +3639,6 @@ public final class Configuration extends AbstractConfiguration {
 
     /**
      * <p>
-     * isSubthemeAddFilterQuery.
-     * </p>
-     *
-     * @should return correct value
-     * @return true if search should generally be filtered by {@link NavigationHelper#getSubThemeDiscriminatorValue()}
-     * 
-     * @deprecated should always return false since search filtering should be done via dedicated cms search pages
-     */
-    @Deprecated
-    public boolean isSubthemeAddFilterQuery() {
-        return getLocalBoolean("viewer.theme[@addFilterQuery]", false);
-    }
-
-    /**
-     * <p>
-     * isSubthemeFilterQueryVisible.
-     * </p>
-     *
-     * @should return correct value
-     * @return a boolean.
-     * 
-     * @deprecated should always return false since search filtering should be done via dedicated cms search pages
-     */
-    @Deprecated
-    public boolean isSubthemeFilterQueryVisible() {
-        return getLocalBoolean("viewer.theme[@filterQueryVisible]", false);
-    }
-
-    /**
-     * <p>
      * getTagCloudSampleSize.
      * </p>
      *
@@ -4200,7 +4214,7 @@ public final class Configuration extends AbstractConfiguration {
         List<Integer> intList = new ArrayList<>();
         for (String s : stringList) {
             try {
-                intList.add(new Integer(s));
+                intList.add(Integer.valueOf(s));
             } catch (NullPointerException | NumberFormatException e) {
                 logger.error("Illegal config at 'viewer.pageBrowse.pageBrowseStep': " + s);
             }
@@ -4358,7 +4372,7 @@ public final class Configuration extends AbstractConfiguration {
     public List<String> getIIIFLicenses() {
         return getLocalList("webapi.iiif.license", Collections.emptyList());
     }
-    
+
     /**
      * <p>
      * getIIIFMetadataFields.

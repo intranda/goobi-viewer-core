@@ -68,7 +68,7 @@ var cmsJS = ( function( cms ) {
             cmsJS.createPage.initSortables( _defaults );
             
             // check preview status and open new tab
-            if ( localStorage.getItem( 'previewStatus' ) === 'false' ) {
+            if ( sessionStorage.getItem( 'previewStatus' ) === 'false' ) {
                 _defaults.prevBtn.attr( 'disabled', true );
                 _defaults.prevDescription.show();
             }
@@ -135,7 +135,7 @@ var cmsJS = ( function( cms ) {
                 console.log( '---------- cmsJS.createPage.disablePreview() ----------' );
             }
             
-            localStorage.setItem( 'previewStatus', 'false' );
+            sessionStorage.setItem( 'previewStatus', 'false' );
         },
         
         /**
@@ -148,7 +148,7 @@ var cmsJS = ( function( cms ) {
                 console.log( '---------- cmsJS.createPage.enablePreview() ----------' );
             }
             
-            localStorage.setItem( 'previewStatus', 'true' );
+            sessionStorage.setItem( 'previewStatus', 'true' );
         },
     };
     

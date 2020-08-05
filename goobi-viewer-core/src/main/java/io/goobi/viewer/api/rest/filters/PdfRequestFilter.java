@@ -35,6 +35,7 @@ import org.slf4j.LoggerFactory;
 import de.unigoettingen.sub.commons.contentlib.exceptions.ServiceNotAllowedException;
 import de.unigoettingen.sub.commons.contentlib.servlet.rest.ContentExceptionMapper.ErrorMessage;
 import io.goobi.viewer.controller.DataManager;
+import io.goobi.viewer.controller.StringTools;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.model.security.AccessConditionUtils;
@@ -114,7 +115,7 @@ public class PdfRequestFilter implements ContainerRequestFilter {
      */
     private void filterForAccessConditions(String pi, String divId, String contentFileName, String privName) throws ServiceNotAllowedException {
         logger.trace("filterForAccessConditions: " + servletRequest.getSession().getId() + " " + contentFileName);
-
+        contentFileName = StringTools.decodeUrl(contentFileName);
         boolean access = false;
         try {
 

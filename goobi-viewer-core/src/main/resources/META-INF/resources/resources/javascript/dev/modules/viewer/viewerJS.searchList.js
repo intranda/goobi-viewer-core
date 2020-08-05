@@ -149,12 +149,16 @@ var viewerJS = ( function( viewer ) {
                     $( '.search-list__hit-thumbnail img' ).each( function() {
                         $( this ).on( 'load', function( event ) {
                             var imgUrl = $( event.currentTarget ).attr( 'src' );
-                            $( event.currentTarget ).parents( '.search-list__hit-thumbnail' ).css( 'background-image', 'url("' + imgUrl + '")' );
-                        });
+                            if(imgUrl) {
+                                $( event.currentTarget ).parents( '.search-list__hit-thumbnail' ).css( 'background-image', 'url("' + imgUrl + '")' );
+                            }
+                        }); 
                         
                         if ( this.complete ) {
                         	var imgUrl = $( this ).attr( 'src' );
-                            $( this ).parents( '.search-list__hit-thumbnail' ).css( 'background-image', 'url("' + imgUrl + '")' );
+                            if(imgUrl) {                                
+                                $( this ).parents( '.search-list__hit-thumbnail' ).css( 'background-image', 'url("' + imgUrl + '")' );
+                            }
                         }
                     } );
                     

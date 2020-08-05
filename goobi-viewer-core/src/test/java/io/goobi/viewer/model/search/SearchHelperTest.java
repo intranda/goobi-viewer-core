@@ -32,6 +32,7 @@ import javax.servlet.http.HttpSession;
 import org.apache.poi.xssf.streaming.SXSSFRow;
 import org.apache.poi.xssf.streaming.SXSSFSheet;
 import org.apache.poi.xssf.streaming.SXSSFWorkbook;
+import org.apache.solr.client.solrj.response.QueryResponse;
 import org.apache.solr.common.SolrDocumentList;
 import org.junit.Assert;
 import org.junit.Before;
@@ -42,6 +43,7 @@ import io.goobi.viewer.AbstractDatabaseAndSolrEnabledTest;
 import io.goobi.viewer.controller.Configuration;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.SolrConstants;
+import io.goobi.viewer.controller.SolrSearchIndex;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.managedbeans.NavigationHelper;
@@ -663,7 +665,7 @@ public class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
      */
     @Test
     public void getAllSuffixes_shouldAddStaticSuffix() throws Exception {
-        String suffix = SearchHelper.getAllSuffixes(null, null, true, false, false);
+        String suffix = SearchHelper.getAllSuffixes(null, true, false);
         Assert.assertNotNull(suffix);
         Assert.assertTrue(suffix.contains(DataManager.getInstance().getConfiguration().getStaticQuerySuffix()));
     }
@@ -674,7 +676,7 @@ public class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
      */
     @Test
     public void getAllSuffixes_shouldNotAddStaticSuffixIfNotRequested() throws Exception {
-        String suffix = SearchHelper.getAllSuffixes(null, null, false, false, false);
+        String suffix = SearchHelper.getAllSuffixes(null, false, false);
         Assert.assertNotNull(suffix);
         Assert.assertFalse(suffix.contains(DataManager.getInstance().getConfiguration().getStaticQuerySuffix()));
     }
@@ -686,7 +688,7 @@ public class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
     @Test
     public void getAllSuffixes_shouldAddCollectionBlacklistSuffix() throws Exception {
 
-        String suffix = SearchHelper.getAllSuffixes(false, null);
+        String suffix = SearchHelper.getAllSuffixes();
         Assert.assertNotNull(suffix);
         Assert.assertTrue(suffix.contains(" -" + SolrConstants.DC + ":collection1 -" + SolrConstants.DC + ":collection2"));
     }
@@ -1171,18 +1173,16 @@ public class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
      */
     @Test
     public void testBuildFinalQuery() throws IndexUnreachableException, PresentationException {
-        NavigationHelper nh = new NavigationHelper();
         String query = "DC:dctei";
 
-        String finalQuery = SearchHelper.buildFinalQuery(query, false, nh, null);
+        String finalQuery = SearchHelper.buildFinalQuery(query, false, null);
         SolrDocumentList docs = DataManager.getInstance().getSearchIndex().search(finalQuery);
         Assert.assertEquals(65, docs.size());
 
-        nh.setSubThemeDiscriminatorValue("subtheme1");
-        finalQuery = SearchHelper.buildFinalQuery(query, false, nh,
+        finalQuery = SearchHelper.buildFinalQuery(query, false,
                 null);
         docs = DataManager.getInstance().getSearchIndex().search(finalQuery);
-        Assert.assertEquals(4, docs.size());
+        Assert.assertEquals(65, docs.size());
     }
 
     /**
@@ -1195,9 +1195,10 @@ public class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
     public void getFilteredTerms_shouldBeThreadSafeWhenCountingTerms() throws Exception {
         int previousSize = -1;
         Map<String, Long> previousCounts = new HashMap<>();
-        BrowsingMenuFieldConfig bmfc = new BrowsingMenuFieldConfig("MD_LANGUAGE_UNTOKENIZED", null, null, false, null, false);
+        BrowsingMenuFieldConfig bmfc = new BrowsingMenuFieldConfig("MD_LANGUAGE_UNTOKENIZED", null, null, false, false, false);
         for (int i = 0; i < 100; ++i) {
-            List<BrowseTerm> terms = SearchHelper.getFilteredTerms(bmfc, null, null, new BrowseTermComparator(Locale.ENGLISH), true);
+            List<BrowseTerm> terms =
+                    SearchHelper.getFilteredTerms(bmfc, null, null, 0, SolrSearchIndex.MAX_HITS, new BrowseTermComparator(Locale.ENGLISH), true);
             Assert.assertFalse(terms.isEmpty());
             Assert.assertTrue(previousSize == -1 || terms.size() == previousSize);
             previousSize = terms.size();
@@ -1219,5 +1220,17 @@ public class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
     public void generateQueryParams_shouldReturnEmptyMapIfSearchHitAggregationOn() throws Exception {
         DataManager.getInstance().getConfiguration().overrideValue("search.aggregateHits", true);
         Map<String, String> params = SearchHelper.generateQueryParams();
+    }
+
+    /**
+     * @see SearchHelper#getFilteredTermsFromIndex(BrowsingMenuFieldConfig,String,String,List,int,int)
+     * @verifies contain facets for the main field
+     */
+    @Test
+    public void getFilteredTermsFromIndex_shouldContainFacetsForTheMainField() throws Exception {
+        BrowsingMenuFieldConfig bmfc = new BrowsingMenuFieldConfig("MD_CREATOR_UNTOKENIZED", null, null, false, false, false);
+        QueryResponse resp = SearchHelper.getFilteredTermsFromIndex(bmfc, "", null, null, 0, SolrSearchIndex.MAX_HITS);
+        Assert.assertNotNull(resp);
+        Assert.assertNotNull(resp.getFacetField(SearchHelper.facetifyField(bmfc.getField())));
     }
 }

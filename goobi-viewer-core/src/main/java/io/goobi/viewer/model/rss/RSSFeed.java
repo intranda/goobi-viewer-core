@@ -743,7 +743,7 @@ public class RSSFeed {
             }
             query = createQuery(query, null, subtheme, servletRequest, false);
             if(StringUtils.isNotBlank(query)) {
-                query = SearchHelper.buildFinalQuery(query, DataManager.getInstance().getConfiguration().isAggregateHits(), BeanUtils.getNavigationHelper(), servletRequest);
+                query = SearchHelper.buildFinalQuery(query, DataManager.getInstance().getConfiguration().isAggregateHits(),  servletRequest);
             }
             
             // Optional faceting
@@ -773,7 +773,7 @@ public class RSSFeed {
             }
             query = createQuery(query, null, subtheme, servletRequest, false);
             if(StringUtils.isNotBlank(query)) {
-                query = SearchHelper.buildFinalQuery(query, DataManager.getInstance().getConfiguration().isAggregateHits(), BeanUtils.getNavigationHelper(), servletRequest);
+                query = SearchHelper.buildFinalQuery(query, DataManager.getInstance().getConfiguration().isAggregateHits(),  servletRequest);
             }
             
             // Optional faceting
@@ -825,7 +825,7 @@ public class RSSFeed {
 
         if (addSuffixes) {
             sbQuery.append(
-                    SearchHelper.getAllSuffixes(servletRequest, null, true, true, DataManager.getInstance().getConfiguration().isSubthemeAddFilterQuery()));
+                    SearchHelper.getAllSuffixes(servletRequest, true, true));
         }
 
         return sbQuery.toString();
