@@ -29,6 +29,9 @@ jobs:
       with:
         java-version: 1.8
 
+    - uses: actions/checkout@v2
+      name: Checkout Goobi viewer Core
+
     - name: Generate Javadoc
       run: mvn -f goobi-viewer-core/pom.xml javadoc:javadoc
 
