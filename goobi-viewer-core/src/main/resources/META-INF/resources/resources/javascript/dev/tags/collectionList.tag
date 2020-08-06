@@ -100,12 +100,10 @@ getChildren(collection) {
 }
 
 hasDescription(element) {
-    console.log("description ", element, element.description);
     return element.description != undefined;
 }
 
 getDescription(element) { 
-    console.log("description ", element, element.description);
     return this.getValue(element.description);
 }
 

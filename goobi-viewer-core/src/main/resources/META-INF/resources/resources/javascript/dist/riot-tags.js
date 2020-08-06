@@ -963,12 +963,10 @@ this.getChildren = function(collection) {
 }.bind(this)
 
 this.hasDescription = function(element) {
-    console.log("description ", element, element.description);
     return element.description != undefined;
 }.bind(this)
 
 this.getDescription = function(element) {
-    console.log("description ", element, element.description);
     return this.getValue(element.description);
 }.bind(this)
 
