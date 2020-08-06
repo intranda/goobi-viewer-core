@@ -18,10 +18,22 @@
 				</a>
 			</h4>
 			
+			<div>
+				<a if="{hasDescription(collection)}" href="#description-{this.opts.setindex}-{index}" role="button" data-toggle="collapse" aria-expanded="false">
+					<i class="fa fa-info-circle" aria-hidden="true"></i>
+				</a>
+			</div>
+				
 			<div class="card-rss">
 				<a href="{viewerJS.iiif.getRelated(collection, 'Rss feed')['@id']}">
 					<i class="fa fa-rss" aria-hidden="true"/>
 				</a>
+			</div>
+			
+			<div if="{hasDescription(collection)}" id="description-{this.opts.setindex}-{index}" class="card-collapse collapse" role="tabcard" aria-expanded="false">
+				<p>
+					{getDescription(collection)}
+				</p>
 			</div>
 	
 		</div>
@@ -85,6 +97,16 @@ hasChildren(element) {
 
 getChildren(collection) {
     return collection.members.filter( child => viewerJS.iiif.isCollection(child));
+}
+
+hasDescription(element) {
+    console.log("description ", element, element.description);
+    return element.description != undefined;
+}
+
+getDescription(element) { 
+    console.log("description ", element, element.description);
+    return this.getValue(element.description);
 }
 
 
