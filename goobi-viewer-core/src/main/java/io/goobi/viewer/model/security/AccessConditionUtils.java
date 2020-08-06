@@ -149,18 +149,10 @@ public class AccessConditionUtils {
         String extension = FilenameUtils.getExtension(fileName).toLowerCase();
         switch (extension) {
             case "webm":
-                useFileField = SolrConstants.FILENAME_WEBM;
-                break;
             case "mp4":
-                useFileField = SolrConstants.FILENAME_MP4;
-                break;
             case "mp3":
-                // if the mime type in METS is not audio/mpeg3 but something else, access will be false
-                useFileField = SolrConstants.FILENAME_MPEG3;
-                break;
             case "ogg":
             case "ogv":
-                useFileField = SolrConstants.FILENAME_OGG;
                 break;
             case "txt":
             case "xml":

@@ -19,9 +19,11 @@ import java.awt.Rectangle;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
+import org.jdom2.Element;
 
 import de.intranda.api.annotation.AbstractAnnotation;
 import de.intranda.api.annotation.IAnnotation;
@@ -36,7 +38,9 @@ import de.intranda.api.annotation.oa.FragmentSelector;
 import de.intranda.api.iiif.presentation.AnnotationList;
 import de.intranda.api.iiif.presentation.Canvas;
 import de.intranda.digiverso.ocr.alto.model.structureclasses.Page;
+import de.intranda.digiverso.ocr.alto.model.structureclasses.logical.AltoDocument;
 import de.intranda.digiverso.ocr.alto.model.superclasses.GeometricData;
+import de.intranda.digiverso.ocr.alto.utils.IDManager;
 import io.goobi.viewer.api.rest.AbstractApiUrlManager;
 import io.goobi.viewer.api.rest.AbstractApiUrlManager.ApiPath;
 import io.goobi.viewer.api.rest.v1.ApiUrls;
@@ -123,12 +127,22 @@ public class AltoAnnotationBuilder {
      * @return a {@link de.intranda.api.annotation.IAnnotation} object.
      */
     public IAnnotation createAnnotation(GeometricData element, String pi, Integer pageNo, IResource canvas, boolean urlOnlyTarget) {
-        AbstractAnnotation anno = new OpenAnnotation(createAnnotationId(pi, pageNo, element.getId()));
+        String id = Optional.ofNullable(element.getId()).orElse(buildId(element));
+        AbstractAnnotation anno = new OpenAnnotation(createAnnotationId(pi, pageNo, id));
         anno.setMotivation(Motivation.PAINTING);
         anno.setTarget(createSpecificResource(canvas, element.getBounds(), urlOnlyTarget));
         TextualResource body = new TextualResource(element.getContent());
         anno.setBody(body);
         return anno;
+    }
+    
+    /**
+     * Method to construct alto element id if no id attribute is available 
+     * @param e
+     * @return
+     */
+    private String buildId(GeometricData e) {
+        return e.getClass().getSimpleName() + "_" +  e.getBounds().x + "_" + e.getBounds().y + "_" + e.getBounds().width + "_" + e.getBounds().height;
     }
 
     /**

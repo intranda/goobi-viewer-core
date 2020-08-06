@@ -9,23 +9,29 @@
     <!-- INTERFACE OPTIONS -->
     <composite:interface>
         <composite:attribute name="widget" type="io.goobi.viewer.model.cms.CMSSidebarElement" required="true" />
+        <composite:attribute name="linkToSearch" required="false" default="true" />
+    	<composite:attribute name="allowFullscreen" required="false" default="true" />
+    	<composite:attribute name="title" required="false" default="#{cc.attrs.widget.geoMap.title}" />
     </composite:interface>
 
     <composite:implementation>
+    
         <!-- WIDGET GEO LOCATIONS -->
         <h:panelGroup rendered="#{(cc.attrs.widget.type == 'widgetGeoMap' and cc.attrs.widget.geoMapId > -1) or cc.attrs.widget == null}">
             <!-- STANDARD -->
             <h:panelGroup rendered="#{cc.attrs.widget.widgetMode == 'STANDARD' or cc.attrs.widget.widgetMode == null}">
                 <div id="widgetGeoMap_#{cc.attrs.widget.geoMapId}" class="widget widget-geomap #{cc.attrs.widget.cssClass}">
                     <h3>
-                        #{cc.attrs.widget.geoMap.title}
-                        <button id="expandMap_#{cc.attrs.widget.geoMapId}" data-toggle="tooltip" title="#{msg.fullscreen_enter}" class="widget-geomap__expand" aria-label="#{msg.fullscreen_enter}">
-                        	<i class="fa fa-expand"/>
-                        </button>
+                        #{cc.attrs.title}
+                        <ui:fragment rendered="#{cc.attrs.allowFullscreen}">
+	                        <button id="expandMap_#{cc.attrs.widget.geoMapId}" data-toggle="tooltip" title="#{msg.fullscreen_enter}" class="widget-geomap__expand" aria-label="#{msg.fullscreen_enter}">
+	                        	<i class="fa fa-expand"/>
+	                        </button>
+                        </ui:fragment>
                     </h3>
 
                     <!-- MAP -->
-                    <viewerComponent:geoMap geoMap="#{cc.attrs.widget.geoMap}" mapId="widget_geoMap_#{cc.attrs.widget.geoMapId}"></viewerComponent:geoMap>
+                    <viewerComponent:geoMap geoMap="#{cc.attrs.widget.geoMap}" linkToSearch="#{cc.attrs.linkToSearch}" mapId="widget_geoMap_#{cc.attrs.widget.geoMapId}"></viewerComponent:geoMap>
                 </div>
             </h:panelGroup>
             <popover id="geoMapPopoverTemplate_#{cc.attrs.widget.geoMapId}">

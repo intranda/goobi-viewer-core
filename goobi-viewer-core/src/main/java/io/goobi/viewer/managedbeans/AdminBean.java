@@ -191,7 +191,7 @@ public class AdminBean implements Serializable {
         lazyModelComments.setEntriesPerPage(DEFAULT_ROWS_PER_PAGE);
         lazyModelComments.setFilters("text_owner-nickName_owner-email");
     }
-
+    
     // User
 
     /**

@@ -664,6 +664,18 @@ public class CMSSidebarElement {
         }
     }
     
+    /**
+     * @param geoMap the geoMap to set
+     */
+    public void setGeoMap(GeoMap geoMap) {
+        this.geoMap = geoMap;
+        if(this.geoMap != null)  {
+            this.geoMapId = this.geoMap.getId();
+        } else {
+            this.geoMapId = Long.MAX_VALUE;
+        }
+    }
+    
     public synchronized GeoMap getGeoMap() throws DAOException {
         if(this.geoMap == null) {
             GeoMap map = loadGeoMap();
