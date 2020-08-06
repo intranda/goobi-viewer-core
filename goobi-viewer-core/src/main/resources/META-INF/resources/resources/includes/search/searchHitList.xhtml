@@ -13,6 +13,7 @@
 
     <ui:param name="search" value="#{searchParam != null ? searchParam : searchBean}"></ui:param>
     <ui:param name="showSortingOptions" value="#{showSortingOptions != null ? showSortingOptions : true}"></ui:param>
+    <ui:param name="displayHitsPerPage" value="#{displayHitsPerPage != null ? displayHitsPerPage : true}"></ui:param>
 
     
     <!-- THIS INCLUDE MUSST BE WRAPPED IN AN DIV WITH THE CLASS ".search-list"! -->
@@ -22,6 +23,7 @@
         <!-- SEARCH LIST SORTING -->
         <h:panelGroup rendered="#{showSortingOptions and search.hitsCount > 1}">
             <div class="search-list__sorting">
+            	<ui:fragment rendered="#{displayHitsPerPage}">
                     <div class="search-list__sorting__item">
                         <div class="search-list__sorting__label">
                             <label for="hitsPerPageSelect">#{msg.search__hits_per_page}:</label>
@@ -39,6 +41,8 @@
                             </h:form>
                         </div>
                     </div>
+                 </ui:fragment>
+                    
                     <div class="search-list__sorting__item">
                         <div class="search-list__sorting__label">
                             <label for="sortSelect">#{msg.sortBy}:</label>
