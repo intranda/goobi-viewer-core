@@ -202,22 +202,25 @@ public class PdfRequestFilter implements ContainerRequestFilter {
             Map<String, Set<String>> quotaMap = (Map<String, Set<String>>) request.getSession().getAttribute(ATTRIBUTE_PDF_QUOTA);
             if (quotaMap == null) {
                 request.getSession().setAttribute(ATTRIBUTE_PDF_QUOTA, new HashMap<String, Set<String>>());
-                return false;
             }
             if (quotaMap.get(pi) == null) {
                 quotaMap.put(pi, new HashSet<>());
             }
             // Page already allowed as part of the quota
             if (quotaMap.get(pi).contains(pageFile)) {
+                logger.trace("Page {} already allowed for {}", pageFile, pi);
                 return true;
             }
             // Quota already filled and requested page is not part of it
             int allowedPages = getNumAllowedPages(percentage, numTotalRecordPages);
+            logger.trace("Allowed pages for {}: {}", pi, allowedPages);
             if (quotaMap.get(pi).size() >= allowedPages) {
+                logger.trace("Quota alredy filled");
                 return false;
             }
             // Add file to quotas
             quotaMap.get(pi).add(pageFile);
+            logger.trace("Page {} allowed for {} and added to map", pageFile, pi);
             return true;
         } catch (ClassCastException e) {
             logger.error(e.getMessage(), e);
