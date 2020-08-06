@@ -85,7 +85,8 @@ public class GeoMapBean implements Serializable {
      * @throws DAOException
      */
     public void setCurrentMapId(Long mapId) throws DAOException {
-        this.currentMap = new GeoMap(DataManager.getInstance().getDao().getGeoMap(mapId));
+        GeoMap orig = DataManager.getInstance().getDao().getGeoMap(mapId);
+        this.currentMap = new GeoMap(orig);
     }
     
     public Long getCurrentMapId() {

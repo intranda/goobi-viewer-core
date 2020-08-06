@@ -145,12 +145,14 @@ var viewerJS = ( function( viewer ) {
                 .pipe(RxOp.map(() => this.openPopup(marker)), RxOp.map(() => this.updatePosition(marker)))
                 .subscribe(this.onFeatureMove);
                 Rx.fromEvent(marker, "click").pipe(RxOp.map(e => marker.feature)).subscribe(this.onFeatureClick);
-                if(this.config.popoverOnHover) {                    
-                    Rx.fromEvent(marker, "mouseover").subscribe(() => marker.openPopup());
-                    Rx.fromEvent(marker, "mouseout").subscribe(() => marker.closePopup());
+                
+                if(this.config.popover) {                    
+                    if(this.config.popoverOnHover) {                    
+                        Rx.fromEvent(marker, "mouseover").subscribe(() => marker.openPopup());
+                        Rx.fromEvent(marker, "mouseout").subscribe(() => marker.closePopup());
+                    }
+                    marker.bindPopup(() => this.createPopup(marker),{closeButton: !this.config.popoverOnHover});
                 }
-               
-                marker.bindPopup(() => this.createPopup(marker),{closeButton: !this.config.popoverOnHover});
                 
                 this.markers.push(marker);    
                 if(this.cluster) {

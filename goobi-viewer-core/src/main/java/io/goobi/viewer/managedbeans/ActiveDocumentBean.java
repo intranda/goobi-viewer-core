@@ -60,9 +60,12 @@ import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.messages.Messages;
 import io.goobi.viewer.messages.ViewerResourceBundle;
 import io.goobi.viewer.model.cms.CMSPage;
+import io.goobi.viewer.model.cms.CMSSidebarElement;
 import io.goobi.viewer.model.download.DownloadJob;
 import io.goobi.viewer.model.download.EPUBDownloadJob;
 import io.goobi.viewer.model.download.PDFDownloadJob;
+import io.goobi.viewer.model.maps.GeoMap;
+import io.goobi.viewer.model.maps.GeoMap.GeoMapType;
 import io.goobi.viewer.model.metadata.Metadata;
 import io.goobi.viewer.model.search.BrowseElement;
 import io.goobi.viewer.model.search.SearchHelper;
@@ -1841,4 +1844,25 @@ public class ActiveDocumentBean implements Serializable {
         this.deleteRecordKeepTrace = deleteRecordKeepTrace;
     }
 
+    public CMSSidebarElement getMapWidget() throws PresentationException {
+        
+        
+        CMSSidebarElement widget = new CMSSidebarElement();
+        widget.setType("widgetGeoMap");
+        try {
+        GeoMap map = new GeoMap();
+        map.setId(Long.MAX_VALUE);
+        map.setType(GeoMapType.SOLR_QUERY);
+        map.setShowPopover(false);
+        map.setMarkerTitleField(null);
+        map.setSolrQuery(String.format("PI:%s OR PI_TOPSTRUCT:%s", getPersistentIdentifier(), getPersistentIdentifier()));
+        if(!map.getFeaturesAsString().equals("[]")) {            
+            widget.setGeoMap(map);
+        }
+        } catch (IndexUnreachableException e) {
+            logger.error("Unable to load geomap", e);
+        }
+        return widget;
+    }
+    
 }

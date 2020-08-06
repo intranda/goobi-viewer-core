@@ -23,6 +23,7 @@ import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
+import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Context;
 
 import org.slf4j.Logger;
@@ -94,11 +95,11 @@ public class MediaResource {
      */
     @GET
     @Path(RECORDS_FILES_VIDEO)
-    public String serveVideoContent(@PathParam("mimetype") String format, @PathParam("filename") String filename) throws PresentationException, IndexUnreachableException, AccessDeniedException {
+    public String serveVideoContent(@PathParam("mimetype") String format, @PathParam("filename") String filename) throws PresentationException, IndexUnreachableException, WebApplicationException {
         return serveMediaContent("video", format, pi, filename);
     }
     
-    private String serveMediaContent(String type, String format, String identifier, String filename) throws PresentationException, IndexUnreachableException, AccessDeniedException {
+    private String serveMediaContent(String type, String format, String identifier, String filename) throws PresentationException, IndexUnreachableException, WebApplicationException {
         String mimeType = type + "/" + format;
 
         checkAccess(type, identifier, filename);
@@ -128,7 +129,7 @@ public class MediaResource {
      * @param contentFilename a {@link java.lang.String} object.
      * @throws io.goobi.viewer.exceptions.AccessDeniedException if any.
      */
-    public void checkAccess(String action, String pi, String contentFilename) throws AccessDeniedException {
+    public void checkAccess(String action, String pi, String contentFilename) throws WebApplicationException {
         boolean access = false;
         try {
             access = AccessConditionUtils.checkAccess(request, action, pi, contentFilename, false);
@@ -138,7 +139,7 @@ public class MediaResource {
             logger.debug("DAOException thrown here: {}", e.getMessage());
         }
         if (!access) {
-            throw new AccessDeniedException("Access denied for " + pi + "/" + contentFilename);
+            throw new WebApplicationException(new AccessDeniedException("Access denied for " + pi + "/" + contentFilename));
         }
     }
 

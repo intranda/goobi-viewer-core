@@ -126,7 +126,10 @@ public class GeoMap {
     private GeoMapType type = null;
 
     @Column(name = "initial_view")
-    private String initialView = "";
+    private String initialView = "{" + 
+            "zoom: 5," + 
+            "center: [11.073397, 49.451993]" + 
+        "}";
 
     @Column(name = "marker")
     private String marker = null;
@@ -136,6 +139,10 @@ public class GeoMap {
      */
     @Column(name = "marker_title_field")
     private String markerTitleField = "MD_VALUE";
+    
+    private String featuresAsString = null;
+    
+    private boolean showPopover = true;
 
     /**
      * Empty Constructor
@@ -284,7 +291,7 @@ public class GeoMap {
         }
         return title;
     }
-
+    
     /**
      * @return the type
      */
@@ -311,9 +318,30 @@ public class GeoMap {
      */
     public void setFeatures(List<String> features) {
         this.features = features;
+        this.featuresAsString = null;
     }
 
     public String getFeaturesAsString() throws PresentationException, IndexUnreachableException {
+        if(this.featuresAsString == null) {
+            this.featuresAsString = createFeaturesAsString();
+        }
+        return this.featuresAsString;
+    }
+
+    public void setFeaturesAsString(String features) {
+        if (GeoMapType.MANUAL.equals(getType())) {
+            JSONArray array = new JSONArray(features);
+            this.features = new ArrayList<>();
+            for (Object object : array) {
+                this.features.add(object.toString());
+            }
+        } else {
+            this.features = new ArrayList<>();
+        }
+        this.featuresAsString = null;
+    }
+    
+    private String createFeaturesAsString() throws PresentationException, IndexUnreachableException {
         if (getType() != null) {
             switch (getType()) {
                 case MANUAL:
@@ -334,18 +362,6 @@ public class GeoMap {
 
         } else {
             return "[]";
-        }
-    }
-
-    public void setFeaturesAsString(String features) {
-        if (GeoMapType.MANUAL.equals(getType())) {
-            JSONArray array = new JSONArray(features);
-            this.features = new ArrayList<>();
-            for (Object object : array) {
-                this.features.add(object.toString());
-            }
-        } else {
-            this.features = new ArrayList<>();
         }
     }
 
@@ -426,6 +442,7 @@ public class GeoMap {
      */
     public void setSolrQuery(String solrQuery) {
         this.solrQuery = solrQuery;
+        this.featuresAsString = null;
     }
 
     public boolean hasSolrQuery() {
@@ -499,4 +516,17 @@ public class GeoMap {
         this.markerTitleField = markerTitleField;
     }
 
+    /**
+     * @param showPopover the showPopover to set
+     */
+    public void setShowPopover(boolean showPopover) {
+        this.showPopover = showPopover;
+    }
+    
+    /**
+     * @return the showPopover
+     */
+    public boolean isShowPopover() {
+        return showPopover;
+    }
 }
