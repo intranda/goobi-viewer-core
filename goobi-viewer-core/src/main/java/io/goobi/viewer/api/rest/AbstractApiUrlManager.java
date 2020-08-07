@@ -171,8 +171,8 @@ public abstract class AbstractApiUrlManager {
                     break;
                 }
             }
-            if(!url.endsWith("/") && !Paths.get(url).getFileName().toString().contains(".")) {
-                url += "/";
+            if(url.endsWith("/") && Paths.get(url).getFileName().toString().contains(".")) {
+                url = url.substring(0, url.length()-1);
             }
             return url;
         }
