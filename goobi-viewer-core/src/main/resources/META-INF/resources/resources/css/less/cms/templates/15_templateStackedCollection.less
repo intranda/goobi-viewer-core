@@ -32,7 +32,7 @@
     	padding: 0;
     	display: flex;
     	align-items: center;
-    	height: 64px;
+    	min-height: 64px;
     	border-bottom: 0;
     }
     .card-thumbnail,
@@ -41,19 +41,22 @@
     	overflow: hidden;
     }
     .card-thumbnail {
+		-ms-flex: 0 0 64px;
 		flex: 0 0 64px;
-    	background-image: url("../../images/icons/icon_goobilogo-transparent_512.png");
-		background-size: cover;
-		height: 100%;
+		background-image: url("../../images/icons/icon_goobilogo-transparent_512.png");
+		background-size: 64px;
+		height: 64px;
+		background-position: 50%;
+		background-repeat: no-repeat;
     	img {
 	    	width: 64px;
 			height: 64px;
     	}
     }
     .card-title {
-    	width: calc(~"90% - 64px");
-    	padding: 0 15px;
+    	padding: 1.0rem 15px;
     	margin-bottom: 0;
+		flex: 1 1 auto;
     	a {
     		display: block;
     		&:hover,
@@ -84,8 +87,7 @@
     	
     }
     .card-rss {
-    	width: 10%;
-    	text-align: center;
+    	margin-left: 1.5rem;
     	.fa {
     		width: 16px;
     		height: 16px;
@@ -125,6 +127,21 @@
 	    	}
     	}
     }
+    &__actions {
+    	display: flex;
+    	align-items: center;
+    	flex: 0 0 64px;
+    	justify-content: flex-end;
+		padding-right: 2rem;
+    }    
+    &__long-info {
+    	padding: 1.5rem 1.5rem 1.5rem 79px;
+    	margin: 0;
+    }
+    &__info-toggle {
+    	font-size: 1.8rem;
+    }
+
 }
 
 /* MODIFICATION */

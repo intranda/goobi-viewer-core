@@ -18,26 +18,29 @@
 				</a>
 			</h4>
 			
-			<div>
-				<a if="{hasDescription(collection)}" href="#description-{this.opts.setindex}-{index}" role="button" data-toggle="collapse" aria-expanded="false">
-					<i class="fa fa-info-circle" aria-hidden="true"></i>
-				</a>
-			</div>
-				
-			<div class="card-rss">
-				<a href="{viewerJS.iiif.getRelated(collection, 'Rss feed')['@id']}">
-					<i class="fa fa-rss" aria-hidden="true"/>
-				</a>
-			</div>
-			
-			<div if="{hasDescription(collection)}" id="description-{this.opts.setindex}-{index}" class="card-collapse collapse" role="tabcard" aria-expanded="false">
-				<p>
-					{getDescription(collection)}
-				</p>
+			<div class="tpl-stacked-collection__actions">
+				<div class="tpl-stacked-collection__info-toggle">
+					<a if="{hasDescription(collection)}" href="#description-{this.opts.setindex}-{index}" role="button" data-toggle="collapse" aria-expanded="false">
+						<i class="fa fa-info-circle" aria-hidden="true"></i>
+					</a>
+				</div>
+					
+				<div class="card-rss">
+					<a href="{viewerJS.iiif.getRelated(collection, 'Rss feed')['@id']}">
+						<i class="fa fa-rss" aria-hidden="true"/>
+					</a>
+				</div>
 			</div>
 	
 		</div>
+	
+			<div if="{hasDescription(collection)}" id="description-{this.opts.setindex}-{index}" class="card-collapse collapse" role="tabcard" aria-expanded="false">
+				<p class="tpl-stacked-collection__long-info">
+					{getDescription(collection)}
+				</p>
+			</div>
 		
+
 		<div if="{hasChildren(collection)}" id="collapse-{this.opts.setindex}-{index}" class="card-collapse collapse" role="tabcard" aria-expanded="false">
 			<div class="card-body">
 				<ul if="{collection.members && collection.members.length > 0}" class="list">
