@@ -131,8 +131,10 @@ public class PdfRequestFilter implements ContainerRequestFilter {
      */
     void filterForDownloadQuota(String pi, String divId, String contentFileName, HttpServletRequest request)
             throws ServiceNotAllowedException {
+        logger.trace("filterForDownloadQuota({}, {}, {})", pi, divId, contentFileName);
         try {
             int percentage = AccessConditionUtils.getPdfDownloadQuotaForRecord(pi);
+            logger.trace("percentage: {}", percentage);
             // IF 100% allowed, skip all further checks
             if (percentage == 100) {
                 return;
@@ -149,13 +151,13 @@ public class PdfRequestFilter implements ContainerRequestFilter {
 
             if (StringUtils.isNotEmpty(divId) && StringUtils.isEmpty(contentFileName)) {
                 // Chapter PDF
-                String query = "+" + SolrConstants.PI_TOPSTRUCT + " +" + SolrConstants.LOGID + ":" + divId + " +" + SolrConstants.DOCTYPE + ":PAGE";
-                logger.error(query);
+                String query = "+" + SolrConstants.PI_TOPSTRUCT + ":" + pi + " +" + SolrConstants.LOGID + ":" + divId + " +" + SolrConstants.DOCTYPE
+                        + ":PAGE";
                 SolrDocumentList docs = DataManager.getInstance()
                         .getSearchIndex()
                         .search(query, SolrSearchIndex.MAX_HITS, Collections.singletonList(new StringPair(SolrConstants.ORDER, "asc")),
                                 Arrays.asList(new String[] { SolrConstants.ORDER, SolrConstants.FILENAME }));
-
+                logger.trace(query);
                 if (docs.isEmpty()) {
                     throw new RecordNotFoundException("Document not found: " + pi + "/" + divId);
                 }

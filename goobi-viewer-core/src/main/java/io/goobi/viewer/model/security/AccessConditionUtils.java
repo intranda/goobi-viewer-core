@@ -1017,7 +1017,8 @@ public class AccessConditionUtils {
      * @should return 0 if no license configured
      * @should return actual quota value if found
      */
-    public static int getPdfDownloadQuotaForRecord(String pi) throws PresentationException, IndexUnreachableException, DAOException, RecordNotFoundException {
+    public static int getPdfDownloadQuotaForRecord(String pi)
+            throws PresentationException, IndexUnreachableException, DAOException, RecordNotFoundException {
         if (StringUtils.isEmpty(pi)) {
             return 0;
         }
@@ -1030,6 +1031,7 @@ public class AccessConditionUtils {
             throw new RecordNotFoundException(pi + " not found in index");
         }
         if (!doc.containsKey(SolrConstants.ACCESSCONDITION_PDF_PERCENTAGE_QUOTA)) {
+            logger.trace("Record '{}' has no field '{}'", pi, SolrConstants.ACCESSCONDITION_PDF_PERCENTAGE_QUOTA);
             return 100;
         }
 
@@ -1037,12 +1039,14 @@ public class AccessConditionUtils {
         // No relevant access condition values
         if (requiredAccessConditions == null || requiredAccessConditions.isEmpty()
                 || requiredAccessConditions.get(0).equals(SolrConstants.OPEN_ACCESS_VALUE)) {
+            logger.trace("Record '{}' is open access", pi);
             return 100;
         }
 
         List<LicenseType> relevantLicenseTypes = DataManager.getInstance().getDao().getLicenseTypes(requiredAccessConditions);
         // Deny access if record's license types aren't configured
         if (relevantLicenseTypes.isEmpty()) {
+            logger.trace("Record '{}' hsd access conditions that aren't configured in the database", pi);
             return 0;
         }
         // Check whether this record has an access condition that implements a PDF quota
