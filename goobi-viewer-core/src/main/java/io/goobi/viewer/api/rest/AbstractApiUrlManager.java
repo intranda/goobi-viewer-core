@@ -19,6 +19,8 @@ import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -168,6 +170,9 @@ public abstract class AbstractApiUrlManager {
                     //no further params. Cannot keep replacing
                     break;
                 }
+            }
+            if(url.endsWith("/") && Paths.get(url).getFileName().toString().contains(".")) {
+                url = url.substring(0, url.length()-1);
             }
             return url;
         }
