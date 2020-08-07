@@ -133,13 +133,14 @@ public class PdfRequestFilter implements ContainerRequestFilter {
             throws ServiceNotAllowedException {
         try {
             int percentage = AccessConditionUtils.getPdfDownloadQuotaForRecord(pi);
+            // IF 100% allowed, skip all further checks
+            if (percentage == 100) {
+                return;
+            }
 
             // Full record PDF
             if (StringUtils.isEmpty(divId) && StringUtils.isEmpty(contentFileName)) {
-                if (percentage < 100) {
-                    throw new ServiceNotAllowedException("Insufficient download quota for record '" + pi + "': " + percentage + "%");
-                }
-                return;
+                throw new ServiceNotAllowedException("Insufficient download quota for record '" + pi + "': " + percentage + "%");
             }
 
             int numTotalRecordPages = (int) DataManager.getInstance()
@@ -148,11 +149,11 @@ public class PdfRequestFilter implements ContainerRequestFilter {
 
             if (StringUtils.isNotEmpty(divId) && StringUtils.isEmpty(contentFileName)) {
                 // Chapter PDF
+                String query = "+" + SolrConstants.PI_TOPSTRUCT + " +" + SolrConstants.LOGID + ":" + divId + " +" + SolrConstants.DOCTYPE + ":PAGE";
+                logger.error(query);
                 SolrDocumentList docs = DataManager.getInstance()
                         .getSearchIndex()
-                        .search(
-                                "+" + SolrConstants.PI_TOPSTRUCT + " +" + SolrConstants.LOGID + ":" + divId + " +" + SolrConstants.DOCTYPE + ":PAGE",
-                                SolrSearchIndex.MAX_HITS, Collections.singletonList(new StringPair(SolrConstants.ORDER, "asc")),
+                        .search(query, SolrSearchIndex.MAX_HITS, Collections.singletonList(new StringPair(SolrConstants.ORDER, "asc")),
                                 Arrays.asList(new String[] { SolrConstants.ORDER, SolrConstants.FILENAME }));
 
                 if (docs.isEmpty()) {
