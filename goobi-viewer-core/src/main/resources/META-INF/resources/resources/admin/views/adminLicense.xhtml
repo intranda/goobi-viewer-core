@@ -155,13 +155,15 @@
                                     </div>
                                     <div class="col-9 admin__form-input">
                                         <div class="admin__radio-switch">
-                                            <h:selectOneRadio group="openAccessToggle" value="#{adminBean.currentLicenseType.pdfDownloadQuota}"
+                                            <h:selectOneRadio group="pdfDownloadQuotaToggle" value="#{adminBean.currentLicenseType.pdfDownloadQuota}"
                                                 immediate="true" checked="#{visibleItem.openInNewWindow ? null : 'false'}">
                                                 <f:selectItem itemValue="#{false}" itemLabel="#{msg.no}" />
+                                                <f:ajax render="pdf_download_quota_info_box" />
                                             </h:selectOneRadio>                                     
-                                            <h:selectOneRadio group="openAccessToggle" value="#{adminBean.currentLicenseType.pdfDownloadQuota}"
+                                            <h:selectOneRadio group="pdfDownloadQuotaToggle" value="#{adminBean.currentLicenseType.pdfDownloadQuota}"
                                                 immediate="true" checked="#{visibleItem.openInNewWindow ? 'true' : null}">
                                                 <f:selectItem itemValue="#{true}" itemLabel="#{msg.yes}" />
+                                                <f:ajax render="pdf_download_quota_info_box" />
                                             </h:selectOneRadio>
                                             <span class="toggle-outside"><span class="toggle-inside"></span></span>
                                         </div>
@@ -172,6 +174,25 @@
                                             <i class="fa fa-question-circle" aria-hidden="true"></i>
                                         </button>
                                     </div>
+                                    <h:panelGroup id="pdf_download_quota_info_box">
+                                    <ui:fragment rendered="#{adminBean.currentLicenseType.pdfDownloadQuota}">
+                                        <ui:fragment rendered="#{adminBean.getPdfQuotaRecordCountForLicenseType(adminBean.currentLicenseType.name) > 0}">
+                                            <div class="admin__default-block -success">
+                                                <p>
+                                                    <h:outputFormat value="#{msg.admin__license_pdf_download_quota_record_count_ok}" escape="false">
+                                                        <f:param
+                                                            value="#{adminBean.getPdfQuotaRecordCountForLicenseType(adminBean.currentLicenseType.name)}" />
+                                                    </h:outputFormat>
+                                                </p>
+                                            </div>
+                                        </ui:fragment>
+                                        <ui:fragment rendered="#{adminBean.getPdfQuotaRecordCountForLicenseType(adminBean.currentLicenseType.name) == 0}">
+                                            <div class="admin__default-block -warning">
+                                                <p><h:outputText escape="false" value="#{msg.admin__license_pdf_download_quota_record_count_empty}" /></p>
+                                            </div>
+                                        </ui:fragment>
+                                    </ui:fragment>
+                                    </h:panelGroup>
                                 </div>
                                 
                             </div>

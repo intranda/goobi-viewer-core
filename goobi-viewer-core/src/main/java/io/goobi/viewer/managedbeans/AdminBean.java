@@ -779,6 +779,11 @@ public class AdminBean implements Serializable {
 
         return DataManager.getInstance().getDao().getLicenseCount(licenseType) > 0;
     }
+    
+    public long getPdfQuotaRecordCountForLicenseType(String licenseTypeName) throws IndexUnreachableException, PresentationException {
+        return DataManager.getInstance().getSearchIndex().getHitCount("+" + SolrConstants.ACCESSCONDITION + ":" + licenseTypeName 
+        + " +" + SolrConstants.ISWORK + ":true +" + SolrConstants.ACCESSCONDITION_PDF_PERCENTAGE_QUOTA + ":*");
+    }
 
     /**
      * 
