@@ -83,7 +83,7 @@ public abstract class AbstractApiUrlManager {
             }
             if(url.contains(before) && url.contains(after)) {
                 int urlBeforeEnd = url.indexOf(before) + before.length();
-                int urlAfterStart = after.length() > 0 ? url.indexOf(after) : url.length();
+                int urlAfterStart = after.length() > 0 ? ( after.length() > 1 ? url.indexOf(after) : url.length()-1 ) : url.length();
                 String paramValue = url.substring(urlBeforeEnd, urlAfterStart);
                 return paramValue;
             } else {
@@ -132,6 +132,9 @@ public abstract class AbstractApiUrlManager {
         
         public String build() {
             String path = String.join("", this.paths);
+            if(!this.paths[this.paths.length-1].contains(".")) {
+               path += "/";
+            }
             return path;
         }
     }
