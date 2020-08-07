@@ -86,7 +86,7 @@ public class ViewerImageResourceTest extends AbstractRestApiTest {
     @Test
     public void testGetImageInformationFromBaseUrl() {
         String url = urls.path(RECORDS_FILES_IMAGE).params(PI, FILENAME).build();
-        String id = urls.path(RECORDS_FILES_IMAGE).params(PI, FILENAME).build();
+        String id = urls.path(RECORDS_FILES_IMAGE).params(PI, FILENAME + ".tif").build();
         try (Response response = target(url)
                 .request()
                 .accept(MediaType.APPLICATION_JSON)
@@ -95,7 +95,7 @@ public class ViewerImageResourceTest extends AbstractRestApiTest {
             assertNotNull("Should return user object as json", response.getEntity());
             String responseString = response.readEntity(String.class);
             JSONObject info = new JSONObject(responseString);
-            assertTrue("@id should end with '" + id + ".tif' but was: " + info.getString("@id"), info.getString("@id").endsWith(id + ".tif"));
+            assertTrue("@id should end with '" + id + " but was: " + info.getString("@id"), info.getString("@id").endsWith(id));
         }
     }
     
