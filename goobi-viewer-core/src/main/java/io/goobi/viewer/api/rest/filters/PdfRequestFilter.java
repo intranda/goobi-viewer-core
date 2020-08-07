@@ -144,7 +144,7 @@ public class PdfRequestFilter implements ContainerRequestFilter {
 
             int numTotalRecordPages = (int) DataManager.getInstance()
                     .getSearchIndex()
-                    .getHitCount("+" + SolrConstants.PI_TOPSTRUCT + " +" + SolrConstants.DOCTYPE + ":PAGE");
+                    .getHitCount("+" + SolrConstants.PI_TOPSTRUCT + ":" + pi + " +" + SolrConstants.DOCTYPE + ":PAGE");
 
             if (StringUtils.isNotEmpty(divId) && StringUtils.isEmpty(contentFileName)) {
                 // Chapter PDF
@@ -165,16 +165,19 @@ public class PdfRequestFilter implements ContainerRequestFilter {
                         logger.error("File name not found for page belonging to {}/{}", pi, divId);
                     }
                     if (!checkPageAllowed(pi, fileName, percentage, numTotalRecordPages, request)) {
+                        logger.trace("Insufficient download quota");
                         throw new ServiceNotAllowedException("Insufficient download quota for record '" + pi + "': " + percentage + "%");
                     }
                 }
             } else if (StringUtils.isEmpty(divId) && StringUtils.isNotEmpty(contentFileName)) {
                 // Page PDF
                 if (!checkPageAllowed(pi, contentFileName, percentage, numTotalRecordPages, request)) {
+                    logger.trace("Insufficient download quota");
                     throw new ServiceNotAllowedException("Insufficient download quota for record '" + pi + "': " + percentage + "%");
                 }
             }
         } catch (PresentationException | IndexUnreachableException | DAOException | RecordNotFoundException e) {
+            logger.error(e.getMessage());
             throw new ServiceNotAllowedException(e.getMessage());
         }
     }
@@ -195,13 +198,16 @@ public class PdfRequestFilter implements ContainerRequestFilter {
      */
     @SuppressWarnings("unchecked")
     static boolean checkPageAllowed(String pi, String pageFile, int percentage, int numTotalRecordPages, HttpServletRequest request) {
+        logger.trace("checkPageAllowed({}, {}, {}, {})", pi, pageFile, percentage, numTotalRecordPages);
         if (request == null || request.getSession() == null) {
+            logger.trace("session not found");
             return false;
         }
         try {
             Map<String, Set<String>> quotaMap = (Map<String, Set<String>>) request.getSession().getAttribute(ATTRIBUTE_PDF_QUOTA);
             if (quotaMap == null) {
-                request.getSession().setAttribute(ATTRIBUTE_PDF_QUOTA, new HashMap<String, Set<String>>());
+                quotaMap = new HashMap<>();
+                request.getSession().setAttribute(ATTRIBUTE_PDF_QUOTA, quotaMap);
             }
             if (quotaMap.get(pi) == null) {
                 quotaMap.put(pi, new HashSet<>());
@@ -215,7 +221,7 @@ public class PdfRequestFilter implements ContainerRequestFilter {
             int allowedPages = getNumAllowedPages(percentage, numTotalRecordPages);
             logger.trace("Allowed pages for {}: {}", pi, allowedPages);
             if (quotaMap.get(pi).size() >= allowedPages) {
-                logger.trace("Quota alredy filled");
+                logger.trace("Quota already filled");
                 return false;
             }
             // Add file to quotas

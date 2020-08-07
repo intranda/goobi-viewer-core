@@ -1025,11 +1025,11 @@ public class AccessConditionUtils {
         SolrDocument doc = DataManager.getInstance()
                 .getSearchIndex()
                 .getFirstDoc("+" + SolrConstants.PI + ":" + pi,
-                        Arrays.asList(new String[] { SolrConstants.ACCESSCONDITION, SolrConstants.ACCESSCONDITION_PDFPERCENTAGEQUOTA }));
+                        Arrays.asList(new String[] { SolrConstants.ACCESSCONDITION, SolrConstants.ACCESSCONDITION_PDF_PERCENTAGE_QUOTA }));
         if (doc == null) {
             throw new RecordNotFoundException(pi + " not found in index");
         }
-        if (!doc.containsKey(SolrConstants.ACCESSCONDITION_PDFPERCENTAGEQUOTA)) {
+        if (!doc.containsKey(SolrConstants.ACCESSCONDITION_PDF_PERCENTAGE_QUOTA)) {
             return 100;
         }
 
@@ -1049,7 +1049,7 @@ public class AccessConditionUtils {
         for (LicenseType licenseType : relevantLicenseTypes) {
             if (licenseType.isPdfDownloadQuota()) {
                 try {
-                    return Integer.valueOf((String) doc.getFieldValue(SolrConstants.ACCESSCONDITION_PDFPERCENTAGEQUOTA));
+                    return Integer.valueOf((String) doc.getFieldValue(SolrConstants.ACCESSCONDITION_PDF_PERCENTAGE_QUOTA));
                 } catch (NumberFormatException e) {
                     logger.error(e.getMessage());
                     return 0;
