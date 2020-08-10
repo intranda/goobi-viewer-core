@@ -153,7 +153,7 @@ public class RecordPageResource {
     }
 
     @GET
-    @javax.ws.rs.Path(RECORDS_PAGES_ANNOTATIONS + "/{page}")
+    @javax.ws.rs.Path(RECORDS_PAGES_ANNOTATIONS + "/{page}/")
     @Produces({ MediaType.APPLICATION_JSON })
     @ApiResponse(responseCode="400", description="If the page number is out of bounds")
     public AnnotationPage getAnnotationPageForRecord(

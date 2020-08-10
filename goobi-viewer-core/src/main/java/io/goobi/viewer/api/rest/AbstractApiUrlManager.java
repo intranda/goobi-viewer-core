@@ -19,6 +19,8 @@ import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -83,7 +85,7 @@ public abstract class AbstractApiUrlManager {
             }
             if(url.contains(before) && url.contains(after)) {
                 int urlBeforeEnd = url.indexOf(before) + before.length();
-                int urlAfterStart = after.length() > 0 ? url.indexOf(after) : url.length();
+                int urlAfterStart = after.length() > 0 ? ( after.length() > 1 ? url.indexOf(after) : url.length()-1 ) : url.length();
                 String paramValue = url.substring(urlBeforeEnd, urlAfterStart);
                 return paramValue;
             } else {
@@ -132,6 +134,9 @@ public abstract class AbstractApiUrlManager {
         
         public String build() {
             String path = String.join("", this.paths);
+            if(!this.paths[this.paths.length-1].contains(".")) {
+               path += "/";
+            }
             return path;
         }
     }
@@ -165,6 +170,9 @@ public abstract class AbstractApiUrlManager {
                     //no further params. Cannot keep replacing
                     break;
                 }
+            }
+            if(url.endsWith("/") && Paths.get(url).getFileName().toString().contains(".")) {
+                url = url.substring(0, url.length()-1);
             }
             return url;
         }

@@ -564,6 +564,7 @@ public class Metadata implements Serializable {
      * @return a boolean.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
+     * @should use default value of no value found
      */
     @SuppressWarnings("unchecked")
     public boolean populate(StructElement se, Locale locale) throws IndexUnreachableException, PresentationException {
@@ -661,7 +662,7 @@ public class Metadata implements Serializable {
 
                 int count = 0;
                 int indexOfParam = params.indexOf(param);
-                //            logger.debug(params.toString());
+                // logger.trace("{} ({})", param.toString(), indexOfParam);
                 List<String> mdValues = null;
                 if (MetadataParameterType.TOPSTRUCTFIELD.equals(param.getType()) && se.getTopStruct() != null) {
                     // Topstruct values as the first choice
@@ -674,34 +675,33 @@ public class Metadata implements Serializable {
                     // Topstruct values as a fallback
                     mdValues = getMetadata(se.getTopStruct().getMetadataFields(), param.getKey(), locale);
                 }
-                if (mdValues == null) {
-                    continue;
+                if (mdValues != null) {
+                    for (String mdValue : mdValues) {
+                        // logger.trace("{}: {}", param.getKey(), mdValue);
+                        if (count >= number && number != -1) {
+                            break;
+                        }
+                        found = true;
+                        // Apply replace rules
+                        if (!param.getReplaceRules().isEmpty()) {
+                            mdValue = MetadataTools.applyReplaceRules(mdValue, param.getReplaceRules(), se.getPi());
+                        }
+                        // Format dates
+                        if (param.getKey().equals(SolrConstants.DATECREATED)) {
+                            DateFormat dateFormatMetadata = DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.SHORT,
+                                    FacesContext.getCurrentInstance().getViewRoot().getLocale());
+                            mdValue = dateFormatMetadata.format(new Date(Long.valueOf(mdValue)));
+                        } else if (param.getKey().equals(SolrConstants.DATEUPDATED)) {
+                            DateFormat dateFormatMetadata = DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.SHORT,
+                                    FacesContext.getCurrentInstance().getViewRoot().getLocale());
+                            mdValue = dateFormatMetadata.format(new Date(Long.valueOf(mdValue)));
+                        }
+                        setParamValue(count, indexOfParam, Collections.singletonList(mdValue), param.getKey(), null, null, null, locale);
+                        count++;
+                    }
                 }
-                for (String mdValue : mdValues) {
-                    //                logger.debug(param.toString() + " (" + indexOfParam + ")");
-                    if (count >= number && number != -1) {
-                        break;
-                    }
-                    found = true;
-                    // Apply replace rules
-                    if (!param.getReplaceRules().isEmpty()) {
-                        mdValue = MetadataTools.applyReplaceRules(mdValue, param.getReplaceRules(), se.getPi());
-                    }
-                    // Format dates
-                    if (param.getKey().equals(SolrConstants.DATECREATED)) {
-                        DateFormat dateFormatMetadata = DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.SHORT,
-                                FacesContext.getCurrentInstance().getViewRoot().getLocale());
-                        mdValue = dateFormatMetadata.format(new Date(Long.valueOf(mdValue)));
-                    } else if (param.getKey().equals(SolrConstants.DATEUPDATED)) {
-                        DateFormat dateFormatMetadata = DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.SHORT,
-                                FacesContext.getCurrentInstance().getViewRoot().getLocale());
-                        mdValue = dateFormatMetadata.format(new Date(Long.valueOf(mdValue)));
-                    }
-                    setParamValue(count, indexOfParam, Collections.singletonList(mdValue), param.getKey(), null, null, null, locale);
-                    count++;
-                }
-                if (!found && param.getDefaultValue() != null) {
-                    logger.debug("No value found for {}, using default value", param.getKey());
+                if (mdValues == null && param.getDefaultValue() != null) {
+                    // logger.trace("No value found for {} (index {}), using default value '{}'", param.getKey(), indexOfParam, param.getDefaultValue());
                     setParamValue(0, indexOfParam, Collections.singletonList(param.getDefaultValue()), param.getKey(), null, null, null, locale);
                     found = true;
                     count++;

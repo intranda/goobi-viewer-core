@@ -44,6 +44,7 @@ import org.slf4j.LoggerFactory;
 
 import de.intranda.metadata.multilanguage.IMetadataValue;
 import de.intranda.metadata.multilanguage.MultiLanguageMetadataValue;
+import de.intranda.metadata.multilanguage.SimpleMetadataValue;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.SolrConstants;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
@@ -592,6 +593,19 @@ public class CMSCollection implements Comparable<CMSCollection>, BrowseElementIn
             return ViewerResourceBundle.getTranslations(getSolrField());
         } else {
             IMetadataValue value = new MultiLanguageMetadataValue(labels);
+            return value;
+        }
+    }
+    
+    @Override
+    public IMetadataValue getTranslationsForDescription() {
+        Map<String, String> descriptions = getDescriptions().stream()
+                .filter(l -> StringUtils.isNotBlank(l.getValue()))
+                .collect(Collectors.toMap(l -> l.getLanguage(), l -> l.getValue()));
+        if (descriptions.isEmpty()) {
+            return null;
+        } else {
+            IMetadataValue value = new MultiLanguageMetadataValue(descriptions);
             return value;
         }
     }

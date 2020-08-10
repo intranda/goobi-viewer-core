@@ -25,6 +25,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import de.intranda.metadata.multilanguage.IMetadataValue;
+import de.intranda.metadata.multilanguage.SimpleMetadataValue;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.messages.ViewerResourceBundle;
@@ -187,6 +188,14 @@ public class SimpleBrowseElementInfo implements BrowseElementInfo {
     @Override
     public IMetadataValue getTranslationsForName() {
         return ViewerResourceBundle.getTranslations(getName());
+    }
+
+    /* (non-Javadoc)
+     * @see io.goobi.viewer.model.viewer.BrowseElementInfo#getTranslationsForDescription()
+     */
+    @Override
+    public IMetadataValue getTranslationsForDescription() {
+        return null;
     }
 
 }
