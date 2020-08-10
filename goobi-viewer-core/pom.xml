@@ -118,7 +118,7 @@
 		<jstl.version>1.2</jstl.version>
 		<junit.version>4.13</junit.version>
 		<joda-time.version>2.10.6</joda-time.version>
-		<mariadb-java-client.version>2.6.2</mariadb-java-client.version>
+		<mariadb-java-client.version>2.3.0</mariadb-java-client.version>
 		<mockito.version>3.4.6</mockito.version>
 		<mockserver.version>5.11.1</mockserver.version>
 		<oauth.version>1.0.2</oauth.version>
