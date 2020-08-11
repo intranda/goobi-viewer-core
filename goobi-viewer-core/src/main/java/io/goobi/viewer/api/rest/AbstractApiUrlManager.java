@@ -16,8 +16,10 @@
 package io.goobi.viewer.api.rest;
 
 import java.io.UnsupportedEncodingException;
+import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.net.URL;
 import java.net.URLEncoder;
 import java.nio.file.Paths;
 import java.util.Iterator;
@@ -36,6 +38,8 @@ import org.apache.commons.lang3.StringUtils;
 import org.glassfish.jersey.client.ClientProperties;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import io.goobi.viewer.controller.StringTools;
 
 /**
  * @author florian
@@ -157,7 +161,13 @@ public abstract class AbstractApiUrlManager {
             return build();
         }
 
-        private static String replacePathParams(String urlString, Object[] pathParams) {
+        /**
+         * 
+         * @param urlString
+         * @param pathParams
+         * @return
+         */
+        static String replacePathParams(String urlString, Object[] pathParams) {
             Matcher matcher = Pattern.compile("\\{\\w+\\}").matcher(urlString);
             Iterator i = new ArrayIterator(pathParams);
             while (matcher.find()) {
@@ -171,18 +181,32 @@ public abstract class AbstractApiUrlManager {
                 }
             }
             try {
-                //              URL url = new URL(urlString);
-                //              URI uri = new URI(url.getProtocol(), url.getUserInfo(), url.getHost(), url.getPort(), url.getPath(), url.getQuery(), url.getRef());
-                URI uri = new URI(urlString);
+                URL url = new URL(urlString);
+                URI uri = new URI(url.getProtocol(), url.getUserInfo(), url.getHost(), url.getPort(), url.getPath(), url.getQuery(), url.getRef());
+                //                URI uri = new URI(URLEncoder.encode(urlString, StringTools.DEFAULT_ENCODING));
                 if (urlString.endsWith("/") && Paths.get(uri.getPath()).getFileName().toString().contains(".")) {
                     urlString = urlString.substring(0, urlString.length() - 1);
                 }
             } catch (URISyntaxException e) {
                 logger.error(e.getMessage(), e);
+            } catch (MalformedURLException e) {
+                logger.error(e.getMessage(), e);
             }
 
             return urlString;
         }
+    }
+
+    /**
+     * Calls the identical method inside the inline class ApiPathParams. For testing purposes.
+     * 
+     * @param urlString
+     * @param pathParams
+     * @return
+     * @should remove trailing slash if file name contains period
+     */
+    static String replaceApiPathParams(String urlString, Object[] pathParams) {
+        return ApiPathParams.replacePathParams(urlString, pathParams);
     }
 
     public static class ApiPathQueries extends ApiPathParams {
