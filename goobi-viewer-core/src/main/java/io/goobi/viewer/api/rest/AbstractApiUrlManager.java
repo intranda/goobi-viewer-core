@@ -17,9 +17,8 @@ package io.goobi.viewer.api.rest;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URI;
-import java.net.URLDecoder;
+import java.net.URISyntaxException;
 import java.net.URLEncoder;
-import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
@@ -29,73 +28,72 @@ import java.util.regex.Pattern;
 
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
-import javax.ws.rs.client.Invocation;
-import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.MediaType;
 
 import org.apache.commons.collections4.iterators.ArrayIterator;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.glassfish.jersey.client.ClientProperties;
-
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * @author florian
  *
  */
 public abstract class AbstractApiUrlManager {
-    
+
+    private static final Logger logger = LoggerFactory.getLogger(AbstractApiUrlManager.class);
+
     /**
      * @return The base url to the api without trailing slashes
      */
     public abstract String getApiUrl();
-    
+
     /**
-     * @return  The base url of the viewer application
+     * @return The base url of the viewer application
      */
     public abstract String getApplicationUrl();
-    
+
     public static String subPath(String url, String within) {
-        if(url.startsWith(within)) {
+        if (url.startsWith(within)) {
             return url.substring(within.length());
-        } else {
-            return url;
         }
+
+        return url;
     }
-    
+
     public String parseParameter(String template, String url, String parameter) {
-        if(StringUtils.isNoneBlank(url, parameter)) {
-            if(!parameter.matches("\\{.*\\}")) {
+        if (StringUtils.isNoneBlank(url, parameter)) {
+            if (!parameter.matches("\\{.*\\}")) {
                 parameter = "{" + parameter + "}";
             }
             int paramStart = template.indexOf(parameter);
-            if(paramStart < 0) {
-                return "";  //not found
+            if (paramStart < 0) {
+                return ""; //not found
             }
             int paramEnd = paramStart + parameter.length();
             String before = template.substring(0, paramStart);
             String after = template.substring(paramEnd);
-            if(before.contains("}")) {
-                int lastBracketIndex = before.lastIndexOf("}")+1;
+            if (before.contains("}")) {
+                int lastBracketIndex = before.lastIndexOf("}") + 1;
                 before = before.substring(lastBracketIndex);
             }
-            if(after.contains("{")) {
+            if (after.contains("{")) {
                 int firstBracketIndex = after.indexOf("{");
                 after = after.substring(0, firstBracketIndex);
             }
-            if(url.contains(before) && url.contains(after)) {
+            if (url.contains(before) && url.contains(after)) {
                 int urlBeforeEnd = url.indexOf(before) + before.length();
-                int urlAfterStart = after.length() > 0 ? ( after.length() > 1 ? url.indexOf(after) : url.length()-1 ) : url.length();
+                int urlAfterStart = after.length() > 0 ? (after.length() > 1 ? url.indexOf(after) : url.length() - 1) : url.length();
                 String paramValue = url.substring(urlBeforeEnd, urlAfterStart);
                 return paramValue;
-            } else {
-                return "";
             }
-        } else {
             return "";
         }
+
+        return "";
     }
-    
 
     /**
      * @return the path part of the {@link #getApiUrl()}
@@ -110,101 +108,113 @@ public abstract class AbstractApiUrlManager {
      * @param recordsRssJson
      * @return
      */
-    public ApiPath path(String...paths) {
-        String[] array = (String[]) ArrayUtils.addAll(new String[] {getApiUrl()}, paths);
+    public ApiPath path(String... paths) {
+        String[] array = ArrayUtils.addAll(new String[] { getApiUrl() }, paths);
         return new ApiPath(array);
     }
 
-    
     public static class ApiPath {
-        
+
         private final String[] paths;
-        
+
         public ApiPath(String[] paths) {
             this.paths = paths;
         }
-        
-        public ApiPathParams params(Object...params) {
+
+        public ApiPathParams params(Object... params) {
             return new ApiPathParams(this, params);
         }
-        
+
         public ApiPathQueries query(String key, Object value) {
             return new ApiPathQueries(this).query(key, value);
         }
-        
+
         public String build() {
             String path = String.join("", this.paths);
-            if(!this.paths[this.paths.length-1].contains(".")) {
-               path += "/";
+            if (!this.paths[this.paths.length - 1].contains(".")) {
+                path += "/";
             }
             return path;
         }
     }
-    
-    public static class ApiPathParams extends ApiPath{
-        
+
+    public static class ApiPathParams extends ApiPath {
+
         private final Object[] params;
-        
+
         public ApiPathParams(ApiPath path, Object[] params) {
             super(path.paths);
             this.params = params;
         }
-        
+
+        @Override
         public String build() {
             return replacePathParams(super.build(), this.params);
         }
-        
+
+        @Override
         public String toString() {
             return build();
         }
-        
-        private String replacePathParams(String url, Object[] pathParams) {
-            Matcher matcher = Pattern.compile("\\{\\w+\\}").matcher(url);
+
+        private static String replacePathParams(String urlString, Object[] pathParams) {
+            Matcher matcher = Pattern.compile("\\{\\w+\\}").matcher(urlString);
             Iterator i = new ArrayIterator(pathParams);
-            while(matcher.find()) {
+            while (matcher.find()) {
                 String group = matcher.group();
-                if(i.hasNext()) {
+                if (i.hasNext()) {
                     String replacement = i.next().toString();
-                    url = url.replace(group, replacement);
+                    urlString = urlString.replace(group, replacement);
                 } else {
                     //no further params. Cannot keep replacing
                     break;
                 }
             }
-            if(url.endsWith("/") && Paths.get(url).getFileName().toString().contains(".")) {
-                url = url.substring(0, url.length()-1);
+            try {
+                //              URL url = new URL(urlString);
+                //              URI uri = new URI(url.getProtocol(), url.getUserInfo(), url.getHost(), url.getPort(), url.getPath(), url.getQuery(), url.getRef());
+                URI uri = new URI(urlString);
+                if (urlString.endsWith("/") && Paths.get(uri.getPath()).getFileName().toString().contains(".")) {
+                    urlString = urlString.substring(0, urlString.length() - 1);
+                }
+            } catch (URISyntaxException e) {
+                logger.error(e.getMessage(), e);
             }
-            return url;
+
+            return urlString;
         }
     }
-    
-    public static class ApiPathQueries extends ApiPathParams{
-        
+
+    public static class ApiPathQueries extends ApiPathParams {
+
         private final Map<String, Object> queries;
-        
+
         public ApiPathQueries(ApiPath path) {
-            
+
             super(path, initParams(path));
             this.queries = new LinkedHashMap<>();
         }
-        
+
         private static Object[] initParams(ApiPath path) {
             Object[] params = new Object[0];
-            if(path instanceof ApiPathParams) {
+            if (path instanceof ApiPathParams) {
                 params = ((ApiPathParams) path).params;
             }
             return params;
         }
-        
+
+        @Override
         public ApiPathQueries query(String key, Object value) {
             this.queries.put(key, value);
             return this;
         }
-        
+
+        @Override
         public String toString() {
             return build();
         }
-        
+
+        @Override
         public String build() {
             String path = super.build();
             String querySeparator = "?";
@@ -220,7 +230,7 @@ public abstract class AbstractApiUrlManager {
             return path;
         }
     }
-    
+
     public static class ApiInfo {
         public String name = "";
         public String version = "";
@@ -228,19 +238,19 @@ public abstract class AbstractApiUrlManager {
     }
 
     /**
-     * Calls the {@link #getApiUrl()} and returns a {@link ApiInfo} object if a valid response is returned. Otherwise an object with empty properties is returned
-     * Timeout after a maximum of 3 seconds
+     * Calls the {@link #getApiUrl()} and returns a {@link ApiInfo} object if a valid response is returned. Otherwise an object with empty properties
+     * is returned Timeout after a maximum of 3 seconds
      */
     public ApiInfo getInfo() {
-        try {            
+        try {
             Client client = ClientBuilder.newClient();
             client.property(ClientProperties.CONNECT_TIMEOUT, 1000);
-            client.property(ClientProperties.READ_TIMEOUT,    2000);
+            client.property(ClientProperties.READ_TIMEOUT, 2000);
             return client
                     .target(getApiUrl())
                     .request(MediaType.APPLICATION_JSON)
                     .get(ApiInfo.class);
-        } catch(Throwable e) {
+        } catch (Throwable e) {
             return new ApiInfo();
         }
     }
