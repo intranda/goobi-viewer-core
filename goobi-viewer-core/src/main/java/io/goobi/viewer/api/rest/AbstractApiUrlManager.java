@@ -16,13 +16,9 @@
 package io.goobi.viewer.api.rest;
 
 import java.io.UnsupportedEncodingException;
-import java.net.MalformedURLException;
 import java.net.URI;
-import java.net.URISyntaxException;
-import java.net.URL;
 import java.net.URLEncoder;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -39,6 +35,8 @@ import org.apache.commons.lang3.StringUtils;
 import org.glassfish.jersey.client.ClientProperties;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import io.goobi.viewer.controller.FileTools;
 
 /**
  * @author florian
@@ -179,29 +177,7 @@ public abstract class AbstractApiUrlManager {
                     break;
                 }
             }
-            Path path = null;
-            // URL with protocol will cause an exception in Windows if a Path is created directly
-            if (urlString.contains(":")) {
-                try {
-                    URL url = new URL(urlString);
-                    URI uri =
-                            new URI(url.getProtocol(), url.getUserInfo(), url.getHost(), url.getPort(), url.getPath(), url.getQuery(), url.getRef());
-                    //                URI uri = new URI(URLEncoder.encode(urlString, StringTools.DEFAULT_ENCODING));
-                    if (urlString.endsWith("/") && Paths.get(uri.getPath()).getFileName().toString().contains(".")) {
-                        urlString = urlString.substring(0, urlString.length() - 1);
-                    }
-                    path = Paths.get(uri.getPath());
-                } catch (URISyntaxException e) {
-                    logger.error(e.getMessage(), e);
-                } catch (MalformedURLException e) {
-                    logger.error(e.getMessage(), e);
-                }
-            }
-            // URL without protocol
-            if (path == null) {
-                path = Paths.get(urlString);
-            }
-
+            Path path = FileTools.getPathFromUrlString(urlString);
             if (urlString.endsWith("/") && path.getFileName().toString().contains(".")) {
                 urlString = urlString.substring(0, urlString.length() - 1);
             }
