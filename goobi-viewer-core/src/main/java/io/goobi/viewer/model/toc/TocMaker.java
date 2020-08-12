@@ -735,10 +735,10 @@ public class TocMaker {
                 case TRANSLATEDFIELD:
                     if (doc.getFirstValue(param.getKey()) != null) {
                         // Translate index field value, if available
-                        value = ViewerResourceBundle.getTranslations(doc.getFirstValue(param.getKey()).toString());
+                        value = ViewerResourceBundle.getTranslations(String.valueOf(doc.getFirstValue(param.getKey())));
                     } else if (param.getAltKey() != null && doc.getFirstValue(param.getAltKey()) != null) {
                         // Translate alternative index field value, if available
-                        value = ViewerResourceBundle.getTranslations(doc.getFirstValue(param.getAltKey()).toString());
+                        value = ViewerResourceBundle.getTranslations(String.valueOf(doc.getFirstValue(param.getAltKey())));
                     } else {
                         // Translate key, if no index field found
                         value = ViewerResourceBundle.getTranslations(param.getKey().toString());
@@ -754,22 +754,12 @@ public class TocMaker {
                     break;
             }
 
-            // Special case: If LABEL or MD_TITLE is missing, use DOCSTRCT.
+            // Special case: If LABEL is missing, use DOCSTRCT.
             if (StringUtils.isEmpty(value.toString())
-                    && (SolrConstants.LABEL.equals(param.getKey()) || SolrConstants.TITLE.equals(param.getKey()))) {
+                    && (SolrConstants.LABEL.equals(param.getKey()) || SolrConstants.LABEL.equals(param.getAltKey()))) {
                 // Docstruct fallback should always be translated
                 String docstruct = SolrSearchIndex.getSingleFieldStringValue(doc, SolrConstants.DOCSTRCT);
                 value = ViewerResourceBundle.getTranslations(docstruct);
-
-                // Language tags seem to be different when creating via ViewerResourceBundle.getTranslations(),
-                // so use createMultilanguageValue() and then translate manually...
-                //                value = createMultiLanguageValue(doc, SolrConstants.DOCSTRCT, null);
-                //                for (String language : value.getLanguages()) {
-                //                    if (value.getValue(language).isPresent()) {
-                //                        value.setValue(ViewerResourceBundle.getTranslation(value.getValue(language).get(), Locale.forLanguageTag(language)),
-                //                                language);
-                //                    }
-                //                }
             }
 
             String placeholder = new StringBuilder("{").append(param.getKey()).append("}").toString();
