@@ -818,8 +818,8 @@
 			</template>
 			<template name="PeriodicalVolume">
 				<metadata label="" value="{CURRENTNO}{MD_TITLE}">
-					<param type="field" key="CURRENTNO" prefix="Number " />
-					<param type="field" key="MD_TITLE" altKey="LABEL" prefix=": " />
+					<param type="field" key="CURRENTNO" prefix="Number_SPACE_" />
+					<param type="field" key="MD_TITLE" altKey="LABEL" prefix=":_SPACE_" />
 				</metadata>
 			</template>
 		</labelConfig>
