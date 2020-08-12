@@ -683,7 +683,7 @@ public final class SearchHelper {
                 new StringBuilder(query).append(getAllSuffixes());
         return DataManager.getInstance()
                 .getSearchIndex()
-                .searchFacetsAndStatistics(sbQuery.toString(), facetFields, facetMinCount, getFieldStatistics);
+                .searchFacetsAndStatistics(sbQuery.toString(), null, facetFields, facetMinCount, getFieldStatistics);
     }
 
     /**
@@ -1356,7 +1356,7 @@ public final class SearchHelper {
 
         QueryResponse resp = DataManager.getInstance()
                 .getSearchIndex()
-                .searchFacetsAndStatistics(query, Collections.singletonList(facetFieldName), facetMinCount, facetPrefix, false);
+                .searchFacetsAndStatistics(query, null, Collections.singletonList(facetFieldName), facetMinCount, facetPrefix, false);
         FacetField facetField = resp.getFacetField(facetFieldName);
         List<String> ret = new ArrayList<>(facetField.getValueCount());
         for (Count count : facetField.getValues()) {
@@ -1565,12 +1565,12 @@ public final class SearchHelper {
 
         // logger.trace("getFilteredTermsFromIndex startsWith: {}", startsWith);
         String query = buildFinalQuery(sbQuery.toString(), false);
-        // logger.trace("getFilteredTermsFromIndex query: {}", query);
-        //        if (logger.isTraceEnabled()) {
-        //            for (String fq : filterQueries) {
-        //                logger.trace("getFilteredTermsFromIndex filter query: {}", fq);
-        //            }
-        //        }
+        logger.trace("getFilteredTermsFromIndex query: {}", query);
+        if (logger.isTraceEnabled()) {
+            for (String fq : filterQueries) {
+                logger.trace("getFilteredTermsFromIndex filter query: {}", fq);
+            }
+        }
 
         String facetField = SearchHelper.facetifyField(bmfc.getField());
         List<String> facetFields = new ArrayList<>();
@@ -1585,7 +1585,7 @@ public final class SearchHelper {
 
         // Facets
         if (rows == 0) {
-            return DataManager.getInstance().getSearchIndex().searchFacetsAndStatistics(query, facetFields, 1, startsWith, false);
+            return DataManager.getInstance().getSearchIndex().searchFacetsAndStatistics(query, filterQueries, facetFields, 1, startsWith, false);
         }
 
         // Docs

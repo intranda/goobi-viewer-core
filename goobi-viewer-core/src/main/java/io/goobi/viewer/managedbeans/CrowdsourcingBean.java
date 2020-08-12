@@ -934,7 +934,7 @@ public class CrowdsourcingBean implements Serializable {
 
             QueryResponse qr = DataManager.getInstance()
                     .getSearchIndex()
-                    .searchFacetsAndStatistics(campaign.getSolrQuery(), Collections.singletonList(SolrConstants.PI_TOPSTRUCT), 1, false);
+                    .searchFacetsAndStatistics(campaign.getSolrQuery(), null, Collections.singletonList(SolrConstants.PI_TOPSTRUCT), 1, false);
             if (qr.getFacetField(SolrConstants.PI_TOPSTRUCT) != null) {
                 for (Count count : qr.getFacetField(SolrConstants.PI_TOPSTRUCT).getValues()) {
                     String pi = count.getName();
