@@ -155,6 +155,7 @@ module.exports = function (grunt) {
                             "tinymce/plugins" : "tinymce/",
                             "tinymce/skins" : "tinymce/",
                             "tinymce/themes" : "tinymce/",
+                            "tinymce/icons" : "tinymce/",
                             "tinymce/tinymce.min.js" : "tinymce/",
                             "leaflet/dist/leaflet.js" : "leaflet/",
                             "leaflet.markercluster/dist/leaflet.markercluster.js" : "leaflet/markercluster",
