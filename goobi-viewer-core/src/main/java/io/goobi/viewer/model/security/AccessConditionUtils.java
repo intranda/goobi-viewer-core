@@ -42,6 +42,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import io.goobi.viewer.controller.DataManager;
+import io.goobi.viewer.controller.FileTools;
 import io.goobi.viewer.controller.NetTools;
 import io.goobi.viewer.controller.SolrConstants;
 import io.goobi.viewer.controller.SolrConstants.DocType;
@@ -133,6 +134,7 @@ public class AccessConditionUtils {
      * @should use correct field name for AV files
      * @should use correct file name for text files
      * @should escape file name for wildcard search correctly
+     * @should work correctly with urls
      */
     static String[] generateAccessCheckQuery(String identifier, String fileName) {
         if (fileName == null) {
@@ -142,7 +144,7 @@ public class AccessConditionUtils {
         String[] ret = new String[2];
         StringBuilder sbQuery = new StringBuilder();
         String useFileField = SolrConstants.FILENAME;
-        String useFileName = Paths.get(fileName).getFileName().toString();
+        String useFileName = FileTools.getPathFromUrlString(fileName).getFileName().toString();
         boolean wildcard = false;
         // Different media types have the file name in different fields
         String extension = FilenameUtils.getExtension(fileName).toLowerCase();
@@ -845,7 +847,8 @@ public class AccessConditionUtils {
             // Check whether *all* relevant license types allow the requested privilege by default. As soon as one doesn't, set to false.
             for (LicenseType licenseType : relevantLicenseTypes) {
                 requiredAccessConditions.add(licenseType.getName());
-                if (!licenseType.getPrivileges().contains(privilegeName) && !licenseType.isOpenAccess() && !licenseType.isRestrictionsExpired(query)) {
+                if (!licenseType.getPrivileges().contains(privilegeName) && !licenseType.isOpenAccess()
+                        && !licenseType.isRestrictionsExpired(query)) {
                     // logger.trace("LicenseType '{}' does not allow the action '{}' by default.", licenseType.getName(), privilegeName);
                     licenseTypeAllowsPriv = false;
                 }

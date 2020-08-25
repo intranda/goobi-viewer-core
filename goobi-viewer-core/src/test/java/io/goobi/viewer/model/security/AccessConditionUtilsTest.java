@@ -343,4 +343,15 @@ public class AccessConditionUtilsTest extends AbstractDatabaseAndSolrEnabledTest
             Assert.assertEquals(SolrConstants.FILENAME, result[1]);
         }
     }
+
+    /**
+     * @see AccessConditionUtils#generateAccessCheckQuery(String,String)
+     * @verifies work correctly with urls
+     */
+    @Test
+    public void generateAccessCheckQuery_shouldWorkCorrectlyWithUrls() throws Exception {
+        String[] result = AccessConditionUtils.generateAccessCheckQuery("PPN123456789", "file:///opt/digiverso/viewer/cms_media/bild4.png");
+        Assert.assertEquals("+" + SolrConstants.PI_TOPSTRUCT + ":PPN123456789 +" + SolrConstants.FILENAME + ":\"bild4.png\"", result[0]);
+        Assert.assertEquals(SolrConstants.FILENAME, result[1]);
+    }
 }
