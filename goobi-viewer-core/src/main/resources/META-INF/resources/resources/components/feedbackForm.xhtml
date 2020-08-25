@@ -22,7 +22,7 @@
 				<!-- NAME -->
                 <div class="form-group form-row">
 					<label for="feedbackName" class="col-sm-2 control-label">#{msg.name}:</label>
-					<div class="col-sm-10">
+					<div class="col-12 col-sm-10">
 						<h:inputText id="feedbackName" styleClass="form-control" value="#{userBean.feedback.name}" required="true" requiredMessage="#{msg.errFeedbackNameRequired}" />
 					</div>
 				</div>
@@ -32,47 +32,56 @@
                         <h:inputText id="feedbackLastName" styleClass="form-control" value="#{userBean.lastName}">
                     </h:inputText>
                 </div>
+                
                 <!-- E-MAIL -->
                 <h:panelGroup layout="block" styleClass="form-group form-row" id="emailGroup">
-                    <h:messages for="feedbackEmail" 
-                        infoClass="cms-module__option-message-status success" 
-                        warnClass="cms-module__option-message-status warning"
-                        errorClass="cms-module__option-message-status danger" />
                     <label for="feedbackEmail" class="col-sm-2 control-label">#{msg.email}:</label>
-                    <div class="col-sm-10">
+                    <div class="cms-module__option-control col-12 col-sm-10">
+                    	<div class="cms-module__option-message">
+	                    	<h:messages for="feedbackEmail" styleClass="m-0 p-0 pb-1 list-unstyled"
+		                        infoClass="cms-module__option-message-status success" 
+		                        warnClass="cms-module__option-message-status warning"
+		                        errorClass="cms-module__option-message-status danger" />
+							<div class="cms-module__option-message-mark">
+							    <i class="fa fa-check" aria-hidden="true"></i>
+							    <i class="fa fa-exclamation" aria-hidden="true"></i>
+							</div>	    
+						</div>                    
                         <h:inputText id="feedbackEmail" styleClass="form-control" value="#{userBean.feedback.email}"
                             required="true" requiredMessage="#{msg.errFeedbackEmailRequired}">
                             <f:validator validatorId="emailValidator" />
-<!--                                     <f:ajax render="emailGroup" /> -->
+                       		<f:ajax render="emailGroup" />
                         </h:inputText>
                   </div>
                 </h:panelGroup>
+                
                 <!-- URL -->
 				<div class="form-group form-row hidden">
 					<label for="feedbackURL" class="col-sm-2 control-label">URL:</label>
-					<div class="col-sm-10">
+					<div class="col-12 col-sm-10">
 						<h:inputText id="feedbackURL" styleClass="form-control" value="#{userBean.feedback.url}" required="true" disabled="true" />
 					</div>
 				</div>
+				
                 <!-- MESSAGE -->
 				<div class="form-group form-row">
 					<label for="feedbackMessage" class="col-sm-2 control-label">#{msg.message}:</label>
-					<div class="col-sm-10">
+					<div class="col-12 col-sm-10">
 						<h:inputTextarea id="feedbackMessage" styleClass="form-control" value="#{userBean.feedback.message}" required="true" requiredMessage="#{msg.errFeedbackMessageRequired}" />
 					</div>
 				</div>
-                <!-- SECURITY QUESTION -->
-                <ui:fragment rendered="#{userBean.resetSecurityQuestion() and userBean.securityQuestion != null}">
-                    <div class="form-group form-row">
-                        <h:messages for="feedbackSecurityQuestion" 
+				
+               <!-- SECURITY QUESTION -->
+               <ui:fragment rendered="#{userBean.resetSecurityQuestion() and userBean.securityQuestion != null}">
+                    <div class="form-group form-row mb-0">
+                    	<label for="feedbackSecurityQuestion"  class="col-sm-2 control-label">#{msg.user__security_question}:</label>
+                        <div class="col-12 col-12 col-sm-10 composite-control pt-0">
+                        <span class="control-label d-block pb-1">#{msg[userBean.securityQuestion.questionKey]}:</span>
+                        <h:messages for="feedbackSecurityQuestion" styleClass="m-0 p-0 pb-1 list-unstyled" 
                             infoClass="cms-module__option-message-status success" 
                             warnClass="cms-module__option-message-status warning"
                             errorClass="cms-module__option-message-status danger" />
-                            <label for="feedbackSecurityQuestion"  class="col-sm-2 control-label">#{msg.user__security_question}:</label>
-                        
-                        <div class="col-sm-10 composite-control">
-                        <span  class="control-label">#{msg[userBean.securityQuestion.questionKey]}:</span>
-                            <h:inputSecret 
+                        <h:inputSecret 
                                 id="feedbackSecurityQuestion" 
                                 styleClass="form-control" 
                                 autocomplete="off"
@@ -83,12 +92,14 @@
                     </div>
                 </ui:fragment>
               </div>
+              
                 <!-- ACTION -->
 				<div class="form-group form-row">
 					<div class="col-sm-12 d-flex justify-content-end">
                         <h:commandButton styleClass="btn btn--full" value="#{msg.submit}" action="#{userBean.submitFeedbackAction}" />
 					</div>
 				</div>
+				
 			</h:form>
 	</composite:implementation>
 </ui:composition>

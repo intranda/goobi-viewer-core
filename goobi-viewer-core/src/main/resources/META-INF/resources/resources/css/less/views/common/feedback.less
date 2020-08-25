@@ -5,7 +5,8 @@
 /* FEEDBACK */
 /* BLOCK */
 .view-feedback {
-	margin-bottom: 10px;
+	margin-bottom: 1rem;
+	padding: 2rem;
 	/* ELEMENT */
 	h2 {}
 	p {}
@@ -28,6 +29,9 @@
     .composite-control {
 		padding-top: 6px;
 	}
+	.col-sm-10 {
+		flex-basis: 83.33333%;
+	}
 }
 
 /* BREAKPOINT FOR LARGE DESKTOPS */
@@ -40,4 +44,10 @@
 @media screen and (max-width: @smallBreakpoint) {}
 
 /* BREAKPOINT FOR SMARTPHONES */
-@media screen and (max-width: @xSmallBreakpoint) {}
+@media screen and (max-width: @xSmallBreakpoint) {
+	.view-feedback {
+		.col-12 {
+			flex-basis: 100%;
+		}
+	}
+}
