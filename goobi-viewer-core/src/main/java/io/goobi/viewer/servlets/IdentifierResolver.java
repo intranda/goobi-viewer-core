@@ -112,25 +112,20 @@ public class IdentifierResolver extends HttpServlet {
             return;
         }
 
-        //        if (customMode) {
-        // fieldValue = fieldValue.toLowerCase();
-        //        }
-
-        StringBuilder sbQuery = new StringBuilder(fieldName.toUpperCase());
         try {
-            sbQuery.append(':')
+            String query = new StringBuilder()
+                    .append('+')
+                    .append(fieldName.toUpperCase())
+                    .append(':')
                     .append('"')
                     .append(ClientUtils.escapeQueryChars(fieldValue))
                     .append('"')
-                    .append(SearchHelper.getAllSuffixes(request, false, false));
-        } catch (IndexUnreachableException e) {
-            logger.debug("IndexUnreachableException thrown here: {}", e.getMessage());
-            response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, e.getMessage());
-            return;
-        }
-        try {
+                    .append(SearchHelper.getAllSuffixes(request, false, false))
+                    .toString();
+            logger.trace("query: {}", query);
+
             // 3. evaluate the search
-            SolrDocumentList hits = DataManager.getInstance().getSearchIndex().search(sbQuery.toString());
+            SolrDocumentList hits = DataManager.getInstance().getSearchIndex().search(query);
             if (hits.getNumFound() == 0) {
                 // 3.1 start the alternative page field search
                 if (!customMode) {
@@ -239,11 +234,20 @@ public class IdentifierResolver extends HttpServlet {
     private void doPageSearch(String fieldValue, HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
         logger.trace("doPageSearch {}", fieldValue);
         // A.1 Search for documents, that contain the request param in their page field
-        String query2 = SolrConstants.IMAGEURN + ":" + ClientUtils.escapeQueryChars(fieldValue);
 
         // A.2 Evaluate the search
         SolrDocumentList hits;
         try {
+            String query2 = new StringBuilder()
+                    .append('+')
+                    .append(SolrConstants.IMAGEURN)
+                    .append(':')
+                    .append('"')
+                    .append(ClientUtils.escapeQueryChars(fieldValue))
+                    .append('"')
+                    .append(SearchHelper.getAllSuffixes(request, false, false))
+                    .toString();
+            logger.trace("query: {}", query2);
             hits = DataManager.getInstance().getSearchIndex().search(query2);
         } catch (PresentationException e) {
             logger.debug("PresentationException thrown here: {}", e.getMessage());
@@ -337,15 +341,18 @@ public class IdentifierResolver extends HttpServlet {
         switch (code) {
             case HttpServletResponse.SC_NOT_FOUND:
                 request.setAttribute("type", "recordNotFound");
-                request.setAttribute("errMsg", ViewerResourceBundle.getTranslation("errRecordNotFoundMsg", BeanUtils.getLocale()).replace("{0}", identifier));
+                request.setAttribute("errMsg",
+                        ViewerResourceBundle.getTranslation("errRecordNotFoundMsg", BeanUtils.getLocale()).replace("{0}", identifier));
                 break;
             case HttpServletResponse.SC_GONE:
                 request.setAttribute("type", "recordDeleted");
-                request.setAttribute("errMsg", ViewerResourceBundle.getTranslation("errRecordDeletedMsg", BeanUtils.getLocale()).replace("{0}", identifier));
+                request.setAttribute("errMsg",
+                        ViewerResourceBundle.getTranslation("errRecordDeletedMsg", BeanUtils.getLocale()).replace("{0}", identifier));
                 break;
             case HttpServletResponse.SC_CONFLICT:
                 request.setAttribute("type", "general");
-                request.setAttribute("errMsg", ViewerResourceBundle.getTranslation("errMultiMatch", BeanUtils.getLocale()).replace("{0}", identifier));
+                request.setAttribute("errMsg",
+                        ViewerResourceBundle.getTranslation("errMultiMatch", BeanUtils.getLocale()).replace("{0}", identifier));
                 break;
         }
         request.setAttribute("sourceUrl", NavigationHelper.getFullRequestUrl(request, null));
