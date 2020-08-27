@@ -106,6 +106,7 @@
 		<javax.faces.version>2.4.0</javax.faces.version>
 		<javax.mail.version>1.6.2</javax.mail.version>
 		<javax.persistence.version>2.2.1</javax.persistence.version>
+		<javax.websocket.version>1.1</javax.websocket.version>
 		<jaxb-api.version>2.4.0-b180830.0359</jaxb-api.version>
 		<jaxb-impl.version>2.4.0-b180830.0438</jaxb-impl.version>
         <jaxb-core.version>2.3.0.1</jaxb-core.version>
@@ -331,6 +332,11 @@
             <groupId>javax.annotation</groupId>
             <artifactId>javax.annotation-api</artifactId>
             <version>${javax.annotation.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>javax.websocket</groupId>
+            <artifactId>javax.websocket-api</artifactId>
+            <version>${javax.websocket.version}</version>
         </dependency>
 		<dependency>
 			<groupId>org.glassfish</groupId>
