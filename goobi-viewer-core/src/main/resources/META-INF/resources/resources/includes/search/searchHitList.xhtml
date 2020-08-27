@@ -88,10 +88,19 @@
                     <span class="Z3988" title="#{hit.browseElement.contextObject}"></span>
                     <!-- HEADER -->
                     <header class="search-list__hit-header">
-                        <div class="row">
+                        <div class="row no-gutters">
                             <div class="col-12 col-sm-#{hit.browseElement.showThumbnail ? '10' : '12'}">
                                 <!-- TITLE -->
-                                <div class="search-list__hit-title">
+                                <div class="search-list__hit-title #{hit.browseElement.showThumbnail ? '' : '-noThumbnail'}">
+                                    <!-- ADD TO BOOKMARKS ICON FOR OBJECTS WITHOUT THUMBS -->
+                                    <ui:fragment rendered="#{configurationBean.bookshelvesEnabled and !hit.browseElement.showThumbnail}">
+                                        <button type="button" class="btn btn--icon search-list__no-thumb-bookmark" data-bookmark-list-type="add" data-pi="#{hit.browseElement.pi}">
+                                            <span data-bookmark-list-title-add="#{msg.bookmarkList_addToBookmarkList}" data-bookmark-list-title-added="#{msg.bookmarkList_removeFromBookmarkList}" data-toggle="tooltip" data-placement="bottom">
+                                                <i class="fa #{msg.bookmarkList_icon}" aria-hidden="true"></i>
+                                                <i class="fa #{msg.bookmarkList_iconAdded}" aria-hidden="true"></i>
+                                            </span>
+                                        </button>
+                                    </ui:fragment>
                                     <h4>
                                         <a href="#{navigationHelper.applicationUrl}#{hit.browseElement.url}" title="#{msg[hit.browseElement.label]}">
                                             <h:outputText value="#{msg[hit.browseElement.labelShort]}" escape="false" />

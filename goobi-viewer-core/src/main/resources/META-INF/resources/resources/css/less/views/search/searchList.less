@@ -218,10 +218,45 @@
     &__hit-type,
     &__hit-info {}
     &__hit-title {
+    	position: relative;
         h4 {
         	padding-bottom: 0.5rem;
             margin: 0;
         }
+    	&.-noThumbnail {
+    		padding-right: 2rem;
+    	}
+    }
+    &__no-thumb-bookmark {
+    	position: absolute;
+		right: 0.3rem;
+		top: -0.4rem;
+    	padding: 0;
+    	&[data-bookmark-list-type="add"] {
+		    position: absolute;
+		    font-size: @fontLarge;
+		    color: @blue;
+		    background-image: none;
+		    .fa-bookmark-o,
+		    .fa-bookmark {
+		        color: @blue;
+		    }
+		    .fa-bookmark-o {
+		        display: inline-block;
+		    }
+		    .fa-bookmark {
+		        display: none;
+		    }
+		    &.added, 
+		    &:hover {
+		        .fa-bookmark-o {
+		            display: none;
+		        }
+		        .fa-bookmark {
+		            display: inline-block;
+		        }
+		    }
+		}
     }
     &__hit-thumbnail {
     	position: relative;
@@ -243,7 +278,7 @@
 		    top: 0;
 		    right: 5px;
 		    font-size: @fontLarge;
-		    color: @white;
+		    color: @blue;
 		    background-image: none;
 		    .fa-bookmark-o,
 		    .fa-bookmark {

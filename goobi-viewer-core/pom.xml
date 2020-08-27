@@ -120,7 +120,7 @@
 		<junit.version>4.13</junit.version>
 		<joda-time.version>2.10.6</joda-time.version>
 		<mariadb-java-client.version>2.3.0</mariadb-java-client.version>
-		<mockito.version>3.4.6</mockito.version>
+		<mockito.version>3.5.7</mockito.version>
 		<mockserver.version>5.11.1</mockserver.version>
 		<oauth.version>1.0.2</oauth.version>
 		<openpdf.version>1.3.20</openpdf.version>
@@ -131,12 +131,12 @@
 		<rs-api.version>2.1.1</rs-api.version>
 		<servlet-api.version>4.0.1</servlet-api.version>
 		<slf4j.version>1.7.30</slf4j.version>
-		<solr.version>8.6.0</solr.version>
+		<solr.version>8.6.1</solr.version>
 		<saml-client.version>4.0.0</saml-client.version>
 		<stax-api.version>1.0-2</stax-api.version>
         <swagger.version>2.1.4</swagger.version>
 		<tomcat.version>9.0.37</tomcat.version>
-		<weld-servlet-shaded.version>3.1.4.Final</weld-servlet-shaded.version>
+		<weld-servlet-shaded.version>3.1.5.Final</weld-servlet-shaded.version>
 		<xerces.version>2.12.0</xerces.version>
 		<xmlParserAPIs.version>2.6.2</xmlParserAPIs.version>
 	</properties>
