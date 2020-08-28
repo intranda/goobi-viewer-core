@@ -15,6 +15,7 @@
  */
 package io.goobi.viewer.model.crowdsourcing.campaigns;
 
+import java.io.IOException;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -50,6 +51,8 @@ import javax.persistence.TemporalType;
 import javax.persistence.Transient;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.solr.client.solrj.SolrServerException;
+import org.apache.solr.client.solrj.impl.BaseHttpSolrClient.RemoteSolrException;
 import org.eclipse.persistence.annotations.PrivateOwned;
 import org.joda.time.DateTime;
 import org.joda.time.Days;
@@ -70,6 +73,7 @@ import io.goobi.viewer.controller.SolrConstants;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
+import io.goobi.viewer.faces.validators.SolrQueryValidator;
 import io.goobi.viewer.managedbeans.CmsMediaBean;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.model.cms.CMSContentItem;
@@ -1121,8 +1125,16 @@ public class Campaign implements CMSMediaHolder {
     private List<String> getSolrQueryResults() throws PresentationException, IndexUnreachableException {
         if (this.solrQueryResults == null) {
             String query = "+" + SolrConstants.ISWORK + ":true";
-            if (StringUtils.isNotEmpty(solrQuery)) {
-                query += " +(" + getSolrQuery() + ")";
+            // Validate campaign query before adding it
+            try {
+                SolrQueryValidator.getHitCount(solrQuery);
+                query += " +(" + solrQuery + ")";
+            } catch (SolrServerException e) {
+               logger.error(e.getMessage());
+            } catch (IOException e) {
+                logger.error(e.getMessage());
+            } catch (RemoteSolrException e) {
+                logger.error(e.getMessage());
             }
             this.solrQueryResults = DataManager.getInstance()
                     .getSearchIndex()
@@ -1154,18 +1166,17 @@ public class Campaign implements CMSMediaHolder {
         if (user != null) {
             if (user.isSuperuser()) {
                 return true;
-            } else {
-                if (status.equals(CampaignRecordStatus.ANNOTATE)) {
-                    return !Optional.ofNullable(this.statistics.get(pi)).map(s -> s.getReviewers()).orElse(Collections.emptyList()).contains(user);
-                } else if (status.equals(CampaignRecordStatus.REVIEW)) {
-                    return !Optional.ofNullable(this.statistics.get(pi)).map(s -> s.getAnnotators()).orElse(Collections.emptyList()).contains(user);
-                } else {
-                    return true;
-                }
             }
-        } else {
-            return true;
+            if (status.equals(CampaignRecordStatus.ANNOTATE)) {
+                return !Optional.ofNullable(this.statistics.get(pi)).map(s -> s.getReviewers()).orElse(Collections.emptyList()).contains(user);
+            } else if (status.equals(CampaignRecordStatus.REVIEW)) {
+                return !Optional.ofNullable(this.statistics.get(pi)).map(s -> s.getAnnotators()).orElse(Collections.emptyList()).contains(user);
+            } else {
+                return true;
+            }
         }
+        
+        return true;
     }
 
     /**

@@ -57,8 +57,7 @@ public class SolrQueryValidator implements Validator<String> {
         }
 
         try {
-            QueryResponse resp = DataManager.getInstance().getSearchIndex().testQuery(value);
-            long hits = resp.getResults().getNumFound();
+            long hits = getHitCount(value);
             logger.trace("{} hits", hits);
             if (hits == 0) {
                 String message = ViewerResourceBundle.getTranslation("inline_help__solr_query_warning", null).replace("{0}", String.valueOf(hits));
@@ -80,5 +79,17 @@ public class SolrQueryValidator implements Validator<String> {
         } catch (IOException e) {
             logger.error(e.getMessage(), e);
         }
+    }
+    
+    /**
+     * 
+     * @param query
+     * @return
+     * @throws SolrServerException
+     * @throws IOException
+     */
+    public static long getHitCount(String query) throws SolrServerException, IOException {
+            QueryResponse resp = DataManager.getInstance().getSearchIndex().testQuery(query);
+            return resp.getResults().getNumFound();
     }
 }
