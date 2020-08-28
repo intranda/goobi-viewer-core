@@ -1319,6 +1319,7 @@ public final class SolrSearchIndex {
      */
     public static boolean isQuerySyntaxError(Exception e) {
         return e.getMessage() != null && (e.getMessage().startsWith("org.apache.solr.search.SyntaxError")
+                || e.getMessage().contains("Cannot parse")
                 || e.getMessage().contains("Invalid Number")
                 || e.getMessage().contains("undefined field")
                 || e.getMessage().contains("field can't be found")

@@ -187,6 +187,8 @@
                                                                             </div>
                                                                         </div>
                                                                         <h:inputText id="solrQueryInput"
+                                                                            required="true"
+                                                                            requiredMessage="#{msg.form__required_field}"
                                                                             disabled="#{crowdsourcingBean.selectedCampaign.selectedLocale != navigationHelper.defaultLocale}"
                                                                             value="#{crowdsourcingBean.selectedCampaign.solrQuery}"
                                                                             styleClass="form-control">
