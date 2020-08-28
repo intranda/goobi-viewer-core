@@ -833,7 +833,7 @@ public class Campaign implements CMSMediaHolder {
             return null;
         }
 
-        return DateTools.formatterISO8601Date.print(dateStart.getTime());
+        return DateTools.format(dateStart, DateTools.formatterISO8601Date, false);
     }
 
     /**
@@ -887,7 +887,7 @@ public class Campaign implements CMSMediaHolder {
             return null;
         }
 
-        return DateTools.formatterISO8601Date.print(dateEnd.getTime());
+        return DateTools.format(dateEnd, DateTools.formatterISO8601Date, false);
     }
 
     /**
@@ -1130,7 +1130,7 @@ public class Campaign implements CMSMediaHolder {
                 SolrQueryValidator.getHitCount(solrQuery);
                 query += " +(" + solrQuery + ")";
             } catch (SolrServerException e) {
-               logger.error(e.getMessage());
+                logger.error(e.getMessage());
             } catch (IOException e) {
                 logger.error(e.getMessage());
             } catch (RemoteSolrException e) {
@@ -1175,7 +1175,7 @@ public class Campaign implements CMSMediaHolder {
                 return true;
             }
         }
-        
+
         return true;
     }
 

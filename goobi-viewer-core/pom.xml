@@ -117,7 +117,6 @@
 		<jsoup.version>1.13.1</jsoup.version>
 		<jstl.version>1.2</jstl.version>
 		<junit.version>4.13</junit.version>
-		<joda-time.version>2.10.6</joda-time.version>
 		<mariadb-java-client.version>2.3.0</mariadb-java-client.version>
 		<mockito.version>3.5.7</mockito.version>
 		<mockserver.version>5.11.1</mockserver.version>
@@ -590,11 +589,6 @@
           <groupId>io.swagger.core.v3</groupId>
           <artifactId>swagger-integration</artifactId>
           <version>${swagger.version}</version>
-        </dependency>
-		<dependency>
-			<groupId>joda-time</groupId>
-			<artifactId>joda-time</artifactId>
-			<version>${joda-time.version}</version>
         </dependency>
         <!--            
 		<dependency>

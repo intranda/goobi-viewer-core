@@ -23,6 +23,7 @@ import java.io.Serializable;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
@@ -37,7 +38,6 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.joda.time.DateTime;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.slf4j.Logger;
@@ -110,20 +110,20 @@ public class HarvestServlet extends HttpServlet implements Serializable {
                             message = values[0];
                             break;
                         case "from":
-                            DateTime fromDateTime = DateTools.parseDateTimeFromString(values[0], true);
+                            LocalDateTime fromDateTime = DateTools.parseDateTimeFromString(values[0], true);
                             if (fromDateTime == null) {
                                 response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Illegal 'from' attribute value: " + values[0]);
                                 return;
                             }
-                            fromDate = fromDateTime.toDate();
+                            fromDate = DateTools.convertToDateViaInstant(fromDateTime, true);
                             break;
                         case "until":
-                            DateTime toDateTime = DateTools.parseDateTimeFromString(values[0], true);
+                            LocalDateTime toDateTime = DateTools.parseDateTimeFromString(values[0], true);
                             if (toDateTime == null) {
                                 response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Illegal 'until' attribute value: " + values[0]);
                                 return;
                             }
-                            toDate = toDateTime.toDate();
+                            toDate = DateTools.convertToDateViaInstant(toDateTime, true);
                             break;
                         case "first":
                             try {
@@ -228,7 +228,7 @@ public class HarvestServlet extends HttpServlet implements Serializable {
                         // Compress to a ZIP
                         FileTools.compressZipFile(tempFiles, zipFile.toFile(), 9);
                         if (Files.isRegularFile(zipFile)) {
-                            String now = DateTools.formatterFilename.print(System.currentTimeMillis());
+                            String now = DateTools.format(new Date(), DateTools.formatterISO8601BasicDateTime, false);
                             response.setContentType("application/zip");
                             response.setHeader("Content-Disposition",
                                     new StringBuilder("attachment;filename=").append(now + "_" + fileName).toString());

@@ -1,17 +1,17 @@
 
 package io.goobi.viewer.controller;
 
+import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.List;
 
-import org.joda.time.DateTime;
 import org.joda.time.MutableDateTime;
 import org.junit.Assert;
 import org.junit.Test;
 
-import io.goobi.viewer.controller.DateTools;
+import io.goobi.viewer.AbstractTest;
 
-public class DateToolsTest {
+public class DateToolsTest extends AbstractTest {
 
     /**
      * @see DateTools#getLocalDate(Date,String)
@@ -53,45 +53,45 @@ public class DateToolsTest {
     @Test
     public void parseDateTimeFromString_shouldParseIsoDateFormatsCorrectly() throws Exception {
         {
-            DateTime date = DateTools.parseDateTimeFromString("2017-12-19 00:00:00", false);
+            LocalDateTime date = DateTools.parseDateTimeFromString("2017-12-19 00:00:00", false);
             Assert.assertNotNull(date);
             Assert.assertEquals(2017, date.getYear());
-            Assert.assertEquals(12, date.getMonthOfYear());
+            Assert.assertEquals(12, date.getMonthValue());
             Assert.assertEquals(19, date.getDayOfMonth());
         }
         {
-            DateTime date = DateTools.parseDateTimeFromString("2017-12-19 00:00:00.000", false);
+            LocalDateTime date = DateTools.parseDateTimeFromString("2017-12-19 00:00:00.000", false);
             Assert.assertNotNull(date);
             Assert.assertEquals(2017, date.getYear());
-            Assert.assertEquals(12, date.getMonthOfYear());
+            Assert.assertEquals(12, date.getMonthValue());
             Assert.assertEquals(19, date.getDayOfMonth());
         }
         {
-            DateTime date = DateTools.parseDateTimeFromString("2017-12-19T00:00:00", false);
+            LocalDateTime date = DateTools.parseDateTimeFromString("2017-12-19T00:00:00", false);
             Assert.assertNotNull(date);
             Assert.assertEquals(2017, date.getYear());
-            Assert.assertEquals(12, date.getMonthOfYear());
+            Assert.assertEquals(12, date.getMonthValue());
             Assert.assertEquals(19, date.getDayOfMonth());
         }
         {
-            DateTime date = DateTools.parseDateTimeFromString("2017-12-19T00:00:00Z", false);
+            LocalDateTime date = DateTools.parseDateTimeFromString("2017-12-19T00:00:00Z", false);
             Assert.assertNotNull(date);
             Assert.assertEquals(2017, date.getYear());
-            Assert.assertEquals(12, date.getMonthOfYear());
+            Assert.assertEquals(12, date.getMonthValue());
             Assert.assertEquals(19, date.getDayOfMonth());
         }
         {
-            DateTime date = DateTools.parseDateTimeFromString("2017-12-19", false);
+            LocalDateTime date = DateTools.parseDateTimeFromString("2017-12-19", false);
             Assert.assertNotNull(date);
             Assert.assertEquals(2017, date.getYear());
-            Assert.assertEquals(12, date.getMonthOfYear());
+            Assert.assertEquals(12, date.getMonthValue());
             Assert.assertEquals(19, date.getDayOfMonth());
         }
         {
-            DateTime date = DateTools.parseDateTimeFromString("2017-12", false);
+            LocalDateTime date = DateTools.parseDateTimeFromString("2017-12", false);
             Assert.assertNotNull(date);
             Assert.assertEquals(2017, date.getYear());
-            Assert.assertEquals(12, date.getMonthOfYear());
+            Assert.assertEquals(12, date.getMonthValue());
             Assert.assertEquals(1, date.getDayOfMonth());
         }
     }
@@ -103,21 +103,21 @@ public class DateToolsTest {
     @Test
     public void parseDateTimeFromString_shouldParseGermanDateFormatsCorrectly() throws Exception {
         {
-            DateTime date = DateTools.parseDateTimeFromString("19.12.2017", false);
+            LocalDateTime date = DateTools.parseDateTimeFromString("19.12.2017", false);
             Assert.assertNotNull(date);
             Assert.assertEquals(2017, date.getYear());
-            Assert.assertEquals(12, date.getMonthOfYear());
+            Assert.assertEquals(12, date.getMonthValue());
             Assert.assertEquals(19, date.getDayOfMonth());
         }
         {
-            DateTime date = DateTools.parseDateTimeFromString("20.12.2017 01:02:03", false);
+            LocalDateTime date = DateTools.parseDateTimeFromString("20.12.2017 01:02:03", false);
             Assert.assertNotNull(date);
             Assert.assertEquals(2017, date.getYear());
-            Assert.assertEquals(12, date.getMonthOfYear());
+            Assert.assertEquals(12, date.getMonthValue());
             Assert.assertEquals(20, date.getDayOfMonth());
-            Assert.assertEquals(1, date.getHourOfDay());
-            Assert.assertEquals(2, date.getMinuteOfHour());
-            Assert.assertEquals(3, date.getSecondOfMinute());
+            Assert.assertEquals(1, date.getHour());
+            Assert.assertEquals(2, date.getMinute());
+            Assert.assertEquals(3, date.getSecond());
         }
     }
 
@@ -128,21 +128,21 @@ public class DateToolsTest {
     @Test
     public void parseDateTimeFromString_shouldParseEnglishDateFormatsCorrectly() throws Exception {
         {
-            DateTime date = DateTools.parseDateTimeFromString("12/20/2017", false);
+            LocalDateTime date = DateTools.parseDateTimeFromString("12/20/2017", false);
             Assert.assertNotNull(date);
             Assert.assertEquals(2017, date.getYear());
-            Assert.assertEquals(12, date.getMonthOfYear());
+            Assert.assertEquals(12, date.getMonthValue());
             Assert.assertEquals(20, date.getDayOfMonth());
         }
         {
-            DateTime date = DateTools.parseDateTimeFromString("12/19/2017 1:02:03 AM", false);
+            LocalDateTime date = DateTools.parseDateTimeFromString("12/19/2017 1:02:03 AM", false);
             Assert.assertNotNull(date);
             Assert.assertEquals(2017, date.getYear());
-            Assert.assertEquals(12, date.getMonthOfYear());
+            Assert.assertEquals(12, date.getMonthValue());
             Assert.assertEquals(19, date.getDayOfMonth());
-            Assert.assertEquals(1, date.getHourOfDay());
-            Assert.assertEquals(2, date.getMinuteOfHour());
-            Assert.assertEquals(3, date.getSecondOfMinute());
+            Assert.assertEquals(1, date.getHour());
+            Assert.assertEquals(2, date.getMinute());
+            Assert.assertEquals(3, date.getSecond());
         }
     }
 
@@ -152,10 +152,10 @@ public class DateToolsTest {
      */
     @Test
     public void parseDateTimeFromString_shouldParseChineseDateFormatsCorrectly() throws Exception {
-        DateTime date = DateTools.parseDateTimeFromString("2017.12.19", false);
+        LocalDateTime date = DateTools.parseDateTimeFromString("2017.12.19", false);
         Assert.assertNotNull(date);
         Assert.assertEquals(2017, date.getYear());
-        Assert.assertEquals(12, date.getMonthOfYear());
+        Assert.assertEquals(12, date.getMonthValue());
         Assert.assertEquals(19, date.getDayOfMonth());
     }
 
@@ -165,10 +165,10 @@ public class DateToolsTest {
      */
     @Test
     public void parseDateTimeFromString_shouldParseJapaneseDateFormatsCorrectly() throws Exception {
-        DateTime date = DateTools.parseDateTimeFromString("2017/12/19", false);
+        LocalDateTime date = DateTools.parseDateTimeFromString("2017/12/19", false);
         Assert.assertNotNull(date);
         Assert.assertEquals(2017, date.getYear());
-        Assert.assertEquals(12, date.getMonthOfYear());
+        Assert.assertEquals(12, date.getMonthValue());
         Assert.assertEquals(19, date.getDayOfMonth());
     }
 
@@ -178,12 +178,12 @@ public class DateToolsTest {
      */
     @Test
     public void parseDateTimeFromString_shouldParseIsoDateAsUTCCorrectly() throws Exception {
-        DateTime date = DateTools.parseDateTimeFromString("2017-12-19T01:01:00+01:00", true);
+        LocalDateTime date = DateTools.parseDateTimeFromString("2017-12-19T01:01:00+01:00", true);
         Assert.assertNotNull(date);
         Assert.assertEquals(2017, date.getYear());
-        Assert.assertEquals(12, date.getMonthOfYear());
+        Assert.assertEquals(12, date.getMonthValue());
         Assert.assertEquals(19, date.getDayOfMonth());
-        Assert.assertEquals(0, date.getHourOfDay());
+        Assert.assertEquals(0, date.getHour());
     }
 
     /**
@@ -212,7 +212,7 @@ public class DateToolsTest {
     public void parseMultipleDatesFromString_shouldParseSingleDateCorrectly() throws Exception {
         List<Date> result = DateTools.parseMultipleDatesFromString("2018-11-20");
         Assert.assertEquals(1, result.size());
-        Assert.assertEquals("2018-11-20", DateTools.formatterISO8601Date.print(result.get(0).getTime()));
+        Assert.assertEquals("2018-11-20", DateTools.format(result.get(0), DateTools.formatterISO8601Date, false));
     }
 
     /**
@@ -223,8 +223,8 @@ public class DateToolsTest {
     public void parseMultipleDatesFromString_shouldParseMultipleDatesCorrectly() throws Exception {
         List<Date> result = DateTools.parseMultipleDatesFromString("2018-11-19 / 2018-11-20");
         Assert.assertEquals(2, result.size());
-        Assert.assertEquals("2018-11-19", DateTools.formatterISO8601Date.print(result.get(0).getTime()));
-        Assert.assertEquals("2018-11-20", DateTools.formatterISO8601Date.print(result.get(1).getTime()));
+        Assert.assertEquals("2018-11-19", DateTools.format(result.get(0), DateTools.formatterISO8601Date, false));
+        Assert.assertEquals("2018-11-20", DateTools.format(result.get(1), DateTools.formatterISO8601Date, false));
     }
 
     /**
@@ -235,7 +235,7 @@ public class DateToolsTest {
     public void parseMultipleDatesFromString_shouldParseDatesInParenthesesCorrectly() throws Exception {
         List<Date> result = DateTools.parseMultipleDatesFromString("(2018-11-19) / (2018-11-20)");
         Assert.assertEquals(2, result.size());
-        Assert.assertEquals("2018-11-19", DateTools.formatterISO8601Date.print(result.get(0).getTime()));
-        Assert.assertEquals("2018-11-20", DateTools.formatterISO8601Date.print(result.get(1).getTime()));
+        Assert.assertEquals("2018-11-19",DateTools.format(result.get(0), DateTools.formatterISO8601Date, false));
+        Assert.assertEquals("2018-11-20", DateTools.format(result.get(1), DateTools.formatterISO8601Date, false));
     }
 }

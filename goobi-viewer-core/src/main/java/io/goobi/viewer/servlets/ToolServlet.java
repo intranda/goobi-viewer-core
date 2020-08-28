@@ -240,7 +240,7 @@ public class ToolServlet extends HttpServlet implements Serializable {
         Date date = null;
         switch (dateString.length()) {
             case 8:
-                date = DateTools.formatterISO8601BasicDate.parseDateTime(dateString).toDate();
+                date = DateTools.parseDateFromString(dateString, DateTools.formatterISO8601BasicDate.parseDateTime(dateString).toDate();
                 break;
             case 4:
                 date = DateTools.formatterISO8601BasicDateNoYear.parseDateTime(dateString).toDate();

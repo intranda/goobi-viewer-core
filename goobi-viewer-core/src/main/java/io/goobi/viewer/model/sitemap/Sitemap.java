@@ -21,6 +21,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -38,9 +39,9 @@ import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.DateTools;
 import io.goobi.viewer.controller.FileTools;
 import io.goobi.viewer.controller.SolrConstants;
+import io.goobi.viewer.controller.SolrConstants.DocType;
 import io.goobi.viewer.controller.SolrSearchIndex;
 import io.goobi.viewer.controller.XmlTools;
-import io.goobi.viewer.controller.SolrConstants.DocType;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
@@ -296,7 +297,7 @@ public class Sitemap {
      * @return ISO date string
      */
     private static String getDateString(long timestamp) {
-        return DateTools.formatterISO8601Date.print(timestamp);
+        return DateTools.format(new Date(timestamp), DateTools.formatterISO8601Date, false);
     }
 
     /**
