@@ -49,10 +49,10 @@
 								</div>	    
 							</div>                    
 					 <h:inputText
-						 id="feedbackEmail" label="feedbackEmail" immediate="true" required="true"
+						 id="feedbackEmail" label="feedbackEmail" immediate="true" required="true" value="#{userBean.feedback.email}"
 						 styleClass="form-control">
 						 <f:validator validatorId="emailValidator" for="feedbackEmail" />
-						 <f:ajax render="emailGroup" />
+						 <!-- <f:ajax render="emailGroup" />-->
 					 </h:inputText>
 	                  </div>
 	                </h:panelGroup>
