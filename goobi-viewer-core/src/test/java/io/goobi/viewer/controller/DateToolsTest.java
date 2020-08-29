@@ -5,7 +5,6 @@ import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.List;
 
-import org.joda.time.MutableDateTime;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -19,15 +18,15 @@ public class DateToolsTest extends AbstractTest {
      */
     @Test
     public void getLocalDate_shouldFormatDateCorrectlyForTheGivenLanguage() throws Exception {
-        MutableDateTime date = new MutableDateTime();
-        date.setYear(1980);
-        date.setMonthOfYear(7);
-        date.setDayOfMonth(10);
-        date.setHourOfDay(13);
-        date.setMinuteOfHour(15);
-        date.setSecondOfMinute(30);
-        Assert.assertEquals("10.07.1980 13:15", DateTools.getLocalDate(date.toDate(), "de"));
-        Assert.assertEquals("07/10/1980 1:15 PM", DateTools.getLocalDate(date.toDate(), "en"));
+        LocalDateTime date = LocalDateTime.now()
+                .withYear(1980)
+                .withMonth(7)
+                .withDayOfMonth(10)
+                .withHour(13)
+                .withMinute(15)
+                .withSecond(30);
+        Assert.assertEquals("10.07.1980 13:15", DateTools.getLocalDate(DateTools.convertLocalDateTimeToDateViaInstant(date, false), "de"));
+        Assert.assertEquals("07/10/1980 1:15 PM", DateTools.getLocalDate(DateTools.convertLocalDateTimeToDateViaInstant(date, false), "en"));
     }
 
     /**
@@ -36,14 +35,14 @@ public class DateToolsTest extends AbstractTest {
      */
     @Test
     public void getLocalDate_shouldUseEnglishFormatForUnknownLanguages() throws Exception {
-        MutableDateTime date = new MutableDateTime();
-        date.setYear(1980);
-        date.setMonthOfYear(7);
-        date.setDayOfMonth(10);
-        date.setHourOfDay(13);
-        date.setMinuteOfHour(15);
-        date.setSecondOfMinute(30);
-        Assert.assertEquals("07/10/1980 1:15 PM", DateTools.getLocalDate(date.toDate(), "eu"));
+        LocalDateTime date = LocalDateTime.now()
+                .withYear(1980)
+                .withMonth(7)
+                .withDayOfMonth(10)
+                .withHour(13)
+                .withMinute(15)
+                .withSecond(30);
+        Assert.assertEquals("07/10/1980 1:15 PM", DateTools.getLocalDate(DateTools.convertLocalDateTimeToDateViaInstant(date, false), "eu"));
     }
 
     /**
@@ -235,7 +234,7 @@ public class DateToolsTest extends AbstractTest {
     public void parseMultipleDatesFromString_shouldParseDatesInParenthesesCorrectly() throws Exception {
         List<Date> result = DateTools.parseMultipleDatesFromString("(2018-11-19) / (2018-11-20)");
         Assert.assertEquals(2, result.size());
-        Assert.assertEquals("2018-11-19",DateTools.format(result.get(0), DateTools.formatterISO8601Date, false));
+        Assert.assertEquals("2018-11-19", DateTools.format(result.get(0), DateTools.formatterISO8601Date, false));
         Assert.assertEquals("2018-11-20", DateTools.format(result.get(1), DateTools.formatterISO8601Date, false));
     }
 }
