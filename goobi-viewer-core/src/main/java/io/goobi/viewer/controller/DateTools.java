@@ -53,6 +53,8 @@ public class DateTools {
     public static java.time.format.DateTimeFormatter formatterISO8601Date = DateTimeFormatter.ISO_LOCAL_DATE; // yyyy-MM-dd
     /** Constant <code>formatterISO8601Date</code> */
     public static java.time.format.DateTimeFormatter formatterISO8601Time = DateTimeFormatter.ISO_LOCAL_TIME; // HH:mm:ss
+    /** Constant <code>formatterISO8601DateReverse</code> */
+    public static DateTimeFormatter formatterISO8601DateReverse = DateTimeFormatter.ofPattern("dd-MM-yyyy"); // dd-MM-YYYY
     /** Constant <code>formatterISO8601YearMonth</code> */
     public static DateTimeFormatter formatterISO8601YearMonth = new DateTimeFormatterBuilder()
             .appendPattern("yyyy-MM")
@@ -78,16 +80,19 @@ public class DateTools {
     public static DateTimeFormatter formatterDEDateTimeNoSeconds = DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm");
     /** Constant <code>formatterENDateTimeNoSeconds</code> */
     public static DateTimeFormatter formatterENDateTimeNoSeconds = DateTimeFormatter.ofPattern("MM/dd/yyyy h:mm a");
+    /** Constant <code>formatterISO8601BasicDateNoYear</code> */
+    public static DateTimeFormatter formatterISO8601BasicDateNoYear = new DateTimeFormatterBuilder()
+            .appendPattern("MMdd")
+            .parseDefaulting(ChronoField.DAY_OF_MONTH, 1)
+            .toFormatter();
+    /** Constant <code>formatterISO8601BasicDate</code> */
+    public static DateTimeFormatter formatterISO8601BasicDate = DateTimeFormatter.ofPattern("yyyyMMdd");
     /** Constant <code>formatterBasicDateTime</code> */
     public static DateTimeFormatter formatterISO8601BasicDateTime = DateTimeFormatter.ofPattern("yyyyMMddHHmmss");
 
     // "DateTimeFormat is thread-safe and immutable, and the formatters it returns are as well." - JodaTime Javadoc
     //    /** Constant <code>formatterISO8601BasicDate</code> */
     //    public static DateTimeFormatter formatterISO8601BasicDate = ISODateTimeFormat.basicDate(); // yyyyMMdd
-    //    /** Constant <code>formatterISO8601BasicDateNoYear</code> */
-    //    public static DateTimeFormatter formatterISO8601BasicDateNoYear = DateTimeFormat.forPattern("MMdd");
-    //    /** Constant <code>formatterISO8601DateReverse</code> */
-    //    public static DateTimeFormatter formatterISO8601DateReverse = DateTimeFormat.forPattern("dd-MM-yyyy"); // dd-MM-YYYY
     //    /** Constant <code>formatterFilename</code> */
     //    public static DateTimeFormatter formatterFilename = DateTimeFormat.forPattern("yyyyMMddHHmmss");
 
@@ -243,7 +248,7 @@ public class DateTools {
     public static Date parseDateFromString(String dateString) {
         LocalDateTime dateTime = parseDateTimeFromString(dateString, false);
         if (dateTime != null) {
-            return convertToDateViaInstant(dateTime, false);
+            return convertLocalDateTimeToDateViaInstant(dateTime, false);
         }
 
         return null;
@@ -255,7 +260,7 @@ public class DateTools {
      * @param utc
      * @return
      */
-    public static Date convertToDateViaInstant(LocalDateTime dateToConvert, boolean utc) {
+    public static Date convertLocalDateTimeToDateViaInstant(LocalDateTime dateToConvert, boolean utc) {
         if (dateToConvert == null) {
             throw new IllegalArgumentException("dateToConvert may not be null");
         }

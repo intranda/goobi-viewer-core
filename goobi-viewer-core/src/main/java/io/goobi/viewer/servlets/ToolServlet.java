@@ -19,6 +19,7 @@ import java.io.IOException;
 import java.io.Serializable;
 import java.nio.charset.Charset;
 import java.text.ParseException;
+import java.time.LocalDateTime;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
@@ -35,7 +36,6 @@ import org.slf4j.LoggerFactory;
 
 import de.unigoettingen.sub.commons.util.CacheUtils;
 import io.goobi.viewer.Version;
-import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.DateTools;
 import io.goobi.viewer.controller.SolrSearchIndex;
 
@@ -232,6 +232,7 @@ public class ToolServlet extends HttpServlet implements Serializable {
     //        }
     //    }
 
+    @Deprecated
     private static Date parseDate(String dateString) throws ParseException {
         if (dateString == null) {
             throw new IllegalArgumentException("dateString may not be null");
@@ -240,10 +241,11 @@ public class ToolServlet extends HttpServlet implements Serializable {
         Date date = null;
         switch (dateString.length()) {
             case 8:
-                date = DateTools.parseDateFromString(dateString, DateTools.formatterISO8601BasicDate.parseDateTime(dateString).toDate();
+                date = DateTools.convertLocalDateTimeToDateViaInstant(LocalDateTime.parse(dateString, DateTools.formatterISO8601BasicDate), false);
                 break;
             case 4:
-                date = DateTools.formatterISO8601BasicDateNoYear.parseDateTime(dateString).toDate();
+                date = DateTools.convertLocalDateTimeToDateViaInstant(LocalDateTime.parse(dateString, DateTools.formatterISO8601BasicDateNoYear),
+                        false);
                 Calendar cal = new GregorianCalendar();
                 int year = cal.get(Calendar.YEAR);
                 cal.setTime(date);

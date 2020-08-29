@@ -115,7 +115,7 @@ public class HarvestServlet extends HttpServlet implements Serializable {
                                 response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Illegal 'from' attribute value: " + values[0]);
                                 return;
                             }
-                            fromDate = DateTools.convertToDateViaInstant(fromDateTime, true);
+                            fromDate = DateTools.convertLocalDateTimeToDateViaInstant(fromDateTime, true);
                             break;
                         case "until":
                             LocalDateTime toDateTime = DateTools.parseDateTimeFromString(values[0], true);
@@ -123,7 +123,7 @@ public class HarvestServlet extends HttpServlet implements Serializable {
                                 response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Illegal 'until' attribute value: " + values[0]);
                                 return;
                             }
-                            toDate = DateTools.convertToDateViaInstant(toDateTime, true);
+                            toDate = DateTools.convertLocalDateTimeToDateViaInstant(toDateTime, true);
                             break;
                         case "first":
                             try {
