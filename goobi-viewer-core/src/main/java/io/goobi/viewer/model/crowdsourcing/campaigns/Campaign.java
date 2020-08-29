@@ -17,6 +17,9 @@ package io.goobi.viewer.model.crowdsourcing.campaigns;
 
 import java.io.IOException;
 import java.net.URI;
+import java.time.Duration;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -54,9 +57,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.solr.client.solrj.SolrServerException;
 import org.apache.solr.client.solrj.impl.BaseHttpSolrClient.RemoteSolrException;
 import org.eclipse.persistence.annotations.PrivateOwned;
-import org.joda.time.DateTime;
-import org.joda.time.Days;
-import org.joda.time.LocalDate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -389,14 +389,14 @@ public class Campaign implements CMSMediaHolder {
      * @should return -1 if no dateStart
      * @should calculate days correctly
      */
-    public int getDaysBeforeStart() {
+    public long getDaysBeforeStart() {
         if (dateStart == null) {
             return -1;
         }
 
-        LocalDate now = new DateTime().toLocalDate();
-        LocalDate start = new DateTime(dateStart).toLocalDate();
-        return Math.max(0, Days.daysBetween(now, start).getDays());
+        LocalDateTime now = LocalDate.now().atStartOfDay();
+        LocalDateTime start = DateTools.convertDateToLocalDateTimeViaInstant(dateStart);
+        return Math.max(0L, Duration.between(now, start).toDays());
     }
 
     /**
@@ -407,14 +407,14 @@ public class Campaign implements CMSMediaHolder {
      * @should return -1 if no dateEnd
      * @should calculate days correctly
      */
-    public int getDaysLeft() {
+    public long getDaysLeft() {
         if (dateEnd == null) {
             return -1;
         }
 
-        LocalDate now = new DateTime().toLocalDate();
-        LocalDate end = new DateTime(dateEnd).toLocalDate();
-        return Math.max(0, Days.daysBetween(now, end).getDays());
+        LocalDateTime now = LocalDate.now().atStartOfDay();
+        LocalDateTime end = DateTools.convertDateToLocalDateTimeViaInstant(dateEnd);
+        return Math.max(0L, Duration.between(now, end).toDays());
     }
 
     /**
@@ -426,7 +426,7 @@ public class Campaign implements CMSMediaHolder {
      */
     public String getDaysLeftAsString() {
         if (getDateEnd() != null) {
-            int days = getDaysLeft();
+            long days = getDaysLeft();
             return Long.toString(days);
         }
         return "\u221e";
@@ -448,8 +448,8 @@ public class Campaign implements CMSMediaHolder {
             return true;
         }
 
-        LocalDate now = new DateTime().toLocalDate();
-        LocalDate start = new DateTime(dateStart).toLocalDate();
+        LocalDateTime now = LocalDateTime.now();
+        LocalDateTime start = DateTools.convertDateToLocalDateTimeViaInstant(dateStart);
 
         return now.isEqual(start) || now.isAfter(start);
     }
@@ -469,8 +469,8 @@ public class Campaign implements CMSMediaHolder {
             return false;
         }
 
-        LocalDate now = new DateTime().toLocalDate();
-        LocalDate end = new DateTime(dateEnd).toLocalDate();
+        LocalDateTime now = LocalDateTime.now();
+        LocalDateTime end = DateTools.convertDateToLocalDateTimeViaInstant(dateEnd);
 
         return now.isAfter(end);
     }

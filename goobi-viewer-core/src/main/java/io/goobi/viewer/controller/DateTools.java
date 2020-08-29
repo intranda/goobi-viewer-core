@@ -75,11 +75,11 @@ public class DateTools {
     /** Constant <code>formatterDEDateTime</code> */
     public static DateTimeFormatter formatterDEDateTime = DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm:ss");
     /** Constant <code>formatterENDateTime</code> */
-    public static DateTimeFormatter formatterENDateTime = DateTimeFormatter.ofPattern("MM/dd/yyyy h:mm:ss a");
+    public static DateTimeFormatter formatterENDateTime = DateTimeFormatter.ofPattern("MM/dd/yyyy h:mm:ss a").withLocale(Locale.ENGLISH);
     /** Constant <code>formatterDEDateTimeNoSeconds</code> */
     public static DateTimeFormatter formatterDEDateTimeNoSeconds = DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm");
     /** Constant <code>formatterENDateTimeNoSeconds</code> */
-    public static DateTimeFormatter formatterENDateTimeNoSeconds = DateTimeFormatter.ofPattern("MM/dd/yyyy h:mm a");
+    public static DateTimeFormatter formatterENDateTimeNoSeconds = DateTimeFormatter.ofPattern("MM/dd/yyyy h:mm a").withLocale(Locale.ENGLISH);
     /** Constant <code>formatterISO8601BasicDateNoYear</code> */
     public static DateTimeFormatter formatterISO8601BasicDateNoYear = new DateTimeFormatterBuilder()
             .appendPattern("MMdd")
@@ -171,7 +171,7 @@ public class DateTools {
      * @should return null if unsupported format
      * @should throw IllegalArgumentException if dateString is null
      * @param fromUTC a boolean.
-     * @return a {@link org.joda.time.DateTime} object.
+     * @return a {@link java.time.LocalDateTime} object.
      */
     public static LocalDateTime parseDateTimeFromString(String dateString, boolean fromUTC) {
         if (dateString == null) {
@@ -180,7 +180,10 @@ public class DateTools {
 
         try {
             if (fromUTC) {
-                return LocalDateTime.parse(dateString, formatterISO8601DateTimeInstant).atOffset(ZoneOffset.UTC).toLocalDateTime();
+                return LocalDateTime.parse(dateString, formatterISO8601DateTimeInstant)
+                        .atZone(ZoneId.systemDefault())
+                        .withZoneSameInstant(ZoneOffset.UTC)
+                        .toLocalDateTime();
             }
             return LocalDateTime.parse(dateString, formatterISO8601DateTimeInstant);
         } catch (DateTimeParseException e) {
@@ -190,7 +193,14 @@ public class DateTools {
         } catch (DateTimeParseException e) {
         }
         try {
+            if (fromUTC) {
+                return LocalDateTime.parse(dateString, formatterISO8601DateTimeWithOffset)
+                        .atZone(ZoneId.systemDefault())
+                        .withZoneSameInstant(ZoneOffset.UTC)
+                        .toLocalDateTime();
+            }
             return LocalDateTime.parse(dateString, formatterISO8601DateTimeWithOffset);
+
         } catch (DateTimeParseException e) {
         }
         try {
@@ -332,7 +342,7 @@ public class DateTools {
             case "de":
                 return format(convertDateToLocalDateTimeViaInstant(date), formatterDEDateTimeNoSeconds, false);
             default:
-                return format(convertDateToLocalDateTimeViaInstant(date), formatterENDateTimeNoSeconds, false);
+                return format(convertDateToLocalDateTimeViaInstant(date), formatterENDateTimeNoSeconds.localizedBy(Locale.US), false);
         }
     }
 
