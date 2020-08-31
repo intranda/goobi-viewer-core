@@ -64,7 +64,7 @@
 this.collections = this.opts.collections;
 
 this.on("mount", () => {
-    console.log("mounting collectionList", this.opts);
+    // console.log("mounting collectionList", this.opts);
     this.loadSubCollections();
 })
 

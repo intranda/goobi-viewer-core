@@ -658,6 +658,30 @@ public final class Configuration extends AbstractConfiguration {
     public int getTocAnchorGroupElementsPerPage() {
         return getLocalInt("toc.tocAnchorGroupElementsPerPage", 0);
     }
+    
+    /**
+     * <p>
+     * isDisplaySidebarBrowsingTerms.
+     * </p>
+     *
+     * @return a boolean.
+     * @should return correct value
+     */
+    public boolean isDisplaySidebarBrowsingTerms() {
+        return getLocalBoolean("sidebar.sidebarBrowsingTerms[@display]", true);
+    }
+    
+    /**
+     * <p>
+     * isDisplaySidebarRssFeed.
+     * </p>
+     *
+     * @return a boolean.
+     * @should return correct value
+     */
+    public boolean isDisplaySidebarRssFeed() {
+        return getLocalBoolean("sidebar.sidebarRssFeed[@display]", true);
+    }
 
     /**
      * <p>
@@ -665,9 +689,10 @@ public final class Configuration extends AbstractConfiguration {
      * </p>
      *
      * @return a boolean.
+     * @should return correct value
      */
     public boolean isDisplayWidgetUsage() {
-        return getLocalBoolean("sidebar.sidebarWidgetUsage[@display]", false);
+        return getLocalBoolean("sidebar.sidebarWidgetUsage[@display]", true);
     }
 
     /**
