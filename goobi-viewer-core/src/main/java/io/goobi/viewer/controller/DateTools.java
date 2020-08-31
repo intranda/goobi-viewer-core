@@ -342,7 +342,7 @@ public class DateTools {
             case "de":
                 return format(convertDateToLocalDateTimeViaInstant(date), formatterDEDateTimeNoSeconds, false);
             default:
-                return format(convertDateToLocalDateTimeViaInstant(date), formatterENDateTimeNoSeconds.localizedBy(Locale.US), false);
+                return format(convertDateToLocalDateTimeViaInstant(date), formatterENDateTimeNoSeconds, false);
         }
     }
 
