@@ -370,4 +370,39 @@ public class DateTools {
 
         return format(convertDateToLocalDateTimeViaInstant(date), formatterENDate, false);
     }
+
+    /**
+     * 
+     * @param year
+     * @param month
+     * @param dayofMonth
+     * @param hour
+     * @param minute
+     * @return
+     */
+    public static Date createDate(int year, int month, int dayofMonth, int hour, int minute) {
+        return createDate(year, month, dayofMonth, hour, minute, false);
+    }
+
+    /**
+     * 
+     * @param year
+     * @param month
+     * @param dayofMonth
+     * @param hour
+     * @param minute
+     * @param useUTC
+     * @return
+     * @should create date correctly
+     */
+    public static Date createDate(int year, int month, int dayofMonth, int hour, int minute, boolean useUTC) {
+        return DateTools.convertLocalDateTimeToDateViaInstant(
+                LocalDateTime.now()
+                        .withYear(year)
+                        .withMonth(month)
+                        .withDayOfMonth(dayofMonth)
+                        .withHour(hour)
+                        .withMinute(minute),
+                useUTC);
+    }
 }

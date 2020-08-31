@@ -2,6 +2,7 @@
 package io.goobi.viewer.controller;
 
 import java.time.LocalDateTime;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
@@ -236,5 +237,22 @@ public class DateToolsTest extends AbstractTest {
         Assert.assertEquals(2, result.size());
         Assert.assertEquals("2018-11-19", DateTools.format(result.get(0), DateTools.formatterISO8601Date, false));
         Assert.assertEquals("2018-11-20", DateTools.format(result.get(1), DateTools.formatterISO8601Date, false));
+    }
+
+    /**
+     * @see DateTools#createDate(int,int,int,int,int,boolean)
+     * @verifies create date correctly
+     */
+    @Test
+    public void createDate_shouldCreateDateCorrectly() throws Exception {
+        Date date = DateTools.createDate(2020, 8, 31, 9, 43, false);
+        Assert.assertNotNull(date);
+        Calendar cal = Calendar.getInstance();
+        cal.setTime(date);
+        Assert.assertEquals(2020, cal.get(Calendar.YEAR));
+        Assert.assertEquals(8 - 1, cal.get(Calendar.MONTH));
+        Assert.assertEquals(31, cal.get(Calendar.DAY_OF_MONTH));
+        Assert.assertEquals(9, cal.get(Calendar.HOUR_OF_DAY));
+        Assert.assertEquals(43, cal.get(Calendar.MINUTE));
     }
 }
