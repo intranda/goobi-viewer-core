@@ -879,6 +879,12 @@
 
 	<!-- ##### SHOW OR HIDE SECTIONS IN THE SIDEBAR GLOBALLY ##### -->
 	<sidebar>
+	
+	    <!-- sidebarBrowsingTerms: If true, the sidebar term browsing widget it displayed. Default is true. -->
+        <sidebarBrowsingTerms display="false" />
+        
+        <!-- sidebarBrowsingTerms: If true, the sidebar RSS widget it displayed. Default is true. -->
+        <sidebarRssFeed display="false" />
 
         <sidebarWidgetUsage display="false">
                 <licenseText>
