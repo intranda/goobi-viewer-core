@@ -924,7 +924,7 @@ riot.tag2('collectionlist', '<div if="{collections}" each="{collection, index in
 this.collections = this.opts.collections;
 
 this.on("mount", () => {
-    console.log("mounting collectionList", this.opts);
+
     this.loadSubCollections();
 })
 
@@ -978,7 +978,6 @@ riot.tag2('collectionview', '<div each="{set, index in collectionSets}"><h3 if="
 this.collectionSets = [];
 
 this.on("mount", () => {
-    console.log("mounting collectionView", this.opts);
 
     this.fetchCollections()
     .then( () => {
