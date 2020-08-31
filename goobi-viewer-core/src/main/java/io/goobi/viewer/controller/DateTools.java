@@ -157,31 +157,43 @@ public class DateTools {
     }
 
     /**
-     * <p>
-     * parseDateTimeFromString.
-     * </p>
-     *
-     * @param dateString a {@link java.lang.String} object.
+     * 
+     * @param dateString
+     * @param fromUTC
+     * @return
      * @should parse iso date formats correctly
-     * @should parse iso date as UTC correctly
      * @should parse german date formats correctly
      * @should parse english date formats correctly
      * @should parse chinese date formats correctly
      * @should parse japanese date formats correctly
      * @should return null if unsupported format
      * @should throw IllegalArgumentException if dateString is null
-     * @param fromUTC a boolean.
-     * @return a {@link java.time.LocalDateTime} object.
      */
     public static LocalDateTime parseDateTimeFromString(String dateString, boolean fromUTC) {
+        return parseDateTimeFromString(dateString, fromUTC, null);
+    }
+
+    /**
+     * <p>
+     * parseDateTimeFromString.
+     * </p>
+     *
+     * @param dateString a {@link java.lang.String} object.
+     * @param fromUTC a boolean.
+     * @param zoneOffset
+     * @return a {@link java.time.LocalDateTime} object.
+     * @should parse iso date as UTC correctly
+     */
+    public static LocalDateTime parseDateTimeFromString(String dateString, boolean fromUTC, Integer zoneOffset) {
         if (dateString == null) {
             throw new IllegalArgumentException("dateString may not be null");
         }
 
         try {
             if (fromUTC) {
+                ZoneId zoneId = zoneOffset != null ? ZoneId.ofOffset("UTC", ZoneOffset.ofHours(zoneOffset)): ZoneId.systemDefault();
                 return LocalDateTime.parse(dateString, formatterISO8601DateTimeInstant)
-                        .atZone(ZoneId.systemDefault())
+                        .atZone(zoneId)
                         .withZoneSameInstant(ZoneOffset.UTC)
                         .toLocalDateTime();
             }
@@ -194,8 +206,9 @@ public class DateTools {
         }
         try {
             if (fromUTC) {
+                ZoneId zoneId = zoneOffset != null ? ZoneId.ofOffset("UTC", ZoneOffset.ofHours(zoneOffset)): ZoneId.systemDefault();
                 return LocalDateTime.parse(dateString, formatterISO8601DateTimeWithOffset)
-                        .atZone(ZoneId.systemDefault())
+                        .atZone(zoneId)
                         .withZoneSameInstant(ZoneOffset.UTC)
                         .toLocalDateTime();
             }

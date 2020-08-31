@@ -178,7 +178,7 @@ public class DateToolsTest extends AbstractTest {
      */
     @Test
     public void parseDateTimeFromString_shouldParseIsoDateAsUTCCorrectly() throws Exception {
-        LocalDateTime date = DateTools.parseDateTimeFromString("2017-12-19T01:01:00+01:00", true);
+        LocalDateTime date = DateTools.parseDateTimeFromString("2017-12-19T01:01:00+01:00", true, 1);
         Assert.assertNotNull(date);
         Assert.assertEquals(2017, date.getYear());
         Assert.assertEquals(12, date.getMonthValue());
