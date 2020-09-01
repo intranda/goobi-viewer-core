@@ -111,15 +111,11 @@
                                 <div class="admin__license-functions">
                                     <hr />
                                     <div class="form-group form-row pb-3">
-                                        <div class="col-5 pb-3">#{msg.admin__license_functions_added}</div>
-                                        <div class="col-1 pb-3"></div>
-                                        <div class="col-5 pb-3">#{msg.admin__license_functions_available}</div>
-                                        <div class="col-1 admin__form-help-icon">
-                                            <button type="button" class="btn btn--clean" data-toggle="helptext" aria-label="inline help icon">
-                                                <i class="fa fa-question-circle" aria-hidden="true"></i>
-                                            </button>
-                                        </div>
-                                        <div class="col-5 badge-hover">
+                                        <div class="col-2">#{msg.admin__license_functions}:</div>
+                                        <div class="col-9 pb-1">#{msg.admin__license_functions_added}</div>
+                                        <div class="col-1"></div>
+                                        <div class="col-2"></div>
+                                        <div class="col-9 badge-hover pb-3">
                                             <ui:repeat var="priv" value="#{adminBean.currentLicenseType.getSortedPrivileges(adminBean.currentLicenseType.privilegesCopy)}">
                                                 <h:commandLink styleClass="admin__license-action" action="#{adminBean.currentLicenseType.removePrivilege(priv)}" title="#{msg.remove}">
                                                     <div class="badge badge-success">
@@ -130,8 +126,15 @@
                                                 </h:commandLink>
                                             </ui:repeat>
                                         </div>
-                                        <div class="col-1"></div>
-                                        <div class="col-5 badge-hover">
+                                        <div class="col-1 admin__form-help-icon">
+                                            <button type="button" class="btn btn--clean" data-toggle="helptext" aria-label="inline help icon">
+                                                <i class="fa fa-question-circle" aria-hidden="true"></i>
+                                            </button>
+                                        </div>
+                                        <div class="col-2"></div>                                       
+                                        <div class="col-10 pb-1">#{msg.admin__license_functions_available}</div>
+                                        <div class="col-2"></div>
+                                        <div class="col-9 badge-hover">
                                             <ui:repeat var="priv" value="#{adminBean.currentLicenseType.availablePrivileges}">
                                                 <h:commandLink styleClass="admin__license-action" action="#{adminBean.currentLicenseType.addPrivilege(priv)}" title="#{msg.add}">
                                                     <div class="badge badge-dark">
@@ -142,59 +145,53 @@
                                                 </h:commandLink>
                                             </ui:repeat>
                                         </div>
-	                                    <div class="col-12 admin__license-functions-help">
+                                        <div class="col-2"></div>
+	                                    <div class="col-9 admin__license-functions-help">
 	                                        <h:outputText value="#{msg.admin__license_functions__help}" styleClass="admin__form-help-text" escape="false" />
 	                                    </div>
 									</div>
-                                    
+                                    <hr />
+	                                <div class="form-group form-row mb-3">
+	                                    <div class="col-2 control-label admin__form-label">
+	                                        <span>#{msg.admin__license_pdf_download_quota}:</span>
+	                                    </div>
+	                                    <div class="col-9 admin__form-input mb-2">
+	                                        <div class="admin__radio-switch">
+	                                            <h:selectOneRadio group="pdfDownloadQuotaToggle" value="#{adminBean.currentLicenseType.pdfDownloadQuota}"
+	                                                immediate="true" checked="#{visibleItem.openInNewWindow ? null : 'false'}">
+	                                                <f:selectItem itemValue="#{false}" itemLabel="#{msg.no}" />
+	                                                <f:ajax render="pdf_download_quota_info_box" />
+	                                            </h:selectOneRadio>                                     
+	                                            <h:selectOneRadio group="pdfDownloadQuotaToggle" value="#{adminBean.currentLicenseType.pdfDownloadQuota}"
+	                                                immediate="true" checked="#{visibleItem.openInNewWindow ? 'true' : null}">
+	                                                <f:selectItem itemValue="#{true}" itemLabel="#{msg.yes}" />
+	                                                <f:ajax render="pdf_download_quota_info_box" />
+	                                            </h:selectOneRadio>
+	                                            <span class="toggle-outside"><span class="toggle-inside"></span></span>
+	                                        </div>
+	                                        <span class="admin__form-help-text in">#{msg.admin__license_pdf_download_quota_desc}</span>
+	                                    </div>
+	                                    <div class="col-2"></div>
+	                                    <h:panelGroup id="pdf_download_quota_info_box" layout="block" styleClass="col-9">
+	                                    <ui:fragment rendered="#{adminBean.currentLicenseType.pdfDownloadQuota}">
+	                                        <ui:fragment rendered="#{adminBean.getPdfQuotaRecordCountForLicenseType(adminBean.currentLicenseType.name) > 0}">
+	                                            <div class="admin__default-block mb-0 -success">
+	                                                <p class="mb-0">
+	                                                    <h:outputFormat value="#{msg.admin__license_pdf_download_quota_record_count_ok}" escape="false">
+	                                                        <f:param value="#{adminBean.getPdfQuotaRecordCountForLicenseType(adminBean.currentLicenseType.name)}" />
+	                                                    </h:outputFormat>
+	                                                </p>
+	                                            </div>
+	                                        </ui:fragment>
+	                                        <ui:fragment rendered="#{adminBean.getPdfQuotaRecordCountForLicenseType(adminBean.currentLicenseType.name) == 0}">
+	                                            <div class="admin__default-block mb-0 -warning">
+	                                                <p class="mb-0"><h:outputText escape="false" value="#{msg.admin__license_pdf_download_quota_record_count_empty}" /></p>
+	                                            </div>
+	                                        </ui:fragment>
+	                                    </ui:fragment>
+	                                    </h:panelGroup>
+	                                </div>
                                 </div>
-                                
-                                <div class="form-group form-row mb-3">
-                                    <div class="col-2 control-label admin__form-label">
-                                        <span>#{msg.admin__license_pdf_download_quota}:</span>
-                                    </div>
-                                    <div class="col-9 admin__form-input">
-                                        <div class="admin__radio-switch">
-                                            <h:selectOneRadio group="pdfDownloadQuotaToggle" value="#{adminBean.currentLicenseType.pdfDownloadQuota}"
-                                                immediate="true" checked="#{visibleItem.openInNewWindow ? null : 'false'}">
-                                                <f:selectItem itemValue="#{false}" itemLabel="#{msg.no}" />
-                                                <f:ajax render="pdf_download_quota_info_box" />
-                                            </h:selectOneRadio>                                     
-                                            <h:selectOneRadio group="pdfDownloadQuotaToggle" value="#{adminBean.currentLicenseType.pdfDownloadQuota}"
-                                                immediate="true" checked="#{visibleItem.openInNewWindow ? 'true' : null}">
-                                                <f:selectItem itemValue="#{true}" itemLabel="#{msg.yes}" />
-                                                <f:ajax render="pdf_download_quota_info_box" />
-                                            </h:selectOneRadio>
-                                            <span class="toggle-outside"><span class="toggle-inside"></span></span>
-                                        </div>
-                                        <span class="admin__form-help-text in">#{msg.admin__license_pdf_download_quota_desc}</span>
-                                    </div>
-                                    <div class="col-1 admin__form-help-icon">
-                                        <button type="button" class="btn btn--clean" data-toggle="helptext" aria-label="inline help icon">
-                                            <i class="fa fa-question-circle" aria-hidden="true"></i>
-                                        </button>
-                                    </div>
-                                    <h:panelGroup id="pdf_download_quota_info_box">
-                                    <ui:fragment rendered="#{adminBean.currentLicenseType.pdfDownloadQuota}">
-                                        <ui:fragment rendered="#{adminBean.getPdfQuotaRecordCountForLicenseType(adminBean.currentLicenseType.name) > 0}">
-                                            <div class="admin__default-block -success">
-                                                <p>
-                                                    <h:outputFormat value="#{msg.admin__license_pdf_download_quota_record_count_ok}" escape="false">
-                                                        <f:param
-                                                            value="#{adminBean.getPdfQuotaRecordCountForLicenseType(adminBean.currentLicenseType.name)}" />
-                                                    </h:outputFormat>
-                                                </p>
-                                            </div>
-                                        </ui:fragment>
-                                        <ui:fragment rendered="#{adminBean.getPdfQuotaRecordCountForLicenseType(adminBean.currentLicenseType.name) == 0}">
-                                            <div class="admin__default-block -warning">
-                                                <p><h:outputText escape="false" value="#{msg.admin__license_pdf_download_quota_record_count_empty}" /></p>
-                                            </div>
-                                        </ui:fragment>
-                                    </ui:fragment>
-                                    </h:panelGroup>
-                                </div>
-                                
                             </div>
 
                             <!-- OVERRIDING LICENSES -->
