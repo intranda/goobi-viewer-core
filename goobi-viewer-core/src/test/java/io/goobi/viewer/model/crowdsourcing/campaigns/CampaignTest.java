@@ -1,13 +1,13 @@
 package io.goobi.viewer.model.crowdsourcing.campaigns;
 
+import java.time.LocalDateTime;
 import java.util.Date;
 
-import org.joda.time.DateTime;
-import org.joda.time.MutableDateTime;
 import org.junit.Assert;
 import org.junit.Test;
 
 import io.goobi.viewer.AbstractTest;
+import io.goobi.viewer.controller.DateTools;
 
 public class CampaignTest extends AbstractTest {
 
@@ -20,10 +20,10 @@ public class CampaignTest extends AbstractTest {
         Campaign campaign = new Campaign();
         campaign.setDateEndString("2019-09-01");
         Assert.assertNotNull(campaign.getDateEnd());
-        DateTime jodaDate = new DateTime(campaign.getDateEnd());
-        Assert.assertEquals(2019, jodaDate.getYear());
-        Assert.assertEquals(9, jodaDate.getMonthOfYear());
-        Assert.assertEquals(1, jodaDate.getDayOfMonth());
+        LocalDateTime ldt = DateTools.convertDateToLocalDateTimeViaInstant(campaign.getDateEnd());
+        Assert.assertEquals(2019, ldt.getYear());
+        Assert.assertEquals(9, ldt.getMonthValue());
+        Assert.assertEquals(1, ldt.getDayOfMonth());
     }
 
     /**
@@ -35,10 +35,10 @@ public class CampaignTest extends AbstractTest {
         Campaign campaign = new Campaign();
         campaign.setDateEndString("2020-08-31");
         Assert.assertNotNull(campaign.getDateEnd());
-        DateTime jodaDate = new DateTime(campaign.getDateEnd());
-        Assert.assertEquals(2020, jodaDate.getYear());
-        Assert.assertEquals(8, jodaDate.getMonthOfYear());
-        Assert.assertEquals(31, jodaDate.getDayOfMonth());
+        LocalDateTime ldt = DateTools.convertDateToLocalDateTimeViaInstant(campaign.getDateEnd());
+        Assert.assertEquals(2020, ldt.getYear());
+        Assert.assertEquals(8, ldt.getMonthValue());
+        Assert.assertEquals(31, ldt.getDayOfMonth());
     }
 
     /**
@@ -59,15 +59,13 @@ public class CampaignTest extends AbstractTest {
     public void getDaysLeft_shouldCalculateDaysCorrectly() throws Exception {
         Campaign campaign = new Campaign();
         {
-            MutableDateTime later = new MutableDateTime();
-            later.addDays(99);
-            campaign.setDateEnd(later.toDate());
+            LocalDateTime later = LocalDateTime.now().plusDays(99);
+            campaign.setDateEnd(DateTools.convertLocalDateTimeToDateViaInstant(later, false));
             Assert.assertEquals(99, campaign.getDaysLeft());
         }
         {
-            MutableDateTime earlier = new MutableDateTime();
-            earlier.addDays(-20);
-            campaign.setDateEnd(earlier.toDate());
+            LocalDateTime earlier = LocalDateTime.now().plusDays(-20);
+            campaign.setDateEnd(DateTools.convertLocalDateTimeToDateViaInstant(earlier, false));
             Assert.assertEquals(0, campaign.getDaysLeft());
         }
     }
@@ -90,15 +88,13 @@ public class CampaignTest extends AbstractTest {
     public void getDaysBeforeStart_shouldCalculateDaysCorrectly() throws Exception {
         Campaign campaign = new Campaign();
         {
-            MutableDateTime later = new MutableDateTime();
-            later.addDays(15);
-            campaign.setDateStart(later.toDate());
+            LocalDateTime later = LocalDateTime.now().plusDays(15);
+            campaign.setDateStart(DateTools.convertLocalDateTimeToDateViaInstant(later, false));
             Assert.assertEquals(15, campaign.getDaysBeforeStart());
         }
         {
-            MutableDateTime earlier = new MutableDateTime();
-            earlier.addDays(-20);
-            campaign.setDateStart(earlier.toDate());
+            LocalDateTime earlier = LocalDateTime.now().plusDays(-20);
+            campaign.setDateStart(DateTools.convertLocalDateTimeToDateViaInstant(earlier, false));
             Assert.assertEquals(0, campaign.getDaysBeforeStart());
         }
     }
@@ -120,9 +116,8 @@ public class CampaignTest extends AbstractTest {
     @Test
     public void isHasEnded_shouldReturnTrueIfDateEndBeforeNow() throws Exception {
         Campaign campaign = new Campaign();
-        MutableDateTime earlier = new MutableDateTime();
-        earlier.addDays(-20);
-        campaign.setDateEnd(earlier.toDate());
+        LocalDateTime earlier = LocalDateTime.now().plusDays(-20);
+        campaign.setDateEnd(DateTools.convertLocalDateTimeToDateViaInstant(earlier, false));
         Assert.assertTrue(campaign.isHasEnded());
     }
 
@@ -133,9 +128,8 @@ public class CampaignTest extends AbstractTest {
     @Test
     public void isHasEnded_shouldReturnFalseIfDateEndAfterNow() throws Exception {
         Campaign campaign = new Campaign();
-        MutableDateTime later = new MutableDateTime();
-        later.addDays(20);
-        campaign.setDateEnd(later.toDate());
+        LocalDateTime later = LocalDateTime.now().plusDays(20);
+        campaign.setDateEnd(DateTools.convertLocalDateTimeToDateViaInstant(later, false));
         Assert.assertFalse(campaign.isHasEnded());
     }
 
@@ -167,9 +161,8 @@ public class CampaignTest extends AbstractTest {
     @Test
     public void isHasStarted_shouldReturnTrueIfDateStartBeforeNow() throws Exception {
         Campaign campaign = new Campaign();
-        MutableDateTime later = new MutableDateTime();
-        later.addDays(-20);
-        campaign.setDateStart(later.toDate());
+        LocalDateTime later = LocalDateTime.now().plusDays(-20);
+        campaign.setDateStart(DateTools.convertLocalDateTimeToDateViaInstant(later, false));
         Assert.assertTrue(campaign.isHasStarted());
     }
 
@@ -180,9 +173,8 @@ public class CampaignTest extends AbstractTest {
     @Test
     public void isHasStarted_shouldReturnFalseIfDateStartAfterNow() throws Exception {
         Campaign campaign = new Campaign();
-        MutableDateTime later = new MutableDateTime();
-        later.addDays(20);
-        campaign.setDateStart(later.toDate());
+        LocalDateTime later = LocalDateTime.now().plusDays(20);
+        campaign.setDateStart(DateTools.convertLocalDateTimeToDateViaInstant(later, false));
         Assert.assertFalse(campaign.isHasStarted());
     }
 }

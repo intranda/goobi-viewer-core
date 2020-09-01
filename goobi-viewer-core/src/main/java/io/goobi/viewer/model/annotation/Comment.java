@@ -85,14 +85,14 @@ public class Comment implements Comparable<Comment> {
     @Column(name = "date_updated")
     private Date dateUpdated;
 
-//    @ManyToOne
-//    @JoinColumn(name = "parent_id")
-//    private Comment parent;
+    //    @ManyToOne
+    //    @JoinColumn(name = "parent_id")
+    //    private Comment parent;
 
-//    @OneToMany(mappedBy = "parent", fetch = FetchType.EAGER, cascade = { CascadeType.ALL })
-//    @PrivateOwned
-//    @CascadeOnDelete
-//    private List<Comment> children;
+    //    @OneToMany(mappedBy = "parent", fetch = FetchType.EAGER, cascade = { CascadeType.ALL })
+    //    @PrivateOwned
+    //    @CascadeOnDelete
+    //    private List<Comment> children;
 
     /**
      * <p>
@@ -120,7 +120,7 @@ public class Comment implements Comparable<Comment> {
         this.page = page;
         this.owner = owner;
         this.text = text;
-//        this.parent = parent;
+        //        this.parent = parent;
     }
 
     /** {@inheritDoc} */
@@ -197,7 +197,7 @@ public class Comment implements Comparable<Comment> {
      * @return a {@link java.lang.String} object.
      */
     public String getDisplayDate(Date date) {
-        return DateTools.formatterDEDateTime.print(date.getTime());
+        return DateTools.format(date, DateTools.formatterDEDateTime, false);
     }
 
     /**

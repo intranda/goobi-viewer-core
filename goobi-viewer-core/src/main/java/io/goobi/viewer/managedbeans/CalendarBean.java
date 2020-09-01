@@ -16,6 +16,9 @@
 package io.goobi.viewer.managedbeans;
 
 import java.io.Serializable;
+import java.time.DayOfWeek;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
@@ -34,15 +37,11 @@ import org.apache.solr.client.solrj.response.FacetField;
 import org.apache.solr.client.solrj.response.FacetField.Count;
 import org.apache.solr.client.solrj.response.QueryResponse;
 import org.apache.solr.client.solrj.util.ClientUtils;
-import org.joda.time.DateTimeConstants;
-import org.joda.time.DateTimeField;
-import org.joda.time.LocalDate;
-import org.joda.time.MutableDateTime;
-import org.joda.time.chrono.GregorianChronology;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import io.goobi.viewer.controller.DataManager;
+import io.goobi.viewer.controller.DateTools;
 import io.goobi.viewer.controller.SolrConstants;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
@@ -82,7 +81,6 @@ public class CalendarBean implements Serializable {
     private int yearEnd = 3000;
     private String collection;
 
-    private static final int NUMBER_OF_ITEMS_IN_ROW = 10;
     private int rowIndex;
 
     private CalendarRow monthRow = new CalendarRow();
@@ -106,23 +104,6 @@ public class CalendarBean implements Serializable {
     private void init() {
         // PostConstruct methods may not throw exceptions
         logger.trace("init");
-        //        StringBuilder sbQuery = new StringBuilder();
-        //        try {
-        //            List<String> list = DataManager.getInstance().getConfiguration().getCalendarDocStructTypes();
-        //            if (!list.isEmpty()) {
-        //                sbQuery.append(" AND (");
-        //                for (String s : list) {
-        //                    if (StringUtils.isNotBlank(s)) {
-        //                        sbQuery.append(SolrConstants.DOCSTRCT).append(':').append(ClientUtils.escapeQueryChars(s.trim())).append(" OR ");
-        //                    }
-        //                }
-        //                sbQuery.delete(sbQuery.length() - 4, sbQuery.length());
-        //                sbQuery.append(')');
-        //            }
-        //        } finally {
-        //            docstructFilterQuery = sbQuery.toString();
-        //            logger.trace("docstructFilterQuery: {}", docstructFilterQuery);
-        //        }
         try {
             getDefaultDates();
         } catch (PresentationException e) {
@@ -367,13 +348,10 @@ public class CalendarBean implements Serializable {
         FacetField field = resp.getFacetField(SolrConstants._CALENDAR_DAY);
         List<Count> fieldValues = field.getValues() != null ? field.getValues() : new ArrayList<>();
 
-        GregorianChronology calendar = GregorianChronology.getInstance();
-        DateTimeField datefield = calendar.dayOfMonth();
+        LocalDate date = LocalDate.now().withYear(Integer.parseInt(value)).withMonth(currentMonth.getValue()).withDayOfMonth(1);
 
-        LocalDate date = new LocalDate(Integer.parseInt(value), currentMonth.getValue(), 1, calendar);
-
-        int number = datefield.getMaximumValue(date);
-        for (int day = 1; day <= number; day++) {
+        int daysInMonth = date.getMonth().length(date.isLeapYear());
+        for (int day = 1; day <= daysInMonth; day++) {
             String facetName = generateSearchStringForDays(day);
             CalendarItemDay dayItem = null;
             for (Count count : fieldValues) {
@@ -385,24 +363,25 @@ public class CalendarBean implements Serializable {
             if (dayItem == null) {
                 dayItem = new CalendarItemDay(String.valueOf(day), day, 0);
             }
-            date = new LocalDate(Integer.parseInt(value), currentMonth.getValue(), day, calendar);
+            // date = new LocalDate(Integer.parseInt(value), currentMonth.getValue(), day, calendar);
+            date = LocalDate.now().withYear(Integer.parseInt(value)).withMonth(currentMonth.getValue()).withDayOfMonth(day);
             switch (date.getDayOfWeek()) {
-                case 1:
+                case SUNDAY:
                     dayItem.setDayOfWeek("Sunday");
                     break;
-                case 2:
+                case MONDAY:
                     dayItem.setDayOfWeek("Monday");
                     break;
-                case 3:
+                case TUESDAY:
                     dayItem.setDayOfWeek("Tuesday");
                     break;
-                case 4:
-                    dayItem.setDayOfWeek("Wednsday");
+                case WEDNESDAY:
+                    dayItem.setDayOfWeek("Wednesday");
                     break;
-                case 5:
+                case THURSDAY:
                     dayItem.setDayOfWeek("Thursday");
                     break;
-                case 6:
+                case FRIDAY:
                     dayItem.setDayOfWeek("Friday");
                     break;
                 default:
@@ -584,18 +563,18 @@ public class CalendarBean implements Serializable {
      * @return a {@link java.util.Date} object.
      */
     public Date getCurrentDate() {
-        MutableDateTime date = new MutableDateTime();
+        LocalDateTime ldt = LocalDateTime.now();
         if (currentYear != null) {
-            date.setYear(currentYear.getValue());
+            ldt = ldt.withYear(currentYear.getValue());
         }
         if (currentMonth != null) {
-            date.setMonthOfYear(currentMonth.getValue());
+            ldt = ldt.withMonth(currentMonth.getValue());
         }
         if (currentDay != null) {
-            date.setDayOfMonth(currentDay.getValue());
+            ldt = ldt.withDayOfMonth(currentDay.getValue());
         }
 
-        return date.toDate();
+        return DateTools.convertLocalDateTimeToDateViaInstant(ldt, false);
     }
 
     /**
@@ -849,9 +828,6 @@ public class CalendarBean implements Serializable {
         List<Count> monthFacets = resp.getFacetField(SolrConstants._CALENDAR_MONTH).getValues() != null
                 ? resp.getFacetField(SolrConstants._CALENDAR_MONTH).getValues() : new ArrayList<>();
 
-        GregorianChronology calendar = GregorianChronology.getInstance();
-        DateTimeField datefield = calendar.dayOfMonth();
-
         CalendarItemMonth jan = new CalendarItemMonth("january", 1, 0);
         monthList.add(jan);
         CalendarItemMonth feb = new CalendarItemMonth("february", 2, 0);
@@ -923,31 +899,6 @@ public class CalendarBean implements Serializable {
                     dec.setHits((int) monthCount.getCount());
                     break;
             }
-            //            if (monthCount.getName().equals(selectYear + "01")) {
-            //                jan.setHits((int) monthCount.getCount());
-            //            } else if (monthCount.getName().equals(selectYear + "02")) {
-            //                feb.setHits((int) monthCount.getCount());
-            //            } else if (monthCount.getName().equals(selectYear + "03")) {
-            //                mar.setHits((int) monthCount.getCount());
-            //            } else if (monthCount.getName().equals(selectYear + "04")) {
-            //                apr.setHits((int) monthCount.getCount());
-            //            } else if (monthCount.getName().equals(selectYear + "05")) {
-            //                may.setHits((int) monthCount.getCount());
-            //            } else if (monthCount.getName().equals(selectYear + "06")) {
-            //                jun.setHits((int) monthCount.getCount());
-            //            } else if (monthCount.getName().equals(selectYear + "07")) {
-            //                jul.setHits((int) monthCount.getCount());
-            //            } else if (monthCount.getName().equals(selectYear + "08")) {
-            //                aug.setHits((int) monthCount.getCount());
-            //            } else if (monthCount.getName().equals(selectYear + "09")) {
-            //                sep.setHits((int) monthCount.getCount());
-            //            } else if (monthCount.getName().equals(selectYear + "10")) {
-            //                oct.setHits((int) monthCount.getCount());
-            //            } else if (monthCount.getName().equals(selectYear + "11")) {
-            //                nov.setHits((int) monthCount.getCount());
-            //            } else if (monthCount.getName().equals(selectYear + "12")) {
-            //                dec.setHits((int) monthCount.getCount());
-            //            }
         }
 
         for (CalendarItemMonth monthItem : monthList) {
@@ -955,9 +906,10 @@ public class CalendarBean implements Serializable {
             CalendarItemWeek currentWeek = new CalendarItemWeek("", 0, 0);
             weeksOfMonth.add(currentWeek);
             monthItem.setWeeksOfMonth(weeksOfMonth);
-            LocalDate date = new LocalDate(Integer.parseInt(selectYear), monthItem.getValue(), 1, calendar);
-            int number = datefield.getMaximumValue(date);
-            for (int day = 1; day <= number; day++) {
+            // LocalDate date = new LocalDate(Integer.parseInt(selectYear), monthItem.getValue(), 1, calendar);
+            LocalDate date = LocalDate.now().withYear(Integer.parseInt(selectYear)).withMonth(monthItem.getValue()).withDayOfMonth(1);
+            int daysInMonth = date.getMonth().length(date.isLeapYear());
+            for (int day = 1; day <= daysInMonth; day++) {
                 StringBuilder facetBuilder = new StringBuilder();
                 facetBuilder.append(selectYear);
                 if (monthItem.getValue() < 10) {
@@ -988,31 +940,32 @@ public class CalendarBean implements Serializable {
                 if (dayItem == null) {
                     dayItem = new CalendarItemDay(String.valueOf(day), day, 0);
                 }
-                date = new LocalDate(Integer.parseInt(selectYear), monthItem.getValue(), day, calendar);
+                //                date = new LocalDate(Integer.parseInt(selectYear), monthItem.getValue(), day, calendar);
+                date = LocalDate.now().withYear(Integer.parseInt(selectYear)).withMonth(monthItem.getValue()).withDayOfMonth(day);
                 switch (date.getDayOfWeek()) {
-                    case DateTimeConstants.MONDAY:
+                    case MONDAY:
                         dayItem.setDayOfWeek("Monday");
                         if (!currentWeek.getDaysOfWeek().isEmpty()) {
                             currentWeek = new CalendarItemWeek("", 0, 0);
                             weeksOfMonth.add(currentWeek);
                         }
                         break;
-                    case DateTimeConstants.TUESDAY:
+                    case TUESDAY:
                         dayItem.setDayOfWeek("Tuesday");
                         break;
-                    case DateTimeConstants.WEDNESDAY:
+                    case WEDNESDAY:
                         dayItem.setDayOfWeek("Wednesday");
                         break;
-                    case DateTimeConstants.THURSDAY:
+                    case THURSDAY:
                         dayItem.setDayOfWeek("Thursday");
                         break;
-                    case DateTimeConstants.FRIDAY:
+                    case FRIDAY:
                         dayItem.setDayOfWeek("Friday");
                         break;
-                    case DateTimeConstants.SATURDAY:
+                    case SATURDAY:
                         dayItem.setDayOfWeek("Saturday");
                         break;
-                    case DateTimeConstants.SUNDAY:
+                    case SUNDAY:
                         dayItem.setDayOfWeek("Sunday");
                         break;
                     default:
@@ -1020,33 +973,35 @@ public class CalendarBean implements Serializable {
                         break;
                 }
 
-                if (date.getDayOfMonth() == 1 && date.getDayOfWeek() != DateTimeConstants.MONDAY) {
+                if (date.getDayOfMonth() == 1 && !DayOfWeek.MONDAY.equals(date.getDayOfWeek())) {
                     // fill first week with empty day items
                     switch (date.getDayOfWeek()) {
-                        case 7:
+                        case SUNDAY:
                             // Sunday
                             CalendarItemDay sun = new CalendarItemDay("", 0, 0);
                             currentWeek.addDay(sun);
-                        case 6:
+                        case SATURDAY:
                             // Saturday
                             CalendarItemDay sat = new CalendarItemDay("", 0, 0);
                             currentWeek.addDay(sat);
-                        case 5:
+                        case FRIDAY:
                             // Friday
                             CalendarItemDay fri = new CalendarItemDay("", 0, 0);
                             currentWeek.addDay(fri);
-                        case 4:
+                        case THURSDAY:
                             // Thursday
                             CalendarItemDay thu = new CalendarItemDay("", 0, 0);
                             currentWeek.addDay(thu);
-                        case 3:
+                        case WEDNESDAY:
                             // Wednesday
                             CalendarItemDay wed = new CalendarItemDay("", 0, 0);
                             currentWeek.addDay(wed);
-                        case 2:
+                        case TUESDAY:
                             // Tuesday
                             CalendarItemDay tue = new CalendarItemDay("", 0, 0);
                             currentWeek.addDay(tue);
+                            break;
+                        default:
                             break;
                     }
                 }

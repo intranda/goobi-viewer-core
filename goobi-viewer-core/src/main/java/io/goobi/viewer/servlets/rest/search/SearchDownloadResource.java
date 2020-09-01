@@ -17,6 +17,7 @@ package io.goobi.viewer.servlets.rest.search;
 
 import java.io.IOException;
 import java.io.OutputStream;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -133,7 +134,7 @@ public class SearchDownloadResource {
 
         response.setContentType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
         response.setHeader("Content-Disposition",
-                "attachment;filename=\"viewer_search_" + DateTools.formatterISO8601DateTime.print(System.currentTimeMillis()) + ".xlsx\"");
+                "attachment;filename=\"viewer_search_" + DateTools.format(new Date(), DateTools.formatterISO8601DateTime, false) + ".xlsx\"");
 
         Map<String, String> params = SearchHelper.generateQueryParams();
         final SXSSFWorkbook wb = SearchHelper.exportSearchAsExcel(query, currentQuery, sortFields,
