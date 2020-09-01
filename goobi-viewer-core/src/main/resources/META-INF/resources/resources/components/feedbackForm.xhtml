@@ -4,13 +4,6 @@
 	xmlns:f="http://xmlns.jcp.org/jsf/core"
 	xmlns:composite="http://xmlns.jcp.org/jsf/composite">
 	
-	<ui:define name="metadata">
-		<f:metadata>
-			<f:event type="preRenderView" listener="#{navigationHelper.setCurrentPage('feedback', false, true)}" />
-            <f:event type="preRenderView" listener="#{userBean.createFeedback}" />
-		</f:metadata>
-	</ui:define>
-
 	<composite:interface />
 
     <composite:implementation>
@@ -52,7 +45,7 @@
 						 id="feedbackEmail" label="feedbackEmail" immediate="true" required="true" value="#{userBean.feedback.email}"
 						 styleClass="form-control">
 						 <f:validator validatorId="emailValidator" for="feedbackEmail" />
-						 <!-- <f:ajax render="emailGroup" />-->
+						 <f:ajax render="emailGroup" />
 					 </h:inputText>
 	                  </div>
 	                </h:panelGroup>

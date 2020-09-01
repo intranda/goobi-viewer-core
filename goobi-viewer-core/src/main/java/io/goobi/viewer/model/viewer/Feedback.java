@@ -60,7 +60,11 @@ public class Feedback implements Serializable {
     public String getEmailBody(String key) {
         String body = ViewerResourceBundle.getTranslation(key, null);
         if (body != null) {
-            body = body.replace("{0}", name).replace("{1}", email).replace("{2}", url).replace("{3}", message);
+            body = body
+                    .replace("{0}", name)
+                    .replace("{1}", email)
+                    .replace("{2}", url)
+                    .replace("{3}", message);
             // Feedback type only exists for crowdsourcing feedback
             if (type != null) {
                 body = body.replace("{4}", type);
@@ -111,6 +115,7 @@ public class Feedback implements Serializable {
      * @param email the email to set
      */
     public void setEmail(String email) {
+        logger.trace("setEmail: {}", email);
         this.email = email;
     }
 
