@@ -1186,21 +1186,27 @@
 
 	<!-- ##### SHOW OR HIDE SECTIONS IN THE SIDEBAR GLOBALLY ##### -->
 	<sidebar>
+	
+	    <!-- sidebarBrowsingTerms: If true, the sidebar term browsing widget it displayed. Default is true. -->
+        <sidebarBrowsingTerms display="true" />
+        
+        <!-- sidebarBrowsingTerms: If true, the sidebar RSS widget it displayed. Default is true. -->
+        <sidebarRssFeed display="true" />
     
-            <sidebarWidgetUsage display="true">
-                <licenseText>
-                    <metadata label="MD_LICENSETEXT" value="MASTERVALUE_LICENSETEXT">
-                        <param type="field" key="LABEL" />
-                        <param type="translatedfield" key="ACCESSCONDITION" />
-                    </metadata>
-                </licenseText>
-                <page>
-                    <!-- displayLinkToJpegImage: Enables JPEG image download links for pages. Default is false.  -->
-                    <displayLinkToJpegImage>true</displayLinkToJpegImage>
-                    <!-- displayLinkToJpegImage: Enables TIFF image download links for pages. Default is false.  -->
-                    <displayLinkToTiffImage>true</displayLinkToTiffImage>
-                </page>
-            </sidebarWidgetUsage>
+        <sidebarWidgetUsage display="true">
+            <licenseText>
+                <metadata label="MD_LICENSETEXT" value="MASTERVALUE_LICENSETEXT">
+                    <param type="field" key="LABEL" />
+                    <param type="translatedfield" key="ACCESSCONDITION" />
+                </metadata>
+            </licenseText>
+            <page>
+                <!-- displayLinkToJpegImage: Enables JPEG image download links for pages. Default is false.  -->
+                <displayLinkToJpegImage>true</displayLinkToJpegImage>
+                <!-- displayLinkToJpegImage: Enables TIFF image download links for pages. Default is false.  -->
+                <displayLinkToTiffImage>true</displayLinkToTiffImage>
+            </page>
+        </sidebarWidgetUsage>
 
 		<!-- page: if false, the image view is hidden -->
 		<page>

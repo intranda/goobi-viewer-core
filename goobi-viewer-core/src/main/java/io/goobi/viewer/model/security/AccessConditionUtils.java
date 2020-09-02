@@ -42,6 +42,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import io.goobi.viewer.controller.DataManager;
+import io.goobi.viewer.controller.FileTools;
 import io.goobi.viewer.controller.NetTools;
 import io.goobi.viewer.controller.SolrConstants;
 import io.goobi.viewer.controller.SolrConstants.DocType;
@@ -134,6 +135,7 @@ public class AccessConditionUtils {
      * @should use correct field name for AV files
      * @should use correct file name for text files
      * @should escape file name for wildcard search correctly
+     * @should work correctly with urls
      */
     static String[] generateAccessCheckQuery(String identifier, String fileName) {
         if (fileName == null) {
@@ -143,7 +145,7 @@ public class AccessConditionUtils {
         String[] ret = new String[2];
         StringBuilder sbQuery = new StringBuilder();
         String useFileField = SolrConstants.FILENAME;
-        String useFileName = Paths.get(fileName).getFileName().toString();
+        String useFileName = FileTools.getPathFromUrlString(fileName).getFileName().toString();
         boolean wildcard = false;
         // Different media types have the file name in different fields
         String extension = FilenameUtils.getExtension(fileName).toLowerCase();
@@ -318,7 +320,7 @@ public class AccessConditionUtils {
 
         try {
             Set<String> requiredAccessConditions = new HashSet<>();
-            logger.trace(sbQuery.toString());
+            // logger.trace(sbQuery.toString());
             SolrDocumentList results = DataManager.getInstance()
                     .getSearchIndex()
                     .search(sbQuery.toString(), 1, null, Arrays.asList(new String[] { SolrConstants.ACCESSCONDITION }));
@@ -328,7 +330,7 @@ public class AccessConditionUtils {
                     if (fieldsAccessConddition != null) {
                         for (Object accessCondition : fieldsAccessConddition) {
                             requiredAccessConditions.add((String) accessCondition);
-                            logger.trace("{}", accessCondition.toString());
+                            // logger.trace("{}", accessCondition.toString());
                         }
                     }
                 }
@@ -853,12 +855,12 @@ public class AccessConditionUtils {
                 requiredAccessConditions.add(licenseType.getName());
                 if (!licenseType.getPrivileges().contains(privilegeName) && !licenseType.isOpenAccess()
                         && !licenseType.isRestrictionsExpired(query)) {
-                    logger.trace("LicenseType '{}' does not allow the action '{}' by default.", licenseType.getName(), privilegeName);
+                    // logger.trace("LicenseType '{}' does not allow the action '{}' by default.", licenseType.getName(), privilegeName);
                     licenseTypeAllowsPriv = false;
                 }
             }
             if (licenseTypeAllowsPriv) {
-                logger.trace("Privilege '{}' is allowed by default in all license types.", privilegeName);
+                // logger.trace("Privilege '{}' is allowed by default in all license types.", privilegeName);
                 accessMap.put(key, Boolean.TRUE);
             } else if (isFreeOpenAccess(requiredAccessConditions, relevantLicenseTypes)) {
                 logger.trace("Privilege '{}' is OpenAccess", privilegeName);

@@ -25,13 +25,13 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
 
-import org.joda.time.DateTime;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
 import io.goobi.viewer.AbstractDatabaseEnabledTest;
 import io.goobi.viewer.controller.DataManager;
+import io.goobi.viewer.controller.DateTools;
 import io.goobi.viewer.exceptions.AccessDeniedException;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.model.annotation.Comment;
@@ -1656,21 +1656,21 @@ public class JPADAOTest extends AbstractDatabaseEnabledTest {
         Assert.assertEquals(1,
                 DataManager.getInstance()
                         .getDao()
-                        .getCMSPagesWithRelatedPi(0, 100, new DateTime(2015, 1, 1, 0, 0).toDate(), new DateTime(2015, 12, 31, 0, 0).toDate(),
+                        .getCMSPagesWithRelatedPi(0, 100, DateTools.createDate(2015, 1, 1, 0, 0), DateTools.createDate(2015, 12, 31, 0, 0),
                                 Arrays.asList("template_simple", "template_two"))
                         .size());
         // Wrong template
         Assert.assertEquals(0,
                 DataManager.getInstance()
                         .getDao()
-                        .getCMSPagesWithRelatedPi(0, 100, new DateTime(2015, 1, 1, 0, 0).toDate(), new DateTime(2015, 12, 31, 0, 0).toDate(),
+                        .getCMSPagesWithRelatedPi(0, 100, DateTools.createDate(2015, 1, 1, 0, 0), DateTools.createDate(2015, 12, 31, 0, 0),
                                 Collections.singletonList("wrong_tempalte"))
                         .size());
         // Wrong date range
         Assert.assertEquals(0,
                 DataManager.getInstance()
                         .getDao()
-                        .getCMSPagesWithRelatedPi(0, 100, new DateTime(2016, 1, 1, 0, 0).toDate(), new DateTime(2016, 12, 31, 0, 0).toDate(),
+                        .getCMSPagesWithRelatedPi(0, 100, DateTools.createDate(2016, 1, 1, 0, 0), DateTools.createDate(2016, 12, 31, 0, 0),
                                 Collections.singletonList("template_simple"))
                         .size());
     }
@@ -1683,10 +1683,10 @@ public class JPADAOTest extends AbstractDatabaseEnabledTest {
     public void isCMSPagesForRecordHaveUpdates_shouldReturnCorrectValue() throws Exception {
         Assert.assertTrue(DataManager.getInstance()
                 .getDao()
-                .isCMSPagesForRecordHaveUpdates("PI_1", null, new DateTime(2015, 1, 1, 0, 0).toDate(), new DateTime(2015, 12, 31, 0, 0).toDate()));
+                .isCMSPagesForRecordHaveUpdates("PI_1", null, DateTools.createDate(2015, 1, 1, 0, 0), DateTools.createDate(2015, 12, 31, 0, 0)));
         Assert.assertFalse(DataManager.getInstance()
                 .getDao()
-                .isCMSPagesForRecordHaveUpdates("PI_1", null, new DateTime(2016, 1, 1, 0, 0).toDate(), new DateTime(2016, 12, 31, 0, 0).toDate()));
+                .isCMSPagesForRecordHaveUpdates("PI_1", null, DateTools.createDate(2016, 1, 1, 0, 0), DateTools.createDate(2016, 12, 31, 0, 0)));
         Assert.assertFalse(DataManager.getInstance().getDao().isCMSPagesForRecordHaveUpdates("PI_2", null, null, null));
     }
 
@@ -1699,19 +1699,19 @@ public class JPADAOTest extends AbstractDatabaseEnabledTest {
         Assert.assertEquals(1,
                 DataManager.getInstance()
                         .getDao()
-                        .getCMSPageWithRelatedPiCount(new DateTime(2015, 1, 1, 0, 0).toDate(), new DateTime(2015, 12, 31, 0, 0).toDate(),
+                        .getCMSPageWithRelatedPiCount(DateTools.createDate(2015, 1, 1, 0, 0), DateTools.createDate(2015, 12, 31, 0, 0),
                                 Arrays.asList("template_simple", "template_two")));
         // Wrong template
         Assert.assertEquals(0,
                 DataManager.getInstance()
                         .getDao()
-                        .getCMSPageWithRelatedPiCount(new DateTime(2015, 1, 1, 0, 0).toDate(), new DateTime(2015, 12, 31, 0, 0).toDate(),
+                        .getCMSPageWithRelatedPiCount(DateTools.createDate(2015, 1, 1, 0, 0), DateTools.createDate(2015, 12, 31, 0, 0),
                                 Collections.singletonList("wrong_template")));
         // Wrong date range
         Assert.assertEquals(0,
                 DataManager.getInstance()
                         .getDao()
-                        .getCMSPageWithRelatedPiCount(new DateTime(2016, 1, 1, 0, 0).toDate(), new DateTime(2016, 12, 31, 0, 0).toDate(),
+                        .getCMSPageWithRelatedPiCount(DateTools.createDate(2016, 1, 1, 0, 0), DateTools.createDate(2016, 12, 31, 0, 0),
                                 Collections.singletonList("template_simple")));
     }
 

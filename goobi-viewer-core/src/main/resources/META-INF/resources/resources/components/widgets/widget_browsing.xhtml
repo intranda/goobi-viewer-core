@@ -9,7 +9,7 @@
     </composite:interface>
 
 	<composite:implementation>
-		<h:panelGroup rendered="#{(cc.attrs.widget.type == 'widgetBrowsing' or cc.attrs.widget.type == null) and browseBean.browsingMenuEnabled}">
+		<h:panelGroup rendered="#{browseBean.browsingMenuEnabled and configurationBean.displaySidebarBrowsingTerms and (cc.attrs.widget.type == 'widgetBrowsing' or cc.attrs.widget.type == null)}">
 			<div id="widgetBrowsing" class="widget #{cc.attrs.widget.cssClass}">
 				<h:form id="widgetBrowsingForm">
 					<h:panelGroup rendered="#{cc.attrs.widget.widgetMode == 'STANDARD' or cc.attrs.widget.type == null}">				

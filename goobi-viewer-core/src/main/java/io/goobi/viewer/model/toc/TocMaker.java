@@ -22,6 +22,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 import java.util.regex.Matcher;
@@ -55,7 +56,6 @@ import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.messages.ViewerResourceBundle;
 import io.goobi.viewer.model.metadata.Metadata;
 import io.goobi.viewer.model.metadata.MetadataParameter;
-import io.goobi.viewer.model.metadata.MetadataParameter.MetadataParameterType;
 import io.goobi.viewer.model.search.SearchHelper;
 import io.goobi.viewer.model.security.AccessConditionUtils;
 import io.goobi.viewer.model.security.IPrivilegeHolder;
@@ -664,7 +664,7 @@ public class TocMaker {
 
             // Child elements
             if (addChildren && childrenMap != null && childrenMap.get(iddoc) != null && !childrenMap.get(iddoc).isEmpty()) {
-                logger.trace("Adding {} children for {}", childrenMap.get(iddoc).size(), iddoc);
+                // logger.trace("Adding {} children for {}", childrenMap.get(iddoc).size(), iddoc);
                 for (SolrDocument childDoc : childrenMap.get(iddoc)) {
                     addTocElementsRecusively(ret, childrenMap, childDoc, level + 1, true, pdfPermissionMap, mimeType, footerId);
                 }
@@ -707,72 +707,15 @@ public class TocMaker {
      * @param doc
      * @param template
      * @should build configured label correctly
+     * @should fill remaining parameters correctly if docstruct fallback used
      */
     static IMetadataValue buildLabel(SolrDocument doc, String template) {
         // logger.trace("buildLabel: {}", template);
         List<Metadata> labelConfigList = DataManager.getInstance().getConfiguration().getTocLabelConfiguration(template);
         IMetadataValue label = new MultiLanguageMetadataValue();
-        if (labelConfigList != null && !labelConfigList.isEmpty()) {
-            // Configurable label layout
-            Metadata labelConfig = labelConfigList.get(0);
-            for (MetadataParameter param : labelConfig.getParams()) {
-                // logger.trace("param key: {}", param.getKey());
-                IMetadataValue value;
-                switch (param.getType()) {
-                    case TRANSLATEDFIELD:
-                        if (doc.getFirstValue(param.getKey()) != null) {
-                            // Translate index field value, if available
-                            value = ViewerResourceBundle.getTranslations(doc.getFirstValue(param.getKey()).toString());
-                        } else if (param.getAltKey() != null && doc.getFirstValue(param.getAltKey()) != null) {
-                            // Translate alternative index field value, if available
-                            value = ViewerResourceBundle.getTranslations(doc.getFirstValue(param.getAltKey()).toString());
-                        } else {
-                            // Translate key, if no index field found
-                            value = ViewerResourceBundle.getTranslations(param.getKey().toString());
-                        }
-                        break;
-                    case FIELD:
-                        value = createMultiLanguageValue(doc, param.getKey(), param.getAltKey());
-                        break;
-                    default:
-                        value = new SimpleMetadataValue();
-                        value.setValue(SolrSearchIndex.getSingleFieldStringValue(doc, param.getKey()));
-                        // logger.trace("value: {}:{}", param.getKey(), value.getValue());
-                        break;
-                }
 
-                // Special case: If LABEL or MD_TITLE is missing, use DOCSTRCT.
-                if (StringUtils.isEmpty(value.toString())
-                        && (SolrConstants.LABEL.equals(param.getKey()) || SolrConstants.TITLE.equals(param.getKey()))) {
-                    // Docstruct fallback should always be translated
-                    String docstruct = SolrSearchIndex.getSingleFieldStringValue(doc, SolrConstants.DOCSTRCT);
-                    value = ViewerResourceBundle.getTranslations(docstruct);
-                }
-
-                String placeholder = new StringBuilder("{").append(param.getKey()).append("}").toString();
-                // logger.trace("placeholder: {}", placeholder);
-                // logger.trace("param value: {}", param.getKey());
-                if (!value.isEmpty() && StringUtils.isNotEmpty(param.getPrefix())) {
-                    String prefix = ViewerResourceBundle.getTranslation(param.getPrefix(), null);
-                    value.addPrefix(prefix);
-                }
-                if (!value.isEmpty() && StringUtils.isNotEmpty(param.getSuffix())) {
-                    String suffix = ViewerResourceBundle.getTranslation(param.getSuffix(), null);
-                    value.addSuffix(suffix);
-                }
-                Set<String> languages = new HashSet<>(value.getLanguages());
-
-                languages.addAll(label.getLanguages());
-                // Replace master value placeholders in the label object 
-                for (String language : languages) {
-                    String langValue = label.getValue(language)
-                            .orElse(labelConfig.getMasterValue())
-                            .replace(placeholder, value.getValue(language).orElse(value.getValue().orElse("")));
-                    label.setValue(langValue, language);
-                }
-            }
-        } else {
-            // Fallback if no template found
+        // Fallback if no template found
+        if (labelConfigList == null || labelConfigList.isEmpty()) {
             label.setValue(SolrSearchIndex.getSingleFieldStringValue(doc, SolrConstants.LABEL));
             if (StringUtils.isEmpty(label.toString())) {
                 label.setValue(SolrSearchIndex.getSingleFieldStringValue(doc, SolrConstants.TITLE));
@@ -780,11 +723,65 @@ public class TocMaker {
                     label.setValue(SolrSearchIndex.getSingleFieldStringValue(doc, SolrConstants.DOCSTRCT));
                 }
             }
+            return label;
         }
 
-        //        for (String language : label.getLanguages()) {
-        //            logger.trace("label ({}): {}", language, label.getValue(language).get());
-        //        }
+        // Configurable label layout
+        Metadata labelConfig = labelConfigList.get(0);
+        for (MetadataParameter param : labelConfig.getParams()) {
+            // logger.trace("param key: {}", param.getKey());
+            IMetadataValue value;
+            switch (param.getType()) {
+                case TRANSLATEDFIELD:
+                    if (doc.getFirstValue(param.getKey()) != null) {
+                        // Translate index field value, if available
+                        value = ViewerResourceBundle.getTranslations(String.valueOf(doc.getFirstValue(param.getKey())));
+                    } else if (param.getAltKey() != null && doc.getFirstValue(param.getAltKey()) != null) {
+                        // Translate alternative index field value, if available
+                        value = ViewerResourceBundle.getTranslations(String.valueOf(doc.getFirstValue(param.getAltKey())));
+                    } else {
+                        // Translate key, if no index field found
+                        value = ViewerResourceBundle.getTranslations(param.getKey().toString());
+                    }
+                    break;
+                case FIELD:
+                    value = createMultiLanguageValue(doc, param.getKey(), param.getAltKey());
+                    break;
+                default:
+                    value = new SimpleMetadataValue();
+                    value.setValue(SolrSearchIndex.getSingleFieldStringValue(doc, param.getKey()));
+                    // logger.trace("value: {}:{}", param.getKey(), value.getValue());
+                    break;
+            }
+
+            // Special case: If LABEL is missing, use DOCSTRCT.
+            if (StringUtils.isEmpty(value.toString())
+                    && (SolrConstants.LABEL.equals(param.getKey()) || SolrConstants.LABEL.equals(param.getAltKey()))) {
+                // Docstruct fallback should always be translated
+                String docstruct = SolrSearchIndex.getSingleFieldStringValue(doc, SolrConstants.DOCSTRCT);
+                value = ViewerResourceBundle.getTranslations(docstruct);
+            }
+
+            String placeholder = new StringBuilder("{").append(param.getKey()).append("}").toString();
+            // logger.trace("placeholder: {}", placeholder);
+            if (!value.isEmpty() && StringUtils.isNotEmpty(param.getPrefix())) {
+                String prefix = ViewerResourceBundle.getTranslation(param.getPrefix(), null);
+                value.addPrefix(prefix);
+            }
+            if (!value.isEmpty() && StringUtils.isNotEmpty(param.getSuffix())) {
+                String suffix = ViewerResourceBundle.getTranslation(param.getSuffix(), null);
+                value.addSuffix(suffix);
+            }
+            Set<String> languages = new HashSet<>(value.getLanguages());
+            languages.addAll(label.getLanguages());
+            // Replace master value placeholders in the label object 
+            for (String language : languages) {
+                String langValue = label.getValue(language)
+                        .orElse(label.getValue().orElse(labelConfig.getMasterValue()))
+                        .replace(placeholder, value.getValue(language).orElse(value.getValue().orElse("")));
+                label.setValue(langValue, language);
+            }
+        }
 
         return label;
     }

@@ -373,10 +373,10 @@ public class ConfigurationTest extends AbstractTest {
         List<MetadataParameter> params = metadata.getParams();
         Assert.assertEquals(2, params.size());
         Assert.assertEquals("CURRENTNO", params.get(0).getKey());
-        Assert.assertEquals("Number", params.get(0).getPrefix());
+        Assert.assertEquals("Number ", params.get(0).getPrefix());
         Assert.assertEquals("MD_TITLE", params.get(1).getKey());
         Assert.assertEquals("LABEL", params.get(1).getAltKey());
-        Assert.assertEquals(":", params.get(1).getPrefix());
+        Assert.assertEquals(": ", params.get(1).getPrefix());
     }
 
     /**
@@ -2803,5 +2803,32 @@ public class ConfigurationTest extends AbstractTest {
     public void getConnectorVersionUrl_shouldReturnCorrectValue() throws Exception {
         Assert.assertEquals("http://localhost:8081/M2M/oai/tools?action=getVersion",
                 DataManager.getInstance().getConfiguration().getConnectorVersionUrl());
+    }
+
+    /**
+     * @see Configuration#isDisplaySidebarBrowsingTerms()
+     * @verifies return correct value
+     */
+    @Test
+    public void isDisplaySidebarBrowsingTerms_shouldReturnCorrectValue() throws Exception {
+        Assert.assertFalse(DataManager.getInstance().getConfiguration().isDisplaySidebarBrowsingTerms());
+    }
+
+    /**
+     * @see Configuration#isDisplaySidebarRssFeed()
+     * @verifies return correct value
+     */
+    @Test
+    public void isDisplaySidebarRssFeed_shouldReturnCorrectValue() throws Exception {
+        Assert.assertFalse(DataManager.getInstance().getConfiguration().isDisplaySidebarRssFeed());
+    }
+
+    /**
+     * @see Configuration#isDisplayWidgetUsage()
+     * @verifies return correct value
+     */
+    @Test
+    public void isDisplayWidgetUsage_shouldReturnCorrectValue() throws Exception {
+        Assert.assertFalse(DataManager.getInstance().getConfiguration().isDisplayWidgetUsage());
     }
 }

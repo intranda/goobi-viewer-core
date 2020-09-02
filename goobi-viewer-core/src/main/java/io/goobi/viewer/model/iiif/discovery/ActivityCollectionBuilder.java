@@ -46,7 +46,6 @@ import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.model.search.SearchHelper;
 
-
 /**
  * Builder for both {@link de.intranda.api.iiif.discovery.OrderedCollection} and {@link de.intranda.api.iiif.discovery.OrderedCollectionPage} of
  * {@link Activity Acvitities} for the IIIF Discovery API.
@@ -66,7 +65,7 @@ public class ActivityCollectionBuilder {
     public ActivityCollectionBuilder(AbstractApiUrlManager apiUrlManager) {
         this.urls = apiUrlManager;
     }
-    
+
     /**
      * Creates a An {@link de.intranda.api.iiif.discovery.OrderedCollection} of {@link Activity Acvitities}, linking to the first and last contained
      * {@link de.intranda.api.iiif.discovery.OrderedCollectionPage} as well as counting the total number of Activities
@@ -77,7 +76,7 @@ public class ActivityCollectionBuilder {
      */
     public OrderedCollection<Activity> buildCollection() throws PresentationException, IndexUnreachableException {
         OrderedCollection<Activity> collection = new OrderedCollection<>(getCollectionURI());
-        collection.setTotalItems(new Long(getNumActivities()));
+        collection.setTotalItems(Long.valueOf(getNumActivities()));
         collection.setFirst(new OrderedCollectionPage<>(getPageURI(0)));
         collection.setLast(new OrderedCollectionPage<>(getPageURI(getLastPageNo())));
         return collection;
@@ -240,19 +239,19 @@ public class ActivityCollectionBuilder {
         return manifest;
     }
 
-    private int getNumberOfActivities(Date startDate) throws PresentationException, IndexUnreachableException {
+    private static int getNumberOfActivities(Date startDate) throws PresentationException, IndexUnreachableException {
         String query = "ISWORK:true";
         query += " " + SearchHelper.getAllSuffixes();
         if (startDate != null) {
             query += " AND (DATEUPDATED:[" + startDate + " TO*] OR DATECREATED:[" + startDate + " TO *])";
         }
-        QueryResponse qr = DataManager.getInstance().getSearchIndex().searchFacetsAndStatistics(query, Arrays.asList(FACET_FIELDS), 1, false);
+        QueryResponse qr = DataManager.getInstance().getSearchIndex().searchFacetsAndStatistics(query, null, Arrays.asList(FACET_FIELDS), 1, false);
         if (qr != null) {
             Long count = qr.getFacetFields().stream().flatMap(field -> field.getValues().stream()).map(Count::getName).distinct().count();
             return count.intValue();
-        } else {
-            return 0;
         }
+
+        return 0;
     }
 
     /**
@@ -266,17 +265,17 @@ public class ActivityCollectionBuilder {
      * @throws PresentationException
      * @throws IndexUnreachableException
      */
-    private List<Long> getActivities(Date startDate, int first, int last) throws PresentationException, IndexUnreachableException {
+    private static List<Long> getActivities(Date startDate, int first, int last) throws PresentationException, IndexUnreachableException {
         return getActivities(startDate).stream().skip(first).limit(last - first + 1).collect(Collectors.toList());
     }
 
-    private List<Long> getActivities(Date startDate) throws PresentationException, IndexUnreachableException {
+    private static List<Long> getActivities(Date startDate) throws PresentationException, IndexUnreachableException {
         String query = "ISWORK:true";
         query += " " + SearchHelper.getAllSuffixes();
         if (startDate != null) {
             query += " AND (DATEUPDATED:[" + startDate + " TO *] OR DATECREATED:[" + startDate + " TO *])";
         }
-        QueryResponse qr = DataManager.getInstance().getSearchIndex().searchFacetsAndStatistics(query, Arrays.asList(FACET_FIELDS), 1, false);
+        QueryResponse qr = DataManager.getInstance().getSearchIndex().searchFacetsAndStatistics(query, null, Arrays.asList(FACET_FIELDS), 1, false);
         if (qr != null) {
             List<Long> list = qr.getFacetFields()
                     .stream()
@@ -287,9 +286,9 @@ public class ActivityCollectionBuilder {
                     .sorted()
                     .collect(Collectors.toList());
             return list;
-        } else {
-            return new ArrayList<>();
         }
+
+        return new ArrayList<>();
     }
 
     private SolrDocumentList getDocs(Long startDate, Long endDate) throws PresentationException, IndexUnreachableException {

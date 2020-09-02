@@ -26,7 +26,10 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
 import java.net.URI;
+import java.net.URISyntaxException;
+import java.net.URL;
 import java.net.URLConnection;
 import java.nio.file.DirectoryStream;
 import java.nio.file.Files;
@@ -535,7 +538,44 @@ public class FileTools {
             return "";
         }
 
-        Path path = Paths.get(pathString);
+        Path path = getPathFromUrlString(pathString);
         return path.getFileName().toString();
+    }
+
+    /**
+     * Creates a Path from the given URL in a way that word on Windows machines.
+     * 
+     * @param urlString Relative or absolute path or URL, with or without protocol
+     * @return Constructed Path
+     */
+    public static Path getPathFromUrlString(String urlString) {
+        if (StringUtils.isEmpty(urlString)) {
+            return null;
+        }
+
+        Path path = null;
+        // URL with protocol will cause an exception in Windows if a Path is created directly
+        if (urlString.contains(":")) {
+            try {
+                URL url = new URL(urlString);
+                URI uri =
+                        new URI(url.getProtocol(), url.getUserInfo(), url.getHost(), url.getPort(), url.getPath(), url.getQuery(), url.getRef());
+                //                URI uri = new URI(URLEncoder.encode(urlString, StringTools.DEFAULT_ENCODING));
+                if (urlString.endsWith("/") && Paths.get(uri.getPath()).getFileName().toString().contains(".")) {
+                    urlString = urlString.substring(0, urlString.length() - 1);
+                }
+                path = Paths.get(uri.getPath());
+            } catch (URISyntaxException e) {
+                logger.error(e.getMessage(), e);
+            } catch (MalformedURLException e) {
+                logger.error(e.getMessage(), e);
+            }
+        }
+        // URL without protocol
+        if (path == null) {
+            path = Paths.get(urlString);
+        }
+
+        return path;
     }
 }

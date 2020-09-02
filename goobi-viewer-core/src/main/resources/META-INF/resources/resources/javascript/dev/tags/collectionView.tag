@@ -11,7 +11,7 @@ this.collectionSets = [];
 
 
 this.on("mount", () => {
-    console.log("mounting collectionView", this.opts);
+    // console.log("mounting collectionView", this.opts);
     
     this.fetchCollections()
     .then( () => {

@@ -15,6 +15,9 @@
  */
 package io.goobi.viewer.servlets;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -23,6 +26,7 @@ import org.apache.solr.common.SolrDocument;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.Mockito;
 
 import com.meterware.httpunit.GetMethodWebRequest;
 import com.meterware.httpunit.HttpException;
@@ -34,6 +38,7 @@ import com.meterware.servletunit.ServletRunner;
 import com.meterware.servletunit.ServletUnitClient;
 
 import io.goobi.viewer.AbstractDatabaseAndSolrEnabledTest;
+import io.goobi.viewer.TestUtils;
 import io.goobi.viewer.controller.Configuration;
 import io.goobi.viewer.controller.ConfigurationTest;
 import io.goobi.viewer.controller.DataManager;
@@ -182,5 +187,27 @@ public class IdentifierResolverTest extends AbstractDatabaseAndSolrEnabledTest {
         doc.setField(SolrConstants.PI_TOPSTRUCT, "123");
         doc.setField(SolrConstants.MIMETYPE, "application");
         Assert.assertEquals("/metadata/" + pi + "/1/-/", IdentifierResolver.constructUrl(doc, false));
+    }
+
+    /**
+     * @see IdentifierResolver#parseFieldValueParameters(HttpServletRequest,Map,Map)
+     * @verifies parse fields and values correctly
+     */
+    @Test
+    public void parseFieldValueParameters_shouldParseFieldsAndValuesCorrectly() throws Exception {
+        Map<Integer, String> moreFields = new HashMap<>();
+        Map<Integer, String> moreValues = new HashMap<>();
+        Map<String, String[]> parameterMap = new HashMap<>(6);
+        parameterMap.put("field2", new String[] { "FIELD2" });
+        parameterMap.put("field3", new String[] { "FIELD3" });
+        parameterMap.put("value2", new String[] { "val2" });
+        parameterMap.put("value3", new String[] { "val3" });
+        IdentifierResolver.parseFieldValueParameters(parameterMap, moreFields, moreValues);
+        Assert.assertEquals(2, moreFields.size());
+        Assert.assertEquals("FIELD2", moreFields.get(2));
+        Assert.assertEquals("FIELD3", moreFields.get(3));
+        Assert.assertEquals(2, moreValues.size());
+        Assert.assertEquals("val2", moreValues.get(2));
+        Assert.assertEquals("val3", moreValues.get(3));
     }
 }

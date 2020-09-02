@@ -12,7 +12,7 @@
         <composite:attribute name="filterQuery" required="false" default="#{cc.attrs.widget.widgetType == 'CMSSidebarElementWithQuery' ? cc.attrs.widget.additionalQuery : ''}"/>
     </composite:interface>
     <composite:implementation>
-        <h:panelGroup rendered="#{(cc.attrs.widget.type == 'widgetRssFeed' or cc.attrs.widget.type == null)}">
+        <h:panelGroup rendered="#{configurationBean.displaySidebarRssFeed and (cc.attrs.widget.type == 'widgetRssFeed' or cc.attrs.widget.type == null)}">
             <script type="text/javascript" src="#{request.contextPath}/resources/javascript/libs/jquery.aRSSFeed.js"></script>
             <script type="text/javascript" src="#{request.contextPath}/resources/javascript/libs/jquery.jfeed.js"></script>
             <div class="compName_rssFeed rss_wrapp men_wrapp rss_elem_wrapp sidebar-widget widget #{cc.attrs.widget.cssClass}">

@@ -15,6 +15,7 @@
  */
 package io.goobi.viewer.managedbeans;
 
+import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -35,6 +36,8 @@ import javax.inject.Inject;
 import javax.inject.Named;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.solr.client.solrj.SolrServerException;
+import org.apache.solr.client.solrj.impl.BaseHttpSolrClient.RemoteSolrException;
 import org.apache.solr.client.solrj.response.FacetField.Count;
 import org.apache.solr.client.solrj.response.QueryResponse;
 import org.slf4j.Logger;
@@ -51,6 +54,7 @@ import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.exceptions.RecordNotFoundException;
 import io.goobi.viewer.exceptions.ViewerConfigurationException;
+import io.goobi.viewer.faces.validators.SolrQueryValidator;
 import io.goobi.viewer.managedbeans.tabledata.TableDataFilter;
 import io.goobi.viewer.managedbeans.tabledata.TableDataProvider;
 import io.goobi.viewer.managedbeans.tabledata.TableDataProvider.SortOrder;
@@ -932,9 +936,17 @@ public class CrowdsourcingBean implements Serializable {
             //                continue;
             //            }
 
+            // Skip if query invalid
+            try {
+                SolrQueryValidator.getHitCount(campaign.getSolrQuery());
+            } catch (IOException | SolrServerException | RemoteSolrException e) {
+                logger.error(e.getMessage());
+                continue;
+            }
+
             QueryResponse qr = DataManager.getInstance()
                     .getSearchIndex()
-                    .searchFacetsAndStatistics(campaign.getSolrQuery(), Collections.singletonList(SolrConstants.PI_TOPSTRUCT), 1, false);
+                    .searchFacetsAndStatistics(campaign.getSolrQuery(), null, Collections.singletonList(SolrConstants.PI_TOPSTRUCT), 1, false);
             if (qr.getFacetField(SolrConstants.PI_TOPSTRUCT) != null) {
                 for (Count count : qr.getFacetField(SolrConstants.PI_TOPSTRUCT).getValues()) {
                     String pi = count.getName();

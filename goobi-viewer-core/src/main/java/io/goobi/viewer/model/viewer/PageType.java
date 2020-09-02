@@ -99,6 +99,7 @@ public enum PageType {
     advancedSearch("searchadvanced", PageTypeHandling.cms),
     browse("browse", PageTypeHandling.cms),
     privacy("privacy", PageTypeHandling.cms),
+    imprint("imprint", PageTypeHandling.cms),    
     feedback("feedback", PageTypeHandling.cms),
     crowsourcingCampaigns("campaigns", PageTypeHandling.cms),
     bookmarks("bookmarks", PageTypeHandling.cms),

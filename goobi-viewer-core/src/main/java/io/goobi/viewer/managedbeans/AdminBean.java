@@ -125,73 +125,76 @@ public class AdminBean implements Serializable {
      */
     @PostConstruct
     public void init() {
-        lazyModelUsers = new TableDataProvider<>(new TableDataSource<User>() {
+        {
+            lazyModelUsers = new TableDataProvider<>(new TableDataSource<User>() {
 
-            @Override
-            public List<User> getEntries(int first, int pageSize, String sortField, SortOrder sortOrder, Map<String, String> filters) {
-                logger.trace("getEntries<User>");
-                try {
-                    if (StringUtils.isEmpty(sortField)) {
-                        sortField = "id";
+                @Override
+                public List<User> getEntries(int first, int pageSize, String sortField, SortOrder sortOrder, Map<String, String> filters) {
+                    logger.trace("getEntries<User>, {}-{}", first, first + pageSize);
+                    try {
+                        if (StringUtils.isEmpty(sortField)) {
+                            sortField = "id";
+                        }
+                        return DataManager.getInstance().getDao().getUsers(first, pageSize, sortField, sortOrder.asBoolean(), filters);
+                    } catch (DAOException e) {
+                        logger.error(e.getMessage());
                     }
-                    return DataManager.getInstance().getDao().getUsers(first, pageSize, sortField, sortOrder.asBoolean(), filters);
-                } catch (DAOException e) {
-                    logger.error(e.getMessage());
+                    return Collections.emptyList();
                 }
-                return Collections.emptyList();
-            }
 
-            @Override
-            public long getTotalNumberOfRecords(Map<String, String> filters) {
-                try {
-                    return DataManager.getInstance().getDao().getUserCount(filters);
-                } catch (DAOException e) {
-                    logger.error(e.getMessage(), e);
-                    return 0;
-                }
-            }
-
-            @Override
-            public void resetTotalNumberOfRecords() {
-            }
-        });
-        lazyModelUsers.setEntriesPerPage(DEFAULT_ROWS_PER_PAGE);
-        lazyModelUsers.setFilters("firstName_lastName_nickName_email");
-
-        lazyModelComments = new TableDataProvider<>(new TableDataSource<Comment>() {
-
-            @Override
-            public List<Comment> getEntries(int first, int pageSize, String sortField, SortOrder sortOrder, Map<String, String> filters) {
-                try {
-                    if (StringUtils.isEmpty(sortField)) {
-                        sortField = "dateCreated";
-                        sortOrder = SortOrder.DESCENDING;
+                @Override
+                public long getTotalNumberOfRecords(Map<String, String> filters) {
+                    try {
+                        return DataManager.getInstance().getDao().getUserCount(filters);
+                    } catch (DAOException e) {
+                        logger.error(e.getMessage(), e);
+                        return 0;
                     }
-                    return DataManager.getInstance().getDao().getComments(first, pageSize, sortField, sortOrder.asBoolean(), filters);
-                } catch (DAOException e) {
-                    logger.error(e.getMessage());
                 }
-                return Collections.emptyList();
-            }
 
-            @Override
-            public long getTotalNumberOfRecords(Map<String, String> filters) {
-                try {
-                    return DataManager.getInstance().getDao().getCommentCount(filters);
-                } catch (DAOException e) {
-                    logger.error(e.getMessage(), e);
-                    return 0;
+                @Override
+                public void resetTotalNumberOfRecords() {
                 }
-            }
+            });
+            lazyModelUsers.setEntriesPerPage(DEFAULT_ROWS_PER_PAGE);
+            lazyModelUsers.setFilters("firstName_lastName_nickName_email");
+        }
+        {
+            lazyModelComments = new TableDataProvider<>(new TableDataSource<Comment>() {
 
-            @Override
-            public void resetTotalNumberOfRecords() {
-            }
-        });
-        lazyModelComments.setEntriesPerPage(DEFAULT_ROWS_PER_PAGE);
-        lazyModelComments.setFilters("text_owner-nickName_owner-email");
+                @Override
+                public List<Comment> getEntries(int first, int pageSize, String sortField, SortOrder sortOrder, Map<String, String> filters) {
+                    try {
+                        if (StringUtils.isEmpty(sortField)) {
+                            sortField = "dateCreated";
+                            sortOrder = SortOrder.DESCENDING;
+                        }
+                        return DataManager.getInstance().getDao().getComments(first, pageSize, sortField, sortOrder.asBoolean(), filters);
+                    } catch (DAOException e) {
+                        logger.error(e.getMessage());
+                    }
+                    return Collections.emptyList();
+                }
+
+                @Override
+                public long getTotalNumberOfRecords(Map<String, String> filters) {
+                    try {
+                        return DataManager.getInstance().getDao().getCommentCount(filters);
+                    } catch (DAOException e) {
+                        logger.error(e.getMessage(), e);
+                        return 0;
+                    }
+                }
+
+                @Override
+                public void resetTotalNumberOfRecords() {
+                }
+            });
+            lazyModelComments.setEntriesPerPage(DEFAULT_ROWS_PER_PAGE);
+            lazyModelComments.setFilters("text_owner-nickName_owner-email");
+        }
     }
-    
+
     // User
 
     /**
@@ -789,7 +792,7 @@ public class AdminBean implements Serializable {
      * 
      * @param licenseType
      * @return
-     * @throws DAOException 
+     * @throws DAOException
      */
     public List<License> getLicenses(LicenseType licenseType) throws DAOException {
         return DataManager.getInstance().getDao().getLicenses(licenseType);

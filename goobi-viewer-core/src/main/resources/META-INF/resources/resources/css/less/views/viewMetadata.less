@@ -7,6 +7,45 @@
 .metadata {
 	position: relative;
     margin-bottom: 1.3125rem;
+	&__title-wrapper {
+		display: flex;
+		margin-bottom: 1.5rem;
+	}
+	&__title {
+		flex: 0 0 calc(100% - 25px);
+		margin: 0;
+	}
+    &__bookmark-button {
+    	&[data-bookmark-list-type="add"] {
+    		flex: 0 0 25px;
+    		display: flex;
+			align-items: start;
+			justify-content: end;
+		    color: @blue;
+		    background-image: none;
+		    font-size: 2rem;
+		    .fa-bookmark-o,
+		    .fa-bookmark {
+		        color: @blue;
+		        margin-right: 0;
+		    }
+		    .fa-bookmark-o {
+		        display: inline-block;
+		    }
+		    .fa-bookmark {
+		        display: none;
+		    }
+		    &.added, 
+		    &:hover {
+		        .fa-bookmark-o {
+		            display: none;
+		        }
+		        .fa-bookmark {
+		            display: inline-block;
+		        }
+		    }
+		}
+	}
     .fa {
     	margin-right: 5px;
     }
@@ -67,6 +106,7 @@
 		dd {}
 	}
 	&__event-value {}
+	
 }
 
 /* DOWNLOADS */
@@ -115,6 +155,10 @@
 				margin: 0;			
 			}
 		}
+	}
+/* Fix for mobile metadata view */
+	.dl-horizontal dt {
+		float: none;
 	}
 }
 

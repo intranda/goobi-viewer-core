@@ -346,10 +346,21 @@ public class AccessConditionUtilsTest extends AbstractDatabaseAndSolrEnabledTest
     }
 
     /**
+     * @see AccessConditionUtils#generateAccessCheckQuery(String,String)
+     * @verifies work correctly with urls
+     */
+    @Test
+    public void generateAccessCheckQuery_shouldWorkCorrectlyWithUrls() throws Exception {
+        String[] result = AccessConditionUtils.generateAccessCheckQuery("PPN123456789", "file:///opt/digiverso/viewer/cms_media/bild4.png");
+        Assert.assertEquals("+" + SolrConstants.PI_TOPSTRUCT + ":PPN123456789 +" + SolrConstants.FILENAME + ":\"bild4.png\"", result[0]);
+        Assert.assertEquals(SolrConstants.FILENAME, result[1]);
+    }
+
+    /**
      * @see AccessConditionUtils#getPdfDownloadQuotaForRecord(String)
      * @verifies throw RecordNotFoundException if record not found
      */
-    @Test (expected = RecordNotFoundException.class)
+    @Test(expected = RecordNotFoundException.class)
     public void getPdfDownloadQuotaForRecord_shouldThrowRecordNotFoundExceptionIfRecordNotFound() throws Exception {
         AccessConditionUtils.getPdfDownloadQuotaForRecord("notfound");
     }

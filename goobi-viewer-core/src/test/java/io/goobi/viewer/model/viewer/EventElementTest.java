@@ -26,7 +26,6 @@ import io.goobi.viewer.controller.Configuration;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.DateTools;
 import io.goobi.viewer.controller.SolrConstants;
-import io.goobi.viewer.model.viewer.EventElement;
 
 public class EventElementTest {
 
@@ -46,7 +45,7 @@ public class EventElementTest {
         doc.setField(SolrConstants.EVENTDATE, "2018-11-23");
         EventElement ee = new EventElement(doc, null);
         Assert.assertNotNull(ee.getDateStart());
-        Assert.assertEquals("2018-11-23", DateTools.formatterISO8601Date.print(ee.getDateStart().getTime()));
+        Assert.assertEquals("2018-11-23", DateTools.format(ee.getDateStart(), DateTools.formatterISO8601Date, false));
     }
 
     /**
@@ -59,6 +58,6 @@ public class EventElementTest {
         doc.setField(SolrConstants.EVENTDATESTART, "2018-11-23");
         EventElement ee = new EventElement(doc, null);
         Assert.assertNotNull(ee.getDateEnd());
-        Assert.assertEquals("2018-11-23", DateTools.formatterISO8601Date.print(ee.getDateEnd().getTime()));
+        Assert.assertEquals("2018-11-23", DateTools.format(ee.getDateEnd(), DateTools.formatterISO8601Date, false));
     }
 }

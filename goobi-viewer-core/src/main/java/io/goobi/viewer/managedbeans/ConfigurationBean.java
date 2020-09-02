@@ -712,7 +712,7 @@ public class ConfigurationBean implements Serializable {
     public boolean isSidebarTocWidgetVisible() {
         return DataManager.getInstance().getConfiguration().isSidebarTocWidgetVisible();
     }
-    
+
     /**
      * <p>
      * isSidebarTocWidgetVisibleInFullscreen.
@@ -1274,9 +1274,9 @@ public class ConfigurationBean implements Serializable {
     public String getIiifApiUrl() throws ViewerConfigurationException {
         return DataManager.getInstance().getConfiguration().getRestApiUrl();
     }
-    
+
     /**
-     * @return  The url to the /api/v1 Rest Api
+     * @return The url to the /api/v1 Rest Api
      */
     public String getRestApiUrlV1() {
         return DataManager.getInstance().getConfiguration().getRestApiUrl().replace("/rest", "/api/v1");
@@ -1364,6 +1364,30 @@ public class ConfigurationBean implements Serializable {
      */
     public int getMetadataParamNumber() {
         return DataManager.getInstance().getConfiguration().getMetadataParamNumber();
+    }
+
+    /**
+     * <p>
+     * isDisplaySidebarBrowsingTerms.
+     * </p>
+     *
+     * @return a boolean.
+     * @should return correct value
+     */
+    public boolean isDisplaySidebarBrowsingTerms() {
+        return DataManager.getInstance().getConfiguration().isDisplaySidebarBrowsingTerms();
+    }
+
+    /**
+     * <p>
+     * isDisplaySidebarRssFeed.
+     * </p>
+     *
+     * @return a boolean.
+     * @should return correct value
+     */
+    public boolean isDisplaySidebarRssFeed() {
+        return DataManager.getInstance().getConfiguration().isDisplaySidebarRssFeed();
     }
 
     /**

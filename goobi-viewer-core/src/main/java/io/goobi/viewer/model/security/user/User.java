@@ -154,6 +154,9 @@ public class User implements ILicensee, HttpSessionBindingListener, Serializable
     @Column(name = "use_gravatar")
     private boolean useGravatar = false;
 
+//    @Column(name = "dummy")
+//    private boolean dummy = false;
+
     /** List contains both old style OpenID 2.0 identifiers and OAuth subs. */
     @ElementCollection(fetch = FetchType.EAGER)
     @CollectionTable(name = "openid_accounts", joinColumns = @JoinColumn(name = "user_id"))
@@ -1458,7 +1461,21 @@ public class User implements ILicensee, HttpSessionBindingListener, Serializable
     public void setUseGravatar(boolean useGravatar) {
         this.useGravatar = useGravatar;
     }
-    
+
+//    /**
+//     * @return the dummy
+//     */
+//    public boolean isDummy() {
+//        return dummy;
+//    }
+//
+//    /**
+//     * @param dummy the dummy to set
+//     */
+//    public void setDummy(boolean dummy) {
+//        this.dummy = dummy;
+//    }
+
     /**
      * 
      * @return true if user email address equals the configured anonymous user address; false otherwise

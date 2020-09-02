@@ -274,6 +274,7 @@ public class JPADAO implements IDAO {
             q.setParameter(param, params.get(param));
         }
 
+        q.setFirstResult(first);
         q.setMaxResults(pageSize);
         q.setHint("javax.persistence.cache.storeMode", "REFRESH");
 
@@ -286,16 +287,18 @@ public class JPADAO implements IDAO {
      */
     public String getUsersFilterQuery(String param) {
         String filterQuery;
-        String filterQueryNames = "(UPPER(a.firstName) LIKE :%s OR UPPER(a.lastName) LIKE :%s OR UPPER(a.nickName) LIKE :%s OR UPPER(a.email) LIKE :%s)";
-        String filterQueryGroup = "EXISTS (SELECT role FROM UserRole role LEFT JOIN role.userGroup group WHERE role.user = a AND UPPER(group.name) LIKE :%s)";
+        String filterQueryNames =
+                "(UPPER(a.firstName) LIKE :%s OR UPPER(a.lastName) LIKE :%s OR UPPER(a.nickName) LIKE :%s OR UPPER(a.email) LIKE :%s)";
+        String filterQueryGroup =
+                "EXISTS (SELECT role FROM UserRole role LEFT JOIN role.userGroup group WHERE role.user = a AND UPPER(group.name) LIKE :%s)";
         filterQuery = " WHERE " + filterQueryNames.replace("%s", param) + " OR " + filterQueryGroup.replace("%s", param);
         return filterQuery;
     }
 
     /**
      * 
-     * Remove characters from the parameter that may be used to modify the sql query itself.
-     * Also puts the parameter to upper case
+     * Remove characters from the parameter that may be used to modify the sql query itself. Also puts the parameter to upper case
+     * 
      * @param param     The parameter to sanitize
      * @param addWildCards  if true, add '%' to the beginning and end of param
      * @return  the sanitized parameter
