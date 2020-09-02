@@ -2804,4 +2804,31 @@ public class ConfigurationTest extends AbstractTest {
         Assert.assertEquals("http://localhost:8081/M2M/oai/tools?action=getVersion",
                 DataManager.getInstance().getConfiguration().getConnectorVersionUrl());
     }
+
+    /**
+     * @see Configuration#isDisplaySidebarBrowsingTerms()
+     * @verifies return correct value
+     */
+    @Test
+    public void isDisplaySidebarBrowsingTerms_shouldReturnCorrectValue() throws Exception {
+        Assert.assertFalse(DataManager.getInstance().getConfiguration().isDisplaySidebarBrowsingTerms());
+    }
+
+    /**
+     * @see Configuration#isDisplaySidebarRssFeed()
+     * @verifies return correct value
+     */
+    @Test
+    public void isDisplaySidebarRssFeed_shouldReturnCorrectValue() throws Exception {
+        Assert.assertFalse(DataManager.getInstance().getConfiguration().isDisplaySidebarRssFeed());
+    }
+
+    /**
+     * @see Configuration#isDisplayWidgetUsage()
+     * @verifies return correct value
+     */
+    @Test
+    public void isDisplayWidgetUsage_shouldReturnCorrectValue() throws Exception {
+        Assert.assertFalse(DataManager.getInstance().getConfiguration().isDisplayWidgetUsage());
+    }
 }

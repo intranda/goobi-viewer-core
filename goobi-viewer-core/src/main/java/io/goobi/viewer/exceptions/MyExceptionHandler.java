@@ -234,10 +234,8 @@ public class MyExceptionHandler extends ExceptionHandlerWrapper {
                 logger.error(t.getMessage(), t);
                 try {
                     // Put the exception in the flash scope to be displayed in the error page if necessary ...
-                    String msg = new StringBuilder(DateTools.formatterISO8601DateTime.print(System.currentTimeMillis())).append(": ")
-                            .append(t.getMessage())
-                            .toString();
-                    //                    flash.put("errorDetails", msg);
+                    String msg = DateTools.format(new Date(), DateTools.formatterISO8601DateTime, false) + ": " + t.getMessage();
+                    // flash.put("errorDetails", msg);
                     requestMap.put("errMsg", msg);
                     requestMap.put("errorType", "general");
                     flash.put("errorType", "general");

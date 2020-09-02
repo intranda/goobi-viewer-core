@@ -249,8 +249,7 @@ public class DisplayUserGeneratedContent {
      */
     public String getDateUpdatedAsString() {
         if (dateUpdated != null) {
-            String dateString = DateTools.formatterDEDate.print(dateUpdated.getTime());
-            return dateString;
+            return DateTools.format(dateUpdated, DateTools.formatterDEDate, false);
         }
         return null;
     }
@@ -264,8 +263,7 @@ public class DisplayUserGeneratedContent {
      */
     public String getTimeUpdatedAsString() {
         if (dateUpdated != null) {
-            String dateString = DateTools.formatterISO8601Time.print(dateUpdated.getTime());
-            return dateString;
+            return DateTools.format(dateUpdated, DateTools.formatterISO8601Time, false);
         }
         return null;
     }

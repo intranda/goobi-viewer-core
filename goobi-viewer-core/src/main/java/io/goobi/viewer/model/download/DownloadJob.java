@@ -22,6 +22,8 @@ import java.io.UnsupportedEncodingException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.Duration;
+import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -58,7 +60,6 @@ import org.apache.http.impl.client.BasicResponseHandler;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.glassfish.jersey.client.ClientProperties;
-import org.joda.time.MutableDateTime;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.slf4j.Logger;
@@ -69,7 +70,6 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 
-import io.goobi.viewer.api.rest.AbstractApiUrlManager.ApiInfo;
 import io.goobi.viewer.controller.DataFileTools;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.DateTools;
@@ -295,11 +295,10 @@ public abstract class DownloadJob implements Serializable {
                 updated = DataManager.getInstance().getDao().addDownloadJob(downloadJob);
             }
             updated = DataManager.getInstance().getDao().updateDownloadJob(downloadJob);
-            if(updated) {                
+            if (updated) {
                 return downloadJob;
-            } else {
-                return null;
             }
+            return null;
         } finally {
             // Clean up expired jobs AFTER updating the one in use
             cleanupExpiredDownloads();
@@ -477,10 +476,10 @@ public abstract class DownloadJob implements Serializable {
                     body = body.replace("{0}", pi);
                     body = body.replace("{1}", DataManager.getInstance().getConfiguration().getDownloadUrl() + identifier + "/"); // TODO
                     body = body.replace("{4}", getType().toUpperCase());
-                    MutableDateTime exirationDate = new MutableDateTime(lastRequested);
-                    exirationDate.add(ttl);
-                    body = body.replace("{2}", DateTools.formatterISO8601Date.print(exirationDate));
-                    body = body.replace("{3}", DateTools.formatterISO8601Time.print(exirationDate));
+                    LocalDateTime exirationDate = DateTools.convertDateToLocalDateTimeViaInstant(lastRequested);
+                    exirationDate = exirationDate.plus(ttl, ChronoUnit.MILLIS);
+                    body = body.replace("{2}", DateTools.format(exirationDate, DateTools.formatterISO8601Date, false));
+                    body = body.replace("{3}", DateTools.format(exirationDate, DateTools.formatterISO8601Date, false));
                 }
                 break;
             case ERROR:
@@ -802,19 +801,19 @@ public abstract class DownloadJob implements Serializable {
     public void setMessage(String message) {
         this.message = message;
     }
-    
+
     public static Response postJobRequest(String url, AbstractTaskManagerRequest body) throws IOException {
-            try {            
-                Client client = ClientBuilder.newClient();
-                client.property(ClientProperties.CONNECT_TIMEOUT, 4000);
-                client.property(ClientProperties.READ_TIMEOUT,    10000);
-                return client
+        try {
+            Client client = ClientBuilder.newClient();
+            client.property(ClientProperties.CONNECT_TIMEOUT, 4000);
+            client.property(ClientProperties.READ_TIMEOUT, 10000);
+            return client
                     .target(url)
                     .request(MediaType.APPLICATION_JSON)
                     .post(javax.ws.rs.client.Entity.entity(body, MediaType.APPLICATION_JSON));
-            } catch(Throwable e) {
-               throw new IOException("Error connecting to " + url, e);
-            }
+        } catch (Throwable e) {
+            throw new IOException("Error connecting to " + url, e);
+        }
     }
 
     /**

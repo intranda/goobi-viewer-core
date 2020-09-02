@@ -118,7 +118,6 @@
 		<jsoup.version>1.13.1</jsoup.version>
 		<jstl.version>1.2</jstl.version>
 		<junit.version>4.13</junit.version>
-		<joda-time.version>2.10.6</joda-time.version>
 		<mariadb-java-client.version>2.3.0</mariadb-java-client.version>
 		<mockito.version>3.5.7</mockito.version>
 		<mockserver.version>5.11.1</mockserver.version>
@@ -131,12 +130,12 @@
 		<rs-api.version>2.1.1</rs-api.version>
 		<servlet-api.version>4.0.1</servlet-api.version>
 		<slf4j.version>1.7.30</slf4j.version>
-		<solr.version>8.6.1</solr.version>
+		<solr.version>8.6.2</solr.version>
 		<saml-client.version>4.0.0</saml-client.version>
 		<stax-api.version>1.0-2</stax-api.version>
         <swagger.version>2.1.4</swagger.version>
 		<tomcat.version>9.0.37</tomcat.version>
-		<weld-servlet-shaded.version>3.1.5.Final</weld-servlet-shaded.version>
+		<weld-servlet-shaded.version>3.1.5.SP1</weld-servlet-shaded.version>
 		<xerces.version>2.12.0</xerces.version>
 		<xmlParserAPIs.version>2.6.2</xmlParserAPIs.version>
 	</properties>
@@ -596,11 +595,6 @@
           <groupId>io.swagger.core.v3</groupId>
           <artifactId>swagger-integration</artifactId>
           <version>${swagger.version}</version>
-        </dependency>
-		<dependency>
-			<groupId>joda-time</groupId>
-			<artifactId>joda-time</artifactId>
-			<version>${joda-time.version}</version>
         </dependency>
         <!--            
 		<dependency>

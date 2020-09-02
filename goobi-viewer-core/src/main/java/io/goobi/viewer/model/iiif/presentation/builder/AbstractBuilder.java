@@ -15,13 +15,28 @@
  */
 package io.goobi.viewer.model.iiif.presentation.builder;
 
-import static io.goobi.viewer.api.rest.v1.ApiUrls.*;
+import static io.goobi.viewer.api.rest.v1.ApiUrls.ANNOTATIONS;
+import static io.goobi.viewer.api.rest.v1.ApiUrls.ANNOTATIONS_ANNOTATION;
+import static io.goobi.viewer.api.rest.v1.ApiUrls.ANNOTATIONS_COMMENT;
+import static io.goobi.viewer.api.rest.v1.ApiUrls.ANNOTATIONS_UGC;
+import static io.goobi.viewer.api.rest.v1.ApiUrls.COLLECTIONS;
+import static io.goobi.viewer.api.rest.v1.ApiUrls.COLLECTIONS_COLLECTION;
+import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_ANNOTATIONS;
+import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_LAYER;
+import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_MANIFEST;
+import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_MANIFEST_AUTOCOMPLETE;
+import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_MANIFEST_SEARCH;
+import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_PAGES;
+import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_PAGES_ANNOTATIONS;
+import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_PAGES_CANVAS;
+import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_PAGES_SEQUENCE;
+import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_RECORD;
+import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_SECTIONS;
+import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_SECTIONS_RANGE;
 
 import java.awt.Rectangle;
-import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -64,6 +79,7 @@ import de.intranda.metadata.multilanguage.MultiLanguageMetadataValue;
 import de.intranda.metadata.multilanguage.SimpleMetadataValue;
 import de.unigoettingen.sub.commons.util.PathConverter;
 import io.goobi.viewer.api.rest.AbstractApiUrlManager;
+import io.goobi.viewer.api.rest.AbstractApiUrlManager.ApiPath;
 import io.goobi.viewer.api.rest.resourcebuilders.AnnotationsResourceBuilder;
 import io.goobi.viewer.api.rest.v1.ApiUrls;
 import io.goobi.viewer.controller.DataManager;
@@ -77,7 +93,6 @@ import io.goobi.viewer.messages.ViewerResourceBundle;
 import io.goobi.viewer.model.viewer.PageType;
 import io.goobi.viewer.model.viewer.PhysicalElement;
 import io.goobi.viewer.model.viewer.StructElement;
-
 
 /**
  * <p>
@@ -104,7 +119,7 @@ public abstract class AbstractBuilder {
 
     protected final AbstractApiUrlManager urls;
     protected final AnnotationsResourceBuilder annoBuilder;
-    
+
     /**
      * <p>
      * Constructor for AbstractBuilder.
@@ -113,31 +128,32 @@ public abstract class AbstractBuilder {
      * @param request a {@link javax.servlet.http.HttpServletRequest} object.
      */
     public AbstractBuilder(AbstractApiUrlManager apiUrlManager) {
+        if (apiUrlManager == null) {
+            throw new org.jboss.weld.exceptions.IllegalArgumentException("apiUrlManager may not be null");
+        }
         this.urls = apiUrlManager;
         this.annoBuilder = new AnnotationsResourceBuilder(this.urls);
     }
-    
-    
+
     /**
      * @param iconURI
      * @return
      */
     public URI absolutize(URI uri) {
-        if(uri == null) {
+        if (uri == null) {
             return null;
         }
-        if(uri.isAbsolute()) {
+        if (uri.isAbsolute()) {
             return uri;
-        } else {
-            try {
-                return PathConverter.resolve(this.urls.getApplicationUrl(), uri.toString());
-            } catch (URISyntaxException e) {
-                logger.error(e.toString(), e);
-                return uri;
-            }
+        }
+        try {
+            return PathConverter.resolve(this.urls.getApplicationUrl(), uri.toString());
+        } catch (URISyntaxException e) {
+            logger.error(e.toString(), e);
+            return uri;
         }
     }
-    
+
     public URI absolutize(String uri) {
         return absolutize(URI.create(uri));
     }
@@ -273,7 +289,7 @@ public abstract class AbstractBuilder {
      * @param displayFields
      * @return
      */
-    private boolean contained(String field, List<String> displayFields) {
+    private static boolean contained(String field, List<String> displayFields) {
 
         return displayFields.stream().map(displayField -> displayField.replace("*", "")).anyMatch(displayField -> field.startsWith(displayField));
     }
@@ -283,11 +299,11 @@ public abstract class AbstractBuilder {
      * @param allLocales
      * @return
      */
-    private List<String> addLanguageFields(List<String> displayFields, List<Locale> locales) {
+    private static List<String> addLanguageFields(List<String> displayFields, List<Locale> locales) {
         return displayFields.stream().flatMap(field -> getLanguageFields(field, locales, true).stream()).collect(Collectors.toList());
     }
 
-    private List<String> getLanguageFields(String field, List<Locale> locales, boolean includeSelf) {
+    private static List<String> getLanguageFields(String field, List<Locale> locales, boolean includeSelf) {
         List<String> fields = new ArrayList<>();
         if (includeSelf) {
             fields.add(field);
@@ -467,21 +483,20 @@ public abstract class AbstractBuilder {
         }
         return annoMap;
     }
-    
+
     public IAnnotation getCrowdsourcingAnnotation(String id) throws PresentationException, IndexUnreachableException {
         StringBuilder queryBuilder = new StringBuilder();
         queryBuilder.append(" +DOCTYPE:UGC");
         queryBuilder.append(" +IDDOC:").append(id);
-        
+
         SolrDocumentList docList = DataManager.getInstance().getSearchIndex().search(queryBuilder.toString());
-        if(docList != null && !docList.isEmpty()) {
+        if (docList != null && !docList.isEmpty()) {
             SolrDocument doc = docList.get(0);
             IAnnotation anno = createUGCOpenAnnotation(doc, false);
             return anno;
-        } else {
-            return null;
         }
-        
+
+        return null;
     }
 
     /**
@@ -566,7 +581,7 @@ public abstract class AbstractBuilder {
      * @param doc
      * @return
      */
-    private String readSolrField(SolrDocument doc, Object fieldValue) {
+    private static String readSolrField(SolrDocument doc, Object fieldValue) {
         String text;
         Object textObject = Optional.ofNullable(fieldValue).orElse("");
         if (textObject != null && textObject instanceof Collection) {
@@ -638,9 +653,13 @@ public abstract class AbstractBuilder {
      * @return the configured attribution
      */
     protected List<IMetadataValue> getAttributions() {
-        List<IMetadataValue> messages = DataManager.getInstance().getConfiguration().getIIIFAttribution()
-                .stream().map(ViewerResourceBundle::getTranslations).collect(Collectors.toList());
-        
+        List<IMetadataValue> messages = DataManager.getInstance()
+                .getConfiguration()
+                .getIIIFAttribution()
+                .stream()
+                .map(ViewerResourceBundle::getTranslations)
+                .collect(Collectors.toList());
+
         return messages;
     }
 
@@ -709,7 +728,7 @@ public abstract class AbstractBuilder {
      * @return a {@link java.net.URI} object.
      */
     public URI getManifestURI(String pi, BuildMode mode) {
-        String urlString =this.urls.path(RECORDS_RECORD, RECORDS_MANIFEST).params(pi).query("mode", mode.name()).build();
+        String urlString = this.urls.path(RECORDS_RECORD, RECORDS_MANIFEST).params(pi).query("mode", mode.name()).build();
         return URI.create(urlString);
     }
 
@@ -770,9 +789,9 @@ public abstract class AbstractBuilder {
         Matcher matcher = Pattern.compile(regex).matcher(uri.toString());
         if (matcher.find()) {
             return Integer.parseInt(matcher.group(1));
-        } else {
-            return null;
         }
+
+        return null;
     }
 
     /**
@@ -786,9 +805,9 @@ public abstract class AbstractBuilder {
         Matcher matcher = Pattern.compile(regex).matcher(uri.toString());
         if (matcher.find()) {
             return matcher.group(1);
-        } else {
-            return null;
         }
+        
+        return null;
     }
 
     /**
@@ -803,11 +822,11 @@ public abstract class AbstractBuilder {
      */
     public URI getAnnotationListURI(String pi, int pageNo, AnnotationType type) {
         ApiPath url = this.urls.path(RECORDS_PAGES, RECORDS_PAGES_ANNOTATIONS).params(pi, pageNo);
-        if(type != null) {
+        if (type != null) {
             url = url.query("type", type.name());
-            
+
         }
-                
+
         return URI.create(url.build());
     }
 
@@ -918,17 +937,16 @@ public abstract class AbstractBuilder {
         }
         return URI.create(baseURI + "search");
     }
-    
+
     /**
      * Get URL to search service from {@link ApiUrls}
      * 
-     * @param pi    The persistent identifier of the work to search
-     * @return  the service URI
+     * @param pi The persistent identifier of the work to search
+     * @return the service URI
      */
     public URI getSearchServiceURI(String pi) {
         return URI.create(urls.path(RECORDS_RECORD, RECORDS_MANIFEST_SEARCH).params(pi).build());
     }
-
 
     /**
      * <p>
@@ -946,12 +964,12 @@ public abstract class AbstractBuilder {
         }
         return URI.create(baseURI + "autocomplete");
     }
-    
+
     /**
      * Get URL to auto complete service from {@link ApiUrls}
      * 
-     * @param pi    The persistent identifier of the work to search for autocomplete
-     * @return  the service URI
+     * @param pi The persistent identifier of the work to search for autocomplete
+     * @return the service URI
      */
     public URI getAutoCompleteServiceURI(String pi) {
         return URI.create(urls.path(RECORDS_RECORD, RECORDS_MANIFEST_AUTOCOMPLETE).params(pi).build());

@@ -16,12 +16,13 @@
 package io.goobi.viewer.model.security.authentication.model;
 
 import java.io.IOException;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 import org.apache.commons.lang3.StringUtils;
 import org.jdom2.Document;
 import org.jdom2.Element;
 import org.jdom2.JDOMException;
-import org.joda.time.MutableDateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -72,8 +73,8 @@ public class XServiceAuthenticationResponse {
 
         String expiryDateString = eleZ305.getChildText("z305-expiry-date");
         if (StringUtils.isNotEmpty(expiryDateString)) {
-            MutableDateTime expiryDate = DateTools.formatterISO8601DateReverse.parseMutableDateTime(expiryDateString);
-            expired = expiryDate.isBefore(MutableDateTime.now());
+            LocalDateTime expiryDate = LocalDate.parse(expiryDateString, DateTools.formatterISO8601DateReverse).atStartOfDay();
+            expired = expiryDate.isBefore(LocalDateTime.now());
             logger.trace("expired: {}", expired);
         }
     }
