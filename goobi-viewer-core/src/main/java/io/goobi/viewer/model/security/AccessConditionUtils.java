@@ -1027,7 +1027,7 @@ public class AccessConditionUtils {
 
         SolrDocument doc = DataManager.getInstance()
                 .getSearchIndex()
-                .getFirstDoc("+" + SolrConstants.PI + ":" + pi,
+                .getFirstDoc("+" + SolrConstants.PI + ":\"" + pi + '"',
                         Arrays.asList(new String[] { SolrConstants.ACCESSCONDITION, SolrConstants.ACCESSCONDITION_PDF_PERCENTAGE_QUOTA }));
         if (doc == null) {
             throw new RecordNotFoundException(pi + " not found in index");
