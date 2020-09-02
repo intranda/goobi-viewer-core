@@ -96,7 +96,7 @@ public class LicenseType implements IPrivilegeHolder {
     @Column(name = "moving_wall")
     private boolean movingWall = false;
     @Column(name = "pdf_download_quota")
-    private boolean pdfDownloadQuota = false;
+    private boolean pdfDownloadQuota = true;
 
     /** Privileges that everyone else has (users without this license, users that are not logged in). */
     @ElementCollection(fetch = FetchType.EAGER)
