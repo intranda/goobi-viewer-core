@@ -540,6 +540,16 @@ public class LicenseType implements IPrivilegeHolder {
         return privileges.contains(privilege);
     }
 
+    /**
+     * Checks whether this license type has the given privilege in the working copy of the privilege list.
+     * 
+     * @param privilege Privilege name to check
+     * @return true if copy contains privilege; false otherwise
+     */
+    public boolean hasPrivilegeCopy(String privilege) {
+        return privilegesCopy.contains(privilege);
+    }
+
     /* (non-Javadoc)
      * @see io.goobi.viewer.model.security.IPrivilegeHolder#isPrivCmsPages()
      */
