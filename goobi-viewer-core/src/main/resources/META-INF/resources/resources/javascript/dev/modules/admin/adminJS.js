@@ -101,7 +101,12 @@ $( document ).ready(function() {
 		});
 	});
 	
-	//pdf quota radio switch - change color of box according to state
+	// pdf quota radio switch - change color of box according to state
+	$('#pdf_download_quota_info_box').each(function() {
+		if ($(this).find("input:nth-of-type(1)").prop('checked')) {
+			$(this).children('.admin__default-block').addClass('-gray-box');
+		}
+	}); 
 	$("body").on("click", '#pdf_download_quota_info_box', function() {
 		if ($('#pdf_download_quota_info_box').find("input:nth-of-type(1)").prop('checked')) {
 			$('#pdf_download_quota_info_box').children('.admin__default-block').addClass('-gray-box');
