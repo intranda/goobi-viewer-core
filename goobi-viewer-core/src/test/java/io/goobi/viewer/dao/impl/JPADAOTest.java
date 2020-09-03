@@ -691,7 +691,7 @@ public class JPADAOTest extends AbstractDatabaseEnabledTest {
         Assert.assertNotNull(comment);
         Assert.assertEquals(Long.valueOf(1), comment.getId());
         Assert.assertEquals("PI_1", comment.getPi());
-        Assert.assertEquals(new Integer(1), comment.getPage());
+        Assert.assertEquals(Integer.valueOf(1), comment.getPage());
         Assert.assertNotNull(comment.getOwner());
         Assert.assertEquals(Long.valueOf(1), comment.getOwner().getId());
         Assert.assertEquals("comment 1 text", comment.getText());
@@ -975,6 +975,20 @@ public class JPADAOTest extends AbstractDatabaseEnabledTest {
         Assert.assertEquals("license type 2 (unused)", licenseType.getDescription());
         Assert.assertEquals(true, licenseType.isOpenAccess());
         Assert.assertEquals(1, licenseType.getPrivileges().size());
+    }
+
+    /**
+     * @see JPADAO#getLicenseTypes(List)
+     * @verifies return all matching rows
+     */
+    @Test
+    public void getLicenseTypes_shouldReturnAllMatchingRows() throws Exception {
+        String[] names = new String[] { "license type 1 name", "license type 2 name" };
+        List<LicenseType> result = DataManager.getInstance().getDao().getLicenseTypes(Arrays.asList(names));
+        Assert.assertNotNull(result);
+        Assert.assertEquals(2, result.size());
+        Assert.assertEquals("license type 1 name", result.get(0).getName());
+        Assert.assertEquals("license type 2 name", result.get(1).getName());
     }
 
     @Test
@@ -2673,5 +2687,4 @@ public class JPADAOTest extends AbstractDatabaseEnabledTest {
         Assert.assertEquals(expectedFilterString, filterString);
         Assert.assertTrue(params.get("BcC").equals("%BAR%"));
     }
-
 }

@@ -4,7 +4,7 @@
  * For LGPL see License.txt in the project root for license information.
  * For commercial licenses see https://www.tiny.cloud/
  *
- * Version: 5.4.1 (2020-07-08)
+ * Version: 5.2.0 (2020-02-13)
  */
 (function () {
     'use strict';
@@ -17,15 +17,17 @@
       var cmd = listName === 'UL' ? 'InsertUnorderedList' : 'InsertOrderedList';
       editor.execCommand(cmd, false, styleValue === false ? null : { 'list-style-type': styleValue });
     };
+    var Actions = { applyListFormat: applyListFormat };
 
     var register = function (editor) {
       editor.addCommand('ApplyUnorderedListStyle', function (ui, value) {
-        applyListFormat(editor, 'UL', value['list-style-type']);
+        Actions.applyListFormat(editor, 'UL', value['list-style-type']);
       });
       editor.addCommand('ApplyOrderedListStyle', function (ui, value) {
-        applyListFormat(editor, 'OL', value['list-style-type']);
+        Actions.applyListFormat(editor, 'OL', value['list-style-type']);
       });
     };
+    var Commands = { register: register };
 
     var getNumberStyles = function (editor) {
       var styles = editor.getParam('advlist_number_styles', 'default,lower-alpha,lower-greek,lower-roman,upper-alpha,upper-roman');
@@ -34,6 +36,10 @@
     var getBulletStyles = function (editor) {
       var styles = editor.getParam('advlist_bullet_styles', 'default,circle,square');
       return styles ? styles.split(/[ ,]/) : [];
+    };
+    var Settings = {
+      getNumberStyles: getNumberStyles,
+      getBulletStyles: getBulletStyles
     };
 
     var noop = function () {
@@ -60,7 +66,7 @@
         return n;
       };
       var me = {
-        fold: function (n, _s) {
+        fold: function (n, s) {
           return n();
         },
         is: never,
@@ -88,6 +94,9 @@
         },
         toString: constant('none()')
       };
+      if (Object.freeze) {
+        Object.freeze(me);
+      }
       return me;
     }();
     var some = function (a) {
@@ -168,6 +177,11 @@
       var style = editor.dom.getStyle(listElm, 'listStyleType');
       return Option.from(style);
     };
+    var ListUtils = {
+      isTableCellNode: isTableCellNode,
+      isListNode: isListNode,
+      getSelectedStyleType: getSelectedStyleType
+    };
 
     var findIndex = function (list, predicate) {
       for (var index = 0; index < list.length; index++) {
@@ -184,9 +198,9 @@
       });
     };
     var isWithinList = function (editor, e, nodeName) {
-      var tableCellIndex = findIndex(e.parents, isTableCellNode);
+      var tableCellIndex = findIndex(e.parents, ListUtils.isTableCellNode);
       var parents = tableCellIndex !== -1 ? e.parents.slice(0, tableCellIndex) : e.parents;
-      var lists = global$1.grep(parents, isListNode(editor));
+      var lists = global$1.grep(parents, ListUtils.isListNode(editor));
       return lists.length > 0 && lists[0].nodeName === nodeName;
     };
     var addSplitButton = function (editor, id, tooltip, cmd, nodeName, styles) {
@@ -213,11 +227,11 @@
         onAction: function () {
           return editor.execCommand(cmd);
         },
-        onItemAction: function (_splitButtonApi, value) {
-          applyListFormat(editor, nodeName, value);
+        onItemAction: function (splitButtonApi, value) {
+          Actions.applyListFormat(editor, nodeName, value);
         },
         select: function (value) {
-          var listStyleType = getSelectedStyleType(editor);
+          var listStyleType = ListUtils.getSelectedStyleType(editor);
           return listStyleType.map(function (listStyle) {
             return value === listStyle;
           }).getOr(false);
@@ -233,7 +247,7 @@
         }
       });
     };
-    var addButton = function (editor, id, tooltip, cmd, nodeName, _styles) {
+    var addButton = function (editor, id, tooltip, cmd, nodeName, styles) {
       editor.ui.registry.addToggleButton(id, {
         active: false,
         tooltip: tooltip,
@@ -253,25 +267,27 @@
       });
     };
     var addControl = function (editor, id, tooltip, cmd, nodeName, styles) {
-      if (styles.length > 1) {
+      if (styles.length > 0) {
         addSplitButton(editor, id, tooltip, cmd, nodeName, styles);
       } else {
         addButton(editor, id, tooltip, cmd, nodeName);
       }
     };
     var register$1 = function (editor) {
-      addControl(editor, 'numlist', 'Numbered list', 'InsertOrderedList', 'OL', getNumberStyles(editor));
-      addControl(editor, 'bullist', 'Bullet list', 'InsertUnorderedList', 'UL', getBulletStyles(editor));
+      addControl(editor, 'numlist', 'Numbered list', 'InsertOrderedList', 'OL', Settings.getNumberStyles(editor));
+      addControl(editor, 'bullist', 'Bullet list', 'InsertUnorderedList', 'UL', Settings.getBulletStyles(editor));
     };
+    var Buttons = { register: register$1 };
 
     function Plugin () {
       global.add('advlist', function (editor) {
         var hasPlugin = function (editor, plugin) {
-          return global$1.inArray(editor.getParam('plugins', '', 'string').split(/[ ,]/), plugin) !== -1;
+          var plugins = editor.settings.plugins ? editor.settings.plugins : '';
+          return global$1.inArray(plugins.split(/[ ,]/), plugin) !== -1;
         };
         if (hasPlugin(editor, 'lists')) {
-          register$1(editor);
-          register(editor);
+          Buttons.register(editor);
+          Commands.register(editor);
         }
       });
     }

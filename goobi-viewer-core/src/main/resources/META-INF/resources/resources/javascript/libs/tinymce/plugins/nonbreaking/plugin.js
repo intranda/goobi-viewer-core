@@ -4,7 +4,7 @@
  * For LGPL see License.txt in the project root for license information.
  * For commercial licenses see https://www.tiny.cloud/
  *
- * Version: 5.4.1 (2020-07-08)
+ * Version: 5.2.0 (2020-02-13)
  */
 (function () {
     'use strict';
@@ -21,6 +21,10 @@
     };
     var wrapNbsps = function (editor) {
       return editor.getParam('nonbreaking_wrap', true, 'boolean');
+    };
+    var Settings = {
+      getKeyboardSpaces: getKeyboardSpaces,
+      wrapNbsps: wrapNbsps
     };
 
     var stringRepeat = function (string, repeats) {
@@ -40,23 +44,25 @@
       var nbspSpan = function () {
         return '<span class="' + classes() + '" contenteditable="false">' + stringRepeat('&nbsp;', times) + '</span>';
       };
-      var shouldWrap = wrapNbsps(editor);
+      var shouldWrap = Settings.wrapNbsps(editor);
       var html = shouldWrap || editor.plugins.visualchars ? nbspSpan() : stringRepeat('&nbsp;', times);
       editor.undoManager.transact(function () {
         return editor.insertContent(html);
       });
     };
+    var Actions = { insertNbsp: insertNbsp };
 
     var register = function (editor) {
       editor.addCommand('mceNonBreaking', function () {
-        insertNbsp(editor, 1);
+        Actions.insertNbsp(editor, 1);
       });
     };
+    var Commands = { register: register };
 
     var global$1 = tinymce.util.Tools.resolve('tinymce.util.VK');
 
     var setup = function (editor) {
-      var spaces = getKeyboardSpaces(editor);
+      var spaces = Settings.getKeyboardSpaces(editor);
       if (spaces > 0) {
         editor.on('keydown', function (e) {
           if (e.keyCode === global$1.TAB && !e.isDefaultPrevented()) {
@@ -65,11 +71,12 @@
             }
             e.preventDefault();
             e.stopImmediatePropagation();
-            insertNbsp(editor, spaces);
+            Actions.insertNbsp(editor, spaces);
           }
         });
       }
     };
+    var Keyboard = { setup: setup };
 
     var register$1 = function (editor) {
       editor.ui.registry.addButton('nonbreaking', {
@@ -87,12 +94,13 @@
         }
       });
     };
+    var Buttons = { register: register$1 };
 
     function Plugin () {
       global.add('nonbreaking', function (editor) {
-        register(editor);
-        register$1(editor);
-        setup(editor);
+        Commands.register(editor);
+        Buttons.register(editor);
+        Keyboard.setup(editor);
       });
     }
 

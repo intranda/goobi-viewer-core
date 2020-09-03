@@ -4,7 +4,7 @@
  * For LGPL see License.txt in the project root for license information.
  * For commercial licenses see https://www.tiny.cloud/
  *
- * Version: 5.4.1 (2020-07-08)
+ * Version: 5.2.0 (2020-02-13)
  */
 (function (domGlobals) {
     'use strict';
@@ -35,7 +35,7 @@
         return n;
       };
       var me = {
-        fold: function (n, _s) {
+        fold: function (n, s) {
           return n();
         },
         is: never,
@@ -63,6 +63,9 @@
         },
         toString: constant('none()')
       };
+      if (Object.freeze) {
+        Object.freeze(me);
+      }
       return me;
     }();
     var some = function (a) {
@@ -127,10 +130,6 @@
       from: from
     };
 
-    var head = function (xs) {
-      return xs.length === 0 ? Option.none() : Option.some(xs[0]);
-    };
-
     var global$1 = tinymce.util.Tools.resolve('tinymce.dom.DOMUtils');
 
     function isCodeSample(elm) {
@@ -141,6 +140,10 @@
         return predicateFn(arg2);
       };
     }
+    var Utils = {
+      isCodeSample: isCodeSample,
+      trimArg: trimArg
+    };
 
     var Global = typeof domGlobals.window !== 'undefined' ? domGlobals.window : Function('return this;')();
 
@@ -1481,14 +1484,19 @@
     var useGlobalPrismJS = function (editor) {
       return editor.getParam('codesample_global_prismjs', false, 'boolean');
     };
+    var Settings = {
+      getLanguages: getLanguages,
+      useGlobalPrismJS: useGlobalPrismJS
+    };
 
     var get = function (editor) {
-      return Global.Prism && useGlobalPrismJS(editor) ? Global.Prism : Prism$1;
+      return Global.Prism && Settings.useGlobalPrismJS(editor) ? Global.Prism : Prism$1;
     };
+    var Prism$2 = { get: get };
 
     var getSelectedCodeSample = function (editor) {
       var node = editor.selection ? editor.selection.getNode() : null;
-      if (isCodeSample(node)) {
+      if (Utils.isCodeSample(node)) {
         return Option.some(node);
       }
       return Option.none();
@@ -1503,7 +1511,7 @@
         }, function (n) {
           editor.dom.setAttrib(n, 'class', 'language-' + language);
           n.innerHTML = code;
-          get(editor).highlightElement(n);
+          Prism$2.get(editor).highlightElement(n);
           editor.selection.select(n);
         });
       });
@@ -1515,6 +1523,11 @@
       }, function (n) {
         return n.textContent;
       });
+    };
+    var CodeSample = {
+      getSelectedCodeSample: getSelectedCodeSample,
+      insertCodeSample: insertCodeSample,
+      getCurrentCode: getCurrentCode
     };
 
     var getLanguages$1 = function (editor) {
@@ -1560,11 +1573,11 @@
           value: 'cpp'
         }
       ];
-      var customLanguages = getLanguages(editor);
+      var customLanguages = Settings.getLanguages(editor);
       return customLanguages ? customLanguages : defaultLanguages;
     };
     var getCurrentLanguage = function (editor, fallback) {
-      var node = getSelectedCodeSample(editor);
+      var node = CodeSample.getSelectedCodeSample(editor);
       return node.fold(function () {
         return fallback;
       }, function (n) {
@@ -1572,16 +1585,48 @@
         return matches ? matches[1] : fallback;
       });
     };
+    var Languages = {
+      getLanguages: getLanguages$1,
+      getCurrentLanguage: getCurrentLanguage
+    };
+
+    var typeOf = function (x) {
+      if (x === null) {
+        return 'null';
+      }
+      var t = typeof x;
+      if (t === 'object' && (Array.prototype.isPrototypeOf(x) || x.constructor && x.constructor.name === 'Array')) {
+        return 'array';
+      }
+      if (t === 'object' && (String.prototype.isPrototypeOf(x) || x.constructor && x.constructor.name === 'String')) {
+        return 'string';
+      }
+      return t;
+    };
+    var isType = function (type) {
+      return function (value) {
+        return typeOf(value) === type;
+      };
+    };
+    var isFunction = isType('function');
+
+    var nativeSlice = Array.prototype.slice;
+    var head = function (xs) {
+      return xs.length === 0 ? Option.none() : Option.some(xs[0]);
+    };
+    var from$1 = isFunction(Array.from) ? Array.from : function (x) {
+      return nativeSlice.call(x);
+    };
 
     var open = function (editor) {
-      var languages = getLanguages$1(editor);
+      var languages = Languages.getLanguages(editor);
       var defaultLanguage = head(languages).fold(function () {
         return '';
       }, function (l) {
         return l.value;
       });
-      var currentLanguage = getCurrentLanguage(editor, defaultLanguage);
-      var currentCode = getCurrentCode(editor);
+      var currentLanguage = Languages.getCurrentLanguage(editor, defaultLanguage);
+      var currentCode = CodeSample.getCurrentCode(editor);
       editor.windowManager.open({
         title: 'Insert/Edit Code Sample',
         size: 'large',
@@ -1620,27 +1665,29 @@
         },
         onSubmit: function (api) {
           var data = api.getData();
-          insertCodeSample(editor, data.language, data.code);
+          CodeSample.insertCodeSample(editor, data.language, data.code);
           api.close();
         }
       });
     };
+    var Dialog = { open: open };
 
     var register = function (editor) {
       editor.addCommand('codesample', function () {
         var node = editor.selection.getNode();
-        if (editor.selection.isCollapsed() || isCodeSample(node)) {
-          open(editor);
+        if (editor.selection.isCollapsed() || Utils.isCodeSample(node)) {
+          Dialog.open(editor);
         } else {
           editor.formatter.toggle('code');
         }
       });
     };
+    var Commands = { register: register };
 
     var setup = function (editor) {
       var $ = editor.$;
       editor.on('PreProcess', function (e) {
-        $('pre[contenteditable=false]', e.node).filter(trimArg(isCodeSample)).each(function (idx, elm) {
+        $('pre[contenteditable=false]', e.node).filter(Utils.trimArg(Utils.isCodeSample)).each(function (idx, elm) {
           var $elm = $(elm), code = elm.textContent;
           $elm.attr('class', $.trim($elm.attr('class')));
           $elm.removeAttr('contentEditable');
@@ -1650,7 +1697,7 @@
         });
       });
       editor.on('SetContent', function () {
-        var unprocessedCodeSamples = $('pre').filter(trimArg(isCodeSample)).filter(function (idx, elm) {
+        var unprocessedCodeSamples = $('pre').filter(Utils.trimArg(Utils.isCodeSample)).filter(function (idx, elm) {
           return elm.contentEditable !== 'false';
         });
         if (unprocessedCodeSamples.length) {
@@ -1661,13 +1708,14 @@
               });
               elm.contentEditable = 'false';
               elm.innerHTML = editor.dom.encode(elm.textContent);
-              get(editor).highlightElement(elm);
+              Prism$2.get(editor).highlightElement(elm);
               elm.className = $.trim(elm.className);
             });
           });
         }
       });
     };
+    var FilterContent = { setup: setup };
 
     var isCodeSampleSelection = function (editor) {
       var node = editor.selection.getStart();
@@ -1678,7 +1726,7 @@
         icon: 'code-sample',
         tooltip: 'Insert/edit code sample',
         onAction: function () {
-          return open(editor);
+          return Dialog.open(editor);
         },
         onSetup: function (api) {
           var nodeChangeHandler = function () {
@@ -1694,19 +1742,20 @@
         text: 'Code sample...',
         icon: 'code-sample',
         onAction: function () {
-          return open(editor);
+          return Dialog.open(editor);
         }
       });
     };
+    var Buttons = { register: register$1 };
 
     function Plugin () {
       global.add('codesample', function (editor) {
-        setup(editor);
-        register$1(editor);
-        register(editor);
+        FilterContent.setup(editor);
+        Buttons.register(editor);
+        Commands.register(editor);
         editor.on('dblclick', function (ev) {
-          if (isCodeSample(ev.target)) {
-            open(editor);
+          if (Utils.isCodeSample(ev.target)) {
+            Dialog.open(editor);
           }
         });
       });

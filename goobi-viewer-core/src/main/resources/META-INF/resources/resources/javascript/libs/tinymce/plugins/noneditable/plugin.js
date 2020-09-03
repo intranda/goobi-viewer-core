@@ -4,7 +4,7 @@
  * For LGPL see License.txt in the project root for license information.
  * For commercial licenses see https://www.tiny.cloud/
  *
- * Version: 5.4.1 (2020-07-08)
+ * Version: 5.2.0 (2020-02-13)
  */
 (function () {
     'use strict';
@@ -26,6 +26,11 @@
       } else {
         return nonEditableRegExps;
       }
+    };
+    var Settings = {
+      getNonEditableClass: getNonEditableClass,
+      getEditableClass: getEditableClass,
+      getNonEditableRegExps: getNonEditableRegExps
     };
 
     var hasClass = function (checkClassName) {
@@ -58,17 +63,18 @@
         return;
       }
       while (i--) {
-        content = content.replace(nonEditableRegExps[i], replaceMatchWithSpan(editor, content, getNonEditableClass(editor)));
+        content = content.replace(nonEditableRegExps[i], replaceMatchWithSpan(editor, content, Settings.getNonEditableClass(editor)));
       }
       e.content = content;
     };
     var setup = function (editor) {
+      var editClass, nonEditClass;
       var contentEditableAttrName = 'contenteditable';
-      var editClass = ' ' + global$1.trim(getEditableClass(editor)) + ' ';
-      var nonEditClass = ' ' + global$1.trim(getNonEditableClass(editor)) + ' ';
+      editClass = ' ' + global$1.trim(Settings.getEditableClass(editor)) + ' ';
+      nonEditClass = ' ' + global$1.trim(Settings.getNonEditableClass(editor)) + ' ';
       var hasEditClass = hasClass(editClass);
       var hasNonEditClass = hasClass(nonEditClass);
-      var nonEditableRegExps = getNonEditableRegExps(editor);
+      var nonEditableRegExps = Settings.getNonEditableRegExps(editor);
       editor.on('PreInit', function () {
         if (nonEditableRegExps.length > 0) {
           editor.on('BeforeSetContent', function (e) {
@@ -105,10 +111,11 @@
         });
       });
     };
+    var FilterContent = { setup: setup };
 
     function Plugin () {
       global.add('noneditable', function (editor) {
-        setup(editor);
+        FilterContent.setup(editor);
       });
     }
 

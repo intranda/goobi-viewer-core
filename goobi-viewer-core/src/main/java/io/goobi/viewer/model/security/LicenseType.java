@@ -95,6 +95,8 @@ public class LicenseType implements IPrivilegeHolder {
     private boolean core = false;
     @Column(name = "moving_wall")
     private boolean movingWall = false;
+    @Column(name = "pdf_download_quota")
+    private boolean pdfDownloadQuota = true;
 
     /** Privileges that everyone else has (users without this license, users that are not logged in). */
     @ElementCollection(fetch = FetchType.EAGER)
@@ -438,6 +440,20 @@ public class LicenseType implements IPrivilegeHolder {
     }
 
     /**
+     * @return the pdfDownloadQuota
+     */
+    public boolean isPdfDownloadQuota() {
+        return pdfDownloadQuota;
+    }
+
+    /**
+     * @param pdfDownloadQuota the pdfDownloadQuota to set
+     */
+    public void setPdfDownloadQuota(boolean pdfDownloadQuota) {
+        this.pdfDownloadQuota = pdfDownloadQuota;
+    }
+
+    /**
      * <p>
      * Getter for the field <code>privileges</code>.
      * </p>
@@ -524,6 +540,16 @@ public class LicenseType implements IPrivilegeHolder {
         return privileges.contains(privilege);
     }
 
+    /**
+     * Checks whether this license type has the given privilege in the working copy of the privilege list.
+     * 
+     * @param privilege Privilege name to check
+     * @return true if copy contains privilege; false otherwise
+     */
+    public boolean hasPrivilegeCopy(String privilege) {
+        return privilegesCopy.contains(privilege);
+    }
+
     /* (non-Javadoc)
      * @see io.goobi.viewer.model.security.IPrivilegeHolder#isPrivCmsPages()
      */
@@ -545,7 +571,7 @@ public class LicenseType implements IPrivilegeHolder {
             privilegesCopy.remove(IPrivilegeHolder.PRIV_CMS_PAGES);
         }
     }
-    
+
     /* (non-Javadoc)
      * @see io.goobi.viewer.model.security.IPrivilegeHolder#isPrivCmsAllSubthemes()
      */
