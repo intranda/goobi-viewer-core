@@ -257,8 +257,8 @@ public abstract class AbstractApiUrlManager {
     public ApiInfo getInfo() {
         try {
             Client client = ClientBuilder.newClient();
-            client.property(ClientProperties.CONNECT_TIMEOUT, 1000);
-            client.property(ClientProperties.READ_TIMEOUT, 2000);
+            client.property(ClientProperties.CONNECT_TIMEOUT, 5000);
+            client.property(ClientProperties.READ_TIMEOUT, 5000);
             return client
                     .target(getApiUrl())
                     .request(MediaType.APPLICATION_JSON)
