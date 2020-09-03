@@ -90,12 +90,6 @@ public class DateTools {
     /** Constant <code>formatterBasicDateTime</code> */
     public static DateTimeFormatter formatterISO8601BasicDateTime = DateTimeFormatter.ofPattern("yyyyMMddHHmmss");
 
-    // "DateTimeFormat is thread-safe and immutable, and the formatters it returns are as well." - JodaTime Javadoc
-    //    /** Constant <code>formatterISO8601BasicDate</code> */
-    //    public static DateTimeFormatter formatterISO8601BasicDate = ISODateTimeFormat.basicDate(); // yyyyMMdd
-    //    /** Constant <code>formatterFilename</code> */
-    //    public static DateTimeFormatter formatterFilename = DateTimeFormat.forPattern("yyyyMMddHHmmss");
-
     /**
      * Converts the given string to a list of Date objects created from the contents of this string (years or whole dates).
      *
