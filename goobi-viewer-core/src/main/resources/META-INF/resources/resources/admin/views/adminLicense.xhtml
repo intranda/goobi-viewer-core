@@ -155,9 +155,7 @@
                                     <ui:fragment rendered="#{adminBean.getPdfQuotaRecordCountForLicenseType(adminBean.currentLicenseType.name) > 0}">
 	                                <hr />
 	                                <div class="form-group form-row mb-3">
-	                                    <div class="col-2 control-label admin__form-label">
-	                                        <span>#{msg.admin__license_pdf_download_quota}:</span>
-	                                    </div>
+	                                    <div class="col-2"></div>
 	                                    <h:panelGroup id="pdf_download_quota_info_box" layout="block" styleClass="col-9">
 	                                        <!-- Records found -->
 	                                        <ui:fragment rendered="#{!adminBean.currentLicenseType.hasPrivilegeCopy('DOWNLOAD_PDF') and !adminBean.currentLicenseType.hasPrivilegeCopy('DOWNLOAD_PAGE_PDF')}">
@@ -172,17 +170,17 @@
 	                                                    </h:outputFormat>
 	                                                </p>
 	                                                <div class="admin__radio-switch -on-off">
-                                                <h:selectOneRadio group="pdfDownloadQuotaToggle" value="#{adminBean.currentLicenseType.pdfDownloadQuota}"
-                                                    immediate="true" checked="#{visibleItem.openInNewWindow ? null : 'false'}">
-                                                    <f:selectItem itemValue="#{false}" itemLabel="#{msg.inactive}" />
-                                                    <!-- <f:ajax render="pdf_download_quota_info_box" /> -->
-                                                </h:selectOneRadio>                                     
-                                                <h:selectOneRadio group="pdfDownloadQuotaToggle" value="#{adminBean.currentLicenseType.pdfDownloadQuota}"
-                                                    immediate="true" checked="#{visibleItem.openInNewWindow ? 'true' : null}">
-                                                    <f:selectItem itemValue="#{true}" itemLabel="#{msg.active}" />
-                                                	<!-- <f:ajax render="pdf_download_quota_info_box" /> -->
-                                                </h:selectOneRadio>
-                                                <span class="toggle-outside"><span class="toggle-inside"></span></span>
+                                                        <h:selectOneRadio group="pdfDownloadQuotaToggle" value="#{adminBean.currentLicenseType.pdfDownloadQuota}"
+                                                            immediate="true" checked="#{visibleItem.openInNewWindow ? null : 'false'}">
+                                                            <f:selectItem itemValue="#{false}" itemLabel="#{msg.no}" />
+                                                            <!-- <f:ajax render="pdf_download_quota_info_box" /> -->
+                                                        </h:selectOneRadio>                                     
+                                                        <h:selectOneRadio group="pdfDownloadQuotaToggle" value="#{adminBean.currentLicenseType.pdfDownloadQuota}"
+                                                            immediate="true" checked="#{visibleItem.openInNewWindow ? 'true' : null}">
+                                                            <f:selectItem itemValue="#{true}" itemLabel="#{msg.yes}" />
+                                                        	<!-- <f:ajax render="pdf_download_quota_info_box" /> -->
+                                                        </h:selectOneRadio>
+                                                        <span class="toggle-outside"><span class="toggle-inside"></span></span>
 	                                            </div>
                                             </div>
 	                                        </ui:fragment>
