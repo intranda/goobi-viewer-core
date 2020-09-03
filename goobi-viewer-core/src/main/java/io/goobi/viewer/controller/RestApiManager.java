@@ -43,7 +43,7 @@ import io.goobi.viewer.api.rest.v1.ApiUrls;
  *
  */
 public class RestApiManager {
-    
+
     private static final Logger logger = LoggerFactory.getLogger(RestApiManager.class);
 
     /**
@@ -98,9 +98,9 @@ public class RestApiManager {
         AbstractApiUrlManager manager = getDataApiManager();
         if (manager != null) {
             return manager.getApiUrl();
-        } else {
-            return this.configuredDataApiUrl;
         }
+
+        return this.configuredDataApiUrl;
     }
 
     /**
@@ -111,9 +111,9 @@ public class RestApiManager {
         AbstractApiUrlManager manager = getContentApiManager();
         if (manager != null) {
             return manager.getApiPath();
-        } else {
-            return this.configuredContentApiUrl;
         }
+
+        return this.configuredContentApiUrl;
     }
 
     /**
@@ -145,20 +145,22 @@ public class RestApiManager {
 
     private void updateDataUrlManager() {
         if (this.config == null) {
-            logger.error("config is null");
             return;
         }
         String url = this.config.getRestApiUrl();
         if (this.configuredDataApiUrl == null || !this.configuredContentApiUrl.equals(url)) {
             //url not initialized or changed
             url = url.replace("/rest", "/api/v1");
-            logger.debug("REST API URL: {}", url);
+            // logger.debug("REST API URL: {}", url);
             ApiUrls urls = new ApiUrls(url);
             ApiInfo info = urls.getInfo();
             if (info != null && info.version.equals("v1")) {
                 dataApiManager = urls;
             } else {
-                logger.error("API info not found");
+                logger.error("API info not found; URL: {}", url);
+                if (info != null) {
+                    logger.debug("API version: {}", info.version);
+                }
                 dataApiManager = null;
             }
             this.configuredDataApiUrl = url;
