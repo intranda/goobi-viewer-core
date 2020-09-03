@@ -192,6 +192,18 @@
 		&.-warning {
 			border-top: 5px solid rgba(243, 208, 70, 0.85);
 		}
+		&.-success-box {
+		border: 1px solid #ABD9B5;
+    	border-top: 5px solid #ABD9B5;
+		}
+		&.-info-box {
+		border: 1px solid @blue;
+    	border-top: 5px solid @blue;
+		}
+		&.-gray-box {
+		border: 1px solid @gray;
+    	border-top: 5px solid @gray;			
+		}
 		&-description {
 	    	margin-bottom: 3rem;
             &-empty {
@@ -641,6 +653,24 @@
 		input {
 		    width: 6rem;
 		    left: 4.7rem;
+		}
+		&.-on-off {
+			.toggle-outside {
+				left: 6rem;
+				}
+			label {
+				&:first-of-type {
+					width: 5rem;
+				}
+				&:last-of-type {
+					margin-left: 7.6rem;
+					width: 3.2rem;
+				}
+			}
+			input {
+			    width: 6rem;
+			    left: 6rem;
+			}			
 		}
 	}
 	
