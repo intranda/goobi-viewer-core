@@ -117,7 +117,7 @@
     
                                                 <!-- PDF QUOTA NOTICE -->
                                                 <ui:fragment
-                                                    rendered="#{licenseType.pdfDownloadQuota and (licenseType.hasPrivilegeCopy('DOWNLOAD_PDF') or licenseType.hasPrivilegeCopy('DOWNLOAD_PAGE_PDF')) and adminBean.getPdfQuotaRecordCountForLicenseType(licenseType.name) > 0}">
+                                                    rendered="#{licenseType.pdfDownloadQuota and (licenseType.hasPrivilege('DOWNLOAD_PDF') or licenseType.hasPrivilege('DOWNLOAD_PAGE_PDF')) and adminBean.getPdfQuotaRecordCountForLicenseType(licenseType.name) > 0}">
                                                     <dt class="col-sm-4">#{msg.admin__notice}:</dt>
                                                     <dd class="col-sm-8">
                                                         <h:outputText value="#{msg.admin__license_pdf_download_quota_notice}" />
