@@ -264,7 +264,7 @@ public abstract class AbstractApiUrlManager {
                     .request(MediaType.APPLICATION_JSON)
                     .get(ApiInfo.class);
         } catch (Throwable e) {
-            logger.error(e.getMessage(), e);
+            logger.error(e.getMessage());
             return new ApiInfo();
         }
     }

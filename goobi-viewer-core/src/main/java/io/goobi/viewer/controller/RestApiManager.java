@@ -136,6 +136,7 @@ public class RestApiManager {
                 if (info != null && info.version.equals("v1")) {
                     contentApiManager = urls;
                 } else {
+                    logger.error("API info not found; URL: {}", url);
                     contentApiManager = null;
                 }
                 this.configuredContentApiUrl = url;
@@ -158,9 +159,6 @@ public class RestApiManager {
                 dataApiManager = urls;
             } else {
                 logger.error("API info not found; URL: {}", url);
-                if (info != null) {
-                    logger.debug("API version: {}", info.version);
-                }
                 dataApiManager = null;
             }
             this.configuredDataApiUrl = url;
