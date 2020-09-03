@@ -175,22 +175,16 @@
                                                 <h:selectOneRadio group="pdfDownloadQuotaToggle" value="#{adminBean.currentLicenseType.pdfDownloadQuota}"
                                                     immediate="true" checked="#{visibleItem.openInNewWindow ? null : 'false'}">
                                                     <f:selectItem itemValue="#{false}" itemLabel="#{msg.inactive}" />
-                                                    <f:ajax render="pdf_download_quota_info_box" />
+                                                    <!-- <f:ajax render="pdf_download_quota_info_box" /> -->
                                                 </h:selectOneRadio>                                     
                                                 <h:selectOneRadio group="pdfDownloadQuotaToggle" value="#{adminBean.currentLicenseType.pdfDownloadQuota}"
                                                     immediate="true" checked="#{visibleItem.openInNewWindow ? 'true' : null}">
                                                     <f:selectItem itemValue="#{true}" itemLabel="#{msg.active}" />
-                                                    <f:ajax render="pdf_download_quota_info_box" />
+                                                	<!-- <f:ajax render="pdf_download_quota_info_box" /> -->
                                                 </h:selectOneRadio>
                                                 <span class="toggle-outside"><span class="toggle-inside"></span></span>
 	                                            </div>
                                             </div>
-	                                        </ui:fragment>
-	                                        <!-- No records found -->
-	                                        <ui:fragment rendered="#{adminBean.getPdfQuotaRecordCountForLicenseType(adminBean.currentLicenseType.name) == 0}">
-	                                            <div class="admin__default-block mb-0 -warning">
-	                                                <p class="mb-0"><h:outputText escape="false" value="#{msg.admin__license_pdf_download_quota_record_count_empty}" /></p>
-	                                            </div>
 	                                        </ui:fragment>
 	                                        <script>
 	                                     // pdf quota radio switch - change color of box according to state
