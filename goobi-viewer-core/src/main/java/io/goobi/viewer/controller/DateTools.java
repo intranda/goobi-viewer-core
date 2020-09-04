@@ -15,6 +15,15 @@
  */
 package io.goobi.viewer.controller;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.ZoneOffset;
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeFormatterBuilder;
+import java.time.format.DateTimeParseException;
+import java.time.temporal.ChronoField;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -24,10 +33,6 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.apache.commons.lang3.StringUtils;
-import org.joda.time.DateTime;
-import org.joda.time.format.DateTimeFormat;
-import org.joda.time.format.DateTimeFormatter;
-import org.joda.time.format.ISODateTimeFormat;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -38,47 +43,52 @@ public class DateTools {
 
     private static final Logger logger = LoggerFactory.getLogger(DateTools.class);
 
-    // "DateTimeFormat is thread-safe and immutable, and the formatters it returns are as well." - JodaTime Javadoc
-    /** Constant <code>formatterISO8601BasicDateTime</code> */
-    public static DateTimeFormatter formatterISO8601BasicDateTime = ISODateTimeFormat.basicDateTime(); // yyyyMMddHHmmss
-    /** Constant <code>formatterISO8601BasicDate</code> */
-    public static DateTimeFormatter formatterISO8601BasicDate = ISODateTimeFormat.basicDate(); // yyyyMMdd
-    /** Constant <code>formatterISO8601BasicDateNoYear</code> */
-    public static DateTimeFormatter formatterISO8601BasicDateNoYear = DateTimeFormat.forPattern("MMdd");
-    /** Constant <code>formatterISO8601YearMonth</code> */
-    public static DateTimeFormatter formatterISO8601YearMonth = DateTimeFormat.forPattern("yyyy-MM"); // yyyy-MM
+    /** Constant <code>formatterISO8601Full</code> */
+    public static DateTimeFormatter formatterISO8601Full = DateTimeFormatter.ISO_LOCAL_DATE_TIME; // yyyy-MM-dd'T'HH:mm:ss
+    /** Constant <code>formatterISO8601DateTimeInstant</code> */
+    public static DateTimeFormatter formatterISO8601DateTimeInstant = DateTimeFormatter.ISO_INSTANT; // yyyy-MM-dd'T'HH:mm:ssZ
+    /** Constant <code>formatterISO8601DateTimeWithOffset</code> */
+    public static DateTimeFormatter formatterISO8601DateTimeWithOffset = DateTimeFormatter.ISO_OFFSET_DATE_TIME; // yyyy-MM-dd'T'HH:mm:ss+01:00
     /** Constant <code>formatterISO8601Date</code> */
-    public static DateTimeFormatter formatterISO8601Date = ISODateTimeFormat.date(); // yyyy-MM-dd
+    public static java.time.format.DateTimeFormatter formatterISO8601Date = DateTimeFormatter.ISO_LOCAL_DATE; // yyyy-MM-dd
+    /** Constant <code>formatterISO8601Date</code> */
+    public static java.time.format.DateTimeFormatter formatterISO8601Time = DateTimeFormatter.ISO_LOCAL_TIME; // HH:mm:ss
     /** Constant <code>formatterISO8601DateReverse</code> */
-    public static DateTimeFormatter formatterISO8601DateReverse = DateTimeFormat.forPattern("dd-MM-yyyy"); // dd-MM-YYYY
+    public static DateTimeFormatter formatterISO8601DateReverse = DateTimeFormatter.ofPattern("dd-MM-yyyy"); // dd-MM-YYYY
+    /** Constant <code>formatterISO8601YearMonth</code> */
+    public static DateTimeFormatter formatterISO8601YearMonth = new DateTimeFormatterBuilder()
+            .appendPattern("yyyy-MM")
+            .parseDefaulting(ChronoField.DAY_OF_MONTH, 1)
+            .toFormatter();
     /** Constant <code>formatterISO8601DateTime</code> */
-    public static DateTimeFormatter formatterISO8601DateTime = DateTimeFormat.forPattern("yyyy-MM-dd HH:mm:ss");
+    public static DateTimeFormatter formatterISO8601DateTime = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
     /** Constant <code>formatterISO8601DateTimeMS</code> */
-    public static DateTimeFormatter formatterISO8601DateTimeMS = DateTimeFormat.forPattern("yyyy-MM-dd HH:mm:ss.SSS");
-    /** Constant <code>formatterISO8601DateTimeFull</code> */
-    public static DateTimeFormatter formatterISO8601DateTimeFull = DateTimeFormat.forPattern("yyyy-MM-dd'T'HH:mm:ss");
-    /** Constant <code>formatterISO8601DateTimeFullWithTimeZone</code> */
-    public static DateTimeFormatter formatterISO8601DateTimeFullWithTimeZone = DateTimeFormat.forPattern("yyyy-MM-dd'T'HH:mm:ssZ");
-    /** Constant <code>formatterISO8601Time</code> */
-    public static DateTimeFormatter formatterISO8601Time = DateTimeFormat.forPattern("HH:mm:ss");
-    /** Constant <code>formatterDEDateTime</code> */
-    public static DateTimeFormatter formatterDEDateTime = DateTimeFormat.forPattern("dd.MM.yyyy HH:mm:ss");
-    /** Constant <code>formatterENDateTime</code> */
-    public static DateTimeFormatter formatterENDateTime = DateTimeFormat.forPattern("MM/dd/yyyy h:mm:ss a");
-    /** Constant <code>formatterDEDateTimeNoSeconds</code> */
-    public static DateTimeFormatter formatterDEDateTimeNoSeconds = DateTimeFormat.forPattern("dd.MM.yyyy HH:mm");
-    /** Constant <code>formatterENDateTimeNoSeconds</code> */
-    public static DateTimeFormatter formatterENDateTimeNoSeconds = DateTimeFormat.forPattern("MM/dd/yyyy h:mm a");
+    public static DateTimeFormatter formatterISO8601DateTimeMS = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SSS");
     /** Constant <code>formatterDEDate</code> */
-    public static DateTimeFormatter formatterDEDate = DateTimeFormat.forPattern("dd.MM.yyyy");
-    /** Constant <code>formatterENDate</code> */
-    public static DateTimeFormatter formatterENDate = DateTimeFormat.forPattern("MM/dd/yyyy");
+    public static DateTimeFormatter formatterDEDate = DateTimeFormatter.ofPattern("dd.MM.yyyy");
+    /** Constant <code>formatterUSDate</code> */
+    public static DateTimeFormatter formatterENDate = DateTimeFormatter.ofPattern("MM/dd/yyyy");
     /** Constant <code>formatterCNDate</code> */
-    public static DateTimeFormatter formatterCNDate = DateTimeFormat.forPattern("yyyy.MM.dd");
+    public static DateTimeFormatter formatterCNDate = DateTimeFormatter.ofPattern("yyyy.MM.dd");
     /** Constant <code>formatterJPDate</code> */
-    public static DateTimeFormatter formatterJPDate = DateTimeFormat.forPattern("yyyy/MM/dd");;
-    /** Constant <code>formatterFilename</code> */
-    public static DateTimeFormatter formatterFilename = DateTimeFormat.forPattern("yyyyMMddHHmmss");
+    public static DateTimeFormatter formatterJPDate = DateTimeFormatter.ofPattern("yyyy/MM/dd");;
+    /** Constant <code>formatterDEDateTime</code> */
+    public static DateTimeFormatter formatterDEDateTime = DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm:ss");
+    /** Constant <code>formatterENDateTime</code> */
+    public static DateTimeFormatter formatterENDateTime = DateTimeFormatter.ofPattern("MM/dd/yyyy h:mm:ss a").withLocale(Locale.ENGLISH);
+    /** Constant <code>formatterDEDateTimeNoSeconds</code> */
+    public static DateTimeFormatter formatterDEDateTimeNoSeconds = DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm");
+    /** Constant <code>formatterENDateTimeNoSeconds</code> */
+    public static DateTimeFormatter formatterENDateTimeNoSeconds = DateTimeFormatter.ofPattern("MM/dd/yyyy h:mm a").withLocale(Locale.ENGLISH);
+    /** Constant <code>formatterISO8601BasicDateNoYear</code> */
+    public static DateTimeFormatter formatterISO8601BasicDateNoYear = new DateTimeFormatterBuilder()
+            .appendPattern("MMdd")
+            .parseDefaulting(ChronoField.DAY_OF_MONTH, 1)
+            .toFormatter();
+    /** Constant <code>formatterISO8601BasicDate</code> */
+    public static DateTimeFormatter formatterISO8601BasicDate = DateTimeFormatter.ofPattern("yyyyMMdd");
+    /** Constant <code>formatterBasicDateTime</code> */
+    public static DateTimeFormatter formatterISO8601BasicDateTime = DateTimeFormatter.ofPattern("yyyyMMddHHmmss");
 
     /**
      * Converts the given string to a list of Date objects created from the contents of this string (years or whole dates).
@@ -141,77 +151,104 @@ public class DateTools {
     }
 
     /**
-     * <p>
-     * parseDateTimeFromString.
-     * </p>
-     *
-     * @param dateString a {@link java.lang.String} object.
+     * 
+     * @param dateString
+     * @param fromUTC
+     * @return
      * @should parse iso date formats correctly
-     * @should parse iso date as UTC correctly
      * @should parse german date formats correctly
      * @should parse english date formats correctly
      * @should parse chinese date formats correctly
      * @should parse japanese date formats correctly
      * @should return null if unsupported format
      * @should throw IllegalArgumentException if dateString is null
-     * @param fromUTC a boolean.
-     * @return a {@link org.joda.time.DateTime} object.
      */
-    public static DateTime parseDateTimeFromString(String dateString, boolean fromUTC) {
+    public static LocalDateTime parseDateTimeFromString(String dateString, boolean fromUTC) {
+        return parseDateTimeFromString(dateString, fromUTC, null);
+    }
+
+    /**
+     * <p>
+     * parseDateTimeFromString.
+     * </p>
+     *
+     * @param dateString a {@link java.lang.String} object.
+     * @param fromUTC a boolean.
+     * @param zoneOffset
+     * @return a {@link java.time.LocalDateTime} object.
+     * @should parse iso date as UTC correctly
+     */
+    public static LocalDateTime parseDateTimeFromString(String dateString, boolean fromUTC, Integer zoneOffset) {
         if (dateString == null) {
             throw new IllegalArgumentException("dateString may not be null");
         }
 
         try {
             if (fromUTC) {
-                return formatterISO8601DateTimeFullWithTimeZone.withZoneUTC().parseDateTime(dateString);
+                ZoneId zoneId = zoneOffset != null ? ZoneId.ofOffset("UTC", ZoneOffset.ofHours(zoneOffset)): ZoneId.systemDefault();
+                return LocalDateTime.parse(dateString, formatterISO8601DateTimeInstant)
+                        .atZone(zoneId)
+                        .withZoneSameInstant(ZoneOffset.UTC)
+                        .toLocalDateTime();
             }
-            return formatterISO8601DateTimeFullWithTimeZone.parseDateTime(dateString);
-        } catch (IllegalArgumentException e) {
+            return LocalDateTime.parse(dateString, formatterISO8601DateTimeInstant);
+        } catch (DateTimeParseException e) {
         }
         try {
-            return formatterISO8601DateTimeFull.parseDateTime(dateString);
-        } catch (IllegalArgumentException e) {
+            return LocalDateTime.parse(dateString, formatterISO8601Full);
+        } catch (DateTimeParseException e) {
         }
         try {
-            return formatterISO8601DateTimeMS.parseDateTime(dateString);
-        } catch (IllegalArgumentException e) {
+            if (fromUTC) {
+                ZoneId zoneId = zoneOffset != null ? ZoneId.ofOffset("UTC", ZoneOffset.ofHours(zoneOffset)): ZoneId.systemDefault();
+                return LocalDateTime.parse(dateString, formatterISO8601DateTimeWithOffset)
+                        .atZone(zoneId)
+                        .withZoneSameInstant(ZoneOffset.UTC)
+                        .toLocalDateTime();
+            }
+            return LocalDateTime.parse(dateString, formatterISO8601DateTimeWithOffset);
+
+        } catch (DateTimeParseException e) {
         }
         try {
-            return formatterISO8601DateTime.parseDateTime(dateString);
-        } catch (IllegalArgumentException e) {
+            return LocalDateTime.parse(dateString, formatterISO8601DateTimeMS);
+        } catch (DateTimeParseException e) {
         }
         try {
-            return formatterISO8601Date.parseDateTime(dateString);
-        } catch (IllegalArgumentException e) {
+            return LocalDateTime.parse(dateString, formatterISO8601DateTime);
+        } catch (DateTimeParseException e) {
         }
         try {
-            return formatterISO8601YearMonth.parseDateTime(dateString);
-        } catch (IllegalArgumentException e) {
+            return LocalDate.parse(dateString, formatterISO8601Date).atStartOfDay();
+        } catch (DateTimeParseException e) {
         }
         try {
-            return formatterDEDateTime.parseDateTime(dateString);
-        } catch (IllegalArgumentException e) {
+            return LocalDate.parse(dateString, formatterISO8601YearMonth).atStartOfDay();
+        } catch (DateTimeParseException e) {
         }
         try {
-            return formatterENDateTime.parseDateTime(dateString);
-        } catch (IllegalArgumentException e) {
+            return LocalDateTime.parse(dateString, formatterDEDateTime);
+        } catch (DateTimeParseException e) {
         }
         try {
-            return formatterDEDate.parseDateTime(dateString);
-        } catch (IllegalArgumentException e) {
+            return LocalDateTime.parse(dateString, formatterENDateTime);
+        } catch (DateTimeParseException e) {
         }
         try {
-            return formatterENDate.parseDateTime(dateString);
-        } catch (IllegalArgumentException e) {
+            return LocalDate.parse(dateString, formatterDEDate).atStartOfDay();
+        } catch (DateTimeParseException e) {
         }
         try {
-            return formatterJPDate.parseDateTime(dateString);
-        } catch (IllegalArgumentException e) {
+            return LocalDate.parse(dateString, formatterENDate).atStartOfDay();
+        } catch (DateTimeParseException e) {
         }
         try {
-            return formatterCNDate.parseDateTime(dateString);
-        } catch (IllegalArgumentException e) {
+            return LocalDate.parse(dateString, formatterJPDate).atStartOfDay();
+        } catch (DateTimeParseException e) {
+        }
+        try {
+            return LocalDate.parse(dateString, formatterCNDate).atStartOfDay();
+        } catch (DateTimeParseException e) {
         }
 
         return null;
@@ -226,12 +263,73 @@ public class DateTools {
      * @return a {@link java.util.Date} object.
      */
     public static Date parseDateFromString(String dateString) {
-        DateTime dateTime = parseDateTimeFromString(dateString, false);
+        LocalDateTime dateTime = parseDateTimeFromString(dateString, false);
         if (dateTime != null) {
-            return dateTime.toDate();
+            return convertLocalDateTimeToDateViaInstant(dateTime, false);
         }
 
         return null;
+    }
+
+    /**
+     * 
+     * @param dateToConvert
+     * @param utc
+     * @return
+     */
+    public static Date convertLocalDateTimeToDateViaInstant(LocalDateTime dateToConvert, boolean utc) {
+        if (dateToConvert == null) {
+            throw new IllegalArgumentException("dateToConvert may not be null");
+        }
+        return Date.from(dateToConvert.atZone(utc ? ZoneOffset.UTC : ZoneOffset.systemDefault()).toInstant());
+    }
+
+    /**
+     * 
+     * @param dateToConvert
+     * @return
+     */
+    public static LocalDateTime convertDateToLocalDateTimeViaInstant(Date dateToConvert) {
+        if (dateToConvert == null) {
+            throw new IllegalArgumentException("dateToConvert may not be null");
+        }
+        return dateToConvert.toInstant()
+                .atZone(ZoneId.systemDefault())
+                .toLocalDateTime();
+    }
+
+    /**
+     * 
+     * @param date java.util.Date
+     * @param formatter
+     * @param utc
+     * @return
+     */
+    public static String format(Date date, DateTimeFormatter formatter, boolean utc) {
+        if (date == null) {
+            throw new IllegalArgumentException("date may not be null");
+        }
+
+        ZonedDateTime ld =
+                convertDateToLocalDateTimeViaInstant(date).atZone(utc ? ZoneOffset.UTC : ZoneOffset.systemDefault());
+        return ld.format(formatter);
+    }
+
+    /**
+     * 
+     * @param localDateTime
+     * @param formatter
+     * @param utc
+     * @return
+     */
+    public static String format(LocalDateTime localDateTime, DateTimeFormatter formatter, boolean utc) {
+        if (localDateTime == null) {
+            throw new IllegalArgumentException("localDateTime may not be null");
+        }
+
+        ZonedDateTime ld =
+                localDateTime.atZone(utc ? ZoneOffset.UTC : ZoneOffset.systemDefault());
+        return ld.format(formatter);
     }
 
     /**
@@ -244,11 +342,14 @@ public class DateTools {
      * @return a {@link java.lang.String} object.
      */
     public static String getLocalDate(Date date, String language) {
+        if (language == null) {
+            return format(convertDateToLocalDateTimeViaInstant(date), formatterENDateTimeNoSeconds, false);
+        }
         switch (language) {
             case "de":
-                return formatterDEDateTimeNoSeconds.print(date.getTime());
+                return format(convertDateToLocalDateTimeViaInstant(date), formatterDEDateTimeNoSeconds, false);
             default:
-                return formatterENDateTimeNoSeconds.print(date.getTime());
+                return format(convertDateToLocalDateTimeViaInstant(date), formatterENDateTimeNoSeconds, false);
         }
     }
 
@@ -260,16 +361,55 @@ public class DateTools {
      * @return a {@link java.lang.String} object.
      */
     public static String formatDate(Date date, Locale locale) {
+        if (date == null) {
+            return null;
+        }
+
         if (locale != null) {
             switch (locale.getLanguage()) {
                 case "de":
-                    return formatterDEDate.print(date.getTime());
+                    return format(convertDateToLocalDateTimeViaInstant(date), formatterDEDate, false);
                 case "en":
                 default:
-                    return formatterENDate.print(date.getTime());
+                    return format(convertDateToLocalDateTimeViaInstant(date), formatterENDate, false);
             }
         }
 
-        return formatterENDate.print(date.getTime());
+        return format(convertDateToLocalDateTimeViaInstant(date), formatterENDate, false);
+    }
+
+    /**
+     * 
+     * @param year
+     * @param month
+     * @param dayofMonth
+     * @param hour
+     * @param minute
+     * @return
+     */
+    public static Date createDate(int year, int month, int dayofMonth, int hour, int minute) {
+        return createDate(year, month, dayofMonth, hour, minute, false);
+    }
+
+    /**
+     * 
+     * @param year
+     * @param month
+     * @param dayofMonth
+     * @param hour
+     * @param minute
+     * @param useUTC
+     * @return
+     * @should create date correctly
+     */
+    public static Date createDate(int year, int month, int dayofMonth, int hour, int minute, boolean useUTC) {
+        return DateTools.convertLocalDateTimeToDateViaInstant(
+                LocalDateTime.now()
+                        .withYear(year)
+                        .withMonth(month)
+                        .withDayOfMonth(dayofMonth)
+                        .withHour(hour)
+                        .withMinute(minute),
+                useUTC);
     }
 }

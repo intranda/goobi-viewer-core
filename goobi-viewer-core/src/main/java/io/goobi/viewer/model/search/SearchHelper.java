@@ -683,7 +683,7 @@ public final class SearchHelper {
                 new StringBuilder(query).append(getAllSuffixes());
         return DataManager.getInstance()
                 .getSearchIndex()
-                .searchFacetsAndStatistics(sbQuery.toString(), facetFields, facetMinCount, getFieldStatistics);
+                .searchFacetsAndStatistics(sbQuery.toString(), null, facetFields, facetMinCount, getFieldStatistics);
     }
 
     /**
@@ -1356,7 +1356,7 @@ public final class SearchHelper {
 
         QueryResponse resp = DataManager.getInstance()
                 .getSearchIndex()
-                .searchFacetsAndStatistics(query, Collections.singletonList(facetFieldName), facetMinCount, facetPrefix, false);
+                .searchFacetsAndStatistics(query, null, Collections.singletonList(facetFieldName), facetMinCount, facetPrefix, false);
         FacetField facetField = resp.getFacetField(facetFieldName);
         List<String> ret = new ArrayList<>(facetField.getValueCount());
         for (Count count : facetField.getValues()) {
@@ -1565,12 +1565,12 @@ public final class SearchHelper {
 
         // logger.trace("getFilteredTermsFromIndex startsWith: {}", startsWith);
         String query = buildFinalQuery(sbQuery.toString(), false);
-        // logger.trace("getFilteredTermsFromIndex query: {}", query);
-        //        if (logger.isTraceEnabled()) {
-        //            for (String fq : filterQueries) {
-        //                logger.trace("getFilteredTermsFromIndex filter query: {}", fq);
-        //            }
-        //        }
+        logger.trace("getFilteredTermsFromIndex query: {}", query);
+        if (logger.isTraceEnabled()) {
+            for (String fq : filterQueries) {
+                logger.trace("getFilteredTermsFromIndex filter query: {}", fq);
+            }
+        }
 
         String facetField = SearchHelper.facetifyField(bmfc.getField());
         List<String> facetFields = new ArrayList<>();
@@ -1585,7 +1585,7 @@ public final class SearchHelper {
 
         // Facets
         if (rows == 0) {
-            return DataManager.getInstance().getSearchIndex().searchFacetsAndStatistics(query, facetFields, 1, startsWith, false);
+            return DataManager.getInstance().getSearchIndex().searchFacetsAndStatistics(query, filterQueries, facetFields, 1, startsWith, false);
         }
 
         // Docs
@@ -2261,6 +2261,7 @@ public final class SearchHelper {
      * @should add join statement if aggregateHits true
      * @return a {@link java.lang.String} object.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
+     * 
      */
     public static String buildFinalQuery(String rawQuery, boolean aggregateHits) throws IndexUnreachableException {
         return buildFinalQuery(rawQuery, aggregateHits, null);
@@ -2277,8 +2278,7 @@ public final class SearchHelper {
      * @return a {@link java.lang.String} object.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      */
-    public static String buildFinalQuery(String rawQuery, boolean aggregateHits, HttpServletRequest request)
-            throws IndexUnreachableException {
+    public static String buildFinalQuery(String rawQuery, boolean aggregateHits, HttpServletRequest request) throws IndexUnreachableException {
         StringBuilder sbQuery = new StringBuilder();
         if (aggregateHits) {
             sbQuery.append("{!join from=PI_TOPSTRUCT to=PI}");
@@ -2297,7 +2297,7 @@ public final class SearchHelper {
 
     /**
      * @param request
-     * @return
+     * @return Filter query suffix string from the HTTP session
      */
     static String getFilterQuerySuffix(HttpServletRequest request) {
         if (request == null) {
@@ -2311,7 +2311,22 @@ public final class SearchHelper {
             return null;
         }
 
-        return (String) session.getAttribute(PARAM_NAME_FILTER_QUERY_SUFFIX);
+        String ret = (String) session.getAttribute(PARAM_NAME_FILTER_QUERY_SUFFIX);
+        // If not suffix generated yet, initiate update
+        if (ret == null) {
+            try {
+                updateFilterQuerySuffix(request);
+                ret = (String) session.getAttribute(PARAM_NAME_FILTER_QUERY_SUFFIX);
+            } catch (IndexUnreachableException e) {
+                logger.error(e.getMessage(), e);
+            } catch (PresentationException e) {
+                logger.error(e.getMessage());
+            } catch (DAOException e) {
+                logger.error(e.getMessage(), e);
+            }
+        }
+
+        return ret;
     }
 
     /**

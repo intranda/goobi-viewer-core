@@ -42,6 +42,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import io.goobi.viewer.controller.DataManager;
+import io.goobi.viewer.controller.FileTools;
 import io.goobi.viewer.controller.NetTools;
 import io.goobi.viewer.controller.SolrConstants;
 import io.goobi.viewer.controller.SolrConstants.DocType;
@@ -49,6 +50,7 @@ import io.goobi.viewer.controller.SolrSearchIndex;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
+import io.goobi.viewer.exceptions.RecordNotFoundException;
 import io.goobi.viewer.managedbeans.UserBean;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.model.security.user.IpRange;
@@ -133,6 +135,7 @@ public class AccessConditionUtils {
      * @should use correct field name for AV files
      * @should use correct file name for text files
      * @should escape file name for wildcard search correctly
+     * @should work correctly with urls
      */
     static String[] generateAccessCheckQuery(String identifier, String fileName) {
         if (fileName == null) {
@@ -142,24 +145,16 @@ public class AccessConditionUtils {
         String[] ret = new String[2];
         StringBuilder sbQuery = new StringBuilder();
         String useFileField = SolrConstants.FILENAME;
-        String useFileName = Paths.get(fileName).getFileName().toString();
+        String useFileName = FileTools.getPathFromUrlString(fileName).getFileName().toString();
         boolean wildcard = false;
         // Different media types have the file name in different fields
         String extension = FilenameUtils.getExtension(fileName).toLowerCase();
         switch (extension) {
             case "webm":
-                useFileField = SolrConstants.FILENAME_WEBM;
-                break;
             case "mp4":
-                useFileField = SolrConstants.FILENAME_MP4;
-                break;
             case "mp3":
-                // if the mime type in METS is not audio/mpeg3 but something else, access will be false
-                useFileField = SolrConstants.FILENAME_MPEG3;
-                break;
             case "ogg":
             case "ogv":
-                useFileField = SolrConstants.FILENAME_OGG;
                 break;
             case "txt":
             case "xml":
@@ -300,53 +295,58 @@ public class AccessConditionUtils {
     public static boolean checkAccessPermissionByIdentifierAndLogId(String identifier, String logId, String privilegeName, HttpServletRequest request)
             throws IndexUnreachableException, DAOException {
         logger.trace("checkAccessPermissionByIdentifierAndLogId({}, {}, {})", identifier, logId, privilegeName);
-        if (StringUtils.isNotEmpty(identifier)) {
-            StringBuilder sbQuery = new StringBuilder("+");
-            if (StringUtils.isNotEmpty(logId)) {
-                // Sub-docstruct
-                sbQuery.append(SolrConstants.PI_TOPSTRUCT)
-                        .append(':')
-                        .append(identifier)
-                        .append(" +")
-                        .append(SolrConstants.LOGID)
-                        .append(':')
-                        .append(logId);
-            } else {
-                // Top document
-                sbQuery.append(SolrConstants.PI).append(':').append(identifier);
-            }
-            // Only query docstruct docs because metadata/event docs may not contain values defined in the license type filter query
-            sbQuery.append(" +").append(SolrConstants.DOCTYPE).append(':').append(DocType.DOCSTRCT.name());
-            try {
-                Set<String> requiredAccessConditions = new HashSet<>();
-                logger.trace(sbQuery.toString());
-                SolrDocumentList results = DataManager.getInstance()
-                        .getSearchIndex()
-                        .search(sbQuery.toString(), 1, null, Arrays.asList(new String[] { SolrConstants.ACCESSCONDITION }));
-                if (results != null) {
-                    for (SolrDocument doc : results) {
-                        Collection<Object> fieldsAccessConddition = doc.getFieldValues(SolrConstants.ACCESSCONDITION);
-                        if (fieldsAccessConddition != null) {
-                            for (Object accessCondition : fieldsAccessConddition) {
-                                requiredAccessConditions.add((String) accessCondition);
-                                logger.trace("{}", accessCondition.toString());
-                            }
+        if (StringUtils.isEmpty(identifier)) {
+            return false;
+        }
+
+        StringBuilder sbQuery = new StringBuilder("+");
+        if (StringUtils.isNotEmpty(logId)) {
+            // Sub-docstruct
+            sbQuery.append(SolrConstants.PI_TOPSTRUCT)
+                    .append(':')
+                    .append(identifier)
+                    .append(" +")
+                    .append(SolrConstants.LOGID)
+                    .append(':')
+                    .append(logId)
+                    .append(" +")
+                    .append(SolrConstants.DOCTYPE)
+                    .append(':')
+                    .append(DocType.DOCSTRCT.name());
+        } else {
+            // Top document
+            sbQuery.append(SolrConstants.PI).append(':').append(identifier);
+        }
+
+        try {
+            Set<String> requiredAccessConditions = new HashSet<>();
+            // logger.trace(sbQuery.toString());
+            SolrDocumentList results = DataManager.getInstance()
+                    .getSearchIndex()
+                    .search(sbQuery.toString(), 1, null, Arrays.asList(new String[] { SolrConstants.ACCESSCONDITION }));
+            if (results != null) {
+                for (SolrDocument doc : results) {
+                    Collection<Object> fieldsAccessConddition = doc.getFieldValues(SolrConstants.ACCESSCONDITION);
+                    if (fieldsAccessConddition != null) {
+                        for (Object accessCondition : fieldsAccessConddition) {
+                            requiredAccessConditions.add((String) accessCondition);
+                            // logger.trace("{}", accessCondition.toString());
                         }
                     }
                 }
-
-                User user = BeanUtils.getUserFromRequest(request);
-                if (user == null) {
-                    UserBean userBean = BeanUtils.getUserBean();
-                    if (userBean != null) {
-                        user = userBean.getUser();
-                    }
-                }
-                return checkAccessPermission(DataManager.getInstance().getDao().getRecordLicenseTypes(), requiredAccessConditions,
-                        privilegeName, user, NetTools.getIpAddress(request), sbQuery.toString());
-            } catch (PresentationException e) {
-                logger.debug("PresentationException thrown here: {}", e.getMessage());
             }
+
+            User user = BeanUtils.getUserFromRequest(request);
+            if (user == null) {
+                UserBean userBean = BeanUtils.getUserBean();
+                if (userBean != null) {
+                    user = userBean.getUser();
+                }
+            }
+            return checkAccessPermission(DataManager.getInstance().getDao().getRecordLicenseTypes(), requiredAccessConditions,
+                    privilegeName, user, NetTools.getIpAddress(request), sbQuery.toString());
+        } catch (PresentationException e) {
+            logger.debug("PresentationException thrown here: {}", e.getMessage());
         }
 
         return false;
@@ -853,13 +853,14 @@ public class AccessConditionUtils {
             // Check whether *all* relevant license types allow the requested privilege by default. As soon as one doesn't, set to false.
             for (LicenseType licenseType : relevantLicenseTypes) {
                 requiredAccessConditions.add(licenseType.getName());
-                if (!licenseType.getPrivileges().contains(privilegeName) && !licenseType.isOpenAccess() && !licenseType.isRestrictionsExpired(query)) {
-                    logger.trace("LicenseType '{}' does not allow the action '{}' by default.", licenseType.getName(), privilegeName);
+                if (!licenseType.getPrivileges().contains(privilegeName) && !licenseType.isOpenAccess()
+                        && !licenseType.isRestrictionsExpired(query)) {
+                    // logger.trace("LicenseType '{}' does not allow the action '{}' by default.", licenseType.getName(), privilegeName);
                     licenseTypeAllowsPriv = false;
                 }
             }
             if (licenseTypeAllowsPriv) {
-                logger.trace("Privilege '{}' is allowed by default in all license types.", privilegeName);
+                // logger.trace("Privilege '{}' is allowed by default in all license types.", privilegeName);
                 accessMap.put(key, Boolean.TRUE);
             } else if (isFreeOpenAccess(requiredAccessConditions, relevantLicenseTypes)) {
                 logger.trace("Privilege '{}' is OpenAccess", privilegeName);
@@ -1002,5 +1003,66 @@ public class AccessConditionUtils {
         }
 
         return ret;
+    }
+
+    /**
+     * 
+     * @param pi
+     * @return
+     * @throws PresentationException
+     * @throws IndexUnreachableException
+     * @throws DAOException
+     * @throws RecordNotFoundException
+     * @should throw RecordNotFoundException if record not found
+     * @should return 100 if record has no quota value
+     * @should return 100 if record open access
+     * @should return 0 if no license configured
+     * @should return actual quota value if found
+     */
+    public static int getPdfDownloadQuotaForRecord(String pi)
+            throws PresentationException, IndexUnreachableException, DAOException, RecordNotFoundException {
+        if (StringUtils.isEmpty(pi)) {
+            return 0;
+        }
+
+        SolrDocument doc = DataManager.getInstance()
+                .getSearchIndex()
+                .getFirstDoc("+" + SolrConstants.PI + ":\"" + pi + '"',
+                        Arrays.asList(new String[] { SolrConstants.ACCESSCONDITION, SolrConstants.ACCESSCONDITION_PDF_PERCENTAGE_QUOTA }));
+        if (doc == null) {
+            throw new RecordNotFoundException(pi + " not found in index");
+        }
+        if (!doc.containsKey(SolrConstants.ACCESSCONDITION_PDF_PERCENTAGE_QUOTA)) {
+            logger.trace("Record '{}' has no field '{}'", pi, SolrConstants.ACCESSCONDITION_PDF_PERCENTAGE_QUOTA);
+            return 100;
+        }
+
+        List<String> requiredAccessConditions = SolrSearchIndex.getMetadataValues(doc, SolrConstants.ACCESSCONDITION);
+        // No relevant access condition values
+        if (requiredAccessConditions == null || requiredAccessConditions.isEmpty()
+                || requiredAccessConditions.get(0).equals(SolrConstants.OPEN_ACCESS_VALUE)) {
+            logger.trace("Record '{}' is open access", pi);
+            return 100;
+        }
+
+        List<LicenseType> relevantLicenseTypes = DataManager.getInstance().getDao().getLicenseTypes(requiredAccessConditions);
+        // Deny access if record's license types aren't configured
+        if (relevantLicenseTypes.isEmpty()) {
+            logger.trace("Record '{}' hsd access conditions that aren't configured in the database", pi);
+            return 0;
+        }
+        // Check whether this record has an access condition that implements a PDF quota
+        for (LicenseType licenseType : relevantLicenseTypes) {
+            if (licenseType.isPdfDownloadQuota()) {
+                try {
+                    return Integer.valueOf((String) doc.getFieldValue(SolrConstants.ACCESSCONDITION_PDF_PERCENTAGE_QUOTA));
+                } catch (NumberFormatException e) {
+                    logger.error(e.getMessage());
+                    return 0;
+                }
+            }
+        }
+
+        return 100;
     }
 }

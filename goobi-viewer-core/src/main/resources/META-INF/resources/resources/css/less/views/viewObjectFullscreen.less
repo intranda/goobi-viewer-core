@@ -419,9 +419,14 @@
 			padding-left: 0;
 			border-left: 1px solid @fsMiddlegray;
 		}
+		&__view-sidebar-accordeon-panel {
+			&.fs-imagefilters,
+			&.share-image-area {
+				display: none;
+			}
+		}
 	}
 }
-
 /* BREAKPOINT FOR SMARTPHONES */
 @media screen and (max-width: @xSmallBreakpoint) {
 	.fullscreen {

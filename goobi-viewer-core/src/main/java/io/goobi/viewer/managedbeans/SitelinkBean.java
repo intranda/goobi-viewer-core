@@ -96,7 +96,7 @@ public class SitelinkBean implements Serializable {
 
         filterQuery = SearchHelper.buildFinalQuery(filterQuery, false);
         QueryResponse qr =
-                DataManager.getInstance().getSearchIndex().searchFacetsAndStatistics(filterQuery, Collections.singletonList(field), 1, false);
+                DataManager.getInstance().getSearchIndex().searchFacetsAndStatistics(filterQuery, null, Collections.singletonList(field), 1, false);
         if (qr != null) {
             FacetField facet = qr.getFacetField(field);
             if (facet != null) {

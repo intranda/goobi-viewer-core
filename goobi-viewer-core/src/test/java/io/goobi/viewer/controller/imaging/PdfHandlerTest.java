@@ -65,6 +65,6 @@ public class PdfHandlerTest {
 
         String url = handler.getPdfUrl(pi, divId, watermarkId, watermarkText, label);
         Assert.assertEquals(ConfigurationTest.APPLICATION_ROOT_URL
-                + "api/v1/records/1234/sections/LOG_0003/pdf?watermarkText=watermark+text&watermarkId=footerId", url);
+                + "api/v1/records/1234/sections/LOG_0003/pdf/?watermarkText=watermark+text&watermarkId=footerId", url);
     }
 }

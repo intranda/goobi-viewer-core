@@ -1128,6 +1128,7 @@ public final class SolrSearchIndex {
      * Returns facets for the given facet field list. No actual docs are returned since they aren't necessary.
      *
      * @param query The query to use.
+     * @param filterQueries Optional filter queries
      * @param facetFields List of facet fields.
      * @param facetMinCount a int.
      * @param getFieldStatistics If true, field statistics will be generated for every facet field.
@@ -1138,15 +1139,17 @@ public final class SolrSearchIndex {
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      */
-    public QueryResponse searchFacetsAndStatistics(String query, List<String> facetFields, int facetMinCount, boolean getFieldStatistics)
+    public QueryResponse searchFacetsAndStatistics(String query, List<String> filterQueries, List<String> facetFields, int facetMinCount,
+            boolean getFieldStatistics)
             throws PresentationException, IndexUnreachableException {
-        return searchFacetsAndStatistics(query, facetFields, facetMinCount, null, getFieldStatistics);
+        return searchFacetsAndStatistics(query, filterQueries, facetFields, facetMinCount, null, getFieldStatistics);
     }
 
     /**
      * Returns facets for the given facet field list. No actual docs are returned since they aren't necessary.
      *
      * @param query The query to use.
+     * @param filterQueries Optional filter queries
      * @param facetFields List of facet fields.
      * @param facetMinCount a int.
      * @param facetPrefix The facet field value must start with these characters. Ignored if null or blank
@@ -1158,11 +1161,18 @@ public final class SolrSearchIndex {
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      */
-    public QueryResponse searchFacetsAndStatistics(String query, List<String> facetFields, int facetMinCount, String facetPrefix,
+    public QueryResponse searchFacetsAndStatistics(String query, List<String> filterQueries, List<String> facetFields, int facetMinCount,
+            String facetPrefix,
             boolean getFieldStatistics) throws PresentationException, IndexUnreachableException {
         SolrQuery solrQuery = new SolrQuery(query);
         solrQuery.setStart(0);
         solrQuery.setRows(0);
+
+        if (filterQueries != null && !filterQueries.isEmpty()) {
+            for (String fq : filterQueries) {
+                solrQuery.addFilterQuery(fq);
+            }
+        }
 
         for (String field : facetFields) {
             solrQuery.addField(field);
@@ -1309,6 +1319,7 @@ public final class SolrSearchIndex {
      */
     public static boolean isQuerySyntaxError(Exception e) {
         return e.getMessage() != null && (e.getMessage().startsWith("org.apache.solr.search.SyntaxError")
+                || e.getMessage().contains("Cannot parse")
                 || e.getMessage().contains("Invalid Number")
                 || e.getMessage().contains("undefined field")
                 || e.getMessage().contains("field can't be found")

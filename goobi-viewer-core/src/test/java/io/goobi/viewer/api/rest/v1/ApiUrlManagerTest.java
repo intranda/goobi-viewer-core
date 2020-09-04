@@ -35,8 +35,8 @@ public class ApiUrlManagerTest {
     private final static String PI = "12345";
     private final static String DIVID = "LOG_0003";
     private final static String HOST_URL = "https://viewer/api/v1/";
-    private final static String PATH_FINAL = "https://viewer/api/v1/records/12345/sections/LOG_0003/pdf";
-    private final static String PATH_FINAL_QUERIES = "https://viewer/api/v1/records/12345/sections/LOG_0003/pdf?max=1&author=Mia+Mustermann&watermarkText=Hosting+url%3A+http%3A%2F%2Fsample.org";
+    private final static String PATH_FINAL = "https://viewer/api/v1/records/12345/sections/LOG_0003/pdf/";
+    private final static String PATH_FINAL_QUERIES = "https://viewer/api/v1/records/12345/sections/LOG_0003/pdf/?max=1&author=Mia+Mustermann&watermarkText=Hosting+url%3A+http%3A%2F%2Fsample.org";
 
     private final static String QUERY_PARAM_MAX = "max";
     private final static String QUERY_PARAM_MAX_VALUE = "1";

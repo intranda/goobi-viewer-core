@@ -34,8 +34,6 @@ import org.slf4j.LoggerFactory;
 
 import de.unigoettingen.sub.commons.util.PathConverter;
 import io.goobi.viewer.api.rest.AbstractApiUrlManager;
-import io.goobi.viewer.api.rest.AbstractApiUrlManager.ApiInfo;
-import io.goobi.viewer.api.rest.v1.ApiUrls;
 import io.goobi.viewer.controller.Configuration;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.StringTools;

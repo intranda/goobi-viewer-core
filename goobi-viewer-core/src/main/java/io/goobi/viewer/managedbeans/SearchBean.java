@@ -222,6 +222,7 @@ public class SearchBean implements SearchInterface, Serializable {
      * {@inheritDoc}
      *
      * Action method for search buttons (simple search).
+     * 
      * @should not reset facets
      */
     @Override
@@ -1418,7 +1419,7 @@ public class SearchBean implements SearchInterface, Serializable {
             currentHitIndex++;
         }
         //if we leave the loop without returning, no hit was found and currentHitIndex should be -1
-        currentHitIndex= -1;
+        currentHitIndex = -1;
     }
 
     /**
@@ -1604,7 +1605,7 @@ public class SearchBean implements SearchInterface, Serializable {
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
-     * @throws IllegalRequestException 
+     * @throws IllegalRequestException
      */
     public List<StringPair> getAdvancedSearchSelectItems(String field, String language, boolean hierarchical)
             throws PresentationException, IndexUnreachableException, DAOException {
@@ -1691,7 +1692,7 @@ public class SearchBean implements SearchInterface, Serializable {
      * This method shouldn't throw exceptions, otherwise it can cause an IllegalStateException.
      *
      * @return a {@link java.util.List} object.
-     * @throws IllegalRequestException 
+     * @throws IllegalRequestException
      */
     public List<StringPair> getAllCollections() throws IllegalRequestException {
         //        NavigationHelper navigationHelper = BeanUtils.getNavigationHelper();
@@ -1720,9 +1721,10 @@ public class SearchBean implements SearchInterface, Serializable {
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
-     * @throws IllegalRequestException 
+     * @throws IllegalRequestException
      */
-    public List<StringPair> getAllCollections(String language) throws PresentationException, IndexUnreachableException, DAOException, IllegalRequestException {
+    public List<StringPair> getAllCollections(String language)
+            throws PresentationException, IndexUnreachableException, DAOException, IllegalRequestException {
         return getAdvancedSearchSelectItems(SolrConstants.DC, language, true);
     }
 
@@ -2090,7 +2092,8 @@ public class SearchBean implements SearchInterface, Serializable {
             facesContext.getExternalContext().setResponseContentType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
             facesContext.getExternalContext()
                     .setResponseHeader("Content-Disposition", "attachment;filename=\"viewer_search_"
-                            + DateTools.formatterISO8601DateTime.print(System.currentTimeMillis()) + ".xlsx\"");
+                            + DateTools.format(new Date(), DateTools.formatterISO8601DateTime, false)
+                            + ".xlsx\"");
             return wb;
         } catch (IndexUnreachableException e) {
             logger.error(e.getMessage(), e);

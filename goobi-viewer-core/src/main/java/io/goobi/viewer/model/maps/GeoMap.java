@@ -140,8 +140,10 @@ public class GeoMap {
     @Column(name = "marker_title_field")
     private String markerTitleField = "MD_VALUE";
     
+    @Transient
     private String featuresAsString = null;
     
+    @Transient
     private boolean showPopover = true;
 
     /**

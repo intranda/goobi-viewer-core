@@ -117,4 +117,9 @@ public interface BrowseElementInfo {
      */
     public IMetadataValue getTranslationsForName();
 
+    /**
+     * @return
+     */
+    IMetadataValue getTranslationsForDescription();
+
 }

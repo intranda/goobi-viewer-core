@@ -40,6 +40,14 @@
 		<action onPostback="false">#{searchBean.setActiveSearchType(0)}</action>
 	</url-mapping>
 	
+	<!-- IMPRINT -->
+	<url-mapping id="imprint">
+		<pattern value="/imprint/" />
+		<view-id value="/imprint.xhtml" />
+		<action onPostback="false">#{navigationHelper.resetTheme}</action>
+		<action onPostback="false">#{searchBean.setActiveSearchType(0)}</action>
+	</url-mapping>	
+	
 	<!-- TAGS -->
 	<url-mapping id="tags">
 		<pattern value="/tags/" />

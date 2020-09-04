@@ -15,7 +15,11 @@
  */
 package io.goobi.viewer.model.crowdsourcing.campaigns;
 
+import java.io.IOException;
 import java.net.URI;
+import java.time.Duration;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -50,10 +54,9 @@ import javax.persistence.TemporalType;
 import javax.persistence.Transient;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.solr.client.solrj.SolrServerException;
+import org.apache.solr.client.solrj.impl.BaseHttpSolrClient.RemoteSolrException;
 import org.eclipse.persistence.annotations.PrivateOwned;
-import org.joda.time.DateTime;
-import org.joda.time.Days;
-import org.joda.time.LocalDate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -70,6 +73,7 @@ import io.goobi.viewer.controller.SolrConstants;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
+import io.goobi.viewer.faces.validators.SolrQueryValidator;
 import io.goobi.viewer.managedbeans.CmsMediaBean;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.model.cms.CMSContentItem;
@@ -128,7 +132,8 @@ public class Campaign implements CMSMediaHolder {
 
     private static final Logger logger = LoggerFactory.getLogger(Campaign.class);
 
-    private static final String URI_ID_TEMPLATE = DataManager.getInstance().getConfiguration().getRestApiUrl().replace("/rest", "/api/v1") + "crowdsourcing/campaigns/{id}";
+    private static final String URI_ID_TEMPLATE =
+            DataManager.getInstance().getConfiguration().getRestApiUrl().replace("/rest", "/api/v1") + "crowdsourcing/campaigns/{id}";
     private static final String URI_ID_REGEX = ".*/crowdsourcing/campaigns/(\\d+)/?$";
 
     @Id
@@ -384,14 +389,14 @@ public class Campaign implements CMSMediaHolder {
      * @should return -1 if no dateStart
      * @should calculate days correctly
      */
-    public int getDaysBeforeStart() {
+    public long getDaysBeforeStart() {
         if (dateStart == null) {
             return -1;
         }
 
-        LocalDate now = new DateTime().toLocalDate();
-        LocalDate start = new DateTime(dateStart).toLocalDate();
-        return Math.max(0, Days.daysBetween(now, start).getDays());
+        LocalDateTime now = LocalDate.now().atStartOfDay();
+        LocalDateTime start = DateTools.convertDateToLocalDateTimeViaInstant(dateStart);
+        return Math.max(0L, Duration.between(now, start).toDays());
     }
 
     /**
@@ -402,14 +407,14 @@ public class Campaign implements CMSMediaHolder {
      * @should return -1 if no dateEnd
      * @should calculate days correctly
      */
-    public int getDaysLeft() {
+    public long getDaysLeft() {
         if (dateEnd == null) {
             return -1;
         }
 
-        LocalDate now = new DateTime().toLocalDate();
-        LocalDate end = new DateTime(dateEnd).toLocalDate();
-        return Math.max(0, Days.daysBetween(now, end).getDays());
+        LocalDateTime now = LocalDate.now().atStartOfDay();
+        LocalDateTime end = DateTools.convertDateToLocalDateTimeViaInstant(dateEnd);
+        return Math.max(0L, Duration.between(now, end).toDays());
     }
 
     /**
@@ -421,7 +426,7 @@ public class Campaign implements CMSMediaHolder {
      */
     public String getDaysLeftAsString() {
         if (getDateEnd() != null) {
-            int days = getDaysLeft();
+            long days = getDaysLeft();
             return Long.toString(days);
         }
         return "\u221e";
@@ -443,8 +448,8 @@ public class Campaign implements CMSMediaHolder {
             return true;
         }
 
-        LocalDate now = new DateTime().toLocalDate();
-        LocalDate start = new DateTime(dateStart).toLocalDate();
+        LocalDateTime now = LocalDateTime.now();
+        LocalDateTime start = DateTools.convertDateToLocalDateTimeViaInstant(dateStart);
 
         return now.isEqual(start) || now.isAfter(start);
     }
@@ -464,8 +469,8 @@ public class Campaign implements CMSMediaHolder {
             return false;
         }
 
-        LocalDate now = new DateTime().toLocalDate();
-        LocalDate end = new DateTime(dateEnd).toLocalDate();
+        LocalDateTime now = LocalDateTime.now();
+        LocalDateTime end = DateTools.convertDateToLocalDateTimeViaInstant(dateEnd);
 
         return now.isAfter(end);
     }
@@ -695,7 +700,7 @@ public class Campaign implements CMSMediaHolder {
      * @return a {@link java.lang.Long} object.
      */
     public static Long getId(URI idAsURI) {
-        
+
         Matcher matcher = Pattern.compile(URI_ID_REGEX).matcher(idAsURI.toString());
         if (matcher.find()) {
             String idString = matcher.group(1);
@@ -828,7 +833,7 @@ public class Campaign implements CMSMediaHolder {
             return null;
         }
 
-        return DateTools.formatterISO8601Date.print(dateStart.getTime());
+        return DateTools.format(dateStart, DateTools.formatterISO8601Date, false);
     }
 
     /**
@@ -882,7 +887,7 @@ public class Campaign implements CMSMediaHolder {
             return null;
         }
 
-        return DateTools.formatterISO8601Date.print(dateEnd.getTime());
+        return DateTools.format(dateEnd, DateTools.formatterISO8601Date, false);
     }
 
     /**
@@ -1119,7 +1124,18 @@ public class Campaign implements CMSMediaHolder {
      */
     private List<String> getSolrQueryResults() throws PresentationException, IndexUnreachableException {
         if (this.solrQueryResults == null) {
-            String query = "+(" + getSolrQuery() + ") +" + SolrConstants.ISWORK + ":true";
+            String query = "+" + SolrConstants.ISWORK + ":true";
+            // Validate campaign query before adding it
+            try {
+                SolrQueryValidator.getHitCount(solrQuery);
+                query += " +(" + solrQuery + ")";
+            } catch (SolrServerException e) {
+                logger.error(e.getMessage());
+            } catch (IOException e) {
+                logger.error(e.getMessage());
+            } catch (RemoteSolrException e) {
+                logger.error(e.getMessage());
+            }
             this.solrQueryResults = DataManager.getInstance()
                     .getSearchIndex()
                     .search(query, Collections.singletonList(SolrConstants.PI))
@@ -1150,18 +1166,17 @@ public class Campaign implements CMSMediaHolder {
         if (user != null) {
             if (user.isSuperuser()) {
                 return true;
-            } else {
-                if (status.equals(CampaignRecordStatus.ANNOTATE)) {
-                    return !Optional.ofNullable(this.statistics.get(pi)).map(s -> s.getReviewers()).orElse(Collections.emptyList()).contains(user);
-                } else if (status.equals(CampaignRecordStatus.REVIEW)) {
-                    return !Optional.ofNullable(this.statistics.get(pi)).map(s -> s.getAnnotators()).orElse(Collections.emptyList()).contains(user);
-                } else {
-                    return true;
-                }
             }
-        } else {
-            return true;
+            if (status.equals(CampaignRecordStatus.ANNOTATE)) {
+                return !Optional.ofNullable(this.statistics.get(pi)).map(s -> s.getReviewers()).orElse(Collections.emptyList()).contains(user);
+            } else if (status.equals(CampaignRecordStatus.REVIEW)) {
+                return !Optional.ofNullable(this.statistics.get(pi)).map(s -> s.getAnnotators()).orElse(Collections.emptyList()).contains(user);
+            } else {
+                return true;
+            }
         }
+
+        return true;
     }
 
     /**

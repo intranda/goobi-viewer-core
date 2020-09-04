@@ -153,7 +153,7 @@ public class RecordResourceTest extends AbstractRestApiTest{
      */
     @Test
     public void testGetAnnotationPageForRecord() throws JsonMappingException, JsonProcessingException {
-        try(Response response = target(urls.path(RECORDS_RECORD, RECORDS_ANNOTATIONS).params(PI_ANNOTATIONS).build() + "/1")
+        try(Response response = target(urls.path(RECORDS_RECORD, RECORDS_ANNOTATIONS).params(PI_ANNOTATIONS).build() + "1/")
                 .request()
                 .accept(MediaType.APPLICATION_JSON)
                 .get()) {
@@ -193,7 +193,7 @@ public class RecordResourceTest extends AbstractRestApiTest{
      */
     @Test
     public void testGetCommentPageForRecord() throws JsonMappingException, JsonProcessingException {
-        try(Response response = target(urls.path(RECORDS_RECORD, RECORDS_COMMENTS).params(PI_ANNOTATIONS).build() + "/1")
+        try(Response response = target(urls.path(RECORDS_RECORD, RECORDS_COMMENTS).params(PI_ANNOTATIONS).build() + "1/")
                 .request()
                 .accept(MediaType.APPLICATION_JSON)
                 .get()) {

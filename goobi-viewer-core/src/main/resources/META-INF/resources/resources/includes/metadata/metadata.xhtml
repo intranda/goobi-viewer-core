@@ -1,4 +1,5 @@
-<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+<ui:composition 
+	xmlns="http://www.w3.org/1999/xhtml"
 	xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
 	xmlns:c="http://java.sun.com/jsp/jstl/core"
 	xmlns:h="http://xmlns.jcp.org/jsf/html"
@@ -10,14 +11,26 @@
 	xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components"
 	xmlns:widgetComponent="http://xmlns.jcp.org/jsf/composite/components/widgets">
 
-	<h2>#{activeDocumentBean.viewManager.metadataViewOnly ? activeDocumentBean.viewManager.topDocument.label : msg.bibData}</h2>
-
 	<!-- CHANGE RECORD LOCALE -->
     <viewerComponent:changeRecordLocale />
 
-
     <!-- METADATA -->
     <div id="metadataElementWrapper" class="metadata">
+	    <div class="metadata__title-wrapper">
+	    	<h2 class="metadata__title">#{activeDocumentBean.viewManager.metadataViewOnly ? activeDocumentBean.viewManager.topDocument.label : msg.bibData}</h2>
+            <!-- ADD TO BOOKMARK -->
+            <ui:fragment rendered="#{configurationBean.bookshelvesEnabled and activeDocumentBean.viewManager.metadataViewOnly}">
+                    <button type="button" class="btn btn--icon metadata__bookmark-button"
+                        data-bookmark-list-type="add" 
+                        data-pi="#{activeDocumentBean.viewManager.pi}"
+                        data-page="#{activeDocumentBean.viewManager.currentImageNo}">
+                        <span data-bookmark-list-title-add="#{msg.bookmarkList_addToBookmarkList}" data-bookmark-list-title-added="#{msg.bookmarkList_removeFromBookmarkList}" data-toggle="tooltip" data-placement="#{cc.attrs.tooltipPlacement}">
+                            <i class="fa #{msg.bookmarkList_icon}" aria-hidden="true" ></i>
+                            <i class="fa #{msg.bookmarkList_iconAdded}" aria-hidden="true"></i>
+                        </span>
+                    </button>
+            </ui:fragment>
+	    </div>
         <ui:repeat value="#{metadataBean.metadataElementList}" var="metadataElement" varStatus="status">
             <ui:include src="/resources/includes/metadata/metadataElement.xhtml">
             	<ui:param name="metadataElement" value="#{metadataElement}"/>
@@ -34,10 +47,26 @@
                                 <dt title="#{msg[metadata.label]}">
                                     <h:outputText value="#{msg[metadata.label]}:" escape="false" />
                                 </dt>
-                                <h:panelGroup>
+                                <!-- grouped="true" -->
+                                <h:panelGroup rendered="#{metadata.group}">
                                     <dd>
                                         <ui:repeat value="#{metadata.values}" var="val">
-                                            <span class="metadata__event-value">
+                                            <h:outputFormat value="#{msg[val.masterValue]}" escape="false">
+                                                <c:forEach begin="0" end="#{configurationBean.metadataParamNumber - 1}" var="ind">
+                                                    <f:param value="#{val.getParamLabelWithColon(ind)}" />
+                                                    <f:param value="#{val.getComboValueShort(ind)}" />
+                                                </c:forEach>
+                                            </h:outputFormat>
+                                            <br />
+                                        </ui:repeat>
+                                    </dd>
+                                </h:panelGroup>
+    
+                                <!-- grouped="false" -->
+                                <h:panelGroup rendered="#{!metadata.group}">
+                                    <dd>
+                                        <ui:repeat value="#{metadata.values}" var="val">
+                                            <span class="metadata__element-value">
                                                 <h:outputFormat value="#{msg[val.masterValue]}" escape="false">
                                                     <c:forEach begin="0" end="#{configurationBean.metadataParamNumber - 1}" var="ind">
                                                         <f:param value="#{val.getComboValueShort(ind)}" />

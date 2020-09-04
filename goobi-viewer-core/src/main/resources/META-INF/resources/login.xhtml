@@ -14,19 +14,24 @@
 	        	<f:viewParam name="from" value="#{userBean.redirectUrl}" />
 	        </f:metadata>
 	    </ui:define>
+	    
+	  <meta name="git-revision" content="#{navigationHelper.buildVersion}" />
 
       <h:head profile="http://dublincore.org/documents/dcq-html/">
 
 		<ui:insert name="head" />
 
 		<title>Goobi viewer - Login</title>
+		
+		<!-- FAVICON -->
+    	<link rel="shortcut icon" href="#{request.contextPath}/resources/themes/#{navigationHelper.theme}/images/template/favicon.ico" />
 
 	    <!-- BASIC CSS -->
-	    <link type="text/css" rel="stylesheet" href="#{request.contextPath}/resources/css/libs/bs/bootstrap.custom.css" />
+	    <link type="text/css" rel="stylesheet" href="#{request.contextPath}/resources/css/libs/bs/bootstrap.custom.css?${navigationHelper.buildVersion}" />
 	    <link type="text/css" rel="stylesheet" href="#{request.contextPath}/resources/css/libs/jQueryUI-1.12.1/jquery-ui.min.css" />
 	    <link type="text/css" rel="stylesheet" href="#{request.contextPath}/resources/css/libs/jQueryUI-1.12.1/jquery-ui.structure.min.css" />
 	    <link type="text/css" rel="stylesheet" href="#{request.contextPath}/resources/css/libs/font-awesome.min.css" />
-		<link type="text/css" rel="stylesheet" href="#{request.contextPath}/resources/css/dist/viewer.min.css" />
+		<link type="text/css" rel="stylesheet" href="#{request.contextPath}/resources/css/dist/viewer.min.css?${navigationHelper.buildVersion}" />
 
 		<!-- CUSTOM CSS -->
 		<link type="text/css" rel="stylesheet" href="#{request.contextPath}/resources/themes/#{navigationHelper.theme}/css/dist/#{navigationHelper.theme}.min.css" />
@@ -36,14 +41,18 @@
 	        <link type="text/css" rel="stylesheet" href="#{request.contextPath}/resources/themes/#{navigationHelper.theme}/css/dist/#{navigationHelper.subThemeDiscriminatorValue}.min.css" />
 	    </h:panelGroup> 
 
-	    <!-- JAVASCRIPT -->
-	    <script type="text/javascript" src="#{request.contextPath}/resources/javascript/libs/reactiveX/rxjs.umd.min.js"></script>
-	    <script type="text/javascript" src="#{request.contextPath}/resources/javascript/dist/browsersupport.min.js"></script>
-	    <script type="text/javascript" src="#{request.contextPath}/resources/javascript/dist/viewer.min.js"></script>
 
-	    <!-- FORCES PRIMEFACES TO INCLUDE JQUERY & JQUERY-UI -->
+		<!-- FORCES PRIMEFACES TO INCLUDE JQUERY & JQUERY-UI -->
 	    <h:outputScript library="primefaces" name="/jquery/jquery.js" target="head" />
 	    <h:outputScript library="primefaces" name="/jquery/jquery-plugins.js" target="head" />
+	    
+	   	<!-- JAVASCRIPT LIBS -->
+	    <script type="text/javascript" src="#{request.contextPath}/resources/javascript/libs/bs/bootstrap.bundle.min.js"></script>
+
+	    <!-- JAVASCRIPT DIST FILES -->
+	    <script type="text/javascript" src="#{request.contextPath}/resources/javascript/libs/reactiveX/rxjs.umd.min.js?${navigationHelper.buildVersion}"></script>
+    	<script type="text/javascript" src="#{request.contextPath}/resources/javascript/dist/browsersupport.min.js?${navigationHelper.buildVersion}"></script>
+	    <script type="text/javascript" src="#{request.contextPath}/resources/javascript/dist/viewer.min.js?${navigationHelper.buildVersion}"></script>
 
 	</h:head>
 

@@ -15,26 +15,37 @@
  */
 package io.goobi.viewer.controller;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import io.goobi.viewer.api.rest.AbstractApiUrlManager;
 import io.goobi.viewer.api.rest.AbstractApiUrlManager.ApiInfo;
 import io.goobi.viewer.api.rest.v1.ApiUrls;
 
 /**
- * <p>Handles urls to configured rest api endpoints.</p>
- * <p>Two endpoints are managed: one for data (solr, dao) and one for content (image, ocr, other media)
- * An {@link AbstractApiUrlManager} is kept for both. These can either be injected directly in the constructor
- * or resolved from a {@link Configuration}. </p>
- * <p>In the latter case, 
- * data resources url is taken from {@link Configuration#getRestApiUrl()}, 
- * content resources url is taken from {@link Configuration#getIIIFApiUrl()}. </p>
- * <p>Both urls are updated if the configuration changes. Also, if the configured url contains '/rest' that part is rewritten to
- * '/api/v1' if the rewritten url points to a goobi viewer v1 rest api.
+ * <p>
+ * Handles urls to configured rest api endpoints.
  * </p>
+ * <p>
+ * Two endpoints are managed: one for data (solr, dao) and one for content (image, ocr, other media) An {@link AbstractApiUrlManager} is kept for
+ * both. These can either be injected directly in the constructor or resolved from a {@link Configuration}.
+ * </p>
+ * <p>
+ * In the latter case, data resources url is taken from {@link Configuration#getRestApiUrl()}, content resources url is taken from
+ * {@link Configuration#getIIIFApiUrl()}.
+ * </p>
+ * <p>
+ * Both urls are updated if the configuration changes. Also, if the configured url contains '/rest' that part is rewritten to '/api/v1' if the
+ * rewritten url points to a goobi viewer v1 rest api.
+ * </p>
+ * 
  * @author florian
  *
  */
 public class RestApiManager {
-    
+
+    private static final Logger logger = LoggerFactory.getLogger(RestApiManager.class);
+
     /**
      * Handles URLs to data resources (index, dao)
      */
@@ -43,11 +54,11 @@ public class RestApiManager {
      * Handles URLs to content resources (images, ocr and other media)
      */
     private AbstractApiUrlManager contentApiManager = null;
-    
+
     private String configuredDataApiUrl = null;
     private String configuredContentApiUrl = null;
     private Configuration config = null;
-    
+
     /**
      * Create an instance directly using the unchanged given ApiUrlManagers
      * 
@@ -58,7 +69,7 @@ public class RestApiManager {
         this.dataApiManager = dataApiManager;
         this.contentApiManager = contentApiManager;
     }
-    
+
     /**
      * Create an instance based on configuration. Final urls may change from configured ones
      * 
@@ -69,89 +80,89 @@ public class RestApiManager {
         updateDataUrlManager();
         updateContentUrlManager();
     }
-    
+
     /**
-     * @return the dataApiManager if it is either set directly 
-     * or if the configured rest endpoint points to a goobi viewer v1 rest endpoint.
-     * Otherwise null is returned
+     * @return the dataApiManager if it is either set directly or if the configured rest endpoint points to a goobi viewer v1 rest endpoint. Otherwise
+     *         null is returned
      */
     public AbstractApiUrlManager getDataApiManager() {
         this.updateDataUrlManager();
         return dataApiManager;
     }
-    
+
     /**
-     * @return  The url to the data api. Either {@link AbstractApiUrlManager#getApiUrl()} of the {@link #getDataApiManager()} 
-     * if it exists, or else the configured {@link Configuration#getRestApiUrl()}
+     * @return The url to the data api. Either {@link AbstractApiUrlManager#getApiUrl()} of the {@link #getDataApiManager()} if it exists, or else the
+     *         configured {@link Configuration#getRestApiUrl()}
      */
     public String getDataApiUrl() {
         AbstractApiUrlManager manager = getDataApiManager();
-        if(manager != null) {
+        if (manager != null) {
             return manager.getApiUrl();
-        } else {
-            return this.configuredDataApiUrl;
         }
+
+        return this.configuredDataApiUrl;
     }
-    
+
     /**
-     * @return  The url to the content api. Either {@link AbstractApiUrlManager#getApiUrl()} of the {@link #getContentApiManager()} 
-     * if it exists, or else the configured {@link Configuration#getIIIApiUrl()}
+     * @return The url to the content api. Either {@link AbstractApiUrlManager#getApiUrl()} of the {@link #getContentApiManager()} if it exists, or
+     *         else the configured {@link Configuration#getIIIApiUrl()}
      */
     public String getContentApiUrl() {
         AbstractApiUrlManager manager = getContentApiManager();
-        if(manager != null) {
+        if (manager != null) {
             return manager.getApiPath();
-        } else {
-            return this.configuredContentApiUrl;
         }
+
+        return this.configuredContentApiUrl;
     }
-    
+
     /**
-     * @return the contentApiManager if it is either set directly 
-     * or if the configured rest endpoint points to a goobi viewer v1 rest endpoint.
-     * Otherwise null is returned
+     * @return the contentApiManager if it is either set directly or if the configured rest endpoint points to a goobi viewer v1 rest endpoint.
+     *         Otherwise null is returned
      */
     public AbstractApiUrlManager getContentApiManager() {
         this.updateContentUrlManager();
         return contentApiManager;
     }
-    
+
     private void updateContentUrlManager() {
-        if(this.config != null) {            
+        if (this.config != null) {
             String url = this.config.getIIIFApiUrl();
-            if(this.configuredContentApiUrl == null || !this.configuredContentApiUrl.equals(url)) {
+            if (this.configuredContentApiUrl == null || !this.configuredContentApiUrl.equals(url)) {
                 //url not initialized or changed
                 url = url.replace("/rest", "/api/v1");
                 ApiUrls urls = new ApiUrls(url);
                 ApiInfo info = urls.getInfo();
-                if( info!= null && info.version.equals("v1")) {
+                if (info != null && info.version.equals("v1")) {
                     contentApiManager = urls;
                 } else {
+                    logger.error("API info not found; URL: {}", url);
                     contentApiManager = null;
                 }
                 this.configuredContentApiUrl = url;
             }
         }
     }
-    
+
     private void updateDataUrlManager() {
-        if(this.config != null) {            
-            String url = this.config.getRestApiUrl();
-            if(this.configuredDataApiUrl == null || !this.configuredContentApiUrl.equals(url)) {
-                //url not initialized or changed
-                url = url.replace("/rest", "/api/v1");
-                ApiUrls urls = new ApiUrls(url);
-                ApiInfo info = urls.getInfo();
-                if( info!= null && info.version.equals("v1")) {
-                    dataApiManager = urls;
-                } else {
-                    dataApiManager = null;
-                }
-                this.configuredDataApiUrl = url;
+        if (this.config == null) {
+            return;
+        }
+        String url = this.config.getRestApiUrl();
+        if (this.configuredDataApiUrl == null || !this.configuredContentApiUrl.equals(url)) {
+            //url not initialized or changed
+            url = url.replace("/rest", "/api/v1");
+            // logger.debug("REST API URL: {}", url);
+            ApiUrls urls = new ApiUrls(url);
+            ApiInfo info = urls.getInfo();
+            if (info != null && info.version.equals("v1")) {
+                dataApiManager = urls;
+            } else {
+                logger.error("API info not found; URL: {}", url);
+                dataApiManager = null;
             }
+            this.configuredDataApiUrl = url;
         }
     }
-
-    
 
 }

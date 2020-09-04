@@ -23,13 +23,13 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
 import javax.servlet.ServletException;
 
-import org.joda.time.MutableDateTime;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
@@ -39,6 +39,7 @@ import de.unigoettingen.sub.commons.contentlib.exceptions.IllegalRequestExceptio
 import io.goobi.viewer.AbstractDatabaseEnabledTest;
 import io.goobi.viewer.controller.Configuration;
 import io.goobi.viewer.controller.DataManager;
+import io.goobi.viewer.controller.DateTools;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.managedbeans.CmsBean;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
@@ -140,10 +141,9 @@ public class CMSPageTest extends AbstractDatabaseEnabledTest {
         global.setLanguage("global");
         page.addLanguageVersion(global);
 
-        MutableDateTime created = new MutableDateTime();
-        created.setYear(created.getYear() - 2);
+        LocalDateTime created = LocalDateTime.now().withYear(LocalDateTime.now().getYear() - 2);
         Date updated = new Date();
-        page.setDateCreated(created.toDate());
+        page.setDateCreated(DateTools.convertLocalDateTimeToDateViaInstant(created, false));
         page.setDateUpdated(updated);
 
         page.setCategories(DataManager.getInstance().getDao().getAllCategories());
@@ -189,7 +189,7 @@ public class CMSPageTest extends AbstractDatabaseEnabledTest {
         german.generateCompleteContentItemList();
 
         //tests
-        Assert.assertEquals(created.toDate(), page.getDateCreated());
+        Assert.assertEquals(DateTools.convertLocalDateTimeToDateViaInstant(created, false), page.getDateCreated());
         Assert.assertEquals(updated, page.getDateUpdated());
         Assert.assertEquals(DataManager.getInstance().getDao().getAllCategories(), page.getCategories());
         Assert.assertEquals(altUrl, page.getRelativeUrlPath(true));

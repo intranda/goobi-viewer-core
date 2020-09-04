@@ -257,6 +257,9 @@ public class CollectionBuilder extends AbstractBuilder {
                 BrowseElementInfo info = baseElement.getInfo();
                 if (info != null && (info instanceof SimpleBrowseElementInfo || info instanceof CMSCollection)) {
                     collection.setLabel(info.getTranslationsForName());
+                    if(info instanceof CMSCollection) {                        
+                        collection.setDescription(info.getTranslationsForDescription());
+                    }
                 } else {
                     collection.setLabel(ViewerResourceBundle.getTranslations(baseElement.getName()));
                 }

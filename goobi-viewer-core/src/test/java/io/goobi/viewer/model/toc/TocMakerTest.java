@@ -169,7 +169,7 @@ public class TocMakerTest extends AbstractDatabaseAndSolrEnabledTest {
             Assert.assertEquals(1, tocElements.get(TOC.DEFAULT_GROUP).size());
             Assert.assertEquals(6, toc.getTotalTocSize());
             Assert.assertEquals("306653648", tocElements.get(TOC.DEFAULT_GROUP).get(0).getTopStructPi());
-//            Assert.assertEquals("306653648_1899", tocElements.get(TOC.DEFAULT_GROUP).get(1).getTopStructPi());
+            //            Assert.assertEquals("306653648_1899", tocElements.get(TOC.DEFAULT_GROUP).get(1).getTopStructPi());
         }
     }
 
@@ -204,15 +204,26 @@ public class TocMakerTest extends AbstractDatabaseAndSolrEnabledTest {
             doc.setField(SolrConstants.LABEL, "label");
             doc.setField("MD_CREATOR", "creator");
             String label = TocMaker.buildLabel(doc, null).getValue().orElse("");
-            //System.out.println("Toc label : " + label);
             Assert.assertEquals("label/creator", label);
         }
         {
             SolrDocument doc = new SolrDocument();
-            //            doc.setField(SolrConstants.DOCSTRCT, "PeriodicalVolume");
             doc.setField(SolrConstants.CURRENTNO, "1");
             doc.setField("MD_TITLE", "title");
-            Assert.assertEquals("Number1:title", TocMaker.buildLabel(doc, "PeriodicalVolume").getValue().orElse(""));
+            Assert.assertEquals("Number 1: title", TocMaker.buildLabel(doc, "PeriodicalVolume").getValue().orElse(""));
         }
+    }
+
+    /**
+     * @see TocMaker#buildLabel(SolrDocument,String)
+     * @verifies fill remaining parameters correctly if docstruct fallback used
+     */
+    @Test
+    public void buildLabel_shouldFillRemainingParametersCorrectlyIfDocstructFallbackUsed() throws Exception {
+        SolrDocument doc = new SolrDocument();
+        doc.setField(SolrConstants.CURRENTNO, "1");
+        doc.setField(SolrConstants.DOCSTRCT, "PeriodicalVolume");
+        String label = TocMaker.buildLabel(doc, "PeriodicalVolume").getValue().orElse("");
+        Assert.assertEquals("Number 1: Periodical volume", label);
     }
 }

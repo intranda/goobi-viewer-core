@@ -118,6 +118,7 @@ public class ChangeDiscoveryResourceTest extends AbstractRestApiTest {
             int numPages = (int) (itemCount / itemsPerPage) + 1;
 
             String lastPageUrl = activities.getLast().getId().toString();
+            lastPageUrl = lastPageUrl.substring(0, lastPageUrl.length()-1);
             String pageNo = lastPageUrl.substring(lastPageUrl.lastIndexOf("/") + 1);
             Assert.assertEquals(numPages - 1, Integer.parseInt(pageNo), 0);
         }
