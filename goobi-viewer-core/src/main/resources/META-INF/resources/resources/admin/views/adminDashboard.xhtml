@@ -166,6 +166,16 @@
 
                                     <dt class="col-sm-5 mb-3">#{msg.admin__dashboard_versions_contentserver}:</dt>
                                     <dd class="col-sm-7 mb-3">#{msg[statisticsBean.contentServerVersion]}</dd>
+                                    
+                                </dl>
+                                <div class="row">
+                                    <h4 class="col-9">#{msg.admin__dashboard_versions_modules}</h4>
+                                </div>
+                                <dl class="row">
+                                    <ui:repeat var="module" value="#{configurationBean.modules}">
+                                        <dt class="col-sm-5 mb-3">#{module.name}:</dt>
+                                        <dd class="col-sm-7 mb-3">#{module.version}</dd>
+                                    </ui:repeat>
                                 </dl>
                             </div>
 
