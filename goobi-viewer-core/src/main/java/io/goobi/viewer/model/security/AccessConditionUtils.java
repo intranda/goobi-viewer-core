@@ -138,7 +138,7 @@ public class AccessConditionUtils {
      * @should work correctly with urls
      */
     static String[] generateAccessCheckQuery(String identifier, String fileName) {
-        if (fileName == null) {
+        if (StringUtils.isEmpty(fileName)) {
             return new String[2];
         }
 
