@@ -172,7 +172,8 @@ public abstract class AbstractApiUrlManager {
                 String group = matcher.group();
                 if (i.hasNext()) {
                     String replacement = i.next().toString();
-                    if(replacement.contains(":")) {
+                    // Escape URLs and colons
+                    if (replacement.contains(":")) {
                         try {
                             // logger.trace("Encoding param: {}", replacement);
                             replacement = URLEncoder.encode(replacement, StringTools.DEFAULT_ENCODING);
