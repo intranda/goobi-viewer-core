@@ -1707,7 +1707,7 @@ public final class SolrSearchIndex {
         Map<String, String> ret = new HashMap<>(result.size());
         Set<String> used = new HashSet<>();
         for (SolrDocument doc : result) {
-            String value = (String) doc.getFieldValue("MD_VALUE");
+            String value = getSingleFieldStringValue(doc, "MD_VALUE");
             String label = String.valueOf(doc.getFirstValue(labelField));
             if (used.contains(value + label)) {
                 continue;
