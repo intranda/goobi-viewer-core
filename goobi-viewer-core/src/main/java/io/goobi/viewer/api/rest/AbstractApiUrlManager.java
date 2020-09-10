@@ -167,7 +167,7 @@ public abstract class AbstractApiUrlManager {
          */
         static String replacePathParams(String urlString, Object[] pathParams) {
             Matcher matcher = Pattern.compile("\\{\\w+\\}").matcher(urlString);
-            Iterator<String> i = new ArrayIterator<>(pathParams);
+            Iterator<Object> i = new ArrayIterator<>(pathParams);
             while (matcher.find()) {
                 String group = matcher.group();
                 if (i.hasNext()) {
