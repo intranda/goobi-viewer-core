@@ -17,7 +17,6 @@ package io.goobi.viewer.model.search;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -51,7 +50,6 @@ import io.goobi.viewer.controller.SolrConstants;
 import io.goobi.viewer.controller.SolrConstants.DocType;
 import io.goobi.viewer.controller.SolrSearchIndex;
 import io.goobi.viewer.controller.TEITools;
-import io.goobi.viewer.exceptions.AccessDeniedException;
 import io.goobi.viewer.exceptions.CmsElementNotFoundException;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;

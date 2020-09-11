@@ -80,7 +80,7 @@ public class ContextListener implements ServletContextListener {
             // Add anonymous user
             UserTools.checkAndCreateAnonymousUser();
         } catch (Throwable e) {
-            logger.error(e.getMessage());
+            logger.error(e.getMessage(), e);
         }
         //        createResources();
 

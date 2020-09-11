@@ -29,14 +29,12 @@ import javax.websocket.server.ServerEndpoint;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import io.goobi.viewer.model.security.user.User;
-
-@ServerEndpoint(value = "/socket/session")
+@ServerEndpoint(value = "/sessionsocket")
 public class UserEndpoint {
 
     private static final Logger logger = LoggerFactory.getLogger(UserEndpoint.class);
 
-    private static Map<String, Set<User>> locks = new HashMap<>();
+    private static Map<String, Set<String>> locks = new HashMap<>();
 
     private Session session;
 
@@ -48,7 +46,7 @@ public class UserEndpoint {
 
     @OnMessage
     public void onMessage(String message) {
-
+        logger.trace("onMessage: {}", session.getId());
     }
 
     @OnClose
