@@ -4,7 +4,7 @@
  * For LGPL see License.txt in the project root for license information.
  * For commercial licenses see https://www.tiny.cloud/
  *
- * Version: 5.4.1 (2020-07-08)
+ * Version: 5.2.0 (2020-02-13)
  */
 (function () {
     'use strict';
@@ -31,9 +31,17 @@
     var setInlineStyles = function (editor, inline_styles) {
       editor.settings.inline_styles = inline_styles;
     };
+    var Settings = {
+      getFontFormats: getFontFormats,
+      getFontSizeFormats: getFontSizeFormats,
+      setFontSizeFormats: setFontSizeFormats,
+      setFontFormats: setFontFormats,
+      getFontSizeStyleValues: getFontSizeStyleValues,
+      setInlineStyles: setInlineStyles
+    };
 
     var overrideFormats = function (editor) {
-      var alignElements = 'p,h1,h2,h3,h4,h5,h6,td,th,div,ul,ol,li,table', fontSizes = global$1.explode(getFontSizeStyleValues(editor)), schema = editor.schema;
+      var alignElements = 'p,h1,h2,h3,h4,h5,h6,td,th,div,ul,ol,li,table', fontSizes = global$1.explode(Settings.getFontSizeStyleValues(editor)), schema = editor.schema;
       editor.formatter.register({
         alignleft: {
           selector: alignElements,
@@ -54,19 +62,11 @@
         bold: [
           {
             inline: 'b',
-            remove: 'all',
-            preserve_attributes: [
-              'class',
-              'style'
-            ]
+            remove: 'all'
           },
           {
             inline: 'strong',
-            remove: 'all',
-            preserve_attributes: [
-              'class',
-              'style'
-            ]
+            remove: 'all'
           },
           {
             inline: 'span',
@@ -76,19 +76,11 @@
         italic: [
           {
             inline: 'i',
-            remove: 'all',
-            preserve_attributes: [
-              'class',
-              'style'
-            ]
+            remove: 'all'
           },
           {
             inline: 'em',
-            remove: 'all',
-            preserve_attributes: [
-              'class',
-              'style'
-            ]
+            remove: 'all'
           },
           {
             inline: 'span',
@@ -98,11 +90,7 @@
         underline: [
           {
             inline: 'u',
-            remove: 'all',
-            preserve_attributes: [
-              'class',
-              'style'
-            ]
+            remove: 'all'
           },
           {
             inline: 'span',
@@ -113,11 +101,7 @@
         strikethrough: [
           {
             inline: 'strike',
-            remove: 'all',
-            preserve_attributes: [
-              'class',
-              'style'
-            ]
+            remove: 'all'
           },
           {
             inline: 'span',
@@ -173,12 +157,12 @@
     var overrideSettings = function (editor) {
       var defaultFontsizeFormats = '8pt=1 10pt=2 12pt=3 14pt=4 18pt=5 24pt=6 36pt=7';
       var defaultFontsFormats = 'Andale Mono=andale mono,monospace;' + 'Arial=arial,helvetica,sans-serif;' + 'Arial Black=arial black,sans-serif;' + 'Book Antiqua=book antiqua,palatino,serif;' + 'Comic Sans MS=comic sans ms,sans-serif;' + 'Courier New=courier new,courier,monospace;' + 'Georgia=georgia,palatino,serif;' + 'Helvetica=helvetica,arial,sans-serif;' + 'Impact=impact,sans-serif;' + 'Symbol=symbol;' + 'Tahoma=tahoma,arial,helvetica,sans-serif;' + 'Terminal=terminal,monaco,monospace;' + 'Times New Roman=times new roman,times,serif;' + 'Trebuchet MS=trebuchet ms,geneva,sans-serif;' + 'Verdana=verdana,geneva,sans-serif;' + 'Webdings=webdings;' + 'Wingdings=wingdings,zapf dingbats';
-      setInlineStyles(editor, false);
-      if (!getFontSizeFormats(editor)) {
-        setFontSizeFormats(editor, defaultFontsizeFormats);
+      Settings.setInlineStyles(editor, false);
+      if (!Settings.getFontSizeFormats(editor)) {
+        Settings.setFontSizeFormats(editor, defaultFontsizeFormats);
       }
-      if (!getFontFormats(editor)) {
-        setFontFormats(editor, defaultFontsFormats);
+      if (!Settings.getFontFormats(editor)) {
+        Settings.setFontFormats(editor, defaultFontsFormats);
       }
     };
     var setup = function (editor) {
@@ -187,10 +171,11 @@
         return overrideFormats(editor);
       });
     };
+    var Formats = { setup: setup };
 
     function Plugin () {
       global.add('legacyoutput', function (editor) {
-        setup(editor);
+        Formats.setup(editor);
       });
     }
 

@@ -107,8 +107,6 @@ public class RecordFileResource {
         return builder.getAltoDocument(pi, filename);
     }
 
-
-
     @GET
     @javax.ws.rs.Path(RECORDS_FILES_PLAINTEXT)
     @Produces({ MediaType.TEXT_PLAIN })
@@ -136,7 +134,7 @@ public class RecordFileResource {
         }
         return builder.getFulltextAsTEI(pi, filename);
     }
-    
+
     @GET
     @javax.ws.rs.Path(RECORDS_FILES_PDF)
     @Produces({ "application/pdf" })
@@ -144,6 +142,7 @@ public class RecordFileResource {
     public Response getPDF(
             @Parameter(description = "Filename containing the text") @PathParam("filename") String filename)
             throws ContentLibException {
+        logger.trace("getPDF: {}/{}", pi, filename);
         String url = urls.path(RECORDS_FILES_IMAGE, RECORDS_FILES_IMAGE_PDF).params(pi, filename).build();
         try {
             Response resp = Response.seeOther(PathConverter.toURI(url)).build();
@@ -161,38 +160,39 @@ public class RecordFileResource {
             @Parameter(description = "Source file name") @PathParam("filename") String filename)
             throws ContentLibException, PresentationException, IndexUnreachableException, DAOException {
         Path path = DataFileTools.getDataFilePath(pi, DataManager.getInstance().getConfiguration().getOrigContentFolder(), null, filename);
-        if (Files.isRegularFile(path)) {
-            boolean access = !AccessConditionUtils.checkContentFileAccessPermission(pi, servletRequest, Collections.singletonList(path))
-                    .containsValue(Boolean.FALSE);
-            if (access) {
-                try {
-                    String contentType = Files.probeContentType(path);
-                    logger.trace("content type: {}", contentType);
-                    if (StringUtils.isNotBlank(contentType)) {
-                        servletResponse.setContentType(contentType);
-                    }
-                    servletResponse.setHeader("Content-Disposition", new StringBuilder("attachment;filename=").append(filename).toString());
-                    servletResponse.setHeader("Content-Length", String.valueOf(Files.size(path)));
-                } catch(IOException e) {
-                    logger.error("Failed to probe file content type");
-                }
-                
-                return (out) -> {
-                    try(InputStream in = Files.newInputStream(path)) {
-                        IOUtils.copy(in, out);
-                    }
-                };
-            } else {
-                throw new ServiceNotAllowedException("Access to source file " + filename + " not allowed");
-            }
-        } else {
+        if (!Files.isRegularFile(path)) {
             throw new ContentNotFoundException("Source file " + filename + " not found");
         }
+
+        boolean access = !AccessConditionUtils.checkContentFileAccessPermission(pi, servletRequest, Collections.singletonList(path))
+                .containsValue(Boolean.FALSE);
+        if (!access) {
+            throw new ServiceNotAllowedException("Access to source file " + filename + " not allowed");
+        }
+        
+        try {
+            String contentType = Files.probeContentType(path);
+            logger.trace("content type: {}", contentType);
+            if (StringUtils.isNotBlank(contentType)) {
+                servletResponse.setContentType(contentType);
+            }
+            servletResponse.setHeader("Content-Disposition", new StringBuilder("attachment;filename=").append(filename).toString());
+            servletResponse.setHeader("Content-Length", String.valueOf(Files.size(path)));
+        } catch (IOException e) {
+            logger.error("Failed to probe file content type");
+        }
+
+        return (out) -> {
+            try (InputStream in = Files.newInputStream(path)) {
+                IOUtils.copy(in, out);
+            }
+        };
     }
-    
+
     /**
      * Throw an AccessDenied error if the request doesn't satisfy the access conditions
-     * @throws ServiceNotAllowedException 
+     * 
+     * @throws ServiceNotAllowedException
      */
     private void checkFulltextAccessConditions(String pi, String filename) throws ServiceNotAllowedException {
         boolean access = false;
@@ -201,7 +201,7 @@ public class RecordFileResource {
         } catch (IndexUnreachableException | DAOException e) {
             logger.error(String.format("Cannot check fulltext access for pi %s and file %s: %s", pi, filename, e.toString()));
         }
-        if(!access) {            
+        if (!access) {
             throw new ServiceNotAllowedException("Access to fulltext file " + pi + "/" + filename + " not allowed");
         }
     }

@@ -4,10 +4,28 @@
  * For LGPL see License.txt in the project root for license information.
  * For commercial licenses see https://www.tiny.cloud/
  *
- * Version: 5.4.1 (2020-07-08)
+ * Version: 5.2.0 (2020-02-13)
  */
 (function (domGlobals) {
     'use strict';
+
+    var Cell = function (initial) {
+      var value = initial;
+      var get = function () {
+        return value;
+      };
+      var set = function (v) {
+        value = v;
+      };
+      var clone = function () {
+        return Cell(get());
+      };
+      return {
+        get: get,
+        set: set,
+        clone: clone
+      };
+    };
 
     var global = tinymce.util.Tools.resolve('tinymce.PluginManager');
 
@@ -41,38 +59,27 @@
       return editor.getParam('autosave_ask_before_unload', true);
     };
     var getAutoSavePrefix = function (editor) {
-      var location = domGlobals.document.location;
-      return editor.getParam('autosave_prefix', 'tinymce-autosave-{path}{query}{hash}-{id}-').replace(/{path}/g, location.pathname).replace(/{query}/g, location.search).replace(/{hash}/g, location.hash).replace(/{id}/g, editor.id);
+      var prefix = editor.getParam('autosave_prefix', 'tinymce-autosave-{path}{query}{hash}-{id}-');
+      prefix = prefix.replace(/\{path\}/g, domGlobals.document.location.pathname);
+      prefix = prefix.replace(/\{query\}/g, domGlobals.document.location.search);
+      prefix = prefix.replace(/\{hash\}/g, domGlobals.document.location.hash);
+      prefix = prefix.replace(/\{id\}/g, editor.id);
+      return prefix;
     };
     var shouldRestoreWhenEmpty = function (editor) {
       return editor.getParam('autosave_restore_when_empty', false);
     };
     var getAutoSaveInterval = function (editor) {
-      return parse(editor.getParam('autosave_interval'), '30s');
+      return parse(editor.settings.autosave_interval, '30s');
     };
     var getAutoSaveRetention = function (editor) {
-      return parse(editor.getParam('autosave_retention'), '20m');
+      return parse(editor.settings.autosave_retention, '20m');
     };
-
-    var eq = function (t) {
-      return function (a) {
-        return t === a;
-      };
-    };
-    var isUndefined = eq(undefined);
 
     var isEmpty = function (editor, html) {
-      if (isUndefined(html)) {
-        return editor.dom.isEmpty(editor.getBody());
-      } else {
-        var trimmedHtml = global$3.trim(html);
-        if (trimmedHtml === '') {
-          return true;
-        } else {
-          var fragment = new domGlobals.DOMParser().parseFromString(trimmedHtml, 'text/html');
-          return editor.dom.isEmpty(fragment);
-        }
-      }
+      var forcedRootBlockName = editor.settings.forced_root_block;
+      html = global$3.trim(typeof html === 'undefined' ? editor.getBody().innerHTML : html);
+      return html === '' || new RegExp('^<' + forcedRootBlockName + '[^>]*>((\xA0|&nbsp;|[ \t]|<br[^>]*>)+?|)</' + forcedRootBlockName + '>|<br>$', 'i').test(html);
     };
     var hasDraft = function (editor) {
       var time = parseInt(global$2.getItem(getAutoSavePrefix(editor) + 'time'), 10) || 0;
@@ -108,13 +115,16 @@
         fireRestoreDraft(editor);
       }
     };
-    var startStoreDraft = function (editor) {
+    var startStoreDraft = function (editor, started) {
       var interval = getAutoSaveInterval(editor);
-      global$1.setInterval(function () {
-        if (!editor.removed) {
-          storeDraft(editor);
-        }
-      }, interval);
+      if (!started.get()) {
+        global$1.setInterval(function () {
+          if (!editor.removed) {
+            storeDraft(editor);
+          }
+        }, interval);
+        started.set(true);
+      }
     };
     var restoreLastDraft = function (editor) {
       editor.undoManager.transact(function () {
@@ -124,23 +134,28 @@
       editor.focus();
     };
 
+    function curry(fn) {
+      var initialArgs = [];
+      for (var _i = 1; _i < arguments.length; _i++) {
+        initialArgs[_i - 1] = arguments[_i];
+      }
+      return function () {
+        var restArgs = [];
+        for (var _i = 0; _i < arguments.length; _i++) {
+          restArgs[_i] = arguments[_i];
+        }
+        var all = initialArgs.concat(restArgs);
+        return fn.apply(null, all);
+      };
+    }
+
     var get = function (editor) {
       return {
-        hasDraft: function () {
-          return hasDraft(editor);
-        },
-        storeDraft: function () {
-          return storeDraft(editor);
-        },
-        restoreDraft: function () {
-          return restoreDraft(editor);
-        },
-        removeDraft: function (fire) {
-          return removeDraft(editor, fire);
-        },
-        isEmpty: function (html) {
-          return isEmpty(editor, html);
-        }
+        hasDraft: curry(hasDraft, editor),
+        storeDraft: curry(storeDraft, editor),
+        restoreDraft: curry(restoreDraft, editor),
+        removeDraft: curry(removeDraft, editor),
+        isEmpty: curry(isEmpty, editor)
       };
     };
 
@@ -164,7 +179,7 @@
       });
     };
 
-    var makeSetupHandler = function (editor) {
+    var makeSetupHandler = function (editor, started) {
       return function (api) {
         api.setDisabled(!hasDraft(editor));
         var editorEventCallback = function () {
@@ -176,8 +191,8 @@
         };
       };
     };
-    var register = function (editor) {
-      startStoreDraft(editor);
+    var register = function (editor, started) {
+      startStoreDraft(editor, started);
       editor.ui.registry.addButton('restoredraft', {
         tooltip: 'Restore last draft',
         icon: 'restore-draft',
@@ -198,8 +213,9 @@
 
     function Plugin () {
       global.add('autosave', function (editor) {
+        var started = Cell(false);
         setup(editor);
-        register(editor);
+        register(editor, started);
         editor.on('init', function () {
           if (shouldRestoreWhenEmpty(editor) && editor.dom.isEmpty(editor.getBody())) {
             restoreDraft(editor);

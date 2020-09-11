@@ -15,7 +15,6 @@
  */
 package io.goobi.viewer.api.rest.v1.records.media;
 
-
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.GET;
@@ -26,6 +25,9 @@ import javax.ws.rs.container.ContainerRequestContext;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.StreamingOutput;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import de.unigoettingen.sub.commons.contentlib.exceptions.ContentLibException;
 import de.unigoettingen.sub.commons.contentlib.servlet.model.PdfInformation;
@@ -45,33 +47,38 @@ import io.swagger.v3.oas.annotations.Parameter;
 @Path(ApiUrls.RECORDS_RECORD)
 @ContentServerBinding
 public class ViewerRecordPDFResource extends MetsPdfResource {
-    
+
+    private static final Logger logger = LoggerFactory.getLogger(ViewerRecordPDFResource.class);
+
     private String filename;
 
     public ViewerRecordPDFResource(
             @Context ContainerRequestContext context, @Context HttpServletRequest request, @Context HttpServletResponse response,
             @Context AbstractApiUrlManager urls,
             @Parameter(description = "Persistent identifier of the record") @PathParam("pi") String pi) throws ContentLibException {
-       super(context, request, response, "pdf", pi + ".xml");
-       this.filename = pi + ".pdf";
-       request.setAttribute("pi", pi);
+        super(context, request, response, "pdf", pi + ".xml");
+        this.filename = pi + ".pdf";
+        request.setAttribute("pi", pi);
     }
-    
+
+    @Override
     @GET
     @Path(ApiUrls.RECORDS_PDF)
     @Produces("application/pdf")
     @ContentServerPdfBinding
-    @Operation(tags = { "records"}, summary = "Get PDF for entire record")
+    @Operation(tags = { "records" }, summary = "Get PDF for entire record")
     public StreamingOutput getPdf() throws ContentLibException {
+        logger.trace("getPdf: {}", filename);
         response.addHeader("Content-Disposition", "attachment; filename=\"" + filename + "\"");
         return super.getPdf();
     }
-    
+
+    @Override
     @GET
     @Path(ApiUrls.RECORDS_PDF_INFO)
     @Produces({ MediaType.APPLICATION_JSON })
     @ContentServerPdfInfoBinding
-    @Operation(tags = { "records"}, summary = "Get information about PDF for entire record")
+    @Operation(tags = { "records" }, summary = "Get information about PDF for entire record")
     public PdfInformation getInfoAsJson() throws ContentLibException {
         return super.getInfoAsJson();
     }

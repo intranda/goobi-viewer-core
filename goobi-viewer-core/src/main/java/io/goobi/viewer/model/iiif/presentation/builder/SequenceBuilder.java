@@ -18,8 +18,10 @@ package io.goobi.viewer.model.iiif.presentation.builder;
 import java.awt.Dimension;
 import java.awt.Rectangle;
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.net.URLEncoder;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -53,12 +55,10 @@ import de.intranda.digiverso.ocr.alto.model.structureclasses.logical.AltoDocumen
 import de.intranda.metadata.multilanguage.SimpleMetadataValue;
 import de.unigoettingen.sub.commons.contentlib.exceptions.ContentLibException;
 import de.unigoettingen.sub.commons.contentlib.exceptions.ContentNotFoundException;
-import de.unigoettingen.sub.commons.contentlib.exceptions.ServiceNotAllowedException;
 import io.goobi.viewer.api.rest.AbstractApiUrlManager;
 import io.goobi.viewer.api.rest.resourcebuilders.TextResourceBuilder;
 import io.goobi.viewer.controller.DataManager;
-import io.goobi.viewer.controller.FileTools;
-import io.goobi.viewer.exceptions.AccessDeniedException;
+import io.goobi.viewer.controller.StringTools;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
@@ -94,7 +94,7 @@ public class SequenceBuilder extends AbstractBuilder {
     protected ImageDeliveryBean imageDelivery = BeanUtils.getImageDeliveryBean();
     private BuildMode buildMode = BuildMode.IIIF;
     private PageType preferredView = PageType.viewObject;
-    
+
     /**
      * <p>
      * Constructor for SequenceBuilder.
@@ -197,6 +197,11 @@ public class SequenceBuilder extends AbstractBuilder {
 
         if (MimeType.IMAGE.getName().equals(page.getMimeType())) {
             String url = imageDelivery.getPdf().getPdfUrl(doc, page);
+            try {
+                url = URLEncoder.encode(url, StringTools.DEFAULT_ENCODING);
+            } catch (UnsupportedEncodingException e) {
+                logger.error(e.getMessage());
+            }
             LinkingContent link = new LinkingContent(new URI(url));
             link.setFormat(Format.APPLICATION_PDF);
             link.setType(DcType.SOFTWARE);
@@ -394,8 +399,9 @@ public class SequenceBuilder extends AbstractBuilder {
                         String altoText = builder.getAltoDocument(doc.getPi(), altoFilename);
                         AltoDocument alto = AltoDocument.getDocumentFromString(altoText);
                         if (alto.getFirstPage() != null && StringUtils.isNotBlank(alto.getFirstPage().getContent())) {
-                            List<IAnnotation> annos = new AltoAnnotationBuilder(urls, "oa").createAnnotations(alto.getFirstPage(), doc.getPi(), page.getOrder(), canvas,
-                                    AltoAnnotationBuilder.Granularity.LINE, false);
+                            List<IAnnotation> annos =
+                                    new AltoAnnotationBuilder(urls, "oa").createAnnotations(alto.getFirstPage(), doc.getPi(), page.getOrder(), canvas,
+                                            AltoAnnotationBuilder.Granularity.LINE, false);
                             for (IAnnotation annotation : annos) {
                                 annoList.addResource(annotation);
                             }
@@ -406,11 +412,11 @@ public class SequenceBuilder extends AbstractBuilder {
 
                 } else if (StringUtils.isNotBlank(page.getFulltextFileName())) {
                     try {
-                    OpenAnnotation anno = new OpenAnnotation(URI.create(annoList.getId().toString() + "/text"));
-                    anno.setMotivation(Motivation.PAINTING);
-                    anno.setTarget(createSpecificResource(canvas, 0, 0, canvas.getWidth(), canvas.getHeight()));
-                    String fulltextFilename = Paths.get(page.getFulltextFileName()).getFileName().toString();
-                    String fulltext = builder.getFulltext(doc.getPi(), fulltextFilename);
+                        OpenAnnotation anno = new OpenAnnotation(URI.create(annoList.getId().toString() + "/text"));
+                        anno.setMotivation(Motivation.PAINTING);
+                        anno.setTarget(createSpecificResource(canvas, 0, 0, canvas.getWidth(), canvas.getHeight()));
+                        String fulltextFilename = Paths.get(page.getFulltextFileName()).getFileName().toString();
+                        String fulltext = builder.getFulltext(doc.getPi(), fulltextFilename);
                         TextualResource body = new TextualResource(fulltext);
                         anno.setBody(body);
                         annoList.addResource(anno);

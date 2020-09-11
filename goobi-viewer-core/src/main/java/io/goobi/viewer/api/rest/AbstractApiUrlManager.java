@@ -37,6 +37,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import io.goobi.viewer.controller.FileTools;
+import io.goobi.viewer.controller.StringTools;
 
 /**
  * @author florian
@@ -166,11 +167,20 @@ public abstract class AbstractApiUrlManager {
          */
         static String replacePathParams(String urlString, Object[] pathParams) {
             Matcher matcher = Pattern.compile("\\{\\w+\\}").matcher(urlString);
-            Iterator i = new ArrayIterator(pathParams);
+            Iterator<Object> i = new ArrayIterator<>(pathParams);
             while (matcher.find()) {
                 String group = matcher.group();
                 if (i.hasNext()) {
                     String replacement = i.next().toString();
+                    // Escape URLs and colons
+                    if (replacement.contains(":")) {
+                        try {
+                            // logger.trace("Encoding param: {}", replacement);
+                            replacement = URLEncoder.encode(replacement, StringTools.DEFAULT_ENCODING);
+                        } catch (UnsupportedEncodingException e) {
+                            logger.error(e.getMessage());
+                        }
+                    }
                     urlString = urlString.replace(group, replacement);
                 } else {
                     //no further params. Cannot keep replacing
@@ -257,14 +267,14 @@ public abstract class AbstractApiUrlManager {
     public ApiInfo getInfo() {
         try {
             Client client = ClientBuilder.newClient();
-            client.property(ClientProperties.CONNECT_TIMEOUT, 1000);
-            client.property(ClientProperties.READ_TIMEOUT, 2000);
+            client.property(ClientProperties.CONNECT_TIMEOUT, 5000);
+            client.property(ClientProperties.READ_TIMEOUT, 5000);
             return client
                     .target(getApiUrl())
                     .request(MediaType.APPLICATION_JSON)
                     .get(ApiInfo.class);
         } catch (Throwable e) {
-            logger.error(e.getMessage(), e);
+            logger.error(e.getMessage());
             return new ApiInfo();
         }
     }
