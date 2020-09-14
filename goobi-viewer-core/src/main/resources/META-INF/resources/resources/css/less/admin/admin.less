@@ -651,6 +651,9 @@
 			list-style: none;
 			margin-bottom: 0;
 		}
+        li {
+            transition: all .2s ease;
+        }
 		.-dropdown {
 			&:hover > ul {
 				opacity: 1;
@@ -663,12 +666,16 @@
 		visibility: hidden;
 		position: absolute;
 		top: 100%;
-		background: @activeblue;
+		background: #235396;
 		padding: 0.5rem 1.2rem 1rem 1.2rem;
 		left: 0;
 		min-width: 250px;
 		transition: all 0.2s ease;
-		li {}
+		li {
+            &:hover {
+                padding-left: .5rem;
+            }
+        }
 		a {
 			display: block;
             color: @white;
@@ -683,8 +690,9 @@
 		fill: @white;
 		transition: all 0.2s ease;
 		&:hover {
-			background: @activeblue;
-			fill: @blue;
+			background: #235396;
+            cursor: pointer;
+			fill: @white;
 		}
 	}
 	&__topbar-logo {
@@ -705,7 +713,7 @@
 			font-size: 2.1rem;
 		}
 		&:hover {
-			background: @activeblue;
+			background: #235396;
             color: @white;
 			text-decoration: none;
 		}
@@ -722,8 +730,9 @@
 			font-size: 2.1rem;
 		}
 		&:hover {
-			background: @activeblue;
+			background: #235396;
 			text-decoration: none;
+            cursor: pointer;
 			color: @white;
 		}
 	}
@@ -752,7 +761,7 @@
 			font-size: 2.1rem;
 		}
 		&:hover {
-			background: @activeblue;
+			background: #235396;
             color: white;
 			text-decoration: none;
 		}
