@@ -15,10 +15,6 @@
  */
 package io.goobi.viewer.websockets;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Set;
-
 import javax.websocket.OnClose;
 import javax.websocket.OnError;
 import javax.websocket.OnMessage;
@@ -29,12 +25,12 @@ import javax.websocket.server.ServerEndpoint;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import io.goobi.viewer.controller.DataManager;
+
 @ServerEndpoint(value = "/sessionsocket")
 public class UserEndpoint {
 
     private static final Logger logger = LoggerFactory.getLogger(UserEndpoint.class);
-
-    private static Map<String, Set<String>> locks = new HashMap<>();
 
     private Session session;
 
@@ -52,6 +48,8 @@ public class UserEndpoint {
     @OnClose
     public void onClose(Session session) {
         logger.trace("onClose {}", session.getId());
+        int count = DataManager.getInstance().removeSessionIdFromLocks(session.getId());
+        logger.trace("Removed {} record locks for session '{}'.", count, session.getId());
     }
 
     @OnError

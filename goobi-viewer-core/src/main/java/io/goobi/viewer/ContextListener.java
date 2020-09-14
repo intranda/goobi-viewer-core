@@ -26,6 +26,7 @@ import java.nio.file.ProviderNotFoundException;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
+import javax.faces.context.FacesContext;
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
 import javax.servlet.annotation.WebListener;
@@ -33,6 +34,8 @@ import javax.servlet.annotation.WebListener;
 //import org.apache.logging.log4j.LogManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.ocpsoft.pretty.PrettyContext;
 
 import de.unigoettingen.sub.commons.contentlib.servlet.model.ContentServerConfiguration;
 import io.goobi.viewer.controller.DataManager;
@@ -55,7 +58,7 @@ public class ContextListener implements ServletContextListener {
 
     /** Constant <code>prettyConfigFiles="resources/themes/theme-url-mappings.xml"{trunked}</code> */
     public static volatile String prettyConfigFiles =
-            "resources/themes/theme-url-mappings.xml, pretty-standard-config.xml, pretty-config-viewer-module-crowdsourcing.xml";
+            "resources/themes/theme-url-mappings.xml, ../pretty-standard-config.xml, pretty-config-viewer-module-crowdsourcing.xml";
 
     //    static {
     // ImageIO.scanForPlugins();
@@ -127,6 +130,8 @@ public class ContextListener implements ServletContextListener {
         // Set Pretty config files parameter
         sce.getServletContext().setInitParameter(PRETTY_FACES_CONFIG_PARAM_NAME, prettyConfigFiles);
         logger.debug("Pretty config files: {}", prettyConfigFiles);
+        
+        PrettyContext.getCurrentInstance();
 
         //set contentServerConfig
         ContentServerConfiguration.getInstance("contentServerConfig.xml");

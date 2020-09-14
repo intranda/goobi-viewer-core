@@ -16,9 +16,12 @@
 package io.goobi.viewer.controller;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -30,6 +33,7 @@ import io.goobi.viewer.dao.impl.JPADAO;
 import io.goobi.viewer.dao.update.DatabaseUpdater;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.ModuleMissingException;
+import io.goobi.viewer.exceptions.RecordLimitExceededException;
 import io.goobi.viewer.model.bookmark.SessionStoreBookmarkManager;
 import io.goobi.viewer.model.crowdsourcing.campaigns.Campaign;
 import io.goobi.viewer.model.security.authentication.AuthResponseListener;
@@ -54,6 +58,8 @@ public final class DataManager {
     private final List<IModule> modules = new ArrayList<>();
 
     private final Map<String, Map<String, String>> sessionMap = new LinkedHashMap<>();
+    /** Currently open records */
+    private final Map<String, Set<String>> loadedRecordMap = new HashMap<>();
 
     private Configuration configuration;
 
@@ -72,12 +78,9 @@ public final class DataManager {
     private Map<String, List<Campaign>> recordCampaignMap = null;
 
     private String indexerVersion = "";
-    
-    private RestApiManager restApiManager;
-    
-    
 
-    
+    private RestApiManager restApiManager;
+
     /**
      * <p>
      * Getter for the field <code>instance</code>.
@@ -224,6 +227,73 @@ public final class DataManager {
      */
     public Map<String, Map<String, String>> getSessionMap() {
         return sessionMap;
+    }
+
+    /**
+     * @return the loadedRecordMap
+     */
+    Map<String, Set<String>> getLoadedRecordMap() {
+        return loadedRecordMap;
+    }
+
+    /**
+     * 
+     * @param pi
+     * @param sessionId
+     * @param limit
+     * @throws RecordLimitExceededException
+     * @should add session id to map correctly
+     * @should do nothing if limit null
+     * @should do nothing if session id already in list
+     * @should throw RecordLimitExceededException if limit exceeded
+     */
+    public synchronized void lockRecord(String pi, String sessionId, Integer limit) throws RecordLimitExceededException {
+        if (pi == null) {
+            throw new IllegalArgumentException("pi may not be null");
+        }
+        if (sessionId == null) {
+            throw new IllegalArgumentException("sessionId may not be null");
+        }
+        // Record has unlimited views
+        if (limit == null) {
+            return;
+        }
+        Set<String> sessions = loadedRecordMap.get(pi);
+        if (sessions == null) {
+            sessions = new HashSet<>(limit);
+            loadedRecordMap.put(pi, sessions);
+        }
+        if (sessions.size() == limit) {
+            if (sessions.contains(sessionId)) {
+                return;
+            }
+            throw new RecordLimitExceededException(pi);
+        }
+
+        sessions.add(sessionId);
+    }
+
+    /**
+     * 
+     * @param pi
+     * @param sessionId
+     * @return true if session id removed from list successfully; false otherwise
+     * @should return number of records if session id removed successfully
+     */
+    public synchronized int removeSessionIdFromLocks(String sessionId) {
+        if (sessionId == null) {
+            throw new IllegalArgumentException("sessionId may not be null");
+        }
+        int count = 0;
+        for (String pi : loadedRecordMap.keySet()) {
+            Set<String> sessions = loadedRecordMap.get(pi);
+            if (sessions.contains(pi)) {
+                sessions.remove(sessionId);
+                count++;
+            }
+        }
+
+        return count;
     }
 
     /**
@@ -421,17 +491,17 @@ public final class DataManager {
         this.indexerVersion = indexerVersion;
         logger.trace(indexerVersion);
     }
-    
+
     /**
      * @return the restApiManager
      */
     public RestApiManager getRestApiManager() {
-        if(this.restApiManager == null) {
+        if (this.restApiManager == null) {
             this.restApiManager = new RestApiManager(getConfiguration());
         }
         return restApiManager;
     }
-    
+
     /**
      * @param restApiManager the restApiManager to set
      */
