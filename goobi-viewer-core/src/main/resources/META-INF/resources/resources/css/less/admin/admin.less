@@ -10,8 +10,9 @@
 		width: calc(~"100% - 250px");
 		margin-left: 250px;
 		background-color: @neutralgray2;
-		padding: 15px;
+		padding: 1.5rem;
 		position: absolute;
+		padding-top: 5rem;
 		&.fixed-top,
 		&.fixed-bottom {
 			position: fixed;
@@ -469,7 +470,8 @@
 	}
 	&__sidebar {
 		position: absolute;
-		padding: 15px;
+		padding: 1.5rem;
+		padding-top: 5rem;
 		font-size: @fontNormal;
 		z-index: 1010;
 		&.fixed-top,
@@ -496,8 +498,8 @@
 		h1 {
 			line-height: normal;
 			margin: 0;
-			margin-bottom: 30px;
-			font-size: @fontLarge;
+			margin-bottom: 0.7rem;
+			font-size: 2.5rem;
 			color: @white;
 			a {
 				display: flex;
@@ -633,94 +635,125 @@
 	 		width: 2rem;
 		}
 	}
-}
 
-// language specific positioning for fancy toggle
-	// DE
-	html[lang="de"] .admin__radio-switch {
-		.toggle-outside {
-			left: 4.7rem;
-			}
-		label {
-			&:first-of-type {
-				width: 5rem;
-			}
-			&:last-of-type {
-				margin-left: 5.5rem;
-				width: 3.2rem;
-			}
+	// TOPBAR
+	&__topbar {
+		position: relative;
+		display: flex;
+		width: 100%;
+		z-index: 10000;
+		height: 3.5rem;
+		background: @blue;
+		color: @white;
+		position: fixed;
+		top: 0;
+		ul {
+			list-style: none;
+			margin-bottom: 0;
 		}
-		input {
-		    width: 6rem;
-		    left: 4.7rem;
-		}
-		&.-on-off {
-			.toggle-outside {
-				left: 6rem;
-				}
-			label {
-				&:first-of-type {
-					width: 5rem;
-				}
-				&:last-of-type {
-					margin-left: 7.6rem;
-					width: 3.2rem;
-				}
+		.-dropdown {
+			&:hover > ul {
+				opacity: 1;
+				visibility: visible;
 			}
-			input {
-			    width: 6rem;
-			    left: 6rem;
-			}			
 		}
 	}
-	
-	// EN
-	html[lang="en"] .admin__radio-switch {
-		.toggle-outside {
-			left: 4.0rem;
-			}
-		label {
-			&:first-of-type {
-				width: 4rem;
-			}
-			&:last-of-type {
-				margin-left: 6rem;
-				width: 4.0rem;
-			}
+	&__topbar-dropdown {
+		opacity: 0;
+		visibility: hidden;
+		position: absolute;
+		top: 100%;
+		background: @white;
+		padding: 0.5rem 1.2rem 1rem 1.2rem;
+		left: 0;
+		min-width: 250px;
+		transition: all 0.2s ease;
+		li {}
+		a {
+			display: block;
 		}
-		input {
-		    width: 6rem;
-		    left: 4rem;
-		}
-	}
-	
-	// ES
-	html[lang="es"] .admin__radio-switch {
-		.toggle-outside {
-			left: 4.0rem;
-			}
-		label {
-			&:first-of-type {
-				width: 4rem;
-			}
-			&:last-of-type {
-				margin-left: 6rem;
-				width: 3.2rem;
-			}
-		}
-		input {
-		    width: 6rem;
-		    left: 4rem;
+	}		
+	&__topbar-logo-menu {
+		position: relative;
+		flex: 0 0 6rem;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		fill: @white;
+		transition: all 0.2s ease;
+		&:hover {
+			background: @white;
+			fill: @blue;
 		}
 	}
-
-// overwritten bootstrap margin for description list elements
-.admin dl dd:last-of-type {
-	margin-bottom: 0;
-}
-
-.admin dl:last-of-type {
-	margin-bottom: 0;
+	&__topbar-logo {
+		width: 40px;
+		svg {
+			width: 100%;
+		}
+	}		
+	&__topbar-view-frontend-link {
+		padding: 0 2rem;
+		color: @white;
+		transition: all 0.2s ease;
+		display: flex;
+		justify-content: center;
+		align-items: center;
+		.fa {
+			margin-right: 0.9rem;
+			font-size: 2.1rem;
+		}
+		&:hover {
+			background: @white;
+			text-decoration: none;
+		}
+	}
+	&__topbar-add {
+		position: relative;
+		display: flex;
+		justify-content: center;
+		align-items: center;
+		padding: 0 2rem;
+		transition: all 0.2s ease;
+		.fa {
+			margin-right: 0.9rem;
+			font-size: 2.1rem;
+		}
+		&:hover {
+			background: @white;
+			text-decoration: none;
+			color: @blue;
+		}
+	}
+	&__topbar-logout {
+		display: flex;
+		justify-content: center;
+		align-items: stretch;
+		margin-left: auto;
+		margin-right: 4rem;
+		ul {
+		}
+		form, ul, li {
+			display: flex;
+			align-items: stretch;
+		}
+	}
+	&__topbar-logout-link {
+		padding: 0 2rem;
+		color: @white;
+		transition: all 0.2s ease;
+		display: flex;
+		justify-content: center;
+		align-items: center;
+		.fa {
+			margin-left: 0.9rem;
+			font-size: 2.1rem;
+		}
+		&:hover {
+			background: @white;
+			text-decoration: none;
+		}
+	}
 }
 
 // VISUALLY CONNECTED RADIO BUTTONS
@@ -745,6 +778,95 @@
 }
 input[type="radio"]:checked+label {
     font-weight: bold;
+}
+
+// language specific positioning for fancy toggle
+// DE
+html[lang="de"] .admin__radio-switch {
+	.toggle-outside {
+		left: 4.7rem;
+		}
+	label {
+		&:first-of-type {
+			width: 5rem;
+		}
+		&:last-of-type {
+			margin-left: 5.5rem;
+			width: 3.2rem;
+		}
+	}
+	input {
+	    width: 6rem;
+	    left: 4.7rem;
+	}
+	&.-on-off {
+		.toggle-outside {
+			left: 6rem;
+			}
+		label {
+			&:first-of-type {
+				width: 5rem;
+			}
+			&:last-of-type {
+				margin-left: 7.6rem;
+				width: 3.2rem;
+			}
+		}
+		input {
+		    width: 6rem;
+		    left: 6rem;
+		}			
+	}
+}
+
+// EN
+html[lang="en"] .admin__radio-switch {
+	.toggle-outside {
+		left: 4.0rem;
+		}
+	label {
+		&:first-of-type {
+			width: 4rem;
+		}
+		&:last-of-type {
+			margin-left: 6rem;
+			width: 4.0rem;
+		}
+	}
+	input {
+	    width: 6rem;
+	    left: 4rem;
+	}
+}
+
+// ES
+html[lang="es"] .admin__radio-switch {
+	.toggle-outside {
+		left: 4.0rem;
+		}
+	label {
+		&:first-of-type {
+			width: 4rem;
+		}
+		&:last-of-type {
+			margin-left: 6rem;
+			width: 3.2rem;
+		}
+	}
+	input {
+	    width: 6rem;
+	    left: 4rem;
+	}
+}
+	
+
+// overwritten bootstrap margin for description list elements
+.admin dl dd:last-of-type {
+	margin-bottom: 0;
+}
+
+.admin dl:last-of-type {
+	margin-bottom: 0;
 }
 
 /* USER TABLE FADE IN ANIMATION TEST */
