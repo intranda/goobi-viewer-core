@@ -663,7 +663,7 @@
 		visibility: hidden;
 		position: absolute;
 		top: 100%;
-		background: @white;
+		background: @activeblue;
 		padding: 0.5rem 1.2rem 1rem 1.2rem;
 		left: 0;
 		min-width: 250px;
@@ -671,6 +671,7 @@
 		li {}
 		a {
 			display: block;
+            color: @white;
 		}
 	}		
 	&__topbar-logo-menu {
@@ -682,7 +683,7 @@
 		fill: @white;
 		transition: all 0.2s ease;
 		&:hover {
-			background: @white;
+			background: @activeblue;
 			fill: @blue;
 		}
 	}
@@ -704,7 +705,8 @@
 			font-size: 2.1rem;
 		}
 		&:hover {
-			background: @white;
+			background: @activeblue;
+            color: @white;
 			text-decoration: none;
 		}
 	}
@@ -720,9 +722,9 @@
 			font-size: 2.1rem;
 		}
 		&:hover {
-			background: @white;
+			background: @activeblue;
 			text-decoration: none;
-			color: @blue;
+			color: @white;
 		}
 	}
 	&__topbar-logout {
@@ -750,7 +752,8 @@
 			font-size: 2.1rem;
 		}
 		&:hover {
-			background: @white;
+			background: @activeblue;
+            color: white;
 			text-decoration: none;
 		}
 	}
