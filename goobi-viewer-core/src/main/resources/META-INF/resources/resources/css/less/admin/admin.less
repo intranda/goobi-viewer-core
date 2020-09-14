@@ -647,13 +647,13 @@
 		color: @white;
 		position: fixed;
 		top: 0;
+        li {
+            padding-top: 3px;
+        }
 		ul {
 			list-style: none;
 			margin-bottom: 0;
 		}
-        li {
-            transition: all .2s ease;
-        }
 		.-dropdown {
 			&:hover > ul {
 				opacity: 1;
@@ -673,7 +673,10 @@
 		transition: all 0.2s ease;
 		li {
             &:hover {
-                padding-left: .5rem;
+                padding-left: 12px;
+                margin-left: -12px;
+                margin-right: -12px;
+                background-color: #3365a9;
             }
         }
 		a {
@@ -710,7 +713,7 @@
 		align-items: center;
 		.fa {
 			margin-right: 0.9rem;
-			font-size: 2.1rem;
+			font-size: 1.6rem;
 		}
 		&:hover {
 			background: #235396;
@@ -727,7 +730,7 @@
 		transition: all 0.2s ease;
 		.fa {
 			margin-right: 0.9rem;
-			font-size: 2.1rem;
+			font-size: 1.6rem;
 		}
 		&:hover {
 			background: #235396;
