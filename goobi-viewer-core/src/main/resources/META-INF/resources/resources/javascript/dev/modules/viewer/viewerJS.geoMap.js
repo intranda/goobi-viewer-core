@@ -252,7 +252,6 @@ var viewerJS = ( function( viewer ) {
     }
     
     viewer.GeoMap.prototype.getMarkerIcon = function() {
-        console.log("get marker icon ", this.markerIcon);
         if(this.markerIcon) {       
             let icon = L.ExtraMarkers.icon(this.markerIcon);
             if(this.markerIcon.shadow === false) {                
@@ -282,7 +281,6 @@ var viewerJS = ( function( viewer ) {
             $popover.css("display", "block");
             return $popover.get(0);
         } else if(this.config.popover){
-            console.log("empty marker message ", this.config.popover);
             return this.config.emptyMarkerMessage;
         }
     }

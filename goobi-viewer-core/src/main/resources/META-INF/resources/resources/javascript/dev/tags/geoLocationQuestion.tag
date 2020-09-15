@@ -54,7 +54,6 @@ resetFeatures() {
 setFeatures(annotations) {
     this.geoMap.resetMarkers();
     annotations.filter(anno => !anno.isEmpty()).forEach((anno) => {
-        console.log("add marker for anno ", anno)
         if(anno.color) {
             let markerIcon = this.geoMap.getMarkerIcon().options;
             markerIcon.markerColor = anno.color;
@@ -85,10 +84,6 @@ focusAnnotation(index) {
     let anno = this.question.getByIndex(index);
     if(anno) {
         let marker = this.geoMap.getMarker(anno.markerId);
-        if(marker) {            
-	        console.log("focus ", anno, marker);
-	        
-        }
     }
 }
 
@@ -133,7 +128,6 @@ setNameFromEvent(event) {
 }
 
 initMap() {
-    console.log("initMap 2");
     this.geoMap = new viewerJS.GeoMap({
         mapId : "geoMap_" + this.opts.index,
         allowMovingFeatures: !this.opts.item.isReviewMode(),
