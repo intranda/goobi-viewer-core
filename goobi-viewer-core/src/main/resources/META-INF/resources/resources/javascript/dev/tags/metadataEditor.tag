@@ -11,9 +11,9 @@
 	}
 	The array of metadata must be provided in opts.metadata
 	The supported languages must be provided in opts.languages
-	A Rx.observable returning a metadata array may be added in opts.provider to change the metadata on the fly 
+	A rxjs.observable returning a metadata array may be added in opts.provider to change the metadata on the fly 
 	deleteListener: An observable notified by a delete command (optional)
-	updateListener: Rx.Observable triggered at onChange (optional)
+	updateListener: rxjs.Observable triggered at onChange (optional)
 	deleteLabel: a label for the delete button
  -->
 <metadataEditor> 
