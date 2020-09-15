@@ -32,10 +32,10 @@ var viewerJS = ( function ( viewer ) {
     	 * @description Method to initialize the jsf ajax listener.
     	 * @method init 
     	 * */
-        begin: new Rx.Subject(),
-        complete: new Rx.Subject(),
-        success: new Rx.Subject(),
-        error: new Rx.Subject(),
+        begin: new rxjs.Subject(),
+        complete: new rxjs.Subject(),
+        success: new rxjs.Subject(),
+        error: new rxjs.Subject(),
     	init: function( config ) {
     		if (_debug) {
     		    console.log( 'Initializing: viewerJS.jsfAjax.init' );

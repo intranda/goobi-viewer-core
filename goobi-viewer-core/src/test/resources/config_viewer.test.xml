@@ -1198,6 +1198,11 @@
 	    <marker icon="fa-coffee"  markerColor="pink" shape="star" prefix="fa" iconColor="black" iconRotate="270">maps__marker_4</marker>
 	    <marker icon="fa-number"  number="42" svg="true">maps__marker_5</marker>
 	  </markers>
+	  <coordinateFields>
+	  	<field>MD_GEOJSON_POINT</field>
+	  	<field>NORM_COORDS_GEOJSON</field>
+	  	<field>MD_COORDINATES</field>
+	  </coordinateFields>
 	  <mapbox>
 	    <token>some.token</token>
 	  </mapbox>

@@ -931,7 +931,7 @@ this.on("mount", () => {
 this.loadSubCollections = function() {
     let promises = [];
 
-    let subject = new Rx.Subject();
+    let subject = new rxjs.Subject();
     this.collections.forEach( child => {
         fetch(child['@id'])
         .then( result => result.json())
@@ -945,7 +945,7 @@ this.loadSubCollections = function() {
     });
 
     subject
-    .pipe(RxOp.debounceTime(100))
+    .pipe(rxjs.operators.debounceTime(100))
     .subscribe( () => this.update())
 }.bind(this)
 
@@ -1548,11 +1548,11 @@ riot.tag2('imageview', '<div id="wrapper_{opts.id}" class="imageview_wrapper"><s
 				if(this.opts.item) {
 					this.opts.item.image = this.image;
 
-				    var now = Rx.of(image);
+				    var now = rxjs.of(image);
 					this.opts.item.setImageSource = function(source) {
 					    this.image.setTileSource(this.getImageInfo(source));
 					}.bind(this);
-				    this.opts.item.notifyImageOpened(image.observables.viewerOpen.pipe(RxOp.map( () => image),RxOp.merge(now)));
+				    this.opts.item.notifyImageOpened(image.observables.viewerOpen.pipe(rxjs.operators.map( () => image),rxjs.operators.merge(now)));
 				}
 				return image;
 			})

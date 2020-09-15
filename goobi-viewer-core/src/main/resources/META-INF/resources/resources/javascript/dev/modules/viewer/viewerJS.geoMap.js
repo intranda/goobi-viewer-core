@@ -63,11 +63,11 @@ var viewerJS = ( function( viewer ) {
         this.markers = [];
         
         
-        this.onMapRightclick = new Rx.Subject();
-        this.onMapClick = new Rx.Subject();
-        this.onFeatureClick = new Rx.Subject();
-        this.onFeatureMove = new Rx.Subject();
-        this.onMapMove = new Rx.Subject();
+        this.onMapRightclick = new rxjs.Subject();
+        this.onMapClick = new rxjs.Subject();
+        this.onFeatureClick = new rxjs.Subject();
+        this.onFeatureMove = new rxjs.Subject();
+        this.onMapMove = new rxjs.Subject();
 
 
     }
@@ -118,12 +118,12 @@ var viewerJS = ( function( viewer ) {
 //        this.setView(this.config.initialView);
         
         //init map events
-        Rx.fromEvent(this.map, "moveend").pipe(RxOp.map(e => this.getView())).subscribe(this.onMapMove);
-        Rx.fromEvent(this.map, "contextmenu")
-        .pipe(RxOp.map(e => this.createGeoJson(e.latlng, this.map.getZoom(), this.map.getCenter())))
+        rxjs.fromEvent(this.map, "moveend").pipe(rxjs.operators.map(e => this.getView())).subscribe(this.onMapMove);
+        rxjs.fromEvent(this.map, "contextmenu")
+        .pipe(rxjs.operators.map(e => this.createGeoJson(e.latlng, this.map.getZoom(), this.map.getCenter())))
         .subscribe(this.onMapRightclick);
-        Rx.fromEvent(this.map, "click")
-        .pipe(RxOp.map(e => this.createGeoJson(e.latlng, this.map.getZoom(), this.map.getCenter())))
+        rxjs.fromEvent(this.map, "click")
+        .pipe(rxjs.operators.map(e => this.createGeoJson(e.latlng, this.map.getZoom(), this.map.getCenter())))
         .subscribe(this.onMapClick);
     
         //init feature layer
@@ -141,15 +141,15 @@ var viewerJS = ( function( viewer ) {
                     return this.id;
                 }
                 
-                Rx.fromEvent(marker, "dragend")
-                .pipe(RxOp.map(() => this.openPopup(marker)), RxOp.map(() => this.updatePosition(marker)))
+                rxjs.fromEvent(marker, "dragend")
+                .pipe(rxjs.operators.map(() => this.openPopup(marker)), rxjs.operators.map(() => this.updatePosition(marker)))
                 .subscribe(this.onFeatureMove);
-                Rx.fromEvent(marker, "click").pipe(RxOp.map(e => marker.feature)).subscribe(this.onFeatureClick);
+                rxjs.fromEvent(marker, "click").pipe(rxjs.operators.map(e => marker.feature)).subscribe(this.onFeatureClick);
                 
                 if(this.config.popover) {                    
                     if(this.config.popoverOnHover) {                    
-                        Rx.fromEvent(marker, "mouseover").subscribe(() => marker.openPopup());
-                        Rx.fromEvent(marker, "mouseout").subscribe(() => marker.closePopup());
+                        rxjs.fromEvent(marker, "mouseover").subscribe(() => marker.openPopup());
+                        rxjs.fromEvent(marker, "mouseout").subscribe(() => marker.closePopup());
                     }
                     marker.bindPopup(() => this.createPopup(marker),{closeButton: !this.config.popoverOnHover});
                 }

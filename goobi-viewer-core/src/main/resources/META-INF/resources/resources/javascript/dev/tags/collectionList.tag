@@ -71,7 +71,7 @@ this.on("mount", () => {
 loadSubCollections() {
     let promises = [];
     
-    let subject = new Rx.Subject();
+    let subject = new rxjs.Subject();
     this.collections.forEach( child => {
         fetch(child['@id'])
         .then( result => result.json())
@@ -85,7 +85,7 @@ loadSubCollections() {
     });
 
     subject
-    .pipe(RxOp.debounceTime(100))
+    .pipe(rxjs.operators.debounceTime(100))
     .subscribe( () => this.update())
 }
 

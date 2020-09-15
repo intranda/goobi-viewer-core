@@ -40,8 +40,8 @@ var viewerJS = ( function( viewer ) {
     };
     var _bookmarks = {
              
-            listsNeedUpdate: new Rx.Subject(),
-            listsUpdated: new Rx.Subject(),
+            listsNeedUpdate: new rxjs.Subject(),
+            listsUpdated: new rxjs.Subject(),
             bookmarkLists: [],
             init: function( config ) {
                 if ( _debug ) {
