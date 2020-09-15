@@ -252,6 +252,7 @@ var viewerJS = ( function( viewer ) {
     }
     
     viewer.GeoMap.prototype.getMarkerIcon = function() {
+        console.log("get marker icon ", this.markerIcon);
         if(this.markerIcon) {       
             let icon = L.ExtraMarkers.icon(this.markerIcon);
             if(this.markerIcon.shadow === false) {                
