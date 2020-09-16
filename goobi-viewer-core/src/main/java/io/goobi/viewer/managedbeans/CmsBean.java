@@ -1618,12 +1618,25 @@ public class CmsBean implements Serializable {
                         } catch (RedirectException e) {
                             return "pretty:cmsBrowse3";
                         }
+                        break;
+                    case GEOMAP: 
+                        if(item.getGeoMap() != null) {
+                            item.getGeoMap().updateFeatures();
+                        }
                     default:
                         break;
                 }
             }
         } catch (PresentationException e) {
             logger.warn(e.getMessage());
+        }
+        
+        if(!currentPage.isUseDefaultSidebar()) {
+            for(CMSSidebarElement element : currentPage.getSidebarElements()) {
+                if(element.getGeoMap() != null) {
+                    element.getGeoMap().updateFeatures();
+                }
+            }
         }
 
         // If the page is related to a record, load that record
