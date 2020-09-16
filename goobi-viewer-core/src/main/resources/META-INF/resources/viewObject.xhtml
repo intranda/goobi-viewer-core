@@ -9,6 +9,8 @@
 	xmlns:widgetComponent="http://xmlns.jcp.org/jsf/composite/components/widgets"
 	template="/resources/themes/#{navigationHelper.theme}/template.html">
 
+
+
     <ui:define name="metadata">
         <f:metadata>
             <f:event type="preRenderView" listener="#{navigationHelper.setCurrentView('object')}" />
@@ -21,6 +23,7 @@
                 rendered="#{configurationBean.addDublinCoreMetaTags}" />
             <h:outputText escape="false" value="#{activeDocumentBean.viewManager.highwirePressMetaTags}"
                 rendered="#{configurationBean.addHighwirePressMetaTags}" />
+		<script src="/viewer/resources/javascript/dist/SampleWebSocket.js"></script>
         </f:view>
     </ui:define>
 
@@ -31,6 +34,22 @@
 
     <!-- CONTENT -->
     <ui:define name="content">
+    
+    <div>
+<!--     <button id="socketTest" onclick="testSocket()">TEST WEBSOCKET HERE</button> -->
+    <script>
+    
+    function testSocket() {
+      	console.log("test socket"); 
+	    var client = new WebSocketClient('ws', '127.0.0.1', 8082, '/viewer/sessionsocket');
+		client.connect();
+
+    }
+    testSocket();
+    
+    </script>
+    </div>
+    
 		<f:view contentType="text/html" encoding="utf-8">
             <!-- reCAPTCHA API -->
             <h:panelGroup rendered="#{configurationBean.useReCaptcha}">

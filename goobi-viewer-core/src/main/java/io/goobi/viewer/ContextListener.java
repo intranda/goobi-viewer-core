@@ -131,7 +131,7 @@ public class ContextListener implements ServletContextListener {
         sce.getServletContext().setInitParameter(PRETTY_FACES_CONFIG_PARAM_NAME, prettyConfigFiles);
         logger.debug("Pretty config files: {}", prettyConfigFiles);
         
-        PrettyContext.getCurrentInstance();
+//        PrettyContext.getCurrentInstance();
 
         //set contentServerConfig
         ContentServerConfiguration.getInstance("contentServerConfig.xml");
