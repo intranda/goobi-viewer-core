@@ -129,7 +129,9 @@ public abstract class AbstractBuilder {
      */
     public AbstractBuilder(AbstractApiUrlManager apiUrlManager) {
         if (apiUrlManager == null) {
-            throw new org.jboss.weld.exceptions.IllegalArgumentException("apiUrlManager may not be null");
+            String apiUrl = DataManager.getInstance().getConfiguration().getIIIFApiUrl();
+            apiUrl = apiUrl.replace("/rest", "/api/v1");
+            apiUrlManager = new ApiUrls(apiUrl);
         }
         this.urls = apiUrlManager;
         this.annoBuilder = new AnnotationsResourceBuilder(this.urls);
