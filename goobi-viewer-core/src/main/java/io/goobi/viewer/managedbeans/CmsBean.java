@@ -1618,6 +1618,7 @@ public class CmsBean implements Serializable {
                         } catch (RedirectException e) {
                             return "pretty:cmsBrowse3";
                         }
+                        break;
                     default:
                         break;
                 }

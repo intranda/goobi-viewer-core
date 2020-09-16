@@ -532,4 +532,11 @@ public class GeoMap {
     public boolean isShowPopover() {
         return showPopover;
     }
+    
+    /**
+     * Resets the cached feature string. 
+     */
+    public void updateFeatures() {
+        this.featuresAsString = null;
+    }
 }

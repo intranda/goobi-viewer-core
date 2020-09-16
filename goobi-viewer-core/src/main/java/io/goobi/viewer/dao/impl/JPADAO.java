@@ -4671,6 +4671,10 @@ public class JPADAO implements IDAO {
             em.getTransaction().begin();
             em.merge(map);
             em.getTransaction().commit();
+            //Update the map in the persistent entity manager, removing the feature cache string
+            GeoMap o = this.em.getReference(GeoMap.class, map.getId());
+            o.updateFeatures();
+            this.em.refresh(o);
             return true;
         } catch (IllegalArgumentException e) {
             return false;
