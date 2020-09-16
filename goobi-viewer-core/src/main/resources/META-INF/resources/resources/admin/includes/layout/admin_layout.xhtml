@@ -15,21 +15,6 @@
     xmlns:composite="http://xmlns.jcp.org/jsf/composite"
     xmlns:p="http://primefaces.org/ui">
 
-
-    <composite:interface>
-        <composite:attribute name="showGerman" required="false" default="true" />
-        <composite:attribute name="showEnglish" required="false" default="true" />
-        <composite:attribute name="showFlags" required="false" default="true" />
-        <composite:attribute name="showLabels" required="false" default="true" />
-        <composite:attribute name="displayAll" required="false" default="true" />
-        <composite:attribute name="singleLanguage" required="false" />
-        <composite:attribute name="toggleLanguage" required="false" default="true" />
-    </composite:interface>
-
-
-
-
-
     <!-- MESSAGES -->
     <div class="messages">
         <h:messages id="messages" globalOnly="false" infoClass="alert alert-success" errorClass="alert alert-danger" />
@@ -75,37 +60,36 @@
 	   			</ul>
     		</div>
 
-            <!-- CHANGE BACKEND LANGUAGE -->
-			<ui:fragment rendered="#{fn:length(navigationHelper.supportedLanguages) > 0}">
-				<div class="admin__topbar-language -dropdown">
-					<i class="fa fa-globe" aria-hidden="true"></i><span>#{msg.MD_LANGUAGE}</span>
-					                <h:form id="changeLocalForm1" prependId="false">
-	                <ul class="admin__topbar-dropdown">
-	                    <ui:repeat var="lang" value="#{navigationHelper.supportedLanguages}">
-	                        <li>
-	                             <h:commandLink styleClass="#{navigationHelper.localeString == lang ?'activeLang':''}">
-	                                 <h:outputText value="#{msg['changeLocal_' += lang]}" />
-	                                 <f:setPropertyActionListener target="#{navigationHelper.localeString}" value="#{lang}" />
-	                             </h:commandLink>
-	                         </li>
-	                     </ui:repeat>
-	                 </ul>
-	                 </h:form>
-	            </div>
-			</ui:fragment>  
-            
-            
-            
-            		
+			<!-- RIGHT AREA TOPBAR -->
+			<div class="admin__topbar-right">
+	            <!-- CHANGE LANGUAGE -->
+				<ui:fragment rendered="#{fn:length(navigationHelper.supportedLanguages) > 1}">
+					<div class="admin__topbar-language -dropdown">
+						<i class="fa fa-globe" aria-hidden="true"></i><span>#{msg.MD_LANGUAGE}</span>
+						<h:form id="changeLocalForm1" prependId="false">
+			                <ul class="admin__topbar-dropdown">
+			                    <ui:repeat var="lang" value="#{navigationHelper.supportedLanguages}">
+			                        <li>
+			                             <h:commandLink styleClass="#{navigationHelper.localeString == lang ?'activeLang':''}">
+			                                 <h:outputText value="#{msg['changeLocal_' += lang]}" />
+			                                 <f:setPropertyActionListener target="#{navigationHelper.localeString}" value="#{lang}" />
+			                             </h:commandLink>
+			                         </li>
+			                     </ui:repeat>
+			                 </ul>
+		                 </h:form>
+		            </div>
+				</ui:fragment>
 
-            <!-- LOGOUT -->
-            <div class="admin__topbar-logout">
-                <h:form>
-					<h:commandLink styleClass="admin__topbar-logout-link" action="#{userBean.logout}">
-					    <span>#{msg.logout}</span>
-					    <i class="fa fa-power-off" aria-hidden="true"></i>
-					</h:commandLink>
-                </h:form>
+	            <!-- LOGOUT -->
+	            <div class="admin__topbar-logout">
+	                <h:form>
+						<h:commandLink styleClass="admin__topbar-logout-link" action="#{userBean.logout}">
+						    <span>#{msg.logout}</span>
+						    <i class="fa fa-power-off" aria-hidden="true"></i>
+						</h:commandLink>
+	                </h:form>
+	            </div>
             </div>
 
     	</div>
