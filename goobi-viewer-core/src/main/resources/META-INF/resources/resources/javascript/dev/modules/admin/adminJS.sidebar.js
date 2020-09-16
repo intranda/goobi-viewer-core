@@ -24,7 +24,9 @@
 var adminJS = ( function( admin ) {
     'use strict';
     
-    var _debug = false;
+    console.log('test');
+    
+    var _debug = true;
     
     admin.sidebar = {
         /**

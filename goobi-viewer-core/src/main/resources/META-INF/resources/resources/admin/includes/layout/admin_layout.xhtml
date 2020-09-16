@@ -4,13 +4,31 @@
     xmlns:c="http://java.sun.com/jsp/jstl/core"
     xmlns:h="http://xmlns.jcp.org/jsf/html"
     xmlns:f="http://xmlns.jcp.org/jsf/core"
+    xmlns:fn="http://java.sun.com/jsp/jstl/functions"   
     xmlns:jsf="http://xmlns.jcp.org/jsf"
     xmlns:pt="http://xmlns.jcp.org/jsf/passthrough"
     xmlns:viewer="http://xmlns.jcp.org/jsf/composite/components/partner"
     xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components"
     xmlns:widgetComponent="http://xmlns.jcp.org/jsf/composite/components/widgets"
     xmlns:adminWidget="http://xmlns.jcp.org/jsf/composite/admin/widgets"
-    xmlns:adminComponent="http://xmlns.jcp.org/jsf/composite/admin/components">
+    xmlns:adminComponent="http://xmlns.jcp.org/jsf/composite/admin/components"
+    xmlns:composite="http://xmlns.jcp.org/jsf/composite"
+    xmlns:p="http://primefaces.org/ui">
+
+
+    <composite:interface>
+        <composite:attribute name="showGerman" required="false" default="true" />
+        <composite:attribute name="showEnglish" required="false" default="true" />
+        <composite:attribute name="showFlags" required="false" default="true" />
+        <composite:attribute name="showLabels" required="false" default="true" />
+        <composite:attribute name="displayAll" required="false" default="true" />
+        <composite:attribute name="singleLanguage" required="false" />
+        <composite:attribute name="toggleLanguage" required="false" default="true" />
+    </composite:interface>
+
+
+
+
 
     <!-- MESSAGES -->
     <div class="messages">
@@ -41,9 +59,9 @@
    			title="#{msg.admin__view_frontend}" 
    			aria-label="#{msg.admin__view_frontend}" 
    			target="_blank">
-   			<i class="fa fa-home" aria-hidden="true"></i> #{msg.admin__view_frontend}
+   			<i class="fa fa-home" aria-hidden="true"></i> #{configurationBean.name}
     		</a>
-    		
+
     		<!-- ADD SOMETHING NEW -->
     		<div class="admin__topbar-add -dropdown">
 	    		<i class="fa fa-plus" aria-hidden="true"></i><span>#{msg.admin__new}</span>
@@ -56,6 +74,29 @@
 	    			<li><a href="#{request.contextPath}/admin/cms/categories/new/" target="_self">#{msg.admin__category}</a></li>
 	   			</ul>
     		</div>
+
+            <!-- CHANGE BACKEND LANGUAGE -->
+			<ui:fragment rendered="#{fn:length(navigationHelper.supportedLanguages) > 0}">
+				<div class="admin__topbar-language -dropdown">
+					<i class="fa fa-globe" aria-hidden="true"></i><span>#{msg.MD_LANGUAGE}</span>
+					                <h:form id="changeLocalForm1" prependId="false">
+	                <ul class="admin__topbar-dropdown">
+	                    <ui:repeat var="lang" value="#{navigationHelper.supportedLanguages}">
+	                        <li>
+	                             <h:commandLink styleClass="#{navigationHelper.localeString == lang ?'activeLang':''}">
+	                                 <h:outputText value="#{msg['changeLocal_' += lang]}" />
+	                                 <f:setPropertyActionListener target="#{navigationHelper.localeString}" value="#{lang}" />
+	                             </h:commandLink>
+	                         </li>
+	                     </ui:repeat>
+	                 </ul>
+	                 </h:form>
+	            </div>
+			</ui:fragment>  
+            
+            
+            
+            		
 
             <!-- LOGOUT -->
             <div class="admin__topbar-logout">
