@@ -390,6 +390,7 @@ public enum PageType {
      *
      * @return a boolean.
      */
+    @Deprecated
     public boolean isRestricted() {
         switch (this) {
             case admin:
