@@ -44,6 +44,8 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.ibm.icu.impl.UResource.Array;
+
 import de.unigoettingen.sub.commons.contentlib.imagelib.ImageType;
 import de.unigoettingen.sub.commons.contentlib.imagelib.transform.Scale;
 import io.goobi.viewer.exceptions.ViewerConfigurationException;
@@ -4699,6 +4701,14 @@ public final class Configuration extends AbstractConfiguration {
         return getGeoMapMarkers().stream().filter(m -> name.equalsIgnoreCase(m.getName())).findAny().orElse(null);
     }
 
+    /**
+     *
+     * @return a  list of solr field names containing GeoJson data used to create markers in maps
+     */
+    public List<String> getGeoMapMarkerFields() {
+        return getLocalList("maps.coordinateFields.field", Arrays.asList("MD_GEOJSON_POINT", "NORM_COORDS_GEOJSON"));
+    }
+    
     public List<GeoMapMarker> getGeoMapMarkers() {
 
         List<GeoMapMarker> markers = new ArrayList<>();

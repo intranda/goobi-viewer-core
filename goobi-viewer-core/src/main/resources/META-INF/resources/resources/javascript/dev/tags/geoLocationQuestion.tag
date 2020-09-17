@@ -54,6 +54,11 @@ resetFeatures() {
 setFeatures(annotations) {
     this.geoMap.resetMarkers();
     annotations.filter(anno => !anno.isEmpty()).forEach((anno) => {
+        if(anno.color) {
+            let markerIcon = this.geoMap.getMarkerIcon().options;
+            markerIcon.markerColor = anno.color;
+            this.geoMap.setMarkerIcon(markerIcon);
+        }
         let marker = this.geoMap.addMarker(anno.body);
         anno.markerId = marker.getId();
     });
@@ -79,10 +84,6 @@ focusAnnotation(index) {
     let anno = this.question.getByIndex(index);
     if(anno) {
         let marker = this.geoMap.getMarker(anno.markerId);
-        if(marker) {            
-	        console.log("focus ", anno, marker);
-	        
-        }
     }
 }
 
@@ -129,22 +130,34 @@ setNameFromEvent(event) {
 initMap() {
     this.geoMap = new viewerJS.GeoMap({
         mapId : "geoMap_" + this.opts.index,
-        initialView : {
-            zoom: 5,
-            center: [11.073397, 49.451993] //long, lat
-        },
         allowMovingFeatures: !this.opts.item.isReviewMode(),
         language: Crowdsourcing.translator.language,
         popover: undefined,
         emptyMarkerMessage: undefined,
         popoverOnHover: false,
     })
-    this.geoMap.init();
-
+    let initialView = {
+        zoom: 5,
+        center: [11.073397, 49.451993] //long, lat
+    };
+    this.geoMap.setMarkerIcon({
+        shape: "circle",
+        prefix: "fa",
+        markerColor: "blue",
+        iconColor: "white",
+        icon: "fa-circle",
+        svg: true
+    })
+    this.geoMap.init(initialView);
     this.geoMap.onFeatureMove.subscribe(feature => this.moveFeature(feature));
     this.geoMap.onFeatureClick.subscribe(feature => this.removeFeature(feature));
     this.geoMap.onMapClick.subscribe(geoJson => {
         if(this.addMarkerActive && (this.question.targetFrequency == 0 || this.geoMap.getMarkerCount() < this.question.targetFrequency)) {
+            if(this.annotationToMark && this.annotationToMark.color) {
+                let markerIcon = this.geoMap.getMarkerIcon().options;
+                markerIcon.markerColor = this.annotationToMark.color;
+                this.geoMap.setMarkerIcon(markerIcon);
+            }
             let marker = this.geoMap.addMarker(geoJson);
             if(this.annotationToMark) {
                 this.annotationToMark.markerId = marker.getId();

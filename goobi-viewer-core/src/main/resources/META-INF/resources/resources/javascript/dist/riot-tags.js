@@ -931,7 +931,7 @@ this.on("mount", () => {
 this.loadSubCollections = function() {
     let promises = [];
 
-    let subject = new Rx.Subject();
+    let subject = new rxjs.Subject();
     this.collections.forEach( child => {
         fetch(child['@id'])
         .then( result => result.json())
@@ -945,7 +945,7 @@ this.loadSubCollections = function() {
     });
 
     subject
-    .pipe(RxOp.debounceTime(100))
+    .pipe(rxjs.operators.debounceTime(100))
     .subscribe( () => this.update())
 }.bind(this)
 
@@ -1184,6 +1184,11 @@ this.resetFeatures = function() {
 this.setFeatures = function(annotations) {
     this.geoMap.resetMarkers();
     annotations.filter(anno => !anno.isEmpty()).forEach((anno) => {
+        if(anno.color) {
+            let markerIcon = this.geoMap.getMarkerIcon().options;
+            markerIcon.markerColor = anno.color;
+            this.geoMap.setMarkerIcon(markerIcon);
+        }
         let marker = this.geoMap.addMarker(anno.body);
         anno.markerId = marker.getId();
     });
@@ -1206,10 +1211,6 @@ this.focusAnnotation = function(index) {
     let anno = this.question.getByIndex(index);
     if(anno) {
         let marker = this.geoMap.getMarker(anno.markerId);
-        if(marker) {
-	        console.log("focus ", anno, marker);
-
-        }
     }
 }.bind(this)
 
@@ -1244,22 +1245,34 @@ this.setNameFromEvent = function(event) {
 this.initMap = function() {
     this.geoMap = new viewerJS.GeoMap({
         mapId : "geoMap_" + this.opts.index,
-        initialView : {
-            zoom: 5,
-            center: [11.073397, 49.451993]
-        },
         allowMovingFeatures: !this.opts.item.isReviewMode(),
         language: Crowdsourcing.translator.language,
         popover: undefined,
         emptyMarkerMessage: undefined,
         popoverOnHover: false,
     })
-    this.geoMap.init();
-
+    let initialView = {
+        zoom: 5,
+        center: [11.073397, 49.451993]
+    };
+    this.geoMap.setMarkerIcon({
+        shape: "circle",
+        prefix: "fa",
+        markerColor: "blue",
+        iconColor: "white",
+        icon: "fa-circle",
+        svg: true
+    })
+    this.geoMap.init(initialView);
     this.geoMap.onFeatureMove.subscribe(feature => this.moveFeature(feature));
     this.geoMap.onFeatureClick.subscribe(feature => this.removeFeature(feature));
     this.geoMap.onMapClick.subscribe(geoJson => {
         if(this.addMarkerActive && (this.question.targetFrequency == 0 || this.geoMap.getMarkerCount() < this.question.targetFrequency)) {
+            if(this.annotationToMark && this.annotationToMark.color) {
+                let markerIcon = this.geoMap.getMarkerIcon().options;
+                markerIcon.markerColor = this.annotationToMark.color;
+                this.geoMap.setMarkerIcon(markerIcon);
+            }
             let marker = this.geoMap.addMarker(geoJson);
             if(this.annotationToMark) {
                 this.annotationToMark.markerId = marker.getId();
@@ -1548,11 +1561,11 @@ riot.tag2('imageview', '<div id="wrapper_{opts.id}" class="imageview_wrapper"><s
 				if(this.opts.item) {
 					this.opts.item.image = this.image;
 
-				    var now = Rx.of(image);
+				    var now = rxjs.of(image);
 					this.opts.item.setImageSource = function(source) {
 					    this.image.setTileSource(this.getImageInfo(source));
 					}.bind(this);
-				    this.opts.item.notifyImageOpened(image.observables.viewerOpen.pipe(RxOp.map( () => image),RxOp.merge(now)));
+				    this.opts.item.notifyImageOpened(image.observables.viewerOpen.pipe(rxjs.operators.map( () => image),rxjs.operators.merge(now)));
 				}
 				return image;
 			})

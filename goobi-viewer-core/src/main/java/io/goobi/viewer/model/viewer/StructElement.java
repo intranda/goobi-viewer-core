@@ -184,14 +184,17 @@ public class StructElement extends StructElementStub implements Comparable<Struc
                 doc = getDocument();
             }
             metadataFields = SolrSearchIndex.getFieldValueMap(doc);
-            pi = getMetadataValue(SolrConstants.PI);
+            work = Boolean.valueOf(getMetadataValue(SolrConstants.ISWORK));
+            anchor = Boolean.valueOf(getMetadataValue(SolrConstants.ISANCHOR));
+            // Only load PI if for topstruct/anchor documents to avoid non-resolvable URLs
+            if (work || anchor) {
+                pi = getMetadataValue(SolrConstants.PI);
+            }
             if (pi != null) {
                 pi = pi.intern();
             }
             docType = DocType.getByName(getMetadataValue(SolrConstants.DOCTYPE));
             logid = getMetadataValue(SolrConstants.LOGID);
-            work = Boolean.valueOf(getMetadataValue(SolrConstants.ISWORK));
-            anchor = Boolean.valueOf(getMetadataValue(SolrConstants.ISANCHOR));
             if (anchor) {
                 String numVolumeString = getMetadataValue(SolrConstants.NUMVOLUMES);
                 if (numVolumeString != null) {

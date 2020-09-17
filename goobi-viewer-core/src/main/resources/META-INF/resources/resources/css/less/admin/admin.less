@@ -10,8 +10,9 @@
 		width: calc(~"100% - 250px");
 		margin-left: 250px;
 		background-color: @neutralgray2;
-		padding: 15px;
+		padding: 1.5rem;
 		position: absolute;
+		padding-top: 5rem;
 		&.fixed-top,
 		&.fixed-bottom {
 			position: fixed;
@@ -363,7 +364,7 @@
 		padding: 1rem 0;
         font-size: 1.6rem;
         position: sticky;
-		top: 0;
+		top: 3.5rem;
 		background: white;
 		z-index: 5;
         margin-left:-2rem;
@@ -469,7 +470,8 @@
 	}
 	&__sidebar {
 		position: absolute;
-		padding: 15px;
+		padding: 1.5rem;
+		padding-top: 5rem;
 		font-size: @fontNormal;
 		z-index: 1010;
 		&.fixed-top,
@@ -496,9 +498,11 @@
 		h1 {
 			line-height: normal;
 			margin: 0;
-			margin-bottom: 30px;
-			font-size: @fontLarge;
+			margin-bottom: 0.7rem;
+			font-size: 2.5rem;
 			color: @white;
+			font-weight: 700;
+			padding: 1.7rem 0 0.2rem 0;
 			a {
 				display: flex;
 				align-items: center;
@@ -633,94 +637,176 @@
 	 		width: 2rem;
 		}
 	}
-}
 
-// language specific positioning for fancy toggle
-	// DE
-	html[lang="de"] .admin__radio-switch {
-		.toggle-outside {
-			left: 4.7rem;
-			}
-		label {
-			&:first-of-type {
-				width: 5rem;
-			}
-			&:last-of-type {
-				margin-left: 5.5rem;
-				width: 3.2rem;
-			}
+	// TOPBAR
+	&__topbar {
+		position: relative;
+		display: flex;
+		width: 100vw;
+		z-index: 10000;
+		height: 3.5rem;
+		background: @blue;
+		color: @white;
+		position: fixed;
+		top: 0;
+		// BOOTSTRAP/BROWSER RESET
+		ul {
+			list-style: none;
+			margin-bottom: 0;
+			padding-left: 0;
 		}
-		input {
-		    width: 6rem;
-		    left: 4.7rem;
-		}
-		&.-on-off {
-			.toggle-outside {
-				left: 6rem;
-				}
-			label {
-				&:first-of-type {
-					width: 5rem;
-				}
-				&:last-of-type {
-					margin-left: 7.6rem;
-					width: 3.2rem;
-				}
+		.-dropdown {
+			&:hover > ul,
+			&:hover > form > ul {
+				opacity: 1;
+				visibility: visible;
 			}
-			input {
-			    width: 6rem;
-			    left: 6rem;
-			}			
 		}
 	}
-	
-	// EN
-	html[lang="en"] .admin__radio-switch {
-		.toggle-outside {
-			left: 4.0rem;
-			}
-		label {
-			&:first-of-type {
-				width: 4rem;
-			}
-			&:last-of-type {
-				margin-left: 6rem;
-				width: 4.0rem;
-			}
+	&__topbar-right {
+		margin-left: auto;
+		display: flex;
+	}
+	&__topbar-dropdown {
+		opacity: 0;
+		visibility: hidden;
+		position: absolute;
+		top: 100%;
+		background: #235396;
+		left: 0;
+		min-width: 250px;
+		transition: all 0.2s ease;
+		li {
+			padding: 0.3rem 0.7rem 0.3rem 2rem;
+            &:hover {
+                background-color: #3365a9;
+            }
+        }
+		a {
+			display: block;
+            color: @white;
+            text-decoration: none;
 		}
-		input {
-		    width: 6rem;
-		    left: 4rem;
+	}		
+	&__topbar-logo-menu {
+		position: relative;
+		flex: 0 0 6rem;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		fill: @white;
+		transition: all 0.2s ease;
+		cursor: default;
+		&:hover {
+			background: #235396;
+            cursor: pointer;
+			fill: @white;
 		}
 	}
-	
-	// ES
-	html[lang="es"] .admin__radio-switch {
-		.toggle-outside {
-			left: 4.0rem;
-			}
-		label {
-			&:first-of-type {
-				width: 4rem;
-			}
-			&:last-of-type {
-				margin-left: 6rem;
-				width: 3.2rem;
-			}
+	&__topbar-logo {
+		width: 40px;
+		svg {
+			width: 100%;
 		}
-		input {
-		    width: 6rem;
-		    left: 4rem;
+	}		
+	&__topbar-view-frontend-link {
+		padding: 0 2rem;
+		color: @white;
+		transition: all 0.2s ease;
+		display: flex;
+		justify-content: center;
+		align-items: center;
+		.fa {
+			margin-right: 0.9rem;
+			font-size: 1.6rem;
+		}
+		&:hover {
+			background: #235396;
+            color: @white;
+			text-decoration: none;
+		}
+		&:active,
+		&:focus,
+		&:focus-within {
+			color: @white;
 		}
 	}
-
-// overwritten bootstrap margin for description list elements
-.admin dl dd:last-of-type {
-	margin-bottom: 0;
-}
-
-.admin dl:last-of-type {
-	margin-bottom: 0;
+	&__topbar-add {
+		position: relative;
+		display: flex;
+		justify-content: center;
+		align-items: center;
+		padding: 0 2rem;
+		transition: all 0.2s ease;
+		cursor: default;
+		.fa {
+			margin-right: 0.9rem;
+			font-size: 1.6rem;
+		}
+		&:hover {
+			background: #235396;
+			text-decoration: none;
+            cursor: pointer;
+			color: @white;
+		}
+	}
+	&__topbar-language {
+		position: relative;
+		display: flex;
+		justify-content: center;
+		align-items: center;
+		padding: 0 2rem;
+		transition: all 0.2s ease;
+		cursor: default;
+		&:hover {
+			background: #235396;
+			text-decoration: none;
+            cursor: pointer;
+			color: @white;
+		}
+		.fa {
+			margin-right: 0.9rem;
+			font-size: 1.6rem;
+		}
+		ul {
+			opacity: 0;
+			visibility: hidden;
+		}
+	}
+	&__topbar-logout {
+		display: flex;
+		justify-content: center;
+		align-items: stretch;
+		margin-right: 4rem;
+		ul {
+		}
+		form, ul, li {
+			display: flex;
+			align-items: stretch;
+		}
+	}
+	&__topbar-logout-link {
+		padding: 0 2rem;
+		color: @white;
+		transition: all 0.2s ease;
+		display: flex;
+		justify-content: center;
+		align-items: center;
+		.fa {
+			margin-left: 0.9rem;
+			font-size: 1.6rem;
+		}
+		&:hover {
+			background: #235396;
+            color: white;
+			text-decoration: none;
+		}
+		&:active,
+		&:focus,
+		&:focus-within {
+			color: @white;
+		}
+	}
 }
 
 // VISUALLY CONNECTED RADIO BUTTONS
@@ -745,6 +831,95 @@
 }
 input[type="radio"]:checked+label {
     font-weight: bold;
+}
+
+// language specific positioning for fancy toggle
+// DE
+html[lang="de"] .admin__radio-switch {
+	.toggle-outside {
+		left: 4.7rem;
+		}
+	label {
+		&:first-of-type {
+			width: 5rem;
+		}
+		&:last-of-type {
+			margin-left: 5.5rem;
+			width: 3.2rem;
+		}
+	}
+	input {
+	    width: 6rem;
+	    left: 4.7rem;
+	}
+	&.-on-off {
+		.toggle-outside {
+			left: 6rem;
+			}
+		label {
+			&:first-of-type {
+				width: 5rem;
+			}
+			&:last-of-type {
+				margin-left: 7.6rem;
+				width: 3.2rem;
+			}
+		}
+		input {
+		    width: 6rem;
+		    left: 6rem;
+		}			
+	}
+}
+
+// EN
+html[lang="en"] .admin__radio-switch {
+	.toggle-outside {
+		left: 4.0rem;
+		}
+	label {
+		&:first-of-type {
+			width: 4rem;
+		}
+		&:last-of-type {
+			margin-left: 6rem;
+			width: 4.0rem;
+		}
+	}
+	input {
+	    width: 6rem;
+	    left: 4rem;
+	}
+}
+
+// ES
+html[lang="es"] .admin__radio-switch {
+	.toggle-outside {
+		left: 4.0rem;
+		}
+	label {
+		&:first-of-type {
+			width: 4rem;
+		}
+		&:last-of-type {
+			margin-left: 6rem;
+			width: 3.2rem;
+		}
+	}
+	input {
+	    width: 6rem;
+	    left: 4rem;
+	}
+}
+	
+
+// overwritten bootstrap margin for description list elements
+.admin dl dd:last-of-type {
+	margin-bottom: 0;
+}
+
+.admin dl:last-of-type {
+	margin-bottom: 0;
 }
 
 /* USER TABLE FADE IN ANIMATION TEST */

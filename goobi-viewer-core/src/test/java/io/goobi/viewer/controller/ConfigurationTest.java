@@ -2779,6 +2779,15 @@ public class ConfigurationTest extends AbstractTest {
     }
 
     @Test
+    public void testGetGeoMapMarkerFields() {
+        List<String> fields = DataManager.getInstance().getConfiguration().getGeoMapMarkerFields();
+        Assert.assertEquals(3, fields.size());
+        Assert.assertTrue(fields.contains("MD_GEOJSON_POINT"));
+        Assert.assertTrue(fields.contains("NORM_COORDS_GEOJSON"));
+        Assert.assertTrue(fields.contains("MD_COORDINATES"));
+    }
+    
+    @Test
     public void testGetGeoMapMarkers() {
         List<GeoMapMarker> markers = DataManager.getInstance().getConfiguration().getGeoMapMarkers();
         Assert.assertEquals(5, markers.size());
