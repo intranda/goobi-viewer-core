@@ -80,15 +80,14 @@
                                                         <label class="sr-only" for="advsearchValueText_#{statusGroup.count}-#{status.count}"></label>
                                                         <div class="input-group">
                                                             <ui:fragment rendered="#{queryItem.range}">
-                                                                <h:outputText value="#{msg.searchAdvanced_range_value1}" />
                                                                 <h:inputText id="advsearchValue1Text_#{statusGroup.count}-#{status.count}"
-                                                                    styleClass="form-control value-text" value="#{queryItem.value}">
-                                                                    <f:passThroughAttribute name="placeholder" value="#{msg.searchFieldDemoText}" />
+                                                                    styleClass="form-control value-text -with-right-border" value="#{queryItem.value}">
+                                                                    <f:passThroughAttribute name="placeholder" value="#{msg.of}" />
                                                                 </h:inputText>
-                                                                <h:outputText value="#{msg.searchAdvanced_range_value2}" />
+                                                                <i class="fa fa-arrows-h search-advanced__between-arrow" aria-hidden="true"></i>
                                                                 <h:inputText id="advsearchValue2Text_#{statusGroup.count}-#{status.count}"
-                                                                    styleClass="form-control value-text" value="#{queryItem.value2}">
-                                                                    <f:passThroughAttribute name="placeholder" value="#{msg.searchFieldDemoText}" />
+                                                                    styleClass="form-control value-text -with-right-border" value="#{queryItem.value2}">
+                                                                    <f:passThroughAttribute name="placeholder" value="#{msg.downloadPdfPartsTo}" />
                                                                 </h:inputText>
                                                             </ui:fragment>
                                                             <ui:fragment rendered="#{!queryItem.range}">
