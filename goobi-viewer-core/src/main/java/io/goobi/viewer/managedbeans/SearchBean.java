@@ -614,7 +614,11 @@ public class SearchBean implements SearchInterface, Serializable {
                         }
                         break;
                     default:
-                        sbInfo.append(ViewerResourceBundle.getTranslation(queryItem.getValue(), BeanUtils.getLocale()));
+                        if (queryItem.isRange()) {
+                            sbInfo.append('[').append(queryItem.getValue()).append(" - ").append(queryItem.getValue2()).append(']');
+                        } else {
+                            sbInfo.append(ViewerResourceBundle.getTranslation(queryItem.getValue(), BeanUtils.getLocale()));
+                        }
                 }
 
                 // Add item query part to the group query
@@ -646,7 +650,9 @@ public class SearchBean implements SearchInterface, Serializable {
                 sb.append('(').append(sbGroup).append(')');
             }
         }
-        if (sbCurrentCollection.length() > 0) {
+        if (sbCurrentCollection.length() > 0)
+
+        {
             facets.setCurrentFacetString(facets.getCurrentFacetStringPrefix() + sbCurrentCollection.toString());
         } else {
             facets.setCurrentFacetString("-");
@@ -1789,7 +1795,7 @@ public class SearchBean implements SearchInterface, Serializable {
             }
         }
 
-        fields.add(0, new AdvancedSearchFieldConfiguration(SearchQueryItem.ADVANCED_SEARCH_ALL_FIELDS, null, false, false, false));
+        fields.add(0, new AdvancedSearchFieldConfiguration(SearchQueryItem.ADVANCED_SEARCH_ALL_FIELDS));
 
         return fields;
     }

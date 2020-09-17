@@ -436,7 +436,7 @@
 				<field>MD_CREATOR</field>
 				<field>MD_PUBLISHER</field>
 				<field>MD_PLACEPUBLISH</field>
-				<field>MD_YEARPUBLISH</field>
+				<field range="true">MD_YEARPUBLISH</field>
 				<field>MD_SHELFMARK</field>
 				<field label="-----">#SEPARATOR1#</field>
 				<field>MD_FOO_LANG_EN</field>

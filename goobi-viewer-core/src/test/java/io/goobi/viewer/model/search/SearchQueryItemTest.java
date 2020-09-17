@@ -173,6 +173,19 @@ public class SearchQueryItemTest {
     }
 
     /**
+     * @see SearchQueryItem#generateQuery(Set,boolean)
+     * @verifies generate range query correctly
+     */
+    @Test
+    public void generateQuery_shouldGenerateRangeQueryCorrectly() throws Exception {
+        SearchQueryItem item = new SearchQueryItem(null);
+        item.setField(SolrConstants.YEAR);
+        item.setValue(" 1900 ");
+        item.setValue2(" 2020 ");
+        Assert.assertEquals("YEAR:[1900 TO 2020]", item.generateQuery(new HashSet<>(), true));
+    }
+
+    /**
      * @see SearchQueryItem#checkAutoOperator()
      * @verifies set operator correctly
      */
