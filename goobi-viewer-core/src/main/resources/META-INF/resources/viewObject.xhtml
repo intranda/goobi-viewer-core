@@ -35,21 +35,6 @@
     <!-- CONTENT -->
     <ui:define name="content">
     
-    <div>
-<!--     <button id="socketTest" onclick="testSocket()">TEST WEBSOCKET HERE</button> -->
-    <script>
-    
-    function testSocket() {
-      	console.log("test socket"); 
-	    var client = new WebSocketClient('ws', '127.0.0.1', 8082, '/viewer/sessionsocket');
-		client.connect();
-
-    }
-    testSocket();
-    
-    </script>
-    </div>
-    
 		<f:view contentType="text/html" encoding="utf-8">
             <!-- reCAPTCHA API -->
             <h:panelGroup rendered="#{configurationBean.useReCaptcha}">

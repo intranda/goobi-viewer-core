@@ -27,7 +27,7 @@ import org.slf4j.LoggerFactory;
 
 import io.goobi.viewer.controller.DataManager;
 
-@ServerEndpoint(value = "/sessionsocket")
+@ServerEndpoint(value = "/session.socket")
 public class UserEndpoint {
 
     private static final Logger logger = LoggerFactory.getLogger(UserEndpoint.class);
