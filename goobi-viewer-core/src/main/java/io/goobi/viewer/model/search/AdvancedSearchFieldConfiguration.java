@@ -21,25 +21,18 @@ package io.goobi.viewer.model.search;
 public class AdvancedSearchFieldConfiguration {
 
     private final String field;
-    private final String label;
-    private final boolean hierarchical;
-    private final boolean untokenizeForPhraseSearch;
-    private final boolean disabled;
+    private String label;
+    private boolean hierarchical;
+    private boolean range;
+    private boolean untokenizeForPhraseSearch;
+    private boolean disabled;
 
     /**
      * 
      * @param field Solr field name or separate placeholder
-     * @param label Optional lternative label
-     * @param hierarchical
-     * @param untokenizeForPhraseSearch
-     * @param disabled
      */
-    public AdvancedSearchFieldConfiguration(String field, String label, boolean hierarchical, boolean untokenizeForPhraseSearch, boolean disabled) {
+    public AdvancedSearchFieldConfiguration(String field) {
         this.field = field;
-        this.label = label;
-        this.hierarchical = hierarchical;
-        this.untokenizeForPhraseSearch = untokenizeForPhraseSearch;
-        this.disabled = disabled;
     }
 
     /**
@@ -61,10 +54,44 @@ public class AdvancedSearchFieldConfiguration {
     }
 
     /**
+     * @param label the label to set
+     * @return this object
+     */
+    public AdvancedSearchFieldConfiguration setLabel(String label) {
+        this.label = label;
+        return this;
+    }
+
+    /**
      * @return the hierarchical
      */
     public boolean isHierarchical() {
         return hierarchical;
+    }
+
+    /**
+     * @param hierarchical the hierarchical to set
+     * @return this object
+     */
+    public AdvancedSearchFieldConfiguration setHierarchical(boolean hierarchical) {
+        this.hierarchical = hierarchical;
+        return this;
+    }
+
+    /**
+     * @return the range
+     */
+    public boolean isRange() {
+        return range;
+    }
+
+    /**
+     * @param range the range to set
+     * @return this object
+     */
+    public AdvancedSearchFieldConfiguration setRange(boolean range) {
+        this.range = range;
+        return this;
     }
 
     /**
@@ -75,9 +102,28 @@ public class AdvancedSearchFieldConfiguration {
     }
 
     /**
+     * @param untokenizeForPhraseSearch the untokenizeForPhraseSearch to set
+     * @return this object
+     */
+    public AdvancedSearchFieldConfiguration setUntokenizeForPhraseSearch(boolean untokenizeForPhraseSearch) {
+        this.untokenizeForPhraseSearch = untokenizeForPhraseSearch;
+        return this;
+    }
+
+    /**
      * @return the disabled
      */
     public boolean isDisabled() {
         return disabled;
     }
+
+    /**
+     * @param disabled the disabled to set
+     * @return this object
+     */
+    public AdvancedSearchFieldConfiguration setDisabled(boolean disabled) {
+        this.disabled = disabled;
+        return this;
+    }
+
 }
