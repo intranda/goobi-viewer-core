@@ -263,4 +263,12 @@ public class EPUBDownloadJob extends DownloadJob {
             throw new DownloadException("Failed to start pdf creation for PI=" + pi + ": " + e.getMessage());
         }
     }
+
+    /* (non-Javadoc)
+     * @see io.goobi.viewer.model.download.DownloadJob#getRestApiPath()
+     */
+    @Override
+    protected String getRestApiPath() {
+        return "/viewerepub";
+    }
 }

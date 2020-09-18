@@ -264,4 +264,12 @@ public class PDFDownloadJob extends DownloadJob {
                 return getPDFJobsInQueue(identifier);
         }
     }
+
+    /* (non-Javadoc)
+     * @see io.goobi.viewer.model.download.DownloadJob#getRestApiPath()
+     */
+    @Override
+    protected String getRestApiPath() {
+        return "/viewerpdf";
+    }
 }
