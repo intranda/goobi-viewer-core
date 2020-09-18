@@ -16,6 +16,8 @@
 package io.goobi.viewer.model.download;
 
 import java.io.File;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Date;
 
 import javax.persistence.DiscriminatorValue;
@@ -235,11 +237,12 @@ public class EPUBDownloadJob extends DownloadJob {
 
         String taskManagerUrl = DataManager.getInstance().getConfiguration().getTaskManagerServiceUrl();
         String mediaRepository = DataFileTools.getDataRepositoryPathForRecord(pi);
+        Path altoFolder = Paths.get(mediaRepository).resolve(DataManager.getInstance().getConfiguration().getAltoFolder()).resolve(pi);
         
         TaskManagerEPUBRequest requestObject = new TaskManagerEPUBRequest();
         requestObject.pi = pi;
         requestObject.goobiId = downloadIdentifier;
-        requestObject.sourceDir = mediaRepository;
+        requestObject.sourceDir = altoFolder.toString();
         requestObject.language = CmsBean.getCurrentLocale().getLanguage();
         
         try {
