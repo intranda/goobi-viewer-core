@@ -181,6 +181,7 @@ public class ViewManager implements Serializable {
         currentThumbnailPage = 1;
         //        annotationManager = new AnnotationManager(topDocument);
         pi = topDocument.getPi();
+        
         if (!topDocument.isAnchor()) {
             // Generate drop-down page selector elements
             dropdownPages.clear();
