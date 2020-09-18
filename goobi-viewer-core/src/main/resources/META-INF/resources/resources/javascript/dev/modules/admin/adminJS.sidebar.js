@@ -24,10 +24,8 @@
 var adminJS = ( function( admin ) {
     'use strict';
     
-    console.log('test');
-    
-    var _debug = true;
-    
+    var _debug = false;
+
     admin.sidebar = {
         /**
          * @description Method which initializes the admin sidebar module.

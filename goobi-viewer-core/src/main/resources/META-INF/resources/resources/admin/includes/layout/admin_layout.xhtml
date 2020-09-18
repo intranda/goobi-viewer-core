@@ -71,7 +71,7 @@
 			                    <ui:repeat var="lang" value="#{navigationHelper.supportedLanguages}">
 			                        <li>
 			                             <h:commandLink styleClass="#{navigationHelper.localeString == lang ?'activeLang':''}">
-			                                 <h:outputText value="#{msg['changeLocal_' += lang]}" />
+			                                 <h:outputText value="#{msg['changeLocal_long_' += lang]}" />
 			                                 <f:setPropertyActionListener target="#{navigationHelper.localeString}" value="#{lang}" />
 			                             </h:commandLink>
 			                         </li>

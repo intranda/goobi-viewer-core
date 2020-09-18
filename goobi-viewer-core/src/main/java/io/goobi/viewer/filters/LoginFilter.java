@@ -149,7 +149,7 @@ public class LoginFilter implements Filter {
             uri = uri.replaceAll("/?viewer/", "/");
         }
         logger.trace("uri: {}", uri);
-        switch (uri) {
+        switch (uri.trim()) {
             case "/myactivity/":
             case "/mysearches/":
                 return true;
