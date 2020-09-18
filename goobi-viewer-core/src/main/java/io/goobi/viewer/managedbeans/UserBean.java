@@ -280,9 +280,6 @@ public class UserBean implements Serializable {
      */
     public String login(IAuthenticationProvider provider)
             throws AuthenticationProviderException, IllegalStateException, InterruptedException, ExecutionException {
-        if (getUser() != null) {
-            throw new IllegalStateException("errAlreadyLoggedIn");
-        }
         if ("#".equals(this.redirectUrl)) {
             HttpServletRequest request = BeanUtils.getRequest();
             this.redirectUrl = ViewHistory.getCurrentView(request)
@@ -297,6 +294,12 @@ public class UserBean implements Serializable {
         return null;
     }
 
+    /**
+     * 
+     * @param provider
+     * @param result
+     * @throws IllegalStateException
+     */
     private void completeLogin(IAuthenticationProvider provider, LoginResult result) {
         HttpServletResponse response = result.getResponse();
         HttpServletRequest request = result.getRequest();
@@ -313,6 +316,14 @@ public class UserBean implements Serializable {
             } else if (oUser.isPresent()) { //login successful
                 try {
                     User user = oUser.get();
+                    if (this.user != null) {
+                        if (this.user.equals(user)) {
+                            logger.debug("User already logged in");
+                            return;
+                        }
+                        // Exception if different user logged in
+                        throw new AuthenticationProviderException("errLoginError");
+                    }
                     wipeSession(request);
                     DataManager.getInstance().getBookmarkManager().addSessionBookmarkListToUser(user, request);
                     // Update last login
@@ -357,7 +368,7 @@ public class UserBean implements Serializable {
                     }
                     this.loggedInProvider = provider;
                     return;
-                } catch (DAOException | IOException | IndexUnreachableException | PresentationException e) {
+                } catch (DAOException | IOException | IndexUnreachableException | PresentationException | IllegalStateException e) {
                     //user may login, but setting up viewer account failed
                     provider.logout();
                     throw new AuthenticationProviderException(e);
