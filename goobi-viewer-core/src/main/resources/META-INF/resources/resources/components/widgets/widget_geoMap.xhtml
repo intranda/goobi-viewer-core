@@ -46,7 +46,7 @@
                     let oembedUrl = "#{cc.attrs.widget.geoMap.getOEmbedURI('_parent')}";
                     viewerJS.oembed(oembedUrl)
                     .then( $node => {
-                        viewerJS.overlay($node)
+                        viewerJS.mapOverlay($node)
                         .then( () => $node.remove());
                     })
                 })

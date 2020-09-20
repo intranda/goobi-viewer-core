@@ -17,7 +17,7 @@
  * program. If not, see <http://www.gnu.org/licenses/>.
  * 
  * Opens an overlay spanning the entire viewport and containing a passed element
- * Returns a promise that is rejected if no .overlay element is present in the DOM or if it is already active
+ * Returns a promise that is rejected if no .mapOverlay element is present in the DOM or if it is already active
  * and which is resolved - returning the (now detached) passed element - when the overlay is closed
  * 
  * @version 4.7.0
@@ -27,11 +27,11 @@
 var viewerJS = ( function( viewer ) {
     'use strict';
 
-    viewer.overlay = function(node) {
+    viewer.mapOverlay = function(node) {
         
         let defer = Q.defer()
         
-        let $overlay = $(".overlay");
+        let $overlay = $(".mapOverlay");
         if($overlay.length > 0) {
             if($overlay.hasClass("active")) {
                 defer.reject("overlay is already active");
@@ -42,7 +42,7 @@ var viewerJS = ( function( viewer ) {
             $overlay.addClass("active");
             $( 'html' ).addClass( 'no-overflow' );
             
-            $( 'body' ).one( 'click', '.overlay > .fa-times', event => {
+            $( 'body' ).one( 'click', '.mapOverlay > .fa-times', event => {
                 ($node).detach();
                 $overlay.removeClass("active");
                 $( 'html' ).removeClass( 'no-overflow' );
