@@ -37,15 +37,124 @@ button, .btn {
 .modal {
     overflow-y: auto;
     z-index: 9999;
-}
-
-.modal-open {
-    overflow: auto;
+    width: 100vw;
 }
 
 .modal-open[style] {
     padding-right: 0px !important;
 }
+
+.modal-backdrop.show {
+	opacity: 0.8;
+}
+
+.modal-backdrop {
+    z-index: 4000;
+}
+
+@media screen and (min-width: 576px) {
+	.modal-dialog {
+		max-width: 650px;
+	}
+}
+
+.modal-header {
+	padding: 3rem 3rem 2rem 3rem;
+	.fancy-close {
+		position: relative;
+		padding: 1.3rem;
+		margin: 0;
+		opacity: 0.75;
+		align-self: start;
+		background: transparent;
+		margin: 0rem 0rem 0rem 1rem;
+		&:hover {
+			opacity: 1;
+		}
+	}
+}
+
+.modal-body {
+    padding: 3rem 3rem 2rem 3rem;
+}
+
+.fancy-close {
+	position: absolute;
+	top: auto;
+	margin-top: -12px;
+	width: 24px;
+	height: 24px;
+	border: 2px solid transparent;
+	border-radius: 25%;
+	font-size: 0;
+	color: transparent;
+	-webkit-transform: rotate(45deg);
+	transform: rotate(45deg);
+	cursor: pointer;
+	-webkit-transition: all 100ms ease-out;
+	transition: all 100ms ease-out;
+	right: 0;
+  
+  &:hover {
+    border-color: @black;
+    transition: all 100ms 100ms ease-in;
+  }
+  
+  &:before, &:after {
+    content: '';
+    position: absolute;
+    left: 50%; 
+    top: 50%;
+    display: block;
+    background-color: @black;
+    transition: all 100ms ease-in;
+  }
+  &:hover:before, &:hover:after {
+    transition: all 100ms ease-out;
+  }
+  &:before {
+	width: 26px;
+	height: 2px;
+	margin: -1px auto auto -13px;
+  }
+  &:after {
+	width: 2px;
+	height: 26px;
+	margin: -13px auto auto -1px;
+  }
+  
+  &:hover:before {
+    width: 12px;
+    height: 2px;
+    margin: -1px auto auto -6px;
+  }
+  &:hover:after {
+    width: 2px;
+    height: 12px;
+    margin: -6px auto auto -1px;
+  }
+  
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 pre {
 	font-size: 13px;
@@ -58,10 +167,6 @@ pre {
 
 button:focus {
 	outline: 0;
-}
-
-.modal-backdrop {
-    z-index: 4000;
 }
 
 .badge {

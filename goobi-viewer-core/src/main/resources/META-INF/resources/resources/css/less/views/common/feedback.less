@@ -4,6 +4,12 @@
    ==============================================================*/
 /* FEEDBACK */
 /* BLOCK */
+/* ==============================================================
+   Feedback
+   style declarations for feedback.xhtml
+   ==============================================================*/
+/* FEEDBACK */
+/* BLOCK */
 .view-feedback {
 	margin-bottom: 1rem;
 	padding: 2rem;
@@ -51,3 +57,67 @@
 		}
 	}
 }
+
+
+
+.view-feedback-modal {
+	margin-bottom: 1rem;
+	padding: 2rem;
+	/* ELEMENT */
+	h2 {}
+	p {}
+    .form-group {
+	    label {
+	    	font-weight: 700;
+	    }
+	    input {}
+        textarea {
+            min-height: 150px;
+            resize: vertical;
+        }    	
+	    .btn {
+	    	margin: 0;
+	    }	
+    }
+    .form-group.lastname {
+        display: none;
+    }
+    .composite-control {
+		padding-top: 6px;
+	}
+	.col-lg-9 {
+		flex-basis: 83.33333%;
+	}
+}
+
+/* BREAKPOINT FOR LARGE DESKTOPS */
+@media screen and (max-width: @largeBreakpoint) {} 
+
+/* BREAKPOINT FOR DESKTOPS */
+@media screen and (max-width: @mediumBreakpoint) {}
+
+/* BREAKPOINT FOR TABLETS */
+@media screen and (max-width: @smallBreakpoint) {}
+
+/* BREAKPOINT FOR SMARTPHONES */
+@media screen and (max-width: @xSmallBreakpoint) {
+	.view-feedback-modal {
+		.col-12 {
+			flex-basis: 100%;
+		}
+	}
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
