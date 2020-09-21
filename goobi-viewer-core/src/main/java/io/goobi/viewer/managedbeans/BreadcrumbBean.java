@@ -45,6 +45,7 @@ import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.exceptions.RecordDeletedException;
+import io.goobi.viewer.exceptions.RecordLimitExceededException;
 import io.goobi.viewer.exceptions.RecordNotFoundException;
 import io.goobi.viewer.exceptions.ViewerConfigurationException;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
@@ -170,9 +171,12 @@ public class BreadcrumbBean implements Serializable {
      * @throws DAOException
      * @throws IndexUnreachableException
      * @throws ViewerConfigurationException
+     * @throws RecordLimitExceededException
+     * @throws NumberFormatException
      */
     public void updateBreadcrumbs(CMSPage cmsPage)
-            throws RecordNotFoundException, RecordDeletedException, DAOException, IndexUnreachableException, ViewerConfigurationException {
+            throws RecordNotFoundException, RecordDeletedException, DAOException, IndexUnreachableException, ViewerConfigurationException,
+            RecordLimitExceededException {
         logger.trace("updateBreadcrumbs (CMSPage): {}", cmsPage.getTitle());
 
         List<LabeledLink> tempBreadcrumbs = new ArrayList<>();
@@ -494,7 +498,7 @@ public class BreadcrumbBean implements Serializable {
      * @param page
      * @return
      */
-    private String getUrl(PageType page) {
+    private static String getUrl(PageType page) {
         return getApplicationUrl() + page.getName();
     }
 

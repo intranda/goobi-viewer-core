@@ -15,6 +15,8 @@
  */
 package io.goobi.viewer.websockets;
 
+import javax.servlet.http.HttpSession;
+import javax.websocket.EndpointConfig;
 import javax.websocket.OnClose;
 import javax.websocket.OnError;
 import javax.websocket.OnMessage;
@@ -27,29 +29,37 @@ import org.slf4j.LoggerFactory;
 
 import io.goobi.viewer.controller.DataManager;
 
-@ServerEndpoint(value = "/session.socket")
+@ServerEndpoint(value = "/session.socket", configurator = GetHttpSessionConfigurator.class)
 public class UserEndpoint {
 
     private static final Logger logger = LoggerFactory.getLogger(UserEndpoint.class);
 
     private Session session;
+    private HttpSession httpSession;
 
     @OnOpen
-    public void onOpen(Session session) {
+    public void onOpen(Session session, EndpointConfig config) {
         logger.trace("onOpen: {}", session.getId());
         this.session = session;
+        this.httpSession = (HttpSession) config.getUserProperties().get(HttpSession.class.getName());
+        if (httpSession != null) {
+            logger.trace("HTTP session ID: {}", httpSession.getId());
+        }
     }
 
     @OnMessage
     public void onMessage(String message) {
-        logger.trace("onMessage: {}", session.getId());
+        logger.trace("onMessage from {}: {}", session.getId(), message);
     }
 
     @OnClose
     public void onClose(Session session) {
         logger.trace("onClose {}", session.getId());
-        int count = DataManager.getInstance().removeSessionIdFromLocks(session.getId());
-        logger.trace("Removed {} record locks for session '{}'.", count, session.getId());
+        if (httpSession != null) {
+            // TODO grace period before removing locks
+            int count = DataManager.getInstance().removeSessionIdFromLocks(httpSession.getId());
+            logger.trace("Removed {} record locks for session '{}'.", count, httpSession.getId());
+        }
     }
 
     @OnError

@@ -239,7 +239,7 @@ public final class DataManager {
     /**
      * 
      * @param pi
-     * @param sessionId
+     * @param sessionId HTTP session ID
      * @param limit
      * @throws RecordLimitExceededException
      * @should add session id to map correctly
