@@ -4,9 +4,9 @@
  * For LGPL see License.txt in the project root for license information.
  * For commercial licenses see https://www.tiny.cloud/
  *
- * Version: 5.4.1 (2020-07-08)
+ * Version: 5.2.2 (2020-04-23)
  */
-(function (domGlobals) {
+(function () {
     'use strict';
 
     var Cell = function (initial) {
@@ -17,9 +17,13 @@
       var set = function (v) {
         value = v;
       };
+      var clone = function () {
+        return Cell(get());
+      };
       return {
         get: get,
-        set: set
+        set: set,
+        clone: clone
       };
     };
 
@@ -66,7 +70,7 @@
         return n;
       };
       var me = {
-        fold: function (n, _s) {
+        fold: function (n, s) {
           return n();
         },
         is: never,
@@ -94,6 +98,9 @@
         },
         toString: constant('none()')
       };
+      if (Object.freeze) {
+        Object.freeze(me);
+      }
       return me;
     }();
     var some = function (a) {
@@ -162,508 +169,197 @@
 
     var global$1 = tinymce.util.Tools.resolve('tinymce.util.Tools');
 
-    var typeOf = function (x) {
-      var t = typeof x;
-      if (x === null) {
-        return 'null';
-      } else if (t === 'object' && (Array.prototype.isPrototypeOf(x) || x.constructor && x.constructor.name === 'Array')) {
-        return 'array';
-      } else if (t === 'object' && (String.prototype.isPrototypeOf(x) || x.constructor && x.constructor.name === 'String')) {
-        return 'string';
-      } else {
-        return t;
-      }
-    };
-    var isType = function (type) {
-      return function (value) {
-        return typeOf(value) === type;
-      };
-    };
-    var isSimpleType = function (type) {
-      return function (value) {
-        return typeof value === type;
-      };
-    };
-    var isString = isType('string');
-    var isArray = isType('array');
-    var isBoolean = isSimpleType('boolean');
-    var isFunction = isSimpleType('function');
-    var isNumber = isSimpleType('number');
-
-    var nativeSlice = Array.prototype.slice;
-    var nativePush = Array.prototype.push;
-    var map = function (xs, f) {
-      var len = xs.length;
-      var r = new Array(len);
-      for (var i = 0; i < len; i++) {
-        var x = xs[i];
-        r[i] = f(x, i);
-      }
-      return r;
-    };
-    var each = function (xs, f) {
-      for (var i = 0, len = xs.length; i < len; i++) {
-        var x = xs[i];
-        f(x, i);
-      }
-    };
-    var eachr = function (xs, f) {
-      for (var i = xs.length - 1; i >= 0; i--) {
-        var x = xs[i];
-        f(x, i);
-      }
-    };
-    var groupBy = function (xs, f) {
-      if (xs.length === 0) {
-        return [];
-      } else {
-        var wasType = f(xs[0]);
-        var r = [];
-        var group = [];
-        for (var i = 0, len = xs.length; i < len; i++) {
-          var x = xs[i];
-          var type = f(x);
-          if (type !== wasType) {
-            r.push(group);
-            group = [];
-          }
-          wasType = type;
-          group.push(x);
-        }
-        if (group.length !== 0) {
-          r.push(group);
-        }
-        return r;
-      }
-    };
-    var foldl = function (xs, f, acc) {
-      each(xs, function (x) {
-        acc = f(acc, x);
-      });
-      return acc;
-    };
-    var flatten = function (xs) {
-      var r = [];
-      for (var i = 0, len = xs.length; i < len; ++i) {
-        if (!isArray(xs[i])) {
-          throw new Error('Arr.flatten item ' + i + ' was not an array, input: ' + xs);
-        }
-        nativePush.apply(r, xs[i]);
-      }
-      return r;
-    };
-    var bind = function (xs, f) {
-      return flatten(map(xs, f));
-    };
-    var sort = function (xs, comparator) {
-      var copy = nativeSlice.call(xs, 0);
-      copy.sort(comparator);
-      return copy;
-    };
-
-    var hasOwnProperty = Object.hasOwnProperty;
-    var has = function (obj, key) {
-      return hasOwnProperty.call(obj, key);
-    };
-
-    var Global = typeof domGlobals.window !== 'undefined' ? domGlobals.window : Function('return this;')();
-
-    var DOCUMENT = 9;
-    var DOCUMENT_FRAGMENT = 11;
-    var ELEMENT = 1;
-    var TEXT = 3;
-
-    var type = function (element) {
-      return element.dom().nodeType;
-    };
-    var isType$1 = function (t) {
-      return function (element) {
-        return type(element) === t;
-      };
-    };
-    var isText = isType$1(TEXT);
-
-    var rawSet = function (dom, key, value) {
-      if (isString(value) || isBoolean(value) || isNumber(value)) {
-        dom.setAttribute(key, value + '');
-      } else {
-        domGlobals.console.error('Invalid call to Attr.set. Key ', key, ':: Value ', value, ':: Element ', dom);
-        throw new Error('Attribute value was not simple');
-      }
-    };
-    var set = function (element, key, value) {
-      rawSet(element.dom(), key, value);
-    };
-
-    var fromHtml = function (html, scope) {
-      var doc = scope || domGlobals.document;
-      var div = doc.createElement('div');
-      div.innerHTML = html;
-      if (!div.hasChildNodes() || div.childNodes.length > 1) {
-        domGlobals.console.error('HTML does not have a single root node', html);
-        throw new Error('HTML must have a single root node');
-      }
-      return fromDom(div.childNodes[0]);
-    };
-    var fromTag = function (tag, scope) {
-      var doc = scope || domGlobals.document;
-      var node = doc.createElement(tag);
-      return fromDom(node);
-    };
-    var fromText = function (text, scope) {
-      var doc = scope || domGlobals.document;
-      var node = doc.createTextNode(text);
-      return fromDom(node);
-    };
-    var fromDom = function (node) {
-      if (node === null || node === undefined) {
-        throw new Error('Node cannot be null or undefined');
-      }
-      return { dom: constant(node) };
-    };
-    var fromPoint = function (docElm, x, y) {
-      var doc = docElm.dom();
-      return Option.from(doc.elementFromPoint(x, y)).map(fromDom);
-    };
-    var Element = {
-      fromHtml: fromHtml,
-      fromTag: fromTag,
-      fromText: fromText,
-      fromDom: fromDom,
-      fromPoint: fromPoint
-    };
-
-    var compareDocumentPosition = function (a, b, match) {
-      return (a.compareDocumentPosition(b) & match) !== 0;
-    };
-    var documentPositionPreceding = function (a, b) {
-      return compareDocumentPosition(a, b, domGlobals.Node.DOCUMENT_POSITION_PRECEDING);
-    };
-
-    var bypassSelector = function (dom) {
-      return dom.nodeType !== ELEMENT && dom.nodeType !== DOCUMENT && dom.nodeType !== DOCUMENT_FRAGMENT || dom.childElementCount === 0;
-    };
-    var all = function (selector, scope) {
-      var base = scope === undefined ? domGlobals.document : scope.dom();
-      return bypassSelector(base) ? [] : map(base.querySelectorAll(selector), Element.fromDom);
-    };
-
-    var parent = function (element) {
-      return Option.from(element.dom().parentNode).map(Element.fromDom);
-    };
-    var children = function (element) {
-      return map(element.dom().childNodes, Element.fromDom);
-    };
-    var spot = function (element, offset) {
-      return {
-        element: constant(element),
-        offset: constant(offset)
-      };
-    };
-    var leaf = function (element, offset) {
-      var cs = children(element);
-      return cs.length > 0 && offset < cs.length ? spot(cs[offset], 0) : spot(element, offset);
-    };
-
-    var before = function (marker, element) {
-      var parent$1 = parent(marker);
-      parent$1.each(function (v) {
-        v.dom().insertBefore(element.dom(), marker.dom());
-      });
-    };
-    var append = function (parent, element) {
-      parent.dom().appendChild(element.dom());
-    };
-    var wrap = function (element, wrapper) {
-      before(element, wrapper);
-      append(wrapper, element);
-    };
-
-    function NodeValue (is, name) {
-      var get = function (element) {
-        if (!is(element)) {
-          throw new Error('Can only get ' + name + ' value of a ' + name + ' node');
-        }
-        return getOption(element).getOr('');
-      };
-      var getOption = function (element) {
-        return is(element) ? Option.from(element.dom().nodeValue) : Option.none();
-      };
-      var set = function (element, value) {
-        if (!is(element)) {
-          throw new Error('Can only set raw ' + name + ' value of a ' + name + ' node');
-        }
-        element.dom().nodeValue = value;
-      };
-      return {
-        get: get,
-        getOption: getOption,
-        set: set
-      };
+    function isContentEditableFalse(node) {
+      return node && node.nodeType === 1 && node.contentEditable === 'false';
     }
-
-    var api = NodeValue(isText, 'text');
-    var get = function (element) {
-      return api.get(element);
-    };
-
-    var supported = isFunction(domGlobals.Element.prototype.attachShadow) && isFunction(domGlobals.Node.prototype.getRootNode);
-
-    var descendants = function (scope, selector) {
-      return all(selector, scope);
-    };
-
-    var global$2 = tinymce.util.Tools.resolve('tinymce.dom.TreeWalker');
-
-    var isSimpleBoundary = function (dom, node) {
-      return dom.isBlock(node) || has(dom.schema.getShortEndedElements(), node.nodeName);
-    };
-    var isContentEditableFalse = function (dom, node) {
-      return dom.getContentEditable(node) === 'false';
-    };
-    var isContentEditableTrueInCef = function (dom, node) {
-      return dom.getContentEditable(node) === 'true' && dom.getContentEditableParent(node.parentNode) === 'false';
-    };
-    var isHidden = function (dom, node) {
-      return !dom.isBlock(node) && has(dom.schema.getWhiteSpaceElements(), node.nodeName);
-    };
-    var isBoundary = function (dom, node) {
-      return isSimpleBoundary(dom, node) || isContentEditableFalse(dom, node) || isHidden(dom, node) || isContentEditableTrueInCef(dom, node);
-    };
-    var isText$1 = function (node) {
-      return node.nodeType === 3;
-    };
-    var nuSection = function () {
-      return {
-        sOffset: 0,
-        fOffset: 0,
-        elements: []
-      };
-    };
-    var toLeaf = function (node, offset) {
-      return leaf(Element.fromDom(node), offset);
-    };
-    var walk = function (dom, walkerFn, startNode, callbacks, endNode, skipStart) {
-      if (skipStart === void 0) {
-        skipStart = true;
-      }
-      var next = skipStart ? walkerFn(false) : startNode;
-      while (next) {
-        var isCefNode = isContentEditableFalse(dom, next);
-        if (isCefNode || isHidden(dom, next)) {
-          var stopWalking = isCefNode ? callbacks.cef(next) : callbacks.boundary(next);
-          if (stopWalking) {
-            break;
-          } else {
-            next = walkerFn(true);
-            continue;
-          }
-        } else if (isSimpleBoundary(dom, next)) {
-          if (callbacks.boundary(next)) {
-            break;
-          }
-        } else if (isText$1(next)) {
-          callbacks.text(next);
+    function findAndReplaceDOMText(regex, node, replacementNode, captureGroup, schema) {
+      var m;
+      var matches = [];
+      var text, count = 0, doc;
+      var blockElementsMap, hiddenTextElementsMap, shortEndedElementsMap;
+      doc = node.ownerDocument;
+      blockElementsMap = schema.getBlockElements();
+      hiddenTextElementsMap = schema.getWhiteSpaceElements();
+      shortEndedElementsMap = schema.getShortEndedElements();
+      function getMatchIndexes(m, captureGroup) {
+        captureGroup = captureGroup || 0;
+        if (!m[0]) {
+          throw new Error('findAndReplaceDOMText cannot handle zero-length matches');
         }
-        if (next === endNode) {
-          break;
+        var index = m.index;
+        if (captureGroup > 0) {
+          var cg = m[captureGroup];
+          if (!cg) {
+            throw new Error('Invalid capture group');
+          }
+          index += m[0].indexOf(cg);
+          m[0] = cg;
+        }
+        return [
+          index,
+          index + m[0].length,
+          [m[0]]
+        ];
+      }
+      function getText(node) {
+        var txt;
+        if (node.nodeType === 3) {
+          return node.data;
+        }
+        if (hiddenTextElementsMap[node.nodeName] && !blockElementsMap[node.nodeName]) {
+          return '';
+        }
+        txt = '';
+        if (isContentEditableFalse(node)) {
+          return '\n';
+        }
+        if (blockElementsMap[node.nodeName] || shortEndedElementsMap[node.nodeName]) {
+          txt += '\n';
+        }
+        if (node = node.firstChild) {
+          do {
+            txt += getText(node);
+          } while (node = node.nextSibling);
+        }
+        return txt;
+      }
+      function stepThroughMatches(node, matches, replaceFn) {
+        var startNode, endNode, startNodeIndex, endNodeIndex, innerNodes = [], atIndex = 0, curNode = node, matchLocation = matches.shift(), matchIndex = 0;
+        out:
+          while (true) {
+            if (blockElementsMap[curNode.nodeName] || shortEndedElementsMap[curNode.nodeName] || isContentEditableFalse(curNode)) {
+              atIndex++;
+            }
+            if (curNode.nodeType === 3) {
+              if (!endNode && curNode.length + atIndex >= matchLocation[1]) {
+                endNode = curNode;
+                endNodeIndex = matchLocation[1] - atIndex;
+              } else if (startNode) {
+                innerNodes.push(curNode);
+              }
+              if (!startNode && curNode.length + atIndex > matchLocation[0]) {
+                startNode = curNode;
+                startNodeIndex = matchLocation[0] - atIndex;
+              }
+              atIndex += curNode.length;
+            }
+            if (startNode && endNode) {
+              curNode = replaceFn({
+                startNode: startNode,
+                startNodeIndex: startNodeIndex,
+                endNode: endNode,
+                endNodeIndex: endNodeIndex,
+                innerNodes: innerNodes,
+                match: matchLocation[2],
+                matchIndex: matchIndex
+              });
+              atIndex -= endNode.length - endNodeIndex;
+              startNode = null;
+              endNode = null;
+              innerNodes = [];
+              matchLocation = matches.shift();
+              matchIndex++;
+              if (!matchLocation) {
+                break;
+              }
+            } else if ((!hiddenTextElementsMap[curNode.nodeName] || blockElementsMap[curNode.nodeName]) && curNode.firstChild) {
+              if (!isContentEditableFalse(curNode)) {
+                curNode = curNode.firstChild;
+                continue;
+              }
+            } else if (curNode.nextSibling) {
+              curNode = curNode.nextSibling;
+              continue;
+            }
+            while (true) {
+              if (curNode.nextSibling) {
+                curNode = curNode.nextSibling;
+                break;
+              } else if (curNode.parentNode !== node) {
+                curNode = curNode.parentNode;
+              } else {
+                break out;
+              }
+            }
+          }
+      }
+      function genReplacer(nodeName) {
+        var makeReplacementNode;
+        if (typeof nodeName !== 'function') {
+          var stencilNode_1 = nodeName.nodeType ? nodeName : doc.createElement(nodeName);
+          makeReplacementNode = function (fill, matchIndex) {
+            var clone = stencilNode_1.cloneNode(false);
+            clone.setAttribute('data-mce-index', matchIndex);
+            if (fill) {
+              clone.appendChild(doc.createTextNode(fill));
+            }
+            return clone;
+          };
         } else {
-          next = walkerFn(false);
+          makeReplacementNode = nodeName;
         }
+        return function (range) {
+          var before;
+          var after;
+          var parentNode;
+          var startNode = range.startNode;
+          var endNode = range.endNode;
+          var matchIndex = range.matchIndex;
+          if (startNode === endNode) {
+            var node_1 = startNode;
+            parentNode = node_1.parentNode;
+            if (range.startNodeIndex > 0) {
+              before = doc.createTextNode(node_1.data.substring(0, range.startNodeIndex));
+              parentNode.insertBefore(before, node_1);
+            }
+            var el = makeReplacementNode(range.match[0], matchIndex);
+            parentNode.insertBefore(el, node_1);
+            if (range.endNodeIndex < node_1.length) {
+              after = doc.createTextNode(node_1.data.substring(range.endNodeIndex));
+              parentNode.insertBefore(after, node_1);
+            }
+            node_1.parentNode.removeChild(node_1);
+            return el;
+          }
+          before = doc.createTextNode(startNode.data.substring(0, range.startNodeIndex));
+          after = doc.createTextNode(endNode.data.substring(range.endNodeIndex));
+          var elA = makeReplacementNode(startNode.data.substring(range.startNodeIndex), matchIndex);
+          for (var i = 0, l = range.innerNodes.length; i < l; ++i) {
+            var innerNode = range.innerNodes[i];
+            var innerEl = makeReplacementNode(innerNode.data, matchIndex);
+            innerNode.parentNode.replaceChild(innerEl, innerNode);
+          }
+          var elB = makeReplacementNode(endNode.data.substring(0, range.endNodeIndex), matchIndex);
+          parentNode = startNode.parentNode;
+          parentNode.insertBefore(before, startNode);
+          parentNode.insertBefore(elA, startNode);
+          parentNode.removeChild(startNode);
+          parentNode = endNode.parentNode;
+          parentNode.insertBefore(elB, endNode);
+          parentNode.insertBefore(after, endNode);
+          parentNode.removeChild(endNode);
+          return elB;
+        };
       }
-    };
-    var collectTextToBoundary = function (dom, section, node, rootNode, forwards) {
-      if (isBoundary(dom, node)) {
+      text = getText(node);
+      if (!text) {
         return;
       }
-      var rootBlock = dom.getParent(rootNode, dom.isBlock);
-      var walker = new global$2(node, rootBlock);
-      var walkerFn = forwards ? walker.next : walker.prev;
-      walk(dom, walkerFn, node, {
-        boundary: always,
-        cef: always,
-        text: function (next) {
-          if (forwards) {
-            section.fOffset += next.length;
-          } else {
-            section.sOffset += next.length;
-          }
-          section.elements.push(Element.fromDom(next));
+      if (regex.global) {
+        while (m = regex.exec(text)) {
+          matches.push(getMatchIndexes(m, captureGroup));
         }
-      });
-    };
-    var collect = function (dom, rootNode, startNode, endNode, callbacks, skipStart) {
-      if (skipStart === void 0) {
-        skipStart = true;
+      } else {
+        m = text.match(regex);
+        matches.push(getMatchIndexes(m, captureGroup));
       }
-      var walker = new global$2(startNode, rootNode);
-      var sections = [];
-      var current = nuSection();
-      collectTextToBoundary(dom, current, startNode, rootNode, false);
-      var finishSection = function () {
-        if (current.elements.length > 0) {
-          sections.push(current);
-          current = nuSection();
-        }
-        return false;
-      };
-      walk(dom, walker.next, startNode, {
-        boundary: finishSection,
-        cef: function (node) {
-          finishSection();
-          if (callbacks) {
-            sections.push.apply(sections, callbacks.cef(node));
-          }
-          return false;
-        },
-        text: function (next) {
-          current.elements.push(Element.fromDom(next));
-          if (callbacks) {
-            callbacks.text(next, current);
-          }
-        }
-      }, endNode, skipStart);
-      if (endNode) {
-        collectTextToBoundary(dom, current, endNode, rootNode, true);
+      if (matches.length) {
+        count = matches.length;
+        stepThroughMatches(node, matches, genReplacer(replacementNode));
       }
-      finishSection();
-      return sections;
-    };
-    var collectRangeSections = function (dom, rng) {
-      var start = toLeaf(rng.startContainer, rng.startOffset);
-      var startNode = start.element().dom();
-      var end = toLeaf(rng.endContainer, rng.endOffset);
-      var endNode = end.element().dom();
-      return collect(dom, rng.commonAncestorContainer, startNode, endNode, {
-        text: function (node, section) {
-          if (node === endNode) {
-            section.fOffset += node.length - end.offset();
-          } else if (node === startNode) {
-            section.sOffset += start.offset();
-          }
-        },
-        cef: function (node) {
-          var sections = bind(descendants(Element.fromDom(node), '*[contenteditable=true]'), function (e) {
-            var ceTrueNode = e.dom();
-            return collect(dom, ceTrueNode, ceTrueNode);
-          });
-          return sort(sections, function (a, b) {
-            return documentPositionPreceding(a.elements[0].dom(), b.elements[0].dom()) ? 1 : -1;
-          });
-        }
-      }, false);
-    };
-    var fromRng = function (dom, rng) {
-      return rng.collapsed ? [] : collectRangeSections(dom, rng);
-    };
-    var fromNode = function (dom, node) {
-      var rng = dom.createRng();
-      rng.selectNode(node);
-      return fromRng(dom, rng);
-    };
-    var fromNodes = function (dom, nodes) {
-      return bind(nodes, function (node) {
-        return fromNode(dom, node);
-      });
-    };
-
-    var find = function (text, pattern, start, finish) {
-      if (start === void 0) {
-        start = 0;
-      }
-      if (finish === void 0) {
-        finish = text.length;
-      }
-      var regex = pattern.regex;
-      regex.lastIndex = start;
-      var results = [];
-      var match;
-      while (match = regex.exec(text)) {
-        var matchedText = match[pattern.matchIndex];
-        var matchStart = match.index + match[0].indexOf(matchedText);
-        var matchFinish = matchStart + matchedText.length;
-        if (matchFinish > finish) {
-          break;
-        }
-        results.push({
-          start: matchStart,
-          finish: matchFinish
-        });
-        regex.lastIndex = matchFinish;
-      }
-      return results;
-    };
-    var extract = function (elements, matches) {
-      var nodePositions = foldl(elements, function (acc, element) {
-        var content = get(element);
-        var start = acc.last;
-        var finish = start + content.length;
-        var positions = bind(matches, function (match, matchIdx) {
-          if (match.start < finish && match.finish > start) {
-            return [{
-                element: element,
-                start: Math.max(start, match.start) - start,
-                finish: Math.min(finish, match.finish) - start,
-                matchId: matchIdx
-              }];
-          } else {
-            return [];
-          }
-        });
-        return {
-          results: acc.results.concat(positions),
-          last: finish
-        };
-      }, {
-        results: [],
-        last: 0
-      }).results;
-      return groupBy(nodePositions, function (position) {
-        return position.matchId;
-      });
-    };
-
-    var find$1 = function (pattern, sections) {
-      return bind(sections, function (section) {
-        var elements = section.elements;
-        var content = map(elements, get).join('');
-        var positions = find(content, pattern, section.sOffset, content.length - section.fOffset);
-        return extract(elements, positions);
-      });
-    };
-    var mark = function (matches, replacementNode) {
-      eachr(matches, function (match, idx) {
-        eachr(match, function (pos) {
-          var wrapper = Element.fromDom(replacementNode.cloneNode(false));
-          set(wrapper, 'data-mce-index', idx);
-          var textNode = pos.element.dom();
-          if (textNode.length === pos.finish && pos.start === 0) {
-            wrap(pos.element, wrapper);
-          } else {
-            if (textNode.length !== pos.finish) {
-              textNode.splitText(pos.finish);
-            }
-            var matchNode = textNode.splitText(pos.start);
-            wrap(Element.fromDom(matchNode), wrapper);
-          }
-        });
-      });
-    };
-    var findAndMark = function (dom, pattern, node, replacementNode) {
-      var textSections = fromNode(dom, node);
-      var matches = find$1(pattern, textSections);
-      mark(matches, replacementNode);
-      return matches.length;
-    };
-    var findAndMarkInSelection = function (dom, pattern, selection, replacementNode) {
-      var bookmark = selection.getBookmark();
-      var nodes = dom.select('td[data-mce-selected],th[data-mce-selected]');
-      var textSections = nodes.length > 0 ? fromNodes(dom, nodes) : fromRng(dom, selection.getRng());
-      var matches = find$1(pattern, textSections);
-      mark(matches, replacementNode);
-      selection.moveToBookmark(bookmark);
-      return matches.length;
-    };
+      return count;
+    }
+    var FindReplaceText = { findAndReplaceDOMText: findAndReplaceDOMText };
 
     var getElmIndex = function (elm) {
       var value = elm.getAttribute('data-mce-index');
@@ -672,16 +368,13 @@
       }
       return value;
     };
-    var markAllMatches = function (editor, currentSearchState, pattern, inSelection) {
-      var marker = editor.dom.create('span', { 'data-mce-bogus': 1 });
+    var markAllMatches = function (editor, currentSearchState, regex) {
+      var node, marker;
+      marker = editor.dom.create('span', { 'data-mce-bogus': 1 });
       marker.className = 'mce-match-marker';
-      var node = editor.getBody();
+      node = editor.getBody();
       done(editor, currentSearchState, false);
-      if (inSelection) {
-        return findAndMarkInSelection(editor.dom, pattern, editor.selection, marker);
-      } else {
-        return findAndMark(editor.dom, pattern, node, marker);
-      }
+      return FindReplaceText.findAndReplaceDOMText(regex, node, marker, 1, editor.schema);
     };
     var unwrap = function (node) {
       var parentNode = node.parentNode;
@@ -691,8 +384,9 @@
       node.parentNode.removeChild(node);
     };
     var findSpansByIndex = function (editor, index) {
+      var nodes;
       var spans = [];
-      var nodes = global$1.toArray(editor.getBody().getElementsByTagName('span'));
+      nodes = global$1.toArray(editor.getBody().getElementsByTagName('span'));
       if (nodes.length) {
         for (var i = 0; i < nodes.length; i++) {
           var nodeIndex = getElmIndex(nodes[i]);
@@ -741,17 +435,13 @@
       }
     };
     var escapeSearchText = function (text, wholeWord) {
-      var escapedText = text.replace(/[\-\[\]\/\{\}\(\)\*\+\?\.\\\^\$\|]/g, '\\$&').replace(/\s/g, '[^\\S\\r\\n\\uFEFF]');
+      var escapedText = text.replace(/[\-\[\]\/\{\}\(\)\*\+\?\.\\\^\$\|]/g, '\\$&').replace(/\s/g, '[^\\S\\r\\n]');
       var wordRegex = '(' + escapedText + ')';
       return wholeWord ? '(?:^|\\s|' + punctuation$1() + ')' + wordRegex + ('(?=$|\\s|' + punctuation$1() + ')') : wordRegex;
     };
-    var find$2 = function (editor, currentSearchState, text, matchCase, wholeWord, inSelection) {
+    var find = function (editor, currentSearchState, text, matchCase, wholeWord) {
       var escapedText = escapeSearchText(text, wholeWord);
-      var pattern = {
-        regex: new RegExp(escapedText, matchCase ? 'g' : 'gi'),
-        matchIndex: 1
-      };
-      var count = markAllMatches(editor, currentSearchState, pattern, inSelection);
+      var count = markAllMatches(editor, currentSearchState, new RegExp(escapedText, matchCase ? 'g' : 'gi'));
       if (count) {
         var newIndex = moveSelection(editor, currentSearchState, true);
         currentSearchState.set({
@@ -759,8 +449,7 @@
           count: count,
           text: text,
           matchCase: matchCase,
-          wholeWord: wholeWord,
-          inSelection: inSelection
+          wholeWord: wholeWord
         });
       }
       return count;
@@ -780,13 +469,13 @@
     var replace = function (editor, currentSearchState, text, forward, all) {
       var searchState = currentSearchState.get();
       var currentIndex = searchState.index;
-      var currentMatchIndex, nextIndex = currentIndex;
+      var i, nodes, node, matchIndex, currentMatchIndex, nextIndex = currentIndex;
       forward = forward !== false;
-      var node = editor.getBody();
-      var nodes = global$1.grep(global$1.toArray(node.getElementsByTagName('span')), isMatchSpan);
-      for (var i = 0; i < nodes.length; i++) {
+      node = editor.getBody();
+      nodes = global$1.grep(global$1.toArray(node.getElementsByTagName('span')), isMatchSpan);
+      for (i = 0; i < nodes.length; i++) {
         var nodeIndex = getElmIndex(nodes[i]);
-        var matchIndex = currentMatchIndex = parseInt(nodeIndex, 10);
+        matchIndex = currentMatchIndex = parseInt(nodeIndex, 10);
         if (all || matchIndex === searchState.index) {
           if (text.length) {
             nodes[i].firstChild.nodeValue = text;
@@ -822,9 +511,9 @@
       return !all && currentSearchState.get().count > 0;
     };
     var done = function (editor, currentSearchState, keepEditorSelection) {
-      var i, startContainer, endContainer;
+      var i, nodes, startContainer, endContainer;
       var searchState = currentSearchState.get();
-      var nodes = global$1.toArray(editor.getBody().getElementsByTagName('span'));
+      nodes = global$1.toArray(editor.getBody().getElementsByTagName('span'));
       for (i = 0; i < nodes.length; i++) {
         var nodeIndex = getElmIndex(nodes[i]);
         if (nodeIndex !== null && nodeIndex.length) {
@@ -859,15 +548,12 @@
       return currentSearchState.get().count > 1;
     };
 
-    var get$1 = function (editor, currentState) {
+    var get = function (editor, currentState) {
       var done$1 = function (keepEditorSelection) {
         return done(editor, currentState, keepEditorSelection);
       };
-      var find = function (text, matchCase, wholeWord, inSelection) {
-        if (inSelection === void 0) {
-          inSelection = false;
-        }
-        return find$2(editor, currentState, text, matchCase, wholeWord, inSelection);
+      var find$1 = function (text, matchCase, wholeWord) {
+        return find(editor, currentState, text, matchCase, wholeWord);
       };
       var next$1 = function () {
         return next(editor, currentState);
@@ -880,11 +566,43 @@
       };
       return {
         done: done$1,
-        find: find,
+        find: find$1,
         next: next$1,
         prev: prev$1,
         replace: replace$1
       };
+    };
+    var Api = { get: get };
+
+    var typeOf = function (x) {
+      if (x === null) {
+        return 'null';
+      }
+      var t = typeof x;
+      if (t === 'object' && (Array.prototype.isPrototypeOf(x) || x.constructor && x.constructor.name === 'Array')) {
+        return 'array';
+      }
+      if (t === 'object' && (String.prototype.isPrototypeOf(x) || x.constructor && x.constructor.name === 'String')) {
+        return 'string';
+      }
+      return t;
+    };
+    var isType = function (type) {
+      return function (value) {
+        return typeOf(value) === type;
+      };
+    };
+    var isFunction = isType('function');
+
+    var nativeSlice = Array.prototype.slice;
+    var each = function (xs, f) {
+      for (var i = 0, len = xs.length; i < len; i++) {
+        var x = xs[i];
+        f(x, i);
+      }
+    };
+    var from$1 = isFunction(Array.from) ? Array.from : function (x) {
+      return nativeSlice.call(x);
     };
 
     var value = function () {
@@ -909,7 +627,7 @@
       };
     };
 
-    var global$3 = tinymce.util.Tools.resolve('tinymce.Env');
+    var global$2 = tinymce.util.Tools.resolve('tinymce.Env');
 
     var open = function (editor, currentSearchState) {
       var dialogApi = value();
@@ -926,8 +644,7 @@
         var current = currentSearchState.get();
         currentSearchState.set(__assign(__assign({}, current), {
           matchCase: data.matchcase,
-          wholeWord: data.wholewords,
-          inSelection: data.inselection
+          wholeWord: data.wholewords
         }));
       };
       var disableAll = function (api, disable) {
@@ -946,7 +663,7 @@
         });
       }
       var focusButtonIfRequired = function (api, name) {
-        if (global$3.browser.isSafari() && global$3.deviceType.isTouch() && (name === 'find' || name === 'replace' || name === 'replaceall')) {
+        if (global$2.browser.isSafari() && global$2.deviceType.isTouch() && (name === 'find' || name === 'replace' || name === 'replaceall')) {
           api.focus(name);
         }
       };
@@ -965,7 +682,7 @@
         if (last.text === data.findtext && last.matchCase === data.matchcase && last.wholeWord === data.wholewords) {
           next(editor, currentSearchState);
         } else {
-          var count = find$2(editor, currentSearchState, data.findtext, data.matchcase, data.wholewords, data.inselection);
+          var count = find(editor, currentSearchState, data.findtext, data.matchcase, data.wholewords);
           if (count <= 0) {
             notFoundAlert(api);
           }
@@ -978,8 +695,7 @@
         findtext: selectedText,
         replacetext: '',
         wholewords: initialState.wholeWord,
-        matchcase: initialState.matchCase,
-        inselection: initialState.inSelection
+        matchcase: initialState.matchCase
       };
       var spec = {
         title: 'Find and Replace',
@@ -1040,11 +756,6 @@
                 type: 'togglemenuitem',
                 name: 'wholewords',
                 text: 'Find whole words only'
-              },
-              {
-                type: 'togglemenuitem',
-                name: 'inselection',
-                text: 'Find in selection'
               }
             ]
           },
@@ -1100,7 +811,6 @@
             break;
           case 'matchcase':
           case 'wholewords':
-          case 'inselection':
             updateSearchState(api);
             reset(api);
             break;
@@ -1119,16 +829,18 @@
       };
       dialogApi.set(editor.windowManager.open(spec, { inline: 'toolbar' }));
     };
+    var Dialog = { open: open };
 
     var register = function (editor, currentSearchState) {
       editor.addCommand('SearchReplace', function () {
-        open(editor, currentSearchState);
+        Dialog.open(editor, currentSearchState);
       });
     };
+    var Commands = { register: register };
 
     var showDialog = function (editor, currentSearchState) {
       return function () {
-        open(editor, currentSearchState);
+        Dialog.open(editor, currentSearchState);
       };
     };
     var register$1 = function (editor, currentSearchState) {
@@ -1145,6 +857,7 @@
       });
       editor.shortcuts.add('Meta+F', '', showDialog(editor, currentSearchState));
     };
+    var Buttons = { register: register$1 };
 
     function Plugin () {
       global.add('searchreplace', function (editor) {
@@ -1153,15 +866,14 @@
           count: 0,
           text: '',
           matchCase: false,
-          wholeWord: false,
-          inSelection: false
+          wholeWord: false
         });
-        register(editor, currentSearchState);
-        register$1(editor, currentSearchState);
-        return get$1(editor, currentSearchState);
+        Commands.register(editor, currentSearchState);
+        Buttons.register(editor, currentSearchState);
+        return Api.get(editor, currentSearchState);
       });
     }
 
     Plugin();
 
-}(window));
+}());

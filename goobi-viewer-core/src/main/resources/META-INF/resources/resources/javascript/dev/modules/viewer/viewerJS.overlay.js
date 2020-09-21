@@ -17,7 +17,7 @@
  * program. If not, see <http://www.gnu.org/licenses/>.
  * 
  * Opens an overlay spanning the entire viewport and containing a passed element
- * Returns a promise that is rejected if no .mapOverlay element is present in the DOM or if it is already active
+ * Returns a promise that is rejected if no .overlay element is present in the DOM or if it is already active
  * and which is resolved - returning the (now detached) passed element - when the overlay is closed
  * 
  * @version 4.7.0
@@ -27,14 +27,113 @@
 var viewerJS = ( function( viewer ) {
     'use strict';
 
-    viewer.mapOverlay = function(node) {
+    viewer.overlay = {
+            init : function() {
+                $("[data-overlay='content']").each( (index, overlay) => {
+                    let $overlay = $(overlay);
+                    let $node = $overlay.children();
+                    let $trigger = $("#" + $overlay.attr("data-overlay-trigger"));
+                    let type = $overlay.attr("data-overlay-type");
+                    if(!type) {
+                        type = "default";
+                    }
+                    let strClosable = $overlay.attr("data-overlay-closable");
+                    let closable = true;
+                    if(strClosable && strClosable.toLowerCase() == "false") {
+                        closable = false;
+                    }
+                    let strFullscreen = $overlay.attr("data-overlay-fullscreen");
+                    let fullscreen = false;
+                    if(strFullscreen && strFullscreen.toLowerCase() == "true") {
+                        fullscreen = true;
+                    }
+                    $trigger.on("click", (event) => {
+                        switch(type) {
+                            case "modal":
+                                viewer.overlay.openModal($overlay, closable);
+                                break;
+                            default:
+                                viewer.overlay.open($node, closable, fullscreen);
+                        }
+                        $node.show();
+                    });
+                })
+            }
+    }
+    
+    viewer.overlay.openModal = function(node, closable) {
         
         let defer = Q.defer()
-        
-        let $overlay = $(".mapOverlay");
+
+        let $overlay = $(".overlay");
         if($overlay.length > 0) {
             if($overlay.hasClass("active")) {
                 defer.reject("overlay is already active");
+                return;
+            }
+            
+            let $node = $(node);
+            let $contentHeader = $node.find("[data-overlay-content='header']");
+            let $contentBody = $node.find("[data-overlay-content='body']");
+            let $contentFooter = $node.find("[data-overlay-content='footer']");
+            
+            let $areaHeader = $overlay.find("[data-overlay-area='header']");
+            let $areaBody = $overlay.find("[data-overlay-area='body']");
+            let $areaFooter = $overlay.find("[data-overlay-area='footer']");
+            
+            if($areaHeader.length > 0 && $contentHeader.length > 0) {
+                $areaHeader.append($contentHeader);
+            }
+            if($areaBody.length > 0 && $contentBody.length > 0) {
+                $areaBody.append($contentBody);
+            }
+            if($areaFooter.length > 0 && $contentFooter.length > 0) {
+                $areaFooter.append($contentFooter);
+            }
+            
+            $overlay.addClass("modal-container");
+            let $modal = $("#overlayModal");
+            $modal.modal({
+                backdrop: true,
+                keyboad: closable,
+                focus: true,
+                show: true
+            })
+            $modal.on("hide.bs.modal", event =>  {
+                return closable;
+            })
+            $modal.on("hidden.bs.modal", event => {
+                $modal.modal("dispose");
+                $overlay.removeClass("modal-container");
+                defer.resolve(node);
+                $("body").off("click", ".close-modal");
+            });
+            let $dismissButtons = $overlay.find("[data-overlay-action='dismiss']")
+            if(closable === true) {      
+                $dismissButtons.show();
+                $( 'body' ).one( 'click.close-modal', "[data-overlay-action='dismiss']", event => {
+                    $modal.modal("hide");
+                });
+            } else {
+                $dismissButtons.hide();
+            }
+        } else {
+            defer.reject("No overlay element found");
+        }
+        
+        return defer.promise;
+        
+    }
+    
+    viewer.overlay.open = function(node, closable, fullscreen) {
+        
+        let defer = Q.defer()
+        
+        let $overlay = $(".overlay");
+        if($overlay.length > 0) {
+            if($overlay.hasClass("active")) {
+                defer.reject("overlay is already active");
+                return;
             }
             
             let $node = $(node);
@@ -42,18 +141,48 @@ var viewerJS = ( function( viewer ) {
             $overlay.addClass("active");
             $( 'html' ).addClass( 'no-overflow' );
             
-            $( 'body' ).one( 'click', '.mapOverlay > .fa-times', event => {
-                ($node).detach();
-                $overlay.removeClass("active");
-                $( 'html' ).removeClass( 'no-overflow' );
-                defer.resolve(node);
-            });
+            let $dismissButtons = $overlay.find("[data-overlay-action='dismiss']")
+            if(closable === true) {      
+                $dismissButtons.show();
+                $( 'body' ).one( 'click.close-modal', "[data-overlay-action='dismiss']", event => {
+                    console.log("close modal", event, $node);
+                    ($node).detach();
+                    $overlay.removeClass("active");
+                    $overlay.removeClass("fullscreen");
+                    $( 'html' ).removeClass( 'no-overflow' );
+                    defer.resolve(node);
+                    $("body").off("click.close-modal");
+                });
+                //close on click outside content
+                $( 'body' ).one( 'click.close-modal', ".overlay", event => {
+                    console.log("close modal", event, $node);
+                    if($(event.target).hasClass("overlay")) {
+                        //click directly on modal
+                        ($node).detach();
+                        $overlay.removeClass("active");
+                        $overlay.removeClass("fullscreen");
+                        $( 'html' ).removeClass( 'no-overflow' );
+                        defer.resolve(node);
+                        $("body").off("click.close-modal");
+                    }
+                });
+            } else {
+                $dismissButtons.hide();
+            }
+            
+            if(fullscreen) {
+                $overlay.addClass("fullscreen");
+            }
         } else {
             defer.reject("No overlay element found");
         }
         
         return defer.promise;
     }
+    
+    $(document).ready( () => {        
+        viewer.overlay.init();
+    })
     
     return viewer;
     

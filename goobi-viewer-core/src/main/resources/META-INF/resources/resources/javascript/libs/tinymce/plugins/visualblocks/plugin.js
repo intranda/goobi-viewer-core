@@ -4,7 +4,7 @@
  * For LGPL see License.txt in the project root for license information.
  * For commercial licenses see https://www.tiny.cloud/
  *
- * Version: 5.4.1 (2020-07-08)
+ * Version: 5.2.2 (2020-04-23)
  */
 (function () {
     'use strict';
@@ -17,9 +17,13 @@
       var set = function (v) {
         value = v;
       };
+      var clone = function () {
+        return Cell(get());
+      };
       return {
         get: get,
-        set: set
+        set: set,
+        clone: clone
       };
     };
 
@@ -28,23 +32,27 @@
     var fireVisualBlocks = function (editor, state) {
       editor.fire('VisualBlocks', { state: state });
     };
+    var Events = { fireVisualBlocks: fireVisualBlocks };
 
     var toggleVisualBlocks = function (editor, pluginUrl, enabledState) {
       var dom = editor.dom;
       dom.toggleClass(editor.getBody(), 'mce-visualblocks');
       enabledState.set(!enabledState.get());
-      fireVisualBlocks(editor, enabledState.get());
+      Events.fireVisualBlocks(editor, enabledState.get());
     };
+    var VisualBlocks = { toggleVisualBlocks: toggleVisualBlocks };
 
     var register = function (editor, pluginUrl, enabledState) {
       editor.addCommand('mceVisualBlocks', function () {
-        toggleVisualBlocks(editor, pluginUrl, enabledState);
+        VisualBlocks.toggleVisualBlocks(editor, pluginUrl, enabledState);
       });
     };
+    var Commands = { register: register };
 
     var isEnabledByDefault = function (editor) {
       return editor.getParam('visualblocks_default_state', false, 'boolean');
     };
+    var Settings = { isEnabledByDefault: isEnabledByDefault };
 
     var setup = function (editor, pluginUrl, enabledState) {
       editor.on('PreviewFormats AfterPreviewFormats', function (e) {
@@ -53,11 +61,15 @@
         }
       });
       editor.on('init', function () {
-        if (isEnabledByDefault(editor)) {
-          toggleVisualBlocks(editor, pluginUrl, enabledState);
+        if (Settings.isEnabledByDefault(editor)) {
+          VisualBlocks.toggleVisualBlocks(editor, pluginUrl, enabledState);
         }
       });
+      editor.on('remove', function () {
+        editor.dom.removeClass(editor.getBody(), 'mce-visualblocks');
+      });
     };
+    var Bindings = { setup: setup };
 
     var toggleActiveState = function (editor, enabledState) {
       return function (api) {
@@ -82,20 +94,20 @@
       });
       editor.ui.registry.addToggleMenuItem('visualblocks', {
         text: 'Show blocks',
-        icon: 'visualblocks',
         onAction: function () {
           return editor.execCommand('mceVisualBlocks');
         },
         onSetup: toggleActiveState(editor, enabledState)
       });
     };
+    var Buttons = { register: register$1 };
 
     function Plugin () {
       global.add('visualblocks', function (editor, pluginUrl) {
         var enabledState = Cell(false);
-        register(editor, pluginUrl, enabledState);
-        register$1(editor, enabledState);
-        setup(editor, pluginUrl, enabledState);
+        Commands.register(editor, pluginUrl, enabledState);
+        Buttons.register(editor, enabledState);
+        Bindings.setup(editor, pluginUrl, enabledState);
       });
     }
 

@@ -4,7 +4,7 @@
  * For LGPL see License.txt in the project root for license information.
  * For commercial licenses see https://www.tiny.cloud/
  *
- * Version: 5.4.1 (2020-07-08)
+ * Version: 5.2.2 (2020-04-23)
  */
 (function (domGlobals) {
     'use strict';
@@ -17,9 +17,13 @@
       var set = function (v) {
         value = v;
       };
+      var clone = function () {
+        return Cell(get());
+      };
       return {
         get: get,
-        set: set
+        set: set,
+        clone: clone
       };
     };
 
@@ -78,7 +82,7 @@
         return n;
       };
       var me = {
-        fold: function (n, _s) {
+        fold: function (n, s) {
           return n();
         },
         is: never,
@@ -106,6 +110,9 @@
         },
         toString: constant('none()')
       };
+      if (Object.freeze) {
+        Object.freeze(me);
+      }
       return me;
     }();
     var some = function (a) {
@@ -171,16 +178,17 @@
     };
 
     var typeOf = function (x) {
-      var t = typeof x;
       if (x === null) {
         return 'null';
-      } else if (t === 'object' && (Array.prototype.isPrototypeOf(x) || x.constructor && x.constructor.name === 'Array')) {
-        return 'array';
-      } else if (t === 'object' && (String.prototype.isPrototypeOf(x) || x.constructor && x.constructor.name === 'String')) {
-        return 'string';
-      } else {
-        return t;
       }
+      var t = typeof x;
+      if (t === 'object' && (Array.prototype.isPrototypeOf(x) || x.constructor && x.constructor.name === 'Array')) {
+        return 'array';
+      }
+      if (t === 'object' && (String.prototype.isPrototypeOf(x) || x.constructor && x.constructor.name === 'String')) {
+        return 'string';
+      }
+      return t;
     };
     var isType = function (type) {
       return function (value) {
@@ -190,6 +198,7 @@
     var isString = isType('string');
     var isObject = isType('object');
     var isArray = isType('array');
+    var isFunction = isType('function');
 
     var nativeSlice = Array.prototype.slice;
     var nativeIndexOf = Array.prototype.indexOf;
@@ -242,19 +251,14 @@
       });
       return acc;
     };
-    var findUntil = function (xs, pred, until) {
+    var find = function (xs, pred) {
       for (var i = 0, len = xs.length; i < len; i++) {
         var x = xs[i];
         if (pred(x, i)) {
           return Option.some(x);
-        } else if (until(x, i)) {
-          break;
         }
       }
       return Option.none();
-    };
-    var find = function (xs, pred) {
-      return findUntil(xs, pred, never);
     };
     var forall = function (xs, pred) {
       for (var i = 0, len = xs.length; i < len; ++i) {
@@ -273,9 +277,15 @@
     var head = function (xs) {
       return xs.length === 0 ? Option.none() : Option.some(xs[0]);
     };
+    var from$1 = isFunction(Array.from) ? Array.from : function (x) {
+      return nativeSlice.call(x);
+    };
 
     var keys = Object.keys;
     var hasOwnProperty = Object.hasOwnProperty;
+    var get = function (obj, key) {
+      return has(obj, key) ? Option.from(obj[key]) : Option.none();
+    };
     var has = function (obj, key) {
       return hasOwnProperty.call(obj, key);
     };
@@ -395,16 +405,16 @@
       var is = function (v) {
         return o === v;
       };
-      var or = function (_opt) {
+      var or = function (opt) {
         return value(o);
       };
-      var orThunk = function (_f) {
+      var orThunk = function (f) {
         return value(o);
       };
       var map = function (f) {
         return value(f(o));
       };
-      var mapError = function (_f) {
+      var mapError = function (f) {
         return value(o);
       };
       var each = function (f) {
@@ -457,13 +467,13 @@
       var orThunk = function (f) {
         return f();
       };
-      var map = function (_f) {
+      var map = function (f) {
         return error(message);
       };
       var mapError = function (f) {
         return error(f(message));
       };
-      var bind = function (_f) {
+      var bind = function (f) {
         return error(message);
       };
       var fold = function (onError, _) {
@@ -653,7 +663,7 @@
       };
     };
 
-    var get = function (patternsState) {
+    var get$1 = function (patternsState) {
       var setPatterns = function (newPatterns) {
         var normalized = partition(map(newPatterns, normalizePattern));
         if (normalized.errors.length > 0) {
@@ -670,6 +680,7 @@
         getPatterns: getPatterns
       };
     };
+    var Api = { get: get$1 };
 
     var Global = typeof domGlobals.window !== 'undefined' ? domGlobals.window : Function('return this;')();
 
@@ -735,8 +746,8 @@
         cmd: 'InsertUnorderedList'
       }
     ];
-    var getPatternSet = function (editor) {
-      var patterns = editor.getParam('textpattern_patterns', defaultPatterns, 'array');
+    var getPatternSet = function (editorSettings) {
+      var patterns = get(editorSettings, 'textpattern_patterns').getOr(defaultPatterns);
       if (!isArray(patterns)) {
         error$1('The setting textpattern_patterns should be an array');
         return {
@@ -1050,7 +1061,14 @@
     };
 
     var checkRange = function (str, substr, start) {
-      return substr === '' || str.length >= substr.length && str.substr(start, start + substr.length) === substr;
+      if (substr === '') {
+        return true;
+      }
+      if (str.length < substr.length) {
+        return false;
+      }
+      var x = str.substr(start, start + substr.length);
+      return x === substr;
     };
     var endsWith = function (str, suffix) {
       return checkRange(str, suffix, str.length - suffix.length);
@@ -1059,7 +1077,7 @@
     var newMarker = function (dom, id) {
       return dom.create('span', {
         'data-mce-type': 'bookmark',
-        id: id
+        'id': id
       });
     };
     var rangeFromMarker = function (dom, marker) {
@@ -1347,6 +1365,12 @@
         return chr.charCodeAt(0) === event.charCode;
       });
     };
+    var KeyHandler = {
+      handleEnter: handleEnter,
+      handleInlineKey: handleInlineKey,
+      checkCharCode: checkCharCode,
+      checkKeyCode: checkKeyCode
+    };
 
     var setup = function (editor, patternsState) {
       var charCodes = [
@@ -1360,30 +1384,31 @@
       var keyCodes = [32];
       editor.on('keydown', function (e) {
         if (e.keyCode === 13 && !global$2.modifierPressed(e)) {
-          if (handleEnter(editor, patternsState.get())) {
+          if (KeyHandler.handleEnter(editor, patternsState.get())) {
             e.preventDefault();
           }
         }
       }, true);
       editor.on('keyup', function (e) {
-        if (checkKeyCode(keyCodes, e)) {
-          handleInlineKey(editor, patternsState.get());
+        if (KeyHandler.checkKeyCode(keyCodes, e)) {
+          KeyHandler.handleInlineKey(editor, patternsState.get());
         }
       });
       editor.on('keypress', function (e) {
-        if (checkCharCode(charCodes, e)) {
+        if (KeyHandler.checkCharCode(charCodes, e)) {
           global$1.setEditorTimeout(editor, function () {
-            handleInlineKey(editor, patternsState.get());
+            KeyHandler.handleInlineKey(editor, patternsState.get());
           });
         }
       });
     };
+    var Keyboard = { setup: setup };
 
     function Plugin () {
       global.add('textpattern', function (editor) {
-        var patternsState = Cell(getPatternSet(editor));
-        setup(editor, patternsState);
-        return get(patternsState);
+        var patternsState = Cell(getPatternSet(editor.settings));
+        Keyboard.setup(editor, patternsState);
+        return Api.get(patternsState);
       });
     }
 

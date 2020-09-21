@@ -4,7 +4,7 @@
  * For LGPL see License.txt in the project root for license information.
  * For commercial licenses see https://www.tiny.cloud/
  *
- * Version: 5.4.1 (2020-07-08)
+ * Version: 5.2.2 (2020-04-23)
  */
 (function () {
     'use strict';
@@ -33,18 +33,23 @@
         editor.insertContent(editor.dom.createHTML('a', { id: id }));
       }
     };
+    var Anchor = {
+      isValidId: isValidId,
+      getId: getId,
+      insert: insert
+    };
 
     var insertAnchor = function (editor, newId) {
-      if (!isValidId(newId)) {
+      if (!Anchor.isValidId(newId)) {
         editor.windowManager.alert('Id should start with a letter, followed only by letters, numbers, dashes, dots, colons or underscores.');
         return false;
       } else {
-        insert(editor, newId);
+        Anchor.insert(editor, newId);
         return true;
       }
     };
     var open = function (editor) {
-      var currentId = getId(editor);
+      var currentId = Anchor.getId(editor);
       editor.windowManager.open({
         title: 'Anchor',
         size: 'normal',
@@ -78,12 +83,14 @@
         }
       });
     };
+    var Dialog = { open: open };
 
     var register = function (editor) {
       editor.addCommand('mceAnchor', function () {
-        open(editor);
+        Dialog.open(editor);
       });
     };
+    var Commands = { register: register };
 
     var isNamedAnchorNode = function (node) {
       return !node.attr('href') && (node.attr('id') || node.attr('name')) && !node.firstChild;
@@ -103,6 +110,7 @@
         editor.serializer.addNodeFilter('a', setContentEditable(null));
       });
     };
+    var FilterContent = { setup: setup };
 
     var register$1 = function (editor) {
       editor.ui.registry.addToggleButton('anchor', {
@@ -123,12 +131,13 @@
         }
       });
     };
+    var Buttons = { register: register$1 };
 
     function Plugin () {
       global.add('anchor', function (editor) {
-        setup(editor);
-        register(editor);
-        register$1(editor);
+        FilterContent.setup(editor);
+        Commands.register(editor);
+        Buttons.register(editor);
       });
     }
 
