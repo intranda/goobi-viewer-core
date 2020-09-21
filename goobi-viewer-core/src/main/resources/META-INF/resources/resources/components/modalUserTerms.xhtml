@@ -1,0 +1,50 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+	xmlns:h="http://xmlns.jcp.org/jsf/html"
+	xmlns:f="http://xmlns.jcp.org/jsf/core"
+	xmlns:composite="http://xmlns.jcp.org/jsf/composite">
+
+	<composite:interface />
+
+    <composite:implementation>
+
+			<!-- Modal -->
+			<div class="modal fade user-terms-modal" id="userTermsModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+			  <div class="modal-dialog" role="document">
+			    <div class="modal-content">
+			      <div class="modal-header">
+			        <h2 class="modal-title" id="exampleModalLongTitle">#{msg.user_terms}</h2>
+			        <button type="button" class="fancy-close" data-dismiss="modal" aria-label="Close">
+			          <span aria-hidden="true">x</span>
+			        </button>
+			      </div>
+			      <div class="modal-body">
+					
+					<p>
+	                    <h:outputText value="Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, t Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, t Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, tSed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, t Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, tSed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam, eaque ipsa quae ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt explicabo. Nemo enim ipsam voluptatem quia voluptas sit aspernatur aut odit aut fugit, sed quia consequuntur magni dolores eos qui ratione voluptatem sequi nesciunt. Neque porro quisquam est, qui dolorem ipsum quia dolor sit amet, consectetur, adipisci velit, sed quia non numquam eius modi tempora incidunt ut labore et dolore magnam aliquam quaerat voluptatem. Ut enim ad minima veniam, quis nostrum exercitationem ullam corporis suscipit laboriosam, nisi ut aliquid ex ea commodi consequatur? Quis autem vel eum iure reprehenderit qui in ea voluptate velit esse quam nihil molestiae consequatur, vel illum qui dolorem eum fugiat quo voluptas nulla pariatur? Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam, eaque ipsa quae ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt explicabo. Nemo enim ipsam voluptatem quia voluptas sit aspernatur aut odit aut fugit, sed quia consequuntur magni dolores eos qui ratione voluptatem sequi nesciunt. Neque porro quisquam est, qui dolorem ipsum quia dolor sit amet, consectetur, adipisci velit, sed quia non numquam eius modi tempora incidunt ut labore et dolore magnam aliquam quaerat voluptatem. Ut enim ad minima veniam, quis nostrum exercitationem ullam corporis suscipit laboriosam, nisi ut aliquid ex ea commodi consequatur? Quis autem vel eum iure reprehenderit qui in ea voluptate velit esse quam nihil molestiae consequatur, vel illum qui dolorem eum fugiat quo voluptas nulla pariatur?" />
+	                </p>
+
+			  <h:form id="termsForm" styleClass="form-horizontal" prependId="false">
+			  <div id="terms" class="terms-modal">              
+
+
+              </div>
+              
+                <!-- ACTION -->
+				<div class="form-group form-row">
+					<div class="col-sm-12 d-flex justify-content-end">
+                        <h:commandButton styleClass="btn btn--full decline" value="#{msg.submit}" />
+                        <h:commandButton styleClass="btn btn--full accept" value="#{msg.submit}" />
+					</div>
+				</div>
+				
+			</h:form>
+
+			      </div>
+			    </div>
+			  </div>
+			</div>
+
+			
+	</composite:implementation>
+</ui:composition>

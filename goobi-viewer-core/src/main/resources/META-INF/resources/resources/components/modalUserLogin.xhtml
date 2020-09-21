@@ -15,10 +15,9 @@
 	<composite:interface />
 
     <composite:implementation>	
-    
-    
+
     		<!-- Modal -->
-			<div id="userLoginModal" class="modal fade user-login-modal"  tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+			<div id="userLoginModal" class="modal fade user-login-modal" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
 			  <div class="modal-dialog" role="document">
 			    <div class="modal-content">
 			      <div class="modal-header">
@@ -38,7 +37,7 @@
                 <h:form id="selectLoginForm" prependId="false" rendered="#{userBean.showAuthenticationProviderSelection()}">
 	                <div id="userLoginSelectLoginWrapper" class="user-login-modal__body-login-select">
 	                    <div class="form-row form-group no-gutters">
-	                        <label for="userLoginSelectLogin" class="control-label col-12 col-lg-3">#{msg.login__select_login_title}</label>
+	                        <label for="userLoginSelectLogin" class="control-label col-12 col-lg-3">#{msg.login__select_login_title}:</label>
 	                        <div class="col-12 col-lg-9">
 	                        <div class="custom-control custom-control--select">
 	                            <h:selectOneMenu id="userLoginSelectLogin" value="#{userBean.authenticationProviderName}">
@@ -48,7 +47,7 @@
                                         var="provider" 
                                         itemValue="#{provider.name}" 
                                         itemLabel="#{provider.label}" />
-	                            	<f:ajax event="change" execute="@form" render="userLoginForm"/>
+	                            	<f:ajax event="change" execute="@form" render="loginComponent:userLoginForm"/>
 	                            </h:selectOneMenu>
 	                        </div>
 	                        </div>
@@ -59,6 +58,7 @@
                 <!-- USER LOGIN BODY LOGIN TYPE -->
                 <div class="user-login-modal__body-login-type-wrapper">
                     <!-- USER LOGIN DETAILS -->
+                    
                     <h:form id="userLoginForm" prependId="false">
 	                    <ui:fragment rendered="#{userBean.authenticationProvider != null}">
 	                        <div id="loginType" class="user-login-modal__body-login-type">
