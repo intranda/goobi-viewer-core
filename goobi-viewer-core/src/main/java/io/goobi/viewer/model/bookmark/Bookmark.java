@@ -18,6 +18,7 @@ package io.goobi.viewer.model.bookmark;
 import java.io.Serializable;
 import java.util.Arrays;
 import java.util.Date;
+import java.util.Locale;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -52,6 +53,9 @@ import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.exceptions.ViewerConfigurationException;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
+import io.goobi.viewer.model.metadata.MetadataElement;
+import io.goobi.viewer.model.search.BrowseElement;
+import io.goobi.viewer.model.search.SearchHit;
 import io.goobi.viewer.model.viewer.PageType;
 import io.goobi.viewer.model.viewer.StructElement;
 
@@ -110,7 +114,10 @@ public class Bookmark implements Serializable {
 
     @Transient
     private String url;
-
+    
+    @Transient 
+    private BrowseElement browseElement = null;
+    
     /**
      * Empty constructor.
      */
@@ -623,6 +630,57 @@ public class Bookmark implements Serializable {
     @Deprecated
     public void setMainTitle(String mainTitle) {
         this.mainTitle = mainTitle;
+    }
+    
+    public MetadataElement getMetadataElement() throws IndexUnreachableException {
+        SolrDocument doc = retrieveSolrDocument();
+        Long iddoc = Long.parseLong((String)doc.getFirstValue(SolrConstants.IDDOC));
+        StructElement se = new StructElement(iddoc, doc);
+        Locale sessionLocale = BeanUtils.getLocale();
+        String selectedRecordLanguage = sessionLocale.getLanguage();
+        try {
+            MetadataElement md = new MetadataElement(se, sessionLocale, selectedRecordLanguage);
+            return md;
+        } catch(DAOException | PresentationException e) {
+            throw new IndexUnreachableException(e.getMessage());
+        }
+    }
+
+    /**
+     * @return
+     * @throws PresentationException
+     * @throws IndexUnreachableException
+     */
+    private SolrDocument retrieveSolrDocument() throws IndexUnreachableException {
+        try {            
+            String query = "+PI_TOPSTRUCT:%s";
+            if(StringUtils.isNotBlank(logId)) {
+                query += " +LOGID:%s";
+                query = String.format(query, this.pi, this.logId);
+            } else {
+                query += " +(ISWORK:* OR ISANCHOR:*)";
+                query = String.format(query, this.pi);
+            }
+            SolrDocument doc = DataManager.getInstance().getSearchIndex().getFirstDoc(query, null);
+            return doc;
+        } catch(PresentationException e) {
+            throw new IndexUnreachableException(e.toString());
+        }
+    }
+    
+    public BrowseElement getBrowseElement() throws IndexUnreachableException {
+        if(this.browseElement == null) {            
+            try {                
+                SolrDocument doc = retrieveSolrDocument();
+                Locale locale = BeanUtils.getLocale();
+                SearchHit sh = SearchHit.createSearchHit(doc, null, null, locale, "", null, null, null, false, null, null, SearchHit.HitType.DOCSTRCT);
+                this.browseElement = sh.getBrowseElement();
+            } catch(PresentationException | DAOException | ViewerConfigurationException e) {
+                throw new IndexUnreachableException(e.toString());
+            }
+        }
+        
+        return this.browseElement;
     }
 
 }
