@@ -8,7 +8,8 @@
 	xmlns:viewer="http://xmlns.jcp.org/jsf/composite/components/partner"
 	xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components">
  
-    <ui:param name="showBookmarkIcon" value="{showBookmarkIcon != null ? showBookmarkIcon : false}"></ui:param>
+ 	<ui:param name="browseElement" value="#{browseElement != null ? browseElement : null}"></ui:param>
+    <ui:param name="showBookmarkIcon" value="#{showBookmarkIcon != null ? showBookmarkIcon : false}"></ui:param>
  
 	     <div class="row no-gutters">
 	         <div class="col-12 col-sm-#{browseElement.showThumbnail ? '10' : '12'}">
