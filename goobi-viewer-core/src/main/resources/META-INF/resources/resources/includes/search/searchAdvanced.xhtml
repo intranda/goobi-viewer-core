@@ -65,7 +65,6 @@
                                                     <c:forEach var="field" items="#{searchBean.advancedSearchAllowedFields}">
                                                         <f:selectItem itemValue="#{field.field}" itemLabel="#{msg[field.label]}" itemDisabled="#{field.disabled}" />
                                                     </c:forEach>
-<!--                                                     <f:selectItems value="#{searchBean.advancedSearchAllowedFields}" var="field" itemValue="#{field}" itemLabel="#{msg[field]}" /> -->
                                                     <f:ajax
                                                         render=":advsearch_item_operator_#{statusGroup.count}-#{status.count} :advsearch_value_group_#{statusGroup.count}-#{status.count}" />
                                                 </h:selectOneMenu>
@@ -80,17 +79,30 @@
                                                     <div class="form-group">
                                                         <label class="sr-only" for="advsearchValueText_#{statusGroup.count}-#{status.count}"></label>
                                                         <div class="input-group">
-                                                            <h:inputText id="advsearchValueText_#{statusGroup.count}-#{status.count}" styleClass="form-control value-text"
-                                                                value="#{queryItem.value}">
-                                                                <f:passThroughAttribute name="placeholder" value="#{msg.searchFieldDemoText}" />
-                                                            </h:inputText>
-
-                                                            <div class="input-group-append">
-                                                                <button type="button" class="btn btn--clean reset" data-toggle="tooltip" data-placement="top"
-                                                                    title="#{msg.searchAdvanved_resetCurrentValue}">
-                                                                    <i class="fa fa-times-circle" aria-hidden="true"></i>
-                                                                </button>
+                                                            <ui:fragment rendered="#{queryItem.range}">
+                                                                <h:inputText id="advsearchValue1Text_#{statusGroup.count}-#{status.count}"
+                                                                    styleClass="form-control value-text -with-right-border" value="#{queryItem.value}">
+                                                                    <f:passThroughAttribute name="placeholder" value="#{msg.of}" />
+                                                                </h:inputText>
+                                                                <i class="fa fa-arrows-h search-advanced__between-arrow" aria-hidden="true"></i>
+                                                                <h:inputText id="advsearchValue2Text_#{statusGroup.count}-#{status.count}"
+                                                                    styleClass="form-control value-text -with-right-border" value="#{queryItem.value2}">
+                                                                    <f:passThroughAttribute name="placeholder" value="#{msg.downloadPdfPartsTo}" />
+                                                                </h:inputText>
+                                                            </ui:fragment>
+                                                            <ui:fragment rendered="#{!queryItem.range}">
+                                                                <h:inputText id="advsearchValueText_#{statusGroup.count}-#{status.count}"
+                                                                    styleClass="form-control value-text" value="#{queryItem.value}">
+                                                                    <f:passThroughAttribute name="placeholder" value="#{msg.searchFieldDemoText}" />
+                                                                </h:inputText>
+                                                                <div class="input-group-append">
+                                                                    <button type="button" class="btn btn--clean reset"
+                                                                        data-toggle="tooltip" data-placement="top"
+                                                                        title="#{msg.searchAdvanved_resetCurrentValue}">
+                                                                        <i class="fa fa-times-circle" aria-hidden="true"></i>
+                                                                    </button>
                                                             </div>
+                                                            </ui:fragment>
                                                         </div>
                                                     </div>
                                                 </h:panelGroup>
@@ -112,7 +124,7 @@
                                         <div id="advsearch_operator_#{statusGroup.count}-#{status.count}" class="search-advanced__input-col text-center">
                                             <div class="custom-control custom-control--select">
                                                 <h:selectOneMenu id="advsearch_item_operator_#{statusGroup.count}-#{status.count}" styleClass="value-text"
-                                                    value="#{queryItem.operator}" disabled="#{queryItem.displaySelectItems}">
+                                                    value="#{queryItem.operator}" disabled="#{queryItem.displaySelectItems or queryItem.range}">
                                                     <f:selectItems value="#{queryItem.availableOperators}" var="operator" itemValue="#{operator}" itemLabel="#{operator.label}" />
                                                 </h:selectOneMenu>
                                             </div>
