@@ -15,6 +15,11 @@
  */
 package io.goobi.viewer.websockets;
 
+import java.util.Map;
+import java.util.Timer;
+import java.util.TimerTask;
+import java.util.concurrent.ConcurrentHashMap;
+
 import javax.servlet.http.HttpSession;
 import javax.websocket.EndpointConfig;
 import javax.websocket.OnClose;
@@ -34,6 +39,8 @@ public class UserEndpoint {
 
     private static final Logger logger = LoggerFactory.getLogger(UserEndpoint.class);
 
+    private static Map<String, Timer> sessionClearTimers = new ConcurrentHashMap<>();
+
     private Session session;
     private HttpSession httpSession;
 
@@ -44,26 +51,75 @@ public class UserEndpoint {
         this.httpSession = (HttpSession) config.getUserProperties().get(HttpSession.class.getName());
         if (httpSession != null) {
             logger.trace("HTTP session ID: {}", httpSession.getId());
+            cancelClearTimer(httpSession.getId());
         }
     }
 
     @OnMessage
     public void onMessage(String message) {
         logger.trace("onMessage from {}: {}", session.getId(), message);
+        if (httpSession != null) {
+            cancelClearTimer(httpSession.getId());
+        }
     }
 
     @OnClose
     public void onClose(Session session) {
         logger.trace("onClose {}", session.getId());
         if (httpSession != null) {
-            // TODO grace period before removing locks
-            int count = DataManager.getInstance().removeSessionIdFromLocks(httpSession.getId());
-            logger.trace("Removed {} record locks for session '{}'.", count, httpSession.getId());
+            delayedRemoveLocksForSessionId(httpSession.getId(), 30000L);
         }
     }
 
     @OnError
     public void onError(Session session, Throwable t) {
         logger.error(t.getMessage());
+    }
+
+    /**
+     * 
+     * @param sessionId
+     */
+    private static void cancelClearTimer(String sessionId) {
+        if (sessionId == null) {
+            return;
+        }
+        if (sessionClearTimers.get(sessionId) == null) {
+            return;
+        }
+
+        sessionClearTimers.get(sessionId).cancel();
+        sessionClearTimers.remove(sessionId);
+        logger.trace("Release timer cancelled for session {}", sessionId);
+    }
+
+    /**
+     * Timed grace period before removing any locks for the given session ID.
+     * 
+     * @param sessionId
+     * @param delay
+     */
+    private static void delayedRemoveLocksForSessionId(String sessionId, long delay) {
+        if (sessionId == null) {
+            return;
+        }
+
+        logger.trace("Starting timer for {}", sessionId);
+        TimerTask task = new TimerTask() {
+
+            @Override
+            public void run() {
+                if (sessionClearTimers.containsKey(sessionId)) {
+                    int count = DataManager.getInstance().removeLocksForSessionId(sessionId);
+                    logger.trace("Removed {} record locks for session '{}'.", count, sessionId);
+                    sessionClearTimers.remove(sessionId);
+                } else {
+                    logger.trace("Session {} has been refreshed and won't be cleared", sessionId);
+                }
+            }
+        };
+        Timer timer = new Timer("timer_" + sessionId);
+        sessionClearTimers.put(sessionId, timer);
+        timer.schedule(task, delay);
     }
 }

@@ -18,13 +18,14 @@ package io.goobi.viewer.controller;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 
 import org.apache.solr.common.SolrDocument;
 import org.junit.Assert;
 import org.junit.Test;
 
-import io.goobi.viewer.controller.AbstractConfiguration;
-import io.goobi.viewer.controller.DataManager;
+import io.goobi.viewer.exceptions.RecordLimitExceededException;
+import io.goobi.viewer.model.security.RecordLock;
 import io.goobi.viewer.model.security.user.User;
 import io.goobi.viewer.modules.IModule;
 import io.goobi.viewer.modules.interfaces.IURLBuilder;
@@ -169,5 +170,86 @@ public class DataManagerTest {
         }
         Assert.assertTrue(DataManager.getInstance().registerModule(new TestModule()));
         Assert.assertFalse(DataManager.getInstance().registerModule(new TestModule()));
+    }
+
+    /**
+     * @see DataManager#lockRecord(String,String,Integer)
+     * @verifies add record lock to map correctly
+     */
+    @Test
+    public void lockRecord_shouldAddRecordLockToMapCorrectly() throws Exception {
+        DataManager.getInstance().lockRecord("PPN123", "SID123", 1);
+        Set<RecordLock> locks = DataManager.getInstance().getLoadedRecordMap().get("PPN123");
+        Assert.assertNotNull(locks);
+        Assert.assertEquals(1, locks.size());
+        RecordLock lock = locks.iterator().next();
+        Assert.assertEquals("PPN123", lock.getPi());
+        Assert.assertEquals("SID123", lock.getSessionId());
+    }
+
+    /**
+     * @see DataManager#lockRecord(String,String,Integer)
+     * @verifies do nothing if limit null
+     */
+    @Test
+    public void lockRecord_shouldDoNothingIfLimitNull() throws Exception {
+        DataManager.getInstance().lockRecord("PPN123", "SID123", null);
+        Assert.assertNull(DataManager.getInstance().getLoadedRecordMap().get("PPN123"));
+    }
+
+    /**
+     * @see DataManager#lockRecord(String,String,Integer)
+     * @verifies do nothing if session id already in list
+     */
+    @Test
+    public void lockRecord_shouldDoNothingIfSessionIdAlreadyInList() throws Exception {
+        {
+            DataManager.getInstance().lockRecord("PPN123", "SID123", 2);
+            Set<RecordLock> locks = DataManager.getInstance().getLoadedRecordMap().get("PPN123");
+            Assert.assertNotNull(locks);
+            Assert.assertEquals(1, locks.size());
+        }
+        {
+            DataManager.getInstance().lockRecord("PPN123", "SID123", 2);
+            Set<RecordLock> locks = DataManager.getInstance().getLoadedRecordMap().get("PPN123");
+            Assert.assertNotNull(locks);
+            Assert.assertEquals(1, locks.size());
+        }
+    }
+
+    /**
+     * @see DataManager#lockRecord(String,String,Integer)
+     * @verifies throw RecordLimitExceededException if limit exceeded
+     */
+    @Test(expected = RecordLimitExceededException.class)
+    public void lockRecord_shouldThrowRecordLimitExceededExceptionIfLimitExceeded() throws Exception {
+        DataManager.getInstance().lockRecord("PPN123", "SID123", 1);
+        DataManager.getInstance().lockRecord("PPN123", "SID789", 1);
+    }
+
+    /**
+     * @see DataManager#removeLocksForSessionId(String)
+     * @verifies return number of records if session id removed successfully
+     */
+    @Test
+    public void removeLocksForSessionId_shouldReturnNumberOfRecordsIfSessionIdRemovedSuccessfully() throws Exception {
+        DataManager.getInstance().lockRecord("PPN123", "SID123", 2);
+        Assert.assertEquals(1, DataManager.getInstance().removeLocksForSessionId("SID123"));
+    }
+
+    /**
+     * @see DataManager#removeOldLocks(long)
+     * @verifies remove locks older than maxAge
+     */
+    @Test
+    public void removeOldLocks_shouldRemoveLocksOlderThanMaxAge() throws Exception {
+        DataManager.getInstance().lockRecord("PPN123", "SID123", 1);
+        Set<RecordLock> locks = DataManager.getInstance().getLoadedRecordMap().get("PPN123");
+        Assert.assertNotNull(locks);
+        Assert.assertEquals(1, locks.size());
+        
+        Thread.sleep(10);
+        DataManager.getInstance().removeOldLocks(5);
+        Assert.assertNull(DataManager.getInstance().getLoadedRecordMap().get("PPN123"));
     }
 }

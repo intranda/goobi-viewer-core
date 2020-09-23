@@ -36,6 +36,7 @@ import io.goobi.viewer.exceptions.ModuleMissingException;
 import io.goobi.viewer.exceptions.RecordLimitExceededException;
 import io.goobi.viewer.model.bookmark.SessionStoreBookmarkManager;
 import io.goobi.viewer.model.crowdsourcing.campaigns.Campaign;
+import io.goobi.viewer.model.security.RecordLock;
 import io.goobi.viewer.model.security.authentication.AuthResponseListener;
 import io.goobi.viewer.model.security.authentication.OpenIdProvider;
 import io.goobi.viewer.modules.IModule;
@@ -58,8 +59,9 @@ public final class DataManager {
     private final List<IModule> modules = new ArrayList<>();
 
     private final Map<String, Map<String, String>> sessionMap = new LinkedHashMap<>();
-    /** Currently open records */
-    private final Map<String, Set<String>> loadedRecordMap = new HashMap<>();
+
+    /** Currently viewed records */
+    private final Map<String, Set<RecordLock>> loadedRecordMap = new HashMap<>();
 
     private Configuration configuration;
 
@@ -232,7 +234,7 @@ public final class DataManager {
     /**
      * @return the loadedRecordMap
      */
-    Map<String, Set<String>> getLoadedRecordMap() {
+    Map<String, Set<RecordLock>> getLoadedRecordMap() {
         return loadedRecordMap;
     }
 
@@ -242,7 +244,7 @@ public final class DataManager {
      * @param sessionId HTTP session ID
      * @param limit
      * @throws RecordLimitExceededException
-     * @should add session id to map correctly
+     * @should add record lock to map correctly
      * @should do nothing if limit null
      * @should do nothing if session id already in list
      * @should throw RecordLimitExceededException if limit exceeded
@@ -259,19 +261,20 @@ public final class DataManager {
         if (limit == null) {
             return;
         }
-        Set<String> sessions = loadedRecordMap.get(pi);
-        if (sessions == null) {
-            sessions = new HashSet<>(limit);
-            loadedRecordMap.put(pi, sessions);
+        Set<RecordLock> recordLocks = loadedRecordMap.get(pi);
+        if (recordLocks == null) {
+            recordLocks = new HashSet<>(limit);
+            loadedRecordMap.put(pi, recordLocks);
         }
-        if (sessions.size() == limit) {
-            if (sessions.contains(sessionId)) {
+        RecordLock newLock = new RecordLock(pi, sessionId);
+        if (recordLocks.size() == limit) {
+            if (recordLocks.contains(newLock)) {
                 return;
             }
             throw new RecordLimitExceededException(pi);
         }
 
-        sessions.add(sessionId);
+        recordLocks.add(newLock);
     }
 
     /**
@@ -281,16 +284,77 @@ public final class DataManager {
      * @return true if session id removed from list successfully; false otherwise
      * @should return number of records if session id removed successfully
      */
-    public synchronized int removeSessionIdFromLocks(String sessionId) {
+    public synchronized int removeLocksForSessionId(String sessionId) {
         if (sessionId == null) {
             throw new IllegalArgumentException("sessionId may not be null");
         }
+
         int count = 0;
+        Set<String> emptyPIs = new HashSet<>(loadedRecordMap.size());
         for (String pi : loadedRecordMap.keySet()) {
-            Set<String> sessions = loadedRecordMap.get(pi);
-            if (sessions.contains(pi)) {
-                sessions.remove(sessionId);
+            RecordLock lock = new RecordLock(pi, sessionId);
+            Set<RecordLock> recordLocks = loadedRecordMap.get(pi);
+            if (recordLocks == null) {
+                emptyPIs.add(pi);
+                continue;
+            }
+            if (recordLocks.contains(lock)) {
+                recordLocks.remove(lock);
                 count++;
+            }
+            if (recordLocks.isEmpty()) {
+                emptyPIs.add(pi);
+            }
+        }
+
+        // Remove empty entries
+        if (!emptyPIs.isEmpty()) {
+            for (String pi : emptyPIs) {
+                loadedRecordMap.remove(pi);
+            }
+        }
+
+        return count;
+    }
+
+    /**
+     * Removes all record locks that are older that <code>maxAge</code> milliseconds. Can be used to periodically clean up locks that might have been
+     * missed by the web socket mechanism.
+     * 
+     * @param maxAge
+     * @return
+     * @should remove locks older than maxAge
+     */
+    public synchronized int removeOldLocks(long maxAge) {
+        if (loadedRecordMap.isEmpty()) {
+            return 0;
+        }
+
+        long now = System.currentTimeMillis();
+        int count = 0;
+        Set<String> emptyPIs = new HashSet<>(loadedRecordMap.size());
+        for (String pi : loadedRecordMap.keySet()) {
+            if (loadedRecordMap.get(pi) == null) {
+                continue;
+            }
+            Set<RecordLock> toRemove = new HashSet<>();
+            for (RecordLock lock : loadedRecordMap.get(pi)) {
+                if (now - lock.getTimeCreated() > maxAge) {
+                    toRemove.add(lock);
+                }
+            }
+            if (!toRemove.isEmpty() && loadedRecordMap.get(pi).removeAll(toRemove)) {
+                count += toRemove.size();
+            }
+            if (loadedRecordMap.get(pi).isEmpty()) {
+                emptyPIs.add(pi);
+            }
+        }
+
+        // Remove empty entries
+        if (!emptyPIs.isEmpty()) {
+            for (String pi : emptyPIs) {
+                loadedRecordMap.remove(pi);
             }
         }
 
