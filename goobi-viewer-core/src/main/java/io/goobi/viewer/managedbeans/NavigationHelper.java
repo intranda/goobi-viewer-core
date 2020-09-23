@@ -308,7 +308,7 @@ public class NavigationHelper implements Serializable {
      *
      * @param currentPartnerPage a {@link java.lang.String} object.
      * @should set value correctly
-     * @deprecated  replaced by subTheme mechanism
+     * @deprecated replaced by subTheme mechanism
      */
     public void setCurrentPartnerPage(String currentPartnerPage) {
         statusMap.put(KEY_CURRENT_PARTNER_PAGE, currentPartnerPage);
@@ -322,7 +322,7 @@ public class NavigationHelper implements Serializable {
      *
      * @should return value correctly
      * @return a {@link java.lang.String} object.
-     * @deprecated  replaced by subTheme mechanism
+     * @deprecated replaced by subTheme mechanism
      */
     public String getCurrentPartnerPage() {
         return statusMap.get(KEY_CURRENT_PARTNER_PAGE);
@@ -617,7 +617,7 @@ public class NavigationHelper implements Serializable {
 
         return ret;
     }
-    
+
     /**
      * Returns ISO 639-1 language codes of available JSF locales as json array.
      *
@@ -627,8 +627,8 @@ public class NavigationHelper implements Serializable {
 
         Iterable<Locale> locales = () -> getSupportedLocales();
         String ret = StreamSupport.stream(locales.spliterator(), false)
-            .map(lang -> "\"" + lang + "\"")
-            .collect(Collectors.joining(","));
+                .map(lang -> "\"" + lang + "\"")
+                .collect(Collectors.joining(","));
         ret = "[" + ret + "]";
         return ret;
     }
@@ -931,7 +931,8 @@ public class NavigationHelper implements Serializable {
      * Get the subthemeDiscriminator value either from a property of the currently loaded CMS page or the currently loaded document in the
      * activeDocumentbean if the current page is a docmentPage.
      * 
-     * @return the subtheme name determined from current cmsPage or current document. If {@link Configuration#getSubthemeDiscriminatorField} is blank, always return an empty string
+     * @return the subtheme name determined from current cmsPage or current document. If {@link Configuration#getSubthemeDiscriminatorField} is blank,
+     *         always return an empty string
      * 
      */
     public String determineCurrentSubThemeDiscriminatorValue() {
@@ -1462,7 +1463,11 @@ public class NavigationHelper implements Serializable {
     private static void resetCurrentDocument() {
         ActiveDocumentBean adb = BeanUtils.getActiveDocumentBean();
         if (adb != null) {
-            adb.reset();
+            try {
+                adb.reset();
+            } catch (IndexUnreachableException e) {
+                logger.error(e.getMessage(), e);
+            }
         }
 
         // Module augmentations

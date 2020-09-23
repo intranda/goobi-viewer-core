@@ -167,6 +167,22 @@ public class MyExceptionHandler extends ExceptionHandlerWrapper {
                 } finally {
                     i.remove();
                 }
+            } else if (t instanceof RecordLimitExceededException || isCausedByExceptionType(t, RecordLimitExceededException.class.getName())
+                    || (t instanceof PrettyException && t.getMessage().contains(RecordLimitExceededException.class.getSimpleName()))) {
+                try {
+                    String pi = t.getMessage()
+                            .substring(t.getMessage().indexOf("RecordLimitExceededException: "))
+                            .replace("RecordLimitExceededException: ", "");
+                    String msg = ViewerResourceBundle.getTranslation("errRecordLimitExceededMsg", null).replace("{0}", pi);
+                    flash.put("errorDetails", msg);
+                    requestMap.put("errMsg", msg);
+                    requestMap.put("errorType", "errRecordLimitExceeded");
+                    flash.put("errorType", "errRecordLimitExceeded");
+                    nav.handleNavigation(fc, null, "pretty:error");
+                    fc.renderResponse();
+                } finally {
+                    i.remove();
+                }
             } else if (t instanceof IndexUnreachableException || isCausedByExceptionType(t, IndexUnreachableException.class.getName())
                     || (t instanceof PrettyException && t.getMessage().contains(IndexUnreachableException.class.getSimpleName()))) {
                 logger.trace("Caused by IndexUnreachableException");

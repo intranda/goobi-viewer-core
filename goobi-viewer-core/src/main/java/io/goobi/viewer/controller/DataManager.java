@@ -290,31 +290,35 @@ public final class DataManager {
         }
 
         int count = 0;
-        Set<String> emptyPIs = new HashSet<>(loadedRecordMap.size());
         for (String pi : loadedRecordMap.keySet()) {
-            RecordLock lock = new RecordLock(pi, sessionId);
-            Set<RecordLock> recordLocks = loadedRecordMap.get(pi);
-            if (recordLocks == null) {
-                emptyPIs.add(pi);
-                continue;
-            }
-            if (recordLocks.contains(lock)) {
-                recordLocks.remove(lock);
+            if (removeLockForPiAndSessionId(pi, sessionId)) {
                 count++;
-            }
-            if (recordLocks.isEmpty()) {
-                emptyPIs.add(pi);
-            }
-        }
-
-        // Remove empty entries
-        if (!emptyPIs.isEmpty()) {
-            for (String pi : emptyPIs) {
-                loadedRecordMap.remove(pi);
             }
         }
 
         return count;
+    }
+
+    /**
+     * 
+     * @param pi
+     * @param sessionId
+     * @return
+     */
+    public synchronized boolean removeLockForPiAndSessionId(String pi, String sessionId) {
+        RecordLock lock = new RecordLock(pi, sessionId);
+        Set<RecordLock> recordLocks = loadedRecordMap.get(pi);
+        if (recordLocks == null) {
+            return false;
+        }
+
+        boolean ret = false;
+        if (recordLocks.contains(lock)) {
+            recordLocks.remove(lock);
+            ret = true;
+        }
+
+        return ret;
     }
 
     /**

@@ -199,10 +199,12 @@ public class ActiveDocumentBean implements Serializable {
 
     /**
      * TODO This can cause NPEs if called while update() is running.
+     * @throws IndexUnreachableException 
      */
-    public void reset() {
+    public void reset() throws IndexUnreachableException {
         synchronized (this) {
             logger.trace("reset (thread {})", Thread.currentThread().getId());
+            String pi = viewManager != null ? viewManager.getPi() : null;
             viewManager = null;
             topDocumentIddoc = 0;
             titleBarMetadata.clear();
@@ -216,6 +218,9 @@ public class ActiveDocumentBean implements Serializable {
             for (IModule module : DataManager.getInstance().getModules()) {
                 module.augmentResetRecord();
             }
+
+            // Remove record lock for this record and session
+            DataManager.getInstance().removeLockForPiAndSessionId(pi, BeanUtils.getSession().getId());
         }
     }
 
