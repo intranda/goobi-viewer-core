@@ -20,6 +20,7 @@ import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_FILES_IMAGE_PDF;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.URLEncoder;
 import java.util.Arrays;
 import java.util.List;
@@ -49,6 +50,7 @@ import de.unigoettingen.sub.commons.contentlib.servlet.rest.ContentServerBinding
 import de.unigoettingen.sub.commons.contentlib.servlet.rest.ContentServerImageInfoBinding;
 import de.unigoettingen.sub.commons.contentlib.servlet.rest.ContentServerPdfBinding;
 import de.unigoettingen.sub.commons.contentlib.servlet.rest.ImageResource;
+import de.unigoettingen.sub.commons.util.PathConverter;
 import io.goobi.viewer.api.rest.AbstractApiUrlManager;
 import io.goobi.viewer.api.rest.v1.ApiUrls;
 import io.swagger.v3.oas.annotations.Operation;
@@ -109,6 +111,18 @@ public class RecordsFilesImageResource extends ImageResource {
         filename = FilenameUtils.getBaseName(filename);
         filename = pi + "_" + filename + ".pdf";
         response.addHeader("Content-Disposition", "attachment; filename=\"" + filename + "\"");
+        
+        if(context.getProperty("param:metsSource") != null) {
+            try {
+                String metsSource = context.getProperty("param:metsSource").toString();
+                String metsPath = PathConverter.getPath(PathConverter.toURI(metsSource)).resolve(pi + ".xml").toUri().toString();
+                context.setProperty("param:metsFile", metsPath);
+            } catch (URISyntaxException e) {
+                logger.error("Failed to convert metsSource " + context.getProperty("metsSource") + " to mets URI");
+            }
+            
+        }
+        
         return super.getPdf("full", "max", "0", pi + "_" + filename + ".pdf");
     }
     
