@@ -252,7 +252,8 @@ public final class DataManager {
             throw new IllegalArgumentException("pi may not be null");
         }
         if (sessionId == null) {
-            throw new IllegalArgumentException("sessionId may not be null");
+            logger.warn("No sessionId given");
+            return;
         }
         // Record has unlimited views
         if (limit == null) {
