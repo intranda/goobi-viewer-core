@@ -682,5 +682,14 @@ public class Bookmark implements Serializable {
         
         return this.browseElement;
     }
+    
+    public boolean isHasImages() {
+        try {
+            return this.getBrowseElement().isHasImages();
+        } catch (IndexUnreachableException e) {
+            logger.error("Unable to get browse element for bookmark", e);
+            return false;
+        }
+    }
 
 }

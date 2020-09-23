@@ -683,4 +683,8 @@ public class BookmarkList implements Serializable {
     public boolean isOwnedBy(User user) {
         return user != null && user.equals(this.owner);
     }
+        
+    public long numItemsWithoutImages() {
+        return this.getItems().stream().filter(bm -> !bm.isHasImages()).count();
+    }
 }

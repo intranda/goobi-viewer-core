@@ -78,16 +78,38 @@
 						<div class="user-bookmark__items-image-preview">
 							<ui:repeat value="#{bookmarkList.items}" var="item"
 								varStatus="status">
-								<div class="user-bookmark__single-image-container">
-									<div class="user-bookmark__single-image"
-										style="background-image: url('#{item.getRepresentativeImageUrl(240,400)}');">
-										<!--  IMAGE -->
-										<a href="#{request.contextPath}#{item.url}"
-											title="#{item.name}" data-toggle="tooltip"
-											data-placement="bottom"> </a>
+								<ui:fragment rendered="#{item.hasImages}">
+									<div class="user-bookmark__single-image-container">
+										<div class="user-bookmark__single-image"
+											style="background-image: url('#{item.getRepresentativeImageUrl(240,400)}');">
+											<!--  IMAGE -->
+											<a href="#{request.contextPath}#{item.url}"
+												title="#{item.name}" data-toggle="tooltip"
+												data-placement="bottom"> </a>
+										</div>
 									</div>
-								</div>
+								</ui:fragment>
 							</ui:repeat>
+							<ui:fragment rendered="#{bookmarkList.numItemsWithoutImages() gt 0 and bookmarkList.numItemsWithoutImages() lt bookmarkList.items.size()}">
+								<div class="user-bookmark__link-more-items">
+									<ui:fragment rendered="#{userList}">
+										<a href="#{request.contextPath}/user/bookmarks/show/#{bookmarkList.id}/">
+											<h:outputFormat
+												value="#{bookmarkList.numItemsWithoutImages() gt 1 ? msg.bookmarkList__further_items : msg.bookmarkList__further_item}" escape="false">
+												<f:param value="#{bookmarkList.numItemsWithoutImages()}" />
+											</h:outputFormat>
+										</a>
+									</ui:fragment>
+									<ui:fragment rendered="#{!userList}">
+										<a href="#{bookmarkBean.getShareLink(bookmarkList)}">
+											<h:outputFormat 
+												value="#{bookmarkList.numItemsWithoutImages() gt 1 ? msg.bookmarkList__further_items : msg.bookmarkList__further_item}" escape="false">
+												<f:param value="#{bookmarkList.numItemsWithoutImages()}" />
+											</h:outputFormat>
+										</a>
+									</ui:fragment>
+								</div>
+							</ui:fragment>
 						</div>
 					</div>
 	
@@ -97,7 +119,8 @@
 							<div class="user-bookmark__panel-action text-center">
 								<ui:fragment rendered="#{userList}">
 									
-									<ui:fragment rendered="#{bookmarkList.items.size() > 0}">
+									
+									<ui:fragment rendered="#{bookmarkList.items.size() gt 0 and bookmarkList.numItemsWithoutImages() lt bookmarkList.items.size()}">
 		                              <a 
 		                                data-toggle="tooltip"
 		                                title="#{msg.bookmarkList_openMirador}"
@@ -225,7 +248,7 @@
 				</div>
 			</ui:fragment>
 		</ui:repeat>
-		
+
 		<script>
     		viewerJS.clipboard.init();
 		</script>
