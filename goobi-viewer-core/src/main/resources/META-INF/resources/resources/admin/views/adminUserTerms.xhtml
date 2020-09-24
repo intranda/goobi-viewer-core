@@ -18,50 +18,102 @@
                 <h:panelGroup rendered="#{userBean.admin}">
                     <div class="admin__title-bar">
                         <ui:fragment rendered="#{adminBean.currentUser.id == null}">
-                            <h2 class="admin__title">#{msg.admin__user_terms}</h2>
+                            <h2 class="admin__title">#{msg.admin__terms_of_use__title}</h2>
                         </ui:fragment>
                     </div>
                     <div class="admin__content-inner-content">
-
+						
+						<p>#{msg.admin__terms_of_use__description}</p>
+						
                         <h:form id="editUserTerms" styleClass="form-horizontal form-group" role="form" prependId="false">
-                            <h3>#{msg.admin__edit_text}</h3>
-                            <div class="admin__default-block">
- 								<div role="tabpanel">
-                                            <!-- NAV TABS -->
-                                            <ul class="nav nav-tabs" role="tablist">
-                                                <c:forEach var="locale" items="#{cmsBean.getAllLocales()}">
-                                                    <li role="presentation" class="#{cmsBean.selectedLocale == locale ? 'active':''}">
-                                                        <h:commandLink value="#{locale}" action="#{cmsBean.setSelectedLocale(locale)}" immediate="false" />
-                                                    </li>
-                                                </c:forEach>
-                                            </ul>
+                            
+                            <ui:fragment rendered="#{!termsOfUseBean.active}">
+                            	<div>#{msg.admin__terms_of_use__deactivated}</div>
+                            	<h:commandButton value="#{msg.action__activate}" action="#{termsOfUseBean.setActive(true)}"></h:commandButton>
+                            </ui:fragment>
+                            
+                            
+                            <ui:fragment rendered="#{termsOfUseBean.active}">
+	                            <h3>#{msg.admin__terms_of_use__manage_text}</h3>
+	                            <div class="admin__default-block">
+	 								<div role="tabpanel">
+                                        <!-- NAV TABS -->
+                                        <ul class="nav nav-tabs" role="tablist">
+                                            <c:forEach var="locale" items="#{termsOfUseBean.getAllLocales()}">
+                                                <li role="presentation" class="#{termsOfUseBean.selectedLanguage == locale.language ? 'active':''}">
+                                                    <h:commandLink value="#{locale}" action="#{termsOfUseBean.setSelectedLanguage(locale.language)}" immediate="false">
+                                                    	<f:ajax render="@form" execute="@form"></f:ajax>
+                                                    </h:commandLink>
+                                                </li>
+                                            </c:forEach>
+                                        </ul>
 
-                                            <div class="tab-content">
-                                                <!-- LOCALIZE TABS -->
-                                                <h:panelGroup rendered="#{cmsBean.selectedLocale != null}">
-                                                    <ui:param name="locale" value="#{cmsBean.selectedLocale}" />
-                                                    <div role="tabpanel" class="tab-pane #{cmsBean.selectedLocale == locale ? 'active':''}" id="#{locale.language}">
-                                                       
-                                                        <!-- EDIT USER TERMS AND CONDITIONS TEXT -->
-                                                        <div class="cms-module__option-group">
-                                                            <div class="cms-module__option-label">
-                                                                <label for="userTermsText">terms:</label>
-                                                            </div>
-                                                            
-                                                            <div class="cms-module__option-control">
-                                                                <h:inputTextarea id="cmsCreatePageContenttypeHtml" styleClass="form-control tinyMCE"
-                                                                    value="stillEmpty" />
-                                                            </div>
-                                                            
-                                                            
+                                        <div class="tab-content">
+                                            <!-- LOCALIZE TABS -->
+                                            <h:panelGroup rendered="#{termsOfUseBean.selectedLanguage != null}">
+                                                <ui:param name="language" value="#{termsOfUseBean.selectedLanguage}" />
+                                                <div role="tabpanel" class="tab-pane active">
+                                                   
+                                                   <div class="cms-module__option-group">
+                                                        <div class="cms-module__option-label">
+                                                            <label for="userTermsTitle">#{msg.title}:</label>
                                                         </div>
+                                                        
+                                                        <div class="cms-module__option-control">
+                                                            <h:inputText id="userTermsTitle" styleClass="form-control"
+                                                                value="#{termsOfUseBean.title}" />
+                                                        </div>
+                                                        
+                                                        
                                                     </div>
-                                                </h:panelGroup>
+                                                   
+                                                    <!-- EDIT USER TERMS AND CONDITIONS TEXT -->
+                                                    <div class="cms-module__option-group">
+                                                        <div class="cms-module__option-label">
+                                                            <label for="userTermsText">#{msg.text}:</label>
+                                                        </div>
+                                                        
+                                                        <div class="cms-module__option-control">
+                                                            <h:inputTextarea id="userTermsText" styleClass="form-control tinyMCE"
+                                                                value="#{termsOfUseBean.description}" />
+                                                        </div>
+                                                        
+                                                    </div>
+                                                </div>
+                                            </h:panelGroup>
 
-                                            </div>
                                         </div>
-                            </div>
+                                    </div>
+	                            </div>
+	                            <div>
+	                            	<h:commandButton class="btn btn--success" value="#{msg.save}" action="#{termsOfUseBean.save()}">
+	                            		<f:ajax render="@form" execute="@form"></f:ajax>
+	                            	</h:commandButton>
+	                            </div>
+	                            
+	                            <h3>#{msg.admin__terms_of_use__manage_functionality}</h3>
+	                            <div>
+	                            	<div>
+	                            		<p>#{msg.admin__terms_of_use__deactivate__description}</p>
+	                            	</div>
+	                            	<div>
+	                            		<h:commandButton class="btn btn--default" value="#{msg.action__deactivate}" action="#{termsOfUseBean.setActive(false)}">
+	                            		</h:commandButton>
+	                            	</div>
+	                            	<div>
+	                            		<p>#{msg.admin__terms_of_use__deactivate__description}</p>
+	                            	</div>
+	                            	<div>
+	                            		<h:commandButton class="btn btn--danger" value="#{msg.reset}" action="#{termsOfUseBean.resetUserAcceptance()}">
+	                            			<f:ajax render="@form"></f:ajax>
+	                            		</h:commandButton>
+	                            	</div>
+	                            </div>
+	                            
+                            </ui:fragment>
+                           
                         </h:form>
+
 
                         <!-- DELETE USER -->
                         <ui:fragment rendered="#{adminBean.currentUser.id != null and !adminBean.currentUser.anonymous}">
