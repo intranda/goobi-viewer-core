@@ -1,0 +1,63 @@
+/* ==============================================================
+   Admin Terms Of Use
+   style declarations for adminUserTerms.xhtml
+   ==============================================================*/
+
+#adminUserTerms {
+	.admin {
+		&__user-terms-language-tabs {
+			z-index: 100;
+			position: relative;
+			.nav-tabs {
+				background: #f2f3f4;
+				border-bottom: none;
+			}
+			.nav-tabs li a {
+			    display: inline-block;
+			    padding: 1rem 1.7rem;
+			    border: 1px solid #f2f3f4;
+			    margin-right: .4rem;
+			    transition: all 0.2s ease;
+				width: 70px;
+				text-align: center;
+				padding: 1rem 0;
+				color: #696969;
+			    &:hover {
+			    	border: 1px solid white;
+			    }
+			}
+			.nav-tabs li.active a {
+		    border: 1px solid #ccc;
+		    background-color: #fff;
+		    border-bottom: 0;
+		    border-bottom: 1px solid @white;
+		    padding-bottom: 1.1rem;
+			margin-bottom: -2px;
+			color: @blue;
+		    }
+		    .nav-tabs li {
+		    border: none;
+		    margin-right: 0;
+    		}
+		}
+	}
+	.tox-tinymce {
+		resize: vertical;
+	}
+	.tab-pane {
+		border: none;
+		padding: 0;
+	}
+}
+
+/* BREAKPOINT FOR LARGE DESKTOPS */
+@media screen and (max-width: @largeBreakpoint) {} 
+
+/* BREAKPOINT FOR DESKTOPS */
+@media screen and (max-width: @mediumBreakpoint) {}
+
+/* BREAKPOINT FOR TABLETS */
+@media screen and (max-width: @smallBreakpoint) {}
+
+/* BREAKPOINT FOR SMARTPHONES */
+@media screen and (max-width: @xSmallBreakpoint) {}
