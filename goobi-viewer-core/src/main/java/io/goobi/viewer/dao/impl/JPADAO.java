@@ -78,6 +78,7 @@ import io.goobi.viewer.model.search.Search;
 import io.goobi.viewer.model.security.License;
 import io.goobi.viewer.model.security.LicenseType;
 import io.goobi.viewer.model.security.Role;
+import io.goobi.viewer.model.security.TermsOfUse;
 import io.goobi.viewer.model.security.user.IpRange;
 import io.goobi.viewer.model.security.user.User;
 import io.goobi.viewer.model.security.user.UserGroup;
@@ -4735,5 +4736,50 @@ public class JPADAO implements IDAO {
                 .distinct()
                 .collect(Collectors.toList());
         return pageList;
+    }
+
+    /* (non-Javadoc)
+     * @see io.goobi.viewer.dao.IDAO#saveTermsOfUse(io.goobi.viewer.model.security.TermsOfUse)
+     */
+    @Override
+    public boolean saveTermsOfUse(TermsOfUse tou) throws DAOException {
+        // TODO Auto-generated method stub
+        return false;
+    }
+
+    /* (non-Javadoc)
+     * @see io.goobi.viewer.dao.IDAO#getTermsOfUse()
+     */
+    @Override
+    public TermsOfUse getTermsOfUse() throws DAOException {
+        preQuery();
+        Query q = em.createQuery("SELECT u FROM TermsOfUse u");
+//         q.setHint("javax.persistence.cache.storeMode", "REFRESH");
+        
+        List results = q.getResultList();
+        if(results.isEmpty()) {
+          //No results. Just return a new object which may be saved later
+            return new TermsOfUse();
+        } else {
+            return (TermsOfUse) results.get(0);
+        }
+    }
+
+    /* (non-Javadoc)
+     * @see io.goobi.viewer.dao.IDAO#isTermsOfUseActive()
+     */
+    @Override
+    public boolean isTermsOfUseActive() throws DAOException {
+        // TODO Auto-generated method stub
+        return false;
+    }
+
+    /* (non-Javadoc)
+     * @see io.goobi.viewer.dao.IDAO#resetUserAgreementsToTermsOfUse()
+     */
+    @Override
+    public boolean resetUserAgreementsToTermsOfUse() throws DAOException {
+        // TODO Auto-generated method stub
+        return false;
     }
 }

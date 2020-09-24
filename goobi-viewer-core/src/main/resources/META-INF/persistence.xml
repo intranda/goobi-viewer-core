@@ -44,6 +44,9 @@
 		<class>io.goobi.viewer.model.security.user.UserGroup</class>
 		<class>io.goobi.viewer.model.security.user.UserRole</class>
 		<class>io.goobi.viewer.model.transkribus.TranskribusJob</class>
+		<class>io.goobi.viewer.model.security.TermsOfUse</class>
+		<class>io.goobi.viewer.model.security.TermsOfUseTranslation</class>
+	
 
 		<properties>
 			<!-- EclipseLink should create the database schema automatically -->
@@ -111,6 +114,9 @@
 		<class>io.goobi.viewer.model.security.user.UserGroup</class>
 		<class>io.goobi.viewer.model.security.user.UserRole</class>
 		<class>io.goobi.viewer.model.transkribus.TranskribusJob</class>
+		<class>io.goobi.viewer.model.security.TermsOfUse</class>
+		<class>io.goobi.viewer.model.security.TermsOfUseTranslation</class>
+		
 		<properties>
 			<property name="javax.persistence.jdbc.driver"
 				value="org.h2.Driver" />

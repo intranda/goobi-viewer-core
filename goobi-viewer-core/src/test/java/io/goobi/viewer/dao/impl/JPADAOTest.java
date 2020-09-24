@@ -67,6 +67,7 @@ import io.goobi.viewer.model.security.IPrivilegeHolder;
 import io.goobi.viewer.model.security.License;
 import io.goobi.viewer.model.security.LicenseType;
 import io.goobi.viewer.model.security.Role;
+import io.goobi.viewer.model.security.TermsOfUse;
 import io.goobi.viewer.model.security.user.IpRange;
 import io.goobi.viewer.model.security.user.User;
 import io.goobi.viewer.model.security.user.UserGroup;
@@ -2686,5 +2687,11 @@ public class JPADAOTest extends AbstractDatabaseEnabledTest {
 
         Assert.assertEquals(expectedFilterString, filterString);
         Assert.assertTrue(params.get("BcC").equals("%BAR%"));
+    }
+    
+    @Test
+    public void testGetTermsOfUse() throws DAOException {
+        TermsOfUse tou = DataManager.getInstance().getDao().getTermsOfUse();
+        Assert.assertNotNull(tou);
     }
 }

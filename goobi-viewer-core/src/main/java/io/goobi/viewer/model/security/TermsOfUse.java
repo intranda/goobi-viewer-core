@@ -21,13 +21,16 @@ import java.util.stream.Stream;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
+import javax.persistence.Entity;
 import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
 import javax.persistence.OneToMany;
+import javax.persistence.Table;
 
 import org.apache.commons.lang3.StringUtils;
-import org.bouncycastle.jcajce.provider.symmetric.DES;
 import org.eclipse.persistence.annotations.PrivateOwned;
-
 
 import io.goobi.viewer.model.misc.Translation;
 
@@ -35,18 +38,27 @@ import io.goobi.viewer.model.misc.Translation;
  * @author florian
  *
  */
+@Entity
+@Table(name = "terms_of_use")
 public class TermsOfUse {
 
     //labels for the translations
     private static final String TITLE_TAG = "label";
     private static final String DESCRIPTION_TAG = "description";
     
+    
+    /** Unique database ID. */
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "terms_of_use_id")
+    protected Long id;
+    
     /**
      * Contains texts and titles
      */
     @OneToMany(mappedBy = "owner", fetch = FetchType.EAGER, cascade = { CascadeType.ALL })
     @PrivateOwned
-    private List<Translation> translations = new ArrayList<>();
+    private List<TermsOfUseTranslation> translations = new ArrayList<>();
     
     @Column(name = "active")
     private boolean active = false;
@@ -65,13 +77,13 @@ public class TermsOfUse {
         return active;
     }
     
-    public Translation getTitle(String language) {
-        Translation translation = getForLanguage(getTitles(), language).findAny().orElse(null);
+    public TermsOfUseTranslation getTitle(String language) {
+        TermsOfUseTranslation translation = getForLanguage(getTitles(), language).findAny().orElse(null);
         return translation;
     }
     
-    public Translation setTitle(String language, String value) {
-        Translation translation = getTitle(language);
+    public TermsOfUseTranslation setTitle(String language, String value) {
+        TermsOfUseTranslation translation = getTitle(language);
         if(translation == null) {
             translation = new TermsOfUseTranslation(language, value);
             translation.setTag(TITLE_TAG);
@@ -82,13 +94,13 @@ public class TermsOfUse {
         return translation;
     }
     
-    public Translation getDescription(String language) {
-        Translation translation = getForLanguage(getDescriptions(), language).findAny().orElse(null);
+    public TermsOfUseTranslation getDescription(String language) {
+        TermsOfUseTranslation translation = getForLanguage(getDescriptions(), language).findAny().orElse(null);
         return translation;
     }
     
-    public Translation setDescription(String language, String value) {
-        Translation translation = getDescription(language);
+    public TermsOfUseTranslation setDescription(String language, String value) {
+        TermsOfUseTranslation translation = getDescription(language);
         if(translation == null) {
             translation = new TermsOfUseTranslation(language, value);
             translation.setTag(DESCRIPTION_TAG);
@@ -99,15 +111,15 @@ public class TermsOfUse {
         return translation;
     }
     
-    private Stream<Translation> getTitles() {
+    private Stream<TermsOfUseTranslation> getTitles() {
         return this.translations.stream().filter(t -> TITLE_TAG.equals(t.getTag()));
     }
     
-    private Stream<Translation> getDescriptions() {
+    private Stream<TermsOfUseTranslation> getDescriptions() {
         return this.translations.stream().filter(t -> DESCRIPTION_TAG.equals(t.getTag()));
     }
 
-    private Stream<Translation> getForLanguage(Stream<Translation> translations, String language) {
+    private Stream<TermsOfUseTranslation> getForLanguage(Stream<TermsOfUseTranslation> translations, String language) {
         if(StringUtils.isBlank(language)) {
             throw new IllegalArgumentException("Must provide non-empty language parameter to filter translations for language");
         }
