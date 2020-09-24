@@ -374,7 +374,7 @@ public class ActiveDocumentBean implements Serializable {
                                     limit != null ? Integer.valueOf(limit) : null);
                 } else if (limit != null) {
                     logger.debug("No session found, unable to lock limited view record {}", topDocument.getPi());
-                    throw new RecordLimitExceededException(lastReceivedIdentifier);
+                    throw new RecordLimitExceededException(lastReceivedIdentifier + ":" + limit);
                 }
             }
 

@@ -69,7 +69,7 @@ public class RecordLockManager {
             if (recordLocks.contains(newLock)) {
                 return;
             }
-            throw new RecordLimitExceededException(pi);
+            throw new RecordLimitExceededException(pi + ":" + limit);
         }
 
         recordLocks.add(newLock);

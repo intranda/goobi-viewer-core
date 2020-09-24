@@ -170,10 +170,22 @@ public class MyExceptionHandler extends ExceptionHandlerWrapper {
             } else if (t instanceof RecordLimitExceededException || isCausedByExceptionType(t, RecordLimitExceededException.class.getName())
                     || (t instanceof PrettyException && t.getMessage().contains(RecordLimitExceededException.class.getSimpleName()))) {
                 try {
-                    String pi = t.getMessage()
+                    String data = t.getMessage()
                             .substring(t.getMessage().indexOf("RecordLimitExceededException: "))
                             .replace("RecordLimitExceededException: ", "");
-                    String msg = ViewerResourceBundle.getTranslation("errRecordLimitExceededMsg", null).replace("{0}", pi);
+                    String pi;
+                    String limit;
+                    String dataSplit[] = data.split(":");
+                    if (dataSplit.length == 2) {
+                        pi = dataSplit[0];
+                        limit = dataSplit[1];
+                    } else {
+                        pi = data;
+                        limit = "???";
+                    }
+                    String msg = ViewerResourceBundle.getTranslation("errRecordLimitExceededMsg", null)
+                            .replace("{0}", pi)
+                            .replace("{1}", limit);
                     flash.put("errorDetails", msg);
                     requestMap.put("errMsg", msg);
                     requestMap.put("errorType", "errRecordLimitExceeded");
