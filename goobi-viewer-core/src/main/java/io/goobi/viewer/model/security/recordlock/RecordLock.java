@@ -13,7 +13,7 @@
  *
  * You should have received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
-package io.goobi.viewer.model.security;
+package io.goobi.viewer.model.security.recordlock;
 
 /**
  * Instance of a limited view record being loaded by a user.

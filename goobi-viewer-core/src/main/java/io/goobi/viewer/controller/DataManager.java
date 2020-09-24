@@ -16,12 +16,9 @@
 package io.goobi.viewer.controller;
 
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -33,12 +30,11 @@ import io.goobi.viewer.dao.impl.JPADAO;
 import io.goobi.viewer.dao.update.DatabaseUpdater;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.ModuleMissingException;
-import io.goobi.viewer.exceptions.RecordLimitExceededException;
 import io.goobi.viewer.model.bookmark.SessionStoreBookmarkManager;
 import io.goobi.viewer.model.crowdsourcing.campaigns.Campaign;
-import io.goobi.viewer.model.security.RecordLock;
 import io.goobi.viewer.model.security.authentication.AuthResponseListener;
 import io.goobi.viewer.model.security.authentication.OpenIdProvider;
+import io.goobi.viewer.model.security.recordlock.RecordLockManager;
 import io.goobi.viewer.modules.IModule;
 import io.goobi.viewer.modules.interfaces.DefaultURLBuilder;
 import io.goobi.viewer.modules.interfaces.IURLBuilder;
@@ -60,8 +56,7 @@ public final class DataManager {
 
     private final Map<String, Map<String, String>> sessionMap = new LinkedHashMap<>();
 
-    /** Currently viewed records */
-    private final Map<String, Set<RecordLock>> loadedRecordMap = new HashMap<>();
+    private final RecordLockManager recordLockManager = new RecordLockManager();
 
     private Configuration configuration;
 
@@ -229,140 +224,6 @@ public final class DataManager {
      */
     public Map<String, Map<String, String>> getSessionMap() {
         return sessionMap;
-    }
-
-    /**
-     * @return the loadedRecordMap
-     */
-    Map<String, Set<RecordLock>> getLoadedRecordMap() {
-        return loadedRecordMap;
-    }
-
-    /**
-     * 
-     * @param pi
-     * @param sessionId HTTP session ID
-     * @param limit
-     * @throws RecordLimitExceededException
-     * @should add record lock to map correctly
-     * @should do nothing if limit null
-     * @should do nothing if session id already in list
-     * @should throw RecordLimitExceededException if limit exceeded
-     */
-    public synchronized void lockRecord(String pi, String sessionId, Integer limit) throws RecordLimitExceededException {
-        if (pi == null) {
-            throw new IllegalArgumentException("pi may not be null");
-        }
-        if (sessionId == null) {
-            logger.warn("No sessionId given");
-            return;
-        }
-        // Record has unlimited views
-        if (limit == null) {
-            return;
-        }
-        Set<RecordLock> recordLocks = loadedRecordMap.get(pi);
-        if (recordLocks == null) {
-            recordLocks = new HashSet<>(limit);
-            loadedRecordMap.put(pi, recordLocks);
-        }
-        RecordLock newLock = new RecordLock(pi, sessionId);
-        if (recordLocks.size() == limit) {
-            if (recordLocks.contains(newLock)) {
-                return;
-            }
-            throw new RecordLimitExceededException(pi);
-        }
-
-        recordLocks.add(newLock);
-    }
-
-    /**
-     * 
-     * @param pi
-     * @param sessionId
-     * @return true if session id removed from list successfully; false otherwise
-     * @should return number of records if session id removed successfully
-     */
-    public synchronized int removeLocksForSessionId(String sessionId) {
-        if (sessionId == null) {
-            throw new IllegalArgumentException("sessionId may not be null");
-        }
-
-        int count = 0;
-        for (String pi : loadedRecordMap.keySet()) {
-            if (removeLockForPiAndSessionId(pi, sessionId)) {
-                count++;
-            }
-        }
-
-        return count;
-    }
-
-    /**
-     * 
-     * @param pi
-     * @param sessionId
-     * @return
-     */
-    public synchronized boolean removeLockForPiAndSessionId(String pi, String sessionId) {
-        RecordLock lock = new RecordLock(pi, sessionId);
-        Set<RecordLock> recordLocks = loadedRecordMap.get(pi);
-        if (recordLocks == null) {
-            return false;
-        }
-
-        boolean ret = false;
-        if (recordLocks.contains(lock)) {
-            recordLocks.remove(lock);
-            ret = true;
-        }
-
-        return ret;
-    }
-
-    /**
-     * Removes all record locks that are older that <code>maxAge</code> milliseconds. Can be used to periodically clean up locks that might have been
-     * missed by the web socket mechanism.
-     * 
-     * @param maxAge
-     * @return
-     * @should remove locks older than maxAge
-     */
-    public synchronized int removeOldLocks(long maxAge) {
-        if (loadedRecordMap.isEmpty()) {
-            return 0;
-        }
-
-        long now = System.currentTimeMillis();
-        int count = 0;
-        Set<String> emptyPIs = new HashSet<>(loadedRecordMap.size());
-        for (String pi : loadedRecordMap.keySet()) {
-            if (loadedRecordMap.get(pi) == null) {
-                continue;
-            }
-            Set<RecordLock> toRemove = new HashSet<>();
-            for (RecordLock lock : loadedRecordMap.get(pi)) {
-                if (now - lock.getTimeCreated() > maxAge) {
-                    toRemove.add(lock);
-                }
-            }
-            if (!toRemove.isEmpty() && loadedRecordMap.get(pi).removeAll(toRemove)) {
-                count += toRemove.size();
-            }
-            if (loadedRecordMap.get(pi).isEmpty()) {
-                emptyPIs.add(pi);
-            }
-        }
-
-        // Remove empty entries
-        if (!emptyPIs.isEmpty()) {
-            for (String pi : emptyPIs) {
-                loadedRecordMap.remove(pi);
-            }
-        }
-
-        return count;
     }
 
     /**
@@ -578,4 +439,10 @@ public final class DataManager {
         this.restApiManager = restApiManager;
     }
 
+    /**
+     * @return the recordLockManager
+     */
+    public RecordLockManager getRecordLockManager() {
+        return recordLockManager;
+    }
 }

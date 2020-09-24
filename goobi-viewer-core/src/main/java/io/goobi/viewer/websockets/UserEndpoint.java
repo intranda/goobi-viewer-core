@@ -110,7 +110,7 @@ public class UserEndpoint {
             @Override
             public void run() {
                 if (sessionClearTimers.containsKey(sessionId)) {
-                    int count = DataManager.getInstance().removeLocksForSessionId(sessionId);
+                    int count = DataManager.getInstance().getRecordLockManager().removeLocksForSessionId(sessionId);
                     logger.trace("Removed {} record locks for session '{}'.", count, sessionId);
                     sessionClearTimers.remove(sessionId);
                 } else {

@@ -220,7 +220,7 @@ public class ActiveDocumentBean implements Serializable {
             }
 
             // Remove record lock for this record and session
-            DataManager.getInstance().removeLockForPiAndSessionId(pi, BeanUtils.getSession().getId());
+            DataManager.getInstance().getRecordLockManager().removeLockForPiAndSessionId(pi, BeanUtils.getSession().getId());
         }
     }
 
@@ -358,8 +358,9 @@ public class ActiveDocumentBean implements Serializable {
                 viewManager.setToc(createTOC());
 
                 HttpSession session = BeanUtils.getSession();
+                // TODO release any locks on other records for this session
                 String limit = viewManager.getTopDocument().getMetadataValue(SolrConstants.ACCESSCONDITION_CONCURRENTUSE);
-                DataManager.getInstance()
+                DataManager.getInstance().getRecordLockManager()
                         .lockRecord(viewManager.getPi(), session != null ? session.getId() : null,
                                 limit != null ? Integer.valueOf(limit) : null);
             }
