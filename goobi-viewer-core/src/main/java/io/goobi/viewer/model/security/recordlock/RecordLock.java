@@ -98,4 +98,8 @@ public class RecordLock {
         return timeCreated;
     }
 
+    @Override
+    public String toString() {
+        return pi + "/" + sessionId;
+    }
 }

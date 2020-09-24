@@ -1,14 +1,17 @@
 package io.goobi.viewer.model.security.recordlock;
 
+import java.util.Collections;
+import java.util.List;
 import java.util.Set;
 
 import org.junit.Assert;
 import org.junit.Test;
 
+import io.goobi.viewer.AbstractTest;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.exceptions.RecordLimitExceededException;
 
-public class RecordLockManagerTest {
+public class RecordLockManagerTest extends AbstractTest {
 
     /**
      * @see RecordLockManager#lockRecord(String,String,Integer)
@@ -72,7 +75,18 @@ public class RecordLockManagerTest {
     @Test
     public void removeLocksForSessionId_shouldReturnNumberOfRecordsIfSessionIdRemovedSuccessfully() throws Exception {
         DataManager.getInstance().getRecordLockManager().lockRecord("PPN123", "SID123", 2);
-        Assert.assertEquals(1, DataManager.getInstance().getRecordLockManager().removeLocksForSessionId("SID123"));
+        Assert.assertEquals(1, DataManager.getInstance().getRecordLockManager().removeLocksForSessionId("SID123", null));
+    }
+
+    /**
+     * @see RecordLockManager#removeLocksForSessionId(String,List)
+     * @verifies skip pi in list
+     */
+    @Test
+    public void removeLocksForSessionId_shouldSkipPiInList() throws Exception {
+        DataManager.getInstance().getRecordLockManager().lockRecord("PPN123", "SID123", 2);
+        Assert.assertEquals(0,
+                DataManager.getInstance().getRecordLockManager().removeLocksForSessionId("SID123", Collections.singletonList("PPN123")));
     }
 
     /**

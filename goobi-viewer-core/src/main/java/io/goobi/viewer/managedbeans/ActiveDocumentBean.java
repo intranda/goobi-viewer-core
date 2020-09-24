@@ -199,7 +199,8 @@ public class ActiveDocumentBean implements Serializable {
 
     /**
      * TODO This can cause NPEs if called while update() is running.
-     * @throws IndexUnreachableException 
+     * 
+     * @throws IndexUnreachableException
      */
     public void reset() throws IndexUnreachableException {
         synchronized (this) {
@@ -357,12 +358,24 @@ public class ActiveDocumentBean implements Serializable {
 
                 viewManager.setToc(createTOC());
 
+                // Lock limited view records
                 HttpSession session = BeanUtils.getSession();
-                // TODO release any locks on other records for this session
                 String limit = viewManager.getTopDocument().getMetadataValue(SolrConstants.ACCESSCONDITION_CONCURRENTUSE);
-                DataManager.getInstance().getRecordLockManager()
-                        .lockRecord(viewManager.getPi(), session != null ? session.getId() : null,
-                                limit != null ? Integer.valueOf(limit) : null);
+                if (session != null) {
+                    // Release all locks for this session except the current record
+                    DataManager.getInstance()
+                            .getRecordLockManager()
+                            .removeLocksForSessionId(session.getId(),
+                                    Collections.singletonList(viewManager.getPi()));
+                    // Add lock for current record, if limit set
+                    DataManager.getInstance()
+                            .getRecordLockManager()
+                            .lockRecord(viewManager.getPi(), session.getId(),
+                                    limit != null ? Integer.valueOf(limit) : null);
+                } else if (limit != null) {
+                    logger.debug("No session found, unable to lock limited view record {}", topDocument.getPi());
+                    throw new RecordLimitExceededException(lastReceivedIdentifier);
+                }
             }
 
             // If LOGID is set, update the current element

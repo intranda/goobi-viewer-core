@@ -41,13 +41,11 @@ public class UserEndpoint {
 
     private static Map<String, Timer> sessionClearTimers = new ConcurrentHashMap<>();
 
-    private Session session;
     private HttpSession httpSession;
 
     @OnOpen
     public void onOpen(Session session, EndpointConfig config) {
         logger.trace("onOpen: {}", session.getId());
-        this.session = session;
         this.httpSession = (HttpSession) config.getUserProperties().get(HttpSession.class.getName());
         if (httpSession != null) {
             logger.trace("HTTP session ID: {}", httpSession.getId());
@@ -57,7 +55,7 @@ public class UserEndpoint {
 
     @OnMessage
     public void onMessage(String message) {
-        logger.trace("onMessage from {}: {}", session.getId(), message);
+        // logger.trace("onMessage from {}: {}", session.getId(), message);
         if (httpSession != null) {
             cancelClearTimer(httpSession.getId());
         }
@@ -110,7 +108,7 @@ public class UserEndpoint {
             @Override
             public void run() {
                 if (sessionClearTimers.containsKey(sessionId)) {
-                    int count = DataManager.getInstance().getRecordLockManager().removeLocksForSessionId(sessionId);
+                    int count = DataManager.getInstance().getRecordLockManager().removeLocksForSessionId(sessionId, null);
                     logger.trace("Removed {} record locks for session '{}'.", count, sessionId);
                     sessionClearTimers.remove(sessionId);
                 } else {

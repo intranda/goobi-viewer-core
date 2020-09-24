@@ -15,10 +15,11 @@
  */
 package io.goobi.viewer.model.security.recordlock;
 
-import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -31,13 +32,13 @@ public class RecordLockManager {
     private static final Logger logger = LoggerFactory.getLogger(RecordLockManager.class);
 
     /** Currently viewed records */
-    private final Map<String, Set<RecordLock>> loadedRecordMap = new HashMap<>();
+    private final Map<String, Set<RecordLock>> loadedRecordMap = new ConcurrentHashMap<>();
 
     /**
      * 
-     * @param pi
+     * @param pi Record identifier
      * @param sessionId HTTP session ID
-     * @param limit
+     * @param limit Optional number of concurrent views for the record
      * @throws RecordLimitExceededException
      * @should add record lock to map correctly
      * @should do nothing if limit null
@@ -45,6 +46,7 @@ public class RecordLockManager {
      * @should throw RecordLimitExceededException if limit exceeded
      */
     public synchronized void lockRecord(String pi, String sessionId, Integer limit) throws RecordLimitExceededException {
+        logger.trace("lockRecord: {}", pi);
         if (pi == null) {
             throw new IllegalArgumentException("pi may not be null");
         }
@@ -62,6 +64,7 @@ public class RecordLockManager {
             loadedRecordMap.put(pi, recordLocks);
         }
         RecordLock newLock = new RecordLock(pi, sessionId);
+        logger.trace("{} is currently locked {} times", pi, recordLocks.size());
         if (recordLocks.size() == limit) {
             if (recordLocks.contains(newLock)) {
                 return;
@@ -70,22 +73,27 @@ public class RecordLockManager {
         }
 
         recordLocks.add(newLock);
+        logger.trace("Added lock: {}", newLock);
     }
 
     /**
      * 
-     * @param pi
-     * @param sessionId
+     * @param sessionId HTTP session ID
+     * @param skipPiList Optional list of identifiers to skip
      * @return true if session id removed from list successfully; false otherwise
      * @should return number of records if session id removed successfully
+     * @should skip pi in list
      */
-    public synchronized int removeLocksForSessionId(String sessionId) {
+    public synchronized int removeLocksForSessionId(String sessionId, List<String> skipPiList) {
         if (sessionId == null) {
             throw new IllegalArgumentException("sessionId may not be null");
         }
 
         int count = 0;
         for (String pi : loadedRecordMap.keySet()) {
+            if (skipPiList != null && skipPiList.contains(pi)) {
+                continue;
+            }
             if (removeLockForPiAndSessionId(pi, sessionId)) {
                 count++;
             }
@@ -111,17 +119,10 @@ public class RecordLockManager {
         if (recordLocks.contains(lock)) {
             recordLocks.remove(lock);
             ret = true;
-            logger.trace("Removed record lock: {}", lock.getPi() + " - " + lock.getSessionId());
+            logger.trace("Removed record lock: {}", lock);
         }
 
         return ret;
-    }
-
-    /**
-     * @return the loadedRecordMap
-     */
-    Map<String, Set<RecordLock>> getLoadedRecordMap() {
-        return loadedRecordMap;
     }
 
     /**
@@ -168,4 +169,10 @@ public class RecordLockManager {
         return count;
     }
 
+    /**
+     * @return the loadedRecordMap
+     */
+    Map<String, Set<RecordLock>> getLoadedRecordMap() {
+        return loadedRecordMap;
+    }
 }
