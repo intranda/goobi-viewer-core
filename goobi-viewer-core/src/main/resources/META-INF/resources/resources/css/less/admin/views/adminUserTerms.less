@@ -11,34 +11,62 @@
 			.nav-tabs {
 				background: #f2f3f4;
 				border-bottom: none;
-			}
-			.nav-tabs li a {
+				}
+		}
+		&__user-terms-language-tab {	
+			border: none;
+			margin-right: 0;
+			a {
 			    display: inline-block;
 			    padding: 1rem 1.7rem;
 			    border: 1px solid #f2f3f4;
-			    margin-right: .4rem;
+			    margin-right: .3rem;
 			    transition: all 0.2s ease;
 				width: 70px;
 				text-align: center;
 				padding: 1rem 0;
 				color: #696969;
-			    &:hover {
-			    	border: 1px solid white;
-			    }
+				text-transform: uppercase;
+				&:hover {
+					border: 1px solid white;
+				}
 			}
-			.nav-tabs li.active a {
-		    border: 1px solid #ccc;
-		    background-color: #fff;
-		    border-bottom: 0;
-		    border-bottom: 1px solid @white;
-		    padding-bottom: 1.1rem;
-			margin-bottom: -2px;
-			color: @blue;
-		    }
-		    .nav-tabs li {
-		    border: none;
-		    margin-right: 0;
-    		}
+			&:first-child {
+				a {
+		    		background: #9cb5d5;
+		    		color: @white;
+		    		margin-right: 1.8rem;
+		    		border-bottom-color: #9cb5d5;
+			    	&:hover {
+		    			background: @blue;
+		    			border-bottom-color: @blue;
+			    	}
+			    }
+		    	&.active a {
+		    		background: @blue;
+		    		color: @white;
+		    		border-bottom-color: @blue;
+		    	}
+			}
+			&.active a {
+				    border: 1px solid #ccc;
+				    background-color: #fff;
+				    border-bottom: 0;
+				    border-bottom: 1px solid @white;
+				    padding-bottom: 1.1rem;
+					margin-bottom: -2px;
+					color: @blue;
+		    	}
+			&.-alreadyTranslated {
+				a {
+					background: #caf7c1;
+					border-color: #caf7c1;
+					&:hover {
+						border-color: @white;
+						background: @white;
+					}
+				}
+			}
 		}
 	}
 	.tox-tinymce {

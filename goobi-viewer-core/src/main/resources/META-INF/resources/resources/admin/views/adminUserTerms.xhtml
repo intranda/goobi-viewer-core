@@ -52,7 +52,7 @@
 									<c:forEach var="locale"
 										items="#{termsOfUseBean.getAllLocales()}">
 										<li role="presentation"
-											class="#{termsOfUseBean.selectedLanguage == locale.language ? 'active':''}">
+											class="admin__user-terms-language-tab #{termsOfUseBean.selectedLanguage == locale.language ? 'active':''}">
 											<h:commandLink value="#{locale}"
 												action="#{termsOfUseBean.setSelectedLanguage(locale.language)}"
 												immediate="false">
@@ -60,6 +60,17 @@
 											</h:commandLink>
 										</li>
 									</c:forEach>
+								
+									<!-- DEMONSTRATION PURPOSE - TO DELETE -->
+										<li role="presentation"
+											class="admin__user-terms-language-tab -alreadyTranslated #{termsOfUseBean.selectedLanguage == locale.language ? 'active':''}">
+											<h:commandLink value="XY"
+												action="#{termsOfUseBean.setSelectedLanguage(locale.language)}"
+												immediate="false">
+												<f:ajax render="@form" execute="@form"></f:ajax>
+											</h:commandLink>
+										</li>		
+									
 								</ul>
 							</div>
 
@@ -101,7 +112,7 @@
 							<div class="row no-gutters justify-content-end admin__final-actions">
 								<h:commandButton class="btn btn--success" value="#{msg.save}"
 									action="#{termsOfUseBean.save()}">
-									<f:ajax render="@form" execute="@form"></f:ajax>
+									<f:ajax render="@form :messages" execute="@form"></f:ajax>
 								</h:commandButton>
 							</div>
 
@@ -120,7 +131,7 @@
 								<div class="text-left mb-2">
 									<h:commandButton class="btn btn--danger" value="#{msg.reset}"
 										action="#{termsOfUseBean.resetUserAcceptance()}">
-										<f:ajax render="@form"></f:ajax>
+										<f:ajax render="@form :messages"></f:ajax>
 									</h:commandButton>
 								</div>
 							</div>
