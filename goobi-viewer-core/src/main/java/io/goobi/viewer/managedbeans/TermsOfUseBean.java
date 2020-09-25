@@ -45,6 +45,8 @@ import io.goobi.viewer.model.security.TermsOfUse;
 @ViewScoped
 public class TermsOfUseBean implements Serializable {
 
+    private static final long serialVersionUID = -3105025774455196485L;
+
     private static final Logger logger = LoggerFactory.getLogger(TermsOfUseBean.class);
     
     private TermsOfUse termsOfUse;
@@ -64,7 +66,7 @@ public class TermsOfUseBean implements Serializable {
         }
         return translation.getValue();
     }
-    
+        
     public void setTitle(String value)  {
         this.termsOfUse.setTitle(selectedLanguage, value);
     }
