@@ -1065,4 +1065,31 @@ public class AccessConditionUtils {
 
         return 100;
     }
+
+    /**
+     * 
+     * @param accessConditions
+     * @return true if any license type for the given list of access conditions has concurrent views limit enabled; false otherwise
+     * @throws DAOException
+     * @should return false if access conditions null or empty
+     * @should return true if any license type has limit enabled
+     */
+    public static boolean isConcurrentViewsLimitEnabledForAnyAccessCondition(List<String> accessConditions) throws DAOException {
+        if (accessConditions == null || accessConditions.isEmpty()) {
+            return false;
+        }
+
+        List<LicenseType> licenseTypes = DataManager.getInstance().getDao().getLicenseTypes(accessConditions);
+        if (licenseTypes.isEmpty()) {
+            return false;
+        }
+
+        for (LicenseType licenseType : licenseTypes) {
+            if (licenseType.isConcurrentViewsLimit()) {
+                return true;
+            }
+        }
+
+        return false;
+    }
 }

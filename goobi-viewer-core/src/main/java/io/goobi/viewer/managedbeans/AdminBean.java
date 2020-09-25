@@ -790,6 +790,18 @@ public class AdminBean implements Serializable {
      * @throws IndexUnreachableException
      * @throws PresentationException
      */
+    public long getConcurrentViewsLimitRecordCountForLicenseType(String licenseTypeName) throws IndexUnreachableException, PresentationException {
+        return DataManager.getInstance().getSearchIndex().getHitCount("+" + SolrConstants.ACCESSCONDITION + ":\"" + licenseTypeName 
+        + "\" +" + SolrConstants.ISWORK + ":true +" + SolrConstants.ACCESSCONDITION_CONCURRENTUSE + ":*");
+    }
+    
+    /**
+     * 
+     * @param licenseTypeName
+     * @return
+     * @throws IndexUnreachableException
+     * @throws PresentationException
+     */
     public long getPdfQuotaRecordCountForLicenseType(String licenseTypeName) throws IndexUnreachableException, PresentationException {
         return DataManager.getInstance().getSearchIndex().getHitCount("+" + SolrConstants.ACCESSCONDITION + ":\"" + licenseTypeName 
         + "\" +" + SolrConstants.ISWORK + ":true +" + SolrConstants.ACCESSCONDITION_PDF_PERCENTAGE_QUOTA + ":*");

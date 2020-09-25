@@ -358,23 +358,26 @@ public class ActiveDocumentBean implements Serializable {
 
                 viewManager.setToc(createTOC());
 
-                // Lock limited view records
                 HttpSession session = BeanUtils.getSession();
-                String limit = viewManager.getTopDocument().getMetadataValue(SolrConstants.ACCESSCONDITION_CONCURRENTUSE);
+                // Release all locks for this session except the current record
                 if (session != null) {
-                    // Release all locks for this session except the current record
                     DataManager.getInstance()
                             .getRecordLockManager()
                             .removeLocksForSessionId(session.getId(),
                                     Collections.singletonList(viewManager.getPi()));
-                    // Add lock for current record, if limit set
-                    DataManager.getInstance()
-                            .getRecordLockManager()
-                            .lockRecord(viewManager.getPi(), session.getId(),
-                                    limit != null ? Integer.valueOf(limit) : null);
-                } else if (limit != null) {
-                    logger.debug("No session found, unable to lock limited view record {}", topDocument.getPi());
-                    throw new RecordLimitExceededException(lastReceivedIdentifier + ":" + limit);
+                }
+                String limit = viewManager.getTopDocument().getMetadataValue(SolrConstants.ACCESSCONDITION_CONCURRENTUSE);
+                // Lock limited view records, if limit exists and record has a license type that has this feature enabled
+                if (limit != null && AccessConditionUtils.isConcurrentViewsLimitEnabledForAnyAccessCondition(
+                        viewManager.getTopDocument().getMetadataValues(SolrConstants.ACCESSCONDITION))) {
+                    if (session != null) {
+                        DataManager.getInstance()
+                                .getRecordLockManager()
+                                .lockRecord(viewManager.getPi(), session.getId(), Integer.valueOf(limit));
+                    } else {
+                        logger.debug("No session found, unable to lock limited view record {}", topDocument.getPi());
+                        throw new RecordLimitExceededException(lastReceivedIdentifier + ":" + limit);
+                    }
                 }
             }
 
@@ -478,6 +481,7 @@ public class ActiveDocumentBean implements Serializable {
                 }
             }
         }
+
     }
 
     /**

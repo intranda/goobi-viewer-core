@@ -109,6 +109,9 @@ public class RecordLockManager {
      * @return
      */
     public synchronized boolean removeLockForPiAndSessionId(String pi, String sessionId) {
+        if (pi == null || sessionId == null) {
+            return false;
+        }
         Set<RecordLock> recordLocks = loadedRecordMap.get(pi);
         if (recordLocks == null) {
             return false;
