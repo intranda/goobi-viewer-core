@@ -11,8 +11,8 @@
     <ui:fragment rendered="#{userBean.mustAgreeToTermsOfUse()}">
 
 			<!-- Modal -->
-			<div class="modal user-terms-modal" id="userTermsModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
-			  <div class="modal-dialog" role="document">
+			<div class="modal modal__user-terms" id="userTermsModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+			  <div class="modal-dialog modal-dialog-centered" role="document">
 			    <div class="modal-content">
 			      <div class="modal-header">
 			        <h2 class="modal-title" id="exampleModalLongTitle">#{termsOfUseBean.title}</h2>
@@ -21,11 +21,9 @@
 <!-- 			        </button> -->
 			      </div>
 			      <div class="modal-body">
-					
-					<p>
+					<div class="modal__user-terms-text">
 	                    <h:outputText value="#{termsOfUseBean.description}" escape="false" />
-	                </p>
-
+	                </div>
 			  <h:form id="termsForm" styleClass="form-horizontal" prependId="false">
 			  <div id="terms" class="terms-modal">              
 
@@ -33,27 +31,51 @@
               </div>
               
                 <!-- ACTION -->
-				<div class="form-group form-row">
-					<div class="col-sm-12 d-flex justify-content-end">
-                        <h:commandButton styleClass="btn btn--danger decline" value="#{msg.reject}" action="#{userBean.rejectTermsOfUse()}"/>
-                        <h:commandButton  styleClass="btn btn--success accept" value="#{msg.agree}" action="#{userBean.agreeToTermsOfUse()}">
-                        	<f:ajax execute="@this"/>
-                        	<f:passThroughAttribute name="data-dismiss" value="modal"></f:passThroughAttribute>
-                        </h:commandButton>
+				<div class="modal__user-terms-actions">
+					<div class="form-group form-row modal__user-terms-first-click">
+						<div class="col-sm-12 d-flex justify-content-end">
+						    <button class="btn btn--danger mr-3 modal__user-terms-decline">#{msg.reject}</button>
+	                        <h:commandButton styleClass="btn btn--success accept" value="#{msg.agree}" action="#{userBean.agreeToTermsOfUse()}">
+	                        	<f:ajax execute="@this"/>
+	                        	<f:passThroughAttribute name="data-dismiss" value="modal"></f:passThroughAttribute>
+	                        </h:commandButton>
+						</div>
+					</div>
+					<div class="modal__user-terms-second-click">
+						<p>#{msg.AreYouSureAboutDelete}</p>
+						<button class="btn btn--default mr-3 modal__user-terms-back-button">#{msg.Nope}</button>
+						<h:commandButton styleClass="btn btn--danger mr-2 decline" value="#{msg.iAmSure}" action="#{userBean.rejectTermsOfUse()}"/>
 					</div>
 				</div>
-				
+
 			</h:form>
 
 			      </div>
 			    </div>
 			  </div>
 			</div>
-
 	<script>
-		$("#userTermsModal").modal({backdrop:"static", keyboard:false}).modal("show");
+	    $(window).on('load',function(){
+	        $('#userTermsModal').modal({
+	        	backdrop:"static",
+	        	keyboard:false}).modal("show");
+	    });
+	    $('.modal__user-terms-decline').click(
+	    		 function(event) {
+	    	event.preventDefault();
+	    	$('.modal__user-terms-first-click, .modal__user-terms-text').hide();
+	    	$('.modal__user-terms-second-click').fadeIn('fast');
+	    		  }
+	    );
+	    $('.modal__user-terms-back-button').click(
+	    		 function(event) {
+	    	event.preventDefault();
+	    	$('.modal__user-terms-first-click, .modal__user-terms-text').fadeIn('fast');
+	    	$('.modal__user-terms-second-click').hide();
+	    		  }
+	    );
+	    
 	</script>
-	
 </ui:fragment>
 
 	</composite:implementation>
