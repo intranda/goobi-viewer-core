@@ -838,8 +838,8 @@ public class BrowseBean implements Serializable {
         if (StringUtils.isBlank(getTargetCollection())) {
             return null;
         }
-        String url = SearchHelper.getFirstWorkUrlWithFieldValue(SolrConstants.DC, getTargetCollection(), true, true,
-                DataManager.getInstance().getConfiguration().getCollectionSplittingChar(SolrConstants.DC), BeanUtils.getLocale());
+        String url = SearchHelper.getFirstWorkUrlWithFieldValue(getCollectionField(), getTargetCollection(), true, true,
+                DataManager.getInstance().getConfiguration().getCollectionSplittingChar(getCollectionField()), BeanUtils.getLocale());
         //        url = BeanUtils.getServletPathWithHostAsUrlFromJsfContext() + url;
         //        return url;
         try {

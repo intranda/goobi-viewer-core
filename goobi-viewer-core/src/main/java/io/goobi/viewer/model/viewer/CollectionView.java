@@ -956,6 +956,8 @@ public class CollectionView {
             
             String url = new StringBuilder(BeanUtils.getServletPathWithHostAsUrlFromJsfContext())
             .append("/browse/")
+            .append(field)
+            .append("/")
             .append(collection.getLuceneName())
             .append("/record/").toString();
             return url;
