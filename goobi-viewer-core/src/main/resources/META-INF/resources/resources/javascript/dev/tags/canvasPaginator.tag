@@ -24,6 +24,9 @@
 				<i class="fa fa-angle-right" aria-hidden="true"></i>
 			</span>
 		</li>
+<!-- 		<li > -->
+<!-- 			<input placeholder="Enter page number" onchange="{this.toPageNumber}" data-input='number'></input> -->
+<!-- 		</li> -->
 	</ul>
 
 </nav>
@@ -116,6 +119,16 @@ lastCanvases() {
         return this.opts.item.canvases.slice(this.getTotalImageCount()-2);
     } else {
         return this.opts.item.canvases.slice(this.getCurrentIndex()-2);
+    }
+}
+
+toPageNumber(e) {
+    console.log("Change in ", e.target, e.target.value);
+    let page = parseInt(e.target.value);
+    if(page > 0 && page <= this.getTotalImageCount()) {        
+    	this.load(page-1);
+    } else{
+        alert(page + " is not a valid page number")
     }
 }
 

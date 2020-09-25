@@ -130,6 +130,7 @@
 								<p>#{msg.admin__terms_of_use__reset__description}</p>
 								<div class="text-left mb-2">
 									<h:commandButton class="btn btn--danger" value="#{msg.reset}"
+									    onclick="if ( !confirm( &quot;#{msg.admin__terms_of_use__reset__confirm}&quot; ) ) { return false };"
 										action="#{termsOfUseBean.resetUserAcceptance()}">
 										<f:ajax render="@form :messages"></f:ajax>
 									</h:commandButton>
