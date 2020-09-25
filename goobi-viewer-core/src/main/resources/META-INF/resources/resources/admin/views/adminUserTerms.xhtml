@@ -101,7 +101,7 @@
 							<div class="row no-gutters justify-content-end admin__final-actions">
 								<h:commandButton class="btn btn--success" value="#{msg.save}"
 									action="#{termsOfUseBean.save()}">
-									<f:ajax render="@form" execute="@form"></f:ajax>
+									<f:ajax render="@form :messages" execute="@form"></f:ajax>
 								</h:commandButton>
 							</div>
 
@@ -119,8 +119,9 @@
 								<p>#{msg.admin__terms_of_use__reset__description}</p>
 								<div class="text-left mb-2">
 									<h:commandButton class="btn btn--danger" value="#{msg.reset}"
+									    onclick="if ( !confirm( &quot;#{msg.admin__terms_of_use__reset__confirm}&quot; ) ) { return false };"
 										action="#{termsOfUseBean.resetUserAcceptance()}">
-										<f:ajax render="@form"></f:ajax>
+										<f:ajax render="@form :messages"></f:ajax>
 									</h:commandButton>
 								</div>
 							</div>

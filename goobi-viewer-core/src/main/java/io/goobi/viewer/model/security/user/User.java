@@ -154,6 +154,9 @@ public class User implements ILicensee, HttpSessionBindingListener, Serializable
     @Column(name = "use_gravatar")
     private boolean useGravatar = false;
 
+    @Column(name = "agreed_to_terms_of_use")
+    private boolean agreedToTermsOfUse = false;
+    
 //    @Column(name = "dummy")
 //    private boolean dummy = false;
 
@@ -1753,5 +1756,19 @@ public class User implements ILicensee, HttpSessionBindingListener, Serializable
      */
     public static void main(String[] args) {
         System.out.println(BCrypt.hashpw("halbgeviertstrich", BCrypt.gensalt()));
+    }
+    
+    /**
+     * @param agreedToTermsOfUse the agreedToTermsOfUse to set
+     */
+    public void setAgreedToTermsOfUse(boolean agreedToTermsOfUse) {
+        this.agreedToTermsOfUse = agreedToTermsOfUse;
+    }
+    
+    /**
+     * @return the agreedToTermsOfUse
+     */
+    public boolean isAgreedToTermsOfUse() {
+        return agreedToTermsOfUse;
     }
 }

@@ -4743,8 +4743,24 @@ public class JPADAO implements IDAO {
      */
     @Override
     public boolean saveTermsOfUse(TermsOfUse tou) throws DAOException {
-        // TODO Auto-generated method stub
-        return false;
+        preQuery();
+        EntityManager em = factory.createEntityManager();
+        try {
+            em.getTransaction().begin();
+            if(tou.getId() == null) {
+                //create initial tou
+                em.persist(tou);
+            } else {                
+                em.merge(tou);
+            }
+            em.getTransaction().commit();
+            
+            tou = this.em.getReference(TermsOfUse.class, tou.getId());
+            this.em.refresh(tou);
+        } finally {
+            em.close();
+        }
+        return true;
     }
 
     /* (non-Javadoc)
@@ -4770,8 +4786,15 @@ public class JPADAO implements IDAO {
      */
     @Override
     public boolean isTermsOfUseActive() throws DAOException {
-        // TODO Auto-generated method stub
-        return false;
+        preQuery();
+        Query q = em.createQuery("SELECT u.active FROM TermsOfUse u");
+        List results = q.getResultList();
+        if(results.isEmpty()) {
+            //If no terms of use object exists, it is inactive
+            return false;
+        } else {
+            return (boolean) results.get(0);
+        }
     }
 
     /* (non-Javadoc)
@@ -4779,7 +4802,15 @@ public class JPADAO implements IDAO {
      */
     @Override
     public boolean resetUserAgreementsToTermsOfUse() throws DAOException {
-        // TODO Auto-generated method stub
-        return false;
+        List<User> users = getAllUsers(true);
+        users.forEach(u -> u.setAgreedToTermsOfUse(false));
+        users.forEach(u -> {
+            try {
+                updateUser(u);
+            } catch (DAOException e) {
+                logger.error("Error resetting user agreement for user " + u, e);
+            }
+        });
+        return true;
     }
 }

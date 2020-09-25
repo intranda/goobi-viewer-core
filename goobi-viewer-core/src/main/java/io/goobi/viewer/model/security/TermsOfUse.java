@@ -16,6 +16,7 @@
 package io.goobi.viewer.model.security;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.stream.Stream;
 
@@ -31,8 +32,6 @@ import javax.persistence.Table;
 
 import org.apache.commons.lang3.StringUtils;
 import org.eclipse.persistence.annotations.PrivateOwned;
-
-import io.goobi.viewer.model.misc.Translation;
 
 /**
  * @author florian
@@ -63,6 +62,19 @@ public class TermsOfUse {
     @Column(name = "active")
     private boolean active = false;
     
+    public TermsOfUse() {
+        
+    }
+    
+    public TermsOfUse(TermsOfUse orig) {
+        this.active = orig.active;
+        this.id = orig.id;
+        for(TermsOfUseTranslation translation : orig.translations) {
+            TermsOfUseTranslation copy = new TermsOfUseTranslation(translation);
+            this.translations.add(copy);
+        }
+    }
+    
     /**
      * @param active the active to set
      */
@@ -85,7 +97,7 @@ public class TermsOfUse {
     public TermsOfUseTranslation setTitle(String language, String value) {
         TermsOfUseTranslation translation = getTitle(language);
         if(translation == null) {
-            translation = new TermsOfUseTranslation(language, value);
+            translation = new TermsOfUseTranslation(language, value, this);
             translation.setTag(TITLE_TAG);
             this.translations.add(translation);
         } else {
@@ -102,7 +114,7 @@ public class TermsOfUse {
     public TermsOfUseTranslation setDescription(String language, String value) {
         TermsOfUseTranslation translation = getDescription(language);
         if(translation == null) {
-            translation = new TermsOfUseTranslation(language, value);
+            translation = new TermsOfUseTranslation(language, value, this);
             translation.setTag(DESCRIPTION_TAG);
             this.translations.add(translation);
         } else {
@@ -124,5 +136,22 @@ public class TermsOfUse {
             throw new IllegalArgumentException("Must provide non-empty language parameter to filter translations for language");
         }
         return translations.filter(t -> language.equals(t.getLanguage()));
+    }
+    
+    public Long getId() {
+        return id;
+    }
+
+    /**
+     * Remove all empty translations from the translations list
+     */
+    public void cleanTranslations() {
+        Iterator<TermsOfUseTranslation> i = this.translations.iterator();
+        while(i.hasNext()) {
+            TermsOfUseTranslation t = i.next();
+            if(StringUtils.isBlank(t.getValue())) {
+                i.remove();
+            }
+        }
     }
 }

@@ -51,8 +51,14 @@ public class TermsOfUseTranslation extends Translation {
      * @param language a {@link java.lang.String} object.
      * @param value a {@link java.lang.String} object.
      */
-    public TermsOfUseTranslation(String language, String value) {
+    public TermsOfUseTranslation(String language, String value, TermsOfUse owner) {
         super(language, value);
+        this.owner = owner;
+    }
+    
+    public TermsOfUseTranslation(TermsOfUseTranslation orig) {
+        super(orig);
+        this.owner = orig.owner;
     }
 
     /**

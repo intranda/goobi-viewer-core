@@ -26,7 +26,13 @@ import javax.faces.context.FacesContext;
 import javax.faces.view.ViewScoped;
 import javax.inject.Named;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import io.goobi.viewer.controller.DataManager;
+import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
+import io.goobi.viewer.messages.Messages;
 import io.goobi.viewer.messages.ViewerResourceBundle;
 import io.goobi.viewer.model.misc.Translation;
 import io.goobi.viewer.model.security.TermsOfUse;
@@ -39,13 +45,15 @@ import io.goobi.viewer.model.security.TermsOfUse;
 @ViewScoped
 public class TermsOfUseBean implements Serializable {
 
+    private static final Logger logger = LoggerFactory.getLogger(TermsOfUseBean.class);
+    
     private TermsOfUse termsOfUse;
     private String selectedLanguage = BeanUtils.getLocale().getLanguage();
     
     @PostConstruct
-    public void init() {
-        //TOTO: load from database
-        termsOfUse = new TermsOfUse();
+    public void init() throws DAOException {
+        TermsOfUse fromDatabase = DataManager.getInstance().getDao().getTermsOfUse();
+        termsOfUse = new TermsOfUse(fromDatabase);
     }
     
     
@@ -75,6 +83,7 @@ public class TermsOfUseBean implements Serializable {
     
     public void setActive(boolean active) {
         this.termsOfUse.setActive(active);
+        this.save();
     }
     
     public boolean isActive() {
@@ -96,11 +105,23 @@ public class TermsOfUseBean implements Serializable {
     }
     
     public void save() {
-        //TODO: SAVE to database
+        boolean saved = false;
+        try {
+            this.termsOfUse.cleanTranslations();
+            saved = DataManager.getInstance().getDao().saveTermsOfUse(this.termsOfUse);
+        } catch (DAOException e) {
+            logger.error("Error saving terms of use ", e);
+        }
+        if(saved) {
+            Messages.info("admin__terms_of_use__save__success");
+        } else {
+            Messages.error("admin__terms_of_use__save__error");
+        }
     }
     
-    public void resetUserAcceptance() {
-        
+    public void resetUserAcceptance() throws DAOException {
+        DataManager.getInstance().getDao().resetUserAgreementsToTermsOfUse();
+        Messages.info("admin__terms_of_use__reset__success");
     }
     
     public static List<Locale> getAllLocales() {
