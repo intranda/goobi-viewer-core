@@ -950,7 +950,8 @@ this.loadSubCollections = function() {
 }.bind(this)
 
 this.getValue = function(element) {
-    return viewerJS.iiif.getValue(element, this.opts.language);
+    console.log("this.opts.defaultLanguage", this.opts.defaultlanguage)
+    return viewerJS.iiif.getValue(element, this.opts.language, this.opts.defaultlanguage);
 }.bind(this)
 
 this.hasChildren = function(element) {
@@ -973,11 +974,12 @@ this.getDescription = function(element) {
 });
 
 
-riot.tag2('collectionview', '<div each="{set, index in collectionSets}"><h3 if="{set[0] != \'\'}">{translator.translate(set[0])}</h3><collectionlist collections="{set[1]}" language="{opts.language}" setindex="{index}"></collectionlist></div>', '', '', function(opts) {
+riot.tag2('collectionview', '<div each="{set, index in collectionSets}"><h3 if="{set[0] != \'\'}">{translator.translate(set[0])}</h3><collectionlist collections="{set[1]}" language="{opts.language}" defaultlanguage="{opts.defaultlanguage}" setindex="{index}"></collectionlist></div>', '', '', function(opts) {
 
 this.collectionSets = [];
 
 this.on("mount", () => {
+    console.log("mounting collectionView", this.opts);
 
     this.fetchCollections()
     .then( () => {
