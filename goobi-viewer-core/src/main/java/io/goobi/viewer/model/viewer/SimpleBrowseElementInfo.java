@@ -187,7 +187,7 @@ public class SimpleBrowseElementInfo implements BrowseElementInfo {
     /** {@inheritDoc} */
     @Override
     public IMetadataValue getTranslationsForName() {
-        return ViewerResourceBundle.getTranslations(getName());
+        return ViewerResourceBundle.getTranslations(getName(), false);
     }
 
     /* (non-Javadoc)

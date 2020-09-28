@@ -1,8 +1,7 @@
 <collectionView>
-
 	<div each="{set, index in collectionSets}">
 		<h3 if="{set[0] != ''}">{translator.translate(set[0])}</h3>
-		<collectionList collections="{set[1]}" language="{opts.language}" setindex="{index}"/>
+		<collectionList collections="{set[1]}" language="{opts.language}" defaultlanguage="{opts.defaultlanguage}" setindex="{index}"/>
 	</div>
 
 <script>
@@ -11,7 +10,7 @@ this.collectionSets = [];
 
 
 this.on("mount", () => {
-    // console.log("mounting collectionView", this.opts);
+    console.log("mounting collectionView", this.opts);
     
     this.fetchCollections()
     .then( () => {

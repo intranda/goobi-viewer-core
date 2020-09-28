@@ -37,7 +37,7 @@
 			<div if="{hasDescription(collection)}" id="description-{this.opts.setindex}-{index}" class="card-collapse collapse" role="tabcard" aria-expanded="false">
 				<p class="tpl-stacked-collection__long-info">
 					{getDescription(collection)}
-				</p>
+				</p> 
 			</div>
 		
 
@@ -90,7 +90,8 @@ loadSubCollections() {
 }
 
 getValue(element) {
-    return viewerJS.iiif.getValue(element, this.opts.language);
+    console.log("this.opts.defaultLanguage", this.opts.defaultlanguage)
+    return viewerJS.iiif.getValue(element, this.opts.language, this.opts.defaultlanguage);
 }
 
 hasChildren(element) {
