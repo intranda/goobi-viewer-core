@@ -97,6 +97,7 @@
                                     value="#{bookmarkBean.currentBookmarkList.items}"
                                     var="item"
                                     varStatus="status">
+                                    <div class="view-bookmark__single-entry">
                                         <h:form
                                             id="viewBookmarkForm"
                                             prependId="false">
@@ -104,6 +105,7 @@
                                             	<ui:param name="browseElement" value="#{item.browseElement}"></ui:param>
                                             </ui:include>
                                         </h:form>
+                                    </div>
                                 </ui:repeat>
                         </h:panelGroup>
                     </h:panelGroup>
