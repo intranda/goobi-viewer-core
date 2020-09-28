@@ -363,8 +363,7 @@ public class ActiveDocumentBean implements Serializable {
                 if (session != null) {
                     DataManager.getInstance()
                             .getRecordLockManager()
-                            .removeLocksForSessionId(session.getId(),
-                                    Collections.singletonList(viewManager.getPi()));
+                            .removeLocksForSessionId(session.getId(), Collections.singletonList(viewManager.getPi()));
                 }
                 String limit = viewManager.getTopDocument().getMetadataValue(SolrConstants.ACCESSCONDITION_CONCURRENTUSE);
                 // Lock limited view records, if limit exists and record has a license type that has this feature enabled

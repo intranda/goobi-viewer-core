@@ -39,6 +39,7 @@ import de.unigoettingen.sub.commons.contentlib.imagelib.transform.Scale;
 import de.unigoettingen.sub.commons.contentlib.imagelib.transform.Scale.AbsoluteScale;
 import de.unigoettingen.sub.commons.contentlib.imagelib.transform.Scale.RelativeScale;
 import de.unigoettingen.sub.commons.contentlib.servlet.rest.ContentExceptionMapper.ErrorMessage;
+import de.unigoettingen.sub.commons.contentlib.servlet.rest.ContentServerImageBinding;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.StringTools;
 import io.goobi.viewer.exceptions.DAOException;
@@ -47,7 +48,6 @@ import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.exceptions.ViewerConfigurationException;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.model.security.AccessConditionUtils;
-import de.unigoettingen.sub.commons.contentlib.servlet.rest.ContentServerImageBinding;
 
 /**
  * <p>
@@ -66,7 +66,6 @@ public class ImageRequestFilter implements ContainerRequestFilter {
     private HttpServletResponse servletResponse;
 
     /** {@inheritDoc} */
-    @SuppressWarnings("unchecked")
     @Override
     public void filter(ContainerRequestContext request) throws IOException {
 
@@ -121,6 +120,7 @@ public class ImageRequestFilter implements ContainerRequestFilter {
                     && !BeanUtils.getImageDeliveryBean().isStaticImageUrl(imageName)) {
                 filterForAccessConditions(request, pi, imageName, isThumb);
                 //                filterForImageSize(requestPath, size);
+                FilterTools.filterForConcurrentViewLimit(pi, servletRequest);
                 setRequestParameter(request, isThumb);
             }
         } catch (ServiceNotAllowedException e) {
@@ -170,7 +170,7 @@ public class ImageRequestFilter implements ContainerRequestFilter {
      * @param request
      * @param isThumb
      */
-    private void setRequestParameter(ContainerRequestContext request, boolean isThumb) {
+    private static void setRequestParameter(ContainerRequestContext request, boolean isThumb) {
         if (isThumb) {
             Integer compression = DataManager.getInstance().getConfiguration().getThumbnailsCompression();
             request.setProperty("param:compression", compression.toString());
@@ -247,6 +247,7 @@ public class ImageRequestFilter implements ContainerRequestFilter {
         return isThumb;
     }
 
+    @Deprecated
     private static void filterForImageSize(String requestPath, String sizeSegment) throws ServiceNotAllowedException {
         try {
             Scale scale = Scale.getScaleMethod(sizeSegment);
