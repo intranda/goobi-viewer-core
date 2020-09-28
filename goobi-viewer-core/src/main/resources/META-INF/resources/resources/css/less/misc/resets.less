@@ -91,11 +91,11 @@ button, .btn {
 	-webkit-transform: rotate(45deg);
 	transform: rotate(45deg);
 	cursor: pointer;
-	-webkit-transition: all 200ms ease-out;
-	transition: all 200ms ease-out;
+	-webkit-transition: all 150ms ease-out;
+	transition: all 150ms ease-out;
 	right: 0;
   &:hover {
-    transition: all 200ms 100ms ease-in;
+    transition: all 150ms 100ms ease-in;
   }
   
   &:before, &:after {
@@ -105,10 +105,11 @@ button, .btn {
     top: 50%;
     display: block;
     background-color: @black;
-    transition: all 200ms ease-in;
+    transition: all 150ms ease-in;
   }
   &:hover:before, &:hover:after {
-    transition: all 200ms ease-out;
+    transition: all 150ms ease-out;
+    transform: rotate(90deg);
   }
   &:before {
 	width: 26px;
