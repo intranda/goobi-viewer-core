@@ -33,6 +33,7 @@ import de.unigoettingen.sub.commons.contentlib.imagelib.transform.Region;
 import de.unigoettingen.sub.commons.contentlib.imagelib.transform.RegionRequest;
 import de.unigoettingen.sub.commons.contentlib.imagelib.transform.Rotation;
 import de.unigoettingen.sub.commons.contentlib.imagelib.transform.Scale;
+import io.goobi.viewer.api.rest.v1.ApiUrls;
 import io.goobi.viewer.controller.Configuration;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.SolrConstants;
@@ -159,11 +160,22 @@ public class ThumbnailHandler {
      */
     public String getThumbnailUrl(String pi, int width, int height)
             throws IndexUnreachableException, PresentationException, ViewerConfigurationException {
-        SolrDocument doc = DataManager.getInstance().getSearchIndex().getDocumentByPI(pi);
-        if (doc != null) {
-            return getThumbnailUrl(doc, width, height);
+        
+        if(iiifUrlHandler.getUrlManager() != null) {
+            String size = width + "," + height;
+            return iiifUrlHandler.getUrlManager()
+                    .path(ApiUrls.RECORDS_RECORD, ApiUrls.RECORDS_IMAGE_IIIF)
+                    .params(pi, "full", size, "0", "default", "jpg")
+                    .build();
+        } else {            
+            SolrDocument doc = DataManager.getInstance().getSearchIndex().getDocumentByPI(pi);
+            if (doc != null) {
+                return getThumbnailUrl(doc, width, height);
+            }
+            return null;
         }
-        return null;
+        
+        
     }
 
     /**

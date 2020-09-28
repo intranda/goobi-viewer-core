@@ -1623,7 +1623,7 @@ public final class SolrSearchIndex {
      * isHasImages.
      * </p>
      *
-     * @param doc a {@link org.apache.solr.common.SolrDocument} object.
+     * @param doc a {@link org.apache.solr.common.SolrDocument} object. Needs to contain metadata fields {@link SolrConstants.FILENAME} and {@link SolrConstants.THUMBNAIL}
      * @should return correct value for page docs
      * @should return correct value for docsctrct docs
      * @return a boolean.
