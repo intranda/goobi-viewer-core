@@ -97,15 +97,17 @@
                                     value="#{bookmarkBean.currentBookmarkList.items}"
                                     var="item"
                                     varStatus="status">
-                                    <div class="view-bookmark__single-entry">
-                                        <h:form
-                                            id="viewBookmarkForm"
-                                            prependId="false">
-                                            <ui:include src="/resources/includes/search/browseElement.xhtml">
-                                            	<ui:param name="browseElement" value="#{item.browseElement}"></ui:param>
-                                            </ui:include>
-                                        </h:form>
-                                    </div>
+                                    <ui:fragment rendered="#{item.browseElement != null}">
+	                                    <div class="view-bookmark__single-entry">
+	                                        <h:form
+	                                            id="viewBookmarkForm"
+	                                            prependId="false">
+	                                            <ui:include src="/resources/includes/search/browseElement.xhtml">
+	                                            	<ui:param name="browseElement" value="#{item.browseElement}"></ui:param>
+	                                            </ui:include>
+	                                        </h:form>
+	                                    </div>
+                                    </ui:fragment>
                                 </ui:repeat>
                         </h:panelGroup>
                     </h:panelGroup>

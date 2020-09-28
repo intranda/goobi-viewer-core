@@ -674,9 +674,11 @@ public class Bookmark implements Serializable {
         if(this.browseElement == null) {            
             try {                
                 SolrDocument doc = retrieveSolrDocument();
-                Locale locale = BeanUtils.getLocale();
-                SearchHit sh = SearchHit.createSearchHit(doc, null, null, locale, "", null, null, null, false, null, null, SearchHit.HitType.DOCSTRCT);
-                this.browseElement = sh.getBrowseElement();
+                if(doc != null) {                    
+                    Locale locale = BeanUtils.getLocale();
+                    SearchHit sh = SearchHit.createSearchHit(doc, null, null, locale, "", null, null, null, false, null, null, SearchHit.HitType.DOCSTRCT);
+                    this.browseElement = sh.getBrowseElement();
+                }
             } catch(PresentationException | DAOException | ViewerConfigurationException e) {
                 throw new IndexUnreachableException(e.toString());
             }
@@ -691,6 +693,9 @@ public class Bookmark implements Serializable {
             return this.getBrowseElement().isHasImages();
         } catch (IndexUnreachableException e) {
             logger.error("Unable to get browse element for bookmark", e);
+            return false;
+        } catch(NullPointerException e) {
+            //not browse element found 
             return false;
         }
     }
