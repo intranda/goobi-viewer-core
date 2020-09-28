@@ -118,6 +118,11 @@
 			display: inline-block;
 		}
 	}
+	&__link-more-items {
+		display: flex;
+		flex: 0 0 100%;
+		padding: 5px;
+	}
 }
 
 /* BREAKPOINT FOR LARGE DESKTOPS */
@@ -133,9 +138,9 @@
 			padding: .5rem .5rem;
 		}
 	}
-	&__single-image-container {
+	&__single-image-container, &__link-more-items {
 		flex: 0 0 25%;
-	}	
+	}
 }
 }
 
@@ -145,7 +150,7 @@
 @media screen and (max-width: @xSmallBreakpoint) {
 	
 .user-bookmark {
-		&__single-image-container {
+		&__single-image-container, &__link-more-items {
 			flex: 0 0 50%;
 		}
 }

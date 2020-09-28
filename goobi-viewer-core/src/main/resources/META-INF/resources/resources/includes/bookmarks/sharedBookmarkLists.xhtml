@@ -91,24 +91,30 @@
 								</ui:fragment>
 							</ui:repeat>
 							<ui:fragment rendered="#{bookmarkList.numItemsWithoutImages() gt 0 and bookmarkList.numItemsWithoutImages() lt bookmarkList.items.size()}">
-								<div class="user-bookmark__link-more-items">
 									<ui:fragment rendered="#{userList}">
-										<a href="#{request.contextPath}/user/bookmarks/show/#{bookmarkList.id}/">
-											<h:outputFormat
-												value="#{bookmarkList.numItemsWithoutImages() gt 1 ? msg.bookmarkList__further_items : msg.bookmarkList__further_item}" escape="false">
-												<f:param value="#{bookmarkList.numItemsWithoutImages()}" />
-											</h:outputFormat>
-										</a>
+										<div class="user-bookmark__link-more-items">
+											<a href="#{request.contextPath}/user/bookmarks/show/#{bookmarkList.id}/">
+												<span>
+													<h:outputFormat
+														value="#{bookmarkList.numItemsWithoutImages() gt 1 ? msg.bookmarkList__further_items : msg.bookmarkList__further_item}" escape="false">
+														<f:param value="#{bookmarkList.numItemsWithoutImages()}" />
+													</h:outputFormat>
+												</span>
+											</a>
+										</div>
 									</ui:fragment>
 									<ui:fragment rendered="#{!userList}">
-										<a href="#{bookmarkBean.getShareLink(bookmarkList)}">
-											<h:outputFormat 
-												value="#{bookmarkList.numItemsWithoutImages() gt 1 ? msg.bookmarkList__further_items : msg.bookmarkList__further_item}" escape="false">
-												<f:param value="#{bookmarkList.numItemsWithoutImages()}" />
-											</h:outputFormat>
-										</a>
+										<div class="user-bookmark__link-more-items">
+											<a href="#{bookmarkBean.getShareLink(bookmarkList)}">
+												<span>
+													<h:outputFormat 
+														value="#{bookmarkList.numItemsWithoutImages() gt 1 ? msg.bookmarkList__further_items : msg.bookmarkList__further_item}" escape="false">
+														<f:param value="#{bookmarkList.numItemsWithoutImages()}" />
+													</h:outputFormat>
+												</span>
+											</a>
+										</div>
 									</ui:fragment>
-								</div>
 							</ui:fragment>
 						</div>
 					</div>

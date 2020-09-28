@@ -20,7 +20,7 @@
 			<f:event type="preRenderView" listener="#{breadcrumbBean.addStaticLinkToBreadcrumb(bookmarkBean.currentBookmarkList.name, userBean.loggedIn ? 3 : 2)}" />
 		</f:metadata>
 	</ui:define>
-	
+
 	<ui:define name="breadcrumbs">
 		<ui:include src="/resources/includes/breadcrumbs.xhtml" />
 	</ui:define>
@@ -104,6 +104,7 @@
 	                                            prependId="false">
 	                                            <ui:include src="/resources/includes/search/browseElement.xhtml">
 	                                            	<ui:param name="browseElement" value="#{item.browseElement}"></ui:param>
+													<ui:param name="showBookmarkIcon" value="true"></ui:param>
 	                                            </ui:include>
 	                                        </h:form>
 	                                    </div>
