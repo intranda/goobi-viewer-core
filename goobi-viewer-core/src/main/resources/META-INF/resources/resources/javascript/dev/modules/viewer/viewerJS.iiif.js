@@ -40,7 +40,11 @@ var viewerJS = ( function( viewer ) {
              * @param language  The preferred language String as a two digit code
              * @returns         The most appropriate String value found
              */
-            getValue: function(element, locale) {
+            getValue: function(element, locale, fallbackLanguage) {
+                
+                if(!fallbackLanguage) {
+                    fallbackLanguage = 'en';
+                }
                 if(element) {
                     if(typeof element === 'string') {
                         return element;
@@ -55,7 +59,7 @@ var viewerJS = ( function( viewer ) {
                                var language = item['@language'];
                                if(locale == language) {
                                    return value;
-                               } else if(!fallback || language == 'en') {
+                               } else if(!fallback || language == fallbackLanguage) {
                                    fallback = value;
                                }
                            }

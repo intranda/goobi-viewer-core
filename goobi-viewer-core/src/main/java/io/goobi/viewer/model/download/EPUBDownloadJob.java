@@ -16,6 +16,8 @@
 package io.goobi.viewer.model.download;
 
 import java.io.File;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Date;
 
 import javax.persistence.DiscriminatorValue;
@@ -235,11 +237,13 @@ public class EPUBDownloadJob extends DownloadJob {
 
         String taskManagerUrl = DataManager.getInstance().getConfiguration().getTaskManagerServiceUrl();
         String mediaRepository = DataFileTools.getDataRepositoryPathForRecord(pi);
-        
+        Path altoFolder = Paths.get(mediaRepository).resolve(DataManager.getInstance().getConfiguration().getAltoFolder()).resolve(pi);
+        Path metsPath = Paths.get(mediaRepository).resolve(DataManager.getInstance().getConfiguration().getIndexedMetsFolder()).resolve(pi + ".xml");
+
         TaskManagerEPUBRequest requestObject = new TaskManagerEPUBRequest();
         requestObject.pi = pi;
         requestObject.goobiId = downloadIdentifier;
-        requestObject.sourceDir = mediaRepository;
+        requestObject.sourceDir = metsPath.toString();
         requestObject.language = CmsBean.getCurrentLocale().getLanguage();
         
         try {
@@ -258,5 +262,13 @@ public class EPUBDownloadJob extends DownloadJob {
             // Had to catch generic exception here because a ParseException triggered by Tomcat error HTML getting parsed as JSON cannot be caught
             throw new DownloadException("Failed to start pdf creation for PI=" + pi + ": " + e.getMessage());
         }
+    }
+
+    /* (non-Javadoc)
+     * @see io.goobi.viewer.model.download.DownloadJob#getRestApiPath()
+     */
+    @Override
+    protected String getRestApiPath() {
+        return "/viewerepub";
     }
 }

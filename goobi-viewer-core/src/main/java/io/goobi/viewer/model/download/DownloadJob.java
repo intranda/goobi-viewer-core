@@ -260,6 +260,7 @@ public abstract class DownloadJob implements Serializable {
                 // Update latest request timestamp of an existing job
                 logger.debug("Retrieve existing job");
                 downloadJob.setLastRequested(new Date());
+                downloadJob.updateStatus();        
             }
             logger.debug("Requested download job " + downloadJob);
 
@@ -271,7 +272,6 @@ public abstract class DownloadJob implements Serializable {
             if (StringUtils.isNotBlank(useEmail)) {
                 downloadJob.getObservers().add(useEmail);
             }
-
             if (downloadJob.status.equals(JobStatus.WAITING)) {
                 //keep waiting
             } else if (downloadJob.getFile() != null && downloadJob.getFile().toFile().exists()) {
@@ -824,10 +824,10 @@ public abstract class DownloadJob implements Serializable {
      * @param identifier a {@link java.lang.String} object.
      * @return a {@link java.lang.String} object.
      */
-    public static String getJobStatus(String identifier) {
+    public String getJobStatus(String identifier) {
         StringBuilder url = new StringBuilder();
         url.append(DataManager.getInstance().getConfiguration().getTaskManagerRestUrl());
-        url.append("/viewerpdf/info/");
+        url.append(getRestApiPath()).append("/info/");
         url.append(identifier);
         ResponseHandler<String> handler = new BasicResponseHandler();
         HttpGet httpGet = new HttpGet(url.toString());
@@ -843,12 +843,17 @@ public abstract class DownloadJob implements Serializable {
     }
 
     /**
+     * @return
+     */
+    protected abstract String getRestApiPath();
+
+    /**
      * <p>
      * updateStatus.
      * </p>
      */
     public void updateStatus() {
-        String ret = PDFDownloadJob.getJobStatus(identifier);
+        String ret = getJobStatus(identifier);
         try {
             JSONObject object = new JSONObject(ret);
             String statusString = object.getString("status");

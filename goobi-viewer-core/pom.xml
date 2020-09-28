@@ -74,7 +74,7 @@
 
 		<!-- intranda libraries -->
 		<alto.version>1.5.4</alto.version>
-		<contentserver.version>2.4.1</contentserver.version>
+		<contentserver.version>2.4.3</contentserver.version>
 		<tei-conversion.version>1.1.0</tei-conversion.version>
 		<iiif-api-model.version>1.9.0-SNAPSHOT</iiif-api-model.version>
 		<normdataimporter.version>1.4.0</normdataimporter.version>
@@ -119,10 +119,10 @@
 		<jstl.version>1.2</jstl.version>
 		<junit.version>4.13</junit.version>
 		<mariadb-java-client.version>2.3.0</mariadb-java-client.version>
-		<mockito.version>3.5.10</mockito.version>
+		<mockito.version>3.5.11</mockito.version>
 		<mockserver.version>5.11.1</mockserver.version>
 		<oauth.version>1.0.2</oauth.version>
-		<openpdf.version>1.3.20</openpdf.version>
+		<openpdf.version>1.3.21</openpdf.version>
 		<poi.version>4.1.2</poi.version>
 		<prettyfaces.version>3.4.4.Final</prettyfaces.version>
 		<primefaces.version>8.0</primefaces.version>
