@@ -632,6 +632,7 @@ public class Bookmark implements Serializable {
         this.mainTitle = mainTitle;
     }
     
+    @JsonIgnore
     public MetadataElement getMetadataElement() throws IndexUnreachableException {
         SolrDocument doc = retrieveSolrDocument();
         Long iddoc = Long.parseLong((String)doc.getFirstValue(SolrConstants.IDDOC));
@@ -668,6 +669,7 @@ public class Bookmark implements Serializable {
         }
     }
     
+    @JsonIgnore
     public BrowseElement getBrowseElement() throws IndexUnreachableException {
         if(this.browseElement == null) {            
             try {                
@@ -683,6 +685,7 @@ public class Bookmark implements Serializable {
         return this.browseElement;
     }
     
+    @JsonIgnore
     public boolean isHasImages() {
         try {
             return this.getBrowseElement().isHasImages();
