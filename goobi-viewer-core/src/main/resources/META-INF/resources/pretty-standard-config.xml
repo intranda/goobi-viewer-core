@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<pretty-config xmlns="http://ocpsoft.org/schema/rewrite-config-prettyfaces" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://ocpsoft.org/schema/rewrite-config-prettyfaces http://ocpsoft.org/xml/ns/prettyfaces/rewrite-config-prettyfaces.xsd">
+<pretty-config xmlns="http://ocpsoft.com/prettyfaces/3.3.3" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://ocpsoft.com/prettyfaces/3.3.3 http://ocpsoft.com/xml/ns/prettyfaces/ocpsoft-pretty-faces-3.3.3.xsd">
 
 	<rewrite match="/;jsessionid=\w+" substitute="/" />
 	<rewrite match="/melody/?" substitute="/monitoring?main" />
@@ -1031,7 +1031,7 @@
 		<pattern value="/embed/map/#{mapId}/"/>
         <view-id value="/contentOnly.xhtml" />
 		<action onPostback="false">#{dynamicBean.addComponent('map', 'geoMap', mapId, linkTarget)}</action>
-<!--         <query-param name="linkTarget">#{linkTarget}</query-param> -->
+		<query-param name="linkTarget">#{linkTarget}</query-param>
 	</url-mapping>
 
 	<!-- Swagger OpenApi -->

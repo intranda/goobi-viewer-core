@@ -81,7 +81,5 @@ public class FilterTools {
         } catch (RecordLimitExceededException e) {
             throw new ServiceNotAllowedException("Concurrent views limit has been exceeded for record: " + pi);
         }
-        
-        // TODO Lock record for session?
     }
 }
