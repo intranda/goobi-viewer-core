@@ -19,16 +19,17 @@
 			a {
 			    display: inline-block;
 			    padding: 1rem 1.7rem;
-			    border: 1px solid #f2f3f4;
+			    border: 1px solid #ccc;
+			    border-bottom: none;
 			    margin-right: .3rem;
 			    transition: all 0.2s ease;
-				width: 70px;
+				width: 9rem;
 				text-align: center;
 				padding: 1rem 0;
 				color: #696969;
-				text-transform: uppercase;
 				&:hover {
-					border: 1px solid white;
+					border: 1px solid #ccc;
+					border-bottom: none;
 				}
 			}
 			&:first-child {
@@ -36,7 +37,7 @@
 		    		background: #9cb5d5;
 		    		color: @white;
 		    		margin-right: 1.8rem;
-		    		border-bottom-color: #9cb5d5;
+		    		border-bottom: none;
 			    	&:hover {
 		    			background: @blue;
 		    			border-bottom-color: @blue;
@@ -45,7 +46,7 @@
 		    	&.active a {
 		    		background: @blue;
 		    		color: @white;
-		    		border-bottom-color: @blue;
+		    		border-bottom: none;
 		    	}
 			}
 			&.active a {
@@ -59,10 +60,9 @@
 		    	}
 			&.-alreadyTranslated {
 				a {
-					background: #caf7c1;
-					border-color: #caf7c1;
+					background: @btnSuccessBgc;
+					border-color: #ccc;
 					&:hover {
-						border-color: @white;
 						background: @white;
 					}
 				}
