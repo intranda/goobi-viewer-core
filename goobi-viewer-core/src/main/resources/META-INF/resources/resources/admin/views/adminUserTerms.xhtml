@@ -135,18 +135,20 @@
 							<div class="col-6">
 							<p>#{msg.admin__terms_of_use__deactivate__description}</p>
 								
-									<h:commandButton class="btn btn--default"
+									<h:commandButton class="btn btn--default mb-3"
 										value="#{msg.action__deactivate}"
 										action="#{termsOfUseBean.setActive(false)}">
 									</h:commandButton>
 															
 								<h:commandButton
-								styleClass="btn btn--success admin__user-terms-activate-button"
+								styleClass="btn btn--success admin__user-terms-activate-button mb-3"
 								value="#{msg.action__activate}"
 								action="#{termsOfUseBean.setActive(true)}"></h:commandButton>
-																
-															
-							<div class="admin__radio-switch userTermsToggle">
+								
+								
+							<div class="form-group form-row">			
+							<div class="col-2 control-label admin__form-label"><span>#{msg.functionalityActive}:</span></div>
+							<div class="col-6 admin__radio-switch userTermsToggle">
                                <h:selectOneRadio group="activateUserTerms" value="#{termsOfUseBean.active}">
                                    <f:selectItem itemValue="#{false}" itemLabel="#{msg.no}" />
                                </h:selectOneRadio>                                                        
@@ -156,7 +158,7 @@
                                </h:selectOneRadio>
                                <span class="toggle-outside"><span class="toggle-inside"></span></span>
                            </div>	
-									
+						</div>			
 							</div>
 							<div class="col-6 text-right">
 							
