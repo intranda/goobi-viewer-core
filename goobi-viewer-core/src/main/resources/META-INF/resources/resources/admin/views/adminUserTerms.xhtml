@@ -14,7 +14,8 @@
 	<ui:define name="content">
 		<f:view contentType="text/html" encoding="utf-8">
 
-			<h:panelGroup layout="block" id="adminUserTerms" rendered="#{userBean.admin}">
+			<h:panelGroup layout="block" id="adminUserTerms"
+				rendered="#{userBean.admin}">
 				<!-- TITLE -->
 				<div class="admin__title-bar">
 					<h2 class="admin__title">#{msg.admin__terms_of_use__title}</h2>
@@ -22,35 +23,34 @@
 
 				<div class="admin__content-inner-content">
 					<div class="admin__info-text">
-						<h:outputText value="#{msg.admin__terms_of_use__description}" escape="false" />
+						<h:outputText value="#{msg.admin__terms_of_use__description}"
+							escape="false" />
 					</div>
 
-					<h:form id="editUserTerms" styleClass="form-horizontal form-group" role="form" prependId="false">
+					<h:form id="editUserTerms" styleClass="form-horizontal form-group"
+						role="form" prependId="false">
 
+						<div class="row no-gutters mb-3 align-items-center">
+							<div class="control-label mr-3 admin__form-label">#{msg.admin__terms_of_use__activated}:</div>
+							<div class="admin__form-input">
+								<div class="admin__radio-switch userTermsToggle">
+									<h:selectOneRadio group="activateUserTerms"
+										value="#{termsOfUseBean.activated}">
+										<f:selectItem itemValue="#{false}" itemLabel="#{msg.no}" />
+										<f:ajax render="@none" execute="@this" />
+									</h:selectOneRadio>
+									<h:selectOneRadio group="activateUserTerms"
+										value="#{termsOfUseBean.activated}">
+										<f:selectItem itemValue="#{true}" itemLabel="#{msg.yes}" />
+										<f:ajax render="@none" execute="@this" />
+									</h:selectOneRadio>
+									<span class="toggle-outside"><span class="toggle-inside"></span></span>
+								</div>
+							</div>
+						</div>
 
-					<div class="row mb-3">
-						<div class="col-2 control-label admin__form-label">#{msg.admin__terms_of_use__activate}:<span class="admin__label-required-field">#{msg.form__required_field}</span></div>
-						<div class="col-7 admin__form-input">
-							<div class="admin__radio-switch userTermsToggle">
-			                    <h:selectOneRadio group="activateUserTerms" value="#{termsOfUseBean.activated}">
-			                        <f:selectItem itemValue="#{false}" itemLabel="#{msg.no}" />
-			                        <f:ajax render="@none" execute="@this"/>
-			                    </h:selectOneRadio>
-			                    <h:selectOneRadio group="activateUserTerms" value="#{termsOfUseBean.activated}">
-			                        <f:selectItem itemValue="#{true}" itemLabel="#{msg.yes}" />
-			                        <f:ajax render="@none" execute="@this"/>
-			                    </h:selectOneRadio>
-			                    <span class="toggle-outside"><span class="toggle-inside"></span></span>
-			                </div>
-		                </div>				
-					</div>
-
-
-					
-
-			<div class="admin__user-terms-box-editable">
-						<!-- RENDERED IF TERMS OF USE FUNCTION IS ACTIVE -->
-						<!-- <ui:fragment rendered="#{termsOfUseBean.activated}">-->
+						<div class="admin__user-terms-box-editable">
+							<!-- RENDERED IF TERMS OF USE FUNCTION IS ACTIVE -->
 							<!-- EDIT TERMS OF USE TITLE -->
 							<h3>#{msg.admin__terms_of_use__manage_text}</h3>
 
@@ -62,14 +62,14 @@
 										items="#{termsOfUseBean.getAllLocales()}">
 										<li role="presentation"
 											class="admin__user-terms-language-tab #{termsOfUseBean.selectedLanguage == locale.language ? 'active':''}">
-											<h:commandLink value="#{locale.getDisplayLanguage(navigationHelper.locale)}"
+											<h:commandLink
+												value="#{locale.getDisplayLanguage(navigationHelper.locale)}"
 												action="#{termsOfUseBean.setSelectedLanguage(locale.language)}"
 												immediate="false">
 												<f:ajax render="@form" execute="@form"></f:ajax>
 											</h:commandLink>
 										</li>
 									</c:forEach>
-								
 									<!-- DEMONSTRATION PURPOSE - TO DELETE -->
 									<!-- <li role="presentation"
 											class="admin__user-terms-language-tab -alreadyTranslated #{termsOfUseBean.selectedLanguage == locale.language ? 'active':''}">
@@ -78,8 +78,7 @@
 												immediate="false">
 												<f:ajax render="@form" execute="@form"></f:ajax>
 											</h:commandLink>
-										</li>-->	
-									
+										</li>-->
 								</ul>
 							</div>
 
@@ -92,7 +91,8 @@
 											value="#{termsOfUseBean.selectedLanguage}" />
 										<div class="form-group form-row">
 											<div class="col-2 control-label admin__form-label">
-												<label for="userTermsTitle">#{msg.title}:</label>
+												<label for="userTermsTitle">#{msg.title}:<span
+													class="admin__label-required-field">(#{msg.form__required_field})</span></label>
 											</div>
 											<div class="col-10 admin__form-input">
 												<h:inputText id="userTermsTitle" styleClass="form-control"
@@ -104,7 +104,8 @@
 										<!-- EDIT TERMS OF USE TEXT -->
 										<div class="form-group form-row">
 											<div class="col-2 control-label admin__form-label">
-												<label for="userTermsText">#{msg.text}:</label>
+												<label for="userTermsText">#{msg.text}:<span
+													class="admin__label-required-field">(#{msg.form__required_field})</span></label>
 											</div>
 											<div class="col-10 admin__form-input">
 												<h:inputTextarea id="userTermsText"
@@ -118,38 +119,37 @@
 							</div>
 
 							<!-- SAVE TERMS OF USE TEXT -->
-							<div class="row no-gutters justify-content-end admin__final-actions">
+							<div
+								class="row no-gutters justify-content-end admin__final-actions">
 								<h:commandButton class="btn btn--success" value="#{msg.save}"
 									action="#{termsOfUseBean.save()}">
 									<f:ajax render="@form :messages" execute="@form"></f:ajax>
 								</h:commandButton>
 							</div>
-							
-
 
 							<!-- DEACTIVATE TERMS OF USE + RESET STATUS ACCEPTED FOR USERS -->
-							<h3>#{msg.admin__terms_of_use__manage_functionality}</h3>
-							<div class="admin__default-block">
-							
-						<div class="row">
-							<div class="col-12">
-								<p>#{msg.admin__terms_of_use__reset__description}</p>
-								<div class="text-right">
-									<h:commandButton class="btn btn--danger" value="#{msg.reset}"
-									    onclick="if ( !confirm( &quot;#{msg.admin__terms_of_use__reset__confirm}&quot; ) ) { return false };"
-										action="#{termsOfUseBean.resetUserAcceptance()}">
-										<f:ajax render="@form :messages"></f:ajax>
-									</h:commandButton>
+							<h3>#{msg.admin__terms_of_use__reset__consent}</h3>
+							<div class="admin__default-block -danger">
+
+								<div class="row">
+									<div class="col-12">
+										<p>#{msg.admin__terms_of_use__reset__description}</p>
+										<div class="text-right">
+											<h:commandButton class="btn btn--danger"
+												value="#{msg.admin__terms_of_use__reset__button}"
+												onclick="if ( !confirm( &quot;#{msg.admin__terms_of_use__reset__confirm}&quot; ) ) { return false };"
+												action="#{termsOfUseBean.resetUserAcceptance()}">
+												<f:ajax render="@form :messages"></f:ajax>
+											</h:commandButton>
+										</div>
+									</div>
 								</div>
 							</div>
 						</div>
-
-							</div>
-							</div>
-					<!-- </ui:fragment>-->
 					</h:form>
 				</div>
 			</h:panelGroup>
 		</f:view>
 	</ui:define>
 </ui:composition>
+
