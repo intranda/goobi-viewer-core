@@ -410,6 +410,16 @@ public class IdentifierResolver extends HttpServlet {
         //        response.sendError(code, msg);
         //        return;
     }
+    
+    static String constructUrl(SolrDocument targetDoc, boolean pageResolverUrl) {
+        int order = 1;
+        if (targetDoc.containsKey(SolrConstants.THUMBPAGENO)) {
+            order = (int) targetDoc.getFieldValue(SolrConstants.THUMBPAGENO);
+        } else if (targetDoc.containsKey(SolrConstants.ORDER)) {
+            order = (int) targetDoc.getFieldValue(SolrConstants.ORDER);
+        }
+        return constructUrl(targetDoc, pageResolverUrl, order);
+    }
 
     /**
      *
@@ -423,7 +433,7 @@ public class IdentifierResolver extends HttpServlet {
      * @should construct preferred view url correctly
      * @should construct application mime type url correctly
      */
-    static String constructUrl(SolrDocument targetDoc, boolean pageResolverUrl) {
+    static String constructUrl(SolrDocument targetDoc, boolean pageResolverUrl, int order ) {
         String docStructType = (String) targetDoc.getFieldValue(SolrConstants.DOCSTRCT);
         String mimeType = (String) targetDoc.getFieldValue(SolrConstants.MIMETYPE);
         String topstructPi = (String) targetDoc.getFieldValue(SolrConstants.PI_TOPSTRUCT);
@@ -433,12 +443,7 @@ public class IdentifierResolver extends HttpServlet {
                 && !StringUtils.isEmpty((String) targetDoc.getFieldValue(SolrConstants.THUMBNAIL)));
 
         PageType pageType = PageType.determinePageType(docStructType, mimeType, anchorOrGroup, hasImages, pageResolverUrl);
-        int order = 1;
-        if (targetDoc.containsKey(SolrConstants.THUMBPAGENO)) {
-            order = (int) targetDoc.getFieldValue(SolrConstants.THUMBPAGENO);
-        } else if (targetDoc.containsKey(SolrConstants.ORDER)) {
-            order = (int) targetDoc.getFieldValue(SolrConstants.ORDER);
-        }
+       
 
         StringBuilder sb = new StringBuilder("/");
         sb.append(DataManager.getInstance()
