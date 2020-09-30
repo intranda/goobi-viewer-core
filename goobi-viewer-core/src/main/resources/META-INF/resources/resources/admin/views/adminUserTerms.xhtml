@@ -34,9 +34,11 @@
 							<div class="admin__radio-switch userTermsToggle">
 			                    <h:selectOneRadio group="activateUserTerms" value="#{termsOfUseBean.activated}">
 			                        <f:selectItem itemValue="#{false}" itemLabel="#{msg.no}" />
+			                        <f:ajax render="@none" execute="@this"/>
 			                    </h:selectOneRadio>
 			                    <h:selectOneRadio group="activateUserTerms" value="#{termsOfUseBean.activated}">
 			                        <f:selectItem itemValue="#{true}" itemLabel="#{msg.yes}" />
+			                        <f:ajax render="@none" execute="@this"/>
 			                    </h:selectOneRadio>
 			                    <span class="toggle-outside"><span class="toggle-inside"></span></span>
 			                </div>
