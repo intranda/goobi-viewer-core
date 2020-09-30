@@ -2150,7 +2150,7 @@ public class CmsBean implements Serializable {
         }
 
         for (CMSStaticPage staticPage : getStaticPages()) {
-            if (staticPage.isHasCmsPage() && staticPage.getCmsPage().equals(page)) {
+            if (page.equals(staticPage.getCmsPage())) {
                 return true;
             }
         }

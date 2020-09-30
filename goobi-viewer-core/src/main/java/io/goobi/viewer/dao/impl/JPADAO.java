@@ -2842,7 +2842,7 @@ public class JPADAO implements IDAO {
                 preQuery();
                 Query q = em.createQuery("SELECT o FROM CMSMediaItem o");
                 q.setFlushMode(FlushModeType.COMMIT);
-                // q.setHint("javax.persistence.cache.storeMode", "REFRESH");
+                q.setHint("javax.persistence.cache.storeMode", "REFRESH");
                 return q.getResultList();
             } catch (PersistenceException e) {
                 logger.error("Exception \"" + e.toString() + "\" when trying to get cms pages. Returning empty list");
