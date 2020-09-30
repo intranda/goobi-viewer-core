@@ -162,7 +162,7 @@ public class ThumbnailHandler {
             throws IndexUnreachableException, PresentationException, ViewerConfigurationException {
         
         if(iiifUrlHandler.getUrlManager() != null) {
-            String size = width + "," + height;
+            String size = "!" + width + "," + height;
             return iiifUrlHandler.getUrlManager()
                     .path(ApiUrls.RECORDS_RECORD, ApiUrls.RECORDS_IMAGE_IIIF)
                     .params(pi, "full", size, "0", "default", "jpg")
