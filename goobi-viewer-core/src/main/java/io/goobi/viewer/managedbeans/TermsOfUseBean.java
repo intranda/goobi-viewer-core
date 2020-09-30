@@ -83,14 +83,16 @@ public class TermsOfUseBean implements Serializable {
         this.termsOfUse.setDescription(selectedLanguage, value);
     }
     
-    public void setActive(boolean active) {
+    public void setActivated(boolean active) {
         this.termsOfUse.setActive(active);
         this.save();
     }
     
-    public boolean isActive() {
+    public boolean isActivated() {
         return this.termsOfUse.isActive();
     }
+
+    
     
     /**
      * @param selectedLanguage the selectedLanguage to set
