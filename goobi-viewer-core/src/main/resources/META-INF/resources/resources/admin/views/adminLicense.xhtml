@@ -152,9 +152,28 @@
 									</div>
 									
                                     <!-- CONCURRENT VIEWS LIMIT -->
+                                    <ui:fragment rendered="#{adminBean.getConcurrentViewsLimitRecordCountForLicenseType(adminBean.currentLicenseType.name) > 0}">
                                     <div class="form-group form-row mb-3">
                                         <div class="col-2"></div>
                                         <h:panelGroup id="pdf_concurrent_views_limit_info_box" layout="block" styleClass="col-9">
+                                            <!-- No records found -->
+<!--                                             <ui:fragment -->
+<!--                                                 rendered="#{adminBean.getConcurrentViewsLimitRecordCountForLicenseType(adminBean.currentLicenseType.name) == 0}"> -->
+<!--                                                     <div class="admin__default-block mb-0 -info-box"> -->
+<!--                                                         <h:outputFormat value="#{msg.admin__license_concurrent_views_limit_record_count_nok}" escape="false"> -->
+<!--                                                             <f:param value="#{adminBean.getConcurrentViewsLimitRecordCountForLicenseType(adminBean.currentLicenseType.name)}" /> -->
+<!--                                                         </h:outputFormat> -->
+<!--                                                     </div> -->
+<!--                                             </ui:fragment> -->
+                                            <!-- Yes, records found -->
+                                            <ui:fragment
+                                                rendered="#{adminBean.getConcurrentViewsLimitRecordCountForLicenseType(adminBean.currentLicenseType.name) > 0}">
+                                                <div class="admin__default-block mb-0 -success-box">
+                                                    <p class="mb-3">
+                                                        <h:outputFormat value="#{msg.admin__license_concurrent_views_limit_record_count_ok}" escape="false">
+                                                            <f:param value="#{adminBean.getConcurrentViewsLimitRecordCountForLicenseType(adminBean.currentLicenseType.name)}" />
+                                                        </h:outputFormat>
+                                                    </p>
                                                     <div class="row">
                                                         <div class="col-2">#{msg.admin__license_concurrent_views_limit_active}:</div>
                                                         <div class="col-10">
@@ -171,30 +190,11 @@
                                                             </div>
                                                         </div>
                                                     </div>
-                                        
-                                            <!-- No records found -->
-                                            <ui:fragment
-                                                rendered="#{adminBean.getConcurrentViewsLimitRecordCountForLicenseType(adminBean.currentLicenseType.name) == 0}">
-                                                    <div class="admin__default-block mb-0 -info-box">
-                                                        <h:outputFormat value="#{msg.admin__license_concurrent_views_limit_record_count_nok}" escape="false">
-                                                            <f:param value="#{adminBean.getConcurrentViewsLimitRecordCountForLicenseType(adminBean.currentLicenseType.name)}" />
-                                                        </h:outputFormat>
-                                                    </div>
-                                            </ui:fragment>
-
-                                            <!-- Yes, records found -->
-                                            <ui:fragment
-                                                rendered="#{adminBean.getConcurrentViewsLimitRecordCountForLicenseType(adminBean.currentLicenseType.name) > 0}">
-                                                <div class="admin__default-block mb-0 -success-box">
-                                                    <p class="mb-3">
-                                                        <h:outputFormat value="#{msg.admin__license_concurrent_views_limit_record_count_ok}" escape="false">
-                                                            <f:param value="#{adminBean.getConcurrentViewsLimitRecordCountForLicenseType(adminBean.currentLicenseType.name)}" />
-                                                        </h:outputFormat>
-                                                    </p>
                                                 </div>
                                             </ui:fragment>
                                         </h:panelGroup>
                                     </div>
+                                    </ui:fragment>
 
                                     <!-- PDF DOWNLOAD QUOTA -->
                                     <ui:fragment rendered="#{adminBean.getPdfQuotaRecordCountForLicenseType(adminBean.currentLicenseType.name) > 0}">
