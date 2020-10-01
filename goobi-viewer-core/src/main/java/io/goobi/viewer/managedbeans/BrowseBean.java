@@ -41,10 +41,13 @@ import io.goobi.viewer.controller.AlphanumCollatorComparator;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.SolrConstants;
 import io.goobi.viewer.controller.SolrSearchIndex;
+import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
+import io.goobi.viewer.exceptions.RecordDeletedException;
 import io.goobi.viewer.exceptions.RecordNotFoundException;
 import io.goobi.viewer.exceptions.RedirectException;
+import io.goobi.viewer.exceptions.ViewerConfigurationException;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.messages.Messages;
 import io.goobi.viewer.messages.ViewerResourceBundle;
@@ -833,20 +836,28 @@ public class BrowseBean implements Serializable {
      * @return a {@link java.lang.String} object.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
+     * @throws ViewerConfigurationException
+     * @throws DAOException
+     * @throws RecordDeletedException
      */
-    public String openWorkInTargetCollection() throws IndexUnreachableException, PresentationException {
+    public String openWorkInTargetCollection()
+            throws IndexUnreachableException, PresentationException, RecordDeletedException, DAOException, ViewerConfigurationException {
         if (StringUtils.isBlank(getTargetCollection())) {
             return null;
         }
-        String url = SearchHelper.getFirstWorkUrlWithFieldValue(getCollectionField(), getTargetCollection(), true, true,
+        String pi = SearchHelper.getFirstWorkUrlWithFieldValue(getCollectionField(), getTargetCollection(), true, true,
                 DataManager.getInstance().getConfiguration().getCollectionSplittingChar(getCollectionField()), BeanUtils.getLocale());
-        //        url = BeanUtils.getServletPathWithHostAsUrlFromJsfContext() + url;
-        //        return url;
+        //        pi = BeanUtils.getServletPathWithHostAsUrlFromJsfContext() + url;
+        //        return pi;
         try {
-            BeanUtils.getActiveDocumentBean().setPersistentIdentifier(url);
+            ActiveDocumentBean adb = BeanUtils.getActiveDocumentBean();
+            if (adb != null) {
+                adb.setPersistentIdentifier(pi);
+                adb.open(); // open to persist PI on ViewManager
+            }
             return "pretty:object1";
         } catch (RecordNotFoundException e) {
-            logger.error("No record found for id " + url);
+            logger.error("No record found for ID: {}", pi);
             return null;
         }
     }
