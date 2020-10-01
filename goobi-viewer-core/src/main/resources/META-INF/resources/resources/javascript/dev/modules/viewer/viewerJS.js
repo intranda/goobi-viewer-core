@@ -81,6 +81,10 @@ var viewerJS = (function () {
         viewerJS.popovers.init();
         
 	    viewerJS.userDropdown.init();
+	    
+	    //init toggle hide/show
+	    viewerJS.toggle.init();
+
        
         // init bookmarks if enabled
         if ( bookmarksEnabled ) {

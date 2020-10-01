@@ -116,29 +116,12 @@ $( document ).ready(function() {
 		}
 	});	
 
-	// USER TERMS 
-	// hide editable text if radio = no
-	// check if toggle yes on page load
 	
-if ($('.userTermsToggle input:nth-of-type(2)').prop('checked')) {
-		  $('.admin__user-terms-box-editable').show();
-	  }
-
-	// check if toggle status changes
-	$("body").on("change", '.userTermsToggle input', function() {	
-
-	  if ($('.userTermsToggle input:nth-of-type(1)').is(':checked'))
-	   $('.admin__user-terms-box-editable').animate({
-		    height: "toggle",
-		    opacity: "toggle"
-		}, 250);
-	  else if ($('.userTermsToggle input:nth-of-type(2)').is(':checked'))
-		   $('.admin__user-terms-box-editable').animate({
-			    height: "toggle",
-			    opacity: "toggle"
-			}, 250);
-	});
+	
+//END DOCUMENT READY
 });
+ 
+
 
 
 // hiding the new tab option for cms menus if link value is '#'

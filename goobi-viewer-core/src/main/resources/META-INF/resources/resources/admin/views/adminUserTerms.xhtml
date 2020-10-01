@@ -31,26 +31,18 @@
 						<div class="row no-gutters mb-3 align-items-center">
 							<div class="control-label mr-3 admin__form-label">#{msg.admin__terms_of_use__is_active}:</div>
 							<div class="admin__form-input">
-								<div class="admin__radio-switch userTermsToggle">
-									<h:selectOneRadio group="activateUserTerms"
-										value="#{termsOfUseBean.activated}">
-										<f:selectItem itemValue="#{false}" itemLabel="#{msg.no}" />
-										<f:ajax render="@none" execute="@this" />
-									</h:selectOneRadio>
-									<h:selectOneRadio group="activateUserTerms"
-										value="#{termsOfUseBean.activated}">
-										<f:selectItem itemValue="#{true}" itemLabel="#{msg.yes}" />
-										<f:ajax render="@none" execute="@this" />
-									</h:selectOneRadio>
-									<span class="toggle-outside"><span class="toggle-inside"></span></span>
-								</div>
+								<viewerComponent:ToggleSwitch
+									name="activateUserTerms"
+									value="#{termsOfUseBean.activated}"
+									toggleTarget=".admin__user-terms-box-editable"
+								/>
 							</div>
 						</div>
 				</h:form>
 
 					
-				<h:form id="editUserTerms" styleClass="form-horizontal form-group" role="form" prependId="false">
-					<div class="admin__user-terms-box-editable">
+				<div class="admin__user-terms-box-editable">
+					<h:form id="editUserTerms" styleClass="form-horizontal form-group" role="form" prependId="false">
 
 							<h3>#{msg.admin__terms_of_use__manage_text}</h3>
 
@@ -165,8 +157,8 @@
 									</div>
 								</div>
 							</div>
-						</div>
-					</h:form>
+						</h:form>
+					</div>
 				</div>
 			</h:panelGroup>
 		</f:view>
