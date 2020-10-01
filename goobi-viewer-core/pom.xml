@@ -111,7 +111,7 @@
 		<jaxb-impl.version>2.4.0-b180830.0438</jaxb-impl.version>
         <jaxb-core.version>2.3.0.1</jaxb-core.version>
 		<jdom2.version>2.0.6</jdom2.version>
-		<jersey.version>2.31</jersey.version>
+		<jersey.version>2.32</jersey.version>
 		<jersey-guava.version>2.26-b03</jersey-guava.version>
 		<jgravatar.version>1.2</jgravatar.version>
 		<json.version>20200518</json.version>
@@ -119,10 +119,10 @@
 		<jstl.version>1.2</jstl.version>
 		<junit.version>4.13</junit.version>
 		<mariadb-java-client.version>2.3.0</mariadb-java-client.version>
-		<mockito.version>3.5.11</mockito.version>
+		<mockito.version>3.5.13</mockito.version>
 		<mockserver.version>5.11.1</mockserver.version>
 		<oauth.version>1.0.2</oauth.version>
-		<openpdf.version>1.3.21</openpdf.version>
+		<openpdf.version>1.3.22</openpdf.version>
 		<poi.version>4.1.2</poi.version>
 		<prettyfaces.version>3.3.4-20120314</prettyfaces.version>
 		<primefaces.version>8.0</primefaces.version>

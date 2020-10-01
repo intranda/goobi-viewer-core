@@ -23,6 +23,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.solr.common.SolrDocument;
 import org.apache.solr.common.SolrDocumentList;
 import org.slf4j.Logger;
@@ -48,6 +49,9 @@ public class PpnResolver extends HttpServlet implements Serializable {
     private static final Logger logger = LoggerFactory.getLogger(PpnResolver.class);
 
     private static final String REQUEST_PARAM_NAME = "id";
+    
+    private static final String REQUEST_PAGE_PARAM_NAME = "page";
+
 
     // error messages
 
@@ -56,6 +60,7 @@ public class PpnResolver extends HttpServlet implements Serializable {
             "You didnt not specify a source field value for the mapping. Append the value to the URL as a request parameter; expected param name is :";
     private static final String ERRTXT_ILLEGAL_IDENTIFIER = "Illegal identifier";
     private static final String ERRTXT_MULTIMATCH = "Multiple documents matched the search query. No unambiguous mapping possible.";
+    private static final String ERRTXT_ILLEGAL_PAGE_NUMBER = "Illegal page number";
 
     /**
      * {@inheritDoc}
@@ -81,7 +86,16 @@ public class PpnResolver extends HttpServlet implements Serializable {
             response.sendError(HttpServletResponse.SC_BAD_REQUEST, ERRTXT_ILLEGAL_IDENTIFIER + ": " + identifier);
             return;
         }
-
+        Integer page = null;
+        String pageString = request.getParameter(REQUEST_PAGE_PARAM_NAME);
+        if(StringUtils.isNotBlank(pageString)) {
+            try {
+                page = Integer.parseInt(pageString);
+            } catch(NumberFormatException e) {
+                response.sendError(HttpServletResponse.SC_BAD_REQUEST, ERRTXT_ILLEGAL_PAGE_NUMBER + ": " + identifier);
+            }
+        }
+        
         // // 5. redirect or forward using the target field value
         // if (DO_REDIRECT) {
         // response.sendRedirect(result);
@@ -117,7 +131,12 @@ public class PpnResolver extends HttpServlet implements Serializable {
             // 4. extract the target field value of the single found document
             SolrDocument targetDoc = hits.get(0);
 
-            String result = IdentifierResolver.constructUrl(targetDoc, false);
+            String result;
+            if(page == null)  {
+                result = IdentifierResolver.constructUrl(targetDoc, false);
+            } else {
+                result = IdentifierResolver.constructUrl(targetDoc, false, page);
+            }
             if (DataManager.getInstance().getConfiguration().isUrnDoRedirect()) {
                 response.sendRedirect(result);
             } else {

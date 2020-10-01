@@ -18,6 +18,7 @@ package io.goobi.viewer.model.bookmark;
 import java.io.Serializable;
 import java.util.Arrays;
 import java.util.Date;
+import java.util.Locale;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -52,6 +53,9 @@ import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.exceptions.ViewerConfigurationException;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
+import io.goobi.viewer.model.metadata.MetadataElement;
+import io.goobi.viewer.model.search.BrowseElement;
+import io.goobi.viewer.model.search.SearchHit;
 import io.goobi.viewer.model.viewer.PageType;
 import io.goobi.viewer.model.viewer.StructElement;
 
@@ -110,7 +114,13 @@ public class Bookmark implements Serializable {
 
     @Transient
     private String url;
+    
+    @Transient 
+    private BrowseElement browseElement = null;
 
+    @Transient 
+    private Boolean hasImages = null; 
+   
     /**
      * Empty constructor.
      */
@@ -266,32 +276,10 @@ public class Bookmark implements Serializable {
         if (StringUtils.isNotEmpty(urn)) {
             sb.append("/resolver?identifier=").append(urn);
         } else {
-            // Determine page type
-            StringBuilder sbQuery = new StringBuilder("+");
+            sb.append("/piresolver?id=").append(pi);
             if (order != null) {
-                sbQuery.append(SolrConstants.PI_TOPSTRUCT)
-                        .append(':')
-                        .append(pi)
-                        .append(" +")
-                        .append(SolrConstants.ORDER)
-                        .append(':')
-                        .append(order)
-                        .append(" +")
-                        .append(SolrConstants.DOCTYPE)
-                        .append(":PAGE");
-            } else {
-                sbQuery.append(SolrConstants.PI).append(':').append(pi);
+                sb.append("&page=").append(order);
             }
-            SolrDocument doc = DataManager.getInstance().getSearchIndex().getFirstDoc(sbQuery.toString(), null);
-            PageType pageType = PageType.viewMetadata;
-            if (doc != null) {
-                boolean isAnchor = doc.containsKey(SolrConstants.ISANCHOR) ? (Boolean) doc.getFieldValue(SolrConstants.ISANCHOR) : false;
-                pageType = PageType.determinePageType((String) doc.getFieldValue(SolrConstants.DOCSTRCT),
-                        (String) doc.getFieldValue(SolrConstants.MIMETYPE), isAnchor, SolrSearchIndex.isHasImages(doc), order != null);
-                logger.trace("found page type: {}", pageType);
-            }
-            sb.append('/')
-                    .append(DataManager.getInstance().getUrlBuilder().buildPageUrl(pi, order != null ? Integer.valueOf(order) : 1, logId, pageType));
         }
         url = sb.toString();
 
@@ -327,35 +315,12 @@ public class Bookmark implements Serializable {
      */
     public String getRepresentativeImageUrl(int width, int height)
             throws PresentationException, IndexUnreachableException, ViewerConfigurationException, DAOException {
-        String query;
+        ThumbnailHandler thumbs = BeanUtils.getImageDeliveryBean().getThumbs();
         if (order != null) {
-            // Exactly the bookmarked page
-            query = new StringBuilder("+").append(SolrConstants.PI_TOPSTRUCT)
-                    .append(':')
-                    .append(pi)
-                    .append(" +")
-                    .append(SolrConstants.ORDER)
-                    .append(':')
-                    .append(order)
-                    .append(" +")
-                    .append(SolrConstants.DOCTYPE)
-                    .append(":PAGE")
-                    .toString();
+            return thumbs.getThumbnailUrl(order, pi, width, height);
         } else {
-            // Representative image
-            query = new StringBuilder(SolrConstants.PI).append(':').append(pi).toString();
+            return thumbs.getThumbnailUrl(pi, width, height);
         }
-
-        SolrDocumentList docs = DataManager.getInstance().getSearchIndex().search(query, 1, null, Arrays.asList(FIELDS));
-        if (!docs.isEmpty()) {
-            ThumbnailHandler thumbs = BeanUtils.getImageDeliveryBean().getThumbs();
-            if (order != null) {
-                return thumbs.getThumbnailUrl(order, pi, width, height);
-            }
-            return thumbs.getThumbnailUrl(docs.get(0), width, height);
-        }
-
-        return "";
     }
 
     /**
@@ -623,6 +588,93 @@ public class Bookmark implements Serializable {
     @Deprecated
     public void setMainTitle(String mainTitle) {
         this.mainTitle = mainTitle;
+    }
+    
+    @JsonIgnore
+    public MetadataElement getMetadataElement() throws IndexUnreachableException {
+        SolrDocument doc = retrieveSolrDocument();
+        Long iddoc = Long.parseLong((String)doc.getFirstValue(SolrConstants.IDDOC));
+        StructElement se = new StructElement(iddoc, doc);
+        Locale sessionLocale = BeanUtils.getLocale();
+        String selectedRecordLanguage = sessionLocale.getLanguage();
+        try {
+            MetadataElement md = new MetadataElement(se, sessionLocale, selectedRecordLanguage);
+            return md;
+        } catch(DAOException | PresentationException e) {
+            throw new IndexUnreachableException(e.getMessage());
+        }
+    }
+
+    /**
+     * @return
+     * @throws PresentationException
+     * @throws IndexUnreachableException
+     */
+    private SolrDocument retrieveSolrDocument() throws IndexUnreachableException {
+        try {            
+            String query = getSolrQueryForDocument();
+            SolrDocument doc = DataManager.getInstance().getSearchIndex().getFirstDoc(query, null);
+            return doc;
+        } catch(PresentationException e) {
+            throw new IndexUnreachableException(e.toString());
+        }
+    }
+
+    /**
+     * @return
+     */
+    @JsonIgnore
+    public String getSolrQueryForDocument() {
+        String query = "+PI_TOPSTRUCT:%s";
+        if(StringUtils.isNotBlank(logId)) {
+            query += " +LOGID:%s";
+            query = String.format(query, this.pi, this.logId);
+        } else {
+            query += " +(ISWORK:* OR ISANCHOR:*)";
+            query = String.format(query, this.pi);
+        }
+        return query;
+    }
+    
+    @JsonIgnore
+    public BrowseElement getBrowseElement() throws IndexUnreachableException {
+        if(this.browseElement == null) {            
+            try {                
+                SolrDocument doc = retrieveSolrDocument();
+                if(doc != null) {                    
+                    Locale locale = BeanUtils.getLocale();
+                    SearchHit sh = SearchHit.createSearchHit(doc, null, null, locale, "", null, null, null, false, null, null, SearchHit.HitType.DOCSTRCT);
+                    this.browseElement = sh.getBrowseElement();
+                }
+            } catch(PresentationException | DAOException | ViewerConfigurationException e) {
+                throw new IndexUnreachableException(e.toString());
+            }
+        }
+        
+        return this.browseElement;
+    }
+    
+    @JsonIgnore
+    public boolean isHasImages() {
+        try {
+            if(this.hasImages != null) {
+                //no action required
+            } else if(this.browseElement != null) {
+                this.hasImages = this.browseElement.isHasImages();
+            } else {
+                this.hasImages = isHasImagesFromSolr();
+            }
+        } catch(IndexUnreachableException | PresentationException e) {
+            logger.error("Unable to get browse element for bookmark", e);
+            return false;
+        }
+        return this.hasImages;
+    }
+
+    
+    private boolean isHasImagesFromSolr() throws IndexUnreachableException, PresentationException {
+        SolrDocument doc = DataManager.getInstance().getSearchIndex().getFirstDoc(getSolrQueryForDocument(), Arrays.asList(SolrConstants.THUMBNAIL, SolrConstants.FILENAME));
+        return SolrSearchIndex.isHasImages(doc);
     }
 
 }
