@@ -25,11 +25,10 @@
 						<h:outputText value="#{msg.admin__terms_of_use__description}" escape="false" />
 					</div>
 
-					<h:form id="editUserTerms" styleClass="form-horizontal form-group" role="form" prependId="false">
 
-
+		<h:form id="activateTermsOfUse" styleClass="form-horizontal form-group" role="form" prependId="false">
 					<div class="row mb-3">
-						<div class="col-2 control-label admin__form-label">#{msg.admin__terms_of_use__activate}:<span class="admin__label-required-field">#{msg.form__required_field}</span></div>
+						<div class="col-2 control-label admin__form-label">#{msg.admin__terms_of_use__is_active}:</div>
 						<div class="col-7 admin__form-input">
 							<div class="admin__radio-switch userTermsToggle">
 			                    <h:selectOneRadio group="activateUserTerms" value="#{termsOfUseBean.activated}">
@@ -44,10 +43,10 @@
 			                </div>
 		                </div>				
 					</div>
-
+		</h:form>
 
 					
-
+		<h:form id="editUserTerms" styleClass="form-horizontal form-group" role="form" prependId="false">
 			<div class="admin__user-terms-box-editable">
 						<!-- RENDERED IF TERMS OF USE FUNCTION IS ACTIVE -->
 						<!-- <ui:fragment rendered="#{termsOfUseBean.activated}">-->
@@ -59,9 +58,11 @@
 								<!-- NAV TABS -->
 								<ul class="nav nav-tabs" role="tablist">
 									<c:forEach var="locale"
-										items="#{termsOfUseBean.getAllLocales()}">
+										items="#{termsOfUseBean.getLocales()}">
 										<li role="presentation"
-											class="admin__user-terms-language-tab #{termsOfUseBean.selectedLanguage == locale.language ? 'active':''}">
+											class="admin__user-terms-language-tab 
+											#{termsOfUseBean.selectedLanguage == locale.language ? 'active':''}
+											#{termsOfUseBean.selectedLanguage == termsOfUseBean.getDefaultLocale().language ? 'default-language':''}">
 											<h:commandLink value="#{locale.getDisplayLanguage(navigationHelper.locale)}"
 												action="#{termsOfUseBean.setSelectedLanguage(locale.language)}"
 												immediate="false">
@@ -84,7 +85,7 @@
 							</div>
 
 							<div class="admin__default-block">
-								<div class="tab-content">
+								<div class="tab-content  admin__input_form">
 									<!-- LOCALIZE TABS -->
 									<h:panelGroup
 										rendered="#{termsOfUseBean.selectedLanguage != null}">
@@ -93,9 +94,22 @@
 										<div class="form-group form-row">
 											<div class="col-2 control-label admin__form-label">
 												<label for="userTermsTitle">#{msg.title}:</label>
+												<ui:fragment rendered="#{termsOfUseBean.selectedLanguage == termsOfUseBean.getDefaultLocale().language}">
+													<span class="admin__label-required-field">(#{msg.form__required_field})</span>
+												</ui:fragment>
 											</div>
-											<div class="col-10 admin__form-input">
+											<div class="col-10 admin__form-input input_form__option_control">
+												<div class="input_form__option-message">
+								                    <h:messages for="userTermsTitle" errorClass="input_form__option-message danger" />
+								                    
+								                    <div class="input_form__option-message-mark">
+								                        <i class="fa fa-check" aria-hidden="true"></i>
+								                        <i class="fa fa-exclamation" aria-hidden="true"></i>
+								                    </div>
+								                </div>
 												<h:inputText id="userTermsTitle" styleClass="form-control"
+												required="#{termsOfUseBean.selectedLanguage == termsOfUseBean.getDefaultLocale().language}"
+												requiredMessage="#{msg.valueRequired}"
 													value="#{termsOfUseBean.title}" />
 												<!-- <span class="admin__form-help-text">#{msg.admin__user_display_name__help}</span>  -->
 											</div>
@@ -105,10 +119,23 @@
 										<div class="form-group form-row">
 											<div class="col-2 control-label admin__form-label">
 												<label for="userTermsText">#{msg.text}:</label>
+												<ui:fragment rendered="#{termsOfUseBean.selectedLanguage == termsOfUseBean.getDefaultLocale().language}">
+													<span class="admin__label-required-field">(#{msg.form__required_field})</span>
+												</ui:fragment>
 											</div>
-											<div class="col-10 admin__form-input">
+											<div class="col-10 admin__form-input input_form__option_control">
+												<div class="input_form__option-message">
+								                    <h:messages for="userTermsText" errorClass="input_form__option-message danger" />
+								                    
+								                    <div class="input_form__option-message-mark">
+								                        <i class="fa fa-check" aria-hidden="true"></i>
+								                        <i class="fa fa-exclamation" aria-hidden="true"></i>
+								                    </div>
+								                </div>
 												<h:inputTextarea id="userTermsText"
 													styleClass="form-control tinyMCE"
+													required="#{termsOfUseBean.selectedLanguage == termsOfUseBean.getDefaultLocale().language}"
+												    requiredMessage="#{msg.valueRequired}"
 													value="#{termsOfUseBean.description}" />
 												<!-- <span class="admin__form-help-text">#{msg.admin__user_display_name__help}</span>  -->
 											</div>

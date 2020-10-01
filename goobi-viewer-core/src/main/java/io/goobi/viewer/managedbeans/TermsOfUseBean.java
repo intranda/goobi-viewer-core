@@ -34,6 +34,7 @@ import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.messages.Messages;
 import io.goobi.viewer.messages.ViewerResourceBundle;
+import io.goobi.viewer.model.misc.IPolyglott;
 import io.goobi.viewer.model.misc.Translation;
 import io.goobi.viewer.model.security.TermsOfUse;
 
@@ -43,7 +44,7 @@ import io.goobi.viewer.model.security.TermsOfUse;
  */
 @Named
 @ViewScoped
-public class TermsOfUseBean implements Serializable {
+public class TermsOfUseBean implements Serializable, IPolyglott {
 
     private static final long serialVersionUID = -3105025774455196485L;
 
@@ -127,20 +128,14 @@ public class TermsOfUseBean implements Serializable {
         DataManager.getInstance().getDao().resetUserAgreementsToTermsOfUse();
         Messages.info("admin__terms_of_use__reset__success");
     }
-    
-    public static List<Locale> getAllLocales() {
-        List<Locale> list = new LinkedList<>();
-        list.add(ViewerResourceBundle.getDefaultLocale());
-        if (FacesContext.getCurrentInstance() != null && FacesContext.getCurrentInstance().getApplication() != null) {
-            Iterator<Locale> iter = FacesContext.getCurrentInstance().getApplication().getSupportedLocales();
-            while (iter.hasNext()) {
-                Locale locale = iter.next();
-                if (!list.contains(locale)) {
-                    list.add(locale);
-                }
-            }
-        }
-        return list;
+
+
+    /* (non-Javadoc)
+     * @see io.goobi.viewer.model.misc.IPolyglott#isComplete(java.lang.String)
+     */
+    @Override
+    public boolean isComplete(String language) {
+        return !termsOfUse.getTitle(language).isEmpty() && !termsOfUse.getDescription(language).isEmpty();
     }
     
 }

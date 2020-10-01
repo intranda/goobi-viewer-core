@@ -15,7 +15,11 @@
  */
 package io.goobi.viewer.model.misc;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Locale;
 
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
 
@@ -34,12 +38,15 @@ public interface IPolyglott {
     
     public void setSelectedLanguage(String language);
     
-    public default List<String> getLanguages() {
-        return BeanUtils.getNavigationHelper().getSupportedLanguages();
+    public default Collection<Locale> getLocales() {
+        Iterator<Locale> i = BeanUtils.getNavigationHelper().getSupportedLocales();
+        ArrayList<Locale> list = new ArrayList<>();
+        i.forEachRemaining(list::add);
+        return list;
     }
     
-    public default String getDefaultLanguage() {
-        return BeanUtils.getNavigationHelper().getDefaultLocale().getLanguage();
+    public default Locale getDefaultLocale() {
+        return BeanUtils.getNavigationHelper().getDefaultLocale();
     }
     
 }
