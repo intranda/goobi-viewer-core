@@ -73,27 +73,28 @@
 									<h:panelGroup rendered="#{termsOfUseBean.selectedLocale != null}">
 										<div class="form-group form-row">
 											<div class="col-2 control-label admin__form-label">
-
 												<label for="userTermsTitle">#{msg.title}:
 													<ui:fragment rendered="#{termsOfUseBean.isDefaultLocaleSelected()}">
 														<span class="admin__label-required-field">(#{msg.form__required_field})</span>
 													</ui:fragment>
 												</label>
-
 											</div>
-											<div class="col-10 admin__form-input input_form__option_control">
-												<div class="input_form__option-message">
-								                    <h:messages for="userTermsTitle" errorClass="input_form__option-message danger" />
-								                    
-								                    <div class="input_form__option-message-mark">
-								                        <i class="fa fa-check" aria-hidden="true"></i>
-								                        <i class="fa fa-exclamation" aria-hidden="true"></i>
-								                    </div>
+
+											<div class="col-10 admin__form-input cms-module__option-control">
+												<div class="cms-module__option-message">
+												
+								                    <h:messages for="userTermsTitle" errorClass="cms-module__option-message-status danger" />
+	                                                 <div class="cms-module__option-message-mark">
+	                                                     <i class="fa fa-check" aria-hidden="true"></i>
+	                                                     <i class="fa fa-exclamation" aria-hidden="true"></i>
+	                                                 </div>
+	                                                 
 								                </div>
 												<h:inputText id="userTermsTitle" styleClass="form-control"
 												required="#{termsOfUseBean.isDefaultLocaleSelected()}"
 												requiredMessage="#{msg.valueRequired}"
-													value="#{termsOfUseBean.title}" />
+													value="#{termsOfUseBean.title}" >
+												</h:inputText>
 												<!-- <span class="admin__form-help-text">#{msg.admin__user_display_name__help}</span>  -->
 											</div>
 										</div>

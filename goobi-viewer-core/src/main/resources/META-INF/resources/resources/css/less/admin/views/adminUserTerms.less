@@ -32,7 +32,8 @@
 					border-bottom: none;
 				}
 			}
-			&:first-child {
+			&:first-child,
+			&:first-child.-already-translated {
 				a {
 		    		background: #9cb5d5;
 		    		color: @white;
@@ -49,7 +50,7 @@
 		    		border-bottom: none;
 		    	}
 			}
-			&.active a {
+			&.active a, &.active.-already-translated a {
 				    border: 1px solid #ccc;
 				    background-color: #fff;
 				    border-bottom: 0;
@@ -58,7 +59,7 @@
 					margin-bottom: -2px;
 					color: @blue;
 		    	}
-			&.-alreadyTranslated {
+			&.-already-translated {
 				a {
 					background: @btnSuccessBgc;
 					border-color: #ccc;
