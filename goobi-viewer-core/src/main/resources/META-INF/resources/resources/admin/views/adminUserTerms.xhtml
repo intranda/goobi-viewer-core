@@ -27,8 +27,6 @@
 							escape="false" />
 					</div>
 
-
-			<div class="admin__user-terms-box-editable">
 				<h:form id="activateTermsOfUse" styleClass="form-horizontal form-group" role="form" prependId="false">
 						<div class="row no-gutters mb-3 align-items-center">
 							<div class="control-label mr-3 admin__form-label">#{msg.admin__terms_of_use__is_active}:</div>
@@ -52,6 +50,7 @@
 
 					
 				<h:form id="editUserTerms" styleClass="form-horizontal form-group" role="form" prependId="false">
+					<div class="admin__user-terms-box-editable">
 
 							<h3>#{msg.admin__terms_of_use__manage_text}</h3>
 
@@ -63,10 +62,11 @@
 										items="#{termsOfUseBean.getLocales()}">
 										<li role="presentation"
 											class="admin__user-terms-language-tab 
-											#{termsOfUseBean.selectedLanguage == locale.language ? 'active':''}
-											#{termsOfUseBean.selectedLanguage == termsOfUseBean.getDefaultLocale().language ? 'default-language':''}">
+											#{termsOfUseBean.isSelected(locale) ? 'active':''}
+											#{termsOfUseBean.isComplete(locale) ? '-already-translated':''}
+											#{termsOfUseBean.isDefaultLocaleSelected() ? '-default-language':''}">
 											<h:commandLink value="#{locale.getDisplayLanguage(navigationHelper.locale)}"
-												action="#{termsOfUseBean.setSelectedLanguage(locale.language)}"
+												action="#{termsOfUseBean.setSelectedLocale(locale)}"
 												immediate="false">
 												<f:ajax render="@form" execute="@form"></f:ajax>
 											</h:commandLink>
@@ -76,17 +76,14 @@
 							</div>
 
 							<div class="admin__default-block">
-								<div class="tab-content  admin__input_form">
+								<div class="tab-content">
 									<!-- LOCALIZE TABS -->
-									<h:panelGroup
-										rendered="#{termsOfUseBean.selectedLanguage != null}">
-										<ui:param name="language"
-											value="#{termsOfUseBean.selectedLanguage}" />
+									<h:panelGroup rendered="#{termsOfUseBean.selectedLocale != null}">
 										<div class="form-group form-row">
 											<div class="col-2 control-label admin__form-label">
 
 												<label for="userTermsTitle">#{msg.title}:
-													<ui:fragment rendered="#{termsOfUseBean.selectedLanguage == termsOfUseBean.getDefaultLocale().language}">
+													<ui:fragment rendered="#{termsOfUseBean.isDefaultLocaleSelected()}">
 														<span class="admin__label-required-field">(#{msg.form__required_field})</span>
 													</ui:fragment>
 												</label>
@@ -102,7 +99,7 @@
 								                    </div>
 								                </div>
 												<h:inputText id="userTermsTitle" styleClass="form-control"
-												required="#{termsOfUseBean.selectedLanguage == termsOfUseBean.getDefaultLocale().language}"
+												required="#{termsOfUseBean.isDefaultLocaleSelected()}"
 												requiredMessage="#{msg.valueRequired}"
 													value="#{termsOfUseBean.title}" />
 												<!-- <span class="admin__form-help-text">#{msg.admin__user_display_name__help}</span>  -->
@@ -114,7 +111,7 @@
 											
 											<div class="col-2 control-label admin__form-label">
 												<label for="userTermsText">#{msg.text}:
-													<ui:fragment rendered="#{termsOfUseBean.selectedLanguage == termsOfUseBean.getDefaultLocale().language}">
+													<ui:fragment rendered="#{termsOfUseBean.isDefaultLocaleSelected()}">
 														<span class="admin__label-required-field">(#{msg.form__required_field})</span>
 													</ui:fragment>
 												</label>
@@ -131,7 +128,7 @@
 								                </div>
 												<h:inputTextarea id="userTermsText"
 													styleClass="form-control tinyMCE"
-													required="#{termsOfUseBean.selectedLanguage == termsOfUseBean.getDefaultLocale().language}"
+													required="#{termsOfUseBean.isDefaultLocaleSelected()}"
 												    requiredMessage="#{msg.valueRequired}"
 													value="#{termsOfUseBean.description}" />
 												<!-- <span class="admin__form-help-text">#{msg.admin__user_display_name__help}</span>  -->

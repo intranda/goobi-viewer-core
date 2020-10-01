@@ -32,11 +32,27 @@ import io.goobi.viewer.managedbeans.utils.BeanUtils;
  */
 public interface IPolyglott {
 
-    public boolean isComplete(String language);
+    public boolean isComplete(Locale locale);
     
-    public String getSelectedLanguage();
+    public Locale getSelectedLocale();
     
-    public void setSelectedLanguage(String language);
+    public void setSelectedLocale(Locale locale);
+    public default void setSelectedLocale(String language) {
+        Locale locale = Locale.forLanguageTag(language);
+        if(locale != null) { 
+            this.setSelectedLocale(locale);
+        } else {
+            throw new IllegalArgumentException("'" + language + "' is not a valid language tag");
+        }
+    }
+    
+    public default boolean isDefaultLocaleSelected() {
+        return getSelectedLocale() != null && getSelectedLocale().equals(getDefaultLocale());
+    }
+    
+    public default boolean isSelected(Locale locale) {
+        return locale != null && locale.equals(getSelectedLocale());
+    }
     
     public default Collection<Locale> getLocales() {
         Iterator<Locale> i = BeanUtils.getNavigationHelper().getSupportedLocales();

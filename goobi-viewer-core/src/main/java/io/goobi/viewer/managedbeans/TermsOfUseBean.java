@@ -51,7 +51,7 @@ public class TermsOfUseBean implements Serializable, IPolyglott {
     private static final Logger logger = LoggerFactory.getLogger(TermsOfUseBean.class);
     
     private TermsOfUse termsOfUse;
-    private String selectedLanguage = BeanUtils.getLocale().getLanguage();
+    private Locale selectedLocale = BeanUtils.getLocale();
     
     @PostConstruct
     public void init() throws DAOException {
@@ -61,27 +61,27 @@ public class TermsOfUseBean implements Serializable, IPolyglott {
     
     
     public String getTitle() {
-        Translation translation = this.termsOfUse.getTitle(selectedLanguage);
+        Translation translation = this.termsOfUse.getTitle(getSelectedLanguage());
         if(translation == null) {
-            translation = this.termsOfUse.setTitle(selectedLanguage, "");
+            translation = this.termsOfUse.setTitle(getSelectedLanguage(), "");
         }
         return translation.getValue();
     }
         
     public void setTitle(String value)  {
-        this.termsOfUse.setTitle(selectedLanguage, value);
+        this.termsOfUse.setTitle(getSelectedLanguage(), value);
     }
     
     public String getDescription() {
-        Translation translation = this.termsOfUse.getDescription(selectedLanguage);
+        Translation translation = this.termsOfUse.getDescription(getSelectedLanguage());
         if(translation == null) {
-            translation = this.termsOfUse.setDescription(selectedLanguage, "");
+            translation = this.termsOfUse.setDescription(getSelectedLanguage(), "");
         }
         return translation.getValue();
     }
     
     public void setDescription(String value)  {
-        this.termsOfUse.setDescription(selectedLanguage, value);
+        this.termsOfUse.setDescription(getSelectedLanguage(), value);
     }
     
     public void setActivated(boolean active) {
@@ -93,20 +93,18 @@ public class TermsOfUseBean implements Serializable, IPolyglott {
         return this.termsOfUse.isActive();
     }
 
-    
-    
-    /**
-     * @param selectedLanguage the selectedLanguage to set
-     */
-    public void setSelectedLanguage(String selectedLanguage) {
-        this.selectedLanguage = selectedLanguage;
+    @Override
+    public void setSelectedLocale(Locale locale) {
+       this.selectedLocale = locale;
+    }
+
+    @Override
+    public Locale getSelectedLocale() {
+        return this.selectedLocale;
     }
     
-    /**
-     * @return the selectedLanguage
-     */
     public String getSelectedLanguage() {
-        return selectedLanguage;
+        return this.selectedLocale.getLanguage();
     }
     
     public void save() {
@@ -129,13 +127,13 @@ public class TermsOfUseBean implements Serializable, IPolyglott {
         Messages.info("admin__terms_of_use__reset__success");
     }
 
-
-    /* (non-Javadoc)
-     * @see io.goobi.viewer.model.misc.IPolyglott#isComplete(java.lang.String)
-     */
     @Override
-    public boolean isComplete(String language) {
-        return !termsOfUse.getTitle(language).isEmpty() && !termsOfUse.getDescription(language).isEmpty();
+    public boolean isComplete(Locale locale) {
+        
+        Translation title = termsOfUse.getTitle(locale.getLanguage());
+        Translation desc = termsOfUse.getDescription(locale.getLanguage());
+        return title != null && !title.isEmpty() && desc != null && !desc.isEmpty();
+        
     }
-    
+
 }
