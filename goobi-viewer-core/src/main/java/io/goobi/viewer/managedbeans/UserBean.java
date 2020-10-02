@@ -1435,4 +1435,10 @@ public class UserBean implements Serializable {
             DataManager.getInstance().getDao().updateUser(this.user);
         }
     }
+    
+    public void logoutWithMessage(String messageKey) throws AuthenticationProviderException {
+        this.logout();
+        Messages.info(messageKey);
+        
+    }
 }

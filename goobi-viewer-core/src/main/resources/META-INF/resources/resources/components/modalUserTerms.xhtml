@@ -29,8 +29,8 @@
                 <!-- ACTION -->
 				<div class="form-group form-row  modal__user-terms-actions">
 					<div class="col-sm-12 d-flex justify-content-end">
-				    <button class="btn btn--danger mr-3 modal__user-terms-decline">#{msg.reject}</button>
-                       <h:commandButton styleClass="btn btn--success accept" value="#{msg.agree}" action="#{userBean.agreeToTermsOfUse()}">
+				    <h:commandButton class="btn btn--danger mr-3 modal__user-terms-decline" value="#{msg.action__reject}" action="#{userBean.logoutWithMessage('logoutSuccessful')}"></h:commandButton>
+                       <h:commandButton styleClass="btn btn--success accept" value="#{msg.action__agree}" action="#{userBean.agreeToTermsOfUse()}">
                        	<f:ajax execute="@this"/>
                        	<f:passThroughAttribute name="data-dismiss" value="modal"></f:passThroughAttribute>
                        </h:commandButton>
