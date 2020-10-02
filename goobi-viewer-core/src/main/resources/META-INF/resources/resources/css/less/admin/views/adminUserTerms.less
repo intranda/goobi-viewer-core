@@ -35,18 +35,19 @@
 			&:first-child,
 			&:first-child.-already-translated {
 				a {
-		    		background: #9cb5d5;
+		    		background: @blue;
 		    		color: @white;
 		    		margin-right: 1.8rem;
 		    		border-bottom: none;
 			    	&:hover {
-		    			background: @blue;
-		    			border-bottom-color: @blue;
+		    			background: @white;
+		    			border-bottom-color: @white;
+		    			color: #696969;
 			    	}
 			    }
 		    	&.active a {
-		    		background: @blue;
-		    		color: @white;
+		    		background: @white;
+		    		color: @blue;
 		    		border-bottom: none;
 		    	}
 			}

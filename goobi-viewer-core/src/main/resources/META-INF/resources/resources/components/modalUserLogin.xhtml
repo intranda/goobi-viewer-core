@@ -167,10 +167,10 @@
 										<p>#{msg.login__retrieve_account_description}</p>
 
 										<h:form id="loginTypeRetrieveAccountForm">
-											<div class="form-group">
-												<label for="userEMailToRetrieve" class="contro-label">#{msg.email}:</label>
+											<div class="form-group form-row">
+												<label for="userEMailToRetrieve" class="col-12 col-lg-3 contro-label">#{msg.email}:</label>
 												<h:inputText id="userEMailToRetrieve"
-													styleClass="form-control" value="#{userBean.email}"
+													styleClass="form-control col-12 col-lg-9" value="#{userBean.email}"
 													required="true" requiredMessage="#{msg.loginEnterEmail}">
 													<f:validator validatorId="emailValidator" />
 												</h:inputText>
@@ -310,7 +310,7 @@
 								<ui:fragment
 									rendered="#{userBean.hasProvidersOfType('openId') or userBean.hasProvidersOfType('saml')}">
 									<div id="userLoginOpenId"
-										class="mb-3 user-login-modal__body-login-open-id">
+										class="mb-5 user-login-modal__body-login-open-id">
 										<h4>
 											<span>#{msg.login__login_with_other_provider}</span>
 										</h4>
@@ -349,7 +349,7 @@
 								<h:panelGroup rendered="#{userBean.userRegistrationEnabled}">
 									<div id="userLoginOpenId" class="user-login-modal__new-account">
 										<h4>
-											<span>#{msg.login__create_new_account}</span>
+											<span>#{msg.login__new_to_goobi_viewer}</span>
 										</h4>
 										<button type="button"
 											class="btn user-login-modal__new-account-submit"
