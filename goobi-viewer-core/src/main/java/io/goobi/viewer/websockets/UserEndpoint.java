@@ -34,6 +34,9 @@ import org.slf4j.LoggerFactory;
 
 import io.goobi.viewer.controller.DataManager;
 
+/**
+ * Endpoint that maps HTTP session IDs to connected web sockets.
+ */
 @ServerEndpoint(value = "/session.socket", configurator = GetHttpSessionConfigurator.class)
 public class UserEndpoint {
 
