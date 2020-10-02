@@ -20,9 +20,9 @@ import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -235,9 +235,9 @@ public class JPADAO implements IDAO {
     public long getUserCount(Map<String, String> filters) throws DAOException {
         String filterQuery = "";
         Map<String, String> params = new HashMap<>();
-        if(filters != null) {            
+        if (filters != null) {
             String filterValue = filters.values().stream().findFirst().orElse("");
-            if(StringUtils.isNotBlank(filterValue)) {
+            if (StringUtils.isNotBlank(filterValue)) {
                 filterQuery = getUsersFilterQuery("value");
                 params.put("value", sanitizeQueryParam(filterValue, true));
             }
@@ -253,14 +253,14 @@ public class JPADAO implements IDAO {
         StringBuilder sbQuery = new StringBuilder("SELECT a FROM User a");
         Map<String, String> params = new HashMap<>();
 
-        if(filters != null) {
+        if (filters != null) {
             String filterValue = filters.values().stream().findFirst().orElse("");
-            if(StringUtils.isNotBlank(filterValue)) {
+            if (StringUtils.isNotBlank(filterValue)) {
                 String filterQuery = getUsersFilterQuery("value");
                 params.put("value", sanitizeQueryParam(filterValue, true));
                 sbQuery.append(filterQuery);
-                    }
-                }
+            }
+        }
 
         if (StringUtils.isNotEmpty(sortField)) {
             sbQuery.append(" ORDER BY a.").append(sortField);
@@ -299,14 +299,14 @@ public class JPADAO implements IDAO {
      * 
      * Remove characters from the parameter that may be used to modify the sql query itself. Also puts the parameter to upper case
      * 
-     * @param param     The parameter to sanitize
-     * @param addWildCards  if true, add '%' to the beginning and end of param
-     * @return  the sanitized parameter
+     * @param param The parameter to sanitize
+     * @param addWildCards if true, add '%' to the beginning and end of param
+     * @return the sanitized parameter
      */
     private String sanitizeQueryParam(String param, boolean addWildCards) {
         param = param.replaceAll("['\"\\(\\)]", "");
         param = param.toUpperCase();
-        if(addWildCards) {
+        if (addWildCards) {
             param = "%" + param + "%";
         }
         return param;
@@ -2424,11 +2424,10 @@ public class JPADAO implements IDAO {
             AlphabetIterator abc = new AlphabetIterator();
             String mainTableKey = abc.next(); // = a
 
-
             for (Entry<String, String> entry : filters.entrySet()) {
                 String key = entry.getKey();
                 String filterValue = entry.getValue();
-                if(StringUtils.isBlank(filterValue)) {
+                if (StringUtils.isBlank(filterValue)) {
                     continue;
                 }
                 String keyValueParam = key.replaceAll("[" + MULTIKEY_SEPARATOR + KEY_FIELD_SEPARATOR + "]", "");
@@ -2446,10 +2445,10 @@ public class JPADAO implements IDAO {
                         String table = subKey.substring(0, subKey.indexOf(KEY_FIELD_SEPARATOR));
                         String field = subKey.substring(subKey.indexOf(KEY_FIELD_SEPARATOR) + 1);
                         String tableKey;
-                        if(!tableKeys.containsKey(table)) {
+                        if (!tableKeys.containsKey(table)) {
                             tableKey = abc.next();
                             tableKeys.put(table, tableKey);
-                            String join = "LEFT JOIN " + mainTableKey + "." + table + " " + tableKey; 
+                            String join = "LEFT JOIN " + mainTableKey + "." + table + " " + tableKey;
                             joinStatements.add(join); // JOIN mainTable.joinTable b
                         } else {
                             tableKey = tableKeys.get(table);
@@ -2566,7 +2565,8 @@ public class JPADAO implements IDAO {
     /** {@inheritDoc} */
     @SuppressWarnings("unchecked")
     @Override
-    public List<CMSPage> getCMSPagesWithRelatedPi(int first, int pageSize, Date fromDate, Date toDate, List<String> templateIds) throws DAOException {
+    public List<CMSPage> getCMSPagesWithRelatedPi(int first, int pageSize, LocalDateTime fromDate, LocalDateTime toDate, List<String> templateIds)
+            throws DAOException {
         preQuery();
         StringBuilder sbQuery = new StringBuilder("SELECT o FROM CMSPage o WHERE o.relatedPI IS NOT NULL AND o.relatedPI <> ''");
         if (fromDate != null) {
@@ -2604,7 +2604,7 @@ public class JPADAO implements IDAO {
 
     /** {@inheritDoc} */
     @Override
-    public boolean isCMSPagesForRecordHaveUpdates(String pi, CMSCategory category, Date fromDate, Date toDate) throws DAOException {
+    public boolean isCMSPagesForRecordHaveUpdates(String pi, CMSCategory category, LocalDateTime fromDate, LocalDateTime toDate) throws DAOException {
         if (pi == null) {
             throw new IllegalArgumentException("pi may not be null");
         }
@@ -2633,7 +2633,7 @@ public class JPADAO implements IDAO {
 
     /** {@inheritDoc} */
     @Override
-    public long getCMSPageWithRelatedPiCount(Date fromDate, Date toDate, List<String> templateIds) throws DAOException {
+    public long getCMSPageWithRelatedPiCount(LocalDateTime fromDate, LocalDateTime toDate, List<String> templateIds) throws DAOException {
         preQuery();
         StringBuilder sbQuery =
                 new StringBuilder("SELECT COUNT(DISTINCT o.relatedPI) FROM CMSPage o WHERE o.relatedPI IS NOT NULL AND o.relatedPI <> ''");
@@ -3728,7 +3728,7 @@ public class JPADAO implements IDAO {
      * Universal method for returning the row count for the given class and filter string.
      * 
      * @param className
-     * @param filter    Filter query string
+     * @param filter Filter query string
      * @return
      * @throws DAOException
      */
@@ -3740,7 +3740,7 @@ public class JPADAO implements IDAO {
 
         return (long) q.getSingleResult();
     }
-    
+
     /**
      * Universal method for returning the row count for the given class and filters.
      * 

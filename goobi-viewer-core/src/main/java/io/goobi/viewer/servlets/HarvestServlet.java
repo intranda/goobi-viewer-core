@@ -85,8 +85,8 @@ public class HarvestServlet extends HttpServlet implements Serializable {
         String identifier = null;
         String status = null;
         String message = null;
-        Date fromDate = null;
-        Date toDate = null;
+        LocalDateTime fromDate = null;
+        LocalDateTime toDate = null;
         int first = 0;
         int pageSize = 100000;
 
@@ -110,20 +110,18 @@ public class HarvestServlet extends HttpServlet implements Serializable {
                             message = values[0];
                             break;
                         case "from":
-                            LocalDateTime fromDateTime = DateTools.parseDateTimeFromString(values[0], true);
-                            if (fromDateTime == null) {
+                            fromDate = DateTools.parseDateTimeFromString(values[0], true);
+                            if (fromDate == null) {
                                 response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Illegal 'from' attribute value: " + values[0]);
                                 return;
                             }
-                            fromDate = DateTools.convertLocalDateTimeToDateViaInstant(fromDateTime, true);
                             break;
                         case "until":
-                            LocalDateTime toDateTime = DateTools.parseDateTimeFromString(values[0], true);
-                            if (toDateTime == null) {
+                            toDate = DateTools.parseDateTimeFromString(values[0], true);
+                            if (toDate == null) {
                                 response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Illegal 'until' attribute value: " + values[0]);
                                 return;
                             }
-                            toDate = DateTools.convertLocalDateTimeToDateViaInstant(toDateTime, true);
                             break;
                         case "first":
                             try {
@@ -212,8 +210,9 @@ public class HarvestServlet extends HttpServlet implements Serializable {
                             return;
                         }
                         Files.createDirectory(localTempFolder);
-                        String fileName = identifier + "_cmspage_" + (fromDate != null ? fromDate.getTime() : "-") + "-"
-                                + (toDate != null ? toDate.getTime() : "-") + ".zip";
+                        String fileName =
+                                identifier + "_cmspage_" + (fromDate != null ? DateTools.getMillisFromLocalDateTime(fromDate, true) : "-") + "-"
+                                        + (toDate != null ? DateTools.getMillisFromLocalDateTime(toDate, true) : "-") + ".zip";
                         Path zipFile = Paths.get(localTempFolder.toAbsolutePath().toString(), fileName);
                         List<File> tempFiles = new ArrayList<>(pages.size() * 2);
                         for (CMSPage page : pages) {
