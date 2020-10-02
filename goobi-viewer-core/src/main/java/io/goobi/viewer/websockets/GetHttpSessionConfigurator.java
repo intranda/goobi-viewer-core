@@ -24,6 +24,9 @@ import javax.websocket.HandshakeResponse;
 import javax.websocket.server.HandshakeRequest;
 import javax.websocket.server.ServerEndpointConfig;
 
+/**
+ * Custom configurator that exposes the HTTP session to the web socket endpoint.
+ */
 public class GetHttpSessionConfigurator extends ServerEndpointConfig.Configurator {
 
     @Override
