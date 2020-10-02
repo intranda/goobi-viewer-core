@@ -18,9 +18,9 @@ package io.goobi.viewer.managedbeans;
 import java.io.IOException;
 import java.io.Serializable;
 import java.io.UnsupportedEncodingException;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Date;
 import java.util.Enumeration;
 import java.util.HashSet;
 import java.util.List;
@@ -327,7 +327,7 @@ public class UserBean implements Serializable {
                     wipeSession(request);
                     DataManager.getInstance().getBookmarkManager().addSessionBookmarkListToUser(user, request);
                     // Update last login
-                    user.setLastLogin(new Date());
+                    user.setLastLogin(LocalDateTime.now());
                     if (!DataManager.getInstance().getDao().updateUser(user)) {
                         logger.error("Could not update user in DB.");
                     }

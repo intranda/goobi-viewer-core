@@ -25,7 +25,6 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 import javax.servlet.ServletException;
@@ -142,8 +141,8 @@ public class CMSPageTest extends AbstractDatabaseEnabledTest {
         page.addLanguageVersion(global);
 
         LocalDateTime created = LocalDateTime.now().withYear(LocalDateTime.now().getYear() - 2);
-        Date updated = new Date();
-        page.setDateCreated(DateTools.convertLocalDateTimeToDateViaInstant(created, false));
+        LocalDateTime updated = LocalDateTime.now();
+        page.setDateCreated(created);
         page.setDateUpdated(updated);
 
         page.setCategories(DataManager.getInstance().getDao().getAllCategories());

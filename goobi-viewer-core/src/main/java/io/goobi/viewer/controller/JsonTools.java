@@ -16,7 +16,6 @@
 package io.goobi.viewer.controller;
 
 import java.util.Collection;
-import java.util.Date;
 import java.util.HashSet;
 import java.util.Locale;
 import java.util.Map;
@@ -206,7 +205,8 @@ public class JsonTools {
             //            logger.debug(jsonObject.toString());
             try {
                 Long dateCreatedTimestamp = (Long) jsonObject.get("dateCreated");
-                String dateString = DateTools.format(new Date(dateCreatedTimestamp), DateTools.formatterISO8601Date, false);
+                String dateString =
+                        DateTools.format(DateTools.getLocalDateTimeFromMillis(dateCreatedTimestamp, false), DateTools.formatterISO8601Date, false);
                 if (currentDateJsonObject == null || !dateString.equals(currentDateString)) {
                     currentDateString = dateString;
                     currentDateJsonObject = new JSONObject();

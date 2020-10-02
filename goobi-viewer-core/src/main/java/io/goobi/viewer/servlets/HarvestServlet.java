@@ -357,7 +357,7 @@ public class HarvestServlet extends HttpServlet implements Serializable {
             JSONObject jsonObj = new JSONObject();
             jsonObj.put("id", o.getPi());
             if (o.getDateUpdated() != null) {
-                long timestamp = o.getDateUpdated().getTime();
+                long timestamp = DateTools.getMillisFromLocalDateTime(o.getDateUpdated(), false);
                 if (timestamp < 0) {
                     timestamp = 0;
                 }

@@ -15,6 +15,7 @@
  */
 package io.goobi.viewer.controller;
 
+import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
@@ -149,7 +150,33 @@ public class DateTools {
 
         return ret;
     }
-
+    
+    /**
+     * 
+     * @param millis
+     * @param utc
+     * @return
+     */
+    public static LocalDateTime getLocalDateTimeFromMillis(long millis, boolean utc) {
+        Instant instant = Instant.ofEpochMilli(millis);
+        return instant.atZone(utc ? ZoneOffset.UTC : ZoneId.systemDefault()).toLocalDateTime();
+    }
+    
+    /**
+     * 
+     * @param ldt
+     * @param utc
+     * @return
+     */
+    public static Long getMillisFromLocalDateTime(LocalDateTime ldt, boolean utc) {
+        if(ldt == null) {
+            return null;
+        }
+        
+        ZonedDateTime zdt = ldt.atZone(utc ? ZoneOffset.UTC : ZoneId.systemDefault());
+        return zdt.toInstant().toEpochMilli();
+    }
+    
     /**
      * 
      * @param dateString
@@ -352,7 +379,7 @@ public class DateTools {
                 return format(convertDateToLocalDateTimeViaInstant(date), formatterENDateTimeNoSeconds, false);
         }
     }
-
+    
     /**
      * FIXME add some more documentation This method is used by the crowdsourcing module
      *
