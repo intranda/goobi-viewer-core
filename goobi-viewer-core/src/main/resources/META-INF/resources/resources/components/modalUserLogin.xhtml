@@ -25,9 +25,9 @@
 			<div class="modal-dialog modal-dialog-centered" role="document">
 				<div class="modal-content">
 					<div class="modal-header">
-						<div class="user-login-modal__header-logo"></div>
-						<h2 class="modal-title user-login-modal__header-title"
-							id="exampleModalLongTitle">#{msg.login__header_title}</h2>
+						<!--  <div class="user-login-modal__header-logo"></div>-->
+						<h2 class="modal-title user-login-modal__header-title">#{msg.login__header_title}</h2>
+						<h2 class="modal-title user-login-modal__header-title-create-account">#{msg.login__create_new_account}</h2>
 						<ui:fragment rendered="#{!alwaysVisible}">
 							<button type="button" class="fancy-close" data-dismiss="modal"
 								aria-label="Close">
@@ -200,17 +200,8 @@
 										rendered="#{userBean.userRegistrationEnabled and userBean.resetSecurityQuestion()}">
 										<div id="loginTypeCreateAccount"
 											class="user-login-modal__body-login-type create">
+											<p class="user-login-modal__create-account-info">#{msg.createAccountInfo}:</p>
 											<h:form id="loginTypeCreateAccountForm">
-												<div class="form-group form-row">
-													<label for="userCreateAccountNick"
-														class="col-12 col-lg-3 control-label ">#{msg.nameNick}:</label>
-													<h:inputText id="userCreateAccountNick"
-														styleClass="col-12 col-lg-9 form-control"
-														value="#{userBean.nickName}" required="false"
-														requiredMessage="#{msg.loginEnterNickName}">
-														<f:validator validatorId="nicknameValidator" />
-													</h:inputText>
-												</div>
 
 												<div class="form-group form-row lastname">
 													<label for="userCreateAccountLastName"
@@ -269,20 +260,21 @@
 													<div class="col-12 mb-2 user-login-modal__terms-title">
 														<b>#{termsOfUseBean.title}</b>
 													</div>
-													<div class="col-12 mb-1">
-														<textarea class="user-login-modal__terms-text mb-2"
+													<div class="col-12 mb-1 pr-0">
+														<textarea class="user-login-modal__terms-text mb-3"
 															readonly="true">
 															<h:outputText value="#{termsOfUseBean.description}"
 																escape="false" />
 														</textarea>
 													</div>
-													<div class="col-12 d-flex align-items-center">
-														<h:selectBooleanCheckbox
-															styleClass="user-login-modal__accept-terms-checkbox mr-2"
-															value="accepted terms" id="createAccountAcceptTerms" />
-														<label class="mb-0 -noSelect"
-															for="loginComponent:loginTypeCreateAccountForm:createAccountAcceptTerms">#{msg.admin__terms_of_use__accept}</label>
-													</div>
+													<div id="createAccountAcceptTerms" class="col-12 d-flex align-items-center admin__form-input">
+														<label class="mr-3 mb-0">#{msg.admin__terms_of_use__accept}:</label>
+														<div>
+														<viewerComponent:toggleSwitch
+															name="activateUserTerms"
+															value="false"/>
+														</div>
+													</div>															
 												</div>
 												<!-- USER LOGIN BODY ACTION -->
 												<div class="user-login-modal__body-action">
@@ -291,7 +283,7 @@
 														value="#{msg.submit}"
 														action="#{userBean.createNewUserAccount}" disabled="true">
 														<f:passThroughAttribute name="aria-label"
-															value="#{msg.submit}" />
+															value="#{msg.login__create_new_account}" />
 													</h:commandButton>
 
 													<br />
@@ -365,20 +357,5 @@
 				</div>
 			</div>
 		</div>
-		<script>
-			// accept terms for account creation
-			$('.user-login-modal__accept-terms-checkbox').on(
-					"click",
-					function() {
-						if ($(".user-login-modal__accept-terms-checkbox").prop(
-								'checked') == true) {
-							$('.user-login-modal__create-account-submit').prop(
-									'disabled', false);
-						} else {
-							$('.user-login-modal__create-account-submit').prop(
-									'disabled', true);
-						}
-					});
-		</script>
 	</composite:implementation>
 </ui:composition>

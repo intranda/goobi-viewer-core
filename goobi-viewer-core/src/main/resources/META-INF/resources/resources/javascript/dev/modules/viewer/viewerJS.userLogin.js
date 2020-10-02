@@ -84,11 +84,24 @@ var viewerJS = ( function( viewer ) {
            		$( '#userLoginSelectLoginWrapper, #loginType, #loginTypeRetrieveAccount, #userLoginOpenId, #userLoginFooter' ).hide();
            		$( '#loginTypeCreateAccount' ).fadeIn();
            		$( '[id*="userCreateAccountNick"]' ).focus();
+           		$('.user-login-modal__header-title').hide();
+           		$('.user-login-modal__header-title-create-account').fadeIn();
+           		
            	} );
            	$( 'body' ).on( 'click', '[data-close="create-account"]', function() {
            		$( '#loginTypeExternal, #loginTypeRetrieveAccount, #loginTypeCreateAccount' ).hide();
            		$( '#userLoginSelectLoginWrapper, #loginType, #userLoginOpenId, #userLoginFooter' ).fadeIn();
+           		$('.user-login-modal__header-title-create-account').hide();
+           		$('.user-login-modal__header-title').fadeIn();
            	} );
+           	
+			// accept terms for account creation
+			$('#createAccountAcceptTerms input').change(function(){
+				if ($('#createAccountAcceptTerms input:nth-of-type(2)').is(':checked')) { 
+					$('.user-login-modal__create-account-submit').prop('disabled', false);
+				} else if ($('#createAccountAcceptTerms input:nth-of-type(1)').is(':checked'))
+					$('.user-login-modal__create-account-submit').prop('disabled', true);
+				});
         }
     }
     
