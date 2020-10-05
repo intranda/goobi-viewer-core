@@ -23,8 +23,6 @@ import org.apache.solr.common.SolrDocument;
 import org.junit.Assert;
 import org.junit.Test;
 
-import io.goobi.viewer.controller.AbstractConfiguration;
-import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.model.security.user.User;
 import io.goobi.viewer.modules.IModule;
 import io.goobi.viewer.modules.interfaces.IURLBuilder;

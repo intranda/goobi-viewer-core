@@ -58,6 +58,7 @@ import io.goobi.viewer.exceptions.IDDOCNotFoundException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.exceptions.RecordDeletedException;
+import io.goobi.viewer.exceptions.RecordLimitExceededException;
 import io.goobi.viewer.exceptions.RecordNotFoundException;
 import io.goobi.viewer.exceptions.RedirectException;
 import io.goobi.viewer.exceptions.ViewerConfigurationException;
@@ -1644,8 +1645,12 @@ public class CmsBean implements Serializable {
                         adb.reload(currentPage.getRelatedPI());
                     } catch (PresentationException e1) {
                         logger.warn(e.getMessage());
+                    } catch (RecordLimitExceededException e1) {
+                        logger.warn(e.getMessage());
                     }
                 } catch (PresentationException e) {
+                    logger.warn(e.getMessage());
+                } catch (RecordLimitExceededException e) {
                     logger.warn(e.getMessage());
                 }
             }

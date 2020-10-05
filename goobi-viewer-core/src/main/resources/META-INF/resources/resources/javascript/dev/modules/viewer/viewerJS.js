@@ -64,6 +64,9 @@ var viewerJS = (function () {
         console.info('Current Theme = ', _defaults.theme);
         console.info('Current Page = ', _defaults.currentPage);
 
+        //init websocket
+        viewer.webSocket = new viewerJS.WebSocket(window.location.host, currentPath, viewerJS.WebSocket.PATH_SESSION_SOCKET);
+  
         // init Bootstrap features
         viewerJS.helper.initBsFeatures();
 

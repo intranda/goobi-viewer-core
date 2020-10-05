@@ -31,6 +31,7 @@ import javax.faces.context.FacesContext;
 import javax.inject.Inject;
 import javax.inject.Named;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.text.StringEscapeUtils;
@@ -53,6 +54,7 @@ import io.goobi.viewer.exceptions.IDDOCNotFoundException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.exceptions.RecordDeletedException;
+import io.goobi.viewer.exceptions.RecordLimitExceededException;
 import io.goobi.viewer.exceptions.RecordNotFoundException;
 import io.goobi.viewer.exceptions.ViewerConfigurationException;
 import io.goobi.viewer.faces.validators.PIValidator;
@@ -197,10 +199,13 @@ public class ActiveDocumentBean implements Serializable {
 
     /**
      * TODO This can cause NPEs if called while update() is running.
+     * 
+     * @throws IndexUnreachableException
      */
-    public void reset() {
+    public void reset() throws IndexUnreachableException {
         synchronized (this) {
             logger.trace("reset (thread {})", Thread.currentThread().getId());
+            String pi = viewManager != null ? viewManager.getPi() : null;
             viewManager = null;
             topDocumentIddoc = 0;
             titleBarMetadata.clear();
@@ -214,6 +219,9 @@ public class ActiveDocumentBean implements Serializable {
             for (IModule module : DataManager.getInstance().getModules()) {
                 module.augmentResetRecord();
             }
+
+            // Remove record lock for this record and session
+            DataManager.getInstance().getRecordLockManager().removeLockForPiAndSessionId(pi, BeanUtils.getSession().getId());
         }
     }
 
@@ -232,7 +240,8 @@ public class ActiveDocumentBean implements Serializable {
                 }
             } catch (PresentationException e) {
                 logger.debug("PresentationException thrown here: {}", e.getMessage());
-            } catch (RecordNotFoundException | RecordDeletedException | IndexUnreachableException | DAOException | ViewerConfigurationException e) {
+            } catch (RecordNotFoundException | RecordDeletedException | IndexUnreachableException | DAOException | ViewerConfigurationException
+                    | RecordLimitExceededException e) {
             }
         }
 
@@ -241,16 +250,11 @@ public class ActiveDocumentBean implements Serializable {
 
     /**
      * 
-     * @param pi
-     * @throws PresentationException
-     * @throws RecordNotFoundException
-     * @throws RecordDeletedException
-     * @throws IndexUnreachableException
-     * @throws DAOException
-     * @throws ViewerConfigurationException
+     * @param pi @throws PresentationException @throws RecordNotFoundException @throws RecordDeletedException @throws
+     *            IndexUnreachableException @throws DAOException @throws ViewerConfigurationException @throws RecordLimitExceededException @throws
      */
     public String reload(String pi) throws PresentationException, RecordNotFoundException, RecordDeletedException, IndexUnreachableException,
-            DAOException, ViewerConfigurationException {
+            DAOException, ViewerConfigurationException, RecordLimitExceededException {
         logger.trace("reload({})", pi);
         reloads++;
         reset();
@@ -258,7 +262,7 @@ public class ActiveDocumentBean implements Serializable {
             throw new RecordNotFoundException(pi);
         }
         setPersistentIdentifier(pi);
-//        setImageToShow(1);
+        //        setImageToShow(1);
         return open();
     }
 
@@ -275,12 +279,14 @@ public class ActiveDocumentBean implements Serializable {
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
      * @throws IDDOCNotFoundException
+     * @throws RecordLimitExceededException
+     * @throws NumberFormatException
      * @should throw RecordNotFoundException if listing not allowed by default
      * @should load records that have been released via moving wall
      */
 
     public void update() throws PresentationException, IndexUnreachableException, RecordNotFoundException, RecordDeletedException, DAOException,
-            ViewerConfigurationException, IDDOCNotFoundException {
+            ViewerConfigurationException, IDDOCNotFoundException, NumberFormatException, RecordLimitExceededException {
         synchronized (this) {
             if (topDocumentIddoc == 0) {
                 throw new RecordNotFoundException(lastReceivedIdentifier);
@@ -351,6 +357,27 @@ public class ActiveDocumentBean implements Serializable {
                 }
 
                 viewManager.setToc(createTOC());
+
+                HttpSession session = BeanUtils.getSession();
+                // Release all locks for this session except the current record
+                if (session != null) {
+                    DataManager.getInstance()
+                            .getRecordLockManager()
+                            .removeLocksForSessionId(session.getId(), Collections.singletonList(viewManager.getPi()));
+                }
+                String limit = viewManager.getTopDocument().getMetadataValue(SolrConstants.ACCESSCONDITION_CONCURRENTUSE);
+                // Lock limited view records, if limit exists and record has a license type that has this feature enabled
+                if (limit != null && AccessConditionUtils.isConcurrentViewsLimitEnabledForAnyAccessCondition(
+                        viewManager.getTopDocument().getMetadataValues(SolrConstants.ACCESSCONDITION))) {
+                    if (session != null) {
+                        DataManager.getInstance()
+                                .getRecordLockManager()
+                                .lockRecord(viewManager.getPi(), session.getId(), Integer.valueOf(limit));
+                    } else {
+                        logger.debug("No session found, unable to lock limited view record {}", topDocument.getPi());
+                        throw new RecordLimitExceededException(lastReceivedIdentifier + ":" + limit);
+                    }
+                }
             }
 
             // If LOGID is set, update the current element
@@ -453,6 +480,7 @@ public class ActiveDocumentBean implements Serializable {
                 }
             }
         }
+
     }
 
     /**
@@ -484,10 +512,12 @@ public class ActiveDocumentBean implements Serializable {
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
+     * @throws RecordLimitExceededException
      * @throws PresentationException
      */
     public String open()
-            throws RecordNotFoundException, RecordDeletedException, IndexUnreachableException, DAOException, ViewerConfigurationException {
+            throws RecordNotFoundException, RecordDeletedException, IndexUnreachableException, DAOException, ViewerConfigurationException,
+            RecordLimitExceededException {
         synchronized (this) {
             logger.trace("open()");
             try {
@@ -546,10 +576,12 @@ public class ActiveDocumentBean implements Serializable {
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
      * @throws PresentationException
+     * @throws RecordLimitExceededException
+     * @throws NumberFormatException
      */
     public String openFulltext()
             throws RecordNotFoundException, RecordDeletedException, IndexUnreachableException, DAOException, ViewerConfigurationException,
-            PresentationException {
+            PresentationException, NumberFormatException, RecordLimitExceededException {
         open();
         return "viewFulltext";
     }
@@ -1845,24 +1877,23 @@ public class ActiveDocumentBean implements Serializable {
     }
 
     public CMSSidebarElement getMapWidget() throws PresentationException {
-        
-        
+
         CMSSidebarElement widget = new CMSSidebarElement();
         widget.setType("widgetGeoMap");
         try {
-        GeoMap map = new GeoMap();
-        map.setId(Long.MAX_VALUE);
-        map.setType(GeoMapType.SOLR_QUERY);
-        map.setShowPopover(false);
-        map.setMarkerTitleField(null);
-        map.setSolrQuery(String.format("PI:%s OR PI_TOPSTRUCT:%s", getPersistentIdentifier(), getPersistentIdentifier()));
-        if(!map.getFeaturesAsString().equals("[]")) {            
-            widget.setGeoMap(map);
-        }
+            GeoMap map = new GeoMap();
+            map.setId(Long.MAX_VALUE);
+            map.setType(GeoMapType.SOLR_QUERY);
+            map.setShowPopover(false);
+            map.setMarkerTitleField(null);
+            map.setSolrQuery(String.format("PI:%s OR PI_TOPSTRUCT:%s", getPersistentIdentifier(), getPersistentIdentifier()));
+            if (!map.getFeaturesAsString().equals("[]")) {
+                widget.setGeoMap(map);
+            }
         } catch (IndexUnreachableException e) {
             logger.error("Unable to load geomap", e);
         }
         return widget;
     }
-    
+
 }

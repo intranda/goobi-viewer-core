@@ -52,7 +52,8 @@
 		
     <license_types license_type_id="4" name="license type 4 name"
         description="no listing, overridden by license type 1"
-        open_access="false" core="false" />
+        open_access="false" core="false"
+        concurrent_views_limit="true" />
         
     <license_types license_type_id="5" name="CMS"
         description="CMS role"

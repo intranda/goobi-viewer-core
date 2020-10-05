@@ -45,6 +45,7 @@ import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.exceptions.RecordDeletedException;
+import io.goobi.viewer.exceptions.RecordLimitExceededException;
 import io.goobi.viewer.exceptions.RecordNotFoundException;
 import io.goobi.viewer.exceptions.RedirectException;
 import io.goobi.viewer.exceptions.ViewerConfigurationException;
@@ -841,9 +842,10 @@ public class BrowseBean implements Serializable {
      * @throws ViewerConfigurationException
      * @throws DAOException
      * @throws RecordDeletedException
+     * @throws RecordLimitExceededException 
      */
     public String openWorkInTargetCollection()
-            throws IndexUnreachableException, PresentationException, RecordDeletedException, DAOException, ViewerConfigurationException {
+            throws IndexUnreachableException, PresentationException, RecordDeletedException, DAOException, ViewerConfigurationException, RecordLimitExceededException {
         if (StringUtils.isBlank(getTargetCollection())) {
             return null;
         }

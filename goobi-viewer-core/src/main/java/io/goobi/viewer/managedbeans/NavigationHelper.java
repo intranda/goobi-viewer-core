@@ -1465,7 +1465,11 @@ public class NavigationHelper implements Serializable {
     private static void resetCurrentDocument() {
         ActiveDocumentBean adb = BeanUtils.getActiveDocumentBean();
         if (adb != null) {
-            adb.reset();
+            try {
+                adb.reset();
+            } catch (IndexUnreachableException e) {
+                logger.error(e.getMessage(), e);
+            }
         }
 
         // Module augmentations
