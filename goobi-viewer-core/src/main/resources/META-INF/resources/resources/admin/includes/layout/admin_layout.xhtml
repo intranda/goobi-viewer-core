@@ -22,13 +22,13 @@
 
     <div class="admin">
     	<!-- ADMIN TOPBAR (ACTION MENU) -->
-    	<div class="admin__topbar">
+    	<div class="admin__topbar" role="navigation">
     	
-    		<div class="admin__topbar-logo-menu -dropdown">
-    			<div class="admin__topbar-logo">
+    		<div class="admin__topbar-logo-menu -dropdown" aria-label="Topbar logo menu">
+    			<div class="admin__topbar-logo" aria-label="Topbar logo">
 					<ui:include src="/resources/images/goobi_logo.svg" alt="Goobi Viewer"/>
 				</div>
-    			<ul class="admin__topbar-dropdown">
+    			<ul class="admin__topbar-dropdown" aria-label="Topbar logo menu dropdown">
 	    			<li><a href="https://goobi.io" target="_blank">#{msg.admin__about_goobi}</a></li>
 	    			<li><a href="https://docs.goobi.io/" target="_blank">#{msg.admin__documentation}</a></li>
 	    			<li><a href="https://community.goobi.io/" target="_blank">#{msg.admin__community}</a></li>
@@ -38,7 +38,7 @@
     		</div>
 
 			<!-- GO TO FRONTEND VIEW IN NEW WINDOW -->
-    		<a 
+    		<a
    			class="admin__topbar-view-frontend-link" 
    			href="#{request.contextPath}/" 
    			title="#{msg.admin__view_frontend}" 
@@ -98,7 +98,7 @@
         <div class="admin__sidebar-background"></div>
 
         <!-- SIDEBAR -->
-        <aside id="adminSidebar" class="admin__sidebar">
+        <aside id="adminSidebar" class="admin__sidebar" aria-label="Admin sidebar">
             <div class="admin__sidebar-inner">
                  <h1>
                         <a href="#{request.contextPath}/admin/"><span>Goobi viewer</span></a>
