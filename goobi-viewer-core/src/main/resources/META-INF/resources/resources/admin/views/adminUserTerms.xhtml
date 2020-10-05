@@ -47,13 +47,13 @@
 							<h3>#{msg.admin__terms_of_use__manage_text}</h3>
 
 							<!-- TERMS OF USE LANGUAGE TABS -->
-							<div class="admin__user-terms-language-tabs">
+							<div class="admin__language-tabs">
 								<!-- NAV TABS -->
 								<ul class="nav nav-tabs" role="tablist">
 									<c:forEach var="locale"
 										items="#{termsOfUseBean.getLocales()}">
 										<li role="tab"
-											class="admin__user-terms-language-tab 
+											class="admin__language-tab 
 											#{termsOfUseBean.isSelected(locale) ? 'active':''}
 											#{termsOfUseBean.isComplete(locale) ? '-already-translated':''}
 											#{termsOfUseBean.isDefaultLocaleSelected() ? '-default-language':''}">

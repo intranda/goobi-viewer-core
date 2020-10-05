@@ -135,64 +135,6 @@ html.is-IE {
 	}
 }
 
-/* validation messages */
-.-validation-message {
-	&.-success {
-		color: @validSuccess;
-	}
-	&.-warning {
-		color: @validWarning;
-	}
-	&.-danger {
-		color: @validDanger;
-	}
-}
-.-validation-mark {
-	position: absolute;
-	right: -8px;
-	bottom: -8px;
-	width: 16px;
-	height: 16px;
-	line-height: 16px;
-	font-size: @fontSmall;
-	text-align: center;
-	border-radius: 50%;
-	color: @white;
-	&.-success {
-	    background-color: @validSuccess;
-	    .fa-check {
-	    	display: inline-block;
-	    }
-	}
-	&.-warning {
-		background-color: @validWarning;
-	    .fa-check {
-	    	display: inline-block;
-	    }
-	}
-	&.-danger {
-		background-color: @validDanger;
-	    .fa-exclamation {
-	    	display: inline-block;
-	    }
-	}
-	.fa {
-		display: none;
-	}
-}
-
-.-validation-input {
-	&.-success {
-    	border-color: @validSuccess;
-    }
-    &.-warning {
-    	border-color: @validWarning;	    	
-    }
-    &.-danger {
-    	border-color: @validDanger;
-    }
-}
-
 /* BREAKPOINT FOR LARGE DESKTOPS */
 @media screen and (max-width: @largeBreakpoint) {} 
 
