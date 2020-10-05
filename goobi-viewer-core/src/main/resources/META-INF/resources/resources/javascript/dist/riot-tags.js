@@ -929,28 +929,24 @@ this.on("mount", () => {
 })
 
 this.loadSubCollections = function() {
-    let promises = [];
+    rxjs.from(this.collections)
+    .pipe(
+    	rxjs.operators.filter( child => this.hasChildren(child) ),
+    	rxjs.operators.mergeMap( child => this.fetchMembers(child) ),
+    	rxjs.operators.debounceTime(100)
 
-    let subject = new rxjs.Subject();
-    this.collections.forEach( child => {
-        fetch(child['@id'])
-        .then( result => result.json())
-        .then(json => {
-            child.members = json.members;
-            subject.next(child);
-        })
-        .catch( error => {
-           subject.error(error);
-        });
-    });
+    )
+    .subscribe( () => {this.update();});
 
-    subject
-    .pipe(rxjs.operators.debounceTime(100))
-    .subscribe( () => this.update())
+}.bind(this)
+
+this.fetchMembers = function(collection) {
+    return fetch(collection['@id'])
+    .then( result => result.json())
+    .then(json => {collection.members = json.members;})
 }.bind(this)
 
 this.getValue = function(element) {
-    console.log("this.opts.defaultLanguage", this.opts.defaultlanguage)
     return viewerJS.iiif.getValue(element, this.opts.language, this.opts.defaultlanguage);
 }.bind(this)
 
