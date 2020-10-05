@@ -108,6 +108,9 @@ var viewerJS = (function () {
 
         // AJAX Loader Eventlistener
         viewerJS.jsfAjax.init(_defaults);
+        
+        //input validation status
+        viewerJS.validationStatus.init();
 
         // render warning if local storage is not useable
         if (!viewer.localStoragePossible) {

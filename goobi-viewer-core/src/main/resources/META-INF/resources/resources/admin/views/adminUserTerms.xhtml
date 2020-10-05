@@ -81,16 +81,14 @@
 											</div>
 
 											<div class="col-10 admin__form-input cms-module__option-control">
-												<div class="cms-module__option-message">
 												
-								                    <h:messages for="userTermsTitle" errorClass="cms-module__option-message-status danger" />
-	                                                 <div class="cms-module__option-message-mark">
-	                                                     <i class="fa fa-check" aria-hidden="true"></i>
-	                                                     <i class="fa fa-exclamation" aria-hidden="true"></i>
-	                                                 </div>
-	                                                 
-								                </div>
-												<h:inputText id="userTermsTitle" styleClass="form-control"
+							                    <h:message for="userTermsTitle" errorClass="-validation-message -danger">
+							                    </h:message>
+                                                 <div class="-validation-mark">
+                                                     <i class="fa fa-check" aria-hidden="true"></i>
+                                                     <i class="fa fa-exclamation" aria-hidden="true"></i>
+                                                 </div>
+												<h:inputText id="userTermsTitle" styleClass="form-control -validation-input"
 												required="#{termsOfUseBean.isDefaultLocaleSelected()}"
 												requiredMessage="#{msg.valueRequired}"
 													value="#{termsOfUseBean.title}" >
@@ -120,7 +118,7 @@
 								                    </div>
 								                </div>
 												<h:inputTextarea id="userTermsText"
-													styleClass="form-control tinyMCE"
+													styleClass="form-control tinyMCE -validate"
 													required="#{termsOfUseBean.isDefaultLocaleSelected()}"
 												    requiredMessage="#{msg.valueRequired}"
 													value="#{termsOfUseBean.description}" />
