@@ -27,7 +27,7 @@
 							escape="false" />
 					</div>
 
-				<h:form id="activateTermsOfUse" styleClass="form-horizontal form-group" role="form" prependId="false">
+				<h:form id="activateTermsOfUse" styleClass="form-horizontal form-group" prependId="false">
 						<div class="row no-gutters mb-3 align-items-center">
 							<div class="control-label mr-3 admin__form-label">#{msg.admin__terms_of_use__is_active}:</div>
 							<div class="admin__form-input">
@@ -42,7 +42,7 @@
 
 					
 				<div class="admin__user-terms-box-editable">
-					<h:form id="editUserTerms" styleClass="form-horizontal form-group" role="form" prependId="false">
+					<h:form id="editUserTerms" styleClass="form-horizontal form-group" prependId="false">
 
 							<h3>#{msg.admin__terms_of_use__manage_text}</h3>
 
@@ -52,7 +52,7 @@
 								<ul class="nav nav-tabs" role="tablist">
 									<c:forEach var="locale"
 										items="#{termsOfUseBean.getLocales()}">
-										<li role="presentation"
+										<li role="tab"
 											class="admin__user-terms-language-tab 
 											#{termsOfUseBean.isSelected(locale) ? 'active':''}
 											#{termsOfUseBean.isComplete(locale) ? '-already-translated':''}

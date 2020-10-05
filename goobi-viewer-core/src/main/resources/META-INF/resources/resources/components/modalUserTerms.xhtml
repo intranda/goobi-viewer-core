@@ -1,24 +1,33 @@
 <ui:composition xmlns="http://www.w3.org/1999/xhtml"
 	xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+	xmlns:c="http://java.sun.com/jsp/jstl/core"
 	xmlns:h="http://xmlns.jcp.org/jsf/html"
 	xmlns:f="http://xmlns.jcp.org/jsf/core"
+	xmlns:jsf="http://xmlns.jcp.org/jsf"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:pt="http://xmlns.jcp.org/jsf/passthrough"
+	xmlns:viewer="http://xmlns.jcp.org/jsf/composite/components/partner"
+	xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components"
+	xmlns:widgetComponent="http://xmlns.jcp.org/jsf/composite/components/widgets"
 	xmlns:composite="http://xmlns.jcp.org/jsf/composite">
 
 	<composite:interface />
+
+				<composite:attribute name="id" required="true" />
 
     <composite:implementation>
     
     <ui:fragment rendered="#{userBean.mustAgreeToTermsOfUse()}">
 
 			<!-- MODAL -->
-			<div class="modal modal__user-terms" id="userTermsModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+			<div class="modal modal__user-terms" id="#{cc.attrs.id}" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
 			  <div class="modal-dialog modal-dialog-centered" role="document">
 			    <div class="modal-content">
 			      <div class="modal-header">
 			        <h2 class="modal-title" id="exampleModalLongTitle">#{termsOfUseBean.title}</h2>
 			      </div>
 			      <div class="modal-body">
-					<div class="modal__user-terms-text">
+					<div class="modal__user-terms-text mb-3">
 	                    <h:outputText value="#{termsOfUseBean.description}" escape="false" />
 	                </div>
 			  <h:form id="termsForm" styleClass="form-horizontal" prependId="false">
@@ -44,7 +53,7 @@
 			</div>
 	<script>
 	    $(window).on('load',function(){
-	        $('#userTermsModal').modal({
+	        $('##{cc.attrs.id}').modal({
 	        	backdrop:"static",
 	        	keyboard:false}).modal("show");
 	    });
