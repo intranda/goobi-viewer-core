@@ -65,7 +65,7 @@
 															var="provider" itemValue="#{provider.name}"
 															itemLabel="#{provider.label}" />
 														<f:ajax event="change" execute="@form"
-															render="loginComponent:userLoginForm" />
+															render="#{cc.attrs.id}:userLoginForm" />
 													</h:selectOneMenu>
 												</div>
 											</div>
