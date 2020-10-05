@@ -90,7 +90,7 @@
                                                  </div>
 												<h:inputText id="userTermsTitle" styleClass="form-control -validation-input"
 												required="#{termsOfUseBean.isDefaultLocaleSelected()}"
-												requiredMessage="#{msg.valueRequired}"
+												requiredMessage="#{msg.info__input_required}"
 													value="#{termsOfUseBean.title}" >
 												</h:inputText>
 												<!-- <span class="admin__form-help-text">#{msg.admin__user_display_name__help}</span>  -->
@@ -109,18 +109,15 @@
 											</div>
 											
 											<div class="col-10 admin__form-input input_form__option_control">
-												<div class="input_form__option-message">
-								                    <h:messages for="userTermsText" errorClass="input_form__option-message danger" />
-								                    
-								                    <div class="input_form__option-message-mark">
+								                 <h:message for="userTermsText" errorClass="-validation-message -danger"/>
+                                                 <div class="-validation-mark">
 								                        <i class="fa fa-check" aria-hidden="true"></i>
 								                        <i class="fa fa-exclamation" aria-hidden="true"></i>
 								                    </div>
-								                </div>
 												<h:inputTextarea id="userTermsText"
-													styleClass="form-control tinyMCE -validate"
+													styleClass="form-control tinyMCE -validation-input"
 													required="#{termsOfUseBean.isDefaultLocaleSelected()}"
-												    requiredMessage="#{msg.valueRequired}"
+												    requiredMessage="#{msg.info__input_required}"
 													value="#{termsOfUseBean.description}" />
 												<!-- <span class="admin__form-help-text">#{msg.admin__user_display_name__help}</span>  -->
 											</div>

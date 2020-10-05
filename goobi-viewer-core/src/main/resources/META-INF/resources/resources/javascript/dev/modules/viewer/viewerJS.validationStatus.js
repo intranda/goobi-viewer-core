@@ -33,6 +33,8 @@ var viewerJS = ( function( viewer ) {
             if(_debug)console.log("init validation status")
             if($(".-validation-mark").length) {                
                 viewer.jsfAjax.success.subscribe( e => {
+                    //mark tinymce editors as validation-input fields to apply colored border if applicable
+                    $(".tox.tox-tinymce").addClass("-validation-input");
                     let $validationMessages = $(".-validation-message");
                     if(_debug)console.log("check validation messages ", $validationMessages);
                     $validationMessages.each( (index,message) => {
@@ -40,10 +42,6 @@ var viewerJS = ( function( viewer ) {
                         let severity = $message.attr("class").replace("-validation-message", "").trim();
                         if(_debug)console.log("set validation severity ", severity);
                         $message.nextAll(".-validation-mark, .-validation-input").addClass(severity);
-                        let forAttr = $message.attr("for");
-                        if(forAttr) {
-                            $("#" + forAttr).addClass(severity);
-                        }
                     } )
                 })
             }
