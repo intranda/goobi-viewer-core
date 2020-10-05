@@ -81,6 +81,10 @@ var viewerJS = (function () {
         viewerJS.popovers.init();
         
 	    viewerJS.userDropdown.init();
+	    
+	    //init toggle hide/show
+	    viewerJS.toggle.init();
+
        
         // init bookmarks if enabled
         if ( bookmarksEnabled ) {
@@ -104,6 +108,9 @@ var viewerJS = (function () {
 
         // AJAX Loader Eventlistener
         viewerJS.jsfAjax.init(_defaults);
+        
+        //input validation status
+        viewerJS.validationStatus.init();
 
         // render warning if local storage is not useable
         if (!viewer.localStoragePossible) {
@@ -234,21 +241,24 @@ var viewerJS = (function () {
         });
 
         // set tinymce language
-        this.tinyConfig.language = currentLang;
-
-        if (currentPage === 'adminCmsCreatePage') {
-            this.tinyConfig.setup = function (ed) {
-                // listen to changes on tinymce input fields
-                ed.on('change input paste', function (e) {
-                    tinymce.triggerSave();
-                    createPageConfig.prevBtn.attr('disabled', true);
-                    createPageConfig.prevDescription.show();
-                });
-            };
-        }
 
         // init tinymce if it exists
         if ($('.tinyMCE').length > 0) {
+            this.tinyConfig.language = currentLang;
+            this.tinyConfig.setup = function (ed) {
+                // listen to changes on tinymce input fields
+                ed.on('init', function (e) {
+                    console.log("init ", e);
+                });
+
+                ed.on('change input paste', function (e) {
+                    tinymce.triggerSave();
+                    if (currentPage === 'adminCmsCreatePage') {
+                        createPageConfig.prevBtn.attr('disabled', true);
+                        createPageConfig.prevDescription.show();
+                    }
+                });
+            };
             viewerJS.tinyMce.init(this.tinyConfig);
         }
 

@@ -66,6 +66,7 @@ public enum PageType {
     adminRights("admin/rights"),
     adminRightsNew("admin/rights/new"),
     adminUserComments("admin/comments"),
+    adminUserTerms("admin/userterms"),
     adminCreateRecord("admin/record/new"),
     //admin/cms
     adminCms("admin/cms"),

@@ -2,9 +2,14 @@
    User Login
    style declarations for userLogin.xhtml
    ==============================================================*/
-/* USER LOGIN */
-.user-login {
-	display: none;
+   
+/* ==============================================================
+   User Login
+   style declarations for userLogin.xhtml
+   ==============================================================*/
+
+/* USER LOGIN MODAL */
+.user-login-modal {
 	&.active {
 		position: fixed;
 		display: flex;		
@@ -33,11 +38,7 @@
 	}
 	/* HEADER / BODY */
 	&__header,
-	&__body {
-		padding: 15px;
-		border: 1px solid @middlegray;
-		background-color: @white;
-	}
+	&__body {}
 	&__header,
 	&__body,
 	&__footer {
@@ -68,12 +69,16 @@
 	}
 	&__header-logo {
 		align-self: normal;
-		flex: 0 0 25%;
-		max-width: 25%;
+		flex: 0 0 6rem;
+		max-width: 6rem;
 		background-image: url("@{images}/goobi_logo-blue.png");
 		background-repeat: no-repeat;
 		background-position: right center;
 		background-size: contain;
+		}
+	&__header-title {}
+	&__header-title-create-account {
+		display: none;
 	}
 	/* BODY */
 	&__body {
@@ -83,9 +88,7 @@
 		}
 	}
 	&__body-login-select {}
-	&__body-login-type-wrapper {
-		min-height: 215px;		
-	}
+	&__body-login-type-wrapper {}
 	&__body-login-type {
 		position: relative;
 		background-color: @white;
@@ -113,11 +116,9 @@
 		}
 		.btn--full {
 			width: 100%;
-			margin-top: 2rem;
-			margin-bottom: 1rem;
 		}
 	}
-	&__body-login-open-id {
+	&__body-login-open-id, &__new-account  {
 		h4 {
 			position: relative;
 			margin-right: -15px;
@@ -192,6 +193,20 @@
 			}
 		}
 	}
+	&__terms-text {
+		border: 1px solid @middlegray;
+		resize: none;
+		padding: 0.5rem 1rem;
+	}
+	&__new-account-submit {
+		width: 100%;
+		color: @black;
+		background-color: #dcdcdc;
+		border: none;
+		&:hover {
+			background: #e9e9e9
+		}
+	}
 	/* FOOTER */
 	&__footer {
 		padding: 5px 0;
@@ -209,17 +224,20 @@
 }
 
 /* MODIFICATION */
-#login-body { 
+#login-body {
 	.user-login {
 		width: 100vw;
 		height: 100vh;
-		display: flex;
+		display: block;
 		align-items: center;
 	    justify-content: center;
 	    background-color: @neutralgray;
 	    & > .fa {
 	    	display: none;
 	    }	
+	}
+	.user-login-modal {
+		display: block;
 	}
 }
 
@@ -234,7 +252,7 @@
 
 /* BREAKPOINT FOR SMARTPHONES */
 @media screen and (max-width: @xSmallBreakpoint) {
-	.user-login {
+	.user-login-modal {
 		&.active {
 			align-items: flex-start;
 			padding-top: 25px;

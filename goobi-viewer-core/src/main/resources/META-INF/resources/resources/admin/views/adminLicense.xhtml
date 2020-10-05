@@ -73,18 +73,20 @@
                                         <span>#{msg.openAccess}:</span>
                                     </div>
                                     <div class="col-9 admin__form-input">
-	                   	                <div class="admin__radio-switch openAccessToggle">
-	                                        <h:selectOneRadio group="openAccessToggle" value="#{adminBean.currentLicenseType.openAccess}"
-	                                            immediate="true" checked="#{visibleItem.openInNewWindow ? null : 'false'}">
-	                                            <f:selectItem itemValue="#{false}" itemLabel="#{msg.no}" />
-	                                        </h:selectOneRadio>
-	                                        <h:selectOneRadio group="openAccessToggle" value="#{adminBean.currentLicenseType.openAccess}"
-	                                            immediate="true" checked="#{visibleItem.openInNewWindow ? 'true' : null}">
-	                                            <f:selectItem itemValue="#{true}" itemLabel="#{msg.yes}" />
-	                                        </h:selectOneRadio>
-	                                        <span class="toggle-outside"><span class="toggle-inside"></span></span>
-	                                    </div>
+                                    
+                                	<viewerComponent:toggleSwitch
+									name="openAccessToggle"
+									value="#{adminBean.currentLicenseType.openAccess}"
+									toggleTarget=".admin__license-functions, .abcdefg"
+									toggleActionLeft="show"
+									toggleActionRight="hide"/>    
+                                    
+
                                         <span class="admin__form-help-text in">#{msg.admin__license_functions_open_access_desc}</span>
+                                        
+                                        
+                                        
+                                        
                                     </div>
                                 </div>
 

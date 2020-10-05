@@ -19,7 +19,7 @@
                 <ui:fragment rendered="#{!userBean.loggedIn}">
                     <li data-login="false">
                         <!-- TOGGLE LOGIN -->
-                        <button type="button" class="btn btn--clean" data-toggle="login" aria-label="#{msg.userNotLoggedIn}">
+                        <button type="button" class="btn btn--clean" data-toggle="modal" data-target="#userLoginModal" aria-label="#{msg.userNotLoggedIn}">
                             <span>#{msg.userNotLoggedIn}</span>
                             <i class="fa fa-user-circle-o" aria-hidden="true"></i>
                         </button>

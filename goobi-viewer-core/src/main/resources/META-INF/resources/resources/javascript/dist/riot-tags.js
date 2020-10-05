@@ -684,6 +684,16 @@ this.lastCanvases = function() {
     }
 }.bind(this)
 
+this.toPageNumber = function(e) {
+    console.log("Change in ", e.target, e.target.value);
+    let page = parseInt(e.target.value);
+    if(page > 0 && page <= this.getTotalImageCount()) {
+    	this.load(page-1);
+    } else{
+        alert(page + " is not a valid page number")
+    }
+}.bind(this)
+
 });
 
 

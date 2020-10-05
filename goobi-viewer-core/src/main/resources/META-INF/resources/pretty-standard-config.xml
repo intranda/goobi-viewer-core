@@ -771,6 +771,11 @@
         <view-id value="/resources/admin/views/adminUserComments.xhtml" />
         <action onPostback="false">#{navigationHelper.resetTheme}</action>
     </url-mapping>
+    <url-mapping id="adminUserTerms">
+        <pattern value="/admin/userterms/" />
+        <view-id value="/resources/admin/views/adminUserTerms.xhtml" />
+        <action onPostback="false">#{navigationHelper.resetTheme}</action>
+    </url-mapping>
     <url-mapping id="adminCreateRecord">
         <pattern value="/admin/record/new/" />
         <view-id value="/resources/admin/views/adminCreateRecord.xhtml" />

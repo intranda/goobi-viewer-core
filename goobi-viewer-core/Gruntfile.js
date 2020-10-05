@@ -282,5 +282,7 @@ module.exports = function (grunt) {
     // default task.
     // Default which runs the build task.
 	// $ grunt
-	grunt.registerTask('default', ['build', "copydeps"]);
+	grunt.registerTask('default', ['build']);
+	
+    grunt.registerTask('updatelibs', ["copydeps"]);
 };

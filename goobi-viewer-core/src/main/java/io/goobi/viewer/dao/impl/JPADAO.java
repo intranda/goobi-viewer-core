@@ -78,6 +78,7 @@ import io.goobi.viewer.model.search.Search;
 import io.goobi.viewer.model.security.License;
 import io.goobi.viewer.model.security.LicenseType;
 import io.goobi.viewer.model.security.Role;
+import io.goobi.viewer.model.security.TermsOfUse;
 import io.goobi.viewer.model.security.user.IpRange;
 import io.goobi.viewer.model.security.user.User;
 import io.goobi.viewer.model.security.user.UserGroup;
@@ -4735,5 +4736,81 @@ public class JPADAO implements IDAO {
                 .distinct()
                 .collect(Collectors.toList());
         return pageList;
+    }
+
+    /* (non-Javadoc)
+     * @see io.goobi.viewer.dao.IDAO#saveTermsOfUse(io.goobi.viewer.model.security.TermsOfUse)
+     */
+    @Override
+    public boolean saveTermsOfUse(TermsOfUse tou) throws DAOException {
+        preQuery();
+        EntityManager em = factory.createEntityManager();
+        try {
+            em.getTransaction().begin();
+            if(tou.getId() == null) {
+                //create initial tou
+                em.persist(tou);
+            } else {                
+                em.merge(tou);
+            }
+            em.getTransaction().commit();
+            
+            tou = this.em.getReference(TermsOfUse.class, tou.getId());
+            this.em.refresh(tou);
+        } finally {
+            em.close();
+        }
+        return true;
+    }
+
+    /* (non-Javadoc)
+     * @see io.goobi.viewer.dao.IDAO#getTermsOfUse()
+     */
+    @Override
+    public TermsOfUse getTermsOfUse() throws DAOException {
+        preQuery();
+        Query q = em.createQuery("SELECT u FROM TermsOfUse u");
+//         q.setHint("javax.persistence.cache.storeMode", "REFRESH");
+        
+        List results = q.getResultList();
+        if(results.isEmpty()) {
+          //No results. Just return a new object which may be saved later
+            return new TermsOfUse();
+        } else {
+            return (TermsOfUse) results.get(0);
+        }
+    }
+
+    /* (non-Javadoc)
+     * @see io.goobi.viewer.dao.IDAO#isTermsOfUseActive()
+     */
+    @Override
+    public boolean isTermsOfUseActive() throws DAOException {
+        preQuery();
+        Query q = em.createQuery("SELECT u.active FROM TermsOfUse u");
+        List results = q.getResultList();
+        if(results.isEmpty()) {
+            //If no terms of use object exists, it is inactive
+            return false;
+        } else {
+            return (boolean) results.get(0);
+        }
+    }
+
+    /* (non-Javadoc)
+     * @see io.goobi.viewer.dao.IDAO#resetUserAgreementsToTermsOfUse()
+     */
+    @Override
+    public boolean resetUserAgreementsToTermsOfUse() throws DAOException {
+        List<User> users = getAllUsers(true);
+        users.forEach(u -> u.setAgreedToTermsOfUse(false));
+        users.forEach(u -> {
+            try {
+                updateUser(u);
+            } catch (DAOException e) {
+                logger.error("Error resetting user agreement for user " + u, e);
+            }
+        });
+        return true;
     }
 }
