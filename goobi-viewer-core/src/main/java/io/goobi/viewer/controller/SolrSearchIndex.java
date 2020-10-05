@@ -908,6 +908,45 @@ public final class SolrSearchIndex {
     }
 
     /**
+     * 
+     * @param doc
+     * @return
+     */
+    public static boolean isGroup(SolrDocument doc) {
+        if (doc == null) {
+            return false;
+        }
+
+        return DocType.GROUP.toString().equals(doc.getFieldValue(SolrConstants.DOCTYPE));
+    }
+
+    /**
+     * 
+     * @param doc
+     * @return
+     */
+    public static boolean isAnchor(SolrDocument doc) {
+        if (doc == null) {
+            return false;
+        }
+
+        return doc.containsKey(SolrConstants.ISANCHOR) && (Boolean) doc.getFieldValue(SolrConstants.ISANCHOR);
+    }
+
+    /**
+     * 
+     * @param doc
+     * @return
+     */
+    public static boolean isWork(SolrDocument doc) {
+        if (doc == null) {
+            return false;
+        }
+
+        return doc.containsKey(SolrConstants.ISWORK) && (Boolean) doc.getFieldValue(SolrConstants.ISWORK);
+    }
+
+    /**
      * @param fieldName
      * @return
      */
@@ -1623,7 +1662,8 @@ public final class SolrSearchIndex {
      * isHasImages.
      * </p>
      *
-     * @param doc a {@link org.apache.solr.common.SolrDocument} object. Needs to contain metadata fields {@link SolrConstants.FILENAME} and {@link SolrConstants.THUMBNAIL}
+     * @param doc a {@link org.apache.solr.common.SolrDocument} object. Needs to contain metadata fields {@link SolrConstants.FILENAME} and
+     *            {@link SolrConstants.THUMBNAIL}
      * @should return correct value for page docs
      * @should return correct value for docsctrct docs
      * @return a boolean.
