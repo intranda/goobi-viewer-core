@@ -11,6 +11,12 @@
 	xmlns:adminWidget="http://xmlns.jcp.org/jsf/composite/admin/widgets"
 	template="/resources/themes/#{navigationHelper.theme}/templateAdmin.html">
 
+    <ui:define name="metadata">
+        <f:metadata>
+            <f:event type="preRenderView" listener="#{navigationHelper.setCurrentPageAdmin('adminUserTerms')}" />
+        </f:metadata>
+    </ui:define>
+
 	<ui:define name="content">
 		<f:view contentType="text/html" encoding="utf-8">
 
