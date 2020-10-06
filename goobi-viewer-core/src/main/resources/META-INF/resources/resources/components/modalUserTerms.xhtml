@@ -13,14 +13,14 @@
 
 	<composite:interface />
 
-				<composite:attribute name="modalID" required="true" />
+				<composite:attribute name="id" required="true" />
 
     <composite:implementation>
     
     <ui:fragment rendered="#{userBean.mustAgreeToTermsOfUse()}">
 
 			<!-- MODAL -->
-			<div class="modal modal__user-terms" id="#{cc.attrs.modalID}" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+			<div class="modal modal__user-terms" id="#{cc.attrs.id}" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
 			  <div class="modal-dialog modal-dialog-centered" role="document">
 			    <div class="modal-content">
 			      <div class="modal-header">
