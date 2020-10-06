@@ -96,6 +96,12 @@ var viewerJS = ( function( viewer ) {
            	} );
            	
 			// accept terms for account creation
+           	$('#createAccountAcceptTerms input:nth-of-type(1)').prop('checked', true);
+
+           	if ($('.user-login-modal__terms').length === 1) {
+				$('.user-login-modal__create-account-submit').prop('disabled', true);
+           	}
+           	
 			$('#createAccountAcceptTerms input').change(function(){
 				if ($('#createAccountAcceptTerms input:nth-of-type(2)').is(':checked')) { 
 					$('.user-login-modal__create-account-submit').prop('disabled', false);

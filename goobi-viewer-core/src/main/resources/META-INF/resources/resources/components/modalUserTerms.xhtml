@@ -13,18 +13,16 @@
 
 	<composite:interface />
 
-				<composite:attribute name="id" required="true" />
-
     <composite:implementation>
     
     <ui:fragment rendered="#{userBean.mustAgreeToTermsOfUse()}">
 
 			<!-- MODAL -->
-			<div class="modal modal__user-terms" id="#{cc.attrs.id}" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+			<div class="modal modal__user-terms" id="#{cc.attrs.id}" tabindex="-1" role="dialog" aria-labelledby="#{termsOfUseBean.title}" aria-hidden="true">
 			  <div class="modal-dialog modal-dialog-centered" role="document">
 			    <div class="modal-content">
 			      <div class="modal-header">
-			        <h2 class="modal-title" id="exampleModalLongTitle">#{termsOfUseBean.title}</h2>
+			        <h2 class="modal-title">#{termsOfUseBean.title}</h2>
 			      </div>
 			      <div class="modal-body">
 					<div class="modal__user-terms-text mb-3">

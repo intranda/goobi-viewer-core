@@ -12,8 +12,6 @@
 	xmlns:composite="http://xmlns.jcp.org/jsf/composite">
 
 	<composite:interface />
-	
-		<composite:attribute name="id" required="true" />
 
 	<composite:implementation>
 
@@ -23,7 +21,7 @@
 		<!-- Modal User Login -->
 		<div id="#{cc.attrs.id}"
 			class="modal user-login-modal #{alwaysVisible ? 'show':'fade'}"
-			tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle"
+			tabindex="-1" role="dialog" aria-labelledby="Login Area"
 			aria-hidden="true">
 			<div class="modal-dialog modal-dialog-centered" role="document">
 				<div class="modal-content">
@@ -259,32 +257,35 @@
 													</div>
 												</ui:fragment>
 
-												<div class="form-group form-row">
-													<div class="col-12 mb-2 user-login-modal__terms-title">
-														<b>#{termsOfUseBean.title}</b>
-													</div>
-													<div class="col-12 mb-1 pr-0">
-														<textarea class="user-login-modal__terms-text mb-3"
-															readonly="true">
-															<h:outputText value="#{termsOfUseBean.description}"
-																escape="false" />
-														</textarea>
-													</div>
-													<div id="createAccountAcceptTerms" class="col-12 d-flex align-items-center admin__form-input">
-														<label class="mr-3 mb-0">#{msg.admin__terms_of_use__accept}:</label>
-														<div>
-														<viewerComponent:toggleSwitch
-															name="activateUserTerms"
-															value="false"/>
+												<ui:fragment rendered="#{termsOfUseBean.activated}">
+													<div class="form-group form-row user-login-modal__terms">
+														<div class="col-12 mb-2 user-login-modal__terms-title">
+															<b>#{termsOfUseBean.title}</b>
 														</div>
-													</div>															
-												</div>
+														<div class="col-12 mb-1 pr-0">
+															<textarea class="user-login-modal__terms-text mb-3"
+																readonly="true">
+																<h:outputText value="#{termsOfUseBean.description}"
+																	escape="false" />
+															</textarea>
+														</div>
+														<div id="createAccountAcceptTerms" class="col-12 d-flex align-items-center admin__form-input">
+															<label class="mr-3 mb-0">#{msg.admin__terms_of_use__accept}:</label>
+															<div>
+															<viewerComponent:toggleSwitch
+																name="activateUserTerms"
+																value="false"
+																id="user-login-modal__terms-toggle" />
+															</div>
+														</div>															
+													</div>
+												</ui:fragment>
 												<!-- USER LOGIN BODY ACTION -->
 												<div class="user-login-modal__body-action">
 													<h:commandButton
 														styleClass="btn btn--full user-login-modal__create-account-submit"
 														value="#{msg.submit}"
-														action="#{userBean.createNewUserAccount}" disabled="true">
+														action="#{userBean.createNewUserAccount}">
 														<f:passThroughAttribute name="aria-label"
 															value="#{msg.login__create_new_account}" />
 													</h:commandButton>
