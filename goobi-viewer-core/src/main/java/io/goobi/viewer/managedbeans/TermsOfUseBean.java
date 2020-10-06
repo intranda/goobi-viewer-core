@@ -51,7 +51,7 @@ public class TermsOfUseBean implements Serializable, IPolyglott {
     private static final Logger logger = LoggerFactory.getLogger(TermsOfUseBean.class);
     
     private TermsOfUse termsOfUse;
-    private Locale selectedLocale = BeanUtils.getLocale();
+    private Locale selectedLocale = BeanUtils.getDefaultLocale();
     
     @PostConstruct
     public void init() throws DAOException {

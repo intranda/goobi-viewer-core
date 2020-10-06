@@ -37,6 +37,7 @@ public interface IPolyglott {
     public Locale getSelectedLocale();
     
     public void setSelectedLocale(Locale locale);
+    
     public default void setSelectedLocale(String language) {
         Locale locale = Locale.forLanguageTag(language);
         if(locale != null) { 
