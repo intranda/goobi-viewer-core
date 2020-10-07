@@ -592,12 +592,19 @@ public class ViewerResourceBundle extends ResourceBundle {
      * @return A Multilanguage metadata value containing all found translations for the {@code key}, or the key itself if not translations were found
      */
     public static IMetadataValue getTranslations(String key) {
+        return getTranslations(key, true);
+    }
+    
+    
+    public static IMetadataValue getTranslations(String key, boolean allowKeyAsTranslation) {
         Map<String, String> translations = new HashMap<>();
         if (ViewerResourceBundle.getAllLocales() != null) {
             for (Locale locale : getAllLocales()) {
                 String translation = ViewerResourceBundle.getTranslation(key, locale, false);
                 if (key != null && StringUtils.isNotBlank(translation)) {
-                    translations.put(locale.getLanguage(), translation);
+                    if(allowKeyAsTranslation || !key.equals(translation)) {                        
+                        translations.put(locale.getLanguage(), translation);
+                    }
                 }
             }
         }

@@ -106,7 +106,7 @@ public class ThumbnailHandlerTest extends AbstractTest {
                 urlBox);
 
         String urlFraction = handler.getFullImageUrl(page, new Scale.ScaleToFraction(0.5));
-        Assert.assertEquals("/api/v1/records/1234/files/images/00000001.tif/full/pct:50/0/default.tif",
+        Assert.assertEquals("/api/v1/records/1234/files/images/00000001.tif/full/pct%3A50/0/default.tif",
                 urlFraction);
     }
 

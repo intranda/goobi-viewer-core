@@ -30,6 +30,7 @@ import javax.naming.NamingException;
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -92,6 +93,19 @@ public class BeanUtils {
         if (context != null && context.getExternalContext() != null) {
             HttpServletRequest request = (HttpServletRequest) context.getExternalContext().getRequest();
             return request;
+        }
+
+        return null;
+    }
+
+    /**
+     * 
+     * @return
+     */
+    public static HttpSession getSession() {
+        HttpServletRequest request = getRequest();
+        if (request != null) {
+            return request.getSession();
         }
 
         return null;
@@ -287,11 +301,10 @@ public class BeanUtils {
     public static BookmarkBean getBookmarkBean() {
         return (BookmarkBean) getBeanByName("bookmarkBean", BookmarkBean.class);
     }
-    
+
     public static CreateRecordBean getCreateRecordBean() {
         return (CreateRecordBean) getBeanByName("createRecordBean", CreateRecordBean.class);
     }
-
 
     /**
      * <p>

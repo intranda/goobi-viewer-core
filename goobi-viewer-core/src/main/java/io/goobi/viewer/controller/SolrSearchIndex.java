@@ -908,6 +908,45 @@ public final class SolrSearchIndex {
     }
 
     /**
+     * 
+     * @param doc
+     * @return
+     */
+    public static boolean isGroup(SolrDocument doc) {
+        if (doc == null) {
+            return false;
+        }
+
+        return DocType.GROUP.toString().equals(doc.getFieldValue(SolrConstants.DOCTYPE));
+    }
+
+    /**
+     * 
+     * @param doc
+     * @return
+     */
+    public static boolean isAnchor(SolrDocument doc) {
+        if (doc == null) {
+            return false;
+        }
+
+        return doc.containsKey(SolrConstants.ISANCHOR) && (Boolean) doc.getFieldValue(SolrConstants.ISANCHOR);
+    }
+
+    /**
+     * 
+     * @param doc
+     * @return
+     */
+    public static boolean isWork(SolrDocument doc) {
+        if (doc == null) {
+            return false;
+        }
+
+        return doc.containsKey(SolrConstants.ISWORK) && (Boolean) doc.getFieldValue(SolrConstants.ISWORK);
+    }
+
+    /**
      * @param fieldName
      * @return
      */
@@ -1623,7 +1662,8 @@ public final class SolrSearchIndex {
      * isHasImages.
      * </p>
      *
-     * @param doc a {@link org.apache.solr.common.SolrDocument} object.
+     * @param doc a {@link org.apache.solr.common.SolrDocument} object. Needs to contain metadata fields {@link SolrConstants.FILENAME} and
+     *            {@link SolrConstants.THUMBNAIL}
      * @should return correct value for page docs
      * @should return correct value for docsctrct docs
      * @return a boolean.
@@ -1693,36 +1733,49 @@ public final class SolrSearchIndex {
             return Collections.emptyMap();
         }
 
-        StringBuilder sbQuery = new StringBuilder().append("+").append(SolrConstants.LABEL).append(":").append(field).append(" +(");
-        for (String value : values) {
-            sbQuery.append(" MD_VALUE:\"").append(value).append('"');
-        }
-        sbQuery.append(')');
-        String[] fields = new String[] { "MD_VALUE", labelField };
-        SolrDocumentList result = search(sbQuery.toString(), Arrays.asList(fields));
-        if (result.isEmpty()) {
-            return Collections.emptyMap();
-        }
-
-        Map<String, String> ret = new HashMap<>(result.size());
+        Map<String, String> ret = new HashMap<>();
         Set<String> used = new HashSet<>();
-        for (SolrDocument doc : result) {
-            String value = (String) doc.getFieldValue("MD_VALUE");
-            String label = String.valueOf(doc.getFirstValue(labelField));
-            if (used.contains(value + label)) {
-                continue;
-            }
-            if (StringUtils.isNotEmpty(value) || StringUtils.isNotEmpty(labelField)) {
-                String key = field + ":" + value;
-                if (ret.get(key) != null) {
-                    // Add all found labels for each value to the string
-                    ret.put(key, ret.get(key) + " / " + label);
-                    // TODO truncate at certain length?
-                } else {
-                    ret.put(key, label);
+        String[] fields = new String[] { "MD_VALUE", labelField };
+        String queryRoot = new StringBuilder().append("+").append(SolrConstants.LABEL).append(":").append(field).append(" +(").toString();
+        double pages = Math.ceil(values.size() / 10d);
+        List<String> valuesList = new ArrayList<>(values);
+        for (int i = 0; i < pages; ++i) {
+            StringBuilder sbValueQuery = new StringBuilder();
+            int start = i * 10;
+            for (int j = start; j < start + 10; ++j) {
+                if (j >= valuesList.size()) {
+                    break;
                 }
-                used.add(value + label);
+                sbValueQuery.append("MD_VALUE:\"").append(valuesList.get(j)).append('"');
             }
+            sbValueQuery.append(')');
+
+            logger.trace("label query: {}", queryRoot + sbValueQuery.toString());
+
+            SolrDocumentList result = search(queryRoot + sbValueQuery.toString(), Arrays.asList(fields));
+            //          if (result.isEmpty()) {
+            //              return Collections.emptyMap();
+            //          }
+
+            for (SolrDocument doc : result) {
+                String value = getSingleFieldStringValue(doc, "MD_VALUE");
+                String label = String.valueOf(doc.getFirstValue(labelField));
+                if (used.contains(value + label)) {
+                    continue;
+                }
+                if (StringUtils.isNotEmpty(value) || StringUtils.isNotEmpty(labelField)) {
+                    String key = field + ":" + value;
+                    if (ret.get(key) != null) {
+                        // Add all found labels for each value to the string
+                        ret.put(key, ret.get(key) + " / " + label);
+                        // TODO truncate at certain length?
+                    } else {
+                        ret.put(key, label);
+                    }
+                    used.add(value + label);
+                }
+            }
+
         }
 
         return ret;

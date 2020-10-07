@@ -67,6 +67,7 @@ import io.goobi.viewer.model.security.IPrivilegeHolder;
 import io.goobi.viewer.model.security.License;
 import io.goobi.viewer.model.security.LicenseType;
 import io.goobi.viewer.model.security.Role;
+import io.goobi.viewer.model.security.TermsOfUse;
 import io.goobi.viewer.model.security.user.IpRange;
 import io.goobi.viewer.model.security.user.User;
 import io.goobi.viewer.model.security.user.UserGroup;
@@ -2686,5 +2687,66 @@ public class JPADAOTest extends AbstractDatabaseEnabledTest {
 
         Assert.assertEquals(expectedFilterString, filterString);
         Assert.assertTrue(params.get("BcC").equals("%BAR%"));
+    }
+    
+    @Test
+    public void testGetTermsOfUse() throws DAOException {
+        TermsOfUse tou = DataManager.getInstance().getDao().getTermsOfUse();
+        Assert.assertNotNull(tou);
+    }
+    
+    @Test
+    public void testIsTermsOfUseActive() throws DAOException {
+        boolean active = DataManager.getInstance().getDao().isTermsOfUseActive();
+        Assert.assertFalse(active);
+    }
+    
+    @Test
+    public void testSaveTermsOfUse() throws DAOException {
+        Assert.assertFalse(DataManager.getInstance().getDao().isTermsOfUseActive());
+        TermsOfUse tou = new TermsOfUse();
+        tou.setActive(true);
+        DataManager.getInstance().getDao().saveTermsOfUse(tou);
+        Assert.assertTrue(DataManager.getInstance().getDao().isTermsOfUseActive());
+        
+        tou = DataManager.getInstance().getDao().getTermsOfUse();
+        Assert.assertTrue(tou.isActive());
+        tou.setTitle("en", "English Title");
+        tou.setTitle("de", "German Title");
+        tou.setDescription("en", "English description");
+        tou.setDescription("de", "German description");
+        
+        DataManager.getInstance().getDao().saveTermsOfUse(tou);
+        tou = DataManager.getInstance().getDao().getTermsOfUse();
+        Assert.assertEquals("English Title", tou.getTitle("en").getValue());
+        Assert.assertEquals("German Title", tou.getTitle("de").getValue());
+        Assert.assertEquals("German description", tou.getDescription("de").getValue());
+        Assert.assertEquals("English description", tou.getDescription("en").getValue());
+        
+    }
+    
+    @Test
+    public void testResetUserAgreementsToTermsOfUse() throws DAOException {
+        
+        //initially noone has agreed
+        List<User> users = DataManager.getInstance().getDao().getAllUsers(true);
+        Assert.assertTrue(users.stream().allMatch(u -> !u.isAgreedToTermsOfUse()));
+        
+        //now all agree
+        for (User user : users) {
+            user.setAgreedToTermsOfUse(true);
+            DataManager.getInstance().getDao().updateUser(user);
+        }
+        
+        //now all should have agreed
+        users = DataManager.getInstance().getDao().getAllUsers(true);
+        Assert.assertTrue(users.stream().allMatch(u -> u.isAgreedToTermsOfUse()));
+        
+        //reset agreements
+        DataManager.getInstance().getDao().resetUserAgreementsToTermsOfUse();
+        
+        //now noone has agreed again
+        users = DataManager.getInstance().getDao().getAllUsers(true);
+        Assert.assertTrue(users.stream().allMatch(u -> !u.isAgreedToTermsOfUse()));
     }
 }

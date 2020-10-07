@@ -97,6 +97,8 @@ public class LicenseType implements IPrivilegeHolder {
     private boolean movingWall = false;
     @Column(name = "pdf_download_quota")
     private boolean pdfDownloadQuota = true;
+    @Column(name = "concurrent_views_limit")
+    private boolean concurrentViewsLimit = true;
 
     /** Privileges that everyone else has (users without this license, users that are not logged in). */
     @ElementCollection(fetch = FetchType.EAGER)
@@ -451,6 +453,20 @@ public class LicenseType implements IPrivilegeHolder {
      */
     public void setPdfDownloadQuota(boolean pdfDownloadQuota) {
         this.pdfDownloadQuota = pdfDownloadQuota;
+    }
+
+    /**
+     * @return the concurrentViewsLimit
+     */
+    public boolean isConcurrentViewsLimit() {
+        return concurrentViewsLimit;
+    }
+
+    /**
+     * @param concurrentViewsLimit the concurrentViewsLimit to set
+     */
+    public void setConcurrentViewsLimit(boolean concurrentViewsLimit) {
+        this.concurrentViewsLimit = concurrentViewsLimit;
     }
 
     /**

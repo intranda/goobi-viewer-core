@@ -14,8 +14,9 @@
 	
     <ui:define name="metadata">
 	    <f:metadata> 
-            <f:event type="preRenderView" listener="#{navigationHelper.setCurrentPage(cmsBean.currentPage.title, false, false, true)}" />
-			<f:event type="preRenderView" listener="#{breadcrumbBean.updateBreadcrumbs(cmsBean.currentPage)}" />            <f:event type="preRenderView" listener="#{searchBean.resetSearchFilter}" />
+            <f:event type="preRenderView" listener="#{navigationHelper.setCurrentPage(cmsBean.currentPage.title, false, true, true)}" />
+			<f:event type="preRenderView" listener="#{breadcrumbBean.updateBreadcrumbs(cmsBean.currentPage)}" />
+			<f:event type="preRenderView" listener="#{searchBean.resetSearchFilter}" />
         </f:metadata>
     </ui:define>
 
@@ -38,7 +39,6 @@
 				</h:panelGroup>
 
 				<h2>#{cmsPage.title}</h2>
-				
 				<div class="tpl-stacked-collection__text">
                     <ui:include src="#{cmsPage.getContent('text')}" />
                 </div>
@@ -50,6 +50,7 @@
 					baseCollection="#{cmsPage.getContentItem('collection').baseCollection}"
 					grouping="#{cmsPage.getContentItem('collection').groupBy}"
 					language="#{navigationHelper.localeString}"
+					defaultlanguage="#{navigationHelper.defaultLocale.language}"
 					></collectionView>
 				</div>
 				

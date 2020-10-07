@@ -17,7 +17,6 @@ package io.goobi.viewer.model.search;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -51,7 +50,6 @@ import io.goobi.viewer.controller.SolrConstants;
 import io.goobi.viewer.controller.SolrConstants.DocType;
 import io.goobi.viewer.controller.SolrSearchIndex;
 import io.goobi.viewer.controller.TEITools;
-import io.goobi.viewer.exceptions.AccessDeniedException;
 import io.goobi.viewer.exceptions.CmsElementNotFoundException;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
@@ -457,7 +455,7 @@ public class SearchHit implements Comparable<SearchHit> {
 
         try {
             String fulltext = null;
-            if(AccessConditionUtils.checkAccess(BeanUtils.getRequest(), "text", browseElement.getPi(), teiFilename, false)) {
+            if (AccessConditionUtils.checkAccess(BeanUtils.getRequest(), "text", browseElement.getPi(), teiFilename, false)) {
                 fulltext = DataFileTools.loadTei((String) doc.getFieldValue(SolrConstants.PI), language);
             }
             if (fulltext != null) {
@@ -532,134 +530,136 @@ public class SearchHit implements Comparable<SearchHit> {
 
         // Create child hits
         String pi = browseElement.getPi();
-        if (pi != null && childDocs != null) {
-            logger.trace("{} child hits found for {}", childDocs.size(), pi);
-            if (number + skip > childDocs.size()) {
-                number = childDocs.size() - skip;
+        if (pi == null || childDocs == null) {
+            logger.trace("Nothing to populate");
+            return;
+        }
+        
+        logger.trace("{} child hits found for {}", childDocs.size(), pi);
+        if (number + skip > childDocs.size()) {
+            number = childDocs.size() - skip;
+        }
+        Set<String> ignoreFields = new HashSet<>(DataManager.getInstance().getConfiguration().getDisplayAdditionalMetadataIgnoreFields());
+        Set<String> translateFields = new HashSet<>(DataManager.getInstance().getConfiguration().getDisplayAdditionalMetadataTranslateFields());
+        List<SolrDocument> ugcDocs = null;
+        for (int i = 0; i < number; ++i) {
+            SolrDocument childDoc = childDocs.get(i + skip);
+            String fulltext = null;
+            DocType docType = DocType.getByName((String) childDoc.getFieldValue(SolrConstants.DOCTYPE));
+            if (docType == null) {
+                logger.warn("Document {} has no DOCTYPE field, cannot add to child search hits.", childDoc.getFieldValue(SolrConstants.IDDOC));
+                continue;
             }
-            Set<String> ignoreFields = new HashSet<>(DataManager.getInstance().getConfiguration().getDisplayAdditionalMetadataIgnoreFields());
-            Set<String> translateFields = new HashSet<>(DataManager.getInstance().getConfiguration().getDisplayAdditionalMetadataTranslateFields());
-            List<SolrDocument> ugcDocs = null;
-            for (int i = 0; i < number; ++i) {
-                SolrDocument childDoc = childDocs.get(i + skip);
-                String fulltext = null;
-                DocType docType = DocType.getByName((String) childDoc.getFieldValue(SolrConstants.DOCTYPE));
-                if (docType == null) {
-                    logger.warn("Document {} has no DOCTYPE field, cannot add to child search hits.", childDoc.getFieldValue(SolrConstants.IDDOC));
-                    continue;
-                }
-                //                    logger.trace("Found child doc: {}", docType);
-                boolean acccessDeniedType = false;
-                switch (docType) {
-                    case PAGE:
-                        try {
-                            String altoFilename = (String) childDoc.getFirstValue(SolrConstants.FILENAME_ALTO);
-                            String plaintextFilename = (String) childDoc.getFirstValue(SolrConstants.FILENAME_FULLTEXT);
-                            if(StringUtils.isNotBlank(plaintextFilename)) {
-                                boolean access = AccessConditionUtils.checkAccess(request, "text", pi, plaintextFilename, false);
-                                if(access) {
-                                    fulltext = DataFileTools.loadFulltext(null, plaintextFilename, false, request);
-                                } else {
-                                    acccessDeniedType = true;
-                                }
-                            } else if(StringUtils.isNotBlank(altoFilename)) {
-                                boolean access = AccessConditionUtils.checkAccess(request, "text", pi, altoFilename, false);
-                                if(access) {
-                                    fulltext = DataFileTools.loadFulltext(altoFilename, null, false, request);
-                                } else {
-                                    acccessDeniedType = true;
-                                }
+            //                    logger.trace("Found child doc: {}", docType);
+            boolean acccessDeniedType = false;
+            switch (docType) {
+                case PAGE:
+                    try {
+                        String altoFilename = (String) childDoc.getFirstValue(SolrConstants.FILENAME_ALTO);
+                        String plaintextFilename = (String) childDoc.getFirstValue(SolrConstants.FILENAME_FULLTEXT);
+                        if (StringUtils.isNotBlank(plaintextFilename)) {
+                            boolean access = AccessConditionUtils.checkAccess(request, "text", pi, plaintextFilename, false);
+                            if (access) {
+                                fulltext = DataFileTools.loadFulltext(null, plaintextFilename, false, request);
+                            } else {
+                                acccessDeniedType = true;
                             }
-                        } catch (FileNotFoundException e) {
-                            logger.error(e.getMessage());
-                        } catch (IOException e) {
-                            logger.error(e.getMessage(), e);
+                        } else if (StringUtils.isNotBlank(altoFilename)) {
+                            boolean access = AccessConditionUtils.checkAccess(request, "text", pi, altoFilename, false);
+                            if (access) {
+                                fulltext = DataFileTools.loadFulltext(altoFilename, null, false, request);
+                            } else {
+                                acccessDeniedType = true;
+                            }
                         }
+                    } catch (FileNotFoundException e) {
+                        logger.error(e.getMessage());
+                    } catch (IOException e) {
+                        logger.error(e.getMessage(), e);
+                    }
 
-                        // Skip page hits without a proper full-text
-                        if (StringUtils.isBlank(fulltext)) {
-                            continue;
-                        }
-                    case METADATA:
-                    case UGC:
-                    case EVENT: {
-                        String ownerIddoc = (String) childDoc.getFieldValue(SolrConstants.IDDOC_OWNER);
-                        SearchHit ownerHit = ownerHits.get(ownerIddoc);
-                        boolean populateHit = false;
-                        if (ownerHit == null) {
-                            SolrDocument ownerDoc = DataManager.getInstance().getSearchIndex().getDocumentByIddoc(ownerIddoc);
-                            if (ownerDoc != null) {
-                                ownerHit = createSearchHit(ownerDoc, null, null, locale, fulltext, searchTerms, null, null, false, ignoreFields,
-                                        translateFields,
-                                        null);
-                                children.add(ownerHit);
-                                ownerHits.put(ownerIddoc, ownerHit);
-                                ownerDocs.put(ownerIddoc, ownerDoc);
-                                populateHit = true;
-                                // logger.trace("owner doc: {}", ownerDoc.getFieldValue("LOGID"));
-                            }
-                        }
-                        if (ownerHit == null) {
-                            logger.error("No document found for IDDOC {}", ownerIddoc);
-                            continue;
-                        }
-                        {
-                            SearchHit childHit =
-                                    createSearchHit(childDoc, ownerDocs.get(ownerIddoc), ownerHit.getBrowseElement().getExistingMetadataFields(),
-                                            locale, fulltext, searchTerms, null, null,
-                                            false,
-                                            ignoreFields, translateFields, acccessDeniedType ? HitType.ACCESSDENIED : null);
-                            // Skip grouped metadata child hits that have no additional (unique) metadata to display
-                            if (DocType.METADATA.equals(docType) && childHit.getFoundMetadata().isEmpty()) {
-                                continue;
-                            }
-                            if (!DocType.UGC.equals(docType)) {
-                                // Add all found additional metadata to the owner doc (minus duplicates) so it can be displayed
-                                for (StringPair metadata : childHit.getFoundMetadata()) {
-                                    // Found metadata lists will usually be very short, so it's ok to iterate through the list on every check
-                                    if (!ownerHit.getFoundMetadata().contains(metadata)) {
-                                        ownerHit.getFoundMetadata().add(metadata);
-                                    }
-                                }
-                            }
-                            //                                if (!(DocType.METADATA.equals(docType))) {
-                            ownerHit.getChildren().add(childHit);
+                    // Skip page hits without a proper full-text
+                    if (StringUtils.isBlank(fulltext)) {
+                        continue;
+                    }
+                case METADATA:
+                case UGC:
+                case EVENT: {
+                    String ownerIddoc = (String) childDoc.getFieldValue(SolrConstants.IDDOC_OWNER);
+                    SearchHit ownerHit = ownerHits.get(ownerIddoc);
+                    boolean populateHit = false;
+                    if (ownerHit == null) {
+                        SolrDocument ownerDoc = DataManager.getInstance().getSearchIndex().getDocumentByIddoc(ownerIddoc);
+                        if (ownerDoc != null) {
+                            ownerHit = createSearchHit(ownerDoc, null, null, locale, fulltext, searchTerms, null, null, false, ignoreFields,
+                                    translateFields,
+                                    null);
+                            children.add(ownerHit);
+                            ownerHits.put(ownerIddoc, ownerHit);
+                            ownerDocs.put(ownerIddoc, ownerDoc);
                             populateHit = true;
-                            //                                }
-                            if (populateHit) {
-                                hitsPopulated++;
-                            }
+                            // logger.trace("owner doc: {}", ownerDoc.getFieldValue("LOGID"));
                         }
                     }
-                        break;
-                    case DOCSTRCT:
-                        // Docstruct hits are immediate children of the main hit
-                        String iddoc = (String) childDoc.getFieldValue(SolrConstants.IDDOC);
-                        if (!ownerHits.containsKey(iddoc)) {
-                            SearchHit childHit =
-                                    createSearchHit(childDoc, null, null, locale, fulltext, searchTerms, null, null, false, ignoreFields,
-                                            translateFields,
-                                            null);
-                            children.add(childHit);
-                            ownerHits.put(iddoc, childHit);
-                            ownerDocs.put(iddoc, childDoc);
+                    if (ownerHit == null) {
+                        logger.error("No document found for IDDOC {}", ownerIddoc);
+                        continue;
+                    }
+                    {
+                        SearchHit childHit =
+                                createSearchHit(childDoc, ownerDocs.get(ownerIddoc), ownerHit.getBrowseElement().getExistingMetadataFields(),
+                                        locale, fulltext, searchTerms, null, null,
+                                        false,
+                                        ignoreFields, translateFields, acccessDeniedType ? HitType.ACCESSDENIED : null);
+                        // Skip grouped metadata child hits that have no additional (unique) metadata to display
+                        if (DocType.METADATA.equals(docType) && childHit.getFoundMetadata().isEmpty()) {
+                            continue;
+                        }
+                        if (!DocType.UGC.equals(docType)) {
+                            // Add all found additional metadata to the owner doc (minus duplicates) so it can be displayed
+                            for (StringPair metadata : childHit.getFoundMetadata()) {
+                                // Found metadata lists will usually be very short, so it's ok to iterate through the list on every check
+                                if (!ownerHit.getFoundMetadata().contains(metadata)) {
+                                    ownerHit.getFoundMetadata().add(metadata);
+                                }
+                            }
+                        }
+                        //                                if (!(DocType.METADATA.equals(docType))) {
+                        ownerHit.getChildren().add(childHit);
+                        populateHit = true;
+                        //                                }
+                        if (populateHit) {
                             hitsPopulated++;
                         }
-                        break;
-                    case GROUP:
-                    default:
-                        break;
+                    }
                 }
+                    break;
+                case DOCSTRCT:
+                    // Docstruct hits are immediate children of the main hit
+                    String iddoc = (String) childDoc.getFieldValue(SolrConstants.IDDOC);
+                    if (!ownerHits.containsKey(iddoc)) {
+                        SearchHit childHit =
+                                createSearchHit(childDoc, null, null, locale, fulltext, searchTerms, null, null, false, ignoreFields,
+                                        translateFields,
+                                        null);
+                        children.add(childHit);
+                        ownerHits.put(iddoc, childHit);
+                        ownerDocs.put(iddoc, childDoc);
+                        hitsPopulated++;
+                    }
+                    break;
+                case GROUP:
+                default:
+                    break;
             }
-
-            //            childDocs = childDocs.subList(number, childDocs.size());
-            if (childDocs.isEmpty()) {
-                ownerDocs.clear();
-                ownerHits.clear();
-            }
-            logger.trace("Remaning child docs: {}", childDocs.size());
         }
-        logger.trace("populateChildren END");
+
+        //            childDocs = childDocs.subList(number, childDocs.size());
+        if (childDocs.isEmpty()) {
+            ownerDocs.clear();
+            ownerHits.clear();
+        }
+        logger.trace("Remaning child docs: {}", childDocs.size());
     }
 
     /**

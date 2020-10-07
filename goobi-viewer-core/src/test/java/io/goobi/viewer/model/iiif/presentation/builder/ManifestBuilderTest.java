@@ -72,7 +72,7 @@ public class ManifestBuilderTest extends AbstractDatabaseAndSolrEnabledTest {
         DataManager.getInstance().injectConfiguration(new Configuration("src/test/resources/config_viewer.test.xml"));
     }
 
-    public static final String PI = PI_KLEIUNIV;
+    public static final String PI = "74241";
 
     @Test
     public void test() throws PresentationException, IndexUnreachableException, ViewerConfigurationException, DAOException, URISyntaxException,

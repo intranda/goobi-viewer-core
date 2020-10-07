@@ -40,7 +40,11 @@ var viewerJS = ( function( viewer ) {
              * @param language  The preferred language String as a two digit code
              * @returns         The most appropriate String value found
              */
-            getValue: function(element, locale) {
+            getValue: function(element, locale, fallbackLanguage) {
+                
+                if(!fallbackLanguage) {
+                    fallbackLanguage = 'en';
+                }
                 if(element) {
                     if(typeof element === 'string') {
                         return element;
@@ -55,7 +59,7 @@ var viewerJS = ( function( viewer ) {
                                var language = item['@language'];
                                if(locale == language) {
                                    return value;
-                               } else if(!fallback || language == 'en') {
+                               } else if(!fallback || language == fallbackLanguage) {
                                    fallback = value;
                                }
                            }
@@ -213,6 +217,22 @@ var viewerJS = ( function( viewer ) {
                     return anno.resource;
                 } else {
                     return {};
+                }
+            },
+            
+            
+            /**
+             * @return the object in the service property which @context ends in <name>.context.json, if any
+             */
+            getService(manifest, name) {
+                let service = manifest.service;
+                if(service && Array.isArray(service)) {
+                    return service.find(s => {
+                        let context = service['@context'];
+                        return context && context.endsWith(name + ".context.json");
+                    })
+                } else {
+                    return service;
                 }
             }
     }

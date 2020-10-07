@@ -219,5 +219,12 @@ public class IIIFUrlHandler {
                 rotation == null ? null : rotation.toString(), quality == null ? null : quality.toString(),
                 format == null ? null : format.getFileExtension());
     }
+    
+    /**
+     * @return the urls
+     */
+    public AbstractApiUrlManager getUrlManager() {
+        return urls;
+    }
 
 }

@@ -16,6 +16,7 @@
 package io.goobi.viewer.model.security;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
@@ -381,5 +382,25 @@ public class AccessConditionUtilsTest extends AbstractDatabaseAndSolrEnabledTest
     @Test
     public void getPdfDownloadQuotaForRecord_shouldReturn100IfRecordOpenAccess() throws Exception {
         Assert.assertEquals(100, AccessConditionUtils.getPdfDownloadQuotaForRecord("PPN517154005"));
+    }
+
+    /**
+     * @see AccessConditionUtils#isConcurrentViewsLimitEnabledForAnyAccessCondition(List)
+     * @verifies return false if access conditions null or empty
+     */
+    @Test
+    public void isConcurrentViewsLimitEnabledForAnyAccessCondition_shouldReturnFalseIfAccessConditionsNullOrEmpty() throws Exception {
+        Assert.assertFalse(AccessConditionUtils.isConcurrentViewsLimitEnabledForAnyAccessCondition(null));
+        Assert.assertFalse(AccessConditionUtils.isConcurrentViewsLimitEnabledForAnyAccessCondition(Collections.emptyList()));
+    }
+
+    /**
+     * @see AccessConditionUtils#isConcurrentViewsLimitEnabledForAnyAccessCondition(List)
+     * @verifies return true if any license type has limit enabled
+     */
+    @Test
+    public void isConcurrentViewsLimitEnabledForAnyAccessCondition_shouldReturnTrueIfAnyLicenseTypeHasLimitEnabled() throws Exception {
+        String[] licenseTypes = new String[] { "license type 1 name", "license type 4 name" };
+        Assert.assertTrue(AccessConditionUtils.isConcurrentViewsLimitEnabledForAnyAccessCondition(Arrays.asList(licenseTypes)));
     }
 }

@@ -5,6 +5,7 @@
 /* SAERCH ADVANCED */
 /* BLOCK */
 .search-advanced {
+	margin-bottom: 1.5rem;
     /* ELEMENT */
     &__group {
         position: relative;
@@ -52,8 +53,6 @@
     &__input-group {
         .form-control__select,
         input[type="text"] {
-        }
-        input[type="text"] {
             border-right: none;
             &:focus {
                 border-right-color: @blue;
@@ -61,6 +60,15 @@
                 	border-color: @blue;
                 }
             }
+            &.-with-right-border {
+            	border-right: 1px solid @middlegray;
+            	&:focus {
+                	border-right-color: @blue;
+                	& + .input-group-append {
+                	border-color: @blue;
+                	}
+            	}
+        	}
         }
         .input-group-append {
             padding: 0;
@@ -97,6 +105,21 @@
         .row .col-sm-1 {
             padding-left: 0;
         }
+    }
+    &__between-arrow {
+	    display: flex;
+		align-items: center;
+		padding: 0 0.7rem;
+		font-size: 1.6rem;	
+    }
+    &__year-span-from {
+    		align-self: center;
+    		margin-right: 1rem;
+    }
+    &__year-span-to {
+    		align-self: center;
+    		margin-right: 1rem;
+    		margin-left: 1rem;
     }
     &__input-col {
         a {

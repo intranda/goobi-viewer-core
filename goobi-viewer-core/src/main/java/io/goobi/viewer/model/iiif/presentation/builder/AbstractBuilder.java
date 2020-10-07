@@ -129,7 +129,9 @@ public abstract class AbstractBuilder {
      */
     public AbstractBuilder(AbstractApiUrlManager apiUrlManager) {
         if (apiUrlManager == null) {
-            throw new org.jboss.weld.exceptions.IllegalArgumentException("apiUrlManager may not be null");
+            String apiUrl = DataManager.getInstance().getConfiguration().getIIIFApiUrl();
+            apiUrl = apiUrl.replace("/rest", "/api/v1");
+            apiUrlManager = new ApiUrls(apiUrl);
         }
         this.urls = apiUrlManager;
         this.annoBuilder = new AnnotationsResourceBuilder(this.urls);
@@ -272,7 +274,7 @@ public abstract class AbstractBuilder {
                 String label = StringUtils.isNotBlank(configuredLabel) ? configuredLabel
                         : (field.contains("/") ? field.substring(field.indexOf("/") + 1) : field);
                 SolrSearchIndex.getTranslations(field, ele, (s1, s2) -> s1 + "; " + s2)
-                        .map(value -> new Metadata(ViewerResourceBundle.getTranslations(label), value))
+                        .map(value -> new Metadata(ViewerResourceBundle.getTranslations(label, false), value))
                         .ifPresent(md -> {
                             md.getLabel().removeTranslation(MultiLanguageMetadataValue.DEFAULT_LANGUAGE);
                             md.getValue().removeTranslation(MultiLanguageMetadataValue.DEFAULT_LANGUAGE);

@@ -34,7 +34,7 @@ import org.slf4j.LoggerFactory;
 
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.SolrConstants;
-import io.goobi.viewer.controller.SolrConstants.DocType;
+import io.goobi.viewer.controller.SolrSearchIndex;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
@@ -411,6 +411,16 @@ public class IdentifierResolver extends HttpServlet {
         //        return;
     }
 
+    static String constructUrl(SolrDocument targetDoc, boolean pageResolverUrl) {
+        int order = 1;
+        if (targetDoc.containsKey(SolrConstants.THUMBPAGENO)) {
+            order = (int) targetDoc.getFieldValue(SolrConstants.THUMBPAGENO);
+        } else if (targetDoc.containsKey(SolrConstants.ORDER)) {
+            order = (int) targetDoc.getFieldValue(SolrConstants.ORDER);
+        }
+        return constructUrl(targetDoc, pageResolverUrl, order);
+    }
+
     /**
      *
      * @param targetDoc
@@ -423,22 +433,15 @@ public class IdentifierResolver extends HttpServlet {
      * @should construct preferred view url correctly
      * @should construct application mime type url correctly
      */
-    static String constructUrl(SolrDocument targetDoc, boolean pageResolverUrl) {
+    static String constructUrl(SolrDocument targetDoc, boolean pageResolverUrl, int order) {
         String docStructType = (String) targetDoc.getFieldValue(SolrConstants.DOCSTRCT);
         String mimeType = (String) targetDoc.getFieldValue(SolrConstants.MIMETYPE);
         String topstructPi = (String) targetDoc.getFieldValue(SolrConstants.PI_TOPSTRUCT);
-        boolean anchorOrGroup = (targetDoc.containsKey(SolrConstants.ISANCHOR) && (Boolean) targetDoc.getFieldValue(SolrConstants.ISANCHOR))
-                || DocType.GROUP.toString().equals(targetDoc.getFieldValue(SolrConstants.DOCTYPE));
+        boolean anchorOrGroup = SolrSearchIndex.isAnchor(targetDoc) || SolrSearchIndex.isGroup(targetDoc);
         boolean hasImages = targetDoc.containsKey(SolrConstants.ORDER) || (targetDoc.containsKey(SolrConstants.THUMBNAIL)
                 && !StringUtils.isEmpty((String) targetDoc.getFieldValue(SolrConstants.THUMBNAIL)));
 
         PageType pageType = PageType.determinePageType(docStructType, mimeType, anchorOrGroup, hasImages, pageResolverUrl);
-        int order = 1;
-        if (targetDoc.containsKey(SolrConstants.THUMBPAGENO)) {
-            order = (int) targetDoc.getFieldValue(SolrConstants.THUMBPAGENO);
-        } else if (targetDoc.containsKey(SolrConstants.ORDER)) {
-            order = (int) targetDoc.getFieldValue(SolrConstants.ORDER);
-        }
 
         StringBuilder sb = new StringBuilder("/");
         sb.append(DataManager.getInstance()

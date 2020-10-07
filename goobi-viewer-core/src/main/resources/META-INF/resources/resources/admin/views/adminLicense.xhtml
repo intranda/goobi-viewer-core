@@ -73,18 +73,20 @@
                                         <span>#{msg.openAccess}:</span>
                                     </div>
                                     <div class="col-9 admin__form-input">
-	                   	                <div class="admin__radio-switch openAccessToggle">
-	                                        <h:selectOneRadio group="openAccessToggle" value="#{adminBean.currentLicenseType.openAccess}"
-	                                            immediate="true" checked="#{visibleItem.openInNewWindow ? null : 'false'}">
-	                                            <f:selectItem itemValue="#{false}" itemLabel="#{msg.no}" />
-	                                        </h:selectOneRadio>
-	                                        <h:selectOneRadio group="openAccessToggle" value="#{adminBean.currentLicenseType.openAccess}"
-	                                            immediate="true" checked="#{visibleItem.openInNewWindow ? 'true' : null}">
-	                                            <f:selectItem itemValue="#{true}" itemLabel="#{msg.yes}" />
-	                                        </h:selectOneRadio>
-	                                        <span class="toggle-outside"><span class="toggle-inside"></span></span>
-	                                    </div>
+                                    
+                                	<viewerComponent:toggleSwitch
+									name="openAccessToggle"
+									value="#{adminBean.currentLicenseType.openAccess}"
+									toggleTarget=".admin__license-functions, .abcdefg"
+									toggleActionLeft="show"
+									toggleActionRight="hide"/>    
+                                    
+
                                         <span class="admin__form-help-text in">#{msg.admin__license_functions_open_access_desc}</span>
+                                        
+                                        
+                                        
+                                        
                                     </div>
                                 </div>
 
@@ -150,6 +152,51 @@
 	                                        <h:outputText value="#{msg.admin__license_functions__help}" styleClass="admin__form-help-text" escape="false" />
 	                                    </div>
 									</div>
+									
+                                    <!-- CONCURRENT VIEWS LIMIT -->
+                                    <ui:fragment rendered="#{adminBean.getConcurrentViewsLimitRecordCountForLicenseType(adminBean.currentLicenseType.name) > 0}">
+                                    <div class="form-group form-row mb-3">
+                                        <div class="col-2"></div>
+                                        <h:panelGroup id="pdf_concurrent_views_limit_info_box" layout="block" styleClass="col-9">
+                                            <!-- No records found -->
+<!--                                             <ui:fragment -->
+<!--                                                 rendered="#{adminBean.getConcurrentViewsLimitRecordCountForLicenseType(adminBean.currentLicenseType.name) == 0}"> -->
+<!--                                                     <div class="admin__default-block mb-0 -info-box"> -->
+<!--                                                         <h:outputFormat value="#{msg.admin__license_concurrent_views_limit_record_count_nok}" escape="false"> -->
+<!--                                                             <f:param value="#{adminBean.getConcurrentViewsLimitRecordCountForLicenseType(adminBean.currentLicenseType.name)}" /> -->
+<!--                                                         </h:outputFormat> -->
+<!--                                                     </div> -->
+<!--                                             </ui:fragment> -->
+                                            <!-- Yes, records found -->
+                                            <ui:fragment
+                                                rendered="#{adminBean.getConcurrentViewsLimitRecordCountForLicenseType(adminBean.currentLicenseType.name) > 0}">
+                                                <div class="admin__default-block mb-0 -success-box">
+                                                    <p class="mb-3">
+                                                        <h:outputFormat value="#{msg.admin__license_concurrent_views_limit_record_count_ok}" escape="false">
+                                                            <f:param value="#{adminBean.getConcurrentViewsLimitRecordCountForLicenseType(adminBean.currentLicenseType.name)}" />
+                                                        </h:outputFormat>
+                                                    </p>
+                                                    <div class="row">
+                                                        <div class="col-2">#{msg.admin__license_concurrent_views_limit_active}:</div>
+                                                        <div class="col-10">
+                                                            <div class="admin__radio-switch -on-off">
+                                                                <h:selectOneRadio group="concurentViewsLimitToggle" value="#{adminBean.currentLicenseType.concurrentViewsLimit}"
+                                                                    immediate="true" checked="#{visibleItem.openInNewWindow ? null : 'false'}">
+                                                                    <f:selectItem itemValue="#{false}" itemLabel="#{msg.no}" />
+                                                                </h:selectOneRadio>
+                                                                <h:selectOneRadio group="concurentViewsLimitToggle" value="#{adminBean.currentLicenseType.concurrentViewsLimit}"
+                                                                    immediate="true" checked="#{visibleItem.openInNewWindow ? 'true' : null}">
+                                                                    <f:selectItem itemValue="#{true}" itemLabel="#{msg.yes}" />
+                                                                </h:selectOneRadio>
+                                                                <span class="toggle-outside"><span class="toggle-inside"></span></span>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </ui:fragment>
+                                        </h:panelGroup>
+                                    </div>
+                                    </ui:fragment>
 
                                     <!-- PDF DOWNLOAD QUOTA -->
                                     <ui:fragment rendered="#{adminBean.getPdfQuotaRecordCountForLicenseType(adminBean.currentLicenseType.name) > 0}">
@@ -157,7 +204,8 @@
 	                                    <div class="col-2"></div>
 	                                    <h:panelGroup id="pdf_download_quota_info_box" layout="block" styleClass="col-9">
 	                                        <!-- Records found -->
-	                                        <ui:fragment rendered="#{!adminBean.currentLicenseType.hasPrivilegeCopy('DOWNLOAD_PDF') and !adminBean.currentLicenseType.hasPrivilegeCopy('DOWNLOAD_PAGE_PDF')}">
+	                                        <ui:fragment
+	                                            rendered="#{!adminBean.currentLicenseType.hasPrivilegeCopy('DOWNLOAD_PDF') and !adminBean.currentLicenseType.hasPrivilegeCopy('DOWNLOAD_PAGE_PDF')}">
                                                     <div class="admin__default-block mb-0 -info-box">
                                                         <h:outputFormat value="#{msg.admin__license_pdf_download_quota_record_found}" escape="false">
                                                             <f:param value="#{adminBean.getPdfQuotaRecordCountForLicenseType(adminBean.currentLicenseType.name)}" />
@@ -175,7 +223,7 @@
                                                     <div class="row">
                                                         <div class="col-2">#{msg.admin__license_pdf_download_quota_active}:</div>
                                                         <div class="col-10">
-	                                                        <div class="admin__radio-switch -on-off">
+                                                            <div class="admin__radio-switch -on-off">
                                                                 <h:selectOneRadio group="pdfDownloadQuotaToggle" value="#{adminBean.currentLicenseType.pdfDownloadQuota}"
                                                                     immediate="true" checked="#{visibleItem.openInNewWindow ? null : 'false'}">
                                                                     <f:selectItem itemValue="#{false}" itemLabel="#{msg.no}" />
@@ -184,10 +232,10 @@
                                                                 <h:selectOneRadio group="pdfDownloadQuotaToggle" value="#{adminBean.currentLicenseType.pdfDownloadQuota}"
                                                                     immediate="true" checked="#{visibleItem.openInNewWindow ? 'true' : null}">
                                                                     <f:selectItem itemValue="#{true}" itemLabel="#{msg.yes}" />
-                                                                	<!-- <f:ajax render="pdf_download_quota_info_box" /> -->
+                                                                    <!-- <f:ajax render="pdf_download_quota_info_box" /> -->
                                                                 </h:selectOneRadio>
                                                                 <span class="toggle-outside"><span class="toggle-inside"></span></span>
-	                                                        </div>
+                                                            </div>
                                                         </div>
                                                     </div>
                                                 </div>

@@ -41,10 +41,14 @@ import io.goobi.viewer.controller.AlphanumCollatorComparator;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.SolrConstants;
 import io.goobi.viewer.controller.SolrSearchIndex;
+import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
+import io.goobi.viewer.exceptions.RecordDeletedException;
+import io.goobi.viewer.exceptions.RecordLimitExceededException;
 import io.goobi.viewer.exceptions.RecordNotFoundException;
 import io.goobi.viewer.exceptions.RedirectException;
+import io.goobi.viewer.exceptions.ViewerConfigurationException;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.messages.Messages;
 import io.goobi.viewer.messages.ViewerResourceBundle;
@@ -56,6 +60,8 @@ import io.goobi.viewer.model.termbrowsing.BrowsingMenuFieldConfig;
 import io.goobi.viewer.model.viewer.BrowseDcElement;
 import io.goobi.viewer.model.viewer.CollectionView;
 import io.goobi.viewer.model.viewer.CollectionView.BrowseDataProvider;
+import io.goobi.viewer.model.viewer.PageType;
+import io.goobi.viewer.model.viewer.StringPair;
 
 /**
  * This bean provides the data for collection and term browsing.
@@ -833,20 +839,44 @@ public class BrowseBean implements Serializable {
      * @return a {@link java.lang.String} object.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
+     * @throws ViewerConfigurationException
+     * @throws DAOException
+     * @throws RecordDeletedException
+     * @throws RecordLimitExceededException 
      */
-    public String openWorkInTargetCollection() throws IndexUnreachableException, PresentationException {
+    public String openWorkInTargetCollection()
+            throws IndexUnreachableException, PresentationException, RecordDeletedException, DAOException, ViewerConfigurationException, RecordLimitExceededException {
         if (StringUtils.isBlank(getTargetCollection())) {
             return null;
         }
-        String url = SearchHelper.getFirstWorkUrlWithFieldValue(SolrConstants.DC, getTargetCollection(), true, true,
-                DataManager.getInstance().getConfiguration().getCollectionSplittingChar(SolrConstants.DC), BeanUtils.getLocale());
-        //        url = BeanUtils.getServletPathWithHostAsUrlFromJsfContext() + url;
-        //        return url;
+
+        StringPair result =
+                SearchHelper.getFirstRecordURL(getCollectionField(), getTargetCollection(), true, true,
+                        DataManager.getInstance().getConfiguration().getCollectionSplittingChar(getCollectionField()), BeanUtils.getLocale());
+        if (result == null) {
+            return null;
+        }
+
         try {
-            BeanUtils.getActiveDocumentBean().setPersistentIdentifier(url);
-            return "pretty:object1";
+            ActiveDocumentBean adb = BeanUtils.getActiveDocumentBean();
+            if (adb != null) {
+                adb.setPersistentIdentifier(result.getOne());
+                adb.open(); // open to persist PI on ViewManager
+            }
+
+            //            return BeanUtils.getNavigationHelper().getApplicationUrl() + result.getTwo();
+            PageType pageType = PageType.getByName(result.getTwo());
+            switch (pageType) {
+                case viewToc:
+                    return "pretty:toc1";
+                case viewMetadata:
+                    return "pretty:metadata1";
+                default:
+                    return "pretty:object1";
+            }
+            // TODO Return and forward to foo URL instead of switch+pretty
         } catch (RecordNotFoundException e) {
-            logger.error("No record found for id " + url);
+            logger.error("No record found for ID: {}", result.getOne());
             return null;
         }
     }

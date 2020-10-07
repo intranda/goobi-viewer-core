@@ -294,7 +294,7 @@ public class AccessConditionUtils {
      */
     public static boolean checkAccessPermissionByIdentifierAndLogId(String identifier, String logId, String privilegeName, HttpServletRequest request)
             throws IndexUnreachableException, DAOException {
-        logger.trace("checkAccessPermissionByIdentifierAndLogId({}, {}, {})", identifier, logId, privilegeName);
+        // logger.trace("checkAccessPermissionByIdentifierAndLogId({}, {}, {})", identifier, logId, privilegeName);
         if (StringUtils.isEmpty(identifier)) {
             return false;
         }
@@ -1064,5 +1064,32 @@ public class AccessConditionUtils {
         }
 
         return 100;
+    }
+
+    /**
+     * 
+     * @param accessConditions
+     * @return true if any license type for the given list of access conditions has concurrent views limit enabled; false otherwise
+     * @throws DAOException
+     * @should return false if access conditions null or empty
+     * @should return true if any license type has limit enabled
+     */
+    public static boolean isConcurrentViewsLimitEnabledForAnyAccessCondition(List<String> accessConditions) throws DAOException {
+        if (accessConditions == null || accessConditions.isEmpty()) {
+            return false;
+        }
+
+        List<LicenseType> licenseTypes = DataManager.getInstance().getDao().getLicenseTypes(accessConditions);
+        if (licenseTypes.isEmpty()) {
+            return false;
+        }
+
+        for (LicenseType licenseType : licenseTypes) {
+            if (licenseType.isConcurrentViewsLimit()) {
+                return true;
+            }
+        }
+
+        return false;
     }
 }

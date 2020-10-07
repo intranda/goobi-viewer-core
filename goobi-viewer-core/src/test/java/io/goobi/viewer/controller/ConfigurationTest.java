@@ -1561,11 +1561,9 @@ public class ConfigurationTest extends AbstractTest {
     public void getAdvancedSearchFields_shouldReturnAllValues() throws Exception {
         List<AdvancedSearchFieldConfiguration> result = DataManager.getInstance().getConfiguration().getAdvancedSearchFields();
         Assert.assertEquals(11, result.size());
-
         Assert.assertTrue(result.get(0).isHierarchical());
-
+        Assert.assertTrue(result.get(5).isRange());
         Assert.assertTrue(result.get(1).isUntokenizeForPhraseSearch());
-
         Assert.assertEquals("#SEPARATOR1#", result.get(7).getField());
         Assert.assertEquals("-----", result.get(7).getLabel());
         Assert.assertTrue(result.get(7).isDisabled());
@@ -1577,8 +1575,17 @@ public class ConfigurationTest extends AbstractTest {
      */
     @Test
     public void isAdvancedSearchFieldHierarchical_shouldReturnCorrectValue() throws Exception {
-        Assert.assertTrue(DataManager.getInstance().getConfiguration().isAdvancedSearchFieldHierarchical(SolrConstants.DC));
-        Assert.assertFalse(DataManager.getInstance().getConfiguration().isAdvancedSearchFieldHierarchical("MD_TITLE"));
+
+    }
+
+    /**
+     * @see Configuration#isAdvancedSearchFieldRange(String)
+     * @verifies return correct value
+     */
+    @Test
+    public void isAdvancedSearchFieldRange_shouldReturnCorrectValue() throws Exception {
+        Assert.assertFalse(DataManager.getInstance().getConfiguration().isAdvancedSearchFieldRange(SolrConstants.DC));
+        Assert.assertTrue(DataManager.getInstance().getConfiguration().isAdvancedSearchFieldRange("MD_YEARPUBLISH"));
     }
 
     /**
@@ -2776,6 +2783,15 @@ public class ConfigurationTest extends AbstractTest {
         Assert.assertEquals("CC0 1.0", licenses.get(0).getLabel());
         Assert.assertEquals("http://rightsstatements.org/vocab/InC/1.0/", licenses.get(1).getUrl());
         Assert.assertEquals("", licenses.get(0).getIcon());
+    }
+
+    @Test
+    public void testGetGeoMapMarkerFields() {
+        List<String> fields = DataManager.getInstance().getConfiguration().getGeoMapMarkerFields();
+        Assert.assertEquals(3, fields.size());
+        Assert.assertTrue(fields.contains("MD_GEOJSON_POINT"));
+        Assert.assertTrue(fields.contains("NORM_COORDS_GEOJSON"));
+        Assert.assertTrue(fields.contains("MD_COORDINATES"));
     }
 
     @Test

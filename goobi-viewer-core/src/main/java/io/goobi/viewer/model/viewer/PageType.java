@@ -66,6 +66,7 @@ public enum PageType {
     adminRights("admin/rights"),
     adminRightsNew("admin/rights/new"),
     adminUserComments("admin/comments"),
+    adminUserTerms("admin/userterms"),
     adminCreateRecord("admin/record/new"),
     //admin/cms
     adminCms("admin/cms"),
@@ -92,20 +93,20 @@ public enum PageType {
     editContent("crowd/editContent"),
     editOcr("crowd/editOcr"),
     editHistory("crowd/editHistory"),
-    
+
     // The order of page types handled by CMS here determines the listing order of static pages
     index("index", PageTypeHandling.cms),
     search("search", PageTypeHandling.cms),
     advancedSearch("searchadvanced", PageTypeHandling.cms),
     browse("browse", PageTypeHandling.cms),
     privacy("privacy", PageTypeHandling.cms),
-    imprint("imprint", PageTypeHandling.cms),    
+    imprint("imprint", PageTypeHandling.cms),
     feedback("feedback", PageTypeHandling.cms),
     crowsourcingCampaigns("campaigns", PageTypeHandling.cms),
     bookmarks("bookmarks", PageTypeHandling.cms),
     crowsourcingAnnotation("campaigns/.../annotate"),
     crowsourcingReview("campaigns/.../review"),
-    
+
     other(""); //unknown page type name in Navigationhelper. Probably a cms-page
 
     /** Logger for this class. */
@@ -390,6 +391,7 @@ public enum PageType {
      *
      * @return a boolean.
      */
+    @Deprecated
     public boolean isRestricted() {
         switch (this) {
             case admin:
@@ -402,6 +404,9 @@ public enum PageType {
             case adminCmsCollections:
             case adminCmsNewPage:
             case adminCmsEditCollection:
+            case adminCmsGeoMaps:
+            case adminCmsGeoMapEdit:
+            case adminCmsGeoMapNew:
             case adminCmsMedia:
             case adminCmsMenuItems:
             case adminCmsOverview:

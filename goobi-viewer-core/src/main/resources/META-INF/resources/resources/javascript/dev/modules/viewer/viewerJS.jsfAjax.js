@@ -32,10 +32,10 @@ var viewerJS = ( function ( viewer ) {
     	 * @description Method to initialize the jsf ajax listener.
     	 * @method init 
     	 * */
-        begin: new Rx.Subject(),
-        complete: new Rx.Subject(),
-        success: new Rx.Subject(),
-        error: new Rx.Subject(),
+        begin: new rxjs.Subject(),
+        complete: new rxjs.Subject(),
+        success: new rxjs.Subject(),
+        error: new rxjs.Subject(),
     	init: function( config ) {
     		if (_debug) {
     		    console.log( 'Initializing: viewerJS.jsfAjax.init' );
@@ -70,7 +70,9 @@ var viewerJS = ( function ( viewer ) {
                             // load thumbnails
                             viewer.loadThumbnails();
                             // init tinyMCE    
-                            if ( $( '.tinyMCE' ).length > 0 ) {
+                            let isTiny = data.responseText.includes("tinyMCE");
+                            if(isTiny) {
+//                            if ( $( '.tinyMCE' ).length > 0 ) {
                                 viewerJS.tinyMce.close();
                                 viewerJS.tinyMce.init( viewerJS.tinyConfig );
                             }

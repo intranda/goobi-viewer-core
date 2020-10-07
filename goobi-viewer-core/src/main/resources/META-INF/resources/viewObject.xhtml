@@ -9,6 +9,8 @@
 	xmlns:widgetComponent="http://xmlns.jcp.org/jsf/composite/components/widgets"
 	template="/resources/themes/#{navigationHelper.theme}/template.html">
 
+
+
     <ui:define name="metadata">
         <f:metadata>
             <f:event type="preRenderView" listener="#{navigationHelper.setCurrentView('object')}" />
@@ -31,6 +33,7 @@
 
     <!-- CONTENT -->
     <ui:define name="content">
+    
 		<f:view contentType="text/html" encoding="utf-8">
             <!-- reCAPTCHA API -->
             <h:panelGroup rendered="#{configurationBean.useReCaptcha}">

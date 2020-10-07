@@ -658,7 +658,7 @@ public final class Configuration extends AbstractConfiguration {
     public int getTocAnchorGroupElementsPerPage() {
         return getLocalInt("toc.tocAnchorGroupElementsPerPage", 0);
     }
-    
+
     /**
      * <p>
      * isDisplaySidebarBrowsingTerms.
@@ -670,7 +670,7 @@ public final class Configuration extends AbstractConfiguration {
     public boolean isDisplaySidebarBrowsingTerms() {
         return getLocalBoolean("sidebar.sidebarBrowsingTerms[@display]", true);
     }
-    
+
     /**
      * <p>
      * isDisplaySidebarRssFeed.
@@ -1289,10 +1289,15 @@ public final class Configuration extends AbstractConfiguration {
             }
             String label = subElement.getString("[@label]", null);
             boolean hierarchical = subElement.getBoolean("[@hierarchical]", false);
+            boolean range = subElement.getBoolean("[@range]", false);
             boolean untokenizeForPhraseSearch = subElement.getBoolean("[@untokenizeForPhraseSearch]", false);
 
-            ret.add(new AdvancedSearchFieldConfiguration(field, label, hierarchical, untokenizeForPhraseSearch,
-                    field.charAt(0) == '#' && field.charAt(field.length() - 1) == '#'));
+            ret.add(new AdvancedSearchFieldConfiguration(field)
+                    .setLabel(label)
+                    .setHierarchical(hierarchical)
+                    .setRange(range)
+                    .setUntokenizeForPhraseSearch(untokenizeForPhraseSearch)
+                    .setDisabled(field.charAt(0) == '#' && field.charAt(field.length() - 1) == '#'));
         }
 
         return ret;
@@ -1368,6 +1373,19 @@ public final class Configuration extends AbstractConfiguration {
      */
     public boolean isAdvancedSearchFieldHierarchical(String field) {
         return isAdvancedSearchFieldHasAttribute(field, "hierarchical");
+    }
+    
+    /**
+     * <p>
+     * isAdvancedSearchFieldRange.
+     * </p>
+     *
+     * @param field a {@link java.lang.String} object.
+     * @return a boolean.
+     * @should return correct value
+     */
+    public boolean isAdvancedSearchFieldRange(String field) {
+        return isAdvancedSearchFieldHasAttribute(field, "range");
     }
 
     /**
@@ -4697,6 +4715,14 @@ public final class Configuration extends AbstractConfiguration {
      */
     public GeoMapMarker getGeoMapMarker(String name) {
         return getGeoMapMarkers().stream().filter(m -> name.equalsIgnoreCase(m.getName())).findAny().orElse(null);
+    }
+
+    /**
+     *
+     * @return a list of solr field names containing GeoJson data used to create markers in maps
+     */
+    public List<String> getGeoMapMarkerFields() {
+        return getLocalList("maps.coordinateFields.field", Arrays.asList("MD_GEOJSON_POINT", "NORM_COORDS_GEOJSON"));
     }
 
     public List<GeoMapMarker> getGeoMapMarkers() {

@@ -46,6 +46,8 @@ import org.jdom2.JDOMException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.ocpsoft.pretty.PrettyContext;
+
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.NetTools;
 import io.goobi.viewer.controller.StringTools;
@@ -72,7 +74,6 @@ import io.goobi.viewer.model.security.user.UserGroup;
 import io.goobi.viewer.model.urlresolution.ViewHistory;
 import io.goobi.viewer.model.urlresolution.ViewerPath;
 import io.goobi.viewer.model.viewer.Feedback;
-import io.goobi.viewer.model.viewer.PageType;
 import io.goobi.viewer.servlets.utils.ServletUtils;
 
 /**
@@ -279,9 +280,6 @@ public class UserBean implements Serializable {
      */
     public String login(IAuthenticationProvider provider)
             throws AuthenticationProviderException, IllegalStateException, InterruptedException, ExecutionException {
-        if (getUser() != null) {
-            throw new IllegalStateException("errAlreadyLoggedIn");
-        }
         if ("#".equals(this.redirectUrl)) {
             HttpServletRequest request = BeanUtils.getRequest();
             this.redirectUrl = ViewHistory.getCurrentView(request)
@@ -296,6 +294,12 @@ public class UserBean implements Serializable {
         return null;
     }
 
+    /**
+     * 
+     * @param provider
+     * @param result
+     * @throws IllegalStateException
+     */
     private void completeLogin(IAuthenticationProvider provider, LoginResult result) {
         HttpServletResponse response = result.getResponse();
         HttpServletRequest request = result.getRequest();
@@ -312,6 +316,14 @@ public class UserBean implements Serializable {
             } else if (oUser.isPresent()) { //login successful
                 try {
                     User user = oUser.get();
+                    if (this.user != null) {
+                        if (this.user.equals(user)) {
+                            logger.debug("User already logged in");
+                            return;
+                        }
+                        // Exception if different user logged in
+                        throw new AuthenticationProviderException("errLoginError");
+                    }
                     wipeSession(request);
                     DataManager.getInstance().getBookmarkManager().addSessionBookmarkListToUser(user, request);
                     // Update last login
@@ -356,7 +368,7 @@ public class UserBean implements Serializable {
                     }
                     this.loggedInProvider = provider;
                     return;
-                } catch (DAOException | IOException | IndexUnreachableException | PresentationException e) {
+                } catch (DAOException | IOException | IndexUnreachableException | PresentationException | IllegalStateException e) {
                     //user may login, but setting up viewer account failed
                     provider.logout();
                     throw new AuthenticationProviderException(e);
@@ -430,15 +442,20 @@ public class UserBean implements Serializable {
             }
         } else if (oCurrentPath.isPresent()) {
             ViewerPath currentPath = oCurrentPath.get();
-            PageType pageType = currentPath.getPageType();
-            if (pageType != null && pageType.isRestricted()) {
+            if (LoginFilter.isRestrictedUri(currentPath.getCombinedUrl())) {
                 logger.trace("Redirecting to start page");
-                String redirect = "pretty:index";
-                return redirect;
+                return "pretty:index";
             }
             logger.trace("Redirecting to current url {}", currentPath.getCombinedPrettyfiedUrl());
             String redirect = currentPath.getCombinedPrettyfiedUrl();
             return redirect;
+        } else {
+            // IF ViewerPath is unavailable, extract URI via PrettyContext
+            PrettyContext prettyContext = PrettyContext.getCurrentInstance(request);
+            if (prettyContext != null && LoginFilter.isRestrictedUri(prettyContext.getRequestURL().toURL())) {
+                logger.trace("Redirecting to start page");
+                return "pretty:index";
+            }
         }
         return "";
     }
@@ -788,7 +805,7 @@ public class UserBean implements Serializable {
         lastName = null;
         securityAnswer = null;
         securityQuestion = null;
-        
+
         String url = FacesContext.getCurrentInstance().getExternalContext().getRequestHeaderMap().get("referer");
         feedback = new Feedback();
         if (user != null) {
@@ -1007,7 +1024,7 @@ public class UserBean implements Serializable {
     public IAuthenticationProvider getXserviceAuthenticationProvider() {
         return getProvidersOfType("userPassword").stream().findFirst().orElse(null);
     }
-    
+
     public boolean showAuthenticationProviderSelection() {
         return getAuthenticationProviders().stream()
                 .filter(p -> "local".equalsIgnoreCase(p.getType()) || "userPassword".equalsIgnoreCase(p.getType()))
@@ -1386,5 +1403,42 @@ public class UserBean implements Serializable {
     public boolean isAllowEmailChange() {
         return loggedInProvider != null && loggedInProvider.allowsEmailChange();
 
+    }
+    
+    /**
+     * Check if the current user is required to agree to the terms of use
+     * 
+     * @return true if  termsOfUse is active, a user is logged in and {@link User#isAgreedToTermsOfUse()} returns false for this user
+     */
+    public boolean mustAgreeToTermsOfUse() {
+        if(this.user != null && !this.user.isAgreedToTermsOfUse()) {
+            try {
+                boolean active = DataManager.getInstance().getDao().isTermsOfUseActive();
+                return active;
+            } catch(DAOException e) {
+                logger.error("Unable to query terms of use active state" , e);
+            }
+        }
+        return false;
+    }
+    
+    public void agreeToTermsOfUse() throws DAOException {
+        if(this.user != null) {
+            this.user.setAgreedToTermsOfUse(true);
+            DataManager.getInstance().getDao().updateUser(this.user);
+        }
+    }
+    
+    public void rejectTermsOfUse() throws DAOException {
+        if(this.user != null) {
+            this.user.setAgreedToTermsOfUse(false);
+            DataManager.getInstance().getDao().updateUser(this.user);
+        }
+    }
+    
+    public void logoutWithMessage(String messageKey) throws AuthenticationProviderException {
+        this.logout();
+        Messages.info(messageKey);
+        
     }
 }

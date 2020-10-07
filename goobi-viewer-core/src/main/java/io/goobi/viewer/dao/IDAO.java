@@ -46,6 +46,7 @@ import io.goobi.viewer.model.search.Search;
 import io.goobi.viewer.model.security.License;
 import io.goobi.viewer.model.security.LicenseType;
 import io.goobi.viewer.model.security.Role;
+import io.goobi.viewer.model.security.TermsOfUse;
 import io.goobi.viewer.model.security.user.IpRange;
 import io.goobi.viewer.model.security.user.User;
 import io.goobi.viewer.model.security.user.UserGroup;
@@ -2149,5 +2150,10 @@ public interface IDAO {
      * @throws DAOException
      */
     List<CMSPage> getCMSPagesForSubtheme(String subtheme) throws DAOException;
+    
+    public boolean saveTermsOfUse(TermsOfUse tou) throws DAOException;
+    public TermsOfUse getTermsOfUse() throws DAOException;
+    public boolean isTermsOfUseActive() throws DAOException;
+    public boolean resetUserAgreementsToTermsOfUse() throws DAOException;
 
 }

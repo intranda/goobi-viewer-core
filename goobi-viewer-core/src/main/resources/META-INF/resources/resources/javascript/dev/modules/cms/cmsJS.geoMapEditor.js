@@ -50,9 +50,9 @@ var cmsJS = ( function( cms ) {
     cms.GeoMapEditor = function(config){
         this.config = $.extend({}, _defaults, config);
         this.currentFeature = undefined;
-        this.onDeleteClick = new Rx.Subject();
-        this.onMetadataUpdate = new Rx.Subject();
-        this.metadataProvider = new Rx.Subject();
+        this.onDeleteClick = new rxjs.Subject();
+        this.onMetadataUpdate = new rxjs.Subject();
+        this.metadataProvider = new rxjs.Subject();
         
         this.geoMap = new viewerJS.GeoMap({
             language: this.config.displayLanguage,
@@ -62,30 +62,30 @@ var cmsJS = ( function( cms ) {
         });
         
         this.geoMap.onMapRightclick
-        .pipe(RxOp.takeWhile(() => this.config.allowEditFeatures), RxOp.map(geojson => this.addFeature(geojson)))
+        .pipe(rxjs.operators.takeWhile(() => this.config.allowEditFeatures), rxjs.operators.map(geojson => this.addFeature(geojson)))
         .subscribe(() => this.saveFeatures());
         
         this.geoMap.onMapClick
-        .pipe(RxOp.takeWhile(() => this.config.allowEditFeatures))
+        .pipe(rxjs.operators.takeWhile(() => this.config.allowEditFeatures))
         .subscribe(() => this.setCurrentFeature());
         
         this.geoMap.onFeatureClick
-        .pipe(RxOp.takeWhile(() => this.config.allowEditFeatures))
+        .pipe(rxjs.operators.takeWhile(() => this.config.allowEditFeatures))
         .subscribe(geojson => this.setCurrentFeature(geojson, true));
         
         this.geoMap.onFeatureMove
-        .pipe(RxOp.takeWhile(() => this.config.allowEditFeatures), RxOp.map(geojson => this.setCurrentFeature(geojson)))
+        .pipe(rxjs.operators.takeWhile(() => this.config.allowEditFeatures), rxjs.operators.map(geojson => this.setCurrentFeature(geojson)))
         .subscribe(() => this.saveFeatures());
         
         this.geoMap.onMapMove
         .subscribe(() => this.saveView())
         
         this.onDeleteClick
-        .pipe(RxOp.takeWhile(() => this.config.allowEditFeatures), RxOp.map(() => this.deleteCurrentFeature()))
+        .pipe(rxjs.operators.takeWhile(() => this.config.allowEditFeatures), rxjs.operators.map(() => this.deleteCurrentFeature()))
         .subscribe(() => this.saveFeatures());
         
         this.onMetadataUpdate
-        .pipe(RxOp.takeWhile(() => this.config.allowEditFeatures), RxOp.map((metadata) => this.updateCurrentFeatureMetadata(metadata)))
+        .pipe(rxjs.operators.takeWhile(() => this.config.allowEditFeatures), rxjs.operators.map((metadata) => this.updateCurrentFeatureMetadata(metadata)))
         .subscribe(() => this.saveFeatures());
     
         if(this.config.loader) {

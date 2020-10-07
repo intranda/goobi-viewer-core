@@ -127,8 +127,8 @@ public class GeoMap {
 
     @Column(name = "initial_view")
     private String initialView = "{" + 
-            "zoom: 5," + 
-            "center: [11.073397, 49.451993]" + 
+            "\"zoom\": 5," + 
+            "\"center\": [11.073397, 49.451993]" + 
         "}";
 
     @Column(name = "marker")
@@ -369,14 +369,15 @@ public class GeoMap {
 
     public Collection<GeoMapFeature> getFeaturesFromSolrQuery(String query) throws PresentationException, IndexUnreachableException {
         List<SolrDocument> docs;
-        List<String> fieldList = Arrays.asList(new String[]{"MD_GEOJSON_POINT", "NORM_COORDS_GEOJSON", getMarkerTitleField()});
-            docs = DataManager.getInstance().getSearchIndex().search(query, SolrSearchIndex.MAX_HITS, null, fieldList);
+        List<String> coordinateFields = DataManager.getInstance().getConfiguration().getGeoMapMarkerFields();
+        List<String> fieldList = new ArrayList<>(coordinateFields);
+        fieldList.add(getMarkerTitleField());
+        docs = DataManager.getInstance().getSearchIndex().search(query, SolrSearchIndex.MAX_HITS, null, fieldList);
         Set<GeoMapFeature> features = new HashSet<>();
         for (SolrDocument doc : docs) {
-            //            List<JSONObject> docFeatures = new ArrayList<>();
-            features.addAll(getGeojsonPoints(doc, "MD_GEOJSON_POINT", getMarkerTitleField(), null));
-            features.addAll(getGeojsonPoints(doc, "NORM_COORDS_GEOJSON", getMarkerTitleField(), null));
-            //            features.addAll(docFeatures.stream().map(JSONObject::toString).collect(Collectors.toList()));
+            for (String field : coordinateFields) {
+                features.addAll(getGeojsonPoints(doc, field, getMarkerTitleField(), null));
+            }
         }
         return features;
     }
@@ -530,5 +531,12 @@ public class GeoMap {
      */
     public boolean isShowPopover() {
         return showPopover;
+    }
+    
+    /**
+     * Resets the cached feature string. 
+     */
+    public void updateFeatures() {
+        this.featuresAsString = null;
     }
 }

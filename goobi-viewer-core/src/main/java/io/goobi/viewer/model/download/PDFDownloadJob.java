@@ -16,6 +16,8 @@
 package io.goobi.viewer.model.download;
 
 import java.io.File;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Date;
 
 import javax.persistence.DiscriminatorValue;
@@ -167,13 +169,16 @@ public class PDFDownloadJob extends DownloadJob {
 
         String taskManagerUrl = DataManager.getInstance().getConfiguration().getTaskManagerServiceUrl();
         String mediaRepository = DataFileTools.getDataRepositoryPathForRecord(pi);
+        Path imageFolder = Paths.get(mediaRepository).resolve(DataManager.getInstance().getConfiguration().getMediaFolder()).resolve(pi);
+        Path metsPath = Paths.get(mediaRepository).resolve(DataManager.getInstance().getConfiguration().getIndexedMetsFolder()).resolve(pi + ".xml");
+        
         logger.debug("Calling taskManager at " + taskManagerUrl);
 
         TaskManagerPDFRequest requestObject = new TaskManagerPDFRequest();
         requestObject.pi = pi;
         requestObject.logId = logId;
         requestObject.goobiId = downloadIdentifier;
-        requestObject.sourceDir = mediaRepository;
+        requestObject.sourceDir = metsPath.toString();
         try {
             Response response = postJobRequest(taskManagerUrl, requestObject);
             String entity = (String)response.readEntity(String.class);
@@ -258,5 +263,13 @@ public class PDFDownloadJob extends DownloadJob {
             default:
                 return getPDFJobsInQueue(identifier);
         }
+    }
+
+    /* (non-Javadoc)
+     * @see io.goobi.viewer.model.download.DownloadJob#getRestApiPath()
+     */
+    @Override
+    protected String getRestApiPath() {
+        return "/viewerpdf";
     }
 }

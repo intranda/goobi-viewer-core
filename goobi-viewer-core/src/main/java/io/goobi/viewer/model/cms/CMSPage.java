@@ -230,14 +230,14 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable {
      */
     public CMSPage(CMSPage original) {
         if (original.id != null) {
-            this.id = new Long(original.id);
+            this.id = Long.valueOf(original.id);
         }
         this.templateId = original.templateId;
         this.dateCreated = new Date(original.dateCreated.getTime());
         this.dateUpdated = new Date(original.dateUpdated.getTime());
         this.published = original.published;
         if (original.pageSorting != null) {
-            this.pageSorting = new Long(original.pageSorting);
+            this.pageSorting = Long.valueOf(original.pageSorting);
         }
         this.useDefaultSidebar = original.useDefaultSidebar;
         this.persistentUrl = original.persistentUrl;
@@ -1052,7 +1052,7 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable {
         CMSPageLanguageVersion language = getLanguageVersions().stream()
                 .filter(l -> !l.getLanguage().equals(GLOBAL_LANGUAGE))
                 .sorted(new CMSPageLanguageVersionComparator(locale, ViewerResourceBundle.getDefaultLocale()))
-                .sorted((p1, p2) ->  ObjectUtils.compare(p2.getStatus(), p1.getStatus()))
+                .sorted((p1, p2) -> ObjectUtils.compare(p2.getStatus(), p1.getStatus()))
                 .findFirst()
                 .orElseThrow(() -> new CmsElementNotFoundException("No language version exists for page " + this.getId()));
         return language;
@@ -1716,7 +1716,7 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable {
      * @return a {@link io.goobi.viewer.model.viewer.CollectionView} object.
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
-     * @throws IllegalRequestException 
+     * @throws IllegalRequestException
      */
     public CollectionView getCollection() throws PresentationException, IndexUnreachableException, IllegalRequestException {
         return BeanUtils.getCmsBean().getCollection(this);
@@ -2044,7 +2044,7 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable {
      */
     public void setUnusedSidebarElements(List<CMSSidebarElement> unusedSidebarElements2) {
         this.unusedSidebarElements = unusedSidebarElements2;
-        
+
     }
 
 }

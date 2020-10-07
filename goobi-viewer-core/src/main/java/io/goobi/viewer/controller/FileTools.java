@@ -545,7 +545,7 @@ public class FileTools {
     /**
      * Creates a Path from the given URL in a way that word on Windows machines.
      * 
-     * @param urlString Relative or absolute path or URL, with or without protocol
+     * @param urlString Relative or absolute path or URL, with or without protocol. If a URL parameter is in itself a complete URL, it must be escaped first!
      * @return Constructed Path
      */
     public static Path getPathFromUrlString(String urlString) {
@@ -555,16 +555,19 @@ public class FileTools {
 
         Path path = null;
         // URL with protocol will cause an exception in Windows if a Path is created directly
-        if (urlString.contains(":")) {
+        String urlStringLocal = urlString;
+        if (urlStringLocal.contains(":")) {
             try {
+                // logger.trace("url string: {}" + urlString);
                 URL url = new URL(urlString);
-                URI uri =
-                        new URI(url.getProtocol(), url.getUserInfo(), url.getHost(), url.getPort(), url.getPath(), url.getQuery(), url.getRef());
+                URI uri = new URI(url.getProtocol(), url.getUserInfo(), url.getHost(), url.getPort(), url.getPath(),
+                        url.getQuery(), url.getRef());
                 //                URI uri = new URI(URLEncoder.encode(urlString, StringTools.DEFAULT_ENCODING));
                 if (urlString.endsWith("/") && Paths.get(uri.getPath()).getFileName().toString().contains(".")) {
                     urlString = urlString.substring(0, urlString.length() - 1);
                 }
                 path = Paths.get(uri.getPath());
+                //                urlStringlocal = uri.getPath();
             } catch (URISyntaxException e) {
                 logger.error(e.getMessage(), e);
             } catch (MalformedURLException e) {
