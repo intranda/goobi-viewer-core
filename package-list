@@ -59,6 +59,7 @@ io.goobi.viewer.model.search
 io.goobi.viewer.model.security
 io.goobi.viewer.model.security.authentication
 io.goobi.viewer.model.security.authentication.model
+io.goobi.viewer.model.security.recordlock
 io.goobi.viewer.model.security.user
 io.goobi.viewer.model.sitemap
 io.goobi.viewer.model.termbrowsing
@@ -99,3 +100,4 @@ io.goobi.viewer.servlets.rest.services
 io.goobi.viewer.servlets.rest.utils
 io.goobi.viewer.servlets.saml
 io.goobi.viewer.servlets.utils
+io.goobi.viewer.websockets
