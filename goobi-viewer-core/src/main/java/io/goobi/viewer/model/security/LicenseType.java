@@ -54,7 +54,7 @@ import io.goobi.viewer.exceptions.DAOException;
  */
 @Entity
 @Table(name = "license_types")
-public class LicenseType implements IPrivilegeHolder {
+public class LicenseType implements IPrivilegeHolder, ILicenseType {
 
     /** Logger for this class. */
     private static final Logger logger = LoggerFactory.getLogger(LicenseType.class);
@@ -207,6 +207,7 @@ public class LicenseType implements IPrivilegeHolder {
      *
      * @return the name
      */
+    @Override
     public String getName() {
         return name;
     }

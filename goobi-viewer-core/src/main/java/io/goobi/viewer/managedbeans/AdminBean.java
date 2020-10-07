@@ -65,6 +65,7 @@ import io.goobi.viewer.model.annotation.Comment;
 import io.goobi.viewer.model.cms.CMSCategory;
 import io.goobi.viewer.model.cms.CMSPageTemplate;
 import io.goobi.viewer.model.cms.Selectable;
+import io.goobi.viewer.model.crowdsourcing.campaigns.Campaign;
 import io.goobi.viewer.model.search.SearchHelper;
 import io.goobi.viewer.model.security.License;
 import io.goobi.viewer.model.security.LicenseType;
@@ -587,27 +588,36 @@ public class AdminBean implements Serializable {
                 list2.add(licenseType);
             }
         }
-
         List<SelectItem> ret = new ArrayList<>(licenseTypes.size());
         {
-            SelectItemGroup group1 = new SelectItemGroup(ViewerResourceBundle.getTranslation("admin__license_function", null));
+            SelectItemGroup group = new SelectItemGroup(ViewerResourceBundle.getTranslation("admin__license_function", null));
             SelectItem[] array1 = new SelectItem[list1.size()];
             for (int i = 0; i < array1.length; ++i) {
                 array1[i] = new SelectItem(list1.get(i), ViewerResourceBundle.getTranslation(list1.get(i).getName(), null));
             }
-            group1.setSelectItems(array1);
-            ret.add(group1);
+            group.setSelectItems(array1);
+            ret.add(group);
         }
         {
-            SelectItemGroup group2 = new SelectItemGroup(ViewerResourceBundle.getTranslation("admin__license", null));
-            SelectItem[] array2 = new SelectItem[list2.size()];
-            for (int i = 0; i < array2.length; ++i) {
-                array2[i] = new SelectItem(list2.get(i), ViewerResourceBundle.getTranslation(list2.get(i).getName(), null));
+            SelectItemGroup group = new SelectItemGroup(ViewerResourceBundle.getTranslation("admin__license", null));
+            SelectItem[] array = new SelectItem[list2.size()];
+            for (int i = 0; i < array.length; ++i) {
+                array[i] = new SelectItem(list2.get(i), ViewerResourceBundle.getTranslation(list2.get(i).getName(), null));
             }
-            group2.setSelectItems(array2);
-            ret.add(group2);
+            group.setSelectItems(array);
+            ret.add(group);
         }
-
+        
+        List<Campaign> campaigns = DataManager.getInstance().getDao().getAllCampaigns();
+        if (!campaigns.isEmpty()) {
+            SelectItemGroup group = new SelectItemGroup(ViewerResourceBundle.getTranslation("admin__campaigns", null));
+            SelectItem[] array = new SelectItem[campaigns.size()];
+            for (int i = 0; i < array.length; ++i) {
+                array[i] = new SelectItem(campaigns.get(i), ViewerResourceBundle.getTranslation(campaigns.get(i).getTitle(), null));
+            }
+            group.setSelectItems(array);
+            ret.add(group);
+        }
         return ret;
     }
 
@@ -782,7 +792,7 @@ public class AdminBean implements Serializable {
 
         return DataManager.getInstance().getDao().getLicenseCount(licenseType) > 0;
     }
-    
+
     /**
      * 
      * @param licenseTypeName
@@ -791,10 +801,12 @@ public class AdminBean implements Serializable {
      * @throws PresentationException
      */
     public long getConcurrentViewsLimitRecordCountForLicenseType(String licenseTypeName) throws IndexUnreachableException, PresentationException {
-        return DataManager.getInstance().getSearchIndex().getHitCount("+" + SolrConstants.ACCESSCONDITION + ":\"" + licenseTypeName 
-        + "\" +" + SolrConstants.ISWORK + ":true +" + SolrConstants.ACCESSCONDITION_CONCURRENTUSE + ":*");
+        return DataManager.getInstance()
+                .getSearchIndex()
+                .getHitCount("+" + SolrConstants.ACCESSCONDITION + ":\"" + licenseTypeName
+                        + "\" +" + SolrConstants.ISWORK + ":true +" + SolrConstants.ACCESSCONDITION_CONCURRENTUSE + ":*");
     }
-    
+
     /**
      * 
      * @param licenseTypeName
@@ -803,8 +815,10 @@ public class AdminBean implements Serializable {
      * @throws PresentationException
      */
     public long getPdfQuotaRecordCountForLicenseType(String licenseTypeName) throws IndexUnreachableException, PresentationException {
-        return DataManager.getInstance().getSearchIndex().getHitCount("+" + SolrConstants.ACCESSCONDITION + ":\"" + licenseTypeName 
-        + "\" +" + SolrConstants.ISWORK + ":true +" + SolrConstants.ACCESSCONDITION_PDF_PERCENTAGE_QUOTA + ":*");
+        return DataManager.getInstance()
+                .getSearchIndex()
+                .getHitCount("+" + SolrConstants.ACCESSCONDITION + ":\"" + licenseTypeName
+                        + "\" +" + SolrConstants.ISWORK + ":true +" + SolrConstants.ACCESSCONDITION_PDF_PERCENTAGE_QUOTA + ":*");
     }
 
     /**

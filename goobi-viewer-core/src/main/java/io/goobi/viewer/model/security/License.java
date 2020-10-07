@@ -115,8 +115,11 @@ public class License implements IPrivilegeHolder, Serializable {
     @Column(name = "license_id")
     private Long id;
 
-    @JoinColumn(name = "license_type_id", nullable = false)
+    @JoinColumn(name = "license_type_id")
     private LicenseType licenseType;
+
+    @JoinColumn(name = "campaign_id")
+    private Campaign campaign;
 
     @ManyToOne
     @JoinColumn(name = "user_id")
@@ -247,7 +250,7 @@ public class License implements IPrivilegeHolder, Serializable {
             privilegesCopy.remove(IPrivilegeHolder.PRIV_CMS_PAGES);
         }
     }
-    
+
     /* (non-Javadoc)
      * @see io.goobi.viewer.model.security.IPrivilegeHolder#isPrivCmsAllSubthemes()
      */
@@ -620,6 +623,30 @@ public class License implements IPrivilegeHolder, Serializable {
     }
 
     /**
+     * 
+     * @return
+     */
+    public ILicenseType getLicenseTypeSelection() {
+        if (this.campaign != null) {
+            return this.campaign;
+        }
+
+        return this.licenseType;
+    }
+
+    /**
+     * 
+     * @param selection
+     */
+    public void setLicenseTypeSelection(ILicenseType selection) {
+        if (selection instanceof Campaign) {
+            this.campaign = (Campaign) selection;
+        } else if (selection instanceof LicenseType) {
+            this.licenseType = (LicenseType) selection;
+        }
+    }
+
+    /**
      * <p>
      * Getter for the field <code>licenseType</code>.
      * </p>
@@ -639,6 +666,20 @@ public class License implements IPrivilegeHolder, Serializable {
      */
     public void setLicenseType(LicenseType licenseType) {
         this.licenseType = licenseType;
+    }
+
+    /**
+     * @return the campaign
+     */
+    public Campaign getCampaign() {
+        return campaign;
+    }
+
+    /**
+     * @param campaign the campaign to set
+     */
+    public void setCampaign(Campaign campaign) {
+        this.campaign = campaign;
     }
 
     /**

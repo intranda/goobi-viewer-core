@@ -83,6 +83,7 @@ import io.goobi.viewer.model.cms.CategorizableTranslatedSelectable;
 import io.goobi.viewer.model.crowdsourcing.campaigns.CampaignRecordStatistic.CampaignRecordStatus;
 import io.goobi.viewer.model.crowdsourcing.questions.Question;
 import io.goobi.viewer.model.misc.Translation;
+import io.goobi.viewer.model.security.ILicenseType;
 import io.goobi.viewer.model.security.IPrivilegeHolder;
 import io.goobi.viewer.model.security.user.User;
 
@@ -96,7 +97,7 @@ import io.goobi.viewer.model.security.user.User;
 @Entity
 @Table(name = "cs_campaigns")
 @JsonInclude(Include.NON_EMPTY)
-public class Campaign implements CMSMediaHolder {
+public class Campaign implements CMSMediaHolder, ILicenseType {
 
     /**
      * The visibility of the campaign to other users
@@ -109,6 +110,7 @@ public class Campaign implements CMSMediaHolder {
         /**
          * Hidden to all except users having the appropritate rights
          */
+        @Deprecated
         RESTRICTED,
         /**
          * Visible by all users
@@ -117,6 +119,7 @@ public class Campaign implements CMSMediaHolder {
         /**
          * Visible to all, but no creation of annotations possible
          */
+        @Deprecated
         FINISHED;
 
         public static CampaignVisibility getByName(String name) {
@@ -280,7 +283,7 @@ public class Campaign implements CMSMediaHolder {
      */
     @JsonIgnore
     public List<CampaignVisibility> getCampaignVisibilityValues() {
-        return Arrays.asList(CampaignVisibility.values());
+        return Arrays.asList(CampaignVisibility.PUBLIC, CampaignVisibility.PRIVATE);
     }
 
     /**
@@ -501,6 +504,11 @@ public class Campaign implements CMSMediaHolder {
             default:
                 return false;
         }
+    }
+
+    @Override
+    public String getName() {
+        return getTitle();
     }
 
     /**
@@ -1334,5 +1342,4 @@ public class Campaign implements CMSMediaHolder {
 
         return null;
     }
-
 }

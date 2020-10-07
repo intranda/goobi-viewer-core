@@ -108,15 +108,15 @@
                                      </div>
                                 </h:panelGroup>
 
-                                <!-- LICENSE TYPE SELECTION -->
+                                <!-- LICENSE TYPE / CAMPAIGN SELECTION -->
                                 <h:panelGroup id="licenseTypeGroup" layout="block" styleClass="form-group form-row">
                                      <div class="col-sm-4">
-                                         <label for="currentLicense.licenseType" class="control-label">#{msg.admin__license_license_type_select_label}:</label>
+                                         <label for="currentLicense.licenseTypeSelection" class="control-label">#{msg.admin__license_license_type_select_label}:</label>
                                      </div>
                                      <div class="col-sm-8">
                                          <h:selectOneMenu
                                              rendered="#{adminBean.currentLicense.user != null or adminBean.currentLicense.userGroup != null or adminBean.currentLicense.ipRange != null}"
-                                             value="#{adminBean.currentLicense.licenseType}"
+                                             value="#{adminBean.currentLicense.licenseTypeSelection}"
                                              styleClass="form-control"
                                              immediate="true"
                                              converter="licenseTypeConverter"
