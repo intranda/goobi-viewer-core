@@ -18,6 +18,7 @@ package io.goobi.viewer.model.security;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Stream;
 
 import javax.persistence.CascadeType;
@@ -34,6 +35,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.eclipse.persistence.annotations.PrivateOwned;
 
 import io.goobi.viewer.model.misc.IPolyglott;
+import io.goobi.viewer.model.misc.Translation;
 
 /**
  * @author florian
@@ -96,6 +98,10 @@ public class TermsOfUse {
         return translation;
     }
     
+    public Optional<String> getTitleIfExists(String language) {
+        return getForLanguage(getTitles(), language).findAny().map(Translation::getValue);
+    }
+    
     public TermsOfUseTranslation setTitle(String language, String value) {
         TermsOfUseTranslation translation = getTitle(language);
         if(translation == null) {
@@ -111,6 +117,10 @@ public class TermsOfUse {
     public TermsOfUseTranslation getDescription(String language) {
         TermsOfUseTranslation translation = getForLanguage(getDescriptions(), language).findAny().orElse(null);
         return translation;
+    }
+    
+    public Optional<String> getDescriptionIfExists(String language) {
+        return getForLanguage(getDescriptions(), language).findAny().map(Translation::getValue);
     }
     
     public TermsOfUseTranslation setDescription(String language, String value) {

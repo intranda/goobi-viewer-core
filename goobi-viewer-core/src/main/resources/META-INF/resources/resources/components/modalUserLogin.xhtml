@@ -260,12 +260,12 @@
 												<ui:fragment rendered="#{termsOfUseBean.activated}">
 													<div class="form-group form-row user-login-modal__terms">
 														<div class="col-12 mb-2 user-login-modal__terms-title">
-															<b>#{termsOfUseBean.getTitle(navigationHelper.locale)}</b>
+															<b>#{termsOfUseBean.getTitleForDisplay()}</b>
 														</div>
 														<div class="col-12 mb-1 pr-0">
 															<textarea class="user-login-modal__terms-text mb-3"
 																readonly="true">
-																<h:outputText value="#{termsOfUseBean.getDescription(navigationHelper.locale)}"
+																<h:outputText value="#{termsOfUseBean.getDescriptionForDisplay()}"
 																	escape="false" />
 															</textarea>
 														</div>
