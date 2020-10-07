@@ -18,15 +18,15 @@
     <ui:fragment rendered="#{userBean.mustAgreeToTermsOfUse()}">
 
 			<!-- MODAL -->
-			<div class="modal modal__user-terms" id="#{cc.attrs.id}" tabindex="-1" role="dialog" aria-labelledby="#{termsOfUseBean.title}" aria-hidden="true">
+			<div class="modal modal__user-terms" id="#{cc.attrs.id}" tabindex="-1" role="dialog" aria-labelledby="#{termsOfUseBean.getTitle(navigationHelper.locale)}" aria-hidden="true">
 			  <div class="modal-dialog modal-dialog-centered" role="document">
 			    <div class="modal-content">
 			      <div class="modal-header">
-			        <h2 class="modal-title">#{termsOfUseBean.title}</h2>
+			        <h2 class="modal-title">#{termsOfUseBean.getTitle(navigationHelper.locale)}</h2>
 			      </div>
 			      <div class="modal-body">
 					<div class="modal__user-terms-text mb-3">
-	                    <h:outputText value="#{termsOfUseBean.description}" escape="false" />
+	                    <h:outputText value="#{termsOfUseBean.getDescription(navigationHelper.locale)}" escape="false" />
 	                </div>
 			  <h:form id="termsForm" styleClass="form-horizontal" prependId="false">
 			  <div id="terms" class="terms-modal">              
