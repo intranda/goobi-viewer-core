@@ -37,6 +37,11 @@
 		     apiTarget += '/';
 		     apiTarget += $(this.opts.count).val();
 		     apiTarget += '/';
+		     
+		     if(this.opts.subtheme) {
+		         apiTarget += ("?subtheme=" + this.opts.subtheme);
+		     }
+		     
 		     // render thumbnails
 		    opts.loading.show()
 			let fetchPromise = fetch(apiTarget);

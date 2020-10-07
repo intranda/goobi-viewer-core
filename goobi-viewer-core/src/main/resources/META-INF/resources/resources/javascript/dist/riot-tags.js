@@ -1997,6 +1997,10 @@ riot.tag2('timematrix', '<div class="timematrix__objects"><div each="{image in i
 		     apiTarget += $(this.opts.count).val();
 		     apiTarget += '/';
 
+		     if(this.opts.subtheme) {
+		         apiTarget += ("?subtheme=" + this.opts.subtheme);
+		     }
+
 		    opts.loading.show()
 			let fetchPromise = fetch(apiTarget);
 		    fetchPromise.then( function(result) {

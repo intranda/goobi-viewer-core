@@ -32,6 +32,7 @@ import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.StreamingOutput;
@@ -188,7 +189,8 @@ public class RecordsResource {
     @GET
     @Path("/timematrix/range/{startDate}/{endDate}/{count}")
     @Produces({ MediaType.APPLICATION_JSON })
-    public String getTimeMatrix(@PathParam("startDate") String startDate, @PathParam("endDate") String endDate, @PathParam("count") int count)
+    public String getTimeMatrix(@PathParam("startDate") String startDate, @PathParam("endDate") String endDate, @PathParam("count") int count,
+            @QueryParam("subtheme") String subtheme)
             throws MalformedURLException, ContentNotFoundException, ServiceNotAllowedException, IndexUnreachableException, PresentationException,
             ViewerConfigurationException {
         logger.trace("getTimeMatrix({}, {}, {})", startDate, endDate, count);
@@ -202,15 +204,27 @@ public class RecordsResource {
         }
         logger.trace("end Date: {}", endDate);
 
-        String query = new StringBuilder().append(SolrConstants.ISWORK)
-                .append(":true AND YEAR:[")
+        StringBuilder query = new StringBuilder().append(SolrConstants.ISWORK)
+                .append(":true");
+
+        if (StringUtils.isNotBlank(subtheme)) {
+            String subthemeField = DataManager.getInstance().getConfiguration().getSubthemeDiscriminatorField();
+            query.append(" AND ")
+                    .append(subthemeField)
+                    .append(":")
+                    .append(subtheme);
+
+        }
+
+        query.append(" AND ")
+                .append("YEAR:[")
                 .append(startDate)
                 .append(" TO ")
                 .append(endDate)
                 .append("]")
                 .toString();
 
-        return getTimeMatrix(query, count);
+        return getTimeMatrix(query.toString(), count);
     }
 
     /**

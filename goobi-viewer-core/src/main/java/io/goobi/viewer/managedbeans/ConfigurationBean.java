@@ -904,10 +904,14 @@ public class ConfigurationBean implements Serializable {
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      */
-    public int getTimeMatrixStartYear() throws PresentationException, IndexUnreachableException {
+    public int getTimeMatrixStartYear(String subTheme) throws PresentationException, IndexUnreachableException {
         String value = DataManager.getInstance().getConfiguration().getStartYearForTimeline();
         if ("MIN".equals(value)) {
-            return SearchHelper.getMinMaxYears(null)[0];
+            String subQuery = null;
+            if(StringUtils.isNotBlank(subTheme)) {
+                subQuery = String.format("+%s:%s", DataManager.getInstance().getConfiguration().getSubthemeDiscriminatorField(), subTheme);
+            }
+            return SearchHelper.getMinMaxYears(subQuery)[0];
         }
         try {
             return Integer.valueOf(value);
@@ -926,10 +930,14 @@ public class ConfigurationBean implements Serializable {
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      */
-    public int getTimeMatrixEndYear() throws PresentationException, IndexUnreachableException {
+    public int getTimeMatrixEndYear(String subTheme) throws PresentationException, IndexUnreachableException {
         String value = DataManager.getInstance().getConfiguration().getEndYearForTimeline();
         if ("MAX".equals(value)) {
-            return SearchHelper.getMinMaxYears(null)[1];
+            String subQuery = null;
+            if(StringUtils.isNotBlank(subTheme)) {
+                subQuery = String.format("+%s:%s", DataManager.getInstance().getConfiguration().getSubthemeDiscriminatorField(), subTheme);
+            }
+            return SearchHelper.getMinMaxYears(subQuery)[1];
         }
         try {
             return Integer.valueOf(value);
