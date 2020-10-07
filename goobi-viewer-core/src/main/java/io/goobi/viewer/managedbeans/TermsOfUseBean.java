@@ -49,64 +49,63 @@ public class TermsOfUseBean implements Serializable, IPolyglott {
     private static final long serialVersionUID = -3105025774455196485L;
 
     private static final Logger logger = LoggerFactory.getLogger(TermsOfUseBean.class);
-    
+
     private TermsOfUse termsOfUse;
     private Locale selectedLocale = BeanUtils.getDefaultLocale();
-    
+
     @PostConstruct
     public void init() throws DAOException {
         TermsOfUse fromDatabase = DataManager.getInstance().getDao().getTermsOfUse();
         termsOfUse = new TermsOfUse(fromDatabase);
     }
-    
-    
+
     public String getTitle() {
         Translation translation = this.termsOfUse.getTitle(getSelectedLanguage());
-        if(translation == null) {
+        if (translation == null) {
             translation = this.termsOfUse.setTitle(getSelectedLanguage(), "");
         }
         return translation.getValue();
     }
-        
-    public void setTitle(String value)  {
+
+    public void setTitle(String value) {
         this.termsOfUse.setTitle(getSelectedLanguage(), value);
     }
-    
+
     public String getDescription() {
         Translation translation = this.termsOfUse.getDescription(getSelectedLanguage());
-        if(translation == null) {
+        if (translation == null) {
             translation = this.termsOfUse.setDescription(getSelectedLanguage(), "");
         }
         return translation.getValue();
     }
-    
-    public void setDescription(String value)  {
+
+    public void setDescription(String value) {
         this.termsOfUse.setDescription(getSelectedLanguage(), value);
     }
-    
+
     public void setActivated(boolean active) {
         this.termsOfUse.setActive(active);
         this.save();
     }
-    
+
     public boolean isActivated() {
         return this.termsOfUse.isActive();
     }
 
     @Override
     public void setSelectedLocale(Locale locale) {
-       this.selectedLocale = locale;
+        this.selectedLocale = locale;
     }
 
     @Override
     public Locale getSelectedLocale() {
         return this.selectedLocale;
     }
-    
+
     public String getSelectedLanguage() {
         return this.selectedLocale.getLanguage();
     }
-    
+
     public void save() {
         boolean saved = false;
         try {
@@ -115,13 +114,13 @@ public class TermsOfUseBean implements Serializable, IPolyglott {
         } catch (DAOException e) {
             logger.error("Error saving terms of use ", e);
         }
-        if(saved) {
+        if (saved) {
             Messages.info("admin__terms_of_use__save__success");
         } else {
             Messages.error("admin__terms_of_use__save__error");
         }
     }
-    
+
     public void resetUserAcceptance() throws DAOException {
         DataManager.getInstance().getDao().resetUserAgreementsToTermsOfUse();
         Messages.info("admin__terms_of_use__reset__success");
@@ -129,27 +128,23 @@ public class TermsOfUseBean implements Serializable, IPolyglott {
 
     @Override
     public boolean isComplete(Locale locale) {
-        
+
         Translation title = termsOfUse.getTitle(locale.getLanguage());
         Translation desc = termsOfUse.getDescription(locale.getLanguage());
         return title != null && !title.isEmpty() && desc != null && !desc.isEmpty();
-        
+
     }
-    
-    public String getTitle(Locale locale) {
-        return getTitle(locale.getLanguage());
+
+    public String getTitleForDisplay() {
+        return this.termsOfUse.getTitleIfExists(BeanUtils.getLocale().getLanguage())
+                .orElse(this.termsOfUse.getTitleIfExists(BeanUtils.getDefaultLocale().getLanguage())
+                        .orElse(""));
     }
-    
-    public String getTitle(String language) {
-        return this.termsOfUse.getTitle(language).getValue();
-    }
-    
-    public String getDescription(Locale locale) {
-        return getDescription(locale.getLanguage());
-    }
-    
-    public String getDescription(String language) {
-        return this.termsOfUse.getDescription(language).getValue();
+
+    public String getDescriptionForDisplay() {
+        return this.termsOfUse.getDescriptionIfExists(BeanUtils.getLocale().getLanguage())
+                .orElse(this.termsOfUse.getDescriptionIfExists(BeanUtils.getDefaultLocale().getLanguage())
+                        .orElse(""));
     }
 
 }
