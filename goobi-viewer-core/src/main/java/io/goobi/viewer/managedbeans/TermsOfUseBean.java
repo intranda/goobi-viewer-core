@@ -135,5 +135,21 @@ public class TermsOfUseBean implements Serializable, IPolyglott {
         return title != null && !title.isEmpty() && desc != null && !desc.isEmpty();
         
     }
+    
+    public String getTitle(Locale locale) {
+        return getTitle(locale.getLanguage());
+    }
+    
+    public String getTitle(String language) {
+        return this.termsOfUse.getTitle(language).getValue();
+    }
+    
+    public String getDescription(Locale locale) {
+        return getDescription(locale.getLanguage());
+    }
+    
+    public String getDescription(String language) {
+        return this.termsOfUse.getDescription(language).getValue();
+    }
 
 }
