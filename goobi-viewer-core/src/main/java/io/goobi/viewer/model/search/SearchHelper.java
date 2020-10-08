@@ -712,13 +712,13 @@ public final class SearchHelper {
     public static int[] getMinMaxYears(String subQuery) throws PresentationException, IndexUnreachableException {
         int[] ret = { -1, -1 };
 
-        StringBuilder sbSearchString = new StringBuilder();
-        sbSearchString.append(SolrConstants._CALENDAR_YEAR).append(":*");
-        if (StringUtils.isNotEmpty(subQuery)) {
-            sbSearchString.append(subQuery);
+        String searchString = String.format("+%s:*", SolrConstants._CALENDAR_YEAR);
+        if(StringUtils.isNotBlank(subQuery)) {
+            searchString += " " + subQuery;
         }
+
         // logger.debug("searchString: {}", searchString);
-        QueryResponse resp = searchCalendar(sbSearchString.toString(), Collections.singletonList(SolrConstants._CALENDAR_YEAR), 0, true);
+        QueryResponse resp = searchCalendar(searchString, Collections.singletonList(SolrConstants._CALENDAR_YEAR), 0, true);
 
         FieldStatsInfo info = resp.getFieldStatsInfo().get(SolrConstants._CALENDAR_YEAR);
         Object min = info.getMin();
