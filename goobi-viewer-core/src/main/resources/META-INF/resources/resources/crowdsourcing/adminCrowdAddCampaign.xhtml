@@ -19,6 +19,7 @@
     <ui:define name="content">
         <h:panelGroup id="crowdAddCampaignAccessControl" rendered="#{userBean.user.superuser}">
             <div id="createCampaign" class="cms-create-page">
+            
                 <!-- BACK TO OVERVIEW -->
                 <h:form rendered="#{crowdsourcingBean.selectedCampaign == null}">
                     <h:commandLink action="pretty:adminCrowdCampaigns">
@@ -27,28 +28,51 @@
                 </h:form>
 
                 <h:panelGroup rendered="#{crowdsourcingBean.selectedCampaign != null}">
-                    <h2 class="admin__content-inner-title clearfix">
-                        #{crowdsourcingBean.editMode ? msg.admin__crowdsourcing_campaign_edit : msg.admin__crowdsourcing_campaign_new}
-                    
-	                    <!-- EXIT -->
-                        <a 
-                            href="#{request.contextPath}#{navigationHelper.previousViewUrl}"
-                            class="admin__content-inner-title-exit"
-                            data-toggle="tooltip"
-                            data-placement="bottom"
-                            title="#{msg.admin__cms_back_to_page}">
-                        </a>
+                    <h2 class="admin__title">#{crowdsourcingBean.editMode ? msg.admin__crowdsourcing_campaign_edit : msg.admin__crowdsourcing_campaign_new}
                     </h2>
 
                     <div class="admin__content-inner-content">
+                    
                         <div class="row">
-                            <h:form id="create_page_form" prependId="true">
+                        
+                            <h:form id="create_campaign_form" prependId="true">
+                            
                                 <div class="col-12 col-sm-12 col-md-9 col-lg-9 create-page-left">
-                                    <!-- CREATE PAGE WRAPPER -->
-                                    <div class="crowdsourcing-add-campaign_wrapper">
                                     
-<!--                                         <h2>#{msg.general}</h2> -->
+                                    <!-- CREATE CAMPAIGN WRAPPER -->
+                                    <div class="admin__crowdsourcing-add-campaign-wrapper">
                                     
+									<!-- TERMS OF USE LANGUAGE TABS -->
+									<div class="admin__language-tabs">
+										<!-- NAV TABS -->
+										<ul class="nav nav-tabs" role="tablist">
+											<c:forEach var="locale"
+												items="#{termsOfUseBean.getLocales()}">
+												<li role="tab"
+													class="admin__language-tab 
+													#{termsOfUseBean.isSelected(locale) ? 'active':''}
+													#{termsOfUseBean.isComplete(locale) ? '-already-translated':''}
+													#{termsOfUseBean.isDefaultLocaleSelected() ? '-default-language':''}">
+													<h:commandLink value="#{locale.getDisplayLanguage(navigationHelper.locale)}"
+														action="#{termsOfUseBean.setSelectedLocale(locale)}"
+														immediate="false">
+														<f:ajax render="@form" execute="@form"></f:ajax>
+													</h:commandLink>
+												</li>
+											</c:forEach>
+										</ul>
+									</div>
+
+									<div class="admin__default-block">
+										<div class="tab-content">
+										
+										
+										
+										
+										</div>
+									</div>
+
+
                                         <div role="tabpanel">
                                             <!-- NAV TABS -->
                                             <ul class="nav nav-tabs" role="tablist">
@@ -386,7 +410,7 @@
                             <!-- SELECT MEDIA ITEM -->
                             <div class="admin-cms-media__select">                            
                                 <ui:include src="/resources/cms/includes/mediaSelect.xhtml">
-                                 	<ui:param name="mediaDisplayPanel" value="create_page_form:contentMediaGroup" />
+                                 	<ui:param name="mediaDisplayPanel" value="create_campaign_form:contentMediaGroup" />
                                 </ui:include>
                             </div>
                         </ui:fragment>
