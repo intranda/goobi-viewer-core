@@ -16,6 +16,9 @@
 package io.goobi.viewer.model.iiif.presentation.builder;
 
 import java.net.URI;
+
+import static io.goobi.viewer.api.rest.v1.ApiUrls.*;
+
 import java.net.URISyntaxException;
 import java.time.Instant;
 import java.time.LocalDate;
@@ -99,7 +102,7 @@ public class ManifestBuilder extends AbstractBuilder {
      * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
-    public IPresentationModelElement generateManifest(StructElement ele)
+    public AbstractPresentationModelElement generateManifest(StructElement ele)
             throws URISyntaxException, PresentationException, IndexUnreachableException, ViewerConfigurationException, DAOException {
 
         final AbstractPresentationModelElement manifest;

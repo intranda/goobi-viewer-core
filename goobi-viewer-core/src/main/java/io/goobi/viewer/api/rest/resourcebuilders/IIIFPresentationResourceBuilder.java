@@ -15,22 +15,25 @@
  */
 package io.goobi.viewer.api.rest.resourcebuilders;
 
+import static io.goobi.viewer.api.rest.v1.ApiUrls.*;
+
 import java.io.IOException;
+import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
-import javax.ws.rs.GET;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.Produces;
-import javax.ws.rs.core.MediaType;
-
 import org.apache.commons.lang3.StringUtils;
+import org.apache.solr.common.SolrDocument;
+import org.apache.solr.common.SolrDocumentList;
 
 import de.intranda.api.annotation.oa.Motivation;
+import de.intranda.api.iiif.discovery.OrderedCollectionPage;
+import de.intranda.api.iiif.presentation.AbstractPresentationModelElement;
 import de.intranda.api.iiif.presentation.AnnotationList;
 import de.intranda.api.iiif.presentation.Canvas;
 import de.intranda.api.iiif.presentation.Collection;
@@ -39,14 +42,14 @@ import de.intranda.api.iiif.presentation.Layer;
 import de.intranda.api.iiif.presentation.Manifest;
 import de.intranda.api.iiif.presentation.Range;
 import de.intranda.api.iiif.presentation.Sequence;
+import de.intranda.api.iiif.presentation.content.ImageContent;
 import de.intranda.api.iiif.presentation.enums.AnnotationType;
 import de.unigoettingen.sub.commons.contentlib.exceptions.ContentNotFoundException;
 import de.unigoettingen.sub.commons.contentlib.exceptions.IllegalRequestException;
-import de.unigoettingen.sub.commons.contentlib.servlet.rest.CORSBinding;
 import io.goobi.viewer.api.rest.AbstractApiUrlManager;
-import io.goobi.viewer.api.rest.v1.ApiUrls;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.SolrConstants;
+import io.goobi.viewer.controller.SolrSearchIndex;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
@@ -59,6 +62,7 @@ import io.goobi.viewer.model.iiif.presentation.builder.SequenceBuilder;
 import io.goobi.viewer.model.iiif.presentation.builder.StructureBuilder;
 import io.goobi.viewer.model.viewer.BrowseDcElement;
 import io.goobi.viewer.model.viewer.PhysicalElement;
+import io.goobi.viewer.model.viewer.StringPair;
 import io.goobi.viewer.model.viewer.StructElement;
 import io.goobi.viewer.servlets.rest.content.ContentResource;
 
@@ -304,6 +308,37 @@ public class IIIFPresentationResourceBuilder {
                 DataManager.getInstance().getConfiguration().getCollectionSplittingChar(collectionField));
 
         return collection;
+
+    }
+    
+    
+    public List<IPresentationModelElement> getManifestsForQuery(String query, String sortFields, int first, int rows) throws DAOException, PresentationException, IndexUnreachableException, URISyntaxException, ViewerConfigurationException {
+
+        String finalQuery = query + " +(ISWORK:* OR ISANCHOR:*)";
+        
+        List<StringPair> sortFieldList = SolrSearchIndex.getSolrSortFieldsAsList(sortFields == null ? "" : sortFields, ",", " ");
+        SolrDocumentList queryResults = DataManager.getInstance().getSearchIndex().search(finalQuery, first, rows, sortFieldList, null, Arrays.asList(CollectionBuilder.CONTAINED_WORKS_QUERY_FIELDS)).getResults();
+                
+        List<IPresentationModelElement> manifests = new ArrayList<>(queryResults.size());
+        ManifestBuilder builder = new ManifestBuilder(urls);
+        for (SolrDocument doc : queryResults) {
+            long luceneId = Long.parseLong(doc.getFirstValue(SolrConstants.IDDOC).toString());
+            StructElement ele = new StructElement(luceneId, doc);
+            AbstractPresentationModelElement manifest = builder.generateManifest(ele);
+            
+            AbstractApiUrlManager imageUrls = DataManager.getInstance().getRestApiManager().getContentApiManager();
+            
+            if(manifest.getThumbnails().isEmpty()) {            
+                int thumbsWidth = DataManager.getInstance().getConfiguration().getThumbnailsWidth();
+                int thumbsHeight = DataManager.getInstance().getConfiguration().getThumbnailsHeight();
+                String thumbnailUrl = imageUrls.path(RECORDS_RECORD, RECORDS_IMAGE_IIIF).params(ele.getPi(), "full", "!" + thumbsWidth + "," + thumbsHeight, 0, "default", "jpg").build();
+                manifest.addThumbnail(new ImageContent(URI.create(thumbnailUrl)));
+            }
+            
+            manifests.add(manifest);
+        }
+        
+        return manifests;
 
     }
     
