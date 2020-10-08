@@ -33,7 +33,7 @@
            		clusterMarkers: #{cc.attrs.geoMap.type == 'SOLR_QUERY'},
            	});
         	if(#{cc.attrs.linkToSearch and cc.attrs.geoMap.type == 'SOLR_QUERY'}) {
-                let searchUrlTemplate = '#{geoMapBean.getCoordinateSearchQueryTemplate()}';
+                let searchUrlTemplate = '#{geoMapBean.getCoordinateSearchQueryTemplate(cc.attrs.geoMap)}';
                 geoMap.onFeatureClick.subscribe( (feature) => {
                     let queryUrl = searchUrlTemplate.replace("{lng}", feature.geometry.coordinates[0]);
                     queryUrl = queryUrl.replace("{lat}", feature.geometry.coordinates[1]);
