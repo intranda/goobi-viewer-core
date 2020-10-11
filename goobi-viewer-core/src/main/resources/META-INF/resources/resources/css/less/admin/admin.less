@@ -524,6 +524,38 @@
 	}
 	
 	
+	/* CAMPAIGN STYLING */
+	
+	&__campaign-media-file-box {
+		.admin-cms-media__file-select, .admin-cms-media__file-bottom {
+			display: none;
+		}
+		.admin-cms-media__file {
+			background: @white !important;
+			border: none;
+			padding: 0;
+		}
+		.admin-cms-media__file-top {
+			margin-bottom: 0;
+		}
+		.admin-cms-media__file-image {
+			cursor: default;
+		}
+		.cms-module__actions {
+			opacity: 0;
+			transition: all 0.2s ease;
+		}
+		&:hover .cms-module__actions {
+			opacity: 1;
+			transition: all 0.2s ease;
+		}
+		.cms-module__actions {
+			a:hover {
+				text-decoration: underline;
+			}
+		}
+	}
+	
 	/* ADMIN FORMS */
 	&__form-label {}
 	&__form-input {
