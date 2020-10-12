@@ -17,7 +17,7 @@
 	</ui:define>
 
 	<ui:define name="content">
-		<h:panelGroup id="crowdAddCampaignAccessControl"
+		<h:panelGroup id="crowdAddCampaignView"
 			rendered="#{userBean.user.superuser}">
 			<div id="createCampaign" class="cms-create-page">
 
@@ -37,20 +37,15 @@
 							msg.admin__crowdsourcing_campaign_new}</h2>
 					</div>
 					<div class="admin__content-inner-content">
-
-						<h:form id="create_campaign_form" prependId="true">
-						
+						<h:form id="createCampaignForm" prependId="true">
 							<div class="row">
-
 								<div class="col-12">
-
 									<!-- CREATE CAMPAIGN WRAPPER -->
 									<div class="admin__crowdsourcing-add-campaign-wrapper">
-
 										<!-- GENERAL INFORMATION (TITLE + TEXT) -->
 										<h3>#{msg.admin__category_general}</h3>
-
-										<!-- CAMPAIGN LANGUAGE TABS GENERAL -->
+										
+										<!-- NEW CAMPAIGN LANGUAGE TABS GENERAL -->
 										<div class="admin__language-tabs">
 											<ul class="nav nav-tabs" role="tablist">
 												<c:forEach var="locale"
@@ -71,7 +66,48 @@
 											</ul>
 										</div>
 
-										<div class="admin__default-block">
+										 <!-- OLD LANGUAGE  TABS FUNCTIONS -->
+<!--                                             <ul class="nav nav-tabs" role="tablist"> -->
+
+<!--                                                 <c:forEach var="locale" items="#{crowdsourcingBean.getAllLocales()}"> -->
+<!--                                                     <li role="presentation" class="#{crowdsourcingBean.selectedCampaign.selectedLocale == locale ? 'active':''}"> -->
+<!--                                                         <h:commandLink value="#{msg['changeLocal_' += locale]}" action="#{crowdsourcingBean.selectedCampaign.setSelectedLocale(locale)}" immediate="false" /> -->
+<!--                                                     </li> -->
+<!--                                                 </c:forEach> -->
+
+<!--                                             </ul> -->
+
+ 										 <!-- OLD CONTENT TABS -->
+<!--                                          <ui:param name="locale" value="#{crowdsourcingBean.selectedCampaign.selectedLocale}" /> -->
+<!--                                          <div role="tabpanel" class="tab-pane #{crowdsourcingBean.selectedCampaign.selectedLocale == locale ? 'active':''}" -->
+<!--                                              id="#{locale.language}"> -->
+	                                       
+<!-- 	                                         <div class="edit-content-page edit-content-page-content"> -->
+	                                         
+<!-- 	                                             <div class="cms-module__option-group"> -->
+<!-- 	                                                 <div class="cms-module__option-label"> -->
+<!-- 	                                                     <label for="adminCrowdAddCampaignTitle"> -->
+<!-- 	                                                         #{msg.label__cms_page_title}#{crowdsourcingBean.selectedCampaign.selectedLocale == navigationHelper.defaultLocale ? '*' : ''}: -->
+<!-- 	                                                     </label> -->
+<!-- 	                                                 </div> -->
+<!-- 	                                                 <div class="cms-module__option-control"> -->
+<!-- 	                                                     <h:inputText id="adminCrowdAddCampaignTitle" styleClass="form-control" -->
+<!-- 	                                                         required="#{crowdsourcingBean.selectedCampaign.selectedLocale == navigationHelper.defaultLocale}" -->
+<!-- 	                                                         value="#{crowdsourcingBean.selectedCampaign.title}" /> -->
+<!-- 	                                                     <span class="cms-module__option-control-helptext">#{msg.help__cms_page_title}</span> -->
+<!-- 	                                                 </div> -->
+<!-- 	                                                 <div class="cms-module__option-help"> -->
+<!-- 	                                                     <button type="button" class="btn btnclean" data-toggle="helptext"> -->
+<!-- 	                                                         <i class="fa fa-question-circle" aria-hidden="true"></i> -->
+<!-- 	                                                     </button> -->
+<!-- 	                                                 </div> -->
+<!-- 	                                             </div> -->
+<!--                                             </div> -->
+<!--                                             </div> -->
+                                                 
+
+ 										<!-- NEW CONTENT TABS CAMPAIGN GENERAL-->
+										<div id="languagesGeneralArea" class="admin__default-block">
 											<div class="tab-content">
 												<!-- TITLE -->
 												<div class="form-group form-row">
@@ -145,7 +181,7 @@
 												<div class="col-9 admin__form-input">
 													<div class="admin__campaign-media-file-box">
 														<!-- MEDIA FILE -->
-														<ui:fragment id="testxxx"
+														<ui:fragment
 															rendered="#{crowdsourcingBean.selectedCampaign.mediaItem != null}">
 															<ui:include
 																src="/resources/cms/includes/mediaFile.xhtml">
@@ -159,7 +195,7 @@
 															<h:commandLink
 																action="#{cmsBean.setSelectedMediaHolder(crowdsourcingBean.selectedCampaign)}"
 																value="#{crowdsourcingBean.selectedCampaign.getMediaItem() == null ? msg.cms_selectMedia : msg.cms_media_editFile}"
-																class="btn #{crowdsourcingBean.selectedCampaign.getMediaItem() == null ? 'btn--default' : 'btn--clean'}"
+																class="btn #{crowdsourcingBean.selectedCampaign.getMediaItem() == null ? 'btn--default' : 'btn--clean edit'}"
 																role="button">
 																<f:ajax execute="@this" render="mediaSelectPanel" />
 															</h:commandLink>
@@ -215,7 +251,6 @@
 															<f:ajax event="blur" render="solrQueryInputGroup" />
 														</h:inputText>
 													</h:panelGroup>
-													
 													<span class="admin__form-help-text">#{msg.inline_help__input_solr_query}</span>
 												</div>
 												
@@ -229,23 +264,30 @@
 											</div>
 											
 											<!-- VISIBILITY OF CAMPAIGN -->
-											<div class="form-group form-row">
+											<div class="form-row form-group">
 											
 												<div class="col-2 control-label admin__form-label">
 													<label for="adminCrowdAddCampaignSolrQuery">#{msg.admin__crowdsourcing_campaign_visibility}:</label>
 												</div>
 							                    
-							                    <div class="col-9">
-								                        <h:selectOneMenu value="#{crowdsourcingBean.selectedCampaign.visibility}" styleClass="form-control">
-								                            <f:selectItems itemLabel="#{msg['admin__crowdsourcing_campaign_visibility_' += val]}"
-								                                var="val" value="#{crowdsourcingBean.selectedCampaign.campaignVisibilityValues}"/> 
-								                        </h:selectOneMenu>
+							                    <div class="col-9 admin__form-input">
+							                        <h:selectOneMenu value="#{crowdsourcingBean.selectedCampaign.visibility}" styleClass="form-control">
+							                            <f:selectItems itemLabel="#{msg['admin__crowdsourcing_campaign_visibility_' += val]}"
+							                                var="val" value="#{crowdsourcingBean.selectedCampaign.campaignVisibilityValues}"/> 
+							                        </h:selectOneMenu>
+							                        <span class="admin__form-help-text">#{msg.admin__crowdsourcing_campaign_visibility}</span>
 						                   		</div>
+						                   		
+												<div class="col-1 admin__form-help-icon">
+													<button type="button" class="btn btn--clean"
+														data-toggle="helptext" aria-label="inline help icon">
+														<i class="fa fa-question-circle" aria-hidden="true"></i>
+													</button>
+												</div>
+												
 						                   	</div>
-										</div>
-										
-										
-										
+										</div>						
+
 										<h3>#{msg.admin__crowdsourcing_questions}
 										
 										<!-- Add new question link -->
@@ -260,224 +302,188 @@
 											<ul class="nav nav-tabs" role="tablist">
 												<c:forEach var="locale"
 													items="#{crowdsourcingBean.getAllLocales()}">
+													
 													<li role="tab"
 														class="admin__language-tab 
 													#{termsOfUseBean.isSelected(locale) ? 'active':''}
 													#{termsOfUseBean.isComplete(locale) ? '-already-translated':''}
 													#{termsOfUseBean.isDefaultLocaleSelected() ? '-default-language':''}">
+													
 														<h:commandLink
-															value="#{msg['changeLocal_' += locale]}"
+															value="#{locale.getDisplayLanguage(navigationHelper.locale)}"
 															action="#{crowdsourcingBean.selectedCampaign.setSelectedLocale(locale)}"
 															immediate="false">
-															<f:ajax render="@form" execute="@form"></f:ajax>
+															<f:ajax render="languagesQuestionsArea languagesGeneralArea" execute="@form"></f:ajax>
 														</h:commandLink>
 													</li>
 												</c:forEach>
 											</ul>
 										</div>
 
+										<div class="tab-content">
+										
+											<!-- LOCALIZE TABS -->
+											<h:panelGroup
+												id="languagesQuestionsArea"
+												rendered="#{crowdsourcingBean.selectedCampaign.selectedLocale != null}">
+												<ui:param name="locale"
+													value="#{crowdsourcingBean.selectedCampaign.selectedLocale}" />
+												<div role="tabpanel"
+													class="admin__default-block"
+													id="#{locale.language}">
 
-											<div class="tab-content">
-												<!-- LOCALIZE TABS -->
-												<h:panelGroup
-													rendered="#{crowdsourcingBean.selectedCampaign.selectedLocale != null}">
-													<ui:param name="locale"
-														value="#{crowdsourcingBean.selectedCampaign.selectedLocale}" />
-													<div role="tabpanel"
-														class="admin__default-block"
-														id="#{locale.language}">
+													<div class="edit-content-page edit-content-page-questions">
+														<ui:repeat var="question"
+															value="#{crowdsourcingBean.selectedCampaign.questions}"
+															varStatus="status">
+															
+															<div class="edit-content-page edit-content-page-single-question">
 
-
-														<div class="edit-content-page edit-content-page-questions">
-															<ui:repeat var="question"
-																value="#{crowdsourcingBean.selectedCampaign.questions}"
-																varStatus="status">
-																<div
-																	class="edit-content-page edit-content-page-single-question">
-
-																	<!-- TEXT -->
-																	<div class="cms-module__option-group">
-																		<div class="cms-module__option-label">
-																			<label
-																				for="adminCrowdAddCampaignQuestionText_#{status.count}">
-																				#{msg.admin__crowdsourcing_question_text}:
-																				<ui:fragment
-																					rendered="#{termsOfUseBean.isDefaultLocaleSelected()}">
-																					<span class="admin__label-required-field">(#{msg.form__required_field})</span>
-																				</ui:fragment>
-																			</label>
-																		</div>
-																		<div class="cms-module__option-message">
-																			<h:messages
-																				for="adminCrowdAddCampaignQuestionText_#{status.count}"
-																				infoClass="cms-module__option-message-status success"
-																				warnClass="cms-module__option-message-status warning"
-																				errorClass="cms-module__option-message-status danger" />
-
-																			<div class="cms-module__option-message-mark">
-																				<i class="fa fa-check" aria-hidden="true"></i> <i
-																					class="fa fa-exclamation" aria-hidden="true"></i>
-																			</div>
-																		</div>
-																		<div class="cms-module__option-control">
-																			<h:inputTextarea
-																				id="adminCrowdAddCampaignQuestionText_#{status.count}"
-																				styleClass="form-control" value="#{question.text}"
-																				required="#{crowdsourcingBean.selectedCampaign.selectedLocale == navigationHelper.defaultLocale}" />
-																			<span class="cms-module__option-control-helptext">#{msg.admin__help_crowdsourcing_question_text}</span>
-																		</div>
-																		<div class="cms-module__option-help">
-																			<button type="button" class="btn btn--clean"
-																				data-toggle="helptext">
-																				<i class="fa fa-question-circle" aria-hidden="true"></i>
-																			</button>
-																		</div>
+																<!-- TEXT -->
+																<div class="form-group form-row">
+																
+																	<div class="col-2 admin__form-label">
+																		<label
+																			for="adminCrowdAddCampaignQuestionText_#{status.count}">
+																			#{msg.admin__crowdsourcing_question_text}:
+																			<ui:fragment
+																				rendered="#{termsOfUseBean.isDefaultLocaleSelected()}">
+																				<span class="admin__label-required-field">(#{msg.form__required_field})</span>
+																			</ui:fragment>
+																		</label>
 																	</div>
-
-																	<!-- TYPE -->
-																	<div class="cms-module__option-group">
-																		<div class="cms-module__option-label">
-																			<label for="adminCrowdAddCampaignQueryType">#{msg.type}:</label>
-																		</div>
-																		<div class="cms-module__option-message">
-																			<h:messages
-																				for="adminCrowdAddCampaignQuestionText_#{status.count}"
-																				infoClass="cms-module__option-message-status success"
-																				warnClass="cms-module__option-message-status warning"
-																				errorClass="cms-module__option-message-status danger" />
-
-																			<div class="cms-module__option-message-mark">
-																				<i class="fa fa-check" aria-hidden="true"></i> <i
-																					class="fa fa-exclamation" aria-hidden="true"></i>
-																			</div>
-																		</div>
-																		<div class="cms-module__option-control">
-																			<div class="custom-control custom-control--select">
-																				<h:selectOneMenu value="#{question.questionType}">
-																					<f:selectItems var="type"
-																						value="#{question.availableQuestionTypes}"
-																						itemLabel="#{msg['admin__crowdsourcing_question_type_' += type]}" />
-																				</h:selectOneMenu>
-																				<span class="cms-module__option-control-helptext">#{msg.admin__help_crowdsourcing_question_type}</span>
-																			</div>
-																		</div>
-																		<div class="cms-module__option-help">
-																			<button type="button" class="btn btn--clean"
-																				data-toggle="helptext">
-																				<i class="fa fa-question-circle" aria-hidden="true"></i>
-																			</button>
-																		</div>
+																		
+																	<div class="col-9 admin__form-input">
+																		<h:inputTextarea
+																			id="adminCrowdAddCampaignQuestionText_#{status.count}"
+																			styleClass="form-control" value="#{question.text}"
+																			required="#{crowdsourcingBean.selectedCampaign.selectedLocale == navigationHelper.defaultLocale}" />
+																		<span class="admin__form-help-text">#{msg.admin__help_crowdsourcing_question_text}</span>	
 																	</div>
-
-																	<!-- TARGET SELECTOR -->
-																	<div class="cms-module__option-group">
-																		<div class="cms-module__option-label">
-																			<label
-																				for="adminCrowdAddCampaignQuestionTargetSelector">#{msg.admin__crowdsourcing_question_targetSelector}:<span class="admin__label-required-field">(#{msg.form__required_field})</span></label>
-																		</div>
-																		<div class="cms-module__option-message">
-																			<h:messages
-																				for="adminCrowdAddCampaignQuestionText_#{status.count}"
-																				infoClass="cms-module__option-message-status success"
-																				warnClass="cms-module__option-message-status warning"
-																				errorClass="cms-module__option-message-status danger" />
-
-																			<div class="cms-module__option-message-mark">
-																				<i class="fa fa-check" aria-hidden="true"></i> <i
-																					class="fa fa-exclamation" aria-hidden="true"></i>
-																			</div>
-																		</div>
-																		<div class="cms-module__option-control">
-																			<div class="custom-control custom-control--select">
-																				<h:selectOneMenu value="#{question.targetSelector}">
-																					<f:selectItems var="selector"
-																						value="#{question.availableTargetSelectors}"
-																						itemLabel="#{msg['admin__crowdsourcing_question_targetSelector_' += selector]}" />
-																				</h:selectOneMenu>
-																				<span class="cms-module__option-control-helptext">#{msg.admin__help_crowdsourcing_question_targetSelector}</span>
-																			</div>
-																		</div>
-																		<div class="cms-module__option-help">
-																			<button type="button" class="btn btn--clean"
-																				data-toggle="helptext">
-																				<i class="fa fa-question-circle" aria-hidden="true"></i>
-																			</button>
-																		</div>
+																		
+																	<div class="col-1 admin__form-help-icon">
+																		<button type="button" class="btn btn--clean"
+																			data-toggle="helptext" aria-label="inline help icon">
+																			<i class="fa fa-question-circle" aria-hidden="true"></i>
+																		</button>
 																	</div>
-
-																	<!-- TARGET FREQUENCY -->
-																	<div class="cms-module__option-group">
-																		<div class="cms-module__option-label">
-																			<label
-																				for="adminCrowdAddCampaignQuestionTargetSelector">#{msg.admin__crowdsourcing_question_targetFrequency}:<span class="admin__label-required-field">(#{msg.form__required_field})</span></label>
-																		</div>
-																		<div class="cms-module__option-message">
-																			<h:messages
-																				for="adminCrowdAddCampaignQuestionText_#{status.count}"
-																				infoClass="cms-module__option-message-status success"
-																				warnClass="cms-module__option-message-status warning"
-																				errorClass="cms-module__option-message-status danger" />
-
-																			<div class="cms-module__option-message-mark">
-																				<i class="fa fa-check" aria-hidden="true"></i> <i
-																					class="fa fa-exclamation" aria-hidden="true"></i>
-																			</div>
-																		</div>
-																		<div
-																			class="cms-module__option-control  custom-control custom-control--select">
-																			<h:selectOneMenu value="#{question.targetFrequency}">
-																				<f:selectItem
-																					itemLabel="#{msg.admin__crowdsourcing_question_targetFrequency_one}"
-																					itemValue="1" noSelectionOption="true" />
-																				<f:selectItem
-																					itemLabel="#{msg.admin__crowdsourcing_question_targetFrequency_multiple}"
-																					itemValue="0" />
-																			</h:selectOneMenu>
-																			<span class="cms-module__option-control-helptext">#{msg.admin__help_crowdsourcing_question_targetFrequency}</span>
-																		</div>
-																		<div class="cms-module__option-help">
-																			<button type="button" class="btn btn--clean"
-																				data-toggle="helptext">
-																				<i class="fa fa-question-circle" aria-hidden="true"></i>
-																			</button>
-																		</div>
-																	</div>
-
-																	<!-- Add new question link -->
-																	<div class="cms-module__actions">
-																		<h:commandLink styleClass="btn btn--clean delete"
-																			action="#{crowdsourcingBean.removeQuestionAction(question)}"
-																			title="#{msg.delete}" alt="#{msg.delete}">
-	                                                   #{msg.delete}
-	                                               </h:commandLink>
-																	</div>
-
+																		
 																</div>
-															</ui:repeat>
 
-														</div>
+																<!-- TYPE -->
+																<div class="form-row form-group">
+																
+																	<div class="col-2 admin__form-label">
+																		<label for="adminCrowdAddCampaignQueryType">#{msg.type}:</label>
+																	</div>
+
+																	<div class="col-9 admin__form-input">
+																			<h:selectOneMenu value="#{question.questionType}" styleClass="form-control">
+																				<f:selectItems var="type"
+																					value="#{question.availableQuestionTypes}"
+																					itemLabel="#{msg['admin__crowdsourcing_question_type_' += type]}" />
+																			</h:selectOneMenu>
+																		<span class="admin__form-help-text">#{msg.admin__help_crowdsourcing_question_type}</span>	
+																	</div>
+																	
+																	<div class="col-1 admin__form-help-icon">
+																		<button type="button" class="btn btn--clean"
+																			data-toggle="helptext" aria-label="inline help icon">
+																			<i class="fa fa-question-circle" aria-hidden="true"></i>
+																		</button>
+																	</div>
+																		
+																</div>
+
+																<!-- TARGET SELECTOR -->
+																<div class="form-row form-group">
+																
+																	<div class="col-2 admin__form-label">
+																		<label for="adminCrowdAddCampaignQuestionTargetSelector">#{msg.admin__crowdsourcing_question_targetSelector}:<span class="admin__label-required-field">(#{msg.form__required_field})</span></label>
+																	</div>
+																	
+																	<div class="col-9 admin__form-input">
+																		<h:selectOneMenu value="#{question.targetSelector}" styleClass="form-control">
+																			<f:selectItems var="selector"
+																				value="#{question.availableTargetSelectors}"
+																				itemLabel="#{msg['admin__crowdsourcing_question_targetSelector_' += selector]}" />
+																		</h:selectOneMenu>
+																		<span class="admin__form-help-text">#{msg.admin__help_crowdsourcing_question_targetSelector}</span>
+																	</div>
+																	
+																	<div class="col-1 admin__form-help-icon">
+																		<button type="button" class="btn btn--clean"
+																			data-toggle="helptext" aria-label="inline help icon">
+																			<i class="fa fa-question-circle" aria-hidden="true"></i>
+																		</button>
+																	</div>
+																	
+																</div>
+
+																<!-- TARGET FREQUENCY -->
+																<div class="form-row form-group">
+																	<div class="col-2 admin__form-label">
+																		<label
+																			for="adminCrowdAddCampaignQuestionTargetSelector">#{msg.admin__crowdsourcing_question_targetFrequency}:<span class="admin__label-required-field">(#{msg.form__required_field})</span></label>
+																	</div>
+																	
+																	<div class="col-9 admin__form-input">
+																		<h:selectOneMenu value="#{question.targetFrequency}" styleClass="form-control">
+																			<f:selectItem
+																				itemLabel="#{msg.admin__crowdsourcing_question_targetFrequency_one}"
+																				itemValue="1" noSelectionOption="true" />
+																			<f:selectItem
+																				itemLabel="#{msg.admin__crowdsourcing_question_targetFrequency_multiple}"
+																				itemValue="0" />
+																		</h:selectOneMenu>
+																		<span class="admin__form-help-text">#{msg.admin__help_crowdsourcing_question_targetFrequency}</span>
+																	</div>
+																	
+																	<div class="col-1 admin__form-help-icon">
+																		<button type="button" class="btn btn--clean"
+																			data-toggle="helptext" aria-label="inline help icon">
+																			<i class="fa fa-question-circle" aria-hidden="true"></i>
+																		</button>
+																	</div>
+																	
+																</div>
+
+																<!-- DELETE QUESTION -->
+																<div class="cms-module__actions">
+																	<h:commandLink styleClass="btn btn--clean delete"
+																		action="#{crowdsourcingBean.removeQuestionAction(question)}"
+																		title="#{msg.delete}" alt="#{msg.delete}">
+                                                   					#{msg.delete}
+                                              	 					</h:commandLink>
+																</div>
+																
+															</div>
+														</ui:repeat>
 													</div>
-												</h:panelGroup>
-											</div>
-
+												</div>
+											</h:panelGroup>
+										</div>
+										<h3>#{msg.admin__crowdsourcing_campaign_statistics}</h3>
+										<div class="admin__default-block">
+											<!-- METADATA WRAPPER -->
+											<crowdsourcingComponent:crowdsourcing_addCampaignMetadataItemWrapper
+												id="metadata_component" />
+											<ui:include
+												src="/resources/crowdsourcing/includes/campaignStatistics.xhtml">
+												<ui:param name="campaign"
+													value="#{crowdsourcingBean.selectedCampaign}"></ui:param>
+											</ui:include>
+										</div>
 									</div>
 								</div>
-
-
-
-								<div
-									class="col-12 col-sm-12 col-md-3 col-lg-3 create-page-right">
-									<!-- METADATA WRAPPER -->
-									<crowdsourcingComponent:crowdsourcing_addCampaignMetadataItemWrapper
-										id="metadata_component" />
-									<ui:include
-										src="/resources/crowdsourcing/includes/campaignStatistics.xhtml">
-										<ui:param name="campaign"
-											value="#{crowdsourcingBean.selectedCampaign}"></ui:param>
-									</ui:include>
-								</div>
 							</div>
+							<!-- FINAL ACTIONS CANCEL + SAVE -->
+								<div class="row no-gutters justify-content-end admin__final-actions mb-4">
+                                    <h:commandLink id="cancelAddCampaignButton" type="submit" styleClass="btn" value="#{msg.cancel}" action="pretty:adminCrowdCampaigns" immediate="true" />
+                                    <h:commandLink id="saveAddCampaignButton" styleClass="btn btn--success" value="#{msg.button__save}" action="#{crowdsourcingBean.saveSelectedCampaign}" />
+                                </div>
 						</h:form>
+																	
 					</div>
 
 					<!-- MEDIA SELECT PANEL -->
@@ -490,7 +496,7 @@
 							<div class="admin-cms-media__select">
 								<ui:include src="/resources/cms/includes/mediaSelect.xhtml">
 									<ui:param name="mediaDisplayPanel"
-										value="create_campaign_form:contentMediaGroup" />
+										value="createCampaignForm:contentMediaGroup" />
 								</ui:include>
 							</div>
 						</ui:fragment>
