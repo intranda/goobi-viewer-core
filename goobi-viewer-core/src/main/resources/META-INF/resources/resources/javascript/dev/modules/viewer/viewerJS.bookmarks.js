@@ -82,9 +82,11 @@ var viewerJS = ( function( viewer ) {
                     if(added) {
                         $button.addClass("added");
                         $span.tooltip('hide').attr("title", $span.attr("data-bookmark-list-title-added")).tooltip("_fixTitle");
+                        $button.attr('aria-checked', true);
                     } else {
                         $button.removeClass("added");
                         $span.tooltip('hide').attr("title", $span.attr("data-bookmark-list-title-add")).tooltip("_fixTitle");
+                        $button.attr('aria-checked', false);
                     }
                     
                 } );
