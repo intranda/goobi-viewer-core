@@ -637,10 +637,16 @@ public class License implements IPrivilegeHolder, Serializable {
     /**
      * 
      * @param selection
+     * @throws DAOException 
      */
-    public void setLicenseTypeSelection(ILicenseType selection) {
+    public void setLicenseTypeSelection(ILicenseType selection) throws DAOException {
+        logger.trace("setLicenseTypeSelection: {}", selection);
         if (selection instanceof Campaign) {
             this.campaign = (Campaign) selection;
+            // Having a license type is mandatory
+            this.licenseType = DataManager.getInstance().getDao().getLicenseType(LicenseType.LICENSE_TYPE_CROWDSOURCING_CAMPAIGNS);
+            logger.trace("campaign: {}", campaign);
+            logger.trace("licenseType: {}", licenseType);
         } else if (selection instanceof LicenseType) {
             this.licenseType = (LicenseType) selection;
         }

@@ -82,6 +82,7 @@ import io.goobi.viewer.model.cms.CMSMediaItem;
 import io.goobi.viewer.model.cms.CategorizableTranslatedSelectable;
 import io.goobi.viewer.model.crowdsourcing.campaigns.CampaignRecordStatistic.CampaignRecordStatus;
 import io.goobi.viewer.model.crowdsourcing.questions.Question;
+import io.goobi.viewer.model.misc.IPolyglott;
 import io.goobi.viewer.model.misc.Translation;
 import io.goobi.viewer.model.security.ILicenseType;
 import io.goobi.viewer.model.security.IPrivilegeHolder;
@@ -97,7 +98,7 @@ import io.goobi.viewer.model.security.user.User;
 @Entity
 @Table(name = "cs_campaigns")
 @JsonInclude(Include.NON_EMPTY)
-public class Campaign implements CMSMediaHolder, ILicenseType {
+public class Campaign implements CMSMediaHolder, ILicenseType, IPolyglott {
 
     /**
      * The visibility of the campaign to other users
@@ -1065,6 +1066,7 @@ public class Campaign implements CMSMediaHolder, ILicenseType {
      *
      * @return the selectedLocale
      */
+    @Override
     public Locale getSelectedLocale() {
         return selectedLocale;
     }
@@ -1076,8 +1078,17 @@ public class Campaign implements CMSMediaHolder, ILicenseType {
      *
      * @param selectedLocale the selectedLocale to set
      */
+    @Override
     public void setSelectedLocale(Locale selectedLocale) {
         this.selectedLocale = selectedLocale;
+    }
+
+    /* (non-Javadoc)
+     * @see io.goobi.viewer.model.misc.IPolyglott#isComplete(java.util.Locale)
+     */
+    @Override
+    public boolean isComplete(Locale locale) {
+        return getTitle(locale.getLanguage(), false) != null;
     }
 
     /**

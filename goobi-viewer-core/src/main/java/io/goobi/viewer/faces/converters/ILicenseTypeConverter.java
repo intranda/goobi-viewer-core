@@ -20,6 +20,9 @@ import javax.faces.context.FacesContext;
 import javax.faces.convert.Converter;
 import javax.faces.convert.FacesConverter;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.model.crowdsourcing.campaigns.Campaign;
@@ -31,14 +34,18 @@ import io.goobi.viewer.model.security.LicenseType;
  * Converter for either LicenseType or Campaign objects.
  * </p>
  */
-@FacesConverter("licenseTypeConverter")
+@FacesConverter("iLicenseTypeConverter")
 public class ILicenseTypeConverter implements Converter<ILicenseType> {
+    
+    /** Logger for this class. */
+    private static final Logger logger = LoggerFactory.getLogger(ILicenseTypeConverter.class);
 
     /** {@inheritDoc} */
     @Override
     public final ILicenseType getAsObject(final FacesContext context, final UIComponent component, final String value) {
         try {
             long id = Long.valueOf(value);
+            logger.trace("getAsObject: {}", value);
             return DataManager.getInstance().getDao().getLicenseType(id);
         } catch (NumberFormatException e) {
             return null;

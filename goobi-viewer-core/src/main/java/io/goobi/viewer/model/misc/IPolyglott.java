@@ -24,8 +24,7 @@ import java.util.Locale;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
 
 /**
- * Interface for objects containing translations for a set of languages. 
- * Used to construct tab panels to switch beween languages
+ * Interface for objects containing translations for a set of languages. Used to construct tab panels to switch beween languages
  * 
  * @author florian
  *
@@ -33,37 +32,37 @@ import io.goobi.viewer.managedbeans.utils.BeanUtils;
 public interface IPolyglott {
 
     public boolean isComplete(Locale locale);
-    
+
     public Locale getSelectedLocale();
-    
+
     public void setSelectedLocale(Locale locale);
-    
+
     public default void setSelectedLocale(String language) {
         Locale locale = Locale.forLanguageTag(language);
-        if(locale != null) { 
+        if (locale != null) {
             this.setSelectedLocale(locale);
         } else {
             throw new IllegalArgumentException("'" + language + "' is not a valid language tag");
         }
     }
-    
+
     public default boolean isDefaultLocaleSelected() {
         return getSelectedLocale() != null && getSelectedLocale().equals(getDefaultLocale());
     }
-    
+
     public default boolean isSelected(Locale locale) {
         return locale != null && locale.equals(getSelectedLocale());
     }
-    
+
     public default Collection<Locale> getLocales() {
         Iterator<Locale> i = BeanUtils.getNavigationHelper().getSupportedLocales();
         ArrayList<Locale> list = new ArrayList<>();
         i.forEachRemaining(list::add);
         return list;
     }
-    
+
     public default Locale getDefaultLocale() {
         return BeanUtils.getNavigationHelper().getDefaultLocale();
     }
-    
+
 }

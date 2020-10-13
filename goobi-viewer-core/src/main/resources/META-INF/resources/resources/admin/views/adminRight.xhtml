@@ -119,9 +119,9 @@
                                              value="#{adminBean.currentLicense.licenseTypeSelection}"
                                              styleClass="form-control"
                                              immediate="true"
-                                             converter="licenseTypeConverter"
+                                             converter="iLicenseTypeConverter"
                                              disabled="#{adminBean.currentLicense.id != null}">
-
+                                             <f:converter converterId="iLicenseTypeConverter"  />
                                              <f:passThroughAttribute name="aria-label" value="#{msg.admin__license_license_type_select_label}" />
 
                                              <f:selectItem itemLabel="#{msg.select}" itemValue="#{null}" noSelectionOption="true" />

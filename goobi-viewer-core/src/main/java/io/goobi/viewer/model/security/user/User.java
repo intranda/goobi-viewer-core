@@ -189,7 +189,7 @@ public class User implements ILicensee, HttpSessionBindingListener, Serializable
     private TranskribusSession transkribusSession;
 
     /**
-     * Empty constructor for XStream.
+     * Empty constructor.
      */
     public User() {
         // the emptiness inside

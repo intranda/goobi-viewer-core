@@ -135,7 +135,7 @@ public class UserBean implements Serializable {
     }
 
     /**
-     * Create a new local User and save the data (in moment by xstream)
+     * Creates and persists a new local User.
      *
      * @return a {@link java.lang.String} object.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
