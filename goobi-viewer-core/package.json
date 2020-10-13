@@ -35,7 +35,7 @@
     "less-plugin-autoprefix": "^2.0.0",
     "michelangelo": "^0.8.0",
     "pdfjs-dist": "^2.5.207",
-    "webpack": "4.44.2"
+    "webpack": "5.0.0"
   },
   "scripts": {
     "docs": "jsdoc -c jsdoc.conf",
