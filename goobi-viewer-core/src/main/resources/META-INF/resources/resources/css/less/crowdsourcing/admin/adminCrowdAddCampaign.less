@@ -1,4 +1,68 @@
+.admin {	
+	/* CAMPAIGN STYLING */
+	#crowdAddCampaignView {
+		.campaign-statistics {
+			flex-wrap: wrap;
+			flex-direction: column-reverse;
+			progressbar {
+				width: 100%;
+			}
+		}
+		.campaign-statistics__text, .campaign-statistics__bar {
+			width: 100%;
+			margin-bottom: 2rem;
+		}
+		.goobi-progress-bar-wrapper {
+			border: none;
+			background: @neutralgray2;
+		}
+		.campaign-statistics__text dl {
+			grid-template-columns: 20% 80%;
+		}
+	}
 
+	&__campaign-media-file-box {
+		.admin-cms-media__file-select, .admin-cms-media__file-bottom {
+			display: none;
+		}
+		.admin-cms-media__file {
+			background: @white !important;
+			border: none;
+			padding: 0;
+		}
+		.admin-cms-media__file-top {
+			margin-bottom: 0;
+		}
+		.admin-cms-media__file-image {
+			cursor: default;
+		}
+		.cms-module__actions {
+			.edit, .delete {
+				opacity: 0;
+				transition: all 0.2s ease;
+			}
+			a {
+				font-size: 1.4rem;
+				&:hover {
+					text-decoration: underline;
+				}
+			}
+		}
+		&:hover .cms-module__actions {
+			.edit, .delete {	
+				opacity: 1;
+				transition: all 0.2s ease;			
+			}
+		}
+	}
+	&__campaign-delete-question {
+		opacity: 0;
+		transition: all 0.2s ease;
+		.delete { 
+			font-size: 14px;
+		}
+	}
+}
 
 #createCampaign {
 	
@@ -15,11 +79,20 @@
   			border-bottom: 1px dotted #ddd; 
    		}
    		&.edit-content-page-single-question {
-   			padding: 10px;
-		    background-color: #fafafa;
-		    border: 1px solid #e5e5e5;
-		    margin-bottom: 5px;
-/* 		    TODO: letztes Element ohne margin-bottom */
+   			padding: 1rem;
+		    margin-bottom: 4.3rem;
+		    border-bottom: 3px dashed @neutralgray;
+		    padding-bottom: 2.6rem;
+		    &:last-child {
+		    	margin-bottom: 0;
+		    	border-bottom: none;
+		    }
+		    &:hover {
+		    	.admin__campaign-delete-question {
+		    		opacity: 1;
+		    	}
+		    }
+			
    		}
    		.cms-module__option-control {
    			padding-left: 0;

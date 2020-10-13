@@ -522,65 +522,9 @@
 		padding-left: 15px;
 		border-top: 1px solid @white;
 	}
-	
-	
-	/* CAMPAIGN STYLING */
-	#crowdAddCampaignView {
-		.campaign-statistics {
-			flex-wrap: wrap;
-			flex-direction: column-reverse;
-			progressbar {
-				width: 100%;
-			}
-		}
-		.campaign-statistics__text, .campaign-statistics__bar {
-			width: 100%;
-			margin-bottom: 2rem;
-		}
-		.goobi-progress-bar-wrapper {
-			border: none;
-			background: @neutralgray2;
-		}
-		.campaign-statistics__text dl {
-			grid-template-columns: 20% 80%;
-		}
-	}
 
-	&__campaign-media-file-box {
-		.admin-cms-media__file-select, .admin-cms-media__file-bottom {
-			display: none;
-		}
-		.admin-cms-media__file {
-			background: @white !important;
-			border: none;
-			padding: 0;
-		}
-		.admin-cms-media__file-top {
-			margin-bottom: 0;
-		}
-		.admin-cms-media__file-image {
-			cursor: default;
-		}
-		.cms-module__actions {
-			.edit, .delete {
-				opacity: 0;
-				transition: all 0.2s ease;
-			}
-			a {
-				font-size: 1.4rem;
-				&:hover {
-					text-decoration: underline;
-				}
-			}
-		}
-		&:hover .cms-module__actions {
-			.edit, .delete {	
-				opacity: 1;
-				transition: all 0.2s ease;			
-			}
-		}
-	}
 	
+
 	/* ADMIN FORMS */
 	&__form-label {}
 	&__form-input {
@@ -930,6 +874,53 @@
 			}
 		}
 	}
+	&__language-tabs-vertical {
+		display: flex;
+		flex-direction: column;
+		border-bottom: none;
+			li a {
+				padding: 0.4rem 0.8rem;
+				margin-right: 0;
+			}
+		}
+		
+	&__language-tab.-vertical {
+		z-index: 100;
+		margin-right: -1px;
+		margin-bottom: 3px;
+			&:last-child {
+				margin-bottom: 0;
+			}
+			a {
+				text-align: left;
+				width: 100%;
+					&:hover {
+					border-right: 1px solid @white;
+					border-bottom: 1px solid #ccc;
+				}
+			}
+		&:first-child,
+		&:first-child.-already-translated {
+			a {
+				margin-right: 0;
+		    }
+	    	&.active a {
+	    		border-right: 1px solid @white;
+	    		border-bottom: 1px solid #ccc;
+	    		
+	    	}
+		}
+		&.active a, &.active.-already-translated a {
+			    padding-bottom: 0.4rem;
+			    border-bottom: 1px solid #ccc;
+			    border-right: 1px solid @white;
+	    	}
+	}
+	&__language-tabs-vertical-textarea {
+		min-height: 100%;
+	}
+	
+	
 }
 
 
