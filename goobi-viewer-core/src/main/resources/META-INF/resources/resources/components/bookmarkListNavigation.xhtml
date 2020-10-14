@@ -27,7 +27,7 @@
                             <span class="bookmark-navigation__counter" data-bookmark-list-type="counter" data-toggle="tooltip" data-placement="bottom" data-trigger="hover" title="#{msg.wl_watchListItems}"></span>
                         </ui:fragment>
                         <!-- TO DO ONLY SHOW IF ONE BOOKMARKLIST EXISTS -->
-                        <ui:fragment rendered="#{bookmarkList.items.size() > 0 and userBean.loggedIn}">
+                        <ui:fragment rendered="#{userBean.loggedIn}">
                             <span class="bookmark-navigation__counter" data-bookmark-list-type="counter" data-toggle="tooltip" data-placement="bottom" data-trigger="hover" title="#{msg.wl_allWatchListItems}"></span>
                         </ui:fragment>
                     </button>

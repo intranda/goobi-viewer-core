@@ -116,12 +116,17 @@ $( document ).ready(function() {
 		}
 	});	
 
-	
+	// vertical language tabs focus effect
+	$("body").on("focus", ".admin__language-tabs-vertical-textarea", function() {
+		$(this).prev('.admin__language-tabs-vertical').find('.admin__language-tab.active a').css({"border-color": "#3365a9", "border-right-color": "#fff"})
+	});
+
+	$("body").on("focusout", ".admin__language-tabs-vertical-textarea", function() {
+		$(this).prev('.admin__language-tabs-vertical').find('.admin__language-tab.active a').css({"border-color": "#ccc", "border-right-color": "#fff"})
+	});
 	
 //END DOCUMENT READY
 });
- 
-
 
 
 // hiding the new tab option for cms menus if link value is '#'

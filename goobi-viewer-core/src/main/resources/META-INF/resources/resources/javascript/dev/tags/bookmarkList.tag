@@ -43,21 +43,15 @@
 	
 	<li each="{bookmark in bookmarkList.items}">
 		<div class="row no-margin">
+			<div class="col-8 no-padding">
+				<h4>
+					<a class="bookmark-navigation__dropdown-title" href="{opts.bookmarks.config.root}{bookmark.url}">{bookmark.name}</a>
+				</h4>
+			</div>
 			<div class="col-4 no-padding">
 				<div class="{mainClass}-image"
 					style="background-image: url({bookmark.representativeImageUrl});">
 				</div>
-			</div>
-			<div class="col-7 no-padding">
-				<h4>
-					<a href="{opts.bookmarks.config.root}{bookmark.url}">{bookmark.name}</a>
-				</h4>
-			</div>
-			<div class="col-1 no-padding {mainClass}-remove">
-				<button class="btn btn--clean" type="button"
-					data-bookshelf-type="delete" onclick="{remove}">
-					<i class="fa fa-ban" aria-hidden="true"></i>
-				</button>
 			</div>
 		</div>
 	</li>
@@ -69,16 +63,16 @@
 	<div if="{mayEmptyList(bookmarkList)}" class="{mainClass}-reset">
 		<button class="btn btn--clean" type="button"
 			data-bookshelf-type="reset" onclick="{deleteList}">
-			<span>{msg('bookmarkList_reset')}</span>
 			<i class="fa fa-trash-o" aria-hidden="true"></i>
+			<span>{msg('bookmarkList_reset')}</span>
 		</button>
 	</div>
 
 
 	<div if="{maySendList(bookmarkList)}" class="{mainClass}-send">
 		<a href="{sendListUrl(bookmarkList)}"> 
-			<span>{msg('bookmarkList_session_mail_sendList')}</span> 
 			<i class="fa fa-paper-plane-o" aria-hidden="true"></i>
+			<span>{msg('bookmarkList_session_mail_sendList')}</span> 
 		</a>
 	</div>
 
@@ -86,16 +80,16 @@
 	<div if="{maySearchList(bookmarkList)}" class="{mainClass}-search">
 		<a href="{searchListUrl(bookmarkList)}"
 			data-toggle="tooltip" data-placement="top" data-original-title=""
-			title=""> 
-			<span>{msg('action__search_in_bookmarks')}</span> 
+			title="">
 			<i class="fa fa-search" aria-hidden="true"></i>
+			<span>{msg('action__search_in_bookmarks')}</span> 
 		</a>
 	</div>
 
 	<div if="{mayCompareList(bookmarkList)}" class="{mainClass}-mirador">
 		<a href="{miradorUrl(bookmarkList)}" target="_blank"> 
-			<span>{msg('viewMiradorComparison')}</span> 
 			<i class="fa fa-th" aria-hidden="true"></i>
+			<span>{msg('viewMiradorComparison')}</span> 
 		</a>
 	</div>
 </div>

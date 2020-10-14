@@ -46,9 +46,10 @@ var viewerJS = ( function( viewer ) {
             $( '[data-toggle="user-dropdown"]' ).on( 'click', function( event ) {
                 event.stopPropagation();
                 
-                // hide bookmarkdropdow if exist
+                // hide bookmarkdropdow if exist and hide language dropdown panel
                 if ( _bookshelfDropdown ) {
                     $( '.bookmark-navigation__dropdown' ).hide();
+                    $( '.change-local' ).hide();
                     $( '.bookmark-popup' ).remove();
                 }
                 // hide collection panel if exist
@@ -56,7 +57,10 @@ var viewerJS = ( function( viewer ) {
                     $( '.navigation__collection-panel' ).hide();
                 }
                 
-                $(this).next( '.login-navigation__user-dropdown' ).slideToggle( 'fast' );
+
+
+                
+                $(this).next( '.login-navigation__user-dropdown' ).fadeToggle( 'fast' );
             } );
             
             // remove dropdown by clicking on body
