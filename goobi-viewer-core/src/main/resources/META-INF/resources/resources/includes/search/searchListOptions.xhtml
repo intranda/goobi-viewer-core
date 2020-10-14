@@ -24,7 +24,7 @@
         <!-- RSS LINK -->
         <h:panelGroup rendered="#{configurationBean.displaySearchRssLinks}">
             <div class="search-list__rss">
-                <a href="#{searchBean.rssUrl}" class="btn btn--icon" data-toggle="tooltip" data-placement="top" title="#{msg.rssSubscribe}" target="_blank" aria-label="#{msg.rssSubscribe}">
+                <a href="#{searchBean.rssUrl}" class="btn btn--icon" data-toggle="tooltip" data-placement="top" title="#{msg.rssSubscribe}" target="_blank" aria-label="#{msg.aria_label__rss_subscribe}">
                     <i class="fa fa-rss" aria-hidden="true"></i>
                 </a>
             </div>
@@ -43,6 +43,7 @@
                         <i class="fa fa-table" aria-hidden="true"></i>
                         <f:passThroughAttribute name="data-toggle" value="tooltip" />
                         <f:passThroughAttribute name="data-placement" value="top" />
+                        <f:passThroughAttribute name="aria-label" value="#{msg.aria_label__excel_export}" />
                     </h:commandLink>
 
                     <span class="excel-export-loader">
@@ -56,7 +57,7 @@
         <ui:fragment rendered="#{configurationBean.aggregateSearchHits}">
 	        <div class="search-list__toggle-thumbs">
 	       		<button type="button" class="btn btn--icon" data-title-inactive="#{msg.action__show_subhits_thumbnails}" data-title-active="#{msg.action__hide_subhits_thumbnails}" data-toggle="tooltip" data-placement="top" data-trigger="hover"
-	       			data-action="toggle-thumbs">
+	       			data-action="toggle-thumbs" aria-label="#{msg.aria_label__show_subhits}" role="switch" aria-checked="false">
 	                <i class="fa fa-image" aria-hidden="true"></i>
 	            </button>
 	        </div>
@@ -65,13 +66,13 @@
         <!-- SEARCHLIST VIEWS -->
         <div class="search-list__views">
             <button type="button" class="btn btn--icon" title="#{msg.searchListDetailView}" data-view="search-list-default" data-toggle="tooltip" data-placement="top"
-                data-trigger="hover" aria-label="#{msg.searchListDetailView}">
+                data-trigger="hover" aria-label="#{msg.aria_label__searchList_detail_view}">
                 <i class="fa fa-list-ul" aria-hidden="true"></i>
             </button>
-            <button type="button" class="btn btn--icon" title="#{msg.searchListTileView}" data-view="search-list-grid" data-toggle="tooltip" data-placement="top" data-trigger="hover" aria-label="#{msg.searchListTileView}">
+            <button type="button" class="btn btn--icon" title="#{msg.searchListTileView}" data-view="search-list-grid" data-toggle="tooltip" data-placement="top" data-trigger="hover" aria-label="#{msg.aria_label__searchList_tile_view}">
                 <i class="fa fa-th-large" aria-hidden="true"></i>
             </button>
-            <button type="button" class="btn btn--icon" title="#{msg.searchListListView}" data-view="search-list-list" data-toggle="tooltip" data-placement="top" data-trigger="hover" aria-label="#{msg.searchListListView}">
+            <button type="button" class="btn btn--icon" title="#{msg.searchListListView}" data-view="search-list-list" data-toggle="tooltip" data-placement="top" data-trigger="hover" aria-label="#{msg.aria_label__searchList_list_view}">
                 <i class="fa fa-bars" aria-hidden="true"></i>
             </button>
         </div>
