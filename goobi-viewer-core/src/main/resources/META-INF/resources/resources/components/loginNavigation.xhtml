@@ -126,13 +126,20 @@
                                             </div>
                                         </li>
                                     </ui:fragment>
-                                </ul>
                                 
                                 <!-- LOGOUT -->
-                                <div class="login-navigation__user-dropdown-action">
-                                    <h:commandLink value="#{msg.logout}" action="#{userBean.logout}" styleClass="btn btn--full">
-                                    </h:commandLink>
-                                </div>
+                                    <li>
+                                        <div class="login-navigation__user-dropdown-item">
+                                            <div class="login-navigation__user-dropdown-item-icon">
+                                                <i class="fa fa-power-off" aria-hidden="true"></i>
+                                            </div>
+                                            <div class="login-navigation__user-dropdown-item-string">
+                                                <h:commandLink value="#{msg.logout}" action="#{userBean.logout}">
+                                    			</h:commandLink>
+                                            </div>
+                                        </div>
+                                    </li>
+                            	</ul>
                             </h:form>
                         </div>
                     </li>

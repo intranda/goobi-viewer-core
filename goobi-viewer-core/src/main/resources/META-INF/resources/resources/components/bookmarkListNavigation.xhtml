@@ -2,6 +2,7 @@
       xmlns:h="http://xmlns.jcp.org/jsf/html"
       xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
       xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:fn="http://java.sun.com/jsp/jstl/functions"
       xmlns:composite="http://xmlns.jcp.org/jsf/composite"
       xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components" 
       xmlns:widgetComponent="http://xmlns.jcp.org/jsf/composite/components/widgets"
@@ -25,7 +26,8 @@
                         <ui:fragment rendered="#{!userBean.loggedIn}">
                             <span class="bookmark-navigation__counter" data-bookmark-list-type="counter" data-toggle="tooltip" data-placement="bottom" data-trigger="hover" title="#{msg.wl_watchListItems}"></span>
                         </ui:fragment>
-                        <ui:fragment rendered="#{userBean.loggedIn}">
+                        <!-- TO DO ONLY SHOW IF ONE BOOKMARKLIST EXISTS -->
+                        <ui:fragment rendered="#{bookmarkList.items.size() > 0 and userBean.loggedIn}">
                             <span class="bookmark-navigation__counter" data-bookmark-list-type="counter" data-toggle="tooltip" data-placement="bottom" data-trigger="hover" title="#{msg.wl_allWatchListItems}"></span>
                         </ui:fragment>
                     </button>
