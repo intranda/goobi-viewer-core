@@ -236,9 +236,9 @@ public class JPADAO implements IDAO {
     public long getUserCount(Map<String, String> filters) throws DAOException {
         String filterQuery = "";
         Map<String, String> params = new HashMap<>();
-        if(filters != null) {            
+        if (filters != null) {
             String filterValue = filters.values().stream().findFirst().orElse("");
-            if(StringUtils.isNotBlank(filterValue)) {
+            if (StringUtils.isNotBlank(filterValue)) {
                 filterQuery = getUsersFilterQuery("value");
                 params.put("value", sanitizeQueryParam(filterValue, true));
             }
@@ -254,14 +254,14 @@ public class JPADAO implements IDAO {
         StringBuilder sbQuery = new StringBuilder("SELECT a FROM User a");
         Map<String, String> params = new HashMap<>();
 
-        if(filters != null) {
+        if (filters != null) {
             String filterValue = filters.values().stream().findFirst().orElse("");
-            if(StringUtils.isNotBlank(filterValue)) {
+            if (StringUtils.isNotBlank(filterValue)) {
                 String filterQuery = getUsersFilterQuery("value");
                 params.put("value", sanitizeQueryParam(filterValue, true));
                 sbQuery.append(filterQuery);
-                    }
-                }
+            }
+        }
 
         if (StringUtils.isNotEmpty(sortField)) {
             sbQuery.append(" ORDER BY a.").append(sortField);
@@ -300,14 +300,14 @@ public class JPADAO implements IDAO {
      * 
      * Remove characters from the parameter that may be used to modify the sql query itself. Also puts the parameter to upper case
      * 
-     * @param param     The parameter to sanitize
-     * @param addWildCards  if true, add '%' to the beginning and end of param
-     * @return  the sanitized parameter
+     * @param param The parameter to sanitize
+     * @param addWildCards if true, add '%' to the beginning and end of param
+     * @return the sanitized parameter
      */
     private String sanitizeQueryParam(String param, boolean addWildCards) {
         param = param.replaceAll("['\"\\(\\)]", "");
         param = param.toUpperCase();
-        if(addWildCards) {
+        if (addWildCards) {
             param = "%" + param + "%";
         }
         return param;
@@ -2102,7 +2102,11 @@ public class JPADAO implements IDAO {
 
     // Downloads
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     * 
+     * @should return all objects
+     */
     @SuppressWarnings("unchecked")
     @Override
     public List<DownloadJob> getAllDownloadJobs() throws DAOException {
@@ -2112,7 +2116,11 @@ public class JPADAO implements IDAO {
         return q.getResultList();
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     * 
+     * @should return correct object
+     */
     @Override
     public DownloadJob getDownloadJob(long id) throws DAOException {
         preQuery();
@@ -2127,7 +2135,11 @@ public class JPADAO implements IDAO {
         }
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     * 
+     * @should return correct object
+     */
     @Override
     public DownloadJob getDownloadJobByIdentifier(String identifier) throws DAOException {
         if (identifier == null) {
@@ -2151,7 +2163,11 @@ public class JPADAO implements IDAO {
         }
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     * 
+     * @should return correct object
+     */
     @Override
     public DownloadJob getDownloadJobByMetadata(String type, String pi, String logId) throws DAOException {
         if (type == null) {
@@ -2425,11 +2441,10 @@ public class JPADAO implements IDAO {
             AlphabetIterator abc = new AlphabetIterator();
             String mainTableKey = abc.next(); // = a
 
-
             for (Entry<String, String> entry : filters.entrySet()) {
                 String key = entry.getKey();
                 String filterValue = entry.getValue();
-                if(StringUtils.isBlank(filterValue)) {
+                if (StringUtils.isBlank(filterValue)) {
                     continue;
                 }
                 String keyValueParam = key.replaceAll("[" + MULTIKEY_SEPARATOR + KEY_FIELD_SEPARATOR + "]", "");
@@ -2447,10 +2462,10 @@ public class JPADAO implements IDAO {
                         String table = subKey.substring(0, subKey.indexOf(KEY_FIELD_SEPARATOR));
                         String field = subKey.substring(subKey.indexOf(KEY_FIELD_SEPARATOR) + 1);
                         String tableKey;
-                        if(!tableKeys.containsKey(table)) {
+                        if (!tableKeys.containsKey(table)) {
                             tableKey = abc.next();
                             tableKeys.put(table, tableKey);
-                            String join = "LEFT JOIN " + mainTableKey + "." + table + " " + tableKey; 
+                            String join = "LEFT JOIN " + mainTableKey + "." + table + " " + tableKey;
                             joinStatements.add(join); // JOIN mainTable.joinTable b
                         } else {
                             tableKey = tableKeys.get(table);
@@ -3729,7 +3744,7 @@ public class JPADAO implements IDAO {
      * Universal method for returning the row count for the given class and filter string.
      * 
      * @param className
-     * @param filter    Filter query string
+     * @param filter Filter query string
      * @return
      * @throws DAOException
      */
@@ -3741,7 +3756,7 @@ public class JPADAO implements IDAO {
 
         return (long) q.getSingleResult();
     }
-    
+
     /**
      * Universal method for returning the row count for the given class and filters.
      * 
@@ -4747,14 +4762,14 @@ public class JPADAO implements IDAO {
         EntityManager em = factory.createEntityManager();
         try {
             em.getTransaction().begin();
-            if(tou.getId() == null) {
+            if (tou.getId() == null) {
                 //create initial tou
                 em.persist(tou);
-            } else {                
+            } else {
                 em.merge(tou);
             }
             em.getTransaction().commit();
-            
+
             tou = this.em.getReference(TermsOfUse.class, tou.getId());
             this.em.refresh(tou);
         } finally {
@@ -4770,11 +4785,11 @@ public class JPADAO implements IDAO {
     public TermsOfUse getTermsOfUse() throws DAOException {
         preQuery();
         Query q = em.createQuery("SELECT u FROM TermsOfUse u");
-//         q.setHint("javax.persistence.cache.storeMode", "REFRESH");
-        
+        //         q.setHint("javax.persistence.cache.storeMode", "REFRESH");
+
         List results = q.getResultList();
-        if(results.isEmpty()) {
-          //No results. Just return a new object which may be saved later
+        if (results.isEmpty()) {
+            //No results. Just return a new object which may be saved later
             return new TermsOfUse();
         } else {
             return (TermsOfUse) results.get(0);
@@ -4789,7 +4804,7 @@ public class JPADAO implements IDAO {
         preQuery();
         Query q = em.createQuery("SELECT u.active FROM TermsOfUse u");
         List results = q.getResultList();
-        if(results.isEmpty()) {
+        if (results.isEmpty()) {
             //If no terms of use object exists, it is inactive
             return false;
         } else {

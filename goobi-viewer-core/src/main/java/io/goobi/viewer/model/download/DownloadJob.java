@@ -141,7 +141,7 @@ public abstract class DownloadJob implements Serializable {
     protected String type;
 
     /** Unique identifier for the download (e.g. a combination of PI and LOGID for PDFs). */
-    @Column(name = "identifier", nullable = false)
+    @Column(name = "identifier", nullable = false, unique = true)
     protected String identifier;
 
     @Column(name = "pi", nullable = false)
@@ -221,7 +221,7 @@ public abstract class DownloadJob implements Serializable {
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      */
-    public static DownloadJob checkDownload(String type, final String email, String pi, String logId, String downloadIdentifier, long ttl)
+    public static synchronized DownloadJob checkDownload(String type, final String email, String pi, String logId, String downloadIdentifier, long ttl)
             throws DAOException, PresentationException, IndexUnreachableException {
         if (type == null) {
             throw new IllegalArgumentException("type may not be null");

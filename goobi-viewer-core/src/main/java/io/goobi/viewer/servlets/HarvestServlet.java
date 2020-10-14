@@ -276,7 +276,7 @@ public class HarvestServlet extends HttpServlet implements Serializable {
                             response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Unknown status: " + status);
                             return;
                         }
-                        logger.trace("Update for " + job.getType() + " job " + job.getIdentifier() + ": Status changed from " + oldStatus + " to "
+                        logger.trace("Update for " + job.getType() + " job " + job.getIdentifier() + ": Changing status from " + oldStatus + " to "
                                 + djStatus);
                         //only do something if job status has actually changed
                         if (!djStatus.equals(oldStatus)) {
