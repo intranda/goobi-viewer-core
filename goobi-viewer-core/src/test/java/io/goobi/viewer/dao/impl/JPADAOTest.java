@@ -2748,5 +2748,5 @@ public class JPADAOTest extends AbstractDatabaseEnabledTest {
         //now noone has agreed again
         users = DataManager.getInstance().getDao().getAllUsers(true);
         Assert.assertTrue(users.stream().allMatch(u -> !u.isAgreedToTermsOfUse()));
-    }
+    }   
 }
