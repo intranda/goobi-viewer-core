@@ -887,14 +887,17 @@
 		
 	&__language-tab.-vertical {
 		margin-bottom: 3px;
-			a {
-				text-align: left;
-				width: 100%;
-					&:hover {
-					border-right: 1px solid @white;
-					border-bottom: 1px solid #ccc;
-				}
+		a {
+			text-align: left;
+			width: 100%;
+			border-right: none;
+				&:hover {
+				border-bottom: 1px solid #ccc;
 			}
+		}
+		&.active {
+			margin-right: -1px;
+		}
 		&.-already-translated {
 			a {
 				border-right: none;
@@ -906,18 +909,15 @@
 				margin-right: 0;
 		    }
 	    	&.active a {
-	    		border-right: none;
+	    		border-right: 1px solid @white;
 	    		border-bottom: 1px solid #ccc;
 	    		
 	    	}
 		}
-		&.active {
-			margin-right: -1px;
-		}
 		&.active a, &.active.-already-translated a {
 		    padding-bottom: 0.4rem;
 		    border-bottom: 1px solid #ccc;
-		    border-right: 1px solid @white;
+
 		}
 			&:last-child {
 				margin-bottom: 0;
