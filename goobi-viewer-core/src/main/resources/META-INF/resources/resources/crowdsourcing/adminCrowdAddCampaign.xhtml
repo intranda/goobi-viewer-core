@@ -249,7 +249,7 @@
 															styleClass="form-control">
 															<f:validator validatorId="solrQueryValidator"
 																for="solrQueryInput" />
-															<f:ajax event="blur" render="solrQueryInputGroup" />
+															<f:ajax event="blur" render="@form solrQueryInputGroup addQuestionButton statisticsArea" />
 														</h:inputText>
 													</h:panelGroup>
 													<span class="admin__form-help-text">#{msg.inline_help__input_solr_query}</span>
@@ -289,18 +289,22 @@
 						                   	</div>
 										</div>						
 
-										<h3>#{msg.admin__crowdsourcing_questions}
+										<h:panelGroup id="addQuestionButton"
+													  rendered="#{crowdsourcingBean.selectedCampaign.solrQuery != null}">
+											<h3>#{msg.admin__crowdsourcing_questions}
+											<!-- Add new question link -->
+											<h:commandButton styleClass="btn btn--default admin__title-bar-action"
+												action="#{crowdsourcingBean.addNewQuestionAction}"
+												value="#{msg.add}" title="#{msg.add}" alt="#{msg.add}">
+											</h:commandButton>
+											</h3>
+										</h:panelGroup>
+									
 										
-										<!-- Add new question link -->
-										<h:commandButton styleClass="btn btn--default admin__title-bar-action"
-											action="#{crowdsourcingBean.addNewQuestionAction}"
-											value="#{msg.add}" title="#{msg.add}" alt="#{msg.add}">
-										</h:commandButton>
-										</h3>
-
+										
 										<ui:fragment rendered="#{fn:length(crowdsourcingBean.selectedCampaign.questions) > 0}">
 											<h:panelGroup
-													id="languagesQuestionsArea"
+													id="QuestionsArea"
 													rendered="#{crowdsourcingBean.selectedCampaign.selectedLocale != null}">
 													
 	
@@ -377,7 +381,7 @@
 																								value="#{locale.getDisplayLanguage(navigationHelper.locale)}"
 																								action="#{crowdsourcingBean.selectedCampaign.setSelectedLocale(locale)}"
 																								immediate="false">
-																								<f:ajax render="languagesQuestionsArea languagesGeneralArea" execute="@form"></f:ajax>
+																								<f:ajax render="QuestionsArea languagesGeneralArea" execute="@form"></f:ajax>
 																							</h:commandLink>
 																						</li>
 																					</c:forEach>
@@ -491,17 +495,20 @@
 												</div>
 											</h:panelGroup>
 										</ui:fragment>
-										<h3>#{msg.admin__crowdsourcing_campaign_statistics}</h3>
-										<div class="admin__default-block">
-											<!-- METADATA WRAPPER -->
-											<crowdsourcingComponent:crowdsourcing_addCampaignMetadataItemWrapper
-												id="metadata_component" />
-											<ui:include
-												src="/resources/crowdsourcing/includes/campaignStatistics.xhtml">
-												<ui:param name="campaign"
-													value="#{crowdsourcingBean.selectedCampaign}"></ui:param>
-											</ui:include>
-										</div>
+
+										<h:panelGroup id="statisticsArea" rendered="#{crowdsourcingBean.selectedCampaign.solrQuery != null}">
+											<h3>#{msg.admin__crowdsourcing_campaign_statistics}</h3>
+											<div class="admin__default-block">
+												<!-- METADATA WRAPPER -->
+												<crowdsourcingComponent:crowdsourcing_addCampaignMetadataItemWrapper
+													id="metadata_component" />
+												<ui:include
+													src="/resources/crowdsourcing/includes/campaignStatistics.xhtml">
+													<ui:param name="campaign"
+														value="#{crowdsourcingBean.selectedCampaign}"></ui:param>
+												</ui:include>
+											</div>
+										</h:panelGroup>
 									</div>
 								</div>
 							</div>
