@@ -66,6 +66,18 @@
                         <div class="login-navigation__user-dropdown">
                             <h:form id="userDropdownForm" prependId="false">
                                 <ul>
+                                    <!-- USERDATA -->
+                                    <li>
+                                        <div class="login-navigation__user-dropdown-item">
+                                            <div class="login-navigation__user-dropdown-item-icon">
+                                                <i class="fa fa-user-circle-o" aria-hidden="true"></i>
+                                            </div>
+                                            <div class="login-navigation__user-dropdown-item-string">
+                                                <a href="#{navigationHelper.applicationUrl}user/">#{msg.admin__user_profile}</a>
+                                            </div>
+                                        </div>
+                                    </li>
+                                    
                                     <!-- BOOKMARKS -->
                                     <ui:fragment rendered="#{configurationBean.bookshelvesEnabled}">
                                         <li>
@@ -74,7 +86,7 @@
                                                     <i class="fa #{msg.bookmarkList_iconAdded}" aria-hidden="true"></i>
                                                 </div>
                                                 <div class="login-navigation__user-dropdown-item-string">
-                                                    <a href="#{navigationHelper.applicationUrl}user/bookmarks/">#{msg.bookmarkList_myBookmarkLists}</a>
+                                                    <a href="#{navigationHelper.applicationUrl}user/bookmarks/">#{msg.bookmarks}</a>
                                                 </div>
                                             </div>
                                         </li>
@@ -88,23 +100,23 @@
                                                     <i class="fa fa-search" aria-hidden="true"></i>
                                                 </div>
                                                 <div class="login-navigation__user-dropdown-item-string">
-                                                    <a href="#{navigationHelper.applicationUrl}mysearches/">#{msg.user_mySearches}</a>
+                                                    <a href="#{navigationHelper.applicationUrl}mysearches/">#{msg.search}</a>
                                                 </div>
                                             </div>
                                         </li>
                                     </ui:fragment>
                                     
-                                    <!-- USERDATA -->
-                                    <li>
-                                        <div class="login-navigation__user-dropdown-item">
-                                            <div class="login-navigation__user-dropdown-item-icon">
-                                                <i class="fa fa-user-circle-o" aria-hidden="true"></i>
-                                            </div>
-                                            <div class="login-navigation__user-dropdown-item-string">
-                                                <a href="#{navigationHelper.applicationUrl}user/">#{msg.userCP}</a>
-                                            </div>
-                                        </div>
-                                    </li>
+                                    <!-- ANNOTIATIONS -->
+									<li>
+										<div class="login-navigation__user-dropdown-item">
+											<div class="login-navigation__user-dropdown-item-icon">
+												<i class="fa fa-sticky-note " aria-hidden="true"></i>
+											</div>
+											<div class="login-navigation__user-dropdown-item-string">
+												<a href="#{navigationHelper.applicationUrl}myactivity/">#{msg.annotations}</a>
+											</div>
+										</div>
+									</li>	
                                     
                                     <!-- MODULE CONTRIBUTIONS -->
                                     <c:forEach var="module" items="#{configurationBean.modules}">
