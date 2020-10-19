@@ -34,37 +34,41 @@
 
 									<h:panelGroup rendered="#{content.type == 'COMMENT'}">
 										<li id="words-#{content.id}" class="widget-annotations__entry">
-											<div class="widget-annotations__page"><span>3</span></div>
+											<div class="widget-annotations__type"><i class="fa fa-comment" aria-hidden="true"></i></div>
 											<div class="widget-annotations__text">
 												<h:outputText value="#{contentBean.cleanUpValue(content.label)}" escape="false"></h:outputText>
 											</div>
+											<div class="widget-annotations__page"><span>3</span></div>
 										</li>
 									</h:panelGroup>
 
 									<h:panelGroup rendered="#{content.type == 'ADDRESS'}">
 										<li id="words-#{content.id}" class="widget-annotations__entry">
-											<div class="widget-annotations__page"><span>9</span></div>
+											<div class="widget-annotations__type"><i class="fa fa-envelope" aria-hidden="true"></i></div>
 											<div class="widget-annotations__text">
 												<h:outputText value="#{contentBean.cleanUpValue(content.label)}" escape="false" />
 											</div>
+											<div class="widget-annotations__page"><span>9</span></div>
 										</li>
 									</h:panelGroup>
 
 									<h:panelGroup rendered="#{content.type == 'PERSON'}">
 										<li id="words-#{content.id}" class="widget-annotations__entry">
-											<div class="widget-annotations__page"><span>27</span></div>
+											<div class="widget-annotations__type"><i class="fa fa-user" aria-hidden="true"></i></div>
 											<div class="widget-annotations__text">
 												<h:outputText value="#{contentBean.cleanUpValue(content.label)}" escape="false" />
 											</div>
+											<div class="widget-annotations__page"><span>9</span></div>
 										</li>
 									</h:panelGroup>
 
 									<h:panelGroup rendered="#{content.type == 'CORPORATION'}">
 										<li id="words-#{content.id}" class="widget-annotations__entry">
-											<div class="widget-annotations__page"><span>14</span></div>
+											<div class="widget-annotations__type"><i class="fa fa-home" aria-hidden="true"></i></div>
 											<div class="widget-annotations__text">
 												<h:outputText value="#{contentBean.cleanUpValue(content.label)}" escape="false" />
 											</div>
+											<div class="widget-annotations__page"><span>14</span></div>
 										</li>
 									</h:panelGroup>
 
