@@ -373,7 +373,7 @@
 																					<c:forEach var="locale"
 																						items="#{crowdsourcingBean.getAllLocales()}">
 																						
-																						<li role="tab" class="admin__language-tab -vertical
+																						<li role="tab" class="admin__language-tab-vertical
 																							#{crowdsourcingBean.selectedCampaign.isSelected(locale) ? 'active':''}
 																							#{crowdsourcingBean.selectedCampaign.isComplete(locale) ? '':'-already-translated'}
 																							#{crowdsourcingBean.selectedCampaign.isDefaultLocaleSelected() ? '-default-language':''}">

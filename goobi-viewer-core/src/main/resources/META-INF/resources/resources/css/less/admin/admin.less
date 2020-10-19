@@ -880,43 +880,40 @@
 		border-bottom: none;
 		z-index: 50;
 			li a {
-				padding: 0.2rem 1.1rem;
-				margin-right: 0;
+				border-right: none;
+				padding: 0.5rem 1.2rem;
+			}
+			li.active a {
+	    		border-bottom: 1px solid #ccc;
+	    		padding-right: 1.3rem;
 			}
 		}
 		
-	&__language-tab.-vertical {
+	&__language-tab-vertical {
 		margin-bottom: 3px;
-		a {
-			text-align: center;
-			width: 100%;
-			border-right: none;
-				&:hover {
-				border-bottom: 1px solid #ccc;
-			}
+		transition: all 0.2s ease;
+		&:hover {
+		  margin-right: -1px;
+		}
+		&:hover a {
+		  background: white;
+		  padding-right: 13px;
 		}
 		&.active {
 			margin-right: -1px;
 		}
-		&.-already-translated {
-			a {
-				border-right: none;
+		a {
+			transition: all 0.2s ease;
+			text-align: center;
+			width: 100%;
+			color: #666;
+				&:hover {
+				border-bottom: 1px solid #ccc;
 			}
-		}	
-		&:first-child,
-		&:first-child.-already-translated {
-			a {
-				margin-right: 0;
-		    }
-	    	&.active a {
-	    		border-right: 1px solid @white;
-	    		border-bottom: 1px solid #ccc;
-	    		
-	    	}
 		}
 		&.active a, &.active.-already-translated a {
-		    padding-bottom: 0.2rem;
 		    border-bottom: 1px solid #ccc;
+		    color: @blue;
 
 		}
 			&:last-child {
@@ -927,8 +924,6 @@
 		min-height: 100%;
 		z-index: 49;
 	}
-	
-	
 }
 
 
