@@ -36,7 +36,7 @@
 	                 <!-- DOCTSTRUCT HIERACHY BREADCRUMBS -->
 	                 <h:panelGroup
 	                     rendered="#{fn:length(browseElement.structElements) > 0 and browseElement.metadataGroupType == NULL and configurationBean.displayStructType}">
-	                     <nav class="search-list__hit-docstruct">
+	                     <nav class="search-list__hit-docstruct" aria-label="#{msg[browseElement.labelShort]}">
 	                         <ul>
 	                             <ui:repeat value="#{browseElement.structElements}" varStatus="stat" var="struct">
 	                                 <li>
