@@ -36,7 +36,7 @@ import io.goobi.viewer.model.security.LicenseType;
  */
 @FacesConverter("iLicenseTypeConverter")
 public class ILicenseTypeConverter implements Converter<ILicenseType> {
-    
+
     /** Logger for this class. */
     private static final Logger logger = LoggerFactory.getLogger(ILicenseTypeConverter.class);
 
@@ -44,10 +44,17 @@ public class ILicenseTypeConverter implements Converter<ILicenseType> {
     @Override
     public final ILicenseType getAsObject(final FacesContext context, final UIComponent component, final String value) {
         try {
-            long id = Long.valueOf(value);
-            logger.trace("getAsObject: {}", value);
-            return DataManager.getInstance().getDao().getLicenseType(id);
+            // value should contain class name as prefix to the identifier
+            if (value.startsWith(LicenseType.class.getSimpleName())) {
+                long id = Long.valueOf(value.substring(LicenseType.class.getSimpleName().length()));
+                return DataManager.getInstance().getDao().getLicenseType(id);
+            } else if (value.startsWith(Campaign.class.getSimpleName())) {
+                long id = Long.valueOf(value.substring(Campaign.class.getSimpleName().length()));
+                return DataManager.getInstance().getDao().getCampaign(id);
+            }
+            throw new IllegalArgumentException("'" + value + "' is not a valid value.");
         } catch (NumberFormatException e) {
+            logger.error(e.getMessage());
             return null;
         } catch (DAOException e) {
             return null;
@@ -61,17 +68,18 @@ public class ILicenseTypeConverter implements Converter<ILicenseType> {
             return null;
         }
 
+        // Use class name as prefix to the identifier
         if (object instanceof LicenseType) {
             LicenseType licenseType = (LicenseType) object;
             try {
-                return String.valueOf(licenseType.getId());
+                return LicenseType.class.getSimpleName() + String.valueOf(licenseType.getId());
             } catch (NumberFormatException nfe) {
                 return null;
             }
-        } else  if (object instanceof Campaign) {
+        } else if (object instanceof Campaign) {
             Campaign campaign = (Campaign) object;
             try {
-                return String.valueOf(campaign.getId());
+                return Campaign.class.getSimpleName() + String.valueOf(campaign.getId());
             } catch (NumberFormatException nfe) {
                 return null;
             }
