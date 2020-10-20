@@ -11,7 +11,7 @@
     <ui:define name="metadata">
         <f:metadata>
             <f:event type="preRenderView" listener="#{navigationHelper.setCurrentPageAdmin('adminCrowdCampagins')}" />
-            <f:event type="preRenderView" listener="#{cmsBean.init()}" />
+            <f:event type="preRenderView" listener="#{crowdsourcingBean.createNewCampaignAction}" />
         </f:metadata>
     </ui:define>
 
@@ -24,9 +24,10 @@
                         <h2 class="admin__title">#{msg.admin__crowdsourcing_campaigns}</h2>
 
                         <!-- ADD CAMPAIGN -->
-                        <h:commandButton styleClass="btn btn--default admin__title-bar-action" action="#{crowdsourcingBean.createNewCampaignAction}" value="#{msg.add}">
-                            <f:setPropertyActionListener value="#{false}" target="#{crowdsourcingBean.editMode}" />
-                        </h:commandButton>
+                        <a href="#{navigationHelper.applicationUrl}admin/crowdsourcing/campaigns/new/"
+                            class="btn btn--default admin__title-bar-action" aria-label="#{msg.add}">
+                            #{msg.add}
+                        </a>
                     </div>
 
                     <div class="admin__content-inner-content">
@@ -83,8 +84,10 @@
                                             <span>#{campaign.getTitle(navigationHelper.locale, true)}</span>
                                             <div>
                                                 <!-- EDIT -->
-                                                <h:commandLink styleClass="admin__table-action-link" action="#{crowdsourcingBean.editCampaignAction(campaign)}" title="#{msg.edit}" alt="#{msg.edit}">
-                                                    #{msg.edit}<f:setPropertyActionListener value="#{true}" target="#{crowdsourcingBean.editMode}" /></h:commandLink>
+                                                <a href="#{navigationHelper.applicationUrl}admin/crowdsourcing/campaigns/edit/#{campaign.id}/"
+                                                    class="admin__table-action-link" aria-label="#{msg.edit}">
+                                                    #{msg.edit}
+                                                </a>
                                                 <!-- Delete link -->
                                                 <h:commandLink styleClass="admin__table-action-link -redlink"
                                                     onclick="if ( !confirm( &quot;#{msg.admin__crowdsourcing_campaign_deleteConfirmationText}&quot; ) ) { return false };" 

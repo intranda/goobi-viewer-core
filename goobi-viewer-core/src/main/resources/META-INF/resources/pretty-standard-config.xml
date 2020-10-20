@@ -978,7 +978,7 @@
         <action onPostback="false">#{navigationHelper.resetTheme}</action>
     </url-mapping>
     <url-mapping id="adminCrowdEditCampaign">
-        <pattern value="/admin/crowdsourcing/campaigns/edit/" />
+        <pattern value="/admin/crowdsourcing/campaigns/edit/#{campaignId:crowdsourcingBean.selectedCampaignId}/" />
         <view-id value="/resources/crowdsourcing/adminCrowdAddCampaign.xhtml" />
         <action onPostback="false">#{navigationHelper.resetTheme}</action>
     </url-mapping>

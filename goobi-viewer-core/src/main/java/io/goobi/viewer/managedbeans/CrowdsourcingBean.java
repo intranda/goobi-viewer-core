@@ -104,10 +104,6 @@ public class CrowdsourcingBean implements Serializable {
      * The identifier (PI) of the work currently targeted by this campaign
      */
     private String targetIdentifier;
-    /**
-     * true if the campaign is an existing campaign currently edited in the viewer-backend; false otherwise
-     */
-    private boolean editMode = false;
 
     /**
      * Initialize all campaigns as lazily loaded list
@@ -262,7 +258,7 @@ public class CrowdsourcingBean implements Serializable {
      */
     public String createNewCampaignAction() {
         selectedCampaign = new Campaign(ViewerResourceBundle.getDefaultLocale());
-        return "pretty:adminCrowdAddCampaign";
+        return "";
     }
 
     /**
@@ -426,15 +422,15 @@ public class CrowdsourcingBean implements Serializable {
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      */
-    public void saveSelectedCampaign() throws DAOException, PresentationException, IndexUnreachableException {
+    public String saveSelectedCampaignAction() throws DAOException, PresentationException, IndexUnreachableException {
         logger.trace("saveSelectedCampaign");
         try {
             if (userBean == null || !userBean.getUser().isSuperuser()) {
                 // Only authorized admins may save
-                return;
+                return "";
             }
             if (selectedCampaign == null) {
-                return;
+                return "";
             }
 
             // Save
@@ -456,11 +452,13 @@ public class CrowdsourcingBean implements Serializable {
                 lazyModelCampaigns.update();
                 // Update the map of active campaigns for record identifiers (in case a new Solr query changes the set)
                 updateActiveCampaigns();
-            } else {
-                Messages.error("admin__crowdsourcing_campaign_save_failure");
+                return "pretty:adminCrowdCampaigns";
             }
+            Messages.error("admin__crowdsourcing_campaign_save_failure");
         } finally {
         }
+        
+        return  "";
     }
 
     /**
@@ -552,28 +550,6 @@ public class CrowdsourcingBean implements Serializable {
 
     /**
      * <p>
-     * isEditMode.
-     * </p>
-     *
-     * @return the editMode
-     */
-    public boolean isEditMode() {
-        return editMode;
-    }
-
-    /**
-     * <p>
-     * Setter for the field <code>editMode</code>.
-     * </p>
-     *
-     * @param editMode the editMode to set
-     */
-    public void setEditMode(boolean editMode) {
-        this.editMode = editMode;
-    }
-
-    /**
-     * <p>
      * getSelectedCampaignId.
      * </p>
      *
@@ -597,6 +573,17 @@ public class CrowdsourcingBean implements Serializable {
         } else {
             setSelectedCampaign(null);
         }
+    }
+
+    /**
+     * <p>
+     * isEditMode.
+     * </p>
+     *
+     * @return the editMode
+     */
+    public boolean isEditMode() {
+        return selectedCampaign != null && selectedCampaign.getId() != null;
     }
 
     /**

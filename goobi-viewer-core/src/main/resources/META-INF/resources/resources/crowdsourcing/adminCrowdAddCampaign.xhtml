@@ -35,7 +35,8 @@
 					<div class="admin__title-bar">
 						<h2 class="admin__title">#{crowdsourcingBean.editMode ?
 							msg.admin__crowdsourcing_campaign_edit :
-							msg.admin__crowdsourcing_campaign_new}</h2>
+							msg.admin__crowdsourcing_campaign_new}
+						</h2>
 					</div>
 					<div class="admin__content-inner-content">
 						<h:form id="createCampaignForm" prependId="true">
@@ -514,8 +515,10 @@
 							</div>
 							<!-- FINAL ACTIONS CANCEL + SAVE -->
 								<div class="row no-gutters justify-content-end admin__final-actions mb-4">
-                                    <h:commandLink id="cancelAddCampaignButton" type="submit" styleClass="btn" value="#{msg.cancel}" action="pretty:adminCrowdCampaigns" immediate="true" />
-                                    <h:commandLink id="saveAddCampaignButton" styleClass="btn btn--success" value="#{msg.button__save}" action="#{crowdsourcingBean.saveSelectedCampaign}" />
+                                    <h:commandLink id="cancelAddCampaignButton" type="submit" styleClass="btn" value="#{msg.cancel}"
+                                        action="pretty:adminCrowdCampaigns" immediate="true" />
+                                    <h:commandLink id="saveAddCampaignButton" styleClass="btn btn--success" value="#{msg.button__save}"
+                                        action="#{crowdsourcingBean.saveSelectedCampaignAction}" />
                                 </div>
 						</h:form>
 																	
