@@ -141,7 +141,7 @@ var cmsJS = ( function( cms ) {
                 $gridItemCaption.html( item.caption );
                 
                 // grid item caption heading
-                $gridItemCaptionHeading = $( '<h4 />' );
+                $gridItemCaptionHeading = $( '<h3 />' );
                 $gridItemCaptionHeading.text( item.title );
                 $gridItemCaption.prepend( $gridItemCaptionHeading );
                 
