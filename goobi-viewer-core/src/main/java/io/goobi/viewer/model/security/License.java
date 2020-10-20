@@ -152,6 +152,9 @@ public class License implements IPrivilegeHolder, Serializable {
     @Column(name = "description")
     private String description;
 
+    @Column(name = "enabled")
+    private boolean enabled = true;
+
     /** List of allowed subtheme discriminator values for CMS pages. */
     @ElementCollection(fetch = FetchType.LAZY)
     @CollectionTable(name = "license_cms_subthemes", joinColumns = @JoinColumn(name = "license_id"))
@@ -637,7 +640,7 @@ public class License implements IPrivilegeHolder, Serializable {
     /**
      * 
      * @param selection
-     * @throws DAOException 
+     * @throws DAOException
      */
     public void setLicenseTypeSelection(ILicenseType selection) throws DAOException {
         logger.trace("setLicenseTypeSelection: {}", selection);
@@ -880,6 +883,20 @@ public class License implements IPrivilegeHolder, Serializable {
      */
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    /**
+     * @return the enabled
+     */
+    public boolean isEnabled() {
+        return enabled;
+    }
+
+    /**
+     * @param enabled the enabled to set
+     */
+    public void setEnabled(boolean enabled) {
+        this.enabled = enabled;
     }
 
     /**

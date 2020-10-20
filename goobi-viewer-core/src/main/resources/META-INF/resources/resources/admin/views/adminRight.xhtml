@@ -516,9 +516,11 @@
                                                 </div>
                                             </div>
                                         </ui:fragment>
+                                        
 
                                         <!-- RECORD RELATED FUNCTIONS -->
-                                        <ui:fragment rendered="#{!adminBean.currentLicense.licenseType.core}">
+                                        <ui:fragment
+                                            rendered="#{!adminBean.currentLicense.licenseType.core and adminBean.currentLicense.campaign == null}">
                                             <div class="admin__license-functions admin__license-functions-added">
                                                 <div class="form-group form-row">
                                                     <div class="col-5 mb-3">#{msg.admin__license_functions_added}</div>
@@ -564,6 +566,67 @@
 	                                                    <h:outputText value="#{msg.admin__license_functions__help}" styleClass="admin__form-help-text" escape="false" />
 	                                                </div>    
                                                 </div>
+                                            </div>
+                                        </ui:fragment>
+                                        
+                                        
+                                        <!-- CAMPAIGN RELATED FUNCTIONS -->
+                                        <ui:fragment rendered="#{adminBean.currentLicense.campaign != null}">
+                                            <div class="admin__license-functions admin__license-functions-added">
+                                            
+                                                <!-- LICENSE ENABLED -->
+                                                <div class="form-group form-row blockAfterRadioToggler">
+                                                    <div class="col-4">
+                                                        <label class="control-label">#{msg.admin__license_enabled_label}:</label>
+                                                    </div>
+                                                    <div class="col-7 admin__form-input">
+                                                        <div class="admin__radio-switch">
+                                                            <h:selectOneRadio group="privCmsAllSubthemes"
+                                                                value="#{adminBean.currentLicense.enabled}" immediate="true">
+                                                                <f:selectItem itemValue="#{false}" itemLabel="#{msg.no}" />
+                                                            </h:selectOneRadio>                                                        
+                                                            <h:selectOneRadio group="privCmsAllSubthemes"
+                                                                value="#{adminBean.currentLicense.enabled}" immediate="true">
+                                                                <f:selectItem itemValue="#{true}" itemLabel="#{msg.yes}" />
+                                                            </h:selectOneRadio>
+                                                            <span class="toggle-outside"><span class="toggle-inside"></span></span>
+                                                        </div>
+                                                        <span class="admin__form-help-text">#{msg.admin__license_enabled__help}</span>
+                                                    </div>
+                                                    <div class="col-1 admin__form-help-icon">
+                                                        <button type="button" class="btn btn--clean" data-toggle="helptext" aria-label="inline help icon">
+                                                            <i class="fa fa-question-circle" aria-hidden="true"></i>
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                                
+                                                <!-- TIME PERIOD ENABLED -->
+                                                <div class="form-group form-row blockAfterRadioToggler">
+                                                    <div class="col-4">
+                                                        <label class="control-label">#{msg.admin__license_time_period_enabled_label}:</label>
+                                                    </div>
+                                                    <div class="col-7 admin__form-input">
+                                                        <div class="admin__radio-switch">
+                                                            <!-- TODO define class property -->
+                                                            <h:selectOneRadio group="privCmsAllSubthemes"
+                                                                value="#{adminBean.currentLicense.enabled}" immediate="true">
+                                                                <f:selectItem itemValue="#{false}" itemLabel="#{msg.no}" />
+                                                            </h:selectOneRadio>                                                        
+                                                            <h:selectOneRadio group="privCmsAllSubthemes"
+                                                                value="#{adminBean.currentLicense.enabled}" immediate="true">
+                                                                <f:selectItem itemValue="#{true}" itemLabel="#{msg.yes}" />
+                                                            </h:selectOneRadio>
+                                                            <span class="toggle-outside"><span class="toggle-inside"></span></span>
+                                                        </div>
+                                                        <span class="admin__form-help-text">#{msg.admin__license_time_period_enabled__help}</span>
+                                                    </div>
+                                                    <div class="col-1 admin__form-help-icon">
+                                                        <button type="button" class="btn btn--clean" data-toggle="helptext" aria-label="inline help icon">
+                                                            <i class="fa fa-question-circle" aria-hidden="true"></i>
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                                
                                             </div>
                                         </ui:fragment>
                                     </div>
