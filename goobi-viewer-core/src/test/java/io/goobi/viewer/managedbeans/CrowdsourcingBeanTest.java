@@ -42,6 +42,7 @@ public class CrowdsourcingBeanTest extends AbstractDatabaseAndSolrEnabledTest {
     /**
      * @throws java.lang.Exception
      */
+    @Override
     @Before
     public void setUp() throws Exception {
         super.setUp();
@@ -54,6 +55,7 @@ public class CrowdsourcingBeanTest extends AbstractDatabaseAndSolrEnabledTest {
     /**
      * @throws java.lang.Exception
      */
+    @Override
     @After
     public void tearDown() throws Exception {
         super.tearDown();
@@ -63,10 +65,8 @@ public class CrowdsourcingBeanTest extends AbstractDatabaseAndSolrEnabledTest {
     public void testGetCampaignCount() throws DAOException {
         long numPublic = bean.getCampaignCount(CampaignVisibility.PUBLIC);
         long numPrivate = bean.getCampaignCount(CampaignVisibility.PRIVATE);
-        long numRestricted = bean.getCampaignCount(CampaignVisibility.RESTRICTED);
         Assert.assertEquals(1, numPublic);
         Assert.assertEquals(1, numPrivate);
-        Assert.assertEquals(0, numRestricted);
     }
 
     @Test
@@ -84,7 +84,7 @@ public class CrowdsourcingBeanTest extends AbstractDatabaseAndSolrEnabledTest {
         Date created = new Date();
         bean.getSelectedCampaign().setDateCreated(created);
         Assert.assertEquals("Date created does not match after setting", created, bean.getSelectedCampaign().getDateCreated());
-        bean.saveSelectedCampaign();
+        bean.saveSelectedCampaignAction();
 
         bean.setSelectedCampaignId("1");
         Assert.assertEquals("Date created does not match in database", created, bean.getSelectedCampaign().getDateCreated());
