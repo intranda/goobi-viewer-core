@@ -172,15 +172,30 @@
                                             	<span class="admin__default-block-description-empty" aria-disabled="true">(#{msg.admin__label__no_description_available})</span>
                                             </h:outputText>
                                         </dd>
-                                        <dt class="col-4">#{msg[adminBean.currentLicense.licenseType.name]}</dt>
-                                        <dd class="col-8">
-                                            <ui:fragment rendered="#{adminBean.currentLicense.licenseType.description ne ''}">
-                                                #{msg[adminBean.currentLicense.licenseType.description]}
-                                            </ui:fragment>
-                                            <ui:fragment rendered="#{adminBean.currentLicense.licenseType.description eq ''}">
-                                                <span class="admin__default-block-description-empty" aria-disabled="true">(#{msg.admin__label__no_description_available})</span>
-                                            </ui:fragment>
-                                        </dd>
+                                        <!-- LICENSE TYPE INFO -->
+                                        <ui:fragment rendered="#{adminBean.currentLicense.campaign == null}">
+                                            <dt class="col-4">#{msg[adminBean.currentLicense.licenseType.name]}</dt>
+                                            <dd class="col-8">
+                                                <ui:fragment rendered="#{adminBean.currentLicense.licenseType.description ne ''}">
+                                                    #{msg[adminBean.currentLicense.licenseType.description]}
+                                                </ui:fragment>
+                                                <ui:fragment rendered="#{adminBean.currentLicense.licenseType.description eq ''}">
+                                                    <span class="admin__default-block-description-empty" aria-disabled="true">(#{msg.admin__label__no_description_available})</span>
+                                                </ui:fragment>
+                                            </dd>
+                                        </ui:fragment>
+                                        <!-- CAMPAIGN INFO -->
+                                        <ui:fragment rendered="#{adminBean.currentLicense.campaign != null}">
+                                            <dt class="col-4">#{msg[adminBean.currentLicense.campaign.name]}</dt>
+                                            <dd class="col-8">
+                                                <ui:fragment rendered="#{adminBean.currentLicense.campaign.description ne ''}">
+                                                    #{msg[adminBean.currentLicense.campaign.description]}
+                                                </ui:fragment>
+                                                <ui:fragment rendered="#{adminBean.currentLicense.campaign eq ''}">
+                                                    <span class="admin__default-block-description-empty" aria-disabled="true">(#{msg.admin__label__no_description_available})</span>
+                                                </ui:fragment>
+                                            </dd>
+                                        </ui:fragment>
                                     </dl>
                                 </div>
                                 </ui:fragment>
