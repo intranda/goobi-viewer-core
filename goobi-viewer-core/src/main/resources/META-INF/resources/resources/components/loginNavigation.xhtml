@@ -81,14 +81,21 @@
                                     <!-- BOOKMARKS -->
                                     <ui:fragment rendered="#{configurationBean.bookshelvesEnabled}">
                                         <li>
-                                            <div class="login-navigation__user-dropdown-item">
+                                            <div class="login-navigation__user-dropdown-item login-navigation__bookmark-trigger">
                                                 <div class="login-navigation__user-dropdown-item-icon">
                                                     <i class="fa #{msg.bookmarkList_iconAdded}" aria-hidden="true"></i>
                                                 </div>
+                                                
                                                 <div class="login-navigation__user-dropdown-item-string">
                                                     <a href="#{navigationHelper.applicationUrl}user/bookmarks/">#{msg.bookmarks}</a>
                                                 </div>
                                             </div>
+
+                                            <ul class="login-navigation__bookmark-dropdown">
+                                            	<li>Merklisteneintrag</li>
+                                            	<li class="login-navigation__bookmark-overview">#{msg.bookmarks}(all)</li>
+                                            </ul>
+
                                         </li>
                                     </ui:fragment>
                                     
