@@ -175,6 +175,13 @@ var viewerJS = ( function( viewer ) {
                     }
                 })
                 
+                // Trigger bookmarks dropdown in login navigation dropdown
+                $('body').on('click', '.login-navigation__bookmarks-trigger', function(){
+                	event.preventDefault();
+                	$('.login-navigation__bookmarks-dropdown').slideToggle('fast');
+                	$('.login-navigation__bookmarks-trigger .fa-caret-down').toggleClass('-upside');
+                });
+                   
 //                $dropdown.on("click", (event) => event.stopPropagation());
                 
             },

@@ -5,8 +5,11 @@
 /* LOGIN NAVIGATION */
 /* BLOCK */
 .login-navigation {
-	position: relative;
 	.mx-list-reset;
+	position: relative;
+	&__list {
+		.mx-list-reset;
+	}
 	/* ELEMENT */
 	/* NOT LOGGED IN */
 	[data-login="false"] {
@@ -49,18 +52,12 @@
 				top: 100%;
 				right: 0;
 				width: 275px;
-				padding: 10px;
 				padding-bottom: 0;
 				padding-top: 0;
 				font-size: @fontNormal;
 				background-color: @white;
 				overflow: hidden;
 				z-index: 999;
-				ul {
-					.mx-list-reset;
-					margin-right: -10px;
-					margin-left: -10px;
-				}
 				li {
 					margin: 0;
 					border-bottom: 1px solid @middlegray;
@@ -102,6 +99,23 @@
 					&:hover,
 					&:active,
 					&:focus {}
+				}
+			}
+			&__bookmarks-dropdown {
+				.mx-list-reset;
+				display: none;
+				padding-left: 1.5rem;
+			}
+			&__bookmarks-trigger {
+				.mx-no-style-button;
+				display: block;
+				padding: 7px 15px;
+				.fa-caret-down {
+					margin-left: 0.8rem;
+					transition: all 0.2s ease;
+					&.-upside {
+						transform: rotate(180deg);
+					}
 				}
 			}
 		}

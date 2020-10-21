@@ -56,10 +56,7 @@ var viewerJS = ( function( viewer ) {
                 if ( $( '.navigation__collection-panel' ).length > 0 ) {
                     $( '.navigation__collection-panel' ).hide();
                 }
-                
 
-
-                
                 $(this).next( '.login-navigation__user-dropdown' ).fadeToggle( 'fast' );
             } );
             

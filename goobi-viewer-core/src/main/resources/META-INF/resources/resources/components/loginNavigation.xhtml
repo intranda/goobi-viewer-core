@@ -65,7 +65,7 @@
                         <!-- USER DROPDOWN -->
                         <div class="login-navigation__user-dropdown">
                             <h:form id="userDropdownForm" prependId="false">
-                                <ul>
+                                <ul class="login-navigation__list">
                                     <!-- USERDATA -->
                                     <li>
                                         <div class="login-navigation__user-dropdown-item">
@@ -87,13 +87,13 @@
                                                 </div>
                                                 
                                                 <div class="login-navigation__user-dropdown-item-string">
-                                                    <a href="#{navigationHelper.applicationUrl}user/bookmarks/">#{msg.bookmarks}</a>
+                                                    <button class="login-navigation__bookmarks-trigger">#{msg.bookmarks}<i class="fa fa-caret-down" aria-hidden="true"></i></button>
                                                 </div>
                                             </div>
 
-                                            <ul class="login-navigation__bookmark-dropdown">
+                                            <ul class="login-navigation__bookmarks-dropdown">
                                             	<li>Merklisteneintrag</li>
-                                            	<li class="login-navigation__bookmark-overview">#{msg.bookmarks}(all)</li>
+                                            	<li class="login-navigation__bookmarks-overview">#{msg.bookmarks}(all)</li>
                                             </ul>
 
                                         </li>
