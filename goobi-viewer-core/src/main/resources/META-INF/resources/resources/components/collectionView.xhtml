@@ -26,6 +26,7 @@
                                         <h:panelGroup rendered="#{browseDcElement.hasSubelements and !browseDcElement.opensInNewWindow}">
                                             <div class="collection__structure text-center">
                                                 <h:commandLink action="#{collection.toggleChildren(browseDcElement)}">
+                                                	<f:passThroughAttribute name="aria-label" value="#{msg.aria_label__access_coll_expand}"/>
                                                     <h:panelGroup rendered="#{browseDcElement.hasSubelements and !browseDcElement.showSubElements}">
                                                         <i class="fa fa-plus-square-o" aria-hidden="true"></i>
                                                     </h:panelGroup>
@@ -74,7 +75,7 @@
 										<!-- RSS FEED -->
 										<h:panelGroup rendered="#{configurationBean.displaySearchRssLinks}">
 											<div class="collection__rss pull-right">
-												<a href="#{browseDcElement.rssUrl}" title="#{msg.rssSubscribe}" target="_blank">
+												<a href="#{browseDcElement.rssUrl}" title="#{msg[browseDcElement.label]}: #{msg.rssSubscribe}" target="_blank">
 													<i class="fa fa-rss" aria-hidden="true"></i>
 												</a>
 											</div>
