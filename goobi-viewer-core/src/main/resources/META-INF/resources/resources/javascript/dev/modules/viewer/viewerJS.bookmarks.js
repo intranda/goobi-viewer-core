@@ -29,7 +29,8 @@ var viewerJS = ( function( viewer ) {
     var _messageKeys = ['bookmarkList_reset', 'bookmarkList_delete', 'bookmarkList_session_mail_sendList', 
         'action__search_in_bookmarks', 'bookmarkList_resetConfirm', 'bookmarkList_noItemsAvailable', 
         'bookmarkList_selectBookmarkList', 'bookmarkList_addNewBookmarkList', 'viewMiradorComparison',
-        'bookmarkList_type_label', 'bookmarkList_typeRecord', 'bookmarkList_typePage'];
+        'bookmarkList_type_label', 'bookmarkList_typeRecord', 'bookmarkList_typePage', 'bookmarkList_overview_all',
+        'admin__crowdsourcing_campaign_statistics_numRecords'];
     var _defaults = {
         root: '',
         rest: '',
@@ -150,10 +151,7 @@ var viewerJS = ( function( viewer ) {
                     button: '[data-bookmark-list-type="dropdown"]',
                     bookmarks: this,
                 });
-                
-                
-                
-                
+
                 var $bookmarkPosition = $('.login-navigation__bookmarks-list');
                 var $dropdownUserLogin = $("<bookmarkListLoggedIn></bookmarkListLoggedIn>");
                 $dropdownUserLogin.addClass("login-navigation__bookmarks-dropdown");
@@ -172,9 +170,6 @@ var viewerJS = ( function( viewer ) {
                     bookmarks: this,
                 });
 
-                
-                
-                
                 // handle closing dropdown
                 let toggle = function() {
                     $dropdown.slideToggle( 'fast' );
