@@ -48,6 +48,7 @@ import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.IndexerTools;
 import io.goobi.viewer.controller.SolrConstants;
 import io.goobi.viewer.controller.SolrSearchIndex;
+import io.goobi.viewer.controller.SolrConstants.DocType;
 import io.goobi.viewer.controller.language.Language;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IDDOCNotFoundException;
@@ -385,17 +386,22 @@ public class ActiveDocumentBean implements Serializable {
                 // TODO set new values instead of re-creating ViewManager, perhaps
                 logger.debug("Find doc by LOGID: {}", logid);
                 new StructElement(topDocumentIddoc);
-                StringBuilder sbQuery = new StringBuilder();
-                sbQuery.append(SolrConstants.LOGID)
+                String query = new StringBuilder("+")
+                        .append(SolrConstants.LOGID)
                         .append(':')
                         .append(logid)
-                        .append(" AND ")
+                        .append(" +")
                         .append(SolrConstants.PI_TOPSTRUCT)
                         .append(':')
-                        .append(viewManager.getPi());
+                        .append(viewManager.getPi())
+                        .append(" +")
+                        .append(SolrConstants.DOCTYPE)
+                        .append(':')
+                        .append(DocType.DOCSTRCT.name())
+                        .toString();
                 SolrDocumentList docList = DataManager.getInstance()
                         .getSearchIndex()
-                        .search(sbQuery.toString(), 1, null, Collections.singletonList(SolrConstants.IDDOC));
+                        .search(query, 1, null, Collections.singletonList(SolrConstants.IDDOC));
                 long subElementIddoc = 0;
                 if (!docList.isEmpty()) {
                     subElementIddoc = Long.valueOf((String) docList.get(0).getFieldValue(SolrConstants.IDDOC));

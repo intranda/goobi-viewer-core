@@ -705,19 +705,24 @@ public final class SolrSearchIndex {
      *
      * @param pi a {@link java.lang.String} object.
      * @param logId a {@link java.lang.String} object.
-     * @should retrieve correct IDDOC
      * @return a long.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
+     * @should retrieve correct IDDOC
      */
     public long getIddocByLogid(String pi, String logId) throws IndexUnreachableException, PresentationException {
         logger.trace("getIddocByLogid: {}:{}", pi, logId);
-        String query = new StringBuilder(SolrConstants.PI_TOPSTRUCT).append(":")
+        String query = new StringBuilder("+")
+                .append(SolrConstants.PI_TOPSTRUCT).append(":")
                 .append(pi)
-                .append(" AND ")
+                .append(" +")
                 .append(SolrConstants.LOGID)
                 .append(":")
                 .append(logId)
+                .append(" +")
+                .append(SolrConstants.DOCTYPE)
+                .append(":")
+                .append(DocType.DOCSTRCT.name())
                 .toString();
         SolrDocument doc = getFirstDoc(query, Collections.singletonList(SolrConstants.IDDOC));
         if (doc != null) {
