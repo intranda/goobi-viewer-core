@@ -80,8 +80,8 @@
                                     
                                     <!-- BOOKMARKS -->
                                     <ui:fragment rendered="#{configurationBean.bookshelvesEnabled}">
-                                        <li>
-                                            <div class="login-navigation__user-dropdown-item login-navigation__bookmark-trigger">
+                                        <li class="login-navigation__bookmarks-list-wrapper">
+                                            <div class="login-navigation__user-dropdown-item login-navigation__bookmarks-list">
                                                 <div class="login-navigation__user-dropdown-item-icon">
                                                     <i class="fa #{msg.bookmarkList_iconAdded}" aria-hidden="true"></i>
                                                 </div>
@@ -90,12 +90,6 @@
                                                     <button class="login-navigation__bookmarks-trigger">#{msg.bookmarks}<i class="fa fa-caret-down" aria-hidden="true"></i></button>
                                                 </div>
                                             </div>
-
-                                            <ul class="login-navigation__bookmarks-dropdown">
-                                            	<li>Merklisteneintrag</li>
-                                            	<li class="login-navigation__bookmarks-overview">#{msg.bookmarks}(all)</li>
-                                            </ul>
-
                                         </li>
                                     </ui:fragment>
                                     
