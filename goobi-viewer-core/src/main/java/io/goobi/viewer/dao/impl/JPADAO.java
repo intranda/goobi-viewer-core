@@ -304,7 +304,7 @@ public class JPADAO implements IDAO {
      * @param addWildCards if true, add '%' to the beginning and end of param
      * @return the sanitized parameter
      */
-    private String sanitizeQueryParam(String param, boolean addWildCards) {
+    private static String sanitizeQueryParam(String param, boolean addWildCards) {
         param = param.replaceAll("['\"\\(\\)]", "");
         param = param.toUpperCase();
         if (addWildCards) {
@@ -4514,6 +4514,23 @@ public class JPADAO implements IDAO {
         return q.getResultList();
     }
 
+    /**
+     * @see io.goobi.viewer.dao.IDAO#getAnnotationsForUser(java.lang.Long)
+     * @should return correct rows
+     */
+    @SuppressWarnings("unchecked")
+    @Override
+    public List<PersistentAnnotation> getAnnotationsForUserId(Long userId) throws DAOException {
+        if (userId == null) {
+            return Collections.emptyList();
+        }
+
+        preQuery();
+        String query = "SELECT a FROM PersistentAnnotation a WHERE a.creatorId = :userId OR a.reviewerId = :userId";
+        
+        return em.createQuery(query).setParameter("userId", userId).getResultList();
+    }
+
     /** {@inheritDoc} */
     @SuppressWarnings("unchecked")
     @Override
@@ -4791,9 +4808,8 @@ public class JPADAO implements IDAO {
         if (results.isEmpty()) {
             //No results. Just return a new object which may be saved later
             return new TermsOfUse();
-        } else {
-            return (TermsOfUse) results.get(0);
         }
+        return (TermsOfUse) results.get(0);
     }
 
     /* (non-Javadoc)
@@ -4807,9 +4823,8 @@ public class JPADAO implements IDAO {
         if (results.isEmpty()) {
             //If no terms of use object exists, it is inactive
             return false;
-        } else {
-            return (boolean) results.get(0);
         }
+        return (boolean) results.get(0);
     }
 
     /* (non-Javadoc)

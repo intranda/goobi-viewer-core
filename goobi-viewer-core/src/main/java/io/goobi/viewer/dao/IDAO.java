@@ -1986,6 +1986,14 @@ public interface IDAO {
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
     public List<PersistentAnnotation> getAnnotationsForTarget(String pi, Integer page) throws DAOException;
+    
+    /**
+     * 
+     * @param userId
+     * @return
+     * @throws DAOException
+     */
+    public List<PersistentAnnotation> getAnnotationsForUserId(Long userId) throws DAOException;
 
     /**
      * <p>
@@ -2112,7 +2120,7 @@ public interface IDAO {
      * Add the given map to the database if no map of the same id already exists
      * 
      * @param map
-     * @return true if successfull
+     * @return true if successful
      * @throws DAOException
      */
     public boolean addGeoMap(GeoMap map) throws DAOException;
@@ -2121,7 +2129,7 @@ public interface IDAO {
      * Update the given {@link GeoMap} in the database
      * 
      * @param map
-     * @return true if successfull
+     * @return true if successful
      * @throws DAOException
      */
     public boolean updateGeoMap(GeoMap map) throws DAOException;
@@ -2130,7 +2138,7 @@ public interface IDAO {
      * Delete the given {@link GeoMap} from the database
      * 
      * @param map
-     * @return true if successfull
+     * @return true if successful
      * @throws DAOException
      */
     public boolean deleteGeoMap(GeoMap map) throws DAOException;

@@ -61,6 +61,7 @@ import io.goobi.viewer.filters.LoginFilter;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.messages.Messages;
 import io.goobi.viewer.messages.ViewerResourceBundle;
+import io.goobi.viewer.model.annotation.PersistentAnnotation;
 import io.goobi.viewer.model.search.Search;
 import io.goobi.viewer.model.search.SearchHelper;
 import io.goobi.viewer.model.security.IPrivilegeHolder;
@@ -727,17 +728,30 @@ public class UserBean implements Serializable {
     /**
      * Returns saved searches for the logged in user.
      *
-     * @should return searches for correct user
-     * @should return null if no user logged in
      * @return a {@link java.util.List} object.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
+     * @should return searches for correct user
+     * @should return null if no user logged in
      */
     public List<Search> getSearches() throws DAOException {
-        if (user != null) {
-            return DataManager.getInstance().getDao().getSearches(user);
+        if (user == null) {
+            return null;
         }
 
-        return null;
+        return DataManager.getInstance().getDao().getSearches(user);
+    }
+
+    /**
+     * 
+     * @return
+     * @throws DAOException
+     */
+    public List<PersistentAnnotation> getAnnotations() throws DAOException {
+        if (user == null) {
+            return Collections.emptyList();
+        }
+
+        return DataManager.getInstance().getDao().getAnnotationsForUserId(user.getId());
     }
 
     /**
@@ -748,15 +762,17 @@ public class UserBean implements Serializable {
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
     public String deleteSearchAction(Search search) throws DAOException {
-        if (search != null) {
-            logger.debug("Deleting search query: " + search.getId());
-            if (DataManager.getInstance().getDao().deleteSearch(search)) {
-                String msg = ViewerResourceBundle.getTranslation("savedSearch_deleteSuccess", null);
-                Messages.info(msg.replace("{0}", search.getName()));
-            } else {
-                String msg = ViewerResourceBundle.getTranslation("savedSearch_deleteFailure", null);
-                Messages.error(msg.replace("{0}", search.getName()));
-            }
+        if (search == null) {
+            return "";
+        }
+
+        logger.debug("Deleting search query: {}", search.getId());
+        if (DataManager.getInstance().getDao().deleteSearch(search)) {
+            String msg = ViewerResourceBundle.getTranslation("savedSearch_deleteSuccess", null);
+            Messages.info(msg.replace("{0}", search.getName()));
+        } else {
+            String msg = ViewerResourceBundle.getTranslation("savedSearch_deleteFailure", null);
+            Messages.error(msg.replace("{0}", search.getName()));
         }
 
         return "";
@@ -1404,41 +1420,41 @@ public class UserBean implements Serializable {
         return loggedInProvider != null && loggedInProvider.allowsEmailChange();
 
     }
-    
+
     /**
      * Check if the current user is required to agree to the terms of use
      * 
-     * @return true if  termsOfUse is active, a user is logged in and {@link User#isAgreedToTermsOfUse()} returns false for this user
+     * @return true if termsOfUse is active, a user is logged in and {@link User#isAgreedToTermsOfUse()} returns false for this user
      */
     public boolean mustAgreeToTermsOfUse() {
-        if(this.user != null && !this.user.isAgreedToTermsOfUse()) {
+        if (this.user != null && !this.user.isAgreedToTermsOfUse()) {
             try {
                 boolean active = DataManager.getInstance().getDao().isTermsOfUseActive();
                 return active;
-            } catch(DAOException e) {
-                logger.error("Unable to query terms of use active state" , e);
+            } catch (DAOException e) {
+                logger.error("Unable to query terms of use active state", e);
             }
         }
         return false;
     }
-    
+
     public void agreeToTermsOfUse() throws DAOException {
-        if(this.user != null) {
+        if (this.user != null) {
             this.user.setAgreedToTermsOfUse(true);
             DataManager.getInstance().getDao().updateUser(this.user);
         }
     }
-    
+
     public void rejectTermsOfUse() throws DAOException {
-        if(this.user != null) {
+        if (this.user != null) {
             this.user.setAgreedToTermsOfUse(false);
             DataManager.getInstance().getDao().updateUser(this.user);
         }
     }
-    
+
     public void logoutWithMessage(String messageKey) throws AuthenticationProviderException {
         this.logout();
         Messages.info(messageKey);
-        
+
     }
 }

@@ -671,12 +671,17 @@
 		<action onPostback="false">#{navigationHelper.resetTheme}</action>
 	</url-mapping>
 
-	<!-- MY SEARCHES -->
+	<!-- USER PAGES -->
 	<url-mapping id="userMenuMySearches">
 		<pattern value="/mysearches/" />
 		<view-id value="/userBackendSearches.xhtml" />
 		<action onPostback="false">#{navigationHelper.resetTheme}</action>
 	</url-mapping>
+    <url-mapping id="userMenuMyAnnotations">
+        <pattern value="/myannotations/" />
+        <view-id value="/userBackendAnnotations.xhtml" />
+        <action onPostback="false">#{navigationHelper.resetTheme}</action>
+    </url-mapping>
 	
 	<!-- ADMIN -->
 	<url-mapping id="admin">
