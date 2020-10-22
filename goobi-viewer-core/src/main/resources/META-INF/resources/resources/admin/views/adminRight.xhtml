@@ -574,7 +574,7 @@
                                         <ui:fragment rendered="#{adminBean.currentLicense.campaign != null}">
                                             <div class="admin__license-functions admin__license-functions-added">
                                             
-                                                <!-- LICENSE ENABLED -->
+                                                <!-- GROUPS ENABLED -->
                                                 <div class="form-group form-row blockAfterRadioToggler">
                                                     <div class="col-4">
                                                         <label class="control-label">#{msg.admin__license_enabled_label}:</label>
@@ -582,11 +582,11 @@
                                                     <div class="col-7 admin__form-input">
                                                         <div class="admin__radio-switch">
                                                             <h:selectOneRadio group="privCmsAllSubthemes"
-                                                                value="#{adminBean.currentLicense.enabled}" immediate="true">
+                                                                value="#{adminBean.currentLicense.enableGroups}" immediate="true">
                                                                 <f:selectItem itemValue="#{false}" itemLabel="#{msg.no}" />
                                                             </h:selectOneRadio>                                                        
                                                             <h:selectOneRadio group="privCmsAllSubthemes"
-                                                                value="#{adminBean.currentLicense.enabled}" immediate="true">
+                                                                value="#{adminBean.currentLicense.enableGroups}" immediate="true">
                                                                 <f:selectItem itemValue="#{true}" itemLabel="#{msg.yes}" />
                                                             </h:selectOneRadio>
                                                             <span class="toggle-outside"><span class="toggle-inside"></span></span>
@@ -609,11 +609,11 @@
                                                         <div class="admin__radio-switch">
                                                             <!-- TODO define class property -->
                                                             <h:selectOneRadio group="privCmsAllSubthemes"
-                                                                value="#{adminBean.currentLicense.enabled}" immediate="true">
+                                                                value="#{adminBean.currentLicense.enableTimePeriod}" immediate="true">
                                                                 <f:selectItem itemValue="#{false}" itemLabel="#{msg.no}" />
                                                             </h:selectOneRadio>                                                        
                                                             <h:selectOneRadio group="privCmsAllSubthemes"
-                                                                value="#{adminBean.currentLicense.enabled}" immediate="true">
+                                                                value="#{adminBean.currentLicense.enableTimePeriod}" immediate="true">
                                                                 <f:selectItem itemValue="#{true}" itemLabel="#{msg.yes}" />
                                                             </h:selectOneRadio>
                                                             <span class="toggle-outside"><span class="toggle-inside"></span></span>

@@ -16,10 +16,10 @@
 package io.goobi.viewer.model.security;
 
 import java.io.Serializable;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -38,8 +38,6 @@ import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
-import javax.persistence.Temporal;
-import javax.persistence.TemporalType;
 import javax.persistence.Transient;
 
 import org.slf4j.Logger;
@@ -133,13 +131,11 @@ public class License implements IPrivilegeHolder, Serializable {
     @JoinColumn(name = "ip_range_id")
     private IpRange ipRange;
 
-    @Temporal(TemporalType.TIMESTAMP)
     @Column(name = "date_start")
-    private Date start;
+    private LocalDateTime start;
 
-    @Temporal(TemporalType.TIMESTAMP)
     @Column(name = "date_end")
-    private Date end;
+    private LocalDateTime end;
 
     @ElementCollection(fetch = FetchType.EAGER)
     @CollectionTable(name = "license_privileges", joinColumns = @JoinColumn(name = "license_id"))
@@ -152,8 +148,11 @@ public class License implements IPrivilegeHolder, Serializable {
     @Column(name = "description")
     private String description;
 
-    @Column(name = "enabled")
-    private boolean enabled = true;
+    @Column(name = "enable_groups")
+    private boolean enableGroups = false;
+
+    @Column(name = "enable_time_period")
+    private boolean enableTimePeriod = false;
 
     /** List of allowed subtheme discriminator values for CMS pages. */
     @ElementCollection(fetch = FetchType.LAZY)
@@ -202,8 +201,8 @@ public class License implements IPrivilegeHolder, Serializable {
      * @should return correct value
      */
     public boolean isValid() {
-        Date now = new Date();
-        return (start == null || start.before(now)) && (end == null || end.after(now));
+        LocalDateTime now = LocalDateTime.now();
+        return (start == null || start.isBefore(now)) && (end == null || end.isAfter(now));
     }
 
     /**
@@ -782,7 +781,7 @@ public class License implements IPrivilegeHolder, Serializable {
      *
      * @return the start
      */
-    public Date getStart() {
+    public LocalDateTime getStart() {
         return start;
     }
 
@@ -793,7 +792,7 @@ public class License implements IPrivilegeHolder, Serializable {
      *
      * @param start the start to set
      */
-    public void setStart(Date start) {
+    public void setStart(LocalDateTime start) {
         this.start = start;
     }
 
@@ -804,7 +803,7 @@ public class License implements IPrivilegeHolder, Serializable {
      *
      * @return the end
      */
-    public Date getEnd() {
+    public LocalDateTime getEnd() {
         return end;
     }
 
@@ -815,7 +814,7 @@ public class License implements IPrivilegeHolder, Serializable {
      *
      * @param end the end to set
      */
-    public void setEnd(Date end) {
+    public void setEnd(LocalDateTime end) {
         this.end = end;
     }
 
@@ -886,17 +885,31 @@ public class License implements IPrivilegeHolder, Serializable {
     }
 
     /**
-     * @return the enabled
+     * @return the enableGroups
      */
-    public boolean isEnabled() {
-        return enabled;
+    public boolean isEnableGroups() {
+        return enableGroups;
     }
 
     /**
-     * @param enabled the enabled to set
+     * @param enableGroups the enableGroups to set
      */
-    public void setEnabled(boolean enabled) {
-        this.enabled = enabled;
+    public void setEnableGroups(boolean enableGroups) {
+        this.enableGroups = enableGroups;
+    }
+
+    /**
+     * @return the enableTimePeriod
+     */
+    public boolean isEnableTimePeriod() {
+        return enableTimePeriod;
+    }
+
+    /**
+     * @param enableTimePeriod the enableTimePeriod to set
+     */
+    public void setEnableTimePeriod(boolean enableTimePeriod) {
+        this.enableTimePeriod = enableTimePeriod;
     }
 
     /**
