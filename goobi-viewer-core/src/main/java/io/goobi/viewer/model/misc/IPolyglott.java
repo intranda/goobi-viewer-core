@@ -58,6 +58,16 @@ public interface IPolyglott {
         Iterator<Locale> i = BeanUtils.getNavigationHelper().getSupportedLocales();
         ArrayList<Locale> list = new ArrayList<>();
         i.forEachRemaining(list::add);
+        final Locale defaultLocale = getDefaultLocale();
+        list.sort( (l1,l2) -> {
+            if(l1.equals(defaultLocale)) {
+                return -1;
+            } else if(l2.equals(defaultLocale)) {
+                return 1;
+            } else {
+                return 0;
+            }
+        } );
         return list;
     }
 
