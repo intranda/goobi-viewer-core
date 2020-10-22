@@ -94,6 +94,10 @@ public class StringTools {
      * @return a {@link java.lang.String} object.
      */
     public static String decodeUrl(String string) {
+        if (string == null) {
+            return string;
+        }
+        
         //    string = string.replace("%", "\\u");
         String encodedString = string;
         try {
