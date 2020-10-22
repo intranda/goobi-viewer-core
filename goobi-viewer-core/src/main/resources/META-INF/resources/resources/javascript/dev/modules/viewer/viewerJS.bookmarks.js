@@ -151,6 +151,30 @@ var viewerJS = ( function( viewer ) {
                     bookmarks: this,
                 });
                 
+                
+                
+                
+                var $bookmarkPosition = $('.login-navigation__bookmarks-list');
+                var $dropdownUserLogin = $("<bookmarkListLoggedIn></bookmarkListLoggedIn>");
+                $dropdownUserLogin.addClass("login-navigation__bookmarks-dropdown");
+                
+                $bookmarkPosition.after($dropdownUserLogin);
+                riot.mount('bookmarkListLoggedIn', {
+                    data: {        
+                        pi: '',
+                        logid: '',
+                        page: ''
+                    },
+                    style: {
+                        mainClass : "login-navigation__bookmarks"
+                    },
+                    bookmarkPosition: '.login-navigation__bookmarks-list',
+                    bookmarks: this,
+                });
+
+                
+                
+                
                 // handle closing dropdown
                 let toggle = function() {
                     $dropdown.slideToggle( 'fast' );
@@ -178,8 +202,8 @@ var viewerJS = ( function( viewer ) {
                 // Trigger bookmarks dropdown in login navigation dropdown
                 $('body').on('click', '.login-navigation__bookmarks-trigger', function(){
                 	event.preventDefault();
-                	$('.login-navigation__bookmarks-dropdown').slideToggle('fast');
-                	$('.login-navigation__bookmarks-trigger .fa-caret-down').toggleClass('-upside');
+                	$('.login-navigation__bookmarks-small-list').slideToggle('fast');
+                	$('.login-navigation__bookmarks-list').toggleClass('-opened');
                 });
                    
 //                $dropdown.on("click", (event) => event.stopPropagation());

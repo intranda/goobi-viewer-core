@@ -368,6 +368,116 @@ this.msg = function(key) {
 });
 
 
+riot.tag2('bookmarklistloggedin', '<ul if="{opts.bookmarks.config.userLoggedIn}" class="{mainClass}-small-list list"><li class="{mainClass}-entry" each="{bookmarkList in getBookmarkLists()}"><div class="login-navigation__bookmarks-name"><a href="{opts.bookmarks.getBookmarkListUrl(bookmarkList.id)}">{bookmarkList.name}</a></div><div class="login-navigation__bookmarks-icon-list icon-list"><a href="{searchListUrl(bookmarkList)}" data-toggle="tooltip" data-placement="top" data-original-title="" title="{msg(\'action__search_in_bookmarks\')}"><i class="fa fa-search" aria-hidden="true"></i></a><a href="{miradorUrl(bookmarkList)}" target="_blank" title="{msg(\'viewMiradorComparison\')}"><i class="fa fa-th" aria-hidden="true"></i></a><span title="{msg(\'admin__crowdsourcing_campaign_statistics_numRecords\')}" class="{mainClass}-counter">{bookmarkList.numItems}</span></div></li><li class="{mainClass}-entry"><a class="login-navigation__bookmarks-overview-link" href="{navigationHelper.applicationUrl}user/bookmarks/" data-toggle="tooltip" data-placement="top" data-original-title="" title="{msg(\'action__search_in_bookmarks\')}">{msg(\'bookmarkList_myBookmarkLists\')} </a></li></ul>', '', '', function(opts) {
+
+
+this.pi = this.opts.data.pi;
+this.logid = this.opts.data.logid;
+this.page = this.opts.data.page;
+this.loader = this.opts.loader;
+this.button = this.opts.button;
+this.mainClass = (this.opts.style && this.opts.style.mainClass) ? this.opts.style.mainClass : "bookmark-popup__body-list";
+
+this.on( 'mount', function() {
+    this.updateLists();
+    this.opts.bookmarks.listsUpdated.subscribe( () => this.onListUpdate());
+});
+
+this.getBookmarkLists = function() {
+    let lists =  this.opts.bookmarks.getBookmarkLists().slice(0,3);
+    return lists;
+}.bind(this)
+
+this.updateLists = function() {
+    this.opts.bookmarks.listsNeedUpdate.next();
+}.bind(this)
+
+this.onListUpdate = function() {
+	this.update();
+    this.hideLoader();
+}.bind(this)
+
+this.hideLoader = function() {
+    $(this.loader).hide();
+}.bind(this)
+
+this.showLoader = function() {
+    $(this.loader).show();
+}.bind(this)
+
+this.add = function(event) {
+    let list = event.item.bookmarkList
+    this.opts.bookmarks.addToBookmarkList(list.id, this.pi, this.page, this.logid, this.opts.bookmarks.isTypePage())
+    .then( () => this.updateLists());
+}.bind(this)
+
+this.remove = function(event) {
+    if(this.opts.bookmarks.config.userLoggedIn) {
+	    let list = event.item.bookmarkList
+	    this.opts.bookmarks.removeFromBookmarkList(list.id, this.pi, this.page, this.logid, this.opts.bookmarks.isTypePage())
+	    .then( () => this.updateLists())
+    } else {
+        let bookmark = event.item.bookmark;
+        this.opts.bookmarks.removeFromBookmarkList(undefined, bookmark.pi, undefined, undefined, false)
+	    .then( () => this.updateLists())
+    }
+}.bind(this)
+
+this.inList = function(list, pi, page, logid) {
+    return this.opts.bookmarks.inList(list, pi, page, logid);
+}.bind(this)
+
+this.mayEmptyList = function(list) {
+    return list.items.length > 0;
+}.bind(this)
+
+this.deleteList = function(event) {
+    let list = event.item.bookmarkList
+    this.opts.bookmarks.removeBookmarkList(list.id)
+    .then( () => this.updateLists());
+}.bind(this)
+
+this.maySendList = function(list) {
+    return !opts.bookmarks.config.userLoggedIn && list.items.length > 0;
+}.bind(this)
+
+this.sendListUrl = function(list) {
+	return this.opts.bookmarks.config.root + "/bookmarks/send/";
+}.bind(this)
+
+this.maySearchList = function(list) {
+    return list.items.length > 0;
+}.bind(this)
+
+this.searchListUrl = function(list) {
+    let url;
+    if(this.opts.bookmarks.config.userLoggedIn) {
+	    url = this.opts.bookmarks.config.root + "/user/bookmarks/search/" + list.name + "/";
+    } else {
+	    url = this.opts.bookmarks.config.root + "/bookmarks/search/" + list.name + "/";
+    }
+    return url;
+}.bind(this)
+
+this.mayCompareList = function(list) {
+    return list.items.length > 0;
+}.bind(this)
+
+this.miradorUrl = function(list) {
+    if(list.id != null) {
+    	return this.opts.bookmarks.config.root + "/mirador/id/" + list.id + "/";
+    } else {
+    	return this.opts.bookmarks.config.root + "/mirador/";
+    }
+}.bind(this)
+
+this.msg = function(key) {
+    return this.opts.bookmarks.translator.translate(key);
+}.bind(this)
+
+});
+
+
 riot.tag2('bookmarkspopup', '<div class="bookmark-popup__body-loader"></div><div if="{opts.data.page !== undefined}" class="bookmark-popup__radio-buttons"><div><label><input type="radio" checked="{opts.bookmarks.isTypeRecord()}" name="bookmarkType" riot-value="{msg(\'bookmarkList_typeRecord\')}" onclick="{setBookmarkTypeRecord}">{msg(\'bookmarkList_typeRecord\')}</label></div><div><label><input type="radio" checked="{opts.bookmarks.isTypePage()}" name="bookmarkType" riot-value="{msg(\'bookmarkList_typePage\')}" onclick="{setBookmarkTypePage}">{msg(\'bookmarkList_typePage\')}</label></div></div><div class="bookmark-popup__header"> {msg(\'bookmarkList_selectBookmarkList\')} </div><div class="bookmark-popup__body"><bookmarklist data="{this.opts.data}" loader="{this.opts.loader}" button="{this.opts.button}" bookmarks="{this.opts.bookmarks}"></bookmarkList></div><div class="bookmark-popup__footer"><div class="row no-margin"><div class="col-11 no-padding"><input ref="inputValue" type="text" placeholder="{msg(\'bookmarkList_addNewBookmarkList\')}"></div><div class="col-1 no-padding"><button class="btn btn-clean" type="button" onclick="{add}"></button></div></div></div>', '', 'class="bookmark-popup bottom"', function(opts) {
 
 const popupOffset = 6;
