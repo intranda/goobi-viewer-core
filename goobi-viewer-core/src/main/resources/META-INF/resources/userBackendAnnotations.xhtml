@@ -34,37 +34,46 @@
                             <thead>
                                 <tr>
                                     <th>     
-                                        #{msgcs.crowdsourcing_creationDateLabel}
+                                        #{msg.date}
                                     </th>
                                     <th>
-                                        #{msgcs.work}
+                                        #{msg.work}
                                     </th>
                                     <th>
-                                        #{msgcs.type}
+                                        #{msg.campaign}
+                                    </th>
+                                    <th>
+                                        #{msg.role}
                                         <i class="fa fa-info-circle" aria-hidden="true"></i>
                                     </th>
                                 </tr>
                             </thead>
                             <tbody>
-                                <ui:repeat var="annotations" value="#{userBean.annotations}">
+                                <ui:repeat var="annotation" value="#{userBean.annotations}">
                                     <tr>
                                         <td>
-<!--                                             <h:outputText value="#{update.dateUpdatedAsString}" title="#{update.timeUpdatedAsString}" /> -->
-                                            <h:outputText value="#{update.dateUpdated}">
-                                                <f:convertDateTime type="both" dateStyle="medium" timeStyle="short" />
+                                        <!-- TODO dateCreated if creator, dateModified if reviewer? -->
+                                            <h:outputText value="#{annotation.dateModified}">
+                                                <f:converter converterId="localDateTimeConverter" />
+                                                <f:attribute name="pattern" value="dd.MM.YYYY - HH:mm" />
                                             </h:outputText>
                                         </td>
                                         <td>
-                                            <h:outputLink rendered="#{update.updateType == 'crowdsourcing_updateTypeOCR'}"
-                                                value="#{transcriptionBean.editOcrUrl}/#{update.pi}/#{update.displayPage}" styleClass="link">
-                                                <h:outputText value="#{update.displayLabel} (#{update.displayPage})" />
-                                            </h:outputLink> <h:outputLink rendered="#{update.updateType == 'crowdsourcing_updateTypeContent'}"
-                                                value="#{transcriptionBean.editContentUrl}/#{update.pi}/#{update.displayPage}" styleClass="link">
-                                                <h:outputText value="#{update.displayLabel} (#{update.displayPage})" />
+                                            <h:outputLink
+                                                value="#{navigationHelper.objectUrl}/#{annotation.targetPI}/#{annotation.targetPageOrder}" styleClass="link">
+                                                <h:outputText value="#{annotation.targetPI} (#{annotation.targetPageOrder})" />
                                             </h:outputLink>
                                         </td>
                                         <td>
-                                            <h:outputText value="#{msgcs[update.updateType]}" />
+                                            <h:outputText value="#{annotation.generatorId}" />
+                                        </td>                                  
+                                        <td>
+                                            <ui:fragment rendered="#{annotation.creatorId == userBean.user.id}">
+                                                <h:outputText value="#{msg.creator}" />
+                                            </ui:fragment>
+                                            <ui:fragment rendered="#{annotation.reviewerId == userBean.user.id}">
+                                                <h:outputText value="#{msg.creator}" />
+                                            </ui:fragment>
                                         </td>
                                     </tr>
                                 </ui:repeat>

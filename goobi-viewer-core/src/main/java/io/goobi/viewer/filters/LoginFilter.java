@@ -151,6 +151,7 @@ public class LoginFilter implements Filter {
         logger.trace("uri: {}", uri);
         switch (uri.trim()) {
             case "/myactivity/":
+            case "/myannotations/":
             case "/mysearches/":
                 return true;
             default:
