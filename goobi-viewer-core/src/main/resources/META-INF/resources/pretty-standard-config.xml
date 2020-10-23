@@ -672,8 +672,8 @@
 	</url-mapping>
 
 	<!-- USER PAGES -->
-	<url-mapping id="userMenuMySearches">
-		<pattern value="/mysearches/" />
+	<url-mapping id="userMenuSearches">
+		<pattern value="/user/searches/" />
 		<view-id value="/userBackendSearches.xhtml" />
 		<action onPostback="false">#{navigationHelper.resetTheme}</action>
 	</url-mapping>
