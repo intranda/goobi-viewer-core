@@ -26,85 +26,97 @@
     		<h:panelGroup rendered="#{userBean.loggedIn}">
                 <h2>#{msg.annotations}</h2>
                 
+            <div id="crowdCampaigns">
+                <h:form id="csCampaignsForm" prependId="false">
+
+                    <div class="admin__content-inner-content">
+
+                        <div class="admin__table-tools">
+                            <!-- PAGINATOR -->
+                            <div class="admin__table-paginator">
+                                <viewerComponent:dataTablePaginator tableValues="#{userDataBean.lazyModelAnnotations}" />
+                            </div>
+                            <!-- FILTER -->
+                            <div class="admin__table-filter">
+                                <!-- TODO: ADD FILTER FOR targetPI, TOO -->
+                                <viewerComponent:dataTableColumnFilter key="admin__crowsourcing_annotations_search"
+                                    filter="#{userDataBean.lazyModelAnnotations.getFilter('targetPI_body')}" />
+                            </div>
+                        </div>
+
+
+                        <!-- ALL ANNOTATIONS TABLE -->
+                        <div id="csAnnotationsTable" class="admin__table-content">
+
+                            <!-- TITLE ROW -->
+                            <div class="row no-gutters admin__table-title">
+
+                                <!-- ANNOTATION COL -->
+                                <div class="col-8 d-flex">#{msg.admin__crowdsourcing_annotation}</div>
+
+                                <!-- TARGET COL -->
+                                <div class="col-2 d-flex">
+                                    #{msg.admin__crowdsourcing_annotation_target}
+                                    <div class="admin__table-sorting">
+                                        <h:commandLink styleClass="sort" action="#{userDataBean.lazyModelAnnotations.sortBy('targetPI', 'ASCENDING')}">
+                                            <f:passThroughAttribute name="aria-label" value="sort ascending" />
+                                            <i class="fa fa-angle-down" aria-hidden="true"></i>
+                                            <f:ajax execute="@form" render="@form" />
+                                        </h:commandLink>
+                                        <h:commandLink styleClass="sort" action="#{userDataBean.lazyModelAnnotations.sortBy('targetPI', 'DESCENDING')}">
+                                            <f:passThroughAttribute name="aria-label" value="sort descending" />
+                                            <i class="fa fa-angle-up" aria-hidden="true"></i>
+                                            <f:ajax execute="@form" render="@form" />
+                                        </h:commandLink>
+                                    </div>
+                                </div>
+
+                                <!-- DATE COL -->
+                                <div class="col-2 d-flex">
+                                    #{msg.date}
+                                    <div class="admin__table-sorting">
+                                        <h:commandLink styleClass="sort" action="#{userDataBean.lazyModelAnnotations.sortBy('dateCreated', 'ASCENDING')}">
+                                            <f:passThroughAttribute name="aria-label" value="sort ascending" />
+                                            <i class="fa fa-angle-down" aria-hidden="true"></i>
+                                            <f:ajax execute="@form" render="@form" />
+                                        </h:commandLink>
+                                        <h:commandLink styleClass="sort" action="#{userDataBean.lazyModelAnnotations.sortBy('dateCreated', 'DESCENDING')}">
+                                            <f:passThroughAttribute name="aria-label" value="sort descending" />
+                                            <i class="fa fa-angle-up" aria-hidden="true"></i>
+                                            <f:ajax execute="@form" render="@form" />
+                                        </h:commandLink>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- INDIVIDUAL ANNOTATION ROWS -->
+                            <ui:repeat var="annotation" value="#{userDataBean.lazyModelAnnotations.paginatorList}">
+                                <div class="row no-gutters admin__table-entry">
+                                    <div class="col-8 d-flex" style="flex-direction:column;">
+                                        <h:outputText value="#{annotation.contentString}" />
+
+                                    </div>
+                                    <div class="col-2 d-flex">
+                                        #{annotation.targetPI}<h:outputText rendered="#{annotation.targetPageOrder != null}" value=", #{msg.page} #{annotation.targetPageOrder}" />
+                                    </div>
+                                    <div class="col-2 d-flex">
+                                        <h:outputText value="#{annotation.dateCreated}">
+                                            <f:converter converterId="localDateTimeConverter" />
+                                            <f:attribute name="pattern" value="dd.MM.YYYY - HH:mm" />
+                                        </h:outputText>
+                                    </div>
+                                </div>
+                            </ui:repeat>
+                        </div>
+                    </div>
+                </h:form>
+            </div>
                 
-                <!-- USER ACTIVITY -->
-                <div class="user-activity">
-                    <h:form id="userMyLastActivityForm" prependId="false">
-                        <table class="table table-striped table-bordered user-activity__table admin-table">
-                            <thead>
-                                <tr>
-                                    <th>     
-                                        #{msg.date}
-                                    </th>
-                                    <th>
-                                        #{msg.work}
-                                    </th>
-                                    <th>
-                                        #{msg.campaign}
-                                    </th>
-                                    <th>
-                                        #{msg.role}
-                                        <i class="fa fa-info-circle" aria-hidden="true"></i>
-                                    </th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <ui:repeat var="annotation" value="#{userBean.annotations}">
-                                    <tr>
-                                        <td>
-                                        <!-- TODO dateCreated if creator, dateModified if reviewer? -->
-                                            <h:outputText value="#{annotation.dateModified}">
-                                                <f:converter converterId="localDateTimeConverter" />
-                                                <f:attribute name="pattern" value="dd.MM.YYYY - HH:mm" />
-                                            </h:outputText>
-                                        </td>
-                                        <td>
-                                            <h:outputLink
-                                                value="#{navigationHelper.objectUrl}/#{annotation.targetPI}/#{annotation.targetPageOrder}" styleClass="link">
-                                                <h:outputText value="#{annotation.targetPI} (#{annotation.targetPageOrder})" />
-                                            </h:outputLink>
-                                        </td>
-                                        <td>
-                                            <h:outputText value="#{annotation.generatorId}" />
-                                        </td>                                  
-                                        <td>
-                                            <ui:fragment rendered="#{annotation.creatorId == userBean.user.id}">
-                                                <h:outputText value="#{msg.creator}" />
-                                            </ui:fragment>
-                                            <ui:fragment rendered="#{annotation.reviewerId == userBean.user.id}">
-                                                <h:outputText value="#{msg.creator}" />
-                                            </ui:fragment>
-                                        </td>
-                                    </tr>
-                                </ui:repeat>
-                            </tbody>
-                        </table>
-                    </h:form>
-                </div>
+
 			</h:panelGroup>
         </div>
+        
 
-		<script type="text/javascript">			
-        	$( document ).ready( function() {        		
-        		$( '.user-activity__table .fa' ).popover({
-        			html: true,
-        			content: function() {
-        				var string = "";
-        				
-        				if ( #{transcriptionBean.crowdsourcingEditFullText} ) {
-        					string += "#{msgcs.crowdsourcing_myActivityTooltip_ocr}";
-        				}
-        				
-        				if ( #{transcriptionBean.crowdsourcingEditUGC} ) {
-        					string += "#{msgcs.crowdsourcing_myActivityTooltip_ugc}";
-        				}
-        				
-        				return string;
-        			},
-        			placement: 'bottom'
-        		});
-        	} );
-        </script>
 	</ui:define>
 
 	<ui:define name="sidebar">
