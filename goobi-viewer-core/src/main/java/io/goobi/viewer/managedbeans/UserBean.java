@@ -61,8 +61,6 @@ import io.goobi.viewer.filters.LoginFilter;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.messages.Messages;
 import io.goobi.viewer.messages.ViewerResourceBundle;
-import io.goobi.viewer.model.annotation.PersistentAnnotation;
-import io.goobi.viewer.model.search.Search;
 import io.goobi.viewer.model.search.SearchHelper;
 import io.goobi.viewer.model.security.IPrivilegeHolder;
 import io.goobi.viewer.model.security.Role;
@@ -78,9 +76,7 @@ import io.goobi.viewer.model.viewer.Feedback;
 import io.goobi.viewer.servlets.utils.ServletUtils;
 
 /**
- * <p>
- * UserBean class.
- * </p>
+ * Primarily for user authentication.
  */
 @Named
 @SessionScoped
@@ -723,59 +719,6 @@ public class UserBean implements Serializable {
 
         Messages.error("user_retrieveAccountUserNotFound");
         return "user?faces-redirect=true";
-    }
-
-    /**
-     * Returns saved searches for the logged in user.
-     *
-     * @return a {@link java.util.List} object.
-     * @throws io.goobi.viewer.exceptions.DAOException if any.
-     * @should return searches for correct user
-     * @should return null if no user logged in
-     */
-    public List<Search> getSearches() throws DAOException {
-        if (user == null) {
-            return null;
-        }
-
-        return DataManager.getInstance().getDao().getSearches(user);
-    }
-
-    /**
-     * 
-     * @return
-     * @throws DAOException
-     */
-    public List<PersistentAnnotation> getAnnotations() throws DAOException {
-        if (user == null) {
-            return Collections.emptyList();
-        }
-
-        return DataManager.getInstance().getDao().getAnnotationsForUserId(user.getId());
-    }
-
-    /**
-     * Deletes the given persistent user search.
-     *
-     * @param search a {@link io.goobi.viewer.model.search.Search} object.
-     * @return a {@link java.lang.String} object.
-     * @throws io.goobi.viewer.exceptions.DAOException if any.
-     */
-    public String deleteSearchAction(Search search) throws DAOException {
-        if (search == null) {
-            return "";
-        }
-
-        logger.debug("Deleting search query: {}", search.getId());
-        if (DataManager.getInstance().getDao().deleteSearch(search)) {
-            String msg = ViewerResourceBundle.getTranslation("savedSearch_deleteSuccess", null);
-            Messages.info(msg.replace("{0}", search.getName()));
-        } else {
-            String msg = ViewerResourceBundle.getTranslation("savedSearch_deleteFailure", null);
-            Messages.error(msg.replace("{0}", search.getName()));
-        }
-
-        return "";
     }
 
     /**

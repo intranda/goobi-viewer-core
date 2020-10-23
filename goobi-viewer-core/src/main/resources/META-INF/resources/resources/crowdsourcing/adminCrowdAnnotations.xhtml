@@ -107,7 +107,8 @@
                                     </div>
                                     <div class="col-2 d-flex">
                                         <h:outputText value="#{annotation.dateCreated}">
-                                            <f:convertDateTime type="date" dateStyle="medium" timeStyle="short" />
+                                            <f:converter converterId="localDateTimeConverter" />
+                                            <f:attribute name="pattern" value="dd.MM.YYYY - HH:mm" />
                                         </h:outputText>
                                     </div>
                                 </div>
