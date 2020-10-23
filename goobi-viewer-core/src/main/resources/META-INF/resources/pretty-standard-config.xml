@@ -677,8 +677,8 @@
 		<view-id value="/userBackendSearches.xhtml" />
 		<action onPostback="false">#{navigationHelper.resetTheme}</action>
 	</url-mapping>
-    <url-mapping id="userMenuMyAnnotations">
-        <pattern value="/myannotations/" />
+    <url-mapping id="userMenuAnnotations">
+        <pattern value="/user/annotations/" />
         <view-id value="/userBackendAnnotations.xhtml" />
         <action onPostback="false">#{navigationHelper.resetTheme}</action>
     </url-mapping>
