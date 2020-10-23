@@ -26,27 +26,32 @@
         }
     }
     #user_generated_content_nav .ugc-highlight {
-        background: @middlegray;
+        background: @lightgray;
     }
 }
 
 .widget-annotations {
+	.widget__body {
+		max-height: 230px;
+		overflow: hidden scroll;
+	}
 	&__entry {
 		display: flex;
 		margin-bottom: 0.6rem;
 	}
 	&__type {
-		margin-right: 1rem;
+		flex: 23px 0 0;
+		max-width: 50px;
 	}
 	&__text {
-		flex-grow: 1;
 	}
 	&__page {
-		margin-left: 1rem;
+		margin-left: auto;
+		padding-left: 0.6rem;
 		span {
-			background: #343a40;
+			background: @blue;
 			color: @white;
-			padding: 0.4rem 0.4rem;
+			padding: 0 0.3rem;
 			display: block;
 			white-space: nowrap;
 		}
