@@ -37,14 +37,9 @@
     			</ul>
     		</div>
 
-			<!-- GO TO FRONTEND VIEW IN NEW WINDOW -->
-    		<a
-   			class="admin__topbar-view-frontend-link" 
-   			href="#{request.contextPath}/" 
-   			title="#{msg.admin__view_frontend}" 
-   			aria-label="#{msg.admin__view_frontend}" 
-   			target="_blank">
-   			<i class="fa fa-home" aria-hidden="true"></i> #{configurationBean.name}
+			<!-- GO TO FRONTEND VIEW -->
+            <a class="admin__topbar-view-frontend-link" href="#{request.contextPath}/" title="#{msg.admin__view_frontend}" aria-label="#{msg.admin__view_frontend}">
+                <i class="fa fa-home" aria-hidden="true"></i> #{configurationBean.name}
     		</a>
 
     		<!-- ADD SOMETHING NEW -->
