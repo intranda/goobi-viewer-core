@@ -132,4 +132,12 @@ public class TranslationList implements IPolyglott {
                 .collect(Collectors.toMap(e -> e.getKey(), e -> e.getValue().getValue()));
     }
 
+    /**
+     * @param locale
+     * @return  true if this list has an entry for the given locale
+     */
+    public boolean hasLocale(Locale locale) {
+        return locale != null && this.translations.containsKey(locale);
+    }
+
 }
