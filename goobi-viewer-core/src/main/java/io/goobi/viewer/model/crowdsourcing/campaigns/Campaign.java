@@ -48,6 +48,8 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.MapKeyColumn;
 import javax.persistence.OneToMany;
+import javax.persistence.PrePersist;
+import javax.persistence.PreUpdate;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
@@ -242,6 +244,16 @@ public class Campaign implements CMSMediaHolder, ILicenseType, IPolyglott {
         this.selectedLocale = selectedLocale;
     }
 
+    @PrePersist
+    public void onPrePersist() {
+        this.questions.forEach(Question::onPrePersist);
+    }
+    
+    @PreUpdate
+    public void onPreUpdate() {
+        this.questions.forEach(Question::onPreUpdate);
+    }
+    
     /* (non-Javadoc)
      * @see java.lang.Object#hashCode()
      */
@@ -1088,7 +1100,7 @@ public class Campaign implements CMSMediaHolder, ILicenseType, IPolyglott {
      */
     @Override
     public boolean isComplete(Locale locale) {
-        return getTitle(locale.getLanguage(), false) != null;
+        return StringUtils.isNotBlank(getTitle(locale.getLanguage(), false));
     }
 
     /**

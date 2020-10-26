@@ -13,29 +13,51 @@
  *
  * You should have received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
-package io.goobi.viewer.model.crowdsourcing.questions;
+package io.goobi.viewer.model.misc;
 
-import javax.persistence.Entity;
-import javax.persistence.Table;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.MappedSuperclass;
 
-import io.goobi.viewer.model.misc.PersistentTranslation;
-import io.goobi.viewer.model.misc.Translation;
 
 /**
- * A persistence object holding a translated String value
+ * @author florian
  *
- * @author Florian Alpers
  */
-@Entity
-@Table(name = "cs_question_translations")
-public class QuestionTranslation extends PersistentTranslation<Question> {
+@MappedSuperclass
+public class PersistentTranslation<O> extends Translation {
 
-    public QuestionTranslation() {
-        super();
+    /** Reference to the owning {@link PersistentEntity}. */
+    @ManyToOne
+    @JoinColumn(name = "owner_id", nullable = false)
+    private O owner;
+    
+    public PersistentTranslation() {
+        
     }
     
-    public QuestionTranslation(Translation t, Question q) {
-        super(t, q);
+    public PersistentTranslation(O owner) {
+        this.owner = owner;
     }
+
+    public PersistentTranslation(Translation t, O owner) {
+        super(t);
+        this.owner = owner;
+    }
+    
+    /**
+     * @return the owner
+     */
+    public O getOwner() {
+        return owner;
+    }
+    
+    /**
+     * @param owner the owner to set
+     */
+    public void setOwner(O owner) {
+        this.owner = owner;
+    }
+    
 
 }

@@ -1,0 +1,45 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+	xmlns:composite="http://xmlns.jcp.org/jsf/composite"
+	xmlns:f="http://xmlns.jcp.org/jsf/core"
+	xmlns:c="http://java.sun.com/jsp/jstl/core"
+	xmlns:h="http://xmlns.jcp.org/jsf/html">
+
+	<composite:interface>
+		<composite:attribute name="value" required="true" type="io.goobi.viewer.model.misc.TranslationList" />
+		<composite:attribute name="render" required="false" default=""></composite:attribute>
+		<composite:attribute name="execute" required="false" default=""></composite:attribute>
+		<composite:attribute name="required" required="false" default="false" type="java.lang.Boolean"></composite:attribute>
+	</composite:interface>
+
+	<composite:implementation>
+
+		<div id="#{cc.clientId}" class="col-9 admin__form-input d-flex">
+			<!-- NAV TABS -->
+			<ul class="nav nav-tabs admin__language-tabs-vertical" role="tablist">
+				<ui:repeat id="loop" var="locale" value="#{cc.attrs.value.getLocales()}">
+					<li role="tab"
+						class="admin__language-tab-vertical
+						#{cc.attrs.value.isSelected(locale) ? 'active':''}
+						#{cc.attrs.value.isComplete(locale) ? '-already-translated':''}
+						#{cc.attrs.value.isDefaultLocaleSelected() ? '-default-language':''}">
+						<h:commandLink
+							value="#{locale.getDisplayLanguage(navigationHelper.locale)}"
+							action="#{cc.attrs.value.setSelectedLocale(locale)}"
+							immediate="false">
+							<f:ajax render="#{cc.clientId}" execute="#{cc.clientId}"></f:ajax>
+						</h:commandLink>
+					</li>
+				</ui:repeat>
+			</ul>
+
+			<h:inputTextarea
+				id="input"
+				styleClass="form-control admin__language-tabs-vertical-textarea"
+				value="#{cc.attrs.value.value}"
+				required="#{cc.attrs.required and cc.attrs.value.isDefaultLocaleSelected()}"/>
+		</div>
+
+
+	</composite:implementation>
+</ui:composition>

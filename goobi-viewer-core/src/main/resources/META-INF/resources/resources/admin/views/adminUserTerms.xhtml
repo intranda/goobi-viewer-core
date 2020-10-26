@@ -54,23 +54,7 @@
 
 							<!-- TERMS OF USE LANGUAGE TABS -->
 							<div class="admin__language-tabs">
-								<!-- NAV TABS -->
-								<ul class="nav nav-tabs" role="tablist">
-									<c:forEach var="locale"
-										items="#{termsOfUseBean.getLocales()}">
-										<li role="tab"
-											class="admin__language-tab 
-											#{termsOfUseBean.isSelected(locale) ? 'active':''}
-											#{termsOfUseBean.isComplete(locale) ? '-already-translated':''}
-											#{termsOfUseBean.isDefaultLocaleSelected() ? '-default-language':''}">
-											<h:commandLink value="#{locale.getDisplayLanguage(navigationHelper.locale)}"
-												action="#{termsOfUseBean.setSelectedLocale(locale)}"
-												immediate="false">
-												<f:ajax render="@form" execute="@form"></f:ajax>
-											</h:commandLink>
-										</li>
-									</c:forEach>
-								</ul>
+								<viewerComponent:localeSelector object="#{termsOfUseBean}"/>
 							</div>
 
 							<div class="admin__default-block">

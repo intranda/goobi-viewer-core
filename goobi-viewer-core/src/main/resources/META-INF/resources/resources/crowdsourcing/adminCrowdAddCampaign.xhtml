@@ -47,65 +47,14 @@
 										<!-- GENERAL INFORMATION (TITLE + TEXT) -->
 										<h3>#{msg.admin__category_general}</h3>
 										
+										<h:panelGroup id="titleDataGroup">
 										<!-- NEW CAMPAIGN LANGUAGE TABS GENERAL -->
 										<div class="admin__language-tabs">
-											<ul class="nav nav-tabs" role="tablist">
-												<c:forEach var="locale"
-													items="#{termsOfUseBean.getLocales()}">
-													<li role="tab"
-														class="admin__language-tab 
-													#{crowdsourcingBean.selectedCampaign.isSelected(locale) ? 'active':''}
-													#{crowdsourcingBean.selectedCampaign.isComplete(locale) ? '-already-translated':''}
-													#{crowdsourcingBean.selectedCampaign.isDefaultLocaleSelected() ? '-default-language':''}">
-														<h:commandLink
-															value="#{locale.getDisplayLanguage(navigationHelper.locale)}"
-															action="#{crowdsourcingBean.selectedCampaign.setSelectedLocale(locale)}"
-															immediate="false">
-															<f:ajax render="@form" execute="@form"></f:ajax>
-														</h:commandLink>
-													</li>
-												</c:forEach>
-											</ul>
+											<viewerComponent:localeSelector 
+											object="#{crowdsourcingBean.selectedCampaign}"
+											render="createCampaignForm:titleDataGroup"
+											execute="createCampaignForm:titleDataGroup"/>
 										</div>
-
-										 <!-- OLD LANGUAGE  TABS FUNCTIONS -->
-<!--                                             <ul class="nav nav-tabs" role="tablist"> -->
-
-<!--                                                 <c:forEach var="locale" items="#{crowdsourcingBean.getAllLocales()}"> -->
-<!--                                                     <li role="presentation" class="#{crowdsourcingBean.selectedCampaign.selectedLocale == locale ? 'active':''}"> -->
-<!--                                                         <h:commandLink value="#{msg['changeLocal_' += locale]}" action="#{crowdsourcingBean.selectedCampaign.setSelectedLocale(locale)}" immediate="false" /> -->
-<!--                                                     </li> -->
-<!--                                                 </c:forEach> -->
-
-<!--                                             </ul> -->
-
- 										 <!-- OLD CONTENT TABS -->
-<!--                                          <ui:param name="locale" value="#{crowdsourcingBean.selectedCampaign.selectedLocale}" /> -->
-<!--                                          <div role="tabpanel" class="tab-pane #{crowdsourcingBean.selectedCampaign.selectedLocale == locale ? 'active':''}" -->
-<!--                                              id="#{locale.language}"> -->
-	                                       
-<!-- 	                                         <div class="edit-content-page edit-content-page-content"> -->
-	                                         
-<!-- 	                                             <div class="cms-module__option-group"> -->
-<!-- 	                                                 <div class="cms-module__option-label"> -->
-<!-- 	                                                     <label for="adminCrowdAddCampaignTitle"> -->
-<!-- 	                                                         #{msg.label__cms_page_title}#{crowdsourcingBean.selectedCampaign.selectedLocale == navigationHelper.defaultLocale ? '*' : ''}: -->
-<!-- 	                                                     </label> -->
-<!-- 	                                                 </div> -->
-<!-- 	                                                 <div class="cms-module__option-control"> -->
-<!-- 	                                                     <h:inputText id="adminCrowdAddCampaignTitle" styleClass="form-control" -->
-<!-- 	                                                         required="#{crowdsourcingBean.selectedCampaign.selectedLocale == navigationHelper.defaultLocale}" -->
-<!-- 	                                                         value="#{crowdsourcingBean.selectedCampaign.title}" /> -->
-<!-- 	                                                     <span class="cms-module__option-control-helptext">#{msg.help__cms_page_title}</span> -->
-<!-- 	                                                 </div> -->
-<!-- 	                                                 <div class="cms-module__option-help"> -->
-<!-- 	                                                     <button type="button" class="btn btnclean" data-toggle="helptext"> -->
-<!-- 	                                                         <i class="fa fa-question-circle" aria-hidden="true"></i> -->
-<!-- 	                                                     </button> -->
-<!-- 	                                                 </div> -->
-<!-- 	                                             </div> -->
-<!--                                             </div> -->
-<!--                                             </div> -->
                                                  
 
  										<!-- NEW CONTENT TABS CAMPAIGN GENERAL-->
@@ -143,10 +92,7 @@
 												<div class="form-group form-row">
 													<div class="col-2 control-label admin__form-label">
 														<label for="adminCrowdAddCampaignDescription">
-															#{msg.description}: <ui:fragment
-																rendered="#{termsOfUseBean.isDefaultLocaleSelected()}">
-																<span class="admin__label-required-field">(#{msg.form__required_field})</span>
-															</ui:fragment>
+															#{msg.description}: 
 														</label>
 													</div>
 
@@ -169,6 +115,7 @@
 											</div>
 										<!-- ADMIN BLOCK EOL -->
 										</div>
+										</h:panelGroup>
 										
 										<div class="admin__default-block">
 										
@@ -339,12 +286,8 @@
 	
 	
 											<div class="tab-content">
-												<!-- LOCALIZE TABS -->
-													<ui:param name="locale"
-														value="#{crowdsourcingBean.selectedCampaign.selectedLocale}" />
 													<div role="tabpanel"
-														class="admin__default-block"
-														id="#{locale.language}">
+														class="admin__default-block">
 	
 														<div class="edit-content-page edit-content-page-questions">
 															<ui:repeat var="question"
@@ -369,31 +312,11 @@
 																		
 																		
 																		<!-- CAMPAIGN LANGUAGE TABS QUESTIONS VERTICAL ORDER -->	
-																		<div class="col-9 admin__form-input d-flex">
-																				<ul class="nav nav-tabs admin__language-tabs-vertical" role="tablist">
-																					<c:forEach var="locale"
-																						items="#{crowdsourcingBean.getAllLocales()}">
-																						
-																						<li role="tab" class="admin__language-tab-vertical
-																							#{crowdsourcingBean.selectedCampaign.isSelected(locale) ? 'active':''}
-																							#{crowdsourcingBean.selectedCampaign.isComplete(locale) ? '':'-already-translated'}
-																							#{crowdsourcingBean.selectedCampaign.isDefaultLocaleSelected() ? '-default-language':''}">
-																							<h:commandLink
-																								value="#{locale.getDisplayLanguage(navigationHelper.locale)}"
-																								action="#{crowdsourcingBean.selectedCampaign.setSelectedLocale(locale)}"
-																								immediate="false">
-																								<f:ajax render="QuestionsArea languagesGeneralArea" execute="@form"></f:ajax>
-																							</h:commandLink>
-																						</li>
-																					</c:forEach>
-																				</ul>
-																			<h:inputTextarea
-																				id="adminCrowdAddCampaignQuestionText_#{status.count}"
-																				styleClass="form-control admin__language-tabs-vertical-textarea" value="#{question.text}"
-																				required="#{crowdsourcingBean.selectedCampaign.selectedLocale == navigationHelper.defaultLocale}" />
-																			<span class="admin__form-help-text">#{msg.admin__help_crowdsourcing_question_text}</span>	
-																		</div>
-																			
+																		
+																			<viewerComponent:translatedInputField 
+																				value="#{question.translations}" 
+																				required="true"/>
+																			<span class="admin__form-help-text">#{msg.admin__help_crowdsourcing_question_text}</span>
 																		<div class="col-1 admin__form-help-icon">
 																			<button type="button" class="btn btn--clean"
 																				data-toggle="helptext" aria-label="inline help icon">

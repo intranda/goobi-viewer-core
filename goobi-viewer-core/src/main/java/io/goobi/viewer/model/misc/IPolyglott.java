@@ -16,6 +16,7 @@
 package io.goobi.viewer.model.misc;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
@@ -55,24 +56,45 @@ public interface IPolyglott {
     }
 
     public default Collection<Locale> getLocales() {
-        Iterator<Locale> i = BeanUtils.getNavigationHelper().getSupportedLocales();
-        ArrayList<Locale> list = new ArrayList<>();
-        i.forEachRemaining(list::add);
-        final Locale defaultLocale = getDefaultLocale();
-        list.sort( (l1,l2) -> {
-            if(l1.equals(defaultLocale)) {
-                return -1;
-            } else if(l2.equals(defaultLocale)) {
-                return 1;
-            } else {
-                return 0;
-            }
-        } );
-        return list;
+        return IPolyglott.getLocalesStatic();
     }
 
-    public default Locale getDefaultLocale() {
-        return BeanUtils.getNavigationHelper().getDefaultLocale();
+    public static Collection<Locale> getLocalesStatic() {
+
+        try {
+            Iterator<Locale> i = BeanUtils.getNavigationHelper().getSupportedLocales();
+            ArrayList<Locale> list = new ArrayList<>();
+            i.forEachRemaining(list::add);
+            final Locale defaultLocale = getDefaultLocale();
+            list.sort((l1, l2) -> {
+                if (l1.equals(defaultLocale)) {
+                    return -1;
+                } else if (l2.equals(defaultLocale)) {
+                    return 1;
+                } else {
+                    return 0;
+                }
+            });
+            return list;
+        } catch(NullPointerException e) {
+            return Arrays.asList(Locale.ENGLISH, Locale.GERMAN);
+        }
+    }
+
+    public static Locale getDefaultLocale() {
+        try {            
+            return BeanUtils.getNavigationHelper().getDefaultLocale();
+        } catch(NullPointerException e) {
+            return Locale.ENGLISH;
+        }
+    }
+    
+    public static Locale getCurrentLocale() {
+        try {            
+            return BeanUtils.getNavigationHelper().getLocale();
+        } catch(NullPointerException e) {
+            return Locale.ENGLISH;
+        }
     }
 
 }

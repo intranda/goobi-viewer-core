@@ -19,8 +19,10 @@ import java.net.URI;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Locale;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -34,7 +36,11 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
+import javax.persistence.PostLoad;
+import javax.persistence.PrePersist;
+import javax.persistence.PreUpdate;
 import javax.persistence.Table;
+import javax.persistence.Transient;
 
 import org.eclipse.persistence.annotations.PrivateOwned;
 
@@ -46,8 +52,10 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
 import io.goobi.viewer.api.rest.serialization.TranslationListSerializer;
 import io.goobi.viewer.controller.DataManager;
+import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.model.crowdsourcing.campaigns.Campaign;
-import io.goobi.viewer.model.misc.Translation;
+import io.goobi.viewer.model.misc.IPolyglott;
+import io.goobi.viewer.model.misc.TranslationList;
 
 /**
  * An annotation generator to create a specific type of annotation for a specific question. One or more of these may be contained within a
@@ -79,6 +87,8 @@ public class Question {
     @PrivateOwned
     @JsonSerialize(using = TranslationListSerializer.class)
     private List<QuestionTranslation> translations = new ArrayList<>();
+    @Transient 
+    private TranslationList tempTranslations;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "question_type", nullable = false)
@@ -95,6 +105,7 @@ public class Question {
      * Empty constructor.
      */
     public Question() {
+        tempTranslations = new TranslationList("text", IPolyglott.getCurrentLocale(), IPolyglott.getLocalesStatic());
     }
 
     /**
@@ -103,6 +114,7 @@ public class Question {
      * @param owner a {@link io.goobi.viewer.model.crowdsourcing.campaigns.Campaign} object.
      */
     public Question(Campaign owner) {
+        this();
         this.owner = owner;
     }
 
@@ -116,32 +128,40 @@ public class Question {
      * @param owner a {@link io.goobi.viewer.model.crowdsourcing.campaigns.Campaign} object.
      */
     public Question(QuestionType questionType, TargetSelector targetSelector, int targetFrequency, Campaign owner) {
+        this(owner);
         this.questionType = questionType;
         this.targetSelector = targetSelector;
         this.targetFrequency = targetFrequency;
-        this.owner = owner;
+    }
+    
+    @PrePersist
+    public void onPrePersist() {
+        serializeTranslations();
+    }
+    
+    @PreUpdate
+    public void onPreUpdate() {
+        serializeTranslations();
     }
 
-    /**
-     * <p>
-     * getText.
-     * </p>
-     *
-     * @return translation of the 'text' attribute for the currently selected locale in the owner campaign
-     */
-    public String getText() {
-        return Translation.getTranslation(translations, owner.getSelectedLocale().getLanguage(), "text");
+    
+    @PostLoad
+    public void onPostLoad() {
+        deserializeTranslations();
     }
 
-    /**
-     * Sets the translation of the 'text' attribute for the currently selected locale in the owner campaign
-     *
-     * @param text a {@link java.lang.String} object.
-     */
-    public void setText(String text) {
-        QuestionTranslation.setTranslation(translations, owner.getSelectedLocale().getLanguage(), text, "text", this);
+    private void serializeTranslations() {
+        this.translations = this.tempTranslations.stream().map(t -> new QuestionTranslation(t, this)).collect(Collectors.toList());
     }
-
+    
+    private void deserializeTranslations() {
+        this.tempTranslations = new TranslationList("text", BeanUtils.getLocale(), IPolyglott.getLocalesStatic());
+        for (QuestionTranslation translation : translations) {
+            Locale locale = Locale.forLanguageTag(translation.getLanguage());
+            this.tempTranslations.setValueForLocale(locale, translation.getValue());
+        }
+    }
+    
     /**
      * <p>
      * getAvailableQuestionTypes.
@@ -218,19 +238,8 @@ public class Question {
      *
      * @return the translations
      */
-    public List<QuestionTranslation> getTranslations() {
-        return translations;
-    }
-
-    /**
-     * <p>
-     * Setter for the field <code>translations</code>.
-     * </p>
-     *
-     * @param translations the translations to set
-     */
-    public void setTranslations(List<QuestionTranslation> translations) {
-        this.translations = translations;
+    public TranslationList getTranslations() {
+        return tempTranslations;
     }
 
     /**

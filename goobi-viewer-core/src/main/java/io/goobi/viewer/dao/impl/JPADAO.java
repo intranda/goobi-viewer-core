@@ -3370,6 +3370,7 @@ public class JPADAO implements IDAO {
             preQuery();
             EntityManager em = factory.createEntityManager();
             try {
+                campaign.onPreUpdate();
                 em.getTransaction().begin();
                 em.merge(campaign);
                 em.getTransaction().commit();
