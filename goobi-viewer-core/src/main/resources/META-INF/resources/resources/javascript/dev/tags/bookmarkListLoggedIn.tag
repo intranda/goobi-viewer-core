@@ -116,7 +116,7 @@ searchListUrl(list) {
     return url; 
 }
 
-allBookmarksUrl(list) {
+allBookmarksUrl() {
     	return this.opts.bookmarks.config.root + "/user/bookmarks/";
 }
 
