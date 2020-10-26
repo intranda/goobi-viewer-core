@@ -19,9 +19,9 @@
 		</div>
 	</li>
 	<li class="{mainClass}-entry">
-		<a class="login-navigation__bookmarks-overview-link" href="{navigationHelper.applicationUrl}user/bookmarks/"
+		<a class="login-navigation__bookmarks-overview-link" href="{allBookmarksUrl()}"
 			data-toggle="tooltip" data-placement="top" data-original-title=""
-			title="{msg('action__search_in_bookmarks')}">{msg('bookmarkList_myBookmarkLists')}
+			title="{msg('bookmarkList_overview_all')}">{msg('bookmarkList_overview_all')}
 		</a>
 	</li>
 </ul>
@@ -34,7 +34,6 @@ this.page = this.opts.data.page;
 this.loader = this.opts.loader; 
 this.button = this.opts.button;
 this.mainClass = (this.opts.style && this.opts.style.mainClass) ? this.opts.style.mainClass : "bookmark-popup__body-list";
-
 
 this.on( 'mount', function() {    	
     this.updateLists();
@@ -115,6 +114,10 @@ searchListUrl(list) {
 	    url = this.opts.bookmarks.config.root + "/bookmarks/search/" + list.name + "/";
     }
     return url; 
+}
+
+allBookmarksUrl(list) {
+    	return this.opts.bookmarks.config.root + "/user/bookmarks/";
 }
 
 mayCompareList(list) {

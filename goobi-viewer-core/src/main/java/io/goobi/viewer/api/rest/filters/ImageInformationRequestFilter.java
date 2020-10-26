@@ -16,14 +16,11 @@
 package io.goobi.viewer.api.rest.filters;
 
 import java.io.IOException;
-import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
 import javax.ws.rs.container.ContainerRequestContext;
 import javax.ws.rs.container.ContainerRequestFilter;
 import javax.ws.rs.core.Context;
@@ -33,7 +30,6 @@ import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.ext.Provider;
 
 import org.apache.commons.text.StringTokenizer;
-import org.apache.solr.common.SolrDocument;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -41,14 +37,10 @@ import de.unigoettingen.sub.commons.contentlib.exceptions.ServiceNotAllowedExcep
 import de.unigoettingen.sub.commons.contentlib.servlet.rest.ContentExceptionMapper.ErrorMessage;
 import de.unigoettingen.sub.commons.contentlib.servlet.rest.ContentServerImageInfoBinding;
 import io.goobi.viewer.controller.DataManager;
-import io.goobi.viewer.controller.SolrConstants;
-import io.goobi.viewer.controller.SolrSearchIndex;
 import io.goobi.viewer.controller.StringTools;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
-import io.goobi.viewer.exceptions.RecordLimitExceededException;
-import io.goobi.viewer.exceptions.RecordNotFoundException;
 import io.goobi.viewer.exceptions.ViewerConfigurationException;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.model.security.AccessConditionUtils;
@@ -76,11 +68,22 @@ public class ImageInformationRequestFilter implements ContainerRequestFilter {
         logger.trace("filter");
         try {
             String pi;
-            String imageName;
+            String imageName = null;
             if (servletRequest.getAttribute("filename") != null) {
                 //read parameters 
                 pi = (String) servletRequest.getAttribute("pi");
                 imageName = (String) servletRequest.getAttribute("filename");
+            } else if (servletRequest.getRequestURI().contains("rest/pdf/")) {
+                // Old API PDF quickfix
+                // TODO Why is this filter even applied to /rest/pdf/mets/foo.xml/-/info.json ?
+                String requestPath = servletRequest.getRequestURI();
+                requestPath = requestPath.substring(requestPath.indexOf("rest/pdf/") + 9);
+                logger.trace("Filtering request: {}", requestPath);
+                StringTokenizer tokenizer = new StringTokenizer(requestPath, "/");
+                List<String> pathSegments = tokenizer.getTokenList();
+                pi = pathSegments.get(1);
+                logger.trace("pi: " + pi);
+                //                imageName = pathSegments.size() > 3 ? pathSegments.get(3) : "";
             } else {
                 String requestPath = servletRequest.getRequestURI();
                 requestPath = requestPath.substring(requestPath.indexOf("records/") + 8);
@@ -97,7 +100,8 @@ public class ImageInformationRequestFilter implements ContainerRequestFilter {
                 return;
             }
             //only for actual image requests, no info requests
-            if (!BeanUtils.getImageDeliveryBean().isExternalUrl(imageName) && !BeanUtils.getImageDeliveryBean().isPublicUrl(imageName)
+            if (imageName != null && !BeanUtils.getImageDeliveryBean().isExternalUrl(imageName)
+                    && !BeanUtils.getImageDeliveryBean().isPublicUrl(imageName)
                     && !BeanUtils.getImageDeliveryBean().isStaticImageUrl(imageName)) {
                 filterForAccessConditions(request, pi, imageName);
                 FilterTools.filterForConcurrentViewLimit(pi, servletRequest);
@@ -170,6 +174,5 @@ public class ImageInformationRequestFilter implements ContainerRequestFilter {
             throw new ServiceNotAllowedException("Serving this image is restricted due to access conditions");
         }
     }
-
 
 }

@@ -20,9 +20,9 @@ import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -304,7 +304,7 @@ public class JPADAO implements IDAO {
      * @param addWildCards if true, add '%' to the beginning and end of param
      * @return the sanitized parameter
      */
-    private String sanitizeQueryParam(String param, boolean addWildCards) {
+    private static String sanitizeQueryParam(String param, boolean addWildCards) {
         param = param.replaceAll("['\"\\(\\)]", "");
         param = param.toUpperCase();
         if (addWildCards) {
@@ -2582,7 +2582,8 @@ public class JPADAO implements IDAO {
     /** {@inheritDoc} */
     @SuppressWarnings("unchecked")
     @Override
-    public List<CMSPage> getCMSPagesWithRelatedPi(int first, int pageSize, Date fromDate, Date toDate, List<String> templateIds) throws DAOException {
+    public List<CMSPage> getCMSPagesWithRelatedPi(int first, int pageSize, LocalDateTime fromDate, LocalDateTime toDate, List<String> templateIds)
+            throws DAOException {
         preQuery();
         StringBuilder sbQuery = new StringBuilder("SELECT o FROM CMSPage o WHERE o.relatedPI IS NOT NULL AND o.relatedPI <> ''");
         if (fromDate != null) {
@@ -2620,7 +2621,7 @@ public class JPADAO implements IDAO {
 
     /** {@inheritDoc} */
     @Override
-    public boolean isCMSPagesForRecordHaveUpdates(String pi, CMSCategory category, Date fromDate, Date toDate) throws DAOException {
+    public boolean isCMSPagesForRecordHaveUpdates(String pi, CMSCategory category, LocalDateTime fromDate, LocalDateTime toDate) throws DAOException {
         if (pi == null) {
             throw new IllegalArgumentException("pi may not be null");
         }
@@ -2649,7 +2650,7 @@ public class JPADAO implements IDAO {
 
     /** {@inheritDoc} */
     @Override
-    public long getCMSPageWithRelatedPiCount(Date fromDate, Date toDate, List<String> templateIds) throws DAOException {
+    public long getCMSPageWithRelatedPiCount(LocalDateTime fromDate, LocalDateTime toDate, List<String> templateIds) throws DAOException {
         preQuery();
         StringBuilder sbQuery =
                 new StringBuilder("SELECT COUNT(DISTINCT o.relatedPI) FROM CMSPage o WHERE o.relatedPI IS NOT NULL AND o.relatedPI <> ''");
@@ -4515,6 +4516,23 @@ public class JPADAO implements IDAO {
         return q.getResultList();
     }
 
+    /**
+     * @see io.goobi.viewer.dao.IDAO#getAnnotationsForUser(java.lang.Long)
+     * @should return correct rows
+     */
+    @SuppressWarnings("unchecked")
+    @Override
+    public List<PersistentAnnotation> getAnnotationsForUserId(Long userId) throws DAOException {
+        if (userId == null) {
+            return Collections.emptyList();
+        }
+
+        preQuery();
+        String query = "SELECT a FROM PersistentAnnotation a WHERE a.creatorId = :userId OR a.reviewerId = :userId";
+        
+        return em.createQuery(query).setParameter("userId", userId).getResultList();
+    }
+
     /** {@inheritDoc} */
     @SuppressWarnings("unchecked")
     @Override
@@ -4792,9 +4810,8 @@ public class JPADAO implements IDAO {
         if (results.isEmpty()) {
             //No results. Just return a new object which may be saved later
             return new TermsOfUse();
-        } else {
-            return (TermsOfUse) results.get(0);
         }
+        return (TermsOfUse) results.get(0);
     }
 
     /* (non-Javadoc)
@@ -4808,9 +4825,8 @@ public class JPADAO implements IDAO {
         if (results.isEmpty()) {
             //If no terms of use object exists, it is inactive
             return false;
-        } else {
-            return (boolean) results.get(0);
         }
+        return (boolean) results.get(0);
     }
 
     /* (non-Javadoc)

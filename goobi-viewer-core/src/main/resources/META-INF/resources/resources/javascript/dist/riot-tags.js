@@ -368,7 +368,7 @@ this.msg = function(key) {
 });
 
 
-riot.tag2('bookmarklistloggedin', '<ul if="{opts.bookmarks.config.userLoggedIn}" class="{mainClass}-small-list list"><li class="{mainClass}-entry" each="{bookmarkList in getBookmarkLists()}"><div class="login-navigation__bookmarks-name"><a href="{opts.bookmarks.getBookmarkListUrl(bookmarkList.id)}">{bookmarkList.name}</a></div><div class="login-navigation__bookmarks-icon-list icon-list"><a href="{searchListUrl(bookmarkList)}" data-toggle="tooltip" data-placement="top" data-original-title="" title="{msg(\'action__search_in_bookmarks\')}"><i class="fa fa-search" aria-hidden="true"></i></a><a href="{miradorUrl(bookmarkList)}" target="_blank" title="{msg(\'viewMiradorComparison\')}"><i class="fa fa-th" aria-hidden="true"></i></a><span title="{msg(\'admin__crowdsourcing_campaign_statistics_numRecords\')}" class="{mainClass}-counter">{bookmarkList.numItems}</span></div></li><li class="{mainClass}-entry"><a class="login-navigation__bookmarks-overview-link" href="{navigationHelper.applicationUrl}user/bookmarks/" data-toggle="tooltip" data-placement="top" data-original-title="" title="{msg(\'action__search_in_bookmarks\')}">{msg(\'bookmarkList_myBookmarkLists\')} </a></li></ul>', '', '', function(opts) {
+riot.tag2('bookmarklistloggedin', '<ul if="{opts.bookmarks.config.userLoggedIn}" class="{mainClass}-small-list list"><li class="{mainClass}-entry" each="{bookmarkList in getBookmarkLists()}"><div class="login-navigation__bookmarks-name"><a href="{opts.bookmarks.getBookmarkListUrl(bookmarkList.id)}">{bookmarkList.name}</a></div><div class="login-navigation__bookmarks-icon-list icon-list"><a href="{searchListUrl(bookmarkList)}" data-toggle="tooltip" data-placement="top" data-original-title="" title="{msg(\'action__search_in_bookmarks\')}"><i class="fa fa-search" aria-hidden="true"></i></a><a href="{miradorUrl(bookmarkList)}" target="_blank" title="{msg(\'viewMiradorComparison\')}"><i class="fa fa-th" aria-hidden="true"></i></a><span title="{msg(\'admin__crowdsourcing_campaign_statistics_numRecords\')}" class="{mainClass}-counter">{bookmarkList.numItems}</span></div></li><li class="{mainClass}-entry"><a class="login-navigation__bookmarks-overview-link" href="{allBookmarksUrl()}" data-toggle="tooltip" data-placement="top" data-original-title="" title="{msg(\'bookmarkList_overview_all\')}">{msg(\'bookmarkList_overview_all\')} </a></li></ul>', '', '', function(opts) {
 
 
 this.pi = this.opts.data.pi;
@@ -457,6 +457,10 @@ this.searchListUrl = function(list) {
 	    url = this.opts.bookmarks.config.root + "/bookmarks/search/" + list.name + "/";
     }
     return url;
+}.bind(this)
+
+this.allBookmarksUrl = function(list) {
+    	return this.opts.bookmarks.config.root + "/user/bookmarks/";
 }.bind(this)
 
 this.mayCompareList = function(list) {
@@ -2083,11 +2087,11 @@ this.addAnnotation = function() {
 });
 
 
-riot.tag2('timematrix', '<div class="timematrix__objects"><div each="{image in imageList}" class="timematrix__content"><div id="imageMap" class="timematrix__img"><a href="{image.url}"><img riot-src="{image.mediumimage}" class="timematrix__image" data-viewer-thumbnail="thumbnail" onerror="this.onerror=null;this.src=\'/viewer/resources/images/access_denied.png\'"><div class="timematrix__text"><p if="{image.title}" name="timetext" class="timetext">{image.title[0]}</p></div></a></div></div></div>', '', '', function(opts) {
+riot.tag2('timematrix', '<div class="timematrix__objects"><div each="{manifest in manifests}" class="timematrix__content"><div id="imageMap" class="timematrix__img"><a href="{getViewerUrl(manifest)}"><img riot-src="{getImageUrl(manifest)}" class="timematrix__image" data-viewer-thumbnail="thumbnail" onerror="this.onerror=null;this.src=\'/viewer/resources/images/access_denied.png\'"><div class="timematrix__text"><p if="{hasTitle(manifest)}" name="timetext" class="timetext">{getDisplayTitle(manifest)}</p></div></a></div></div></div>', '', '', function(opts) {
 	    this.on( 'mount', function() {
 
 	        rxjs.fromEvent($( this.opts.button ), "click").pipe(
-	                rxjs.operators.map( e => this.getApiUrl()),
+	                rxjs.operators.map( e => this.getIIIFApiUrl()),
 	                rxjs.operators.switchMap( url => {
 
 	                    this.opts.loading.show();
@@ -2098,21 +2102,53 @@ riot.tag2('timematrix', '<div class="timematrix__objects"><div each="{image in i
 	                    return result.json();
 	                }),
 	                ).subscribe(json => {
-
-	                    this.imageList = json;
+	                    this.manifests = json.orderedItems;
+	                    console.log("got manifests ", this.manifests);
 	                    this.update()
 	                    this.opts.loading.hide()
 	                })
 
-	        this.imageList = [];
+	        this.manifests = [];
 	        this.startDate = parseInt( $( this.opts.startInput ).val() );
 	        this.endDate = parseInt( $( this.opts.endInput ).val() );
 	        this.initSlider( this.opts.slider, this.startDate, this.endDate );
 	    } );
 
-	    this.updateRange = function( event )
-	    {
-	        this.getTimematrix()
+	    this.getViewerUrl = function(manifest) {
+	        let viewer = manifest.rendering.find(r => r.format == "text/html");
+	        if(viewer) {
+	            return viewer["@id"];
+	        } else {
+	            return "";
+	        }
+	    }.bind(this)
+
+	    this.getImageUrl = function(manifest) {
+	        if(manifest.thumbnail) {
+	            let url = manifest.thumbnail["@id"];
+	            return url;
+	        }
+	    }.bind(this)
+
+	    this.hasTitle = function(manifest) {
+	        return manifest.label != undefined;
+	    }.bind(this)
+
+	    this.getDisplayTitle = function(manifest) {
+	        return viewerJS.iiif.getValue(manifest.label, this.opts.language, "en");
+	    }.bind(this)
+
+	    this.getIIIFApiUrl = function() {
+	        var apiTarget = this.opts.contextPath;
+	        apiTarget += "api/v1/records/list";
+	        apiTarget += "?start=" + $( this.opts.startInput ).val();
+	        apiTarget += "&end=" + $( this.opts.endInput ).val();
+	        apiTarget += "&count=" + $( this.opts.count ).val();
+	        apiTarget += "&sort=YEAR";
+	        if ( this.opts.subtheme ) {
+	            apiTarget += ( "&subtheme=" + this.opts.subtheme );
+	        }
+	        return apiTarget;
 	    }.bind(this)
 
 	    this.getApiUrl = function() {

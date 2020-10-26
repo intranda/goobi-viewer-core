@@ -3,6 +3,7 @@
                 xmlns:f="http://xmlns.jcp.org/jsf/core"
                 xmlns:p="http://primefaces.org/ui"
                 xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+                xmlns:fn="http://java.sun.com/jsp/jstl/functions"
                 xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components"
                 xmlns:widgetComponent="http://xmlns.jcp.org/jsf/composite/components/widgets"
                 xmlns:adminWidget="http://xmlns.jcp.org/jsf/composite/admin/widgets"
@@ -104,7 +105,8 @@
                                         </div>
                                         <div class="col-2 d-flex">
                                         	<h:outputText value="#{page.dateUpdated}">
-                                                <f:convertDateTime pattern="dd.MM.YYYY - HH:mm" type="both" dateStyle="short" timeStyle="short" />
+                                                <f:converter converterId="localDateTimeConverter" />
+                                                <f:attribute name="pattern" value="dd.MM.YYYY - HH:mm" />
                                             </h:outputText>
                                         </div>
                                     </div>
@@ -168,15 +170,17 @@
                                     <dd class="col-sm-7 mb-3">#{msg[statisticsBean.contentServerVersion]}</dd>
                                     
                                 </dl>
-                                <div class="row">
-                                    <h4 class="col-9">#{msg.admin__dashboard_versions_modules}</h4>
-                                </div>
-                                <dl class="row">
-                                    <ui:repeat var="module" value="#{configurationBean.modules}">
-                                        <dt class="col-sm-5 mb-3">#{module.name}:</dt>
-                                        <dd class="col-sm-7 mb-3">#{module.version}</dd>
-                                    </ui:repeat>
-                                </dl>
+                                <ui:fragment rendered="#{fn:length(configurationBean.modules) > 0}">
+                                    <div class="row">
+                                        <h4 class="col-9">#{msg.admin__dashboard_versions_modules}</h4>
+                                    </div>
+                                    <dl class="row">
+                                        <ui:repeat var="module" value="#{configurationBean.modules}">
+                                            <dt class="col-sm-5 mb-3">#{module.name}:</dt>
+                                            <dd class="col-sm-7 mb-3">#{module.version}</dd>
+                                        </ui:repeat>
+                                    </dl>
+                                </ui:fragment>
                             </div>
 
 

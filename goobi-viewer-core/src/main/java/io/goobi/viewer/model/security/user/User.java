@@ -17,9 +17,9 @@ package io.goobi.viewer.model.security.user;
 
 import java.io.Serializable;
 import java.net.URI;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -123,9 +123,9 @@ public class User implements ILicensee, HttpSessionBindingListener, Serializable
     @Column(name = "activation_key")
     private String activationKey;
 
-    @Temporal(TemporalType.TIMESTAMP)
+//    @Temporal(TemporalType.TIMESTAMP)
     @Column(name = "last_login")
-    private Date lastLogin;
+    private LocalDateTime lastLogin;
 
     @Column(name = "active", nullable = false)
     private boolean active = false;
@@ -760,7 +760,7 @@ public class User implements ILicensee, HttpSessionBindingListener, Serializable
         User user = DataManager.getInstance().getDao().getUserByEmail(email);
         // Only allow non-openID accounts
         if (user != null && user.getPasswordHash() != null && bcrypt.checkpw(password, user.getPasswordHash())) {
-            user.setLastLogin(new Date());
+            user.setLastLogin(LocalDateTime.now());
             return user;
         }
 
@@ -1230,7 +1230,7 @@ public class User implements ILicensee, HttpSessionBindingListener, Serializable
      *
      * @return the lastLogin
      */
-    public Date getLastLogin() {
+    public LocalDateTime getLastLogin() {
         return lastLogin;
     }
 
@@ -1241,7 +1241,7 @@ public class User implements ILicensee, HttpSessionBindingListener, Serializable
      *
      * @param lastLogin the lastLogin to set
      */
-    public void setLastLogin(Date lastLogin) {
+    public void setLastLogin(LocalDateTime lastLogin) {
         this.lastLogin = lastLogin;
     }
 

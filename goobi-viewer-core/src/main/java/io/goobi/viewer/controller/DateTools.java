@@ -15,6 +15,7 @@
  */
 package io.goobi.viewer.controller;
 
+import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
@@ -149,7 +150,33 @@ public class DateTools {
 
         return ret;
     }
-
+    
+    /**
+     * 
+     * @param millis
+     * @param utc
+     * @return
+     */
+    public static LocalDateTime getLocalDateTimeFromMillis(long millis, boolean utc) {
+        Instant instant = Instant.ofEpochMilli(millis);
+        return instant.atZone(utc ? ZoneOffset.UTC : ZoneId.systemDefault()).toLocalDateTime();
+    }
+    
+    /**
+     * 
+     * @param ldt
+     * @param utc
+     * @return
+     */
+    public static Long getMillisFromLocalDateTime(LocalDateTime ldt, boolean utc) {
+        if(ldt == null) {
+            return null;
+        }
+        
+        ZonedDateTime zdt = ldt.atZone(utc ? ZoneOffset.UTC : ZoneId.systemDefault());
+        return zdt.toInstant().toEpochMilli();
+    }
+    
     /**
      * 
      * @param dateString
@@ -279,7 +306,7 @@ public class DateTools {
      */
     public static Date convertLocalDateTimeToDateViaInstant(LocalDateTime dateToConvert, boolean utc) {
         if (dateToConvert == null) {
-            throw new IllegalArgumentException("dateToConvert may not be null");
+            return null;
         }
         return Date.from(dateToConvert.atZone(utc ? ZoneOffset.UTC : ZoneOffset.systemDefault()).toInstant());
     }
@@ -291,7 +318,7 @@ public class DateTools {
      */
     public static LocalDateTime convertDateToLocalDateTimeViaInstant(Date dateToConvert) {
         if (dateToConvert == null) {
-            throw new IllegalArgumentException("dateToConvert may not be null");
+            return null;
         }
         return dateToConvert.toInstant()
                 .atZone(ZoneId.systemDefault())
@@ -352,7 +379,7 @@ public class DateTools {
                 return format(convertDateToLocalDateTimeViaInstant(date), formatterENDateTimeNoSeconds, false);
         }
     }
-
+    
     /**
      * FIXME add some more documentation This method is used by the crowdsourcing module
      *

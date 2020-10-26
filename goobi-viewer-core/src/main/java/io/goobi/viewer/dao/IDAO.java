@@ -16,7 +16,7 @@
 package io.goobi.viewer.dao;
 
 import java.sql.SQLException;
-import java.util.Date;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -1272,13 +1272,13 @@ public interface IDAO {
      *
      * @param first a int.
      * @param pageSize a int.
-     * @param fromDate a {@link java.util.Date} object.
-     * @param toDate a {@link java.util.Date} object.
+     * @param fromDate a {@link java.time.LocalDateTime} object.
+     * @param toDate a {@link java.time.LocalDateTime} object.
      * @param templateIds Optional list of template IDs for filtering.
      * @return a {@link java.util.List} object.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
-    public List<CMSPage> getCMSPagesWithRelatedPi(int first, int pageSize, Date fromDate, Date toDate, List<String> templateIds) throws DAOException;
+    public List<CMSPage> getCMSPagesWithRelatedPi(int first, int pageSize, LocalDateTime fromDate, LocalDateTime toDate, List<String> templateIds) throws DAOException;
 
     /**
      * <p>
@@ -1287,25 +1287,25 @@ public interface IDAO {
      *
      * @param pi a {@link java.lang.String} object.
      * @param category a {@link io.goobi.viewer.model.cms.CMSCategory} object.
-     * @param fromDate a {@link java.util.Date} object.
-     * @param toDate a {@link java.util.Date} object.
+     * @param fromDate a {@link java.time.LocalDateTime} object.
+     * @param toDate a {@link java.time.LocalDateTime} object.
      * @return a boolean.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
-    public boolean isCMSPagesForRecordHaveUpdates(String pi, CMSCategory category, Date fromDate, Date toDate) throws DAOException;
+    public boolean isCMSPagesForRecordHaveUpdates(String pi, CMSCategory category, LocalDateTime fromDate, LocalDateTime toDate) throws DAOException;
 
     /**
      * <p>
      * getCMSPageWithRelatedPiCount.
      * </p>
      *
-     * @param fromDate a {@link java.util.Date} object.
-     * @param toDate a {@link java.util.Date} object.
+     * @param fromDate a {@link java.time.LocalDateTime} object.
+     * @param toDate a {@link java.time.LocalDateTime} object.
      * @param templateIds Optional list of template IDs for filtering.
      * @return a long.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
-    public long getCMSPageWithRelatedPiCount(Date fromDate, Date toDate, List<String> templateIds) throws DAOException;
+    public long getCMSPageWithRelatedPiCount(LocalDateTime fromDate, LocalDateTime toDate, List<String> templateIds) throws DAOException;
 
     /**
      * <p>
@@ -1986,6 +1986,14 @@ public interface IDAO {
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
     public List<PersistentAnnotation> getAnnotationsForTarget(String pi, Integer page) throws DAOException;
+    
+    /**
+     * 
+     * @param userId
+     * @return
+     * @throws DAOException
+     */
+    public List<PersistentAnnotation> getAnnotationsForUserId(Long userId) throws DAOException;
 
     /**
      * <p>
@@ -2112,7 +2120,7 @@ public interface IDAO {
      * Add the given map to the database if no map of the same id already exists
      * 
      * @param map
-     * @return true if successfull
+     * @return true if successful
      * @throws DAOException
      */
     public boolean addGeoMap(GeoMap map) throws DAOException;
@@ -2121,7 +2129,7 @@ public interface IDAO {
      * Update the given {@link GeoMap} in the database
      * 
      * @param map
-     * @return true if successfull
+     * @return true if successful
      * @throws DAOException
      */
     public boolean updateGeoMap(GeoMap map) throws DAOException;
@@ -2130,7 +2138,7 @@ public interface IDAO {
      * Delete the given {@link GeoMap} from the database
      * 
      * @param map
-     * @return true if successfull
+     * @return true if successful
      * @throws DAOException
      */
     public boolean deleteGeoMap(GeoMap map) throws DAOException;

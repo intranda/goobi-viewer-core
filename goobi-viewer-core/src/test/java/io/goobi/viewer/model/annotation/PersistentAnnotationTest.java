@@ -20,7 +20,7 @@ import static org.junit.Assert.assertEquals;
 import java.awt.Rectangle;
 import java.io.IOException;
 import java.net.URI;
-import java.util.Date;
+import java.time.LocalDateTime;
 import java.util.List;
 
 import javax.persistence.EntityManager;
@@ -205,7 +205,7 @@ public class PersistentAnnotationTest extends AbstractDatabaseEnabledTest {
         Assert.assertEquals(webAnno.getTarget(), fromDAOWebAnno.getTarget());
         Assert.assertEquals(webAnno, fromDAOWebAnno);
 
-        Date changed = new Date();
+        LocalDateTime changed = LocalDateTime.now();
         fromDAO.setDateModified(changed);
         boolean updated = DataManager.getInstance().getDao().updateAnnotation(fromDAO);
 

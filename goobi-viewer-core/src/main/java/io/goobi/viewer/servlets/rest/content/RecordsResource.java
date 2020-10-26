@@ -51,6 +51,7 @@ import de.unigoettingen.sub.commons.contentlib.exceptions.ContentNotFoundExcepti
 import de.unigoettingen.sub.commons.contentlib.exceptions.ServiceNotAllowedException;
 import de.unigoettingen.sub.commons.contentlib.servlet.rest.CORSBinding;
 import io.goobi.viewer.api.rest.ViewerRestServiceBinding;
+import io.goobi.viewer.api.rest.v1.records.RecordsListResource;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.FileTools;
 import io.goobi.viewer.controller.JsonTools;
@@ -119,7 +120,9 @@ public class RecordsResource {
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
+     * @deprecated use {@link RecordsListResource#listManifests(String, Integer, Integer, String, String, String, String)} instead
      */
+    @Deprecated
     @GET
     @Path("/timematrix/q/{query}/{count}")
     @Produces({ MediaType.APPLICATION_JSON })

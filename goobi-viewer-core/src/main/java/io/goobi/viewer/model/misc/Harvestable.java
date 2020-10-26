@@ -15,7 +15,7 @@
  */
 package io.goobi.viewer.model.misc;
 
-import java.util.Date;
+import java.time.LocalDateTime;
 
 /**
  * Interface describing objects that can be queried via HarvestServlet.
@@ -38,5 +38,5 @@ public interface Harvestable {
      *
      * @return a {@link java.util.Date} object.
      */
-    public Date getDateUpdated();
+    public LocalDateTime getDateUpdated();
 }

@@ -21,7 +21,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -106,9 +105,9 @@ public class Sitemap {
                     String url = viewerRootUrl + page.getUrl();
                     String dateUpdated = "";
                     if (page.getDateUpdated() != null) {
-                        dateUpdated = getDateString(page.getDateUpdated().getTime());
+                        dateUpdated = DateTools.format(page.getDateUpdated(), DateTools.formatterISO8601Date, false);
                     } else if (page.getDateCreated() != null) {
-                        dateUpdated = getDateString(page.getDateCreated().getTime());
+                        DateTools.format(page.getDateCreated(), DateTools.formatterISO8601Date, false);
                     }
                     currentDocSitemap.getRootElement().addContent(createUrlElement(url, dateUpdated, "weekly", "0.5"));
                     increment(timestampModified);
@@ -154,7 +153,8 @@ public class Sitemap {
                         timestampModified = (long) dateUpdated;
                     }
                 }
-                dateModified = getDateString(timestampModified);
+                dateModified =
+                        DateTools.format(DateTools.getLocalDateTimeFromMillis(timestampModified, false), DateTools.formatterISO8601Date, false);
                 if (timestampModified > latestTimestampModified) {
                     latestTimestampModified = timestampModified;
                     eleCurrectIndexSitemap.getChild("lastmod", nsSitemap).setText(dateModified);
@@ -280,7 +280,8 @@ public class Sitemap {
                 eleCurrectIndexSitemap.addContent(eleLastmod);
                 if (timestamp > 0) {
                     // If switching sitemap files within a record, use the current record's timestamp
-                    eleLastmod.setText(getDateString(timestamp));
+                    eleLastmod
+                            .setText(DateTools.format(DateTools.getLocalDateTimeFromMillis(timestamp, false), DateTools.formatterISO8601Date, false));
                 } else {
                     eleLastmod.setText("");
                 }
@@ -288,16 +289,6 @@ public class Sitemap {
 
             index = 0;
         }
-    }
-
-    /**
-     * Extracts date string from the given timestamp.
-     * 
-     * @param timestamp
-     * @return ISO date string
-     */
-    private static String getDateString(long timestamp) {
-        return DateTools.format(new Date(timestamp), DateTools.formatterISO8601Date, false);
     }
 
     /**

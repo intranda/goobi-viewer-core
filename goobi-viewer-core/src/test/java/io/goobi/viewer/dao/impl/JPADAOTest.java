@@ -16,6 +16,7 @@
 package io.goobi.viewer.dao.impl;
 
 import java.io.File;
+import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
@@ -31,7 +32,6 @@ import org.junit.Test;
 
 import io.goobi.viewer.AbstractDatabaseEnabledTest;
 import io.goobi.viewer.controller.DataManager;
-import io.goobi.viewer.controller.DateTools;
 import io.goobi.viewer.exceptions.AccessDeniedException;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.model.annotation.Comment;
@@ -105,6 +105,7 @@ public class JPADAOTest extends AbstractDatabaseEnabledTest {
         User user = DataManager.getInstance().getDao().getUser(1);
         Assert.assertNotNull(user);
         Assert.assertEquals(2, user.getOpenIdAccounts().size());
+        Assert.assertEquals(LocalDateTime.of(2012, 3, 3, 11, 22, 33), user.getLastLogin());
     }
 
     @Test
@@ -136,7 +137,7 @@ public class JPADAOTest extends AbstractDatabaseEnabledTest {
         user.setNickName("banned_admin");
         user.setComments("no");
         user.setUseGravatar(true);
-        Date now = new Date();
+        LocalDateTime now = LocalDateTime.now();
         user.setLastLogin(now);
         user.setActive(false);
         user.setSuperuser(true);
@@ -170,8 +171,7 @@ public class JPADAOTest extends AbstractDatabaseEnabledTest {
         user.setNickName("unbanned_admin");
         user.setComments("no");
         user.setUseGravatar(true);
-        Date now = new Date();
-        user.setLastLogin(now);
+        user.setLastLogin(LocalDateTime.now());
         user.setActive(false);
         user.setSuspended(true);
         user.setSuperuser(false);
@@ -599,64 +599,6 @@ public class JPADAOTest extends AbstractDatabaseEnabledTest {
         Assert.assertNotNull(ipRange3);
         Assert.assertEquals(0, ipRange3.getLicenses().size());
     }
-
-    // Annotations
-
-    /*
-     * @Test public void getAllAnnotationsTest() { List<AnnotationElement> annotations =
-     * DataManager.getInstance().getDao().getAllAnnotations(); Assert.assertEquals(3, annotations.size()); }
-     * 
-     * @Test public void getAnnotationByIdTest() { AnnotationElement annotation =
-     * DataManager.getInstance().getDao().getAnnotation(1); Assert.assertNotNull(annotation);
-     * Assert.assertEquals(Long.valueOf(1), annotation.getId()); Assert.assertEquals("PI_1", annotation.getPi());
-     * Assert.assertEquals(1, annotation.getPage()); Assert.assertNotNull(annotation.getOwner());
-     * Assert.assertEquals(Long.valueOf(1), annotation.getOwner().getId());
-     * Assert.assertNotNull(annotation.getDateCreated()); Assert.assertNull(annotation.getDateUpdated());
-     * Assert.assertEquals(AnnotationStatus.PUBLIC, annotation.getStatus()); Assert.assertEquals("annotation 1 text",
-     * annotation.getText()); }
-     * 
-     * @Test public void getAnnotationsForPageTest() { List<AnnotationElement> annotations =
-     * DataManager.getInstance().getDao().getAnnotationsForPage("PI_1", 1); Assert.assertEquals(2, annotations.size()); }
-     * 
-     * @Test public void addAnnotationTest() { Assert.assertEquals(3,
-     * DataManager.getInstance().getDao().getAllAnnotations().size()); AnnotationElement annotation = new
-     * AnnotationElement(); annotation.setPi("PI_2"); annotation.setPage(1); annotation.setText("new annotation text");
-     * annotation.setOwner(DataManager.getInstance().getDao().getUser(1)); annotation.setStatus(AnnotationStatus.PRIVATE);
-     * try { Assert.assertTrue(DataManager.getInstance().getDao().addAnnotation(annotation)); } catch (PresentationException
-     * e) { e.printStackTrace(); } Assert.assertNotNull(annotation.getId()); Assert.assertEquals(4,
-     * DataManager.getInstance().getDao().getAllAnnotations().size());
-     * 
-     * AnnotationElement annotation2 = DataManager.getInstance().getDao().getAnnotation(annotation.getId());
-     * Assert.assertNotNull(annotation2); Assert.assertEquals(annotation.getPi(), annotation2.getPi());
-     * Assert.assertEquals(annotation.getPage(), annotation2.getPage()); Assert.assertEquals(annotation.getText(),
-     * annotation2.getText()); Assert.assertEquals(AnnotationStatus.PRIVATE, annotation2.getStatus());
-     * Assert.assertEquals(annotation.getOwner(), annotation2.getOwner());
-     * Assert.assertNotNull(annotation2.getDateCreated()); Assert.assertNull(annotation.getDateUpdated()); }
-     * 
-     * @Test public void updateAnnotationTest() { Assert.assertEquals(3,
-     * DataManager.getInstance().getDao().getAllAnnotations().size()); AnnotationElement annotation =
-     * DataManager.getInstance().getDao().getAnnotation(1); Assert.assertNotNull(annotation);
-     * 
-     * annotation.setText("new annotation 1 text"); annotation.setStatus(AnnotationStatus.PRIVATE);
-     * annotation.setDateUpdated(new Date());
-     * 
-     * Assert.assertTrue(DataManager.getInstance().getDao().updateAnnotation(annotation)); Assert.assertEquals(3,
-     * DataManager.getInstance().getDao().getAllAnnotations().size());
-     * 
-     * AnnotationElement annotation2 = DataManager.getInstance().getDao().getAnnotation(annotation.getId());
-     * Assert.assertNotNull(annotation2); Assert.assertEquals(annotation.getPi(), annotation2.getPi());
-     * Assert.assertEquals(annotation.getPage(), annotation2.getPage()); Assert.assertEquals(annotation.getText(),
-     * annotation2.getText()); Assert.assertEquals(AnnotationStatus.PRIVATE, annotation2.getStatus());
-     * Assert.assertEquals(annotation.getOwner(), annotation2.getOwner()); Assert.assertNotNull(annotation.getDateCreated());
-     * Assert.assertNotNull(annotation.getDateUpdated()); }
-     * 
-     * @Test public void deleteAnnotationTest() { Assert.assertEquals(3,
-     * DataManager.getInstance().getDao().getAllAnnotations().size()); AnnotationElement annotation =
-     * DataManager.getInstance().getDao().getAnnotation(1); Assert.assertNotNull(annotation);
-     * Assert.assertTrue(DataManager.getInstance().getDao().deleteAnnotation(annotation));
-     * Assert.assertNull(DataManager.getInstance().getDao().getAnnotation(1)); Assert.assertEquals(2,
-     * DataManager.getInstance().getDao().getAllAnnotations().size()); }
-     */
 
     // Comments
 
@@ -1657,21 +1599,21 @@ public class JPADAOTest extends AbstractDatabaseEnabledTest {
         Assert.assertEquals(1,
                 DataManager.getInstance()
                         .getDao()
-                        .getCMSPagesWithRelatedPi(0, 100, DateTools.createDate(2015, 1, 1, 0, 0), DateTools.createDate(2015, 12, 31, 0, 0),
+                        .getCMSPagesWithRelatedPi(0, 100, LocalDateTime.of(2015, 1, 1, 0, 0), LocalDateTime.of(2015, 12, 31, 0, 0),
                                 Arrays.asList("template_simple", "template_two"))
                         .size());
         // Wrong template
         Assert.assertEquals(0,
                 DataManager.getInstance()
                         .getDao()
-                        .getCMSPagesWithRelatedPi(0, 100, DateTools.createDate(2015, 1, 1, 0, 0), DateTools.createDate(2015, 12, 31, 0, 0),
+                        .getCMSPagesWithRelatedPi(0, 100, LocalDateTime.of(2015, 1, 1, 0, 0), LocalDateTime.of(2015, 12, 31, 0, 0),
                                 Collections.singletonList("wrong_tempalte"))
                         .size());
         // Wrong date range
         Assert.assertEquals(0,
                 DataManager.getInstance()
                         .getDao()
-                        .getCMSPagesWithRelatedPi(0, 100, DateTools.createDate(2016, 1, 1, 0, 0), DateTools.createDate(2016, 12, 31, 0, 0),
+                        .getCMSPagesWithRelatedPi(0, 100, LocalDateTime.of(2016, 1, 1, 0, 0), LocalDateTime.of(2016, 12, 31, 0, 0),
                                 Collections.singletonList("template_simple"))
                         .size());
     }
@@ -1684,10 +1626,10 @@ public class JPADAOTest extends AbstractDatabaseEnabledTest {
     public void isCMSPagesForRecordHaveUpdates_shouldReturnCorrectValue() throws Exception {
         Assert.assertTrue(DataManager.getInstance()
                 .getDao()
-                .isCMSPagesForRecordHaveUpdates("PI_1", null, DateTools.createDate(2015, 1, 1, 0, 0), DateTools.createDate(2015, 12, 31, 0, 0)));
+                .isCMSPagesForRecordHaveUpdates("PI_1", null, LocalDateTime.of(2015, 1, 1, 0, 0), LocalDateTime.of(2015, 12, 31, 0, 0)));
         Assert.assertFalse(DataManager.getInstance()
                 .getDao()
-                .isCMSPagesForRecordHaveUpdates("PI_1", null, DateTools.createDate(2016, 1, 1, 0, 0), DateTools.createDate(2016, 12, 31, 0, 0)));
+                .isCMSPagesForRecordHaveUpdates("PI_1", null, LocalDateTime.of(2016, 1, 1, 0, 0), LocalDateTime.of(2016, 12, 31, 0, 0)));
         Assert.assertFalse(DataManager.getInstance().getDao().isCMSPagesForRecordHaveUpdates("PI_2", null, null, null));
     }
 
@@ -1700,19 +1642,19 @@ public class JPADAOTest extends AbstractDatabaseEnabledTest {
         Assert.assertEquals(1,
                 DataManager.getInstance()
                         .getDao()
-                        .getCMSPageWithRelatedPiCount(DateTools.createDate(2015, 1, 1, 0, 0), DateTools.createDate(2015, 12, 31, 0, 0),
+                        .getCMSPageWithRelatedPiCount(LocalDateTime.of(2015, 1, 1, 0, 0), LocalDateTime.of(2015, 12, 31, 0, 0),
                                 Arrays.asList("template_simple", "template_two")));
         // Wrong template
         Assert.assertEquals(0,
                 DataManager.getInstance()
                         .getDao()
-                        .getCMSPageWithRelatedPiCount(DateTools.createDate(2015, 1, 1, 0, 0), DateTools.createDate(2015, 12, 31, 0, 0),
+                        .getCMSPageWithRelatedPiCount(LocalDateTime.of(2015, 1, 1, 0, 0), LocalDateTime.of(2015, 12, 31, 0, 0),
                                 Collections.singletonList("wrong_template")));
         // Wrong date range
         Assert.assertEquals(0,
                 DataManager.getInstance()
                         .getDao()
-                        .getCMSPageWithRelatedPiCount(DateTools.createDate(2016, 1, 1, 0, 0), DateTools.createDate(2016, 12, 31, 0, 0),
+                        .getCMSPageWithRelatedPiCount(LocalDateTime.of(2016, 1, 1, 0, 0), LocalDateTime.of(2016, 12, 31, 0, 0),
                                 Collections.singletonList("template_simple")));
     }
 
@@ -1753,7 +1695,7 @@ public class JPADAOTest extends AbstractDatabaseEnabledTest {
     public void addCMSPage_shouldAddPageCorrectly() throws Exception {
         CMSPage page = new CMSPage();
         page.setTemplateId("template_id");
-        page.setDateCreated(new Date());
+        page.setDateCreated(LocalDateTime.now());
         page.setPublished(true);
         page.setUseDefaultSidebar(false);
 
@@ -1827,7 +1769,7 @@ public class JPADAOTest extends AbstractDatabaseEnabledTest {
         CMSCategory cClass = DataManager.getInstance().getDao().getCategoryByName("class");
         page.getCategories().add(cClass);
 
-        Date now = new Date();
+        LocalDateTime now = LocalDateTime.now();
         page.setDateUpdated(now);
         Assert.assertTrue(DataManager.getInstance().getDao().updateCMSPage(page));
 
@@ -2470,6 +2412,19 @@ public class JPADAOTest extends AbstractDatabaseEnabledTest {
     }
 
     /**
+     * @see JPADAO#getAnnotationsForUserId(Long)
+     * @verifies return correct rows
+     */
+    @Test
+    public void getAnnotationsForUserId_shouldReturnCorrectRows() throws Exception {
+        List<PersistentAnnotation> result = DataManager.getInstance().getDao().getAnnotationsForUserId(1L);
+        Assert.assertNotNull(result);
+        Assert.assertEquals(2, result.size());
+        Assert.assertEquals(Long.valueOf(1), result.get(0).getId());
+        Assert.assertEquals(Long.valueOf(2), result.get(1).getId());
+    }
+
+    /**
      * @see JPADAO#getAnnotationCount(Map)
      * @verifies return correct count
      */
@@ -2688,19 +2643,19 @@ public class JPADAOTest extends AbstractDatabaseEnabledTest {
         Assert.assertEquals(expectedFilterString, filterString);
         Assert.assertTrue(params.get("BcC").equals("%BAR%"));
     }
-    
+
     @Test
     public void testGetTermsOfUse() throws DAOException {
         TermsOfUse tou = DataManager.getInstance().getDao().getTermsOfUse();
         Assert.assertNotNull(tou);
     }
-    
+
     @Test
     public void testIsTermsOfUseActive() throws DAOException {
         boolean active = DataManager.getInstance().getDao().isTermsOfUseActive();
         Assert.assertFalse(active);
     }
-    
+
     @Test
     public void testSaveTermsOfUse() throws DAOException {
         Assert.assertFalse(DataManager.getInstance().getDao().isTermsOfUseActive());
@@ -2708,45 +2663,45 @@ public class JPADAOTest extends AbstractDatabaseEnabledTest {
         tou.setActive(true);
         DataManager.getInstance().getDao().saveTermsOfUse(tou);
         Assert.assertTrue(DataManager.getInstance().getDao().isTermsOfUseActive());
-        
+
         tou = DataManager.getInstance().getDao().getTermsOfUse();
         Assert.assertTrue(tou.isActive());
         tou.setTitle("en", "English Title");
         tou.setTitle("de", "German Title");
         tou.setDescription("en", "English description");
         tou.setDescription("de", "German description");
-        
+
         DataManager.getInstance().getDao().saveTermsOfUse(tou);
         tou = DataManager.getInstance().getDao().getTermsOfUse();
         Assert.assertEquals("English Title", tou.getTitle("en").getValue());
         Assert.assertEquals("German Title", tou.getTitle("de").getValue());
         Assert.assertEquals("German description", tou.getDescription("de").getValue());
         Assert.assertEquals("English description", tou.getDescription("en").getValue());
-        
+
     }
-    
+
     @Test
     public void testResetUserAgreementsToTermsOfUse() throws DAOException {
-        
+
         //initially noone has agreed
         List<User> users = DataManager.getInstance().getDao().getAllUsers(true);
         Assert.assertTrue(users.stream().allMatch(u -> !u.isAgreedToTermsOfUse()));
-        
+
         //now all agree
         for (User user : users) {
             user.setAgreedToTermsOfUse(true);
             DataManager.getInstance().getDao().updateUser(user);
         }
-        
+
         //now all should have agreed
         users = DataManager.getInstance().getDao().getAllUsers(true);
         Assert.assertTrue(users.stream().allMatch(u -> u.isAgreedToTermsOfUse()));
-        
+
         //reset agreements
         DataManager.getInstance().getDao().resetUserAgreementsToTermsOfUse();
-        
+
         //now noone has agreed again
         users = DataManager.getInstance().getDao().getAllUsers(true);
         Assert.assertTrue(users.stream().allMatch(u -> !u.isAgreedToTermsOfUse()));
-    }   
+    }
 }
