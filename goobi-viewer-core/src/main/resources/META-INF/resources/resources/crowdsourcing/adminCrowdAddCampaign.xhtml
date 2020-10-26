@@ -254,37 +254,7 @@
 											<h:panelGroup
 													id="QuestionsArea"
 													rendered="#{crowdsourcingBean.selectedCampaign.selectedLocale != null}">
-													
-	
-											<!-- CAMPAIGN LANGUAGE TABS QUESTIONS -->
-								<!--  		<div class="admin__language-tabs">
-												<ul class="nav nav-tabs" role="tablist">
-													<c:forEach var="locale"
-														items="#{crowdsourcingBean.getAllLocales()}">
-														
-														<li role="tab"
-															class="admin__language-tab 
-														#{crowdsourcingBean.selectedCampaign.isSelected(locale) ? 'active':''}
-														#{crowdsourcingBean.selectedCampaign.isComplete(locale) ? '-already-translated':''}
-														#{crowdsourcingBean.selectedCampaign.isDefaultLocaleSelected() ? '-default-language':''}">
-															<h:commandLink
-																value="#{locale.getDisplayLanguage(navigationHelper.locale)}"
-																action="#{crowdsourcingBean.selectedCampaign.setSelectedLocale(locale)}"
-																immediate="false">
-																<f:ajax render="languagesQuestionsArea languagesGeneralArea" execute="@form"></f:ajax>
-															</h:commandLink>
-														</li>
-													</c:forEach>
-												</ul>
-											</div>
-											-->
-											
-											
-											
-											
-	
-	
-	
+
 											<div class="tab-content">
 													<div role="tabpanel"
 														class="admin__default-block">
@@ -314,7 +284,7 @@
 																		<!-- CAMPAIGN LANGUAGE TABS QUESTIONS VERTICAL ORDER -->	
 																		
 																			<viewerComponent:translatedInputField 
-																				value="#{question.translations}" 
+																				value="#{question.tempTranslations}" 
 																				required="true"/>
 																			<span class="admin__form-help-text">#{msg.admin__help_crowdsourcing_question_text}</span>
 																		<div class="col-1 admin__form-help-icon">
