@@ -459,7 +459,7 @@ this.searchListUrl = function(list) {
     return url;
 }.bind(this)
 
-this.allBookmarksUrl = function(list) {
+this.allBookmarksUrl = function() {
     	return this.opts.bookmarks.config.root + "/user/bookmarks/";
 }.bind(this)
 
