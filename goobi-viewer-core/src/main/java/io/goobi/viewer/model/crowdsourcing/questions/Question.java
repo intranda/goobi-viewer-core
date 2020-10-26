@@ -158,7 +158,9 @@ public class Question {
         this.tempTranslations = new TranslationList("text", BeanUtils.getLocale(), IPolyglott.getLocalesStatic());
         for (QuestionTranslation translation : translations) {
             Locale locale = Locale.forLanguageTag(translation.getLanguage());
-            this.tempTranslations.setValueForLocale(locale, translation.getValue());
+            if(locale != null) {                
+                this.tempTranslations.setValueForLocale(locale, translation.getValue());
+            }
         }
     }
     

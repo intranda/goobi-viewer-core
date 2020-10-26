@@ -91,7 +91,7 @@ public class TranslationList implements IPolyglott {
     public Translation getTranslation(Locale locale) {
         Translation t = translations.get(locale);
         if(t == null) {
-            throw new IllegalArgumentException("Invalid locale for translation");
+            throw new IllegalArgumentException("Invalid locale for translation '" + locale + "'");
         }
         return t;
 
