@@ -18,6 +18,7 @@ package io.goobi.viewer.model.crowdsourcing.questions;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
 import java.util.Locale;
 import java.util.regex.Matcher;
@@ -55,6 +56,7 @@ import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.model.crowdsourcing.campaigns.Campaign;
 import io.goobi.viewer.model.misc.IPolyglott;
+import io.goobi.viewer.model.misc.Translation;
 import io.goobi.viewer.model.misc.TranslationList;
 
 /**
@@ -88,6 +90,7 @@ public class Question {
     @JsonSerialize(using = TranslationListSerializer.class)
     private List<QuestionTranslation> translations = new ArrayList<>();
     @Transient 
+    @JsonIgnore
     private TranslationList tempTranslations;
 
     @Enumerated(EnumType.STRING)
@@ -240,10 +243,17 @@ public class Question {
      *
      * @return the translations
      */
-    public TranslationList getTranslations() {
+    public Collection<QuestionTranslation> getTranslations() {
+        return translations;
+    }
+    
+    /**
+     * @return the tempTranslations
+     */
+    public TranslationList getTempTranslations() {
         return tempTranslations;
     }
-
+    
     /**
      * <p>
      * Getter for the field <code>questionType</code>.

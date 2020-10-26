@@ -35,6 +35,7 @@ import javax.faces.context.FacesContext;
 import javax.inject.Inject;
 import javax.inject.Named;
 
+import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.solr.client.solrj.SolrServerException;
 import org.apache.solr.client.solrj.impl.BaseHttpSolrClient.RemoteSolrException;
@@ -544,8 +545,16 @@ public class CrowdsourcingBean implements Serializable {
      *
      * @param selectedCampaign the selectedCampaign to set
      */
-    public void setSelectedCampaign(Campaign selectedCampaign) {
-        this.selectedCampaign = selectedCampaign;
+    public void setSelectedCampaign(Campaign campaign) {
+        selectedCampaign = campaign;
+    }
+
+    /**
+     * @param campaign
+     * @return
+     */
+    private boolean isSelected(Campaign campaign) {
+        return campaign != null && this.selectedCampaign != null && ObjectUtils.equals(campaign.getId(), this.selectedCampaign.getId());
     }
 
     /**
