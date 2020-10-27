@@ -20,7 +20,7 @@
 				<div class="col-12 user-bookmark__panel">
 					<div class="user-bookmark__panel-header d-flex">
 						<div class="col-8 col-sm-9">
-							<h4>
+							<h3>
 								<ui:fragment rendered="#{userList}">
 									<a href="#{request.contextPath}/user/bookmarks/show/#{bookmarkList.id}/">
 										#{bookmarkList.name}
@@ -39,7 +39,7 @@
 								<ui:fragment rendered="#{owned}">
 									<small>(#{bookmarkList.items.size()} #{bookmarkList.items.size() == 1 ? msg.bookmarkList_object : msg.bookmarkList_objects})</small>
 								</ui:fragment>
-							</h4>
+							</h3>
 						</div>
 						<div class="col-4 col-sm-3 user-bookmark__panel-action text-right">
 							
@@ -85,7 +85,7 @@
 											<!--  IMAGE -->
 											<a href="#{request.contextPath}#{item.url}"
 												title="#{item.name}" data-toggle="tooltip"
-												data-placement="bottom"> </a>
+												data-placement="bottom" aria-label="#{item.name}"> </a>
 										</div>
 									</div>
 								</ui:fragment>
