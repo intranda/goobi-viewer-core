@@ -713,7 +713,8 @@ public final class SolrSearchIndex {
     public long getIddocByLogid(String pi, String logId) throws IndexUnreachableException, PresentationException {
         logger.trace("getIddocByLogid: {}:{}", pi, logId);
         String query = new StringBuilder("+")
-                .append(SolrConstants.PI_TOPSTRUCT).append(":")
+                .append(SolrConstants.PI_TOPSTRUCT)
+                .append(":")
                 .append(pi)
                 .append(" +")
                 .append(SolrConstants.LOGID)
@@ -815,22 +816,25 @@ public final class SolrSearchIndex {
      * @return a {@link java.util.List} object.
      */
     public static List<String> getMetadataValues(SolrDocument doc, String fieldName) {
-        if (doc != null) {
-            Collection<Object> values = doc.getFieldValues(fieldName);
-            if (values != null) {
-                List<String> ret = new ArrayList<>(values.size());
-                for (Object value : values) {
-                    if (value instanceof String) {
-                        ret.add((String) value);
-                    } else {
-                        ret.add(String.valueOf(value));
-                    }
-                }
-                return ret;
+        if (doc == null) {
+            return Collections.emptyList();
+        }
+        
+        Collection<Object> values = doc.getFieldValues(fieldName);
+        if (values == null) {
+            return Collections.emptyList();
+        }
+        
+        List<String> ret = new ArrayList<>(values.size());
+        for (Object value : values) {
+            if (value instanceof String) {
+                ret.add((String) value);
+            } else {
+                ret.add(String.valueOf(value));
             }
         }
 
-        return Collections.emptyList();
+        return ret;
     }
 
     /**
