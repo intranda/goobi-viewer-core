@@ -56,9 +56,9 @@ public class QuestionTest extends AbstractDatabaseEnabledTest {
     public void loadTranslation() throws DAOException {
         Question question1 = DataManager.getInstance().getDao().getCampaign(1l).getQuestions().stream().filter(q -> q.getId().equals(1l)).findFirst().orElse(null);
         Assert.assertNotNull(question1);
-        Translation trEnglish = question1.getTempTranslations().getTranslation(Locale.ENGLISH);
+        String trEnglish = question1.getText().getText(Locale.ENGLISH);
         Assert.assertNotNull(trEnglish);
-        Assert.assertEquals("English text", trEnglish.getValue());
+        Assert.assertEquals("English text", trEnglish);
     }
     
     @Test
@@ -66,23 +66,23 @@ public class QuestionTest extends AbstractDatabaseEnabledTest {
         Campaign campaign = DataManager.getInstance().getDao().getCampaign(1l);
         Question question1 = campaign.getQuestions().stream().filter(q -> q.getId().equals(1l)).findFirst().orElse(null);
         Assert.assertNotNull(question1);
-        Assert.assertEquals("", question1.getTempTranslations().getValueForLocale(Locale.GERMAN));
-        Assert.assertEquals(1, question1.getTempTranslations().stream().count());
-        question1.getTempTranslations().setValueForLocale(Locale.GERMAN, "deutscher Text");
-        Assert.assertEquals("deutscher Text", question1.getTempTranslations().getValueForLocale(Locale.GERMAN));
-        Assert.assertEquals(2, question1.getTranslations().stream().count());
+        Assert.assertEquals("", question1.getText().getText(Locale.GERMAN));
+        Assert.assertEquals(1, question1.getText().toMap().size());
+        question1.getText().setText("deutscher Text", Locale.GERMAN);
+        Assert.assertEquals("deutscher Text", question1.getText().getText(Locale.GERMAN));
+        Assert.assertEquals(2, question1.getText().toMap().size());
     }
     
     @Test
     public void persistTranslation() throws DAOException {
         Campaign campaign = DataManager.getInstance().getDao().getCampaign(1l);
         Question question = campaign.getQuestions().stream().filter(q -> q.getId().equals(1l)).findFirst().orElse(null);
-        question.getTempTranslations().setValueForLocale(Locale.GERMAN, "TEST");
+        question.getText().setText("TEST", Locale.GERMAN);
         DataManager.getInstance().getDao().updateCampaign(campaign);
         
         campaign = DataManager.getInstance().getDao().getCampaign(1l);
         question = campaign.getQuestions().stream().filter(q -> q.getId().equals(1l)).findFirst().orElse(null);
-        Assert.assertEquals("TEST", question.getTempTranslations().getValueForLocale(Locale.GERMAN));
+        Assert.assertEquals("TEST", question.getText().getText(Locale.GERMAN));
     }
 
 }

@@ -2262,7 +2262,7 @@ public class JPADAOTest extends AbstractDatabaseEnabledTest {
         Assert.assertEquals("English title", campaign.getTitle());
 
         Assert.assertEquals(2, campaign.getQuestions().size());
-        Assert.assertEquals("English text", campaign.getQuestions().get(0).getTempTranslations().getValueForLocale(Locale.ENGLISH));
+        Assert.assertEquals("English text", campaign.getQuestions().get(0).getText().getText(Locale.ENGLISH));
 
         Assert.assertEquals(4, campaign.getStatistics().size());
         Assert.assertNotNull(campaign.getStatistics().get("PI_1"));
@@ -2281,7 +2281,7 @@ public class JPADAOTest extends AbstractDatabaseEnabledTest {
         Assert.assertNotNull(q);
         Assert.assertEquals(Long.valueOf(1), q.getId());
         Assert.assertEquals(Long.valueOf(1), q.getOwner().getId());
-        Assert.assertEquals("English text", q.getTempTranslations().getValueForLocale(Locale.ENGLISH));
+        Assert.assertEquals("English text", q.getText().getText(Locale.ENGLISH));
         Assert.assertEquals(QuestionType.PLAINTEXT, q.getQuestionType());
         Assert.assertEquals(TargetSelector.RECTANGLE, q.getTargetSelector());
         Assert.assertEquals(0, q.getTargetFrequency());

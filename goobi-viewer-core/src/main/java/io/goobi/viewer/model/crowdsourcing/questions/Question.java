@@ -18,15 +18,15 @@ package io.goobi.viewer.model.crowdsourcing.questions;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import java.util.stream.Collectors;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
+import javax.persistence.Convert;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
@@ -37,11 +37,7 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
-import javax.persistence.PostLoad;
-import javax.persistence.PrePersist;
-import javax.persistence.PreUpdate;
 import javax.persistence.Table;
-import javax.persistence.Transient;
 
 import org.eclipse.persistence.annotations.PrivateOwned;
 
@@ -49,15 +45,14 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
-import io.goobi.viewer.api.rest.serialization.TranslationListSerializer;
 import io.goobi.viewer.controller.DataManager;
+import io.goobi.viewer.dao.converter.TranslatedTextConverter;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.model.crowdsourcing.campaigns.Campaign;
 import io.goobi.viewer.model.misc.IPolyglott;
-import io.goobi.viewer.model.misc.Translation;
-import io.goobi.viewer.model.misc.TranslationList;
+import io.goobi.viewer.model.misc.MultiLanguageValue;
+import io.goobi.viewer.model.misc.TranslatedText;
 
 /**
  * An annotation generator to create a specific type of annotation for a specific question. One or more of these may be contained within a
@@ -84,14 +79,19 @@ public class Question {
     @JsonIgnore
     private Campaign owner;
 
-    /** Translated metadata. */
+    /**
+     * @deprecated replaced by {@link #text}. Keep for backward database compatibility
+     */
     @OneToMany(mappedBy = "owner", fetch = FetchType.EAGER, cascade = { CascadeType.ALL })
     @PrivateOwned
-    @JsonSerialize(using = TranslationListSerializer.class)
-    private List<QuestionTranslation> translations = new ArrayList<>();
-    @Transient 
+//    @JsonSerialize(using = TranslationListSerializer.class)
     @JsonIgnore
-    private TranslationList tempTranslations;
+    @Deprecated
+    private List<QuestionTranslation> translationsLegacy = new ArrayList<>();
+    
+    @Column(name="text", nullable = true, columnDefinition = "LONGTEXT")
+    @Convert(converter = TranslatedTextConverter.class)
+    private TranslatedText text;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "question_type", nullable = false)
@@ -108,7 +108,7 @@ public class Question {
      * Empty constructor.
      */
     public Question() {
-        tempTranslations = new TranslationList("text", IPolyglott.getCurrentLocale(), IPolyglott.getLocalesStatic());
+        text = new TranslatedText();
     }
 
     /**
@@ -137,32 +137,74 @@ public class Question {
         this.targetFrequency = targetFrequency;
     }
     
-    @PrePersist
+    public Question(Question orig) {
+       this.id = orig.id;
+       this.owner = orig.owner;
+       this.questionType = orig.questionType;
+       this.targetFrequency = orig.targetFrequency;
+       this.targetSelector = orig.targetSelector;
+       this.text = new TranslatedText(orig.text, IPolyglott.getLocalesStatic(), IPolyglott.getCurrentLocale());
+    }
+    
+    /**
+     * Create a clone of the given question with the given campaign as owner
+     * 
+     * @param q
+     * @param campaign
+     */
+    public Question(Question orig, Campaign campaign) {
+        this(orig);
+        this.owner = campaign;
+    }
+
+    /**
+     * No @PrePersist annotation because it is called from owning campaign
+     */
     public void onPrePersist() {
         serializeTranslations();
     }
     
-    @PreUpdate
+    /**
+     * No @PreUpdate annotation because it is called from owning campaign
+     */
     public void onPreUpdate() {
         serializeTranslations();
     }
 
-    
-    @PostLoad
+    /**
+     * No @PostLoad annotation because it is called from owning campaign
+     */
     public void onPostLoad() {
         deserializeTranslations();
     }
 
     private void serializeTranslations() {
-        this.translations = this.tempTranslations.stream().map(t -> new QuestionTranslation(t, this)).collect(Collectors.toList());
+        
+        this.translationsLegacy = Collections.emptyList();
+        
+//        Map<Locale, String> locationsMap = this.text.map();
+//        for (Entry<Locale, String> entry : locationsMap.entrySet()) {
+//            Locale locale = entry.getKey();
+//            String value = entry.getValue();
+//            QuestionTranslation translation = translations.stream().filter(t -> t.getLanguage().equals(locale.getLanguage())).findAny()
+//                    .orElseGet(() -> this.addTranslation(locale));
+//            translation.setValue(value);
+//        }
+//        
+//        
+//        this.translations = this.text.stream().map(t -> new QuestionTranslation(t, this)).collect(Collectors.toList());
     }
     
+
+
     private void deserializeTranslations() {
-        this.tempTranslations = new TranslationList("text", BeanUtils.getLocale(), IPolyglott.getLocalesStatic());
-        for (QuestionTranslation translation : translations) {
-            Locale locale = Locale.forLanguageTag(translation.getLanguage());
-            if(this.tempTranslations.hasLocale(locale)) {                
-                this.tempTranslations.setValueForLocale(locale, translation.getValue());
+        if(this.translationsLegacy != null && !this.translationsLegacy.isEmpty()) {          
+            this.text = new TranslatedText();
+            for (QuestionTranslation translation : translationsLegacy) {
+                Locale locale = Locale.forLanguageTag(translation.getLanguage());
+                if(this.text.hasLocale(locale)) {                
+                    this.text.setText(translation.getValue(), locale);
+                }
             }
         }
     }
@@ -235,23 +277,12 @@ public class Question {
     public void setOwner(Campaign owner) {
         this.owner = owner;
     }
-
-    /**
-     * <p>
-     * Getter for the field <code>translations</code>.
-     * </p>
-     *
-     * @return the translations
-     */
-    public Collection<QuestionTranslation> getTranslations() {
-        return translations;
-    }
     
     /**
      * @return the tempTranslations
      */
-    public TranslationList getTempTranslations() {
-        return tempTranslations;
+    public TranslatedText getText() {
+        return text;
     }
     
     /**

@@ -300,7 +300,6 @@ public class CrowdsourcingBean implements Serializable {
     public String addNewQuestionAction() {
         if (selectedCampaign != null) {
             selectedCampaign.getQuestions().add(new Question(selectedCampaign));
-            selectedCampaign.setDirty(true);
         }
 
         return "";
@@ -315,7 +314,6 @@ public class CrowdsourcingBean implements Serializable {
     public String removeQuestionAction(Question question) {
         if (selectedCampaign != null && question != null) {
             selectedCampaign.getQuestions().remove(question);
-            selectedCampaign.setDirty(true);
         }
 
         return "";
@@ -447,7 +445,6 @@ public class CrowdsourcingBean implements Serializable {
                 success = DataManager.getInstance().getDao().addCampaign(selectedCampaign);
             }
             if (success) {
-                selectedCampaign.setDirty(false);
                 Messages.info("admin__crowdsourcing_campaign_save_success");
                 setSelectedCampaign(selectedCampaign);
                 lazyModelCampaigns.update();
@@ -539,14 +536,17 @@ public class CrowdsourcingBean implements Serializable {
     }
 
     /**
-     * <p>
-     * Setter for the field <code>selectedCampaign</code>.
-     * </p>
+     * Set the selected campaign to a clone of the given campaign
      *
      * @param selectedCampaign the selectedCampaign to set
      */
     public void setSelectedCampaign(Campaign campaign) {
-        selectedCampaign = campaign;
+        
+        if(campaign == null) {
+            this.selectedCampaign = null;
+        } else if(selectedCampaign == null || ObjectUtils.notEqual(selectedCampaign.getId(), campaign.getId())) {
+            this.selectedCampaign = new Campaign(campaign);
+        }
     }
 
     /**

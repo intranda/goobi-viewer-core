@@ -6,7 +6,7 @@
 	xmlns:h="http://xmlns.jcp.org/jsf/html">
 
 	<composite:interface>
-		<composite:attribute name="value" required="true" type="io.goobi.viewer.model.misc.TranslationList" />
+		<composite:attribute name="value" required="true" type="io.goobi.viewer.model.misc.TranslatedText" />
 		<composite:attribute name="render" required="false" default=""></composite:attribute>
 		<composite:attribute name="execute" required="false" default=""></composite:attribute>
 		<composite:attribute name="required" required="false" default="false" type="java.lang.Boolean"></composite:attribute>
@@ -36,7 +36,7 @@
 			<h:inputTextarea
 				id="input"
 				styleClass="form-control admin__language-tabs-vertical-textarea"
-				value="#{cc.attrs.value.value}"
+				value="#{cc.attrs.value.text}"
 				required="#{cc.attrs.required and cc.attrs.value.isDefaultLocaleSelected()}"/>
 		</div>
 
