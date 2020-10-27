@@ -15,17 +15,11 @@
  */
 package io.goobi.viewer.model.misc;
 
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-import java.util.Optional;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-
-import javax.persistence.Transient;
 
 import org.jboss.weld.exceptions.IllegalArgumentException;
 
@@ -35,7 +29,7 @@ import io.goobi.viewer.managedbeans.utils.BeanUtils;
  * @author florian
  *
  */
-public class TranslationList implements IPolyglott {
+public class MultiLanguageValue implements IPolyglott {
 
     private static final long serialVersionUID = -7620488755993671335L;
 
@@ -44,7 +38,7 @@ public class TranslationList implements IPolyglott {
     private final String label;
     private final Map<Locale, Translation> translations;
 
-    public TranslationList(String label, Locale initialLocale, Collection<Locale> locales) {
+    public MultiLanguageValue(String label, Locale initialLocale, Collection<Locale> locales) {
         this.label = label;
         this.selectedLocale = initialLocale;
         this.translations = locales.stream().collect(Collectors.toMap(l -> l, l -> new Translation(l.getLanguage(), this.label, "")));
@@ -82,7 +76,7 @@ public class TranslationList implements IPolyglott {
     public Translation getSelectedTranslation() {
         return getTranslation(this.selectedLocale);
     }
-    
+        
     /**
      * 
      * @param language

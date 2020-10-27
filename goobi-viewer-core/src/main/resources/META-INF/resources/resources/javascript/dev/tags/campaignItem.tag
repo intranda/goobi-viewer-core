@@ -22,7 +22,7 @@
 				<div each="{question, index in this.item.questions}" 
 					onclick="{setActive}"
 					class="crowdsourcing-annotations__question-wrapper {question.isRegionTarget() ? 'area-selector-question' : ''} {question.active ? 'active' : ''}" >
-					<div class="crowdsourcing-annotations__question-wrapper-description">{Crowdsourcing.translate(question.translations.text)}</div>
+					<div class="crowdsourcing-annotations__question-wrapper-description">{Crowdsourcing.translate(question.text)}</div>
 					<plaintextQuestion if="{question.questionType == 'PLAINTEXT'}" question="{question}" item="{this.item}" index="{index}"></plaintextQuestion>
 					<geoLocationQuestion if="{question.questionType == 'GEOLOCATION_POINT'}" question="{question}" item="{this.item}" index="{index}"></geoLocationQuestion>
 				</div>

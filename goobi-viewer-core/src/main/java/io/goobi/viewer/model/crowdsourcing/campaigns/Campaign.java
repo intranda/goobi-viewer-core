@@ -48,6 +48,7 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.MapKeyColumn;
 import javax.persistence.OneToMany;
+import javax.persistence.PostLoad;
 import javax.persistence.PrePersist;
 import javax.persistence.PreUpdate;
 import javax.persistence.Table;
@@ -72,6 +73,7 @@ import io.goobi.viewer.api.rest.serialization.TranslationListSerializer;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.DateTools;
 import io.goobi.viewer.controller.SolrConstants;
+import io.goobi.viewer.dao.IDAO;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
@@ -212,14 +214,6 @@ public class Campaign implements CMSMediaHolder, ILicenseType, IPolyglott {
     @JsonIgnore
     private Locale selectedLocale;
 
-    @Transient
-    @JsonIgnore
-    private boolean dirty = false;
-
-    @Transient
-    @JsonIgnore
-    private CMSContentItem contentItem = new CMSContentItem();
-
     /**
      * temporary storage for results from {@link #solrQuery}, reduced to PIs. Will be initialized if required by {@link #getSolrQueryResults()} and
      * reset to null by {@link #setSolrQuery(String)}
@@ -243,15 +237,43 @@ public class Campaign implements CMSMediaHolder, ILicenseType, IPolyglott {
     public Campaign(Locale selectedLocale) {
         this.selectedLocale = selectedLocale;
     }
+    
+    public Campaign(Campaign orig) {
+        
+        this.id = orig.id;
+        this.translations = orig.translations.stream().map(t -> new CampaignTranslation(t, this)).collect(Collectors.toList());
+        this.breadcrumbParentCmsPageId = orig.breadcrumbParentCmsPageId;
+        this.dateCreated = orig.dateCreated;
+        this.dateUpdated = orig.dateUpdated;
+        this.dateEnd = orig.dateEnd;
+        this.dateStart = orig.dateStart;
+        this.mediaItem = orig.mediaItem; //no need for deep copy since it can't be changed within the campaign
+        this.permalink = orig.permalink;
+        this.selectedLocale = orig.selectedLocale;
+        this.solrQuery = orig.solrQuery;
+        this.solrQueryResults = orig.solrQueryResults;
+        this.visibility = orig.visibility;
+        this.statistics = orig.statistics; //no need for deep copy since it can't be changed in campaign editor
+        this.questions = orig.questions.stream().map(q -> new Question(q, this)).collect(Collectors.toList());
+    }
 
-    @PrePersist
+    /**
+     * No @PrePersist annotation because it is called explicitly in {@link IDAO#addCampaign(Campaign)}
+     */
     public void onPrePersist() {
         this.questions.forEach(Question::onPrePersist);
     }
     
-    @PreUpdate
+    /**
+     * No @PreUpdate annotation because it is called explicitly in {@link IDAO#updateCampaign(Campaign)}
+     */
     public void onPreUpdate() {
         this.questions.forEach(Question::onPreUpdate);
+    }
+    
+    @PostLoad
+    public void onPostLoad() {
+        this.questions.forEach(Question::onPostLoad);
     }
     
     /* (non-Javadoc)
@@ -929,17 +951,6 @@ public class Campaign implements CMSMediaHolder, ILicenseType, IPolyglott {
 
     /**
      * <p>
-     * Getter for the field <code>contentItem</code>.
-     * </p>
-     *
-     * @return the contentItem
-     */
-    public CMSContentItem getContentItem() {
-        return contentItem;
-    }
-
-    /**
-     * <p>
      * Getter for the field <code>solrQuery</code>.
      * </p>
      *
@@ -1101,28 +1112,6 @@ public class Campaign implements CMSMediaHolder, ILicenseType, IPolyglott {
     @Override
     public boolean isComplete(Locale locale) {
         return StringUtils.isNotBlank(getTitle(locale.getLanguage(), false));
-    }
-
-    /**
-     * <p>
-     * isDirty.
-     * </p>
-     *
-     * @return the dirty
-     */
-    public boolean isDirty() {
-        return dirty;
-    }
-
-    /**
-     * <p>
-     * Setter for the field <code>dirty</code>.
-     * </p>
-     *
-     * @param dirty the dirty to set
-     */
-    public void setDirty(boolean dirty) {
-        this.dirty = dirty;
     }
 
     /**

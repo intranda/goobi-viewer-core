@@ -66,15 +66,8 @@ public interface IPolyglott {
             ArrayList<Locale> list = new ArrayList<>();
             i.forEachRemaining(list::add);
             final Locale defaultLocale = getDefaultLocale();
-            list.sort((l1, l2) -> {
-                if (l1.equals(defaultLocale)) {
-                    return -1;
-                } else if (l2.equals(defaultLocale)) {
-                    return 1;
-                } else {
-                    return 0;
-                }
-            });
+            list.remove(defaultLocale);
+            list.add(0, defaultLocale);
             return list;
         } catch(NullPointerException e) {
             return Arrays.asList(Locale.ENGLISH, Locale.GERMAN);

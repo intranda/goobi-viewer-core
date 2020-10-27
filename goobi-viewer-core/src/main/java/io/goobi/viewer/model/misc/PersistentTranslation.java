@@ -33,7 +33,7 @@ public class PersistentTranslation<O> extends Translation {
     private O owner;
     
     public PersistentTranslation() {
-        
+        super();
     }
     
     public PersistentTranslation(O owner) {

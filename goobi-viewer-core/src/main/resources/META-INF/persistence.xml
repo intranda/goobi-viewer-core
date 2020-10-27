@@ -46,6 +46,7 @@
 		<class>io.goobi.viewer.model.transkribus.TranskribusJob</class>
 		<class>io.goobi.viewer.model.security.TermsOfUse</class>
 		<class>io.goobi.viewer.model.security.TermsOfUseTranslation</class>
+		<class>io.goobi.viewer.dao.converter.TranslatedTextConverter</class>
 	
 
 		<properties>
@@ -116,6 +117,7 @@
 		<class>io.goobi.viewer.model.transkribus.TranskribusJob</class>
 		<class>io.goobi.viewer.model.security.TermsOfUse</class>
 		<class>io.goobi.viewer.model.security.TermsOfUseTranslation</class>
+		<class>io.goobi.viewer.dao.converter.TranslatedTextConverter</class>
 		
 		<properties>
 			<property name="javax.persistence.jdbc.driver"

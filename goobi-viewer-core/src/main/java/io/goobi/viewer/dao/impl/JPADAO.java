@@ -3304,9 +3304,6 @@ public class JPADAO implements IDAO {
             preQuery();
             try {
                 Question o = em.getReference(Question.class, id);
-                if (o != null) {
-                    updateFromDatabase(id, Question.class);
-                }
                 return o;
             } catch (EntityNotFoundException e) {
                 return null;
@@ -3349,14 +3346,14 @@ public class JPADAO implements IDAO {
     public boolean addCampaign(Campaign campaign) throws DAOException {
         synchronized (crowdsourcingRequestLock) {
             preQuery();
-            EntityManager em = factory.createEntityManager();
             try {
+                campaign.onPrePersist();
                 em.getTransaction().begin();
                 em.persist(campaign);
                 em.getTransaction().commit();
-                return updateFromDatabase(campaign.getId(), Campaign.class);
-            } finally {
-                em.close();
+                return true;
+            } catch (RollbackException e) {
+                return false;
             }
         }
     }
@@ -3369,15 +3366,14 @@ public class JPADAO implements IDAO {
     public boolean updateCampaign(Campaign campaign) throws DAOException {
         synchronized (cmsRequestLock) {
             preQuery();
-            EntityManager em = factory.createEntityManager();
             try {
                 campaign.onPreUpdate();
                 em.getTransaction().begin();
                 em.merge(campaign);
                 em.getTransaction().commit();
                 return true;
-            } finally {
-                em.close();
+            } catch (RollbackException e) {
+                return false;
             }
         }
     }
@@ -3391,17 +3387,14 @@ public class JPADAO implements IDAO {
         synchronized (cmsRequestLock) {
 
             preQuery();
-            EntityManager em = factory.createEntityManager();
             try {
                 em.getTransaction().begin();
                 Campaign o = em.getReference(Campaign.class, campaign.getId());
                 em.remove(o);
                 em.getTransaction().commit();
-                return !updateFromDatabase(campaign.getId(), Campaign.class);
+                return true;
             } catch (RollbackException e) {
                 return false;
-            } finally {
-                em.close();
             }
         }
     }
@@ -3416,60 +3409,6 @@ public class JPADAO implements IDAO {
         if (user == null) {
             return 0;
         }
-
-        //        List<Campaign> campaigns = new ArrayList<>();
-        //        Set<CampaignRecordStatistic> statistics = new HashSet<>();
-        //        {
-        //            StringBuilder sbQuery =
-        //                    new StringBuilder();
-        //            List<CampaignRecordStatistic> result =
-        //                    em.createQuery("SELECT o FROM CampaignRecordStatistic o WHERE :user MEMBER OF o.annotators")
-        //                            .setParameter("user", user)
-        //                            .getResultList();
-        //            statistics.addAll(result);
-        //        }
-        //        {
-        //            StringBuilder sbQuery =
-        //                    new StringBuilder();
-        //            List<CampaignRecordStatistic> result =
-        //                    em.createQuery("SELECT o FROM CampaignRecordStatistic o WHERE :user MEMBER OF o.reviewers")
-        //                            .setParameter("user", user)
-        //                            .getResultList();
-        //            statistics.addAll(result);
-        //        }
-        //        for (CampaignRecordStatistic statistic : statistics) {
-        //            boolean annotator = false;
-        //            boolean reviewer = false;
-        //            while (statistic.getAnnotators().contains(user)) {
-        //                annotator = true;
-        //                statistic.getAnnotators().remove(user);
-        //            }
-        //            while (statistic.getReviewers().contains(user)) {
-        //                reviewer = true;
-        //                statistic.getReviewers().remove(user);
-        //            }
-        //            if (!campaigns.contains(statistic.getOwner())) {
-        //                campaigns.add(statistic.getOwner());
-        //            }
-        //            // Lazy load the lists where the user was removed, otherwise they won't be updated when saving the campaign
-        //            if (annotator) {
-        //                statistic.getOwner().getStatistics().get(statistic.getPi()).getAnnotators();
-        //            }
-        //            if (reviewer) {
-        //                statistic.getOwner().getStatistics().get(statistic.getPi()).getReviewers();
-        //            }
-        //        }
-        //
-        //        int count = 0;
-        //        if (!campaigns.isEmpty()) {
-        //            for (Campaign campaign : campaigns) {
-        //                if (updateCampaign(campaign)) {
-        //                    count++;
-        //                }
-        //            }
-        //        }
-        //
-        //        return count;
 
         EntityManager emLocal = factory.createEntityManager();
         try {
@@ -3502,117 +3441,6 @@ public class JPADAO implements IDAO {
 
         List<Campaign> campaignsToUpdate = new ArrayList<>();
         Set<CampaignRecordStatistic> statistics = new HashSet<>();
-
-        //        List<Campaign> allCampaigns = DataManager.getInstance().getDao().getAllCampaigns();
-        //        for (Campaign campaign : allCampaigns) {
-        //            logger.trace("");
-        //            for (String pi : campaign.getStatistics().keySet()) {
-        //                CampaignRecordStatistic statistic = campaign.getStatistics().get(pi);
-        //                boolean annotator = false;
-        //                boolean reviewer = false;
-        //                if (statistic.getPi().equals("mnha16210")) {
-        //                    for (User user : statistic.getAnnotators()) {
-        //                        logger.trace("annotator: " + user.getId());
-        //                    }
-        //                    for (User user : statistic.getReviewers()) {
-        //                        logger.trace("reviewer: " + user.getId());
-        //                    }
-        //                }
-        //                while (statistic.getAnnotators().contains(fromUser)) {
-        //                    annotator = true;
-        //                    int index = statistic.getAnnotators().indexOf(fromUser);
-        //                    statistic.getAnnotators().remove(index);
-        //                    logger.trace("removed annotator {} from statistic {}", fromUser.getId(), statistic.getId());
-        //                    if (!statistic.getAnnotators().contains(toUser)) {
-        //                        statistic.getAnnotators().add(index, toUser);
-        //                        logger.trace("added annotator {} to statistic {}", toUser.getId(), statistic.getId());
-        //                    }
-        //                }
-        //                while (statistic.getReviewers().contains(fromUser)) {
-        //                    reviewer = true;
-        //                    int index = statistic.getReviewers().indexOf(fromUser);
-        //                    statistic.getReviewers().remove(index);
-        //                    logger.trace("removed reviewer {} from statistic {}", fromUser.getId(), statistic.getId());
-        //                    if (!statistic.getReviewers().contains(toUser)) {
-        //                        statistic.getReviewers().add(index, toUser);
-        //                        logger.trace("added reviewer {} to statistic {}", toUser.getId(), statistic.getId());
-        //                    }
-        //                }
-        //                if ((annotator || reviewer) && !campaignsToUpdate.contains(statistic.getOwner())) {
-        //                    logger.trace("statistic contains user: {}", statistic.getId());
-        //                    campaignsToUpdate.add(statistic.getOwner());
-        //                }
-        //            }
-        //        }
-
-        //        {
-        //            List<CampaignRecordStatistic> result =
-        //                    em.createQuery(
-        //                            "SELECT DISTINCT o FROM CampaignRecordStatistic o WHERE :fromUser MEMBER OF o.annotators")
-        //                            .setParameter("fromUser", fromUser)
-        //                            .getResultList();
-        //            statistics.addAll(result);
-        //        }
-        //        {
-        //            List<CampaignRecordStatistic> result =
-        //                    em.createQuery(
-        //                            "SELECT DISTINCT o FROM CampaignRecordStatistic o WHERE :fromUser MEMBER OF o.reviewers")
-        //                            .setParameter("fromUser", fromUser)
-        //                            .getResultList();
-        //            statistics.addAll(result);
-        //        }
-        //        logger.trace("found {} campaign statistic rows with user {}", statistics.size(), fromUser.getId());
-        //        for (CampaignRecordStatistic statistic : statistics) {
-        //            logger.trace("statistic {}", statistic.getId());
-        //            boolean annotator = false;
-        //            boolean reviewer = false;
-        //            while (statistic.getAnnotators().contains(fromUser)) {
-        //                annotator = true;
-        //                int index = statistic.getAnnotators().indexOf(fromUser);
-        //                statistic.getAnnotators().remove(index);
-        //                logger.trace("removed annotator {} from statistic {}", fromUser.getId(), statistic.getId());
-        //                if (!statistic.getAnnotators().contains(toUser)) {
-        //                    statistic.getAnnotators().add(index, toUser);
-        //                    logger.trace("added annotator {} to statistic {}", toUser.getId(), statistic.getId());
-        //                }
-        //            }
-        //            while (statistic.getReviewers().contains(fromUser)) {
-        //                reviewer = true;
-        //                int index = statistic.getReviewers().indexOf(fromUser);
-        //                statistic.getReviewers().remove(index);
-        //                logger.trace("removed reviewer {} from statistic {}", fromUser.getId(), statistic.getId());
-        //                if (!statistic.getReviewers().contains(toUser)) {
-        //                    statistic.getReviewers().add(index, toUser);
-        //                    logger.trace("added reviewer {} to statistic {}", toUser.getId(), statistic.getId());
-        //                }
-        //            }
-        //            if ((annotator || reviewer) && !campaignsToUpdate.contains(statistic.getOwner())) {
-        //                campaignsToUpdate.add(statistic.getOwner());
-        //            }
-        //            // Lazy load the lists where the user was replaced, otherwise they won't be updated when saving the campaign
-        //            if (annotator) {
-        //                logger.trace("lazy loading annotators");
-        //                statistic.getOwner().getStatistics().get(statistic.getPi()).getAnnotators();
-        //            }
-        //            if (reviewer) {
-        //                logger.trace("lazy loading reviewers");
-        //                statistic.getOwner().getStatistics().get(statistic.getPi()).getReviewers();
-        //            }
-        //        }
-
-        // Refresh objects in context
-        //        em.createQuery("SELECT o FROM CampaignRecordStatistic o WHERE :user MEMBER OF o.annotators")
-        //                .setParameter("user", toUser)
-        //                .setHint("javax.persistence.cache.storeMode", "REFRESH")
-        //                .getResultList()
-        //                .size();
-        //        em.createQuery("SELECT o FROM CampaignRecordStatistic o WHERE  :user MEMBER OF o.reviewers")
-        //                .setParameter("user", toUser)
-        //                .setHint("javax.persistence.cache.storeMode", "REFRESH")
-        //                .getResultList()
-        //                .size();
-
-        //        return count;
 
         EntityManager emLocal = factory.createEntityManager();
         try {

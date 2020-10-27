@@ -37,5 +37,11 @@ public class QuestionTranslation extends PersistentTranslation<Question> {
     public QuestionTranslation(Translation t, Question q) {
         super(t, q);
     }
+    
+    public QuestionTranslation(Question q, String language, String value) {
+        super(q);
+        this.language = language;
+        this.value = value;
+    }
 
 }
