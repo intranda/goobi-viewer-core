@@ -22,14 +22,14 @@
 			<div class="timematrix__bar">
 				<div class="timematrix__period">
 					<span>#{msg.timematrix__timePeriod}:</span>&#xA0;
-					<input tabindex="+1" class="timematrix__selectionRangeInput" id="timematrixSelectionRangeInput1" value="#{configurationBean.timeMatrixStartYear}" maxlength="4" />
+					<input tabindex="0" aria-label="#{msg.aria_label__timeline_period_start}" class="timematrix__selectionRangeInput" id="timematrixSelectionRangeInput1" value="#{configurationBean.timeMatrixStartYear}" maxlength="4" />
 					&#xA0;<span>-</span>&#xA0; <!-- The spaces created are inserted outside of the span using hexa-code, since the spaces typed in the span caused different spacing in the different themes and the entities in the span had no effect -->
-					<input tabindex="+1" class="timematrix__selectionRangeInput" id="timematrixSelectionRangeInput2" value="#{configurationBean.timeMatrixEndYear}" maxlength="4" />
+					<input tabindex="0" aria-label="#{msg.aria_label__timeline_period_end}" class="timematrix__selectionRangeInput" id="timematrixSelectionRangeInput2" value="#{configurationBean.timeMatrixEndYear}" maxlength="4" />
 				</div>
 				<div class="timematrix__hitsForm">
 					<div class="timematrix__hitsInput">
 						<span>#{msg.timematrix__maxResults}: &#xA0;</span>
-							<input type="text" id="hitsPerPage" class="hitsPerPage" name="hitsPerPage" value="#{configurationBean.timeMatrixHits}" placeholder="" maxlength="5" />
+							<input type="text" id="hitsPerPage" class="hitsPerPage" name="hitsPerPage" value="#{configurationBean.timeMatrixHits}" placeholder="" maxlength="5" aria-label="#{msg.aria_label__timeline_hits}"/>
 					</div>
 				</div>
 			</div>
