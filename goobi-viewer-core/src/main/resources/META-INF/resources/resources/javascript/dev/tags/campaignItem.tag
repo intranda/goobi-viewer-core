@@ -1,40 +1,40 @@
 <campaignItem>
 
-	<div if="{!opts.pi}" class="content">
+	<div if="{!opts.pi}" class="crowdsourcing-annotations__content-wrapper">
 		{Crowdsourcing.translate("crowdsourcing__error__no_item_available")}
 	</div>
 
-	<div if="{opts.pi}" class="content">
-	<span if="{ this.loading }" class="loader_wrapper">
+	<div if="{opts.pi}" class="crowdsourcing-annotations__content-wrapper">
+	<span if="{ this.loading }" class="crowdsourcing-annotations__loader-wrapper">
 		<img src="{this.opts.loaderimageurl}" />
 	</span>
-	<span if="{this.error}" class="loader_wrapper">
+	<span if="{this.error}" class="crowdsourcing-annotations__loader-wrapper">
 		<span class="error_message">{this.error.message}</span>
 	</span>
 	</span>
-		<div class="content_left" >
+		<div class="crowdsourcing-annotations__content-left" >
 			<imageView if="{this.item}" id="mainImage" source="{this.item.getCurrentCanvas()}" item="{this.item}"></imageView>
 			<canvasPaginator if="{this.item}" item="{this.item}"></canvasPaginator>
 		</div>
-		<div if="{this.item}" class="content_right">
-			<h1 class="content_right__title">{Crowdsourcing.translate(this.item.translations.title)}</h1>
-			<div class="questions_wrapper" >
+		<div if="{this.item}" class="crowdsourcing-annotations__content-right">
+			<h1 class="crowdsourcing-annotations__content-right-title">{Crowdsourcing.translate(this.item.translations.title)}</h1>
+			<div class="crowdsourcing-annotations__questions-wrapper" >
 				<div each="{question, index in this.item.questions}" 
 					onclick="{setActive}"
-					class="question_wrapper {question.isRegionTarget() ? 'area-selector-question' : ''} {question.active ? 'active' : ''}" >
-					<div class="question_wrapper__description">{Crowdsourcing.translate(question.translations.text)}</div>
+					class="crowdsourcing-annotations__question-wrapper {question.isRegionTarget() ? 'area-selector-question' : ''} {question.active ? 'active' : ''}" >
+					<div class="crowdsourcing-annotations__question-wrapper-description">{Crowdsourcing.translate(question.translations.text)}</div>
 					<plaintextQuestion if="{question.questionType == 'PLAINTEXT'}" question="{question}" item="{this.item}" index="{index}"></plaintextQuestion>
 					<geoLocationQuestion if="{question.questionType == 'GEOLOCATION_POINT'}" question="{question}" item="{this.item}" index="{index}"></geoLocationQuestion>
 				</div>
 			</div>
-			<div if="{!item.isReviewMode()}" class="options-wrapper options-wrapper-annotate">
-				<button onclick="{saveAnnotations}" class="options-wrapper__option btn btn--default" id="save">{Crowdsourcing.translate("button__save")}</button>
+			<div if="{!item.isReviewMode()}" class="crowdsourcing-annotations__options-wrapper crowdsourcing-annotations__options-wrapper-annotate">
+				<button onclick="{saveAnnotations}" class="crowdsourcing-annotations__options-wrapper__option btn btn--default" id="save">{Crowdsourcing.translate("button__save")}</button>
 				<div>{Crowdsourcing.translate("label__or")}</div>
 				<button onclick="{submitForReview}" class="options-wrapper__option btn btn--success" id="review">{Crowdsourcing.translate("action__submit_for_review")}</button>
 				<div>{Crowdsourcing.translate("label__or")}</div>
 				<button if="{this.opts.nextitemurl}" onclick="{skipItem}" class="options-wrapper__option btn btn--link" id="skip">{Crowdsourcing.translate("action__skip_item")}</button>
 			</div>
-			<div if="{item.isReviewMode()}" class="options-wrapper options-wrapper-review">
+			<div if="{item.isReviewMode()}" class="crowdsourcing-annotations__options-wrapper crowdsourcing-annotations__options-wrapper-review">
 				<button onclick="{acceptReview}" class="options-wrapper__option btn btn--success" id="accept">{Crowdsourcing.translate("action__accept_review")}</button>
 				<div>{Crowdsourcing.translate("label__or")}</div>
 				<button onclick="{rejectReview}" class="options-wrapper__option btn btn--danger" id="reject">{Crowdsourcing.translate("action__reject_review")}</button>
