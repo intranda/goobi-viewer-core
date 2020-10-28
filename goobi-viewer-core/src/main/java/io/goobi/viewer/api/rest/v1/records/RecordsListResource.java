@@ -46,6 +46,7 @@ import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.exceptions.ViewerConfigurationException;
+import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.model.search.SearchHelper;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -61,8 +62,7 @@ import io.swagger.v3.oas.annotations.Parameter;
 @ViewerRestServiceBinding
 @CORSBinding
 public class RecordsListResource {
-    
-    
+
     /**
      * 
      */
@@ -75,37 +75,34 @@ public class RecordsListResource {
     @Inject
     private AbstractApiUrlManager urls;
 
-
     @GET
     @Produces({ MediaType.APPLICATION_JSON })
     @Operation(tags = { "records" }, summary = "List records in an ordered collection page, use query parameter for filtering")
-    public OrderedCollectionPage<IPresentationModelElement> listManifests (
-            @Parameter(description = "filter query")@QueryParam("query") String query,
-            @Parameter(description = "Index of the first result to return")@QueryParam("first") Integer firstRow,
-            @Parameter(description = "Number of results to return")@QueryParam("rows") Integer rows,
-            @Parameter(description = "filter for records from this date or later")@QueryParam("start") String start,
-            @Parameter(description = "filter for records from this date or earlier")@QueryParam("end") String end,
-            @Parameter(description = "filter for records of this subtheme")@QueryParam("subtheme") String subtheme,
-            @Parameter(description = "sort string")@QueryParam("sort") String sort
-            ) throws IndexUnreachableException, DAOException, PresentationException, URISyntaxException, ViewerConfigurationException {
-        
+    public OrderedCollectionPage<IPresentationModelElement> listManifests(
+            @Parameter(description = "filter query") @QueryParam("query") String query,
+            @Parameter(description = "Index of the first result to return") @QueryParam("first") Integer firstRow,
+            @Parameter(description = "Number of results to return") @QueryParam("rows") Integer rows,
+            @Parameter(description = "filter for records from this date or later") @QueryParam("start") String start,
+            @Parameter(description = "filter for records from this date or earlier") @QueryParam("end") String end,
+            @Parameter(description = "filter for records of this subtheme") @QueryParam("subtheme") String subtheme,
+            @Parameter(description = "sort string") @QueryParam("sort") String sort)
+            throws IndexUnreachableException, DAOException, PresentationException, URISyntaxException, ViewerConfigurationException {
+
         firstRow = firstRow == null ? 0 : firstRow;
         rows = rows == null ? DEFAULT_MAX_ROWS : rows;
-        
+
         String finalQuery = createQuery(query, start, end, subtheme);
-        
+        logger.trace("final query: {}", finalQuery);
+
         IIIFPresentationResourceBuilder builder = new IIIFPresentationResourceBuilder(urls);
-        
-        
-        
+
         List<IPresentationModelElement> items = builder.getManifestsForQuery(finalQuery, sort, firstRow, rows);
-                
+
         OrderedCollectionPage<IPresentationModelElement> page = new OrderedCollectionPage<>();
         page.setOrderedItems(items);
-        
+
         return page;
     }
-
 
     /**
      * @param query
@@ -117,19 +114,20 @@ public class RecordsListResource {
      */
     private String createQuery(String query, String start, String end, String subtheme) throws IndexUnreachableException {
         String finalQuery = "";
-        if(StringUtils.isNotBlank(query)) {
+        if (StringUtils.isNotBlank(query)) {
             finalQuery += "+(" + query + ")";
         }
-        if(!StringUtils.isAllBlank(start, end)) {
+        if (!StringUtils.isAllBlank(start, end)) {
             start = StringUtils.isNotBlank(start) ? start : "*";
             end = StringUtils.isNotBlank(end) ? end : "*";
             finalQuery += " +YEAR:[ " + start + " TO " + end + " ]";
         }
-        if(StringUtils.isNotBlank(subtheme)) {
+        if (StringUtils.isNotBlank(subtheme)) {
             String discriminatorField = DataManager.getInstance().getConfiguration().getSubthemeDiscriminatorField();
             finalQuery += " +" + discriminatorField + ":" + subtheme;
         }
-        finalQuery += " " + SearchHelper.getAllSuffixes();
+        finalQuery += " " + SearchHelper.getAllSuffixes(servletRequest, true, true);
+        ;
 
         return finalQuery;
     }
