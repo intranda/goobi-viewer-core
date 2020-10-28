@@ -12,9 +12,12 @@
 		<ui:repeat var="campaign" value="#{crowdsourcingBean.getAllowedCampaigns(userBean.user)}">
 			<ui:fragment rendered="#{!campaign.hasEnded}">
 				<div class="crowdsourcing-campaigns-overview__campaign">
-					<ui:fragment rendered="#{campaign.hasMediaItem()}">
+					<ui:fragment rendered="#{campaign.hasMediaItem()}"> 
 						<div class="crowdsourcing-campaigns-overview__campaign__image">
-							<img src="#{campaign.mediaItem.iconURI}" />
+							<h:graphicImage>
+								<f:passThroughAttribute name="src" value="#{campaign.mediaItem.iconURI}"/>
+								<f:passThroughAttribute name="alt" value="#{campaign.mediaItem.alternativeText != '' ? campaign.mediaItem.alternativeText : '' }"/>
+							</h:graphicImage>
 						</div>
 					</ui:fragment>
 					<div class="crowdsourcing-campaigns-overview__campaign__text">
