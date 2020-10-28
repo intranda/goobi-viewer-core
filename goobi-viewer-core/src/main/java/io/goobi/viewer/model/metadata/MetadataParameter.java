@@ -41,6 +41,7 @@ public class MetadataParameter implements Serializable {
         UNESCAPEDFIELD("unescapedfield"),
         URLESCAPEDFIELD("urlescapedfield"),
         HIERARCHICALFIELD("hierarchicalfield"),
+        MILLISFIELD("millisfield"),
         NORMDATAURI("normdatauri"),
         NORMDATASEARCH("normdatasearch");
 

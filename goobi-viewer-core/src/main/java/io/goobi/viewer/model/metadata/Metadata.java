@@ -17,6 +17,7 @@ package io.goobi.viewer.model.metadata;
 
 import java.io.Serializable;
 import java.text.DateFormat;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -42,6 +43,7 @@ import org.slf4j.LoggerFactory;
 import de.intranda.digiverso.normdataimporter.NormDataImporter;
 import de.intranda.digiverso.normdataimporter.model.MarcRecord;
 import de.intranda.digiverso.normdataimporter.model.NormData;
+import io.goobi.viewer.controller.DateTools;
 import io.goobi.viewer.controller.SolrConstants;
 import io.goobi.viewer.controller.SolrConstants.MetadataGroupType;
 import io.goobi.viewer.controller.SolrSearchIndex;
@@ -119,15 +121,17 @@ public class Metadata implements Serializable {
      * @param masterValue a {@link java.lang.String} object.
      * @param param a {@link io.goobi.viewer.model.metadata.MetadataParameter} object.
      * @param paramValue a {@link java.lang.String} object.
+     * @param locale
      */
-    public Metadata(String label, String masterValue, MetadataParameter param, String paramValue) {
+    public Metadata(String label, String masterValue, MetadataParameter param, String paramValue, Locale locale) {
         this.label = label;
         this.masterValue = masterValue;
         params.add(param);
         values.add(new MetadataValue(masterValue));
         if (paramValue != null) {
-            values.get(0).getParamValues().add(new ArrayList<>());
-            values.get(0).getParamValues().get(0).add(paramValue);
+            setParamValue(0, 0, Collections.singletonList(paramValue), label, null, null, null, locale);
+//            values.get(0).getParamValues().add(new ArrayList<>());
+//            values.get(0).getParamValues().get(0).add(paramValue);
         }
         this.type = 0;
         this.number = -1;
@@ -297,10 +301,11 @@ public class Metadata implements Serializable {
      * @param options a {@link java.util.Map} object.
      * @param groupType value of METADATATYPE, if available
      * @param locale a {@link java.util.Locale} object.
+     * @return this
      * @should add multivalued param values correctly
      * @should set group type correctly
      */
-    public void setParamValue(int valueIndex, int paramIndex, List<String> inValues, String label, String url, Map<String, String> options,
+    public Metadata setParamValue(int valueIndex, int paramIndex, List<String> inValues, String label, String url, Map<String, String> options,
             String groupType, Locale locale) {
         // logger.trace("setParamValue: {}", label);
         if (inValues == null) {
@@ -320,11 +325,11 @@ public class Metadata implements Serializable {
 
         if (paramIndex >= params.size()) {
             logger.warn("No params defined");
-            return;
+            return this;
         }
 
         if (inValues.isEmpty()) {
-            return;
+            return this;
         }
 
         for (String value : inValues) {
@@ -380,6 +385,11 @@ public class Metadata implements Serializable {
                     NavigationHelper nh = BeanUtils.getNavigationHelper();
                     value = buildHierarchicalValue(label, value, locale, nh != null ? nh.getApplicationUrl() : null);
                 }
+                    break;
+                case MILLISFIELD:
+                    // Create formatted date-time from millis
+                    LocalDateTime ldt = DateTools.createLocalDateTimeFromMillis(Long.valueOf(value), false);
+                    value = DateTools.formatDate(ldt, locale);
                     break;
                 case NORMDATAURI:
                     if (StringUtils.isNotEmpty(value)) {
@@ -460,6 +470,8 @@ public class Metadata implements Serializable {
                 mdValue.getParamUrls().add(paramIndex, url);
             }
         }
+        
+        return this;
     }
 
     /**

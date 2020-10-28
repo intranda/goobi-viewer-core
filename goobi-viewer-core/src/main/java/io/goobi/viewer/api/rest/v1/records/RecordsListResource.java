@@ -18,7 +18,6 @@ package io.goobi.viewer.api.rest.v1.records;
 import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_LIST;
 
 import java.net.URISyntaxException;
-import java.util.Collections;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -34,7 +33,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import de.intranda.api.iiif.discovery.OrderedCollection;
 import de.intranda.api.iiif.discovery.OrderedCollectionPage;
 import de.intranda.api.iiif.presentation.IPresentationModelElement;
 import de.unigoettingen.sub.commons.contentlib.servlet.rest.CORSBinding;
@@ -46,7 +44,6 @@ import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.exceptions.ViewerConfigurationException;
-import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.model.search.SearchHelper;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;

@@ -16,6 +16,7 @@
 package io.goobi.viewer.dao.impl;
 
 import java.io.File;
+import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
@@ -1657,21 +1658,27 @@ public class JPADAOTest extends AbstractDatabaseEnabledTest {
         Assert.assertEquals(1,
                 DataManager.getInstance()
                         .getDao()
-                        .getCMSPagesWithRelatedPi(0, 100, DateTools.createDate(2015, 1, 1, 0, 0), DateTools.createDate(2015, 12, 31, 0, 0),
+                        .getCMSPagesWithRelatedPi(0, 100,
+                                DateTools.convertLocalDateTimeToDateViaInstant(LocalDateTime.of(2015, 1, 1, 0, 0), false),
+                                DateTools.convertLocalDateTimeToDateViaInstant(LocalDateTime.of(2015, 12, 31, 0, 0), false),
                                 Arrays.asList("template_simple", "template_two"))
                         .size());
         // Wrong template
         Assert.assertEquals(0,
                 DataManager.getInstance()
                         .getDao()
-                        .getCMSPagesWithRelatedPi(0, 100, DateTools.createDate(2015, 1, 1, 0, 0), DateTools.createDate(2015, 12, 31, 0, 0),
+                        .getCMSPagesWithRelatedPi(0, 100,
+                                DateTools.convertLocalDateTimeToDateViaInstant(LocalDateTime.of(2015, 1, 1, 0, 0), false),
+                                DateTools.convertLocalDateTimeToDateViaInstant(LocalDateTime.of(2015, 12, 31, 0, 0), false),
                                 Collections.singletonList("wrong_tempalte"))
                         .size());
         // Wrong date range
         Assert.assertEquals(0,
                 DataManager.getInstance()
                         .getDao()
-                        .getCMSPagesWithRelatedPi(0, 100, DateTools.createDate(2016, 1, 1, 0, 0), DateTools.createDate(2016, 12, 31, 0, 0),
+                        .getCMSPagesWithRelatedPi(0, 100,
+                                DateTools.convertLocalDateTimeToDateViaInstant(LocalDateTime.of(2016, 1, 1, 0, 0), false),
+                                DateTools.convertLocalDateTimeToDateViaInstant(LocalDateTime.of(2016, 12, 31, 0, 0), false),
                                 Collections.singletonList("template_simple"))
                         .size());
     }
@@ -1684,10 +1691,14 @@ public class JPADAOTest extends AbstractDatabaseEnabledTest {
     public void isCMSPagesForRecordHaveUpdates_shouldReturnCorrectValue() throws Exception {
         Assert.assertTrue(DataManager.getInstance()
                 .getDao()
-                .isCMSPagesForRecordHaveUpdates("PI_1", null, DateTools.createDate(2015, 1, 1, 0, 0), DateTools.createDate(2015, 12, 31, 0, 0)));
+                .isCMSPagesForRecordHaveUpdates("PI_1", null,
+                        DateTools.convertLocalDateTimeToDateViaInstant(LocalDateTime.of(2015, 1, 1, 0, 0), false),
+                        DateTools.convertLocalDateTimeToDateViaInstant(LocalDateTime.of(2015, 12, 31, 0, 0), false)));
         Assert.assertFalse(DataManager.getInstance()
                 .getDao()
-                .isCMSPagesForRecordHaveUpdates("PI_1", null, DateTools.createDate(2016, 1, 1, 0, 0), DateTools.createDate(2016, 12, 31, 0, 0)));
+                .isCMSPagesForRecordHaveUpdates("PI_1", null,
+                        DateTools.convertLocalDateTimeToDateViaInstant(LocalDateTime.of(2015, 1, 1, 0, 0), false),
+                        DateTools.convertLocalDateTimeToDateViaInstant(LocalDateTime.of(2015, 12, 31, 0, 0), false)));
         Assert.assertFalse(DataManager.getInstance().getDao().isCMSPagesForRecordHaveUpdates("PI_2", null, null, null));
     }
 
@@ -1700,19 +1711,25 @@ public class JPADAOTest extends AbstractDatabaseEnabledTest {
         Assert.assertEquals(1,
                 DataManager.getInstance()
                         .getDao()
-                        .getCMSPageWithRelatedPiCount(DateTools.createDate(2015, 1, 1, 0, 0), DateTools.createDate(2015, 12, 31, 0, 0),
+                        .getCMSPageWithRelatedPiCount(
+                                DateTools.convertLocalDateTimeToDateViaInstant(LocalDateTime.of(2015, 1, 1, 0, 0), false),
+                                DateTools.convertLocalDateTimeToDateViaInstant(LocalDateTime.of(2015, 12, 31, 0, 0), false),
                                 Arrays.asList("template_simple", "template_two")));
         // Wrong template
         Assert.assertEquals(0,
                 DataManager.getInstance()
                         .getDao()
-                        .getCMSPageWithRelatedPiCount(DateTools.createDate(2015, 1, 1, 0, 0), DateTools.createDate(2015, 12, 31, 0, 0),
+                        .getCMSPageWithRelatedPiCount(
+                                DateTools.convertLocalDateTimeToDateViaInstant(LocalDateTime.of(2015, 1, 1, 0, 0), false),
+                                DateTools.convertLocalDateTimeToDateViaInstant(LocalDateTime.of(2015, 12, 31, 0, 0), false),
                                 Collections.singletonList("wrong_template")));
         // Wrong date range
         Assert.assertEquals(0,
                 DataManager.getInstance()
                         .getDao()
-                        .getCMSPageWithRelatedPiCount(DateTools.createDate(2016, 1, 1, 0, 0), DateTools.createDate(2016, 12, 31, 0, 0),
+                        .getCMSPageWithRelatedPiCount(
+                                DateTools.convertLocalDateTimeToDateViaInstant(LocalDateTime.of(2016, 1, 1, 0, 0), false),
+                                DateTools.convertLocalDateTimeToDateViaInstant(LocalDateTime.of(2016, 12, 31, 0, 0), false),
                                 Collections.singletonList("template_simple")));
     }
 
@@ -2688,19 +2705,19 @@ public class JPADAOTest extends AbstractDatabaseEnabledTest {
         Assert.assertEquals(expectedFilterString, filterString);
         Assert.assertTrue(params.get("BcC").equals("%BAR%"));
     }
-    
+
     @Test
     public void testGetTermsOfUse() throws DAOException {
         TermsOfUse tou = DataManager.getInstance().getDao().getTermsOfUse();
         Assert.assertNotNull(tou);
     }
-    
+
     @Test
     public void testIsTermsOfUseActive() throws DAOException {
         boolean active = DataManager.getInstance().getDao().isTermsOfUseActive();
         Assert.assertFalse(active);
     }
-    
+
     @Test
     public void testSaveTermsOfUse() throws DAOException {
         Assert.assertFalse(DataManager.getInstance().getDao().isTermsOfUseActive());
@@ -2708,45 +2725,45 @@ public class JPADAOTest extends AbstractDatabaseEnabledTest {
         tou.setActive(true);
         DataManager.getInstance().getDao().saveTermsOfUse(tou);
         Assert.assertTrue(DataManager.getInstance().getDao().isTermsOfUseActive());
-        
+
         tou = DataManager.getInstance().getDao().getTermsOfUse();
         Assert.assertTrue(tou.isActive());
         tou.setTitle("en", "English Title");
         tou.setTitle("de", "German Title");
         tou.setDescription("en", "English description");
         tou.setDescription("de", "German description");
-        
+
         DataManager.getInstance().getDao().saveTermsOfUse(tou);
         tou = DataManager.getInstance().getDao().getTermsOfUse();
         Assert.assertEquals("English Title", tou.getTitle("en").getValue());
         Assert.assertEquals("German Title", tou.getTitle("de").getValue());
         Assert.assertEquals("German description", tou.getDescription("de").getValue());
         Assert.assertEquals("English description", tou.getDescription("en").getValue());
-        
+
     }
-    
+
     @Test
     public void testResetUserAgreementsToTermsOfUse() throws DAOException {
-        
+
         //initially noone has agreed
         List<User> users = DataManager.getInstance().getDao().getAllUsers(true);
         Assert.assertTrue(users.stream().allMatch(u -> !u.isAgreedToTermsOfUse()));
-        
+
         //now all agree
         for (User user : users) {
             user.setAgreedToTermsOfUse(true);
             DataManager.getInstance().getDao().updateUser(user);
         }
-        
+
         //now all should have agreed
         users = DataManager.getInstance().getDao().getAllUsers(true);
         Assert.assertTrue(users.stream().allMatch(u -> u.isAgreedToTermsOfUse()));
-        
+
         //reset agreements
         DataManager.getInstance().getDao().resetUserAgreementsToTermsOfUse();
-        
+
         //now noone has agreed again
         users = DataManager.getInstance().getDao().getAllUsers(true);
         Assert.assertTrue(users.stream().allMatch(u -> !u.isAgreedToTermsOfUse()));
-    }   
+    }
 }
