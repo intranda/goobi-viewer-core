@@ -57,14 +57,14 @@
     						<c:forEach var="faqItem" items="#{cmsPage.getContentItem('faqList').nestedPages}" varStatus="status">
                                 <div class="card" id="card-#{faqItem.id}">
     								<div class="card-header" role="tab" id="heading-#{faqItem.id}">
-    									<h4 class="card-title">
+    									<h3 class="card-title">
     										<a 
                                                 href="#collapse-#{faqItem.id}"
                                                 role="button" 
                                                 class="#{status.count eq 1 ? '' : 'collapsed'}" 
                                                 data-toggle="collapse" 
                                                 aria-expanded="#{status.count eq 1 ? 'true' : 'false'}" 
-                                                aria-controls="collapseOne">
+                                                aria-controls="collapse-#{faqItem.id}">
 										<!-- 	<i class="fa fa-chevron-down" aria-hidden="true"></i>
     											<i class="fa fa-chevron-up" aria-hidden="true"></i> -->
     											#{faqItem.title}
@@ -72,12 +72,14 @@
                                             <a 
                                                 class="fa fa-link card-header__fragment-link" 
                                                 href="#card-#{faqItem.id}"
-                                                data-collapse-show="#collapse-#{faqItem.id}">
+												data-collapse-show="#collapse-#{faqItem.id}"
+												tabindex="-1"
+												aria-hidden="true">
                                             </a>
-    									</h4>
+    									</h3>
     								</div>
     								<div 
-                                        role="tabcard" 
+                                        role="region"
                                         id="collapse-#{faqItem.id}"
                                         class="card-collapse collapse #{status.count eq 1 ? 'in' : ''}" 
                                         data-parent="#faqAccordion" 
@@ -144,7 +146,7 @@
 	                                            </h4>
 	                                        </div>
 	                                        <div 
-	                                            role="tabcard" 
+	                                            role="region" 
 	                                            id="collapse-#{faqItem.id}-#{category.id}" 
 	                                            class="card-collapse collapse #{(classification_status.count eq 1) and (status.count eq 1) ? 'in' : ''}"
 	                                            data-parent="#faqAccordion" 
