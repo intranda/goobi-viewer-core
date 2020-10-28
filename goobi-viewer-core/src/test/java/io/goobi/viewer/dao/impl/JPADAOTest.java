@@ -1697,8 +1697,8 @@ public class JPADAOTest extends AbstractDatabaseEnabledTest {
         Assert.assertFalse(DataManager.getInstance()
                 .getDao()
                 .isCMSPagesForRecordHaveUpdates("PI_1", null,
-                        DateTools.convertLocalDateTimeToDateViaInstant(LocalDateTime.of(2015, 1, 1, 0, 0), false),
-                        DateTools.convertLocalDateTimeToDateViaInstant(LocalDateTime.of(2015, 12, 31, 0, 0), false)));
+                        DateTools.convertLocalDateTimeToDateViaInstant(LocalDateTime.of(2016, 1, 1, 0, 0), false),
+                        DateTools.convertLocalDateTimeToDateViaInstant(LocalDateTime.of(2016, 12, 31, 0, 0), false)));
         Assert.assertFalse(DataManager.getInstance().getDao().isCMSPagesForRecordHaveUpdates("PI_2", null, null, null));
     }
 
