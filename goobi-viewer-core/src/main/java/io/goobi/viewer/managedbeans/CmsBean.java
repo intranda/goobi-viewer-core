@@ -1613,6 +1613,9 @@ public class CmsBean implements Serializable {
                         if (StringUtils.isNotBlank(currentPage.getSubThemeDiscriminatorValue())) {
                             browse.setFilter(DataManager.getInstance().getConfiguration().getSubthemeDiscriminatorField(),
                                     currentPage.getSubThemeDiscriminatorValue());
+                        } else {
+                            //reset subtheme filter
+                            browse.setFilter(null, null);
                         }
                         try {
                             browse.searchTerms();
