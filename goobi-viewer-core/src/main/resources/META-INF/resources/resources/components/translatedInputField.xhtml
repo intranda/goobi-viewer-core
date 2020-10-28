@@ -14,32 +14,42 @@
 
 	<composite:implementation>
 
-		<div id="#{cc.clientId}" class="col-9 admin__form-input d-flex">
-			<!-- NAV TABS -->
-			<ul class="nav nav-tabs admin__language-tabs-vertical" role="tablist">
-				<ui:repeat id="loop" var="locale" value="#{cc.attrs.value.getLocales()}">
-					<li role="tab"
-						class="admin__language-tab-vertical
-						#{cc.attrs.value.isSelected(locale) ? 'active':''}
-						#{cc.attrs.value.isComplete(locale) ? '-already-translated':''}
-						#{cc.attrs.value.isDefaultLocaleSelected() ? '-default-language':''}">
-						<h:commandLink
-							value="#{locale.getDisplayLanguage(navigationHelper.locale)}"
-							action="#{cc.attrs.value.setSelectedLocale(locale)}"
-							immediate="false">
-							<f:ajax render="#{cc.clientId}" execute="#{cc.clientId}"></f:ajax>
-						</h:commandLink>
-					</li>
-				</ui:repeat>
-			</ul>
+		<div id="#{cc.clientId}" class="col-9">
 
-			<h:inputTextarea
-				id="input"
-				styleClass="form-control admin__language-tabs-vertical-textarea"
-				value="#{cc.attrs.value.text}"
-				required="#{cc.attrs.required and cc.attrs.value.isDefaultLocaleSelected()}"/>
-		</div>
+			<h:message for="input" errorClass="-validation-message -danger"></h:message>
+	        <div class="-validation-mark">
+	        	<i class="fa fa-check" aria-hidden="true"></i>
+	        	<i class="fa fa-exclamation" aria-hidden="true"></i>
+        	</div>
 
+			<div class="admin__form-input d-flex">
+				<!-- NAV TABS -->
+				<ul class="nav nav-tabs admin__language-tabs-vertical" role="tablist">
+					<ui:repeat id="loop" var="locale" value="#{cc.attrs.value.getLocales()}">
+						<li role="tab"
+							class="admin__language-tab-vertical
+							#{cc.attrs.value.isSelected(locale) ? 'active':''}
+							#{cc.attrs.value.isComplete(locale) ? '-already-translated':''}
+							#{cc.attrs.value.isDefaultLocaleSelected() ? '-default-language':''}">
+							<h:commandLink
+								value="#{locale.getDisplayLanguage(navigationHelper.locale)}"
+								action="#{cc.attrs.value.setSelectedLocale(locale)}"
+								immediate="false">
+								<f:ajax render="#{cc.clientId}" execute="#{cc.clientId}"></f:ajax>
+							</h:commandLink>
+						</li>
+					</ui:repeat>
+				</ul>
+
+				<h:inputTextarea
+					id="input"
+					styleClass="form-control admin__language-tabs-vertical-textarea -validation-input"
+					value="#{cc.attrs.value.text}"
+					required="#{cc.attrs.required and cc.attrs.value.isDefaultLocaleSelected()}"
+					requiredMessage="#{msg.info__input_required}"/>
+					
+			</div>
+	</div>
 
 	</composite:implementation>
 </ui:composition>
