@@ -116,6 +116,7 @@ public class BrowseFunctionality implements Functionality {
      */
     public void reset() {
         bean.setCurrentStringFilter("");
+        bean.setFilterQuery("");
         bean.setCurrentPage(1);
     }
 
