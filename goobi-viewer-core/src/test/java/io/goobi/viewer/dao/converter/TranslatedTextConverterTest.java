@@ -70,7 +70,7 @@ public class TranslatedTextConverterTest {
         
         TranslatedText value = converter.convertToEntityAttribute(JSON);
         
-        Assert.assertEquals(locales.size(), value.getLocales().size());
+        Assert.assertEquals(locales.size(), value.getValues().size());
         Assert.assertEquals(GERMANVALUE, value.getText(Locale.GERMAN));
         Assert.assertEquals(ENGLISHVALUE, value.getText(Locale.ENGLISH));
         Assert.assertEquals("", value.getText(Locale.CHINESE));

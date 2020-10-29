@@ -2808,6 +2808,14 @@ public class JPADAO implements IDAO {
             return false;
         }
     }
+ 
+    private void updateCampaignsFromDatabase() throws DAOException {
+        List<Campaign> campaigns = this.getAllCampaigns();
+        for (Campaign campaign : campaigns) {
+            updateFromDatabase(campaign.getId(), Campaign.class);
+        }
+        
+    }
 
     @SuppressWarnings({ "unchecked", "rawtypes" })
     private boolean updateFromDatabase(Long id, Class clazz) {
@@ -3422,11 +3430,14 @@ public class JPADAO implements IDAO {
                             "DELETE FROM cs_campaign_record_statistic_reviewers WHERE user_id=" + user.getId())
                     .executeUpdate();
             emLocal.getTransaction().commit();
+            updateCampaignsFromDatabase();
             return rows;
         } finally {
             emLocal.close();
         }
     }
+
+
 
     /**
      * @see io.goobi.viewer.dao.IDAO#changeCampaignStatisticContributors(io.goobi.viewer.model.security.user.User,
@@ -3454,6 +3465,7 @@ public class JPADAO implements IDAO {
                             "UPDATE cs_campaign_record_statistic_reviewers SET user_id=" + toUser.getId() + " WHERE user_id=" + fromUser.getId())
                     .executeUpdate();
             emLocal.getTransaction().commit();
+            updateCampaignsFromDatabase();
             return rows;
         } finally {
             emLocal.close();
