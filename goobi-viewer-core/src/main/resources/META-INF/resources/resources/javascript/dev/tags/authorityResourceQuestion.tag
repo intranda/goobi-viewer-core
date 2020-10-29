@@ -1,4 +1,4 @@
-<richtextquestion>
+<authorityResourceQuestion>
 	<div if="{this.showInstructions()}" class="annotation_instruction">
 		<label>{Crowdsourcing.translate("crowdsourcing__help__create_rect_on_image")}</label>
 	</div>
@@ -6,13 +6,14 @@
 		<label>{Crowdsourcing.translate("crowdsourcing__help__make_active")}</label>
 	</div>
 	<div class="annotation_wrapper" id="question_{opts.index}_annotation_{index}" each="{anno, index in this.question.annotations}">
-		<div class="annotation_area" >
+		<div class="annotation_area -small" >
 			<div if="{this.showAnnotationImages()}" class="annotation_area__image" style="border-color: {anno.getColor()}">
 				<img src="{this.question.getImage(anno)}"></img>
 			</div>
+			<span class="annotation_area__input_prefix">{question.authorityData.baseUri}</span>
 			<div class="annotation_area__text_input">
-				<textarea class="tinyMCE" disabled="{this.opts.item.isReviewMode() ? 'disabled' : ''}" onChange="{setTextFromEvent}" value="{anno.getText()}">
-				</textarea>
+				<input class="form-control" disabled="{this.opts.item.isReviewMode() ? 'disabled' : ''}" onChange="{setIdFromEvent}" value="{getIdAsNumber(anno)}">
+				</input>
 			</div>
 		</div>
 		<div class="cms-module__actions">
@@ -26,11 +27,9 @@
 <script>
 
 	this.question = this.opts.question;
-
+ 
 	this.on("mount", function() {
-	  console.log("item ", this.question.item);
-	    this.question.initializeView((anno) => new Crowdsourcing.Annotation.Richtext(anno), this.update, this.update, this.focusAnnotation);	    
-
+	    this.question.initializeView((anno) => new Crowdsourcing.Annotation.AuthorityResource(anno, this.question.authorityData.context), this.update, this.update, this.focusAnnotation);	    
 	    this.opts.item.onImageOpen(function() {
 	        switch(this.question.targetSelector) {
 	            case Crowdsourcing.Question.Selector.WHOLE_PAGE:
@@ -39,35 +38,14 @@
 	                    this.question.addAnnotation();
 	                }
 	        }
-	        this.update();		    
+	        this.update()
 	    }.bind(this));
 	});
 
-	this.on("updated", function(e) {
-	    this.initTinyMce();
-	});
-
-	initTinyMce() {
-	    if($(".tinyMCE").length) {	        
-		    let config = viewerJS.tinyMce.getConfig({
-		        language: Crowdsourcing.language,
-		    	setup: (editor) => {
-		    	    editor.on('change', (e) => {
-		    	        editor.save();
-		    	        editor.targetElm.dispatchEvent(new Event('change'));
-		    	    });
-		    	}    
-		    });
-		    if(this.opts.item.isReviewMode()) {
-		        config.readonly = 1;
-		    }
-	  	    tinymce.init( config );
-	    }
-	}
 	
 	focusAnnotation(index) {
 	    let id = "question_" + this.opts.index + "_annotation_" + index;
-	    let inputSelector = "#" + id + " textarea";
+	    let inputSelector = "#" + id + " input";
 	    this.root.querySelector(inputSelector).focus();
 	}
 	
@@ -88,10 +66,15 @@
 	    return !this.question.isReviewMode() && !this.question.isRegionTarget() && this.question.mayAddAnnotation();
 	}
 	
-    setTextFromEvent(event) {
+    setIdFromEvent(event) {
         event.preventUpdate = true;
-        if(event.item.anno) {            
-            event.item.anno.setText(event.target.value);
+        if(event.item.anno) {    
+            let uri = this.question.authorityData.baseUri;
+            if(!uri.endsWith("/")) {
+                uri += "/"
+            }
+            uri += event.target.value;
+            event.item.anno.setId(uri);
             this.question.saveToLocalStorage();
         } else {
             throw "No annotation to set"
@@ -110,10 +93,16 @@
         this.question.focusCurrentAnnotation();
     }
 
-
+    getIdAsNumber(anno) {
+        if(anno.isEmpty()) {
+            return "";
+        } else {
+            return anno.getId().replace(this.question.authorityData.baseUri, "").replace("/", "");
+        }
+    }
 
 </script>
 
 
-</richtextquestion>
+</authorityResourceQuestion>
 

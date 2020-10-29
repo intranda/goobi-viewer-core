@@ -26,7 +26,7 @@ var Crowdsourcing = ( function(crowdsourcing) {
  
 
     crowdsourcing.Annotation = function(anno) {
-        let temp = crowdsourcing.deepCopy(anno ? anno : {});            
+        let temp = crowdsourcing.deepCopy(anno ? anno : {});  
         Object.assign(this, temp);
         if(!anno) {
             this.setCreated(new Date());

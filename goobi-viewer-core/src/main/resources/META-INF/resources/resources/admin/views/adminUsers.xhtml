@@ -118,7 +118,7 @@
                                     <span class="admin__table-last-login">
                                         <h:outputText value="#{user.lastLogin}">
                                             <f:converter converterId="localDateTimeConverter" />
-                                            <f:attribute name="pattern" value="dd.MM.YYYY - HH:mm" />
+                                            <f:attribute name="pattern" value="#{navigationHelper.dateTimePattern}" />
                                         </h:outputText>
                                     </span>
                                 </div>

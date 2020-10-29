@@ -106,8 +106,8 @@ public class PersistentAnnotationTest extends AbstractDatabaseEnabledTest {
         generator.setTargetSelector(TargetSelector.WHOLE_PAGE);
 
         annotation = new WebAnnotation(URI.create("http://www.example.com/anno/1"));
-        annotation.setCreated(DateTools.createDate(2019, 01, 22, 12, 54));
-        annotation.setModified(DateTools.createDate(2019, 8, 11, 17, 13));
+        annotation.setCreated(DateTools.convertLocalDateTimeToDateViaInstant(LocalDateTime.of(2019, 01, 22, 12, 54), false));
+        annotation.setModified(DateTools.convertLocalDateTimeToDateViaInstant(LocalDateTime.of(2019, 8, 11, 17, 13), false));
         annotation.setCreator(new Agent(URI.create(creator.getId().toString()), AgentType.PERSON, creator.getNickName()));
         annotation.setGenerator(new Agent(URI.create(generator.getId().toString()), AgentType.SOFTWARE, ""));
 
