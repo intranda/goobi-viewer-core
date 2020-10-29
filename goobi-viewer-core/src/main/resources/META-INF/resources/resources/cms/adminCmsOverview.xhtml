@@ -134,7 +134,7 @@
                                      <div class="col-2 d-flex align-items-center">
                                         <h:outputText value="#{page.dateUpdated}">
                                             <f:converter converterId="localDateTimeConverter" />
-                                            <f:attribute name="pattern" value="dd.MM.YYYY - HH:mm" />
+                                            <f:attribute name="pattern" value="#{navigationHelper.dateTimePattern}" />
                                         </h:outputText>
                                     </div>
                                     <div class="col-2 d-flex flex-column justify-content-center">

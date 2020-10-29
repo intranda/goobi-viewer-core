@@ -118,7 +118,7 @@
                                     <div class="col-2 d-flex">#{comment.owner}</div>
                                     <div class="col-2 d-flex">
                                         <h:outputText value="#{comment.dateCreated}">
-                                            <f:convertDateTime pattern="dd.MM.YYYY - HH:mm" type="both" dateStyle="short" timeStyle="short" />
+                                            <f:convertDateTime pattern="#{navigationHelper.dateTimePattern}" type="both" dateStyle="short" timeStyle="short" />
                                         </h:outputText>
                                     </div>
                                </div>
