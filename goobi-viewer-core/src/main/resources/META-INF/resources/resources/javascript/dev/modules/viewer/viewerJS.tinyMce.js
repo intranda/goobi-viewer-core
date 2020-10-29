@@ -25,7 +25,7 @@
 var viewerJS = ( function( viewer ) {
     'use strict';
     
-    var _debug = false;
+    var _debug = true;
     var _defaults = {
         currLang: 'de',
         selector: 'textarea.tinyMCE',
@@ -46,14 +46,14 @@ var viewerJS = ( function( viewer ) {
     
     viewer.tinyMce = {
         init: function( config ) {
+            this.config = $.extend( true, {}, _defaults, config );
             if ( _debug ) {
                 console.log( '##############################' );
                 console.log( 'viewer.tinyMce.init' );
                 console.log( '##############################' );
-                console.log( 'viewer.tinyMce.init: config - ', config );
+                console.log( 'viewer.tinyMce.init: config - ', this.config );
             }
             
-            this.config = $.extend( true, {}, _defaults, config );
              
             // check current language
             switch ( this.config.currLang ) {
