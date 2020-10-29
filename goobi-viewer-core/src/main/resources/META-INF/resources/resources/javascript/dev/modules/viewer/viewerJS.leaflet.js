@@ -25,7 +25,7 @@
  * loaded GeoJson object is used to zoom/center the map.
  * 
  * @version 3.2.0
- * @module viewerJS.normdata
+ * @module viewerJS.leaflet
  * @requires jQuery
  * @requires leaflet
  * 

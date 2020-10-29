@@ -53,6 +53,7 @@ import io.goobi.viewer.model.crowdsourcing.campaigns.Campaign;
 import io.goobi.viewer.model.misc.IPolyglott;
 import io.goobi.viewer.model.misc.MultiLanguageValue;
 import io.goobi.viewer.model.misc.TranslatedText;
+import io.goobi.viewer.model.normdata.NormdataAuthority;
 
 /**
  * An annotation generator to create a specific type of annotation for a specific question. One or more of these may be contained within a
@@ -394,6 +395,19 @@ public class Question {
     public URI getIdAsURI() {
         return URI
                 .create(URI_ID_TEMPLATE.replace("{campaignId}", this.getOwner().getId().toString()).replace("{questionId}", this.getId().toString()));
+    }
+    
+    /**
+     * Currently only returns GND authority data. 
+     * @return Normdata authority data if the question type is NORMDATA, otherwise null
+     */
+    @JsonProperty("authorityData")
+    public NormdataAuthority getAuthorityData() {
+        if(QuestionType.NORMDATA.equals(getQuestionType())) {
+            return NormdataAuthority.GND;
+        } else {
+            return null;
+        }
     }
 
 }

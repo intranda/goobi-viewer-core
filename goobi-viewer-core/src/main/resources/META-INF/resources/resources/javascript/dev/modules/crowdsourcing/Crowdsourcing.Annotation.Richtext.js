@@ -44,7 +44,7 @@ var Crowdsourcing = ( function(crowdsourcing) {
     }
         
     crowdsourcing.Annotation.Richtext.prototype.setText = function(text) {
-        if(this.body.valuie != text) {                
+        if(this.body.value != text) {                
             this.setModified(new Date());
         }
         this.body.value = text;

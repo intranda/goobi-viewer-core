@@ -24,34 +24,31 @@
 var Crowdsourcing = ( function(crowdsourcing) {
     'use strict';
 
-
-    crowdsourcing.Annotation.Plaintext = function(annotation) {
+    crowdsourcing.Annotation.AuthorityResource = function(annotation, context) {
         crowdsourcing.Annotation.call(this, annotation);
         if(!this.body) {
             this.body = {
-                    type: "TextualBody",
-                    format: "text/plain",
-                    value: "",
+                    type: "AuthorityResource",
+                    "@context": context
             }
         }
+        console.log("new authority resource ", this.body);
     }
+    crowdsourcing.Annotation.AuthorityResource.prototype = Object.create(crowdsourcing.Annotation.prototype);
     
-    crowdsourcing.Annotation.Plaintext.prototype = Object.create(crowdsourcing.Annotation.prototype);
-    
-    crowdsourcing.Annotation.Plaintext.prototype.getText = function() {
-            return this.body.value;
-
+    crowdsourcing.Annotation.AuthorityResource.prototype.getId = function() {
+            return this.body.id;
     }
         
-    crowdsourcing.Annotation.Plaintext.prototype.setText = function(text) {
-        if(this.body.value != text) {                
+    crowdsourcing.Annotation.AuthorityResource.prototype.setId = function(uri) {
+        if(this.body.id && this.body.id != uri) {                
             this.setModified(new Date());
         }
-        this.body.value = text;
+        this.body.id = uri;
     }
 
-    crowdsourcing.Annotation.Plaintext.prototype.isEmpty = function(text) {
-        if(this.getText() && this.getText().length > 0) {
+    crowdsourcing.Annotation.AuthorityResource.prototype.isEmpty = function() {
+        if(this.getId() && this.getId().length > 0) {
             return false;
         } else {
             return true;

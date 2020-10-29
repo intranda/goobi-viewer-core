@@ -297,6 +297,7 @@ var Crowdsourcing = ( function(crowdsourcing) {
     crowdsourcing.Question.Type.GEOLOCATION_AREA = "GEOLOCATION_AREA";
     crowdsourcing.Question.Type.TRANSCRIPTION = "TRANSCRIPTION";
     crowdsourcing.Question.Type.KEY_VALUE_LIST = "KEY_VALUE_LIST";
+    crowdsourcing.Question.Type.NORMDATA = "NORMDATA";
     crowdsourcing.Question.Type.get = function(text) {
         return crowdsourcing.Question.Type[text];
     }

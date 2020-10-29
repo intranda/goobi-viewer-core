@@ -13,23 +13,35 @@
  *
  * You should have received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
-package io.goobi.viewer.model.crowdsourcing.questions;
+package io.goobi.viewer.model.normdata;
+
+import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 /**
- * The QuestionType determines GUI element to use to create annotations for a {@link io.goobi.viewer.model.crowdsourcing.questions.Question}, which
- * also determines the type of body the generated annotations have
- *
  * @author florian
+ *
  */
-public enum QuestionType {
+@JsonFormat(shape = JsonFormat.Shape.OBJECT)
+public enum NormdataAuthority {
 
-    PLAINTEXT,
-    RICHTEXT,
-    GEOLOCATION_POINT,
-    NORMDATA
-    /**
-     * Not implemented yet DATE_PICKER, GEOLOCATION_AREA, TRANSCRIPTION, KEY_VALUE_LIST
-     **/
-    ;
+    GND("http://lobid.org/gnd/context.jsonld", "https://d-nb.info/gnd/");
+    
+    private final String context;
+    private final String baseUri;
+    
+    private NormdataAuthority(String context, String uri) {
+        this.context = context;
+        this.baseUri = uri;
+    }
 
+    @JsonProperty
+    public String getBaseUri() {
+        return baseUri;
+    }
+
+    @JsonProperty
+    public String getContext() {
+        return context;
+    }
 }
