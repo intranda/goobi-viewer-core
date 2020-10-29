@@ -51,6 +51,7 @@ $( document ).ready(function() {
 // toggle help text for admin forms
 	$("body").on("click", '[data-toggle="helptext"]', function() {
 		$(this).closest('.form-group').children('.admin__form-input, .admin__license-functions-help').find('.admin__form-help-text').toggleClass('in');
+		$(this).closest('.form-group').children('.admin__form-input').siblings('.admin__form-help-text').toggleClass('in');
 	});
 
 // hide license functions if open access toggle is yes
@@ -118,11 +119,11 @@ $( document ).ready(function() {
 
 	// vertical language tabs focus effect
 	$("body").on("focus", ".admin__language-tabs-vertical-textarea", function() {
-		$(this).prev('.admin__language-tabs-vertical').find('.admin__language-tab-vertical.active a').css({"border-color": "#3365a9", "border-right-color": "#fff"})
+		$(this).siblings('.admin__language-tabs-vertical').find('.admin__language-tab-vertical.active a').css({"border-color": "#3365a9", "border-right-color": "#fff"})
 	});
 
 	$("body").on("focusout", ".admin__language-tabs-vertical-textarea", function() {
-		$(this).prev('.admin__language-tabs-vertical').find('.admin__language-tab-vertical.active a').css({"border-color": "#ccc", "border-right-color": "#fff"})
+		$(this).siblings('.admin__language-tabs-vertical').find('.admin__language-tab-vertical.active a').css({"border-color": "#ccc", "border-right-color": "#fff"})
 	});
 	
 //END DOCUMENT READY

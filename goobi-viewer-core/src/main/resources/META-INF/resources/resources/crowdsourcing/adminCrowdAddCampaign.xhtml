@@ -60,7 +60,7 @@
  										<!-- NEW CONTENT TABS CAMPAIGN GENERAL-->
 										<div id="languagesGeneralArea" class="admin__default-block">
 											<div class="tab-content">
-												<!-- TITLE -->
+												<!-- TITLE CAMPAIGN -->
 												<div class="form-group form-row">
 													<div class="col-2 control-label admin__form-label">
 														<label for="adminCrowdAddCampaignTitle">
@@ -72,11 +72,18 @@
 														</label>
 													</div>
 
-													<div class="col-9 admin__form-input">
+													<div class="col-9 cms-module__option-control admin__form-input">
+													
+									                    <h:message for="displayName" errorClass="-validation-message -danger"></h:message>
+		                                                 <div class="-validation-mark">
+		                                                     <i class="fa fa-check" aria-hidden="true"></i>
+		                                                     <i class="fa fa-exclamation" aria-hidden="true"></i>
+		                                                 </div>
+		                                                 
 														<h:inputText value="#{crowdsourcingBean.selectedCampaign.title}"
 															id="displayName" label="displayName"
-															styleClass="form-control" required="false"
-															requiredMessage="#{msg.loginEnterDisplayName}" />
+															styleClass="form-control -validation-input" required="#{crowdsourcingBean.selectedCampaign.isDefaultLocaleSelected()}"
+															requiredMessage="#{msg.info__input_required}" />
 														<span class="admin__form-help-text">#{msg.help__cms_page_title}</span>
 													</div>
 
@@ -197,7 +204,7 @@
 															styleClass="form-control">
 															<f:validator validatorId="solrQueryValidator"
 																for="solrQueryInput" />
-															<f:ajax event="blur" render="@form solrQueryInputGroup addQuestionButton statisticsArea" />
+															<f:ajax event="blur" render="solrQueryInputGroup addQuestionButton statisticsArea" />
 														</h:inputText>
 													</h:panelGroup>
 													<span class="admin__form-help-text">#{msg.inline_help__input_solr_query}</span>
@@ -236,18 +243,18 @@
 												
 						                   	</div>
 										</div>						
-
-										<h:panelGroup id="addQuestionButton"
-													  rendered="#{crowdsourcingBean.selectedCampaign.solrQuery != null}">
-											<h3>#{msg.admin__crowdsourcing_questions}
-											<!-- Add new question link -->
-											<h:commandButton styleClass="btn btn--default admin__title-bar-action"
-												action="#{crowdsourcingBean.addNewQuestionAction}"
-												value="#{msg.add}" title="#{msg.add}" alt="#{msg.add}">
-											</h:commandButton>
-											</h3>
+										
+										<h:panelGroup id="addQuestionButton">
+											<ui:fragment rendered="#{crowdsourcingBean.selectedCampaign.solrQuery != null}">
+												<h3>#{msg.admin__crowdsourcing_questions}
+												<!-- Add new question link -->
+												<h:commandButton styleClass="btn btn--default admin__title-bar-action"
+													action="#{crowdsourcingBean.addNewQuestionAction}"
+													value="#{msg.add}" title="#{msg.add}" alt="#{msg.add}">
+												</h:commandButton>
+												</h3>
+											</ui:fragment>
 										</h:panelGroup>
-									
 										
 										
 										<ui:fragment rendered="#{fn:length(crowdsourcingBean.selectedCampaign.questions) > 0}">
@@ -286,14 +293,17 @@
 																			<viewerComponent:translatedInputField 
 																				value="#{question.text}" 
 																				required="true"/>
-																			<span class="admin__form-help-text">#{msg.admin__help_crowdsourcing_question_text}</span>
-																		<div class="col-1 admin__form-help-icon">
-																			<button type="button" class="btn btn--clean"
-																				data-toggle="helptext" aria-label="inline help icon">
-																				<i class="fa fa-question-circle" aria-hidden="true"></i>
-																			</button>
-																		</div>
-																			
+																				
+																			<div class="col-1 admin__form-help-icon">
+																				<button type="button" class="btn btn--clean"
+																					data-toggle="helptext" aria-label="inline help icon">
+																					<i class="fa fa-question-circle" aria-hidden="true"></i>
+																				</button>
+																			</div>
+																				
+																			<div class="col-2"></div>
+																			<span class="col-8 admin__form-help-text">#{msg.admin__help_crowdsourcing_question_text}</span>
+
 																	</div>
 	
 																	<!-- TYPE -->
@@ -389,19 +399,21 @@
 												</div>
 											</h:panelGroup>
 										</ui:fragment>
-
-										<h:panelGroup id="statisticsArea" rendered="#{crowdsourcingBean.selectedCampaign.solrQuery != null}">
-											<h3>#{msg.admin__crowdsourcing_campaign_statistics}</h3>
-											<div class="admin__default-block">
-												<!-- METADATA WRAPPER -->
-												<crowdsourcingComponent:crowdsourcing_addCampaignMetadataItemWrapper
-													id="metadata_component" />
-												<ui:include
-													src="/resources/crowdsourcing/includes/campaignStatistics.xhtml">
-													<ui:param name="campaign"
-														value="#{crowdsourcingBean.selectedCampaign}"></ui:param>
-												</ui:include>
-											</div>
+										
+										<h:panelGroup id="statisticsArea">
+											<ui:fragment rendered="#{crowdsourcingBean.selectedCampaign.solrQuery != null}">
+												<h3>#{msg.admin__crowdsourcing_campaign_statistics}</h3>
+												<div class="admin__default-block">
+													<!-- METADATA WRAPPER -->
+													<crowdsourcingComponent:crowdsourcing_addCampaignMetadataItemWrapper
+														id="metadata_component" />
+													<ui:include
+														src="/resources/crowdsourcing/includes/campaignStatistics.xhtml">
+														<ui:param name="campaign"
+															value="#{crowdsourcingBean.selectedCampaign}"></ui:param>
+													</ui:include>
+												</div>
+											</ui:fragment>
 										</h:panelGroup>
 									</div>
 								</div>
