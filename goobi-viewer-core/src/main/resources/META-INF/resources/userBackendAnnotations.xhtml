@@ -94,7 +94,14 @@
                                 <div class="row no-gutters admin__table-entry">
                                     <div class="col-8 d-flex" style="flex-direction:column;">
                                         <h:outputText value="#{annotation.contentString}" />
-
+                                        <!-- ACTIONS -->
+                                        <div>
+                                            <!-- SHOW -->
+                                            <!-- TODO INLINE CSS -->
+                                            <a href="#{navigationHelper.objectUrl}#{annotation.targetLink}"
+                                                class="admin__table-action-link" style="padding-right: 1.4rem;" target="_blank"
+                                                aria-label="#{msg.admin__crowdsourcing_annotation} #{msg.show} (#{annotation.targetPI})">#{msg.show}</a>
+                                        </div>
                                     </div>
                                     <div class="col-2 d-flex">
                                         #{annotation.targetPI}<h:outputText rendered="#{annotation.targetPageOrder != null}" value=", #{msg.page} #{annotation.targetPageOrder}" />
