@@ -2808,13 +2808,13 @@ public class JPADAO implements IDAO {
             return false;
         }
     }
- 
+
     private void updateCampaignsFromDatabase() throws DAOException {
         List<Campaign> campaigns = this.getAllCampaigns();
         for (Campaign campaign : campaigns) {
             updateFromDatabase(campaign.getId(), Campaign.class);
         }
-        
+
     }
 
     @SuppressWarnings({ "unchecked", "rawtypes" })
@@ -3295,7 +3295,7 @@ public class JPADAO implements IDAO {
             try {
                 Campaign o = em.getReference(Campaign.class, id);
                 if (o != null) {
-//                    updateFromDatabase(id, Campaign.class);
+                    //                    updateFromDatabase(id, Campaign.class);
                 }
                 return o;
             } catch (EntityNotFoundException e) {
@@ -3436,8 +3436,6 @@ public class JPADAO implements IDAO {
             emLocal.close();
         }
     }
-
-
 
     /**
      * @see io.goobi.viewer.dao.IDAO#changeCampaignStatisticContributors(io.goobi.viewer.model.security.user.User,
@@ -4369,15 +4367,15 @@ public class JPADAO implements IDAO {
 
         preQuery();
         String query = "SELECT a FROM PersistentAnnotation a WHERE a.creatorId = :userId OR a.reviewerId = :userId";
-        
+
         return em.createQuery(query).setParameter("userId", userId).getResultList();
     }
 
     /** {@inheritDoc} */
     @SuppressWarnings("unchecked")
     @Override
-    public List<PersistentAnnotation> getAnnotations(int first, int pageSize, String sortField, boolean descending, Map<String, String> filters)
-            throws DAOException {
+    public List<PersistentAnnotation> getAnnotations(int first, int pageSize, String sortField, boolean descending,
+            Map<String, String> filters) throws DAOException {
         synchronized (crowdsourcingRequestLock) {
             preQuery();
             StringBuilder sbQuery = new StringBuilder("SELECT DISTINCT a FROM PersistentAnnotation a");

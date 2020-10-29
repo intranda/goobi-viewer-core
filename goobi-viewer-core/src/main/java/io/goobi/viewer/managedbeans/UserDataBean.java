@@ -74,10 +74,7 @@ public class UserDataBean implements Serializable {
                             sortField = "id";
                             sortOrder = SortOrder.DESCENDING;
                         }
-                        
-                        filters.put("creatorId", String.valueOf(userBean.getUser().getId()));
-                        // TODO or reviewerId
-
+                        filters.put("creatorId_reviewerId", String.valueOf(userBean.getUser().getId()));
                         List<PersistentAnnotation> ret =
                                 DataManager.getInstance().getDao().getAnnotations(first, pageSize, sortField, sortOrder.asBoolean(), filters);
                         return ret;
@@ -91,6 +88,7 @@ public class UserDataBean implements Serializable {
                 @Override
                 public long getTotalNumberOfRecords(Map<String, String> filters) {
                     if (!numCreatedPages.isPresent()) {
+                        filters.put("creatorId_reviewerId", String.valueOf(userBean.getUser().getId()));
                         try {
                             numCreatedPages = Optional.ofNullable(DataManager.getInstance().getDao().getAnnotationCount(filters));
                         } catch (DAOException e) {
