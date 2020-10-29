@@ -43,7 +43,8 @@
 							<div class="row">
 								<div class="col-12">
 									<!-- CREATE CAMPAIGN WRAPPER -->
-									<div class="admin__crowdsourcing-add-campaign-wrapper">
+									<div class="admin__content-wrapper">
+									<div class="admin__content-main">
 										<!-- GENERAL INFORMATION (TITLE + TEXT) -->
 										<h3>#{msg.admin__category_general}</h3>
 										
@@ -55,7 +56,6 @@
 											render="createCampaignForm:titleDataGroup"
 											execute="createCampaignForm:titleDataGroup"/>
 										</div>
-                                                 
 
  										<!-- NEW CONTENT TABS CAMPAIGN GENERAL-->
 										<div id="languagesGeneralArea" class="admin__default-block">
@@ -118,6 +118,57 @@
 													</div>
 												</div>
 												
+												<!-- IMAGE FILE -->
+												<!-- AREA FOR AJAX REFRESH -->
+												<h:panelGroup id="contentMediaGroup" styleClass="form-group form-row" layout="block">
+													<div class="col-2 control-label admin__form-label">
+														<label for="">#{msg.admin__cms_media_file}:</label>
+													</div>
+													
+													<div class="col-9 admin__form-input">
+														<div class="admin__campaign-media-file-box">
+															<!-- MEDIA FILE -->
+															<ui:fragment
+																rendered="#{crowdsourcingBean.selectedCampaign.mediaItem != null}">
+																<ui:include
+																	src="/resources/cms/includes/mediaFile.xhtml">
+																	<ui:param name="item"
+																		value="#{crowdsourcingBean.selectedCampaign.mediaItemWrapper}" />
+																</ui:include>
+															</ui:fragment>
+									
+															<!-- ACTIONS -->
+															<div class="cms-module__actions">
+																<h:commandLink
+																	action="#{cmsBean.setSelectedMediaHolder(crowdsourcingBean.selectedCampaign)}"
+																	value="#{crowdsourcingBean.selectedCampaign.getMediaItem() == null ? msg.cms_selectMedia : msg.cms_media_editFile}"
+																	class="btn #{crowdsourcingBean.selectedCampaign.getMediaItem() == null ? 'btn--default' : 'btn--clean edit'}"
+																	role="button">
+																	<f:ajax execute="@this" render="mediaSelectPanel" />
+																</h:commandLink>
+																<h:commandLink
+																	rendered="#{crowdsourcingBean.selectedCampaign.getMediaItem() != null}"
+																	action="#{crowdsourcingBean.selectedCampaign.setMediaItem(null)}"
+																	value="#{msg.cms_selectMediaItem_deselect}"
+																	class="btn btn--clean delete" role="button">
+																	<f:ajax render="contentMediaGroup" />
+																</h:commandLink>
+															</div>
+									
+															<!-- HELP -->
+															<span class="admin__form-help-text">#{msg.admin__help_crowdsourcing_campaign_media_file}</span>
+														</div>
+													</div>
+								
+													<div class="col-1 admin__form-help-icon">
+														<button type="button" class="btn btn--clean"
+															data-toggle="helptext" aria-label="inline help icon">
+															<i class="fa fa-question-circle" aria-hidden="true"></i>
+														</button>
+													</div>
+														
+												</h:panelGroup>
+												
 											<!-- TAB CONTENT EOL -->
 											</div>
 										<!-- ADMIN BLOCK EOL -->
@@ -125,58 +176,7 @@
 										</h:panelGroup>
 										
 										<div class="admin__default-block">
-										
-											<!-- IMAGE FILE -->
-											<!-- AREA FOR AJAX REFRESH -->
-											<h:panelGroup id="contentMediaGroup"
-												styleClass="form-group form-row" layout="block">
-												<div class="col-2 control-label admin__form-label">
-													<label for="">#{msg.admin__cms_media_file}:</label>
-												</div>
-												
-												<div class="col-9 admin__form-input">
-													<div class="admin__campaign-media-file-box">
-														<!-- MEDIA FILE -->
-														<ui:fragment
-															rendered="#{crowdsourcingBean.selectedCampaign.mediaItem != null}">
-															<ui:include
-																src="/resources/cms/includes/mediaFile.xhtml">
-																<ui:param name="item"
-																	value="#{crowdsourcingBean.selectedCampaign.mediaItemWrapper}" />
-															</ui:include>
-														</ui:fragment>
-								
-														<!-- ACTIONS -->
-														<div class="cms-module__actions">
-															<h:commandLink
-																action="#{cmsBean.setSelectedMediaHolder(crowdsourcingBean.selectedCampaign)}"
-																value="#{crowdsourcingBean.selectedCampaign.getMediaItem() == null ? msg.cms_selectMedia : msg.cms_media_editFile}"
-																class="btn #{crowdsourcingBean.selectedCampaign.getMediaItem() == null ? 'btn--default' : 'btn--clean edit'}"
-																role="button">
-																<f:ajax execute="@this" render="mediaSelectPanel" />
-															</h:commandLink>
-															<h:commandLink
-																rendered="#{crowdsourcingBean.selectedCampaign.getMediaItem() != null}"
-																action="#{crowdsourcingBean.selectedCampaign.setMediaItem(null)}"
-																value="#{msg.cms_selectMediaItem_deselect}"
-																class="btn btn--clean delete" role="button">
-																<f:ajax render="contentMediaGroup" />
-															</h:commandLink>
-														</div>
-								
-														<!-- HELP -->
-														<span class="admin__form-help-text">#{msg.admin__help_crowdsourcing_campaign_media_file}</span>
-													</div>
-												</div>
-							
-												<div class="col-1 admin__form-help-icon">
-													<button type="button" class="btn btn--clean"
-														data-toggle="helptext" aria-label="inline help icon">
-														<i class="fa fa-question-circle" aria-hidden="true"></i>
-													</button>
-												</div>
-													
-											</h:panelGroup>
+
 											
 											<!-- SOLR QUERY -->
 											<div class="form-group form-row">
@@ -415,6 +415,10 @@
 												</div>
 											</ui:fragment>
 										</h:panelGroup>
+									</div>
+									<div class="admin__content-side">
+									</div>
+
 									</div>
 								</div>
 							</div>
