@@ -45,6 +45,10 @@ var viewerJS = ( function( viewer ) {
     };
     
     viewer.tinyMce = {
+        getConfig: function(config) {
+            let c = $.extend( true, {}, _defaults, config );
+            return c;
+        },
         init: function( config ) {
             this.config = $.extend( true, {}, _defaults, config );
             if ( _debug ) {

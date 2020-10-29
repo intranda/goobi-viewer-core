@@ -28,11 +28,9 @@
 	this.question = this.opts.question;
 
 	this.on("mount", function() {
+	  
 	    this.question.initializeView((anno) => new Crowdsourcing.Annotation.Richtext(anno), this.update, this.update, this.focusAnnotation);	    
-	    this.opts.item.onAnnotationsReload(() => {
-	        this.initTinyMce();
-	        console.log("init tinyMce after reload", $(".tinyMCE").length)
-	    });
+
 	    this.opts.item.onImageOpen(function() {
 	        switch(this.question.targetSelector) {
 	            case Crowdsourcing.Question.Selector.WHOLE_PAGE:
@@ -41,24 +39,31 @@
 	                    this.question.addAnnotation();
 	                }
 	        }
-	        this.update();
-	        this.initTinyMce();
-		    
+	        this.update();		    
 	    }.bind(this));
 	});
 
-
+	this.on("updated", function(e) {
+	    this.initTinyMce();
+	});
 
 	initTinyMce() {
-	    viewerJS.tinyMce.init({
-	        language: Crowdsourcing.language,
-	    	setup: (editor) => {
-	    	    editor.on('change', (e) => {
-	    	        editor.save();
-	    	        editor.targetElm.dispatchEvent(new Event('change'));
-	    	    });
-	    	}    
-	    });
+	    console.log("init tinyMCE");
+	    if($(".tinyMCE").length) {	        
+		    let config = viewerJS.tinyMce.getConfig({
+		        language: Crowdsourcing.language,
+		    	setup: (editor) => {
+		    	    editor.on('change', (e) => {
+		    	        editor.save();
+		    	        editor.targetElm.dispatchEvent(new Event('change'));
+		    	    });
+		    	}    
+		    });
+		    if(this.opts.item.isReviewMode()) {
+		        config.readonly = 1;
+		    }
+	  	    tinymce.init( config );
+	    }
 	}
 	
 	focusAnnotation(index) {
