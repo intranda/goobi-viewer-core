@@ -46,6 +46,7 @@ import org.slf4j.LoggerFactory;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import de.intranda.metadata.multilanguage.IMetadataValue;
 import de.unigoettingen.sub.commons.contentlib.exceptions.ContentNotFoundException;
 import de.unigoettingen.sub.commons.contentlib.exceptions.IllegalRequestException;
 import de.unigoettingen.sub.commons.contentlib.exceptions.ServiceNotAllowedException;
@@ -1796,8 +1797,11 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
                 containedStructElements = new ArrayList<>(docstructDocs.size());
                 for (SolrDocument doc : docstructDocs) {
                     StructElement ele = new StructElement(Long.valueOf((String) doc.getFieldValue(SolrConstants.IDDOC)), doc);
-                    Optional<String> label = TocMaker.buildTocElementLabel(doc).getValue(BeanUtils.getLocale());
-                    label.ifPresent(ele::setLabel);
+                    IMetadataValue value = TocMaker.buildTocElementLabel(doc);
+                    String label = value.getValue(BeanUtils.getLocale()).orElse(value.getValue().orElse(""));
+                    if(StringUtils.isNotBlank(label)) {
+                        ele.setLabel(label);
+                    }
                     containedStructElements.add(ele);
                 }
             }

@@ -15,6 +15,8 @@
  */
 package io.goobi.viewer.model.cms.itemfunctionality;
 
+import org.apache.commons.lang3.StringUtils;
+
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.exceptions.RedirectException;
@@ -79,7 +81,11 @@ public class BrowseFunctionality implements Functionality {
      * @param value
      */
     public void setFilter(String field, String value) {
-        bean.setFilterQuery(field + ":" + value);
+        if(StringUtils.isNoneBlank(field, value)) {            
+            bean.setFilterQuery(field + ":" + value);
+        } else {
+            bean.setFilterQuery("");
+        }
     }
 
     /**
@@ -116,6 +122,7 @@ public class BrowseFunctionality implements Functionality {
      */
     public void reset() {
         bean.setCurrentStringFilter("");
+        bean.setFilterQuery("");
         bean.setCurrentPage(1);
     }
 
