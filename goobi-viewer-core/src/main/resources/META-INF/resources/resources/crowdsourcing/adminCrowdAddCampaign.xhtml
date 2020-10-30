@@ -120,7 +120,10 @@
 												
 												<!-- IMAGE FILE -->
 												<!-- AREA FOR AJAX REFRESH -->
-												<h:panelGroup id="contentMediaGroup" styleClass="form-group form-row #{crowdsourcingBean.selectedCampaign.isDefaultLocaleSelected() == 'false' ? '-transparent' : ''}" layout="block">
+												<h:panelGroup id="contentMediaGroup" styleClass="form-group form-row position-relative #{crowdsourcingBean.selectedCampaign.isDefaultLocaleSelected() == 'false' ? '-deactivated' : ''}" layout="block">
+													<ui:fragment rendered="#{!crowdsourcingBean.selectedCampaign.isDefaultLocaleSelected()}">
+														<div class="admin__non-clickable-area-overlay">test</div>
+													</ui:fragment>													
 													<div class="col-2 control-label admin__form-label">
 														<label for="">#{msg.admin__cms_media_file}:</label>
 													</div>
@@ -128,8 +131,10 @@
 													<div class="col-9 admin__form-input">
 														<div class="admin__campaign-media-file-box">
 															<!-- MEDIA FILE -->
+
 															<ui:fragment
 																rendered="#{crowdsourcingBean.selectedCampaign.mediaItem != null}">
+
 																<ui:include
 																	src="/resources/cms/includes/mediaFile.xhtml">
 																	<ui:param name="item"
@@ -170,7 +175,7 @@
 												</h:panelGroup>
 												
 												<!-- SOLR QUERY -->
-												<div class="form-group form-row #{crowdsourcingBean.selectedCampaign.isDefaultLocaleSelected() == 'false' ? '-transparent' : ''}">
+												<div class="form-group form-row #{crowdsourcingBean.selectedCampaign.isDefaultLocaleSelected() == 'false' ? '-deactivated' : ''}">
 												
 													<div class="col-2 control-label admin__form-label">
 														<label for="adminCrowdAddCampaignSolrQuery">#{msg.admin__crowdsourcing_campaign_solrQuery}: <span class="admin__label-required-field">(#{msg.form__required_field})</span></label>
