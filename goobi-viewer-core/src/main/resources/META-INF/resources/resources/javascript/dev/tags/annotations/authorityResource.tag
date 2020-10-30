@@ -2,17 +2,17 @@
 	<div class="annotation__body__authority">
 		<div if="{normdataList.length == 0}">{authorityId}</div>
 		
-		<div class="annotation__body__authority__normdata_list" each="{normdata in normdataList}">
-				<div class="normdata_list__label">{normdata.property}: </div>
-				<div class="normdata_list__value">{normdata.value}</div>
-		</div>
+		<dl class="annotation__body__authority__normdata_list" each="{normdata in normdataList}">
+				<dt class="normdata_list__label">{normdata.property}: </dt>
+				<dd class="normdata_list__value">{normdata.value}</dd>
+		</dl>
 	</div>
 <script>
     this.normdataList = [];
 
 	this.on("mount", () => {
 		this.authorityId = this.opts.resource.id;
-	    this.url = this.opts.resturl + "normdata/get/" + this.unicodeEscapeUri(this.authorityId) + "/" + this.opts.currentlang + "/"
+	    this.url = this.opts.resturl + "normdata/get/" + this.unicodeEscapeUri(this.authorityId) + "/ANNOTATION/" + this.opts.currentlang + "/"
 		this.update();
 	    fetch(this.url)
 	    .then(response => {
