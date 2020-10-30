@@ -258,7 +258,7 @@ riot.tag2('adminmediaupload', '<div class="admin-cms-media__upload-wrapper"><div
 });
 
 
-riot.tag2('annotationbody', '<plaintextresource if="{isPlaintext()}" resource="{this.annotationBody}" annotationid="{this.opts.annotationid}"></plaintextResource><htmltextresource if="{isHtml()}" resource="{this.annotationBody}" annotationid="{this.opts.annotationid}"></htmltextResource><geomapresource if="{isGeoJson()}" resource="{this.annotationBody}" annotationid="{this.opts.annotationid}"></geoMapResource><authorityresource if="{isAuthorityResource()}" resource="{this.annotationBody}" annotationid="{this.opts.annotationid}" currentlang="{this.opts.currentlang}" resturl="{this.opts.resturl}"></authorityResource>', '', '', function(opts) {
+riot.tag2('annotationbody', '<plaintextresource if="{isPlaintext()}" resource="{this.annotationBody}" annotationid="{this.opts.annotationid}"></plaintextResource><htmltextresource if="{isHtml()}" resource="{this.annotationBody}" annotationid="{this.opts.annotationid}"></htmltextResource><geomapresource if="{isGeoJson()}" resource="{this.annotationBody}" annotationid="{this.opts.annotationid}" mapboxtoken="{this.opts.mapboxtoken}"></geoMapResource><authorityresource if="{isAuthorityResource()}" resource="{this.annotationBody}" annotationid="{this.opts.annotationid}" currentlang="{this.opts.currentlang}" resturl="{this.opts.resturl}"></authorityResource>', '', '', function(opts) {
 
 this.on("mount", () => {
     if(this.opts.contentid) {
@@ -297,7 +297,7 @@ this.isAuthorityResource = function() {
 });
 
 
-riot.tag2('authorityresource', '<div class="annotation__body__authority"><div if="{normdataList.length == 0}">{authorityId}</div><div each="{normdata in normdataList}"><div>{normdata.property}: </div><div>{normdata.value}</div></div></div>', '', '', function(opts) {
+riot.tag2('authorityresource', '<div class="annotation__body__authority"><div if="{normdataList.length == 0}">{authorityId}</div><div class="annotation__body__authority__normdata_list" each="{normdata in normdataList}"><div class="normdata_list__label">{normdata.property}: </div><div class="normdata_list__value">{normdata.value}</div></div></div>', '', '', function(opts) {
     this.normdataList = [];
 
 	this.on("mount", () => {
@@ -348,7 +348,8 @@ this.on("mount", () => {
 	        popover: undefined,
 	        mapId: "geomap_" + this.opts.annotationid,
 	        fixed: true,
-	        clusterMarkers: false
+	        clusterMarkers: false,
+	        mapBoxToken: this.opts.mapboxtoken
 	    };
     this.geoMap = new viewerJS.GeoMap(this.config);
     console.log("init geomap with ", this.config);

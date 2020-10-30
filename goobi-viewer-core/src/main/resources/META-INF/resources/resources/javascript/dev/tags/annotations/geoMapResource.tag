@@ -11,7 +11,8 @@ this.on("mount", () => {
 	        popover: undefined,
 	        mapId: "geomap_" + this.opts.annotationid,
 	        fixed: true,
-	        clusterMarkers: false
+	        clusterMarkers: false,
+	        mapBoxToken: this.opts.mapboxtoken
 	    };
     this.geoMap = new viewerJS.GeoMap(this.config);
     console.log("init geomap with ", this.config);

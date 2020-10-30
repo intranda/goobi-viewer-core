@@ -138,7 +138,8 @@
                         riot.mount("progressBar");
                         riot.mount("annotationBody", {
                             currentlang: "#{navigationHelper.localeString}",
-                            resturl: "#{configurationBean.restApiUrl}"
+                            resturl: "#{configurationBean.restApiUrl}",
+                            mapboxtoken: "#{configurationBean.mapBoxToken}"
                         });
             </script>
         </h:panelGroup>

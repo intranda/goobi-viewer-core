@@ -2,9 +2,9 @@
 	<div class="annotation__body__authority">
 		<div if="{normdataList.length == 0}">{authorityId}</div>
 		
-		<div each="{normdata in normdataList}">
-				<div>{normdata.property}: </div>
-				<div>{normdata.value}</div>
+		<div class="annotation__body__authority__normdata_list" each="{normdata in normdataList}">
+				<div class="normdata_list__label">{normdata.property}: </div>
+				<div class="normdata_list__value">{normdata.value}</div>
 		</div>
 	</div>
 <script>
