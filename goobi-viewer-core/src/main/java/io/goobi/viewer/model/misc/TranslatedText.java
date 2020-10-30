@@ -33,11 +33,11 @@ public class TranslatedText extends MultiLanguageMetadataValue implements IPolyg
     private Locale selectedLocale;
     
     public TranslatedText() {
-        this(IPolyglott.getLocalesStatic(), IPolyglott.getCurrentLocale());
+        this(IPolyglott.getLocalesStatic(), IPolyglott.getDefaultLocale());
     }
     
     public TranslatedText(Collection<Locale> locales) {
-        this(locales, IPolyglott.getCurrentLocale());
+        this(locales, IPolyglott.getDefaultLocale());
     }
     
     public TranslatedText(Collection<Locale> locales, Locale initalLocale) {
