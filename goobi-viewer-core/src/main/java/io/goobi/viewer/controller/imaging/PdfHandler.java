@@ -62,7 +62,7 @@ public class PdfHandler {
         this.iiifUrl = configuration.getIIIFApiUrl();
         this.urls = null;
     }
-    
+
     /**
      * <p>
      * Constructor for PdfHandler.
@@ -93,15 +93,15 @@ public class PdfHandler {
      * Return the pdf-download url for the given {@link io.goobi.viewer.model.viewer.StructElement} and a number of
      * {@link io.goobi.viewer.model.viewer.PhysicalElement}s
      *
-     * @param doc a {@link io.goobi.viewer.model.viewer.StructElement} object.
+     * @param se a {@link io.goobi.viewer.model.viewer.StructElement} object.
      * @param pages an array of {@link io.goobi.viewer.model.viewer.PhysicalElement} objects.
      * @return a {@link java.lang.String} object.
      */
-    public String getPdfUrl(StructElement doc, PhysicalElement[] pages) {
+    public String getPdfUrl(StructElement se, PhysicalElement[] pages) {
         final UrlParameterSeparator paramSep = new UrlParameterSeparator();
         StringBuilder sb = new StringBuilder();
         String filenames = Arrays.stream(pages).map(page -> page.getFileName()).collect(Collectors.joining("$"));
-        if(this.urls != null) {
+        if (this.urls != null) {
             sb.append(urls.path(ApiUrls.RECORDS_FILES, ApiUrls.RECORDS_FILES_PDF).params(pages[0].getPi(), filenames).build());
         } else {
             sb.append(this.iiifUrl);
@@ -121,12 +121,12 @@ public class PdfHandler {
             sb.append(".pdf");
         }
         Path indexedSourceFile = Paths.get(DataFileTools.getSourceFilePath(pages[0].getPi() + ".xml", pages[0].getDataRepository(),
-                doc != null ? doc.getSourceDocFormat() : SolrConstants._METS));
+                (se != null && se.getSourceDocFormat() != null) ? se.getSourceDocFormat() : SolrConstants._METS));
         if (Files.exists(indexedSourceFile)) {
             sb.append(paramSep.getChar()).append("metsFile=").append(indexedSourceFile.toUri());
 
-            if (doc != null && StringUtils.isNotBlank(doc.getLogid())) {
-                sb.append(paramSep.getChar()).append("divID=").append(doc.getLogid());
+            if (se != null && StringUtils.isNotBlank(se.getLogid())) {
+                sb.append(paramSep.getChar()).append("divID=").append(se.getLogid());
             }
         } else {
             //If there is no metsFile, prevent the contentServer from generating a title page by giving an invalid divID which it cannot find
@@ -136,7 +136,7 @@ public class PdfHandler {
         if (this.watermarkHandler != null) {
             this.watermarkHandler.getWatermarkTextIfExists(pages[0])
                     .ifPresent(text -> sb.append(paramSep.getChar()).append("watermarkText=").append(encode(text)));
-            this.watermarkHandler.getFooterIdIfExists(doc)
+            this.watermarkHandler.getFooterIdIfExists(se)
                     .ifPresent(footerId -> sb.append(paramSep.getChar()).append("watermarkId=").append(footerId));
         }
 
@@ -151,14 +151,12 @@ public class PdfHandler {
      * @return a {@link java.lang.String} object.
      */
     public String getPdfUrl(String pi, String filename) {
-
-        if(this.urls != null) {
-            return urls.path(ApiUrls.RECORDS_FILES, ApiUrls.RECORDS_FILES_PDF).params(pi,filename).build();
-        } else {  
-            StringBuilder sb = new StringBuilder(this.iiifUrl);
-            sb.append("image").append("/").append(pi).append("/").append(filename).append("/").append("full/max/0/").append(filename);
-            return sb.toString();
+        if (this.urls != null) {
+            return urls.path(ApiUrls.RECORDS_FILES, ApiUrls.RECORDS_FILES_PDF).params(pi, filename).build();
         }
+        StringBuilder sb = new StringBuilder(this.iiifUrl);
+        sb.append("image").append("/").append(pi).append("/").append(filename).append("/").append("full/max/0/").append(filename);
+        return sb.toString();
     }
 
     /**
@@ -214,24 +212,24 @@ public class PdfHandler {
                 .map(l -> l.replaceAll("[\\W]", ""))
                 .map(l -> l.toLowerCase().endsWith(".pdf") ? l : (l + ".pdf"))
                 .orElse(pi + divId.map(id -> "_" + id).orElse("") + ".pdf");
-       
+
         StringBuilder sb;
-        if(this.urls != null) {
-            if(divId.isPresent()) {
+        if (this.urls != null) {
+            if (divId.isPresent()) {
                 sb = new StringBuilder(urls.path(ApiUrls.RECORDS_SECTIONS, ApiUrls.RECORDS_SECTIONS_PDF).params(pi, divId.get()).build());
-            } else {                
+            } else {
                 sb = new StringBuilder(urls.path(ApiUrls.RECORDS_RECORD, ApiUrls.RECORDS_PDF).params(pi).build());
             }
-        } else {            
+        } else {
             sb = new StringBuilder(this.iiifUrl);
             sb.append("pdf/mets/").append(pi).append(".xml").append("/");
             divId.ifPresent(id -> sb.append(id).append("/"));
             sb.append(filename);
-            
+
         }
         watermarkText.ifPresent(text -> sb.append(paramSep.getChar()).append("watermarkText=").append(encode(text)));
         watermarkId.ifPresent(footerId -> sb.append(paramSep.getChar()).append("watermarkId=").append(footerId));
-        
+
         return sb.toString();
     }
 
