@@ -40,10 +40,12 @@ var adminJS = ( function( admin ) {
             
             // set scroll event
             _setScrollEvent();
+//            _setScrollEventContentSidebar(); 
             
             // set scroll event on resize and orientationchange
             $( window ).on( 'resize orientationchange', function() {
-            	_setScrollEvent();            	
+            	_setScrollEvent();   
+//            	_setScrollEventContentSidebar(); 
             } );
             
             // set scroll event on ajax success
@@ -105,6 +107,50 @@ var adminJS = ( function( admin ) {
     		
     	} );    	
     }
+    
+    /**
+     * @description Method to set an scroll event for the sidebar.
+     * @method _setScrollEvent
+     * */
+//    function _setScrollEventContentSidebar() {
+//    	if ( _debug ) {
+//    		console.log( 'EXECUTE: _setScrollEventContentSidebar' );
+//    	}
+//    	
+//    	$( window ).off( 'scroll' ).on( 'scroll', function() {
+//    		var windowHeight = $( this ).height();
+//    		var sidebarHeight = $( '.admin__content-side' ).outerHeight();
+//    		var contentHeight = $( '#adminContent' ).outerHeight();
+//    		var diffSidebar = sidebarHeight - windowHeight;
+//    		var diffContent = contentHeight - windowHeight;
+//    		var scrollPos = $( this ).scrollTop();
+//    		
+//    		if(diffSidebar <= 0) {
+//    		    $( '.admin__content-side' ).removeClass( 'fixed-bottom' ).addClass( 'fixed-top' );
+//    		} else if(diffContent <= 0) {
+//    		    $( '#adminContent' ).removeClass( 'fixed-bottom' ).addClass( 'fixed-top' );
+//    		} else if(sidebarHeight <= contentHeight) {
+//    		   // console.log("sidebar smaller content")
+//    		    if ( scrollPos >= diffSidebar && windowHeight < sidebarHeight ) {
+//                    $( '.admin__content-side' ).removeClass( 'fixed-top' ).addClass( 'fixed-bottom' );
+//                } else if ( windowHeight > sidebarHeight ) {
+//                    $( '.admin__content-side' ).removeClass( 'fixed-bottom' ).addClass( 'fixed-top' );;
+//                } else {
+//                    $( '.admin__content-side, #adminContent' ).removeClass( 'fixed-top, fixed-bottom' );
+//                }
+//    		} else {
+//    		   // console.log("sidebar larger content")
+//    		    if ( scrollPos >= diffContent && windowHeight < contentHeight ) {
+//    		        $( '#adminContent' ).removeClass( 'fixed-top' ).addClass( 'fixed-bottom' );
+//    		    } else if ( windowHeight > contentHeight ) {
+//    		        $( '#adminContent' ).removeClass( 'fixed-bottom' ).addClass( 'fixed-top' );;
+//    		    }else {
+//    		        $( '.admin__content-side, #adminContent' ).removeClass( 'fixed-top, fixed-bottom' );
+//    		    }
+//    		}
+//    		
+//    	} );    	
+//    }
     
     return admin;
     

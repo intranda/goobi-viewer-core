@@ -120,7 +120,7 @@
 												
 												<!-- IMAGE FILE -->
 												<!-- AREA FOR AJAX REFRESH -->
-												<h:panelGroup id="contentMediaGroup" styleClass="form-group form-row" layout="block">
+												<h:panelGroup id="contentMediaGroup" styleClass="form-group form-row #{crowdsourcingBean.selectedCampaign.isDefaultLocaleSelected() == 'false' ? '-transparent' : ''}" layout="block">
 													<div class="col-2 control-label admin__form-label">
 														<label for="">#{msg.admin__cms_media_file}:</label>
 													</div>
@@ -169,80 +169,53 @@
 														
 												</h:panelGroup>
 												
+												<!-- SOLR QUERY -->
+												<div class="form-group form-row #{crowdsourcingBean.selectedCampaign.isDefaultLocaleSelected() == 'false' ? '-transparent' : ''}">
+												
+													<div class="col-2 control-label admin__form-label">
+														<label for="adminCrowdAddCampaignSolrQuery">#{msg.admin__crowdsourcing_campaign_solrQuery}: <span class="admin__label-required-field">(#{msg.form__required_field})</span></label>
+													</div>
+													
+													<div class="cms-module__option-control col-9 admin__form-input">
+														<h:panelGroup id="solrQueryInputGroup">
+															<div class="cms-module__option-message">
+																<h:messages for="solrQueryInput"
+																	infoClass="cms-module__option-message-status success"
+																	warnClass="cms-module__option-message-status warning"
+																	errorClass="cms-module__option-message-status danger" />
+						
+																<div class="cms-module__option-message-mark">
+																	<i class="fa fa-check" aria-hidden="true"></i> <i
+																		class="fa fa-exclamation" aria-hidden="true"></i>
+																</div>
+															</div>
+															<h:inputText id="solrQueryInput" required="true"
+																requiredMessage="#{msg.form__required_field}"
+																value="#{crowdsourcingBean.selectedCampaign.solrQuery}"
+																styleClass="form-control"
+																disabled="#{!crowdsourcingBean.selectedCampaign.isDefaultLocaleSelected()}">
+																<f:validator validatorId="solrQueryValidator"
+																	for="solrQueryInput" />
+																<f:ajax event="blur" render="solrQueryInputGroup addQuestionButton statisticsArea" />
+															</h:inputText>
+														</h:panelGroup>
+														<span class="admin__form-help-text">#{msg.inline_help__input_solr_query}</span>
+													</div>
+													
+													<div class="col-1 admin__form-help-icon">
+														<button type="button" class="btn btn--clean"
+															data-toggle="helptext" aria-label="inline help icon">
+															<i class="fa fa-question-circle" aria-hidden="true"></i>
+														</button>
+													</div>
+													
+												</div>
+												
 											<!-- TAB CONTENT EOL -->
 											</div>
 										<!-- ADMIN BLOCK EOL -->
 										</div>
-										</h:panelGroup>
-										
-										<div class="admin__default-block">
-
-											
-											<!-- SOLR QUERY -->
-											<div class="form-group form-row">
-											
-												<div class="col-2 control-label admin__form-label">
-													<label for="adminCrowdAddCampaignSolrQuery">#{msg.admin__crowdsourcing_campaign_solrQuery}: <span class="admin__label-required-field">(#{msg.form__required_field})</span></label>
-												</div>
-												
-												<div class="cms-module__option-control col-9 admin__form-input">
-													<h:panelGroup id="solrQueryInputGroup">
-														<div class="cms-module__option-message">
-															<h:messages for="solrQueryInput"
-																infoClass="cms-module__option-message-status success"
-																warnClass="cms-module__option-message-status warning"
-																errorClass="cms-module__option-message-status danger" />
-					
-															<div class="cms-module__option-message-mark">
-																<i class="fa fa-check" aria-hidden="true"></i> <i
-																	class="fa fa-exclamation" aria-hidden="true"></i>
-															</div>
-														</div>
-														<h:inputText id="solrQueryInput" required="true"
-															requiredMessage="#{msg.form__required_field}"
-															value="#{crowdsourcingBean.selectedCampaign.solrQuery}"
-															styleClass="form-control">
-															<f:validator validatorId="solrQueryValidator"
-																for="solrQueryInput" />
-															<f:ajax event="blur" render="solrQueryInputGroup addQuestionButton statisticsArea" />
-														</h:inputText>
-													</h:panelGroup>
-													<span class="admin__form-help-text">#{msg.inline_help__input_solr_query}</span>
-												</div>
-												
-												<div class="col-1 admin__form-help-icon">
-													<button type="button" class="btn btn--clean"
-														data-toggle="helptext" aria-label="inline help icon">
-														<i class="fa fa-question-circle" aria-hidden="true"></i>
-													</button>
-												</div>
-												
-											</div>
-											
-											<!-- VISIBILITY OF CAMPAIGN -->
-											<div class="form-row form-group">
-											
-												<div class="col-2 control-label admin__form-label">
-													<label for="adminCrowdAddCampaignSolrQuery">#{msg.admin__crowdsourcing_campaign_visibility}:</label>
-												</div>
-							                    
-							                    <div class="col-9 admin__form-input">
-							                        <h:selectOneMenu value="#{crowdsourcingBean.selectedCampaign.visibility}" styleClass="form-control">
-							                            <f:selectItems itemLabel="#{msg['admin__crowdsourcing_campaign_visibility_' += val]}"
-							                                var="val" value="#{crowdsourcingBean.selectedCampaign.campaignVisibilityValues}"/> 
-							                        </h:selectOneMenu>
-							                        <span class="admin__form-help-text">#{msg.admin__crowdsourcing_campaign_visibility}</span>
-						                   		</div>
-						                   		
-												<div class="col-1 admin__form-help-icon">
-													<button type="button" class="btn btn--clean"
-														data-toggle="helptext" aria-label="inline help icon">
-														<i class="fa fa-question-circle" aria-hidden="true"></i>
-													</button>
-												</div>
-												
-						                   	</div>
-										</div>						
+										</h:panelGroup>					
 										
 										<h:panelGroup id="addQuestionButton">
 											<ui:fragment rendered="#{crowdsourcingBean.selectedCampaign.solrQuery != null}">
@@ -314,7 +287,7 @@
 																		</div>
 	
 																		<div class="col-9 admin__form-input">
-																				<h:selectOneMenu value="#{question.questionType}" styleClass="form-control">
+																				<h:selectOneMenu id="adminCrowdAddCampaignQueryType" value="#{question.questionType}" styleClass="form-control">
 																					<f:selectItems var="type"
 																						value="#{question.availableQuestionTypes}"
 																						itemLabel="#{msg['admin__crowdsourcing_question_type_' += type]}" />
@@ -339,7 +312,7 @@
 																		</div>
 																		
 																		<div class="col-9 admin__form-input">
-																			<h:selectOneMenu value="#{question.targetSelector}" styleClass="form-control">
+																			<h:selectOneMenu id="adminCrowdAddCampaignQuestionTargetSelector" value="#{question.targetSelector}" styleClass="form-control">
 																				<f:selectItems var="selector"
 																					value="#{question.availableTargetSelectors}"
 																					itemLabel="#{msg['admin__crowdsourcing_question_targetSelector_' += selector]}" />
@@ -360,11 +333,11 @@
 																	<div class="form-row form-group">
 																		<div class="col-2 admin__form-label">
 																			<label
-																				for="adminCrowdAddCampaignQuestionTargetSelector">#{msg.admin__crowdsourcing_question_targetFrequency}:<span class="admin__label-required-field">(#{msg.form__required_field})</span></label>
+																				for="adminCrowdAddCampaignQuestionTargetFrequency">#{msg.admin__crowdsourcing_question_targetFrequency}:<span class="admin__label-required-field">(#{msg.form__required_field})</span></label>
 																		</div>
 																		
 																		<div class="col-9 admin__form-input">
-																			<h:selectOneMenu value="#{question.targetFrequency}" styleClass="form-control">
+																			<h:selectOneMenu id="adminCrowdAddCampaignQuestionTargetFrequency" value="#{question.targetFrequency}" styleClass="form-control">
 																				<f:selectItem
 																					itemLabel="#{msg.admin__crowdsourcing_question_targetFrequency_one}"
 																					itemValue="1" noSelectionOption="true" />
@@ -400,10 +373,81 @@
 											</h:panelGroup>
 										</ui:fragment>
 										
+									<!-- FINAL ACTIONS CANCEL + SAVE -->
+									<div class="row no-gutters justify-content-end admin__final-actions mb-4">
+	                                    <h:commandLink id="cancelAddCampaignButton" type="submit" styleClass="btn" value="#{msg.cancel}"
+	                                        action="pretty:adminCrowdCampaigns" immediate="true" />
+	                                    <h:commandLink id="saveAddCampaignButton" styleClass="btn btn--success" value="#{msg.button__save}"
+	                                        action="#{crowdsourcingBean.saveSelectedCampaignAction}" />
+	                                </div>
+	                                
+									</div>
+									<div class="admin__content-side">
+										
+										<!-- VISIBILITY OF CAMPAIGN -->
+										<div class="admin__default-block">
+											<h3>#{msg.admin__crowdsourcing_campaign_visibility}</h3>
+											
+											<!-- VISIBILITY STATUS -->
+											<div class="form-row form-group">
+
+												<div class="col-12 control-label admin__form-label">
+													<label for="adminCrowdVisibleStatus">
+														#{msg.admin__crowdsourcing_campaign_visibility}:
+													</label>
+												</div>
+
+							                    <div class="col-11 admin__form-input">
+							                        <h:selectOneMenu id="adminCrowdVisibleStatus" value="#{crowdsourcingBean.selectedCampaign.visibility}" styleClass="form-control">
+							                            <f:selectItems itemLabel="#{msg['admin__crowdsourcing_campaign_visibility_' += val]}"
+							                                var="val" value="#{crowdsourcingBean.selectedCampaign.campaignVisibilityValues}"/> 
+							                                <f:ajax render="adminCrowdVisibleForGroup" />
+							                        </h:selectOneMenu>
+							                        <span class="admin__form-help-text">#{msg.admin__crowdsourcing_campaign_visibility}</span>
+						                   		</div>
+						                   		
+												<div class="col-1 admin__form-help-icon">
+													<button type="button" class="btn btn--clean"
+														data-toggle="helptext" aria-label="inline help icon">
+														<i class="fa fa-question-circle" aria-hidden="true"></i>
+													</button>
+												</div>
+						                   	</div>
+						                   	
+											<!-- VISIBLE FOR GROUP SELECTION -->
+											<h:panelGroup id="adminCrowdVisibleForGroup" styleClass="form-row form-group" layout="block">
+												<!-- TO DO: ONLY SHOW IF VISIBILITY STATUS SELECTION IS PRIVATE -->
+												<ui:fragment rendered="true">
+													<div class="col-12 control-label admin__form-label">
+														<label for="adminCrowdVisibleFor">
+															#{msg.admin__crowdsourcing_campaign_visible_for}:
+														</label>
+													</div>
+								                    
+								                    <!-- TO DO: ENABLE VISIBLE FOR GROUP LOGIC -->
+								                    <div class="col-11 admin__form-input">
+								                        <h:selectOneMenu id="adminCrowdVisibleFor" value="#{crowdsourcingBean.selectedCampaign.visibility}" styleClass="form-control">
+								                            <f:selectItems itemLabel="#{msg['admin__crowdsourcing_campaign_visibility_' += val]}"
+								                                var="val" value="#{crowdsourcingBean.selectedCampaign.campaignVisibilityValues}"/> 
+								                        </h:selectOneMenu>
+								                        <span class="admin__form-help-text">#{msg.admin__help_crowdsourcing_campaign_visible_for}</span>
+							                   		</div>
+							                   		
+													<div class="col-1 admin__form-help-icon">
+														<button type="button" class="btn btn--clean"
+															data-toggle="helptext" aria-label="inline help icon">
+															<i class="fa fa-question-circle" aria-hidden="true"></i>
+														</button>
+													</div>
+							                   	</ui:fragment>
+											</h:panelGroup>
+					                   	</div>
+					                   	
+										<!-- STATISTICS SIDEBAR WIDGET -->
 										<h:panelGroup id="statisticsArea">
 											<ui:fragment rendered="#{crowdsourcingBean.selectedCampaign.solrQuery != null}">
-												<h3>#{msg.admin__crowdsourcing_campaign_statistics}</h3>
 												<div class="admin__default-block">
+													<h3>#{msg.admin__crowdsourcing_campaign_statistics}</h3>
 													<!-- METADATA WRAPPER -->
 													<crowdsourcingComponent:crowdsourcing_addCampaignMetadataItemWrapper
 														id="metadata_component" />
@@ -416,19 +460,9 @@
 											</ui:fragment>
 										</h:panelGroup>
 									</div>
-									<div class="admin__content-side">
-									</div>
-
 									</div>
 								</div>
 							</div>
-							<!-- FINAL ACTIONS CANCEL + SAVE -->
-								<div class="row no-gutters justify-content-end admin__final-actions mb-4">
-                                    <h:commandLink id="cancelAddCampaignButton" type="submit" styleClass="btn" value="#{msg.cancel}"
-                                        action="pretty:adminCrowdCampaigns" immediate="true" />
-                                    <h:commandLink id="saveAddCampaignButton" styleClass="btn btn--success" value="#{msg.button__save}"
-                                        action="#{crowdsourcingBean.saveSelectedCampaignAction}" />
-                                </div>
 						</h:form>
 																	
 					</div>

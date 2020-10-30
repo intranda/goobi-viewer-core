@@ -51,7 +51,7 @@ $( document ).ready(function() {
 // toggle help text for admin forms
 	$("body").on("click", '[data-toggle="helptext"]', function() {
 		$(this).closest('.form-group').children('.admin__form-input, .admin__license-functions-help').find('.admin__form-help-text').toggleClass('in');
-		$(this).closest('.form-group').children('.admin__form-input').siblings('.admin__form-help-text').toggleClass('in');
+		$(this).parents().siblings('.admin__form-help-text').toggleClass('in');
 	});
 
 // hide license functions if open access toggle is yes
