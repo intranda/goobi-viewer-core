@@ -87,8 +87,8 @@
                             <ui:repeat var="annotation" value="#{crowdsourcingBean.lazyModelAnnotations.paginatorList}">
                                 <div class="row no-gutters admin__table-entry">
                                     <div class="col-8 d-flex" style="flex-direction:column;">
-                                        <h:outputText value="#{annotation.contentString}" />
-
+                                        <div id="annotation_body_#{annotation.id}" class="annotation__body__content_wrapper">#{annotation.body}</div>
+										<annotationBody annotationid="#{annotation.id}" contentid="annotation_body_#{annotation.id}"/>
                                         <!-- ACTIONS -->
                                         <div>
                                             <!-- SHOW -->
@@ -136,6 +136,10 @@
                     viewerJS.dataTable.init( dataTableConfig );
                 } );
                         riot.mount("progressBar");
+                        riot.mount("annotationBody", {
+                            currentlang: "#{navigationHelper.localeString}",
+                            resturl: "#{configurationBean.restApiUrl}"
+                        });
             </script>
         </h:panelGroup>
     </ui:define>

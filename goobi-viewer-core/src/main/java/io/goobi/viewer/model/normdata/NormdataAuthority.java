@@ -18,10 +18,6 @@ package io.goobi.viewer.model.normdata;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-/**
- * @author florian
- *
- */
 @JsonFormat(shape = JsonFormat.Shape.OBJECT)
 public enum NormdataAuthority {
 
