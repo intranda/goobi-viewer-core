@@ -2429,61 +2429,136 @@ public class JPADAO implements IDAO {
     }
 
     static String createFilterQuery2(String staticFilterQuery, Map<String, String> filters, Map<String, String> params) {
-
         StringBuilder q = new StringBuilder(" ");
-        //placeholder keys (a,b,c,...) for all tables to query
-        Map<String, String> tableKeys = new HashMap<>();
-
         if (StringUtils.isNotEmpty(staticFilterQuery)) {
             q.append(staticFilterQuery);
         }
-        if (filters != null && !filters.isEmpty()) {
-            AlphabetIterator abc = new AlphabetIterator();
-            String mainTableKey = abc.next(); // = a
+        if (filters == null || filters.isEmpty()) {
+            return q.toString();
+        }
 
-            for (Entry<String, String> entry : filters.entrySet()) {
-                String key = entry.getKey();
-                String filterValue = entry.getValue();
-                if (StringUtils.isBlank(filterValue)) {
+        AlphabetIterator abc = new AlphabetIterator();
+        String mainTableKey = abc.next(); // = a
+        //placeholder keys (a,b,c,...) for all tables to query
+        Map<String, String> tableKeys = new HashMap<>();
+
+        for (Entry<String, String> entry : filters.entrySet()) {
+            String key = entry.getKey();
+            String filterValue = entry.getValue();
+            if (StringUtils.isBlank(filterValue)) {
+                continue;
+            }
+            String keyValueParam = key.replaceAll("[" + MULTIKEY_SEPARATOR + KEY_FIELD_SEPARATOR + "]", "");
+            params.put(keyValueParam, "%" + filterValue.toUpperCase() + "%");
+
+            List<String> joinStatements = new ArrayList<>();
+            List<String> whereStatements = new ArrayList<>();
+
+            //subkeys = all keys this filter applies to, each of the form [field] or [table]-[field]
+            String[] subKeys = key.split(MULTIKEY_SEPARATOR);
+            for (String subKey : subKeys) {
+                if (StringUtils.isBlank(subKey)) {
+                    continue;
+                } else if (subKey.contains(KEY_FIELD_SEPARATOR)) {
+                    String table = subKey.substring(0, subKey.indexOf(KEY_FIELD_SEPARATOR));
+                    String field = subKey.substring(subKey.indexOf(KEY_FIELD_SEPARATOR) + 1);
+                    String tableKey;
+                    if (!tableKeys.containsKey(table)) {
+                        tableKey = abc.next();
+                        tableKeys.put(table, tableKey);
+                        String join = "LEFT JOIN " + mainTableKey + "." + table + " " + tableKey;
+                        joinStatements.add(join); // JOIN mainTable.joinTable b
+                    } else {
+                        tableKey = tableKeys.get(table);
+                    }
+                    subKey = tableKey + "." + field;
+                } else {
+                    subKey = mainTableKey + "." + subKey;
+                }
+                String where;
+                if ("campaign".equals(subKey)) {
+                    where = "generatorId IN (SELECT q.id WHERE Question q WHERE q.ownerId IN " +
+                            "(SELECT t.ownerId from CampaignTranslation t WHERE UPPER(" + subKey + ") LIKE :" + keyValueParam;
+                } else {
+                    where = "UPPER(" + subKey + ") LIKE :" + keyValueParam;
+                }
+                whereStatements.add(where); // joinTable.field LIKE :param | field LIKE :param
+            }
+            String filterQuery = joinStatements.stream().collect(Collectors.joining(" "));
+            if (!whereStatements.isEmpty()) {
+                filterQuery += " WHERE (" + whereStatements.stream().collect(Collectors.joining(" OR ")) + ")";
+            }
+            q.append(filterQuery);
+        }
+
+        return q.toString();
+    }
+
+    /**
+     * 
+     * @param staticFilterQuery
+     * @param filters
+     * @param params
+     * @return
+     * @should create query correctly
+     */
+    static String createAnnotationsFilterQuery(String staticFilterQuery, Map<String, String> filters, Map<String, String> params) {
+        StringBuilder q = new StringBuilder(" ");
+        if (StringUtils.isNotEmpty(staticFilterQuery)) {
+            q.append(staticFilterQuery);
+        }
+        if (filters == null || filters.isEmpty()) {
+            return q.toString();
+        }
+
+        AlphabetIterator abc = new AlphabetIterator();
+        String mainTableKey = abc.next(); // = a
+        //placeholder keys (a,b,c,...) for all tables to query
+        Map<String, String> tableKeys = new HashMap<>();
+        List<String> whereStatements = new ArrayList<>();
+        for (Entry<String, String> entry : filters.entrySet()) {
+            String key = entry.getKey();
+            String filterValue = entry.getValue();
+            if (StringUtils.isBlank(filterValue)) {
+                continue;
+            }
+            String keyValueParam = key.replaceAll("[" + MULTIKEY_SEPARATOR + KEY_FIELD_SEPARATOR + "]", "");
+            if ("creatorId_reviewerId".equals(key)) {
+                params.put(keyValueParam, filterValue);
+            } else {
+                params.put(keyValueParam, "%" + filterValue.toUpperCase() + "%");
+            }
+
+            //subkeys = all keys this filter applies to, each of the form [field] or [table]-[field]
+            String[] subKeys = key.split(MULTIKEY_SEPARATOR);
+            for (String subKey : subKeys) {
+                if (StringUtils.isBlank(subKey)) {
                     continue;
                 }
-                String keyValueParam = key.replaceAll("[" + MULTIKEY_SEPARATOR + KEY_FIELD_SEPARATOR + "]", "");
-                params.put(keyValueParam, "%" + filterValue.toUpperCase() + "%");
-
-                List<String> joinStatements = new ArrayList<>();
-                List<String> whereStatements = new ArrayList<>();
-
-                //subkeys = all keys this filter applies to, each of the form [field] or [table]-[field]
-                String[] subKeys = key.split(MULTIKEY_SEPARATOR);
-                for (String subKey : subKeys) {
-                    if (StringUtils.isBlank(subKey)) {
-                        continue;
-                    } else if (subKey.contains(KEY_FIELD_SEPARATOR)) {
-                        String table = subKey.substring(0, subKey.indexOf(KEY_FIELD_SEPARATOR));
-                        String field = subKey.substring(subKey.indexOf(KEY_FIELD_SEPARATOR) + 1);
-                        String tableKey;
-                        if (!tableKeys.containsKey(table)) {
-                            tableKey = abc.next();
-                            tableKeys.put(table, tableKey);
-                            String join = "LEFT JOIN " + mainTableKey + "." + table + " " + tableKey;
-                            joinStatements.add(join); // JOIN mainTable.joinTable b
-                        } else {
-                            tableKey = tableKeys.get(table);
-                        }
-                        subKey = tableKey + "." + field;
-                    } else {
-                        subKey = mainTableKey + "." + subKey;
-                    }
-                    String where = "UPPER(" + subKey + ") LIKE :" + keyValueParam;
-                    whereStatements.add(where); // joinTable.field LIKE :param | field LIKE :param
+                subKey = mainTableKey + "." + subKey;
+                String where = null;
+                switch (subKey) {
+                    case "a.creatorId":
+                    case "a.reviewerId":
+                        where = subKey + "=:" + keyValueParam;
+                        break;
+                    case "a.campaign":
+                        where = mainTableKey + ".generatorId IN (SELECT q.id FROM Question q WHERE q.owner IN " +
+                                "(SELECT t.owner FROM CampaignTranslation t WHERE UPPER(t.value) LIKE :" + keyValueParam + "))";
+                        break;
+                    default:
+                        where = "UPPER(" + subKey + ") LIKE :" + keyValueParam;
+                        break;
                 }
-                String filterQuery = joinStatements.stream().collect(Collectors.joining(" "));
-                if (!whereStatements.isEmpty()) {
-                    filterQuery += " WHERE (" + whereStatements.stream().collect(Collectors.joining(" OR ")) + ")";
-                }
-                q.append(filterQuery);
+
+                whereStatements.add(where); // joinTable.field LIKE :param | field LIKE :param
             }
         }
+        if (!whereStatements.isEmpty()) {
+            String filterQuery = " WHERE (" + whereStatements.stream().collect(Collectors.joining(" OR ")) + ")";
+            q.append(filterQuery);
+        }
+
         return q.toString();
     }
 
@@ -4394,7 +4469,7 @@ public class JPADAO implements IDAO {
             try {
                 Map<String, String> params = new HashMap<>();
 
-                String filterString = createFilterQuery(null, filters, params);
+                String filterString = createAnnotationsFilterQuery(null, filters, params);
                 if (StringUtils.isNotEmpty(sortField)) {
                     order.append(" ORDER BY a.").append(sortField);
                     if (descending) {

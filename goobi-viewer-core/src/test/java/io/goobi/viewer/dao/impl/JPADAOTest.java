@@ -2704,4 +2704,23 @@ public class JPADAOTest extends AbstractDatabaseEnabledTest {
         users = DataManager.getInstance().getDao().getAllUsers(true);
         Assert.assertTrue(users.stream().allMatch(u -> !u.isAgreedToTermsOfUse()));
     }
+
+    /**
+     * @see JPADAO#createAnnotationsFilterQuery(String,Map,Map)
+     * @verifies create query correctly
+     */
+    @Test
+    public void createAnnotationsFilterQuery_shouldCreateQueryCorrectly() throws Exception {
+        Map<String, String> filters = new HashMap<>();
+        filters.put("creatorId_reviewerId", "1");
+        filters.put("campaign", "geo");
+
+        Map<String, String> params = new HashMap<>();
+        Assert.assertEquals(
+                " prefix WHERE (a.generatorId IN (SELECT q.id FROM Question q WHERE q.owner IN (SELECT t.owner FROM CampaignTranslation t WHERE UPPER(t.value) LIKE :campaign)) OR a.creatorId=:creatorIdreviewerId OR a.reviewerId=:creatorIdreviewerId)",
+                JPADAO.createAnnotationsFilterQuery("prefix", filters, params));
+        Assert.assertEquals(2, params.size());
+        Assert.assertEquals("%GEO%", params.get("campaign"));
+        Assert.assertEquals("1", params.get("creatorIdreviewerId"));
+    }
 }

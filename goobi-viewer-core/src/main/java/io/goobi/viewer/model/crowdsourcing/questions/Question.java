@@ -48,10 +48,8 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.dao.converter.TranslatedTextConverter;
-import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.model.crowdsourcing.campaigns.Campaign;
 import io.goobi.viewer.model.misc.IPolyglott;
-import io.goobi.viewer.model.misc.MultiLanguageValue;
 import io.goobi.viewer.model.misc.TranslatedText;
 import io.goobi.viewer.model.normdata.NormdataAuthority;
 
@@ -85,12 +83,12 @@ public class Question {
      */
     @OneToMany(mappedBy = "owner", fetch = FetchType.EAGER, cascade = { CascadeType.ALL })
     @PrivateOwned
-//    @JsonSerialize(using = TranslationListSerializer.class)
+    //    @JsonSerialize(using = TranslationListSerializer.class)
     @JsonIgnore
     @Deprecated
     private List<QuestionTranslation> translationsLegacy = new ArrayList<>();
-    
-    @Column(name="text", nullable = true, columnDefinition = "LONGTEXT")
+
+    @Column(name = "text", nullable = true, columnDefinition = "LONGTEXT")
     @Convert(converter = TranslatedTextConverter.class)
     private TranslatedText text;
 
@@ -137,16 +135,16 @@ public class Question {
         this.targetSelector = targetSelector;
         this.targetFrequency = targetFrequency;
     }
-    
+
     public Question(Question orig) {
-       this.id = orig.id;
-       this.owner = orig.owner;
-       this.questionType = orig.questionType;
-       this.targetFrequency = orig.targetFrequency;
-       this.targetSelector = orig.targetSelector;
-       this.text = new TranslatedText(orig.text, IPolyglott.getLocalesStatic(), IPolyglott.getCurrentLocale());
+        this.id = orig.id;
+        this.owner = orig.owner;
+        this.questionType = orig.questionType;
+        this.targetFrequency = orig.targetFrequency;
+        this.targetSelector = orig.targetSelector;
+        this.text = new TranslatedText(orig.text, IPolyglott.getLocalesStatic(), IPolyglott.getCurrentLocale());
     }
-    
+
     /**
      * Create a clone of the given question with the given campaign as owner
      * 
@@ -164,7 +162,7 @@ public class Question {
     public void onPrePersist() {
         serializeTranslations();
     }
-    
+
     /**
      * No @PreUpdate annotation because it is called from owning campaign
      */
@@ -180,36 +178,34 @@ public class Question {
     }
 
     private void serializeTranslations() {
-        
-        this.translationsLegacy = Collections.emptyList();
-        
-//        Map<Locale, String> locationsMap = this.text.map();
-//        for (Entry<Locale, String> entry : locationsMap.entrySet()) {
-//            Locale locale = entry.getKey();
-//            String value = entry.getValue();
-//            QuestionTranslation translation = translations.stream().filter(t -> t.getLanguage().equals(locale.getLanguage())).findAny()
-//                    .orElseGet(() -> this.addTranslation(locale));
-//            translation.setValue(value);
-//        }
-//        
-//        
-//        this.translations = this.text.stream().map(t -> new QuestionTranslation(t, this)).collect(Collectors.toList());
-    }
-    
 
+        this.translationsLegacy = Collections.emptyList();
+
+        //        Map<Locale, String> locationsMap = this.text.map();
+        //        for (Entry<Locale, String> entry : locationsMap.entrySet()) {
+        //            Locale locale = entry.getKey();
+        //            String value = entry.getValue();
+        //            QuestionTranslation translation = translations.stream().filter(t -> t.getLanguage().equals(locale.getLanguage())).findAny()
+        //                    .orElseGet(() -> this.addTranslation(locale));
+        //            translation.setValue(value);
+        //        }
+        //        
+        //        
+        //        this.translations = this.text.stream().map(t -> new QuestionTranslation(t, this)).collect(Collectors.toList());
+    }
 
     private void deserializeTranslations() {
-        if(this.translationsLegacy != null && !this.translationsLegacy.isEmpty()) {          
+        if (this.translationsLegacy != null && !this.translationsLegacy.isEmpty()) {
             this.text = new TranslatedText();
             for (QuestionTranslation translation : translationsLegacy) {
                 Locale locale = Locale.forLanguageTag(translation.getLanguage());
-                if(this.text.hasLocale(locale)) {                
+                if (this.text.hasLocale(locale)) {
                     this.text.setText(translation.getValue(), locale);
                 }
             }
         }
     }
-    
+
     /**
      * <p>
      * getAvailableQuestionTypes.
@@ -278,14 +274,14 @@ public class Question {
     public void setOwner(Campaign owner) {
         this.owner = owner;
     }
-    
+
     /**
      * @return the tempTranslations
      */
     public TranslatedText getText() {
         return text;
     }
-    
+
     /**
      * <p>
      * Getter for the field <code>questionType</code>.
@@ -396,18 +392,19 @@ public class Question {
         return URI
                 .create(URI_ID_TEMPLATE.replace("{campaignId}", this.getOwner().getId().toString()).replace("{questionId}", this.getId().toString()));
     }
-    
+
     /**
-     * Currently only returns GND authority data. 
+     * Currently only returns GND authority data.
+     * 
      * @return Normdata authority data if the question type is NORMDATA, otherwise null
      */
     @JsonProperty("authorityData")
     public NormdataAuthority getAuthorityData() {
-        if(QuestionType.NORMDATA.equals(getQuestionType())) {
+        if (QuestionType.NORMDATA.equals(getQuestionType())) {
             return NormdataAuthority.GND;
-        } else {
-            return null;
         }
+
+        return null;
     }
 
 }
