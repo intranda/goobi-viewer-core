@@ -44,44 +44,21 @@
                         <!-- TITLE ROW -->
                         <div class="row no-gutters admin__table-title">
                             <!-- NAME COL -->
-                            <div class="col-6 d-flex">
+                            <div class="col-6 d-flex -sorting-arrow-trigger">
                                 <span>#{msg.admin__users}</span>
+                                
                                 <!-- SORTING -->
                                 <div class="admin__table-sorting">
-                                
-								<ui:fragment rendered="#{adminBean.lazyModelUsers.sortOrder == 'ASCENDING' and adminBean.lazyModelUsers.sortField == 'email'}"><span>testx</span></ui:fragment>
-								  <h:commandLink styleClass="sort"
-								      action="#{adminBean.lazyModelUsers.sortBy('email', 'ASCENDING')}">
-								      <f:passThroughAttribute name="aria-label" value="sort ascending" />
-								      <i class="fa fa-angle-up" aria-hidden="true"></i>
-								      <f:ajax execute="@form" render="@form" />
-								  </h:commandLink>
-								  <h:commandLink styleClass="sort"
-								      action="#{adminBean.lazyModelUsers.sortBy('email', 'DESCENDING')}">
-								      <f:passThroughAttribute name="aria-label" value="sort descending" />
-								      <i class="fa fa-angle-down" aria-hidden="true"></i>
-								      <f:ajax execute="@form" render="@form" />
-								  </h:commandLink>
-                                    
+                                	<viewerComponent:sortingArrow filterType="email" list="#{adminBean.lazyModelUsers}" />
                                 </div>
+                                
                             </div>
                             <!-- LAST LOGIN COL -->
-                            <div class="col-3 d-flex">
+                            <div class="col-3 d-flex  -sorting-arrow-trigger">
                                 <span>#{msg.lastLoginDate}</span>
                                 <!-- SORTING -->
                                 <div class="admin__table-sorting">
-                                    <h:commandLink styleClass="sort"
-                                        action="#{adminBean.lazyModelUsers.sortBy('lastLogin', 'ASCENDING')}">
-                                        <f:passThroughAttribute name="aria-label" value="sort ascending" />
-                                        <i class="fa fa-angle-up" aria-hidden="true"></i>
-                                        <f:ajax execute="@form" render="@form" />
-                                    </h:commandLink>
-                                    <h:commandLink styleClass="sort"
-                                        action="#{adminBean.lazyModelUsers.sortBy('lastLogin', 'DESCENDING')}">
-                                        <f:passThroughAttribute name="aria-label" value="sort descending" />
-                                        <i class="fa fa-angle-down" aria-hidden="true"></i>
-                                        <f:ajax execute="@form" render="@form" />
-                                    </h:commandLink>
+									<viewerComponent:sortingArrow filterType="lastLogin" list="#{adminBean.lazyModelUsers}" />
                                 </div>
                             </div>
                             <!-- USER GROUPS COL -->
