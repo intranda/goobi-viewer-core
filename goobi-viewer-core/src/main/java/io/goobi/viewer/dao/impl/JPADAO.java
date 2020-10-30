@@ -2567,6 +2567,17 @@ public class JPADAO implements IDAO {
                     } else if ("classifications".equals(joinTable)) {
                         join.append(" JOIN ").append(pageKey).append(".").append(joinTable).append(" ").append(tableKey);
                         //                            .append(" ON ").append(" (").append(pageKey).append(".id = ").append(tableKey).append(".ownerPage.id)");
+                    } else if ("CampaignTranslation".equals(joinTable)) {
+                        join.append(" JOIN ")
+                                .append(joinTable)
+                                .append(" ")
+                                .append(tableKey)
+                                .append(" ON")
+                                .append(" (")
+                                .append(pageKey)
+                                .append(".id = ")
+                                .append(tableKey)
+                                .append(".owner.id)");
                     }
                     params.put(key.replaceAll(MULTIKEY_SEPARATOR, "").replace("-", ""), "%" + value.toUpperCase() + "%");
                 }
