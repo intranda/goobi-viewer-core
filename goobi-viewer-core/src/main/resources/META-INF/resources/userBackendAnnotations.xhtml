@@ -26,8 +26,8 @@
     		<h:panelGroup rendered="#{userBean.loggedIn}">
                 <h2>#{msg.annotations}</h2>
                 
-            <div id="crowdCampaigns">
-                <h:form id="csCampaignsForm" prependId="false">
+            <div id="userAnnotations">
+                <h:form id="userAnnotationsSongs" prependId="false">
 
                     <div class="admin__content-inner-content">
 
@@ -40,19 +40,19 @@
                             <div class="admin__table-filter">
                                 <!-- TODO: ADD FILTER FOR targetPI, TOO -->
                                 <viewerComponent:dataTableColumnFilter key="admin__crowsourcing_annotations_search"
-                                    filter="#{userDataBean.lazyModelAnnotations.getFilter('targetPI_body')}" />
+                                    filter="#{userDataBean.lazyModelAnnotations.getFilter('targetPI_body_dateCreated')}" />
                             </div>
                         </div>
 
 
                         <!-- ALL ANNOTATIONS TABLE -->
-                        <div id="csAnnotationsTable" class="admin__table-content">
+                        <div id="userAnnotationsTable" class="admin__table-content">
 
                             <!-- TITLE ROW -->
                             <div class="row no-gutters admin__table-title">
 
                                 <!-- ANNOTATION COL -->
-                                <div class="col-8 d-flex">#{msg.admin__crowdsourcing_annotation}</div>
+                                <div class="col-6 d-flex">#{msg.admin__crowdsourcing_annotation}</div>
 
                                 <!-- TARGET COL -->
                                 <div class="col-2 d-flex">
@@ -64,6 +64,23 @@
                                             <f:ajax execute="@form" render="@form" />
                                         </h:commandLink>
                                         <h:commandLink styleClass="sort" action="#{userDataBean.lazyModelAnnotations.sortBy('targetPI', 'DESCENDING')}">
+                                            <f:passThroughAttribute name="aria-label" value="sort descending" />
+                                            <i class="fa fa-angle-up" aria-hidden="true"></i>
+                                            <f:ajax execute="@form" render="@form" />
+                                        </h:commandLink>
+                                    </div>
+                                </div>
+                                
+                                <!-- CAMPAIGN COL -->
+                                <div class="col-2 d-flex">
+                                    #{msg.admin__crowdsourcing_campaign}
+                                    <div class="admin__table-sorting">
+                                        <h:commandLink styleClass="sort" action="#{userDataBean.lazyModelAnnotations.sortBy('generatorId', 'ASCENDING')}">
+                                            <f:passThroughAttribute name="aria-label" value="sort ascending" />
+                                            <i class="fa fa-angle-down" aria-hidden="true"></i>
+                                            <f:ajax execute="@form" render="@form" />
+                                        </h:commandLink>
+                                        <h:commandLink styleClass="sort" action="#{userDataBean.lazyModelAnnotations.sortBy('generatorId', 'DESCENDING')}">
                                             <f:passThroughAttribute name="aria-label" value="sort descending" />
                                             <i class="fa fa-angle-up" aria-hidden="true"></i>
                                             <f:ajax execute="@form" render="@form" />
@@ -92,24 +109,29 @@
                             <!-- INDIVIDUAL ANNOTATION ROWS -->
                             <ui:repeat var="annotation" value="#{userDataBean.lazyModelAnnotations.paginatorList}">
                                 <div class="row no-gutters admin__table-entry">
-                                    <div class="col-8 d-flex" style="flex-direction:column;">
+                                    <!-- ANNOTATION CONTENT -->
+                                    <div class="col-6 d-flex" style="flex-direction:column;">
                                         <h:outputText value="#{annotation.contentString}" />
-                                        <!-- ACTIONS -->
                                         <div>
-                                            <!-- SHOW -->
                                             <!-- TODO INLINE CSS -->
                                             <a href="#{navigationHelper.objectUrl}#{annotation.targetLink}"
                                                 class="admin__table-action-link" style="padding-right: 1.4rem;" target="_blank"
                                                 aria-label="#{msg.admin__crowdsourcing_annotation} #{msg.show} (#{annotation.targetPI})">#{msg.show}</a>
                                         </div>
                                     </div>
+                                    <!-- TARGET -->
                                     <div class="col-2 d-flex">
                                         #{annotation.targetPI}<h:outputText rendered="#{annotation.targetPageOrder != null}" value=", #{msg.page} #{annotation.targetPageOrder}" />
                                     </div>
+                                    <!-- CAMPAIGN -->
+                                    <div class="col-2 d-flex">
+                                        #{annotation.generatorId}
+                                    </div>
+                                    <!-- DATE -->
                                     <div class="col-2 d-flex">
                                         <h:outputText value="#{annotation.dateCreated}">
                                             <f:converter converterId="localDateTimeConverter" />
-                                            <f:attribute name="pattern" value="dd.MM.YYYY - HH:mm" />
+                                            <f:attribute name="pattern" value="#{navigationHelper.dateTimePattern}" />
                                         </h:outputText>
                                     </div>
                                 </div>
