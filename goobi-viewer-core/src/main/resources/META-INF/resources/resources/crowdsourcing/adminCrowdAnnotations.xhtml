@@ -115,33 +115,33 @@
                             </ui:repeat>
                         </div>
                     </div>
+		            <script type="text/javascript">
+		                $( document ).ready( function() {
+		                    var displayDateUpdated = true;
+		                    if ( !displayDateUpdated ) {
+		                        $( ".column_date_updated" ).hide();
+		                    }
+		                    
+		                    var dataTableConfig = {
+		                        dataTablePaginator: "#dataTablePaginator",
+		                        txtField1: "#txtMoveTo1",
+		                        txtField2: "#txtMoveTo2",
+		                        totalCount: "#totalCount",
+		                        reloadBtn: 'input[id*="cmdMoveTo"]',
+		                    };
+		                    
+		                    viewerJS.dataTable.init( dataTableConfig );
+		                } );
+		                        riot.mount("progressBar");
+		                        riot.mount("annotationBody", {
+		                            currentlang: "#{navigationHelper.localeString}",
+		                            resturl: "#{configurationBean.restApiUrl}",
+		                            mapboxtoken: "#{configurationBean.mapBoxToken}"
+		                        });
+		            </script>
                 </h:form>
             </div>
 
-            <script type="text/javascript">
-                $( document ).ready( function() {
-                    var displayDateUpdated = true;
-                    if ( !displayDateUpdated ) {
-                        $( ".column_date_updated" ).hide();
-                    }
-                    
-                    var dataTableConfig = {
-                        dataTablePaginator: "#dataTablePaginator",
-                        txtField1: "#txtMoveTo1",
-                        txtField2: "#txtMoveTo2",
-                        totalCount: "#totalCount",
-                        reloadBtn: 'input[id*="cmdMoveTo"]',
-                    };
-                    
-                    viewerJS.dataTable.init( dataTableConfig );
-                } );
-                        riot.mount("progressBar");
-                        riot.mount("annotationBody", {
-                            currentlang: "#{navigationHelper.localeString}",
-                            resturl: "#{configurationBean.restApiUrl}",
-                            mapboxtoken: "#{configurationBean.mapBoxToken}"
-                        });
-            </script>
         </h:panelGroup>
     </ui:define>
 </ui:composition>
