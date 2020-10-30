@@ -962,6 +962,30 @@
 		z-index: 100;
 	}
 
+	// Sorting arrow
+	.-sorting-arrow-trigger {
+		&:hover {
+			.admin__sorting-arrow-hidden {
+				opacity: 1;
+			}
+		}
+	}
+	&__sorting-arrow-hidden {
+		transition: all 0.2s ease;
+		opacity: 0;
+	}
+	&__sorting-arrow-up {
+	}	
+	&__sorting-arrow-down {
+	}
+	&__sorting-arrow-down, 
+	&__sorting-arrow-up, 
+	&__sorting-arrow-hidden {
+		.fa {
+			font-size: 22px;
+			vertical-align: bottom;
+		}
+	}
 //	.sticky-top {
 //		position: sticky;
 //		top: 0;

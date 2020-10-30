@@ -1,0 +1,54 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+	xmlns:c="http://java.sun.com/jsp/jstl/core"
+	xmlns:h="http://xmlns.jcp.org/jsf/html"
+	xmlns:f="http://xmlns.jcp.org/jsf/core"
+	xmlns:jsf="http://xmlns.jcp.org/jsf"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:pt="http://xmlns.jcp.org/jsf/passthrough"
+	xmlns:viewer="http://xmlns.jcp.org/jsf/composite/components/partner"
+	xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components"
+	xmlns:widgetComponent="http://xmlns.jcp.org/jsf/composite/components/widgets"
+	xmlns:composite="http://xmlns.jcp.org/jsf/composite">
+
+	<composite:interface />
+
+    <composite:interface>
+        <composite:attribute name="list" required="true" type="io.goobi.viewer.managedbeans.tabledata.TableDataProvider" />
+        <composite:attribute name="filterType" required="true" />
+    </composite:interface>
+
+	<composite:implementation>
+
+		<!-- SHOW IF THIS SORTING OPTION IS NOT ACTIVE -->
+		<ui:fragment rendered="#{cc.attrs.list.sortField != cc.attrs.filterType}">
+		  <h:commandLink styleClass="sort admin__sorting-arrow-hidden"
+		      action="#{cc.attrs.list.sortBy(cc.attrs.filterType, 'ASCENDING')}">
+		      <f:passThroughAttribute name="aria-label" value="sort ascending" />
+		      <i class="fa fa-angle-up" aria-hidden="true"></i>
+		      <f:ajax execute="@form" render="@form" />
+		  </h:commandLink>
+		</ui:fragment>
+		           
+		<!-- SHOW IF THIS SORTING OPTION IS SELECTED AND ASCENDING -->    
+		<ui:fragment rendered="#{cc.attrs.list.sortOrder == 'ASCENDING' and cc.attrs.list.sortField == cc.attrs.filterType}">
+		  <h:commandLink styleClass="sort admin__sorting-arrow-up"
+		      action="#{cc.attrs.list.sortBy(cc.attrs.filterType, 'DESCENDING')}">
+		      <f:passThroughAttribute name="aria-label" value="sort ascending" />
+		      <i class="fa fa-angle-up" aria-hidden="true"></i>
+		      <f:ajax execute="@form" render="@form" />
+		  </h:commandLink>
+		</ui:fragment>
+		  
+		<!-- SHOW IF THIS SORTING OPTION IS SELECTED AND DESCENDING -->    
+		<ui:fragment rendered="#{cc.attrs.list.sortOrder == 'DESCENDING' and cc.attrs.list.sortField == cc.attrs.filterType}">
+		  <h:commandLink styleClass="sort admin__sorting-arrow-down"
+		      action="#{cc.attrs.list.sortBy(cc.attrs.filterType, 'ASCENDING')}">
+		      <f:passThroughAttribute name="aria-label" value="sort descending" />
+		      <i class="fa fa-angle-down" aria-hidden="true"></i>
+		      <f:ajax execute="@form" render="@form" />
+		  </h:commandLink>
+		</ui:fragment>
+
+	</composite:implementation>
+</ui:composition>
