@@ -1106,9 +1106,15 @@ public class Campaign implements CMSMediaHolder, ILicenseType, IPolyglott {
         this.selectedLocale = selectedLocale;
     }
 
-    /* (non-Javadoc)
-     * @see io.goobi.viewer.model.misc.IPolyglott#isComplete(java.util.Locale)
+    /**
+     * Return true if the campaign is ready for use. For this, the title in the default language must exists 
+     * and there must be at least one question
+     * 
      */
+    public boolean isComplete() {
+        return isComplete(BeanUtils.getDefaultLocale()) && !getQuestions().isEmpty();
+    }
+    
     @Override
     public boolean isComplete(Locale locale) {
         return StringUtils.isNotBlank(getTitle(locale.getLanguage(), false));
