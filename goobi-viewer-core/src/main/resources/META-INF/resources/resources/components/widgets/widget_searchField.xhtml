@@ -29,7 +29,7 @@
                                     styleClass="form-control"
                                     value="#{searchBean.invisibleSearchString}"> 
                                     <f:passThroughAttribute name="placeholder" value="#{cc.attrs.widget.hasWidgetTitle ? msg[cc.attrs.widget.widgetTitle] : msg.search}" />
-                                    <f:passThroughAttribute name="aria-label" value="searchField" />
+                                    <f:passThroughAttribute name="aria-label" value="#{msg.searchField}" />
                                 </h:inputText>
                                 <div class="input-group-addon">
                                     <ui:fragment rendered="#{!cc.attrs.widget.hasLinkedPages}">

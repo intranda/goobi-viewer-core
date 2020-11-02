@@ -12,10 +12,11 @@
             <div id="widgetSearchInCurrentItem" class="widget widget-search-in-current-item">
                 <h:form id="searchInCurrentItemForm" styleClass="form-inline" prependId="false">
                     <div class="form-group">
-                        <label for="searchInCurrentItemInput" class="sr-only">#{msg.searchIn}</label>
+                        <label for="searchInCurrentItemInput" id="searchInLabel" class="sr-only">#{msg.searchIn}</label>
                         <div class="input-group">
                             <h:inputText value="#{searchBean.advancedQueryGroups[0].queryItems[1].value}" id="searchInCurrentItemInput" styleClass="form-control">
                                 <f:passThroughAttribute name="placeholder" value="#{msg.searchIn}: #{msg[activeDocumentBean.topDocument.label]}" />
+                                <f:passThroughAttribute name="aria-labelledby" value="searchInLabel"/>
                             </h:inputText>
                             <div class="input-group-addon">
                                 <!-- Volumes -->
@@ -29,6 +30,7 @@
                                     <f:setPropertyActionListener value="1" target="#{searchBean.activeSearchType}" />
                                     <f:setPropertyActionListener value="#{searchBean.advancedQueryGroups[0].queryItems[1].value}"
                                         target="#{searchBean.advancedQueryGroups[0].queryItems[1].value}" />
+                                    <f:passThroughAttribute name="aria-label" value="#{msg.search}" />
                                 </h:commandButton>
                                 <!-- Anchors -->
                                 <h:commandButton rendered="#{activeDocumentBean.anchor}" action="#{searchBean.searchAdvanced}">
