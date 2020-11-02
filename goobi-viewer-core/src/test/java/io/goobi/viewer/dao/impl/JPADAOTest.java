@@ -2445,6 +2445,17 @@ public class JPADAOTest extends AbstractDatabaseEnabledTest {
                 DataManager.getInstance().getDao().getAnnotations(0, 10, null, false, Collections.singletonMap("targetPI", "PI_2")).size());
     }
 
+    /**
+     * @see JPADAO#getAnnotations(int,int,String,boolean,Map)
+     * @verifies filter by campaign name correctly
+     */
+    @Test
+    public void getAnnotations_shouldFilterByCampaignNameCorrectly() throws Exception {
+        List<PersistentAnnotation> result =
+                DataManager.getInstance().getDao().getAnnotations(0, 10, null, false, Collections.singletonMap("campaign", "english"));
+        Assert.assertEquals(3, result.size());
+    }
+
     @Test
     public void testGetAllGeoMaps() throws DAOException {
         List<GeoMap> maps = DataManager.getInstance().getDao().getAllGeoMaps();
@@ -2711,16 +2722,35 @@ public class JPADAOTest extends AbstractDatabaseEnabledTest {
      */
     @Test
     public void createAnnotationsFilterQuery_shouldCreateQueryCorrectly() throws Exception {
-        Map<String, String> filters = new HashMap<>();
-        filters.put("creatorId_reviewerId", "1");
-        filters.put("campaign", "geo");
-
-        Map<String, String> params = new HashMap<>();
-        Assert.assertEquals(
-                " prefix WHERE (a.generatorId IN (SELECT q.id FROM Question q WHERE q.owner IN (SELECT t.owner FROM CampaignTranslation t WHERE UPPER(t.value) LIKE :campaign)) OR a.creatorId=:creatorIdreviewerId OR a.reviewerId=:creatorIdreviewerId)",
-                JPADAO.createAnnotationsFilterQuery("prefix", filters, params));
-        Assert.assertEquals(2, params.size());
-        Assert.assertEquals("%GEO%", params.get("campaign"));
-        Assert.assertEquals("1", params.get("creatorIdreviewerId"));
+        {
+            // creator/reviewer and campaign name
+            Map<String, String> filters = new HashMap<>(2);
+            filters.put("creatorId_reviewerId", "1");
+            filters.put("campaign", "geo");
+            Map<String, Object> params = new HashMap<>(2);
+            Assert.assertEquals(
+                    " prefix WHERE (a.creatorId=:creatorIdreviewerId OR a.reviewerId=:creatorIdreviewerId) AND (a.generatorId IN (SELECT q.id FROM Question q WHERE q.owner IN (SELECT t.owner FROM CampaignTranslation t WHERE t.tag='title' AND UPPER(t.value) LIKE :campaign)))",
+                    JPADAO.createAnnotationsFilterQuery("prefix", filters, params));
+            Assert.assertEquals(2, params.size());
+            Assert.assertEquals("%GEO%", params.get("campaign"));
+            Assert.assertEquals(1L, params.get("creatorIdreviewerId"));
+        }
+        {
+            // just creator/reviewer
+            Map<String, String> filters = new HashMap<>(1);
+            filters.put("creatorId_reviewerId", "1");
+            Map<String, Object> params = new HashMap<>(1);
+            Assert.assertEquals(" prefix WHERE (a.creatorId=:creatorIdreviewerId OR a.reviewerId=:creatorIdreviewerId)",
+                    JPADAO.createAnnotationsFilterQuery("prefix", filters, params));
+        }
+        {
+            // just campaign name
+            Map<String, String> filters = new HashMap<>(1);
+            filters.put("campaign", "geo");
+            Map<String, Object> params = new HashMap<>(1);
+            Assert.assertEquals(
+                    " prefix WHERE (a.generatorId IN (SELECT q.id FROM Question q WHERE q.owner IN (SELECT t.owner FROM CampaignTranslation t WHERE t.tag='title' AND UPPER(t.value) LIKE :campaign)))",
+                    JPADAO.createAnnotationsFilterQuery("prefix", filters, params));
+        }
     }
 }

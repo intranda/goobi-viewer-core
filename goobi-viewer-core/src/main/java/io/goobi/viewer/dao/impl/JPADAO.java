@@ -2502,10 +2502,10 @@ public class JPADAO implements IDAO {
      * @return
      * @should create query correctly
      */
-    static String createAnnotationsFilterQuery(String staticFilterQuery, Map<String, String> filters, Map<String, String> params) {
-        StringBuilder q = new StringBuilder(" ");
+    static String createAnnotationsFilterQuery(String staticFilterQuery, Map<String, String> filters, Map<String, Object> params) {
+        StringBuilder q = new StringBuilder();
         if (StringUtils.isNotEmpty(staticFilterQuery)) {
-            q.append(staticFilterQuery);
+            q.append(" ").append(staticFilterQuery);
         }
         if (filters == null || filters.isEmpty()) {
             return q.toString();
@@ -2524,7 +2524,7 @@ public class JPADAO implements IDAO {
             }
             String keyValueParam = key.replaceAll("[" + MULTIKEY_SEPARATOR + KEY_FIELD_SEPARATOR + "]", "");
             if ("creatorId_reviewerId".equals(key)) {
-                params.put(keyValueParam, filterValue);
+                params.put(keyValueParam, Long.valueOf(filterValue));
             } else {
                 params.put(keyValueParam, "%" + filterValue.toUpperCase() + "%");
             }
@@ -2544,22 +2544,43 @@ public class JPADAO implements IDAO {
                         break;
                     case "a.campaign":
                         where = mainTableKey + ".generatorId IN (SELECT q.id FROM Question q WHERE q.owner IN " +
-                                "(SELECT t.owner FROM CampaignTranslation t WHERE UPPER(t.value) LIKE :" + keyValueParam + "))";
+                                "(SELECT t.owner FROM CampaignTranslation t WHERE t.tag='title' AND UPPER(t.value) LIKE :" + keyValueParam + "))";
                         break;
                     default:
                         where = "UPPER(" + subKey + ") LIKE :" + keyValueParam;
                         break;
                 }
 
-                whereStatements.add(where); // joinTable.field LIKE :param | field LIKE :param
+                whereStatements.add(where);
             }
         }
         if (!whereStatements.isEmpty()) {
-            String filterQuery = " WHERE (" + whereStatements.stream().collect(Collectors.joining(" OR ")) + ")";
+            StringBuilder sbCreatorReviewer = new StringBuilder();
+            StringBuilder sbOtherStatements = new StringBuilder();
+            for (String whereStatement : whereStatements) {
+                if (whereStatement.startsWith("a.creatorId")) {
+                    sbCreatorReviewer.append(whereStatement);
+                } else if (whereStatement.startsWith("a.reviewerId")) {
+                    sbCreatorReviewer.append(" OR ").append(whereStatement);
+                } else {
+                    if (sbOtherStatements.length() != 0) {
+                        sbOtherStatements.append(" OR ");
+                    }
+                    sbOtherStatements.append(whereStatement);
+                }
+            }
+            String filterQuery = " WHERE " + (sbCreatorReviewer.length() > 0 ? "(" + sbCreatorReviewer.toString() + ")" : "");
+            if (sbCreatorReviewer.length() > 0 && sbOtherStatements.length() > 0) {
+                filterQuery += " AND ";
+            }
+            if (sbOtherStatements.length() > 0) {
+                filterQuery += ("(" + sbOtherStatements.toString() + ")");
+            }
             q.append(filterQuery);
         }
 
         return q.toString();
+
     }
 
     /**
@@ -4336,54 +4357,6 @@ public class JPADAO implements IDAO {
         return (long) q.getResultList().get(0);
     }
 
-    /* (non-Javadoc)
-     * @see io.goobi.viewer.dao.IDAO#getCampaignContributorCount(java.utils.List)
-     */
-    /** {@inheritDoc} */
-    @SuppressWarnings("unchecked")
-    @Override
-    @Deprecated
-    public long getCampaignContributorCount(List<Long> questionIds) throws DAOException {
-        if (questionIds == null) {
-            throw new IllegalArgumentException("questionIds may not be null");
-        }
-        if (questionIds.isEmpty()) {
-            return 0;
-        }
-
-        StringBuilder sbSubQuery = new StringBuilder();
-        for (long questionId : questionIds) {
-            if (sbSubQuery.length() > 0) {
-                sbSubQuery.append(" OR ");
-            }
-            sbSubQuery.append("a.generatorId = :generatorId" + questionId);
-        }
-
-        Set<Long> creators = new HashSet<>();
-        Set<Long> reviewers = new HashSet<>();
-        {
-            preQuery();
-            String query = "SELECT DISTINCT a.creatorId FROM PersistentAnnotation a WHERE (" + sbSubQuery.toString() + ")";
-            Query q = em.createQuery(query);
-            for (long questionId : questionIds) {
-                q.setParameter("generatorId" + questionId, questionId);
-            }
-            creators.addAll(q.getResultList());
-        }
-        {
-            preQuery();
-            String query = "SELECT DISTINCT a.reviewerId FROM PersistentAnnotation a WHERE (" + sbSubQuery.toString() + ")";
-            Query q = em.createQuery(query);
-            for (long questionId : questionIds) {
-                q.setParameter("generatorId" + questionId, questionId);
-            }
-            reviewers.addAll(q.getResultList());
-        }
-        creators.addAll(reviewers);
-
-        return creators.size();
-    }
-
     /** {@inheritDoc} */
     @SuppressWarnings("unchecked")
     @Override
@@ -4457,7 +4430,12 @@ public class JPADAO implements IDAO {
         return em.createQuery(query).setParameter("userId", userId).getResultList();
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     * 
+     * @should return correct rows
+     * @should filter by campaign name correctly
+     */
     @SuppressWarnings("unchecked")
     @Override
     public List<PersistentAnnotation> getAnnotations(int first, int pageSize, String sortField, boolean descending,
@@ -4467,8 +4445,7 @@ public class JPADAO implements IDAO {
             StringBuilder sbQuery = new StringBuilder("SELECT DISTINCT a FROM PersistentAnnotation a");
             StringBuilder order = new StringBuilder();
             try {
-                Map<String, String> params = new HashMap<>();
-
+                Map<String, Object> params = new HashMap<>();
                 String filterString = createAnnotationsFilterQuery(null, filters, params);
                 if (StringUtils.isNotEmpty(sortField)) {
                     order.append(" ORDER BY a.").append(sortField);
@@ -4486,7 +4463,6 @@ public class JPADAO implements IDAO {
                 q.setMaxResults(pageSize);
                 q.setFlushMode(FlushModeType.COMMIT);
                 // q.setHint("javax.persistence.cache.storeMode", "REFRESH");
-
                 return q.getResultList();
             } catch (PersistenceException e) {
                 logger.error("Exception \"" + e.toString() + "\" when trying to get CS campaigns. Returning empty list");
@@ -4498,7 +4474,13 @@ public class JPADAO implements IDAO {
     /** {@inheritDoc} */
     @Override
     public long getAnnotationCount(Map<String, String> filters) throws DAOException {
-        return getRowCount("PersistentAnnotation", null, filters);
+        preQuery();
+        StringBuilder sbQuery = new StringBuilder("SELECT count(a) FROM PersistentAnnotation a");
+        Map<String, Object> params = new HashMap<>();
+        Query q = em.createQuery(sbQuery.append(createAnnotationsFilterQuery(null, filters, params)).toString());
+        params.entrySet().forEach(entry -> q.setParameter(entry.getKey(), entry.getValue()));
+
+        return (long) q.getSingleResult();
     }
 
     /** {@inheritDoc} */

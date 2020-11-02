@@ -1278,7 +1278,8 @@ public interface IDAO {
      * @return a {@link java.util.List} object.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
-    public List<CMSPage> getCMSPagesWithRelatedPi(int first, int pageSize, LocalDateTime fromDate, LocalDateTime toDate, List<String> templateIds) throws DAOException;
+    public List<CMSPage> getCMSPagesWithRelatedPi(int first, int pageSize, LocalDateTime fromDate, LocalDateTime toDate, List<String> templateIds)
+            throws DAOException;
 
     /**
      * <p>
@@ -1986,7 +1987,7 @@ public interface IDAO {
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
     public List<PersistentAnnotation> getAnnotationsForTarget(String pi, Integer page) throws DAOException;
-    
+
     /**
      * 
      * @param userId
@@ -2033,18 +2034,6 @@ public interface IDAO {
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
     long getAnnotationCountForTarget(String pi, Integer page) throws DAOException;
-
-    /**
-     * <p>
-     * getCampaignContributorCount.
-     * </p>
-     *
-     * @param questionIds a {@link java.util.List} object.
-     * @return a long.
-     * @throws io.goobi.viewer.exceptions.DAOException if any.
-     */
-    @Deprecated
-    public long getCampaignContributorCount(List<Long> questionIds) throws DAOException;
 
     /**
      * <p>
@@ -2158,10 +2147,13 @@ public interface IDAO {
      * @throws DAOException
      */
     List<CMSPage> getCMSPagesForSubtheme(String subtheme) throws DAOException;
-    
+
     public boolean saveTermsOfUse(TermsOfUse tou) throws DAOException;
+
     public TermsOfUse getTermsOfUse() throws DAOException;
+
     public boolean isTermsOfUseActive() throws DAOException;
+
     public boolean resetUserAgreementsToTermsOfUse() throws DAOException;
 
 }
