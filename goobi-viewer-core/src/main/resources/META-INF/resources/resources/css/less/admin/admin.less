@@ -374,11 +374,41 @@
 
 	}
 	&__table-sorting {
-		margin-left: 2rem;
-		a:hover {
+		color: @black;
+		flex: 1;
+		margin-right: 2rem;
+		&:hover {
+			color: @black;
 			text-decoration: none;
+			.admin__table-sorting-arrow-hidden {
+				opacity: 1;
+			}
+			.admin__table-sorting-arrow-up, .admin__table-sorting-arrow-down {
+				transform: rotate(180deg);
+				transform-origin: 50% 53%;
+			}
+		}
+		i {
+			margin-left: 1rem;
+			&:hover {
+				transform: rotate(180deg);
+				transform-origin: 50% 58%;
+			}
 		}
 	}
+	&__table-sorting-arrow-hidden {
+		opacity: 0;
+		transition: all 0.2s ease;
+	}
+	&__table-sorting-arrow-up {}
+	&__table-sorting-arrow-down {}
+	
+	&__table-sorting-arrow-up, 
+	&__table-sorting-arrow-down {
+		
+	}
+	
+	&__table-sorting-heading {}
 	&__table-entry {
 		/* opacity: 0;
 		animation: fadein 0.2s ease-in 0s 1 forwards;
@@ -962,30 +992,6 @@
 		z-index: 100;
 	}
 
-	// Sorting arrow
-	.-sorting-arrow-trigger {
-		&:hover {
-			.admin__sorting-arrow-hidden {
-				opacity: 1;
-			}
-		}
-	}
-	&__sorting-arrow-hidden {
-		transition: all 0.2s ease;
-		opacity: 0;
-	}
-	&__sorting-arrow-up {
-	}	
-	&__sorting-arrow-down {
-	}
-	&__sorting-arrow-down, 
-	&__sorting-arrow-up, 
-	&__sorting-arrow-hidden {
-		.fa {
-			font-size: 22px;
-			vertical-align: bottom;
-		}
-	}
 //	.sticky-top {
 //		position: sticky;
 //		top: 0;

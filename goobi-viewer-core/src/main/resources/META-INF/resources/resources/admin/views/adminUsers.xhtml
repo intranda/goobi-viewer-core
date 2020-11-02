@@ -45,21 +45,13 @@
                         <div class="row no-gutters admin__table-title">
                             <!-- NAME COL -->
                             <div class="col-6 d-flex -sorting-arrow-trigger">
-                                <span>#{msg.admin__users}</span>
-                                
                                 <!-- SORTING -->
-                                <div class="admin__table-sorting">
-                                	<viewerComponent:sortingArrow filterType="email" list="#{adminBean.lazyModelUsers}" />
-                                </div>
-                                
+                                <viewerComponent:sortingArrow filterType="email" tableHeading="#{msg.admin__users}" list="#{adminBean.lazyModelUsers}" />
                             </div>
                             <!-- LAST LOGIN COL -->
-                            <div class="col-3 d-flex  -sorting-arrow-trigger">
-                                <span>#{msg.lastLoginDate}</span>
+                            <div class="col-3 d-flex -sorting-arrow-trigger">
                                 <!-- SORTING -->
-                                <div class="admin__table-sorting">
-									<viewerComponent:sortingArrow filterType="lastLogin" list="#{adminBean.lazyModelUsers}" />
-                                </div>
+								<viewerComponent:sortingArrow filterType="lastLogin" tableHeading="#{msg.lastLoginDate}" list="#{adminBean.lazyModelUsers}" />
                             </div>
                             <!-- USER GROUPS COL -->
                             <div class="col-3 d-flex">#{msg.admin__groups}</div>
