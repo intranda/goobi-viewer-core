@@ -36,7 +36,6 @@ this.button = this.opts.button;
 this.mainClass = (this.opts.style && this.opts.style.mainClass) ? this.opts.style.mainClass : "bookmark-popup__body-list";
 
 this.on( 'mount', function() {    	
-    this.updateLists();
     this.opts.bookmarks.listsUpdated.subscribe( () => this.onListUpdate());
 });
 
