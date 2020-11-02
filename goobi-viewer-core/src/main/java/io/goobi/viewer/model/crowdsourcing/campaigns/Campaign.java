@@ -1111,6 +1111,7 @@ public class Campaign implements CMSMediaHolder, ILicenseType, IPolyglott {
      * and there must be at least one question
      * 
      */
+    @JsonIgnore
     public boolean isComplete() {
         return isComplete(BeanUtils.getDefaultLocale()) && !getQuestions().isEmpty();
     }
