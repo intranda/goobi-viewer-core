@@ -1,12 +1,12 @@
 <geoLocationQuestion>
 	
-	<div if="{this.showInstructions()}" class="annotation_instruction">
+	<div if="{this.showInstructions()}" class="crowdsourcing-annotations__instruction">
 		<label>{Crowdsourcing.translate("crowdsourcing__help__create_rect_on_image")}</label>
 	</div>
-	<div if="{this.showAddMarkerInstructions()}" class="annotation_instruction">
+	<div if="{this.showAddMarkerInstructions()}" class="crowdsourcing-annotations__single-instruction">
 		<label>{Crowdsourcing.translate("crowdsourcing__help__add_marker_to_image")}</label>
 	</div>
-	<div if="{this.showInactiveInstructions()}" class="annotation_instruction annotation_instruction_inactive">
+	<div if="{this.showInactiveInstructions()}" class="crowdsourcing-annotations__single-instruction -inactive">
 		<label>{Crowdsourcing.translate("crowdsourcing__help__make_active")}</label>
 	</div>
 	

@@ -1,28 +1,41 @@
 <authorityResourceQuestion>
-	<div if="{this.showInstructions()}" class="annotation_instruction">
+	<div if="{this.showInstructions()}" class="crowdsourcing-annotations__instruction">
 		<label>{Crowdsourcing.translate("crowdsourcing__help__create_rect_on_image")}</label>
 	</div>
-	<div if="{this.showInactiveInstructions()}" class="annotation_instruction annotation_instruction_inactive">
+	<div if="{this.showInactiveInstructions()}" class="crowdsourcing-annotations__single-instruction -inactive">
 		<label>{Crowdsourcing.translate("crowdsourcing__help__make_active")}</label>
 	</div>
-	<div class="annotation_wrapper" id="question_{opts.index}_annotation_{index}" each="{anno, index in this.question.annotations}">
-		<div class="annotation_area -small" >
-			<div if="{this.showAnnotationImages()}" class="annotation_area__image" style="border-color: {anno.getColor()}">
+	<div class="crowdsourcing-annotations__wrapperx" id="question_{opts.index}_annotation_{index}" each="{anno, index in this.question.annotations}">
+	
+		<div class="crowdsourcing-annotations__annotation-area -small" >
+			<div if="{this.showAnnotationImages()}" class="crowdsourcing-annotations__annotation-area-image" style="border-color: {anno.getColor()}">
 				<img src="{this.question.getImage(anno)}"></img>
 			</div>
-			<span class="annotation_area__input_prefix">{question.authorityData.baseUri}</span>
-			<div class="annotation_area__text_input">
-				<input class="form-control" disabled="{this.opts.item.isReviewMode() ? 'disabled' : ''}" onChange="{setIdFromEvent}" value="{getIdAsNumber(anno)}">
+
+			<div if="{ !this.opts.item.isReviewMode() }" class="crowdsourcing-annotations__question-text-input">
+				<span class="crowdsourcing-annotations__gnd-text">https://d-nb.info/gnd/</span>
+				<input class="crowdsourcing-annotations__gnd-id form-control" onChange="{setIdFromEvent}" value="{question.authorityData.baseUri && getIdAsNumber(anno)}">
 				</input>
 			</div>
+			
+			<!-- FOR REVIEW MODE: DISABLED TEXT INPUT FIELD AND LINK FOR  -->
+			<div if="{ this.opts.item.isReviewMode() }" class="crowdsourcing-annotations__jump-to-gnd">
+				<a target ="_blank" href="{question.authorityData.baseUri}{getIdAsNumber(anno)}">Zum GND (Link in neuem Fenster oeffnen)</a>
+			</div>
+
+			<div if="{ this.opts.item.isReviewMode() }" class="crowdsourcing-annotations__question-text-input">
+				<input class="form-control pl-1" disabled="{this.opts.item.isReviewMode() ? 'disabled' : ''}" value="{question.authorityData.baseUri}{getIdAsNumber(anno)}">
+				</input>
+			</div>
+			
+			<div class="cms-module__actions crowdsourcing-annotations__annotation-action">
+				<button if="{ !this.opts.item.isReviewMode() }" onClick="{deleteAnnotationFromEvent}" class="crowdsourcing-annotations__delete-annotation btn btn--clean delete">{Crowdsourcing.translate("action__delete_annotation")}
+				</button>
+			</div>
 		</div>
-		<div class="cms-module__actions">
-			<button if="{ !this.opts.item.isReviewMode() }" onClick="{deleteAnnotationFromEvent}" class="annotation_area__button btn btn--clean delete">{Crowdsourcing.translate("action__delete_annotation")}
-			</button>
-		</div>
+
 	</div>
 	<button if="{showAddAnnotationButton()}" onclick="{addAnnotation}" class="options-wrapper__option btn btn--default" id="add-annotation">{Crowdsourcing.translate("action__add_annotation")}</button>
-	
 
 <script>
 
@@ -64,6 +77,10 @@
 	
 	showAddAnnotationButton() {
 	    return !this.question.isReviewMode() && !this.question.isRegionTarget() && this.question.mayAddAnnotation();
+	}
+
+	showLinkToGND() {
+	    return this.question.isReviewMode() && this.question.isRegionTarget();
 	}
 	
     setIdFromEvent(event) {

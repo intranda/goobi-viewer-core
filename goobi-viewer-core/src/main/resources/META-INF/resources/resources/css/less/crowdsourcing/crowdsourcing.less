@@ -68,20 +68,24 @@
 		max-width: 0%;
 	}
 	&__top-brand {
-		flex: 0 0 30%;
-		max-width: 30%;
+		flex: 1;
 		padding: 1.5rem;
-		font-size: 1.6rem;
-		font-weight: 700;
+		margin-right: auto;
 		a {
 			&:hover {
 				text-decoration: none;
 			}
 		}
 	}
+	&__top-title {
+		flex: 1;
+		text-align: center;
+		font-weight: 700;
+		font-size: 1.6rem;
+	}
 	&__top-actions {
-		flex: 0 0 70%;
-		max-width: 70%;
+		flex: 1;
+		margin-left: auto;
 		display: flex;
 		flex-wrap: wrap;
 		align-items: center;
@@ -128,7 +132,7 @@
 	}
 	&__main {
 		background-color: #f2f3f4;
-		padding: 15px 0 0 15px;
+		padding: 0 0 0 1.5rem;
 		height: calc(~"100vh - 60px");
 		width: 100vw;
 	}
@@ -136,7 +140,7 @@
 		width: 100%;
 		display: flex;
 		align-items: stretch;
-		height: calc(~"100vh - 135px");
+		height: calc(~"100vh - 90px");
 	}
 	&__loader-wrapper {
 		position: absolute;
@@ -151,6 +155,7 @@
 		width: 50%;
 		background-color: white;
 		border: 1px solid #d5d5d5;
+		margin-top: 1.5rem;
 		.imageview_wrapper {
 			width: 100%;
 			height:calc(~"100% - 50px") ;
@@ -174,113 +179,149 @@
 		}
 	}
 	&__content-right {
-		margin-left: 20px;
+		margin-left: 1.5rem;
 		padding-right: 15px;
 		width: 50%;
 		overflow: auto;
+		padding-top: 1.5rem;
 	}
 	&__content-right-title {
-			margin-bottom: 10px;
-			margin-top: 0;
-	}
-
-	&__questions-wrapper {
+		margin-bottom: 10px;
+		margin-top: 0;
 		background-color: white;
-		padding: 5px;
-		margin-bottom: 5px;
+		padding: 1rem;
+		margin-bottom: 1rem;
 		border: 1px solid #d5d5d5;
+	}
+	&__questions-wrapper {
 		&.area-selector-question {
 			&.active {
 				border-width: 2px;
 			}
 		}
-		.btn {
-			margin: 0 0 10px 10px;
-		}
-		.annotation_instruction {
-			margin: 10px;
+	}
+	&__instruction {}
+	&__single-instruction {
+			margin: 1rem 0;
 			border: 2px solid @lightgray;
 			display: flex;
 			align-items: center;
 			justify-content: center;
 			height: 100px;
 			color: @middlegray;
-			&.annotation_instruction_inactive {
+			&.-inactive {
 				height: auto;
 			}
 			label {
-				margin: 5px 10px;
+				margin: 0.5rem 1rem;
 			}
-		}
+	}
 		.annotation_wrapper {
-			margin-bottom: 40px;
-			.btn {
-				margin: 0 10px;
-			}
+			margin-bottom: 2rem;
 		}
-		.annotation_area {
+	&__annotation-area {
+		display: flex;
+		min-height: 100px;
+		flex-wrap: wrap;
+		&.-small {
+			min-height: 0;
+		}
+		&__image {
+			width: 100px;
+			height: 100px;
 			display: flex;
-			margin: 0 10px;
-			min-height: 100px;
-			&.-small {
-				min-height: 0;
-			}
-			&__image {
-				width: 100px;
-				height: 100px;
-				display: flex;
-		   	    flex-flow: row nowrap;
-			    align-items: center;
-			    justify-content: center;
-				border: 2px solid #d5d5d5;
-				margin-right: 20px;
-				background-color: #f1f2f3;
-				img {
-					max-width: 100%;
-					max-height: 100%;
-				}
-			}
-			&__text_input {
-				flex: 1;
-				display: flex;
-		   	    flex-flow: row nowrap;
-			    align-items: center;
-			    justify-content: center;
-			    label {
-			    	max-width: 150px;
-			    }
-				textarea {
-					flex: 1;
-					text-align: left;
-					background-color: transparent;
-	    			border: 0px solid;
-	    			height: 100%;
-	    			resize: none;
-	    			border: 1px solid #d5d5d5;
-	    			padding: 1rem;
-	    			&:focus {
-	    				border: 1px solid @darkgray;
-	    				background: @lightgray2;
-	    				resize: vertical;
-	    			}
-	    			&:disabled {
-	    				background-color: @lightgray2;
-	    				color: @gray;
-	    			}
-				}
-			}
-			&__button {
-				float: right;
-				margin-right: 10px;
+	   	    flex-flow: row nowrap;
+		    align-items: center;
+		    justify-content: center;
+			border: 2px solid #d5d5d5;
+			margin-right: 20px;
+			background-color: #f1f2f3;
+			img {
+				max-width: 100%;
+				max-height: 100%;
 			}
 		}
+		.cms-module__actions {
+			margin-left: auto;
+		}
+	}
+	&__annotation-area-image {
+		width: 100px;
+		height: 100px;
+		display: flex;
+   	    flex-flow: row nowrap;
+	    align-items: center;
+	    justify-content: center;
+		border: 2px solid #d5d5d5;
+		margin-right: 20px;
+		background-color: #f1f2f3;
+		img {
+			max-width: 100%;
+			max-height: 100%;
+		}
+	}
+	&__gnd-text {
+		white-space: nowrap;
+		padding-right: 0.2rem;
+	}
+	&__gnd-id {
+	padding: 0;
+	height: 2.8rem;
+	}
+	&__question-text-input {
+		    flex: 1;
+		    display: flex;
+		    align-items: center;
+		    label {
+		    	max-width: 150px;
+		    }
+		    input {
+		    	padding-left: 0;
+		    }
+			textarea {
+				flex: 1;
+				text-align: left;
+				background-color: transparent;
+    			border: 0px solid;
+    			height: 100%;
+    			resize: none;
+    			border: 1px solid #d5d5d5;
+    			padding: 1rem;
+    			&:focus {
+    				border: 1px solid @darkgray;
+    				background: @lightgray2;
+    				resize: vertical;
+    			}
+    			&:disabled {
+    				background-color: @lightgray2;
+    				color: @gray;
+    			}
+			}
+		}
+		&__button {
+			float: right;
+			margin-right: 10px;
+			}
+		
 		.geo-map {
 			height: 600px;
 		}
+	&__delete-annotation {}
+	&__jump-to-gnd {
+		flex: 0 0 100%;
 	}
-
+	&__wrapper {
+		margin-bottom: 2rem;
+	}
+	&__question-wrapper {
+		background-color: white;
+		padding: 2rem;
+		margin-bottom: 2.5rem;
+		border: 1px solid #d5d5d5;
+	}
 	&__question-wrapper-description {
-		margin: 10px 0 30px 10px;
+		margin:  0 0 1.5rem 0;
+		font-size: 1.6rem;
 	}
 	&__options-wrapper {
 		width: 100%;
@@ -291,6 +332,10 @@
 			margin: 5px 20px;
 		}
 		&__option {}
+	}
+	&__annotation-action {
+		flex: 0 0 100%;
+		text-align: right;
 	}
 	.breadcrumbs-wrapper {
 		height: 30px;

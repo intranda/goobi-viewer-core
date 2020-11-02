@@ -17,7 +17,7 @@
 			<canvasPaginator if="{this.item}" item="{this.item}"></canvasPaginator>
 		</div>
 		<div if="{this.item}" class="crowdsourcing-annotations__content-right">
-			<h1 class="crowdsourcing-annotations__content-right-title">{Crowdsourcing.translate(this.item.translations.title)}</h1>
+			<!-- <h1 class="crowdsourcing-annotations__content-right-title">{Crowdsourcing.translate(this.item.translations.title)}</h1>-->
 			<div class="crowdsourcing-annotations__questions-wrapper" >
 				<div each="{question, index in this.item.questions}" 
 					onclick="{setActive}"
