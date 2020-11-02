@@ -385,13 +385,6 @@
 			}
 			.admin__table-sorting-arrow-up, .admin__table-sorting-arrow-down {
 				transform: rotate(180deg);
-				transform-origin: 50% 53%;
-			}
-		}
-		i {
-			margin-left: 1rem;
-			&:hover {
-				transform: rotate(180deg);
 				transform-origin: 50% 58%;
 			}
 		}
@@ -403,11 +396,11 @@
 	&__table-sorting-arrow-up {}
 	&__table-sorting-arrow-down {}
 	
+	&__table-sorting-arrow-hidden,
 	&__table-sorting-arrow-up, 
 	&__table-sorting-arrow-down {
-		
+		margin-left: 1rem;
 	}
-	
 	&__table-sorting-heading {}
 	&__table-entry {
 		/* opacity: 0;
