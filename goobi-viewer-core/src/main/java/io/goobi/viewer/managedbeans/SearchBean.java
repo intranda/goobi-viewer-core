@@ -1231,6 +1231,12 @@ public class SearchBean implements SearchInterface, Serializable {
             }
         }
     }
+    
+    public String removeChronologyFacetAction() {
+        String facet = SolrConstants.YEAR + ":" + facets.getTempValue();
+        facets.setTempValue("");
+        return removeFacetAction(facet);
+    }
 
     /**
      * <p>
