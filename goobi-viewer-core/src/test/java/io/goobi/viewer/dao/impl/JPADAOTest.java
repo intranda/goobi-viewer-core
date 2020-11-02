@@ -2729,7 +2729,7 @@ public class JPADAOTest extends AbstractDatabaseEnabledTest {
             filters.put("campaign", "geo");
             Map<String, Object> params = new HashMap<>(2);
             Assert.assertEquals(
-                    " prefix WHERE (a.creatorId=:creatorIdreviewerId OR a.reviewerId=:creatorIdreviewerId) AND (a.generatorId IN (SELECT q.id FROM Question q WHERE q.owner IN (SELECT t.owner FROM CampaignTranslation t WHERE UPPER(t.value) LIKE :campaign)))",
+                    " prefix WHERE (a.creatorId=:creatorIdreviewerId OR a.reviewerId=:creatorIdreviewerId) AND (a.generatorId IN (SELECT q.id FROM Question q WHERE q.owner IN (SELECT t.owner FROM CampaignTranslation t WHERE t.tag='title' AND UPPER(t.value) LIKE :campaign)))",
                     JPADAO.createAnnotationsFilterQuery("prefix", filters, params));
             Assert.assertEquals(2, params.size());
             Assert.assertEquals("%GEO%", params.get("campaign"));
@@ -2749,7 +2749,7 @@ public class JPADAOTest extends AbstractDatabaseEnabledTest {
             filters.put("campaign", "geo");
             Map<String, Object> params = new HashMap<>(1);
             Assert.assertEquals(
-                    " prefix WHERE (a.generatorId IN (SELECT q.id FROM Question q WHERE q.owner IN (SELECT t.owner FROM CampaignTranslation t WHERE UPPER(t.value) LIKE :campaign)))",
+                    " prefix WHERE (a.generatorId IN (SELECT q.id FROM Question q WHERE q.owner IN (SELECT t.owner FROM CampaignTranslation t WHERE t.tag='title' AND UPPER(t.value) LIKE :campaign)))",
                     JPADAO.createAnnotationsFilterQuery("prefix", filters, params));
         }
     }

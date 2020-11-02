@@ -2544,7 +2544,7 @@ public class JPADAO implements IDAO {
                         break;
                     case "a.campaign":
                         where = mainTableKey + ".generatorId IN (SELECT q.id FROM Question q WHERE q.owner IN " +
-                                "(SELECT t.owner FROM CampaignTranslation t WHERE UPPER(t.value) LIKE :" + keyValueParam + "))";
+                                "(SELECT t.owner FROM CampaignTranslation t WHERE t.tag='title' AND UPPER(t.value) LIKE :" + keyValueParam + "))";
                         break;
                     default:
                         where = "UPPER(" + subKey + ") LIKE :" + keyValueParam;
