@@ -139,6 +139,8 @@
 			<property name="eclipselink.id-validation" value="NONE" />
 			<property name="logging.level" value="SEVERE" />
 			<property name="eclipselink.logging.level" value="SEVERE" />
+<!--             <property name="eclipselink.logging.level.sql" value="FINE"/> -->
+<!--             <property name="eclipselink.logging.parameters" value="true"/> -->
 		</properties>
 	</persistence-unit>
 </persistence>

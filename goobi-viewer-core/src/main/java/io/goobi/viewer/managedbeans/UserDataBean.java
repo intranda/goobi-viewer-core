@@ -104,7 +104,7 @@ public class UserDataBean implements Serializable {
                 }
             });
             lazyModelAnnotations.setEntriesPerPage(DEFAULT_ROWS_PER_PAGE);
-            lazyModelAnnotations.setFilters("targetPI_body_dateCreated"); // TODO campaign name in current language
+            lazyModelAnnotations.setFilters("targetPI_body_campaign_dateCreated");
         }
     }
 
