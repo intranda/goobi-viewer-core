@@ -1173,6 +1173,10 @@ public class Campaign implements CMSMediaHolder, ILicenseType, IPolyglott {
         }
         return this.solrQueryResults;
     }
+    
+    public void resetSolrQueryResults() {
+        this.solrQueryResults = null;
+    }
 
     /**
      * Check if the given user may annotate/review (depending on status) a specific pi within this campaign
