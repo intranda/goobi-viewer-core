@@ -33,7 +33,7 @@
                                     <i class="fa fa-minus-square-o" aria-hidden="true"></i>
                                     <f:passThroughAttribute name="data-toggle" value="tooltip" />
 									<f:passThroughAttribute name="data-placement" value="top" />
-									<f:passThroughAttribute name="aria-label" value="#{msg.aria_label__title_collapse}"/>
+									<f:passThroughAttribute name="aria-label" value="#{msg.allClose}"/>
                                     <f:ajax render="widgetTocForm" />
                                 </h:commandLink>
                                 <!-- OPEN -->
@@ -41,7 +41,7 @@
                                     <i class="fa fa-plus-square-o" aria-hidden="true"></i>
                                     <f:passThroughAttribute name="data-toggle" value="tooltip" />
 									<f:passThroughAttribute name="data-placement" value="top" />
-									<f:passThroughAttribute name="aria-label" value="#{msg.aria_label__title_expand}"/>
+									<f:passThroughAttribute name="aria-label" value="#{msg.allOpen}"/>
                                     <f:ajax render="widgetTocForm" />
                                 </h:commandLink>
                             </div>
@@ -63,12 +63,12 @@
     													<div class="widget-toc__element-expand">
     														<h:commandLink styleClass="btn btn--clean" action="#{activeDocumentBean.setChildrenVisible(tocElement)}" rendered="#{tocElement.visible and !tocElement.expanded}">
 																<i class="fa fa-plus-square-o" aria-hidden="true"></i>
-																<f:passThroughAttribute name="aria-label" value="#{msg.aria_label__title_expand}"/>
+																<f:passThroughAttribute name="aria-label" value="#{msg.allOpen}"/>
 																<f:ajax render="@form" />
     														</h:commandLink>
     														<h:commandLink styleClass="btn btn--clean" action="#{activeDocumentBean.setChildrenInvisible(tocElement)}" rendered="#{tocElement.visible and tocElement.expanded}">
 																<i class="fa fa-minus-square-o" aria-hidden="true"></i>
-																<f:passThroughAttribute name="aria-label" value="#{msg.aria_label__title_collapse}"/>
+																<f:passThroughAttribute name="aria-label" value="#{msg.allClose}"/>
     															<f:ajax render="@form" />
     														</h:commandLink>
     													</div>
