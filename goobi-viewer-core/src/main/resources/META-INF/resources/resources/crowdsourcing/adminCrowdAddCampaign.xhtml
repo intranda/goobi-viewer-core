@@ -201,7 +201,7 @@
 																disabled="#{!crowdsourcingBean.selectedCampaign.isDefaultLocaleSelected()}">
 																<f:validator validatorId="solrQueryValidator"
 																	for="solrQueryInput" />
-																<f:ajax event="blur" render="solrQueryInputGroup addQuestionButton statisticsArea" />
+																<f:ajax event="blur" render="solrQueryInputGroup addQuestionButton noQuestionYet statisticsArea" />
 															</h:inputText>
 														</h:panelGroup>
 														<span class="admin__form-help-text">#{msg.inline_help__input_solr_query}</span>
@@ -222,6 +222,8 @@
 										</div>
 										</h:panelGroup>					
 										
+										
+										<!-- ADD QUESTION BUTTON -->
 										<h:panelGroup id="addQuestionButton">
 											<ui:fragment rendered="#{crowdsourcingBean.selectedCampaign.solrQuery != null}">
 												<h3>#{msg.admin__crowdsourcing_questions}
@@ -234,7 +236,16 @@
 											</ui:fragment>
 										</h:panelGroup>
 										
+										<!-- NO QUESTION YET - CAMPAIGN NOT SHOWN NOTIFICATION -->
+										<h:panelGroup id="noQuestionYet">
+											<ui:fragment rendered="#{fn:length(crowdsourcingBean.selectedCampaign.questions) == 0 and crowdsourcingBean.selectedCampaign.solrQuery != null}">
+												<div class="admin__default-block -warning">
+													<span>#{msg.admin__crowdsourcing_campaign_no_question_yet}</span>
+												</div>
+											</ui:fragment>
+										</h:panelGroup>
 										
+										<!-- QUESTIONS AREA -->
 										<ui:fragment rendered="#{fn:length(crowdsourcingBean.selectedCampaign.questions) > 0}">
 											<h:panelGroup
 													id="QuestionsArea"

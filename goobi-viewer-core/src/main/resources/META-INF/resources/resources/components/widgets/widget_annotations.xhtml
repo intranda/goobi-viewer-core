@@ -51,7 +51,6 @@
 								
 								<script type="text/javascript">
 									$("#words-#{content.id}").on('click', function(e) {
-										e.preventDefault();
 										viewImage.overlays.focusBox("ugc", "#{content.id}");
 										highlightCurrentSelection($(this));
 									});

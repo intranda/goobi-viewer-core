@@ -19,15 +19,14 @@
 			</div>
 			
 			<!-- FOR REVIEW MODE: DISABLED TEXT INPUT FIELD AND LINK FOR  -->
-			<div if="{ this.opts.item.isReviewMode() }" class="crowdsourcing-annotations__jump-to-gnd">
-				<a target ="_blank" href="{question.authorityData.baseUri}{getIdAsNumber(anno)}">Zum GND (Link in neuem Fenster oeffnen)</a>
-			</div>
-
 			<div if="{ this.opts.item.isReviewMode() }" class="crowdsourcing-annotations__question-text-input">
 				<input class="form-control pl-1" disabled="{this.opts.item.isReviewMode() ? 'disabled' : ''}" value="{question.authorityData.baseUri}{getIdAsNumber(anno)}">
 				</input>
+				<div if="{ this.opts.item.isReviewMode() }" class="crowdsourcing-annotations__jump-to-gnd">
+					<a target ="_blank" href="{question.authorityData.baseUri}{getIdAsNumber(anno)}">{Crowdsourcing.translate("cms_menu_create_item_new_tab")}</a>
+				</div>
 			</div>
-			
+
 			<div class="cms-module__actions crowdsourcing-annotations__annotation-action">
 				<button if="{ !this.opts.item.isReviewMode() }" onClick="{deleteAnnotationFromEvent}" class="crowdsourcing-annotations__delete-annotation btn btn--clean delete">{Crowdsourcing.translate("action__delete_annotation")}
 				</button>
