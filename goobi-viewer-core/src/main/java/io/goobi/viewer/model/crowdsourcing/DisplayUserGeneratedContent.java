@@ -29,7 +29,11 @@ import io.goobi.viewer.controller.DateTools;
 import io.goobi.viewer.controller.SolrConstants;
 import io.goobi.viewer.controller.StringTools;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
+import io.goobi.viewer.exceptions.ViewerConfigurationException;
+import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.model.security.user.User;
+import io.goobi.viewer.model.viewer.PageType;
+import io.goobi.viewer.model.viewer.PhysicalElement;
 import io.goobi.viewer.model.viewer.StructElement;
 
 /**
@@ -452,6 +456,11 @@ public class DisplayUserGeneratedContent {
         ret.setType(ContentType.getByName(type));
         ret.setAreaString((String) doc.getFieldValue(SolrConstants.UGCCOORDS));
         ret.setDisplayCoordinates((String) doc.getFieldValue(SolrConstants.UGCCOORDS));
+        ret.setPi((String) doc.getFieldValue(SolrConstants.PI_TOPSTRUCT));
+        Object pageNo = doc.getFieldValue(SolrConstants.ORDER);
+        if(pageNo != null && pageNo instanceof Number) {            
+            ret.setPage(((Number) pageNo).intValue());
+        }
 
         StructElement se = new StructElement(iddoc, doc);
         ret.setLabel(generateUgcLabel(se));
@@ -555,6 +564,41 @@ public class DisplayUserGeneratedContent {
         }
 
         return se.getMetadataValue(SolrConstants.LABEL);
+    }
+    
+    public boolean isOnPage(PhysicalElement page) {
+        return page.getOrder() == this.page;
+    }
+    
+    public String getIconClass() {
+        switch(this.type) {
+            case ADDRESS:
+                return "fa fa-envelope";
+            case PERSON:
+                return "fa fa-user";
+            case CORPORATION:
+                return "fa fa-home";
+            case PICTURE:
+                return "fa fa-photo";
+            case COMMENT:
+            default:
+                return "fa fa-comment";
+        }
+    }
+    
+    public String getPageUrl() {
+        return getPageUrl(BeanUtils.getNavigationHelper().getCurrentPageType());
+    }
+
+    
+    public String getPageUrl(PageType pageType) {
+        
+        String pageTypeUrl = BeanUtils.getNavigationHelper().getPageUrl(pageType); //no trailing slash
+        String pageUrl = pageTypeUrl + "/" + getPi() + "/";
+        if(getPage() != null) {
+            pageUrl = pageUrl + getPage() + "/#ugc=" + getId();
+        }
+        return pageUrl;
     }
 
 }

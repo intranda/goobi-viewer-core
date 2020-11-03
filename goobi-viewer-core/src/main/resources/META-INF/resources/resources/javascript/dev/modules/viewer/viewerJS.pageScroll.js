@@ -58,7 +58,7 @@ var viewerJS = ( function( viewer ) {
              * If the url contains a fragment which doesn't start with 'xywh=', assume the fragment refers to a dom id
              */
             let hash = window.location.hash;
-            if(hash && !hash.startsWith("#xywh=")) {
+            if(hash && !hash.includes("=")) {
                 /**
                  * Start scrolling just after $(document).ready() is complete (timeout with 0 millis)
                  */
