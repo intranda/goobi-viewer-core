@@ -260,6 +260,7 @@
 																value="#{crowdsourcingBean.selectedCampaign.questions}"
 																varStatus="status">
 																
+																
 																<div class="edit-content-page edit-content-page-single-question">
 	
 																	<!-- TEXT -->
@@ -275,7 +276,6 @@
 																				</ui:fragment>
 																			</label>
 																		</div>
-																		
 																		
 																		<!-- CAMPAIGN LANGUAGE TABS QUESTIONS VERTICAL ORDER -->	
 																		
@@ -307,6 +307,7 @@
 																					<f:selectItems var="type"
 																						value="#{question.availableQuestionTypes}"
 																						itemLabel="#{msg['admin__crowdsourcing_question_type_' += type]}" />
+																					<f:ajax event="change" render="@none" execute="@this"></f:ajax>
 																				</h:selectOneMenu>
 																			<span class="admin__form-help-text">#{msg.admin__help_crowdsourcing_question_type}</span>	
 																		</div>
@@ -332,6 +333,7 @@
 																				<f:selectItems var="selector"
 																					value="#{question.availableTargetSelectors}"
 																					itemLabel="#{msg['admin__crowdsourcing_question_targetSelector_' += selector]}" />
+																				<f:ajax event="change" render="@none" execute="@this"></f:ajax>
 																			</h:selectOneMenu>
 																			<span class="admin__form-help-text">#{msg.admin__help_crowdsourcing_question_targetSelector}</span>
 																		</div>
@@ -360,6 +362,7 @@
 																				<f:selectItem
 																					itemLabel="#{msg.admin__crowdsourcing_question_targetFrequency_multiple}"
 																					itemValue="0" />
+																				<f:ajax event="change" render="@none" execute="@this"></f:ajax>
 																			</h:selectOneMenu>
 																			<span class="admin__form-help-text">#{msg.admin__help_crowdsourcing_question_targetFrequency}</span>
 																		</div>
@@ -377,7 +380,7 @@
 																	<div class="admin__campaign-delete-question">
 																		<h:commandLink styleClass="btn btn--clean delete"
 																			action="#{crowdsourcingBean.removeQuestionAction(question)}"
-																			title="#{msg.delete}" alt="#{msg.delete}">
+																			title="#{msg.delete}" alt="#{msg.delete}" immediate="true">
 	                                                   					#{msg.delete}
 	                                              	 					</h:commandLink>
 																	</div>
