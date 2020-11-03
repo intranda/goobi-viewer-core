@@ -1112,8 +1112,8 @@ public class Campaign implements CMSMediaHolder, ILicenseType, IPolyglott {
      * 
      */
     @JsonIgnore
-    public boolean isComplete() {
-        return isComplete(BeanUtils.getDefaultLocale()) && !getQuestions().isEmpty();
+    public boolean isReady() {
+        return isComplete(IPolyglott.getDefaultLocale()) && !getQuestions().isEmpty();
     }
     
     @Override
@@ -1172,6 +1172,10 @@ public class Campaign implements CMSMediaHolder, ILicenseType, IPolyglott {
 
         }
         return this.solrQueryResults;
+    }
+    
+    public void resetSolrQueryResults() {
+        this.solrQueryResults = null;
     }
 
     /**

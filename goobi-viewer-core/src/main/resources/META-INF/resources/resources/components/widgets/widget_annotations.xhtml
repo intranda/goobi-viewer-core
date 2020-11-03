@@ -15,7 +15,7 @@
 
     <composite:implementation>
 		<!-- USER GENERATED CONTENT -->
-		<h:panelGroup rendered="#{contentBean.getUserGeneratedContentsForDisplay(activeDocumentBean.viewManager.currentPage) != null}">
+		<h:panelGroup rendered="#{!contentBean.getUserGeneratedContentsForDisplay(activeDocumentBean.viewManager.pi).isEmpty()}">
 			<div id="widgetAnnotations" class="widget widget-annotations">
 			
 			
@@ -26,57 +26,31 @@
 				</h3>
 
 
-				<div class="widget__body collapseable">
+				<h:panelGroup layout="block" styleClass="widget__body collapseable #{contentBean.getUserGeneratedContentsForDisplay(activeDocumentBean.viewManager.pi).size() gt 3 ? '-scrollable' : ''}">
 					<nav id="user_generated_content_nav">
 						<ul>
-							<ui:repeat var="content" value="#{contentBean.getUserGeneratedContentsForDisplay(activeDocumentBean.viewManager.currentPage)}">
+							<ui:repeat var="content" value="#{contentBean.getUserGeneratedContentsForDisplay(activeDocumentBean.viewManager.pi)}">
 								<h:panelGroup rendered="#{content.label == ''?'false':'true'}">
 
-									<h:panelGroup rendered="#{content.type == 'COMMENT'}">
-										<li id="words-#{content.id}" class="widget-annotations__entry">
-											<div class="widget-annotations__type"><i class="fa fa-comment" aria-hidden="true"></i></div>
+										<li id="words-#{content.id}" class="widget-annotations__entry #{content.isOnPage(activeDocumentBean.viewManager.currentPage) ? '-onpage' : ''}">
+											<div class="widget-annotations__type"><i class="#{content.iconClass}" aria-hidden="true"></i></div>
 											<div class="widget-annotations__text">
-												<h:outputText value="#{contentBean.cleanUpValue(content.label)}" escape="false"></h:outputText>
+												<ui:fragment rendered="#{content.isOnPage(activeDocumentBean.viewManager.currentPage)}">
+													<h:outputText value="#{contentBean.cleanUpValue(content.label)}" escape="false"></h:outputText>
+												</ui:fragment>
+												<ui:fragment rendered="#{!content.isOnPage(activeDocumentBean.viewManager.currentPage)}">
+													<h:outputLink value="#{content.pageUrl}">
+														<h:outputText value="#{contentBean.cleanUpValue(content.label)}" escape="false"></h:outputText>
+													</h:outputLink>
+												</ui:fragment>
 											</div>
-											<div class="widget-annotations__page"><span>3</span></div>
+											<div class="widget-annotations__page"><span>#{content.page}</span></div>
 										</li>
-									</h:panelGroup>
-
-									<h:panelGroup rendered="#{content.type == 'ADDRESS'}">
-										<li id="words-#{content.id}" class="widget-annotations__entry">
-											<div class="widget-annotations__type"><i class="fa fa-envelope" aria-hidden="true"></i></div>
-											<div class="widget-annotations__text">
-												<h:outputText value="#{contentBean.cleanUpValue(content.label)}" escape="false" />
-											</div>
-											<div class="widget-annotations__page"><span>9</span></div>
-										</li>
-									</h:panelGroup>
-
-									<h:panelGroup rendered="#{content.type == 'PERSON'}">
-										<li id="words-#{content.id}" class="widget-annotations__entry">
-											<div class="widget-annotations__type"><i class="fa fa-user" aria-hidden="true"></i></div>
-											<div class="widget-annotations__text">
-												<h:outputText value="#{contentBean.cleanUpValue(content.label)}" escape="false" />
-											</div>
-											<div class="widget-annotations__page"><span>9</span></div>
-										</li>
-									</h:panelGroup>
-
-									<h:panelGroup rendered="#{content.type == 'CORPORATION'}">
-										<li id="words-#{content.id}" class="widget-annotations__entry">
-											<div class="widget-annotations__type"><i class="fa fa-home" aria-hidden="true"></i></div>
-											<div class="widget-annotations__text">
-												<h:outputText value="#{contentBean.cleanUpValue(content.label)}" escape="false" />
-											</div>
-											<div class="widget-annotations__page"><span>14</span></div>
-										</li>
-									</h:panelGroup>
 
 								</h:panelGroup>
 								
 								<script type="text/javascript">
 									$("#words-#{content.id}").on('click', function(e) {
-										e.preventDefault();
 										viewImage.overlays.focusBox("ugc", "#{content.id}");
 										highlightCurrentSelection($(this));
 									});
@@ -84,7 +58,7 @@
 							</ui:repeat>
 							
 							<script type="text/javascript">
-								//<![CDATA[
+								//<![CDATA[ 
 		                            var highlightCurrentSelection = function( $Obj ) {
 		                            	// reset styles for all li elements
 		                            	$( '#user_generated_content_nav li' ).removeClass( 'ugc-highlight' );
@@ -110,7 +84,7 @@
 		                    </script>
 						</ul>
 					</nav>
-				</div>
+				</h:panelGroup>
 			</div>
 		</h:panelGroup>
     </composite:implementation>

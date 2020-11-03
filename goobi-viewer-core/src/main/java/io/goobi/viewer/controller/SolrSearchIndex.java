@@ -1570,7 +1570,49 @@ public final class SolrSearchIndex {
 
         return ret;
     }
+    
 
+    /**
+     * <p>
+     * getDisplayUserGeneratedContentsForPage.
+     * </p>
+     *
+     * @param pi a {@link java.lang.String} object.
+     * @param page a int.
+     * @return contents for the given page
+     * @throws io.goobi.viewer.exceptions.PresentationException if any.
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
+     */
+    public List<DisplayUserGeneratedContent> getDisplayUserGeneratedContentsForRecord(String pi)
+            throws PresentationException, IndexUnreachableException {
+        String query = new StringBuilder().append(SolrConstants.PI_TOPSTRUCT)
+                .append(":")
+                .append(pi)
+                .append(" AND ")
+                .append(SolrConstants.DOCTYPE)
+                .append(":")
+                .append(DocType.UGC.name())
+                .toString();
+
+        SolrDocumentList hits = search(query);
+        if (hits.isEmpty()) {
+            return Collections.emptyList();
+        }
+
+        List<DisplayUserGeneratedContent> ret = new ArrayList<>(hits.size());
+        for (SolrDocument doc : hits) {
+            DisplayUserGeneratedContent ugc = DisplayUserGeneratedContent.buildFromSolrDoc(doc);
+            if (ugc != null) {
+                ret.add(ugc);
+                logger.trace("Loaded UGC: {}", ugc.getLabel());
+            }
+        }
+        Collections.sort(ret, (c1,c2) -> Integer.compare(
+                c1.getPage() == null ? 0 : c1.getPage(),
+                        c2.getPage() == null ? 0 : c2.getPage()));
+
+        return ret;
+    }
     /**
      * Catches the filename of the page with the given order under the given ip
      *

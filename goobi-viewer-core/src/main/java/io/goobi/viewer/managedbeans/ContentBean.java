@@ -20,6 +20,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.SessionScoped;
@@ -47,9 +48,10 @@ public class ContentBean implements Serializable {
 
     private static final Logger logger = LoggerFactory.getLogger(ContentBean.class);
 
+    /**
+     * PI for which {@link #userGeneratedContentsForDisplay} is loaded
+     */
     private String pi;
-    /** Currently open page number. Used to make sure contents are reloaded if a new page is opened. */
-    private int currentPage = -1;
     /** User generated contents to display on this page. */
     private List<DisplayUserGeneratedContent> userGeneratedContentsForDisplay;
 
@@ -79,17 +81,27 @@ public class ContentBean implements Serializable {
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      */
-    public List<DisplayUserGeneratedContent> getUserGeneratedContentsForDisplay(PhysicalElement page)
+    public List<DisplayUserGeneratedContent> getUserGeneratedContentsForDisplay(String pi)
             throws PresentationException, IndexUnreachableException {
         // logger.trace("getUserGeneratedContentsForDisplay");
-        if (page != null && (userGeneratedContentsForDisplay == null || !page.getPi().equals(pi) || page.getOrder() != currentPage)) {
-            loadUserGeneratedContentsForDisplay(page);
+        if (pi != null && (userGeneratedContentsForDisplay == null || !pi.equals(this.pi))) {
+            loadUserGeneratedContentsForDisplay(pi);
         }
         if (userGeneratedContentsForDisplay != null && userGeneratedContentsForDisplay.size() > 0) {
             return userGeneratedContentsForDisplay;
         }
 
-        return null;
+        return Collections.emptyList();
+    }
+    
+    /**
+     * @param page
+     * @return
+     * @throws IndexUnreachableException 
+     * @throws PresentationException 
+     */
+    private List<DisplayUserGeneratedContent> getUserGeneratedContentsForDisplay(PhysicalElement page) throws PresentationException, IndexUnreachableException {
+        return getUserGeneratedContentsForDisplay(page.getPi()).stream().filter(ugc -> page.getOrder() == ugc.getPage()).collect(Collectors.toList());
     }
 
     /**
@@ -101,24 +113,23 @@ public class ContentBean implements Serializable {
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      */
-    public void loadUserGeneratedContentsForDisplay(PhysicalElement page) throws PresentationException, IndexUnreachableException {
+    public void loadUserGeneratedContentsForDisplay(String pi) throws PresentationException, IndexUnreachableException {
         logger.trace("loadUserGeneratedContentsForDisplay");
-        if (page == null) {
-            logger.debug("page is null, cannot load");
+        if (pi == null) {
+            logger.debug("pi is null, cannot load");
             return;
         }
-        pi = page.getPi();
-        currentPage = page.getOrder();
+        this.pi = pi;
         userGeneratedContentsForDisplay = new ArrayList<>();
         List<DisplayUserGeneratedContent> allContent =
-                DataManager.getInstance().getSearchIndex().getDisplayUserGeneratedContentsForPage(page.getPi(), page.getOrder());
+                DataManager.getInstance().getSearchIndex().getDisplayUserGeneratedContentsForRecord(pi);
         for (DisplayUserGeneratedContent ugcContent : allContent) {
             // Do not add empty comments
             if (!ugcContent.isEmpty()) {
                 userGeneratedContentsForDisplay.add(ugcContent);
             }
         }
-        logger.trace("Loaded {} user generated contents for page {}", userGeneratedContentsForDisplay.size(), currentPage);
+        logger.trace("Loaded {} user generated contents for pi {}", userGeneratedContentsForDisplay.size(), this.pi);
     }
 
     /**
@@ -153,6 +164,8 @@ public class ContentBean implements Serializable {
         logger.trace("getting ugc coordinates {}", coords);
         return coords;
     }
+
+
 
     /**
      * Removes script tags from the given string.

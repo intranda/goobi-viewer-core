@@ -3481,14 +3481,17 @@ public class JPADAO implements IDAO {
     public boolean updateCampaign(Campaign campaign) throws DAOException {
         synchronized (cmsRequestLock) {
             preQuery();
+            campaign.onPreUpdate();
             try {
-                campaign.onPreUpdate();
                 em.getTransaction().begin();
-                em.merge(campaign);
-                em.getTransaction().commit();
+                Campaign c = em.merge(campaign);
+                //solrQueryResults remains unchanged in managed campaign even after merge. Manually reset results to account for changed solrquery
+                c.resetSolrQueryResults();
                 return true;
             } catch (RollbackException e) {
                 return false;
+            }finally {
+                em.getTransaction().commit();
             }
         }
     }

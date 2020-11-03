@@ -46,7 +46,9 @@
 					styleClass="form-control admin__language-tabs-vertical-textarea -validation-input"
 					value="#{cc.attrs.value.text}"
 					required="#{cc.attrs.required and cc.attrs.value.isDefaultLocaleSelected()}"
-					requiredMessage="#{msg.info__input_required}"/>
+					requiredMessage="#{msg.info__input_required}">
+					<f:ajax event="change" render="@none" execute="@this"></f:ajax>
+					</h:inputTextarea>
 					
 			</div>
 	</div>
