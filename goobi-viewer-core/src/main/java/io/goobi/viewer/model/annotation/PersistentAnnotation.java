@@ -44,9 +44,11 @@ import io.goobi.viewer.controller.DataFileTools;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.DateTools;
 import io.goobi.viewer.controller.FileTools;
+import io.goobi.viewer.controller.IndexerTools;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
+import io.goobi.viewer.exceptions.RecordNotFoundException;
 import io.goobi.viewer.exceptions.ViewerConfigurationException;
 import io.goobi.viewer.model.crowdsourcing.questions.Question;
 import io.goobi.viewer.model.security.user.User;
@@ -363,7 +365,6 @@ public class PersistentAnnotation {
         return body;
     }
 
-
     /**
      * <p>
      * Setter for the field <code>body</code>.
@@ -478,9 +479,9 @@ public class PersistentAnnotation {
         try {
             Set<Path> filesToDelete = new HashSet<>();
             Path annotationFolder = DataFileTools.getDataFolder(targetPI, DataManager.getInstance().getConfiguration().getAnnotationFolder());
-            logger.trace("Annotation folder path: {}", annotationFolder.toAbsolutePath().toString());
+            logger.debug("Annotation folder path: {}", annotationFolder.toAbsolutePath().toString());
             if (!Files.isDirectory(annotationFolder)) {
-                logger.trace("Annotation folder not found - nothing to delete");
+                logger.debug("Annotation folder not found - nothing to delete");
                 return 0;
             }
 
@@ -565,5 +566,29 @@ public class PersistentAnnotation {
         }
 
         return ret;
+    }
+
+    /**
+     * Deletes this annotation from the database. If successful, deletes any JSON files in the file system and creates a re-indexing job.
+     * 
+     * @return
+     * @throws DAOException
+     * @throws ViewerConfigurationException
+     */
+    public boolean delete() throws DAOException, ViewerConfigurationException {
+        if (!DataManager.getInstance().getDao().deleteAnnotation(this)) {
+            return false;
+        }
+
+        if (deleteExportedTextFiles() > 0) {
+            try {
+                IndexerTools.reIndexRecord(targetPI);
+                logger.debug("Re-indexing record: {}", targetPI);
+            } catch (RecordNotFoundException e) {
+                logger.error(e.getMessage());
+            }
+        }
+
+        return true;
     }
 }
