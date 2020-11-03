@@ -32,13 +32,18 @@
 
 .widget-annotations {
 	.widget__body {
-		max-height: 230px;
-		overflow: hidden scroll;
+		overflow: hidden;
+		&.-scrollable {
+			max-height: 280px;
+			overflow: hidden auto;
+		}
 	}
+
 	&__entry {
 		display: flex;
 		margin-bottom: 0.6rem;
 		padding-left: 5px;
+		cursor: pointer;
 		&.-onpage {
 			border-left: 4px solid @blue;
 		}
