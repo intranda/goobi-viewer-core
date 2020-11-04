@@ -23,9 +23,11 @@ import javax.servlet.http.HttpServletRequest;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.HttpRequest;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 import io.goobi.viewer.model.security.user.User;
 
@@ -57,6 +59,7 @@ public class UserJsonFacade {
         this.superuser = user.isSuperuser();
         this.avatar = absolutizeAvatarUrl(user.getAvatarUrl(), request);
     }
+    
     public UserJsonFacade(User user) {
         this(user, null);
     }
@@ -83,8 +86,16 @@ public class UserJsonFacade {
      * @param anonymous
      * @param superuser
      */
-    public UserJsonFacade(Long userId, String name, String avatar, long score, boolean active, boolean suspended, boolean anonymous,
-            boolean superuser) {
+    @JsonCreator
+    public UserJsonFacade(
+            @JsonProperty("userId")Long userId, 
+            @JsonProperty("name")String name, 
+            @JsonProperty("avatar")String avatar, 
+            @JsonProperty("score")long score, 
+            @JsonProperty("active")boolean active, 
+            @JsonProperty("suspended")boolean suspended, 
+            @JsonProperty("anonymous")boolean anonymous,
+            @JsonProperty("superuser")boolean superuser) {
         this.avatar = avatar;
         this.name = name;
         this.userId = userId;

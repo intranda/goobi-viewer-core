@@ -126,9 +126,7 @@ public class CampaignItemResource {
             item.setSource(manifestURI);
             item.setCampaign(campaign);
             if(campaign.isShowLog()) {
-                item.setLog(campaign.getLogMessages().getOrDefault(pi, Collections.emptyList()).stream().map(LogMessage::new).collect(Collectors.toList()));
-                LogMessage testMessage = new LogMessage("Test Nachricht", 1l, servletRequest);
-                item.getLog().add(testMessage);
+                item.setLog(campaign.getLogMessages().stream().filter(m -> m.getPi().equals(pi)).map(LogMessage::new).collect(Collectors.toList()));
             }
             return item;
         }
@@ -161,14 +159,14 @@ public class CampaignItemResource {
         }
         if (status != null && campaign != null) {
             campaign.setRecordStatus(pi, status, Optional.ofNullable(user));
+            if(log != null && !log.isEmpty()) {
+                log.forEach(message -> campaign.addLogMessage(message, pi));
+            }
             DataManager.getInstance().getDao().updateCampaign(campaign);
             // Re-index finished record to have its annotations indexed
             if (status.equals(CampaignRecordStatus.FINISHED)) {
                 IndexerTools.triggerReIndexRecord(pi);
             }
-        }
-        if(log != null && !log.isEmpty() && campaign != null) {
-            log.forEach(message -> campaign.addLogMessage(message, pi));
         }
     }
 

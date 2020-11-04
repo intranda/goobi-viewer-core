@@ -962,13 +962,15 @@
 	&__content-main {
 		flex: 0 0 calc(~"100% - 350px");
 		max-width: calc(~"100% - 350px");
+		position: relative;
+		align-self: flex-start;
 	}
 	&__content-side {
-		max-width: 330px;
-		width: 330px;
-		position: absolute;
+		max-width: 350px;
+		flex: 0 0 350px;
+		position: relative;
 		align-self: flex-start;
-		right: 0;
+		padding-left: 3rem;
 	}
 	.-deactivated {
 		opacity: 0.5;

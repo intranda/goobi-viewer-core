@@ -51,7 +51,13 @@ var adminJS = ( function( admin ) {
          		// - 50px distance to top
          		innerTop: -50
          	});
-
+         	
+         	// sticky content main area for create campaign
+         	$('#crowdAddCampaignView .admin__content-main').hcSticky({
+         		stickTo: $('.admin__content-wrapper')[0],
+         		innerTop: -50
+         	});
+   
         }
     }
 	
