@@ -148,12 +148,6 @@ public class License implements IPrivilegeHolder, Serializable {
     @Column(name = "description")
     private String description;
 
-    @Column(name = "enable_groups")
-    private boolean enableGroups = false;
-
-    @Column(name = "enable_time_period")
-    private boolean enableTimePeriod = false;
-
     /** List of allowed subtheme discriminator values for CMS pages. */
     @ElementCollection(fetch = FetchType.LAZY)
     @CollectionTable(name = "license_cms_subthemes", joinColumns = @JoinColumn(name = "license_id"))
@@ -882,34 +876,6 @@ public class License implements IPrivilegeHolder, Serializable {
      */
     public void setDescription(String description) {
         this.description = description;
-    }
-
-    /**
-     * @return the enableGroups
-     */
-    public boolean isEnableGroups() {
-        return enableGroups;
-    }
-
-    /**
-     * @param enableGroups the enableGroups to set
-     */
-    public void setEnableGroups(boolean enableGroups) {
-        this.enableGroups = enableGroups;
-    }
-
-    /**
-     * @return the enableTimePeriod
-     */
-    public boolean isEnableTimePeriod() {
-        return enableTimePeriod;
-    }
-
-    /**
-     * @param enableTimePeriod the enableTimePeriod to set
-     */
-    public void setEnableTimePeriod(boolean enableTimePeriod) {
-        this.enableTimePeriod = enableTimePeriod;
     }
 
     /**

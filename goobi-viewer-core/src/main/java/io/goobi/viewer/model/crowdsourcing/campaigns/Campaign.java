@@ -46,6 +46,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.MapKeyColumn;
 import javax.persistence.OneToMany;
 import javax.persistence.PostLoad;
@@ -90,6 +91,7 @@ import io.goobi.viewer.model.misc.Translation;
 import io.goobi.viewer.model.security.ILicenseType;
 import io.goobi.viewer.model.security.IPrivilegeHolder;
 import io.goobi.viewer.model.security.user.User;
+import io.goobi.viewer.model.security.user.UserGroup;
 
 /**
  *
@@ -189,6 +191,13 @@ public class Campaign implements CMSMediaHolder, ILicenseType, IPolyglott {
 
     @Column(name = "limit_to_group")
     private boolean limitToGroup = false;
+
+    @ManyToOne
+    @JoinColumn(name = "user_group_id")
+    private UserGroup userGroup;
+
+    @Column(name = "time_period_enabled")
+    private boolean timePeriodEnabled = false;
 
     /**
      * The id of the parent page. This is usually the id (as String) of the parent cms page, or NULL if the parent page is the start page The system
@@ -1380,6 +1389,34 @@ public class Campaign implements CMSMediaHolder, ILicenseType, IPolyglott {
      */
     public void setLimitToGroup(boolean limitToGroup) {
         this.limitToGroup = limitToGroup;
+    }
+
+    /**
+     * @return the userGroup
+     */
+    public UserGroup getUserGroup() {
+        return userGroup;
+    }
+
+    /**
+     * @param userGroup the userGroup to set
+     */
+    public void setUserGroup(UserGroup userGroup) {
+        this.userGroup = userGroup;
+    }
+
+    /**
+     * @return the timePeriodEnabled
+     */
+    public boolean isTimePeriodEnabled() {
+        return timePeriodEnabled;
+    }
+
+    /**
+     * @param timePeriodEnabled the timePeriodEnabled to set
+     */
+    public void setTimePeriodEnabled(boolean timePeriodEnabled) {
+        this.timePeriodEnabled = timePeriodEnabled;
     }
 
     /**

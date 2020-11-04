@@ -467,19 +467,19 @@
 												</div>
 						                   	</div>
 						                   	
-											<!-- VISIBLE FOR GROUP SELECTION -->
-											<h:panelGroup id="adminCrowdVisibleForGroup" styleClass="form-row form-group" layout="block">
+											<!-- VISIBLE TO GROUP SELECTION -->
+											<h:panelGroup id="adminCrowdUserGroup" styleClass="form-row form-group" layout="block">
 												<!-- TO DO: ONLY SHOW IF VISIBILITY STATUS SELECTION IS PRIVATE -->
 												<ui:fragment rendered="true">
 													<div class="col-12 control-label admin__form-label">
 														<label for="adminCrowdVisibleFor">
-															#{msg.admin__crowdsourcing_campaign_visible_for}:
+															#{msg.admin__crowdsourcing_campaign_limit_to_group}:
 														</label>
 													</div>
 								                    
 								                    <!-- TO DO: ENABLE VISIBLE FOR GROUP LOGIC -->
 								                    <div class="col-11 admin__form-input">
-								                        <viewerComponent:toggleSwitch id="limitToGroupSelectionSelection"
+								                        <viewerComponent:toggleSwitch id="limitToGroupSelection"
 								                            value="#{crowdsourcingBean.selectedCampaign.limitToGroup}" /> 
 								                        <span class="admin__form-help-text">#{msg.admin__help_crowdsourcing_campaign_limit_to_group}</span>
 							                   		</div>
@@ -491,6 +491,30 @@
 													</div>
 							                   	</ui:fragment>
 											</h:panelGroup>
+											
+                                            <!-- TIME PERIOD -->
+                                            <h:panelGroup id="adminCrowdTimePeriod" styleClass="form-row form-group" layout="block">
+                                                <ui:fragment rendered="true">
+                                                    <div class="col-12 control-label admin__form-label">
+                                                        <label for="adminCrowdVisibleFor">
+                                                            #{msg.admin__crowdsourcing_campaign_time_pediod_enabled}:
+                                                        </label>
+                                                    </div>
+                                                    
+                                                    <!-- TO DO: ENABLE VISIBLE FOR GROUP LOGIC -->
+                                                    <div class="col-11 admin__form-input">
+                                                        <viewerComponent:toggleSwitch id="timePeriodEnabledSelection"
+                                                            value="#{crowdsourcingBean.selectedCampaign.timePeriodEnabled}" /> 
+                                                        <span class="admin__form-help-text">#{msg.admin__help_crowdsourcing_campaign_time_pediod_enabled}</span>
+                                                    </div>
+                                                    <div class="col-1 admin__form-help-icon">
+                                                        <button type="button" class="btn btn--clean"
+                                                            data-toggle="helptext" aria-label="inline help icon">
+                                                            <i class="fa fa-question-circle" aria-hidden="true"></i>
+                                                        </button>
+                                                    </div>
+                                                </ui:fragment>
+                                            </h:panelGroup>
 					                   	</div>
 					                   	
 										<!-- STATISTICS SIDEBAR WIDGET -->
