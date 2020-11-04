@@ -373,12 +373,11 @@
         padding-right:2rem;
 
 	}
+	// SORTING ARROW
 	&__table-sorting {
-		color: @black;
 		flex: 1;
 		margin-right: 2rem;
 		&:hover {
-			color: @black;
 			text-decoration: none;
 			.admin__table-sorting-arrow-hidden {
 				opacity: 1;
@@ -395,13 +394,14 @@
 	}
 	&__table-sorting-arrow-up {}
 	&__table-sorting-arrow-down {}
-	
 	&__table-sorting-arrow-hidden,
 	&__table-sorting-arrow-up, 
 	&__table-sorting-arrow-down {
-		margin-left: 1rem;
+		color: @black;
+		margin-left: 0.6rem;
 	}
 	&__table-sorting-heading {}
+	
 	&__table-entry {
 		/* opacity: 0;
 		animation: fadein 0.2s ease-in 0s 1 forwards;
