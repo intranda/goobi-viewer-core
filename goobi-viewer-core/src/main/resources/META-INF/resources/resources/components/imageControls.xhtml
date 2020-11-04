@@ -35,9 +35,10 @@
                                             <ui:fragment rendered="#{activeDocumentBean.viewManager.topDocument.rtl}">
                                                 <i class="image-end"></i>
                                             </ui:fragment>
-                                            <span class="labeltext">#{msg.firstImage}</span>
+                                            <span id="firstImageLabel" class="labeltext">#{msg.firstImage}</span>
                                             <f:passThroughAttribute name="data-toggle" value="tooltip" />
                                             <f:passThroughAttribute name="data-placement" value="#{cc.attrs.tooltipPlacement}" />
+                                            <f:passThroughAttribute name="aria-labelledby" value="firstImageLabel" />
                                         </h:outputLink>
                                     </ui:fragment>
                                     <ui:fragment rendered="#{activeDocumentBean.imageToShow == 1}">
@@ -110,9 +111,10 @@
                                             <ui:fragment rendered="#{activeDocumentBean.viewManager.topDocument.rtl}">
                                                 <i class="image-forward"></i>
                                             </ui:fragment>
-                                            <span class="labeltext">#{msg.prevImage}</span>
+                                            <span id="prevImageLabel" class="labeltext">#{msg.prevImage}</span>
                                             <f:passThroughAttribute name="data-toggle" value="tooltip" />
                                             <f:passThroughAttribute name="data-placement" value="#{cc.attrs.tooltipPlacement}" />
+                                            <f:passThroughAttribute name="aria-labelledby" value="prevImageLabel" />
                                         </h:outputLink>
                                     </ui:fragment>
                                     <ui:fragment rendered="#{activeDocumentBean.imageToShow == 1}">
