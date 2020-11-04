@@ -8,8 +8,9 @@
 	</div>
 	<div>
 		<div>{currentUser.name}</div>
-		<div>{currentUser.avatar}</div>		
-		<input onchange="{addMessage}" value=""></input>
+		<img src="{currentUser.avatar}"></img>
+		<input ref="messageText"></input>
+		<button onclick="{addMessage}">Send</button>
 	</div>
 
 <script>
@@ -17,16 +18,14 @@
 this.currentUser = this.opts.user;
 this.messages = this.opts.messages
 
-
 this.on("mount", function() {
     //actions to do when tag is created
 });
 
 addMessage(event) {
-    event.preventUpdate = true;
-    let text = event.target.value;
-    event.target.value = "";
-    if(text) {
+    let text = this.refs.messageText.value;
+    this.refs.messageText.value = "";
+    if(text.trim().length > 0) {
         let message = {
                 message : text,
                 dateCreated : new Date().toJSON(),
@@ -34,7 +33,7 @@ addMessage(event) {
                 
         }
         this.messages.push(message);
-        this.update();
+        console.log("added message", message);
     }
 }
 

@@ -1335,7 +1335,7 @@ riot.tag2('campaignitem', '<div if="{!opts.pi}" class="crowdsourcing-annotations
 	}.bind(this)
 
 });
-riot.tag2('campaignitemlog', '<div each="{message in messages}" class="{isCurrentUser(message.creator) ? \'from_me\' : \'\'}"><div>{message.creator.name}</div><img riot-src="{message.creator.avatar}"></img><div>{message.dateCreated}</div><div>{message.message}</div></div><div><div>{currentUser.name}</div><div>{currentUser.avatar}</div><input onchange="{addMessage}" value=""></input></div>', '', '', function(opts) {
+riot.tag2('campaignitemlog', '<div each="{message in messages}" class="{isCurrentUser(message.creator) ? \'from_me\' : \'\'}"><div>{message.creator.name}</div><img riot-src="{message.creator.avatar}"></img><div>{message.dateCreated}</div><div>{message.message}</div></div><div><div>{currentUser.name}</div><img riot-src="{currentUser.avatar}"></img><input ref="messageText"></input><button onclick="{addMessage}">Send</button></div>', '', '', function(opts) {
 
 this.currentUser = this.opts.user;
 this.messages = this.opts.messages
@@ -1345,10 +1345,9 @@ this.on("mount", function() {
 });
 
 this.addMessage = function(event) {
-    event.preventUpdate = true;
-    let text = event.target.value;
-    event.target.value = "";
-    if(text) {
+    let text = this.refs.messageText.value;
+    this.refs.messageText.value = "";
+    if(text.trim().length > 0) {
         let message = {
                 message : text,
                 dateCreated : new Date().toJSON(),
@@ -1356,7 +1355,7 @@ this.addMessage = function(event) {
 
         }
         this.messages.push(message);
-        this.update();
+        console.log("added message", message);
     }
 }.bind(this)
 
