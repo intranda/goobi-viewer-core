@@ -60,6 +60,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.solr.client.solrj.SolrServerException;
 import org.apache.solr.client.solrj.impl.BaseHttpSolrClient.RemoteSolrException;
 import org.eclipse.persistence.annotations.PrivateOwned;
+import org.jboss.weld.exceptions.IllegalArgumentException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -86,6 +87,7 @@ import io.goobi.viewer.model.cms.CMSMediaItem;
 import io.goobi.viewer.model.cms.CategorizableTranslatedSelectable;
 import io.goobi.viewer.model.crowdsourcing.campaigns.CampaignRecordStatistic.CampaignRecordStatus;
 import io.goobi.viewer.model.crowdsourcing.questions.Question;
+import io.goobi.viewer.model.log.LogMessage;
 import io.goobi.viewer.model.misc.IPolyglott;
 import io.goobi.viewer.model.misc.Translation;
 import io.goobi.viewer.model.security.ILicenseType;
@@ -186,6 +188,9 @@ public class Campaign implements CMSMediaHolder, ILicenseType, IPolyglott {
     @Column(name = "permalink")
     @JsonIgnore
     private String permalink;
+    
+    @Column(name = "show_log")
+    private boolean showLog = false;
 
     /**
      * The id of the parent page. This is usually the id (as String) of the parent cms page, or NULL if the parent page is the start page The system
@@ -210,6 +215,12 @@ public class Campaign implements CMSMediaHolder, ILicenseType, IPolyglott {
     @JsonIgnore
     private Map<String, CampaignRecordStatistic> statistics = new HashMap<>();
 
+    /** Status entry for each record that has been worked on in the context of this campaign. The PI of each record is the map key. */
+    @OneToMany(mappedBy = "campaign", fetch = FetchType.LAZY, cascade = { CascadeType.ALL })
+    @MapKeyColumn(name = "pi", insertable = false, updatable = false)
+    @JsonIgnore
+    private Map<String, List<CampaignLogMessage>> logMessages = new HashMap<>();
+    
     @Transient
     @JsonIgnore
     private Locale selectedLocale;
@@ -254,6 +265,7 @@ public class Campaign implements CMSMediaHolder, ILicenseType, IPolyglott {
         this.solrQueryResults = orig.solrQueryResults;
         this.visibility = orig.visibility;
         this.statistics = orig.statistics; //no need for deep copy since it can't be changed in campaign editor
+        this.logMessages = orig.logMessages; //no need for deep copy since it can't be changed in campaign editor
         this.questions = orig.questions.stream().map(q -> new Question(q, this)).collect(Collectors.toList());
     }
 
@@ -1349,6 +1361,41 @@ public class Campaign implements CMSMediaHolder, ILicenseType, IPolyglott {
     @Override
     public boolean hasMediaItem() {
         return this.mediaItem != null;
+    }
+    
+    /**
+     * @param showLog the showLog to set
+     */
+    public void setShowLog(boolean showLog) {
+        this.showLog = showLog;
+    }
+    
+    /**
+     * @return the showLog
+     */
+    public boolean isShowLog() {
+        return showLog;
+    }
+    
+    /**
+     * @return the logMessages
+     */
+    public Map<String, List<CampaignLogMessage>> getLogMessages() {
+        return logMessages;
+    }
+    
+    public void addLogMessage(LogMessage message, String pi) {
+        if(message.getId() == null) {
+            List<CampaignLogMessage> list = this.logMessages.get(pi);
+            if(list == null) {
+                list = new ArrayList<>();
+                this.logMessages.put(pi, list);
+            }
+            list.add(new CampaignLogMessage(message, this, pi));
+        } else {
+            //Log messages may not be changed, only new ones added. So only accept messages without id
+            throw new IllegalArgumentException("Log messages with non null id may not be added to log");
+        }
     }
 
     /* (non-Javadoc)

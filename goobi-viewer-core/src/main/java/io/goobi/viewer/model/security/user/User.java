@@ -24,6 +24,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -66,6 +67,7 @@ import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.managedbeans.ActiveDocumentBean;
+import io.goobi.viewer.managedbeans.NavigationHelper;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.messages.ViewerResourceBundle;
 import io.goobi.viewer.model.cms.CMSCategory;
@@ -677,8 +679,9 @@ public class User implements ILicensee, HttpSessionBindingListener, Serializable
         if (useGravatar) {
             return getGravatarUrl(AVATAR_DEFAULT_SIZE);
         }
-
-        return BeanUtils.getNavigationHelper().getApplicationUrl() + "resources/crowdsourcing/img/profile-small.png";
+        return Optional.ofNullable(BeanUtils.getNavigationHelper())
+                .map(NavigationHelper::getApplicationUrl)
+                .orElse("/") + "resources/crowdsourcing/img/profile-small.png";
     }
 
     /**
@@ -692,7 +695,9 @@ public class User implements ILicensee, HttpSessionBindingListener, Serializable
             return getGravatarUrl(size);
         }
 
-        return BeanUtils.getNavigationHelper().getApplicationUrl() + "resources/crowdsourcing/img/profile-small.png";
+        return Optional.ofNullable(BeanUtils.getNavigationHelper())
+                .map(NavigationHelper::getApplicationUrl)
+                .orElse("/") + "resources/crowdsourcing/img/profile-small.png";
     }
 
     /**
