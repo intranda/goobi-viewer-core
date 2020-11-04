@@ -43,7 +43,7 @@
 							<div class="row">
 								<div class="col-12">
 									<!-- CREATE CAMPAIGN WRAPPER -->
-									<div class="admin__content-wrapper">
+									<div class="admin__content-wrapper" data-sticky-container="">
 									<div class="admin__content-main">
 										<!-- GENERAL INFORMATION (TITLE + TEXT) -->
 										<h3>#{msg.admin__category_general}</h3>
@@ -427,7 +427,7 @@
 										</ui:fragment>
 										
 									<!-- FINAL ACTIONS CANCEL + SAVE -->
-									<div class="row no-gutters justify-content-end admin__final-actions mb-4">
+									<div class="row no-gutters justify-content-end admin__final-actions mb-0">
 	                                    <h:commandLink id="cancelAddCampaignButton" type="submit" styleClass="btn" value="#{msg.cancel}"
 	                                        action="pretty:adminCrowdCampaigns" immediate="true" />
 	                                    <h:commandLink id="saveAddCampaignButton" styleClass="btn btn--success" value="#{msg.button__save}"
@@ -479,13 +479,10 @@
 								                    
 								                    <!-- TO DO: ENABLE VISIBLE FOR GROUP LOGIC -->
 								                    <div class="col-11 admin__form-input">
-								                        <h:selectOneMenu id="adminCrowdVisibleFor" value="#{crowdsourcingBean.selectedCampaign.visibility}" styleClass="form-control">
-								                            <f:selectItems itemLabel="#{msg['admin__crowdsourcing_campaign_visibility_' += val]}"
-								                                var="val" value="#{crowdsourcingBean.selectedCampaign.campaignVisibilityValues}"/> 
-								                        </h:selectOneMenu>
-								                        <span class="admin__form-help-text">#{msg.admin__help_crowdsourcing_campaign_visible_for}</span>
+								                        <viewerComponent:toggleSwitch id="limitToGroupSelectionSelection"
+								                            value="#{crowdsourcingBean.selectedCampaign.limitToGroup}" /> 
+								                        <span class="admin__form-help-text">#{msg.admin__help_crowdsourcing_campaign_limit_to_group}</span>
 							                   		</div>
-							                   		
 													<div class="col-1 admin__form-help-icon">
 														<button type="button" class="btn btn--clean"
 															data-toggle="helptext" aria-label="inline help icon">
@@ -499,7 +496,7 @@
 										<!-- STATISTICS SIDEBAR WIDGET -->
 										<h:panelGroup id="statisticsArea">
 											<ui:fragment rendered="#{crowdsourcingBean.selectedCampaign.solrQuery != null}">
-												<div class="admin__default-block">
+												<div class="admin__default-block mb-0">
 													<h3>#{msg.admin__crowdsourcing_campaign_statistics}</h3>
 													<!-- METADATA WRAPPER -->
 													<crowdsourcingComponent:crowdsourcing_addCampaignMetadataItemWrapper
@@ -542,7 +539,7 @@
 		</h:panelGroup>
 		<script>        		
         	riot.mount("progressBar");
-		</script>
+		</script>	
 	</ui:define>
 
 	<!-- SIDEBAR -->
