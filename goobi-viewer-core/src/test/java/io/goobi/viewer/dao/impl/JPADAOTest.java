@@ -58,6 +58,7 @@ import io.goobi.viewer.model.crowdsourcing.questions.QuestionType;
 import io.goobi.viewer.model.crowdsourcing.questions.TargetSelector;
 import io.goobi.viewer.model.download.DownloadJob;
 import io.goobi.viewer.model.download.DownloadJob.JobStatus;
+import io.goobi.viewer.model.log.LogMessage;
 import io.goobi.viewer.model.download.EPUBDownloadJob;
 import io.goobi.viewer.model.download.PDFDownloadJob;
 import io.goobi.viewer.model.maps.GeoMap;
@@ -2269,6 +2270,22 @@ public class JPADAOTest extends AbstractDatabaseEnabledTest {
         Assert.assertNotNull(campaign.getStatistics().get("PI_2"));
         Assert.assertNotNull(campaign.getStatistics().get("PI_3"));
         Assert.assertNotNull(campaign.getStatistics().get("PI_4"));
+    }
+    
+    @Test
+    public void testUpdateCampaignWithLogMessage() throws Exception {
+        Campaign campaign = DataManager.getInstance().getDao().getCampaign(1L);
+        Assert.assertNotNull(campaign);
+        
+        LogMessage message = new LogMessage("Test", 1l, new Date(), null);
+        campaign.addLogMessage(message, "PI_10");
+        Assert.assertEquals("Test", campaign.getLogMessages().get(0).getMessage());
+        
+        DataManager.getInstance().getDao().updateCampaign(campaign);
+        campaign = DataManager.getInstance().getDao().getCampaign(1L);
+        Assert.assertEquals("Test", campaign.getLogMessages().get(0).getMessage());
+
+        
     }
 
     /**
