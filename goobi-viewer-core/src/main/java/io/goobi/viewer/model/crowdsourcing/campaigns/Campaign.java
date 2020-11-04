@@ -49,8 +49,6 @@ import javax.persistence.JoinColumn;
 import javax.persistence.MapKeyColumn;
 import javax.persistence.OneToMany;
 import javax.persistence.PostLoad;
-import javax.persistence.PrePersist;
-import javax.persistence.PreUpdate;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
@@ -81,7 +79,6 @@ import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.faces.validators.SolrQueryValidator;
 import io.goobi.viewer.managedbeans.CmsMediaBean;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
-import io.goobi.viewer.model.cms.CMSContentItem;
 import io.goobi.viewer.model.cms.CMSMediaHolder;
 import io.goobi.viewer.model.cms.CMSMediaItem;
 import io.goobi.viewer.model.cms.CategorizableTranslatedSelectable;
@@ -166,15 +163,13 @@ public class Campaign implements CMSMediaHolder, ILicenseType, IPolyglott {
     @JsonIgnore
     private CampaignVisibility visibility = CampaignVisibility.PRIVATE;
 
-    @Temporal(TemporalType.TIMESTAMP)
     @Column(name = "date_start")
     @JsonIgnore
-    private Date dateStart;
+    private LocalDateTime dateStart;
 
-    @Temporal(TemporalType.TIMESTAMP)
     @Column(name = "date_end")
     @JsonIgnore
-    private Date dateEnd;
+    private LocalDateTime dateEnd;
 
     /** Media item reference for media content items. */
     @JoinColumn(name = "media_item_id")
@@ -188,9 +183,12 @@ public class Campaign implements CMSMediaHolder, ILicenseType, IPolyglott {
     @Column(name = "permalink")
     @JsonIgnore
     private String permalink;
-    
+
     @Column(name = "show_log")
     private boolean showLog = false;
+
+    @Column(name = "limit_to_group")
+    private boolean limitToGroup = false;
 
     /**
      * The id of the parent page. This is usually the id (as String) of the parent cms page, or NULL if the parent page is the start page The system
@@ -220,7 +218,7 @@ public class Campaign implements CMSMediaHolder, ILicenseType, IPolyglott {
     @MapKeyColumn(name = "pi", insertable = false, updatable = false)
     @JsonIgnore
     private Map<String, List<CampaignLogMessage>> logMessages = new HashMap<>();
-    
+
     @Transient
     @JsonIgnore
     private Locale selectedLocale;
@@ -248,9 +246,9 @@ public class Campaign implements CMSMediaHolder, ILicenseType, IPolyglott {
     public Campaign(Locale selectedLocale) {
         this.selectedLocale = selectedLocale;
     }
-    
+
     public Campaign(Campaign orig) {
-        
+
         this.id = orig.id;
         this.translations = orig.translations.stream().map(t -> new CampaignTranslation(t, this)).collect(Collectors.toList());
         this.breadcrumbParentCmsPageId = orig.breadcrumbParentCmsPageId;
@@ -275,19 +273,19 @@ public class Campaign implements CMSMediaHolder, ILicenseType, IPolyglott {
     public void onPrePersist() {
         this.questions.forEach(Question::onPrePersist);
     }
-    
+
     /**
      * No @PreUpdate annotation because it is called explicitly in {@link IDAO#updateCampaign(Campaign)}
      */
     public void onPreUpdate() {
         this.questions.forEach(Question::onPreUpdate);
     }
-    
+
     @PostLoad
     public void onPostLoad() {
         this.questions.forEach(Question::onPostLoad);
     }
-    
+
     /* (non-Javadoc)
      * @see java.lang.Object#hashCode()
      */
@@ -445,8 +443,7 @@ public class Campaign implements CMSMediaHolder, ILicenseType, IPolyglott {
         }
 
         LocalDateTime now = LocalDate.now().atStartOfDay();
-        LocalDateTime start = DateTools.convertDateToLocalDateTimeViaInstant(dateStart);
-        return Math.max(0L, Duration.between(now, start).toDays());
+        return Math.max(0L, Duration.between(now, dateStart).toDays());
     }
 
     /**
@@ -463,8 +460,7 @@ public class Campaign implements CMSMediaHolder, ILicenseType, IPolyglott {
         }
 
         LocalDateTime now = LocalDate.now().atStartOfDay();
-        LocalDateTime end = DateTools.convertDateToLocalDateTimeViaInstant(dateEnd);
-        return Math.max(0L, Duration.between(now, end).toDays());
+        return Math.max(0L, Duration.between(now, dateEnd).toDays());
     }
 
     /**
@@ -499,9 +495,7 @@ public class Campaign implements CMSMediaHolder, ILicenseType, IPolyglott {
         }
 
         LocalDateTime now = LocalDateTime.now();
-        LocalDateTime start = DateTools.convertDateToLocalDateTimeViaInstant(dateStart);
-
-        return now.isEqual(start) || now.isAfter(start);
+        return now.isEqual(dateStart) || now.isAfter(dateStart);
     }
 
     /**
@@ -520,9 +514,7 @@ public class Campaign implements CMSMediaHolder, ILicenseType, IPolyglott {
         }
 
         LocalDateTime now = LocalDateTime.now();
-        LocalDateTime end = DateTools.convertDateToLocalDateTimeViaInstant(dateEnd);
-
-        return now.isAfter(end);
+        return now.isAfter(dateEnd);
     }
 
     /**
@@ -861,7 +853,7 @@ public class Campaign implements CMSMediaHolder, ILicenseType, IPolyglott {
      *
      * @return the dateStart
      */
-    public Date getDateStart() {
+    public LocalDateTime getDateStart() {
         return dateStart;
     }
 
@@ -872,7 +864,7 @@ public class Campaign implements CMSMediaHolder, ILicenseType, IPolyglott {
      *
      * @param dateStart the dateStart to set
      */
-    public void setDateStart(Date dateStart) {
+    public void setDateStart(LocalDateTime dateStart) {
         this.dateStart = dateStart;
     }
 
@@ -902,7 +894,7 @@ public class Campaign implements CMSMediaHolder, ILicenseType, IPolyglott {
     public void setDateStartString(String dateStartString) {
         logger.trace("setDateStartString: {}", dateStartString);
         if (dateStartString != null) {
-            this.dateStart = DateTools.parseDateFromString(dateStartString);
+            this.dateStart = DateTools.parseDateTimeFromString(dateStartString, false);
         } else {
             this.dateStart = null;
         }
@@ -915,7 +907,7 @@ public class Campaign implements CMSMediaHolder, ILicenseType, IPolyglott {
      *
      * @return the dateEnd
      */
-    public Date getDateEnd() {
+    public LocalDateTime getDateEnd() {
         return dateEnd;
     }
 
@@ -926,7 +918,7 @@ public class Campaign implements CMSMediaHolder, ILicenseType, IPolyglott {
      *
      * @param dateEnd the dateEnd to set
      */
-    public void setDateEnd(Date dateEnd) {
+    public void setDateEnd(LocalDateTime dateEnd) {
         this.dateEnd = dateEnd;
     }
 
@@ -955,7 +947,7 @@ public class Campaign implements CMSMediaHolder, ILicenseType, IPolyglott {
      */
     public void setDateEndString(String dateEndString) {
         if (dateEndString != null) {
-            this.dateEnd = DateTools.parseDateFromString(dateEndString);
+            this.dateEnd = DateTools.parseDateTimeFromString(dateEndString, false);
         } else {
             this.dateEnd = null;
         }
@@ -1119,15 +1111,14 @@ public class Campaign implements CMSMediaHolder, ILicenseType, IPolyglott {
     }
 
     /**
-     * Return true if the campaign is ready for use. For this, the title in the default language must exists 
-     * and there must be at least one question
+     * Return true if the campaign is ready for use. For this, the title in the default language must exists and there must be at least one question
      * 
      */
     @JsonIgnore
     public boolean isReady() {
         return isComplete(IPolyglott.getDefaultLocale()) && !getQuestions().isEmpty();
     }
-    
+
     @Override
     public boolean isComplete(Locale locale) {
         return StringUtils.isNotBlank(getTitle(locale.getLanguage(), false));
@@ -1185,7 +1176,7 @@ public class Campaign implements CMSMediaHolder, ILicenseType, IPolyglott {
         }
         return this.solrQueryResults;
     }
-    
+
     public void resetSolrQueryResults() {
         this.solrQueryResults = null;
     }
@@ -1362,32 +1353,46 @@ public class Campaign implements CMSMediaHolder, ILicenseType, IPolyglott {
     public boolean hasMediaItem() {
         return this.mediaItem != null;
     }
-    
+
     /**
      * @param showLog the showLog to set
      */
     public void setShowLog(boolean showLog) {
         this.showLog = showLog;
     }
-    
+
     /**
      * @return the showLog
      */
     public boolean isShowLog() {
         return showLog;
     }
-    
+
+    /**
+     * @return the limitToGroup
+     */
+    public boolean isLimitToGroup() {
+        return limitToGroup;
+    }
+
+    /**
+     * @param limitToGroup the limitToGroup to set
+     */
+    public void setLimitToGroup(boolean limitToGroup) {
+        this.limitToGroup = limitToGroup;
+    }
+
     /**
      * @return the logMessages
      */
     public Map<String, List<CampaignLogMessage>> getLogMessages() {
         return logMessages;
     }
-    
+
     public void addLogMessage(LogMessage message, String pi) {
-        if(message.getId() == null) {
+        if (message.getId() == null) {
             List<CampaignLogMessage> list = this.logMessages.get(pi);
-            if(list == null) {
+            if (list == null) {
                 list = new ArrayList<>();
                 this.logMessages.put(pi, list);
             }
