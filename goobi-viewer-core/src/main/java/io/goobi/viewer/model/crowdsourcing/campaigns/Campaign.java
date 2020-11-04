@@ -217,9 +217,8 @@ public class Campaign implements CMSMediaHolder, ILicenseType, IPolyglott {
 
     /** Status entry for each record that has been worked on in the context of this campaign. The PI of each record is the map key. */
     @OneToMany(mappedBy = "campaign", fetch = FetchType.LAZY, cascade = { CascadeType.ALL })
-    @MapKeyColumn(name = "pi", insertable = false, updatable = false)
     @JsonIgnore
-    private Map<String, List<CampaignLogMessage>> logMessages = new HashMap<>();
+    private List<CampaignLogMessage> logMessages = new ArrayList<>();
     
     @Transient
     @JsonIgnore
@@ -1380,18 +1379,13 @@ public class Campaign implements CMSMediaHolder, ILicenseType, IPolyglott {
     /**
      * @return the logMessages
      */
-    public Map<String, List<CampaignLogMessage>> getLogMessages() {
+    public List<CampaignLogMessage> getLogMessages() {
         return logMessages;
     }
     
     public void addLogMessage(LogMessage message, String pi) {
         if(message.getId() == null) {
-            List<CampaignLogMessage> list = this.logMessages.get(pi);
-            if(list == null) {
-                list = new ArrayList<>();
-                this.logMessages.put(pi, list);
-            }
-            list.add(new CampaignLogMessage(message, this, pi));
+            logMessages.add(new CampaignLogMessage(message, this, pi));
         } else {
             //Log messages may not be changed, only new ones added. So only accept messages without id
             throw new IllegalArgumentException("Log messages with non null id may not be added to log");

@@ -3485,13 +3485,12 @@ public class JPADAO implements IDAO {
             try {
                 em.getTransaction().begin();
                 Campaign c = em.merge(campaign);
+                em.getTransaction().commit();
                 //solrQueryResults remains unchanged in managed campaign even after merge. Manually reset results to account for changed solrquery
                 c.resetSolrQueryResults();
                 return true;
             } catch (RollbackException e) {
                 return false;
-            }finally {
-                em.getTransaction().commit();
             }
         }
     }
