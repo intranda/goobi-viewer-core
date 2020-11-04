@@ -81,7 +81,8 @@
         														rendered="#{tocElement.label != null and tocElement.visible}" 
         														title="#{tocElement.label}"
         														value="#{tocElement.getUrl('fullscreen')}"
-        														styleClass="#{tocElement.iddoc == activeDocumentBean.viewManager.currentDocumentIddoc ? 'active' : ''}">
+																styleClass="#{tocElement.iddoc == activeDocumentBean.viewManager.currentDocumentIddoc ? 'active' : ''}">
+																<f:passThroughAttribute name="aria-label" value="#{msg.sidebarTocAnchor}: #{tocElement.label}"/>
         														#{tocElement.label}
         													</h:outputLink>
         												</div>
@@ -93,7 +94,8 @@
                                                             <h:outputLink 
                                                                 rendered="#{tocElement.label != null and tocElement.visible}" 
                                                                 title="#{tocElement.label}"
-                                                                value="#{tocElement.url}">
+																value="#{tocElement.url}">
+																<f:passThroughAttribute name="aria-label" value="#{msg.sidebarTocAnchor}: #{tocElement.label}"/>
                                                                 #{tocElement.label}
                                                             </h:outputLink>
                                                         </div>
@@ -123,6 +125,7 @@
 													title="#{tocElement.label}" value="#{tocElement.url}"
 													styleClass="#{tocElement.iddoc == activeDocumentBean.viewManager.currentDocumentIddoc ? 'active' : ''}">
 													<h:outputText value="#{tocElement.label}" />
+													<f:passThroughAttribute name="aria-label" value="#{msg.sidebarTocAnchor}: #{tocElement.label}"/>
 												</h:outputLink>
 											</div> 
                                             <!-- PAGE NUMBER --> 
