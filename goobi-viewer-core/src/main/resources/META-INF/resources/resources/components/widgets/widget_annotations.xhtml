@@ -26,7 +26,7 @@
 				</h3>
 
 
-				<h:panelGroup layout="block" styleClass="widget__body collapseable #{contentBean.getUserGeneratedContentsForDisplay(activeDocumentBean.viewManager.pi).size() gt 3 ? '-scrollable' : ''}">
+				<h:panelGroup layout="block" styleClass="widget__body collapseable #{contentBean.getUserGeneratedContentsForDisplay(activeDocumentBean.viewManager.pi).size() lt 3 ? '-scrollable' : ''}">
 					<nav id="user_generated_content_nav">
 						<ul>
 							<ui:repeat var="content" value="#{contentBean.getUserGeneratedContentsForDisplay(activeDocumentBean.viewManager.pi)}">

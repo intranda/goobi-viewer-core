@@ -119,7 +119,7 @@ public class IndexerTools {
                     .getFirstDoc(SolrConstants.PI + ":" + pi,
                             Arrays.asList(new String[] { SolrConstants.DATAREPOSITORY, SolrConstants.SOURCEDOCFORMAT }));
             if (doc == null) {
-                throw new RecordNotFoundException(pi);
+                throw new RecordNotFoundException("Record not found in index: " + pi);
             }
             dataRepository = (String) doc.getFieldValue(SolrConstants.DATAREPOSITORY);
             recordType = (String) doc.getFieldValue(SolrConstants.SOURCEDOCFORMAT);

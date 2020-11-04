@@ -48,12 +48,10 @@ import com.ocpsoft.pretty.PrettyContext;
 import com.ocpsoft.pretty.faces.url.URL;
 
 import io.goobi.viewer.controller.DataManager;
-import io.goobi.viewer.controller.IndexerTools;
 import io.goobi.viewer.controller.SolrConstants;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
-import io.goobi.viewer.exceptions.RecordNotFoundException;
 import io.goobi.viewer.exceptions.ViewerConfigurationException;
 import io.goobi.viewer.faces.validators.SolrQueryValidator;
 import io.goobi.viewer.managedbeans.tabledata.TableDataFilter;
@@ -455,8 +453,8 @@ public class CrowdsourcingBean implements Serializable {
             Messages.error("admin__crowdsourcing_campaign_save_failure");
         } finally {
         }
-        
-        return  "";
+
+        return "";
     }
 
     /**
@@ -500,25 +498,18 @@ public class CrowdsourcingBean implements Serializable {
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
     public String deleteAnnotationAction(PersistentAnnotation annotation) throws DAOException {
-        if (annotation != null) {
-            if (DataManager.getInstance().getDao().deleteAnnotation(annotation)) {
-                try {
-                    if (annotation.deleteExportedTextFiles() > 0) {
-                        try {
-                            IndexerTools.reIndexRecord(annotation.getTargetPI());
-                            logger.debug("Re-indexing record: {}", annotation.getTargetPI());
-                        } catch (RecordNotFoundException e) {
-                            logger.error(e.getMessage());
-                        }
-                    }
-                } catch (ViewerConfigurationException e) {
-                    logger.error(e.getMessage());
-                    Messages.error(e.getMessage());
-                }
+        if (annotation == null) {
+            return "";
+        }
 
+        try {
+            if (annotation.delete()) {
                 Messages.info("admin__crowdsoucing_annotation_deleteSuccess");
                 lazyModelCampaigns.update();
             }
+        } catch (ViewerConfigurationException e) {
+            logger.error(e.getMessage());
+            Messages.error(e.getMessage());
         }
 
         return "";
@@ -541,10 +532,10 @@ public class CrowdsourcingBean implements Serializable {
      * @param selectedCampaign the selectedCampaign to set
      */
     public void setSelectedCampaign(Campaign campaign) {
-        
-        if(campaign == null) {
+
+        if (campaign == null) {
             this.selectedCampaign = null;
-        } else if(selectedCampaign == null || ObjectUtils.notEqual(selectedCampaign.getId(), campaign.getId())) {
+        } else if (selectedCampaign == null || ObjectUtils.notEqual(selectedCampaign.getId(), campaign.getId())) {
             this.selectedCampaign = new Campaign(campaign);
         }
     }
