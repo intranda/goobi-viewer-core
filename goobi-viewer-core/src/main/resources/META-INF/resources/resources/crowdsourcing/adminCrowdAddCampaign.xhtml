@@ -1,10 +1,11 @@
 <ui:composition xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:c="http://java.sun.com/jsp/jstl/core"
 	xmlns:h="http://xmlns.jcp.org/jsf/html"
 	xmlns:f="http://xmlns.jcp.org/jsf/core"
 	xmlns:fn="http://java.sun.com/jsp/jstl/functions"
 	xmlns:jsf="http://xmlns.jcp.org/jsf"
+	xmlns:p="http://primefaces.org/ui"
 	xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
-	xmlns:c="http://java.sun.com/jsp/jstl/core"
 	xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components"
 	xmlns:crowdsourcingComponent="http://xmlns.jcp.org/jsf/composite/crowdsourcing/components"
 	xmlns:adminWidget="http://xmlns.jcp.org/jsf/composite/admin/widgets"
@@ -453,7 +454,7 @@
 							                        <h:selectOneMenu id="adminCrowdVisibleStatus" value="#{crowdsourcingBean.selectedCampaign.visibility}" styleClass="form-control">
 							                            <f:selectItems itemLabel="#{msg['admin__crowdsourcing_campaign_visibility_' += val]}"
 							                                var="val" value="#{crowdsourcingBean.selectedCampaign.campaignVisibilityValues}"/> 
-							                                <f:ajax render="adminCrowdVisibleForGroup" />
+							                                <f:ajax render="adminCrowdPrivateSettingsGroup" />
 							                        </h:selectOneMenu>
 							                        <span class="admin__form-help-text">#{msg.admin__crowdsourcing_campaign_visibility}</span>
 						                   		</div>
@@ -466,20 +467,22 @@
 												</div>
 						                   	</div>
 						                   	
-											<!-- VISIBLE TO GROUP SELECTION -->
-											<h:panelGroup id="adminCrowdUserGroup" styleClass="form-row form-group" layout="block">
-												<!-- TO DO: ONLY SHOW IF VISIBILITY STATUS SELECTION IS PRIVATE -->
-												<ui:fragment rendered="true">
+											<h:panelGroup id="adminCrowdPrivateSettingsGroup" styleClass="form-row form-group" layout="block">
+											
+											    <!-- GROUP SELECTION GROUP -->
+												<ui:fragment rendered="#{crowdsourcingBean.selectedCampaign.visibility == 'PRIVATE'}">
 													<div class="col-12 control-label admin__form-label">
 														<label for="adminCrowdVisibleFor">
 															#{msg.admin__crowdsourcing_campaign_limit_to_group}:
 														</label>
 													</div>
 								                    
-								                    <!-- TO DO: ENABLE VISIBLE FOR GROUP LOGIC -->
+								                    <!-- TOGGLE GROUP SELECTION SWITCH -->
 								                    <div class="col-11 admin__form-input">
 								                        <viewerComponent:toggleSwitch id="limitToGroupSelection"
-								                            value="#{crowdsourcingBean.selectedCampaign.limitToGroup}" /> 
+								                            value="#{crowdsourcingBean.selectedCampaign.limitToGroup}"
+								                            immediate="true" render="selectUserGroupGroup" /> 
+								                            <!-- TODO refresh selectUserGroupGroup -->
 								                        <span class="admin__form-help-text">#{msg.admin__help_crowdsourcing_campaign_limit_to_group}</span>
 							                   		</div>
 													<div class="col-1 admin__form-help-icon">
@@ -488,22 +491,35 @@
 															<i class="fa fa-question-circle" aria-hidden="true"></i>
 														</button>
 													</div>
+													
+													<h:panelGroup id="selectUserGroupGroup">
+                                                        <h:selectOneMenu rendered="#{crowdsourcingBean.selectedCampaign.limitToGroup}"
+                                                            value="#{crowdsourcingBean.selectedCampaign.userGroup}"
+                                                            styleClass="form-control"
+                                                            immediate="true"
+                                                            converter="userGroupConverter">
+                                                            <!-- TODO aria label -->
+                                                            <f:selectItem itemLabel="#{msg.select}" itemValue="#{null}" noSelectionOption="true" />
+                                                            <f:selectItems value="#{adminBean.allUserGroups}" />
+                                                            <f:ajax render="licenseTypeGroup infoGroup" />
+                                                        </h:selectOneMenu>
+                                                    </h:panelGroup>
 							                   	</ui:fragment>
-											</h:panelGroup>
 											
-                                            <!-- TIME PERIOD -->
-                                            <h:panelGroup id="adminCrowdTimePeriod" styleClass="form-row form-group" layout="block">
-                                                <ui:fragment rendered="true">
+                                                <!-- TIME PERIOD GROUP -->
+                                                <ui:fragment rendered="#{crowdsourcingBean.selectedCampaign.visibility == 'PRIVATE'}">
                                                     <div class="col-12 control-label admin__form-label">
                                                         <label for="adminCrowdVisibleFor">
                                                             #{msg.admin__crowdsourcing_campaign_time_pediod_enabled}:
                                                         </label>
                                                     </div>
                                                     
-                                                    <!-- TO DO: ENABLE VISIBLE FOR GROUP LOGIC -->
+                                                    <!-- TOGGLE TIME PERIOD SWITCH -->
                                                     <div class="col-11 admin__form-input">
                                                         <viewerComponent:toggleSwitch id="timePeriodEnabledSelection"
-                                                            value="#{crowdsourcingBean.selectedCampaign.timePeriodEnabled}" /> 
+                                                            value="#{crowdsourcingBean.selectedCampaign.timePeriodEnabled}"
+                                                            immediate="true" render="datePickerGroup" />
+                                                            <!-- TODO refresh datePickerGroup -->
                                                         <span class="admin__form-help-text">#{msg.admin__help_crowdsourcing_campaign_time_pediod_enabled}</span>
                                                     </div>
                                                     <div class="col-1 admin__form-help-icon">
@@ -512,6 +528,24 @@
                                                             <i class="fa fa-question-circle" aria-hidden="true"></i>
                                                         </button>
                                                     </div>
+                                                    
+                                                    <h:panelGroup id="datePickerGroup">
+                                                        <ui:fragment rendered="#{crowdsourcingBean.selectedCampaign.timePeriodEnabled}">
+                                                            <!-- TODO: non-primefaces date pickers? -->
+                                                            <div class="col-12 control-label admin__form-label">
+                                                                <label for="pickerDateStart">#{msg.admin__crowdsourcing_campaign_duration_from}:</label>
+                                                                <p:datePicker id="pickerDateStart"
+                                                                    value="#{crowdsourcingBean.selectedCampaign.dateOnlyStart}"
+                                                                    pattern="#{navigationHelper.datePattern}" />
+                                                                </div>
+                                                            <div class="col-12 control-label admin__form-label">
+                                                                <label for="pickerDateEnd">#{msg.admin__crowdsourcing_campaign_duration_until}:</label>
+                                                                <p:datePicker id="pickerDateEnd"
+                                                                    value="#{crowdsourcingBean.selectedCampaign.dateOnlyEnd}"
+                                                                    pattern="#{navigationHelper.datePattern}" />
+                                                            </div>
+                                                        </ui:fragment>
+                                                    </h:panelGroup>
                                                 </ui:fragment>
                                             </h:panelGroup>
 					                   	</div>

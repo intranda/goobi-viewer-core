@@ -20,6 +20,7 @@ import java.net.URI;
 import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -51,8 +52,6 @@ import javax.persistence.MapKeyColumn;
 import javax.persistence.OneToMany;
 import javax.persistence.PostLoad;
 import javax.persistence.Table;
-import javax.persistence.Temporal;
-import javax.persistence.TemporalType;
 import javax.persistence.Transient;
 
 import org.apache.commons.lang3.StringUtils;
@@ -150,15 +149,13 @@ public class Campaign implements CMSMediaHolder, ILicenseType, IPolyglott {
     @Column(name = "campaign_id")
     private Long id;
 
-    @Temporal(TemporalType.TIMESTAMP)
     @Column(name = "date_created", nullable = false)
     @JsonIgnore
-    private Date dateCreated;
+    private LocalDateTime dateCreated;
 
-    @Temporal(TemporalType.TIMESTAMP)
     @Column(name = "date_updated")
     @JsonIgnore
-    private Date dateUpdated;
+    private LocalDateTime dateUpdated;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "visibility", nullable = false)
@@ -795,7 +792,7 @@ public class Campaign implements CMSMediaHolder, ILicenseType, IPolyglott {
      *
      * @return the dateCreated
      */
-    public Date getDateCreated() {
+    public LocalDateTime getDateCreated() {
         return dateCreated;
     }
 
@@ -806,7 +803,7 @@ public class Campaign implements CMSMediaHolder, ILicenseType, IPolyglott {
      *
      * @param dateCreated the dateCreated to set
      */
-    public void setDateCreated(Date dateCreated) {
+    public void setDateCreated(LocalDateTime dateCreated) {
         this.dateCreated = dateCreated;
     }
 
@@ -817,7 +814,7 @@ public class Campaign implements CMSMediaHolder, ILicenseType, IPolyglott {
      *
      * @return the dateUpdated
      */
-    public Date getDateUpdated() {
+    public LocalDateTime getDateUpdated() {
         return dateUpdated;
     }
 
@@ -828,7 +825,7 @@ public class Campaign implements CMSMediaHolder, ILicenseType, IPolyglott {
      *
      * @param dateUpdated the dateUpdated to set
      */
-    public void setDateUpdated(Date dateUpdated) {
+    public void setDateUpdated(LocalDateTime dateUpdated) {
         this.dateUpdated = dateUpdated;
     }
 
@@ -852,6 +849,30 @@ public class Campaign implements CMSMediaHolder, ILicenseType, IPolyglott {
      */
     public void setVisibility(CampaignVisibility visibility) {
         this.visibility = visibility;
+    }
+
+    /**
+     * 
+     * @return
+     */
+    public LocalDate getDateOnlyStart() {
+        if (dateStart == null) {
+            return null;
+        }
+
+        return dateStart.toLocalDate();
+    }
+
+    /**
+     * 
+     * @param dateStart
+     */
+    public void setDateOnlyStart(LocalDate dateStart) {
+        if (dateStart == null) {
+            this.dateStart = null;
+        } else {
+            this.dateStart = LocalDateTime.of(dateStart, LocalTime.of(0, 0));
+        }
     }
 
     /**
@@ -883,6 +904,7 @@ public class Campaign implements CMSMediaHolder, ILicenseType, IPolyglott {
      *
      * @return formatted ISO string representation of stateStart
      */
+    @Deprecated
     public String getDateStartString() {
         if (dateStart == null) {
             return null;
@@ -899,12 +921,37 @@ public class Campaign implements CMSMediaHolder, ILicenseType, IPolyglott {
      * @param dateStartString a {@link java.lang.String} object.
      * @should parse string correctly
      */
+    @Deprecated
     public void setDateStartString(String dateStartString) {
         logger.trace("setDateStartString: {}", dateStartString);
         if (dateStartString != null) {
             this.dateStart = DateTools.parseDateTimeFromString(dateStartString, false);
         } else {
             this.dateStart = null;
+        }
+    }
+
+    /**
+     * 
+     * @return
+     */
+    public LocalDate getDateOnlyEnd() {
+        if (dateEnd == null) {
+            return null;
+        }
+
+        return dateEnd.toLocalDate();
+    }
+
+    /**
+     * 
+     * @param dateEnd
+     */
+    public void setDateOnlyEnd(LocalDate dateEnd) {
+        if (dateEnd == null) {
+            this.dateEnd = null;
+        } else {
+            this.dateEnd = LocalDateTime.of(dateEnd, LocalTime.of(0, 0));
         }
     }
 
@@ -937,6 +984,7 @@ public class Campaign implements CMSMediaHolder, ILicenseType, IPolyglott {
      *
      * @return formatted ISO string representation of dateEnd
      */
+    @Deprecated
     public String getDateEndString() {
         if (dateEnd == null) {
             return null;
@@ -953,6 +1001,7 @@ public class Campaign implements CMSMediaHolder, ILicenseType, IPolyglott {
      * @param dateEndString a {@link java.lang.String} object.
      * @should parse string correctly
      */
+    @Deprecated
     public void setDateEndString(String dateEndString) {
         if (dateEndString != null) {
             this.dateEnd = DateTools.parseDateTimeFromString(dateEndString, false);
@@ -1415,6 +1464,7 @@ public class Campaign implements CMSMediaHolder, ILicenseType, IPolyglott {
      * @param timePeriodEnabled the timePeriodEnabled to set
      */
     public void setTimePeriodEnabled(boolean timePeriodEnabled) {
+        logger.trace("setTimePeriodEnabled: {}", timePeriodEnabled);
         this.timePeriodEnabled = timePeriodEnabled;
     }
 
@@ -1426,7 +1476,7 @@ public class Campaign implements CMSMediaHolder, ILicenseType, IPolyglott {
     }
 
     public void addLogMessage(LogMessage message, String pi) {
-        if(message.getId() == null) {
+        if (message.getId() == null) {
             logMessages.add(new CampaignLogMessage(message, this, pi));
         } else {
             //Log messages may not be changed, only new ones added. So only accept messages without id
