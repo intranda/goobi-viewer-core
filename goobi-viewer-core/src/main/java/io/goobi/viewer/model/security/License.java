@@ -116,9 +116,6 @@ public class License implements IPrivilegeHolder, Serializable {
     @JoinColumn(name = "license_type_id")
     private LicenseType licenseType;
 
-    @JoinColumn(name = "campaign_id")
-    private Campaign campaign;
-
     @ManyToOne
     @JoinColumn(name = "user_id")
     private User user;
@@ -619,36 +616,6 @@ public class License implements IPrivilegeHolder, Serializable {
     }
 
     /**
-     * 
-     * @return
-     */
-    public ILicenseType getLicenseTypeSelection() {
-        if (this.campaign != null) {
-            return this.campaign;
-        }
-
-        return this.licenseType;
-    }
-
-    /**
-     * 
-     * @param selection
-     * @throws DAOException
-     */
-    public void setLicenseTypeSelection(ILicenseType selection) throws DAOException {
-        logger.trace("setLicenseTypeSelection: {}", selection);
-        if (selection instanceof Campaign) {
-            this.campaign = (Campaign) selection;
-            // Having a license type is mandatory
-            this.licenseType = DataManager.getInstance().getDao().getLicenseType(LicenseType.LICENSE_TYPE_CROWDSOURCING_CAMPAIGNS);
-            logger.trace("campaign: {}", campaign);
-            logger.trace("licenseType: {}", licenseType);
-        } else if (selection instanceof LicenseType) {
-            this.licenseType = (LicenseType) selection;
-        }
-    }
-
-    /**
      * <p>
      * Getter for the field <code>licenseType</code>.
      * </p>
@@ -668,20 +635,6 @@ public class License implements IPrivilegeHolder, Serializable {
      */
     public void setLicenseType(LicenseType licenseType) {
         this.licenseType = licenseType;
-    }
-
-    /**
-     * @return the campaign
-     */
-    public Campaign getCampaign() {
-        return campaign;
-    }
-
-    /**
-     * @param campaign the campaign to set
-     */
-    public void setCampaign(Campaign campaign) {
-        this.campaign = campaign;
     }
 
     /**
