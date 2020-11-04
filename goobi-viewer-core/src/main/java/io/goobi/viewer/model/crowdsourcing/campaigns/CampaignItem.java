@@ -26,6 +26,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 import io.goobi.viewer.model.crowdsourcing.campaigns.CampaignRecordStatistic.CampaignRecordStatus;
 import io.goobi.viewer.model.crowdsourcing.questions.Question;
+import io.goobi.viewer.model.log.LogMessage;
 import io.goobi.viewer.model.security.user.User;
 
 /**
@@ -40,6 +41,7 @@ public class CampaignItem {
     private URI source;
     private Campaign campaign;
     private CampaignRecordStatus recordStatus = null;
+    private List<LogMessage> log = null;
     @JsonProperty("creator")
     private URI creatorURI = null;
 
@@ -158,6 +160,20 @@ public class CampaignItem {
      */
     public void setCreatorURI(URI creatorURI) {
         this.creatorURI = creatorURI;
+    }
+    
+    /**
+     * @param log the log to set
+     */
+    public void setLog(List<LogMessage> log) {
+        this.log = log;
+    }
+    
+    /**
+     * @return the log
+     */
+    public List<LogMessage> getLog() {
+        return log;
     }
 
 }

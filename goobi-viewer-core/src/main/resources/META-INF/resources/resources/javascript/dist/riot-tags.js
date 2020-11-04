@@ -364,89 +364,6 @@ riot.tag2('htmltextresource', '<div class="annotation__body__htmltext"><iframe s
 });
 riot.tag2('plaintextresource', '<div class="annotation__body__plaintext">{this.opts.resource.value}</div>', '', '', function(opts) {
 });
-riot.tag2('authorityresourcequestion', '<div if="{this.showInstructions()}" class="crowdsourcing-annotations__instruction"><label>{Crowdsourcing.translate(⁗crowdsourcing__help__create_rect_on_image⁗)}</label></div><div if="{this.showInactiveInstructions()}" class="crowdsourcing-annotations__single-instruction -inactive"><label>{Crowdsourcing.translate(⁗crowdsourcing__help__make_active⁗)}</label></div><div class="crowdsourcing-annotations__wrapperx" id="question_{opts.index}_annotation_{index}" each="{anno, index in this.question.annotations}"><div class="crowdsourcing-annotations__annotation-area -small"><div if="{this.showAnnotationImages()}" class="crowdsourcing-annotations__annotation-area-image" riot-style="border-color: {anno.getColor()}"><img riot-src="{this.question.getImage(anno)}"></img></div><div if="{!this.opts.item.isReviewMode()}" class="crowdsourcing-annotations__question-text-input"><span class="crowdsourcing-annotations__gnd-text">https://d-nb.info/gnd/</span><input class="crowdsourcing-annotations__gnd-id form-control" onchange="{setIdFromEvent}" riot-value="{question.authorityData.baseUri && getIdAsNumber(anno)}"></input></div><div if="{this.opts.item.isReviewMode()}" class="crowdsourcing-annotations__question-text-input"><input class="form-control pl-1" disabled="{this.opts.item.isReviewMode() ? \'disabled\' : \'\'}" riot-value="{question.authorityData.baseUri}{getIdAsNumber(anno)}"></input><div if="{this.opts.item.isReviewMode()}" class="crowdsourcing-annotations__jump-to-gnd"><a target="_blank" href="{question.authorityData.baseUri}{getIdAsNumber(anno)}">{Crowdsourcing.translate(⁗cms_menu_create_item_new_tab⁗)}</a></div></div><div class="cms-module__actions crowdsourcing-annotations__annotation-action"><button if="{!this.opts.item.isReviewMode()}" onclick="{deleteAnnotationFromEvent}" class="crowdsourcing-annotations__delete-annotation btn btn--clean delete">{Crowdsourcing.translate(⁗action__delete_annotation⁗)} </button></div></div></div><button if="{showAddAnnotationButton()}" onclick="{addAnnotation}" class="options-wrapper__option btn btn--default" id="add-annotation">{Crowdsourcing.translate(⁗action__add_annotation⁗)}</button>', '', '', function(opts) {
-
-	this.question = this.opts.question;
-
-	this.on("mount", function() {
-	    this.question.initializeView((anno) => new Crowdsourcing.Annotation.AuthorityResource(anno, this.question.authorityData.context), this.update, this.update, this.focusAnnotation);
-	    this.opts.item.onImageOpen(function() {
-	        switch(this.question.targetSelector) {
-	            case Crowdsourcing.Question.Selector.WHOLE_PAGE:
-	            case Crowdsourcing.Question.Selector.WHOLE_SOURCE:
-	                if(this.question.annotations.length == 0 && !this.question.item.isReviewMode()) {
-	                    this.question.addAnnotation();
-	                }
-	        }
-	        this.update()
-	    }.bind(this));
-	});
-
-	this.focusAnnotation = function(index) {
-	    let id = "question_" + this.opts.index + "_annotation_" + index;
-	    let inputSelector = "#" + id + " input";
-	    this.root.querySelector(inputSelector).focus();
-	}.bind(this)
-
-	this.showAnnotationImages = function() {
-	    return this.question.isRegionTarget();
-	}.bind(this)
-
-	this.showInstructions = function() {
-	    return !this.opts.item.isReviewMode() &&  this.question.active && this.question.targetSelector == Crowdsourcing.Question.Selector.RECTANGLE && this.question.annotations.length == 0;
-	}.bind(this)
-
-	this.showInactiveInstructions = function() {
-	    return !this.opts.item.isReviewMode() &&  !this.question.active && this.question.targetSelector == Crowdsourcing.Question.Selector.RECTANGLE && this.opts.item.questions.filter(q => q.isRegionTarget()).length > 1;
-
-	}.bind(this)
-
-	this.showAddAnnotationButton = function() {
-	    return !this.question.isReviewMode() && !this.question.isRegionTarget() && this.question.mayAddAnnotation();
-	}.bind(this)
-
-	this.showLinkToGND = function() {
-	    return this.question.isReviewMode() && this.question.isRegionTarget();
-	}.bind(this)
-
-    this.setIdFromEvent = function(event) {
-        event.preventUpdate = true;
-        if(event.item.anno) {
-            let uri = this.question.authorityData.baseUri;
-            if(!uri.endsWith("/")) {
-                uri += "/"
-            }
-            uri += event.target.value;
-            event.item.anno.setId(uri);
-            this.question.saveToLocalStorage();
-        } else {
-            throw "No annotation to set"
-        }
-    }.bind(this)
-
-    this.deleteAnnotationFromEvent = function(event) {
-        if(event.item.anno) {
-            this.question.deleteAnnotation(event.item.anno);
-            this.update();
-        }
-    }.bind(this)
-
-    this.addAnnotation = function() {
-        this.question.addAnnotation();
-        this.question.focusCurrentAnnotation();
-    }.bind(this)
-
-    this.getIdAsNumber = function(anno) {
-        if(anno.isEmpty()) {
-            return "";
-        } else {
-            return anno.getId().replace(this.question.authorityData.baseUri, "").replace("/", "");
-        }
-    }.bind(this)
-
-});
-
-
 riot.tag2('bookmarklist', '<ul class="{mainClass} list"><li each="{bookmarkList in getBookmarkLists()}"><button if="{pi}" class="btn btn--clean" type="button" onclick="{inList(bookmarkList, this.pi, this.page, this.logid) ? remove : add}"><i if="{inList(bookmarkList, this.pi, this.page, this.logid)}" class="fa fa-check" aria-hidden="true"></i> {bookmarkList.name} <span>{bookmarkList.numItems}</span></button><div if="{!pi}" class="row no-margin"><div class="col-9 no-padding"><a href="{opts.bookmarks.getBookmarkListUrl(bookmarkList.id)}">{bookmarkList.name}</a></div><div class="col-2 no-padding icon-list"><a if="{maySendList(bookmarkList)}" href="{sendListUrl(bookmarkList)}" title="{msg(\'bookmarkList_session_mail_sendList\')}"><i class="fa fa-paper-plane-o" aria-hidden="true"></i></a><a href="{searchListUrl(bookmarkList)}" data-toggle="tooltip" data-placement="top" data-original-title="" title="{msg(\'action__search_in_bookmarks\')}"><i class="fa fa-search" aria-hidden="true"></i></a><a href="{miradorUrl(bookmarkList)}" target="_blank" title="{msg(\'viewMiradorComparison\')}"><i class="fa fa-th" aria-hidden="true"></i></a></div><div class="col-1 no-padding"><span class="{mainClass}-counter">{bookmarkList.numItems}</span></div></div></li></ul>', '', '', function(opts) {
 
 
@@ -818,261 +735,6 @@ this.msg = function(key) {
 }.bind(this)
 
 });
-riot.tag2('campaignitem', '<div if="{!opts.pi}" class="crowdsourcing-annotations__content-wrapper"> {Crowdsourcing.translate(⁗crowdsourcing__error__no_item_available⁗)} </div><div if="{opts.pi}" class="crowdsourcing-annotations__content-wrapper"><span if="{this.loading}" class="crowdsourcing-annotations__loader-wrapper"><img riot-src="{this.opts.loaderimageurl}"></span><span if="{this.error}" class="crowdsourcing-annotations__loader-wrapper"><span class="error_message">{this.error.message}</span></span></span><div class="crowdsourcing-annotations__content-left"><imageview if="{this.item}" id="mainImage" source="{this.item.getCurrentCanvas()}" item="{this.item}"></imageView><canvaspaginator if="{this.item}" item="{this.item}"></canvasPaginator></div><div if="{this.item}" class="crowdsourcing-annotations__content-right"><div class="crowdsourcing-annotations__questions-wrapper"><div each="{question, index in this.item.questions}" onclick="{setActive}" class="crowdsourcing-annotations__question-wrapper {question.isRegionTarget() ? \'area-selector-question\' : \'\'} {question.active ? \'active\' : \'\'}"><div class="crowdsourcing-annotations__question-wrapper-description">{Crowdsourcing.translate(question.text)}</div><plaintextquestion if="{question.questionType == \'PLAINTEXT\'}" question="{question}" item="{this.item}" index="{index}"></plaintextQuestion><richtextquestion if="{question.questionType == \'RICHTEXT\'}" question="{question}" item="{this.item}" index="{index}"></richtextQuestion><geolocationquestion if="{question.questionType == \'GEOLOCATION_POINT\'}" question="{question}" item="{this.item}" index="{index}"></geoLocationQuestion><authorityresourcequestion if="{question.questionType == \'NORMDATA\'}" question="{question}" item="{this.item}" index="{index}"></authorityResourceQuestion></div></div><div if="{!item.isReviewMode()}" class="crowdsourcing-annotations__options-wrapper crowdsourcing-annotations__options-wrapper-annotate"><button onclick="{saveAnnotations}" class="crowdsourcing-annotations__options-wrapper__option btn btn--default" id="save">{Crowdsourcing.translate(⁗button__save⁗)}</button><div>{Crowdsourcing.translate(⁗label__or⁗)}</div><button onclick="{submitForReview}" class="options-wrapper__option btn btn--success" id="review">{Crowdsourcing.translate(⁗action__submit_for_review⁗)}</button><div>{Crowdsourcing.translate(⁗label__or⁗)}</div><button if="{this.opts.nextitemurl}" onclick="{skipItem}" class="options-wrapper__option btn btn--link" id="skip">{Crowdsourcing.translate(⁗action__skip_item⁗)}</button></div><div if="{item.isReviewMode()}" class="crowdsourcing-annotations__options-wrapper crowdsourcing-annotations__options-wrapper-review"><button onclick="{acceptReview}" class="options-wrapper__option btn btn--success" id="accept">{Crowdsourcing.translate(⁗action__accept_review⁗)}</button><div>{Crowdsourcing.translate(⁗label__or⁗)}</div><button onclick="{rejectReview}" class="options-wrapper__option btn btn--danger" id="reject">{Crowdsourcing.translate(⁗action__reject_review⁗)}</button><div>{Crowdsourcing.translate(⁗label__or⁗)}</div><button if="{this.opts.nextitemurl}" onclick="{skipItem}" class="options-wrapper__option btn btn--link" id="skip">{Crowdsourcing.translate(⁗action__skip_item⁗)}</button></div></div></div>', '', '', function(opts) {
-
-	this.itemSource = this.opts.restapiurl + "crowdsourcing/campaigns/" + this.opts.campaign + "/" + this.opts.pi + "/";
-	this.annotationSource = this.itemSource + "annotations/";
-	this.loading = true;
-
-	this.on("mount", function() {
-	    fetch(this.itemSource)
-	    .then( response => response.json() )
-	    .then( itemConfig => this.loadItem(itemConfig))
-	    .then( () => this.fetch(this.annotationSource))
-	    .then( response => response.json() )
-	    .then( annotations => this.initAnnotations(annotations))
-	    .then( () => this.item.notifyItemInitialized())
-		.catch( error => {
-		    console.error("ERROR ", error);
-	    	this.error = error;
-	    	this.update();
-		})
-	});
-
-	this.loadItem = function(itemConfig) {
-	    console.log("load item ", itemConfig);
-	    this.item = new Crowdsourcing.Item(itemConfig, 0);
-	    this.item.setReviewMode(this.opts.itemstatus && this.opts.itemstatus.toUpperCase() == "REVIEW");
-		fetch(this.item.imageSource + "?mode=simple")
-		.then( response => response.json() )
-		.then( imageSource => this.initImageView(imageSource))
-		.then( () => {this.loading = false; this.update()})
-		.catch( error => {
-		    this.loading = false;
-		    console.error("ERROR ", error);
-		})
-
-		this.item.onImageRotated( () => this.update());
-	}.bind(this)
-
-	this.initImageView = function(imageSource) {
-	    this.item.initViewer(imageSource)
-	    this.update();
-	}.bind(this)
-
-	this.resolveCanvas = function(source) {
-	    if(Crowdsourcing.isString(source)) {
-	        return fetch(source)
-	        .then( response => response.json() );
-	    } else {
-	        return Q.fcall(() => source);
-	    }
-	}.bind(this)
-
-	this.initAnnotations = function(annotations) {
-	    let save = this.item.createAnnotationMap(annotations);
-	    this.item.saveToLocalStorage(save);
-	}.bind(this)
-
-	this.resetItems = function() {
-	    fetch(this.annotationSource)
-	    .then( response => response.json() )
-	    .then( annotations => this.initAnnotations(annotations))
-	    .then( () => this.resetQuestions())
-	    .then( () => this.item.notifyAnnotationsReload())
-	    .then( () => this.update())
-		.catch( error => console.error("ERROR ", error));
-	}.bind(this)
-
-	this.resetQuestions = function() {
-	    this.item.questions.forEach(question => {
-		    question.loadAnnotationsFromLocalStorage();
-		    question.initAnnotations();
-	    })
-	}.bind(this)
-
-	this.setActive = function(event) {
-	    if(event.item.question.isRegionTarget()) {
-		    this.item.questions.forEach(q => q.active = false);
-		    event.item.question.active = true;
-	    }
-	}.bind(this)
-
-	this.saveToServer = function() {
-	    let pages = this.item.loadAnnotationPages();
-	    this.loading = true;
-	    this.update();
-	    return fetch(this.annotationSource, {
-            method: "PUT",
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            cache: "no-cache",
-            mode: 'cors',
-            body: JSON.stringify(pages)
-	    })
-	}.bind(this)
-
-	this.saveAnnotations = function() {
-	    this.saveToServer()
-	    .then(() => this.resetItems())
-	    .then(() => this.setStatus("ANNOTATE"))
-	    .catch((error) => {
-	        console.error(error);
-	    })
-	    .then(() => {
-	        this.loading = false;
-		    this.update();
-	    });
-	}.bind(this)
-
-	this.submitForReview = function() {
-	    this.saveToServer()
-	    .then(() => this.setStatus("REVIEW"))
-	    .then(() => this.skipItem());
-
-	}.bind(this)
-
-	this.acceptReview = function() {
-	    this.setStatus("FINISHED")
-	    .then(() => this.skipItem());
-	}.bind(this)
-
-	this.rejectReview = function() {
-	    this.setStatus("ANNOTATE")
-	    .then(() => this.skipItem());
-	}.bind(this)
-
-	this.skipItem = function() {
-	    window.location.href = this.opts.nextitemurl;
-	}.bind(this)
-
-	this.setStatus = function(status) {
-	    let body = {
-	            recordStatus: status,
-	            creator: this.item.getCreator().id
-	    }
-	    return fetch(this.itemSource, {
-            method: "PUT",
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            cache: "no-cache",
-            mode: 'cors',
-            body: JSON.stringify(body)
-	    })
-	}.bind(this)
-
-	this.fetch = function(url) {
-	    return fetch(url, {
-            method: "GET",
-            cache: "no-cache",
-            mode: 'cors',
-	    })
-	}.bind(this)
-
-});
-riot.tag2('canvaspaginator', '<nav class="numeric-paginator"><ul><li if="{getCurrentIndex() > 0}" class="numeric-paginator__navigate navigate_prev"><span onclick="{this.loadPrevious}"><i class="fa fa-angle-left" aria-hidden="true"></i></span></li><li each="{canvas in this.firstCanvases()}" class="group_left {this.getIndex(canvas) == this.getCurrentIndex() ? \'numeric-paginator__active\' : \'\'}"><span index="{this.getIndex(canvas)}" onclick="{this.loadFromEvent}">{this.getOrder(canvas)}</span></li><li class="numeric-paginator__separator" if="{this.useMiddleButtons()}">...</li><li each="{canvas in this.middleCanvases()}" class="group_middle {this.getIndex(canvas) == this.getCurrentIndex() ? \'numeric-paginator__active\' : \'\'}"><span index="{this.getIndex(canvas)}" onclick="{this.loadFromEvent}">{this.getOrder(canvas)}</span></li><li class="numeric-paginator__separator" if="{this.useLastButtons()}">...</li><li each="{canvas in this.lastCanvases()}" class="group_right {this.getIndex(canvas) == this.getCurrentIndex() ? \'numeric-paginator__active\' : \'\'}"><span index="{this.getIndex(canvas)}" onclick="{this.loadFromEvent}">{this.getOrder(canvas)}</span></li><li if="{getCurrentIndex() < getTotalImageCount()-1}" class="numeric-paginator__navigate navigate_next"><span onclick="{this.loadNext}"><i class="fa fa-angle-right" aria-hidden="true"></i></span></li></ul></nav>', '', '', function(opts) {
-
-this.on( "mount", function() {
-
-    var paginatorConfig = {
-	        previous: () => this.load(this.getCurrentIndex()-1),
-	        next: () => this.load(this.getCurrentIndex()+1),
-	        first: () => this.load(0),
-	        last: () => this.load(this.getTotalImageCount()-1),
-	}
-	viewerJS.paginator.init(paginatorConfig);
-
-})
-
-this.loadFromEvent = function(e) {
-    let index = parseInt(e.target.attributes["index"].value);
-	this.load(index);
-}.bind(this)
-
-this.load = function(index) {
-    if(index != this.getCurrentIndex() && index >= 0 && index < this.getTotalImageCount()) {
-		this.opts.item.loadImage(index);
-		this.update();
-    }
-}.bind(this)
-
-this.loadPrevious = function() {
-    let index = this.getCurrentIndex()-1;
-	this.load(index);
-}.bind(this)
-
-this.loadNext = function() {
-    let index = this.getCurrentIndex()+1;
-	this.load(index);
-}.bind(this)
-
-this.getCurrentIndex = function() {
-    return this.opts.item.currentCanvasIndex;
-}.bind(this)
-
-this.getIndex = function(canvas) {
-    return this.opts.item.canvases.indexOf(canvas);
-}.bind(this)
-
-this.getOrder = function(canvas) {
-    return this.getIndex(canvas) + 1;
-}.bind(this)
-
-this.getTotalImageCount = function() {
-    return this.opts.item.canvases.length;
-}.bind(this)
-
-this.useMiddleButtons = function() {
-    return this.getTotalImageCount() > 9 && this.getCurrentIndex() > 4 && this.getCurrentIndex() < this.getTotalImageCount()-5;
-}.bind(this)
-
-this.useLastButtons = function() {
-    return this.getTotalImageCount() > 9;
-}.bind(this)
-
-this.firstCanvases = function() {
-    if(this.getTotalImageCount() < 10) {
-        return this.opts.item.canvases;
-    } else if(this.getCurrentIndex() < 5) {
-        return this.opts.item.canvases.slice(0, this.getCurrentIndex()+3);
-    } else {
-        return this.opts.item.canvases.slice(0, 2);
-    }
-}.bind(this)
-
-this.middleCanvases = function() {
-    if(this.getTotalImageCount() < 10) {
-        return [];
-    } else if(this.getCurrentIndex() < this.getTotalImageCount()-5 && this.getCurrentIndex() > 4) {
-        return this.opts.item.canvases.slice(this.getCurrentIndex()-2, this.getCurrentIndex()+3);
-    } else {
-        return [];
-    }
-}.bind(this)
-
-this.lastCanvases = function() {
-    if(this.getTotalImageCount() < 10) {
-        return [];
-    } else if(this.getCurrentIndex() < this.getTotalImageCount()-5) {
-        return this.opts.item.canvases.slice(this.getTotalImageCount()-2);
-    } else {
-        return this.opts.item.canvases.slice(this.getCurrentIndex()-2);
-    }
-}.bind(this)
-
-this.toPageNumber = function(e) {
-    console.log("Change in ", e.target, e.target.value);
-    let page = parseInt(e.target.value);
-    if(page > 0 && page <= this.getTotalImageCount()) {
-    	this.load(page-1);
-    } else{
-        alert(page + " is not a valid page number")
-    }
-}.bind(this)
-
-});
 
 
 
@@ -1429,108 +1091,382 @@ this.addToMap = function(map, key, value) {
 }.bind(this)
 
 });
-riot.tag2('fsthumbnailimage', '<div class="fullscreen__view-image-thumb-preloader" if="{preloader}"></div><img ref="image" alt="Thumbnail Image">', '', '', function(opts) {
-    	this.preloader = false;
+riot.tag2('authorityresourcequestion', '<div if="{this.showInstructions()}" class="crowdsourcing-annotations__instruction"><label>{Crowdsourcing.translate(⁗crowdsourcing__help__create_rect_on_image⁗)}</label></div><div if="{this.showInactiveInstructions()}" class="crowdsourcing-annotations__single-instruction -inactive"><label>{Crowdsourcing.translate(⁗crowdsourcing__help__make_active⁗)}</label></div><div class="crowdsourcing-annotations__wrapperx" id="question_{opts.index}_annotation_{index}" each="{anno, index in this.question.annotations}"><div class="crowdsourcing-annotations__annotation-area -small"><div if="{this.showAnnotationImages()}" class="crowdsourcing-annotations__annotation-area-image" riot-style="border-color: {anno.getColor()}"><img riot-src="{this.question.getImage(anno)}"></img></div><div if="{!this.opts.item.isReviewMode()}" class="crowdsourcing-annotations__question-text-input"><span class="crowdsourcing-annotations__gnd-text">https://d-nb.info/gnd/</span><input class="crowdsourcing-annotations__gnd-id form-control" onchange="{setIdFromEvent}" riot-value="{question.authorityData.baseUri && getIdAsNumber(anno)}"></input></div><div if="{this.opts.item.isReviewMode()}" class="crowdsourcing-annotations__question-text-input"><input class="form-control pl-1" disabled="{this.opts.item.isReviewMode() ? \'disabled\' : \'\'}" riot-value="{question.authorityData.baseUri}{getIdAsNumber(anno)}"></input><div if="{this.opts.item.isReviewMode()}" class="crowdsourcing-annotations__jump-to-gnd"><a target="_blank" href="{question.authorityData.baseUri}{getIdAsNumber(anno)}">{Crowdsourcing.translate(⁗cms_menu_create_item_new_tab⁗)}</a></div></div><div class="cms-module__actions crowdsourcing-annotations__annotation-action"><button if="{!this.opts.item.isReviewMode()}" onclick="{deleteAnnotationFromEvent}" class="crowdsourcing-annotations__delete-annotation btn btn--clean delete">{Crowdsourcing.translate(⁗action__delete_annotation⁗)} </button></div></div></div><button if="{showAddAnnotationButton()}" onclick="{addAnnotation}" class="options-wrapper__option btn btn--default" id="add-annotation">{Crowdsourcing.translate(⁗action__add_annotation⁗)}</button>', '', '', function(opts) {
 
-    	this.on('mount', function() {
-    		this.createObserver();
+	this.question = this.opts.question;
 
-    		this.refs.image.onload = function() {
-        		this.refs.image.classList.add( 'in' );
-				this.opts.observable.trigger( 'imageLoaded', this.opts.thumbnail );
-        		this.preloader = false;
-        		this.update();
-    		}.bind(this);
-    	}.bind(this));
+	this.on("mount", function() {
+	    this.question.initializeView((anno) => new Crowdsourcing.Annotation.AuthorityResource(anno, this.question.authorityData.context), this.update, this.update, this.focusAnnotation);
+	    this.opts.item.onImageOpen(function() {
+	        switch(this.question.targetSelector) {
+	            case Crowdsourcing.Question.Selector.WHOLE_PAGE:
+	            case Crowdsourcing.Question.Selector.WHOLE_SOURCE:
+	                if(this.question.annotations.length == 0 && !this.question.item.isReviewMode()) {
+	                    this.question.addAnnotation();
+	                }
+	        }
+	        this.update()
+	    }.bind(this));
+	});
 
-    	this.createObserver = function() {
-    		var observer;
-    		var options = {
-    			root: document.querySelector(this.opts.root),
-    		    rootMargin: "1000px 0px 1000px 0px",
-    		    threshold: 0.8
-    		};
+	this.focusAnnotation = function(index) {
+	    let id = "question_" + this.opts.index + "_annotation_" + index;
+	    let inputSelector = "#" + id + " input";
+	    this.root.querySelector(inputSelector).focus();
+	}.bind(this)
 
-    		observer = new IntersectionObserver(this.loadImages, options);
-    		observer.observe(this.refs.image);
-    	}.bind(this)
+	this.showAnnotationImages = function() {
+	    return this.question.isRegionTarget();
+	}.bind(this)
 
-    	this.loadImages = function(entries, observer) {
-    		entries.forEach( entry => {
-    			if (entry.isIntersecting) {
-    				this.preloader = true;
-    				this.refs.image.src = this.opts.imgsrc;
-    				this.update();
-    			}
-    		} );
-    	}.bind(this)
+	this.showInstructions = function() {
+	    return !this.opts.item.isReviewMode() &&  this.question.active && this.question.targetSelector == Crowdsourcing.Question.Selector.RECTANGLE && this.question.annotations.length == 0;
+	}.bind(this)
+
+	this.showInactiveInstructions = function() {
+	    return !this.opts.item.isReviewMode() &&  !this.question.active && this.question.targetSelector == Crowdsourcing.Question.Selector.RECTANGLE && this.opts.item.questions.filter(q => q.isRegionTarget()).length > 1;
+
+	}.bind(this)
+
+	this.showAddAnnotationButton = function() {
+	    return !this.question.isReviewMode() && !this.question.isRegionTarget() && this.question.mayAddAnnotation();
+	}.bind(this)
+
+	this.showLinkToGND = function() {
+	    return this.question.isReviewMode() && this.question.isRegionTarget();
+	}.bind(this)
+
+    this.setIdFromEvent = function(event) {
+        event.preventUpdate = true;
+        if(event.item.anno) {
+            let uri = this.question.authorityData.baseUri;
+            if(!uri.endsWith("/")) {
+                uri += "/"
+            }
+            uri += event.target.value;
+            event.item.anno.setId(uri);
+            this.question.saveToLocalStorage();
+        } else {
+            throw "No annotation to set"
+        }
+    }.bind(this)
+
+    this.deleteAnnotationFromEvent = function(event) {
+        if(event.item.anno) {
+            this.question.deleteAnnotation(event.item.anno);
+            this.update();
+        }
+    }.bind(this)
+
+    this.addAnnotation = function() {
+        this.question.addAnnotation();
+        this.question.focusCurrentAnnotation();
+    }.bind(this)
+
+    this.getIdAsNumber = function(anno) {
+        if(anno.isEmpty()) {
+            return "";
+        } else {
+            return anno.getId().replace(this.question.authorityData.baseUri, "").replace("/", "");
+        }
+    }.bind(this)
+
 });
-riot.tag2('fsthumbnails', '<div class="fullscreen__view-image-thumbs" ref="thumbnailWrapper"><div each="{thumbnail in thumbnails}" class="fullscreen__view-image-thumb"><figure class="fullscreen__view-image-thumb-image"><a href="{thumbnail.rendering[\'@id\']}"><fsthumbnailimage thumbnail="{thumbnail}" observable="{observable}" root=".fullscreen__view-image-thumbs-wrapper" imgsrc="{thumbnail.thumbnail[\'@id\']}"></fsThumbnailImage></a><figcaption><div class="fullscreen__view-image-thumb-image-order {thumbnail.loaded ? \'in\' : \'\'}">{thumbnail.label}</div></figcaption></figure></div></div>', '', '', function(opts) {
-        function rmObservable() {
-    		riot.observable( this );
-    	}
 
-    	this.observable = new rmObservable();
-        this.thumbnails = [];
-    	this.wrapper = document.getElementsByClassName( 'fullscreen__view-image-thumbs-wrapper' );
-    	this.controls = document.getElementsByClassName( 'image-controls' );
-    	this.image = document.getElementById( 'imageContainer' );
-    	this.viewportWidth;
-    	this.sidebarWidth;
-    	this.thumbsWidth;
 
-    	this.on( 'mount', function() {
-        	$( '[data-show="thumbs"]' ).on( 'click', function(e) {
-        		e.currentTarget.classList.toggle('in');
+riot.tag2('campaignitem', '<div if="{!opts.pi}" class="crowdsourcing-annotations__content-wrapper"> {Crowdsourcing.translate(⁗crowdsourcing__error__no_item_available⁗)} </div><div if="{opts.pi}" class="crowdsourcing-annotations__content-wrapper"><span if="{this.loading}" class="crowdsourcing-annotations__loader-wrapper"><img riot-src="{this.opts.loaderimageurl}"></span><span if="{this.error}" class="crowdsourcing-annotations__loader-wrapper"><span class="error_message">{this.error.message}</span></span></span><div class="crowdsourcing-annotations__content-left"><imageview if="{this.item}" id="mainImage" source="{this.item.getCurrentCanvas()}" item="{this.item}"></imageView><canvaspaginator if="{this.item}" item="{this.item}"></canvasPaginator></div><div if="{this.item}" class="crowdsourcing-annotations__content-right"><div class="crowdsourcing-annotations__questions-wrapper"><div each="{question, index in this.item.questions}" onclick="{setActive}" class="crowdsourcing-annotations__question-wrapper {question.isRegionTarget() ? \'area-selector-question\' : \'\'} {question.active ? \'active\' : \'\'}"><div class="crowdsourcing-annotations__question-wrapper-description">{Crowdsourcing.translate(question.text)}</div><plaintextquestion if="{question.questionType == \'PLAINTEXT\'}" question="{question}" item="{this.item}" index="{index}"></plaintextQuestion><richtextquestion if="{question.questionType == \'RICHTEXT\'}" question="{question}" item="{this.item}" index="{index}"></richtextQuestion><geolocationquestion if="{question.questionType == \'GEOLOCATION_POINT\'}" question="{question}" item="{this.item}" index="{index}"></geoLocationQuestion><authorityresourcequestion if="{question.questionType == \'NORMDATA\'}" question="{question}" item="{this.item}" index="{index}"></authorityResourceQuestion></div></div><campaignitemlog if="{item.showLog}" user="{item.currentUser}" messages="{item.log}"></campaignItemLog><div if="{!item.isReviewMode()}" class="crowdsourcing-annotations__options-wrapper crowdsourcing-annotations__options-wrapper-annotate"><button onclick="{saveAnnotations}" class="crowdsourcing-annotations__options-wrapper__option btn btn--default" id="save">{Crowdsourcing.translate(⁗button__save⁗)}</button><div>{Crowdsourcing.translate(⁗label__or⁗)}</div><button onclick="{submitForReview}" class="options-wrapper__option btn btn--success" id="review">{Crowdsourcing.translate(⁗action__submit_for_review⁗)}</button><div>{Crowdsourcing.translate(⁗label__or⁗)}</div><button if="{this.opts.nextitemurl}" onclick="{skipItem}" class="options-wrapper__option btn btn--link" id="skip">{Crowdsourcing.translate(⁗action__skip_item⁗)}</button></div><div if="{item.isReviewMode()}" class="crowdsourcing-annotations__options-wrapper crowdsourcing-annotations__options-wrapper-review"><button onclick="{acceptReview}" class="options-wrapper__option btn btn--success" id="accept">{Crowdsourcing.translate(⁗action__accept_review⁗)}</button><div>{Crowdsourcing.translate(⁗label__or⁗)}</div><button onclick="{rejectReview}" class="options-wrapper__option btn btn--danger" id="reject">{Crowdsourcing.translate(⁗action__reject_review⁗)}</button><div>{Crowdsourcing.translate(⁗label__or⁗)}</div><button if="{this.opts.nextitemurl}" onclick="{skipItem}" class="options-wrapper__option btn btn--link" id="skip">{Crowdsourcing.translate(⁗action__skip_item⁗)}</button></div></div></div>', '', '', function(opts) {
 
-        		if ( e.currentTarget.classList.contains( 'in' ) ) {
-            		$( '[data-show="thumbs"]' ).attr( 'title', opts.msg.hideThumbs ).tooltip( '_fixTitle' ).tooltip( 'show' );
-        		}
-        		else {
-            		$( '[data-show="thumbs"]' ).attr( 'title', opts.msg.showThumbs ).tooltip( '_fixTitle' ).tooltip( 'show' );
-        		}
+	this.itemSource = this.opts.restapiurl + "crowdsourcing/campaigns/" + this.opts.campaign + "/" + this.opts.pi + "/";
+	this.annotationSource = this.itemSource + "annotations/";
+	this.loading = true;
 
-        		console.log("controls", this.controls);
-        		for (let control of this.controls) {
-        		    control.classList.toggle( 'faded' );
-        		};
+	this.on("mount", function() {
+	    fetch(this.itemSource)
+	    .then( response => response.json() )
+	    .then( itemConfig => this.loadItem(itemConfig))
+	    .then( () => this.fetch(this.annotationSource))
+	    .then( response => response.json() )
+	    .then( annotations => this.initAnnotations(annotations))
+	    .then( () => this.item.notifyItemInitialized())
+		.catch( error => {
+		    console.error("ERROR ", error);
+	    	this.error = error;
+	    	this.update();
+		})
+	});
 
-            	this.viewportWidth = document.getElementById( 'fullscreen' ).offsetWidth;
-            	this.sidebarWidth = document.getElementById( 'fullscreenViewSidebar' ).offsetWidth;
-            	if ( sessionStorage.getItem( 'fsSidebarStatus' ) === 'false' ) {
-                	this.thumbsWidth = this.viewportWidth;
-            	}
-            	else {
-                	this.thumbsWidth = this.viewportWidth - this.sidebarWidth;
-            	}
+	this.loadItem = function(itemConfig) {
+	    console.log("load item ", itemConfig);
+	    this.item = new Crowdsourcing.Item(itemConfig, 0);
+	    if(this.opts.currentuserid) {
+	        this.item.setCurrentUser(this.opts.currentuserid, this.opts.currentusername, this.opts.currentuseravatar);
+	    }
+	    this.item.setReviewMode(this.opts.itemstatus && this.opts.itemstatus.toUpperCase() == "REVIEW");
+	    console.log("loaded item ", this.item);
+		fetch(this.item.imageSource + "?mode=simple")
+		.then( response => response.json() )
+		.then( imageSource => this.initImageView(imageSource))
+		.then( () => {this.loading = false; this.update()})
+		.catch( error => {
+		    this.loading = false;
+		    console.error("ERROR ", error);
+		})
 
-            	let visibility = $( this.image ).css('visibility');
-            	if(visibility == 'hidden') {
-            		$( this.image ).css('visibility','visible');
-            	} else {
-            		$( this.image ).css('visibility','hidden');
-            	}
+		this.item.onImageRotated( () => this.update());
+	}.bind(this)
 
-        		$( this.wrapper ).width( this.thumbsWidth ).fadeToggle( 'fast' );
+	this.initImageView = function(imageSource) {
+	    this.item.initViewer(imageSource)
+	    this.update();
+	}.bind(this)
 
-            	if ( this.thumbnails.length == 0 ) {
+	this.resolveCanvas = function(source) {
+	    if(Crowdsourcing.isString(source)) {
+	        return fetch(source)
+	        .then( response => response.json() );
+	    } else {
+	        return Q.fcall(() => source);
+	    }
+	}.bind(this)
 
-            		$.ajax( {
-                        url: opts.thumbnailUrl,
-                        type: "GET",
-                        datatype: "JSON"
-                    } ).then( function( data ) {
-                    	this.thumbnails = data;
-                    	this.update();
-                    }.bind( this ) );
-    			}
-        	}.bind(this));
-    	}.bind( this ) );
+	this.initAnnotations = function(annotations) {
+	    let save = this.item.createAnnotationMap(annotations);
+	    this.item.saveToLocalStorage(save);
+	}.bind(this)
 
-    	this.observable.on( 'imageLoaded', function( thumbnail ) {
-    		thumbnail.loaded = true;
-    		this.update();
-    	}.bind( this ) );
+	this.resetItems = function() {
+	    fetch(this.annotationSource)
+	    .then( response => response.json() )
+	    .then( annotations => this.initAnnotations(annotations))
+	    .then( () => this.resetQuestions())
+	    .then( () => this.item.notifyAnnotationsReload())
+	    .then( () => this.update())
+		.catch( error => console.error("ERROR ", error));
+	}.bind(this)
+
+	this.resetQuestions = function() {
+	    this.item.questions.forEach(question => {
+		    question.loadAnnotationsFromLocalStorage();
+		    question.initAnnotations();
+	    })
+	}.bind(this)
+
+	this.setActive = function(event) {
+	    if(event.item.question.isRegionTarget()) {
+		    this.item.questions.forEach(q => q.active = false);
+		    event.item.question.active = true;
+	    }
+	}.bind(this)
+
+	this.saveToServer = function() {
+	    let pages = this.item.loadAnnotationPages();
+	    this.loading = true;
+	    this.update();
+	    return fetch(this.annotationSource, {
+            method: "PUT",
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            cache: "no-cache",
+            mode: 'cors',
+            body: JSON.stringify(pages)
+	    })
+	}.bind(this)
+
+	this.saveAnnotations = function() {
+	    this.saveToServer()
+	    .then(() => this.resetItems())
+	    .then(() => this.setStatus("ANNOTATE"))
+	    .catch((error) => {
+	        console.error(error);
+	    })
+	    .then(() => {
+	        this.loading = false;
+		    this.update();
+	    });
+	}.bind(this)
+
+	this.submitForReview = function() {
+	    this.saveToServer()
+	    .then(() => this.setStatus("REVIEW"))
+	    .then(() => this.skipItem());
+
+	}.bind(this)
+
+	this.acceptReview = function() {
+	    this.setStatus("FINISHED")
+	    .then(() => this.skipItem());
+	}.bind(this)
+
+	this.rejectReview = function() {
+	    this.setStatus("ANNOTATE")
+	    .then(() => this.skipItem());
+	}.bind(this)
+
+	this.skipItem = function() {
+	    window.location.href = this.opts.nextitemurl;
+	}.bind(this)
+
+	this.setStatus = function(status) {
+	    let body = {
+	            recordStatus: status,
+	            creator: this.item.getCreator().id,
+	    }
+	    if(this.item.log) {
+	    	body.log = this.item.log.filter(message => message.id === undefined);
+	    }
+	    return fetch(this.itemSource, {
+            method: "PUT",
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            cache: "no-cache",
+            mode: 'cors',
+            body: JSON.stringify(body)
+	    })
+	}.bind(this)
+
+	this.fetch = function(url) {
+	    return fetch(url, {
+            method: "GET",
+            cache: "no-cache",
+            mode: 'cors',
+	    })
+	}.bind(this)
+
+});
+riot.tag2('campaignitemlog', '<div each="{message in messages}" class="{isCurrentUser(message.creator) ? \'from_me\' : \'\'}"><div>{message.creator.name}</div><img riot-src="{message.creator.avatar}"></img><div>{message.dateCreated}</div><div>{message.message}</div></div><div><div>{currentUser.name}</div><div>{currentUser.avatar}</div><input onchange="{addMessage}" value=""></input></div>', '', '', function(opts) {
+
+this.currentUser = this.opts.user;
+this.messages = this.opts.messages
+
+this.on("mount", function() {
+
+});
+
+this.addMessage = function(event) {
+    event.preventUpdate = true;
+    let text = event.target.value;
+    event.target.value = "";
+    if(text) {
+        let message = {
+                message : text,
+                dateCreated : new Date().toJSON(),
+                creator : this.currentUser,
+
+        }
+        this.messages.push(message);
+        this.update();
+    }
+}.bind(this)
+
+this.isCurrentUser = function(user) {
+    return user.userId == this.currentUser.userId;
+}.bind(this)
+
+});
+
+
+riot.tag2('canvaspaginator', '<nav class="numeric-paginator"><ul><li if="{getCurrentIndex() > 0}" class="numeric-paginator__navigate navigate_prev"><span onclick="{this.loadPrevious}"><i class="fa fa-angle-left" aria-hidden="true"></i></span></li><li each="{canvas in this.firstCanvases()}" class="group_left {this.getIndex(canvas) == this.getCurrentIndex() ? \'numeric-paginator__active\' : \'\'}"><span index="{this.getIndex(canvas)}" onclick="{this.loadFromEvent}">{this.getOrder(canvas)}</span></li><li class="numeric-paginator__separator" if="{this.useMiddleButtons()}">...</li><li each="{canvas in this.middleCanvases()}" class="group_middle {this.getIndex(canvas) == this.getCurrentIndex() ? \'numeric-paginator__active\' : \'\'}"><span index="{this.getIndex(canvas)}" onclick="{this.loadFromEvent}">{this.getOrder(canvas)}</span></li><li class="numeric-paginator__separator" if="{this.useLastButtons()}">...</li><li each="{canvas in this.lastCanvases()}" class="group_right {this.getIndex(canvas) == this.getCurrentIndex() ? \'numeric-paginator__active\' : \'\'}"><span index="{this.getIndex(canvas)}" onclick="{this.loadFromEvent}">{this.getOrder(canvas)}</span></li><li if="{getCurrentIndex() < getTotalImageCount()-1}" class="numeric-paginator__navigate navigate_next"><span onclick="{this.loadNext}"><i class="fa fa-angle-right" aria-hidden="true"></i></span></li></ul></nav>', '', '', function(opts) {
+
+this.on( "mount", function() {
+
+    var paginatorConfig = {
+	        previous: () => this.load(this.getCurrentIndex()-1),
+	        next: () => this.load(this.getCurrentIndex()+1),
+	        first: () => this.load(0),
+	        last: () => this.load(this.getTotalImageCount()-1),
+	}
+	viewerJS.paginator.init(paginatorConfig);
+
+})
+
+this.loadFromEvent = function(e) {
+    let index = parseInt(e.target.attributes["index"].value);
+	this.load(index);
+}.bind(this)
+
+this.load = function(index) {
+    if(index != this.getCurrentIndex() && index >= 0 && index < this.getTotalImageCount()) {
+		this.opts.item.loadImage(index);
+		this.update();
+    }
+}.bind(this)
+
+this.loadPrevious = function() {
+    let index = this.getCurrentIndex()-1;
+	this.load(index);
+}.bind(this)
+
+this.loadNext = function() {
+    let index = this.getCurrentIndex()+1;
+	this.load(index);
+}.bind(this)
+
+this.getCurrentIndex = function() {
+    return this.opts.item.currentCanvasIndex;
+}.bind(this)
+
+this.getIndex = function(canvas) {
+    return this.opts.item.canvases.indexOf(canvas);
+}.bind(this)
+
+this.getOrder = function(canvas) {
+    return this.getIndex(canvas) + 1;
+}.bind(this)
+
+this.getTotalImageCount = function() {
+    return this.opts.item.canvases.length;
+}.bind(this)
+
+this.useMiddleButtons = function() {
+    return this.getTotalImageCount() > 9 && this.getCurrentIndex() > 4 && this.getCurrentIndex() < this.getTotalImageCount()-5;
+}.bind(this)
+
+this.useLastButtons = function() {
+    return this.getTotalImageCount() > 9;
+}.bind(this)
+
+this.firstCanvases = function() {
+    if(this.getTotalImageCount() < 10) {
+        return this.opts.item.canvases;
+    } else if(this.getCurrentIndex() < 5) {
+        return this.opts.item.canvases.slice(0, this.getCurrentIndex()+3);
+    } else {
+        return this.opts.item.canvases.slice(0, 2);
+    }
+}.bind(this)
+
+this.middleCanvases = function() {
+    if(this.getTotalImageCount() < 10) {
+        return [];
+    } else if(this.getCurrentIndex() < this.getTotalImageCount()-5 && this.getCurrentIndex() > 4) {
+        return this.opts.item.canvases.slice(this.getCurrentIndex()-2, this.getCurrentIndex()+3);
+    } else {
+        return [];
+    }
+}.bind(this)
+
+this.lastCanvases = function() {
+    if(this.getTotalImageCount() < 10) {
+        return [];
+    } else if(this.getCurrentIndex() < this.getTotalImageCount()-5) {
+        return this.opts.item.canvases.slice(this.getTotalImageCount()-2);
+    } else {
+        return this.opts.item.canvases.slice(this.getCurrentIndex()-2);
+    }
+}.bind(this)
+
+this.toPageNumber = function(e) {
+    console.log("Change in ", e.target, e.target.value);
+    let page = parseInt(e.target.value);
+    if(page > 0 && page <= this.getTotalImageCount()) {
+    	this.load(page-1);
+    } else{
+        alert(page + " is not a valid page number")
+    }
+}.bind(this)
+
 });
 riot.tag2('geolocationquestion', '<div if="{this.showInstructions()}" class="crowdsourcing-annotations__instruction"><label>{Crowdsourcing.translate(⁗crowdsourcing__help__create_rect_on_image⁗)}</label></div><div if="{this.showAddMarkerInstructions()}" class="crowdsourcing-annotations__single-instruction"><label>{Crowdsourcing.translate(⁗crowdsourcing__help__add_marker_to_image⁗)}</label></div><div if="{this.showInactiveInstructions()}" class="crowdsourcing-annotations__single-instruction -inactive"><label>{Crowdsourcing.translate(⁗crowdsourcing__help__make_active⁗)}</label></div><div id="geoMap_{opts.index}" class="geo-map"></div><div id="annotation_{index}" each="{anno, index in this.annotations}"></div>', '', '', function(opts) {
 
@@ -1741,6 +1677,416 @@ riot.tag2('imagecontrols', '<div class="image_controls"><div class="image-contro
         }
     }.bind(this)
 });
+/**
+ * Takes a IIIF canvas object in opts.source. 
+ * If opts.item exists, it creates the method opts.item.setImageSource(canvas) 
+ * and provides an observable in opts.item.imageChanged triggered every time a new image source is loaded (including the first time)
+ * The imageView itself is stored in opts.item.image
+ */
+
+riot.tag2('imageview', '<div id="wrapper_{opts.id}" class="imageview_wrapper"><span if="{this.error}" class="loader_wrapper"><span class="error_message">{this.error.message}</span></span><imagecontrols if="{this.image}" image="{this.image}" item="{this.opts.item}"></imageControls><div class="image_container"><div id="image_{opts.id}" class="image"></div></div></div>', '', '', function(opts) {
+
+	this.getPosition = function() {
+		let pos_os = this.dataPoint.getPosition();
+		let pos_image = ImageView.CoordinateConversion.scaleToImage(pos_os, this.image.viewer, this.image.getOriginalImageSize());
+		let pos_image_rot = ImageView.CoordinateConversion.convertPointFromImageToRotatedImage(pos_image, this.image.controls.getRotation(), this.image.getOriginalImageSize());
+		return pos_image_rot;
+	}.bind(this)
+
+	this.on("mount", function() {
+		$("#controls_" + opts.id + " .draw_overlay").on("click", function() {
+			this.drawing=true;
+		}.bind(this));
+		try{
+			imageViewConfig.image.tileSource = this.getImageInfo(opts.source);
+			this.image = new ImageView.Image(imageViewConfig);
+			this.image.load()
+			.then( (image) => {
+				if(this.opts.item) {
+					this.opts.item.image = this.image;
+
+				    var now = rxjs.of(image);
+					this.opts.item.setImageSource = function(source) {
+					    this.image.setTileSource(this.getImageInfo(source));
+					}.bind(this);
+				    this.opts.item.notifyImageOpened(image.observables.viewerOpen.pipe(rxjs.operators.map( () => image),rxjs.operators.merge(now)));
+				}
+				return image;
+			})
+			.then(function() {
+			  	this.update();
+			}.bind(this));
+		} catch(error) {
+		    console.error("ERROR ", error);
+	    	this.error = error;
+	    	this.update();
+		}
+	})
+
+	this.getImageInfo = function(canvas) {
+	    return canvas.images[0].resource.service["@id"] + "/info.json"
+	}.bind(this)
+
+	const imageViewConfig = {
+			global : {
+				divId : "image_" + opts.id,
+				fitToContainer: true,
+				adaptContainerWidth: false,
+				adaptContainerHeight: false,
+				footerHeight: 00,
+				zoomSpeed: 1.3,
+				allowPanning : true,
+			},
+			image : {}
+	};
+
+	const drawStyle = {
+			borderWidth: 2,
+			borderColor: "#2FEAD5"
+	}
+
+	const lineStyle = {
+			lineWidth : 1,
+			lineColor : "#EEC83B"
+	}
+
+	const pointStyle = ImageView.DataPoint.getPointStyle(20, "#EEC83B");
+
+});
+
+
+riot.tag2('plaintextquestion', '<div if="{this.showInstructions()}" class="crowdsourcing-annotations__instruction"><label>{Crowdsourcing.translate(⁗crowdsourcing__help__create_rect_on_image⁗)}</label></div><div if="{this.showInactiveInstructions()}" class="crowdsourcing-annotations__single-instruction -inactive"><label>{Crowdsourcing.translate(⁗crowdsourcing__help__make_active⁗)}</label></div><div class="crowdsourcing-annotations__wrapper" id="question_{opts.index}_annotation_{index}" each="{anno, index in this.question.annotations}"><div class="crowdsourcing-annotations__annotation-area"><div if="{this.showAnnotationImages()}" class="crowdsourcing-annotations__annotation-area-image" riot-style="border-color: {anno.getColor()}"><img riot-src="{this.question.getImage(anno)}"></img></div><div class="crowdsourcing-annotations__question-text-input"><textarea disabled="{this.opts.item.isReviewMode() ? \'disabled\' : \'\'}" onchange="{setTextFromEvent}" riot-value="{anno.getText()}"></textarea></div></div><div class="cms-module__actions crowdsourcing-annotations__annotation-action"><button if="{!this.opts.item.isReviewMode()}" onclick="{deleteAnnotationFromEvent}" class="crowdsourcing-annotations__delete-annotation btn btn--clean delete">{Crowdsourcing.translate(⁗action__delete_annotation⁗)} </button></div></div><button if="{showAddAnnotationButton()}" onclick="{addAnnotation}" class="options-wrapper__option btn btn--default" id="add-annotation">{Crowdsourcing.translate(⁗action__add_annotation⁗)}</button>', '', '', function(opts) {
+
+	this.question = this.opts.question;
+
+	this.on("mount", function() {
+	    this.question.initializeView((anno) => new Crowdsourcing.Annotation.Plaintext(anno), this.update, this.update, this.focusAnnotation);
+	    this.opts.item.onImageOpen(function() {
+	        switch(this.question.targetSelector) {
+	            case Crowdsourcing.Question.Selector.WHOLE_PAGE:
+	            case Crowdsourcing.Question.Selector.WHOLE_SOURCE:
+	                if(this.question.annotations.length == 0 && !this.question.item.isReviewMode()) {
+	                    this.question.addAnnotation();
+	                }
+	        }
+	        this.update()
+	    }.bind(this));
+	});
+
+	this.focusAnnotation = function(index) {
+	    let id = "question_" + this.opts.index + "_annotation_" + index;
+	    let inputSelector = "#" + id + " textarea";
+	    this.root.querySelector(inputSelector).focus();
+	}.bind(this)
+
+	this.showAnnotationImages = function() {
+	    return this.question.isRegionTarget();
+	}.bind(this)
+
+	this.showInstructions = function() {
+	    return !this.opts.item.isReviewMode() &&  this.question.active && this.question.targetSelector == Crowdsourcing.Question.Selector.RECTANGLE && this.question.annotations.length == 0;
+	}.bind(this)
+
+	this.showInactiveInstructions = function() {
+	    return !this.opts.item.isReviewMode() &&  !this.question.active && this.question.targetSelector == Crowdsourcing.Question.Selector.RECTANGLE && this.opts.item.questions.filter(q => q.isRegionTarget()).length > 1;
+
+	}.bind(this)
+
+	this.showAddAnnotationButton = function() {
+	    return !this.question.isReviewMode() && !this.question.isRegionTarget() && this.question.mayAddAnnotation();
+	}.bind(this)
+
+    this.setTextFromEvent = function(event) {
+        event.preventUpdate = true;
+        if(event.item.anno) {
+            event.item.anno.setText(event.target.value);
+            this.question.saveToLocalStorage();
+        } else {
+            throw "No annotation to set"
+        }
+    }.bind(this)
+
+    this.deleteAnnotationFromEvent = function(event) {
+        if(event.item.anno) {
+            this.question.deleteAnnotation(event.item.anno);
+            this.update();
+        }
+    }.bind(this)
+
+    this.addAnnotation = function() {
+        this.question.addAnnotation();
+        this.question.focusCurrentAnnotation();
+    }.bind(this)
+
+});
+riot.tag2('progressbar', '<div class="goobi-progress-bar-wrapper"><div class="goobi-progress-bar"><div each="{value, index in this.values}" class="goobi-progress-bar__bar {styleClasses[index]}" riot-style="width: {getRelativeWidth(value)};"></div></div></div>', '', '', function(opts) {
+	this.values = JSON.parse(this.opts.values);
+	this.styleClasses = JSON.parse(this.opts.styleclasses);
+
+	this.on("mount", function() {
+	    let bar = this.root.querySelector(".goobi-progress-bar");
+	    this.totalBarWidth = bar.getBoundingClientRect().width;
+		this.update();
+	})
+
+	this.getRelativeWidth = function(value) {
+		    let barWidth = value/this.opts.total*this.totalBarWidth;
+		    return barWidth + "px";
+	}.bind(this)
+
+	this.loaded = function() {
+	    console.log("on load");
+	}.bind(this)
+
+});
+riot.tag2('questiontemplate', '<div if="{showInstructions()}" class="annotation_instruction"><label>{Crowdsourcing.translate(⁗crowdsourcing__help__create_rect_on_image⁗)}</label></div><div if="{showInactiveInstructions()}" class="annotation_instruction annotation_instruction_inactive"><label>{Crowdsourcing.translate(⁗crowdsourcing__help__make_active⁗)}</label></div><div class="annotation_wrapper" id="question_{opts.index}_annotation_{index}" each="{anno, index in this.question.annotations}"><div class="annotation_area"></div></div><button if="{showAddAnnotationButton()}" onclick="{addAnnotation}" class="options-wrapper__option btn btn--default" id="add-annotation">{Crowdsourcing.translate(⁗action__add_annotation⁗)}</button>', '', '', function(opts) {
+
+this.question = this.opts.question;
+
+this.on("mount", function() {
+    this.question.initializeView((anno) => new Crowdsourcing.Annotation.Implementation(anno), this.update, this.update, this.focusAnnotation);
+    this.opts.item.onImageOpen(function() {
+        this.update()
+    }.bind(this));
+});
+
+this.focusAnnotation = function(index) {
+    let id = "question_" + this.opts.index + "_annotation_" + index;
+    let inputSelector = "#" + id + " textarea";
+    this.root.querySelector(inputSelector).focus();
+}.bind(this)
+
+this.showInstructions = function() {
+    return !this.opts.item.isReviewMode() &&  this.question.active && this.question.targetSelector == Crowdsourcing.Question.Selector.RECTANGLE && this.question.annotations.length == 0;
+}.bind(this)
+
+this.showInactiveInstructions = function() {
+    return !this.opts.item.isReviewMode() &&  !this.question.active && this.question.targetSelector == Crowdsourcing.Question.Selector.RECTANGLE && this.opts.item.questions.filter(q => q.isRegionTarget()).length > 1;
+
+}.bind(this)
+
+this.showAddAnnotationButton = function() {
+    return !this.question.isReviewMode() && !this.question.isRegionTarget() && this.question.mayAddAnnotation();
+}.bind(this)
+
+this.setBodyFromEvent = function(event) {
+    event.preventUpdate = true;
+    if(event.item.anno) {
+
+        this.question.saveToLocalStorage();
+    } else {
+        throw "No annotation to set"
+    }
+}.bind(this)
+
+this.deleteAnnotationFromEvent = function(event) {
+    if(event.item.anno) {
+        this.question.deleteAnnotation(event.item.anno);
+        this.update();
+    }
+}.bind(this)
+
+this.addAnnotation = function() {
+    this.question.addAnnotation();
+    this.question.focusCurrentAnnotation();
+}.bind(this)
+
+});
+
+
+riot.tag2('richtextquestion', '<div if="{this.showInstructions()}" class="annotation_instruction"><label>{Crowdsourcing.translate(⁗crowdsourcing__help__create_rect_on_image⁗)}</label></div><div if="{this.showInactiveInstructions()}" class="crowdsourcing-annotations__single-instruction -inactive"><label>{Crowdsourcing.translate(⁗crowdsourcing__help__make_active⁗)}</label></div><div class="crowdsourcing-annotations__wrapper" id="question_{opts.index}_annotation_{index}" each="{anno, index in this.question.annotations}"><div class="crowdsourcing-annotations__annotation-area"><div if="{this.showAnnotationImages()}" class="crowdsourcing-annotations__annotation-area-image" riot-style="border-color: {anno.getColor()}"><img riot-src="{this.question.getImage(anno)}"></img></div><div class="crowdsourcing-annotations__question-text-input"><textarea class="tinyMCE" disabled="{this.opts.item.isReviewMode() ? \'disabled\' : \'\'}" onchange="{setTextFromEvent}" riot-value="{anno.getText()}"></textarea></div></div><div class="cms-module__actions crowdsourcing-annotations__annotation-action"><button if="{!this.opts.item.isReviewMode()}" onclick="{deleteAnnotationFromEvent}" class="annotation_area__button btn btn--clean delete">{Crowdsourcing.translate(⁗action__delete_annotation⁗)} </button></div></div><button if="{showAddAnnotationButton()}" onclick="{addAnnotation}" class="options-wrapper__option btn btn--default" id="add-annotation">{Crowdsourcing.translate(⁗action__add_annotation⁗)}</button>', '', '', function(opts) {
+
+	this.question = this.opts.question;
+
+	this.on("mount", function() {
+	  console.log("item ", this.question.item);
+	    this.question.initializeView((anno) => new Crowdsourcing.Annotation.Richtext(anno), this.update, this.update, this.focusAnnotation);
+
+	    this.opts.item.onImageOpen(function() {
+	        switch(this.question.targetSelector) {
+	            case Crowdsourcing.Question.Selector.WHOLE_PAGE:
+	            case Crowdsourcing.Question.Selector.WHOLE_SOURCE:
+	                if(this.question.annotations.length == 0 && !this.question.item.isReviewMode()) {
+	                    this.question.addAnnotation();
+	                }
+	        }
+	        this.update();
+	    }.bind(this));
+	});
+
+	this.on("updated", function(e) {
+	    this.initTinyMce();
+	});
+
+	this.initTinyMce = function() {
+	    if($(".tinyMCE").length) {
+		    let config = viewerJS.tinyMce.getConfig({
+		        language: Crowdsourcing.language,
+		    	setup: (editor) => {
+		    	    editor.on('change', (e) => {
+		    	        editor.save();
+		    	        editor.targetElm.dispatchEvent(new Event('change'));
+		    	    });
+		    	}
+		    });
+		    if(this.opts.item.isReviewMode()) {
+		        config.readonly = 1;
+		    }
+	  	    tinymce.init( config );
+	    }
+	}.bind(this)
+
+	this.focusAnnotation = function(index) {
+	    let id = "question_" + this.opts.index + "_annotation_" + index;
+	    let inputSelector = "#" + id + " textarea";
+	    this.root.querySelector(inputSelector).focus();
+	}.bind(this)
+
+	this.showAnnotationImages = function() {
+	    return this.question.isRegionTarget();
+	}.bind(this)
+
+	this.showInstructions = function() {
+	    return !this.opts.item.isReviewMode() &&  this.question.active && this.question.targetSelector == Crowdsourcing.Question.Selector.RECTANGLE && this.question.annotations.length == 0;
+	}.bind(this)
+
+	this.showInactiveInstructions = function() {
+	    return !this.opts.item.isReviewMode() &&  !this.question.active && this.question.targetSelector == Crowdsourcing.Question.Selector.RECTANGLE && this.opts.item.questions.filter(q => q.isRegionTarget()).length > 1;
+
+	}.bind(this)
+
+	this.showAddAnnotationButton = function() {
+	    return !this.question.isReviewMode() && !this.question.isRegionTarget() && this.question.mayAddAnnotation();
+	}.bind(this)
+
+    this.setTextFromEvent = function(event) {
+        event.preventUpdate = true;
+        if(event.item.anno) {
+            event.item.anno.setText(event.target.value);
+            this.question.saveToLocalStorage();
+        } else {
+            throw "No annotation to set"
+        }
+    }.bind(this)
+
+    this.deleteAnnotationFromEvent = function(event) {
+        if(event.item.anno) {
+            this.question.deleteAnnotation(event.item.anno);
+            this.update();
+        }
+    }.bind(this)
+
+    this.addAnnotation = function() {
+        this.question.addAnnotation();
+        this.question.focusCurrentAnnotation();
+    }.bind(this)
+
+});
+
+
+riot.tag2('fsthumbnailimage', '<div class="fullscreen__view-image-thumb-preloader" if="{preloader}"></div><img ref="image" alt="Thumbnail Image">', '', '', function(opts) {
+    	this.preloader = false;
+
+    	this.on('mount', function() {
+    		this.createObserver();
+
+    		this.refs.image.onload = function() {
+        		this.refs.image.classList.add( 'in' );
+				this.opts.observable.trigger( 'imageLoaded', this.opts.thumbnail );
+        		this.preloader = false;
+        		this.update();
+    		}.bind(this);
+    	}.bind(this));
+
+    	this.createObserver = function() {
+    		var observer;
+    		var options = {
+    			root: document.querySelector(this.opts.root),
+    		    rootMargin: "1000px 0px 1000px 0px",
+    		    threshold: 0.8
+    		};
+
+    		observer = new IntersectionObserver(this.loadImages, options);
+    		observer.observe(this.refs.image);
+    	}.bind(this)
+
+    	this.loadImages = function(entries, observer) {
+    		entries.forEach( entry => {
+    			if (entry.isIntersecting) {
+    				this.preloader = true;
+    				this.refs.image.src = this.opts.imgsrc;
+    				this.update();
+    			}
+    		} );
+    	}.bind(this)
+});
+riot.tag2('fsthumbnails', '<div class="fullscreen__view-image-thumbs" ref="thumbnailWrapper"><div each="{thumbnail in thumbnails}" class="fullscreen__view-image-thumb"><figure class="fullscreen__view-image-thumb-image"><a href="{thumbnail.rendering[\'@id\']}"><fsthumbnailimage thumbnail="{thumbnail}" observable="{observable}" root=".fullscreen__view-image-thumbs-wrapper" imgsrc="{thumbnail.thumbnail[\'@id\']}"></fsThumbnailImage></a><figcaption><div class="fullscreen__view-image-thumb-image-order {thumbnail.loaded ? \'in\' : \'\'}">{thumbnail.label}</div></figcaption></figure></div></div>', '', '', function(opts) {
+        function rmObservable() {
+    		riot.observable( this );
+    	}
+
+    	this.observable = new rmObservable();
+        this.thumbnails = [];
+    	this.wrapper = document.getElementsByClassName( 'fullscreen__view-image-thumbs-wrapper' );
+    	this.controls = document.getElementsByClassName( 'image-controls' );
+    	this.image = document.getElementById( 'imageContainer' );
+    	this.viewportWidth;
+    	this.sidebarWidth;
+    	this.thumbsWidth;
+
+    	this.on( 'mount', function() {
+        	$( '[data-show="thumbs"]' ).on( 'click', function(e) {
+        		e.currentTarget.classList.toggle('in');
+
+        		if ( e.currentTarget.classList.contains( 'in' ) ) {
+            		$( '[data-show="thumbs"]' ).attr( 'title', opts.msg.hideThumbs ).tooltip( '_fixTitle' ).tooltip( 'show' );
+        		}
+        		else {
+            		$( '[data-show="thumbs"]' ).attr( 'title', opts.msg.showThumbs ).tooltip( '_fixTitle' ).tooltip( 'show' );
+        		}
+
+        		console.log("controls", this.controls);
+        		for (let control of this.controls) {
+        		    control.classList.toggle( 'faded' );
+        		};
+
+            	this.viewportWidth = document.getElementById( 'fullscreen' ).offsetWidth;
+            	this.sidebarWidth = document.getElementById( 'fullscreenViewSidebar' ).offsetWidth;
+            	if ( sessionStorage.getItem( 'fsSidebarStatus' ) === 'false' ) {
+                	this.thumbsWidth = this.viewportWidth;
+            	}
+            	else {
+                	this.thumbsWidth = this.viewportWidth - this.sidebarWidth;
+            	}
+
+            	let visibility = $( this.image ).css('visibility');
+            	if(visibility == 'hidden') {
+            		$( this.image ).css('visibility','visible');
+            	} else {
+            		$( this.image ).css('visibility','hidden');
+            	}
+
+        		$( this.wrapper ).width( this.thumbsWidth ).fadeToggle( 'fast' );
+
+            	if ( this.thumbnails.length == 0 ) {
+
+            		$.ajax( {
+                        url: opts.thumbnailUrl,
+                        type: "GET",
+                        datatype: "JSON"
+                    } ).then( function( data ) {
+                    	this.thumbnails = data;
+                    	this.update();
+                    }.bind( this ) );
+    			}
+        	}.bind(this));
+    	}.bind( this ) );
+
+    	this.observable.on( 'imageLoaded', function( thumbnail ) {
+    		thumbnail.loaded = true;
+    		this.update();
+    	}.bind( this ) );
+});
 riot.tag2('imagefilters', '<div class="imagefilters__filter-list"><div class="imagefilters__filter" each="{filter in filters}"><span class="imagefilters__label {filter.config.slider ? \'\' : \'imagefilters__label-long\'}">{filter.config.label}</span><input disabled="{filter.disabled ? \'disabled=\' : \'\'}" class="imagefilters__checkbox" if="{filter.config.checkbox}" type="checkbox" onchange="{apply}" checked="{filter.isActive() ? \'checked\' : \'\'}"><input disabled="{filter.disabled ? \'disabled=\' : \'\'}" class="imagefilters__slider" title="{filter.getValue()}" if="{filter.config.slider}" type="range" oninput="{apply}" riot-value="{filter.getValue()}" min="{filter.config.min}" max="{filter.config.max}" step="{filter.config.step}" orient="horizontal"></div></div><div class="imagefilters__options"><button type="button" class="btn btn--full" onclick="{resetAll}">{this.config.messages.clearAll}</button></div>', '', '', function(opts) {
 
 		if(!this.opts.image) {
@@ -1919,84 +2265,6 @@ riot.tag2('imagefilters', '<div class="imagefilters__filter-list"><div class="im
 		}.bind(this)
 
 });
-/**
- * Takes a IIIF canvas object in opts.source. 
- * If opts.item exists, it creates the method opts.item.setImageSource(canvas) 
- * and provides an observable in opts.item.imageChanged triggered every time a new image source is loaded (including the first time)
- * The imageView itself is stored in opts.item.image
- */
-
-riot.tag2('imageview', '<div id="wrapper_{opts.id}" class="imageview_wrapper"><span if="{this.error}" class="loader_wrapper"><span class="error_message">{this.error.message}</span></span><imagecontrols if="{this.image}" image="{this.image}" item="{this.opts.item}"></imageControls><div class="image_container"><div id="image_{opts.id}" class="image"></div></div></div>', '', '', function(opts) {
-
-	this.getPosition = function() {
-		let pos_os = this.dataPoint.getPosition();
-		let pos_image = ImageView.CoordinateConversion.scaleToImage(pos_os, this.image.viewer, this.image.getOriginalImageSize());
-		let pos_image_rot = ImageView.CoordinateConversion.convertPointFromImageToRotatedImage(pos_image, this.image.controls.getRotation(), this.image.getOriginalImageSize());
-		return pos_image_rot;
-	}.bind(this)
-
-	this.on("mount", function() {
-		$("#controls_" + opts.id + " .draw_overlay").on("click", function() {
-			this.drawing=true;
-		}.bind(this));
-		try{
-			imageViewConfig.image.tileSource = this.getImageInfo(opts.source);
-			this.image = new ImageView.Image(imageViewConfig);
-			this.image.load()
-			.then( (image) => {
-				if(this.opts.item) {
-					this.opts.item.image = this.image;
-
-				    var now = rxjs.of(image);
-					this.opts.item.setImageSource = function(source) {
-					    this.image.setTileSource(this.getImageInfo(source));
-					}.bind(this);
-				    this.opts.item.notifyImageOpened(image.observables.viewerOpen.pipe(rxjs.operators.map( () => image),rxjs.operators.merge(now)));
-				}
-				return image;
-			})
-			.then(function() {
-			  	this.update();
-			}.bind(this));
-		} catch(error) {
-		    console.error("ERROR ", error);
-	    	this.error = error;
-	    	this.update();
-		}
-	})
-
-	this.getImageInfo = function(canvas) {
-	    return canvas.images[0].resource.service["@id"] + "/info.json"
-	}.bind(this)
-
-	const imageViewConfig = {
-			global : {
-				divId : "image_" + opts.id,
-				fitToContainer: true,
-				adaptContainerWidth: false,
-				adaptContainerHeight: false,
-				footerHeight: 00,
-				zoomSpeed: 1.3,
-				allowPanning : true,
-			},
-			image : {}
-	};
-
-	const drawStyle = {
-			borderWidth: 2,
-			borderColor: "#2FEAD5"
-	}
-
-	const lineStyle = {
-			lineWidth : 1,
-			lineColor : "#EEC83B"
-	}
-
-	const pointStyle = ImageView.DataPoint.getPointStyle(20, "#EEC83B");
-
-});
-
-
 
 riot.tag2('metadataeditor', '<div if="{this.metadataList}"><ul class="nav nav-tabs"><li each="{language, index in this.opts.languages}" class="{language == this.currentLanguage ? \'active\' : \'\'}"><a onclick="{this.setCurrentLanguage}">{language}</a></li></ul><div class="tab-content"><div class="tab-pane active"><div class="input_form"><div each="{metadata, index in this.metadataList}" class="input_form__option_group"><div class="input_form__option_label"><label for="input-{metadata.property}">{metadata.label}:</label></div><div class="input_form__option_marker {metadata.required ? \'in\' : \'\'}"><label>*</label></div><div class="input_form__option_control"><input tabindex="{index+1}" disabled="{this.isEditable(metadata) ? \'\' : \'disabled\'}" ref="input" if="{metadata.type != \'longtext\'}" type="{metadata.type}" id="input-{metadata.property}" class="form-control" riot-value="{getValue(metadata)}" oninput="{this.updateMetadata}"><textarea tabindex="{index+1}" disabled="{this.isEditable(metadata) ? \'\' : \'disabled\'}" ref="input" if="{metadata.type == \'longtext\'}" id="input-{metadata.property}" class="form-control" riot-value="{getValue(metadata)}" oninput="{this.updateMetadata}"></textarea></div><div if="{metadata.helptext}" class="input_form__option_help"><button type="button" class="btn btn--clean" data-toggle="helptext" for="help_{metadata.property}"><i class="fa fa-question-circle" aria-hidden="true"></i></button></div><div if="{metadata.helptext}" id="help_{metadata.property}" class="input_form__option_control_helptext">{metadata.helptext}</div></div><div class="input_form__actions"><a if="{this.opts.deleteListener}" disabled="{this.mayDelete() ? \'\' : \'disabled\'}" class="btn btn--clean delete" onclick="{this.notifyDelete}">{this.opts.deleteLabel}</a></div></div></div></div></div>', '', '', function(opts) {
 
@@ -2180,70 +2448,6 @@ riot.tag2('pdfpage', '<div class="page" id="page_{opts.pageno}"><canvas class="p
 });
 	
 	
-riot.tag2('plaintextquestion', '<div if="{this.showInstructions()}" class="crowdsourcing-annotations__instruction"><label>{Crowdsourcing.translate(⁗crowdsourcing__help__create_rect_on_image⁗)}</label></div><div if="{this.showInactiveInstructions()}" class="crowdsourcing-annotations__single-instruction -inactive"><label>{Crowdsourcing.translate(⁗crowdsourcing__help__make_active⁗)}</label></div><div class="crowdsourcing-annotations__wrapper" id="question_{opts.index}_annotation_{index}" each="{anno, index in this.question.annotations}"><div class="crowdsourcing-annotations__annotation-area"><div if="{this.showAnnotationImages()}" class="crowdsourcing-annotations__annotation-area-image" riot-style="border-color: {anno.getColor()}"><img riot-src="{this.question.getImage(anno)}"></img></div><div class="crowdsourcing-annotations__question-text-input"><textarea disabled="{this.opts.item.isReviewMode() ? \'disabled\' : \'\'}" onchange="{setTextFromEvent}" riot-value="{anno.getText()}"></textarea></div></div><div class="cms-module__actions crowdsourcing-annotations__annotation-action"><button if="{!this.opts.item.isReviewMode()}" onclick="{deleteAnnotationFromEvent}" class="crowdsourcing-annotations__delete-annotation btn btn--clean delete">{Crowdsourcing.translate(⁗action__delete_annotation⁗)} </button></div></div><button if="{showAddAnnotationButton()}" onclick="{addAnnotation}" class="options-wrapper__option btn btn--default" id="add-annotation">{Crowdsourcing.translate(⁗action__add_annotation⁗)}</button>', '', '', function(opts) {
-
-	this.question = this.opts.question;
-
-	this.on("mount", function() {
-	    this.question.initializeView((anno) => new Crowdsourcing.Annotation.Plaintext(anno), this.update, this.update, this.focusAnnotation);
-	    this.opts.item.onImageOpen(function() {
-	        switch(this.question.targetSelector) {
-	            case Crowdsourcing.Question.Selector.WHOLE_PAGE:
-	            case Crowdsourcing.Question.Selector.WHOLE_SOURCE:
-	                if(this.question.annotations.length == 0 && !this.question.item.isReviewMode()) {
-	                    this.question.addAnnotation();
-	                }
-	        }
-	        this.update()
-	    }.bind(this));
-	});
-
-	this.focusAnnotation = function(index) {
-	    let id = "question_" + this.opts.index + "_annotation_" + index;
-	    let inputSelector = "#" + id + " textarea";
-	    this.root.querySelector(inputSelector).focus();
-	}.bind(this)
-
-	this.showAnnotationImages = function() {
-	    return this.question.isRegionTarget();
-	}.bind(this)
-
-	this.showInstructions = function() {
-	    return !this.opts.item.isReviewMode() &&  this.question.active && this.question.targetSelector == Crowdsourcing.Question.Selector.RECTANGLE && this.question.annotations.length == 0;
-	}.bind(this)
-
-	this.showInactiveInstructions = function() {
-	    return !this.opts.item.isReviewMode() &&  !this.question.active && this.question.targetSelector == Crowdsourcing.Question.Selector.RECTANGLE && this.opts.item.questions.filter(q => q.isRegionTarget()).length > 1;
-
-	}.bind(this)
-
-	this.showAddAnnotationButton = function() {
-	    return !this.question.isReviewMode() && !this.question.isRegionTarget() && this.question.mayAddAnnotation();
-	}.bind(this)
-
-    this.setTextFromEvent = function(event) {
-        event.preventUpdate = true;
-        if(event.item.anno) {
-            event.item.anno.setText(event.target.value);
-            this.question.saveToLocalStorage();
-        } else {
-            throw "No annotation to set"
-        }
-    }.bind(this)
-
-    this.deleteAnnotationFromEvent = function(event) {
-        if(event.item.anno) {
-            this.question.deleteAnnotation(event.item.anno);
-            this.update();
-        }
-    }.bind(this)
-
-    this.addAnnotation = function() {
-        this.question.addAnnotation();
-        this.question.focusCurrentAnnotation();
-    }.bind(this)
-
-});
 riot.tag2('popup', '<yield></yield>', '', '', function(opts) {
 
 this.on( 'mount', function() {
@@ -2272,171 +2476,6 @@ this.addCloseHandler = function() {
     }.bind(this));
 
 }.bind(this)
-
-});
-
-
-riot.tag2('progressbar', '<div class="goobi-progress-bar-wrapper"><div class="goobi-progress-bar"><div each="{value, index in this.values}" class="goobi-progress-bar__bar {styleClasses[index]}" riot-style="width: {getRelativeWidth(value)};"></div></div></div>', '', '', function(opts) {
-	this.values = JSON.parse(this.opts.values);
-	this.styleClasses = JSON.parse(this.opts.styleclasses);
-
-	this.on("mount", function() {
-	    let bar = this.root.querySelector(".goobi-progress-bar");
-	    this.totalBarWidth = bar.getBoundingClientRect().width;
-		this.update();
-	})
-
-	this.getRelativeWidth = function(value) {
-		    let barWidth = value/this.opts.total*this.totalBarWidth;
-		    return barWidth + "px";
-	}.bind(this)
-
-	this.loaded = function() {
-	    console.log("on load");
-	}.bind(this)
-
-});
-riot.tag2('questiontemplate', '<div if="{showInstructions()}" class="annotation_instruction"><label>{Crowdsourcing.translate(⁗crowdsourcing__help__create_rect_on_image⁗)}</label></div><div if="{showInactiveInstructions()}" class="annotation_instruction annotation_instruction_inactive"><label>{Crowdsourcing.translate(⁗crowdsourcing__help__make_active⁗)}</label></div><div class="annotation_wrapper" id="question_{opts.index}_annotation_{index}" each="{anno, index in this.question.annotations}"><div class="annotation_area"></div></div><button if="{showAddAnnotationButton()}" onclick="{addAnnotation}" class="options-wrapper__option btn btn--default" id="add-annotation">{Crowdsourcing.translate(⁗action__add_annotation⁗)}</button>', '', '', function(opts) {
-
-this.question = this.opts.question;
-
-this.on("mount", function() {
-    this.question.initializeView((anno) => new Crowdsourcing.Annotation.Implementation(anno), this.update, this.update, this.focusAnnotation);
-    this.opts.item.onImageOpen(function() {
-        this.update()
-    }.bind(this));
-});
-
-this.focusAnnotation = function(index) {
-    let id = "question_" + this.opts.index + "_annotation_" + index;
-    let inputSelector = "#" + id + " textarea";
-    this.root.querySelector(inputSelector).focus();
-}.bind(this)
-
-this.showInstructions = function() {
-    return !this.opts.item.isReviewMode() &&  this.question.active && this.question.targetSelector == Crowdsourcing.Question.Selector.RECTANGLE && this.question.annotations.length == 0;
-}.bind(this)
-
-this.showInactiveInstructions = function() {
-    return !this.opts.item.isReviewMode() &&  !this.question.active && this.question.targetSelector == Crowdsourcing.Question.Selector.RECTANGLE && this.opts.item.questions.filter(q => q.isRegionTarget()).length > 1;
-
-}.bind(this)
-
-this.showAddAnnotationButton = function() {
-    return !this.question.isReviewMode() && !this.question.isRegionTarget() && this.question.mayAddAnnotation();
-}.bind(this)
-
-this.setBodyFromEvent = function(event) {
-    event.preventUpdate = true;
-    if(event.item.anno) {
-
-        this.question.saveToLocalStorage();
-    } else {
-        throw "No annotation to set"
-    }
-}.bind(this)
-
-this.deleteAnnotationFromEvent = function(event) {
-    if(event.item.anno) {
-        this.question.deleteAnnotation(event.item.anno);
-        this.update();
-    }
-}.bind(this)
-
-this.addAnnotation = function() {
-    this.question.addAnnotation();
-    this.question.focusCurrentAnnotation();
-}.bind(this)
-
-});
-
-
-riot.tag2('richtextquestion', '<div if="{this.showInstructions()}" class="annotation_instruction"><label>{Crowdsourcing.translate(⁗crowdsourcing__help__create_rect_on_image⁗)}</label></div><div if="{this.showInactiveInstructions()}" class="crowdsourcing-annotations__single-instruction -inactive"><label>{Crowdsourcing.translate(⁗crowdsourcing__help__make_active⁗)}</label></div><div class="crowdsourcing-annotations__wrapper" id="question_{opts.index}_annotation_{index}" each="{anno, index in this.question.annotations}"><div class="crowdsourcing-annotations__annotation-area"><div if="{this.showAnnotationImages()}" class="crowdsourcing-annotations__annotation-area-image" riot-style="border-color: {anno.getColor()}"><img riot-src="{this.question.getImage(anno)}"></img></div><div class="crowdsourcing-annotations__question-text-input"><textarea class="tinyMCE" disabled="{this.opts.item.isReviewMode() ? \'disabled\' : \'\'}" onchange="{setTextFromEvent}" riot-value="{anno.getText()}"></textarea></div></div><div class="cms-module__actions crowdsourcing-annotations__annotation-action"><button if="{!this.opts.item.isReviewMode()}" onclick="{deleteAnnotationFromEvent}" class="annotation_area__button btn btn--clean delete">{Crowdsourcing.translate(⁗action__delete_annotation⁗)} </button></div></div><button if="{showAddAnnotationButton()}" onclick="{addAnnotation}" class="options-wrapper__option btn btn--default" id="add-annotation">{Crowdsourcing.translate(⁗action__add_annotation⁗)}</button>', '', '', function(opts) {
-
-	this.question = this.opts.question;
-
-	this.on("mount", function() {
-	  console.log("item ", this.question.item);
-	    this.question.initializeView((anno) => new Crowdsourcing.Annotation.Richtext(anno), this.update, this.update, this.focusAnnotation);
-
-	    this.opts.item.onImageOpen(function() {
-	        switch(this.question.targetSelector) {
-	            case Crowdsourcing.Question.Selector.WHOLE_PAGE:
-	            case Crowdsourcing.Question.Selector.WHOLE_SOURCE:
-	                if(this.question.annotations.length == 0 && !this.question.item.isReviewMode()) {
-	                    this.question.addAnnotation();
-	                }
-	        }
-	        this.update();
-	    }.bind(this));
-	});
-
-	this.on("updated", function(e) {
-	    this.initTinyMce();
-	});
-
-	this.initTinyMce = function() {
-	    if($(".tinyMCE").length) {
-		    let config = viewerJS.tinyMce.getConfig({
-		        language: Crowdsourcing.language,
-		    	setup: (editor) => {
-		    	    editor.on('change', (e) => {
-		    	        editor.save();
-		    	        editor.targetElm.dispatchEvent(new Event('change'));
-		    	    });
-		    	}
-		    });
-		    if(this.opts.item.isReviewMode()) {
-		        config.readonly = 1;
-		    }
-	  	    tinymce.init( config );
-	    }
-	}.bind(this)
-
-	this.focusAnnotation = function(index) {
-	    let id = "question_" + this.opts.index + "_annotation_" + index;
-	    let inputSelector = "#" + id + " textarea";
-	    this.root.querySelector(inputSelector).focus();
-	}.bind(this)
-
-	this.showAnnotationImages = function() {
-	    return this.question.isRegionTarget();
-	}.bind(this)
-
-	this.showInstructions = function() {
-	    return !this.opts.item.isReviewMode() &&  this.question.active && this.question.targetSelector == Crowdsourcing.Question.Selector.RECTANGLE && this.question.annotations.length == 0;
-	}.bind(this)
-
-	this.showInactiveInstructions = function() {
-	    return !this.opts.item.isReviewMode() &&  !this.question.active && this.question.targetSelector == Crowdsourcing.Question.Selector.RECTANGLE && this.opts.item.questions.filter(q => q.isRegionTarget()).length > 1;
-
-	}.bind(this)
-
-	this.showAddAnnotationButton = function() {
-	    return !this.question.isReviewMode() && !this.question.isRegionTarget() && this.question.mayAddAnnotation();
-	}.bind(this)
-
-    this.setTextFromEvent = function(event) {
-        event.preventUpdate = true;
-        if(event.item.anno) {
-            event.item.anno.setText(event.target.value);
-            this.question.saveToLocalStorage();
-        } else {
-            throw "No annotation to set"
-        }
-    }.bind(this)
-
-    this.deleteAnnotationFromEvent = function(event) {
-        if(event.item.anno) {
-            this.question.deleteAnnotation(event.item.anno);
-            this.update();
-        }
-    }.bind(this)
-
-    this.addAnnotation = function() {
-        this.question.addAnnotation();
-        this.question.focusCurrentAnnotation();
-    }.bind(this)
 
 });
 
@@ -2497,7 +2536,7 @@ riot.tag2('timematrix', '<div class="timematrix__objects"><div each="{manifest i
 	        apiTarget += "api/v1/records/list";
 	        apiTarget += "?start=" + $( this.opts.startInput ).val();
 	        apiTarget += "&end=" + $( this.opts.endInput ).val();
-	        apiTarget += "&count=" + $( this.opts.count ).val();
+	        apiTarget += "&rows=" + $( this.opts.count ).val();
 	        apiTarget += "&sort=YEAR";
 	        if ( this.opts.subtheme ) {
 	            apiTarget += ( "&subtheme=" + this.opts.subtheme );

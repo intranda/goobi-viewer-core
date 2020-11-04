@@ -47,6 +47,8 @@
 		<class>io.goobi.viewer.model.security.TermsOfUse</class>
 		<class>io.goobi.viewer.model.security.TermsOfUseTranslation</class>
 		<class>io.goobi.viewer.dao.converter.TranslatedTextConverter</class>
+		<class>io.goobi.viewer.model.log.LogMessage</class>
+		<class>io.goobi.viewer.model.crowdsourcing.campaigns.CampaignLogMessage</class>
 	
 
 		<properties>
@@ -118,6 +120,8 @@
 		<class>io.goobi.viewer.model.security.TermsOfUse</class>
 		<class>io.goobi.viewer.model.security.TermsOfUseTranslation</class>
 		<class>io.goobi.viewer.dao.converter.TranslatedTextConverter</class>
+		<class>io.goobi.viewer.model.log.LogMessage</class>
+		<class>io.goobi.viewer.model.crowdsourcing.campaigns.CampaignLogMessage</class>
 		
 		<properties>
 			<property name="javax.persistence.jdbc.driver"

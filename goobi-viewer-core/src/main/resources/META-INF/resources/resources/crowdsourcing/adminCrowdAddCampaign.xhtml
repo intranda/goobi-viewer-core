@@ -174,6 +174,40 @@
 														
 												</h:panelGroup>
 												
+												<!-- LOG -->
+												<div class="form-group form-row">
+												
+													<div class="col-2 control-label admin__form-label">
+														<label for="showLogSelection">#{msg.admin__crowdsourcing_campaign_show_log}: </label>
+													</div>
+													
+													<div class="cms-module__option-control col-9 admin__form-input">
+														<h:panelGroup id="showLogSelectionGroup">
+															<div class="cms-module__option-message">
+																<h:messages for="solrQueryInput"
+																	infoClass="cms-module__option-message-status success"
+																	warnClass="cms-module__option-message-status warning"
+																	errorClass="cms-module__option-message-status danger" />
+						
+																<div class="cms-module__option-message-mark">
+																	<i class="fa fa-check" aria-hidden="true"></i> <i
+																		class="fa fa-exclamation" aria-hidden="true"></i>
+																</div>
+															</div>
+															<viewerComponent:toggleSwitch id="showLogSelection" value="#{crowdsourcingBean.selectedCampaign.showLog}" /> 
+														</h:panelGroup>
+														<span class="admin__form-help-text">#{msg.admin__crowdsourcing_campaign_show_log__help}</span>
+													</div>
+													
+													<div class="col-1 admin__form-help-icon">
+														<button type="button" class="btn btn--clean"
+															data-toggle="helptext" aria-label="inline help icon">
+															<i class="fa fa-question-circle" aria-hidden="true"></i>
+														</button>
+													</div>
+													
+												</div>
+												
 												<!-- SOLR QUERY -->
 												<div class="form-group form-row #{crowdsourcingBean.selectedCampaign.isDefaultLocaleSelected() == 'false' ? '-deactivated' : ''}">
 												

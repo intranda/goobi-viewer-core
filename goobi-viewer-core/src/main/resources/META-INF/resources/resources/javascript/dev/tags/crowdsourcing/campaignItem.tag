@@ -29,6 +29,7 @@
 					<authorityResourceQuestion if="{question.questionType == 'NORMDATA'}" question="{question}" item="{this.item}" index="{index}"></authorityResourceQuestion>
 				</div>
 			</div>
+			<campaignItemLog if="{item.showLog}" user="{item.currentUser}" messages="{item.log}"></campaignItemLog>
 			<div if="{!item.isReviewMode()}" class="crowdsourcing-annotations__options-wrapper crowdsourcing-annotations__options-wrapper-annotate">
 				<button onclick="{saveAnnotations}" class="crowdsourcing-annotations__options-wrapper__option btn btn--default" id="save">{Crowdsourcing.translate("button__save")}</button>
 				<div>{Crowdsourcing.translate("label__or")}</div>
@@ -70,7 +71,11 @@
 	loadItem(itemConfig) {
 	    console.log("load item ", itemConfig); 
 	    this.item = new Crowdsourcing.Item(itemConfig, 0);
+	    if(this.opts.currentuserid) {
+	        this.item.setCurrentUser(this.opts.currentuserid, this.opts.currentusername, this.opts.currentuseravatar);
+	    }
 	    this.item.setReviewMode(this.opts.itemstatus && this.opts.itemstatus.toUpperCase() == "REVIEW");
+	    console.log("loaded item ", this.item);
 		fetch(this.item.imageSource + "?mode=simple")
 		.then( response => response.json() )
 		.then( imageSource => this.initImageView(imageSource))
@@ -179,7 +184,10 @@
 	setStatus(status) {
 	    let body = {
 	            recordStatus: status,
-	            creator: this.item.getCreator().id 
+	            creator: this.item.getCreator().id,
+	    }
+	    if(this.item.log) {	        
+	    	body.log = this.item.log.filter(message => message.id === undefined);
 	    }
 	    return fetch(this.itemSource, {
             method: "PUT",

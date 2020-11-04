@@ -20,6 +20,7 @@ import static io.goobi.viewer.api.rest.v1.ApiUrls.*;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -56,6 +57,7 @@ import io.goobi.viewer.model.crowdsourcing.campaigns.Campaign;
 import io.goobi.viewer.model.crowdsourcing.campaigns.CampaignItem;
 import io.goobi.viewer.model.crowdsourcing.campaigns.CampaignRecordStatistic.CampaignRecordStatus;
 import io.goobi.viewer.model.iiif.presentation.builder.ManifestBuilder;
+import io.goobi.viewer.model.log.LogMessage;
 import io.goobi.viewer.model.security.user.User;
 
 /**
@@ -123,6 +125,11 @@ public class CampaignItemResource {
             CampaignItem item = new CampaignItem();
             item.setSource(manifestURI);
             item.setCampaign(campaign);
+            if(campaign.isShowLog()) {
+                item.setLog(campaign.getLogMessages().getOrDefault(pi, Collections.emptyList()).stream().map(LogMessage::new).collect(Collectors.toList()));
+                LogMessage testMessage = new LogMessage("Test Nachricht", 1l, servletRequest);
+                item.getLog().add(testMessage);
+            }
             return item;
         }
         throw new ContentNotFoundException("No campaign found with id " + campaignId);
@@ -143,7 +150,8 @@ public class CampaignItemResource {
     @CORSBinding
     public void setItemForManifest(CampaignItem item, @PathParam("campaignId") Long campaignId, @PathParam("pi") String pi) throws DAOException {
         CampaignRecordStatus status = item.getRecordStatus();
-
+        List<LogMessage> log = item.getLog();
+        
         Campaign campaign = DataManager.getInstance().getDao().getCampaign(campaignId);
 
         User user = null;
@@ -158,6 +166,9 @@ public class CampaignItemResource {
             if (status.equals(CampaignRecordStatus.FINISHED)) {
                 IndexerTools.triggerReIndexRecord(pi);
             }
+        }
+        if(log != null && !log.isEmpty() && campaign != null) {
+            log.forEach(message -> campaign.addLogMessage(message, pi));
         }
     }
 

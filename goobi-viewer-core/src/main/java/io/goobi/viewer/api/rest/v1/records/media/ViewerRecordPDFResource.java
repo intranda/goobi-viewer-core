@@ -82,5 +82,14 @@ public class ViewerRecordPDFResource extends MetsPdfResource {
     public PdfInformation getInfoAsJson() throws ContentLibException {
         return super.getInfoAsJson();
     }
+    
+    @GET
+    @Path(ApiUrls.RECORDS_EPUB_INFO)
+    @Produces({ MediaType.APPLICATION_JSON })
+    @ContentServerPdfInfoBinding
+    @Operation(tags = { "records" }, summary = "Get information about epub for entire record")
+    public PdfInformation getEpubInfoAsJson() throws ContentLibException {
+        return super.getInfoAsJson("epub");
+    }
 
 }

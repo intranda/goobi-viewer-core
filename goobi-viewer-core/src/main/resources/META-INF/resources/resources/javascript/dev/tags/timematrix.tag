@@ -72,7 +72,7 @@
 	        apiTarget += "api/v1/records/list";
 	        apiTarget += "?start=" + $( this.opts.startInput ).val();
 	        apiTarget += "&end=" + $( this.opts.endInput ).val();
-	        apiTarget += "&count=" + $( this.opts.count ).val();
+	        apiTarget += "&rows=" + $( this.opts.count ).val();
 	        apiTarget += "&sort=YEAR";
 	        if ( this.opts.subtheme ) {
 	            apiTarget += ( "&subtheme=" + this.opts.subtheme );
