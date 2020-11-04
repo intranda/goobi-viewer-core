@@ -62,6 +62,12 @@
 		font-size: 1.4rem;
 		padding: 0.4rem 0.8rem;
 	}
+	&__content-background {
+		height: 100%;
+		width: 100%;
+		background: @neutralgray2;
+		position: fixed;
+	}
 
 	/* LINK MODIFIERS */
 	.rss-elem-title a {
@@ -954,16 +960,15 @@
 		display: flex;
 	}
 	&__content-main {
-		flex: 0 0 70%;
-		max-width: 70%;
+		flex: 0 0 calc(~"100% - 350px");
+		max-width: calc(~"100% - 350px");
 	}
 	&__content-side {
-		flex: 0 0 30%;
-		max-width: 30%;
-		padding-left: 3rem;
-		position: sticky;
-		top: 47px;
+		max-width: 330px;
+		width: 330px;
+		position: absolute;
 		align-self: flex-start;
+		right: 0;
 	}
 	.-deactivated {
 		opacity: 0.5;

@@ -161,7 +161,8 @@ module.exports = function (grunt) {
                             "tinymce/tinymce.min.js" : "tinymce/",
                             "leaflet/dist/leaflet.js" : "leaflet/",
                             "leaflet.markercluster/dist/leaflet.markercluster.js" : "leaflet/markercluster",
-                            "swagger-ui-dist/swagger-ui-bundle.js" : "swagger/"
+                            "swagger-ui-dist/swagger-ui-bundle.js" : "swagger/",
+                            "hc-sticky/dist/hc-sticky.js" : "hcsticky/",
                         },
                         css : {
                             "leaflet/dist/leaflet.css" : "leaflet/",
