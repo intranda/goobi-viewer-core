@@ -29,7 +29,7 @@
 					<authorityResourceQuestion if="{question.questionType == 'NORMDATA'}" question="{question}" item="{this.item}" index="{index}"></authorityResourceQuestion>
 				</div>
 			</div>
-			<campaignItemLog if="{item.showLog}" user="{item.currentUser}" messages="{item.log}"></campaignItemLog>
+			<campaignItemLog if="{item.showLog}" item="{item}"></campaignItemLog>
 			<div if="{!item.isReviewMode()}" class="crowdsourcing-annotations__options-wrapper crowdsourcing-annotations__options-wrapper-annotate">
 				<button onclick="{saveAnnotations}" class="crowdsourcing-annotations__options-wrapper__option btn btn--default" id="save">{Crowdsourcing.translate("button__save")}</button>
 				<div>{Crowdsourcing.translate("label__or")}</div>
@@ -186,8 +186,9 @@
 	            recordStatus: status,
 	            creator: this.item.getCreator().id,
 	    }
-	    if(this.item.log) {	        
-	    	body.log = this.item.log.filter(message => message.id === undefined);
+	    if(this.item.newLogMessages) {	        
+	    	body.log = this.item.newLogMessages.filter(message => message.message != undefined);
+	    	this.item.resetLog();
 	    }
 	    return fetch(this.itemSource, {
             method: "PUT",

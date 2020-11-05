@@ -126,7 +126,7 @@ public class CampaignItemResource {
             item.setSource(manifestURI);
             item.setCampaign(campaign);
             if(campaign.isShowLog()) {
-                item.setLog(campaign.getLogMessages().stream().filter(m -> m.getPi().equals(pi)).map(LogMessage::new).collect(Collectors.toList()));
+                item.setLog(campaign.getLogMessages().stream().filter(m -> m.getPi().equals(pi)).map(clm -> new LogMessage(clm, servletRequest)).collect(Collectors.toList()));
             }
             return item;
         }

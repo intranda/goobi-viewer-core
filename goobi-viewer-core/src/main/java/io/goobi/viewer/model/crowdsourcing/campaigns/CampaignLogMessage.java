@@ -32,7 +32,7 @@ import io.goobi.viewer.model.log.LogMessage;
  *
  */
  @Entity
- @Table(name = "cs_campaigns_log")
+ @Table(name = "cs_campaign_log")
 public class CampaignLogMessage extends LogMessage {
 
     private static final long serialVersionUID = 2810349140888620668L;

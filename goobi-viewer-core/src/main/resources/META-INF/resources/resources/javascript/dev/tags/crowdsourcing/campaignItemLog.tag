@@ -15,8 +15,9 @@
 
 <script>
 
-this.currentUser = this.opts.user;
-this.messages = this.opts.messages
+this.currentUser = this.opts.item.currentUser;
+this.messages = this.opts.item.log;
+this.messagesToAdd = [];
 
 this.on("mount", function() {
     //actions to do when tag is created
@@ -32,7 +33,7 @@ addMessage(event) {
                 creator : this.currentUser,
                 
         }
-        this.messages.push(message);
+        this.opts.item.addLogMessage(message);
         console.log("added message", message);
     }
 }
