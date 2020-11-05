@@ -175,13 +175,16 @@
 												</h:panelGroup>
 												
 												<!-- LOG -->
-												<div class="form-group form-row">
+												<div class="form-group form-row #{crowdsourcingBean.selectedCampaign.isDefaultLocaleSelected() == 'false' ? '-deactivated' : ''}">
 												
 													<div class="col-2 control-label admin__form-label">
 														<label for="showLogSelection">#{msg.admin__crowdsourcing_campaign_show_log}: </label>
 													</div>
 													
 													<div class="cms-module__option-control col-9 admin__form-input">
+													<ui:fragment rendered="#{!crowdsourcingBean.selectedCampaign.isDefaultLocaleSelected()}">
+														<div class="admin__non-clickable-area-overlay"></div>
+													</ui:fragment>		
 														<h:panelGroup id="showLogSelectionGroup">
 															<div class="cms-module__option-message">
 																<h:messages for="solrQueryInput"
