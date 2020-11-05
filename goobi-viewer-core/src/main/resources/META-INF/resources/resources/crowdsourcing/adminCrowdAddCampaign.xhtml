@@ -459,7 +459,7 @@
 							                                var="val" value="#{crowdsourcingBean.selectedCampaign.campaignVisibilityValues}"/> 
 							                                <f:ajax render="adminCrowdPrivateSettingsGroup" />
 							                        </h:selectOneMenu>
-							                        <span class="admin__form-help-text">#{msg.admin__crowdsourcing_campaign_visibility}</span>
+							                        <span class="admin__form-help-text">#{msg.admin__help_crowdsourcing_campaign_visibility}</span>
 						                   		</div>
 						                   		
 												<div class="col-1 admin__form-help-icon">
@@ -482,10 +482,19 @@
 								                    
 								                    <!-- TOGGLE GROUP SELECTION SWITCH -->
 								                    <div class="col-11 admin__form-input">
-								                        <viewerComponent:toggleSwitch id="limitToGroupSelection"
-								                            value="#{crowdsourcingBean.selectedCampaign.limitToGroup}"
-								                            immediate="true" render="selectUserGroupGroup" /> 
-								                            <!-- TODO refresh selectUserGroupGroup -->
+                                                        <div class="admin__radio-switch" id="limitToGroupSelection">
+                                                            <h:selectOneRadio group="limitToGroupSelection"
+                                                                value="#{crowdsourcingBean.selectedCampaign.limitToGroup}" immediate="true">
+                                                                <f:selectItem itemValue="#{false}" itemLabel="#{msg.no}" />
+                                                                <f:ajax render="selectUserGroupGroup" />
+                                                            </h:selectOneRadio>                                                        
+                                                            <h:selectOneRadio group="limitToGroupSelection"
+                                                                value="#{crowdsourcingBean.selectedCampaign.limitToGroup}" immediate="true">
+                                                                <f:selectItem itemValue="#{true}" itemLabel="#{msg.yes}" />
+                                                                <f:ajax render="selectUserGroupGroup" />
+                                                            </h:selectOneRadio>
+                                                            <span class="toggle-outside"><span class="toggle-inside" /></span>
+                                                        </div>
 								                        <span class="admin__form-help-text">#{msg.admin__help_crowdsourcing_campaign_limit_to_group}</span>
 							                   		</div>
 													<div class="col-1 admin__form-help-icon">
@@ -504,8 +513,17 @@
                                                             <!-- TODO aria label -->
                                                             <f:selectItem itemLabel="#{msg.select}" itemValue="#{null}" noSelectionOption="true" />
                                                             <f:selectItems value="#{adminBean.allUserGroups}" />
-                                                            <f:ajax render="licenseTypeGroup infoGroup" />
+                                                            <f:ajax render="campaignOwnerGroup" />
                                                         </h:selectOneMenu>
+                                                        <h:panelGroup id="campaignOwnerGroup">
+                                                            <ui:fragment rendered="#{crowdsourcingBean.selectedCampaign.userGroup != null}">
+                                                            <label for="campaignOwnerName">#{msg.owner}:  </label>
+                                                            <h:outputLink id="campaignOwnerName"
+                                                                value="#{navigationHelper.applicationUrl}admin/users/edit/#{crowdsourcingBean.selectedCampaign.userGroup.owner.id}/">
+                                                                <h:outputText value="#{crowdsourcingBean.selectedCampaign.userGroup.owner.displayName}" />
+                                                            </h:outputLink>
+                                                            </ui:fragment>
+                                                        </h:panelGroup>
                                                     </h:panelGroup>
 							                   	</ui:fragment>
 											
@@ -519,11 +537,20 @@
                                                     
                                                     <!-- TOGGLE TIME PERIOD SWITCH -->
                                                     <div class="col-11 admin__form-input">
-                                                        <viewerComponent:toggleSwitch id="timePeriodEnabledSelection"
-                                                            value="#{crowdsourcingBean.selectedCampaign.timePeriodEnabled}"
-                                                            immediate="true" render="datePickerGroup" />
-                                                            <!-- TODO refresh datePickerGroup -->
-                                                        <span class="admin__form-help-text">#{msg.admin__help_crowdsourcing_campaign_time_pediod_enabled}</span>
+                                                        <div class="admin__radio-switch" id="timePeriodEnabledSelection">
+                                                            <h:selectOneRadio group="timePeriodEnabledSelection"
+                                                                value="#{crowdsourcingBean.selectedCampaign.timePeriodEnabled}" immediate="true">
+                                                                <f:selectItem itemValue="#{false}" itemLabel="#{msg.no}" />
+                                                                <f:ajax render="datePickerGroup" />
+                                                            </h:selectOneRadio>                                                        
+                                                            <h:selectOneRadio group="timePeriodEnabledSelection"
+                                                                value="#{crowdsourcingBean.selectedCampaign.timePeriodEnabled}" immediate="true">
+                                                                <f:selectItem itemValue="#{true}" itemLabel="#{msg.yes}" />
+                                                                <f:ajax render="datePickerGroup" />
+                                                            </h:selectOneRadio>
+                                                            <span class="toggle-outside"><span class="toggle-inside" /></span>
+                                                        </div>
+                                                        <span class="admin__form-help-text">#{msg.admin__help_crowdsourcing_campaign_time_pediod}</span>
                                                     </div>
                                                     <div class="col-1 admin__form-help-icon">
                                                         <button type="button" class="btn btn--clean"
