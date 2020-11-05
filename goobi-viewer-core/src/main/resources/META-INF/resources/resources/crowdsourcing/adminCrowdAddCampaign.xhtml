@@ -176,13 +176,16 @@
 												</h:panelGroup>
 												
 												<!-- LOG -->
-												<div class="form-group form-row">
+												<div class="form-group form-row #{crowdsourcingBean.selectedCampaign.isDefaultLocaleSelected() == 'false' ? '-deactivated' : ''}">
 												
 													<div class="col-2 control-label admin__form-label">
 														<label for="showLogSelection">#{msg.admin__crowdsourcing_campaign_show_log}: </label>
 													</div>
 													
 													<div class="cms-module__option-control col-9 admin__form-input">
+													<ui:fragment rendered="#{!crowdsourcingBean.selectedCampaign.isDefaultLocaleSelected()}">
+														<div class="admin__non-clickable-area-overlay"></div>
+													</ui:fragment>		
 														<h:panelGroup id="showLogSelectionGroup">
 															<div class="cms-module__option-message">
 																<h:messages for="solrQueryInput"
@@ -501,8 +504,17 @@
                                                             <!-- TODO aria label -->
                                                             <f:selectItem itemLabel="#{msg.select}" itemValue="#{null}" noSelectionOption="true" />
                                                             <f:selectItems value="#{adminBean.allUserGroups}" />
-                                                            <f:ajax render="licenseTypeGroup infoGroup" />
+                                                            <f:ajax render="campaignOwnerGroup" />
                                                         </h:selectOneMenu>
+                                                        <h:panelGroup id="campaignOwnerGroup">
+                                                            <ui:fragment rendered="#{crowdsourcingBean.selectedCampaign.userGroup != null}">
+                                                            <label for="campaignOwnerName">#{msg.owner}:  </label>
+                                                            <h:outputLink id="campaignOwnerName"
+                                                                value="#{navigationHelper.applicationUrl}admin/users/edit/#{crowdsourcingBean.selectedCampaign.userGroup.owner.id}/">
+                                                                <h:outputText value="#{crowdsourcingBean.selectedCampaign.userGroup.owner.displayName}" />
+                                                            </h:outputLink>
+                                                            </ui:fragment>
+                                                        </h:panelGroup>
                                                     </h:panelGroup>
 							                   	</ui:fragment>
 											

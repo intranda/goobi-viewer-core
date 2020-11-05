@@ -5,7 +5,7 @@
 	<div if="{this.showInactiveInstructions()}" class="crowdsourcing-annotations__single-instruction -inactive">
 		<label>{Crowdsourcing.translate("crowdsourcing__help__make_active")}</label>
 	</div>
-	<div class="crowdsourcing-annotations__wrapperx" id="question_{opts.index}_annotation_{index}" each="{anno, index in this.question.annotations}">
+	<div class="crowdsourcing-annotations__wrapper" id="question_{opts.index}_annotation_{index}" each="{anno, index in this.question.annotations}">
 	
 		<div class="crowdsourcing-annotations__annotation-area -small" >
 			<div if="{this.showAnnotationImages()}" class="crowdsourcing-annotations__annotation-area-image" style="border-color: {anno.getColor()}">

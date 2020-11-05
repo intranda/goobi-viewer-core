@@ -268,13 +268,15 @@
 	&__gnd-id {
 	padding: 0;
 	height: 2.8rem;
+	flex: 1;
 	}
 	&__question-text-input {
 		    flex: 1;
 		    display: flex;
 		    align-items: center;
 		    flex-wrap: wrap;
-		    align-content: flex-start;
+		    align-content: center;
+		    
 		    flex-basis
 		    label {
 		    	max-width: 150px;
@@ -313,6 +315,7 @@
 	&__delete-annotation {}
 	&__jump-to-gnd {
 		flex: 0 0 100%;
+		margin-bottom: 1.4rem;
 	}
 	&__wrapper {
 		margin-bottom: 2rem;
@@ -380,5 +383,122 @@
 		height: 2.3rem;
 		width: 1.075rem;
 		background-color: #444;             	
+	}
+	&__log-wrapper {
+		background: @white;
+		border: 1px solid #d5d5d5;
+		margin-bottom: 2.5rem;
+	}
+	&__log-inner-wrapper {
+		padding: 2rem;
+	}
+	&__log-title {
+		font-size: 1.6rem;
+		background: #444;
+		padding: 1rem 2rem;
+		color: @white;
+	}
+	&__log-message-entry {
+		display: flex;
+		margin-bottom: 2.5rem;
+		animation: fadeIn 0.5s ease-in 1 forwards;
+		&.-from-me {
+			flex-direction: row-reverse;
+			.crowdsourcing-annotations__log-speech-bubble {
+				margin-right: 1.8rem;
+				margin-left: 0;
+			}
+			.crowdsourcing-annotations__log-speech-bubble {
+				&::before {
+					border-left: 10px solid #E0E8ED;
+					border-right: none;
+					right: -10px;
+					left: unset;
+				}
+				&::after {
+					border-left: 8px solid #FDFDFE;
+					border-right: none;
+					right: -8px;
+					left: unset;
+				}
+			}
+		}
+	}
+	&__log-message-info {
+		margin-bottom: 0.6rem;
+		display: flex;
+		align-items: center;
+		flex: 0 0 100%;
+		max-width: 100%;
+	}
+	&__log-message-user-name {
+		font-weight: 700;
+	}
+	&__log-message-time-stamp {
+		font-size: 1.2rem;
+		padding-left: 0.5rem;
+		margin-left: 1.2rem;
+	}
+	&__log-round-avatar {
+		border-radius: 50%;
+		border: 1px solid #E0E8ED;
+		box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+		height: 70px;
+		width: 70px;
+		flex: 0 0 70px;
+		max-width: 70px;
+	}
+	&__log-message-text {
+		flex: 0 0 100%;
+		break-word: break;
+	}
+	&__log-send-message-area {
+		display: flex;
+		align-content: center;
+		align-items: center;
+	}
+	&__log-message-input {
+		margin-right: 1rem;
+		flex: 1;
+		border: 1px solid #B6B6B6;
+		padding: 0.5rem 0.5rem;
+		transition: border-color 0.2s ease;
+		height: 35px;
+		&:focus {
+			border-color: #3365a9;
+		}
+	}
+	&__log-speech-bubble {
+		background: white;
+		border-radius: 6px;
+		border: 1px solid #E0E8ED;
+		box-shadow: 0 2px 4px rgba(0, 0, 0, 0.04);
+		margin-left: 1.8rem;
+		padding: 1ex 1em;
+		position: relative;
+		display: flex;
+		flex-wrap: wrap;
+		max-width: calc(100% - 120px);
+		&:after {
+			border: 8px solid transparent;
+			border-right: 8px solid #FDFDFE;
+			border-left: none;
+			content: "";
+			display: block;
+			left: -8px;
+			position: absolute;
+			top: 26px;
+		}
+		&:before {
+			border: 10px solid transparent;
+			border-right: 10px solid #E0E8ED;
+			border-left: none;
+			content: "";
+			display: block;
+			left: -10px;
+			position: absolute;
+			top: 24px;
+			
+		}
 	}
 }
