@@ -486,7 +486,7 @@
                                                             <h:selectOneRadio group="limitToGroupSelection"
                                                                 value="#{crowdsourcingBean.selectedCampaign.limitToGroup}" immediate="true">
                                                                 <f:selectItem itemValue="#{false}" itemLabel="#{msg.no}" />
-                                                                <f:ajax render="selectUserGroupGroup" />
+                                                                <f:ajax render="selectUserGroupGroup campaignOwnerGroup" />
                                                             </h:selectOneRadio>                                                        
                                                             <h:selectOneRadio group="limitToGroupSelection"
                                                                 value="#{crowdsourcingBean.selectedCampaign.limitToGroup}" immediate="true">
@@ -516,7 +516,8 @@
                                                             <f:ajax render="campaignOwnerGroup" />
                                                         </h:selectOneMenu>
                                                         <h:panelGroup id="campaignOwnerGroup">
-                                                            <ui:fragment rendered="#{crowdsourcingBean.selectedCampaign.userGroup != null}">
+                                                            <ui:fragment
+                                                                rendered="#{crowdsourcingBean.selectedCampaign.limitToGroup and crowdsourcingBean.selectedCampaign.userGroup != null}">
                                                             <label for="campaignOwnerName">#{msg.owner}:  </label>
                                                             <h:outputLink id="campaignOwnerName"
                                                                 value="#{navigationHelper.applicationUrl}admin/users/edit/#{crowdsourcingBean.selectedCampaign.userGroup.owner.id}/">
