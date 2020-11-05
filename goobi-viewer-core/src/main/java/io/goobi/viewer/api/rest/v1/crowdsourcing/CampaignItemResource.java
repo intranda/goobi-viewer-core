@@ -15,12 +15,14 @@
  */
 package io.goobi.viewer.api.rest.v1.crowdsourcing;
 
-import static io.goobi.viewer.api.rest.v1.ApiUrls.*;
+import static io.goobi.viewer.api.rest.v1.ApiUrls.ANNOTATIONS;
+import static io.goobi.viewer.api.rest.v1.ApiUrls.ANNOTATIONS_ANNOTATION;
+import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_PAGES;
+import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_PAGES_CANVAS;
 
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -51,13 +53,13 @@ import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.IndexerTools;
 import io.goobi.viewer.dao.IDAO;
 import io.goobi.viewer.exceptions.DAOException;
-import io.goobi.viewer.exceptions.streams.Try;
 import io.goobi.viewer.model.annotation.PersistentAnnotation;
 import io.goobi.viewer.model.crowdsourcing.campaigns.Campaign;
 import io.goobi.viewer.model.crowdsourcing.campaigns.CampaignItem;
 import io.goobi.viewer.model.crowdsourcing.campaigns.CampaignRecordStatistic.CampaignRecordStatus;
 import io.goobi.viewer.model.iiif.presentation.builder.ManifestBuilder;
 import io.goobi.viewer.model.log.LogMessage;
+import io.goobi.viewer.model.misc.IPolyglott;
 import io.goobi.viewer.model.security.user.User;
 
 /**
@@ -96,7 +98,7 @@ public class CampaignItemResource {
      */
     public CampaignItemResource() {
     }
-    
+
     public CampaignItemResource(AbstractApiUrlManager urls) {
         this.urls = urls;
     }
@@ -125,8 +127,12 @@ public class CampaignItemResource {
             CampaignItem item = new CampaignItem();
             item.setSource(manifestURI);
             item.setCampaign(campaign);
-            if(campaign.isShowLog()) {
-                item.setLog(campaign.getLogMessages().stream().filter(m -> m.getPi().equals(pi)).map(clm -> new LogMessage(clm, servletRequest)).collect(Collectors.toList()));
+            if (campaign.isShowLog()) {
+                item.setLog(campaign.getLogMessages()
+                        .stream()
+                        .filter(m -> m.getPi().equals(pi))
+                        .map(clm -> new LogMessage(clm, servletRequest))
+                        .collect(Collectors.toList()));
             }
             return item;
         }
@@ -149,7 +155,7 @@ public class CampaignItemResource {
     public void setItemForManifest(CampaignItem item, @PathParam("campaignId") Long campaignId, @PathParam("pi") String pi) throws DAOException {
         CampaignRecordStatus status = item.getRecordStatus();
         List<LogMessage> log = item.getLog();
-        
+
         Campaign campaign = DataManager.getInstance().getDao().getCampaign(campaignId);
 
         User user = null;
@@ -159,7 +165,7 @@ public class CampaignItemResource {
         }
         if (status != null && campaign != null) {
             campaign.setRecordStatus(pi, status, Optional.ofNullable(user));
-            if(log != null && !log.isEmpty()) {
+            if (log != null && !log.isEmpty()) {
                 log.forEach(message -> campaign.addLogMessage(message, pi));
             }
             DataManager.getInstance().getDao().updateCampaign(campaign);
@@ -222,62 +228,64 @@ public class CampaignItemResource {
             URI targetURI = URI.create(page.getId());
             String pageOrderString = urls.parseParameter(
                     urls.path(RECORDS_PAGES, RECORDS_PAGES_CANVAS).build(),
-                    targetURI.toString(), 
+                    targetURI.toString(),
                     "{pageNo}");
             Integer pageOrder = StringUtils.isBlank(pageOrderString) ? null : Integer.parseInt(pageOrderString);
 
             List<PersistentAnnotation> existingAnnotations = dao.getAnnotationsForCampaignAndTarget(campaign, pi, pageOrder);
-            List<PersistentAnnotation> newAnnotations = page.annotations.stream().map(anno -> {
-                Long id = null;
-                if(anno.getId() != null) {                    
-                    String uri = anno.getId().toString();
-                    String idString = urls.parseParameter(urls.path(ANNOTATIONS, ANNOTATIONS_ANNOTATION).build(), uri, "{id}");
-                    if(StringUtils.isNotBlank(idString)) {
-                        id = Long.parseLong(idString);
+            List<PersistentAnnotation> newAnnotations =
+                    page.annotations.stream().map(anno -> createPersistentAnnotation(pi, pageOrder, anno)).collect(Collectors.toList());
+
+            //delete existing annotations not contained in response
+            for (PersistentAnnotation anno : existingAnnotations) {
+                if (newAnnotations.stream().noneMatch(annoNew -> anno.getId().equals(annoNew.getId()))) {
+                    try {
+                        dao.deleteAnnotation(anno);
+                    } catch (DAOException e) {
+                        logger.error("Error deleting annotation " + e.toString());
                     }
                 }
-                PersistentAnnotation pAnno = new PersistentAnnotation(anno, id, pi, pageOrder);
-                return pAnno;
-            }).collect(Collectors.toList());
-
-            //delete existing annotations not in the new annotations list
-            List persistenceExceptions = existingAnnotations.stream()
-                    .filter(anno -> newAnnotations.stream().noneMatch(annoNew -> anno.getId().equals(annoNew.getId())))
-                    .map(Try.lift(dao::deleteAnnotation))
-                    .filter(t -> t.isException())
-                    .map(t -> t.getException().get())
-                    .collect(Collectors.toList());
-            for (Object exception : persistenceExceptions) {
-                logger.error("Error deleting annotation " + exception.toString());
             }
 
-            //add entirely new annotations
-
-            persistenceExceptions = newAnnotations.stream()
-                    .filter(anno -> anno.getId() == null)
-                    .map(Try.lift(dao::addAnnotation))
-                    .filter(either -> either.isException())
-                    .map(either -> either.getException().get())
-                    .collect(Collectors.toList());
-            for (Object exception : persistenceExceptions) {
-                logger.error("Error adding annotation " + exception.toString());
-            }
-
-            //update changed annotations
-            persistenceExceptions = newAnnotations.stream()
-                    .filter(anno -> anno.getId() != null)
-                    .map(Try.lift(dao::updateAnnotation))
-                    .filter(either -> either.isException())
-                    .map(either -> either.getException().get())
-                    .collect(Collectors.toList());
-            for (Object exception : persistenceExceptions) {
-                logger.error("Error updating annotation " + exception.toString());
+            //add new annotaion and update existing ones
+            for (PersistentAnnotation anno : newAnnotations) {
+                if(campaign != null && campaign.isRestrictAnnotationAccess()) {
+                    anno.setAccessCondition(campaign.getTitle(IPolyglott.getDefaultLocale().getLanguage()));
+                }
+                try {
+                    if (anno.getId() == null) {
+                        dao.addAnnotation(anno);
+                    } else {
+                        dao.updateAnnotation(anno);
+                    }
+                } catch (DAOException e) {
+                    logger.error("Error persisting annotation " + e.toString());
+                }
             }
         }
     }
-    
+
+    /**
+     * @param pi
+     * @param pageOrder
+     * @param anno
+     * @return a {@link PersistentAnnotation}. Either with an existing database id, or without id if ann doesn't has an empty id property
+     */
+    public PersistentAnnotation createPersistentAnnotation(String pi, Integer pageOrder, WebAnnotation anno) {
+        Long id = null;
+        if (anno.getId() != null) {
+            String uri = anno.getId().toString();
+            String idString = urls.parseParameter(urls.path(ANNOTATIONS, ANNOTATIONS_ANNOTATION).build(), uri, "{id}");
+            if (StringUtils.isNotBlank(idString)) {
+                id = Long.parseLong(idString);
+            }
+        }
+        PersistentAnnotation pAnno = new PersistentAnnotation(anno, id, pi, pageOrder);
+        return pAnno;
+    }
+
     public AnnotationsResourceBuilder getAnnoBuilder() {
-        if(this.annoBuilder == null) {
+        if (this.annoBuilder == null) {
             annoBuilder = new AnnotationsResourceBuilder(this.urls);
         }
         return annoBuilder;
