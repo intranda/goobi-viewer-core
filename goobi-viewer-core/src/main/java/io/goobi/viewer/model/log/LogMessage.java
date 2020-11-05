@@ -23,6 +23,7 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.MappedSuperclass;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 import javax.persistence.Transient;
@@ -43,7 +44,7 @@ import io.goobi.viewer.model.security.user.User;
  * @author florian
  *
  */
-@Entity
+@MappedSuperclass
 public class LogMessage implements Serializable, Comparable<LogMessage> {
 
     private static final Logger logger = LoggerFactory.getLogger(LogMessage.class);
@@ -88,13 +89,24 @@ public class LogMessage implements Serializable, Comparable<LogMessage> {
         this.dateCreated = dateCreated;
     }
     
-    public LogMessage(LogMessage source) {
+    public LogMessage(LogMessage source, HttpServletRequest request) {
         this.message = source.message;
         this.creatorId = source.creatorId;
         this.dateCreated = source.dateCreated;
         this.creator = source.creator;
+        if(creator == UNASSIGNED) {
+            this.loadCreator(request);
+        }
+        if(this.creatorId == null && this.creator.userId != null) {
+            this.creatorId = this.creator.userId;
+        }
         this.id = source.id;
     }
+    
+    public LogMessage(LogMessage source) {
+        this(source, null);
+    }
+
 
     public LogMessage() {
     }
@@ -102,7 +114,6 @@ public class LogMessage implements Serializable, Comparable<LogMessage> {
     /**
      * @return the id
      */
-    @JsonIgnore
     public Long getId() {
         return id;
     }
@@ -151,6 +162,7 @@ public class LogMessage implements Serializable, Comparable<LogMessage> {
      * Set the value of {@link #creator} from the value of {@link #creatorId}. If creatorId is null or an exception occurs while retrieving
      * the user data, the creator is set to {@link #UNASSIGNED}. If no creator could be found by the given id, the creator is set 
      * to {@link #ANONYMOUS}
+     * A {@link HttpServletRequest request} may be passed to create an absolute URL for the creator avatar
      */
     private void loadCreator(HttpServletRequest request) {
         if(this.creatorId == null) {

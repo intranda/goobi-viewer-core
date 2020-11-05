@@ -108,7 +108,7 @@
                                      </div>
                                 </h:panelGroup>
 
-                                <!-- LICENSE TYPE / CAMPAIGN SELECTION -->
+                                <!-- LICENSE TYPE SELECTION -->
                                 <h:panelGroup id="licenseTypeGroup" layout="block" styleClass="form-group form-row">
                                      <div class="col-sm-4">
                                          <label for="currentLicense.licenseTypeSelection" class="control-label">#{msg.admin__license_license_type_select_label}:</label>
@@ -116,7 +116,7 @@
                                      <div class="col-sm-8">
                                          <h:selectOneMenu
                                              rendered="#{adminBean.currentLicense.user != null or adminBean.currentLicense.userGroup != null or adminBean.currentLicense.ipRange != null}"
-                                             value="#{adminBean.currentLicense.licenseTypeSelection}"
+                                             value="#{adminBean.currentLicense.licenseType}"
                                              styleClass="form-control"
                                              immediate="true"
                                              converter="iLicenseTypeConverter"
@@ -173,7 +173,6 @@
                                             </h:outputText>
                                         </dd>
                                         <!-- LICENSE TYPE INFO -->
-                                        <ui:fragment rendered="#{adminBean.currentLicense.campaign == null}">
                                             <dt class="col-4">#{msg[adminBean.currentLicense.licenseType.name]}</dt>
                                             <dd class="col-8">
                                                 <ui:fragment rendered="#{adminBean.currentLicense.licenseType.description ne ''}">
@@ -183,19 +182,6 @@
                                                     <span class="admin__default-block-description-empty" aria-disabled="true">(#{msg.admin__label__no_description_available})</span>
                                                 </ui:fragment>
                                             </dd>
-                                        </ui:fragment>
-                                        <!-- CAMPAIGN INFO -->
-                                        <ui:fragment rendered="#{adminBean.currentLicense.campaign != null}">
-                                            <dt class="col-4">#{msg[adminBean.currentLicense.campaign.name]}</dt>
-                                            <dd class="col-8">
-                                                <ui:fragment rendered="#{adminBean.currentLicense.campaign.description ne ''}">
-                                                    #{msg[adminBean.currentLicense.campaign.description]}
-                                                </ui:fragment>
-                                                <ui:fragment rendered="#{adminBean.currentLicense.campaign eq ''}">
-                                                    <span class="admin__default-block-description-empty" aria-disabled="true">(#{msg.admin__label__no_description_available})</span>
-                                                </ui:fragment>
-                                            </dd>
-                                        </ui:fragment>
                                     </dl>
                                 </div>
                                 </ui:fragment>
@@ -519,8 +505,7 @@
                                         
 
                                         <!-- RECORD RELATED FUNCTIONS -->
-                                        <ui:fragment
-                                            rendered="#{!adminBean.currentLicense.licenseType.core and adminBean.currentLicense.campaign == null}">
+                                        <ui:fragment rendered="#{!adminBean.currentLicense.licenseType.core}">
                                             <div class="admin__license-functions admin__license-functions-added">
                                                 <div class="form-group form-row">
                                                     <div class="col-5 mb-3">#{msg.admin__license_functions_added}</div>
@@ -568,67 +553,7 @@
                                                 </div>
                                             </div>
                                         </ui:fragment>
-                                        
-                                        
-                                        <!-- CAMPAIGN RELATED FUNCTIONS -->
-                                        <ui:fragment rendered="#{adminBean.currentLicense.campaign != null}">
-                                            <div class="admin__license-functions admin__license-functions-added">
-                                            
-                                                <!-- GROUPS ENABLED -->
-                                                <div class="form-group form-row blockAfterRadioToggler">
-                                                    <div class="col-4">
-                                                        <label class="control-label">#{msg.admin__license_enabled_label}:</label>
-                                                    </div>
-                                                    <div class="col-7 admin__form-input">
-                                                        <div class="admin__radio-switch">
-                                                            <h:selectOneRadio group="privCmsAllSubthemes"
-                                                                value="#{adminBean.currentLicense.enableGroups}" immediate="true">
-                                                                <f:selectItem itemValue="#{false}" itemLabel="#{msg.no}" />
-                                                            </h:selectOneRadio>                                                        
-                                                            <h:selectOneRadio group="privCmsAllSubthemes"
-                                                                value="#{adminBean.currentLicense.enableGroups}" immediate="true">
-                                                                <f:selectItem itemValue="#{true}" itemLabel="#{msg.yes}" />
-                                                            </h:selectOneRadio>
-                                                            <span class="toggle-outside"><span class="toggle-inside"></span></span>
-                                                        </div>
-                                                        <span class="admin__form-help-text">#{msg.admin__license_enabled__help}</span>
-                                                    </div>
-                                                    <div class="col-1 admin__form-help-icon">
-                                                        <button type="button" class="btn btn--clean" data-toggle="helptext" aria-label="inline help icon">
-                                                            <i class="fa fa-question-circle" aria-hidden="true"></i>
-                                                        </button>
-                                                    </div>
-                                                </div>
-                                                
-                                                <!-- TIME PERIOD ENABLED -->
-                                                <div class="form-group form-row blockAfterRadioToggler">
-                                                    <div class="col-4">
-                                                        <label class="control-label">#{msg.admin__license_time_period_enabled_label}:</label>
-                                                    </div>
-                                                    <div class="col-7 admin__form-input">
-                                                        <div class="admin__radio-switch">
-                                                            <!-- TODO define class property -->
-                                                            <h:selectOneRadio group="privCmsAllSubthemes"
-                                                                value="#{adminBean.currentLicense.enableTimePeriod}" immediate="true">
-                                                                <f:selectItem itemValue="#{false}" itemLabel="#{msg.no}" />
-                                                            </h:selectOneRadio>                                                        
-                                                            <h:selectOneRadio group="privCmsAllSubthemes"
-                                                                value="#{adminBean.currentLicense.enableTimePeriod}" immediate="true">
-                                                                <f:selectItem itemValue="#{true}" itemLabel="#{msg.yes}" />
-                                                            </h:selectOneRadio>
-                                                            <span class="toggle-outside"><span class="toggle-inside"></span></span>
-                                                        </div>
-                                                        <span class="admin__form-help-text">#{msg.admin__license_time_period_enabled__help}</span>
-                                                    </div>
-                                                    <div class="col-1 admin__form-help-icon">
-                                                        <button type="button" class="btn btn--clean" data-toggle="helptext" aria-label="inline help icon">
-                                                            <i class="fa fa-question-circle" aria-hidden="true"></i>
-                                                        </button>
-                                                    </div>
-                                                </div>
-                                                
-                                            </div>
-                                        </ui:fragment>
+
                                     </div>
                                 </ui:fragment>
                             </h:panelGroup>
