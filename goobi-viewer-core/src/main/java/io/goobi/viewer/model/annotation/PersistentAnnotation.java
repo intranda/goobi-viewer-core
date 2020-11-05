@@ -115,6 +115,9 @@ public class PersistentAnnotation {
 
     @Column(name = "target_page")
     private Integer targetPageOrder;
+    
+    @Column(name = "access_condition", nullable = true)
+    private String accessCondition;
 
     /**
      * empty constructor
@@ -590,5 +593,19 @@ public class PersistentAnnotation {
         }
 
         return true;
+    }
+
+    /**
+     * @return the accessCondition
+     */
+    public String getAccessCondition() {
+        return accessCondition;
+    }
+    
+    /**
+     * @param accessCondition the accessCondition to set
+     */
+    public void setAccessCondition(String accessCondition) {
+        this.accessCondition = accessCondition;
     }
 }

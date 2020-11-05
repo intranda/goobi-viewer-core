@@ -195,7 +195,7 @@ public class Campaign implements CMSMediaHolder, ILicenseType, IPolyglott {
 
     @Column(name = "time_period_enabled")
     private boolean timePeriodEnabled = false;
-
+    
     /**
      * The id of the parent page. This is usually the id (as String) of the parent cms page, or NULL if the parent page is the start page The system
      * could be extended to set any page type name as parent page (so this page is a breadcrumb-child of e.g. "image view")

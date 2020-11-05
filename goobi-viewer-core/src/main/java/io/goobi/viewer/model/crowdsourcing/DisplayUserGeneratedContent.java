@@ -25,6 +25,12 @@ import org.apache.solr.common.SolrDocument;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
+import de.intranda.api.annotation.IResource;
+import de.intranda.api.annotation.ITypedResource;
+import de.intranda.api.annotation.wa.TypedResource;
 import io.goobi.viewer.controller.DateTools;
 import io.goobi.viewer.controller.SolrConstants;
 import io.goobi.viewer.controller.StringTools;
@@ -47,7 +53,9 @@ public class DisplayUserGeneratedContent {
         CORPORATION,
         ADDRESS,
         COMMENT,
-        PICTURE;
+        PICTURE,
+        GEOLOCATION,
+        NORMDATA;
 
         public String getName() {
             return this.name();
@@ -81,6 +89,8 @@ public class DisplayUserGeneratedContent {
     private String displayCoordinates;
 
     private String areaString;
+    
+    private ITypedResource annotationBody = new TypedResource();
 
     private User updatedBy;
 
@@ -409,14 +419,13 @@ public class DisplayUserGeneratedContent {
     }
 
     /**
-     * <p>
-     * isEmpty.
-     * </p>
+     * Check if the resource has either a label or an annotation body with a type
      *
-     * @return a boolean.
+     * @return true if neither label nor annotation body exist
      */
     public boolean isEmpty() {
-        return StringUtils.isEmpty(getLabel());
+        return StringUtils.isEmpty(getLabel()) 
+                && (this.annotationBody == null || StringUtils.isBlank(this.annotationBody.getType())) ;
     }
 
     /**
@@ -430,6 +439,43 @@ public class DisplayUserGeneratedContent {
         return getType().getName();
     }
 
+    /**
+     * @return the annotationBody
+     */
+    public ITypedResource getAnnotationBody() {
+        return annotationBody;
+    }
+    
+    /**
+     * @param annotationBody the annotationBody to set
+     */
+    public void setAnnotationBody(ITypedResource annotationBody) {
+        this.annotationBody = annotationBody;
+    }
+    
+    public boolean setAnnotationBody(String json) {
+        if(StringUtils.isNotBlank(json) && !"{}".equals(json)) {
+            
+            ObjectMapper mapper = new ObjectMapper();
+            try {
+                this.annotationBody = mapper.readValue(json, de.intranda.api.annotation.oa.TypedResource.class);
+                if(this.annotationBody == null) {
+                    throw new IllegalArgumentException("no content generated");
+                }
+                return true;
+            } catch (JsonProcessingException | IllegalArgumentException e) {
+                try {
+                    this.annotationBody = mapper.readValue(json, de.intranda.api.annotation.wa.TypedResource.class);
+                    return true;
+                } catch (JsonProcessingException e1) {
+                    logger.error("Unable to parse annotation body " + json);
+                }
+
+            }
+        }
+        return false;
+    }
+    
     /**
      * <p>
      * buildFromSolrDoc.
@@ -457,6 +503,7 @@ public class DisplayUserGeneratedContent {
         ret.setAreaString((String) doc.getFieldValue(SolrConstants.UGCCOORDS));
         ret.setDisplayCoordinates((String) doc.getFieldValue(SolrConstants.UGCCOORDS));
         ret.setPi((String) doc.getFieldValue(SolrConstants.PI_TOPSTRUCT));
+        ret.setAnnotationBody((String) doc.getFieldValue(SolrConstants.MD_BODY));
         Object pageNo = doc.getFieldValue(SolrConstants.ORDER);
         if(pageNo != null && pageNo instanceof Number) {            
             ret.setPage(((Number) pageNo).intValue());

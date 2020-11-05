@@ -30,7 +30,7 @@
 					<nav id="user_generated_content_nav">
 						<ul>
 							<ui:repeat var="content" value="#{contentBean.getUserGeneratedContentsForDisplay(activeDocumentBean.viewManager.pi)}">
-								<h:panelGroup rendered="#{content.label == ''?'false':'true'}">
+								<h:panelGroup rendered="#{content.isEmpty() ? 'false':'true'}">
 
 										<li id="words-#{content.id}" class="widget-annotations__entry #{content.isOnPage(activeDocumentBean.viewManager.currentPage) ? '-onpage' : ''}">
 											<div class="widget-annotations__type"><i class="#{content.iconClass}" aria-hidden="true"></i></div>
