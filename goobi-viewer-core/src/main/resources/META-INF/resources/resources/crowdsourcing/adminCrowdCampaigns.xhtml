@@ -94,7 +94,9 @@
                                         </div>
                                     </div>
                                     <div class="col-2 d-flex">
-                                        <h:outputText value="#{msg['admin__crowdsourcing_campaign_visibility_' += campaign.visibility]} " />
+                                        <h:outputText rendered="#{campaign.userGroup == null}" value="#{msg['admin__crowdsourcing_campaign_visibility_' += campaign.visibility]} " />
+                                        <h:outputText rendered="#{campaign.userGroup != null}"
+                                            value="${msg.userGroup}: ${campaign.userGroup.name}"></h:outputText>
                                     </div>
                                     <div class="col-2 d-flex">
                                         <h:outputText rendered="#{campaign.dateStart != null}" value="#{campaign.dateStart}">

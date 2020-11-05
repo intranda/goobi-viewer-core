@@ -42,8 +42,6 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
-import javax.persistence.Temporal;
-import javax.persistence.TemporalType;
 import javax.persistence.Transient;
 import javax.servlet.http.HttpSessionBindingEvent;
 import javax.servlet.http.HttpSessionBindingListener;
@@ -125,7 +123,7 @@ public class User implements ILicensee, HttpSessionBindingListener, Serializable
     @Column(name = "activation_key")
     private String activationKey;
 
-//    @Temporal(TemporalType.TIMESTAMP)
+    //    @Temporal(TemporalType.TIMESTAMP)
     @Column(name = "last_login")
     private LocalDateTime lastLogin;
 
@@ -158,9 +156,9 @@ public class User implements ILicensee, HttpSessionBindingListener, Serializable
 
     @Column(name = "agreed_to_terms_of_use")
     private boolean agreedToTermsOfUse = false;
-    
-//    @Column(name = "dummy")
-//    private boolean dummy = false;
+
+    //    @Column(name = "dummy")
+    //    private boolean dummy = false;
 
     /** List contains both old style OpenID 2.0 identifiers and OAuth subs. */
     @ElementCollection(fetch = FetchType.EAGER)
@@ -1113,13 +1111,31 @@ public class User implements ILicensee, HttpSessionBindingListener, Serializable
         List<Campaign> ret = new ArrayList<>(allCampaigns.size());
         for (Campaign campaign : allCampaigns) {
             logger.trace("campaign: {}", campaign.getTitle());
-            // Skip inactive campaigns
-            if (!campaign.isHasStarted() || campaign.isHasEnded()) {
-                continue;
-            }
             switch (campaign.getVisibility()) {
                 case PUBLIC:
                     ret.add(campaign);
+                    break;
+                case PRIVATE:
+                    // Skip inactive campaigns
+                    if (!campaign.isHasStarted() || campaign.isHasEnded()) {
+                        continue;
+                    }
+                    // Campaign with a set time frame, but no user group
+                    if (campaign.getDateStart() != null && campaign.getDateEnd() != null && campaign.getUserGroup() == null) {
+                        ret.add(campaign);
+                        continue;
+                    }
+                    // Campaign with user group
+                    if (campaign.getUserGroup() != null) {
+                        try {
+                            if (campaign.getUserGroup().getMembersAndOwner().contains(this)) {
+                                ret.add(campaign);
+                            }
+                        } catch (DAOException e) {
+                            logger.error(e.getMessage());
+                            continue;
+                        }
+                    }
                     break;
                 case RESTRICTED:
                     // Check user licenses
@@ -1470,19 +1486,19 @@ public class User implements ILicensee, HttpSessionBindingListener, Serializable
         this.useGravatar = useGravatar;
     }
 
-//    /**
-//     * @return the dummy
-//     */
-//    public boolean isDummy() {
-//        return dummy;
-//    }
-//
-//    /**
-//     * @param dummy the dummy to set
-//     */
-//    public void setDummy(boolean dummy) {
-//        this.dummy = dummy;
-//    }
+    //    /**
+    //     * @return the dummy
+    //     */
+    //    public boolean isDummy() {
+    //        return dummy;
+    //    }
+    //
+    //    /**
+    //     * @param dummy the dummy to set
+    //     */
+    //    public void setDummy(boolean dummy) {
+    //        this.dummy = dummy;
+    //    }
 
     /**
      * 
@@ -1762,14 +1778,14 @@ public class User implements ILicensee, HttpSessionBindingListener, Serializable
     public static void main(String[] args) {
         System.out.println(BCrypt.hashpw("halbgeviertstrich", BCrypt.gensalt()));
     }
-    
+
     /**
      * @param agreedToTermsOfUse the agreedToTermsOfUse to set
      */
     public void setAgreedToTermsOfUse(boolean agreedToTermsOfUse) {
         this.agreedToTermsOfUse = agreedToTermsOfUse;
     }
-    
+
     /**
      * @return the agreedToTermsOfUse
      */

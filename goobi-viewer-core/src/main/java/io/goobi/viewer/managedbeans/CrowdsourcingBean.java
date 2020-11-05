@@ -362,18 +362,31 @@ public class CrowdsourcingBean implements Serializable {
                 .collect(Collectors.toList());
         return pages;
     }
-
+    
     /**
      * Returns the list of campaigns that are visible to the given user.
-     *
-     * @param user a {@link io.goobi.viewer.model.security.user.User} object.
-     * @return list of campaigns visible to the given user; only public campaigns if user is null
-     * @throws io.goobi.viewer.exceptions.DAOException if any.
+     * @param user
+     * @return
+     * @throws DAOException
      */
     public List<Campaign> getAllowedCampaigns(User user) throws DAOException {
+        return getAllowedCampaigns(user, getAllCampaigns());
+    }
+
+    /**
+     * Returns the list of campaigns that are visible to the given user based on the given list of campaigns.
+     *
+     * @param user a {@link io.goobi.viewer.model.security.user.User} object.
+     * @param allCampaigns List of all available campaigns
+     * @return list of campaigns visible to the given user; only public campaigns if user is null
+     * @throws io.goobi.viewer.exceptions.DAOException if any.
+     * @should return all public campaigns if user not logged in
+     * @should return private campaigns within time period if user not logged in
+     * @should return private campaigns within time period if user logged in
+     */
+     List<Campaign> getAllowedCampaigns(User user, List<Campaign> allCampaigns) throws DAOException {
         logger.trace("getAllowedCampaigns");
-        List<Campaign> allCampaigns = getAllCampaigns();
-        if (allCampaigns.isEmpty()) {
+        if (allCampaigns == null || allCampaigns.isEmpty()) {
             logger.trace("No campaigns found");
             return Collections.emptyList();
         }
@@ -385,8 +398,22 @@ public class CrowdsourcingBean implements Serializable {
         // Not logged in - only public campaigns
         List<Campaign> ret = new ArrayList<>(allCampaigns.size());
         for (Campaign campaign : allCampaigns) {
-            if (CampaignVisibility.PUBLIC.equals(campaign.getVisibility())) {
-                ret.add(campaign);
+            switch (campaign.getVisibility()) {
+                case PUBLIC:
+                    ret.add(campaign);
+                    break;
+                case PRIVATE:
+                    // Only logged in members may access campaigns limited to a user group
+                    if (campaign.getUserGroup() != null) {
+                        continue;
+                    }
+                    // Private campaigns with a defined time period can be accessed by anyone within said time period
+                    if (campaign.getDateStart() != null && campaign.getDateEnd() != null && campaign.isHasStarted() && !campaign.isHasEnded()) {
+                        ret.add(campaign);
+                    }
+                    break;
+                default:
+                    break;
             }
         }
 
