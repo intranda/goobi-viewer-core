@@ -51,6 +51,7 @@ import io.goobi.viewer.model.cms.CMSPageTemplateEnabled;
 import io.goobi.viewer.model.cms.CMSStaticPage;
 import io.goobi.viewer.model.cms.CMSTemplateManager;
 import io.goobi.viewer.model.crowdsourcing.campaigns.Campaign;
+import io.goobi.viewer.model.crowdsourcing.campaigns.CampaignLogMessage;
 import io.goobi.viewer.model.crowdsourcing.campaigns.Campaign.CampaignVisibility;
 import io.goobi.viewer.model.crowdsourcing.campaigns.CampaignRecordStatistic.CampaignRecordStatus;
 import io.goobi.viewer.model.crowdsourcing.questions.Question;
@@ -2273,8 +2274,21 @@ public class JPADAOTest extends AbstractDatabaseEnabledTest {
     }
     
     @Test
-    public void testUpdateCampaignWithLogMessage() throws Exception {
+    public void testLoadCampaignWithLogMessage() throws Exception {
         Campaign campaign = DataManager.getInstance().getDao().getCampaign(1L);
+        Assert.assertNotNull(campaign);
+        Assert.assertEquals(1, campaign.getLogMessages().size());
+        
+        CampaignLogMessage message = campaign.getLogMessages().get(0);
+        Assert.assertEquals("Eine Nachricht im Log", message.getMessage());
+        Assert.assertEquals(new Long(1), message.getCreatorId());
+        Assert.assertEquals("PI_1", message.getPi());
+        Assert.assertEquals(campaign, message.getCampaign());
+    }
+    
+    @Test
+    public void testUpdateCampaignWithLogMessage() throws Exception {
+        Campaign campaign = DataManager.getInstance().getDao().getCampaign(2L);
         Assert.assertNotNull(campaign);
         
         LogMessage message = new LogMessage("Test", 1l, new Date(), null);
@@ -2282,7 +2296,7 @@ public class JPADAOTest extends AbstractDatabaseEnabledTest {
         Assert.assertEquals("Test", campaign.getLogMessages().get(0).getMessage());
         
         DataManager.getInstance().getDao().updateCampaign(campaign);
-        campaign = DataManager.getInstance().getDao().getCampaign(1L);
+        campaign = DataManager.getInstance().getDao().getCampaign(2L);
         Assert.assertEquals("Test", campaign.getLogMessages().get(0).getMessage());
 
         

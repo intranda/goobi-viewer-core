@@ -17,7 +17,6 @@
 
 this.currentUser = this.opts.item.currentUser;
 this.messages = this.opts.item.log;
-this.messagesToAdd = [];
 
 this.on("mount", function() {
     //actions to do when tag is created
