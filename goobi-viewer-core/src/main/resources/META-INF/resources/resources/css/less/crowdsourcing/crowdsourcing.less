@@ -389,14 +389,22 @@
 		border: 1px solid #d5d5d5;
 		margin-bottom: 2.5rem;
 	}
-	&__log-inner-wrapper {
-		padding: 2rem;
-	}
 	&__log-title {
 		font-size: 1.6rem;
 		background: #444;
 		padding: 1rem 2rem;
 		color: @white;
+		display: flex;
+	}
+	&__log-inner-wrapper {
+		padding: 2rem;
+		max-height: 350px;
+		overflow-y: hidden;
+		overflow-x: hidden;
+		transition: all 0.2s ease;
+	}
+	&__log-expand {
+		margin-left: auto;
 	}
 	&__log-message-entry {
 		display: flex;
@@ -456,6 +464,7 @@
 		display: flex;
 		align-content: center;
 		align-items: center;
+		padding: 2rem;
 	}
 	&__log-message-input {
 		margin-right: 1rem;

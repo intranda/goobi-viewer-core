@@ -681,7 +681,7 @@ public class User implements ILicensee, HttpSessionBindingListener, Serializable
         }
         return Optional.ofNullable(BeanUtils.getNavigationHelper())
                 .map(NavigationHelper::getApplicationUrl)
-                .orElse("/") + "resources/crowdsourcing/img/profile-small.png";
+                .orElse("/") + "resources/images/backend/thumbnail_goobi_person.png";
     }
 
     /**
@@ -697,7 +697,7 @@ public class User implements ILicensee, HttpSessionBindingListener, Serializable
 
         return Optional.ofNullable(BeanUtils.getNavigationHelper())
                 .map(NavigationHelper::getApplicationUrl)
-                .orElse("/") + "resources/crowdsourcing/img/profile-small.png";
+                .orElse("/") + "resources/images/backend/thumbnail_goobi_person.png";
     }
 
     /**
