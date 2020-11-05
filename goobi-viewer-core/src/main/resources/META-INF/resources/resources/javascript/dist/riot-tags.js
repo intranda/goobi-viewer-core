@@ -1340,7 +1340,6 @@ riot.tag2('campaignitemlog', '<div each="{message in messages}" class="{isCurren
 
 this.currentUser = this.opts.item.currentUser;
 this.messages = this.opts.item.log;
-this.messagesToAdd = [];
 
 this.on("mount", function() {
 
