@@ -174,44 +174,7 @@
 													</div>
 														
 												</h:panelGroup>
-												
-												<!-- LOG -->
-												<div class="form-group form-row #{crowdsourcingBean.selectedCampaign.isDefaultLocaleSelected() == 'false' ? '-deactivated' : ''}">
-												
-													<div class="col-2 control-label admin__form-label">
-														<label for="showLogSelection">#{msg.admin__crowdsourcing_campaign_show_log}: </label>
-													</div>
-													
-													<div class="cms-module__option-control col-9 admin__form-input">
-													<ui:fragment rendered="#{!crowdsourcingBean.selectedCampaign.isDefaultLocaleSelected()}">
-														<div class="admin__non-clickable-area-overlay"></div>
-													</ui:fragment>		
-														<h:panelGroup id="showLogSelectionGroup">
-															<div class="cms-module__option-message">
-																<h:messages for="solrQueryInput"
-																	infoClass="cms-module__option-message-status success"
-																	warnClass="cms-module__option-message-status warning"
-																	errorClass="cms-module__option-message-status danger" />
-						
-																<div class="cms-module__option-message-mark">
-																	<i class="fa fa-check" aria-hidden="true"></i> <i
-																		class="fa fa-exclamation" aria-hidden="true"></i>
-																</div>
-															</div>
-															<viewerComponent:toggleSwitch name="showLogSelection" value="#{crowdsourcingBean.selectedCampaign.showLog}" /> 
-														</h:panelGroup>
-														<span class="admin__form-help-text">#{msg.admin__crowdsourcing_campaign_show_log__help}</span>
-													</div>
-													
-													<div class="col-1 admin__form-help-icon">
-														<button type="button" class="btn btn--clean"
-															data-toggle="helptext" aria-label="inline help icon">
-															<i class="fa fa-question-circle" aria-hidden="true"></i>
-														</button>
-													</div>
-													
-												</div>
-												
+
 												<!-- SOLR QUERY -->
 												<div class="form-group form-row #{crowdsourcingBean.selectedCampaign.isDefaultLocaleSelected() == 'false' ? '-deactivated' : ''}">
 												
@@ -442,15 +405,22 @@
 									<div class="admin__content-side">
 										<!-- VISIBILITY OF CAMPAIGN -->
 										<div class="admin__default-block">
-											<h3>#{msg.admin__crowdsourcing_campaign_visibility}</h3>
+											<h3>#{msg.admin__crowdsourcing_campaign_settings}</h3>
 											
 											<!-- VISIBILITY STATUS -->
 											<div class="form-row form-group">
 
-												<div class="col-12 control-label admin__form-label">
+												<div class="col-11 control-label admin__form-label">
 													<label for="adminCrowdVisibleStatus">
 														#{msg.admin__crowdsourcing_campaign_visibility}:
 													</label>
+												</div>
+	
+												<div class="col-1 admin__form-help-icon">
+													<button type="button" class="btn btn--clean"
+														data-toggle="helptext" aria-label="inline help icon">
+														<i class="fa fa-question-circle" aria-hidden="true"></i>
+													</button>
 												</div>
 
 							                    <div class="col-11 admin__form-input">
@@ -461,24 +431,24 @@
 							                        </h:selectOneMenu>
 							                        <span class="admin__form-help-text">#{msg.admin__help_crowdsourcing_campaign_visibility}</span>
 						                   		</div>
-						                   		
-												<div class="col-1 admin__form-help-icon">
-													<button type="button" class="btn btn--clean"
-														data-toggle="helptext" aria-label="inline help icon">
-														<i class="fa fa-question-circle" aria-hidden="true"></i>
-													</button>
-												</div>
-						                   	</div>
+                                            </div>
 						                   	
 											<h:panelGroup id="adminCrowdPrivateSettingsGroup" layout="block">
 											
 											    <!-- GROUP SELECTION GROUP -->
 												<ui:fragment rendered="#{crowdsourcingBean.selectedCampaign.visibility == 'PRIVATE' and userBean.user.superuser}">
 													<div class="form-group form-row">
-														<div class="col-12 control-label admin__form-label">
+														<div class="col-11 control-label admin__form-label">
 															<label for="adminCrowdVisibleFor">
 																#{msg.admin__crowdsourcing_campaign_limit_to_group}:
 															</label>
+														</div>
+														
+														<div class="col-1 admin__form-help-icon">
+															<button type="button" class="btn btn--clean"
+																data-toggle="helptext" aria-label="inline help icon">
+																<i class="fa fa-question-circle" aria-hidden="true"></i>
+															</button>
 														</div>
 
 								                    <!-- TOGGLE GROUP SELECTION SWITCH -->
@@ -498,15 +468,8 @@
 	                                                        </div>
 									                        <span class="admin__form-help-text">#{msg.admin__help_crowdsourcing_campaign_limit_to_group}</span>
 								                   		</div>
-								                   		
-														<div class="col-1 admin__form-help-icon">
-															<button type="button" class="btn btn--clean"
-																data-toggle="helptext" aria-label="inline help icon">
-																<i class="fa fa-question-circle" aria-hidden="true"></i>
-															</button>
-														</div>
 													
-													<h:panelGroup id="selectUserGroupGroup" styleClass="col-11">
+													<h:panelGroup id="selectUserGroupGroup" styleClass="col-11 mt-1">
                                                         <h:selectOneMenu rendered="#{crowdsourcingBean.selectedCampaign.limitToGroup}"
                                                             value="#{crowdsourcingBean.selectedCampaign.userGroup}"
                                                             styleClass="form-control mt-2"
@@ -536,10 +499,16 @@
                                                 <!-- TIME PERIOD GROUP -->
                                                 <ui:fragment rendered="#{crowdsourcingBean.selectedCampaign.visibility == 'PRIVATE'}">
                                                 	<div class="form-group form-row">
-	                                                    <div class="col-12 control-label admin__form-label">
+	                                                    <div class="col-11 control-label admin__form-label">
 	                                                        <label for="adminCrowdVisibleFor">
 	                                                            #{msg.admin__crowdsourcing_campaign_time_pediod_enabled}:
 	                                                        </label>
+	                                                    </div>
+	                                                    <div class="col-1 admin__form-help-icon">
+	                                                        <button type="button" class="btn btn--clean"
+	                                                            data-toggle="helptext" aria-label="inline help icon">
+	                                                            <i class="fa fa-question-circle" aria-hidden="true"></i>
+	                                                        </button>
 	                                                    </div>
 	                                                    
 	                                                    <!-- TOGGLE TIME PERIOD SWITCH -->
@@ -558,12 +527,6 @@
 	                                                            <span class="toggle-outside"><span class="toggle-inside" /></span>
 	                                                        </div>
 	                                                        <span class="admin__form-help-text">#{msg.admin__help_crowdsourcing_campaign_time_pediod}</span>
-	                                                    </div>
-	                                                    <div class="col-1 admin__form-help-icon">
-	                                                        <button type="button" class="btn btn--clean"
-	                                                            data-toggle="helptext" aria-label="inline help icon">
-	                                                            <i class="fa fa-question-circle" aria-hidden="true"></i>
-	                                                        </button>
 	                                                    </div>
                                                     </div>
                                                     

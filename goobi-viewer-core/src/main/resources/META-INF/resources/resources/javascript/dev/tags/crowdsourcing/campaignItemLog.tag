@@ -2,7 +2,7 @@
 	
 	<div class="crowdsourcing-annotations__log-wrapper">
 		<div class="crowdsourcing-annotations__log-title">
-			<span>Log</span>
+			<span>{Crowdsourcing.translate("log")}</span>
 			<span ref="expand" onclick="{expandLog}" class="crowdsourcing-annotations__log-expand"><i class="fa fa-angle-down" aria-hidden="true"></i></span>
 			<span ref="compress" onclick="{compressLog}" class="crowdsourcing-annotations__log-expand"><i class="fa fa-angle-up" aria-hidden="true"></i></span>
 		</div>
