@@ -195,6 +195,7 @@ public class CrowdsourcingBean implements Serializable {
                 public void resetTotalNumberOfRecords() {
                     numCreatedPages = Optional.empty();
                 }
+
             });
             lazyModelAnnotations.setEntriesPerPage(DEFAULT_ROWS_PER_PAGE);
             lazyModelAnnotations.setFilters("targetPI_body");
@@ -406,6 +407,26 @@ public class CrowdsourcingBean implements Serializable {
     }
 
     /**
+     * 
+     * @param user
+     * @return
+     * @throws DAOException 
+     */
+    public boolean isUserOwnsAnyCampaigns(User user) throws DAOException {
+        if (user == null) {
+            return false;
+        }
+        
+        for (Campaign campaign : getAllCampaigns()) {
+            if (campaign.isLimitToGroup() && campaign.getUserGroup() != null && user.equals(campaign.getUserGroup().getOwner())) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    /**
      * Check if the given user is allowed access to the given campaign from a rights management standpoint alone. If the user is null, access is
      * granted for public campaigns only, otherwise access is granted if the user has the appropriate rights
      *
@@ -446,24 +467,21 @@ public class CrowdsourcingBean implements Serializable {
         switch (campaign.getVisibility()) {
             case PRIVATE:
                 // Only logged in members may access campaigns limited to a user group
-                if (campaign.isLimitToGroup()) {
-                    if (user == null) {
-                        return false;
-                    }
-                    if (user.isSuperuser()) {
-                        return true;
-                    }
-
-                    try {
-                        if (campaign.getUserGroup() != null && campaign.getUserGroup().getMembersAndOwner().contains(user)) {
-                            return true;
-                        }
-                    } catch (DAOException e) {
-                        logger.error(e.getMessage());
-                        return false;
-                    }
+                if (!campaign.isLimitToGroup() || campaign.getUserGroup() == null) {
+                    return false;
                 }
-                break;
+                if (user == null) {
+                    return false;
+                }
+                if (user.isSuperuser()) {
+                    return true;
+                }
+                try {
+                    return campaign.getUserGroup().getMembersAndOwner().contains(user);
+                } catch (DAOException e) {
+                    logger.error(e.getMessage());
+                    return false;
+                }
             case RESTRICTED:
                 // Check user licenses
                 if (user != null) {
