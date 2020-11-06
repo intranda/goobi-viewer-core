@@ -26,6 +26,7 @@ import javax.annotation.PostConstruct;
 import javax.enterprise.context.SessionScoped;
 import javax.inject.Named;
 
+import org.apache.commons.lang.NumberUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -101,7 +102,7 @@ public class ContentBean implements Serializable {
      * @throws PresentationException 
      */
     private List<DisplayUserGeneratedContent> getUserGeneratedContentsForDisplay(PhysicalElement page) throws PresentationException, IndexUnreachableException {
-        return getUserGeneratedContentsForDisplay(page.getPi()).stream().filter(ugc -> page.getOrder() == ugc.getPage()).collect(Collectors.toList());
+        return getUserGeneratedContentsForDisplay(page.getPi()).stream().filter(ugc -> ugc.isOnThisPage(page)).collect(Collectors.toList());
     }
 
     /**

@@ -44,9 +44,8 @@
 													</h:outputLink>
 												</ui:fragment>
 											</div>
-											<ui
 											<div class="widget-annotations__page">
-												<ui:fragment rendered="#{content.page != null}">
+												<ui:fragment rendered="#{content.isOnAnyPage()}">
 													<span>#{content.page}</span>
 												</ui:fragment>
 											</div>
