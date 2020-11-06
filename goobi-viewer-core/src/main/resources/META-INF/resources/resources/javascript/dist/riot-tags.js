@@ -1375,6 +1375,7 @@ this.addMessage = function() {
         this.opts.item.addLogMessage(message);
 
     }
+
 }.bind(this)
 
 this.isCurrentUser = function(user) {
@@ -1386,27 +1387,28 @@ this.scrollToBottom = function() {
 }.bind(this)
 
 this.expandLog = function() {
-    $(this.refs.expand).fadeOut({
+    $(this.refs.expand).hide({
         complete: () => {
-        	$(this.refs.compress).fadeIn();
-    	}
+        	$(this.refs.compress).show();
+    	},
+        duration: 0
     });
     $('.crowdsourcing-annotations__content-right').animate({scrollTop: '+=150px'}, 600);
-	$(this.refs.innerWrapper).css({"overflow-y": "auto", "max-height": "500px"});
+	$(this.refs.innerWrapper).css({"overflow-y": "auto", "max-height": "500px", "min-height": "300px"});
 }.bind(this)
 
 this.compressLog = function() {
-    $(this.refs.compress).fadeOut({
+    $(this.refs.compress).hide({
         complete: () => {
-        	$(this.refs.expand).fadeIn();
-    	}
+        	$(this.refs.expand).show();
+    	},
+        duration: 0
     });
     $('.crowdsourcing-annotations__content-right').animate({scrollTop: '+=150px'}, 600);
 	$(this.refs.innerWrapper).css({"overflow-y": "hidden", "max-height": "350px"});
 }.bind(this)
 
 });
-
 
 riot.tag2('canvaspaginator', '<nav class="numeric-paginator"><ul><li if="{getCurrentIndex() > 0}" class="numeric-paginator__navigate navigate_prev"><span onclick="{this.loadPrevious}"><i class="fa fa-angle-left" aria-hidden="true"></i></span></li><li each="{canvas in this.firstCanvases()}" class="group_left {this.getIndex(canvas) == this.getCurrentIndex() ? \'numeric-paginator__active\' : \'\'}"><span index="{this.getIndex(canvas)}" onclick="{this.loadFromEvent}">{this.getOrder(canvas)}</span></li><li class="numeric-paginator__separator" if="{this.useMiddleButtons()}">...</li><li each="{canvas in this.middleCanvases()}" class="group_middle {this.getIndex(canvas) == this.getCurrentIndex() ? \'numeric-paginator__active\' : \'\'}"><span index="{this.getIndex(canvas)}" onclick="{this.loadFromEvent}">{this.getOrder(canvas)}</span></li><li class="numeric-paginator__separator" if="{this.useLastButtons()}">...</li><li each="{canvas in this.lastCanvases()}" class="group_right {this.getIndex(canvas) == this.getCurrentIndex() ? \'numeric-paginator__active\' : \'\'}"><span index="{this.getIndex(canvas)}" onclick="{this.loadFromEvent}">{this.getOrder(canvas)}</span></li><li if="{getCurrentIndex() < getTotalImageCount()-1}" class="numeric-paginator__navigate navigate_next"><span onclick="{this.loadNext}"><i class="fa fa-angle-right" aria-hidden="true"></i></span></li></ul></nav>', '', '', function(opts) {
 
