@@ -80,14 +80,16 @@
                                                         <label class="sr-only" for="advsearchValueText_#{statusGroup.count}-#{status.count}"></label>
                                                         <div class="input-group">
                                                             <ui:fragment rendered="#{queryItem.range}">
+                                                            	<div class="search-advanced__year-span-from d-none d-lg-inline-block">#{msg.searchAdvanced_range_value1}</div>
                                                                 <h:inputText id="advsearchValue1Text_#{statusGroup.count}-#{status.count}"
                                                                     styleClass="form-control value-text -with-right-border" value="#{queryItem.value}">
-                                                                    <f:passThroughAttribute name="placeholder" value="#{msg.of}" />
+                                                                    <f:passThroughAttribute name="placeholder" value="#{msg.year}" />
                                                                 </h:inputText>
-                                                                <i class="fa fa-arrows-h search-advanced__between-arrow" aria-hidden="true"></i>
+                                                                <i class="fa fa-arrows-h search-advanced__between-arrow d-lg-none" aria-hidden="true"></i>
+                                                                <div class="search-advanced__year-span-to d-none d-lg-inline-block">#{msg.searchAdvanced_range_value2}</div>
                                                                 <h:inputText id="advsearchValue2Text_#{statusGroup.count}-#{status.count}"
                                                                     styleClass="form-control value-text -with-right-border" value="#{queryItem.value2}">
-                                                                    <f:passThroughAttribute name="placeholder" value="#{msg.downloadPdfPartsTo}" />
+                                                                    <f:passThroughAttribute name="placeholder" value="#{msg.year}" />
                                                                 </h:inputText>
                                                             </ui:fragment>
                                                             <ui:fragment rendered="#{!queryItem.range}">

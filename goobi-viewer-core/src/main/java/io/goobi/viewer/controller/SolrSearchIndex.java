@@ -705,19 +705,24 @@ public final class SolrSearchIndex {
      *
      * @param pi a {@link java.lang.String} object.
      * @param logId a {@link java.lang.String} object.
-     * @should retrieve correct IDDOC
      * @return a long.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
+     * @should retrieve correct IDDOC
      */
     public long getIddocByLogid(String pi, String logId) throws IndexUnreachableException, PresentationException {
         logger.trace("getIddocByLogid: {}:{}", pi, logId);
-        String query = new StringBuilder(SolrConstants.PI_TOPSTRUCT).append(":")
+        String query = new StringBuilder("+")
+                .append(SolrConstants.PI_TOPSTRUCT).append(":")
                 .append(pi)
-                .append(" AND ")
+                .append(" +")
                 .append(SolrConstants.LOGID)
                 .append(":")
                 .append(logId)
+                .append(" +")
+                .append(SolrConstants.DOCTYPE)
+                .append(":")
+                .append(DocType.DOCSTRCT.name())
                 .toString();
         SolrDocument doc = getFirstDoc(query, Collections.singletonList(SolrConstants.IDDOC));
         if (doc != null) {
@@ -905,6 +910,45 @@ public final class SolrSearchIndex {
             values.add(value);
         }
         return values;
+    }
+
+    /**
+     * 
+     * @param doc
+     * @return
+     */
+    public static boolean isGroup(SolrDocument doc) {
+        if (doc == null) {
+            return false;
+        }
+
+        return DocType.GROUP.toString().equals(doc.getFieldValue(SolrConstants.DOCTYPE));
+    }
+
+    /**
+     * 
+     * @param doc
+     * @return
+     */
+    public static boolean isAnchor(SolrDocument doc) {
+        if (doc == null) {
+            return false;
+        }
+
+        return doc.containsKey(SolrConstants.ISANCHOR) && (Boolean) doc.getFieldValue(SolrConstants.ISANCHOR);
+    }
+
+    /**
+     * 
+     * @param doc
+     * @return
+     */
+    public static boolean isWork(SolrDocument doc) {
+        if (doc == null) {
+            return false;
+        }
+
+        return doc.containsKey(SolrConstants.ISWORK) && (Boolean) doc.getFieldValue(SolrConstants.ISWORK);
     }
 
     /**
@@ -1623,7 +1667,8 @@ public final class SolrSearchIndex {
      * isHasImages.
      * </p>
      *
-     * @param doc a {@link org.apache.solr.common.SolrDocument} object. Needs to contain metadata fields {@link SolrConstants.FILENAME} and {@link SolrConstants.THUMBNAIL}
+     * @param doc a {@link org.apache.solr.common.SolrDocument} object. Needs to contain metadata fields {@link SolrConstants.FILENAME} and
+     *            {@link SolrConstants.THUMBNAIL}
      * @should return correct value for page docs
      * @should return correct value for docsctrct docs
      * @return a boolean.

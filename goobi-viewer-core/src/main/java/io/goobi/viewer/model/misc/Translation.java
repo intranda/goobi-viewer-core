@@ -97,7 +97,7 @@ public abstract class Translation {
      * Clone constructor
      * @param t
      */
-    public Translation(MapTranslation t) {
+    public Translation(Translation t) {
         this.id = t.id;
         this.language = t.language;
         this.value = t.value;

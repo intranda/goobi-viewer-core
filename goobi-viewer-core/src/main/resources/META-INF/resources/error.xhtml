@@ -98,6 +98,25 @@
                     </h:form>
                 </h:panelGroup>
                 
+                <!-- ERROR RECORD LIMIT EXCEEDED -->             
+                <h:panelGroup rendered="#{type == 'errRecordLimitExceeded'}">
+                    <h2>#{msg.errRecordLimitExceededTitle}</h2>
+
+                    <h:form>
+                        <div class="alert alert-danger" role="alert">
+                            <h:outputText rendered="#{errMsg != null}" value="#{errMsg}" />
+                            <h:outputText rendered="#{errMsg == null}" value="#{flash.keep.errorDetails}" />
+                            <h:outputText rendered="#{!empty header['referer']}" value="#{header['referer']}" />
+                        </div>
+
+                    <p>
+                        <h:outputLink rendered="#{!empty header['referer']}" value="#{header['referer']}">#{msg.returnToPreviousPage}</h:outputLink>
+                        <br />
+                        <h:outputLink value="#{navigationHelper.applicationUrl}">#{msg.returnHome}</h:outputLink>
+                    </p>
+                    </h:form>
+                </h:panelGroup>
+                
                 <!-- INDEX UNREACHABLE -->             
                 <h:panelGroup rendered="#{type == 'indexUnreachable'}">
                     <h3>#{msg.errIndexUnreachableTitle}</h3>

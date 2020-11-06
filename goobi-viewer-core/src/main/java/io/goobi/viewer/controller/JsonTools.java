@@ -279,7 +279,7 @@ public class JsonTools {
         }
 
         String docType = (String) doc.getFieldValue(SolrConstants.DOCTYPE);
-        boolean isAnchor = doc.getFieldValue(SolrConstants.ISANCHOR) != null && (Boolean) doc.getFieldValue(SolrConstants.ISANCHOR);
+        boolean isAnchor = SolrSearchIndex.isAnchor(doc);
         PageType pageType = PageType.determinePageType(docStructType, (String) doc.getFieldValue(SolrConstants.MIMETYPE),
                 isAnchor || DocType.GROUP.name().equals(docType), StringUtils.isNotEmpty(fileName), false);
 

@@ -41,6 +41,9 @@ public class ApiUrls extends AbstractApiUrlManager {
     public static final String RECORDS_CHANGES = "/records/changes";
     public static final String RECORDS_CHANGES_PAGE = "/{pageNo}";
 
+    public static final String RECORDS_LIST = "/records/list";
+
+    
     public static final String RECORDS_RECORD = "/records/{pi}";
     public static final String RECORDS_RIS_TEXT = "/ris.txt";
     public static final String RECORDS_RIS_FILE = "/ris";
@@ -62,6 +65,8 @@ public class ApiUrls extends AbstractApiUrlManager {
     public static final String RECORDS_TEI = "/tei";
     public static final String RECORDS_TEI_LANG = "/tei/{lang}";
     public static final String RECORDS_TEI_ZIP = "/tei.zip";
+    public static final String RECORDS_EPUB = "/epub";
+    public static final String RECORDS_EPUB_INFO = "/epub/info.json";
     public static final String RECORDS_PDF = "/pdf";
     public static final String RECORDS_PDF_INFO = "/pdf/info.json";
     public static final String RECORDS_IMAGE = "/representative";
@@ -148,6 +153,7 @@ public class ApiUrls extends AbstractApiUrlManager {
     public static final String LOCALIZATION_VOCABS = "/vocabularies";
     public static final String LOCALIZATION_VOCABS_FILE = "/vocabularies/{filename}";
     public static final String LOCALIZATION_TRANSLATIONS = "/translations";
+
 
     private final String apiUrl;
 

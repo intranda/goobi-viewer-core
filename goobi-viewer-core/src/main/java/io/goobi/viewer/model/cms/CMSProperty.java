@@ -39,7 +39,7 @@ public class CMSProperty {
     /**
      * Boolean specifying that a page list should separate child pages by tag and prepend each group with a header
      */
-    public static final String KEY_DISPLAY_CHILD_TAGS_AS_HEADERS = "DISPLAY_CHILD_TAGS_AS_HEADERS";
+    //    public static final String KEY_DISPLAY_CHILD_TAGS_AS_HEADERS = "DISPLAY_CHILD_TAGS_AS_HEADERS";
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -83,7 +83,7 @@ public class CMSProperty {
      */
     public CMSProperty(CMSProperty original) {
         if (original.id != null) {
-            this.id = new Long(original.id);
+            this.id = Long.valueOf(original.id);
         }
         this.key = original.getKey();
         this.value = original.getValue();

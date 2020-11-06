@@ -1,0 +1,96 @@
+/* ==============================================================
+   Admin Terms Of Use
+   style declarations for adminUserTerms.xhtml
+   ==============================================================*/
+
+#adminUserTerms {
+	.admin {
+		&__user-terms-language-tabs {
+			z-index: 100;
+			position: relative;
+			.nav-tabs {
+				background: #f2f3f4;
+				border-bottom: none;
+				}
+		}
+		&__user-terms-language-tab {	
+			border: none;
+			margin-right: 0;
+			a {
+			    display: inline-block;
+			    padding: 1rem 1.7rem;
+			    border: 1px solid #ccc;
+			    border-bottom: none;
+			    margin-right: .3rem;
+			    transition: all 0.2s ease;
+				width: 9rem;
+				text-align: center;
+				padding: 1rem 0;
+				color: #666;
+				&:hover {
+					border: 1px solid #ccc;
+					border-bottom: none;
+				}
+			}
+			&:first-child,
+			&:first-child.-already-translated {
+				a {
+		    		background: #3365a9;
+		    		color: @white;
+		    		margin-right: 1.8rem;
+		    		border-bottom: none;
+			    	&:hover {
+		    			background: #235396;
+		    			border-bottom-color: #235396;
+		    			color: @white;
+			    	}
+			    }
+		    	&.active a {
+		    		background: @white;
+		    		color: @blue;
+		    		border-bottom: none;
+		    	}
+			}
+			&.active a, &.active.-already-translated a {
+				    border: 1px solid #ccc;
+				    background-color: #fff;
+				    border-bottom: 0;
+				    border-bottom: 1px solid @white;
+				    padding-bottom: 1.1rem;
+					margin-bottom: -2px;
+					color: @blue;
+		    	}
+			&.-already-translated {
+				a {
+					background: @btnSuccessBgc;
+					border-color: #ccc;
+					&:hover {
+						background: @white;
+					}
+				}
+			}
+		}
+		&__user-terms-box-editable {
+			display: none;
+		}
+	}
+	.tox-tinymce {
+		resize: vertical;
+	}
+	.tab-pane {
+		border: none;
+		padding: 0;
+	}
+}
+
+/* BREAKPOINT FOR LARGE DESKTOPS */
+@media screen and (max-width: @largeBreakpoint) {} 
+
+/* BREAKPOINT FOR DESKTOPS */
+@media screen and (max-width: @mediumBreakpoint) {}
+
+/* BREAKPOINT FOR TABLETS */
+@media screen and (max-width: @smallBreakpoint) {}
+
+/* BREAKPOINT FOR SMARTPHONES */
+@media screen and (max-width: @xSmallBreakpoint) {}

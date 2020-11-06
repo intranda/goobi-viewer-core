@@ -19,6 +19,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.text.Normalizer;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
@@ -70,6 +71,7 @@ import io.goobi.viewer.controller.language.LocaleComparator;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
+import io.goobi.viewer.exceptions.RecordNotFoundException;
 import io.goobi.viewer.exceptions.ViewerConfigurationException;
 import io.goobi.viewer.managedbeans.NavigationHelper;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
@@ -82,6 +84,7 @@ import io.goobi.viewer.model.security.user.User;
 import io.goobi.viewer.model.termbrowsing.BrowseTerm;
 import io.goobi.viewer.model.termbrowsing.BrowseTermComparator;
 import io.goobi.viewer.model.termbrowsing.BrowsingMenuFieldConfig;
+import io.goobi.viewer.model.viewer.PageType;
 import io.goobi.viewer.model.viewer.StringPair;
 
 /**
@@ -455,7 +458,7 @@ public final class SearchHelper {
 
     /**
      * <p>
-     * getFirstWorkUrlWithFieldValue.
+     * getFirstRecordMetadataWithFieldValue.
      * </p>
      *
      * @param luceneField a {@link java.lang.String} object.
@@ -468,8 +471,13 @@ public final class SearchHelper {
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      */
-    public static String getFirstWorkUrlWithFieldValue(String luceneField, String value, boolean filterForWhitelist, boolean filterForBlacklist,
-            String separatorString, Locale locale) throws IndexUnreachableException, PresentationException {
+    public static StringPair getFirstRecordURL(String luceneField, String value, boolean filterForWhitelist,
+            boolean filterForBlacklist, String separatorString, Locale locale)
+            throws IndexUnreachableException, PresentationException {
+        if (luceneField == null || value == null) {
+            return null;
+        }
+
         StringBuilder sbQuery = new StringBuilder();
         if (filterForWhitelist) {
             if (sbQuery.length() > 0) {
@@ -490,9 +498,12 @@ public final class SearchHelper {
             sbQuery.append(getCollectionBlacklistFilterSuffix(luceneField));
         }
 
-        logger.trace("query: {}", sbQuery.toString());
-        QueryResponse resp = DataManager.getInstance().getSearchIndex().search(sbQuery.toString(), 0, SolrSearchIndex.MAX_HITS, null, null, null);
-        logger.trace("query done");
+        List<String> fields =
+                Arrays.asList(SolrConstants.PI, SolrConstants.MIMETYPE, SolrConstants.DOCSTRCT, SolrConstants.THUMBNAIL, SolrConstants.ISANCHOR,
+                        SolrConstants.ISWORK, SolrConstants.LOGID);
+        // logger.trace("query: {}", sbQuery.toString());
+        QueryResponse resp = DataManager.getInstance().getSearchIndex().search(sbQuery.toString(), 0, 1, null, null, fields);
+        // logger.trace("query done");
 
         if (resp.getResults().size() == 0) {
             return null;
@@ -500,26 +511,28 @@ public final class SearchHelper {
 
         String splittingChar = DataManager.getInstance().getConfiguration().getCollectionSplittingChar(luceneField);
         try {
-            for (SolrDocument doc : resp.getResults()) {
-                Collection<Object> fieldList = doc.getFieldValues(luceneField);
-                if (fieldList != null) {
-                    for (Object o : fieldList) {
-                        String pi = (String) doc.getFieldValue(SolrConstants.PI);
-                        Collection<Object> accessConditions = doc.getFieldValues(SolrConstants.ACCESSCONDITION);
-                        if (!AccessConditionUtils.checkAccessPermissionByIdentifierAndLogId(pi, null, IPrivilegeHolder.PRIV_LIST,
-                                BeanUtils.getRequest())) {
-                            // TODO check whether users with permissions still skip over such records
-                            logger.trace("Record '{}' does not allow listing, skipping...", pi);
-                            continue;
-                        }
-                        // String dc = SolrSearchIndex.getAsString(o);
-                        String url = "/ppnresolver?id=" + pi;
-                        return pi;
-                    }
-                }
+            SolrDocument doc = resp.getResults().get(0);
+            String pi = (String) doc.getFieldValue(SolrConstants.PI);
+            Collection<Object> accessConditions = doc.getFieldValues(SolrConstants.ACCESSCONDITION);
+            if (!AccessConditionUtils.checkAccessPermissionByIdentifierAndLogId(pi, null, IPrivilegeHolder.PRIV_LIST,
+                    BeanUtils.getRequest())) {
+                // TODO check whether users with permissions still skip over such records
+                logger.trace("Record '{}' does not allow listing, skipping...", pi);
+                throw new RecordNotFoundException(pi);
             }
+
+            boolean anchorOrGroup = SolrSearchIndex.isAnchor(doc) || SolrSearchIndex.isGroup(doc);
+            PageType pageType =
+                    PageType.determinePageType((String) doc.get(SolrConstants.DOCSTRCT), (String) doc.get(SolrConstants.MIMETYPE), anchorOrGroup,
+                            doc.containsKey(SolrConstants.THUMBNAIL), false);
+
+            //            String url = DataManager.getInstance()
+            //                    .getUrlBuilder()
+            //                    .buildPageUrl(pi, 1, (String) doc.getFieldValue(SolrConstants.LOGID), pageType);
+            //            logger.trace(url);
+            return new StringPair(pi, pageType.name());
         } catch (Throwable e) {
-            logger.error("Failed to retrieve work", e);
+            logger.error("Failed to retrieve record", e);
         }
 
         return null;
@@ -699,13 +712,13 @@ public final class SearchHelper {
     public static int[] getMinMaxYears(String subQuery) throws PresentationException, IndexUnreachableException {
         int[] ret = { -1, -1 };
 
-        StringBuilder sbSearchString = new StringBuilder();
-        sbSearchString.append(SolrConstants._CALENDAR_YEAR).append(":*");
-        if (StringUtils.isNotEmpty(subQuery)) {
-            sbSearchString.append(subQuery);
+        String searchString = String.format("+%s:*", SolrConstants._CALENDAR_YEAR);
+        if(StringUtils.isNotBlank(subQuery)) {
+            searchString += " " + subQuery;
         }
+
         // logger.debug("searchString: {}", searchString);
-        QueryResponse resp = searchCalendar(sbSearchString.toString(), Collections.singletonList(SolrConstants._CALENDAR_YEAR), 0, true);
+        QueryResponse resp = searchCalendar(searchString, Collections.singletonList(SolrConstants._CALENDAR_YEAR), 0, true);
 
         FieldStatsInfo info = resp.getFieldStatsInfo().get(SolrConstants._CALENDAR_YEAR);
         Object min = info.getMin();

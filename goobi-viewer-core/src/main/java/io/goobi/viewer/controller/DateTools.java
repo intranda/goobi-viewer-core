@@ -212,7 +212,7 @@ public class DateTools {
 
         try {
             if (fromUTC) {
-                ZoneId zoneId = zoneOffset != null ? ZoneId.ofOffset("UTC", ZoneOffset.ofHours(zoneOffset)): ZoneId.systemDefault();
+                ZoneId zoneId = zoneOffset != null ? ZoneId.ofOffset("UTC", ZoneOffset.ofHours(zoneOffset)) : ZoneId.systemDefault();
                 return LocalDateTime.parse(dateString, formatterISO8601DateTimeInstant)
                         .atZone(zoneId)
                         .withZoneSameInstant(ZoneOffset.UTC)
@@ -227,7 +227,7 @@ public class DateTools {
         }
         try {
             if (fromUTC) {
-                ZoneId zoneId = zoneOffset != null ? ZoneId.ofOffset("UTC", ZoneOffset.ofHours(zoneOffset)): ZoneId.systemDefault();
+                ZoneId zoneId = zoneOffset != null ? ZoneId.ofOffset("UTC", ZoneOffset.ofHours(zoneOffset)) : ZoneId.systemDefault();
                 return LocalDateTime.parse(dateString, formatterISO8601DateTimeWithOffset)
                         .atZone(zoneId)
                         .withZoneSameInstant(ZoneOffset.UTC)
@@ -381,62 +381,54 @@ public class DateTools {
     }
     
     /**
-     * FIXME add some more documentation This method is used by the crowdsourcing module
-     *
-     * @param locale a {@link java.util.Locale} object.
-     * @param date a {@link java.util.Date} object.
-     * @return a {@link java.lang.String} object.
+     * Used by old crowdsourcing module versions.
+     * 
+     * @param date
+     * @param locale
+     * @return
      */
+    @Deprecated
     public static String formatDate(Date date, Locale locale) {
         if (date == null) {
             return null;
         }
 
-        if (locale != null) {
-            switch (locale.getLanguage()) {
-                case "de":
-                    return format(convertDateToLocalDateTimeViaInstant(date), formatterDEDate, false);
-                case "en":
-                default:
-                    return format(convertDateToLocalDateTimeViaInstant(date), formatterENDate, false);
-            }
+        return formatDate(convertDateToLocalDateTimeViaInstant(date), locale);
+    }
+
+    /**
+     * Converts the given <code>LocalDateTime</code> to a locale-based string format. This method is used by the crowdsourcing module.
+     *
+     * @param ldt a {@link java.time.LocalDateTime} object.
+     * @param locale a {@link java.util.Locale} object.
+     * @return a {@link java.lang.String} object.
+     */
+    public static String formatDate(LocalDateTime ldt, Locale locale) {
+        if (ldt == null) {
+            return null;
         }
-
-        return format(convertDateToLocalDateTimeViaInstant(date), formatterENDate, false);
+        if (locale == null) {
+            return format(ldt, formatterENDate, false);
+        }
+        
+        switch (locale.getLanguage()) {
+            case "de":
+                return format(ldt, formatterDEDate, false);
+            case "en":
+            default:
+                return format(ldt, formatterENDate, false);
+        }
     }
 
     /**
      * 
-     * @param year
-     * @param month
-     * @param dayofMonth
-     * @param hour
-     * @param minute
+     * @param millis
+     * @param utc
      * @return
+     * @should create LocalDateTime correctly
      */
-    public static Date createDate(int year, int month, int dayofMonth, int hour, int minute) {
-        return createDate(year, month, dayofMonth, hour, minute, false);
-    }
-
-    /**
-     * 
-     * @param year
-     * @param month
-     * @param dayofMonth
-     * @param hour
-     * @param minute
-     * @param useUTC
-     * @return
-     * @should create date correctly
-     */
-    public static Date createDate(int year, int month, int dayofMonth, int hour, int minute, boolean useUTC) {
-        return DateTools.convertLocalDateTimeToDateViaInstant(
-                LocalDateTime.now()
-                        .withYear(year)
-                        .withMonth(month)
-                        .withDayOfMonth(dayofMonth)
-                        .withHour(hour)
-                        .withMinute(minute),
-                useUTC);
+    public static LocalDateTime createLocalDateTimeFromMillis(long millis, boolean utc) {
+        LocalDateTime date = Instant.ofEpochMilli(millis).atZone(utc ? ZoneOffset.UTC : ZoneOffset.systemDefault()).toLocalDateTime();
+        return date;
     }
 }

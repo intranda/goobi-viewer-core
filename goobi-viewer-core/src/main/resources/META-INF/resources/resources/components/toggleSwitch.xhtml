@@ -1,0 +1,39 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:f="http://xmlns.jcp.org/jsf/core"
+	xmlns:h="http://xmlns.jcp.org/jsf/html"
+	xmlns:p="http://xmlns.jcp.org/jsf/passthrough"
+	xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+	xmlns:c="http://java.sun.com/jsp/jstl/core"
+	xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+	xmlns:composite="http://xmlns.jcp.org/jsf/composite">
+
+	<composite:interface>
+		<composite:attribute name="name" required="true" />
+		<composite:attribute name="value" required="true" />
+		<composite:attribute name="valueLeft" default="#{false}" />
+		<composite:attribute name="valueRight" default="#{true}" />
+		<composite:attribute name="labelLeft" default="#{msg.no}" />
+		<composite:attribute name="labelRight" default="#{msg.yes}" />
+		<composite:attribute name="toggleTarget" default="#{null}"/>
+		<composite:attribute name="toggleActionLeft" default="hide"/>
+		<composite:attribute name="toggleActionRight" default="show"/>
+	</composite:interface>
+	<div class="admin__radio-switch" id="#{cc.attrs.id}">
+		<h:selectOneRadio group="#{cc.attrs.name}"
+			value="#{cc.attrs.value}">
+			<f:selectItem itemValue="#{cc.attrs.valueLeft}" itemLabel="#{cc.attrs.labelLeft}" />
+			<f:ajax render="@none" execute="@this" />
+				<f:passThroughAttribute name="data-toggle-action" value="#{cc.attrs.toggleActionLeft}" />
+				<f:passThroughAttribute name="data-toggle-target" value="#{cc.attrs.toggleTarget}" />
+		</h:selectOneRadio>
+		<h:selectOneRadio group="#{cc.attrs.name}"
+			value="#{cc.attrs.value}">
+			<f:selectItem itemValue="#{cc.attrs.valueRight}" itemLabel="#{cc.attrs.labelRight}" />
+			<f:ajax render="@none" execute="@this" />
+				<f:passThroughAttribute name="data-toggle-action" value="#{cc.attrs.toggleActionRight}" />
+				<f:passThroughAttribute name="data-toggle-target" value="#{cc.attrs.toggleTarget}" />
+		</h:selectOneRadio>
+		<span class="toggle-outside"><span class="toggle-inside"></span></span>
+	</div>
+
+</ui:composition>

@@ -7,7 +7,7 @@
 	/* LAYOUT GENERAL */
 	&__content {
 		min-height: 100vh;
-		width: calc(~"100% - 250px");
+		width: calc(~"100vw - 250px");
 		margin-left: 250px;
 		background-color: @neutralgray2;
 		padding: 1.5rem;
@@ -807,7 +807,76 @@
 			color: @white;
 		}
 	}
+
+	// LANGUAGE TABS
+	&__language-tabs {
+		z-index: 100;
+		position: relative;
+		.nav-tabs {
+			background: #f2f3f4;
+			border-bottom: none;
+			}
+	}
+	&__language-tab {	
+		border: none;
+		margin-right: 0;
+		margin-bottom: -2px;
+		a {
+		    display: inline-block;
+		    padding: 1rem 1.7rem;
+		    border: 1px solid #ccc;
+		    border-bottom: none;
+		    margin-right: .3rem;
+		    transition: all 0.2s ease;
+			text-align: center;
+			padding: 1rem 0;
+			color: #666;
+			&:hover {
+				border: 1px solid #ccc;
+				border-bottom: none;
+			}
+		}
+		&:first-child,
+		&:first-child.-already-translated {
+			a {
+	    		background: #3365a9;
+	    		color: @white;
+	    		margin-right: 1.8rem;
+	    		border-bottom: 1px solid #3365a9;
+		    	&:hover {
+	    			background: #235396;
+	    			border-bottom-color: #235396;
+	    			color: @white;
+		    	}
+		    }
+	    	&.active a {
+	    		background: @white;
+	    		color: @blue;
+	    		border-bottom: 1px solid @white;
+	    	}
+		}
+		&.active a, &.active.-already-translated a {
+			    border: 1px solid #ccc;
+			    background-color: #fff;
+			    border-bottom: 0;
+			    border-bottom: 1px solid @white;
+			    padding-bottom: 1.1rem;
+				color: @blue;
+	    	}
+		&.-already-translated {
+			a {
+				background: @btnSuccessBgc;
+				border-color: #ccc;
+				&:hover {
+					background: @white;
+				}
+			}
+		}
+	}
 }
+
+
+
 
 // VISUALLY CONNECTED RADIO BUTTONS
 .connected-top {

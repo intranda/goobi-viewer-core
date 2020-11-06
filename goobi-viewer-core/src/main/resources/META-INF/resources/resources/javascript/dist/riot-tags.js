@@ -684,6 +684,16 @@ this.lastCanvases = function() {
     }
 }.bind(this)
 
+this.toPageNumber = function(e) {
+    console.log("Change in ", e.target, e.target.value);
+    let page = parseInt(e.target.value);
+    if(page > 0 && page <= this.getTotalImageCount()) {
+    	this.load(page-1);
+    } else{
+        alert(page + " is not a valid page number")
+    }
+}.bind(this)
+
 });
 
 
@@ -929,28 +939,24 @@ this.on("mount", () => {
 })
 
 this.loadSubCollections = function() {
-    let promises = [];
+    rxjs.from(this.collections)
+    .pipe(
+    	rxjs.operators.filter( child => this.hasChildren(child) ),
+    	rxjs.operators.mergeMap( child => this.fetchMembers(child) ),
+    	rxjs.operators.debounceTime(100)
 
-    let subject = new rxjs.Subject();
-    this.collections.forEach( child => {
-        fetch(child['@id'])
-        .then( result => result.json())
-        .then(json => {
-            child.members = json.members;
-            subject.next(child);
-        })
-        .catch( error => {
-           subject.error(error);
-        });
-    });
+    )
+    .subscribe( () => {this.update();});
 
-    subject
-    .pipe(rxjs.operators.debounceTime(100))
-    .subscribe( () => this.update())
+}.bind(this)
+
+this.fetchMembers = function(collection) {
+    return fetch(collection['@id'])
+    .then( result => result.json())
+    .then(json => {collection.members = json.members;})
 }.bind(this)
 
 this.getValue = function(element) {
-    console.log("this.opts.defaultLanguage", this.opts.defaultlanguage)
     return viewerJS.iiif.getValue(element, this.opts.language, this.opts.defaultlanguage);
 }.bind(this)
 
@@ -1967,62 +1973,109 @@ this.addAnnotation = function() {
 });
 
 
-riot.tag2('timematrix', '<div class="timematrix__objects"><div each="{image in imageList}" class="timematrix__content"><div id="imageMap" class="timematrix__img"><a href="{image.url}"><img riot-src="{image.mediumimage}" class="timematrix__image" data-viewer-thumbnail="thumbnail" onerror="this.onerror=null;this.src=\'/viewer/resources/images/access_denied.png\'"><div class="timematrix__text"><p if="{image.title}" name="timetext" class="timetext">{image.title[0]}</p></div></a></div></div></div>', '', '', function(opts) {
+riot.tag2('timematrix', '<div class="timematrix__objects"><div each="{manifest in manifests}" class="timematrix__content"><div id="imageMap" class="timematrix__img"><a href="{getViewerUrl(manifest)}"><img riot-src="{getImageUrl(manifest)}" class="timematrix__image" data-viewer-thumbnail="thumbnail" onerror="this.onerror=null;this.src=\'/viewer/resources/images/access_denied.png\'"><div class="timematrix__text"><p if="{hasTitle(manifest)}" name="timetext" class="timetext">{getDisplayTitle(manifest)}</p></div></a></div></div></div>', '', '', function(opts) {
+	    this.on( 'mount', function() {
 
-		 this.on( 'mount', function() {
-		 	$(this.opts.button).on("click", this.updateRange);
-		 	this.imageList=[];
-		 	this.startDate = parseInt($(this.opts.startInput).val());
-		 	this.endDate = parseInt($(this.opts.endInput).val());
-		 	this.initSlider(this.opts.slider, this.startDate, this.endDate);
-		 });
+	        rxjs.fromEvent($( this.opts.button ), "click").pipe(
+	                rxjs.operators.map( e => this.getIIIFApiUrl()),
+	                rxjs.operators.switchMap( url => {
 
-		 this.updateRange = function(event){
-			this.getTimematrix()
-		}.bind(this)
-		 this.getTimematrix = function(){
+	                    this.opts.loading.show();
+	                    return fetch(url);
+	                }),
+	                rxjs.operators.switchMap( result => {
 
-		     var apiTarget = this.opts.contextPath;
-		     apiTarget += 'rest/records/timematrix/range/';
-		     apiTarget += $(this.opts.startInput).val();
-		     apiTarget += "/";
-		     apiTarget += $(this.opts.endInput).val();
-		     apiTarget += '/';
-		     apiTarget += $(this.opts.count).val();
-		     apiTarget += '/';
+	                    return result.json();
+	                }),
+	                ).subscribe(json => {
+	                    this.manifests = json.orderedItems;
+	                    console.log("got manifests ", this.manifests);
+	                    this.update()
+	                    this.opts.loading.hide()
+	                })
 
-		    opts.loading.show()
-			let fetchPromise = fetch(apiTarget);
-		    fetchPromise.then( function(result) {
-			    return result.json();
-			})
-			.then( function(json) {
-			    this.imageList=json;
-			    this.update()
-			    opts.loading.hide()
-			}.bind(this));
-		 }.bind(this)
+	        this.manifests = [];
+	        this.startDate = parseInt( $( this.opts.startInput ).val() );
+	        this.endDate = parseInt( $( this.opts.endInput ).val() );
+	        this.initSlider( this.opts.slider, this.startDate, this.endDate );
+	    } );
 
-		 this.initSlider = function(sliderSelector, startDate, endDate) {
-		     let $slider = $(sliderSelector);
+	    this.getViewerUrl = function(manifest) {
+	        let viewer = manifest.rendering.find(r => r.format == "text/html");
+	        if(viewer) {
+	            return viewer["@id"];
+	        } else {
+	            return "";
+	        }
+	    }.bind(this)
 
-	            $slider.slider( {
-	                range: true,
-	                min: parseInt( startDate ),
-	                max: parseInt( endDate ),
-	                values: [ startDate, endDate ],
-	                slide: function( event, ui ) {
-	                    $(this.opts.startInput).val( ui.values[ 0 ] ).change();
-	                    this.startDate = parseInt(ui.values[ 0 ]);
-	                    $(this.opts.endInput).val( ui.values[ 1 ] ).change();
-	                    this.endDate = parseInt(ui.values[ 1 ]);
-	                }.bind(this)
-	            } );
+	    this.getImageUrl = function(manifest) {
+	        if(manifest.thumbnail) {
+	            let url = manifest.thumbnail["@id"];
+	            return url;
+	        }
+	    }.bind(this)
 
-	            $slider.find(".ui-slider-handle").on( 'mousedown', function() {
-	                $( '.ui-slider-handle' ).removeClass( 'top' );
-	                $( this ).addClass( 'top' );
-	            } );
-		 }.bind(this)
+	    this.hasTitle = function(manifest) {
+	        return manifest.label != undefined;
+	    }.bind(this)
+
+	    this.getDisplayTitle = function(manifest) {
+	        return viewerJS.iiif.getValue(manifest.label, this.opts.language, "en");
+	    }.bind(this)
+
+	    this.getIIIFApiUrl = function() {
+	        var apiTarget = this.opts.contextPath;
+	        apiTarget += "api/v1/records/list";
+	        apiTarget += "?start=" + $( this.opts.startInput ).val();
+	        apiTarget += "&end=" + $( this.opts.endInput ).val();
+	        apiTarget += "&rows=" + $( this.opts.count ).val();
+	        apiTarget += "&sort=YEAR";
+	        if ( this.opts.subtheme ) {
+	            apiTarget += ( "&subtheme=" + this.opts.subtheme );
+	        }
+	        return apiTarget;
+	    }.bind(this)
+
+	    this.getApiUrl = function() {
+
+	        var apiTarget = this.opts.contextPath;
+	        apiTarget += 'rest/records/timematrix/range/';
+	        apiTarget += $( this.opts.startInput ).val();
+	        apiTarget += "/";
+	        apiTarget += $( this.opts.endInput ).val();
+	        apiTarget += '/';
+	        apiTarget += $( this.opts.count ).val();
+	        apiTarget += '/';
+
+	        if ( this.opts.subtheme ) {
+	            apiTarget += ( "?subtheme=" + this.opts.subtheme );
+	        }
+
+	        return apiTarget;
+	    }.bind(this)
+
+	    this.initSlider = function( sliderSelector, startDate, endDate ) {
+	        let $slider = $( sliderSelector );
+
+	        $slider.slider( {
+	            range: true,
+	            min: parseInt( startDate ),
+	            max: parseInt( endDate ),
+	            values: [ startDate, endDate ],
+	            slide: function( event, ui ) {
+	                $( this.opts.startInput ).val( ui.values[ 0 ] ).change();
+	                this.startDate = parseInt( ui.values[ 0 ] );
+	                $( this.opts.endInput ).val( ui.values[ 1 ] ).change();
+	                this.endDate = parseInt( ui.values[ 1 ] );
+	            }.bind( this )
+	        } );
+
+	        $slider.find( ".ui-slider-handle" ).on( 'mousedown', function() {
+	            $( '.ui-slider-handle' ).removeClass( 'top' );
+	            $( this ).addClass( 'top' );
+	        } );
+	    }.bind(this)
 
 });
+

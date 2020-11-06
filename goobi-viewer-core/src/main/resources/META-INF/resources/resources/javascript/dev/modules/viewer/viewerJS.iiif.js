@@ -218,6 +218,22 @@ var viewerJS = ( function( viewer ) {
                 } else {
                     return {};
                 }
+            },
+            
+            
+            /**
+             * @return the object in the service property which @context ends in <name>.context.json, if any
+             */
+            getService(manifest, name) {
+                let service = manifest.service;
+                if(service && Array.isArray(service)) {
+                    return service.find(s => {
+                        let context = service['@context'];
+                        return context && context.endsWith(name + ".context.json");
+                    })
+                } else {
+                    return service;
+                }
             }
     }
 

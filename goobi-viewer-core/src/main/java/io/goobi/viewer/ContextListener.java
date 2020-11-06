@@ -80,7 +80,7 @@ public class ContextListener implements ServletContextListener {
             // Add anonymous user
             UserTools.checkAndCreateAnonymousUser();
         } catch (Throwable e) {
-            logger.error(e.getMessage());
+            logger.error(e.getMessage(), e);
         }
         //        createResources();
 
@@ -127,7 +127,7 @@ public class ContextListener implements ServletContextListener {
         // Set Pretty config files parameter
         sce.getServletContext().setInitParameter(PRETTY_FACES_CONFIG_PARAM_NAME, prettyConfigFiles);
         logger.debug("Pretty config files: {}", prettyConfigFiles);
-
+        
         //set contentServerConfig
         ContentServerConfiguration.getInstance("contentServerConfig.xml");
     }

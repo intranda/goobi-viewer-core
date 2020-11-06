@@ -15,8 +15,6 @@
  */
 package io.goobi.viewer;
 
-import java.util.HashMap;
-
 import javax.servlet.annotation.WebListener;
 import javax.servlet.http.HttpSessionEvent;
 import javax.servlet.http.HttpSessionListener;
@@ -55,6 +53,7 @@ public class SessionListener implements HttpSessionListener {
     public void sessionDestroyed(HttpSessionEvent event) {
         if (DataManager.getInstance().getSessionMap().remove(event.getSession().getId()) != null) {
             logger.trace("Session destroyed: {}", event.getSession().getId());
+            DataManager.getInstance().getRecordLockManager().removeLocksForSessionId(event.getSession().getId(), null);
         }
     }
 }

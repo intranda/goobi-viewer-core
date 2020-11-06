@@ -35,6 +35,7 @@ import org.slf4j.LoggerFactory;
 
 import de.unigoettingen.sub.commons.contentlib.exceptions.ServiceNotAllowedException;
 import de.unigoettingen.sub.commons.contentlib.servlet.rest.ContentExceptionMapper.ErrorMessage;
+import de.unigoettingen.sub.commons.contentlib.servlet.rest.ContentServerImageInfoBinding;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.StringTools;
 import io.goobi.viewer.exceptions.DAOException;
@@ -44,7 +45,6 @@ import io.goobi.viewer.exceptions.ViewerConfigurationException;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.model.security.AccessConditionUtils;
 import io.goobi.viewer.model.security.IPrivilegeHolder;
-import de.unigoettingen.sub.commons.contentlib.servlet.rest.ContentServerImageInfoBinding;
 
 /**
  * <p>
@@ -65,13 +65,25 @@ public class ImageInformationRequestFilter implements ContainerRequestFilter {
     /** {@inheritDoc} */
     @Override
     public void filter(ContainerRequestContext request) throws IOException {
+        logger.trace("filter");
         try {
             String pi;
-            String imageName;
-            if(servletRequest.getAttribute("filename") != null) {
+            String imageName = null;
+            if (servletRequest.getAttribute("filename") != null) {
                 //read parameters 
                 pi = (String) servletRequest.getAttribute("pi");
                 imageName = (String) servletRequest.getAttribute("filename");
+            } else if (servletRequest.getRequestURI().contains("rest/pdf/")) {
+                // Old API PDF quickfix
+                // TODO Why is this filter even applied to /rest/pdf/mets/foo.xml/-/info.json ?
+                String requestPath = servletRequest.getRequestURI();
+                requestPath = requestPath.substring(requestPath.indexOf("rest/pdf/") + 9);
+                logger.trace("Filtering request: {}", requestPath);
+                StringTokenizer tokenizer = new StringTokenizer(requestPath, "/");
+                List<String> pathSegments = tokenizer.getTokenList();
+                pi = pathSegments.get(1);
+                logger.trace("pi: " + pi);
+                //                imageName = pathSegments.size() > 3 ? pathSegments.get(3) : "";
             } else {
                 String requestPath = servletRequest.getRequestURI();
                 requestPath = requestPath.substring(requestPath.indexOf("records/") + 8);
@@ -88,9 +100,11 @@ public class ImageInformationRequestFilter implements ContainerRequestFilter {
                 return;
             }
             //only for actual image requests, no info requests
-            if (!BeanUtils.getImageDeliveryBean().isExternalUrl(imageName) && !BeanUtils.getImageDeliveryBean().isPublicUrl(imageName)
+            if (imageName != null && !BeanUtils.getImageDeliveryBean().isExternalUrl(imageName)
+                    && !BeanUtils.getImageDeliveryBean().isPublicUrl(imageName)
                     && !BeanUtils.getImageDeliveryBean().isStaticImageUrl(imageName)) {
                 filterForAccessConditions(request, pi, imageName);
+                FilterTools.filterForConcurrentViewLimit(pi, servletRequest);
             }
         } catch (ServiceNotAllowedException e) {
             String mediaType = MediaType.APPLICATION_JSON;
@@ -120,20 +134,22 @@ public class ImageInformationRequestFilter implements ContainerRequestFilter {
      */
     public static boolean forwardToCanonicalUrl(String pi, String imageName, HttpServletRequest request, HttpServletResponse response)
             throws IOException {
-        if (imageName != null && !imageName.contains(".") && imageName.matches("\\d+")) {
-            try {
-                Optional<String> filename = DataManager.getInstance().getSearchIndex().getFilename(pi, Integer.parseInt(imageName));
-                if (filename.isPresent()) {
-                    String redirectURI = request.getRequestURI().replace("/" + imageName, "/" + filename.get());
-                    response.sendRedirect(redirectURI);
-                    return true;
-                }
-            } catch (NumberFormatException | PresentationException | IndexUnreachableException e) {
-                logger.error("Unable to resolve image file for image order {} and pi {}", imageName, pi);
-            }
+        if (imageName == null || imageName.contains(".") || !imageName.matches("\\d+")) {
+            return false;
         }
+        //        if (imageName != null && !imageName.contains(".") && imageName.matches("\\d+")) {
+        try {
+            Optional<String> filename = DataManager.getInstance().getSearchIndex().getFilename(pi, Integer.parseInt(imageName));
+            if (filename.isPresent()) {
+                String redirectURI = request.getRequestURI().replace("/" + imageName, "/" + filename.get());
+                response.sendRedirect(redirectURI);
+                return true;
+            }
+        } catch (NumberFormatException | PresentationException | IndexUnreachableException e) {
+            logger.error("Unable to resolve image file for image order {} and pi {}", imageName, pi);
+        }
+        //        }
         return false;
-
     }
 
     /**
@@ -149,9 +165,9 @@ public class ImageInformationRequestFilter implements ContainerRequestFilter {
         try {
             access = AccessConditionUtils.checkAccessPermissionByIdentifierAndLogId(pi, null, IPrivilegeHolder.PRIV_LIST, servletRequest);
         } catch (IndexUnreachableException e) {
-            throw new ServiceNotAllowedException("Serving this image is currently impossibe due to ");
+            throw new ServiceNotAllowedException("Serving this image is currently impossible due to " + e.getMessage());
         } catch (DAOException e) {
-            throw new ServiceNotAllowedException("Serving this image is currently impossibe due to ");
+            throw new ServiceNotAllowedException("Serving this image is currently impossible due to " + e.getMessage());
         }
 
         if (!access) {

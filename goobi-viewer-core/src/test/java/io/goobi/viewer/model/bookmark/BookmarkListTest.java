@@ -52,7 +52,7 @@ public class BookmarkListTest extends AbstractSolrEnabledTest {
 
         bookmarkList.setItems(items);
         String query = bookmarkList.generateSolrQueryForItems();
-        Assert.assertEquals("(PI:PI1) OR (PI_TOPSTRUCT:PI2 AND LOGID:LOG1) OR (URN:URN1 OR IMAGEURN:URN1)", query);
+        Assert.assertEquals("(PI:PI1) OR (PI_TOPSTRUCT:PI2 AND LOGID:LOG1 AND DOCTYPE:DOCSTRCT) OR (URN:URN1 OR IMAGEURN:URN1)", query);
     }
 
     /**

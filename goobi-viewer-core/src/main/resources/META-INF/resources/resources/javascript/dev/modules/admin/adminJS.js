@@ -71,6 +71,8 @@ $( document ).ready(function() {
 				    opacity: "toggle"
 				}, 250);
 	});
+	
+
 
 // toggle next cms right block after radio button
 		// check if toggle yes on page load
@@ -88,13 +90,11 @@ $( document ).ready(function() {
 		$('.blockAfterRadioToggler input').change(function() {
 			if ($(this).parent('.admin__radio-switch').find('input:nth-of-type(1)').is(':checked')) {
 				$(this).closest('.blockAfterRadioToggler').next('.admin__license-selectable-block').animate({
-			    height: "toggle",
 			    opacity: "toggle"
 				}, 250);
 			}
 			else if ($(this).parent('.admin__radio-switch').find('input:nth-of-type(2)').is(':checked')) {
 				$(this).closest('.blockAfterRadioToggler').next('.admin__license-selectable-block').animate({
-			    height: "toggle",
 			    opacity: "toggle"
 				}, 250);
 			}
@@ -115,8 +115,12 @@ $( document ).ready(function() {
 			$('#pdf_download_quota_info_box').children('.admin__default-block').removeClass('-gray-box');
 		}
 	});	
-});
 
+	
+	
+//END DOCUMENT READY
+});
+ 
 
 
 

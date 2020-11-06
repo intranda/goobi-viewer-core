@@ -93,7 +93,7 @@ var viewerJS = ( function( viewer ) {
         			    $( '[id*="chronologySliderInput"]' ).val(value);
 //        			   console.log("set slider value ", value)
         			    // submit form
-        			    $( '[id*="chronologySliderForm"] input[type="submit"]' ).click();
+        			    $( '[id*="chronologySliderSet' ).click();
         			}
         		},
         	});
@@ -174,8 +174,9 @@ var viewerJS = ( function( viewer ) {
 			max: years.length - 1
 		} );
 		
-		$( '[id*="chronologySliderInput"]' ).val( '[' + years[ 0 ] + ' TO ' + years[years.length - 1] + ']' );
-		$( '[id*="chronologySliderForm"] input[type="submit"]' ).click();
+//		$( '[id*="chronologySliderInput"]' ).val( '[' + years[ 0 ] + ' TO ' + years[years.length - 1] + ']' );
+//		$( '[id*="chronologySliderForm"] input[type="submit"]' ).click();
+		$( '[id*="chronologySliderReset"]' ).click();
 	}  
 
     return viewer;

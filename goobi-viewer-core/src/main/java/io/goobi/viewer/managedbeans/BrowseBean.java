@@ -45,6 +45,7 @@ import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.exceptions.RecordDeletedException;
+import io.goobi.viewer.exceptions.RecordLimitExceededException;
 import io.goobi.viewer.exceptions.RecordNotFoundException;
 import io.goobi.viewer.exceptions.RedirectException;
 import io.goobi.viewer.exceptions.ViewerConfigurationException;
@@ -59,6 +60,8 @@ import io.goobi.viewer.model.termbrowsing.BrowsingMenuFieldConfig;
 import io.goobi.viewer.model.viewer.BrowseDcElement;
 import io.goobi.viewer.model.viewer.CollectionView;
 import io.goobi.viewer.model.viewer.CollectionView.BrowseDataProvider;
+import io.goobi.viewer.model.viewer.PageType;
+import io.goobi.viewer.model.viewer.StringPair;
 
 /**
  * This bean provides the data for collection and term browsing.
@@ -468,6 +471,10 @@ public class BrowseBean implements Serializable {
                     DataManager.getInstance().getConfiguration().isAggregateHits());
 
             for (int i = start; i < end; ++i) {
+                if(i >= terms.size()) {
+                    //filtered queries may return less results than max (why? SearchHelper.getFilteredTermsCount should already account for filtering)
+                    break;
+                }
                 BrowseTerm term = terms.get(i);
                 if (term.getTranslations() != null && term.getTranslations().getValue(locale).isPresent()) {
                     // Use translated label, if present
@@ -839,25 +846,41 @@ public class BrowseBean implements Serializable {
      * @throws ViewerConfigurationException
      * @throws DAOException
      * @throws RecordDeletedException
+     * @throws RecordLimitExceededException 
      */
     public String openWorkInTargetCollection()
-            throws IndexUnreachableException, PresentationException, RecordDeletedException, DAOException, ViewerConfigurationException {
+            throws IndexUnreachableException, PresentationException, RecordDeletedException, DAOException, ViewerConfigurationException, RecordLimitExceededException {
         if (StringUtils.isBlank(getTargetCollection())) {
             return null;
         }
-        String pi = SearchHelper.getFirstWorkUrlWithFieldValue(getCollectionField(), getTargetCollection(), true, true,
-                DataManager.getInstance().getConfiguration().getCollectionSplittingChar(getCollectionField()), BeanUtils.getLocale());
-        //        pi = BeanUtils.getServletPathWithHostAsUrlFromJsfContext() + url;
-        //        return pi;
+
+        StringPair result =
+                SearchHelper.getFirstRecordURL(getCollectionField(), getTargetCollection(), true, true,
+                        DataManager.getInstance().getConfiguration().getCollectionSplittingChar(getCollectionField()), BeanUtils.getLocale());
+        if (result == null) {
+            return null;
+        }
+
         try {
             ActiveDocumentBean adb = BeanUtils.getActiveDocumentBean();
             if (adb != null) {
-                adb.setPersistentIdentifier(pi);
+                adb.setPersistentIdentifier(result.getOne());
                 adb.open(); // open to persist PI on ViewManager
             }
-            return "pretty:object1";
+
+            //            return BeanUtils.getNavigationHelper().getApplicationUrl() + result.getTwo();
+            PageType pageType = PageType.getByName(result.getTwo());
+            switch (pageType) {
+                case viewToc:
+                    return "pretty:toc1";
+                case viewMetadata:
+                    return "pretty:metadata1";
+                default:
+                    return "pretty:object1";
+            }
+            // TODO Return and forward to foo URL instead of switch+pretty
         } catch (RecordNotFoundException e) {
-            logger.error("No record found for ID: {}", pi);
+            logger.error("No record found for ID: {}", result.getOne());
             return null;
         }
     }

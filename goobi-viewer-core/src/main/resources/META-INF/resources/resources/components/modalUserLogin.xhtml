@@ -1,0 +1,365 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+	xmlns:c="http://java.sun.com/jsp/jstl/core"
+	xmlns:h="http://xmlns.jcp.org/jsf/html"
+	xmlns:f="http://xmlns.jcp.org/jsf/core"
+	xmlns:jsf="http://xmlns.jcp.org/jsf"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:pt="http://xmlns.jcp.org/jsf/passthrough"
+	xmlns:viewer="http://xmlns.jcp.org/jsf/composite/components/partner"
+	xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components"
+	xmlns:widgetComponent="http://xmlns.jcp.org/jsf/composite/components/widgets"
+	xmlns:composite="http://xmlns.jcp.org/jsf/composite">
+
+	<composite:interface />
+
+	<composite:implementation>
+
+		<ui:param value="#{alwaysVisible != null ? alwaysVisible:false}"
+			name="alwaysVisible" />
+
+		<!-- Modal User Login -->
+		<div id="#{cc.attrs.id}"
+			class="modal user-login-modal #{alwaysVisible ? 'show':'fade'}"
+			tabindex="-1" role="dialog" aria-labelledby="Login Area"
+			aria-hidden="true">
+			<div class="modal-dialog modal-dialog-centered" role="document">
+				<div class="modal-content">
+					<div class="modal-header">
+						<!--  <div class="user-login-modal__header-logo"></div>-->
+						<h2 class="modal-title user-login-modal__header-title">#{msg.login__header_title}</h2>
+						<h2 class="modal-title user-login-modal__header-title-create-account">#{msg.login__create_new_account}</h2>
+						<ui:fragment rendered="#{!alwaysVisible}">
+							<button type="button" class="fancy-close" data-dismiss="modal"
+								aria-label="Close">
+								<span aria-hidden="true">x</span>
+							</button>
+						</ui:fragment>
+					</div>
+
+					<div class="modal-body">
+
+						<!-- USER LOGIN -->
+						<div id="userLogin" class="user-login-modal">
+							<div class="user-login-modal__body">
+
+								<!-- USER LOGIN BODY LOGIN SELECT -->
+								<h:form id="selectLoginForm" prependId="false"
+									rendered="#{userBean.showAuthenticationProviderSelection()}">
+									<div id="userLoginSelectLoginWrapper"
+										class="user-login-modal__body-login-select">
+										<div class="form-row form-group no-gutters">
+											<label for="userLoginSelectLogin"
+												class="control-label col-12 col-lg-3">#{msg.login__select_login_title}:</label>
+											<div class="col-12 col-lg-9">
+												<div class="custom-control custom-control--select">
+													<h:selectOneMenu id="userLoginSelectLogin"
+														value="#{userBean.authenticationProviderName}">
+														<f:selectItem
+															itemValue="#{userBean.localAuthenticationProvider.name}"
+															itemLabel="#{msg.login__local_account}" />
+														<f:selectItems
+															value="#{userBean.getProvidersOfType('userpassword')}"
+															var="provider" itemValue="#{provider.name}"
+															itemLabel="#{provider.label}" />
+														<f:ajax event="change" execute="@form"
+															render="#{cc.attrs.id}:userLoginForm" />
+													</h:selectOneMenu>
+												</div>
+											</div>
+										</div>
+									</div>
+								</h:form>
+
+								<!-- USER LOGIN BODY LOGIN TYPE -->
+								<div class="user-login-modal__body-login-type-wrapper">
+									<!-- USER LOGIN DETAILS -->
+
+									<h:form id="userLoginForm" prependId="false">
+										<ui:fragment
+											rendered="#{userBean.authenticationProvider != null}">
+											<div id="loginType" class="user-login-modal__body-login-type">
+												<!-- LOGIN TYPE LOCAL -->
+												<ui:fragment
+													rendered="#{userBean.authenticationProvider.type == 'local'}">
+													<div class="form-row form-group no-gutters">
+														<label for="userEMail"
+															class="control-label col-12 col-lg-3">#{msg.email}:</label>
+														<div class="col-12 col-lg-9">
+															<h:inputText id="userEMail" styleClass="form-control"
+																value="#{userBean.email}" required="true"
+																requiredMessage="#{msg.loginEnterUserName}">
+																<f:validator validatorId="emailValidator" />
+																<f:passThroughAttribute name="placeholder"
+																	value="name@institution.org" />
+															</h:inputText>
+														</div>
+													</div>
+												</ui:fragment>
+
+												<!-- LOGIN TYPE USERPASSWORD -->
+												<ui:fragment
+													rendered="#{userBean.authenticationProvider.type == 'userPassword'}">
+													<div class="form-row form-group no-gutters">
+														<label for="externalUserName"
+															class="control-label col-12 col-lg-3">#{msg.username}:</label>
+														<div class="col-12 col-lg-9">
+															<h:inputText id="externalUserName"
+																styleClass="form-control" value="#{userBean.email}"
+																required="true"
+																requiredMessage="#{msg.loginEnterUserName}">
+																<f:passThroughAttribute name="placeholder"
+																	value="#{msg.username}" />
+															</h:inputText>
+														</div>
+													</div>
+												</ui:fragment>
+
+												<!-- ENTER PASSWORD -->
+												<div
+													class="form-row form-group no-gutters mb-0 user-login-modal__password">
+													<label for="userPassword"
+														class="control-label col-12 col-lg-3">#{msg.password}:</label>
+													<div class="col-12 col-lg-9">
+														<h:inputSecret id="userPassword" styleClass="form-control"
+															type="password" value="#{userBean.password}"
+															required="true"
+															requiredMessage="#{msg.login__enter_password}">
+															<f:passThroughAttribute name="placeholder"
+																value="#{msg.login__enter_password}" />
+														</h:inputSecret>
+													</div>
+												</div>
+
+												<!-- RETRIEVE LOST PASSWORD -->
+												<div
+													class="form-row form-group no-gutters user-login-modal__lost-password">
+													<div class="col-12 col-lg-3 d-none d-lg-block"></div>
+													<div class="col-12 col-lg-9">
+														<ui:fragment
+															rendered="#{userBean.authenticationProvider.allowsPasswordChange()}">
+															<button type="button" class="btn btn--link"
+																aria-label="#{msg.user_forgotPassword}"
+																data-open="retrieve-account">
+																#{msg.login__forgot_password}</button>
+														</ui:fragment>
+													</div>
+												</div>
+
+												<!-- USER LOGIN BODY ACTION -->
+												<div class="row user-login-modal__body-action">
+
+													<!--  LOGIN -->
+													<div class="col-12 mb-2">
+														<h:commandButton styleClass="btn btn--full"
+															value="#{msg.login}" action="#{userBean.login}">
+															<f:passThroughAttribute name="aria-label"
+																value="#{msg.login}" />
+														</h:commandButton>
+													</div>
+												</div>
+											</div>
+										</ui:fragment>
+									</h:form>
+
+									<!-- USER LOGIN TYPE RETRIEVE ACCOUNT -->
+									<div id="loginTypeRetrieveAccount"
+										class="user-login-modal__body-login-type retrieve">
+										<p>#{msg.login__retrieve_account_description}</p>
+
+										<h:form id="loginTypeRetrieveAccountForm">
+											<div class="form-group form-row">
+												<label for="userEMailToRetrieve" class="col-12 col-lg-3 contro-label">#{msg.email}:</label>
+												<h:inputText id="userEMailToRetrieve"
+													styleClass="form-control col-12 col-lg-9" value="#{userBean.email}"
+													required="true" requiredMessage="#{msg.loginEnterEmail}">
+													<f:validator validatorId="emailValidator" />
+												</h:inputText>
+											</div>
+
+											<!-- USER LOGIN BODY ACTION -->
+											<div class="user-login-modal__body-action">
+												<h:commandButton styleClass="btn btn--full"
+													value="#{msg.submit}"
+													action="#{userBean.sendPasswordResetLinkAction}">
+													<f:passThroughAttribute name="aria-label"
+														value="#{msg.submit}" />
+												</h:commandButton>
+
+												<br />
+
+												<button type="button" class="btn btn--link"
+													aria-label="#{msg.login__back_to_login}"
+													data-close="retrieve-account">
+													#{msg.login__back_to_login}</button>
+											</div>
+										</h:form>
+									</div>
+
+									<!-- USER LOGIN TYPE CREATE ACCOUNT -->
+									<ui:fragment
+										rendered="#{userBean.userRegistrationEnabled and userBean.resetSecurityQuestion()}">
+										<div id="loginTypeCreateAccount"
+											class="user-login-modal__body-login-type create">
+											<p class="user-login-modal__create-account-info">#{msg.login__create_new_account__info}:</p>
+											<h:form id="loginTypeCreateAccountForm">
+
+												<div class="form-group form-row lastname">
+													<label for="userCreateAccountLastName"
+														class="col-12 col-lg-3 control-label">#{msg.nameLast}:</label>
+													<h:inputText id="userCreateAccountLastName"
+														styleClass="col-12 col-lg-9 form-control"
+														value="#{userBean.lastName}">
+													</h:inputText>
+												</div>
+
+												<div class="form-group form-row">
+													<label for="userCreateAccountEMail"
+														class="col-12 col-lg-3 control-label">#{msg.email}:</label>
+													<h:inputText id="userCreateAccountEMail"
+														styleClass="col-12 col-lg-9 form-control"
+														value="#{userBean.email}" required="true"
+														requiredMessage="#{msg.loginEnterEmail}">
+														<f:validator validatorId="emailValidator" />
+														<f:validator validatorId="emailAvailableValidator" />
+													</h:inputText>
+												</div>
+
+												<div class="form-group form-row">
+													<label for="userCreateAccountPW1"
+														class="col-12 col-lg-3 control-label">#{msg.newUserPasswordOne}:</label>
+													<h:inputSecret id="userCreateAccountPW1"
+														styleClass="col-12 col-lg-9 form-control" type="password"
+														value="#{userBean.passwordOne}" required="true"
+														requiredMessage="#{msg.newUserPasswordOneRequired}">
+														<f:validator validatorId="passwordValidator" />
+													</h:inputSecret>
+												</div>
+
+												<div class="form-group form-row">
+													<label for="userCreateAccountPW2"
+														class="control-label col-12 col-lg-3">#{msg.newUserPasswordTwo}:</label>
+													<h:inputSecret id="userCreateAccountPW2"
+														styleClass="col-12 col-lg-9 form-control" type="password"
+														value="#{userBean.passwordTwo}" required="true"
+														requiredMessage="#{msg.newUserPasswordTwoRequired}" />
+												</div>
+
+												<ui:fragment rendered="#{userBean.securityQuestion != null}">
+													<div class="form-group form-row">
+														<label for="userCreateAccountConfirm"
+															class="control-label col-12 col-lg-3">#{msg[userBean.securityQuestion.questionKey]}:</label>
+														<h:inputSecret id="userCreateAccountConfirm"
+															styleClass="form-control col-12 col-lg-9"
+															autocomplete="off" value="#{userBean.securityAnswer}"
+															required="true"
+															requiredMessage="#{msg.user__security_question_required_msg}" />
+													</div>
+												</ui:fragment>
+
+												<ui:fragment rendered="#{termsOfUseBean.activated}">
+													<div class="form-group form-row user-login-modal__terms">
+														<div class="col-12 mb-2 user-login-modal__terms-title">
+															<b>#{termsOfUseBean.getTitleForDisplay()}</b>
+														</div>
+														<div class="col-12 mb-1 pr-0">
+															<textarea class="user-login-modal__terms-text mb-3"
+																readonly="true">
+																<h:outputText value="#{termsOfUseBean.getDescriptionForDisplay()}"
+																	escape="false" />
+															</textarea>
+														</div>
+														<div id="createAccountAcceptTerms" class="col-12 d-flex align-items-center admin__form-input">
+															<label class="mr-3 mb-0">#{msg.admin__terms_of_use__accept}:</label>
+															<div>
+															<viewerComponent:toggleSwitch
+																name="activateUserTerms"
+																value="false"
+																id="user-login-modal__terms-toggle" />
+															</div>
+														</div>															
+													</div>
+												</ui:fragment>
+												<!-- USER LOGIN BODY ACTION -->
+												<div class="user-login-modal__body-action">
+													<h:commandButton
+														styleClass="btn btn--full user-login-modal__create-account-submit"
+														value="#{msg.submit}"
+														action="#{userBean.createNewUserAccount}">
+														<f:passThroughAttribute name="aria-label"
+															value="#{msg.login__create_new_account}" />
+													</h:commandButton>
+
+													<br />
+
+													<button type="button" class="btn btn--link"
+														aria-label="#{msg.login__back_to_login}"
+														data-close="create-account">
+														#{msg.login__back_to_login}</button>
+												</div>
+											</h:form>
+										</div>
+									</ui:fragment>
+								</div>
+
+								<!-- USER LOGIN BODY LOGIN OPEN ID -->
+								<ui:fragment
+									rendered="#{userBean.hasProvidersOfType('openId') or userBean.hasProvidersOfType('saml')}">
+									<div id="userLoginOpenId"
+										class="mb-5 user-login-modal__body-login-open-id">
+										<h4>
+											<span>#{msg.login__login_with_other_provider}</span>
+										</h4>
+
+										<h:form id="userLoginOpenIdForm">
+											<ul>
+												<ui:repeat var="provider"
+													value="#{userBean.getProvidersOfType('openId')}">
+													<li
+														class="user-login-modal__body-login-open-id-provider #{provider.name}">
+														<h:commandLink action="#{userBean.login(provider)}">
+                                        #{provider.name}
+                                        <f:passThroughAttribute
+																name="aria-label"
+																value="#{msg.login__login_with} #{provider.name}" />
+														</h:commandLink>
+													</li>
+												</ui:repeat>
+												<ui:repeat var="provider"
+													value="#{userBean.getProvidersOfType('saml')}">
+													<li
+														class="user-login-modal__body-login-open-id-provider #{provider.name}">
+														<h:commandLink action="#{userBean.login(provider)}">
+                                        #{provider.name}
+                                        <f:passThroughAttribute
+																name="aria-label"
+																value="#{msg.login__login_with} #{provider.name}" />
+														</h:commandLink>
+													</li>
+												</ui:repeat>
+											</ul>
+										</h:form>
+									</div>
+								</ui:fragment>
+
+								<h:panelGroup rendered="#{userBean.userRegistrationEnabled}">
+									<div id="userLoginCreateAccount" class="user-login-modal__new-account">
+										<h4>
+											<span>#{msg.login__new_to_goobi_viewer}</span>
+										</h4>
+										<button type="button"
+											class="btn user-login-modal__new-account-submit"
+											aria-label="#{msg.user_createNewAccount}"
+											data-open="create-account">
+											#{msg.login__create_new_account}</button>
+
+									</div>
+								</h:panelGroup>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</composite:implementation>
+</ui:composition>

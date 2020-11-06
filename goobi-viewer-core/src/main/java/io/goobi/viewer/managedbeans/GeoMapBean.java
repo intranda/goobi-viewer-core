@@ -24,6 +24,8 @@ import java.util.List;
 import javax.faces.view.ViewScoped;
 import javax.inject.Named;
 
+import org.apache.commons.lang3.StringUtils;
+
 import com.ocpsoft.pretty.PrettyContext;
 import com.ocpsoft.pretty.faces.url.URL;
 
@@ -210,9 +212,15 @@ public class GeoMapBean implements Serializable {
         return !getAllMaps().isEmpty();
     }
     
-    public String getCoordinateSearchQueryTemplate() {
+    public String getCoordinateSearchQueryTemplate(GeoMap map) {
+        String locationQuery = "WKT_COORDS:\"Intersects(POINT({lng} {lat})) distErrPct=0\"";
+        String filterQuery = map != null ? map.getSolrQuery() : "";
+        String query = locationQuery;
+        if(StringUtils.isNotBlank(filterQuery)) {
+            query = "(" + locationQuery + ") AND (" + filterQuery + ")";
+        }
         URL mappedUrl = PrettyContext.getCurrentInstance().getConfig().getMappingById("newSearch5")
-                .getPatternParser().getMappedURL("-", "WKT_COORDS:\"Intersects(POINT({lng} {lat})) distErrPct=0\"", "1", "-", "-");
+                .getPatternParser().getMappedURL("-", query, "1", "-", "-");
         return BeanUtils.getServletPathWithHostAsUrlFromJsfContext() + mappedUrl.toString();
     }
 

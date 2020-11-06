@@ -41,8 +41,6 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
-import javax.persistence.Temporal;
-import javax.persistence.TemporalType;
 import javax.persistence.Transient;
 import javax.servlet.http.HttpSessionBindingEvent;
 import javax.servlet.http.HttpSessionBindingListener;
@@ -123,7 +121,7 @@ public class User implements ILicensee, HttpSessionBindingListener, Serializable
     @Column(name = "activation_key")
     private String activationKey;
 
-//    @Temporal(TemporalType.TIMESTAMP)
+    //    @Temporal(TemporalType.TIMESTAMP)
     @Column(name = "last_login")
     private LocalDateTime lastLogin;
 
@@ -153,6 +151,9 @@ public class User implements ILicensee, HttpSessionBindingListener, Serializable
 
     @Column(name = "use_gravatar")
     private boolean useGravatar = false;
+
+    @Column(name = "agreed_to_terms_of_use")
+    private boolean agreedToTermsOfUse = false;
 
     //    @Column(name = "dummy")
     //    private boolean dummy = false;
@@ -1753,5 +1754,19 @@ public class User implements ILicensee, HttpSessionBindingListener, Serializable
      */
     public static void main(String[] args) {
         System.out.println(BCrypt.hashpw("halbgeviertstrich", BCrypt.gensalt()));
+    }
+
+    /**
+     * @param agreedToTermsOfUse the agreedToTermsOfUse to set
+     */
+    public void setAgreedToTermsOfUse(boolean agreedToTermsOfUse) {
+        this.agreedToTermsOfUse = agreedToTermsOfUse;
+    }
+
+    /**
+     * @return the agreedToTermsOfUse
+     */
+    public boolean isAgreedToTermsOfUse() {
+        return agreedToTermsOfUse;
     }
 }

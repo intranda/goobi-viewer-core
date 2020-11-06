@@ -1,6 +1,76 @@
 /* ==============================================================
    CSS Helper Classes
    ==============================================================*/
+   
+// modifier for non-selectable content
+.-noSelect {
+  -webkit-touch-callout: none; 
+    -webkit-user-select: none; 
+     -khtml-user-select: none;
+       -moz-user-select: none; 
+        -ms-user-select: none; 
+            user-select: none; 
+}
+
+/* validation messages */
+.-validation-message {
+	&.-success {
+		color: @validSuccess;
+	}
+	&.-warning {
+		color: @validWarning;
+	}
+	&.-danger {
+		color: @validDanger;
+	}
+}
+.-validation-mark {
+	position: absolute;
+	right: 0px;
+	width: 16px;
+	height: 16px;
+	line-height: 16px;
+	font-size: @fontSmall;
+	text-align: center;
+	border-radius: 50%;
+	color: @white;
+	top: 14px;
+	z-index: 5;
+	&.-success {
+	    background-color: @validSuccess;
+	    .fa-check {
+	    	display: inline-block;
+	    }
+	}
+	&.-warning {
+		background-color: @validWarning;
+	    .fa-check {
+	    	display: inline-block;
+	    }
+	}
+	&.-danger {
+		background-color: @validDanger;
+	    .fa-exclamation {
+	    	display: inline-block;
+	    }
+	}
+	.fa {
+		display: none;
+	}
+}
+
+.-validation-input {
+	&.-success {
+    	border-color: @validSuccess;
+    }
+    &.-warning {
+    	border-color: @validWarning;	    	
+    }
+    &.-danger {
+    	border-color: @validDanger;
+    }
+}
+
 /* HORIZONTAL LIST */
 /* BLOCK */
 .list {

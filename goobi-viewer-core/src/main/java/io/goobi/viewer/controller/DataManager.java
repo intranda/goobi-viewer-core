@@ -34,6 +34,7 @@ import io.goobi.viewer.model.bookmark.SessionStoreBookmarkManager;
 import io.goobi.viewer.model.crowdsourcing.campaigns.Campaign;
 import io.goobi.viewer.model.security.authentication.AuthResponseListener;
 import io.goobi.viewer.model.security.authentication.OpenIdProvider;
+import io.goobi.viewer.model.security.recordlock.RecordLockManager;
 import io.goobi.viewer.modules.IModule;
 import io.goobi.viewer.modules.interfaces.DefaultURLBuilder;
 import io.goobi.viewer.modules.interfaces.IURLBuilder;
@@ -55,6 +56,8 @@ public final class DataManager {
 
     private final Map<String, Map<String, String>> sessionMap = new LinkedHashMap<>();
 
+    private final RecordLockManager recordLockManager = new RecordLockManager();
+
     private Configuration configuration;
 
     private LanguageHelper languageHelper;
@@ -72,12 +75,9 @@ public final class DataManager {
     private Map<String, List<Campaign>> recordCampaignMap = null;
 
     private String indexerVersion = "";
-    
-    private RestApiManager restApiManager;
-    
-    
 
-    
+    private RestApiManager restApiManager;
+
     /**
      * <p>
      * Getter for the field <code>instance</code>.
@@ -421,17 +421,17 @@ public final class DataManager {
         this.indexerVersion = indexerVersion;
         logger.trace(indexerVersion);
     }
-    
+
     /**
      * @return the restApiManager
      */
     public RestApiManager getRestApiManager() {
-        if(this.restApiManager == null) {
+        if (this.restApiManager == null) {
             this.restApiManager = new RestApiManager(getConfiguration());
         }
         return restApiManager;
     }
-    
+
     /**
      * @param restApiManager the restApiManager to set
      */
@@ -439,4 +439,10 @@ public final class DataManager {
         this.restApiManager = restApiManager;
     }
 
+    /**
+     * @return the recordLockManager
+     */
+    public RecordLockManager getRecordLockManager() {
+        return recordLockManager;
+    }
 }
