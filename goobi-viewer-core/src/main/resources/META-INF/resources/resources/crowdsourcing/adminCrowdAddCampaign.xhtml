@@ -198,7 +198,7 @@
 																		class="fa fa-exclamation" aria-hidden="true"></i>
 																</div>
 															</div>
-															<viewerComponent:toggleSwitch id="showLogSelection" value="#{crowdsourcingBean.selectedCampaign.showLog}" /> 
+															<viewerComponent:toggleSwitch name="showLogSelection" value="#{crowdsourcingBean.selectedCampaign.showLog}" /> 
 														</h:panelGroup>
 														<span class="admin__form-help-text">#{msg.admin__crowdsourcing_campaign_show_log__help}</span>
 													</div>
@@ -590,7 +590,7 @@
 											</div>
 											<div>
 												<label>#{msg.admin__crowdsourcing_campaign_set_write_access_licence}: </label>
-												<viewerComponent:toggleSwitch value="#{crowdsourcingBean.selectedCampaign.restrictAnnotationAccess}"/>
+												<viewerComponent:toggleSwitch name="toggleAnnotationAccess" value="#{crowdsourcingBean.selectedCampaign.restrictAnnotationAccess}"/>
 											</div>
 										</div>
 					                   	

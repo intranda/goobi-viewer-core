@@ -32,6 +32,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import de.intranda.api.annotation.IResource;
 import de.intranda.api.annotation.ITypedResource;
+import de.intranda.api.annotation.wa.TextualResource;
 import de.intranda.api.annotation.wa.TypedResource;
 import io.goobi.viewer.controller.DateTools;
 import io.goobi.viewer.controller.SolrConstants;
@@ -525,10 +526,41 @@ public class DisplayUserGeneratedContent {
             ret.setPage(((Number) pageNo).intValue());
         }
 
-        StructElement se = new StructElement(iddoc, doc);
-        ret.setLabel(generateUgcLabel(se));
+        if(StringUtils.isNotBlank(ret.getAnnotationBody().getType())) {
+            ret.setLabel(createLabelFromBody(ret.getType(), ret.getAnnotationBody()));
+        } else {            
+            StructElement se = new StructElement(iddoc, doc);
+            ret.setLabel(generateUgcLabel(se));
+        }
 
         return ret;
+    }
+
+    /**
+     * @param annotationBody2
+     * @return
+     */
+    private static String createLabelFromBody(ContentType type, ITypedResource body) {
+        switch(type) {
+            case GEOLOCATION:
+                return "admin__crowdsourcing_question_type_GEOLOCATION_POINT";
+            case NORMDATA:
+                return body.getId().toString();
+            case COMMENT:
+                switch(body.getFormat()) {
+                    case "text/html":
+                        return "admin__crowdsourcing_question_type_RICHTEXT";
+                    case "text/plain":
+                    default:
+                        if(body instanceof TextualResource) {
+                            return ((TextualResource) body).getText();
+                        } else {
+                            return "admin__crowdsourcing_question_type_" + type.toString();
+                        }      
+                }      
+            default:
+                return "admin__crowdsourcing_question_type_" + type.toString();
+        }
     }
 
     /**

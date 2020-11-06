@@ -36,11 +36,11 @@
 											<div class="widget-annotations__type"><i class="#{content.iconClass}" aria-hidden="true"></i></div>
 											<div class="widget-annotations__text">
 												<ui:fragment rendered="#{!content.isOnOtherPage(activeDocumentBean.viewManager.currentPage)}">
-													<h:outputText value="#{contentBean.cleanUpValue(content.label)}" escape="false"></h:outputText>
+													<h:outputText value="#{msg[contentBean.cleanUpValue(content.label)]}" escape="false"></h:outputText>
 												</ui:fragment>
 												<ui:fragment rendered="#{content.isOnOtherPage(activeDocumentBean.viewManager.currentPage)}">
 													<h:outputLink value="#{content.pageUrl}">
-														<h:outputText value="#{contentBean.cleanUpValue(content.label)}" escape="false"></h:outputText>
+														<h:outputText value="#{msg[contentBean.cleanUpValue(content.label)]}" escape="false"></h:outputText>
 													</h:outputLink>
 												</ui:fragment>
 											</div>
