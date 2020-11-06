@@ -520,7 +520,7 @@
                                                         <h:panelGroup id="campaignOwnerGroup">
                                                             <ui:fragment
                                                                 rendered="#{crowdsourcingBean.selectedCampaign.limitToGroup and crowdsourcingBean.selectedCampaign.userGroup != null}">
-	                                                            <div class="mt-1 d-flex justify-content-end">
+	                                                            <div class="mt-1 d-flex justify-content-start">
 		                                                            <label for="campaignOwnerName" class="pr-1 mb-0">#{msg.owner}:</label>
 		                                                            <h:outputLink id="campaignOwnerName"
 		                                                                value="#{navigationHelper.applicationUrl}admin/users/edit/#{crowdsourcingBean.selectedCampaign.userGroup.owner.id}/">
@@ -602,15 +602,27 @@
 					                   	<!-- ACCESS LICENCE WIDGET -->
 										<div class="admin__default-block">
 											<h3>#{msg.access_licence}</h3>
+											<div class="admin__form-help-text in mb-2">
+											#{msg.admin__crowdsourcing_campaign_access_licence__help}
+											</div>
 											<div class="mb-1">
 												<label>#{msg.admin__crowdsourcing_campaign_set_write_access_licence}: </label>
 												<viewerComponent:toggleSwitch value="#{crowdsourcingBean.selectedCampaign.restrictAnnotationAccess}"/>
 											</div>
-											<div class="admin__form-help-text in">
-											#{msg.admin__crowdsourcing_campaign_access_licence__help}
+										</div>
+
+					                   	<!-- ACTIVATE LOG WIDGET -->
+										<div class="admin__default-block">
+											<h3>#{msg.log}</h3>
+											<div class="admin__form-help-text in mb-2">
+											#{msg.admin__crowdsourcing_campaign_show_log__help}
+											</div>
+											<div class="mb-1">
+												<label>#{msg.admin__crowdsourcing_campaign_show_log}: </label>
+												<viewerComponent:toggleSwitch value="#{crowdsourcingBean.selectedCampaign.showLog}" />
 											</div>
 										</div>
-					                   	
+
 										<!-- STATISTICS SIDEBAR WIDGET -->
 										<h:panelGroup id="statisticsArea">
 											<ui:fragment rendered="#{crowdsourcingBean.selectedCampaign.solrQuery != null}">
