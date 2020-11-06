@@ -17,9 +17,9 @@ package io.goobi.viewer.managedbeans;
 
 import java.io.IOException;
 import java.io.Serializable;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -439,7 +439,7 @@ public class CrowdsourcingBean implements Serializable {
 
             // Save
             boolean success = false;
-            Date now = new Date();
+            LocalDateTime now = LocalDateTime.now();
             if (selectedCampaign.getDateCreated() == null) {
                 selectedCampaign.setDateCreated(now);
             }

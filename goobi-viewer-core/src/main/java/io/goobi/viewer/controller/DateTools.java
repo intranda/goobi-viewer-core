@@ -26,7 +26,7 @@ import java.time.format.DateTimeFormatterBuilder;
 import java.time.format.DateTimeParseException;
 import java.time.temporal.ChronoField;
 import java.util.ArrayList;
-import java.util.Calendar;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
@@ -102,51 +102,50 @@ public class DateTools {
      * @should parse dates in parentheses correctly
      * @return a {@link java.util.List} object.
      */
-    public static List<Date> parseMultipleDatesFromString(String dateString) {
-        List<Date> ret = new ArrayList<>();
-
+    public static List<LocalDateTime> parseMultipleDatesFromString(String dateString) {
         // logger.debug("Parsing date string : {}", dateString);
-        if (StringUtils.isNotEmpty(dateString)) {
-            String splittingChar = "/";
-            String[] dateStringSplit = dateString.split(splittingChar);
-            for (String s : dateStringSplit) {
-                s = s.trim();
+        if (StringUtils.isEmpty(dateString)) {
+            return Collections.emptyList();
+        }
 
-                // Check whether this is a well-formed date and not a range or anything
-                {
-                    Date date = parseDateFromString(s);
-                    if (date != null) {
-                        ret.add(date);
-                        continue;
-                    }
-                }
+        List<LocalDateTime> ret = new ArrayList<>();
+        String splittingChar = "/";
+        String[] dateStringSplit = dateString.split(splittingChar);
+        for (String s : dateStringSplit) {
+            s = s.trim();
 
-                // Try finding a complete date in the string (enclosed in parentheses)
-                Pattern p = Pattern.compile(StringTools.REGEX_PARENTHESES);
-                Matcher m = p.matcher(s);
-                if (m.find()) {
-                    s = s.substring(m.start() + 1, m.end() - 1);
-                    logger.trace("Extracted date: {}", s);
-                    Date date = parseDateFromString(s);
-                    if (date != null) {
-                        ret.add(date);
-                        continue;
-                    }
+            // Check whether this is a well-formed date and not a range or anything
+            {
+                LocalDateTime date = parseDateFromString(s);
+                if (date != null) {
+                    ret.add(date);
+                    continue;
                 }
+            }
 
-                // If no complete date was found, just use the year
-                if (s.contains(" ")) {
-                    String[] sSplit = s.split(" ");
-                    s = sSplit[0];
+            // Try finding a complete date in the string (enclosed in parentheses)
+            Pattern p = Pattern.compile(StringTools.REGEX_PARENTHESES);
+            Matcher m = p.matcher(s);
+            if (m.find()) {
+                s = s.substring(m.start() + 1, m.end() - 1);
+                logger.trace("Extracted date: {}", s);
+                LocalDateTime date = parseDateFromString(s);
+                if (date != null) {
+                    ret.add(date);
+                    continue;
                 }
-                try {
-                    int year = Integer.valueOf(s);
-                    Calendar cal = Calendar.getInstance();
-                    cal.set(year, 0, 1, 0, 0, 0);
-                    ret.add(cal.getTime());
-                } catch (NumberFormatException e) {
-                    logger.error("Could not parse year: {}", s);
-                }
+            }
+
+            // If no complete date was found, just use the year
+            if (s.contains(" ")) {
+                String[] sSplit = s.split(" ");
+                s = sSplit[0];
+            }
+            try {
+                int year = Integer.valueOf(s);
+                ret.add(LocalDateTime.of(year, 1, 1, 0, 0));
+            } catch (NumberFormatException e) {
+                logger.error("Could not parse year: {}", s);
             }
         }
 
@@ -291,13 +290,8 @@ public class DateTools {
      * @param dateString a {@link java.lang.String} object.
      * @return a {@link java.util.Date} object.
      */
-    public static Date parseDateFromString(String dateString) {
-        LocalDateTime dateTime = parseDateTimeFromString(dateString, false);
-        if (dateTime != null) {
-            return convertLocalDateTimeToDateViaInstant(dateTime, false);
-        }
-
-        return null;
+    public static LocalDateTime parseDateFromString(String dateString) {
+        return parseDateTimeFromString(dateString, false);
     }
 
     /**

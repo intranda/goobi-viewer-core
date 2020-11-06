@@ -1,45 +1,13 @@
 package io.goobi.viewer.model.crowdsourcing.campaigns;
 
 import java.time.LocalDateTime;
-import java.util.Date;
 
 import org.junit.Assert;
 import org.junit.Test;
 
 import io.goobi.viewer.AbstractTest;
-import io.goobi.viewer.controller.DateTools;
 
 public class CampaignTest extends AbstractTest {
-
-    /**
-     * @see Campaign#setDateStartString(String)
-     * @verifies parse string correctly
-     */
-    @Test
-    public void setDateStartString_shouldParseStringCorrectly() throws Exception {
-        Campaign campaign = new Campaign();
-        campaign.setDateEndString("2019-09-01");
-        Assert.assertNotNull(campaign.getDateEnd());
-        LocalDateTime ldt = DateTools.convertDateToLocalDateTimeViaInstant(campaign.getDateEnd());
-        Assert.assertEquals(2019, ldt.getYear());
-        Assert.assertEquals(9, ldt.getMonthValue());
-        Assert.assertEquals(1, ldt.getDayOfMonth());
-    }
-
-    /**
-     * @see Campaign#setDateEndString(String)
-     * @verifies parse string correctly
-     */
-    @Test
-    public void setDateEndString_shouldParseStringCorrectly() throws Exception {
-        Campaign campaign = new Campaign();
-        campaign.setDateEndString("2020-08-31");
-        Assert.assertNotNull(campaign.getDateEnd());
-        LocalDateTime ldt = DateTools.convertDateToLocalDateTimeViaInstant(campaign.getDateEnd());
-        Assert.assertEquals(2020, ldt.getYear());
-        Assert.assertEquals(8, ldt.getMonthValue());
-        Assert.assertEquals(31, ldt.getDayOfMonth());
-    }
 
     /**
      * @see Campaign#getDaysLeft()
@@ -60,12 +28,12 @@ public class CampaignTest extends AbstractTest {
         Campaign campaign = new Campaign();
         {
             LocalDateTime later = LocalDateTime.now().plusDays(99);
-            campaign.setDateEnd(DateTools.convertLocalDateTimeToDateViaInstant(later, false));
+            campaign.setDateEnd(later);
             Assert.assertEquals(99, campaign.getDaysLeft());
         }
         {
             LocalDateTime earlier = LocalDateTime.now().plusDays(-20);
-            campaign.setDateEnd(DateTools.convertLocalDateTimeToDateViaInstant(earlier, false));
+            campaign.setDateEnd(earlier);
             Assert.assertEquals(0, campaign.getDaysLeft());
         }
     }
@@ -89,12 +57,12 @@ public class CampaignTest extends AbstractTest {
         Campaign campaign = new Campaign();
         {
             LocalDateTime later = LocalDateTime.now().plusDays(15);
-            campaign.setDateStart(DateTools.convertLocalDateTimeToDateViaInstant(later, false));
+            campaign.setDateStart(later);
             Assert.assertEquals(15, campaign.getDaysBeforeStart());
         }
         {
             LocalDateTime earlier = LocalDateTime.now().plusDays(-20);
-            campaign.setDateStart(DateTools.convertLocalDateTimeToDateViaInstant(earlier, false));
+            campaign.setDateStart(earlier);
             Assert.assertEquals(0, campaign.getDaysBeforeStart());
         }
     }
@@ -117,7 +85,7 @@ public class CampaignTest extends AbstractTest {
     public void isHasEnded_shouldReturnTrueIfDateEndBeforeNow() throws Exception {
         Campaign campaign = new Campaign();
         LocalDateTime earlier = LocalDateTime.now().plusDays(-20);
-        campaign.setDateEnd(DateTools.convertLocalDateTimeToDateViaInstant(earlier, false));
+        campaign.setDateEnd(earlier);
         Assert.assertTrue(campaign.isHasEnded());
     }
 
@@ -129,7 +97,7 @@ public class CampaignTest extends AbstractTest {
     public void isHasEnded_shouldReturnFalseIfDateEndAfterNow() throws Exception {
         Campaign campaign = new Campaign();
         LocalDateTime later = LocalDateTime.now().plusDays(20);
-        campaign.setDateEnd(DateTools.convertLocalDateTimeToDateViaInstant(later, false));
+        campaign.setDateEnd(later);
         Assert.assertFalse(campaign.isHasEnded());
     }
 
@@ -150,7 +118,7 @@ public class CampaignTest extends AbstractTest {
     @Test
     public void isHasStarted_shouldReturnTrueIfDateStartEqualsNow() throws Exception {
         Campaign campaign = new Campaign();
-        campaign.setDateStart(new Date());
+        campaign.setDateStart(LocalDateTime.now());
         Assert.assertTrue(campaign.isHasStarted());
     }
 
@@ -162,7 +130,7 @@ public class CampaignTest extends AbstractTest {
     public void isHasStarted_shouldReturnTrueIfDateStartBeforeNow() throws Exception {
         Campaign campaign = new Campaign();
         LocalDateTime later = LocalDateTime.now().plusDays(-20);
-        campaign.setDateStart(DateTools.convertLocalDateTimeToDateViaInstant(later, false));
+        campaign.setDateStart(later);
         Assert.assertTrue(campaign.isHasStarted());
     }
 
@@ -174,7 +142,7 @@ public class CampaignTest extends AbstractTest {
     public void isHasStarted_shouldReturnFalseIfDateStartAfterNow() throws Exception {
         Campaign campaign = new Campaign();
         LocalDateTime later = LocalDateTime.now().plusDays(20);
-        campaign.setDateStart(DateTools.convertLocalDateTimeToDateViaInstant(later, false));
+        campaign.setDateStart(later);
         Assert.assertFalse(campaign.isHasStarted());
     }
 }

@@ -557,7 +557,7 @@ public class CalendarBean implements Serializable {
      * getCurrentDate.
      * </p>
      *
-     * @return a {@link java.util.Date} object.
+     * @return a {@link java.time.LocalDateTime} object.
      */
     public LocalDateTime getCurrentDate() {
         LocalDateTime ldt = LocalDateTime.now();

@@ -209,7 +209,7 @@ public class DateToolsTest extends AbstractTest {
      */
     @Test
     public void parseMultipleDatesFromString_shouldParseSingleDateCorrectly() throws Exception {
-        List<Date> result = DateTools.parseMultipleDatesFromString("2018-11-20");
+        List<LocalDateTime> result = DateTools.parseMultipleDatesFromString("2018-11-20");
         Assert.assertEquals(1, result.size());
         Assert.assertEquals("2018-11-20", DateTools.format(result.get(0), DateTools.formatterISO8601Date, false));
     }
@@ -220,7 +220,7 @@ public class DateToolsTest extends AbstractTest {
      */
     @Test
     public void parseMultipleDatesFromString_shouldParseMultipleDatesCorrectly() throws Exception {
-        List<Date> result = DateTools.parseMultipleDatesFromString("2018-11-19 / 2018-11-20");
+        List<LocalDateTime> result = DateTools.parseMultipleDatesFromString("2018-11-19 / 2018-11-20");
         Assert.assertEquals(2, result.size());
         Assert.assertEquals("2018-11-19", DateTools.format(result.get(0), DateTools.formatterISO8601Date, false));
         Assert.assertEquals("2018-11-20", DateTools.format(result.get(1), DateTools.formatterISO8601Date, false));
@@ -232,7 +232,7 @@ public class DateToolsTest extends AbstractTest {
      */
     @Test
     public void parseMultipleDatesFromString_shouldParseDatesInParenthesesCorrectly() throws Exception {
-        List<Date> result = DateTools.parseMultipleDatesFromString("(2018-11-19) / (2018-11-20)");
+        List<LocalDateTime> result = DateTools.parseMultipleDatesFromString("(2018-11-19) / (2018-11-20)");
         Assert.assertEquals(2, result.size());
         Assert.assertEquals("2018-11-19", DateTools.format(result.get(0), DateTools.formatterISO8601Date, false));
         Assert.assertEquals("2018-11-20", DateTools.format(result.get(1), DateTools.formatterISO8601Date, false));

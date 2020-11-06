@@ -15,7 +15,7 @@
  */
 package io.goobi.viewer.managedbeans;
 
-import java.util.Date;
+import java.time.LocalDateTime;
 import java.util.List;
 
 import org.junit.After;
@@ -42,6 +42,7 @@ public class CrowdsourcingBeanTest extends AbstractDatabaseAndSolrEnabledTest {
     /**
      * @throws java.lang.Exception
      */
+    @Override
     @Before
     public void setUp() throws Exception {
         super.setUp();
@@ -54,6 +55,7 @@ public class CrowdsourcingBeanTest extends AbstractDatabaseAndSolrEnabledTest {
     /**
      * @throws java.lang.Exception
      */
+    @Override
     @After
     public void tearDown() throws Exception {
         super.tearDown();
@@ -81,7 +83,7 @@ public class CrowdsourcingBeanTest extends AbstractDatabaseAndSolrEnabledTest {
         bean.setSelectedCampaignId("1");
         Assert.assertNotNull(bean.getSelectedCampaign());
 
-        Date created = new Date();
+        LocalDateTime created = LocalDateTime.now();
         bean.getSelectedCampaign().setDateCreated(created);
         Assert.assertEquals("Date created does not match after setting", created, bean.getSelectedCampaign().getDateCreated());
         bean.saveSelectedCampaign();

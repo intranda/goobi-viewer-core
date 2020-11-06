@@ -49,8 +49,6 @@ import javax.persistence.JoinColumn;
 import javax.persistence.MapKeyColumn;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
-import javax.persistence.Temporal;
-import javax.persistence.TemporalType;
 import javax.persistence.Transient;
 
 import org.apache.commons.lang3.StringUtils;
@@ -141,30 +139,26 @@ public class Campaign implements CMSMediaHolder {
     @Column(name = "campaign_id")
     private Long id;
 
-    @Temporal(TemporalType.TIMESTAMP)
     @Column(name = "date_created", nullable = false)
     @JsonIgnore
-    private Date dateCreated;
+    private LocalDateTime dateCreated;
 
-    @Temporal(TemporalType.TIMESTAMP)
     @Column(name = "date_updated")
     @JsonIgnore
-    private Date dateUpdated;
+    private LocalDateTime dateUpdated;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "visibility", nullable = false)
     @JsonIgnore
     private CampaignVisibility visibility = CampaignVisibility.PRIVATE;
 
-    @Temporal(TemporalType.TIMESTAMP)
     @Column(name = "date_start")
     @JsonIgnore
-    private Date dateStart;
+    private LocalDateTime dateStart;
 
-    @Temporal(TemporalType.TIMESTAMP)
     @Column(name = "date_end")
     @JsonIgnore
-    private Date dateEnd;
+    private LocalDateTime dateEnd;
 
     /** Media item reference for media content items. */
     @JoinColumn(name = "media_item_id")
@@ -395,8 +389,7 @@ public class Campaign implements CMSMediaHolder {
         }
 
         LocalDateTime now = LocalDate.now().atStartOfDay();
-        LocalDateTime start = DateTools.convertDateToLocalDateTimeViaInstant(dateStart);
-        return Math.max(0L, Duration.between(now, start).toDays());
+        return Math.max(0L, Duration.between(now, dateStart).toDays());
     }
 
     /**
@@ -413,8 +406,7 @@ public class Campaign implements CMSMediaHolder {
         }
 
         LocalDateTime now = LocalDate.now().atStartOfDay();
-        LocalDateTime end = DateTools.convertDateToLocalDateTimeViaInstant(dateEnd);
-        return Math.max(0L, Duration.between(now, end).toDays());
+        return Math.max(0L, Duration.between(now, dateEnd).toDays());
     }
 
     /**
@@ -449,9 +441,7 @@ public class Campaign implements CMSMediaHolder {
         }
 
         LocalDateTime now = LocalDateTime.now();
-        LocalDateTime start = DateTools.convertDateToLocalDateTimeViaInstant(dateStart);
-
-        return now.isEqual(start) || now.isAfter(start);
+        return now.isEqual(dateStart) || now.isAfter(dateStart);
     }
 
     /**
@@ -470,9 +460,7 @@ public class Campaign implements CMSMediaHolder {
         }
 
         LocalDateTime now = LocalDateTime.now();
-        LocalDateTime end = DateTools.convertDateToLocalDateTimeViaInstant(dateEnd);
-
-        return now.isAfter(end);
+        return now.isAfter(dateEnd);
     }
 
     /**
@@ -740,7 +728,7 @@ public class Campaign implements CMSMediaHolder {
      *
      * @return the dateCreated
      */
-    public Date getDateCreated() {
+    public LocalDateTime getDateCreated() {
         return dateCreated;
     }
 
@@ -751,7 +739,7 @@ public class Campaign implements CMSMediaHolder {
      *
      * @param dateCreated the dateCreated to set
      */
-    public void setDateCreated(Date dateCreated) {
+    public void setDateCreated(LocalDateTime dateCreated) {
         this.dateCreated = dateCreated;
     }
 
@@ -762,7 +750,7 @@ public class Campaign implements CMSMediaHolder {
      *
      * @return the dateUpdated
      */
-    public Date getDateUpdated() {
+    public LocalDateTime getDateUpdated() {
         return dateUpdated;
     }
 
@@ -773,7 +761,7 @@ public class Campaign implements CMSMediaHolder {
      *
      * @param dateUpdated the dateUpdated to set
      */
-    public void setDateUpdated(Date dateUpdated) {
+    public void setDateUpdated(LocalDateTime dateUpdated) {
         this.dateUpdated = dateUpdated;
     }
 
@@ -806,7 +794,7 @@ public class Campaign implements CMSMediaHolder {
      *
      * @return the dateStart
      */
-    public Date getDateStart() {
+    public LocalDateTime getDateStart() {
         return dateStart;
     }
 
@@ -817,7 +805,7 @@ public class Campaign implements CMSMediaHolder {
      *
      * @param dateStart the dateStart to set
      */
-    public void setDateStart(Date dateStart) {
+    public void setDateStart(LocalDateTime dateStart) {
         this.dateStart = dateStart;
     }
 
@@ -847,7 +835,7 @@ public class Campaign implements CMSMediaHolder {
     public void setDateStartString(String dateStartString) {
         logger.trace("setDateStartString: {}", dateStartString);
         if (dateStartString != null) {
-            this.dateStart = DateTools.parseDateFromString(dateStartString);
+            this.dateStart = DateTools.parseDateTimeFromString(dateStartString, false);
         } else {
             this.dateStart = null;
         }
@@ -860,7 +848,7 @@ public class Campaign implements CMSMediaHolder {
      *
      * @return the dateEnd
      */
-    public Date getDateEnd() {
+    public LocalDateTime getDateEnd() {
         return dateEnd;
     }
 
@@ -871,7 +859,7 @@ public class Campaign implements CMSMediaHolder {
      *
      * @param dateEnd the dateEnd to set
      */
-    public void setDateEnd(Date dateEnd) {
+    public void setDateEnd(LocalDateTime dateEnd) {
         this.dateEnd = dateEnd;
     }
 
@@ -900,7 +888,7 @@ public class Campaign implements CMSMediaHolder {
      */
     public void setDateEndString(String dateEndString) {
         if (dateEndString != null) {
-            this.dateEnd = DateTools.parseDateFromString(dateEndString);
+            this.dateEnd = DateTools.parseDateTimeFromString(dateEndString, false);
         } else {
             this.dateEnd = null;
         }

@@ -821,7 +821,7 @@ public class JPADAOTest extends AbstractDatabaseEnabledTest {
         o.setSortString("SORT_FIELD");
         o.setFacetString("DOCSTRCT:Other;;DC:newcol");
         o.setNewHitsNotification(true);
-        Date now = new Date();
+        LocalDateTime now = LocalDateTime.now();
         o.setDateUpdated(now);
         Assert.assertTrue(DataManager.getInstance().getDao().addSearch(o));
         Assert.assertNotNull(o.getId());
@@ -846,7 +846,7 @@ public class JPADAOTest extends AbstractDatabaseEnabledTest {
         Assert.assertNotNull(o);
 
         o.setName("new name");
-        Date now = new Date();
+        LocalDateTime now = LocalDateTime.now();
         o.setDateUpdated(now);
 
         Assert.assertTrue(DataManager.getInstance().getDao().updateSearch(o));

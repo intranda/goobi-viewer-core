@@ -699,6 +699,7 @@ public class Metadata implements Serializable {
                             mdValue = MetadataTools.applyReplaceRules(mdValue, param.getReplaceRules(), se.getPi());
                         }
                         // Format dates
+                        // TODO use same formatter as for additional metadata
                         if (param.getKey().equals(SolrConstants.DATECREATED)) {
                             DateFormat dateFormatMetadata = DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.SHORT,
                                     FacesContext.getCurrentInstance().getViewRoot().getLocale());

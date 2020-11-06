@@ -21,9 +21,9 @@ import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -153,7 +153,7 @@ public class SearchBean implements SearchInterface, Serializable {
 
     private String searchInCurrentItemString;
     /** Current search object. Contains the results and can be used to persist search parameters in the DB. */
-    Search currentSearch;
+    private Search currentSearch;
 
     private volatile FutureTask<Boolean> downloadReady;
     private volatile FutureTask<Boolean> downloadComplete;
@@ -1231,7 +1231,7 @@ public class SearchBean implements SearchInterface, Serializable {
             }
         }
     }
-    
+
     public String removeChronologyFacetAction() {
         String facet = SolrConstants.YEAR + ":" + facets.getTempValue();
         facets.setTempValue("");
@@ -1868,33 +1868,13 @@ public class SearchBean implements SearchInterface, Serializable {
             return "";
         }
 
-        //        currentSearch.setUserInput(guiSearchString);
-        //        currentSearch.setQuery(searchString);
-        //        currentSearch.setPage(currentPage);
-        //        currentSearch.setSearchType(activeSearchType);
-        //        currentSearch.setSearchFilter(currentSearchFilter);
-        //        // regular facets
-        //        if (!facets.getCurrentFacets()
-        //                .isEmpty()) {
-        //            currentSearch.setFacetString(facets.getCurrentFacetString());
-        //        }
-        //        // hierarchical facets
-        //        if (!facets.getCurrentHierarchicalFacets()
-        //                .isEmpty()) {
-        //            currentSearch.setHierarchicalFacetString(facets.getCurrentHierarchicalFacetString());
-        //        }
-        //        // sorting
-        //        if (StringUtils.isNotEmpty(sortString)) {
-        //            currentSearch.setSortString(sortString);
-        //        }
-
         currentSearch.setLastHitsCount(currentSearch.getHitsCount());
 
         UserBean ub = BeanUtils.getUserBean();
         if (ub != null) {
             currentSearch.setOwner(ub.getUser());
         }
-        currentSearch.setDateUpdated(new Date());
+        currentSearch.setDateUpdated(LocalDateTime.now());
         if (DataManager.getInstance().getDao().addSearch(currentSearch)) {
             currentSearch.setSaved(true);
             Messages.info("saveSearchSuccess");
@@ -2104,7 +2084,7 @@ public class SearchBean implements SearchInterface, Serializable {
             facesContext.getExternalContext().setResponseContentType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
             facesContext.getExternalContext()
                     .setResponseHeader("Content-Disposition", "attachment;filename=\"viewer_search_"
-                            + DateTools.format(new Date(), DateTools.formatterISO8601DateTime, false)
+                            + LocalDateTime.now().format(DateTools.formatterISO8601DateTime)
                             + ".xlsx\"");
             return wb;
         } catch (IndexUnreachableException e) {
