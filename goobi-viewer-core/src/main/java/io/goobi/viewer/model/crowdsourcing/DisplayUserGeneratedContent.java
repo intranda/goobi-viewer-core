@@ -19,6 +19,8 @@ import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.util.Comparator;
 import java.util.Date;
+import java.util.List;
+import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.solr.common.SolrDocument;
@@ -503,7 +505,21 @@ public class DisplayUserGeneratedContent {
         ret.setAreaString((String) doc.getFieldValue(SolrConstants.UGCCOORDS));
         ret.setDisplayCoordinates((String) doc.getFieldValue(SolrConstants.UGCCOORDS));
         ret.setPi((String) doc.getFieldValue(SolrConstants.PI_TOPSTRUCT));
-        ret.setAnnotationBody((String) doc.getFieldValue(SolrConstants.MD_BODY));
+        if(doc.containsKey(SolrConstants.MD_BODY)) {
+            Object body = doc.getFieldValue(SolrConstants.MD_BODY);
+            if(body instanceof List) {
+                List<String> features = (List<String>) body;
+                if(features.size() == 1) {
+                    ret.setAnnotationBody(features.get(0));
+                } else {
+                    String array = "[" + features.stream().collect(Collectors.joining(",")) + "]";
+                    ret.setAnnotationBody(array);
+                }
+            } else if(body instanceof String) {
+                ret.setAnnotationBody((String) body);                
+            }
+            ret.setTypeFromBody();
+        }
         Object pageNo = doc.getFieldValue(SolrConstants.ORDER);
         if(pageNo != null && pageNo instanceof Number) {            
             ret.setPage(((Number) pageNo).intValue());
@@ -513,6 +529,27 @@ public class DisplayUserGeneratedContent {
         ret.setLabel(generateUgcLabel(se));
 
         return ret;
+    }
+
+    /**
+     * If the annotation body has a type property of one of "Feature", "AuthorityResource" or "TextualBody" 
+     * then the {@link #type} is set accordingly
+     */
+    private void setTypeFromBody() {
+        ContentType type = this.type;
+        if(StringUtils.isNotBlank(this.annotationBody.getType())) {
+            switch(this.annotationBody.getType()) {
+                case "Feature":
+                    type = ContentType.GEOLOCATION;
+                    break;
+                case "AuthorityResource":
+                    type = ContentType.NORMDATA;
+                    break;
+                case "TextualBody":
+                    type = ContentType.COMMENT;
+            }
+        }
+        this.type = type;
     }
 
     /**
@@ -627,6 +664,8 @@ public class DisplayUserGeneratedContent {
                 return "fa fa-home";
             case PICTURE:
                 return "fa fa-photo";
+            case GEOLOCATION:
+                return "fa fa-map-marker";
             case COMMENT:
             default:
                 return "fa fa-comment";
