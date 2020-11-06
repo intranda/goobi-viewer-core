@@ -31,7 +31,6 @@ import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.model.crowdsourcing.campaigns.Campaign;
 import io.goobi.viewer.model.crowdsourcing.campaigns.Campaign.CampaignVisibility;
-import io.goobi.viewer.model.security.Role;
 import io.goobi.viewer.model.security.user.User;
 import io.goobi.viewer.model.security.user.UserGroup;
 
@@ -259,6 +258,139 @@ public class CrowdsourcingBeanTest extends AbstractDatabaseAndSolrEnabledTest {
         Assert.assertEquals(Long.valueOf(3), result.get(0).getId());
         Assert.assertEquals(Long.valueOf(5), result.get(1).getId());
         Assert.assertEquals(Long.valueOf(7), result.get(2).getId());
+    }
+
+    /**
+     * @see CrowdsourcingBean#isAllowed(User,Campaign)
+     * @verifies return true for public campaigns
+     */
+    @Test
+    public void isAllowed_shouldReturnTrueForPublicCampaigns() throws Exception {
+        Campaign campaign = new Campaign();
+        campaign.setId(1L);
+        campaign.setVisibility(CampaignVisibility.PUBLIC);
+        Assert.assertTrue(CrowdsourcingBean.isAllowed(null, campaign));
+        Assert.assertTrue(CrowdsourcingBean.isAllowed(new User(), campaign));
+    }
+
+    /**
+     * @see CrowdsourcingBean#isAllowed(User,Campaign)
+     * @verifies return false if private campaign within time period but boolean false
+     */
+    @Test
+    public void isAllowed_shouldReturnFalseIfPrivateCampaignWithinTimePeriodButBooleanFalse() throws Exception {
+        Campaign campaign = new Campaign();
+        campaign.setId(1L);
+        campaign.setVisibility(CampaignVisibility.PRIVATE);
+        campaign.setDateStart(LocalDateTime.of(2000, 1, 1, 0, 0));
+        campaign.setDateEnd(LocalDateTime.now().plusMonths(3));
+        Assert.assertFalse(CrowdsourcingBean.isAllowed(null, campaign));
+        Assert.assertFalse(CrowdsourcingBean.isAllowed(new User(), campaign));
+    }
+
+    /**
+     * @see CrowdsourcingBean#isAllowed(User,Campaign)
+     * @verifies return true if private campaign within time period and user null
+     */
+    @Test
+    public void isAllowed_shouldReturnTrueIfPrivateCampaignWithinTimePeriodAndUserNull() throws Exception {
+        Campaign campaign = new Campaign();
+        campaign.setId(1L);
+        campaign.setVisibility(CampaignVisibility.PRIVATE);
+        campaign.setDateStart(LocalDateTime.of(2000, 1, 1, 0, 0));
+        campaign.setDateEnd(LocalDateTime.now().plusMonths(3));
+        campaign.setTimePeriodEnabled(true);
+        Assert.assertTrue(CrowdsourcingBean.isAllowed(null, campaign));
+    }
+
+    /**
+     * @see CrowdsourcingBean#isAllowed(User,Campaign)
+     * @verifies return true if private campaign within time period and user not null
+     */
+    @Test
+    public void isAllowed_shouldReturnTrueIfPrivateCampaignWithinTimePeriodAndUserNotNull() throws Exception {
+        Campaign campaign = new Campaign();
+        campaign.setId(1L);
+        campaign.setVisibility(CampaignVisibility.PRIVATE);
+        campaign.setDateStart(LocalDateTime.of(2000, 1, 1, 0, 0));
+        campaign.setDateEnd(LocalDateTime.now().plusMonths(3));
+        campaign.setTimePeriodEnabled(true);
+        Assert.assertTrue(CrowdsourcingBean.isAllowed(new User(), campaign));
+    }
+
+    /**
+     * @see CrowdsourcingBean#isAllowed(User,Campaign)
+     * @verifies return false if private campaign outside time period
+     */
+    @Test
+    public void isAllowed_shouldReturnFalseIfPrivateCampaignOutsideTimePeriod() throws Exception {
+        Campaign campaign = new Campaign();
+        campaign.setId(1L);
+        campaign.setVisibility(CampaignVisibility.PRIVATE);
+        campaign.setDateStart(LocalDateTime.of(2000, 1, 1, 0, 0));
+        campaign.setDateEnd(LocalDateTime.of(2010, 1, 1, 0, 0));
+        campaign.setTimePeriodEnabled(true);
+        Assert.assertFalse(CrowdsourcingBean.isAllowed(null, campaign));
+        Assert.assertFalse(CrowdsourcingBean.isAllowed(new User(), campaign));
+    }
+
+    /**
+     * @see CrowdsourcingBean#isAllowed(User,Campaign)
+     * @verifies return false if user group set and user null
+     */
+    @Test
+    public void isAllowed_shouldReturnFalseIfUserGroupSetAndUserNull() throws Exception {
+        Campaign campaign = new Campaign();
+        campaign.setId(1L);
+        campaign.setVisibility(CampaignVisibility.PRIVATE);
+        campaign.setUserGroup(new UserGroup());
+        campaign.setLimitToGroup(true);
+        Assert.assertFalse(CrowdsourcingBean.isAllowed(null, campaign));
+    }
+
+    /**
+     * @see CrowdsourcingBean#isAllowed(User,Campaign)
+     * @verifies return false if user group set and user not member
+     */
+    @Test
+    public void isAllowed_shouldReturnFalseIfUserGroupSetAndUserNotMember() throws Exception {
+        Campaign campaign = new Campaign();
+        campaign.setId(1L);
+        campaign.setVisibility(CampaignVisibility.PRIVATE);
+        campaign.setUserGroup(new UserGroup());
+        campaign.setLimitToGroup(true);
+        Assert.assertFalse(CrowdsourcingBean.isAllowed(new User(), campaign));
+    }
+
+    /**
+     * @see CrowdsourcingBean#isAllowed(User,Campaign)
+     * @verifies return true if user group set and user owner
+     */
+    @Test
+    public void isAllowed_shouldReturnTrueIfUserGroupSetAndUserOwner() throws Exception {
+        Campaign campaign = new Campaign();
+        campaign.setId(1L);
+        campaign.setVisibility(CampaignVisibility.PRIVATE);
+        campaign.setUserGroup(new UserGroup());
+        User user = new User();
+        campaign.getUserGroup().setOwner(user);
+        campaign.setLimitToGroup(true);
+        Assert.assertTrue(CrowdsourcingBean.isAllowed(user, campaign));
+    }
+
+    /**
+     * @see CrowdsourcingBean#isAllowed(User,Campaign)
+     * @verifies return false if user group set but boolean false
+     */
+    @Test
+    public void isAllowed_shouldReturnFalseIfUserGroupSetButBooleanFalse() throws Exception {
+        Campaign campaign = new Campaign();
+        campaign.setId(1L);
+        campaign.setVisibility(CampaignVisibility.PRIVATE);
+        campaign.setUserGroup(new UserGroup());
+        User user = new User();
+        campaign.getUserGroup().setOwner(user);
+        Assert.assertFalse(CrowdsourcingBean.isAllowed(user, campaign));
     }
 
 }

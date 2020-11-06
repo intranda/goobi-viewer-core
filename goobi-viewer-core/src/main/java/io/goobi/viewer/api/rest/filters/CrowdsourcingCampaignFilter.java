@@ -16,7 +16,6 @@
 package io.goobi.viewer.api.rest.filters;
 
 import java.io.IOException;
-import java.util.Arrays;
 import java.util.Optional;
 
 import javax.servlet.http.HttpServletRequest;
@@ -34,10 +33,9 @@ import org.slf4j.LoggerFactory;
 
 import de.unigoettingen.sub.commons.contentlib.exceptions.ServiceNotAllowedException;
 import de.unigoettingen.sub.commons.contentlib.servlet.rest.ContentExceptionMapper.ErrorMessage;
-import io.goobi.viewer.api.rest.v1.crowdsourcing.CampaignItemLogResource;
 import io.goobi.viewer.controller.DataManager;
-import io.goobi.viewer.exceptions.AccessDeniedException;
 import io.goobi.viewer.exceptions.DAOException;
+import io.goobi.viewer.managedbeans.CrowdsourcingBean;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.model.crowdsourcing.campaigns.Campaign;
 import io.goobi.viewer.model.security.user.User;
@@ -50,44 +48,47 @@ import io.goobi.viewer.model.security.user.User;
 public class CrowdsourcingCampaignFilter implements ContainerRequestFilter {
 
     private static final Logger logger = LoggerFactory.getLogger(CrowdsourcingCampaignFilter.class);
-    
+
     public static final String CAMPAIGN_ID_REQUEST_ATTRIBUTE = "CampaignId";
-    
+
     @Context
     private HttpServletRequest servletRequest;
     @Context
     private HttpServletResponse servletResponse;
-    
+
     @Override
     public void filter(ContainerRequestContext requestContext) throws IOException {
         try {
-        Object attribute = servletRequest.getAttribute(CAMPAIGN_ID_REQUEST_ATTRIBUTE);
-        if(attribute != null && attribute instanceof Long) {
-            Long campaignId = (Long) attribute;
-            User user = getUser().orElseThrow(() -> new ServiceNotAllowedException("No user logged in"));
-            Campaign campaign = DataManager.getInstance().getDao().getCampaign(campaignId);
-            if(user.getAllowedCrowdsourcingCampaigns(Arrays.asList(campaign)).isEmpty()) {
-                throw new ServiceNotAllowedException("User is not allowed to access requested campaign resources");
+            Object attribute = servletRequest.getAttribute(CAMPAIGN_ID_REQUEST_ATTRIBUTE);
+            if (attribute != null && attribute instanceof Long) {
+                Long campaignId = (Long) attribute;
+                User user = getUser().orElseThrow(() -> new ServiceNotAllowedException("No user logged in"));
+                Campaign campaign = DataManager.getInstance().getDao().getCampaign(campaignId);
+                if (!CrowdsourcingBean.isAllowed(user, campaign)) {
+                    throw new ServiceNotAllowedException("User is not allowed to access requested campaign resources");
+                }
             }
-        }
         } catch (ServiceNotAllowedException e) {
             String mediaType = MediaType.APPLICATION_JSON;
             Response response = Response.status(Status.FORBIDDEN).type(mediaType).entity(new ErrorMessage(Status.FORBIDDEN, e, false)).build();
             requestContext.abortWith(response);
         } catch (DAOException e) {
             String mediaType = MediaType.APPLICATION_JSON;
-            Response response = Response.status(Status.INTERNAL_SERVER_ERROR).type(mediaType).entity(new ErrorMessage(Status.INTERNAL_SERVER_ERROR, e, false)).build();
+            Response response = Response.status(Status.INTERNAL_SERVER_ERROR)
+                    .type(mediaType)
+                    .entity(new ErrorMessage(Status.INTERNAL_SERVER_ERROR, e, false))
+                    .build();
             requestContext.abortWith(response);
         }
     }
- 
+
     /**
      * @return
      */
     private Optional<User> getUser() {
-        try {            
+        try {
             return Optional.ofNullable(BeanUtils.getUserBean().getUser());
-        } catch(Throwable e) {
+        } catch (Throwable e) {
             logger.error("Unable to get current user from session: " + e.toString());
             return Optional.empty();
         }
