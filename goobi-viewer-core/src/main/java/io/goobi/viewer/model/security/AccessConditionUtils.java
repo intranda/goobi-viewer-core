@@ -155,7 +155,6 @@ public class AccessConditionUtils {
             case "mp3":
             case "ogg":
             case "ogv":
-                break;
             case "txt":
             case "xml":
                 useFileName = useFileName.replace("." + extension, "");
