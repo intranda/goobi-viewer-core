@@ -3484,6 +3484,7 @@ public class JPADAO implements IDAO {
             campaign.onPreUpdate();
             try {
                 em.getTransaction().begin();
+                em.setFlushMode(FlushModeType.COMMIT);
                 Campaign c = em.merge(campaign);
                 em.getTransaction().commit();
                 //solrQueryResults remains unchanged in managed campaign even after merge. Manually reset results to account for changed solrquery

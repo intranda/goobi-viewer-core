@@ -1196,13 +1196,12 @@ riot.tag2('campaignitem', '<div if="{!opts.pi}" class="crowdsourcing-annotations
 	});
 
 	this.loadItem = function(itemConfig) {
-	    console.log("load item ", itemConfig);
 	    this.item = new Crowdsourcing.Item(itemConfig, 0);
+	    this.item.logEndpoint = this.item.id + "/" + this.opts.pi + "/log/";
 	    if(this.opts.currentuserid) {
 	        this.item.setCurrentUser(this.opts.currentuserid, this.opts.currentusername, this.opts.currentuseravatar);
 	    }
 	    this.item.setReviewMode(this.opts.itemstatus && this.opts.itemstatus.toUpperCase() == "REVIEW");
-	    console.log("loaded item ", this.item);
 		fetch(this.item.imageSource + "?mode=simple")
 		.then( response => response.json() )
 		.then( imageSource => this.initImageView(imageSource))
@@ -1311,10 +1310,6 @@ riot.tag2('campaignitem', '<div if="{!opts.pi}" class="crowdsourcing-annotations
 	    let body = {
 	            recordStatus: status,
 	            creator: this.item.getCreator().id,
-	    }
-	    if(this.item.newLogMessages) {
-	    	body.log = this.item.newLogMessages.filter(message => message.message != undefined);
-	    	this.item.resetLog();
 	    }
 	    return fetch(this.itemSource, {
             method: "PUT",

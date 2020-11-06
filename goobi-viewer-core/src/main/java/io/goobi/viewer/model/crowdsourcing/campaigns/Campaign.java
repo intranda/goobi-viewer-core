@@ -1497,9 +1497,11 @@ public class Campaign implements CMSMediaHolder, ILicenseType, IPolyglott {
         return logMessages;
     }
 
-    public void addLogMessage(LogMessage message, String pi) {
+    public CampaignLogMessage addLogMessage(LogMessage message, String pi) {
         if (message.getId() == null) {
-            logMessages.add(new CampaignLogMessage(message, this, pi));
+            CampaignLogMessage campaignMessage = new CampaignLogMessage(message, this, pi);
+            logMessages.add(campaignMessage);
+            return campaignMessage;
         } else {
             //Log messages may not be changed, only new ones added. So only accept messages without id
             throw new IllegalArgumentException("Log messages with non null id may not be added to log");

@@ -105,14 +105,16 @@ public class CampaignItemLogResource {
     @Path("/{pi}/log")
     @Produces({ MediaType.APPLICATION_JSON })
     @CORSBinding
-    public void addMessage(LogMessage message, @PathParam("pi") String pi)
+    public LogMessage addMessage(LogMessage message, @PathParam("pi") String pi, @Context HttpServletRequest servletRequest)
             throws URISyntaxException, DAOException, ContentNotFoundException {
         Campaign campaign = DataManager.getInstance().getDao().getCampaign(campaignId);
         if (campaign != null) {
-            campaign.addLogMessage(message, pi);
+            CampaignLogMessage campaignMessage = campaign.addLogMessage(message, pi);
             DataManager.getInstance().getDao().updateCampaign(campaign);
+            return new LogMessage(campaignMessage, servletRequest);
+        } else {            
+            throw new ContentNotFoundException("No campaign found with id " + campaignId);
         }
-        throw new ContentNotFoundException("No campaign found with id " + campaignId);
     }
     
     @DELETE
@@ -125,8 +127,9 @@ public class CampaignItemLogResource {
         if (campaign != null) {
             campaign.deleteLogMessage(messageId);
             DataManager.getInstance().getDao().updateCampaign(campaign);
+        } else {            
+            throw new ContentNotFoundException("No campaign found with id " + campaignId);
         }
-        throw new ContentNotFoundException("No campaign found with id " + campaignId);
     }
     
     @GET
