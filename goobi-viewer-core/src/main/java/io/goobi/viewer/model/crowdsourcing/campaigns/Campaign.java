@@ -113,7 +113,7 @@ public class Campaign implements CMSMediaHolder, ILicenseType, IPolyglott {
          */
         PRIVATE,
         /**
-         * Hidden to all except users having the appropritate rights
+         * Hidden to all except users having the appropriate rights
          */
         @Deprecated
         RESTRICTED,

@@ -16,6 +16,7 @@
 package io.goobi.viewer.managedbeans;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.junit.After;
@@ -30,6 +31,9 @@ import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.model.crowdsourcing.campaigns.Campaign;
 import io.goobi.viewer.model.crowdsourcing.campaigns.Campaign.CampaignVisibility;
+import io.goobi.viewer.model.security.Role;
+import io.goobi.viewer.model.security.user.User;
+import io.goobi.viewer.model.security.user.UserGroup;
 
 /**
  * @author florian
@@ -88,6 +92,137 @@ public class CrowdsourcingBeanTest extends AbstractDatabaseAndSolrEnabledTest {
 
         bean.setSelectedCampaignId("1");
         Assert.assertEquals("Date created does not match in database", created, bean.getSelectedCampaign().getDateCreated());
+    }
+
+    /**
+     * @see CrowdsourcingBean#getAllowedCampaigns(User,List)
+     * @verifies return all public campaigns if user not logged in
+     */
+    @Test
+    public void getAllowedCampaigns_shouldReturnAllPublicCampaignsIfUserNotLoggedIn() throws Exception {
+        List<Campaign> allCampaigns = new ArrayList<>(3);
+        {
+            Campaign campaign = new Campaign();
+            campaign.setId(1L);
+            campaign.setVisibility(CampaignVisibility.PUBLIC);
+            allCampaigns.add(campaign);
+        }
+        {
+            Campaign campaign = new Campaign();
+            campaign.setId(2L);
+            campaign.setVisibility(CampaignVisibility.PRIVATE);
+            allCampaigns.add(campaign);
+        }
+        {
+            Campaign campaign = new Campaign();
+            campaign.setId(3L);
+            campaign.setVisibility(CampaignVisibility.PUBLIC);
+            allCampaigns.add(campaign);
+        }
+
+        List<Campaign> result = bean.getAllowedCampaigns(null, allCampaigns);
+        Assert.assertEquals(2, result.size());
+        Assert.assertEquals(Long.valueOf(1), result.get(0).getId());
+        Assert.assertEquals(Long.valueOf(3), result.get(1).getId());
+    }
+
+    /**
+     * @see CrowdsourcingBean#getAllowedCampaigns(User,List)
+     * @verifies return private campaigns within time period if user not logged in
+     */
+    @Test
+    public void getAllowedCampaigns_shouldReturnPrivateCampaignsWithinTimePeriodIfUserNotLoggedIn() throws Exception {
+        List<Campaign> allCampaigns = new ArrayList<>(2);
+        {
+            // No time period
+            Campaign campaign = new Campaign();
+            campaign.setId(1L);
+            campaign.setVisibility(CampaignVisibility.PRIVATE);
+            allCampaigns.add(campaign);
+        }
+        {
+            // Expired time period
+            Campaign campaign = new Campaign();
+            campaign.setId(2L);
+            campaign.setVisibility(CampaignVisibility.PRIVATE);
+            campaign.setDateStart(LocalDateTime.of(2000, 1, 1, 0, 0));
+            campaign.setDateEnd(LocalDateTime.of(2010, 1, 1, 0, 0));
+            allCampaigns.add(campaign);
+        }
+        {
+            // Current time period (update before 2323!)
+            Campaign campaign = new Campaign();
+            campaign.setId(3L);
+            campaign.setVisibility(CampaignVisibility.PRIVATE);
+            campaign.setDateStart(LocalDateTime.of(2000, 1, 1, 0, 0));
+            campaign.setDateEnd(LocalDateTime.of(2323, 1, 1, 0, 0));
+            allCampaigns.add(campaign);
+        }
+
+        List<Campaign> result = bean.getAllowedCampaigns(null, allCampaigns);
+        Assert.assertEquals(1, result.size());
+        Assert.assertEquals(Long.valueOf(3), result.get(0).getId());
+    }
+
+    /**
+     * @see CrowdsourcingBean#getAllowedCampaigns(User,List)
+     * @verifies return private campaigns within time period if user logged in
+     */
+    @Test
+    public void getAllowedCampaigns_shouldReturnPrivateCampaignsWithinTimePeriodIfUserLoggedIn() throws Exception {
+        User user = new User();
+        List<Campaign> allCampaigns = new ArrayList<>(2);
+        {
+            // No time period
+            Campaign campaign = new Campaign();
+            campaign.setId(1L);
+            campaign.setVisibility(CampaignVisibility.PRIVATE);
+            allCampaigns.add(campaign);
+        }
+        {
+            // Expired time period
+            Campaign campaign = new Campaign();
+            campaign.setId(2L);
+            campaign.setVisibility(CampaignVisibility.PRIVATE);
+            campaign.setDateStart(LocalDateTime.of(2000, 1, 1, 0, 0));
+            campaign.setDateEnd(LocalDateTime.of(2010, 1, 1, 0, 0));
+            allCampaigns.add(campaign);
+        }
+        {
+            // Current time period (update before 2323!)
+            Campaign campaign = new Campaign();
+            campaign.setId(3L);
+            campaign.setVisibility(CampaignVisibility.PRIVATE);
+            campaign.setDateStart(LocalDateTime.of(2000, 1, 1, 0, 0));
+            campaign.setDateEnd(LocalDateTime.of(2323, 1, 1, 0, 0));
+            allCampaigns.add(campaign);
+        }
+        {
+            // Current time period and user group, of which the user is owner
+            Campaign campaign = new Campaign();
+            campaign.setId(4L);
+            campaign.setVisibility(CampaignVisibility.PRIVATE);
+            campaign.setDateStart(LocalDateTime.of(2000, 1, 1, 0, 0));
+            campaign.setDateEnd(LocalDateTime.of(2323, 1, 1, 0, 0));
+            campaign.setUserGroup(new UserGroup());
+            campaign.getUserGroup().setOwner(user);
+            allCampaigns.add(campaign);
+        }
+        {
+            // Current time period and user group, to which the user does not belong
+            Campaign campaign = new Campaign();
+            campaign.setId(5L);
+            campaign.setVisibility(CampaignVisibility.PRIVATE);
+            campaign.setDateStart(LocalDateTime.of(2000, 1, 1, 0, 0));
+            campaign.setDateEnd(LocalDateTime.of(2323, 1, 1, 0, 0));
+            campaign.setUserGroup(new UserGroup());
+            allCampaigns.add(campaign);
+        }
+
+        List<Campaign> result = bean.getAllowedCampaigns(user, allCampaigns);
+        Assert.assertEquals(2, result.size());
+        Assert.assertEquals(Long.valueOf(3), result.get(0).getId());
+        Assert.assertEquals(Long.valueOf(4), result.get(1).getId());
     }
 
 }
