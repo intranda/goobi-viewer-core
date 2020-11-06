@@ -2746,6 +2746,23 @@ public class JPADAOTest extends AbstractDatabaseEnabledTest {
         users = DataManager.getInstance().getDao().getAllUsers(true);
         Assert.assertTrue(users.stream().allMatch(u -> !u.isAgreedToTermsOfUse()));
     }
+    
+
+    /**
+     * @see JPADAO#createCampaignsFilterQuery(String,Map,Map)
+     * @verifies create query correctly
+     */
+    @Test
+    public void createCampaignsFilterQuery_shouldCreateQueryCorrectly() throws Exception {
+        Map<String, String> filters = new HashMap<>(1);
+        filters.put("groupOwner", "1");
+        Map<String, Object> params = new HashMap<>(1);
+        Assert.assertEquals(
+                " prefix WHERE (a.userGroup.owner IN (SELECT g.owner FROM UserGroup g WHERE g.owner.id=:groupOwner))",
+                JPADAO.createCampaignsFilterQuery("prefix", filters, params));
+        Assert.assertEquals(1, params.size());
+        Assert.assertEquals(1L, params.get("groupOwner"));
+    }
 
     /**
      * @see JPADAO#createAnnotationsFilterQuery(String,Map,Map)

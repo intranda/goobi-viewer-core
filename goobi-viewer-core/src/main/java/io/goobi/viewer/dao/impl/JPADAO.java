@@ -2502,6 +2502,94 @@ public class JPADAO implements IDAO {
      * @return
      * @should create query correctly
      */
+    static String createCampaignsFilterQuery(String staticFilterQuery, Map<String, String> filters, Map<String, Object> params) {
+        StringBuilder q = new StringBuilder();
+        if (StringUtils.isNotEmpty(staticFilterQuery)) {
+            q.append(" ").append(staticFilterQuery);
+        }
+        if (filters == null || filters.isEmpty()) {
+            return q.toString();
+        }
+
+        AlphabetIterator abc = new AlphabetIterator();
+        String mainTableKey = abc.next(); // = a
+        //placeholder keys (a,b,c,...) for all tables to query
+        Map<String, String> tableKeys = new HashMap<>();
+        List<String> whereStatements = new ArrayList<>();
+        for (Entry<String, String> entry : filters.entrySet()) {
+            String key = entry.getKey();
+            String filterValue = entry.getValue();
+            if (StringUtils.isBlank(filterValue)) {
+                continue;
+            }
+            String keyValueParam = key.replaceAll("[" + MULTIKEY_SEPARATOR + KEY_FIELD_SEPARATOR + "]", "");
+            if ("groupOwner".equals(key)) {
+                params.put(keyValueParam, Long.valueOf(filterValue));
+            } else {
+                params.put(keyValueParam, "%" + filterValue.toUpperCase() + "%");
+            }
+
+            //subkeys = all keys this filter applies to, each of the form [field] or [table]-[field]
+            String[] subKeys = key.split(MULTIKEY_SEPARATOR);
+            for (String subKey : subKeys) {
+                if (StringUtils.isBlank(subKey)) {
+                    continue;
+                }
+                subKey = mainTableKey + "." + subKey;
+                String where = null;
+                switch (subKey) {
+                    case "a.creatorId":
+                    case "a.reviewerId":
+                        where = subKey + "=:" + keyValueParam;
+                        break;
+                    case "a.groupOwner":
+                        where = mainTableKey + ".userGroup.owner IN (SELECT g.owner FROM UserGroup g WHERE g.owner.id=:" + keyValueParam + ")";
+                        break;
+                    default:
+                        where = "UPPER(" + subKey + ") LIKE :" + keyValueParam;
+                        break;
+                }
+
+                whereStatements.add(where);
+            }
+        }
+        if (!whereStatements.isEmpty()) {
+            StringBuilder sbCreatorReviewer = new StringBuilder();
+            StringBuilder sbOtherStatements = new StringBuilder();
+            for (String whereStatement : whereStatements) {
+                if (whereStatement.startsWith("a.creatorId")) {
+                    sbCreatorReviewer.append(whereStatement);
+                } else if (whereStatement.startsWith("a.reviewerId")) {
+                    sbCreatorReviewer.append(" OR ").append(whereStatement);
+                } else {
+                    if (sbOtherStatements.length() != 0) {
+                        sbOtherStatements.append(" OR ");
+                    }
+                    sbOtherStatements.append(whereStatement);
+                }
+            }
+            String filterQuery = " WHERE " + (sbCreatorReviewer.length() > 0 ? "(" + sbCreatorReviewer.toString() + ")" : "");
+            if (sbCreatorReviewer.length() > 0 && sbOtherStatements.length() > 0) {
+                filterQuery += " AND ";
+            }
+            if (sbOtherStatements.length() > 0) {
+                filterQuery += ("(" + sbOtherStatements.toString() + ")");
+            }
+            q.append(filterQuery);
+        }
+
+        return q.toString();
+
+    }
+
+    /**
+     * 
+     * @param staticFilterQuery
+     * @param filters
+     * @param params
+     * @return
+     * @should create query correctly
+     */
     static String createAnnotationsFilterQuery(String staticFilterQuery, Map<String, String> filters, Map<String, Object> params) {
         StringBuilder q = new StringBuilder();
         if (StringUtils.isNotEmpty(staticFilterQuery)) {
@@ -2663,7 +2751,7 @@ public class JPADAO implements IDAO {
                     } else if ("classifications".equals(joinTable)) {
                         join.append(" JOIN ").append(pageKey).append(".").append(joinTable).append(" ").append(tableKey);
                         //                            .append(" ON ").append(" (").append(pageKey).append(".id = ").append(tableKey).append(".ownerPage.id)");
-                    } else if ("CampaignTranslation".equals(joinTable)) {
+                    } else if ("groupOwner".equals(joinTable)) {
                         join.append(" JOIN ")
                                 .append(joinTable)
                                 .append(" ")
@@ -3353,7 +3441,13 @@ public class JPADAO implements IDAO {
     /** {@inheritDoc} */
     @Override
     public long getCampaignCount(Map<String, String> filters) throws DAOException {
-        return getRowCount("Campaign", null, filters);
+        preQuery();
+        StringBuilder sbQuery = new StringBuilder("SELECT count(a) FROM Campaign a");
+        Map<String, Object> params = new HashMap<>();
+        Query q = em.createQuery(sbQuery.append(createCampaignsFilterQuery(null, filters, params)).toString());
+        params.entrySet().forEach(entry -> q.setParameter(entry.getKey(), entry.getValue()));
+
+        return (long) q.getSingleResult();
     }
 
     /** {@inheritDoc} */
@@ -3366,9 +3460,9 @@ public class JPADAO implements IDAO {
             StringBuilder sbQuery = new StringBuilder("SELECT DISTINCT a FROM Campaign a");
             StringBuilder order = new StringBuilder();
             try {
-                Map<String, String> params = new HashMap<>();
+                Map<String, Object> params = new HashMap<>();
 
-                String filterString = createFilterQuery(null, filters, params);
+                String filterString = createCampaignsFilterQuery(null, filters, params);
                 if (StringUtils.isNotEmpty(sortField)) {
                     order.append(" ORDER BY a.").append(sortField);
                     if (descending) {

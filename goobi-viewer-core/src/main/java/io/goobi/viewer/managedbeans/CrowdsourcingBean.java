@@ -125,9 +125,15 @@ public class CrowdsourcingBean implements Serializable {
                             sortOrder = SortOrder.DESCENDING;
                         }
 
-                        List<Campaign> ret =
-                                DataManager.getInstance().getDao().getCampaigns(first, pageSize, sortField, sortOrder.asBoolean(), filters);
-                        return ret;
+                        if (userBean.getUser() != null) {
+                            if (!userBean.getUser().isSuperuser()) {
+                                filters.put("groupOwner", String.valueOf(userBean.getUser().getId()));
+                            }
+
+                            return DataManager.getInstance().getDao().getCampaigns(first, pageSize, sortField, sortOrder.asBoolean(), filters);
+                        }
+
+                        return Collections.emptyList();
                     } catch (DAOException e) {
                         logger.error("Could not initialize lazy model: {}", e.getMessage());
                     }
@@ -139,7 +145,14 @@ public class CrowdsourcingBean implements Serializable {
                 public long getTotalNumberOfRecords(Map<String, String> filters) {
                     if (!numCreatedPages.isPresent()) {
                         try {
-                            numCreatedPages = Optional.ofNullable(DataManager.getInstance().getDao().getCampaignCount(filters));
+                            if (userBean.getUser() != null) {
+                                if (!userBean.getUser().isSuperuser()) {
+                                    filters.put("groupOwner", String.valueOf(userBean.getUser().getId()));
+                                }
+                                numCreatedPages = Optional.ofNullable(DataManager.getInstance().getDao().getCampaignCount(filters));
+                            } else {
+                                numCreatedPages = Optional.ofNullable(0L);
+                            }
                         } catch (DAOException e) {
                             logger.error("Unable to retrieve total number of campaigns", e);
                         }
@@ -410,13 +423,13 @@ public class CrowdsourcingBean implements Serializable {
      * 
      * @param user
      * @return
-     * @throws DAOException 
+     * @throws DAOException
      */
     public boolean isUserOwnsAnyCampaigns(User user) throws DAOException {
         if (user == null) {
             return false;
         }
-        
+
         for (Campaign campaign : getAllCampaigns()) {
             if (campaign.isLimitToGroup() && campaign.getUserGroup() != null && user.equals(campaign.getUserGroup().getOwner())) {
                 return true;
