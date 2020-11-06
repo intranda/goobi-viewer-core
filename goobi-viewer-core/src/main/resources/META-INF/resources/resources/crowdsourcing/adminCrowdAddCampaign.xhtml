@@ -438,10 +438,17 @@
 											    <!-- GROUP SELECTION GROUP -->
 												<ui:fragment rendered="#{crowdsourcingBean.selectedCampaign.visibility == 'PRIVATE' and userBean.user.superuser}">
 													<div class="form-group form-row">
-														<div class="col-12 control-label admin__form-label">
+														<div class="col-11 control-label admin__form-label">
 															<label for="adminCrowdVisibleFor">
 																#{msg.admin__crowdsourcing_campaign_limit_to_group}:
 															</label>
+														</div>
+														
+														<div class="col-1 admin__form-help-icon">
+															<button type="button" class="btn btn--clean"
+																data-toggle="helptext" aria-label="inline help icon">
+																<i class="fa fa-question-circle" aria-hidden="true"></i>
+															</button>
 														</div>
 
 								                    <!-- TOGGLE GROUP SELECTION SWITCH -->
@@ -461,13 +468,6 @@
 	                                                        </div>
 									                        <span class="admin__form-help-text">#{msg.admin__help_crowdsourcing_campaign_limit_to_group}</span>
 								                   		</div>
-								                   		
-														<div class="col-1 admin__form-help-icon">
-															<button type="button" class="btn btn--clean"
-																data-toggle="helptext" aria-label="inline help icon">
-																<i class="fa fa-question-circle" aria-hidden="true"></i>
-															</button>
-														</div>
 													
 													<h:panelGroup id="selectUserGroupGroup" styleClass="col-11 mt-1">
                                                         <h:selectOneMenu rendered="#{crowdsourcingBean.selectedCampaign.limitToGroup}"
@@ -499,10 +499,16 @@
                                                 <!-- TIME PERIOD GROUP -->
                                                 <ui:fragment rendered="#{crowdsourcingBean.selectedCampaign.visibility == 'PRIVATE'}">
                                                 	<div class="form-group form-row">
-	                                                    <div class="col-12 control-label admin__form-label">
+	                                                    <div class="col-11 control-label admin__form-label">
 	                                                        <label for="adminCrowdVisibleFor">
 	                                                            #{msg.admin__crowdsourcing_campaign_time_pediod_enabled}:
 	                                                        </label>
+	                                                    </div>
+	                                                    <div class="col-1 admin__form-help-icon">
+	                                                        <button type="button" class="btn btn--clean"
+	                                                            data-toggle="helptext" aria-label="inline help icon">
+	                                                            <i class="fa fa-question-circle" aria-hidden="true"></i>
+	                                                        </button>
 	                                                    </div>
 	                                                    
 	                                                    <!-- TOGGLE TIME PERIOD SWITCH -->
@@ -521,12 +527,6 @@
 	                                                            <span class="toggle-outside"><span class="toggle-inside" /></span>
 	                                                        </div>
 	                                                        <span class="admin__form-help-text">#{msg.admin__help_crowdsourcing_campaign_time_pediod}</span>
-	                                                    </div>
-	                                                    <div class="col-1 admin__form-help-icon">
-	                                                        <button type="button" class="btn btn--clean"
-	                                                            data-toggle="helptext" aria-label="inline help icon">
-	                                                            <i class="fa fa-question-circle" aria-hidden="true"></i>
-	                                                        </button>
 	                                                    </div>
                                                     </div>
                                                     
