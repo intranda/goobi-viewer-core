@@ -1503,6 +1503,18 @@ public class Campaign implements CMSMediaHolder, ILicenseType, IPolyglott {
             throw new IllegalArgumentException("Log messages with non null id may not be added to log");
         }
     }
+    
+
+    /**
+     * @param messageId
+     */
+    public void deleteLogMessage(Long messageId) {
+        if(messageId != null) {
+            Optional<CampaignLogMessage> message = this.logMessages.stream().filter(m -> messageId.equals(m.getId())).findAny();
+            message.ifPresent(m -> this.logMessages.remove(message));
+        }
+        
+    }
 
     /* (non-Javadoc)
      * @see io.goobi.viewer.model.cms.CMSMediaHolder#getMediaItemWrapper()
@@ -1518,4 +1530,5 @@ public class Campaign implements CMSMediaHolder, ILicenseType, IPolyglott {
 
         return null;
     }
+
 }

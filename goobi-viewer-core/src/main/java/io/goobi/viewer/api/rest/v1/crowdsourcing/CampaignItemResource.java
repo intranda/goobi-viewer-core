@@ -47,7 +47,9 @@ import de.intranda.api.annotation.wa.WebAnnotation;
 import de.unigoettingen.sub.commons.contentlib.exceptions.ContentNotFoundException;
 import de.unigoettingen.sub.commons.contentlib.servlet.rest.CORSBinding;
 import io.goobi.viewer.api.rest.AbstractApiUrlManager;
+import io.goobi.viewer.api.rest.CrowdsourcingCampaignBinding;
 import io.goobi.viewer.api.rest.ViewerRestServiceBinding;
+import io.goobi.viewer.api.rest.filters.CrowdsourcingCampaignFilter;
 import io.goobi.viewer.api.rest.resourcebuilders.AnnotationsResourceBuilder;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.IndexerTools;
@@ -76,31 +78,33 @@ import io.goobi.viewer.model.security.user.User;
  *
  * @author florian
  */
-@Path("/crowdsourcing/campaigns")
+@Path("/crowdsourcing/campaigns/{campaignId}")
 @ViewerRestServiceBinding
+@CrowdsourcingCampaignBinding
 public class CampaignItemResource {
 
     private static final Logger logger = LoggerFactory.getLogger(CampaignItemResource.class);
-
-    @Context
-    private HttpServletRequest servletRequest;
-    @Context
-    private HttpServletResponse servletResponse;
 
     @Inject
     protected AbstractApiUrlManager urls;
     protected AnnotationsResourceBuilder annoBuilder = null;
 
+    private final Long campaignId;
+    
     /**
      * <p>
      * Constructor for CampaignItemResource.
      * </p>
      */
-    public CampaignItemResource() {
+    public CampaignItemResource(@Context HttpServletRequest servletRequest, @PathParam("campaignId") Long campaignId) {
+        this.campaignId = campaignId;
+        servletRequest.setAttribute(CrowdsourcingCampaignFilter.CAMPAIGN_ID_REQUEST_ATTRIBUTE, campaignId);
     }
 
-    public CampaignItemResource(AbstractApiUrlManager urls) {
+    public CampaignItemResource(@Context HttpServletRequest servletRequest, AbstractApiUrlManager urls, @PathParam("campaignId") Long campaignId) {
         this.urls = urls;
+        this.campaignId = campaignId;
+        servletRequest.setAttribute(CrowdsourcingCampaignFilter.CAMPAIGN_ID_REQUEST_ATTRIBUTE, campaignId);
     }
 
     /**
@@ -115,13 +119,14 @@ public class CampaignItemResource {
      * @throws de.unigoettingen.sub.commons.contentlib.exceptions.ContentNotFoundException if any.
      */
     @GET
-    @Path("/{campaignId}/{pi}")
+    @Path("/{pi}")
     @Produces({ MediaType.APPLICATION_JSON })
     @CORSBinding
-    public CampaignItem getItemForManifest(@PathParam("campaignId") Long campaignId, @PathParam("pi") String pi)
+    public CampaignItem getItemForManifest(@PathParam("pi") String pi, @Context HttpServletRequest servletRequest)
             throws URISyntaxException, DAOException, ContentNotFoundException {
+        
+        
         URI manifestURI = new ManifestBuilder(urls).getManifestURI(pi);
-
         Campaign campaign = DataManager.getInstance().getDao().getCampaign(campaignId);
         if (campaign != null) {
             CampaignItem item = new CampaignItem();
@@ -149,10 +154,10 @@ public class CampaignItemResource {
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
     @PUT
-    @Path("/{campaignId}/{pi}/")
+    @Path("/{pi}")
     @Consumes({ MediaType.APPLICATION_JSON })
     @CORSBinding
-    public void setItemForManifest(CampaignItem item, @PathParam("campaignId") Long campaignId, @PathParam("pi") String pi) throws DAOException {
+    public void setItemForManifest(CampaignItem item, @PathParam("pi") String pi) throws DAOException {
         CampaignRecordStatus status = item.getRecordStatus();
         List<LogMessage> log = item.getLog();
 
@@ -186,10 +191,10 @@ public class CampaignItemResource {
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
     @GET
-    @Path("/{campaignId}/{pi}/annotations")
+    @Path("/{pi}/annotations")
     @Produces({ MediaType.APPLICATION_JSON })
     @CORSBinding
-    public List<WebAnnotation> getAnnotationsForManifest(@PathParam("campaignId") Long campaignId, @PathParam("pi") String pi)
+    public List<WebAnnotation> getAnnotationsForManifest(@PathParam("pi") String pi)
             throws URISyntaxException, DAOException {
 
         Campaign campaign = DataManager.getInstance().getDao().getCampaign(campaignId);
@@ -215,10 +220,10 @@ public class CampaignItemResource {
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
     @PUT
-    @Path("/{campaignId}/{pi}/annotations")
+    @Path("/{pi}/annotations")
     @Consumes({ MediaType.APPLICATION_JSON })
     @CORSBinding
-    public void setAnnotationsForManifest(List<AnnotationPage> pages, @PathParam("campaignId") Long campaignId, @PathParam("pi") String pi)
+    public void setAnnotationsForManifest(List<AnnotationPage> pages, @PathParam("pi") String pi)
             throws URISyntaxException, DAOException {
 
         IDAO dao = DataManager.getInstance().getDao();
