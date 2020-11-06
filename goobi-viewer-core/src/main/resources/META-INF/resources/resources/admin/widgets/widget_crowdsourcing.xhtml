@@ -8,7 +8,7 @@
     <composite:interface />
 
     <composite:implementation>
-        <h:panelGroup rendered="#{userBean.user.superuser}">
+        <h:panelGroup rendered="#{userBean.user.superuser or crowdsourcingBean.isUserOwnsAnyCampaigns(userBean.user)}">
             <div id="widgetCrowdsourcing" class="admin-widget">
                 <h:form id="widgetCmsForm">
                     <div class="admin-widget__header">#{msg.admin__crowdsourcing_title}</div>
@@ -20,17 +20,19 @@
                                 <span>#{msg.admin__crowdsourcing_campaigns}</span>
                             </h:outputLink>
                         </li>
-                        <li class="#{navigationHelper.currentPage == 'adminCrowdsourcingAnnotations' ? 'active' : ''}">
-                            <h:outputLink value="#{navigationHelper.getPageUrl('adminCrowdsourcingAnnotations')}/">
-                                <i class="fa fa-sticky-note" aria-hidden="true"></i>
-                                <span>#{msg.admin__crowdsourcing_annotations}</span>
-                            </h:outputLink>
-                        </li>
-                        <c:forEach var="module" items="#{configurationBean.modules}">
-                            <c:forEach var="contribution" items="#{module.adminContributions}">
-                                <ui:include src="/#{contribution}" />
+                        <ui:fragment rendered="#{userBean.user.superuser}">
+                            <li class="#{navigationHelper.currentPage == 'adminCrowdsourcingAnnotations' ? 'active' : ''}">
+                                <h:outputLink value="#{navigationHelper.getPageUrl('adminCrowdsourcingAnnotations')}/">
+                                    <i class="fa fa-sticky-note" aria-hidden="true"></i>
+                                    <span>#{msg.admin__crowdsourcing_annotations}</span>
+                                </h:outputLink>
+                            </li>
+                            <c:forEach var="module" items="#{configurationBean.modules}">
+                                <c:forEach var="contribution" items="#{module.adminContributions}">
+                                    <ui:include src="/#{contribution}" />
+                                </c:forEach>
                             </c:forEach>
-                        </c:forEach>
+                        </ui:fragment>
                     </ul>
                 </h:form>
             </div>

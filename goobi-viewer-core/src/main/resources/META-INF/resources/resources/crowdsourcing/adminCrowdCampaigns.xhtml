@@ -16,7 +16,7 @@
     </ui:define>
 
     <ui:define name="content">
-        <h:panelGroup id="crowdCampaignOverview" rendered="#{userBean.user.superuser}">
+        <h:panelGroup id="crowdCampaignOverview" rendered="#{userBean.user.superuser or crowdsourcingBean.isUserOwnsAnyCampaigns(userBean.user)}">
             <div id="crowdCampaigns">
                 <h:form id="csCampaignsForm" prependId="false">
                     <div class="admin__title-bar">
@@ -45,14 +45,6 @@
                                 </h:commandLink>
                                 <h:outputText rendered="#{crowdsourcingBean.lazyModelCampaigns.getFilter('visibility') == null}"
                                     value="#{msg.admin__crowdsourcing_campaign_visibility_ALL}" /> (#{crowdsourcingBean.getCampaignCount(null)}) |
-                                <!-- restricted -->
-<!--                                 <h:commandLink rendered="#{crowdsourcingBean.lazyModelCampaigns.getFilter('visibility').value != 'RESTRICTED'}" -->
-<!--                                     action="#{crowdsourcingBean.filterCampaignsAction('RESTRICTED')}"> -->
-<!--                                     #{msg.admin__crowdsourcing_campaign_visibility_RESTRICTED} -->
-<!--                                 </h:commandLink> -->
-<!--                                 <h:outputText rendered="#{crowdsourcingBean.lazyModelCampaigns.getFilter('visibility').value == 'RESTRICTED'}" -->
-<!--                                     value="#{msg.admin__crowdsourcing_campaign_visibility_RESTRICTED}" /> (#{crowdsourcingBean.getCampaignCount('RESTRICTED')}) | -->
-                                <!-- public -->
                                 <h:commandLink rendered="#{crowdsourcingBean.lazyModelCampaigns.getFilter('visibility').value != 'PUBLIC'}"
                                     action="#{crowdsourcingBean.filterCampaignsAction('PUBLIC')}">
                                     #{msg.admin__crowdsourcing_campaign_visibility_PUBLIC}
@@ -66,14 +58,6 @@
                                 </h:commandLink>
                                 <h:outputText rendered="#{crowdsourcingBean.lazyModelCampaigns.getFilter('visibility').value == 'PRIVATE'}"
                                     value="#{msg.admin__crowdsourcing_campaign_visibility_PRIVATE}" /> (#{crowdsourcingBean.getCampaignCount('PRIVATE')})
-                                <!-- finished -->
-<!--                                 <h:commandLink rendered="#{crowdsourcingBean.lazyModelCampaigns.getFilter('visibility').value != 'FINISHED'}" -->
-<!--                                     action="#{crowdsourcingBean.filterCampaignsAction('FINISHED')}"> -->
-<!--                                     #{msg.admin__crowdsourcing_campaign_visibility_FINISHED} -->
-<!--                                 </h:commandLink> -->
-<!--                                 <h:outputText rendered="#{crowdsourcingBean.lazyModelCampaigns.getFilter('visibility').value == 'FINISHED'}" -->
-<!--                                     value="#{msg.admin__crowdsourcing_campaign_visibility_FINISHED}" /> (#{crowdsourcingBean.getCampaignCount('FINISHED')}) -->
-
                             </div>
                         </div>
                         <div class="admin__table-content">
