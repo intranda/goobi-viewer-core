@@ -10,34 +10,6 @@ import io.goobi.viewer.AbstractTest;
 public class CampaignTest extends AbstractTest {
 
     /**
-     * @see Campaign#setDateStartString(String)
-     * @verifies parse string correctly
-     */
-    @Test
-    public void setDateStartString_shouldParseStringCorrectly() throws Exception {
-        Campaign campaign = new Campaign();
-        campaign.setDateEndString("2019-09-01");
-        Assert.assertNotNull(campaign.getDateEnd());
-        Assert.assertEquals(2019, campaign.getDateEnd().getYear());
-        Assert.assertEquals(9, campaign.getDateEnd().getMonthValue());
-        Assert.assertEquals(1, campaign.getDateEnd().getDayOfMonth());
-    }
-
-    /**
-     * @see Campaign#setDateEndString(String)
-     * @verifies parse string correctly
-     */
-    @Test
-    public void setDateEndString_shouldParseStringCorrectly() throws Exception {
-        Campaign campaign = new Campaign();
-        campaign.setDateEndString("2020-08-31");
-        Assert.assertNotNull(campaign.getDateEnd());
-        Assert.assertEquals(2020, campaign.getDateEnd().getYear());
-        Assert.assertEquals(8, campaign.getDateEnd().getMonthValue());
-        Assert.assertEquals(31, campaign.getDateEnd().getDayOfMonth());
-    }
-
-    /**
      * @see Campaign#getDaysLeft()
      * @verifies return -1 if no dateEnd
      */
@@ -102,6 +74,7 @@ public class CampaignTest extends AbstractTest {
     @Test
     public void isHasEnded_shouldReturnFalseIfDateEndNull() throws Exception {
         Campaign campaign = new Campaign();
+        campaign.setTimePeriodEnabled(true);
         Assert.assertFalse(campaign.isHasEnded());
     }
 
@@ -114,6 +87,7 @@ public class CampaignTest extends AbstractTest {
         Campaign campaign = new Campaign();
         LocalDateTime earlier = LocalDateTime.now().plusDays(-20);
         campaign.setDateEnd(earlier);
+        campaign.setTimePeriodEnabled(true);
         Assert.assertTrue(campaign.isHasEnded());
     }
 
@@ -126,6 +100,19 @@ public class CampaignTest extends AbstractTest {
         Campaign campaign = new Campaign();
         LocalDateTime later = LocalDateTime.now().plusDays(20);
         campaign.setDateEnd(later);
+        campaign.setTimePeriodEnabled(true);
+        Assert.assertFalse(campaign.isHasEnded());
+    }
+
+    /**
+     * @see Campaign#isHasEnded()
+     * @verifies return false if timePeriodEnabled false
+     */
+    @Test
+    public void isHasEnded_shouldReturnFalseIfTimePeriodEnabledFalse() throws Exception {
+        Campaign campaign = new Campaign();
+        LocalDateTime earlier = LocalDateTime.now().plusDays(-20);
+        campaign.setDateEnd(earlier);
         Assert.assertFalse(campaign.isHasEnded());
     }
 
@@ -137,6 +124,8 @@ public class CampaignTest extends AbstractTest {
     public void isHasStarted_shouldReturnTrueIfDateStartNull() throws Exception {
         Campaign campaign = new Campaign();
         Assert.assertTrue(campaign.isHasStarted());
+        campaign.setTimePeriodEnabled(true);
+        campaign.setTimePeriodEnabled(true);
     }
 
     /**
@@ -147,6 +136,7 @@ public class CampaignTest extends AbstractTest {
     public void isHasStarted_shouldReturnTrueIfDateStartEqualsNow() throws Exception {
         Campaign campaign = new Campaign();
         campaign.setDateStart(LocalDateTime.now());
+        campaign.setTimePeriodEnabled(true);
         Assert.assertTrue(campaign.isHasStarted());
     }
 
@@ -159,6 +149,7 @@ public class CampaignTest extends AbstractTest {
         Campaign campaign = new Campaign();
         LocalDateTime later = LocalDateTime.now().plusDays(-20);
         campaign.setDateStart(later);
+        campaign.setTimePeriodEnabled(true);
         Assert.assertTrue(campaign.isHasStarted());
     }
 
@@ -171,6 +162,20 @@ public class CampaignTest extends AbstractTest {
         Campaign campaign = new Campaign();
         LocalDateTime later = LocalDateTime.now().plusDays(20);
         campaign.setDateStart(later);
+        campaign.setTimePeriodEnabled(true);
         Assert.assertFalse(campaign.isHasStarted());
+    }
+
+    /**
+     * @see Campaign#isHasStarted()
+     * @verifies return true if timePeriodEnabled false
+     */
+    @Test
+    public void isHasStarted_shouldReturnTrueIfTimePeriodEnabledFalse() throws Exception {
+        Campaign campaign = new Campaign();
+        LocalDateTime later = LocalDateTime.now().plusDays(-20);
+        campaign.setDateStart(later);
+        campaign.setTimePeriodEnabled(true);
+        Assert.assertTrue(campaign.isHasStarted());
     }
 }

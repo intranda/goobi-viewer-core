@@ -499,9 +499,10 @@ public class Campaign implements CMSMediaHolder, ILicenseType, IPolyglott {
      * @should return true if dateStart equals now
      * @should return true if dateStart before now
      * @should return false if dateStart after now
+     * @should return true if timePeriodEnabled false
      */
     public boolean isHasStarted() {
-        if (dateStart == null) {
+        if (dateStart == null || !timePeriodEnabled) {
             return true;
         }
 
@@ -518,9 +519,10 @@ public class Campaign implements CMSMediaHolder, ILicenseType, IPolyglott {
      * @should return false if dateEnd null
      * @should return false if dateEnd after now
      * @should return true if dateEnd before now
+     * @should return false if timePeriodEnabled false
      */
     public boolean isHasEnded() {
-        if (dateEnd == null) {
+        if (dateEnd == null || !timePeriodEnabled) {
             return false;
         }
 

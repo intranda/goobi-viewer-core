@@ -362,9 +362,10 @@ public class CrowdsourcingBean implements Serializable {
                 .collect(Collectors.toList());
         return pages;
     }
-    
+
     /**
      * Returns the list of campaigns that are visible to the given user.
+     * 
      * @param user
      * @return
      * @throws DAOException
@@ -384,7 +385,7 @@ public class CrowdsourcingBean implements Serializable {
      * @should return private campaigns within time period if user not logged in
      * @should return private campaigns within time period if user logged in
      */
-     List<Campaign> getAllowedCampaigns(User user, List<Campaign> allCampaigns) throws DAOException {
+    List<Campaign> getAllowedCampaigns(User user, List<Campaign> allCampaigns) throws DAOException {
         logger.trace("getAllowedCampaigns");
         if (allCampaigns == null || allCampaigns.isEmpty()) {
             logger.trace("No campaigns found");
@@ -404,11 +405,15 @@ public class CrowdsourcingBean implements Serializable {
                     break;
                 case PRIVATE:
                     // Only logged in members may access campaigns limited to a user group
-                    if (campaign.getUserGroup() != null) {
+                    if (campaign.isLimitToGroup()) {
                         continue;
                     }
                     // Private campaigns with a defined time period can be accessed by anyone within said time period
-                    if (campaign.getDateStart() != null && campaign.getDateEnd() != null && campaign.isHasStarted() && !campaign.isHasEnded()) {
+                    if (campaign.isTimePeriodEnabled()
+                            && campaign.getDateStart() != null
+                            && campaign.getDateEnd() != null
+                            && campaign.isHasStarted()
+                            && !campaign.isHasEnded()) {
                         ret.add(campaign);
                     }
                     break;

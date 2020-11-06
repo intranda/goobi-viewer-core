@@ -473,7 +473,7 @@
 											<h:panelGroup id="adminCrowdPrivateSettingsGroup" styleClass="form-row form-group" layout="block">
 											
 											    <!-- GROUP SELECTION GROUP -->
-												<ui:fragment rendered="#{crowdsourcingBean.selectedCampaign.visibility == 'PRIVATE'}">
+												<ui:fragment rendered="#{crowdsourcingBean.selectedCampaign.visibility == 'PRIVATE' and userBean.user.superuser}">
 													<div class="col-12 control-label admin__form-label">
 														<label for="adminCrowdVisibleFor">
 															#{msg.admin__crowdsourcing_campaign_limit_to_group}:
@@ -482,7 +482,7 @@
 								                    
 								                    <!-- TOGGLE GROUP SELECTION SWITCH -->
 								                    <div class="col-11 admin__form-input">
-                                                        <div class="admin__radio-switch" id="limitToGroupSelection">
+                                                        <div class="admin__radio-switch">
                                                             <h:selectOneRadio group="limitToGroupSelection"
                                                                 value="#{crowdsourcingBean.selectedCampaign.limitToGroup}" immediate="true">
                                                                 <f:selectItem itemValue="#{false}" itemLabel="#{msg.no}" />
@@ -538,7 +538,7 @@
                                                     
                                                     <!-- TOGGLE TIME PERIOD SWITCH -->
                                                     <div class="col-11 admin__form-input">
-                                                        <div class="admin__radio-switch" id="timePeriodEnabledSelection">
+                                                        <div class="admin__radio-switch">
                                                             <h:selectOneRadio group="timePeriodEnabledSelection"
                                                                 value="#{crowdsourcingBean.selectedCampaign.timePeriodEnabled}" immediate="true">
                                                                 <f:selectItem itemValue="#{false}" itemLabel="#{msg.no}" />
@@ -578,6 +578,7 @@
                                                         </ui:fragment>
                                                     </h:panelGroup>
                                                 </ui:fragment>
+                                                
                                             </h:panelGroup>
 					                   	</div>
 					                   	
