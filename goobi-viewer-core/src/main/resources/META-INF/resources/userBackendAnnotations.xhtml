@@ -50,60 +50,23 @@
 
                             <!-- TITLE ROW -->
                             <div class="row no-gutters admin__table-title">
-
                                 <!-- ANNOTATION COL -->
                                 <div class="col-6 d-flex">#{msg.admin__crowdsourcing_annotation}</div>
 
                                 <!-- TARGET COL -->
-                                <div class="col-2 d-flex">
-                                    #{msg.admin__crowdsourcing_annotation_target}
-                                    <div class="admin__table-sorting">
-                                        <h:commandLink styleClass="sort" action="#{userDataBean.lazyModelAnnotations.sortBy('targetPI', 'ASCENDING')}">
-                                            <f:passThroughAttribute name="aria-label" value="sort ascending" />
-                                            <i class="fa fa-angle-down" aria-hidden="true"></i>
-                                            <f:ajax execute="@form" render="@form" />
-                                        </h:commandLink>
-                                        <h:commandLink styleClass="sort" action="#{userDataBean.lazyModelAnnotations.sortBy('targetPI', 'DESCENDING')}">
-                                            <f:passThroughAttribute name="aria-label" value="sort descending" />
-                                            <i class="fa fa-angle-up" aria-hidden="true"></i>
-                                            <f:ajax execute="@form" render="@form" />
-                                        </h:commandLink>
-                                    </div>
-                                </div>
-                                
+	                            <div class="col-2 d-flex">                            
+	                                <viewerComponent:sortingArrow filterType="targetPI" colHeading="#{msg.admin__crowdsourcing_annotation_target}" list="#{userDataBean.lazyModelAnnotations}" />
+	                            </div>
+
                                 <!-- CAMPAIGN COL -->
-                                <div class="col-2 d-flex">
-                                    #{msg.admin__crowdsourcing_campaign}
-                                    <div class="admin__table-sorting">
-                                        <h:commandLink styleClass="sort" action="#{userDataBean.lazyModelAnnotations.sortBy('generatorId', 'ASCENDING')}">
-                                            <f:passThroughAttribute name="aria-label" value="sort ascending" />
-                                            <i class="fa fa-angle-down" aria-hidden="true"></i>
-                                            <f:ajax execute="@form" render="@form" />
-                                        </h:commandLink>
-                                        <h:commandLink styleClass="sort" action="#{userDataBean.lazyModelAnnotations.sortBy('generatorId', 'DESCENDING')}">
-                                            <f:passThroughAttribute name="aria-label" value="sort descending" />
-                                            <i class="fa fa-angle-up" aria-hidden="true"></i>
-                                            <f:ajax execute="@form" render="@form" />
-                                        </h:commandLink>
-                                    </div>
-                                </div>
+	                            <div class="col-2 d-flex">                            
+	                                <viewerComponent:sortingArrow filterType="generatorId" colHeading="#{msg.admin__crowdsourcing_campaign}" list="#{userDataBean.lazyModelAnnotations}" />
+	                            </div>
 
                                 <!-- DATE COL -->
-                                <div class="col-2 d-flex">
-                                    #{msg.date}
-                                    <div class="admin__table-sorting">
-                                        <h:commandLink styleClass="sort" action="#{userDataBean.lazyModelAnnotations.sortBy('dateCreated', 'ASCENDING')}">
-                                            <f:passThroughAttribute name="aria-label" value="sort ascending" />
-                                            <i class="fa fa-angle-down" aria-hidden="true"></i>
-                                            <f:ajax execute="@form" render="@form" />
-                                        </h:commandLink>
-                                        <h:commandLink styleClass="sort" action="#{userDataBean.lazyModelAnnotations.sortBy('dateCreated', 'DESCENDING')}">
-                                            <f:passThroughAttribute name="aria-label" value="sort descending" />
-                                            <i class="fa fa-angle-up" aria-hidden="true"></i>
-                                            <f:ajax execute="@form" render="@form" />
-                                        </h:commandLink>
-                                    </div>
-                                </div>
+	                            <div class="col-2 d-flex">                            
+	                                <viewerComponent:sortingArrow filterType="dateCreated" colHeading="#{msg.date}" list="#{userDataBean.lazyModelAnnotations}" />
+	                            </div>
                             </div>
 
                             <!-- INDIVIDUAL ANNOTATION ROWS -->

@@ -38,49 +38,23 @@
                             </div>
                         </div>
 
-
                         <!-- ALL ANNOTATIONS TABLE -->
                         <div id="csAnnotationsTable" class="admin__table-content">
 
                             <!-- TITLE ROW -->
                             <div class="row no-gutters admin__table-title">
-
                                 <!-- ANNOTATION COL -->
                                 <div class="col-8 d-flex">#{msg.admin__crowdsourcing_annotation}</div>
 
                                 <!-- TARGET COL -->
-                                <div class="col-2 d-flex">
-                                    #{msg.admin__crowdsourcing_annotation_target}
-                                    <div class="admin__table-sorting">
-                                        <h:commandLink styleClass="sort" action="#{crowdsourcingBean.lazyModelAnnotations.sortBy('targetPI', 'ASCENDING')}">
-                                            <f:passThroughAttribute name="aria-label" value="sort ascending" />
-                                            <i class="fa fa-angle-down" aria-hidden="true"></i>
-                                            <f:ajax execute="@form" render="@form" />
-                                        </h:commandLink>
-                                        <h:commandLink styleClass="sort" action="#{crowdsourcingBean.lazyModelAnnotations.sortBy('targetPI', 'DESCENDING')}">
-                                            <f:passThroughAttribute name="aria-label" value="sort descending" />
-                                            <i class="fa fa-angle-up" aria-hidden="true"></i>
-                                            <f:ajax execute="@form" render="@form" />
-                                        </h:commandLink>
-                                    </div>
-                                </div>
+	                            <div class="col-2 d-flex">                            
+	                                <viewerComponent:sortingArrow filterType="targetPI" colHeading="#{msg.Comment}" list="#{crowdsourcingBean.lazyModelAnnotations}" />
+	                            </div>
 
                                 <!-- DATE COL -->
-                                <div class="col-2 d-flex">
-                                    #{msg.date}
-                                    <div class="admin__table-sorting">
-                                        <h:commandLink styleClass="sort" action="#{crowdsourcingBean.lazyModelAnnotations.sortBy('dateCreated', 'ASCENDING')}">
-                                            <f:passThroughAttribute name="aria-label" value="sort ascending" />
-                                            <i class="fa fa-angle-down" aria-hidden="true"></i>
-                                            <f:ajax execute="@form" render="@form" />
-                                        </h:commandLink>
-                                        <h:commandLink styleClass="sort" action="#{crowdsourcingBean.lazyModelAnnotations.sortBy('dateCreated', 'DESCENDING')}">
-                                            <f:passThroughAttribute name="aria-label" value="sort descending" />
-                                            <i class="fa fa-angle-up" aria-hidden="true"></i>
-                                            <f:ajax execute="@form" render="@form" />
-                                        </h:commandLink>
-                                    </div>
-                                </div>
+	                            <div class="col-2 d-flex">                            
+	                                <viewerComponent:sortingArrow filterType="dateCreated" colHeading="#{msg.Comment}" list="#{crowdsourcingBean.lazyModelAnnotations}" />
+	                            </div>
                             </div>
 
                             <!-- INDIVIDUAL ANNOTATION ROWS -->
