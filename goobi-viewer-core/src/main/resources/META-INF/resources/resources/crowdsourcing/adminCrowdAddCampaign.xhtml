@@ -582,6 +582,18 @@
                                             </h:panelGroup>
 					                   	</div>
 					                   	
+					                   	<!-- ACCESS LICENCE WIDGET -->
+										<div class="admin__default-block">
+											<h3>#{msg.access_licence}</h3>
+											<div class="admin__form-help-text in">
+											#{msg.admin__crowdsourcing_campaign_access_licence__help}
+											</div>
+											<div>
+												<label>#{msg.admin__crowdsourcing_campaign_set_write_access_licence}: </label>
+												<viewerComponent:toggleSwitch value="#{crowdsourcingBean.selectedCampaign.restrictAnnotationAccess}"/>
+											</div>
+										</div>
+					                   	
 										<!-- STATISTICS SIDEBAR WIDGET -->
 										<h:panelGroup id="statisticsArea">
 											<ui:fragment rendered="#{crowdsourcingBean.selectedCampaign.solrQuery != null}">
@@ -597,6 +609,9 @@
 													</ui:include>
 												</div>
 											</ui:fragment>
+											<script>        		
+									        	riot.mount("progressBar");
+											</script>	
 										</h:panelGroup>
 									</div>
 									</div>
@@ -626,9 +641,6 @@
 
 			</div>
 		</h:panelGroup>
-		<script>        		
-        	riot.mount("progressBar");
-		</script>	
 	</ui:define>
 
 	<!-- SIDEBAR -->

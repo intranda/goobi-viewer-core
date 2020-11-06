@@ -84,7 +84,7 @@ public class DisplayUserGeneratedContent {
 
     private String pi;
 
-    private Integer page;
+    private Integer page = null;
 
     private String label;
 
@@ -650,9 +650,18 @@ public class DisplayUserGeneratedContent {
         return se.getMetadataValue(SolrConstants.LABEL);
     }
     
-    public boolean isOnPage(PhysicalElement page) {
+    public boolean isOnThisPage(PhysicalElement page) {
         return page.getOrder() == this.page;
     }
+    
+    public boolean isOnOtherPage(PhysicalElement page) {
+        return isOnAnyPage() && !isOnThisPage(page);
+    }
+    
+    public boolean isOnAnyPage() {
+        return this.page != null;
+    }
+
     
     public String getIconClass() {
         switch(this.type) {
@@ -666,6 +675,8 @@ public class DisplayUserGeneratedContent {
                 return "fa fa-photo";
             case GEOLOCATION:
                 return "fa fa-map-marker";
+            case NORMDATA:
+                return "fa fa fa-list-ul";
             case COMMENT:
             default:
                 return "fa fa-comment";
