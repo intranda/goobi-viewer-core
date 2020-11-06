@@ -405,15 +405,22 @@
 									<div class="admin__content-side">
 										<!-- VISIBILITY OF CAMPAIGN -->
 										<div class="admin__default-block">
-											<h3>#{msg.admin__crowdsourcing_campaign_visibility}</h3>
+											<h3>#{msg.admin__crowdsourcing_campaign_settings}</h3>
 											
 											<!-- VISIBILITY STATUS -->
 											<div class="form-row form-group">
 
-												<div class="col-12 control-label admin__form-label">
+												<div class="col-11 control-label admin__form-label">
 													<label for="adminCrowdVisibleStatus">
 														#{msg.admin__crowdsourcing_campaign_visibility}:
 													</label>
+												</div>
+	
+												<div class="col-1 admin__form-help-icon">
+													<button type="button" class="btn btn--clean"
+														data-toggle="helptext" aria-label="inline help icon">
+														<i class="fa fa-question-circle" aria-hidden="true"></i>
+													</button>
 												</div>
 
 							                    <div class="col-11 admin__form-input">
@@ -424,14 +431,7 @@
 							                        </h:selectOneMenu>
 							                        <span class="admin__form-help-text">#{msg.admin__help_crowdsourcing_campaign_visibility}</span>
 						                   		</div>
-						                   		
-												<div class="col-1 admin__form-help-icon">
-													<button type="button" class="btn btn--clean"
-														data-toggle="helptext" aria-label="inline help icon">
-														<i class="fa fa-question-circle" aria-hidden="true"></i>
-													</button>
-												</div>
-						                   	</div>
+                                            </div>
 						                   	
 											<h:panelGroup id="adminCrowdPrivateSettingsGroup" layout="block">
 											
