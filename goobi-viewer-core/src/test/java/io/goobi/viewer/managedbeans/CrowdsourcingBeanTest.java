@@ -132,7 +132,7 @@ public class CrowdsourcingBeanTest extends AbstractDatabaseAndSolrEnabledTest {
      */
     @Test
     public void getAllowedCampaigns_shouldReturnPrivateCampaignsWithinTimePeriodIfUserNotLoggedIn() throws Exception {
-        List<Campaign> allCampaigns = new ArrayList<>(2);
+        List<Campaign> allCampaigns = new ArrayList<>(4);
         {
             // No time period
             Campaign campaign = new Campaign();
@@ -153,6 +153,16 @@ public class CrowdsourcingBeanTest extends AbstractDatabaseAndSolrEnabledTest {
             // Current time period (update before 2323!)
             Campaign campaign = new Campaign();
             campaign.setId(3L);
+            campaign.setVisibility(CampaignVisibility.PRIVATE);
+            campaign.setDateStart(LocalDateTime.of(2000, 1, 1, 0, 0));
+            campaign.setDateEnd(LocalDateTime.of(2323, 1, 1, 0, 0));
+            campaign.setTimePeriodEnabled(true);
+            allCampaigns.add(campaign);
+        }
+        {
+            // Current time period, but boolean not set
+            Campaign campaign = new Campaign();
+            campaign.setId(4L);
             campaign.setVisibility(CampaignVisibility.PRIVATE);
             campaign.setDateStart(LocalDateTime.of(2000, 1, 1, 0, 0));
             campaign.setDateEnd(LocalDateTime.of(2323, 1, 1, 0, 0));
@@ -171,16 +181,16 @@ public class CrowdsourcingBeanTest extends AbstractDatabaseAndSolrEnabledTest {
     @Test
     public void getAllowedCampaigns_shouldReturnPrivateCampaignsWithinTimePeriodIfUserLoggedIn() throws Exception {
         User user = new User();
-        List<Campaign> allCampaigns = new ArrayList<>(2);
+        List<Campaign> allCampaigns = new ArrayList<>(6);
         {
-            // No time period
+            // No time period (NOT ALLOWED)
             Campaign campaign = new Campaign();
             campaign.setId(1L);
             campaign.setVisibility(CampaignVisibility.PRIVATE);
             allCampaigns.add(campaign);
         }
         {
-            // Expired time period
+            // Expired time period (NOT ALLOWED)
             Campaign campaign = new Campaign();
             campaign.setId(2L);
             campaign.setVisibility(CampaignVisibility.PRIVATE);
@@ -189,40 +199,66 @@ public class CrowdsourcingBeanTest extends AbstractDatabaseAndSolrEnabledTest {
             allCampaigns.add(campaign);
         }
         {
-            // Current time period (update before 2323!)
+            // Current time period (ALLOWED)
             Campaign campaign = new Campaign();
             campaign.setId(3L);
             campaign.setVisibility(CampaignVisibility.PRIVATE);
             campaign.setDateStart(LocalDateTime.of(2000, 1, 1, 0, 0));
             campaign.setDateEnd(LocalDateTime.of(2323, 1, 1, 0, 0));
+            campaign.setTimePeriodEnabled(true);
             allCampaigns.add(campaign);
         }
         {
-            // Current time period and user group, of which the user is owner
+            // Current time period, but boolean not set (NOT ALLOWED)
             Campaign campaign = new Campaign();
             campaign.setId(4L);
             campaign.setVisibility(CampaignVisibility.PRIVATE);
             campaign.setDateStart(LocalDateTime.of(2000, 1, 1, 0, 0));
             campaign.setDateEnd(LocalDateTime.of(2323, 1, 1, 0, 0));
             campaign.setUserGroup(new UserGroup());
-            campaign.getUserGroup().setOwner(user);
             allCampaigns.add(campaign);
         }
         {
-            // Current time period and user group, to which the user does not belong
+            // Current time period and user group, of which the user is owner (ALLOWED)
             Campaign campaign = new Campaign();
             campaign.setId(5L);
             campaign.setVisibility(CampaignVisibility.PRIVATE);
             campaign.setDateStart(LocalDateTime.of(2000, 1, 1, 0, 0));
             campaign.setDateEnd(LocalDateTime.of(2323, 1, 1, 0, 0));
+            campaign.setTimePeriodEnabled(true);
+            campaign.setUserGroup(new UserGroup());
+            campaign.getUserGroup().setOwner(user);
+            allCampaigns.add(campaign);
+        }
+        {
+            // Current time period and user group, to which the user does not belong (NOT ALLOWED)
+            Campaign campaign = new Campaign();
+            campaign.setId(6L);
+            campaign.setVisibility(CampaignVisibility.PRIVATE);
+            campaign.setDateStart(LocalDateTime.of(2000, 1, 1, 0, 0));
+            campaign.setDateEnd(LocalDateTime.of(2323, 1, 1, 0, 0));
+            campaign.setTimePeriodEnabled(true);
+            campaign.setUserGroup(new UserGroup());
+            campaign.setLimitToGroup(true);
+            allCampaigns.add(campaign);
+        }
+        {
+            // Current time period and user group, to which the user does not belong, but boolean not set (ALLOWED)
+            Campaign campaign = new Campaign();
+            campaign.setId(7L);
+            campaign.setVisibility(CampaignVisibility.PRIVATE);
+            campaign.setDateStart(LocalDateTime.of(2000, 1, 1, 0, 0));
+            campaign.setDateEnd(LocalDateTime.of(2323, 1, 1, 0, 0));
+            campaign.setTimePeriodEnabled(true);
             campaign.setUserGroup(new UserGroup());
             allCampaigns.add(campaign);
         }
 
         List<Campaign> result = bean.getAllowedCampaigns(user, allCampaigns);
-        Assert.assertEquals(2, result.size());
+        Assert.assertEquals(3, result.size());
         Assert.assertEquals(Long.valueOf(3), result.get(0).getId());
-        Assert.assertEquals(Long.valueOf(4), result.get(1).getId());
+        Assert.assertEquals(Long.valueOf(5), result.get(1).getId());
+        Assert.assertEquals(Long.valueOf(7), result.get(2).getId());
     }
 
 }

@@ -1121,12 +1121,13 @@ public class User implements ILicensee, HttpSessionBindingListener, Serializable
                         continue;
                     }
                     // Campaign with a set time frame, but no user group
-                    if (campaign.getDateStart() != null && campaign.getDateEnd() != null && campaign.getUserGroup() == null) {
+                    if (campaign.isTimePeriodEnabled() && campaign.getDateStart() != null && campaign.getDateEnd() != null
+                            && !campaign.isLimitToGroup()) {
                         ret.add(campaign);
                         continue;
                     }
                     // Campaign with user group
-                    if (campaign.getUserGroup() != null) {
+                    if (campaign.isLimitToGroup() && campaign.getUserGroup() != null) {
                         try {
                             if (campaign.getUserGroup().getMembersAndOwner().contains(this)) {
                                 ret.add(campaign);
