@@ -74,7 +74,8 @@
                                 <div class="row no-gutters admin__table-entry">
                                     <!-- ANNOTATION CONTENT -->
                                     <div class="col-6 d-flex" style="flex-direction:column;">
-                                        <h:outputText value="#{annotation.contentString}" />
+                                        <div id="annotation_body_#{annotation.id}" class="annotation__body__content_wrapper">#{annotation.body}</div>
+										<annotationBody annotationid="#{annotation.id}" contentid="annotation_body_#{annotation.id}"/>
                                         <div>
                                             <!-- TODO INLINE CSS -->
                                             <a href="#{navigationHelper.objectUrl}#{annotation.targetLink}"
@@ -104,7 +105,13 @@
                     </div>
                 </h:form>
             </div>
-                
+                <script>
+                riot.mount("annotationBody", {
+                    currentlang: "#{navigationHelper.localeString}",
+                    resturl: "#{configurationBean.restApiUrl}",
+                    mapboxtoken: "#{configurationBean.mapBoxToken}"
+                });
+                </script>
 
 			</h:panelGroup>
         </div>
