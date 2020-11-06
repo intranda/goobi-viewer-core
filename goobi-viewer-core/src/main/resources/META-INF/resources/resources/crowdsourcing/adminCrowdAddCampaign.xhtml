@@ -20,7 +20,7 @@
 
 	<ui:define name="content">
 		<h:panelGroup id="crowdAddCampaignView"
-			rendered="#{userBean.user.superuser}">
+			rendered="#{userBean.loggedIn and (userBean.user.superuser or crowdsourcingBean.selectedCampaign.userGroup.owner == userBean.user)}">
 			<div id="createCampaign" class="cms-create-page">
 
 				<!-- BACK TO OVERVIEW -->
