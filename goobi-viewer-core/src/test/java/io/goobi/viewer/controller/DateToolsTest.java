@@ -239,12 +239,12 @@ public class DateToolsTest extends AbstractTest {
     }
 
     /**
-     * @see DateTools#createLocalDateTimeFromMillis(long,boolean)
+     * @see DateTools#getLocalDateTimeFromMillis(long,boolean)
      * @verifies create LocalDateTime correctly
      */
     @Test
-    public void createLocalDateTimeFromMillis_shouldCreateLocalDateTimeCorrectly() throws Exception {
-        LocalDateTime ldt = DateTools.createLocalDateTimeFromMillis(1603905300000L, true);
+    public void getLocalDateTimeFromMillis_shouldCreateLocalDateTimeCorrectly() throws Exception {
+        LocalDateTime ldt = DateTools.getLocalDateTimeFromMillis(1603905300000L, true);
         Assert.assertNotNull(ldt);
         Assert.assertEquals(2020, ldt.getYear());
         Assert.assertEquals(10, ldt.getMonthValue());

@@ -47,6 +47,7 @@ import de.unigoettingen.sub.commons.contentlib.servlet.rest.CORSBinding;
 import io.goobi.viewer.api.rest.ViewerRestServiceBinding;
 import io.goobi.viewer.api.rest.v1.ApiUrls;
 import io.goobi.viewer.controller.DataManager;
+import io.goobi.viewer.controller.DateTools;
 import io.goobi.viewer.controller.StringTools;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
@@ -135,9 +136,10 @@ public class WebAnnotationResource {
                 + comment.getPage() + "/" + comment.getId());
         WebAnnotation anno = new WebAnnotation(resourceId);
         anno.setBody(new TextualResource(comment.getText()));
-        anno.setTarget(new SimpleResource(new SequenceBuilder(new ApiUrls(DataManager.getInstance().getConfiguration().getRestApiUrl())).getCanvasURI(comment.getPi(), comment.getPage())));
-        anno.setCreated(comment.getDateCreated());
-        anno.setModified(comment.getDateUpdated());
+        anno.setTarget(new SimpleResource(new SequenceBuilder(new ApiUrls(DataManager.getInstance().getConfiguration().getRestApiUrl()))
+                .getCanvasURI(comment.getPi(), comment.getPage())));
+        anno.setCreated(DateTools.convertLocalDateTimeToDateViaInstant(comment.getDateCreated(), false));
+        anno.setModified(DateTools.convertLocalDateTimeToDateViaInstant(comment.getDateUpdated(), false));
         anno.setCreator(createAgent(comment.getOwner()));
         anno.setGenerator(
                 new Agent(URI.create(ServletUtils.getServletPathWithHostAsUrlFromRequest(servletRequest)), AgentType.SOFTWARE, "Goobi viewer"));

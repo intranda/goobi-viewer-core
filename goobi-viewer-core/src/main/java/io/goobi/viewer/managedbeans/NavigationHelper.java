@@ -1840,18 +1840,4 @@ public class NavigationHelper implements Serializable {
     public String getApplicationName() {
         return Version.APPLICATION_NAME;
     }
-
-    /**
-     * <p>
-     * getBuildDate.
-     * </p>
-     *
-     * @param pattern a {@link java.lang.String} object.
-     * @return a {@link java.lang.String} object.
-     */
-    @Deprecated
-    public String getBuildDate(String pattern) {
-        return Version.getBuildDate(pattern);
-    }
-
 }

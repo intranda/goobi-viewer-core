@@ -21,9 +21,9 @@ import java.io.IOException;
 import java.io.Serializable;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -782,7 +782,7 @@ public class AdminBean implements Serializable {
 
         return DataManager.getInstance().getDao().getLicenseCount(licenseType) > 0;
     }
-    
+
     /**
      * 
      * @param licenseTypeName
@@ -791,10 +791,12 @@ public class AdminBean implements Serializable {
      * @throws PresentationException
      */
     public long getConcurrentViewsLimitRecordCountForLicenseType(String licenseTypeName) throws IndexUnreachableException, PresentationException {
-        return DataManager.getInstance().getSearchIndex().getHitCount("+" + SolrConstants.ACCESSCONDITION + ":\"" + licenseTypeName 
-        + "\" +" + SolrConstants.ISWORK + ":true +" + SolrConstants.ACCESSCONDITION_CONCURRENTUSE + ":*");
+        return DataManager.getInstance()
+                .getSearchIndex()
+                .getHitCount("+" + SolrConstants.ACCESSCONDITION + ":\"" + licenseTypeName
+                        + "\" +" + SolrConstants.ISWORK + ":true +" + SolrConstants.ACCESSCONDITION_CONCURRENTUSE + ":*");
     }
-    
+
     /**
      * 
      * @param licenseTypeName
@@ -803,8 +805,10 @@ public class AdminBean implements Serializable {
      * @throws PresentationException
      */
     public long getPdfQuotaRecordCountForLicenseType(String licenseTypeName) throws IndexUnreachableException, PresentationException {
-        return DataManager.getInstance().getSearchIndex().getHitCount("+" + SolrConstants.ACCESSCONDITION + ":\"" + licenseTypeName 
-        + "\" +" + SolrConstants.ISWORK + ":true +" + SolrConstants.ACCESSCONDITION_PDF_PERCENTAGE_QUOTA + ":*");
+        return DataManager.getInstance()
+                .getSearchIndex()
+                .getHitCount("+" + SolrConstants.ACCESSCONDITION + ":\"" + licenseTypeName
+                        + "\" +" + SolrConstants.ISWORK + ":true +" + SolrConstants.ACCESSCONDITION_PDF_PERCENTAGE_QUOTA + ":*");
     }
 
     /**
@@ -1037,7 +1041,7 @@ public class AdminBean implements Serializable {
         logger.trace("saveCommentAction");
         if (comment.getId() != null) {
             // Set updated timestamp
-            comment.setDateUpdated(new Date());
+            comment.setDateUpdated(LocalDateTime.now());
             logger.trace(comment.getText());
             if (DataManager.getInstance().getDao().updateComment(comment)) {
                 Messages.info("updatedSuccessfully");

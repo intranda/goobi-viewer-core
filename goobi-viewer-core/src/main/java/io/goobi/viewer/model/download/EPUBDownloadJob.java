@@ -18,17 +18,15 @@ package io.goobi.viewer.model.download;
 import java.io.File;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.Date;
+import java.time.LocalDateTime;
 
 import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
 import javax.ws.rs.core.Response;
 
-import org.apache.http.client.HttpClient;
 import org.apache.http.client.ResponseHandler;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
-import org.apache.http.client.methods.HttpPost;
 import org.apache.http.impl.client.BasicResponseHandler;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
@@ -38,7 +36,6 @@ import org.slf4j.LoggerFactory;
 
 import io.goobi.viewer.controller.DataFileTools;
 import io.goobi.viewer.controller.DataManager;
-import io.goobi.viewer.controller.SolrConstants;
 import io.goobi.viewer.exceptions.DownloadException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
@@ -76,10 +73,10 @@ public class EPUBDownloadJob extends DownloadJob {
      *
      * @param pi a {@link java.lang.String} object.
      * @param logid a {@link java.lang.String} object.
-     * @param lastRequested a {@link java.util.Date} object.
+     * @param lastRequested a {@link java.time.LocalDateTime} object.
      * @param ttl a long.
      */
-    public EPUBDownloadJob(String pi, String logid, Date lastRequested, long ttl) {
+    public EPUBDownloadJob(String pi, String logid, LocalDateTime lastRequested, long ttl) {
         type = TYPE;
         this.pi = pi;
         this.logId = logid;
@@ -248,7 +245,7 @@ public class EPUBDownloadJob extends DownloadJob {
         
         try {
             Response response = postJobRequest(taskManagerUrl, requestObject);
-            String entity = (String)response.readEntity(String.class);
+            String entity = response.readEntity(String.class);
             JSONObject entityJson = new JSONObject(entity);
             if (entityJson.has("STATUS") && entityJson.get("STATUS").equals("ERROR")) {
                 if (entityJson.get("ERRORMESSAGE").equals("Job already in DB, not adding it!")) {

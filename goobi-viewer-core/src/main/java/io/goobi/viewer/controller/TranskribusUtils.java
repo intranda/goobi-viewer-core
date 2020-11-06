@@ -18,7 +18,6 @@ package io.goobi.viewer.controller;
 import java.io.IOException;
 import java.net.URLEncoder;
 import java.time.LocalDateTime;
-//import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 

@@ -16,7 +16,7 @@
 package io.goobi.viewer.exceptions;
 
 import java.net.SocketException;
-import java.util.Date;
+import java.time.LocalDateTime;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Optional;
@@ -114,9 +114,9 @@ public class MyExceptionHandler extends ExceptionHandlerWrapper {
 
                         details.append("Session ID: ").append(session.getId());
                         details.append("</br>");
-                        details.append("Session created: ").append(new Date(session.getCreationTime()));
+                        details.append("Session created: ").append(DateTools.getLocalDateTimeFromMillis(session.getCreationTime(), false));
                         details.append("</br>");
-                        details.append("Session last accessed: ").append(new Date(session.getLastAccessedTime()));
+                        details.append("Session last accessed: ").append(DateTools.getLocalDateTimeFromMillis(session.getLastAccessedTime(), false));
 
                         Optional<Map<Object, Map>> logicalViews =
                                 Optional.ofNullable((Map) session.getAttribute("com.sun.faces.renderkit.ServerSideStateHelper.LogicalViewMap"));
@@ -262,7 +262,7 @@ public class MyExceptionHandler extends ExceptionHandlerWrapper {
                 logger.error(t.getMessage(), t);
                 try {
                     // Put the exception in the flash scope to be displayed in the error page if necessary ...
-                    String msg = DateTools.format(new Date(), DateTools.formatterISO8601DateTime, false) + ": " + t.getMessage();
+                    String msg = DateTools.format(LocalDateTime.now(), DateTools.formatterISO8601DateTime, false) + ": " + t.getMessage();
                     // flash.put("errorDetails", msg);
                     requestMap.put("errMsg", msg);
                     requestMap.put("errorType", "general");

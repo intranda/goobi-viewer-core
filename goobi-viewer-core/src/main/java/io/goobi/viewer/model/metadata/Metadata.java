@@ -388,7 +388,7 @@ public class Metadata implements Serializable {
                     break;
                 case MILLISFIELD:
                     // Create formatted date-time from millis
-                    LocalDateTime ldt = DateTools.createLocalDateTimeFromMillis(Long.valueOf(value), false);
+                    LocalDateTime ldt = DateTools.getLocalDateTimeFromMillis(Long.valueOf(value), false);
                     value = DateTools.formatDate(ldt, locale);
                     break;
                 case NORMDATAURI:

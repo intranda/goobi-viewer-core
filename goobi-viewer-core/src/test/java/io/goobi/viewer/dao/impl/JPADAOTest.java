@@ -683,7 +683,7 @@ public class JPADAOTest extends AbstractDatabaseEnabledTest {
         Assert.assertNotNull(comment);
 
         comment.setText("new comment 1 text");
-        Date now = new Date();
+        LocalDateTime now = LocalDateTime.now();
         comment.setDateUpdated(now);
 
         Assert.assertTrue(DataManager.getInstance().getDao().updateComment(comment));
@@ -2071,7 +2071,7 @@ public class JPADAOTest extends AbstractDatabaseEnabledTest {
      */
     @Test
     public void addDownloadJob_shouldAddObjectCorrectly() throws Exception {
-        Date now = new Date();
+        LocalDateTime now = LocalDateTime.now();
         PDFDownloadJob job = new PDFDownloadJob("PI_2", "LOG_0002", now, 3600);
         job.generateDownloadIdentifier();
         job.setStatus(JobStatus.WAITING);
@@ -2104,7 +2104,7 @@ public class JPADAOTest extends AbstractDatabaseEnabledTest {
 
         DownloadJob job = DataManager.getInstance().getDao().getDownloadJob(1);
         Assert.assertNotNull(job);
-        Date now = new Date();
+        LocalDateTime now = LocalDateTime.now();
         job.setLastRequested(now);
         job.setStatus(JobStatus.READY);
         job.getObservers().add("newobserver@example.com");

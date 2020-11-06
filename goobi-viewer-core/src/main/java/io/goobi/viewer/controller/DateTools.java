@@ -73,6 +73,8 @@ public class DateTools {
     public static DateTimeFormatter formatterCNDate = DateTimeFormatter.ofPattern("yyyy.MM.dd");
     /** Constant <code>formatterJPDate</code> */
     public static DateTimeFormatter formatterJPDate = DateTimeFormatter.ofPattern("yyyy/MM/dd");;
+    /** Constant <code>formatterISO8601DateTimeNoSeconds</code> */
+    public static DateTimeFormatter formatterISO8601DateTimeNoSeconds = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
     /** Constant <code>formatterDEDateTime</code> */
     public static DateTimeFormatter formatterDEDateTime = DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm:ss");
     /** Constant <code>formatterENDateTime</code> */
@@ -150,18 +152,18 @@ public class DateTools {
 
         return ret;
     }
-    
+
     /**
      * 
      * @param millis
      * @param utc
      * @return
+     * @should create LocalDateTime correctly
      */
     public static LocalDateTime getLocalDateTimeFromMillis(long millis, boolean utc) {
-        Instant instant = Instant.ofEpochMilli(millis);
-        return instant.atZone(utc ? ZoneOffset.UTC : ZoneId.systemDefault()).toLocalDateTime();
+        return Instant.ofEpochMilli(millis).atZone(utc ? ZoneOffset.UTC : ZoneOffset.systemDefault()).toLocalDateTime();
     }
-    
+
     /**
      * 
      * @param ldt
@@ -169,14 +171,14 @@ public class DateTools {
      * @return
      */
     public static Long getMillisFromLocalDateTime(LocalDateTime ldt, boolean utc) {
-        if(ldt == null) {
+        if (ldt == null) {
             return null;
         }
-        
+
         ZonedDateTime zdt = ldt.atZone(utc ? ZoneOffset.UTC : ZoneId.systemDefault());
         return zdt.toInstant().toEpochMilli();
     }
-    
+
     /**
      * 
      * @param dateString
@@ -379,7 +381,7 @@ public class DateTools {
                 return format(convertDateToLocalDateTimeViaInstant(date), formatterENDateTimeNoSeconds, false);
         }
     }
-    
+
     /**
      * Used by old crowdsourcing module versions.
      * 
@@ -410,7 +412,7 @@ public class DateTools {
         if (locale == null) {
             return format(ldt, formatterENDate, false);
         }
-        
+
         switch (locale.getLanguage()) {
             case "de":
                 return format(ldt, formatterDEDate, false);
@@ -418,17 +420,5 @@ public class DateTools {
             default:
                 return format(ldt, formatterENDate, false);
         }
-    }
-
-    /**
-     * 
-     * @param millis
-     * @param utc
-     * @return
-     * @should create LocalDateTime correctly
-     */
-    public static LocalDateTime createLocalDateTimeFromMillis(long millis, boolean utc) {
-        LocalDateTime date = Instant.ofEpochMilli(millis).atZone(utc ? ZoneOffset.UTC : ZoneOffset.systemDefault()).toLocalDateTime();
-        return date;
     }
 }

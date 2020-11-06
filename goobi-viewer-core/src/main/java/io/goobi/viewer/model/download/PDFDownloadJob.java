@@ -18,17 +18,15 @@ package io.goobi.viewer.model.download;
 import java.io.File;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.Date;
+import java.time.LocalDateTime;
 
 import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
 import javax.ws.rs.core.Response;
 
-import org.apache.http.client.HttpClient;
 import org.apache.http.client.ResponseHandler;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
-import org.apache.http.client.methods.HttpPost;
 import org.apache.http.impl.client.BasicResponseHandler;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
@@ -74,10 +72,10 @@ public class PDFDownloadJob extends DownloadJob {
      *
      * @param pi a {@link java.lang.String} object.
      * @param logid a {@link java.lang.String} object.
-     * @param lastRequested a {@link java.util.Date} object.
+     * @param lastRequested a {@link java.time.LocalDateTime} object.
      * @param ttl a long.
      */
-    public PDFDownloadJob(String pi, String logid, Date lastRequested, long ttl) {
+    public PDFDownloadJob(String pi, String logid, LocalDateTime lastRequested, long ttl) {
         type = TYPE;
         this.pi = pi;
         this.logId = logid;
@@ -171,7 +169,7 @@ public class PDFDownloadJob extends DownloadJob {
         String mediaRepository = DataFileTools.getDataRepositoryPathForRecord(pi);
         Path imageFolder = Paths.get(mediaRepository).resolve(DataManager.getInstance().getConfiguration().getMediaFolder()).resolve(pi);
         Path metsPath = Paths.get(mediaRepository).resolve(DataManager.getInstance().getConfiguration().getIndexedMetsFolder()).resolve(pi + ".xml");
-        
+
         logger.debug("Calling taskManager at " + taskManagerUrl);
 
         TaskManagerPDFRequest requestObject = new TaskManagerPDFRequest();
@@ -181,7 +179,7 @@ public class PDFDownloadJob extends DownloadJob {
         requestObject.sourceDir = metsPath.toString();
         try {
             Response response = postJobRequest(taskManagerUrl, requestObject);
-            String entity = (String)response.readEntity(String.class);
+            String entity = response.readEntity(String.class);
             JSONObject entityJson = new JSONObject(entity);
             if (entityJson.has("STATUS") && entityJson.get("STATUS").equals("ERROR")) {
                 if (entityJson.get("ERRORMESSAGE").equals("Job already in DB, not adding it!")) {
