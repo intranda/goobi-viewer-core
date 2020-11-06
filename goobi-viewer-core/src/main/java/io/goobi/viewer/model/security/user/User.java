@@ -70,7 +70,6 @@ import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.messages.ViewerResourceBundle;
 import io.goobi.viewer.model.cms.CMSCategory;
 import io.goobi.viewer.model.cms.CMSPageTemplate;
-import io.goobi.viewer.model.crowdsourcing.campaigns.Campaign;
 import io.goobi.viewer.model.security.ILicensee;
 import io.goobi.viewer.model.security.IPrivilegeHolder;
 import io.goobi.viewer.model.security.License;
@@ -1089,95 +1088,6 @@ public class User implements ILicensee, HttpSessionBindingListener, Serializable
 
         return ret;
     }
-
-    /**
-     * <p>
-     * getAllowedCrowdsourcingCampaigns.
-     * </p>
-     *
-     * @param allCampaigns a {@link java.util.List} object.
-     * @return a {@link java.util.List} object.
-     */
-    public List<Campaign> getAllowedCrowdsourcingCampaigns(List<Campaign> allCampaigns) {
-        if (allCampaigns == null || allCampaigns.isEmpty()) {
-            return allCampaigns;
-        }
-
-        // Full admins get all values
-        if (isSuperuser()) {
-            return allCampaigns;
-        }
-
-        List<Campaign> ret = new ArrayList<>(allCampaigns.size());
-        for (Campaign campaign : allCampaigns) {
-            logger.trace("campaign: {}", campaign.getTitle());
-            switch (campaign.getVisibility()) {
-                case PUBLIC:
-                    ret.add(campaign);
-                    break;
-                case PRIVATE:
-                    // Skip inactive campaigns
-                    if (!campaign.isHasStarted() || campaign.isHasEnded()) {
-                        continue;
-                    }
-                    // Campaign with a set time frame, but no user group
-                    if (campaign.isTimePeriodEnabled() && campaign.getDateStart() != null && campaign.getDateEnd() != null
-                            && !campaign.isLimitToGroup()) {
-                        ret.add(campaign);
-                        continue;
-                    }
-                    // Campaign with user group
-                    if (campaign.isLimitToGroup() && campaign.getUserGroup() != null) {
-                        try {
-                            if (campaign.getUserGroup().getMembersAndOwner().contains(this)) {
-                                ret.add(campaign);
-                            }
-                        } catch (DAOException e) {
-                            logger.error(e.getMessage());
-                            continue;
-                        }
-                    }
-                    break;
-                case RESTRICTED:
-                    // Check user licenses
-                    for (License license : licenses) {
-                        if (!LicenseType.LICENSE_TYPE_CROWDSOURCING_CAMPAIGNS.equals(license.getLicenseType().getName())) {
-                            continue;
-                        }
-                        if (license.getAllowedCrowdsourcingCampaigns().contains(campaign)) {
-                            ret.add(campaign);
-                            break;
-                        }
-                    }
-                    // Check user group licenses
-                    try {
-                        for (UserGroup userGroup : getUserGroupsWithMembership()) {
-                            for (License license : userGroup.getLicenses()) {
-                                if (!LicenseType.LICENSE_TYPE_CROWDSOURCING_CAMPAIGNS.equals(license.getLicenseType().getName())) {
-                                    continue;
-                                }
-                                if (license.getAllowedCrowdsourcingCampaigns().contains(campaign)) {
-                                    ret.add(campaign);
-                                    break;
-                                }
-                            }
-                        }
-                    } catch (DAOException e) {
-                        logger.error(e.getMessage(), e);
-                    }
-                    break;
-                default:
-                    break;
-            }
-        }
-
-        logger.trace("{} allowed campaigns", ret.size());
-        return ret;
-    }
-
-    /***********************************
-     * Getter and Setter
-     ***************************************/
 
     /**
      * <p>

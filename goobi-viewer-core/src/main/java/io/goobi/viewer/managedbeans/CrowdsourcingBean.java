@@ -66,7 +66,10 @@ import io.goobi.viewer.model.crowdsourcing.campaigns.Campaign;
 import io.goobi.viewer.model.crowdsourcing.campaigns.Campaign.CampaignVisibility;
 import io.goobi.viewer.model.crowdsourcing.campaigns.CampaignRecordStatistic.CampaignRecordStatus;
 import io.goobi.viewer.model.crowdsourcing.questions.Question;
+import io.goobi.viewer.model.security.License;
+import io.goobi.viewer.model.security.LicenseType;
 import io.goobi.viewer.model.security.user.User;
+import io.goobi.viewer.model.security.user.UserGroup;
 
 /**
  * <p>
@@ -391,34 +394,11 @@ public class CrowdsourcingBean implements Serializable {
             logger.trace("No campaigns found");
             return Collections.emptyList();
         }
-        // Logged in
-        if (user != null) {
-            return user.getAllowedCrowdsourcingCampaigns(allCampaigns);
-        }
 
-        // Not logged in - only public campaigns
         List<Campaign> ret = new ArrayList<>(allCampaigns.size());
         for (Campaign campaign : allCampaigns) {
-            switch (campaign.getVisibility()) {
-                case PUBLIC:
-                    ret.add(campaign);
-                    break;
-                case PRIVATE:
-                    // Only logged in members may access campaigns limited to a user group
-                    if (campaign.isLimitToGroup()) {
-                        continue;
-                    }
-                    // Private campaigns with a defined time period can be accessed by anyone within said time period
-                    if (campaign.isTimePeriodEnabled()
-                            && campaign.getDateStart() != null
-                            && campaign.getDateEnd() != null
-                            && campaign.isHasStarted()
-                            && !campaign.isHasEnded()) {
-                        ret.add(campaign);
-                    }
-                    break;
-                default:
-                    break;
+            if (isAllowed(user, campaign)) {
+                ret.add(campaign);
             }
         }
 
@@ -431,17 +411,92 @@ public class CrowdsourcingBean implements Serializable {
      *
      * @param user a {@link io.goobi.viewer.model.security.user.User} object.
      * @param campaign a {@link io.goobi.viewer.model.crowdsourcing.campaigns.Campaign} object.
-     * @return a boolean.
+     * @return true if campaign is allowed to the given user; false otherwise
      * @throws io.goobi.viewer.exceptions.DAOException if any.
+     * @should return true for public campaigns
+     * @should return false if private campaign within time period but boolean false
+     * @should return true if private campaign within time period and user null
+     * @should return true if private campaign within time period and user not null
+     * @should return false if private campaign outside time period
+     * @should return false if user group set and user null
+     * @should return false if user group set and user not member
+     * @should return true if user group set and user owner
+     * @should return false if user group set but boolean false
      */
-    public boolean isAllowed(User user, Campaign campaign) throws DAOException {
-        if (CampaignVisibility.PUBLIC.equals(campaign.getVisibility())) {
-            return true;
-        } else if (user != null) {
-            return !user.getAllowedCrowdsourcingCampaigns(Collections.singletonList(campaign)).isEmpty();
-        } else {
+    public static boolean isAllowed(User user, Campaign campaign) throws DAOException {
+        if (campaign == null) {
             return false;
         }
+
+        if (CampaignVisibility.PUBLIC.equals(campaign.getVisibility())) {
+            return true;
+        }
+
+        // Skip inactive campaigns
+        if (!campaign.isHasStarted() || campaign.isHasEnded()) {
+            return false;
+        }
+
+        // Allow campaigns with a set time frame, but no user group
+        if (campaign.isTimePeriodEnabled() && campaign.getDateStart() != null && campaign.getDateEnd() != null
+                && !campaign.isLimitToGroup()) {
+            return true;
+        }
+
+        switch (campaign.getVisibility()) {
+            case PRIVATE:
+                // Only logged in members may access campaigns limited to a user group
+                if (campaign.isLimitToGroup()) {
+                    if (user == null) {
+                        return false;
+                    }
+                    if (user.isSuperuser()) {
+                        return true;
+                    }
+
+                    try {
+                        if (campaign.getUserGroup() != null && campaign.getUserGroup().getMembersAndOwner().contains(user)) {
+                            return true;
+                        }
+                    } catch (DAOException e) {
+                        logger.error(e.getMessage());
+                        return false;
+                    }
+                }
+                break;
+            case RESTRICTED:
+                // Check user licenses
+                if (user != null) {
+                    for (License license : user.getLicenses()) {
+                        if (!LicenseType.LICENSE_TYPE_CROWDSOURCING_CAMPAIGNS.equals(license.getLicenseType().getName())) {
+                            continue;
+                        }
+                        if (license.getAllowedCrowdsourcingCampaigns().contains(campaign)) {
+                            return true;
+                        }
+                    }
+                    // Check user group licenses
+                    try {
+                        for (UserGroup userGroup : user.getUserGroupsWithMembership()) {
+                            for (License license : userGroup.getLicenses()) {
+                                if (!LicenseType.LICENSE_TYPE_CROWDSOURCING_CAMPAIGNS.equals(license.getLicenseType().getName())) {
+                                    continue;
+                                }
+                                if (license.getAllowedCrowdsourcingCampaigns().contains(campaign)) {
+                                    return true;
+                                }
+                            }
+                        }
+                    } catch (DAOException e) {
+                        logger.error(e.getMessage(), e);
+                    }
+                }
+                break;
+            default:
+                break;
+        }
+
+        return false;
     }
 
     /**
@@ -576,6 +631,7 @@ public class CrowdsourcingBean implements Serializable {
      * @param campaign
      * @return
      */
+    @Deprecated
     private boolean isSelected(Campaign campaign) {
         return campaign != null && this.selectedCampaign != null && ObjectUtils.equals(campaign.getId(), this.selectedCampaign.getId());
     }
@@ -918,13 +974,9 @@ public class CrowdsourcingBean implements Serializable {
         }
         logger.trace("Found {} total campaigns for {}", allActiveCampaigns.size(), pi);
 
-        if (userBean.isLoggedIn()) {
-            return userBean.getUser().getAllowedCrowdsourcingCampaigns(allActiveCampaigns);
-        }
-
         List<Campaign> ret = new ArrayList<>(allActiveCampaigns.size());
         for (Campaign campaign : allActiveCampaigns) {
-            if (CampaignVisibility.PUBLIC.equals(campaign.getVisibility())) {
+            if (isAllowed(userBean.getUser(), campaign)) {
                 ret.add(campaign);
             }
         }
