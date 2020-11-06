@@ -75,6 +75,7 @@ addMessage() {
         this.opts.item.addLogMessage(message);
 //         console.log("added message", message);
     }
+    
 }
 
 isCurrentUser(user) {
@@ -86,20 +87,22 @@ scrollToBottom() {
 }
 
 expandLog() {
-    $(this.refs.expand).fadeOut({
+    $(this.refs.expand).hide({
         complete: () => {
-        	$(this.refs.compress).fadeIn();
-    	}
+        	$(this.refs.compress).show();
+    	},
+        duration: 0
     });
     $('.crowdsourcing-annotations__content-right').animate({scrollTop: '+=150px'}, 600);
-	$(this.refs.innerWrapper).css({"overflow-y": "auto", "max-height": "500px"});
+	$(this.refs.innerWrapper).css({"overflow-y": "auto", "max-height": "500px", "min-height": "300px"});
 }
 
 compressLog() {
-    $(this.refs.compress).fadeOut({
+    $(this.refs.compress).hide({
         complete: () => {
-        	$(this.refs.expand).fadeIn();
-    	}
+        	$(this.refs.expand).show();
+    	},
+        duration: 0
     });
     $('.crowdsourcing-annotations__content-right').animate({scrollTop: '+=150px'}, 600);
 	$(this.refs.innerWrapper).css({"overflow-y": "hidden", "max-height": "350px"});
@@ -110,4 +113,3 @@ compressLog() {
 
 
 </campaignItemLog>
-
