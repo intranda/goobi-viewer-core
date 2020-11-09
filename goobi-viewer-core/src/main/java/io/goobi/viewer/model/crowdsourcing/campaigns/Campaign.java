@@ -1523,7 +1523,7 @@ public class Campaign implements CMSMediaHolder, ILicenseType, IPolyglott {
     public void deleteLogMessage(Long messageId) {
         if(messageId != null) {
             Optional<CampaignLogMessage> message = this.logMessages.stream().filter(m -> messageId.equals(m.getId())).findAny();
-            message.ifPresent(m -> this.logMessages.remove(message));
+            message.ifPresent(this.logMessages::remove);
         }
         
     }
