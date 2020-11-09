@@ -423,7 +423,7 @@
 													</button>
 												</div>
 
-							                    <div class="col-11 admin__form-input">
+							                    <div class="col-12 admin__form-input">
 							                        <h:selectOneMenu id="adminCrowdVisibleStatus" value="#{crowdsourcingBean.selectedCampaign.visibility}" styleClass="form-control">
 							                            <f:selectItems itemLabel="#{msg['admin__crowdsourcing_campaign_visibility_' += val]}"
 							                                var="val" value="#{crowdsourcingBean.selectedCampaign.campaignVisibilityValues}"/> 
@@ -452,7 +452,7 @@
 														</div>
 
 								                    <!-- TOGGLE GROUP SELECTION SWITCH -->
-									                    <div class="col-11 admin__form-input">
+									                    <div class="col-12 admin__form-input">
 	                                                        <div class="admin__radio-switch">
 	                                                            <h:selectOneRadio group="limitToGroupSelection"
 	                                                                value="#{crowdsourcingBean.selectedCampaign.limitToGroup}" immediate="true">
@@ -469,7 +469,7 @@
 									                        <span class="admin__form-help-text">#{msg.admin__help_crowdsourcing_campaign_limit_to_group}</span>
 								                   		</div>
 													
-													<h:panelGroup id="selectUserGroupGroup" styleClass="col-11 mt-1">
+													<h:panelGroup id="selectUserGroupGroup" styleClass="col-12 mt-1">
                                                         <h:selectOneMenu rendered="#{crowdsourcingBean.selectedCampaign.limitToGroup}"
                                                             value="#{crowdsourcingBean.selectedCampaign.userGroup}"
                                                             styleClass="form-control mt-2"
@@ -512,7 +512,7 @@
 	                                                    </div>
 	                                                    
 	                                                    <!-- TOGGLE TIME PERIOD SWITCH -->
-	                                                    <div class="col-11 admin__form-input">
+	                                                    <div class="col-12 admin__form-input">
 	                                                        <div class="admin__radio-switch">
 	                                                            <h:selectOneRadio group="timePeriodEnabledSelection"
 	                                                                value="#{crowdsourcingBean.selectedCampaign.timePeriodEnabled}" immediate="true">
