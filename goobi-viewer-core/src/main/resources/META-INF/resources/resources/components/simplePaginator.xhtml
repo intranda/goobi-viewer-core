@@ -70,12 +70,13 @@
 
                         <h:panelGroup rendered="#{cc.attrs.itemActive gt 3}">
                             <li>
-                                <a href="#{cc.attrs.urlPrefix}#{cc.attrs.itemActive -  2}/#{cc.attrs.urlSuffix}">#{cc.attrs.itemActive - 2}</a>
+                                <a href="#{cc.attrs.urlPrefix}#{cc.attrs.itemActive -  2}/#{cc.attrs.urlSuffix}" aria-label="#{msg.aria__label_pagination_goto} #{-cc.attrs.itemActive - 2}">{cc.attrs.itemActive - 2}</a>
                             </li>
                         </h:panelGroup>
 
                         <li>
-                            <a href="#{cc.attrs.urlPrefix}#{cc.attrs.itemActive - 1}/#{cc.attrs.urlSuffix}">#{cc.attrs.itemActive - 1}</a>
+                            <a href="#{cc.attrs.urlPrefix}#{cc.attrs.itemActive - 1}/#{cc.attrs.urlSuffix}" aria-label="#{msg.aria__label_pagination_goto} #{cc.attrs.itemActive - 1}">#{cc.attrs.itemActive - 1}</a>
+                            
                         </li>
                     </h:panelGroup>
                 </h:panelGroup>
@@ -88,12 +89,12 @@
                 <h:panelGroup rendered="#{cc.attrs.itemActive != cc.attrs.itemCount}">
                     <h:panelGroup rendered="#{cc.attrs.itemActive lt (cc.attrs.itemCount)}">
                         <li>
-                            <a href="#{cc.attrs.urlPrefix}#{cc.attrs.itemActive + 1}/#{cc.attrs.urlSuffix}">#{cc.attrs.itemActive + 1}</a>
+                            <a href="#{cc.attrs.urlPrefix}#{cc.attrs.itemActive + 1}/#{cc.attrs.urlSuffix}" aria-label="#{msg.aria__label_pagination_goto} #{cc.attrs.itemActive + 1}">#{cc.attrs.itemActive + 1}</a>
                         </li>
 
                         <h:panelGroup rendered="#{cc.attrs.itemActive lt (cc.attrs.itemCount - 1)}">
                             <li>
-                                <a href="#{cc.attrs.urlPrefix}#{cc.attrs.itemActive + 2}/#{cc.attrs.urlSuffix}">#{cc.attrs.itemActive + 2}</a>
+                                <a href="#{cc.attrs.urlPrefix}#{cc.attrs.itemActive + 2}/#{cc.attrs.urlSuffix}" aria-label="#{msg.aria__label_pagination_goto} #{cc.attrs.itemActive + 2}">#{cc.attrs.itemActive + 2}</a>
                             </li>
                         </h:panelGroup>
 
