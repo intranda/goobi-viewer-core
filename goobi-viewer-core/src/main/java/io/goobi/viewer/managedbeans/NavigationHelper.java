@@ -734,7 +734,8 @@ public class NavigationHelper implements Serializable {
      * @return a {@link java.lang.String} object.
      */
     public String getApplicationUrl() {
-        return BeanUtils.getServletPathWithHostAsUrlFromJsfContext() + "/";
+        String applicationUrl = BeanUtils.getServletPathWithHostAsUrlFromJsfContext() + "/";
+        return applicationUrl;
     }
 
     /**

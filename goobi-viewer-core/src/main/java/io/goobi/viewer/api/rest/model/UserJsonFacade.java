@@ -57,7 +57,7 @@ public class UserJsonFacade {
         this.score = user.getScore();
         this.anonymous = user.isAnonymous();
         this.superuser = user.isSuperuser();
-        this.avatar = absolutizeAvatarUrl(user.getAvatarUrl(), request);
+        this.avatar = user.getAvatarUrl(request);
     }
     
     public UserJsonFacade(User user) {
@@ -120,17 +120,26 @@ public class UserJsonFacade {
      * @param applicationUrl
      */
     private String absolutizeAvatarUrl(String avatarUrl, HttpServletRequest request) {
-        if (request != null && StringUtils.isNotBlank(avatarUrl)) {
-            try {
-                URI uri = new URI(avatarUrl);
-                if (!uri.isAbsolute()) {
-                    uri = new URI(request.getRequestURL().toString()).resolve(request.getContextPath() +  avatarUrl);
-                    return uri.toString();
-                }
-            } catch (URISyntaxException e) {
-                //do nothing
-            }
+      try {
+        URI uri = new URI(avatarUrl);
+        if(!uri.isAbsolute() && !avatarUrl.startsWith("//")); {
+            
         }
+    } catch (URISyntaxException e) {
+        //do nothing
+    }
+
+//        if (request != null && StringUtils.isNotBlank(avatarUrl)) {
+//            try {
+//                URI uri = new URI(avatarUrl);
+//                if (!uri.isAbsolute()) {
+//                    uri = new URI(request.getRequestURL().toString()).resolve(request.getContextPath() +  avatarUrl);
+//                    return uri.toString();
+//                }
+//            } catch (URISyntaxException e) {
+//                //do nothing
+//            }
+//        }
         return avatarUrl;
     }
 

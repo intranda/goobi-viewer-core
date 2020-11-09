@@ -43,6 +43,7 @@ import javax.persistence.JoinColumn;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Transient;
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSessionBindingEvent;
 import javax.servlet.http.HttpSessionBindingListener;
 
@@ -666,35 +667,60 @@ public class User implements ILicensee, HttpSessionBindingListener, Serializable
 
         return false;
     }
-
+    
     /**
-     * Used by the crowdsourcing module.
-     *
-     * @return a {@link java.lang.String} object.
+     * get the url for the avatar. If useGravatar is active, return {@link #getGravatarUrl(int size)}. 
+     * Otherwise build a resource url to 'resources/images/backend/thumbnail_goobi_person.png' 
+     * from the request or the JSF-Context if no request is provided
+     * 
+     * @param size
+     * @param request
+     * @return
      */
-    public String getAvatarUrl() {
+    public String getAvatarUrl(int size, HttpServletRequest request) {
         if (useGravatar) {
-            return getGravatarUrl(AVATAR_DEFAULT_SIZE);
+            return getGravatarUrl(size);
         }
-        return Optional.ofNullable(BeanUtils.getNavigationHelper())
-                .map(NavigationHelper::getApplicationUrl)
-                .orElse("/") + "resources/images/backend/thumbnail_goobi_person.png";
+
+        if(request != null) {
+            String contextPath = request.getContextPath();
+            return contextPath + "/resources/images/backend/thumbnail_goobi_person.png";
+        } else {            
+            return Optional.ofNullable(BeanUtils.getNavigationHelper())
+                    .map(NavigationHelper::getApplicationUrl)
+                    .orElse("/") + "resources/images/backend/thumbnail_goobi_person.png";
+        }
+           
     }
 
     /**
      * Used by the crowdsourcing module.
      *
+     * @return {@link #getAvatarUrl(int size, HttpServletRequest request)} with size={@link #AVATAR_DEFAULT_SIZE} and request=null
+     */
+    public String getAvatarUrl() {
+        return getAvatarUrl(AVATAR_DEFAULT_SIZE, null);
+    }
+    
+    /**
+     * 
+     * @param request
+     * @return {@link #getAvatarUrl(int size, HttpServletRequest request)} with size={@link #AVATAR_DEFAULT_SIZE}
+     */
+    public String getAvatarUrl( HttpServletRequest request) {
+        return getAvatarUrl(AVATAR_DEFAULT_SIZE, request);
+    }
+
+
+    
+    /**
+     * Used by the crowdsourcing module.
+     *
      * @param size a int.
-     * @return a {@link java.lang.String} object.
+     * @return {@link #getAvatarUrl(int size, HttpServletRequest request)} with request=null
      */
     public String getAvatarUrl(int size) {
-        if (useGravatar) {
-            return getGravatarUrl(size);
-        }
-
-        return Optional.ofNullable(BeanUtils.getNavigationHelper())
-                .map(NavigationHelper::getApplicationUrl)
-                .orElse("/") + "resources/images/backend/thumbnail_goobi_person.png";
+        return getAvatarUrl(size, null);
     }
 
     /**
