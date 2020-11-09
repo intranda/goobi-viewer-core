@@ -1339,11 +1339,14 @@ this.expanded = false;
 
 this.on("mount", function() {
 
-    $(this.refs.expand).hide();
-
     if (sessionStorage.getItem("logCompressed") === 'logIsCompressed') {
     	$(this.refs.toggleBox).hide();
+        $(this.refs.compress).hide();
     }
+    else {
+        $(this.refs.expand).hide();
+    }
+
 });
 
 this.on("updated", function() {

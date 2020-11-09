@@ -45,12 +45,17 @@ this.messages = this.opts.item.log;
 this.expanded = false;
 
 this.on("mount", function() {
-	//add any initialization here
-    $(this.refs.expand).hide();
+//add any initialization here
+
 	// hide log on page load if user compressed it before
     if (sessionStorage.getItem("logCompressed") === 'logIsCompressed') {
     	$(this.refs.toggleBox).hide();
+        $(this.refs.compress).hide();
+    } 
+    else {
+        $(this.refs.expand).hide();
     }
+
 });
 
 this.on("updated", function() {
