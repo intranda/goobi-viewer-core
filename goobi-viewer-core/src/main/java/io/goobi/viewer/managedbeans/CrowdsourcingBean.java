@@ -62,6 +62,7 @@ import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.messages.Messages;
 import io.goobi.viewer.messages.ViewerResourceBundle;
 import io.goobi.viewer.model.annotation.PersistentAnnotation;
+import io.goobi.viewer.model.crowdsourcing.CrowdsourcingTools;
 import io.goobi.viewer.model.crowdsourcing.campaigns.Campaign;
 import io.goobi.viewer.model.crowdsourcing.campaigns.Campaign.CampaignVisibility;
 import io.goobi.viewer.model.crowdsourcing.campaigns.CampaignRecordStatistic.CampaignRecordStatus;
@@ -426,17 +427,7 @@ public class CrowdsourcingBean implements Serializable {
      * @throws DAOException
      */
     public boolean isUserOwnsAnyCampaigns(User user) throws DAOException {
-        if (user == null) {
-            return false;
-        }
-
-        for (Campaign campaign : getAllCampaigns()) {
-            if (campaign.isLimitToGroup() && campaign.getUserGroup() != null && user.equals(campaign.getUserGroup().getOwner())) {
-                return true;
-            }
-        }
-
-        return false;
+        return CrowdsourcingTools.isUserOwnsAnyCampaigns(user);
     }
 
     /**

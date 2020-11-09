@@ -35,6 +35,7 @@ import com.ocpsoft.pretty.PrettyContext;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
+import io.goobi.viewer.model.crowdsourcing.CrowdsourcingTools;
 import io.goobi.viewer.model.search.SearchHelper;
 import io.goobi.viewer.model.security.IPrivilegeHolder;
 import io.goobi.viewer.model.security.user.User;
@@ -103,7 +104,8 @@ public class LoginFilter implements Filter {
                     ServletUtils.getServletPathWithHostAsUrlFromRequest(httpRequest) + "/login/?from=" + URLEncoder.encode(fullRequestURI, "UTF-8"));
         } else if (httpRequest.getRequestURI().contains("/admin")) {
             try {
-                if (user.isSuperuser() || user.isHasCmsPrivilege(IPrivilegeHolder.PRIV_CMS_PAGES)) {
+                if (user.isSuperuser() || user.isHasCmsPrivilege(IPrivilegeHolder.PRIV_CMS_PAGES)
+                        || CrowdsourcingTools.isUserOwnsAnyCampaigns(user)) {
                     chain.doFilter(request, response); // continue
                     return;
                 }
