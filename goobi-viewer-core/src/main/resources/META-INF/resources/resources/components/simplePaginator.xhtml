@@ -70,7 +70,7 @@
 
                         <h:panelGroup rendered="#{cc.attrs.itemActive gt 3}">
                             <li>
-                                <a href="#{cc.attrs.urlPrefix}#{cc.attrs.itemActive -  2}/#{cc.attrs.urlSuffix}" aria-label="#{msg.aria__label_pagination_goto} #{-cc.attrs.itemActive - 2}">{cc.attrs.itemActive - 2}</a>
+                                <a href="#{cc.attrs.urlPrefix}#{cc.attrs.itemActive -  2}/#{cc.attrs.urlSuffix}" aria-label="#{msg.aria__label_pagination_goto} #{cc.attrs.itemActive - 2}">#{cc.attrs.itemActive - 2}</a>
                             </li>
                         </h:panelGroup>
 

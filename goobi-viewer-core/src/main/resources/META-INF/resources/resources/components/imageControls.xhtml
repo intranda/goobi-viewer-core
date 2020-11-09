@@ -149,7 +149,8 @@
 	                                        <h:selectOneMenu rendered="#{navigationHelper.currentPage == 'fulltext'}"
 	                                            onchange="location.href='#{activeDocumentBean.getPageUrl(navigationHelper.currentView)}' + $(this).val(); + '/';"
 	                                            value="#{activeDocumentBean.viewManager.dropdownSelected}">
-	                                            <f:selectItems value="#{activeDocumentBean.viewManager.dropdownFulltext}" />
+                                                <f:selectItems value="#{activeDocumentBean.viewManager.dropdownFulltext}" />
+                                                <f:passThroughAttribute name="aria-label" value="#{msg.aria_label__select_page}"/>
 	                                        </h:selectOneMenu>
 	                                </div>
 	                            </li>

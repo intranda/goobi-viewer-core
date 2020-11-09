@@ -26,11 +26,11 @@
             <viewerComponent:imageControls tooltipPlacement="bottom"/>
             
             <!-- TOGGLE THUMBNAILS -->
-            <nav class="fullscreen__header-controls__options">
+            <div class="fullscreen__header-controls__options">
 	            <ui:fragment rendered="#{activeDocumentBean.viewManager.imagesCount gt 1}">
-	                <button class="btn btn--clean" title="#{msg.fullscreen_showThumbs}" data-show="thumbs" data-toggle="tooltip" data-placement="bottom"></button>
+	                <button class="btn btn--clean" title="#{msg.fullscreen_showThumbs}" data-show="thumbs" data-toggle="tooltip" data-placement="bottom" aria-label="#{msg.fullscreen_showThumbs}"></button>
 	            </ui:fragment>
-            </nav>
+            </div>
                             
         </div>
         
@@ -39,6 +39,7 @@
             <h:outputLink value="#{request.contextPath}#{navigationHelper.exitUrl}" title="#{msg.fullscreen_exit}">
                 <f:passThroughAttribute name="data-toggle" value="tooltip" />
                 <f:passThroughAttribute name="data-placement" value="bottom" />
+                <f:passThroughAttribute name="aria-label" value="#{msg.fullscreen_exit}" />
             </h:outputLink>
         </div>
     </header>
