@@ -5,13 +5,13 @@ import java.time.LocalDateTime;
 import org.junit.Assert;
 import org.junit.Test;
 
-import io.goobi.viewer.AbstractTest;
+import io.goobi.viewer.AbstractDatabaseEnabledTest;
 import io.goobi.viewer.model.crowdsourcing.campaigns.Campaign.CampaignVisibility;
 import io.goobi.viewer.model.crowdsourcing.campaigns.CampaignRecordStatistic.CampaignRecordStatus;
 import io.goobi.viewer.model.security.user.User;
 import io.goobi.viewer.model.security.user.UserGroup;
 
-public class CampaignTest extends AbstractTest {
+public class CampaignTest extends AbstractDatabaseEnabledTest {
 
     /**
      * @see Campaign#getDaysLeft()
