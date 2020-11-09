@@ -127,7 +127,8 @@
                                     </c:forEach>
                                     
                                     <!-- ADMINISTRATION -->
-                                    <ui:fragment rendered="#{userBean.admin or userBean.user.isHasCmsPrivilege('CMS_PAGES')}">
+                                    <ui:fragment
+                                        rendered="#{userBean.admin or userBean.user.isHasCmsPrivilege('CMS_PAGES') or crowdsourcingBean.isUserOwnsAnyCampaigns(userBean.user)}">
                                         <li>
                                             <div class="login-navigation__user-dropdown-item">
                                                 <div class="login-navigation__user-dropdown-item-icon">
