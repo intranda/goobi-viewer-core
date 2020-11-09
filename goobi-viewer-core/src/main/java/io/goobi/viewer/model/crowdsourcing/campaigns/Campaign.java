@@ -564,6 +564,9 @@ public class Campaign implements CMSMediaHolder, ILicenseType, IPolyglott {
         if (!isHasStarted() || isHasEnded()) {
             return false;
         }
+        if (user.isSuperuser()) {
+            return true;
+        }
         if (CampaignVisibility.PRIVATE.equals(visibility) && isGroupLimitActive()) {
             return userGroup.getMembersAndOwner().contains(user);
         }
