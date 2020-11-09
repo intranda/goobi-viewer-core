@@ -9,6 +9,7 @@
     	<composite:attribute name="mapId" required="false" default="geomap" /><composite:attribute name="linkTarget" required="false" default="_self" />
     	<composite:attribute name="linkToSearch" required="false" default="true" />
     	<composite:attribute name="linkTarget" required="false" default="_self" />
+    	<composite:attribute name="showAnnotations" type="java.lang.Boolean" required="false" default="false"/>
     </composite:interface>
     
 	<composite:implementation>
@@ -46,6 +47,24 @@
             	let features = #{cc.attrs.geoMap.featuresAsString};
        			geoMap.setMarkerIcon(#{cc.attrs.geoMap.markerAsJSON});
             	geoMap.init(view, features);
+            	
+            	if(#{cc.attrs.showAnnotations}) {            	    
+            	 $("[data-geomap-feature]").each((index, ele) => {
+                     let featureString = $(ele).attr("data-geomap-feature");
+                     if(featureString) {
+                         let feature = JSON.parse(featureString);
+                         console.log("Add feature from annotations ", feature);
+                         geoMap.addMarker(feature);
+                         $(ele).parent().on("mouseenter",  () => {
+                             geoMap.highlightMarker(feature);
+                         });
+                         $(ele).parent().on("mouseleave",  () => {
+                             geoMap.highlightMarker(null);
+                         });
+                     }
+                 });
+                 geoMap.setView(geoMap.getViewAroundFeatures());
+            	}
             })
 		    
 		})();

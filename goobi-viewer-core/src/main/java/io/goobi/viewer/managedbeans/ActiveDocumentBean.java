@@ -112,6 +112,8 @@ public class ActiveDocumentBean implements Serializable {
     private ImageDeliveryBean imageDelivery;
     @Inject
     private BreadcrumbBean breadcrumbBean;
+    @Inject
+    private ContentBean contentBean;
 
     /** URL parameter 'action'. */
     private String action = "";
@@ -1892,10 +1894,12 @@ public class ActiveDocumentBean implements Serializable {
             map.setType(GeoMapType.SOLR_QUERY);
             map.setShowPopover(false);
             map.setMarkerTitleField(null);
+            map.setMarker("default");
             map.setSolrQuery(String.format("PI:%s OR PI_TOPSTRUCT:%s", getPersistentIdentifier(), getPersistentIdentifier()));
-            if (!map.getFeaturesAsString().equals("[]")) {
+            
+//            if (!map.getFeaturesAsString().equals("[]")) {
                 widget.setGeoMap(map);
-            }
+//            }
         } catch (IndexUnreachableException e) {
             logger.error("Unable to load geomap", e);
         }

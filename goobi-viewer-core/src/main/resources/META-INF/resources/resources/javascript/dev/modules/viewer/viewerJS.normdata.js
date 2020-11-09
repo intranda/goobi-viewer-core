@@ -41,7 +41,8 @@ var viewerJS = ( function( viewer ) {
         id: 0,
         path: null,
         lang: {},
-        elemWrapper: null
+        elemWrapper: null,
+        linkSelector: ".normdataLink"
     };
     
     viewer.normdata = {
@@ -84,7 +85,7 @@ var viewerJS = ( function( viewer ) {
             $( '.closeAllPopovers' ).hide();
             
             // first level click
-            $( '.normdataLink' ).on( 'click', function() {
+            $( _defaults.linkSelector ).on( 'click', function() {
             	_$this = $( this );
                 
                 _$this.off( 'focus' );
@@ -335,7 +336,7 @@ var viewerJS = ( function( viewer ) {
                 } );
                 
                 // set trigger to enable
-                $( '.normdataLink' ).removeAttr( 'disabled' ).removeClass( 'disabled' );
+                $( _defaults.linkSelector ).removeAttr( 'disabled' ).removeClass( 'disabled' );
             } );
         }
         else {
