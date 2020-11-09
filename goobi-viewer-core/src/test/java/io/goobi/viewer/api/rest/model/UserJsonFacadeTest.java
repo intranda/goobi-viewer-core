@@ -66,8 +66,7 @@ public class UserJsonFacadeTest {
         facade = new UserJsonFacade(user, request);
         avatarUrl = facade.avatar;
         avatarURI = URI.create(avatarUrl);
-        Assert.assertTrue(avatarURI.isAbsolute());
-        Assert.assertTrue(avatarUrl.startsWith("https://viewer.goobi.io/viewer/resources"));
+        Assert.assertTrue(avatarUrl.startsWith("/viewer/resources"));
         
     }
 
