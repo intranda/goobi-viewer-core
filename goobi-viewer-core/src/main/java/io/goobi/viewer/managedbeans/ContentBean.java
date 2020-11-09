@@ -41,6 +41,7 @@ import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.model.crowdsourcing.DisplayUserGeneratedContent;
+import io.goobi.viewer.model.crowdsourcing.DisplayUserGeneratedContent.ContentType;
 import io.goobi.viewer.model.viewer.PhysicalElement;
 
 /**
@@ -190,5 +191,16 @@ public class ContentBean implements Serializable {
         .map(URI::toString)
         .map(BeanUtils::escapeCriticalUrlChracters)
         .orElse("");
+    }
+
+    /**
+     * @param persistentIdentifier
+     * @return
+     * @throws IndexUnreachableException 
+     * @throws PresentationException 
+     */
+    public boolean hasGeoCoordinateAnnotations(String persistentIdentifier) throws PresentationException, IndexUnreachableException {
+        return getUserGeneratedContentsForDisplay(persistentIdentifier)
+        .stream().anyMatch(ugc -> ContentType.GEOLOCATION.equals(ugc.getType()));
     }
 }
