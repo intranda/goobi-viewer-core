@@ -408,7 +408,7 @@
 											<h3>#{msg.admin__crowdsourcing_campaign_settings}</h3>
 											
 											<!-- VISIBILITY STATUS -->
-											<div class="form-row form-group">
+											<div class="form-row form-group crowdsourcing-annotations__sidebar-visibility">
 
 												<div class="col-11 control-label admin__form-label">
 													<label for="adminCrowdVisibleStatus">
@@ -437,7 +437,7 @@
 											
 											    <!-- GROUP SELECTION GROUP -->
 												<ui:fragment rendered="#{crowdsourcingBean.selectedCampaign.visibility == 'PRIVATE' and userBean.user.superuser}">
-													<div class="form-group form-row">
+													<div class="form-group form-row admin__sidebar-divider-top">
 														<div class="col-11 control-label admin__form-label">
 															<label for="adminCrowdVisibleFor">
 																#{msg.admin__crowdsourcing_campaign_limit_to_group}:
@@ -483,7 +483,7 @@
                                                         <h:panelGroup id="campaignOwnerGroup">
                                                             <ui:fragment
                                                                 rendered="#{crowdsourcingBean.selectedCampaign.limitToGroup and crowdsourcingBean.selectedCampaign.userGroup != null}">
-	                                                            <div class="mt-1 d-flex justify-content-start">
+	                                                            <div class="mt-1 d-flex justify-content-start crowdsourcing-annotations__sidebar-owner">
 		                                                            <label for="campaignOwnerName" class="pr-1 mb-0">#{msg.owner}:</label>
 		                                                            <h:outputLink id="campaignOwnerName"
 		                                                                value="#{navigationHelper.applicationUrl}admin/users/edit/#{crowdsourcingBean.selectedCampaign.userGroup.owner.id}/">
@@ -498,7 +498,7 @@
 											
                                                 <!-- TIME PERIOD GROUP -->
                                                 <ui:fragment rendered="#{crowdsourcingBean.selectedCampaign.visibility == 'PRIVATE'}">
-                                                	<div class="form-group form-row">
+                                                	<div class="form-group form-row admin__sidebar-divider-top">
 	                                                    <div class="col-11 control-label admin__form-label">
 	                                                        <label for="adminCrowdVisibleFor">
 	                                                            #{msg.admin__crowdsourcing_campaign_time_pediod_enabled}:
@@ -537,7 +537,7 @@
 	                                                            <div class="col-4 control-label admin__form-label">
 	                                                                <label for="pickerDateStart">#{msg.admin__crowdsourcing_campaign_duration_from}:</label>
 	                                                            </div>
-	                                                            <div class="col-7 control-label admin__form-label">
+	                                                            <div class="col-8 control-label admin__form-label">
 	                                                                <p:datePicker id="pickerDateStart"
 	                                                                    value="#{crowdsourcingBean.selectedCampaign.dateOnlyStart}"
 	                                                                    pattern="#{navigationHelper.datePattern}" 
@@ -548,7 +548,7 @@
 	                                                            <div class="col-4 control-label admin__form-label">
 	                                                                <label for="pickerDateEnd">#{msg.admin__crowdsourcing_campaign_duration_until}:</label>
 																</div>
-																<div class="col-7 control-label admin__form-label">
+																<div class="col-8 control-label admin__form-label">
 	                                                                <p:datePicker id="pickerDateEnd"
 	                                                                    value="#{crowdsourcingBean.selectedCampaign.dateOnlyEnd}"
 	                                                                    pattern="#{navigationHelper.datePattern}" 
@@ -563,26 +563,30 @@
 					                   	</div>
 					                   	
 					                   	<!-- ACCESS LICENCE WIDGET -->
-										<div class="admin__default-block">
-											<h3>#{msg.access_licence}</h3>
-											<div class="admin__form-help-text in mb-2">
-											#{msg.admin__crowdsourcing_campaign_access_licence__help}
-											</div>
-											<div class="mb-1">
-												<label>#{msg.admin__crowdsourcing_campaign_set_write_access_licence}: </label>
-												<viewerComponent:toggleSwitch name="toggleAnnotationAccess" value="#{crowdsourcingBean.selectedCampaign.restrictAnnotationAccess}"/>
+										<div class="admin__default-block crowdsourcing-annotations__access-licence">
+											<div class="crowdsourcing-annotations__sidebar-access-licence">
+												<h3>#{msg.access_licence}</h3>
+												<div class="admin__form-help-text in mb-2">
+												#{msg.admin__crowdsourcing_campaign_access_licence__help}
+												</div>
+												<div class="mb-1 d-flex justify-content-between">
+													<label>#{msg.admin__crowdsourcing_campaign_set_write_access_licence}: </label>
+													<viewerComponent:toggleSwitch name="toggleAnnotationAccess" value="#{crowdsourcingBean.selectedCampaign.restrictAnnotationAccess}"/>
+												</div>
 											</div>
 										</div>
 
 					                   	<!-- ACTIVATE LOG WIDGET -->
 										<div class="admin__default-block">
-											<h3>#{msg.log}</h3>
-											<div class="admin__form-help-text in mb-2">
-											#{msg.admin__crowdsourcing_campaign_show_log__help}
-											</div>
-											<div class="mb-1">
-												<label>#{msg.admin__crowdsourcing_campaign_show_log}: </label>
-												<viewerComponent:toggleSwitch value="#{crowdsourcingBean.selectedCampaign.showLog}" />
+											<div class="crowdsourcing-annotations__sidebar-log">
+												<h3>#{msg.log}</h3>
+												<div class="admin__form-help-text in mb-2">
+												#{msg.admin__crowdsourcing_campaign_show_log__help}
+												</div>
+												<div class="mb-1 d-flex justify-content-between">
+													<label>#{msg.admin__crowdsourcing_campaign_show_log}: </label>
+													<viewerComponent:toggleSwitch value="#{crowdsourcingBean.selectedCampaign.showLog}" />
+												</div>
 											</div>
 										</div>
 

@@ -330,7 +330,7 @@ public class User implements ILicensee, HttpSessionBindingListener, Serializable
                 // TODO why not do this check right at the beginning?
                 if (license.getPrivileges().contains(privilegeName) || license.getLicenseType().getPrivileges().contains(privilegeName)) {
                     if (StringUtils.isEmpty(license.getConditions())) {
-                        logger.debug("Permission found for user: {} ", id);
+                        // logger.trace("Permission found for user: {} ", id);
                         return true;
                     } else if (StringUtils.isNotEmpty(pi)) {
                         // If PI and Solr condition subquery are present, check via Solr

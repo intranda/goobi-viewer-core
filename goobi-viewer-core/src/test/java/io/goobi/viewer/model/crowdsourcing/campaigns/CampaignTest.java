@@ -5,9 +5,13 @@ import java.time.LocalDateTime;
 import org.junit.Assert;
 import org.junit.Test;
 
-import io.goobi.viewer.AbstractTest;
+import io.goobi.viewer.AbstractDatabaseEnabledTest;
+import io.goobi.viewer.model.crowdsourcing.campaigns.Campaign.CampaignVisibility;
+import io.goobi.viewer.model.crowdsourcing.campaigns.CampaignRecordStatistic.CampaignRecordStatus;
+import io.goobi.viewer.model.security.user.User;
+import io.goobi.viewer.model.security.user.UserGroup;
 
-public class CampaignTest extends AbstractTest {
+public class CampaignTest extends AbstractDatabaseEnabledTest {
 
     /**
      * @see Campaign#getDaysLeft()
@@ -177,5 +181,143 @@ public class CampaignTest extends AbstractTest {
         campaign.setDateStart(later);
         campaign.setTimePeriodEnabled(true);
         Assert.assertTrue(campaign.isHasStarted());
+    }
+
+    /**
+     * @see Campaign#isUserAllowedAction(User,CampaignRecordStatus)
+     * @verifies return true if campaign public
+     */
+    @Test
+    public void isUserAllowedAction_shouldReturnTrueIfCampaignPublic() throws Exception {
+        User user = new User();
+        Campaign campaign = new Campaign();
+        campaign.setVisibility(CampaignVisibility.PUBLIC);
+        Assert.assertTrue(campaign.isUserAllowedAction(null, CampaignRecordStatus.ANNOTATE));
+    }
+
+    /**
+     * @see Campaign#isUserAllowedAction(User,CampaignRecordStatus)
+     * @verifies return false if outside time period
+     */
+    @Test
+    public void isUserAllowedAction_shouldReturnFalseIfOutsideTimePeriod() throws Exception {
+        User user = new User();
+        Campaign campaign = new Campaign();
+        campaign.setLimitToGroup(true);
+        campaign.setUserGroup(new UserGroup());
+        campaign.getUserGroup().setOwner(user);
+        campaign.setTimePeriodEnabled(true);
+        campaign.setDateStart(LocalDateTime.of(2000, 01, 01, 0, 0));
+        campaign.setDateEnd(LocalDateTime.of(2001, 01, 01, 0, 0));
+        Assert.assertFalse(campaign.isUserAllowedAction(user, CampaignRecordStatus.ANNOTATE));
+    }
+
+    /**
+     * @see Campaign#isUserAllowedAction(User,CampaignRecordStatus)
+     * @verifies return true if user owner of group
+     */
+    @Test
+    public void isUserAllowedAction_shouldReturnTrueIfUserOwnerOfGroup() throws Exception {
+        User user = new User();
+        Campaign campaign = new Campaign();
+        campaign.setLimitToGroup(true);
+        campaign.setUserGroup(new UserGroup());
+        campaign.getUserGroup().setOwner(user);
+        Assert.assertTrue(campaign.isUserAllowedAction(user, CampaignRecordStatus.ANNOTATE));
+    }
+
+    /**
+     * @see Campaign#isUserAllowedAction(User,CampaignRecordStatus)
+     * @verifies return false if user not in group
+     */
+    @Test
+    public void isUserAllowedAction_shouldReturnFalseIfUserNotInGroup() throws Exception {
+        User user = new User();
+        Campaign campaign = new Campaign();
+        campaign.setLimitToGroup(true);
+        campaign.setUserGroup(new UserGroup());
+        Assert.assertFalse(campaign.isUserMayEdit(user));
+    }
+
+    /**
+     * @see Campaign#isUserMayEdit(User)
+     * @verifies return false if user null
+     */
+    @Test
+    public void isUserMayEdit_shouldReturnFalseIfUserNull() throws Exception {
+        User user = new User();
+        Campaign campaign = new Campaign();
+        campaign.setLimitToGroup(true);
+        campaign.setUserGroup(new UserGroup());
+        campaign.getUserGroup().setOwner(user);
+        Assert.assertFalse(campaign.isUserMayEdit(null));
+    }
+
+    /**
+     * @see Campaign#isUserMayEdit(User)
+     * @verifies return true if user superuser
+     */
+    @Test
+    public void isUserMayEdit_shouldReturnTrueIfUserSuperuser() throws Exception {
+        User user = new User();
+        Campaign campaign = new Campaign();
+        campaign.setLimitToGroup(true);
+        campaign.setUserGroup(new UserGroup());
+        campaign.getUserGroup().setOwner(user);
+        Assert.assertTrue(campaign.isUserMayEdit(user));
+    }
+
+    /**
+     * @see Campaign#isUserMayEdit(User)
+     * @verifies return false if visibility not private
+     */
+    @Test
+    public void isUserMayEdit_shouldReturnFalseIfVisibilityNotPrivate() throws Exception {
+        User user = new User();
+        Campaign campaign = new Campaign();
+        campaign.setVisibility(CampaignVisibility.PUBLIC);
+        campaign.setLimitToGroup(true);
+        campaign.setUserGroup(new UserGroup());
+        campaign.getUserGroup().setOwner(user);
+        Assert.assertFalse(campaign.isUserMayEdit(user));
+    }
+
+    /**
+     * @see Campaign#isUserMayEdit(User)
+     * @verifies return false if boolean false
+     */
+    @Test
+    public void isUserMayEdit_shouldReturnFalseIfBooleanFalse() throws Exception {
+        User user = new User();
+        Campaign campaign = new Campaign();
+        campaign.setUserGroup(new UserGroup());
+        campaign.getUserGroup().setOwner(user);
+        Assert.assertFalse(campaign.isUserMayEdit(user));
+    }
+
+    /**
+     * @see Campaign#isUserMayEdit(User)
+     * @verifies return false if userGroup not set
+     */
+    @Test
+    public void isUserMayEdit_shouldReturnFalseIfUserGroupNotSet() throws Exception {
+        User user = new User();
+        Campaign campaign = new Campaign();
+        campaign.setLimitToGroup(true);
+        Assert.assertFalse(campaign.isUserMayEdit(user));
+    }
+
+    /**
+     * @see Campaign#isUserMayEdit(User)
+     * @verifies return true if user owner
+     */
+    @Test
+    public void isUserMayEdit_shouldReturnTrueIfUserOwner() throws Exception {
+        User user = new User();
+        Campaign campaign = new Campaign();
+        campaign.setLimitToGroup(true);
+        campaign.setUserGroup(new UserGroup());
+        campaign.getUserGroup().setOwner(user);
+        Assert.assertTrue(campaign.isUserMayEdit(user));
     }
 }
