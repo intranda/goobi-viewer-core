@@ -1897,9 +1897,9 @@ public class ActiveDocumentBean implements Serializable {
             map.setMarker("default");
             map.setSolrQuery(String.format("PI:%s OR PI_TOPSTRUCT:%s", getPersistentIdentifier(), getPersistentIdentifier()));
             
-//            if (!map.getFeaturesAsString().equals("[]")) {
+            if (!map.getFeaturesAsString().equals("[]") || contentBean.hasGeoCoordinateAnnotations(getPersistentIdentifier())) {
                 widget.setGeoMap(map);
-//            }
+            }
         } catch (IndexUnreachableException e) {
             logger.error("Unable to load geomap", e);
         }
