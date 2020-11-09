@@ -3,35 +3,37 @@
 	<div class="crowdsourcing-annotations__log-wrapper">
 		<div class="crowdsourcing-annotations__log-title">
 			<span>{Crowdsourcing.translate("log")}</span>
-			<span ref="expand" onclick="{expandLog}" class="crowdsourcing-annotations__log-expand"><i class="fa fa-angle-down" aria-hidden="true"></i></span>
 			<span ref="compress" onclick="{compressLog}" class="crowdsourcing-annotations__log-expand"><i class="fa fa-angle-up" aria-hidden="true"></i></span>
+			<span ref="expand" onclick="{expandLog}" class="crowdsourcing-annotations__log-expand"><i class="fa fa-angle-down" aria-hidden="true"></i></span>
 		</div>
-		<div ref="innerWrapper" class="crowdsourcing-annotations__log-inner-wrapper">
-
-			<div each="{message in messages}" class="crowdsourcing-annotations__log-message-entry {isCurrentUser(message.creator) ? '-from-me' : ''}">
-				<img class="crowdsourcing-annotations__log-round-avatar" src="{message.creator.avatar}"></img>
-				
-				<div class="crowdsourcing-annotations__log-speech-bubble">
-					<div class="crowdsourcing-annotations__log-message-info">
-						<div class="crowdsourcing-annotations__log-message-user-name">
-							{message.creator.name}
+		<div ref="toggleBox" class="crowdsourcing-annotations__toggle-box">
+			<div ref="innerWrapper" class="crowdsourcing-annotations__log-inner-wrapper">
+	
+				<div each="{message in messages}" class="crowdsourcing-annotations__log-message-entry {isCurrentUser(message.creator) ? '-from-me' : ''}">
+					<img class="crowdsourcing-annotations__log-round-avatar" src="{message.creator.avatar}"></img>
+					
+					<div class="crowdsourcing-annotations__log-speech-bubble">
+						<div class="crowdsourcing-annotations__log-message-info">
+							<div class="crowdsourcing-annotations__log-message-user-name">
+								{message.creator.name}
+							</div>
+							<div class="crowdsourcing-annotations__log-message-time-stamp">
+								{message.dateCreated}
+							</div>
 						</div>
-						<div class="crowdsourcing-annotations__log-message-time-stamp">
-							{message.dateCreated}
+						<div class="crowdsourcing-annotations__log-message-text">
+							{message.message}
 						</div>
-					</div>
-					<div class="crowdsourcing-annotations__log-message-text">
-						{message.message}
 					</div>
 				</div>
 			</div>
-		</div>
-			
-		<div class="crowdsourcing-annotations__log-send-message-area">
-<!-- 			<div>{currentUser.name}</div> -->
-<!-- 			<img src="{currentUser.avatar}"></img> -->
-			<input onkeypress="{addMessageOnEnter}" placeholder="Type here..." class="crowdsourcing-annotations__log-message-input" id="crowdsourcingAnnotationsLogMessageInput" name="crowdsourcingAnnotationsLogMessageInput" ref="messageText"></input>
-			<button class="btn btn--default crowdsourcing-annotations__log-message-send-button" onclick="{addMessage}">Send</button>
+				
+			<div ref="messageBox" class="crowdsourcing-annotations__log-send-message-area">
+	<!-- 			<div>{currentUser.name}</div> -->
+	<!-- 			<img src="{currentUser.avatar}"></img> -->
+				<input onkeypress="{addMessageOnEnter}" placeholder="Type here..." class="crowdsourcing-annotations__log-message-input" id="crowdsourcingAnnotationsLogMessageInput" name="crowdsourcingAnnotationsLogMessageInput" ref="messageText"></input>
+				<button class="btn btn--default crowdsourcing-annotations__log-message-send-button" onclick="{addMessage}">Send</button>
+			</div>
 		</div>
 	</div>
 	
@@ -44,7 +46,11 @@ this.expanded = false;
 
 this.on("mount", function() {
 	//add any initialization here
-    $(this.refs.compress).hide();
+    $(this.refs.expand).hide();
+	// hide log on page load if user compressed it before
+    if (sessionStorage.getItem("logCompressed") === 'logIsCompressed') {
+    	$(this.refs.toggleBox).hide();
+    }
 });
 
 this.on("updated", function() {
@@ -93,8 +99,9 @@ expandLog() {
     	},
         duration: 0
     });
-    $('.crowdsourcing-annotations__content-right').animate({scrollTop: '+=150px'}, 600);
-	$(this.refs.innerWrapper).css({"overflow-y": "auto", "max-height": "500px", "min-height": "300px"});
+	$(this.refs.toggleBox).slideToggle(400);
+    $('.crowdsourcing-annotations__content-right').animate({scrollTop: '+=400px'}, 400);
+    sessionStorage.setItem('logCompressed', 'logNotCompressed');
 }
 
 compressLog() {
@@ -104,10 +111,9 @@ compressLog() {
     	},
         duration: 0
     });
-    $('.crowdsourcing-annotations__content-right').animate({scrollTop: '+=150px'}, 600);
-	$(this.refs.innerWrapper).css({"overflow-y": "hidden", "max-height": "350px"});
+	$(this.refs.toggleBox).slideToggle(400);
+	sessionStorage.setItem('logCompressed', 'logIsCompressed');
 }
-
 
 </script>
 
