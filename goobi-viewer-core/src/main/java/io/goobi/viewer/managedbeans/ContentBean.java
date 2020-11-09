@@ -16,10 +16,12 @@
 package io.goobi.viewer.managedbeans;
 
 import java.io.Serializable;
+import java.net.URI;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import javax.annotation.PostConstruct;
@@ -30,12 +32,16 @@ import org.apache.commons.lang.NumberUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import de.intranda.api.annotation.IResource;
+import de.intranda.api.annotation.ITypedResource;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.StringTools;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
+import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.model.crowdsourcing.DisplayUserGeneratedContent;
+import io.goobi.viewer.model.crowdsourcing.DisplayUserGeneratedContent.ContentType;
 import io.goobi.viewer.model.viewer.PhysicalElement;
 
 /**
@@ -176,5 +182,25 @@ public class ContentBean implements Serializable {
      */
     public String cleanUpValue(String value) {
         return StringTools.stripJS(value);
+    }
+    
+    public String getEscapedBodyUrl(DisplayUserGeneratedContent content) {
+        return Optional.ofNullable(content)
+        .map(DisplayUserGeneratedContent::getAnnotationBody)
+        .map(ITypedResource::getId)
+        .map(URI::toString)
+        .map(BeanUtils::escapeCriticalUrlChracters)
+        .orElse("");
+    }
+
+    /**
+     * @param persistentIdentifier
+     * @return
+     * @throws IndexUnreachableException 
+     * @throws PresentationException 
+     */
+    public boolean hasGeoCoordinateAnnotations(String persistentIdentifier) throws PresentationException, IndexUnreachableException {
+        return getUserGeneratedContentsForDisplay(persistentIdentifier)
+        .stream().anyMatch(ugc -> ContentType.GEOLOCATION.equals(ugc.getType()));
     }
 }

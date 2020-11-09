@@ -28,6 +28,7 @@ public class GeoMapMarker {
     private String name;
     private String icon = "";
     private String markerColor = "blue";
+    private String highlightColor = "cyan";
     private String shape  = "circle";
     private String extraClasses = "";
     private String prefix = "fa";
@@ -196,6 +197,20 @@ public class GeoMapMarker {
      */
     public void setShadow(boolean shadow) {
         this.shadow = shadow;
+    }
+    
+    /**
+     * @return the highlightColor
+     */
+    public String getHighlightColor() {
+        return highlightColor;
+    }
+    
+    /**
+     * @param highlightColor the highlightColor to set
+     */
+    public void setHighlightColor(String highlightColor) {
+        this.highlightColor = highlightColor;
     }
     
    public String toJSONString() throws JsonProcessingException {

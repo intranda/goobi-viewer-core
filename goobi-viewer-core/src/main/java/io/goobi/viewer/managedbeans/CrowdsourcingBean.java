@@ -539,39 +539,38 @@ public class CrowdsourcingBean implements Serializable {
      */
     public String saveSelectedCampaignAction() throws DAOException, PresentationException, IndexUnreachableException {
         logger.trace("saveSelectedCampaign");
-        try {
-            if (userBean == null || !userBean.getUser().isSuperuser()) {
-                // Only authorized admins may save
-                return "";
-            }
-            if (selectedCampaign == null) {
-                return "";
-            }
-
-            // Save
-            boolean success = false;
-            LocalDateTime now = LocalDateTime.now();
-            if (selectedCampaign.getDateCreated() == null) {
-                selectedCampaign.setDateCreated(now);
-            }
-            selectedCampaign.setDateUpdated(now);
-            if (selectedCampaign.getId() != null) {
-                success = DataManager.getInstance().getDao().updateCampaign(selectedCampaign);
-            } else {
-                success = DataManager.getInstance().getDao().addCampaign(selectedCampaign);
-            }
-            if (success) {
-                Messages.info("admin__crowdsourcing_campaign_save_success");
-                setSelectedCampaign(selectedCampaign);
-                lazyModelCampaigns.update();
-                // Update the map of active campaigns for record identifiers (in case a new Solr query changes the set)
-                updateActiveCampaigns();
-                return "pretty:adminCrowdCampaigns";
-            }
+        if (selectedCampaign == null) {
             Messages.error("admin__crowdsourcing_campaign_save_failure");
-        } finally {
+            return "";
+        }
+        if (userBean == null || !selectedCampaign.isUserMayEdit(userBean.getUser())) {
+            // Only authorized admins may save
+            Messages.error("admin__crowdsourcing_campaign_save_failure");
+            return "";
         }
 
+        // Save
+        boolean success = false;
+        LocalDateTime now = LocalDateTime.now();
+        if (selectedCampaign.getDateCreated() == null) {
+            selectedCampaign.setDateCreated(now);
+        }
+        selectedCampaign.setDateUpdated(now);
+        if (selectedCampaign.getId() != null) {
+            success = DataManager.getInstance().getDao().updateCampaign(selectedCampaign);
+        } else {
+            success = DataManager.getInstance().getDao().addCampaign(selectedCampaign);
+        }
+        if (success) {
+            Messages.info("admin__crowdsourcing_campaign_save_success");
+            setSelectedCampaign(selectedCampaign);
+            lazyModelCampaigns.update();
+            // Update the map of active campaigns for record identifiers (in case a new Solr query changes the set)
+            updateActiveCampaigns();
+            return "pretty:adminCrowdCampaigns";
+        }
+
+        Messages.error("admin__crowdsourcing_campaign_save_failure");
         return "";
     }
 

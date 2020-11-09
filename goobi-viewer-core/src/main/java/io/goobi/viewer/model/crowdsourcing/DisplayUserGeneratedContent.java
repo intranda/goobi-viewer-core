@@ -15,11 +15,14 @@
  */
 package io.goobi.viewer.model.crowdsourcing;
 
+import java.nio.file.Paths;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
@@ -35,6 +38,7 @@ import de.intranda.api.annotation.ITypedResource;
 import de.intranda.api.annotation.wa.TextualResource;
 import de.intranda.api.annotation.wa.TypedResource;
 import io.goobi.viewer.controller.DateTools;
+import io.goobi.viewer.controller.HtmlParser;
 import io.goobi.viewer.controller.SolrConstants;
 import io.goobi.viewer.controller.StringTools;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
@@ -88,11 +92,13 @@ public class DisplayUserGeneratedContent {
     private Integer page = null;
 
     private String label;
+    
+    private String extendendLabel = null;
 
     private String displayCoordinates;
 
     private String areaString;
-    
+
     private ITypedResource annotationBody = new TypedResource();
 
     private User updatedBy;
@@ -222,6 +228,24 @@ public class DisplayUserGeneratedContent {
      */
     public String getDisplayLabel() {
         return StringUtils.isNotEmpty(label) ? label : pi;
+    }
+    
+    /**
+     * @return the extendendLabel
+     */
+    public String getExtendendLabel() {
+        if(StringUtils.isNotBlank(this.extendendLabel)) {            
+            return extendendLabel;
+        } else {
+            return label;
+        }
+    }
+    
+    /**
+     * @param extendendLabel the extendendLabel to set
+     */
+    public void setExtendendLabel(String extendendLabel) {
+        this.extendendLabel = extendendLabel;
     }
 
     /**
@@ -427,8 +451,8 @@ public class DisplayUserGeneratedContent {
      * @return true if neither label nor annotation body exist
      */
     public boolean isEmpty() {
-        return StringUtils.isEmpty(getLabel()) 
-                && (this.annotationBody == null || StringUtils.isBlank(this.annotationBody.getType())) ;
+        return StringUtils.isEmpty(getLabel())
+                && (this.annotationBody == null || StringUtils.isBlank(this.annotationBody.getType()));
     }
 
     /**
@@ -448,37 +472,37 @@ public class DisplayUserGeneratedContent {
     public ITypedResource getAnnotationBody() {
         return annotationBody;
     }
-    
+
     /**
      * @param annotationBody the annotationBody to set
      */
     public void setAnnotationBody(ITypedResource annotationBody) {
         this.annotationBody = annotationBody;
     }
-    
+
     public boolean setAnnotationBody(String json) {
-        if(StringUtils.isNotBlank(json) && !"{}".equals(json)) {
-            
+        if (StringUtils.isNotBlank(json) && !"{}".equals(json)) {
+
             ObjectMapper mapper = new ObjectMapper();
             try {
-                this.annotationBody = mapper.readValue(json, de.intranda.api.annotation.oa.TypedResource.class);
-                if(this.annotationBody == null) {
+                this.annotationBody = mapper.readValue(json, de.intranda.api.annotation.wa.TypedResource.class);
+                if (this.annotationBody == null) {
                     throw new IllegalArgumentException("no content generated");
                 }
                 return true;
             } catch (JsonProcessingException | IllegalArgumentException e) {
                 try {
-                    this.annotationBody = mapper.readValue(json, de.intranda.api.annotation.wa.TypedResource.class);
+                    this.annotationBody = mapper.readValue(json, de.intranda.api.annotation.oa.TypedResource.class);
                     return true;
                 } catch (JsonProcessingException e1) {
-                    logger.error("Unable to parse annotation body " + json);
+                    this.annotationBody = new TextualResource(json, HtmlParser.isHtml(json) ? "text/html" : "text/plain");
                 }
 
             }
         }
         return false;
     }
-    
+
     /**
      * <p>
      * buildFromSolrDoc.
@@ -506,29 +530,30 @@ public class DisplayUserGeneratedContent {
         ret.setAreaString((String) doc.getFieldValue(SolrConstants.UGCCOORDS));
         ret.setDisplayCoordinates((String) doc.getFieldValue(SolrConstants.UGCCOORDS));
         ret.setPi((String) doc.getFieldValue(SolrConstants.PI_TOPSTRUCT));
-        if(doc.containsKey(SolrConstants.MD_BODY)) {
+        if (doc.containsKey(SolrConstants.MD_BODY)) {
             Object body = doc.getFieldValue(SolrConstants.MD_BODY);
-            if(body instanceof List) {
+            if (body instanceof List) {
                 List<String> features = (List<String>) body;
-                if(features.size() == 1) {
+                if (features.size() == 1) {
                     ret.setAnnotationBody(features.get(0));
                 } else {
                     String array = "[" + features.stream().collect(Collectors.joining(",")) + "]";
                     ret.setAnnotationBody(array);
                 }
-            } else if(body instanceof String) {
-                ret.setAnnotationBody((String) body);                
+            } else if (body instanceof String) {
+                ret.setAnnotationBody((String) body);
             }
             ret.setTypeFromBody();
         }
         Object pageNo = doc.getFieldValue(SolrConstants.ORDER);
-        if(pageNo != null && pageNo instanceof Number) {            
+        if (pageNo != null && pageNo instanceof Number) {
             ret.setPage(((Number) pageNo).intValue());
         }
 
-        if(StringUtils.isNotBlank(ret.getAnnotationBody().getType())) {
+        if (StringUtils.isNotBlank(ret.getAnnotationBody().getType())) {
             ret.setLabel(createLabelFromBody(ret.getType(), ret.getAnnotationBody()));
-        } else {            
+            ret.setExtendendLabel(createExtendedLabelFromBody(ret.getType(), ret.getAnnotationBody()));
+        } else {
             StructElement se = new StructElement(iddoc, doc);
             ret.setLabel(generateUgcLabel(se));
         }
@@ -537,40 +562,47 @@ public class DisplayUserGeneratedContent {
     }
 
     /**
+     * @param type
+     * @param body
+     * @return  the text if the body is a TextualResource. Otherwise return null
+     */
+    private static String createExtendedLabelFromBody(ContentType type, ITypedResource body) {
+        switch (type) {
+            case COMMENT:
+                if (body instanceof TextualResource) {
+                    return ((TextualResource) body).getText();
+                }
+        }
+        return null;
+    }
+
+    /**
      * @param annotationBody2
      * @return
      */
     private static String createLabelFromBody(ContentType type, ITypedResource body) {
-        switch(type) {
+        switch (type) {
             case GEOLOCATION:
                 return "admin__crowdsourcing_question_type_GEOLOCATION_POINT";
             case NORMDATA:
-                return body.getId().toString();
+                return Paths.get(body.getId().getPath()).getFileName().toString();
             case COMMENT:
-                switch(body.getFormat()) {
-                    case "text/html":
-                        return "admin__crowdsourcing_question_type_RICHTEXT";
-                    case "text/plain":
-                    default:
-                        if(body instanceof TextualResource) {
-                            return ((TextualResource) body).getText();
-                        } else {
-                            return "admin__crowdsourcing_question_type_" + type.toString();
-                        }      
-                }      
             default:
-                return "admin__crowdsourcing_question_type_" + type.toString();
+                if (body instanceof TextualResource) {
+                    return HtmlParser.getPlaintext(((TextualResource) body).getText());
+                } else {
+                    return "admin__crowdsourcing_question_type_" + type.toString();
+                }
         }
     }
 
     /**
-     * If the annotation body has a type property of one of "Feature", "AuthorityResource" or "TextualBody" 
-     * then the {@link #type} is set accordingly
+     * If the annotation body has a type property of one of "Feature", "AuthorityResource" or "TextualBody" then the {@link #type} is set accordingly
      */
     private void setTypeFromBody() {
         ContentType type = this.type;
-        if(StringUtils.isNotBlank(this.annotationBody.getType())) {
-            switch(this.annotationBody.getType()) {
+        if (StringUtils.isNotBlank(this.annotationBody.getType())) {
+            switch (this.annotationBody.getType()) {
                 case "Feature":
                     type = ContentType.GEOLOCATION;
                     break;
@@ -681,22 +713,21 @@ public class DisplayUserGeneratedContent {
 
         return se.getMetadataValue(SolrConstants.LABEL);
     }
-    
+
     public boolean isOnThisPage(PhysicalElement page) {
         return this.page != null && page.getOrder() == this.page;
     }
-    
+
     public boolean isOnOtherPage(PhysicalElement page) {
         return isOnAnyPage() && !isOnThisPage(page);
     }
-    
+
     public boolean isOnAnyPage() {
         return this.page != null;
     }
 
-    
     public String getIconClass() {
-        switch(this.type) {
+        switch (this.type) {
             case ADDRESS:
                 return "fa fa-envelope";
             case PERSON:
@@ -714,17 +745,16 @@ public class DisplayUserGeneratedContent {
                 return "fa fa-comment";
         }
     }
-    
+
     public String getPageUrl() {
         return getPageUrl(BeanUtils.getNavigationHelper().getCurrentPageType());
     }
 
-    
     public String getPageUrl(PageType pageType) {
-        
+
         String pageTypeUrl = BeanUtils.getNavigationHelper().getPageUrl(pageType); //no trailing slash
         String pageUrl = pageTypeUrl + "/" + getPi() + "/";
-        if(getPage() != null) {
+        if (getPage() != null) {
             pageUrl = pageUrl + getPage() + "/#ugc=" + getId();
         }
         return pageUrl;
