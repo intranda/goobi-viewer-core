@@ -102,7 +102,8 @@
                 </h1>
 
                 <!-- DASHBOARD -->
-                <ui:fragment rendered="#{userBean.admin}">
+                <ui:fragment
+                    rendered="#{userBean.admin or userBean.user.isHasCmsPrivilege('CMS_PAGES') or crowdsourcingBean.isUserOwnsAnyCampaigns(userBean.user)}">
                     <div class="admin__sidebar-dashboard admin-widget">
                         <div class="admin-widget__header">#{msg.admin__general_title}</div>
                         <ul>
