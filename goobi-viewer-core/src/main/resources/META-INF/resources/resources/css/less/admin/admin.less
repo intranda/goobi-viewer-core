@@ -905,6 +905,9 @@
 				}
 			}
 		}
+		&.-partly-translated a {
+			background: rgba(243,208,70,.4);
+		}
 	}
 	&__language-tabs-vertical {
 		display: flex;
@@ -950,8 +953,11 @@
 		&.-already-translated a {
 			background: @btnSuccessBgc;
 		}
-			&:last-child {
-				margin-bottom: 0;
+		&:last-child {
+			margin-bottom: 0;
+		}
+		&.-partly-translated a {
+			background: rgba(243,208,70,.4);
 		}
 	}
 	&__language-tabs-vertical-textarea {

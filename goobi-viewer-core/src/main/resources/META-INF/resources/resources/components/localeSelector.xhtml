@@ -19,7 +19,7 @@
 				<li role="tab"
 					class="admin__language-tab 
 						#{cc.attrs.object.isSelected(locale) ? 'active':''}
-						#{cc.attrs.object.isComplete(locale) ? '-already-translated':''}
+						#{cc.attrs.object.isValid(locale) ? (cc.attrs.object.isComplete(locale) ? '-already-translated' : '-partly-translated') :''}
 						#{cc.attrs.object.isDefaultLocaleSelected() ? '-default-language':''}">
 					<h:commandLink
 						value="#{locale.getDisplayLanguage(navigationHelper.locale)}"

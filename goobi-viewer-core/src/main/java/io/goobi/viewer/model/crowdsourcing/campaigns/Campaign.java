@@ -1236,7 +1236,10 @@ public class Campaign implements CMSMediaHolder, ILicenseType, IPolyglott {
     @Override
     public boolean isComplete(Locale locale) {
         if(isValid(locale)) {
-            if(StringUtils.isBlank(getDescription(locale.getLanguage()))) {
+            String defaultLanguage = IPolyglott.getDefaultLocale().getLanguage();
+            if(locale.getLanguage().equals(defaultLanguage)) {
+                return true;
+            } else if(StringUtils.isBlank(getDescription(defaultLanguage))) {
                 return true;
             } else {
                 return StringUtils.isNotBlank(getDescription(locale.getLanguage()));

@@ -33,12 +33,14 @@
                         <ui:fragment rendered="#{!cc.attrs.customName}">
                             <button type="button" class="btn btn--clean" data-toggle="user-dropdown">
                                 <!-- USER NAME -->
-                                <ui:fragment rendered="#{userBean.user.nickName != ''}">
-                                    <span class="login-navigation__user-name" title="#{userBean.user.nickName}" data-toggle="tooltip" data-placement="bottom">#{userBean.user.nickName}</span>
-                                </ui:fragment>
-                                <ui:fragment rendered="#{userBean.user.nickName eq null}">
-                                    <span class="login-navigation__user-name" title="#{userBean.user.email}" data-toggle="tooltip" data-placement="bottom">#{userBean.user.email}</span>
-                                </ui:fragment>
+								<span class="login-navigation__user-name" data-toggle="tooltip" data-placement="bottom">#{userBean.user.displayName}</span>
+                                
+<!--                                 <ui:fragment rendered="#{userBean.user.nickName != ''}"> -->
+<!--                                     <span class="login-navigation__user-name" title="#{userBean.user.nickName}" data-toggle="tooltip" data-placement="bottom">#{userBean.user.nickName}</span> -->
+<!--                                 </ui:fragment> -->
+<!--                                 <ui:fragment rendered="#{userBean.user.nickName eq ''}"> -->
+<!--                                     <span class="login-navigation__user-name" title="#{userBean.user.email}" data-toggle="tooltip" data-placement="bottom">#{userBean.user.email}</span> -->
+<!--                                 </ui:fragment> -->
                                 
                                 <!-- USER ICON -->
                                 <span class="login-navigation__user-icon">
