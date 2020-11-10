@@ -1235,7 +1235,25 @@ public class Campaign implements CMSMediaHolder, ILicenseType, IPolyglott {
 
     @Override
     public boolean isComplete(Locale locale) {
+        if(isValid(locale)) {
+            if(StringUtils.isBlank(getDescription(locale.getLanguage()))) {
+                return true;
+            } else {
+                return StringUtils.isNotBlank(getDescription(locale.getLanguage()));
+            }
+        } else {
+            return false;
+        }
+    }
+    
+
+    /**
+     * @return true if the title is not empty for the given locale
+     */
+    @Override
+    public boolean isValid(Locale locale) {
         return StringUtils.isNotBlank(getTitle(locale.getLanguage(), false));
+
     }
 
     /**
@@ -1592,5 +1610,6 @@ public class Campaign implements CMSMediaHolder, ILicenseType, IPolyglott {
 
         return null;
     }
+
 
 }

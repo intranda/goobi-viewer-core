@@ -92,6 +92,11 @@ public class TranslatedText extends MultiLanguageMetadataValue implements IPolyg
 
     @Override
     public boolean isComplete(Locale locale) {
+        return isValid(locale);
+    }
+
+    @Override
+    public boolean isValid(Locale locale) {
         return getValue(locale).filter(StringUtils::isNotBlank).isPresent();
     }
 
@@ -107,4 +112,5 @@ public class TranslatedText extends MultiLanguageMetadataValue implements IPolyg
     public boolean hasLocale(Locale locale) {
         return super.getLanguages().stream().anyMatch(l -> l.equalsIgnoreCase(locale.getLanguage()));
     }
+
 }

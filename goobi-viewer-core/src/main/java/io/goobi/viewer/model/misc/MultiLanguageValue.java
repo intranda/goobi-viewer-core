@@ -52,6 +52,15 @@ public class MultiLanguageValue implements IPolyglott {
     public boolean isComplete(Locale locale) {
         return !this.translations.get(locale).isEmpty();
     }
+    
+
+    /* (non-Javadoc)
+     * @see io.goobi.viewer.model.misc.IPolyglott#isValid(java.util.Locale)
+     */
+    @Override
+    public boolean isValid(Locale locale) {
+        return isComplete(locale);
+    }
 
     /* (non-Javadoc)
      * @see io.goobi.viewer.model.misc.IPolyglott#getSelectedLocale()
@@ -133,5 +142,6 @@ public class MultiLanguageValue implements IPolyglott {
     public boolean hasLocale(Locale locale) {
         return locale != null && this.translations.containsKey(locale);
     }
+
 
 }
