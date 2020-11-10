@@ -55,19 +55,14 @@
 								<!-- TITLE ROW -->
 								<div class="row no-gutters admin__table-title">
 									<!-- ANNOTATION COL -->
-									<div class="col-6 d-flex">
+									<div class="col-7 d-flex">
 										<viewerComponent:sortingArrow filterType="targetPI"
 											colHeading="#{msg.admin__crowdsourcing_annotation}"
 											list="#{userDataBean.lazyModelAnnotations}" />
 									</div>
 
-									<!-- TARGET COL -->
-									<!-- 	                            <div class="col-2 d-flex">                             -->
-									<!-- 	                                <viewerComponent:sortingArrow filterType="targetPI" colHeading="#{msg.admin__crowdsourcing_annotation_target}" list="#{userDataBean.lazyModelAnnotations}" /> -->
-									<!-- 	                            </div> -->
-
 									<!-- CAMPAIGN COL -->
-									<div class="col-2 d-flex">
+									<div class="col-3 d-flex">
 										<viewerComponent:sortingArrow filterType="generatorId"
 											colHeading="#{msg.admin__crowdsourcing_campaign}"
 											list="#{userDataBean.lazyModelAnnotations}" />
@@ -86,7 +81,7 @@
 									value="#{userDataBean.lazyModelAnnotations.paginatorList}">
 									<div class="row no-gutters admin__table-entry">
 										<!-- ANNOTATION CONTENT -->
-										<div class="col-6 d-flex" style="flex-direction: column;">
+										<div class="col-7 d-flex" style="flex-direction: column;">
 											<div class="annotation__label">
 												#{annotation.targetPI}
 												<h:outputText
@@ -106,12 +101,8 @@
 													aria-label="#{msg.admin__crowdsourcing_annotation} #{msg.show} (#{annotation.targetPI})">#{msg.show}</a>
 											</div>
 										</div>
-										<!-- TARGET -->
-										<!--                                     <div class="col-2 d-flex"> -->
-										<!--                                         #{annotation.targetPI}<h:outputText rendered="#{annotation.targetPageOrder != null}" value=", #{msg.page} #{annotation.targetPageOrder}" /> -->
-										<!--                                     </div> -->
 										<!-- CAMPAIGN -->
-										<div class="col-2 d-flex">
+										<div class="col-3 d-flex">
 											#{annotation.generator.owner.name}</div>
 										<!-- DATE -->
 										<div class="col-2 d-flex">
