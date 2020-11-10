@@ -12,14 +12,14 @@
 
     <!-- VIEW -->
     <div id="fullscreenView" class="fullscreen__view">
-        <!-- SIDEBAR PANEL CONTROLS -->
-        <div id="fullscreenSidebarPanelControls" class="fullscreen__view-sidebar-panel-controls">
-            <button class="btn btn--clean" data-close="all-tabs" title="#{msg.allClose}" data-toggle="tooltip" data-placement="top" aria-label="#{msg.allClose}"></button>
-            <button class="btn btn--clean" data-open="all-tabs" title="#{msg.allOpen}" data-toggle="tooltip" data-placement="top" aria-label="#{msg.allOpen}"></button>
-        </div>
-        
         <!-- SIDEBAR -->
-        <aside id="fullscreenViewSidebar" class="fullscreen__view-sidebar">        
+        <aside id="fullscreenViewSidebar" class="fullscreen__view-sidebar">
+            <!-- SIDEBAR PANEL CONTROLS -->
+            <div id="fullscreenSidebarPanelControls" class="fullscreen__view-sidebar-panel-controls">
+                <button class="btn btn--clean" data-close="all-tabs" title="#{msg.allClose}" data-toggle="tooltip" data-placement="top" aria-label="#{msg.allClose}"></button>
+                <button class="btn btn--clean" data-open="all-tabs" title="#{msg.allOpen}" data-toggle="tooltip" data-placement="top" aria-label="#{msg.allOpen}"></button>
+            </div>     
+            
             <div class="fullscreen__view-sidebar-inner">            
                 <!-- SIDEBAR CONTROLS -->
                 <div class="fullscreen__view-sidebar-controls">
@@ -33,7 +33,7 @@
                 
                 <!-- SIDEBAR WORK TITLE -->
                 <div class="fullscreen__view-sidebar-work-title">
-                    <h1>#{activeDocumentBean.titleBarLabel}</h1>
+                    <h2>#{activeDocumentBean.titleBarLabel}</h2>
                 </div>
                 
                <!-- SEARCH IN CURRENT ITEM -->
@@ -46,9 +46,9 @@
                    
                     <!-- METADATA -->
                     <div id="panel-1" class="fullscreen__view-sidebar-accordeon-panel fs-metadata">
-                        <h2 class="fullscreen__view-sidebar-accordeon-panel-title">
+                        <h3 class="fullscreen__view-sidebar-accordeon-panel-title">
                             <span>#{msg.bibData}</span>
-                        </h2>
+                        </h3>
                         
                         <div class="fullscreen__view-sidebar-accordeon-panel-body">
                             <ui:include src="/resources/includes/metadata/metadata.xhtml" />
@@ -58,9 +58,9 @@
                     <!-- TOC -->
 					<ui:fragment rendered="#{configurationBean.sidebarTocWidgetVisibleInFullscreen and (activeDocumentBean.toc.hasChildren or configurationBean.displayEmptyTocInSidebar)}">
                         <div id="panel-2" class="fullscreen__view-sidebar-accordeon-panel fs-toc">
-                            <h2 class="fullscreen__view-sidebar-accordeon-panel-title">
+                            <h3 class="fullscreen__view-sidebar-accordeon-panel-title">
                                 <span>#{msg.sidebarToc}</span>
-                            </h2>
+                            </h3>
                             
                             <div class="fullscreen__view-sidebar-accordeon-panel-body">
                                 <widgetComponent:widget_toc />
@@ -71,9 +71,9 @@
                     <!-- FULLTEXT -->
                     <ui:fragment rendered="#{activeDocumentBean.viewManager.topDocument.fulltextAvailable}">
                         <div id="panel-3" class="fullscreen__view-sidebar-accordeon-panel fs-fulltext">
-                            <h2 class="fullscreen__view-sidebar-accordeon-panel-title">
+                            <h3 class="fullscreen__view-sidebar-accordeon-panel-title">
                                 <span>#{msg.fulltext}</span>
-                            </h2>
+                            </h3>
     
                             <div class="fullscreen__view-sidebar-accordeon-panel-body">
                                 <ui:include src="/resources/includes/object/fulltext.xhtml" />
@@ -83,9 +83,9 @@
 
                     <!-- DOWNLOADS -->
                     <div id="panel-4" class="fullscreen__view-sidebar-accordeon-panel fs-downloads">
-                        <h2 class="fullscreen__view-sidebar-accordeon-panel-title">
+                        <h3 class="fullscreen__view-sidebar-accordeon-panel-title">
                             <span>#{msg.widgetUsage}</span>
-                        </h2>
+                        </h3>
 
                         <div class="fullscreen__view-sidebar-accordeon-panel-body">
                             <widgetComponent:widget_usage />
@@ -95,9 +95,9 @@
                     <!-- SEARCH HIT NAVIGATION -->
                     <ui:fragment rendered="#{searchBean.hitsCount > 1 and activeDocumentBean.prevHit != null}">
                         <div id="panel-6" class="fullscreen__view-sidebar-accordeon-panel fs-search-hit-navigation">
-                            <h2 class="fullscreen__view-sidebar-accordeon-panel-title">
+                            <h3 class="fullscreen__view-sidebar-accordeon-panel-title">
                                 <span>#{msg.searchHitNavigation}</span>
-                            </h2>
+                            </h3>
                             
                             <div class="fullscreen__view-sidebar-accordeon-panel-body">
                                 <widgetComponent:widget_searchResultNavigation />
@@ -108,9 +108,9 @@
                     <!-- IMAGE FILTER -->
                     <ui:fragment rendered="#{activeDocumentBean.viewManager.hasPages}">
                         <div id="panel-7" class="fullscreen__view-sidebar-accordeon-panel fs-imagefilters">
-                            <h2 class="fullscreen__view-sidebar-accordeon-panel-title">
+                            <h3 class="fullscreen__view-sidebar-accordeon-panel-title">
                                 <span>#{msg.label__image_filter_toolkit}</span>
-                            </h2>
+                            </h3>
                             
                             <div class="fullscreen__view-sidebar-accordeon-panel-body">
                             	<span class="fullscreen__view-sidebar-accordeon-panel-error">
@@ -124,9 +124,9 @@
                     <!-- SHARE IMAGE AREA -->
                     <ui:fragment rendered="#{activeDocumentBean.viewManager.currentPage.mimeType == 'image' and !activeDocumentBean.viewManager.doublePageMode}">
                         <div id="panel-8" class="fullscreen__view-sidebar-accordeon-panel share-image-area">
-                            <h2 class="fullscreen__view-sidebar-accordeon-panel-title">
+                            <h3 class="fullscreen__view-sidebar-accordeon-panel-title">
                                 <span>#{msg.action__share_image_region}</span>
-                            </h2>
+                            </h3>
                             <div class="fullscreen__view-sidebar-accordeon-panel-body share-image-area">
 								<div class="share-image-area__instructions">#{msg.help__share_image_area__select}</div>
 						
