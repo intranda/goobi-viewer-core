@@ -2646,12 +2646,15 @@ public class JPADAO implements IDAO {
         }
         if (!whereStatements.isEmpty()) {
             StringBuilder sbCreatorReviewer = new StringBuilder();
+            StringBuilder sbGenerator = new StringBuilder();
             StringBuilder sbOtherStatements = new StringBuilder();
             for (String whereStatement : whereStatements) {
                 if (whereStatement.startsWith("a.creatorId")) {
                     sbCreatorReviewer.append(whereStatement);
                 } else if (whereStatement.startsWith("a.reviewerId")) {
                     sbCreatorReviewer.append(" OR ").append(whereStatement);
+                } else if (whereStatement.startsWith("a.generatorId")) {
+                    sbGenerator.append(whereStatement);
                 } else {
                     if (sbOtherStatements.length() != 0) {
                         sbOtherStatements.append(" OR ");
@@ -2660,11 +2663,18 @@ public class JPADAO implements IDAO {
                 }
             }
             String filterQuery = " WHERE " + (sbCreatorReviewer.length() > 0 ? "(" + sbCreatorReviewer.toString() + ")" : "");
-            if (sbCreatorReviewer.length() > 0 && sbOtherStatements.length() > 0) {
+
+            if (sbCreatorReviewer.length() > 0 && (sbGenerator.length() > 0 || sbOtherStatements.length() > 0)) {
                 filterQuery += " AND ";
             }
+            if (sbGenerator.length() > 0) {
+                filterQuery += "(" + sbGenerator.toString() + ")";
+                if (sbOtherStatements.length() > 0) {
+                    filterQuery += " AND ";
+                }
+            }
             if (sbOtherStatements.length() > 0) {
-                filterQuery += ("(" + sbOtherStatements.toString() + ")");
+                filterQuery += "(" + sbOtherStatements.toString() + ")";
             }
             q.append(filterQuery);
         }
