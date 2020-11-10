@@ -18,7 +18,7 @@
 								{message.creator.name}
 							</div>
 							<div class="crowdsourcing-annotations__log-message-time-stamp">
-								{message.dateCreated}
+								{formatDate(message.dateCreated)}
 							</div>
 						</div>
 						<div class="crowdsourcing-annotations__log-message-text">
@@ -31,8 +31,8 @@
 			<div ref="messageBox" class="crowdsourcing-annotations__log-send-message-area">
 	<!-- 			<div>{currentUser.name}</div> -->
 	<!-- 			<img src="{currentUser.avatar}"></img> -->
-				<input onkeypress="{addMessageOnEnter}" placeholder="Type here..." class="crowdsourcing-annotations__log-message-input" id="crowdsourcingAnnotationsLogMessageInput" name="crowdsourcingAnnotationsLogMessageInput" ref="messageText"></input>
-				<button class="btn btn--default crowdsourcing-annotations__log-message-send-button" onclick="{addMessage}">Send</button>
+				<input onkeypress="{addMessageOnEnter}" placeholder="{Crowdsourcing.translate('label__enter_message_here')}" class="crowdsourcing-annotations__log-message-input" id="crowdsourcingAnnotationsLogMessageInput" name="crowdsourcingAnnotationsLogMessageInput" ref="messageText"></input>
+				<button class="btn btn--default crowdsourcing-annotations__log-message-send-button" onclick="{addMessage}">{Crowdsourcing.translate('action__send')}</button>
 			</div>
 		</div>
 	</div>
@@ -46,7 +46,6 @@ this.expanded = false;
 
 this.on("mount", function() {
 //add any initialization here
-
 	// hide log on page load if user compressed it before
     if (sessionStorage.getItem("logCompressed") === 'logIsCompressed') {
     	$(this.refs.toggleBox).hide();
@@ -118,6 +117,14 @@ compressLog() {
     });
 	$(this.refs.toggleBox).slideToggle(400);
 	sessionStorage.setItem('logCompressed', 'logIsCompressed');
+}
+
+formatDate(dateString) {
+    let date = new Date(dateString);
+    return date.toLocaleString(Crowdsourcing.translator.language, {
+		dateStyle: "long",
+		timeStyle: "short"
+    });
 }
 
 </script>
