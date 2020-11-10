@@ -2758,7 +2758,7 @@ public class JPADAOTest extends AbstractDatabaseEnabledTest {
         filters.put("groupOwner", "1");
         Map<String, Object> params = new HashMap<>(1);
         Assert.assertEquals(
-                " prefix WHERE (a.userGroup.owner IN (SELECT g.owner FROM UserGroup g WHERE g.owner.id=:groupOwner))",
+                " prefix WHERE a.userGroup.owner IN (SELECT g.owner FROM UserGroup g WHERE g.owner.id=:groupOwner)",
                 JPADAO.createCampaignsFilterQuery("prefix", filters, params));
         Assert.assertEquals(1, params.size());
         Assert.assertEquals(1L, params.get("groupOwner"));
