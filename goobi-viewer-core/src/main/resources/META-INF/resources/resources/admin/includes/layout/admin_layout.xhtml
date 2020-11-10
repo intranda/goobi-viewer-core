@@ -43,6 +43,7 @@
     		</a>
 
     		<!-- ADD SOMETHING NEW -->
+    		<ui:fragment rendered="#{userBean.user.superuser}">
     		<div class="admin__topbar-add -dropdown">
 	    		<i class="fa fa-plus" aria-hidden="true"></i><span>#{msg.admin__new}</span>
 	   			<ul class="admin__topbar-dropdown">
@@ -54,6 +55,7 @@
 	    			<li><a href="#{request.contextPath}/admin/cms/categories/new/" target="_self">#{msg.admin__category}</a></li>
 	   			</ul>
     		</div>
+    		</ui:fragment>
 
 			<!-- RIGHT AREA TOPBAR -->
 			<div class="admin__topbar-right">

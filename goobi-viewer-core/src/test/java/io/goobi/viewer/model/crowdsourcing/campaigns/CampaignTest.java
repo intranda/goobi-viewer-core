@@ -6,8 +6,10 @@ import org.junit.Assert;
 import org.junit.Test;
 
 import io.goobi.viewer.AbstractDatabaseEnabledTest;
+import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.model.crowdsourcing.campaigns.Campaign.CampaignVisibility;
 import io.goobi.viewer.model.crowdsourcing.campaigns.CampaignRecordStatistic.CampaignRecordStatus;
+import io.goobi.viewer.model.security.Role;
 import io.goobi.viewer.model.security.user.User;
 import io.goobi.viewer.model.security.user.UserGroup;
 
@@ -228,6 +230,26 @@ public class CampaignTest extends AbstractDatabaseEnabledTest {
 
     /**
      * @see Campaign#isUserAllowedAction(User,CampaignRecordStatus)
+     * @verifies return true if user member of group
+     */
+    @Test
+    public void isUserAllowedAction_shouldReturnTrueIfUserMemberOfGroup() throws Exception {
+        User user = DataManager.getInstance().getDao().getUser(2);
+        Assert.assertNotNull(user);
+        UserGroup userGroup = DataManager.getInstance().getDao().getUserGroup(1);
+        Assert.assertNotNull(userGroup);
+        Role role = DataManager.getInstance().getDao().getRole(1);
+        Assert.assertNotNull(role);
+
+        Campaign campaign = new Campaign();
+        campaign.setLimitToGroup(true);
+        campaign.setUserGroup(userGroup);
+        campaign.getUserGroup().addMember(user, role);
+        Assert.assertTrue(campaign.isUserAllowedAction(user, CampaignRecordStatus.ANNOTATE));
+    }
+
+    /**
+     * @see Campaign#isUserAllowedAction(User,CampaignRecordStatus)
      * @verifies return false if user not in group
      */
     @Test
@@ -319,5 +341,60 @@ public class CampaignTest extends AbstractDatabaseEnabledTest {
         campaign.setUserGroup(new UserGroup());
         campaign.getUserGroup().setOwner(user);
         Assert.assertTrue(campaign.isUserMayEdit(user));
+    }
+
+    /**
+     * @see Campaign#isUserMayEdit(User)
+     * @verifies return true if user member
+     */
+    @Test
+    public void isUserMayEdit_shouldReturnTrueIfUserMember() throws Exception {
+        User user = DataManager.getInstance().getDao().getUser(2);
+        Assert.assertNotNull(user);
+        UserGroup userGroup = DataManager.getInstance().getDao().getUserGroup(1);
+        Assert.assertNotNull(userGroup);
+        Role role = DataManager.getInstance().getDao().getRole(1);
+        Assert.assertNotNull(role);
+
+        Campaign campaign = new Campaign();
+        campaign.setLimitToGroup(true);
+        campaign.setUserGroup(userGroup);
+        campaign.getUserGroup().addMember(user, role);
+        Assert.assertTrue(campaign.isUserMayEdit(user));
+    }
+
+    /**
+     * @see Campaign#isGroupLimitActive()
+     * @verifies return true if boolean true and userGroup not null
+     */
+    @Test
+    public void isGroupLimitActive_shouldReturnTrueIfBooleanTrueAndUserGroupNotNull() throws Exception {
+        Campaign campaign = new Campaign();
+        campaign.setLimitToGroup(true);
+        campaign.setUserGroup(new UserGroup());
+        Assert.assertTrue(campaign.isGroupLimitActive());
+    }
+
+    /**
+     * @see Campaign#isGroupLimitActive()
+     * @verifies return false if boolean false
+     */
+    @Test
+    public void isGroupLimitActive_shouldReturnFalseIfBooleanFalse() throws Exception {
+        Campaign campaign = new Campaign();
+        campaign.setLimitToGroup(false);
+        campaign.setUserGroup(new UserGroup());
+        Assert.assertFalse(campaign.isGroupLimitActive());
+    }
+
+    /**
+     * @see Campaign#isGroupLimitActive()
+     * @verifies return false if userGroup null
+     */
+    @Test
+    public void isGroupLimitActive_shouldReturnFalseIfUserGroupNull() throws Exception {
+        Campaign campaign = new Campaign();
+        campaign.setLimitToGroup(true);
+        Assert.assertFalse(campaign.isGroupLimitActive());
     }
 }
