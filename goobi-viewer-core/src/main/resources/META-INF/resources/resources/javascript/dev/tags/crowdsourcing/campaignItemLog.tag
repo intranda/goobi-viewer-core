@@ -8,7 +8,6 @@
 		</div>
 		<div ref="toggleBox" class="crowdsourcing-annotations__toggle-box">
 			<div ref="innerWrapper" class="crowdsourcing-annotations__log-inner-wrapper">
-	
 				<div each="{message in messages}" class="crowdsourcing-annotations__log-message-entry {isCurrentUser(message.creator) ? '-from-me' : ''}">
 					<img class="crowdsourcing-annotations__log-round-avatar" src="{message.creator.avatar}"></img>
 					
@@ -17,17 +16,17 @@
 							<div class="crowdsourcing-annotations__log-message-user-name">
 								{message.creator.name}
 							</div>
-							<div class="crowdsourcing-annotations__log-message-time-stamp">
-								{formatDate(message.dateCreated)}
-							</div>
 						</div>
 						<div class="crowdsourcing-annotations__log-message-text">
 							{message.message}
 						</div>
+						<div class="crowdsourcing-annotations__log-message-time-stamp">
+							{formatDate(message.dateCreated)}
+						</div>
 					</div>
 				</div>
 			</div>
-				
+
 			<div ref="messageBox" class="crowdsourcing-annotations__log-send-message-area">
 	<!-- 			<div>{currentUser.name}</div> -->
 	<!-- 			<img src="{currentUser.avatar}"></img> -->

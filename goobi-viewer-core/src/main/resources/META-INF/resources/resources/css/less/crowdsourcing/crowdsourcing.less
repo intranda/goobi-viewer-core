@@ -404,20 +404,27 @@
 		transition: all 0.2s ease;
 	}
 	&__log-expand {
-		margin-left: auto;
+		flex: 1;
+		text-align: right;
 		cursor: pointer;
 	}
 	&__log-message-entry {
 		display: flex;
-		margin-bottom: 2.5rem;
+		margin-bottom: 1.6rem;
 		animation: fadeIn 0.5s ease-in 1 forwards;
+		.crowdsourcing-annotations__log-message-info {
+			margin-bottom: 0.2rem;
+		}
 		&.-from-me {
+			.crowdsourcing-annotations__log-message-user-name {
+				display: none;
+			}
 			flex-direction: row-reverse;
 			.crowdsourcing-annotations__log-speech-bubble {
+				background: #d6d6d6;
 				margin-right: 1.8rem;
 				margin-left: 0;
-			}
-			.crowdsourcing-annotations__log-speech-bubble {
+				max-width: calc(100% - 50px);
 				&::before {
 					border-left: 10px solid #E0E8ED;
 					border-right: none;
@@ -425,14 +432,25 @@
 					left: unset;
 				}
 				&::after {
-					border-left: 8px solid #FDFDFE;
+					border-left: 8px solid #d6d6d6;
 					border-right: none;
 					right: -8px;
 					left: unset;
 				}
 			}
+			.crowdsourcing-annotations__log-round-avatar {
+				display: none;
+			}
+		}
+		.crowdsourcing-annotations__log-message-time-stamp {
+			font-size: 1.1rem;
+			padding-left: 0rem;
+			margin-left: 0rem;
+			color: #949494;
+			padding-top: 2px;
 		}
 	}
+	
 	&__log-message-info {
 		margin-bottom: 0.6rem;
 		display: flex;
@@ -447,6 +465,7 @@
 		font-size: 1.2rem;
 		padding-left: 0.5rem;
 		margin-left: 1.2rem;
+		color: #909090;
 	}
 	&__log-round-avatar {
 		border-radius: 50%;
@@ -479,7 +498,7 @@
 		}
 	}
 	&__log-speech-bubble {
-		background: white;
+		background: #f6f6f6;
 		border-radius: 6px;
 		border: 1px solid #E0E8ED;
 		box-shadow: 0 2px 4px rgba(0, 0, 0, 0.04);
@@ -491,7 +510,7 @@
 		max-width: calc(100% - 120px);
 		&:after {
 			border: 8px solid transparent;
-			border-right: 8px solid #FDFDFE;
+			border-right: 8px solid #f6f6f6;
 			border-left: none;
 			content: "";
 			display: block;
