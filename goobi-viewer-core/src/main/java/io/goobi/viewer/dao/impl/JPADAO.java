@@ -2538,12 +2538,12 @@ public class JPADAO implements IDAO {
                 subKey = mainTableKey + "." + subKey;
                 String where = null;
                 switch (subKey) {
-                    case "a.creatorId":
-                    case "a.reviewerId":
-                        where = subKey + "=:" + keyValueParam;
-                        break;
                     case "a.groupOwner":
                         where = mainTableKey + ".userGroup.owner IN (SELECT g.owner FROM UserGroup g WHERE g.owner.id=:" + keyValueParam + ")";
+                        break;
+                    case "a.name":
+                        where = mainTableKey + ".id IN (SELECT t.owner.id FROM CampaignTranslation t WHERE t.tag='title' AND UPPER(t.value) LIKE :"
+                                + keyValueParam + ")";
                         break;
                     default:
                         where = "UPPER(" + subKey + ") LIKE :" + keyValueParam;
@@ -2554,13 +2554,11 @@ public class JPADAO implements IDAO {
             }
         }
         if (!whereStatements.isEmpty()) {
-            StringBuilder sbCreatorReviewer = new StringBuilder();
+            StringBuilder sbOwner = new StringBuilder();
             StringBuilder sbOtherStatements = new StringBuilder();
             for (String whereStatement : whereStatements) {
-                if (whereStatement.startsWith("a.creatorId")) {
-                    sbCreatorReviewer.append(whereStatement);
-                } else if (whereStatement.startsWith("a.reviewerId")) {
-                    sbCreatorReviewer.append(" OR ").append(whereStatement);
+                if (whereStatement.startsWith("a.userGroup.owner")) {
+                    sbOwner.append(whereStatement);
                 } else {
                     if (sbOtherStatements.length() != 0) {
                         sbOtherStatements.append(" OR ");
@@ -2568,8 +2566,8 @@ public class JPADAO implements IDAO {
                     sbOtherStatements.append(whereStatement);
                 }
             }
-            String filterQuery = " WHERE " + (sbCreatorReviewer.length() > 0 ? "(" + sbCreatorReviewer.toString() + ")" : "");
-            if (sbCreatorReviewer.length() > 0 && sbOtherStatements.length() > 0) {
+            String filterQuery = " WHERE " + (sbOwner.length() > 0 ? sbOwner.toString() : "");
+            if (sbOwner.length() > 0 && sbOtherStatements.length() > 0) {
                 filterQuery += " AND ";
             }
             if (sbOtherStatements.length() > 0) {
