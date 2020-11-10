@@ -2609,7 +2609,7 @@ public class JPADAO implements IDAO {
                 continue;
             }
             String keyValueParam = key.replaceAll("[" + MULTIKEY_SEPARATOR + KEY_FIELD_SEPARATOR + "]", "");
-            if ("creatorId_reviewerId".equals(key)) {
+            if ("creatorId_reviewerId".equals(key) || "campaignId".equals(key) || "generatorId".equals(key)) {
                 params.put(keyValueParam, Long.valueOf(filterValue));
             } else {
                 params.put(keyValueParam, "%" + filterValue.toUpperCase() + "%");
@@ -2627,6 +2627,10 @@ public class JPADAO implements IDAO {
                     case "a.creatorId":
                     case "a.reviewerId":
                         where = subKey + "=:" + keyValueParam;
+                        break;
+                    case "a.generatorId":
+                        where = mainTableKey + ".generatorId IN (SELECT q.id FROM Question q WHERE q.owner IN " +
+                                "(SELECT c FROM Campaign c WHERE c.id=:" + keyValueParam + "))";
                         break;
                     case "a.campaign":
                         where = mainTableKey + ".generatorId IN (SELECT q.id FROM Question q WHERE q.owner IN " +
