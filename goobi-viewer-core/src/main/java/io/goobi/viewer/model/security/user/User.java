@@ -301,7 +301,9 @@ public class User implements ILicensee, HttpSessionBindingListener, Serializable
      * If the display name is the e-mail address and the logged in user (!= this user) is not an superuser, obfuscate the address.
      *
      * @return a {@link java.lang.String} object.
+     * @deprecated use {@link #getDisplayName()}  instead
      */
+    @Deprecated
     public String getDisplayNameObfuscated() {
         String displayName = getDisplayName();
         if (!displayName.equals(nickName) && BeanUtils.getUserBean() != null && !BeanUtils.getUserBean().isAdmin()) {

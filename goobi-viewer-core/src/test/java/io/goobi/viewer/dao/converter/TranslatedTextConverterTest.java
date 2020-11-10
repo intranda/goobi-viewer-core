@@ -77,5 +77,19 @@ public class TranslatedTextConverterTest {
 
         
     }
+    
+    @Test
+    public void testConvertSingleValueCurrectly() {
+        TranslatedText value = new TranslatedText(locales, Locale.GERMAN);
+        value.setText(GERMANVALUE, Locale.GERMAN);
+
+        String json = converter.convertToDatabaseColumn(value);
+        TranslatedText restoredValue = converter.convertToEntityAttribute(json);
+        
+        Assert.assertEquals(GERMANVALUE, restoredValue.getValue(Locale.GERMAN).orElse(null));
+        Assert.assertNull(restoredValue.getValue(Locale.ENGLISH).orElse(null));
+
+
+    }
 
 }

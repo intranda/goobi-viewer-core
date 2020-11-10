@@ -69,7 +69,7 @@ public class TranslatedTextConverter implements AttributeConverter<TranslatedTex
         Map<String, String> map = attribute.toMap().entrySet().stream()
                 .collect(Collectors.toMap(e -> e.getKey().getLanguage(), e -> StringEscapeUtils.escapeHtml(e.getValue())));
         MultiLanguageMetadataValue v = new MultiLanguageMetadataValue(map);
-        String s = mapper.writeValueAsString(v);
+        String s = mapper.writeValueAsString(attribute);
         return s;
         } catch (JsonProcessingException e1) {
             throw new IllegalArgumentException("Cannot convert " + attribute + " to String");

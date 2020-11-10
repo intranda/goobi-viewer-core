@@ -50,7 +50,7 @@ public class UserJsonFacade {
     public final boolean superuser;
 
     public UserJsonFacade(User user, HttpServletRequest request) {
-        this.name = user.getDisplayNameObfuscated();
+        this.name = user.getDisplayName();
         this.userId = user.getId();
         this.active = user.isActive();
         this.suspended = user.isSuspended();

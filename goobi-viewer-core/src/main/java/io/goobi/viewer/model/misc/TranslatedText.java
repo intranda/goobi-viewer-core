@@ -22,12 +22,16 @@ import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
 
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+
 import de.intranda.metadata.multilanguage.MultiLanguageMetadataValue;
+import io.goobi.viewer.api.rest.serialization.TranslatedTextSerializer;
 
 /**
  * @author florian
  *
  */
+@JsonSerialize(using=TranslatedTextSerializer.class)
 public class TranslatedText extends MultiLanguageMetadataValue implements IPolyglott {
 
     private Locale selectedLocale;
@@ -81,7 +85,9 @@ public class TranslatedText extends MultiLanguageMetadataValue implements IPolyg
     }
     
     public Map<Locale, String> toMap() {
-        return super.getValues().stream().filter(vp -> StringUtils.isNotBlank(vp.getValue())).collect(Collectors.toMap(ValuePair::getLocale, ValuePair::getValue));
+        return super.getValues().stream()
+                .filter(vp -> StringUtils.isNotBlank(vp.getValue()))
+                .collect(Collectors.toMap(ValuePair::getLocale, ValuePair::getValue));
     }
 
     @Override
