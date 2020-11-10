@@ -26,6 +26,8 @@ import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_MANIFEST_AUTOCOMPLETE;
 import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_MANIFEST_SEARCH;
 import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_METADATA_SOURCE;
 import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_NER_TAGS;
+import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_PAGES;
+import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_PAGES_ANNOTATIONS;
 import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_PLAINTEXT;
 import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_PLAINTEXT_ZIP;
 import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_RECORD;
@@ -61,6 +63,9 @@ import org.jdom2.JDOMException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.fasterxml.jackson.core.JsonParseException;
+import com.fasterxml.jackson.databind.JsonMappingException;
+
 import de.intranda.api.annotation.IAnnotationCollection;
 import de.intranda.api.annotation.wa.collection.AnnotationPage;
 import de.intranda.api.iiif.presentation.IPresentationModelElement;
@@ -92,6 +97,8 @@ import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.exceptions.ViewerConfigurationException;
 import io.goobi.viewer.model.iiif.presentation.builder.BuildMode;
+import io.goobi.viewer.model.iiif.presentation.builder.OpenAnnotationBuilder;
+import io.goobi.viewer.model.iiif.presentation.builder.WebAnnotationBuilder;
 import io.goobi.viewer.model.iiif.search.IIIFSearchBuilder;
 import io.goobi.viewer.model.security.AccessConditionUtils;
 import io.goobi.viewer.model.security.IPrivilegeHolder;
@@ -183,18 +190,18 @@ public class RecordResource {
     public IAnnotationCollection getAnnotationsForRecord(
             @Parameter(
                     description = "annotation format of the response. If it is 'oa' the comments will be delivered as OpenAnnotations, otherwise as W3C-Webannotations") @QueryParam("format") String format)
-            throws DAOException {
+            throws DAOException, PresentationException, IndexUnreachableException {
 
         ApiPath apiPath = urls.path(RECORDS_RECORD, RECORDS_ANNOTATIONS).params(pi);
-        if ("oa".equalsIgnoreCase(format)) {
-            URI uri = URI.create(apiPath.query("format", "oa").build());
-            return new AnnotationsResourceBuilder(urls).getOAnnotationListForRecord(pi, uri);
+            if ("oa".equalsIgnoreCase(format)) {
+                URI uri = URI.create(apiPath.query("format", "oa").build());
+                return new OpenAnnotationBuilder(urls).getCrowdsourcingAnnotationCollection(uri, pi, false);
+            } else {
+                URI uri = URI.create(apiPath.build());
+                return new WebAnnotationBuilder(urls).getCrowdsourcingAnnotationCollection(uri, pi, false);
+            }
+
         }
-
-        URI uri = URI.create(apiPath.build());
-        return new AnnotationsResourceBuilder(urls).getWebAnnotationCollectionForRecord(pi, uri);
-
-    }
 
     @GET
     @javax.ws.rs.Path(RECORDS_ANNOTATIONS + "/{page}")

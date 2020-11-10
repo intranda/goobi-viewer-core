@@ -58,6 +58,7 @@ import io.goobi.viewer.model.iiif.presentation.builder.BuildMode;
 import io.goobi.viewer.model.iiif.presentation.builder.CollectionBuilder;
 import io.goobi.viewer.model.iiif.presentation.builder.LayerBuilder;
 import io.goobi.viewer.model.iiif.presentation.builder.ManifestBuilder;
+import io.goobi.viewer.model.iiif.presentation.builder.OpenAnnotationBuilder;
 import io.goobi.viewer.model.iiif.presentation.builder.SequenceBuilder;
 import io.goobi.viewer.model.iiif.presentation.builder.StructureBuilder;
 import io.goobi.viewer.model.viewer.BrowseDcElement;
@@ -185,7 +186,7 @@ public class IIIFPresentationResourceBuilder {
                 getSequenceBuilder().addSeeAlsos(canvas, doc, page);
                 getSequenceBuilder().addOtherContent(doc, page, canvas, false);
                 getSequenceBuilder().addCrowdourcingAnnotations(Collections.singletonList(canvas),
-                        getSequenceBuilder().getCrowdsourcingAnnotations(pi, false), null);
+                        new OpenAnnotationBuilder(urls).getCrowdsourcingAnnotations(pi, false), null);
                 return canvas;
             }
         }

@@ -86,6 +86,8 @@ public class ApiUrls extends AbstractApiUrlManager {
     public static final String RECORDS_PAGES_ANNOTATIONS = "/{pageNo}/annotations";
     public static final String RECORDS_PAGES_COMMENTS = "/{pageNo}/comments";
     public static final String RECORDS_PAGES_COMMENTS_COMMENT = "/{pageNo}/comments/{id}";
+    public static final String RECORDS_PAGES_TEXT = "/{pageNo}/text";
+
 
     public static final String RECORDS_FILES = "/records/{pi}/files";
     public static final String RECORDS_FILES_PLAINTEXT = "/plaintext/{filename}";
