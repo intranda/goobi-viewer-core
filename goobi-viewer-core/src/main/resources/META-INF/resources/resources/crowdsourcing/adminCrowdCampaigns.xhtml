@@ -37,27 +37,32 @@
                                 <viewerComponent:dataTablePaginator tableValues="#{crowdsourcingBean.lazyModelCampaigns}" />
                             </div>
                             <!-- FILTER -->
-                            <div class="admin__table-filter d-flex justify-content-end align-self-center">
-                                <!-- all -->
-                                <h:commandLink rendered="#{crowdsourcingBean.lazyModelCampaigns.getFilter('visibility') != null}"
-                                    action="#{crowdsourcingBean.filterCampaignsAction(null)}">
-                                    #{msg.admin__crowdsourcing_campaign_visibility_ALL}
-                                </h:commandLink>
-                                <h:outputText rendered="#{crowdsourcingBean.lazyModelCampaigns.getFilter('visibility') == null}"
-                                    value="#{msg.admin__crowdsourcing_campaign_visibility_ALL}" /> (#{crowdsourcingBean.getCampaignCount(null)}) |
-                                <h:commandLink rendered="#{crowdsourcingBean.lazyModelCampaigns.getFilter('visibility').value != 'PUBLIC'}"
-                                    action="#{crowdsourcingBean.filterCampaignsAction('PUBLIC')}">
-                                    #{msg.admin__crowdsourcing_campaign_visibility_PUBLIC}
-                                </h:commandLink>
-                                <h:outputText rendered="#{crowdsourcingBean.lazyModelCampaigns.getFilter('visibility').value == 'PUBLIC'}"
-                                    value="#{msg.admin__crowdsourcing_campaign_visibility_PUBLIC}" /> (#{crowdsourcingBean.getCampaignCount('PUBLIC')}) |
-                                <!-- private -->
-                                <h:commandLink rendered="#{crowdsourcingBean.lazyModelCampaigns.getFilter('visibility').value != 'PRIVATE'}"
-                                    action="#{crowdsourcingBean.filterCampaignsAction('PRIVATE')}">
-                                    #{msg.admin__crowdsourcing_campaign_visibility_PRIVATE}
-                                </h:commandLink>
-                                <h:outputText rendered="#{crowdsourcingBean.lazyModelCampaigns.getFilter('visibility').value == 'PRIVATE'}"
-                                    value="#{msg.admin__crowdsourcing_campaign_visibility_PRIVATE}" /> (#{crowdsourcingBean.getCampaignCount('PRIVATE')})
+<!--                             <div class="admin__table-filter d-flex justify-content-end align-self-center"> -->
+<!--                                 all -->
+<!--                                 <h:commandLink rendered="#{crowdsourcingBean.lazyModelCampaigns.getFilter('visibility') != null}" -->
+<!--                                     action="#{crowdsourcingBean.filterCampaignsAction(null)}"> -->
+<!--                                     #{msg.admin__crowdsourcing_campaign_visibility_ALL} -->
+<!--                                 </h:commandLink> -->
+<!--                                 <h:outputText rendered="#{crowdsourcingBean.lazyModelCampaigns.getFilter('visibility') == null}" -->
+<!--                                     value="#{msg.admin__crowdsourcing_campaign_visibility_ALL}" /> (#{crowdsourcingBean.getCampaignCount(null)}) | -->
+<!--                                 <h:commandLink rendered="#{crowdsourcingBean.lazyModelCampaigns.getFilter('visibility').value != 'PUBLIC'}" -->
+<!--                                     action="#{crowdsourcingBean.filterCampaignsAction('PUBLIC')}"> -->
+<!--                                     #{msg.admin__crowdsourcing_campaign_visibility_PUBLIC} -->
+<!--                                 </h:commandLink> -->
+<!--                                 <h:outputText rendered="#{crowdsourcingBean.lazyModelCampaigns.getFilter('visibility').value == 'PUBLIC'}" -->
+<!--                                     value="#{msg.admin__crowdsourcing_campaign_visibility_PUBLIC}" /> (#{crowdsourcingBean.getCampaignCount('PUBLIC')}) | -->
+<!--                                 private -->
+<!--                                 <h:commandLink rendered="#{crowdsourcingBean.lazyModelCampaigns.getFilter('visibility').value != 'PRIVATE'}" -->
+<!--                                     action="#{crowdsourcingBean.filterCampaignsAction('PRIVATE')}"> -->
+<!--                                     #{msg.admin__crowdsourcing_campaign_visibility_PRIVATE} -->
+<!--                                 </h:commandLink> -->
+<!--                                 <h:outputText rendered="#{crowdsourcingBean.lazyModelCampaigns.getFilter('visibility').value == 'PRIVATE'}" -->
+<!--                                     value="#{msg.admin__crowdsourcing_campaign_visibility_PRIVATE}" /> (#{crowdsourcingBean.getCampaignCount('PRIVATE')}) -->
+<!--                             </div> -->
+                            
+                            <div class="admin__table-filter">
+                                <viewerComponent:dataTableColumnFilter key="search"
+                                    filter="#{crowdsourcingBean.lazyModelCampaigns.getFilter('name')}"/>
                             </div>
                         </div>
                         <div class="admin__table-content">

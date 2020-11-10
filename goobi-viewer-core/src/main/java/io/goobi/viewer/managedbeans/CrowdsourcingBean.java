@@ -167,6 +167,7 @@ public class CrowdsourcingBean implements Serializable {
                 }
             });
             lazyModelCampaigns.setEntriesPerPage(DEFAULT_ROWS_PER_PAGE);
+            lazyModelCampaigns.setFilters("name");
         }
 
         if (lazyModelAnnotations == null) {
@@ -226,7 +227,13 @@ public class CrowdsourcingBean implements Serializable {
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
     public long getCampaignCount(CampaignVisibility visibility) throws DAOException {
-        Map<String, String> filters = visibility != null ? Collections.singletonMap("visibility", visibility.name()) : null;
+        Map<String, String> filters = new HashMap<>();
+        if (visibility != null) {
+            filters.put("visibility", visibility.name());
+        }
+        if (userBean.getUser() != null && !userBean.getUser().isSuperuser()) {
+            filters.put("groupOwner", String.valueOf(userBean.getUser().getId()));
+        }
         return DataManager.getInstance().getDao().getCampaignCount(filters);
     }
 
