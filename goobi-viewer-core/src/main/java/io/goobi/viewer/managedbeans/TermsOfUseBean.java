@@ -141,6 +141,11 @@ public class TermsOfUseBean implements Serializable, IPolyglott {
 
     }
 
+    @Override
+    public boolean isValid(Locale locale) {
+        return isComplete(locale);
+    }
+
     public String getTitleForDisplay() {
         return this.termsOfUse.getTitleIfExists(BeanUtils.getLocale().getLanguage())
                 .orElse(this.termsOfUse.getTitleIfExists(BeanUtils.getDefaultLocale().getLanguage())
@@ -152,5 +157,7 @@ public class TermsOfUseBean implements Serializable, IPolyglott {
                 .orElse(this.termsOfUse.getDescriptionIfExists(BeanUtils.getDefaultLocale().getLanguage())
                         .orElse(""));
     }
+
+
 
 }

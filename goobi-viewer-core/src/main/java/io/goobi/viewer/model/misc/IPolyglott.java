@@ -22,6 +22,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 
+import org.opensaml.saml.saml2.common.IsTimeboundSAMLObjectValidPredicate;
+
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
 
 /**
@@ -32,8 +34,23 @@ import io.goobi.viewer.managedbeans.utils.BeanUtils;
  */
 public interface IPolyglott {
 
+    /**
+     * 
+     * @param locale
+     * @return true if {@link #isValid(Locale)} returns true for the given locale 
+     * and all fields contain a value which have a value in the default locale.
+     * For the default locale, {@link #isComplete(Locale)} and {@link #isValid(Locale)} are identical.
+     * For implementations with only one field, both methods are also always identical
+     */
     public boolean isComplete(Locale locale);
 
+    /**
+     * 
+     * @param locale
+     * @return true if all required fields contain a value in the given locale
+     */
+    public boolean isValid(Locale locale);
+    
     public Locale getSelectedLocale();
 
     public void setSelectedLocale(Locale locale);
