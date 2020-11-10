@@ -17,7 +17,7 @@
 
     <ui:define name="content">
         <f:view contentType="text/html" encoding="utf-8">
-            <ui:fragment rendered="#{userBean.admin}">
+            <ui:fragment rendered="#{userBean.admin or crowdsourcingBean.isUserOwnsAnyCampaigns(userBean.user)}">
                 <div id="adminDashboard">
                     <div class="admin__title-bar">
                         <h2 class="admin__title">#{msg.admin__dashboard}</h2>
@@ -62,6 +62,7 @@
 
 
                             <!-- CMS PAGES -->
+                            <ui:fragment rendered="#{userBean.admin}">
                             <div class="admin__boxed-entry pb-0 -no-actions -w66">
                                 <div class="row">
                                     <h3 class="col-9">#{msg.cms_overview}</h3>
@@ -113,10 +114,12 @@
                                     </ui:repeat>
                                 </div>
                             </div>
+                            </ui:fragment>
 
 
                             <!-- LICENSES -->
-                            <ui:fragment rendered="#{not empty adminBean.notConfiguredAccessConditions}">
+                            
+                            <ui:fragment rendered="#{userBean.admin and not empty adminBean.notConfiguredAccessConditions}">
                                 <h:form prependId="false" styleClass="admin__boxed-entry -no-actions -w33 -danger">
                                     <div class="row">
                                         <h3 class="col-9">#{msg.admin__licenses}</h3>
@@ -191,7 +194,7 @@
 
 
                             <!-- MATOMO -->
-                            <ui:fragment rendered="#{configurationBean.piwikTracking}">
+                            <ui:fragment rendered="#{userBean.admin and configurationBean.piwikTracking}">
                                 <div class="admin__boxed-entry -no-actions -w33">
                                     <div class="row">
                                         <h3 class="col-12">#{msg.admin__dashboard_matomo_title}</h3>
