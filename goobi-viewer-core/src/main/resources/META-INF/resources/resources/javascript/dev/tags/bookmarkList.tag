@@ -55,7 +55,8 @@
 			</div>
 			<div class="col-1 no-padding {mainClass}-remove">
 				<button class="btn btn--clean" type="button"
-					data-bookshelf-type="delete" onclick="{remove}">
+					data-bookshelf-type="delete" onclick="{remove}"
+					aria-label="{msg('bookmarkList_removeFromBookmarkList')}">
 					<i class="fa fa-ban" aria-hidden="true"></i>
 				</button>
 			</div>

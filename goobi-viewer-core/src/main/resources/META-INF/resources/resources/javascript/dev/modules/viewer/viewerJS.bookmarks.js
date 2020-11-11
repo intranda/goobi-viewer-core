@@ -29,7 +29,7 @@ var viewerJS = ( function( viewer ) {
     var _messageKeys = ['bookmarkList_reset', 'bookmarkList_delete', 'bookmarkList_session_mail_sendList', 
         'action__search_in_bookmarks', 'bookmarkList_resetConfirm', 'bookmarkList_noItemsAvailable', 
         'bookmarkList_selectBookmarkList', 'bookmarkList_addNewBookmarkList', 'viewMiradorComparison',
-        'bookmarkList_type_label', 'bookmarkList_typeRecord', 'bookmarkList_typePage'];
+        'bookmarkList_type_label', 'bookmarkList_typeRecord', 'bookmarkList_typePage', 'bookmarkList_removeFromBookmarkList'];
     var _defaults = {
         root: '',
         rest: '',
