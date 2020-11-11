@@ -100,6 +100,7 @@
 					&:focus {}
 				}
 			}
+			/* BOOKMARK DROPDOWN */
 			&__bookmarks-list-wrapper {
 				.-opened {
 					.fa-caret-down {
@@ -114,6 +115,7 @@
 			&__bookmarks-small-list {
 				display: none;
 				padding: 0.5rem 1rem 0.5rem 1.5rem;
+				background: #3a3a3a;
 			}
 			&__bookmarks-entry {
 				display: flex;
@@ -133,14 +135,16 @@
 			}
 			&__bookmarks-name a, 
 			&__bookmarks-icon-list .fa, 
-			&__bookmarks-overview-link {
-				&:hover {}
-			}
 			&__bookmarks-icon-list {
-				display: flex;
 				a {
 					margin-right: 0.7rem;
 				}
+				&:hover {
+					color: #ffd65b;
+				}
+			}
+			&__bookmarks-icon-list {
+				display: flex;
 			}
 			&__bookmarks-counter {
 				padding: 0 0.3rem;
@@ -152,6 +156,9 @@
 			}
 			&__bookmarks-overview-link {
 				margin-left: auto;
+				&:hover {
+					color: #ffd65b;
+				}
 			}
 			&__bookmarks-trigger {
 				.mx-no-style-button;
