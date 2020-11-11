@@ -117,7 +117,7 @@ public final class SearchHelper {
     public static final int SEARCH_TYPE_CALENDAR = 3;
     /** Constant <code>SEARCH_FILTER_ALL</code> */
     public static final SearchFilter SEARCH_FILTER_ALL = new SearchFilter("filter_ALL", "ALL");
-    public static final String AGGREGATION_QUERY_PREFIX= "{!join from=PI_TOPSTRUCT to=PI}";
+    public static final String AGGREGATION_QUERY_PREFIX = "{!join from=PI_TOPSTRUCT to=PI}";
     /** Standard Solr query for all records and anchors. */
     public static final String ALL_RECORDS_QUERY = "+(ISWORK:true ISANCHOR:true)";
     /** Constant <code>DEFAULT_DOCSTRCT_WHITELIST_FILTER_QUERY="(ISWORK:true OR ISANCHOR:true) AND NOT("{trunked}</code> */
@@ -714,7 +714,7 @@ public final class SearchHelper {
         int[] ret = { -1, -1 };
 
         String searchString = String.format("+%s:*", SolrConstants._CALENDAR_YEAR);
-        if(StringUtils.isNotBlank(subQuery)) {
+        if (StringUtils.isNotBlank(subQuery)) {
             searchString += " " + subQuery;
         }
 
@@ -2272,7 +2272,6 @@ public final class SearchHelper {
      *
      * @param rawQuery a {@link java.lang.String} object.
      * @param aggregateHits a boolean.
-     * @should add join statement if aggregateHits true
      * @return a {@link java.lang.String} object.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * 
@@ -2288,12 +2287,21 @@ public final class SearchHelper {
      * @param aggregateHits a boolean.
      * @param nh
      * @param request
-     * @should add join statement if aggregateHits true
      * @return a {@link java.lang.String} object.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
+     * @should add join statement if aggregateHits true
+     * @should not add join statement if aggregateHits false
+     * @should remove existing join statement
      */
     public static String buildFinalQuery(String rawQuery, boolean aggregateHits, HttpServletRequest request) throws IndexUnreachableException {
+        if (rawQuery == null) {
+            throw new IllegalArgumentException("rawQuery may not be null");
+        }
+
         StringBuilder sbQuery = new StringBuilder();
+        if (rawQuery.contains(AGGREGATION_QUERY_PREFIX)) {
+            rawQuery = rawQuery.replace(AGGREGATION_QUERY_PREFIX, "");
+        }
         if (aggregateHits) {
             sbQuery.append(AGGREGATION_QUERY_PREFIX);
             // https://wiki.apache.org/solr/FieldCollapsing
@@ -2540,7 +2548,7 @@ public final class SearchHelper {
 
         return s;
     }
-    
+
     /**
      * 
      * @param accessCondition
@@ -2553,6 +2561,7 @@ public final class SearchHelper {
         if (escape) {
             accessCondition = BeanUtils.escapeCriticalUrlChracters(accessCondition);
         }
-        return AGGREGATION_QUERY_PREFIX + "+(ISWORK:true ISANCHOR:true DOCTYPE:UGC)" + " +" + SolrConstants.ACCESSCONDITION + ":\"" + accessCondition + "\"";
+        return AGGREGATION_QUERY_PREFIX + "+(ISWORK:true ISANCHOR:true DOCTYPE:UGC)" + " +" + SolrConstants.ACCESSCONDITION + ":\"" + accessCondition
+                + "\"";
     }
 }

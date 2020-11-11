@@ -1256,4 +1256,35 @@ public class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
                 "+(ISWORK:true ISANCHOR:true DOCTYPE:UGC) +" + SolrConstants.ACCESSCONDITION + ":\"foo/bar\"",
                 SearchHelper.getQueryForAccessCondition("foo/bar", false));
     }
+
+    /**
+     * @see SearchHelper#buildFinalQuery(String,boolean,HttpServletRequest)
+     * @verifies add join statement if aggregateHits true
+     */
+    @Test
+    public void buildFinalQuery_shouldAddJoinStatementIfAggregateHitsTrue() throws Exception {
+        String finalQuery = SearchHelper.buildFinalQuery("DEFAULT:*", true, null);
+        Assert.assertEquals(SearchHelper.AGGREGATION_QUERY_PREFIX + "+(DEFAULT:*) -BOOL_HIDE:true -DC:collection1 -DC:collection2", finalQuery);
+    }
+
+    /**
+     * @see SearchHelper#buildFinalQuery(String,boolean,HttpServletRequest)
+     * @verifies not add join statement if aggregateHits false
+     */
+    @Test
+    public void buildFinalQuery_shouldNotAddJoinStatementIfAggregateHitsFalse() throws Exception {
+        String finalQuery = SearchHelper.buildFinalQuery("DEFAULT:*", false, null);
+        Assert.assertEquals("+(DEFAULT:*) -BOOL_HIDE:true -DC:collection1 -DC:collection2", finalQuery);
+    }
+
+    /**
+     * @see SearchHelper#buildFinalQuery(String,boolean,HttpServletRequest)
+     * @verifies remove existing join statement
+     */
+    @Test
+    public void buildFinalQuery_shouldRemoveExistingJoinStatement() throws Exception {
+        String finalQuery = SearchHelper.buildFinalQuery(SearchHelper.AGGREGATION_QUERY_PREFIX + "DEFAULT:*", true, null);
+        Assert.assertEquals(SearchHelper.AGGREGATION_QUERY_PREFIX + "+(DEFAULT:*) -BOOL_HIDE:true -DC:collection1 -DC:collection2", finalQuery);
+    }
+
 }
