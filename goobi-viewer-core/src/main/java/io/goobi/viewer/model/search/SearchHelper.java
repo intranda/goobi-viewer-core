@@ -117,6 +117,7 @@ public final class SearchHelper {
     public static final int SEARCH_TYPE_CALENDAR = 3;
     /** Constant <code>SEARCH_FILTER_ALL</code> */
     public static final SearchFilter SEARCH_FILTER_ALL = new SearchFilter("filter_ALL", "ALL");
+    public static final String AGGREGATION_QUERY_PREFIX= "{!join from=PI_TOPSTRUCT to=PI}";
     /** Standard Solr query for all records and anchors. */
     public static final String ALL_RECORDS_QUERY = "+(ISWORK:true ISANCHOR:true)";
     /** Constant <code>DEFAULT_DOCSTRCT_WHITELIST_FILTER_QUERY="(ISWORK:true OR ISANCHOR:true) AND NOT("{trunked}</code> */
@@ -2294,7 +2295,7 @@ public final class SearchHelper {
     public static String buildFinalQuery(String rawQuery, boolean aggregateHits, HttpServletRequest request) throws IndexUnreachableException {
         StringBuilder sbQuery = new StringBuilder();
         if (aggregateHits) {
-            sbQuery.append("{!join from=PI_TOPSTRUCT to=PI}");
+            sbQuery.append(AGGREGATION_QUERY_PREFIX);
             // https://wiki.apache.org/solr/FieldCollapsing
             // https://wiki.apache.org/solr/Join
         }
@@ -2538,5 +2539,20 @@ public final class SearchHelper {
         }
 
         return s;
+    }
+    
+    /**
+     * 
+     * @param accessCondition
+     * @param escape
+     * @return
+     * @should build escaped query correctly
+     * @should build not escaped query correctly
+     */
+    public static String getQueryForAccessCondition(String accessCondition, boolean escape) {
+        if (escape) {
+            accessCondition = BeanUtils.escapeCriticalUrlChracters(accessCondition);
+        }
+        return AGGREGATION_QUERY_PREFIX + "+(ISWORK:true ISANCHOR:true DOCTYPE:UGC)" + " +" + SolrConstants.ACCESSCONDITION + ":\"" + accessCondition + "\"";
     }
 }

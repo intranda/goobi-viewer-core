@@ -1884,7 +1884,7 @@ public class ActiveDocumentBean implements Serializable {
         this.deleteRecordKeepTrace = deleteRecordKeepTrace;
     }
 
-    public CMSSidebarElement getMapWidget() throws PresentationException {
+    public CMSSidebarElement getMapWidget() throws PresentationException, DAOException {
 
         CMSSidebarElement widget = new CMSSidebarElement();
         widget.setType("widgetGeoMap");

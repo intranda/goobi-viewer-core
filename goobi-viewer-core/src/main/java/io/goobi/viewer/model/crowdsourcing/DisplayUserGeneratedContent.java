@@ -21,8 +21,6 @@ import java.text.NumberFormat;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
@@ -33,16 +31,15 @@ import org.slf4j.LoggerFactory;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import de.intranda.api.annotation.IResource;
 import de.intranda.api.annotation.ITypedResource;
 import de.intranda.api.annotation.wa.TextualResource;
 import de.intranda.api.annotation.wa.TypedResource;
 import io.goobi.viewer.controller.DateTools;
 import io.goobi.viewer.controller.HtmlParser;
 import io.goobi.viewer.controller.SolrConstants;
+import io.goobi.viewer.controller.SolrSearchIndex;
 import io.goobi.viewer.controller.StringTools;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
-import io.goobi.viewer.exceptions.ViewerConfigurationException;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.model.security.user.User;
 import io.goobi.viewer.model.viewer.PageType;
@@ -92,7 +89,7 @@ public class DisplayUserGeneratedContent {
     private Integer page = null;
 
     private String label;
-    
+
     private String extendendLabel = null;
 
     private String displayCoordinates;
@@ -104,6 +101,8 @@ public class DisplayUserGeneratedContent {
     private User updatedBy;
 
     private Date dateUpdated;
+
+    private String accessCondition;
 
     /**
      * Default constructor (needed for persistence).
@@ -229,18 +228,17 @@ public class DisplayUserGeneratedContent {
     public String getDisplayLabel() {
         return StringUtils.isNotEmpty(label) ? label : pi;
     }
-    
+
     /**
      * @return the extendendLabel
      */
     public String getExtendendLabel() {
-        if(StringUtils.isNotBlank(this.extendendLabel)) {            
+        if (StringUtils.isNotBlank(this.extendendLabel)) {
             return extendendLabel;
-        } else {
-            return label;
         }
+        return label;
     }
-    
+
     /**
      * @param extendendLabel the extendendLabel to set
      */
@@ -318,6 +316,20 @@ public class DisplayUserGeneratedContent {
      */
     public void setDateUpdated(Date dateUpdated) {
         this.dateUpdated = dateUpdated;
+    }
+
+    /**
+     * @return the accessCondition
+     */
+    public String getAccessCondition() {
+        return accessCondition;
+    }
+
+    /**
+     * @param accessCondition the accessCondition to set
+     */
+    public void setAccessCondition(String accessCondition) {
+        this.accessCondition = accessCondition;
     }
 
     /**
@@ -530,9 +542,11 @@ public class DisplayUserGeneratedContent {
         ret.setAreaString((String) doc.getFieldValue(SolrConstants.UGCCOORDS));
         ret.setDisplayCoordinates((String) doc.getFieldValue(SolrConstants.UGCCOORDS));
         ret.setPi((String) doc.getFieldValue(SolrConstants.PI_TOPSTRUCT));
+        ret.setAccessCondition(SolrSearchIndex.getSingleFieldStringValue(doc, SolrConstants.ACCESSCONDITION));
         if (doc.containsKey(SolrConstants.MD_BODY)) {
             Object body = doc.getFieldValue(SolrConstants.MD_BODY);
             if (body instanceof List) {
+                @SuppressWarnings("unchecked")
                 List<String> features = (List<String>) body;
                 if (features.size() == 1) {
                     ret.setAnnotationBody(features.get(0));
@@ -564,7 +578,7 @@ public class DisplayUserGeneratedContent {
     /**
      * @param type
      * @param body
-     * @return  the text if the body is a TextualResource. Otherwise return null
+     * @return the text if the body is a TextualResource. Otherwise return null
      */
     private static String createExtendedLabelFromBody(ContentType type, ITypedResource body) {
         switch (type) {
@@ -572,7 +586,10 @@ public class DisplayUserGeneratedContent {
                 if (body instanceof TextualResource) {
                     return ((TextualResource) body).getText();
                 }
+            default:
+                break;
         }
+
         return null;
     }
 
@@ -590,9 +607,8 @@ public class DisplayUserGeneratedContent {
             default:
                 if (body instanceof TextualResource) {
                     return HtmlParser.getPlaintext(((TextualResource) body).getText());
-                } else {
-                    return "admin__crowdsourcing_question_type_" + type.toString();
                 }
+                return "admin__crowdsourcing_question_type_" + type.toString();
         }
     }
 

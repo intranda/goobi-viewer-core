@@ -19,9 +19,9 @@ import java.util.List;
 
 import org.junit.After;
 import org.junit.Before;
-import org.junit.Test;
 
 import io.goobi.viewer.AbstractSolrEnabledTest;
+import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.model.crowdsourcing.DisplayUserGeneratedContent;
@@ -33,10 +33,11 @@ import io.goobi.viewer.model.crowdsourcing.DisplayUserGeneratedContent;
 public class ContentBeanTest extends AbstractSolrEnabledTest {
 
     private static final String PI = "AC02949962";
-    
+
     /**
      * @throws java.lang.Exception
      */
+    @Override
     @Before
     public void setUp() throws Exception {
     }
@@ -44,13 +45,14 @@ public class ContentBeanTest extends AbstractSolrEnabledTest {
     /**
      * @throws java.lang.Exception
      */
+    @Override
     @After
     public void tearDown() throws Exception {
     }
 
     //Needs annotations in test system
-//    @Test
-    public void testLoadALlAnnotations() throws PresentationException, IndexUnreachableException {
+    //    @Test
+    public void testLoadALlAnnotations() throws PresentationException, IndexUnreachableException, DAOException {
         ContentBean bean = new ContentBean();
         List<DisplayUserGeneratedContent> ugcList = bean.getUserGeneratedContentsForDisplay(PI);
         for (DisplayUserGeneratedContent ugc : ugcList) {

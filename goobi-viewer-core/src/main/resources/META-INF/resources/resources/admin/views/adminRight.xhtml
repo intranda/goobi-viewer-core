@@ -155,7 +155,9 @@
                                                     | #{msg.lastLoginDate}:
                                                     <h:outputText value="#{adminBean.currentLicense.user.lastLogin}">
                                                         <!-- Everything longer than MM in this pattern is treated as character for the month to be displayed -->
-                                                        <f:convertDateTime pattern="dd. MMMMMMMMMMMMMMM YYYY" />
+<!--                                                         <f:convertDateTime pattern="dd. MMMMMMMMMMMMMMM YYYY" /> -->
+                                                        <f:converter converterId="localDateTimeConverter" />
+                                                        <f:attribute name="pattern" value="#{navigationHelper.dateTimePattern}" />
                                                     </h:outputText>
                                                 </ui:fragment>
                                             </h:outputText>

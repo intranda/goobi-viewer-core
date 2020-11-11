@@ -607,7 +607,7 @@ public class AdminBean implements Serializable {
             group.setSelectItems(array);
             ret.add(group);
         }
-        
+
         List<Campaign> campaigns = DataManager.getInstance().getDao().getAllCampaigns();
         if (!campaigns.isEmpty()) {
             SelectItemGroup group = new SelectItemGroup(ViewerResourceBundle.getTranslation("admin__crowdsourcing_campaigns", null));
@@ -1722,7 +1722,7 @@ public class AdminBean implements Serializable {
     public long getNumRecordsWithAccessCondition(String accessCondition) throws IndexUnreachableException, PresentationException {
         return DataManager.getInstance()
                 .getSearchIndex()
-                .getHitCount(SolrSearchIndex.getQueryForAccessCondition(accessCondition, false));
+                .getHitCount(SearchHelper.getQueryForAccessCondition(accessCondition, false));
     }
 
     /**
@@ -1731,7 +1731,7 @@ public class AdminBean implements Serializable {
      * @return
      */
     public String getUrlQueryForAccessCondition(String accessCondition) {
-        String query = SolrSearchIndex.getQueryForAccessCondition(accessCondition, true);
+        String query = SearchHelper.getQueryForAccessCondition(accessCondition, true);
         try {
             return URLEncoder.encode(query, StringTools.DEFAULT_ENCODING);
         } catch (UnsupportedEncodingException e) {

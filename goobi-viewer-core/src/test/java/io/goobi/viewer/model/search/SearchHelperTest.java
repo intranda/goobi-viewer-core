@@ -47,6 +47,7 @@ import io.goobi.viewer.controller.SolrSearchIndex;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.managedbeans.NavigationHelper;
+import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.model.search.SearchQueryGroup.SearchQueryGroupOperator;
 import io.goobi.viewer.model.search.SearchQueryItem.SearchItemOperator;
 import io.goobi.viewer.model.security.user.User;
@@ -1232,5 +1233,27 @@ public class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
         QueryResponse resp = SearchHelper.getFilteredTermsFromIndex(bmfc, "", null, null, 0, SolrSearchIndex.MAX_HITS);
         Assert.assertNotNull(resp);
         Assert.assertNotNull(resp.getFacetField(SearchHelper.facetifyField(bmfc.getField())));
+    }
+
+    /**
+     * @see SearchHelper#getQueryForAccessCondition(String,boolean)
+     * @verifies build escaped query correctly
+     */
+    @Test
+    public void getQueryForAccessCondition_shouldBuildEscapedQueryCorrectly() throws Exception {
+        Assert.assertEquals(SearchHelper.AGGREGATION_QUERY_PREFIX +
+                "+(ISWORK:true ISANCHOR:true DOCTYPE:UGC) +" + SolrConstants.ACCESSCONDITION + ":\"foo" + BeanUtils.SLASH_REPLACEMENT + "bar\"",
+                SearchHelper.getQueryForAccessCondition("foo/bar", true));
+    }
+
+    /**
+     * @see SearchHelper#getQueryForAccessCondition(String,boolean)
+     * @verifies build not escaped query correctly
+     */
+    @Test
+    public void getQueryForAccessCondition_shouldBuildNotEscapedQueryCorrectly() throws Exception {
+        Assert.assertEquals(SearchHelper.AGGREGATION_QUERY_PREFIX +
+                "+(ISWORK:true ISANCHOR:true DOCTYPE:UGC) +" + SolrConstants.ACCESSCONDITION + ":\"foo/bar\"",
+                SearchHelper.getQueryForAccessCondition("foo/bar", false));
     }
 }

@@ -465,6 +465,26 @@ public class License implements IPrivilegeHolder, Serializable {
         }
     }
 
+    /* (non-Javadoc)
+     * @see io.goobi.viewer.model.security.IPrivilegeHolder#isPrivViewUgc()
+     */
+    @Override
+    public boolean isPrivViewUgc() {
+        return hasPrivilege(IPrivilegeHolder.PRIV_VIEW_UGC);
+    }
+
+    /* (non-Javadoc)
+     * @see io.goobi.viewer.model.security.IPrivilegeHolder#setPrivViewUgc(boolean)
+     */
+    @Override
+    public void setPrivViewUgc(boolean priv) {
+        if (priv) {
+            privilegesCopy.add(IPrivilegeHolder.PRIV_VIEW_UGC);
+        } else {
+            privilegesCopy.remove(IPrivilegeHolder.PRIV_VIEW_UGC);
+        }
+    }
+
     /**
      * Resets all working copies of lists of various privileges.
      */

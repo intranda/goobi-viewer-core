@@ -27,21 +27,24 @@ import java.util.stream.Collectors;
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.SessionScoped;
 import javax.inject.Named;
+import javax.servlet.http.HttpServletRequest;
 
-import org.apache.commons.lang.NumberUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import de.intranda.api.annotation.IResource;
 import de.intranda.api.annotation.ITypedResource;
 import io.goobi.viewer.controller.DataManager;
+import io.goobi.viewer.controller.SolrConstants;
 import io.goobi.viewer.controller.StringTools;
+import io.goobi.viewer.controller.SolrConstants.DocType;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.model.crowdsourcing.DisplayUserGeneratedContent;
 import io.goobi.viewer.model.crowdsourcing.DisplayUserGeneratedContent.ContentType;
+import io.goobi.viewer.model.security.AccessConditionUtils;
+import io.goobi.viewer.model.security.IPrivilegeHolder;
 import io.goobi.viewer.model.viewer.PhysicalElement;
 
 /**
@@ -87,12 +90,13 @@ public class ContentBean implements Serializable {
      * @param page a {@link io.goobi.viewer.model.viewer.PhysicalElement} object.
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
+     * @throws DAOException
      */
     public List<DisplayUserGeneratedContent> getUserGeneratedContentsForDisplay(String pi)
-            throws PresentationException, IndexUnreachableException {
+            throws PresentationException, IndexUnreachableException, DAOException {
         // logger.trace("getUserGeneratedContentsForDisplay");
         if (pi != null && (userGeneratedContentsForDisplay == null || !pi.equals(this.pi))) {
-            loadUserGeneratedContentsForDisplay(pi);
+            loadUserGeneratedContentsForDisplay(pi, BeanUtils.getRequest());
         }
         if (userGeneratedContentsForDisplay != null && userGeneratedContentsForDisplay.size() > 0) {
             return userGeneratedContentsForDisplay;
@@ -100,14 +104,16 @@ public class ContentBean implements Serializable {
 
         return Collections.emptyList();
     }
-    
+
     /**
      * @param page
      * @return
-     * @throws IndexUnreachableException 
-     * @throws PresentationException 
+     * @throws IndexUnreachableException
+     * @throws PresentationException
+     * @throws DAOException
      */
-    private List<DisplayUserGeneratedContent> getUserGeneratedContentsForDisplay(PhysicalElement page) throws PresentationException, IndexUnreachableException {
+    private List<DisplayUserGeneratedContent> getUserGeneratedContentsForDisplay(PhysicalElement page)
+            throws PresentationException, IndexUnreachableException, DAOException {
         return getUserGeneratedContentsForDisplay(page.getPi()).stream().filter(ugc -> ugc.isOnThisPage(page)).collect(Collectors.toList());
     }
 
@@ -116,11 +122,14 @@ public class ContentBean implements Serializable {
      * loadUserGeneratedContentsForDisplay.
      * </p>
      *
-     * @param page a {@link io.goobi.viewer.model.viewer.PhysicalElement} object.
+     * @param pi Record identifier
+     * @param request
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
+     * @throws DAOException
      */
-    public void loadUserGeneratedContentsForDisplay(String pi) throws PresentationException, IndexUnreachableException {
+    public void loadUserGeneratedContentsForDisplay(String pi, HttpServletRequest request)
+            throws PresentationException, IndexUnreachableException, DAOException {
         logger.trace("loadUserGeneratedContentsForDisplay");
         if (pi == null) {
             logger.debug("pi is null, cannot load");
@@ -132,9 +141,19 @@ public class ContentBean implements Serializable {
                 DataManager.getInstance().getSearchIndex().getDisplayUserGeneratedContentsForRecord(pi);
         for (DisplayUserGeneratedContent ugcContent : allContent) {
             // Do not add empty comments
-            if (!ugcContent.isEmpty()) {
-                userGeneratedContentsForDisplay.add(ugcContent);
+            if (ugcContent.isEmpty()) {
+                continue;
             }
+            if (ugcContent.getAccessCondition() != null) {
+                logger.trace("UGC access condition: {}", ugcContent.getAccessCondition());
+                String query = "+" + SolrConstants.PI_TOPSTRUCT + ":" + pi + " +" + SolrConstants.DOCTYPE + ":" + DocType.UGC.name();
+                if (!AccessConditionUtils.checkAccessPermission(Collections.singleton(ugcContent.getAccessCondition()),
+                        IPrivilegeHolder.PRIV_VIEW_UGC, query, request)) {
+                    logger.trace("User may not view UGC {}", ugcContent.getId());
+                    continue;
+                }
+            }
+            userGeneratedContentsForDisplay.add(ugcContent);
         }
         logger.trace("Loaded {} user generated contents for pi {}", userGeneratedContentsForDisplay.size(), this.pi);
     }
@@ -148,8 +167,9 @@ public class ContentBean implements Serializable {
      * @return a {@link java.util.List} object.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
+     * @throws DAOException
      */
-    public List<List<String>> getCurrentUGCCoords(PhysicalElement page) throws IndexUnreachableException, PresentationException {
+    public List<List<String>> getCurrentUGCCoords(PhysicalElement page) throws IndexUnreachableException, PresentationException, DAOException {
         List<DisplayUserGeneratedContent> currentContents;
         currentContents = getUserGeneratedContentsForDisplay(page);
         if (currentContents == null) {
@@ -172,8 +192,6 @@ public class ContentBean implements Serializable {
         return coords;
     }
 
-
-
     /**
      * Removes script tags from the given string.
      *
@@ -183,24 +201,26 @@ public class ContentBean implements Serializable {
     public String cleanUpValue(String value) {
         return StringTools.stripJS(value);
     }
-    
+
     public String getEscapedBodyUrl(DisplayUserGeneratedContent content) {
         return Optional.ofNullable(content)
-        .map(DisplayUserGeneratedContent::getAnnotationBody)
-        .map(ITypedResource::getId)
-        .map(URI::toString)
-        .map(BeanUtils::escapeCriticalUrlChracters)
-        .orElse("");
+                .map(DisplayUserGeneratedContent::getAnnotationBody)
+                .map(ITypedResource::getId)
+                .map(URI::toString)
+                .map(BeanUtils::escapeCriticalUrlChracters)
+                .orElse("");
     }
 
     /**
      * @param persistentIdentifier
      * @return
-     * @throws IndexUnreachableException 
-     * @throws PresentationException 
+     * @throws IndexUnreachableException
+     * @throws PresentationException
+     * @throws DAOException
      */
-    public boolean hasGeoCoordinateAnnotations(String persistentIdentifier) throws PresentationException, IndexUnreachableException {
+    public boolean hasGeoCoordinateAnnotations(String persistentIdentifier) throws PresentationException, IndexUnreachableException, DAOException {
         return getUserGeneratedContentsForDisplay(persistentIdentifier)
-        .stream().anyMatch(ugc -> ContentType.GEOLOCATION.equals(ugc.getType()));
+                .stream()
+                .anyMatch(ugc -> ContentType.GEOLOCATION.equals(ugc.getType()));
     }
 }
