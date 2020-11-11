@@ -164,6 +164,10 @@
 
         <!-- IMAGE -->
         <main id="fullscreenViewImage" class="fullscreen__view-image">
+        	
+        	<!-- heading for screen readers -->
+        	<h1 class="-sr-only">Goobi viewer</h1>
+            
             <div class="fullscreen__view-image-inner">
                 <!-- VIEW IMAGE -->
                 <ui:fragment rendered="#{activeDocumentBean.viewManager.currentPage.mimeType == 'image'}">
