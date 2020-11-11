@@ -445,7 +445,6 @@ public class AnnotationsResourceBuilder {
             annotation.setBody(getBodyAsResource(anno));
             annotation.setTarget(getTargetAsResource(anno));
             annotation.setMotivation(anno.getMotivation());
-            annotation.setRights(anno.getAccessCondition());
         } catch (IOException e) {
             logger.error("Error creating web annotation from " + anno, e);
         }
