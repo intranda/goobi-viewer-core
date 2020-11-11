@@ -33,7 +33,7 @@
 
 						<div class="admin__content-inner-content">
 
-							<div class="admin__table-tools">
+							<div class="admin__table-tools flex-wrap">
 								<!-- PAGINATOR -->
 								<div class="admin__table-paginator">
 									<viewerComponent:dataTablePaginator
@@ -55,21 +55,21 @@
 								<!-- TITLE ROW -->
 								<div class="row no-gutters admin__table-title">
 									<!-- ANNOTATION COL -->
-									<div class="col-7 d-flex">
+									<div class="col-12 col-lg-7">
 										<viewerComponent:sortingArrow filterType="targetPI"
 											colHeading="#{msg.admin__crowdsourcing_annotation}"
 											list="#{userDataBean.lazyModelAnnotations}" />
 									</div>
 
 									<!-- CAMPAIGN COL -->
-									<div class="col-3 d-flex">
+									<div class="col-3 d-none d-lg-flex">
 										<viewerComponent:sortingArrow filterType="generatorId"
 											colHeading="#{msg.admin__crowdsourcing_campaign}"
 											list="#{userDataBean.lazyModelAnnotations}" />
 									</div>
 
 									<!-- DATE COL -->
-									<div class="col-2 d-flex">
+									<div class="col-2 d-none d-lg-flex">
 										<viewerComponent:sortingArrow filterType="dateCreated"
 											colHeading="#{msg.date}"
 											list="#{userDataBean.lazyModelAnnotations}" />
@@ -81,7 +81,7 @@
 									value="#{userDataBean.lazyModelAnnotations.paginatorList}">
 									<div class="row no-gutters admin__table-entry">
 										<!-- ANNOTATION CONTENT -->
-										<div class="col-7 d-flex" style="flex-direction: column;">
+										<div class="col-12 col-lg-7 d-flex text-break" style="flex-direction: column;">
 											<div class="annotation__label">
 												#{annotation.targetPI}
 												<h:outputText
@@ -102,10 +102,10 @@
 											</div>
 										</div>
 										<!-- CAMPAIGN -->
-										<div class="col-3 d-flex">
+										<div class="col-3 d-none d-lg-flex text-break">
 											#{annotation.generator.owner.name}</div>
 										<!-- DATE -->
-										<div class="col-2 d-flex">
+										<div class="col-2 d-none d-lg-flex">
 											<h:outputText value="#{annotation.dateCreated}">
 												<f:converter converterId="localDateTimeConverter" />
 												<f:attribute name="pattern"
