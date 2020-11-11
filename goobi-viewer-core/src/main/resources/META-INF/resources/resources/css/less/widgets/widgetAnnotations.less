@@ -40,11 +40,18 @@
 	}
 	&__entry {
 		display: flex;
-		margin-bottom: 0.6rem;
+		align-items: center;
 		padding-left: 5px;
 		cursor: pointer;
+		padding-top: 3px;
+		padding-bottom: 3px;
+		button {
+			display: flex;
+			align-items: center;
+		}
 		&.-onpage {
 			border-left: 4px solid @blue;
+			margin-left: -4px;
 		}
 	}
 	&__type {
@@ -54,7 +61,8 @@
 	}
 	&__text {
 	}
-	&__link {
+	&__link {}
+	&__button {
 		display: inline-block;
 	    width: 1.6rem;
 	    height: 1.6rem;
@@ -74,6 +82,7 @@
 	&__page {
 		margin-left: auto;
 		padding-left: 0.6rem;
+		align-self: start;
 		span {
 			background: @blue;
 			color: @white;
