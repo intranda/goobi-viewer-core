@@ -61,7 +61,7 @@
                             <ui:repeat var="annotation" value="#{crowdsourcingBean.lazyModelAnnotations.paginatorList}">
                                 <div class="row no-gutters admin__table-entry">
                                     <div class="col-8 d-flex" style="flex-direction:column;">
-                                        <div id="annotation_body_#{annotation.id}" class="annotation__body__content_wrapper">#{annotation.body}</div>
+                                        <div id="annotation_body_#{annotation.id}" class="annotation__body__content_wrapper">#{contentBean.cleanUpValue(annotation.body.toString())}</div>
 										<annotationBody annotationid="#{annotation.id}" contentid="annotation_body_#{annotation.id}"/>
                                         <!-- ACTIONS -->
                                         <div>

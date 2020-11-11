@@ -360,7 +360,12 @@ this.on("mount", () => {
 });
 
 });
-riot.tag2('htmltextresource', '<div class="annotation__body__htmltext"><iframe srcdoc="{this.opts.resource.value}"></iframe></div>', '', '', function(opts) {
+riot.tag2('htmltextresource', '<div ref="container" class="annotation__body__htmltext"></div>', '', '', function(opts) {
+
+	this.on("mount", () => {
+	    this.refs.container.innerHTML = this.opts.resource.value;
+	})
+
 });
 riot.tag2('plaintextresource', '<div class="annotation__body__plaintext">{this.opts.resource.value}</div>', '', '', function(opts) {
 });

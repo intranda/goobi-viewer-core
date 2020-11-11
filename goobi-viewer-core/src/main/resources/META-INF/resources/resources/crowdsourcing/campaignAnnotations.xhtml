@@ -89,7 +89,7 @@
 													value=", #{msg.page} #{annotation.targetPageOrder}" />
 											</div>
 											<div id="annotation_body_#{annotation.id}"
-												class="annotation__body__content_wrapper">#{annotation.body}</div>
+												class="annotation__body__content_wrapper">#{contentBean.cleanUpValue(annotation.body.toString())}</div>
 											<annotationBody annotationid="#{annotation.id}"
 												contentid="annotation_body_#{annotation.id}" />
 											<div>
