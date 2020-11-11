@@ -801,6 +801,15 @@ public class Campaign implements CMSMediaHolder, ILicenseType, IPolyglott {
     public String getMenuTitle(String lang, boolean useFallback) {
         return Translation.getTranslation(translations, lang, "menu_title", useFallback);
     }
+    
+    public String getDisplayTitle() {
+        return getTitle(BeanUtils.getLocale().getLanguage(), true);
+    }
+    
+    public String getDisplayDescription() {
+        return getDescription(BeanUtils.getLocale().getLanguage(), true);
+
+    }
 
     /**
      * <p>
