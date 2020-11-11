@@ -61,7 +61,6 @@ public class TranslatedTextConverterTest {
         value.setText(ENGLISHVALUE, Locale.ENGLISH);
         
         String json = converter.convertToDatabaseColumn(value);
-                System.out.println("json " + json);
         Assert.assertEquals(EXPECTED_JSON, json);
         
     }
