@@ -203,15 +203,6 @@ public class RecordResource {
 
         }
 
-    @GET
-    @javax.ws.rs.Path(RECORDS_ANNOTATIONS + "/{page}")
-    @Produces({ MediaType.APPLICATION_JSON })
-    @ApiResponse(responseCode = "400", description = "If the page number is out of bounds")
-    public AnnotationPage getAnnotationPageForRecord(@PathParam("page") Integer page) throws DAOException, IllegalRequestException {
-
-        URI uri = URI.create(urls.path(RECORDS_RECORD, RECORDS_ANNOTATIONS).params(pi).build());
-        return new AnnotationsResourceBuilder(urls).getWebAnnotationPageForRecord(pi, uri, page);
-    }
 
     @GET
     @javax.ws.rs.Path(RECORDS_COMMENTS)

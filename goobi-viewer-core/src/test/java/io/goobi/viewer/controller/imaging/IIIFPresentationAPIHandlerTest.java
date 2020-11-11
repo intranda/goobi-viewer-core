@@ -67,8 +67,8 @@ public class IIIFPresentationAPIHandlerTest extends AbstractTest {
 
     @Test
     public void testGetAnnotationsUrl() throws URISyntaxException {
-        Assert.assertEquals(ConfigurationTest.APPLICATION_ROOT_URL + "rest/records/PI-SAMPLE/pages/12/annotations/?type=PDF",
-                handler.getAnnotationsUrl("PI-SAMPLE", 12, "pdf"));
+        Assert.assertEquals(ConfigurationTest.APPLICATION_ROOT_URL + "rest/records/PI-SAMPLE/pages/12/annotations/",
+                handler.getAnnotationsUrl("PI-SAMPLE", 12, "crowdsourcing"));
 
     }
 

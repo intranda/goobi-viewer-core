@@ -19,7 +19,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
 
-import org.apache.commons.lang.StringEscapeUtils;
+import org.apache.commons.text.StringEscapeUtils;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
@@ -35,8 +35,9 @@ public class TranslatedTextConverterTest {
 
     private static final String ENGLISHVALUE = "This is the <span font='bold'>value</span> for the \"English\" language";
     private static final String GERMANVALUE = "Deutsch";
-    private static final String JSON = "{\"de\":[\""+ StringEscapeUtils.escapeHtml(GERMANVALUE) + "\"],\"en\":[\"" + StringEscapeUtils.escapeHtml(ENGLISHVALUE) + "\"]}";
-    
+    private static final String JSON = "{\"de\":[\""+ StringEscapeUtils.escapeHtml4(GERMANVALUE) + "\"],\"en\":[\"" + StringEscapeUtils.escapeHtml4(ENGLISHVALUE) + "\"]}";
+    private static final String EXPECTED_JSON = "{\"de\":[\"Deutsch\"],\"en\":[\"This is the <span font='bold'>value</span> for the \\\"English\\\" language\"]}";
+
     private final List<Locale> locales = Arrays.asList(Locale.GERMAN, Locale.ENGLISH, Locale.FRANCE, Locale.CHINESE);
     private final TranslatedTextConverter converter = new TranslatedTextConverter(locales);
     /**
@@ -60,8 +61,8 @@ public class TranslatedTextConverterTest {
         value.setText(ENGLISHVALUE, Locale.ENGLISH);
         
         String json = converter.convertToDatabaseColumn(value);
-                
-        Assert.assertEquals(JSON, json);
+                System.out.println("json " + json);
+        Assert.assertEquals(EXPECTED_JSON, json);
         
     }
     
