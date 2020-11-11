@@ -21,6 +21,7 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
+import java.util.Optional;
 
 import org.opensaml.saml.saml2.common.IsTimeboundSAMLObjectValidPredicate;
 
@@ -93,7 +94,7 @@ public interface IPolyglott {
 
     public static Locale getDefaultLocale() {
         try {            
-            return BeanUtils.getNavigationHelper().getDefaultLocale();
+            return Optional.ofNullable(BeanUtils.getDefaultLocale()).orElse(Locale.ENGLISH);
         } catch(NullPointerException e) {
             return Locale.ENGLISH;
         }
