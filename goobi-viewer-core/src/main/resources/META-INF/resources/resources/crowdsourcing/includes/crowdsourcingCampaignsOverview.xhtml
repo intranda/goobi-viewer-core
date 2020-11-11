@@ -32,6 +32,9 @@
 						    <h:commandLink rendered="#{campaign.hasRecordsToReview(userBean.user) and campaign.isUserAllowedAction(userBean.user, 'REVIEW')}"
 						        action="#{crowdsourcingBean.forwardToCrowdsourcingReview(campaign)}"
 						        styleClass="btn btn--default">#{msg.action__crowdsourcing_review}</h:commandLink>
+                            <h:outputLink rendered="#{campaign.hasAnnotations}"
+                                value="#{navigationHelper.applicationUrl}campaigns/#{campaign.id}/annotations/"
+                                styleClass="btn btn--default">#{msg.annotations}</h:outputLink>
 						</ui:fragment>
 					</div>
 						<div class="crowdsourcing-campaigns-overview__campaign__statistics">

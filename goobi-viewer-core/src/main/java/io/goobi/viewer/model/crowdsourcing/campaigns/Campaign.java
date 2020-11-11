@@ -435,6 +435,20 @@ public class Campaign implements CMSMediaHolder, ILicenseType, IPolyglott {
 
         return userIds.size();
     }
+    
+    /**
+     * 
+     * @return
+     */
+    public boolean isHasAnnotations() {
+        for (String pi : statistics.keySet()) {
+            if(!statistics.get(pi).getAnnotators().isEmpty()) {
+                return true;
+            }
+        }
+        
+        return false;
+    }
 
     /**
      * FINISHED records in percent

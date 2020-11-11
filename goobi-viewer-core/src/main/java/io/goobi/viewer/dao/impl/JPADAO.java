@@ -2609,7 +2609,7 @@ public class JPADAO implements IDAO {
                 continue;
             }
             String keyValueParam = key.replaceAll("[" + MULTIKEY_SEPARATOR + KEY_FIELD_SEPARATOR + "]", "");
-            if ("creatorId_reviewerId".equals(key)) {
+            if ("creatorId_reviewerId".equals(key) || "campaignId".equals(key) || "generatorId".equals(key)) {
                 params.put(keyValueParam, Long.valueOf(filterValue));
             } else {
                 params.put(keyValueParam, "%" + filterValue.toUpperCase() + "%");
@@ -2628,6 +2628,10 @@ public class JPADAO implements IDAO {
                     case "a.reviewerId":
                         where = subKey + "=:" + keyValueParam;
                         break;
+                    case "a.generatorId":
+                        where = mainTableKey + ".generatorId IN (SELECT q.id FROM Question q WHERE q.owner IN " +
+                                "(SELECT c FROM Campaign c WHERE c.id=:" + keyValueParam + "))";
+                        break;
                     case "a.campaign":
                         where = mainTableKey + ".generatorId IN (SELECT q.id FROM Question q WHERE q.owner IN " +
                                 "(SELECT t.owner FROM CampaignTranslation t WHERE t.tag='title' AND UPPER(t.value) LIKE :" + keyValueParam + "))";
@@ -2642,12 +2646,15 @@ public class JPADAO implements IDAO {
         }
         if (!whereStatements.isEmpty()) {
             StringBuilder sbCreatorReviewer = new StringBuilder();
+            StringBuilder sbGenerator = new StringBuilder();
             StringBuilder sbOtherStatements = new StringBuilder();
             for (String whereStatement : whereStatements) {
                 if (whereStatement.startsWith("a.creatorId")) {
                     sbCreatorReviewer.append(whereStatement);
                 } else if (whereStatement.startsWith("a.reviewerId")) {
                     sbCreatorReviewer.append(" OR ").append(whereStatement);
+                } else if (whereStatement.startsWith("a.generatorId")) {
+                    sbGenerator.append(whereStatement);
                 } else {
                     if (sbOtherStatements.length() != 0) {
                         sbOtherStatements.append(" OR ");
@@ -2656,11 +2663,18 @@ public class JPADAO implements IDAO {
                 }
             }
             String filterQuery = " WHERE " + (sbCreatorReviewer.length() > 0 ? "(" + sbCreatorReviewer.toString() + ")" : "");
-            if (sbCreatorReviewer.length() > 0 && sbOtherStatements.length() > 0) {
+
+            if (sbCreatorReviewer.length() > 0 && (sbGenerator.length() > 0 || sbOtherStatements.length() > 0)) {
                 filterQuery += " AND ";
             }
+            if (sbGenerator.length() > 0) {
+                filterQuery += "(" + sbGenerator.toString() + ")";
+                if (sbOtherStatements.length() > 0) {
+                    filterQuery += " AND ";
+                }
+            }
             if (sbOtherStatements.length() > 0) {
-                filterQuery += ("(" + sbOtherStatements.toString() + ")");
+                filterQuery += "(" + sbOtherStatements.toString() + ")";
             }
             q.append(filterQuery);
         }

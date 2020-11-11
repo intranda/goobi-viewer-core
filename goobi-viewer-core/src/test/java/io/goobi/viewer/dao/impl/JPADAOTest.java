@@ -2800,5 +2800,29 @@ public class JPADAOTest extends AbstractDatabaseEnabledTest {
                     " prefix WHERE (a.generatorId IN (SELECT q.id FROM Question q WHERE q.owner IN (SELECT t.owner FROM CampaignTranslation t WHERE t.tag='title' AND UPPER(t.value) LIKE :campaign)))",
                     JPADAO.createAnnotationsFilterQuery("prefix", filters, params));
         }
+        {
+            // just campaign ID
+            Map<String, String> filters = new HashMap<>(2);
+            filters.put("generatorId", "1");
+            Map<String, Object> params = new HashMap<>(2);
+            Assert.assertEquals(
+                    " prefix WHERE (a.generatorId IN (SELECT q.id FROM Question q WHERE q.owner IN (SELECT c FROM Campaign c WHERE c.id=:generatorId)))",
+                    JPADAO.createAnnotationsFilterQuery("prefix", filters, params));
+            Assert.assertEquals(1, params.size());
+            Assert.assertEquals(1L, params.get("generatorId"));
+        }
+        {
+            // campaign ID and record identifier
+            Map<String, String> filters = new HashMap<>(2);
+            filters.put("generatorId", "1");
+            filters.put("targetPI_body", "ppn123");
+            Map<String, Object> params = new HashMap<>(2);
+            Assert.assertEquals(
+                    " prefix WHERE (a.generatorId IN (SELECT q.id FROM Question q WHERE q.owner IN (SELECT c FROM Campaign c WHERE c.id=:generatorId))) AND (UPPER(a.targetPI) LIKE :targetPIbody OR UPPER(a.body) LIKE :targetPIbody)",
+                    JPADAO.createAnnotationsFilterQuery("prefix", filters, params));
+            Assert.assertEquals(2, params.size());
+            Assert.assertEquals(1L, params.get("generatorId"));
+            Assert.assertEquals("%PPN123%", params.get("targetPIbody"));
+        }
     }
 }
