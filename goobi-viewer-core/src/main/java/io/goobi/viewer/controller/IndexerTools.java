@@ -199,7 +199,7 @@ public class IndexerTools {
                             if(StringUtils.isNotBlank(annotation.getAccessCondition())) {
                                 webAnno.setRights(annotation.getAccessCondition());
                             }
-                            String json = annoBuilder.getAsWebAnnotation(annotation).toString();
+                            String json = webAnno.toString();
                             String jsonFileName = annotation.getTargetPI() + "_" + annotation.getId() + ".json";
                             FileUtils.writeStringToFile(new File(annotationDir, jsonFileName), json, Charset.forName(StringTools.DEFAULT_ENCODING));
                         } catch (JsonParseException e) {
