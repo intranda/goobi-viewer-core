@@ -676,6 +676,7 @@ public abstract class AbstractBuilder {
                 break;
             case CROWDSOURCING:
                 url = this.urls.path(RECORDS_PAGES, RECORDS_PAGES_ANNOTATIONS).params(pi, pageNo);
+                break;
             case ALTO:
             case FULLTEXT:
             default:
