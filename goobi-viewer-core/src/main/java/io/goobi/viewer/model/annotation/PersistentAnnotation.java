@@ -115,7 +115,7 @@ public class PersistentAnnotation {
 
     @Column(name = "target_page")
     private Integer targetPageOrder;
-    
+
     @Column(name = "access_condition", nullable = true)
     private String accessCondition;
 
@@ -248,8 +248,8 @@ public class PersistentAnnotation {
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
     public User getCreator() throws DAOException {
-        if (getCreatorId() != null) {
-            return DataManager.getInstance().getDao().getUser(getCreatorId());
+        if (creatorId != null) {
+            return DataManager.getInstance().getDao().getUser(creatorId);
         }
         return null;
     }
@@ -263,6 +263,34 @@ public class PersistentAnnotation {
      */
     public void setCreator(User creator) {
         this.creatorId = creator.getId();
+    }
+
+    /**
+     * <p>
+     * getReviewer.
+     * </p>
+     *
+     * @return the reviewer
+     * @throws io.goobi.viewer.exceptions.DAOException if any.
+     */
+    public User getReviewer() throws DAOException {
+        if (reviewerId != null) {
+            return DataManager.getInstance().getDao().getUser(reviewerId);
+        }
+        return null;
+    }
+
+    /**
+     * <p>
+     * setReviewer.
+     * </p>
+     *
+     * @param reviewer the reviewer to set
+     */
+    public void setReviewer(User reviewer) {
+        if (reviewer != null) {
+            this.reviewerId = reviewer.getId();
+        }
     }
 
     /**
@@ -601,7 +629,7 @@ public class PersistentAnnotation {
     public String getAccessCondition() {
         return accessCondition;
     }
-    
+
     /**
      * @param accessCondition the accessCondition to set
      */

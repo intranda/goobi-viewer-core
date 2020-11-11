@@ -226,7 +226,8 @@ public class StringTools {
             return s;
         }
 
-        return s.replaceAll("(?i)<script[\\s\\S]*<\\/script>", "");
+        return s.replaceAll("(?i)<script[\\s\\S]*<\\/script>", "")
+                .replaceAll("(?i)<script[\\s\\S]*/>", "");
     }
 
     /**

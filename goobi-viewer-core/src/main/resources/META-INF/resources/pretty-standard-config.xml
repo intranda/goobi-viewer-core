@@ -1000,6 +1000,11 @@
 		<action onPostback="false">#{navigationHelper.resetTheme}</action>
 		<action onPostback="false">#{crowdsourcingBean.resetTarget}</action>
 	</url-mapping>
+    <url-mapping id="crowdCampaignAnnotations">
+        <pattern value="/campaigns/#{campaign:crowdsourcingBean.targetCampaignId}/annotations/"/>
+        <view-id value="/resources/crowdsourcing/campaignAnnotations.xhtml" />
+        <action onPostback="false">#{navigationHelper.resetTheme}</action>
+    </url-mapping>
     <url-mapping id="crowdCampaignAnnotate1">
 		<pattern value="/campaigns/#{campaign:crowdsourcingBean.targetCampaignId}/annotate/"/>
         <view-id value="/resources/crowdsourcing/views/CampaignEdit.xhtml" />

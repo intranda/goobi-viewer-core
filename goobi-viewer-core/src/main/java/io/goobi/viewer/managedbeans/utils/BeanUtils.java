@@ -70,6 +70,8 @@ public class BeanUtils {
     public static final String QUESTION_MARK_REPLACEMENT = "U003F";
     /** Constant <code>PERCENT_REPLACEMENT="U0025"</code> */
     public static final String PERCENT_REPLACEMENT = "U0025";
+    
+    private static Locale defaultLocale = null;
 
     /**
      * Gets the current Request from the faces context
@@ -199,12 +201,15 @@ public class BeanUtils {
      * @return a {@link java.util.Locale} object.
      */
     public static Locale getDefaultLocale() {
-        NavigationHelper nh = BeanUtils.getNavigationHelper();
-        if (nh != null) {
-            return nh.getDefaultLocale();
+        if(defaultLocale == null) {            
+            NavigationHelper nh = BeanUtils.getNavigationHelper();
+            if (nh != null) {
+                defaultLocale = nh.getDefaultLocale();
+            } else {
+                return Locale.ENGLISH;
+            }
         }
-
-        return Locale.ENGLISH;
+        return defaultLocale;
     }
 
     private static BeanManager getBeanManager() {

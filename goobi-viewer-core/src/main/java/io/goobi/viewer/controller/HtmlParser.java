@@ -51,11 +51,7 @@ public class HtmlParser {
      * @return
      */
     public static String stripJS(String s) {
-        if (StringUtils.isBlank(s)) {
-            return s;
-        }
-
-        return s.replaceAll("(?i)<script[\\s\\S]*<\\/script>", "");
+        return StringTools.stripJS(s);
     }
     
     public static String getPlaintext(String htmlText) {

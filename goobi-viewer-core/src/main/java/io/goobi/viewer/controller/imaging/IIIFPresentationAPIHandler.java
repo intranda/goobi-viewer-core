@@ -122,7 +122,7 @@ public class IIIFPresentationAPIHandler {
         if (type == null) {
             throw new IllegalArgumentException(annotationType + " is not valid annotation type");
         }
-        return builder.getAnnotationListURI(pi, pageOrder, type).toString();
+        return builder.getAnnotationListURI(pi, pageOrder, type, false).toString();
     }
 
     /**

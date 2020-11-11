@@ -155,7 +155,8 @@ public class SequenceBuilder extends AbstractBuilder {
         }
 
         if (sequence.getCanvases() != null) {
-            addCrowdourcingAnnotations(sequence.getCanvases(), this.getCrowdsourcingAnnotations(doc.getPi(), false), annotationMap);
+            OpenAnnotationBuilder annoBuilder = new OpenAnnotationBuilder(urls);
+            addCrowdourcingAnnotations(sequence.getCanvases(), annoBuilder.getCrowdsourcingAnnotations(doc.getPi(), false), annotationMap);
         }
 
         if (manifest != null && sequence.getCanvases() != null) {
@@ -228,7 +229,7 @@ public class SequenceBuilder extends AbstractBuilder {
         for (Integer order : pages) {
             Canvas canvas = canvases.get(order);
             if (canvas != null) {
-                AnnotationList annoList = new AnnotationList(getAnnotationListURI(pi, order, AnnotationType.COMMENT));
+                AnnotationList annoList = new AnnotationList(getAnnotationListURI(pi, order, AnnotationType.COMMENT, true));
                 annoList.setLabel(ViewerResourceBundle.getTranslations(AnnotationType.COMMENT.name()));
                 if (populate) {
                     List<Comment> comments = DataManager.getInstance().getDao().getCommentsForPage(pi, order);
@@ -389,7 +390,7 @@ public class SequenceBuilder extends AbstractBuilder {
         TextResourceBuilder builder = new TextResourceBuilder();
 
         if (StringUtils.isNotBlank(page.getFulltextFileName()) || StringUtils.isNotBlank(page.getAltoFileName())) {
-            AnnotationList annoList = new AnnotationList(getAnnotationListURI(page.getPi(), page.getOrder(), AnnotationType.FULLTEXT));
+            AnnotationList annoList = new AnnotationList(getAnnotationListURI(page.getPi(), page.getOrder(), AnnotationType.FULLTEXT, true));
             annoList.setLabel(ViewerResourceBundle.getTranslations(AnnotationType.FULLTEXT.name()));
             annotationMap.put(AnnotationType.FULLTEXT, annoList);
             if (populate) {
@@ -429,7 +430,7 @@ public class SequenceBuilder extends AbstractBuilder {
         }
 
         if (MimeType.AUDIO.getName().equals(page.getMimeType())) {
-            AnnotationList annoList = new AnnotationList(getAnnotationListURI(page.getPi(), page.getOrder(), AnnotationType.AUDIO));
+            AnnotationList annoList = new AnnotationList(getAnnotationListURI(page.getPi(), page.getOrder(), AnnotationType.AUDIO, true));
             annoList.setLabel(ViewerResourceBundle.getTranslations(AnnotationType.AUDIO.name()));
             OpenAnnotation annotation = new OpenAnnotation(getAnnotationURI(page.getPi(), page.getOrder(), AnnotationType.AUDIO, 1));
             annotation.setMotivation(Motivation.PAINTING);
@@ -448,7 +449,7 @@ public class SequenceBuilder extends AbstractBuilder {
 
         }
 
-        AnnotationList videoList = new AnnotationList(getAnnotationListURI(page.getPi(), page.getOrder(), AnnotationType.VIDEO));
+        AnnotationList videoList = new AnnotationList(getAnnotationListURI(page.getPi(), page.getOrder(), AnnotationType.VIDEO, true));
         videoList.setLabel(ViewerResourceBundle.getTranslations(AnnotationType.VIDEO.name()));
         if (MimeType.VIDEO.getName().equals(page.getMimeType())) {
             OpenAnnotation annotation = new OpenAnnotation(getAnnotationURI(page.getPi(), page.getOrder(), AnnotationType.VIDEO, 1));
@@ -498,44 +499,6 @@ public class SequenceBuilder extends AbstractBuilder {
             canvas.addOtherContent(annotationMap.get(type));
         }
         return annotationMap;
-    }
-
-    /**
-     * Adds crowdsourcing annotations from the dao to the annotationmap.
-     * 
-     * @param page
-     * @param populate
-     * @param annotationMap
-     * @deprecated annotations are now retrieved from SOLR
-     */
-    @Deprecated
-    private void addCrowdsourcingAnnotations(PhysicalElement page, boolean populate, Map<AnnotationType, AnnotationList> annotationMap) {
-        try {
-            long numCrowdAnnotations = DataManager.getInstance().getDao().getAnnotationCountForTarget(page.getPi(), page.getOrder());
-            if (numCrowdAnnotations > 0) {
-                AnnotationList crowdList = new AnnotationList(getAnnotationListURI(page.getPi(), page.getOrder(), AnnotationType.CROWDSOURCING));
-                crowdList.setLabel(ViewerResourceBundle.getTranslations(AnnotationType.CROWDSOURCING.name()));
-                annotationMap.put(AnnotationType.CROWDSOURCING, crowdList);
-                if (populate) {
-                    List<PersistentAnnotation> crowdAnnotations =
-                            DataManager.getInstance().getDao().getAnnotationsForTarget(page.getPi(), page.getOrder());
-                    for (PersistentAnnotation annotation : crowdAnnotations) {
-                        Question generator = annotation.getGenerator();
-                        if (generator != null) {
-                            if (!CampaignRecordStatus.FINISHED.equals(generator.getOwner().getRecordStatus(page.getPi()))) {
-                                //ignore the annotation if the campaign record is not marked as finished
-                                continue;
-                            }
-                        }
-                        OpenAnnotation openAnnotation = annoBuilder.getAsOpenAnnotation(annotation);
-                        openAnnotation.setMotivation(Motivation.convertFromWebAnnotationMotivation(annotation.getMotivation()));
-                        crowdList.addResource(openAnnotation);
-                    }
-                }
-            }
-        } catch (DAOException e) {
-            logger.error("Error creating crowdsourcing annotations ", e);
-        }
     }
 
     /**

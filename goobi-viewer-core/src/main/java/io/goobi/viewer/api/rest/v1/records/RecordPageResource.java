@@ -15,19 +15,13 @@
  */
 package io.goobi.viewer.api.rest.v1.records;
 
-import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_ANNOTATIONS;
-import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_COMMENTS;
-import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_PAGES;
-import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_PAGES_ANNOTATIONS;
-import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_PAGES_CANVAS;
-import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_PAGES_COMMENTS;
-import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_PAGES_NER_TAGS;
-import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_PAGES_SEQUENCE;
-import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_RECORD;
+import static io.goobi.viewer.api.rest.v1.ApiUrls.*;
 
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.HashMap;
+import java.util.Map;
 
 import javax.inject.Inject;
 import javax.servlet.http.HttpServletRequest;
@@ -47,10 +41,14 @@ import com.fasterxml.jackson.databind.JsonMappingException;
 
 import de.intranda.api.annotation.IAnnotationCollection;
 import de.intranda.api.annotation.wa.collection.AnnotationPage;
+import de.intranda.api.iiif.presentation.AnnotationList;
+import de.intranda.api.iiif.presentation.Canvas;
 import de.intranda.api.iiif.presentation.CollectionExtent;
 import de.intranda.api.iiif.presentation.IPresentationModelElement;
+import de.intranda.api.iiif.presentation.Layer;
 import de.intranda.api.iiif.presentation.Manifest;
 import de.intranda.api.iiif.presentation.Sequence;
+import de.intranda.api.iiif.presentation.enums.AnnotationType;
 import de.unigoettingen.sub.commons.contentlib.exceptions.ContentNotFoundException;
 import de.unigoettingen.sub.commons.contentlib.exceptions.IllegalRequestException;
 import de.unigoettingen.sub.commons.contentlib.servlet.rest.CORSBinding;
@@ -66,6 +64,15 @@ import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.exceptions.ViewerConfigurationException;
+import io.goobi.viewer.messages.ViewerResourceBundle;
+import io.goobi.viewer.model.iiif.presentation.builder.ManifestBuilder;
+import io.goobi.viewer.model.iiif.presentation.builder.OpenAnnotationBuilder;
+import io.goobi.viewer.model.iiif.presentation.builder.SequenceBuilder;
+import io.goobi.viewer.model.iiif.presentation.builder.WebAnnotationBuilder;
+import io.goobi.viewer.model.security.AccessConditionUtils;
+import io.goobi.viewer.model.security.IPrivilegeHolder;
+import io.goobi.viewer.model.viewer.PhysicalElement;
+import io.goobi.viewer.model.viewer.StructElement;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -139,30 +146,17 @@ public class RecordPageResource {
     public IAnnotationCollection getAnnotationsForRecord(
             @Parameter(description = "Page numer (1-based") @PathParam("pageNo") Integer pageNo,
             @Parameter(description = "annotation format of the response. If it is 'oa' the comments will be delivered as OpenAnnotations, otherwise as W3C-Webannotations") @QueryParam("format") String format)
-            throws URISyntaxException, DAOException, JsonParseException, JsonMappingException, IOException {
+            throws URISyntaxException, DAOException, JsonParseException, JsonMappingException, IOException, PresentationException, IndexUnreachableException {
 
         ApiPath apiPath = urls.path(RECORDS_PAGES, RECORDS_PAGES_ANNOTATIONS).params(pi, pageNo);
         if ("oa".equalsIgnoreCase(format)) {
             URI uri = URI.create(apiPath.query("format", "oa").build());
-            return new AnnotationsResourceBuilder(urls).getOAnnotationListForPage(pi, pageNo, uri);
+            return new OpenAnnotationBuilder(urls).getCrowdsourcingAnnotationCollection(uri, pi, pageNo, false);
         } else {
             URI uri = URI.create(apiPath.build());
-            return new AnnotationsResourceBuilder(urls).getWebAnnotationCollectionForPage(pi, pageNo, uri);
+            return new WebAnnotationBuilder(urls).getCrowdsourcingAnnotationCollection(uri, pi, pageNo, false);
         }
 
-    }
-
-    @GET
-    @javax.ws.rs.Path(RECORDS_PAGES_ANNOTATIONS + "/{page}/")
-    @Produces({ MediaType.APPLICATION_JSON })
-    @ApiResponse(responseCode="400", description="If the page number is out of bounds")
-    public AnnotationPage getAnnotationPageForRecord(
-            @Parameter(description = "Page numer (1-based") @PathParam("pageNo") Integer pageNo,
-            @PathParam("page") Integer page)
-            throws URISyntaxException, DAOException, JsonParseException, JsonMappingException, IOException, IllegalRequestException {
-
-        URI uri = URI.create(urls.path(RECORDS_RECORD, RECORDS_ANNOTATIONS).params(pi).build());
-        return new AnnotationsResourceBuilder(urls).getWebAnnotationPageForPage(pi, pageNo, uri, page);
     }
     
     @GET
@@ -196,6 +190,47 @@ public class RecordPageResource {
 
         URI uri = URI.create(urls.path(RECORDS_RECORD, RECORDS_COMMENTS).params(pi).build());
         return new AnnotationsResourceBuilder(urls).getWebAnnotationPageForPageComments(pi, pageNo, uri, page);
+    }
+    
+    @GET
+    @javax.ws.rs.Path(RECORDS_PAGES_TEXT)
+    @Produces({ MediaType.APPLICATION_JSON })
+    @Operation(tags = { "records"}, summary = "List annotations for a page")
+    public IAnnotationCollection getTextForPage(
+            @Parameter(description = "Page numer (1-based") @PathParam("pageNo") Integer pageNo,
+            @Parameter(description = "annotation format of the response. If it is 'oa' the comments will be delivered as OpenAnnotations, otherwise as W3C-Webannotations") @QueryParam("format") String format)
+            throws URISyntaxException, DAOException, JsonParseException, JsonMappingException, IOException, PresentationException, IndexUnreachableException, ViewerConfigurationException {
+
+//        ApiPath apiPath = urls.path(RECORDS_PAGES, RECORDS_PAGES_TEXT).params(pi, pageNo);
+        boolean access = AccessConditionUtils.checkAccessPermissionByIdentifierAndLogId(pi, null, IPrivilegeHolder.PRIV_VIEW_FULLTEXT, servletRequest);
+        Map<AnnotationType, AnnotationList> annotations;
+        if(access) {   
+            SequenceBuilder builder = new SequenceBuilder(urls);
+            StructElement doc = new ManifestBuilder(urls).getDocument(pi);
+            PhysicalElement page = builder.getPage(doc, pageNo);
+            Canvas canvas = builder.generateCanvas(doc, page);
+            annotations = builder.addOtherContent(doc, page, canvas, true);
+        } else {
+            annotations = new HashMap<>();
+        }
+        
+        if(annotations.containsKey(AnnotationType.ALTO)) {
+            AnnotationList al = annotations.get(AnnotationType.ALTO);
+            Layer layer = new Layer(new ManifestBuilder(urls).getLayerURI(pi, AnnotationType.ALTO));
+            layer.setLabel(ViewerResourceBundle.getTranslations(AnnotationType.ALTO.name()));
+            al.addWithin(layer);
+            return al;
+        } else if(annotations.containsKey(AnnotationType.FULLTEXT)) {
+            AnnotationList al = annotations.get(AnnotationType.FULLTEXT);
+            Layer layer = new Layer(new ManifestBuilder(urls).getLayerURI(pi, AnnotationType.FULLTEXT));
+            layer.setLabel(ViewerResourceBundle.getTranslations(AnnotationType.FULLTEXT.name()));
+            al.addWithin(layer);
+            return al;
+        } else {
+            AnnotationList emptyList = new AnnotationList(new SequenceBuilder(urls).getAnnotationListURI(pi, pageNo, AnnotationType.FULLTEXT, true));
+            return emptyList;
+        }
+       
     }
 
     

@@ -73,6 +73,7 @@ import io.goobi.viewer.messages.ViewerResourceBundle;
 import io.goobi.viewer.model.iiif.presentation.builder.BuildMode;
 import io.goobi.viewer.model.iiif.presentation.builder.LayerBuilder;
 import io.goobi.viewer.model.iiif.presentation.builder.ManifestBuilder;
+import io.goobi.viewer.model.iiif.presentation.builder.OpenAnnotationBuilder;
 import io.goobi.viewer.model.iiif.presentation.builder.SequenceBuilder;
 import io.goobi.viewer.model.iiif.presentation.builder.StructureBuilder;
 import io.goobi.viewer.model.iiif.search.IIIFSearchBuilder;
@@ -441,7 +442,7 @@ public class ManifestResource extends AbstractResource {
                 getSequenceBuilder().addSeeAlsos(canvas, doc, page);
                 getSequenceBuilder().addOtherContent(doc, page, canvas, false);
                 getSequenceBuilder().addCrowdourcingAnnotations(Collections.singletonList(canvas),
-                        getSequenceBuilder().getCrowdsourcingAnnotations(pi, false), null);
+                        new OpenAnnotationBuilder(null).getCrowdsourcingAnnotations(pi, false), null);
                 return canvas;
             }
         }
@@ -488,7 +489,7 @@ public class ManifestResource extends AbstractResource {
                         annotations = new HashMap<>();
                         Map<AnnotationType, List<AnnotationList>> annoTempMap = new HashMap<>();
                         getSequenceBuilder().addCrowdourcingAnnotations(Collections.singletonList(canvas),
-                                getSequenceBuilder().getCrowdsourcingAnnotations(pi, false), annoTempMap);
+                                new OpenAnnotationBuilder(null).getCrowdsourcingAnnotations(pi, false), annoTempMap);
                         AnnotationList annoList = null;
                         if (annoTempMap.get(AnnotationType.CROWDSOURCING) != null) {
                             annoList = annoTempMap.get(AnnotationType.CROWDSOURCING).stream().findFirst().orElse(null);
@@ -517,7 +518,7 @@ public class ManifestResource extends AbstractResource {
                     return al;
                 }
             }
-            AnnotationList emptyList = new AnnotationList(getSequenceBuilder().getAnnotationListURI(pi, physPageNo, type));
+            AnnotationList emptyList = new AnnotationList(getSequenceBuilder().getAnnotationListURI(pi, physPageNo, type, true));
             return emptyList;
             //            throw new ContentNotFoundException("No otherContent found for " + pi + "/" + physPageNo + "/" + type);
         } catch(IllegalArgumentException e) {            
@@ -557,7 +558,7 @@ public class ManifestResource extends AbstractResource {
                         (id, lang) -> ContentResource.getCMDIURI(id, lang));
             }
             if (AnnotationType.CROWDSOURCING.equals(type)) {
-                List<OpenAnnotation> workAnnotations = getSequenceBuilder().getCrowdsourcingAnnotations(pi, false).get(null);
+                List<OpenAnnotation> workAnnotations = new OpenAnnotationBuilder(null).getCrowdsourcingAnnotations(pi, false).get(null);
                 if (workAnnotations == null) {
                     workAnnotations = new ArrayList<>();
                 }
