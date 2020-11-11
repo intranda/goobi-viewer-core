@@ -348,7 +348,15 @@ public class UserBean implements Serializable {
                             response.sendRedirect(ServletUtils.getServletPathWithHostAsUrlFromRequest(request));
                         }
                     }
+
+                    // Update personal filter query suffix
                     SearchHelper.updateFilterQuerySuffix(request);
+
+                    // Reset loaded user-generated content lists
+                    ContentBean contentBean = BeanUtils.getContentBean();
+                    if (contentBean != null) {
+                        contentBean.resetContentList();
+                    }
 
                     // Add this user to configured groups
                     if (provider.getAddUserToGroups() != null && !provider.getAddUserToGroups().isEmpty()) {
@@ -404,6 +412,11 @@ public class UserBean implements Serializable {
         try {
             wipeSession(request);
             SearchHelper.updateFilterQuerySuffix(request);
+            // Reset loaded user-generated content lists
+            ContentBean contentBean = BeanUtils.getContentBean();
+            if (contentBean != null) {
+                contentBean.resetContentList();
+            }
         } catch (IndexUnreachableException | PresentationException | DAOException e) {
             throw new AuthenticationProviderException(e);
         }

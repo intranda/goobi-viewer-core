@@ -82,6 +82,14 @@ public class ContentBean implements Serializable {
     }
 
     /**
+     * Resets loaded content. Use when logging in/out.
+     */
+    public void resetContentList() {
+        logger.trace("resetContentList");
+        userGeneratedContentsForDisplay = null;
+    }
+
+    /**
      * <p>
      * Getter for the field <code>userGeneratedContentsForDisplay</code>.
      * </p>

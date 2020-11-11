@@ -44,6 +44,7 @@ import io.goobi.viewer.managedbeans.CalendarBean;
 import io.goobi.viewer.managedbeans.CmsBean;
 import io.goobi.viewer.managedbeans.CmsCollectionsBean;
 import io.goobi.viewer.managedbeans.CmsMediaBean;
+import io.goobi.viewer.managedbeans.ContentBean;
 import io.goobi.viewer.managedbeans.CreateRecordBean;
 import io.goobi.viewer.managedbeans.ImageDeliveryBean;
 import io.goobi.viewer.managedbeans.MetadataBean;
@@ -70,7 +71,7 @@ public class BeanUtils {
     public static final String QUESTION_MARK_REPLACEMENT = "U003F";
     /** Constant <code>PERCENT_REPLACEMENT="U0025"</code> */
     public static final String PERCENT_REPLACEMENT = "U0025";
-    
+
     private static Locale defaultLocale = null;
 
     /**
@@ -201,7 +202,7 @@ public class BeanUtils {
      * @return a {@link java.util.Locale} object.
      */
     public static Locale getDefaultLocale() {
-        if(defaultLocale == null) {            
+        if (defaultLocale == null) {
             NavigationHelper nh = BeanUtils.getNavigationHelper();
             if (nh != null) {
                 defaultLocale = nh.getDefaultLocale();
@@ -408,6 +409,17 @@ public class BeanUtils {
      */
     public static BrowseBean getBrowseBean() {
         return (BrowseBean) getBeanByName("browseBean", BrowseBean.class);
+    }
+
+    /**
+     * <p>
+     * getUserBean.
+     * </p>
+     *
+     * @return a {@link io.goobi.viewer.managedbeans.ContentBean} object.
+     */
+    public static ContentBean getContentBean() {
+        return (ContentBean) getBeanByName("contentBean", ContentBean.class);
     }
 
     /**
