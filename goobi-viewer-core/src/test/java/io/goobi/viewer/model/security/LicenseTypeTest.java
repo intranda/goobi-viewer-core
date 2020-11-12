@@ -15,15 +15,15 @@
  */
 package io.goobi.viewer.model.security;
 
-import static org.junit.Assert.*;
+import java.util.Collections;
+import java.util.List;
+import java.util.Set;
 
 import org.apache.commons.lang3.StringUtils;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-
-import io.goobi.viewer.model.security.LicenseType;
 
 /**
  * @author Florian Alpers
@@ -80,6 +80,19 @@ public class LicenseTypeTest {
 
         type.setConditions(CONDITION_QUERY_1);
         Assert.assertTrue("filename conditions are " + type.getFilenameConditions(), StringUtils.isBlank(type.getFilenameConditions()));
+    }
+
+    /**
+     * @see LicenseType#getAvailablePrivileges(Set)
+     * @verifies only return priv view ugc if ugc type
+     */
+    @Test
+    public void getAvailablePrivileges_shouldOnlyReturnPrivViewUgcIfUgcType() throws Exception {
+        LicenseType type = new LicenseType();
+        type.ugcType = true;
+        List<String> result = type.getAvailablePrivileges(Collections.emptySet());
+        Assert.assertEquals(1, result.size());
+        Assert.assertEquals(IPrivilegeHolder.PRIV_VIEW_UGC, result.get(0));
     }
 
 }

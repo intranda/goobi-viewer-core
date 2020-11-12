@@ -508,11 +508,19 @@ public class License implements IPrivilegeHolder, Serializable {
      * Returns the list of available record privileges for adding to this license (using the given privileges list).
      * 
      * @return Values in IPrivilegeHolder.PRIVS_RECORD minus the privileges already added
+     * @should return cms privileges if licenseType cms type
+     * @should only return priv view ugc if licenseType ugc type
+     * @should return record privileges if licenseType regular
      */
     public List<String> getAvailablePrivileges(Set<String> privileges) {
-        if (licenseType != null && licenseType.isCmsType()) {
-            return getAvailablePrivileges(privileges, Arrays.asList(IPrivilegeHolder.PRIVS_CMS));
+        if (licenseType != null) {
+            if (licenseType.isCmsType()) {
+                return getAvailablePrivileges(privileges, Arrays.asList(IPrivilegeHolder.PRIVS_CMS));
+            } else if (licenseType.isUgcType()) {
+                return getAvailablePrivileges(privileges, Collections.singletonList(IPrivilegeHolder.PRIV_VIEW_UGC));
+            }
         }
+
         return getAvailablePrivileges(privileges, Arrays.asList(IPrivilegeHolder.PRIVS_RECORD));
     }
 
