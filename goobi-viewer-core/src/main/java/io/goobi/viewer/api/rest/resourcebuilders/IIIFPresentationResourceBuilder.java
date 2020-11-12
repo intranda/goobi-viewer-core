@@ -27,6 +27,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
+import javax.servlet.http.HttpServletRequest;
+
 import org.apache.commons.lang3.StringUtils;
 import org.apache.solr.common.SolrDocument;
 import org.apache.solr.common.SolrDocumentList;
@@ -79,9 +81,11 @@ public class IIIFPresentationResourceBuilder {
     private LayerBuilder layerBuilder;
     private CollectionBuilder collectionBuilder;
     private final AbstractApiUrlManager urls;
+    private final HttpServletRequest request;
 
-    public IIIFPresentationResourceBuilder(AbstractApiUrlManager urls) {
+    public IIIFPresentationResourceBuilder(AbstractApiUrlManager urls, HttpServletRequest request) {
         this.urls = urls;
+        this.request  = request;
     }
 
     public IPresentationModelElement getManifest(String pi, BuildMode mode) throws PresentationException, IndexUnreachableException,
@@ -100,7 +104,7 @@ public class IIIFPresentationResourceBuilder {
         } else if (manifest instanceof Manifest) {
             getManifestBuilder().addAnchor((Manifest) manifest, mainDoc.getMetadataValue(SolrConstants.PI_ANCHOR));
 
-            getSequenceBuilder().addBaseSequence((Manifest) manifest, mainDoc, manifest.getId().toString());
+            getSequenceBuilder().addBaseSequence((Manifest) manifest, mainDoc, manifest.getId().toString(), request);
 
             String topLogId = mainDoc.getMetadataValue(SolrConstants.LOGID);
             if (StringUtils.isNotBlank(topLogId)) {
@@ -136,7 +140,7 @@ public class IIIFPresentationResourceBuilder {
         if (manifest instanceof Collection) {
             throw new IllegalRequestException("Identifier refers to a collection which does not have a sequence");
         } else if (manifest instanceof Manifest) {
-            getSequenceBuilder().addBaseSequence((Manifest) manifest, doc, manifest.getId().toString());
+            getSequenceBuilder().addBaseSequence((Manifest) manifest, doc, manifest.getId().toString(), request);
             return ((Manifest) manifest).getSequences().get(0);
         }
         throw new ContentNotFoundException("Not manifest with identifier " + pi + " found");
@@ -160,7 +164,7 @@ public class IIIFPresentationResourceBuilder {
                     (id, lang) -> ContentResource.getCMDIURI(id, lang));
 
         } else {
-            Map<AnnotationType, List<AnnotationList>> annoLists = getSequenceBuilder().addBaseSequence(null, doc, "");
+            Map<AnnotationType, List<AnnotationList>> annoLists = getSequenceBuilder().addBaseSequence(null, doc, "", request);
             Layer layer = getLayerBuilder().generateLayer(pi, annoLists, type);
             return layer;
         }
@@ -186,7 +190,7 @@ public class IIIFPresentationResourceBuilder {
                 getSequenceBuilder().addSeeAlsos(canvas, doc, page);
                 getSequenceBuilder().addOtherContent(doc, page, canvas, false);
                 getSequenceBuilder().addCrowdourcingAnnotations(Collections.singletonList(canvas),
-                        new OpenAnnotationBuilder(urls).getCrowdsourcingAnnotations(pi, false), null);
+                        new OpenAnnotationBuilder(urls).getCrowdsourcingAnnotations(pi, false, request), null);
                 return canvas;
             }
         }

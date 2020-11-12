@@ -31,6 +31,8 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
+import javax.servlet.http.HttpServletRequest;
+
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.solr.common.SolrDocument;
 import org.apache.solr.common.SolrDocumentList;
@@ -55,6 +57,7 @@ import io.goobi.viewer.api.rest.AbstractApiUrlManager;
 import io.goobi.viewer.api.rest.v1.ApiUrls;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.SolrConstants;
+import io.goobi.viewer.controller.SolrSearchIndex;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.messages.ViewerResourceBundle;
@@ -64,7 +67,7 @@ import io.goobi.viewer.model.annotation.PersistentAnnotation;
  * @author florian
  *
  */
-public class OpenAnnotationBuilder extends AbstractBuilder {
+public class OpenAnnotationBuilder extends AbstractAnnotationBuilder {
 
     /**
      * @param apiUrlManager
@@ -83,11 +86,9 @@ public class OpenAnnotationBuilder extends AbstractBuilder {
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      */
-    public Map<Integer, List<OpenAnnotation>> getCrowdsourcingAnnotations(String pi, boolean urlOnlyTarget)
+    public Map<Integer, List<OpenAnnotation>> getCrowdsourcingAnnotations(String pi, boolean urlOnlyTarget, HttpServletRequest request)
             throws PresentationException, IndexUnreachableException {
-        String query = "DOCTYPE:UGC AND PI_TOPSTRUCT:" + pi;
-        List<String> displayFields = addLanguageFields(Arrays.asList(UGC_SOLR_FIELDS), ViewerResourceBundle.getAllLocales());
-        SolrDocumentList ugcDocs = DataManager.getInstance().getSearchIndex().getDocs(query, displayFields);
+        List<SolrDocument> ugcDocs = getAnnotationDocuments(getAnnotationQuery(pi), request);
         Map<Integer, List<OpenAnnotation>> annoMap = new HashMap<>();
         if (ugcDocs != null && !ugcDocs.isEmpty()) {
             for (SolrDocument doc : ugcDocs) {
@@ -148,7 +149,7 @@ public class OpenAnnotationBuilder extends AbstractBuilder {
         String iddoc = Optional.ofNullable(doc.getFieldValue(SolrConstants.IDDOC)).map(Object::toString).orElse("");
         Integer pageOrder = Optional.ofNullable(doc.getFieldValue(SolrConstants.ORDER)).map(o -> (Integer) o).orElse(null);
         String coordString = Optional.ofNullable(doc.getFieldValue(SolrConstants.UGCCOORDS)).map(Object::toString).orElse(null);
-        URI annoURI = URI.create(urls.path(ApiUrls.ANNOTATIONS, ANNOTATIONS_UGC).params(iddoc).build());
+        URI annoURI = getRestBuilder().getAnnotationURI(iddoc);
         
         OpenAnnotation anno = new OpenAnnotation(annoURI);
 
@@ -158,9 +159,9 @@ public class OpenAnnotationBuilder extends AbstractBuilder {
         if(pageOrder != null && coordString != null) {
             anno.setTarget(createFragmentTarget(pi, pageOrder, coordString, urlOnlyTarget));
         } else if(pageOrder != null) {
-            anno.setTarget(new SimpleResource(getCanvasURI(pi, pageOrder)));
+            anno.setTarget(new SimpleResource(getRestBuilder().getCanvasURI(pi, pageOrder)));
         } else {
-            anno.setTarget(new SimpleResource(getManifestURI(pi)));
+            anno.setTarget(new SimpleResource(getRestBuilder().getManifestURI(pi)));
         }
 
         anno.setMotivation(Motivation.DESCRIBING);
@@ -178,9 +179,9 @@ public class OpenAnnotationBuilder extends AbstractBuilder {
         try {
             FragmentSelector selector = new FragmentSelector(coordString);
             if (urlOnlyTarget) {
-                return new SpecificResourceURI(this.getCanvasURI(pi, pageOrder), selector);
+                return new SpecificResourceURI(getRestBuilder().getCanvasURI(pi, pageOrder), selector);
             } else {
-                return new SpecificResource(this.getCanvasURI(pi, pageOrder), selector);
+                return new SpecificResource(getRestBuilder().getCanvasURI(pi, pageOrder), selector);
             }
         } catch (IllegalArgumentException e) {
             //old UGC coords format
@@ -193,13 +194,13 @@ public class OpenAnnotationBuilder extends AbstractBuilder {
                 int y2 = Math.round(Float.parseFloat(matcher.group(4)));
                 FragmentSelector selector = new FragmentSelector(new Rectangle(x1, y1, x2 - x1, y2 - y1));
                 if (urlOnlyTarget) {
-                    return new SpecificResourceURI(this.getCanvasURI(pi, pageOrder), selector);
+                    return new SpecificResourceURI(getRestBuilder().getCanvasURI(pi, pageOrder), selector);
                 } else {
-                    return new SpecificResource(this.getCanvasURI(pi, pageOrder), selector);
+                    return new SpecificResource(getRestBuilder().getCanvasURI(pi, pageOrder), selector);
                 }
             } else {
                 //failed to decipher selector
-                return new SimpleResource(getCanvasURI(pi, pageOrder));
+                return new SimpleResource(getRestBuilder().getCanvasURI(pi, pageOrder));
             }
         }
     }
@@ -211,7 +212,7 @@ public class OpenAnnotationBuilder extends AbstractBuilder {
     public IResource createAnnnotationBodyFromUGCDocument(SolrDocument doc) {
         IResource body = null;
         if (doc.containsKey(SolrConstants.MD_BODY)) {
-            String bodyString = readSolrField(doc, doc.getFieldValue(SolrConstants.MD_BODY));
+            String bodyString = SolrSearchIndex.getSingleFieldStringValue(doc, SolrConstants.MD_BODY);
             try {                
                 JSONObject json = new JSONObject(bodyString);
                 body = new JSONResource(json);
@@ -219,7 +220,7 @@ public class OpenAnnotationBuilder extends AbstractBuilder {
                 body = new TextualResource(bodyString);
             }
         } else if (doc.containsKey(SolrConstants.MD_TEXT)) {
-            String text = readSolrField(doc, doc.getFieldValue(SolrConstants.MD_TEXT));
+            String text = SolrSearchIndex.getSingleFieldStringValue(doc, SolrConstants.MD_TEXT);
             body = new TextualResource(text);
         }
         return body;
@@ -233,15 +234,15 @@ public class OpenAnnotationBuilder extends AbstractBuilder {
      * @throws IndexUnreachableException 
      * @throws PresentationException 
      */
-    public IAnnotationCollection getCrowdsourcingAnnotationCollection(URI uri, String pi, boolean urlsOnly) throws PresentationException, IndexUnreachableException {
+    public IAnnotationCollection getCrowdsourcingAnnotationCollection(URI uri, String pi, boolean urlsOnly, HttpServletRequest request) throws PresentationException, IndexUnreachableException {
         AnnotationList list = new AnnotationList(uri);
-        getCrowdsourcingAnnotations(pi, urlsOnly).values().stream().flatMap(List::stream).forEach(anno -> list.addResource(anno));
+        getCrowdsourcingAnnotations(pi, urlsOnly, request).values().stream().flatMap(List::stream).forEach(anno -> list.addResource(anno));
         return list;
     }
     
-    public IAnnotationCollection getCrowdsourcingAnnotationCollection(URI uri, String pi, Integer page, boolean urlsOnly) throws PresentationException, IndexUnreachableException {
+    public IAnnotationCollection getCrowdsourcingAnnotationCollection(URI uri, String pi, Integer page, boolean urlsOnly, HttpServletRequest request) throws PresentationException, IndexUnreachableException {
         AnnotationList list = new AnnotationList(uri);
-        getCrowdsourcingAnnotations(pi, urlsOnly).entrySet().stream()
+        getCrowdsourcingAnnotations(pi, urlsOnly, request).entrySet().stream()
         .filter(entry -> ObjectUtils.equals(page, entry.getKey()))
         .map(Entry::getValue)
         .flatMap(List::stream)

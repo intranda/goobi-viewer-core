@@ -15,12 +15,9 @@
  */
 package io.goobi.viewer.model.iiif.presentation.builder;
 
-import static io.goobi.viewer.api.rest.v1.ApiUrls.ANNOTATIONS_UGC;
-
 import java.awt.Rectangle;
 import java.net.URI;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -29,6 +26,8 @@ import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
+
+import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.solr.common.SolrDocument;
@@ -48,25 +47,19 @@ import de.intranda.api.annotation.wa.SpecificResourceURI;
 import de.intranda.api.annotation.wa.TextualResource;
 import de.intranda.api.annotation.wa.WebAnnotation;
 import de.intranda.api.annotation.wa.collection.AnnotationCollection;
-import de.intranda.api.annotation.wa.collection.AnnotationCollectionBuilder;
 import de.intranda.api.annotation.wa.collection.AnnotationPage;
-import de.intranda.api.iiif.presentation.AnnotationList;
-import de.unigoettingen.sub.commons.contentlib.exceptions.IllegalRequestException;
 import io.goobi.viewer.api.rest.AbstractApiUrlManager;
-import io.goobi.viewer.api.rest.v1.ApiUrls;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.SolrConstants;
-import io.goobi.viewer.exceptions.DAOException;
+import io.goobi.viewer.controller.SolrSearchIndex;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
-import io.goobi.viewer.messages.ViewerResourceBundle;
-import io.goobi.viewer.model.annotation.PersistentAnnotation;
 
 /**
  * @author florian
  *
  */
-public class WebAnnotationBuilder extends AbstractBuilder {
+public class WebAnnotationBuilder extends AbstractAnnotationBuilder {
 
     /**
      * @param apiUrlManager
@@ -85,11 +78,9 @@ public class WebAnnotationBuilder extends AbstractBuilder {
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      */
-    public Map<Integer, List<WebAnnotation>> getCrowdsourcingAnnotations(String pi, boolean urlOnlyTarget)
+    public Map<Integer, List<WebAnnotation>> getCrowdsourcingAnnotations(String pi, boolean urlOnlyTarget, HttpServletRequest request)
             throws PresentationException, IndexUnreachableException {
-        String query = "DOCTYPE:UGC AND PI_TOPSTRUCT:" + pi;
-        List<String> displayFields = addLanguageFields(Arrays.asList(UGC_SOLR_FIELDS), ViewerResourceBundle.getAllLocales());
-        SolrDocumentList ugcDocs = DataManager.getInstance().getSearchIndex().getDocs(query, displayFields);
+        List<SolrDocument> ugcDocs = getAnnotationDocuments(getAnnotationQuery(pi), request);
         Map<Integer, List<WebAnnotation>> annoMap = new HashMap<>();
         if (ugcDocs != null && !ugcDocs.isEmpty()) {
             for (SolrDocument doc : ugcDocs) {
@@ -150,7 +141,7 @@ public class WebAnnotationBuilder extends AbstractBuilder {
         String iddoc = Optional.ofNullable(doc.getFieldValue(SolrConstants.IDDOC)).map(Object::toString).orElse("");
         Integer pageOrder = Optional.ofNullable(doc.getFieldValue(SolrConstants.ORDER)).map(o -> (Integer) o).orElse(null);
         String coordString = Optional.ofNullable(doc.getFieldValue(SolrConstants.UGCCOORDS)).map(Object::toString).orElse(null);
-        URI annoURI = URI.create(urls.path(ApiUrls.ANNOTATIONS, ANNOTATIONS_UGC).params(iddoc).build());
+        URI annoURI = getRestBuilder().getAnnotationURI(iddoc);
         
         WebAnnotation anno = new WebAnnotation(annoURI);
 
@@ -160,9 +151,9 @@ public class WebAnnotationBuilder extends AbstractBuilder {
         if(pageOrder != null && coordString != null) {
             anno.setTarget(createFragmentTarget(pi, pageOrder, coordString, urlOnlyTarget));
         } else if(pageOrder != null) {
-            anno.setTarget(new SimpleResource(getCanvasURI(pi, pageOrder)));
+            anno.setTarget(new SimpleResource(getRestBuilder().getCanvasURI(pi, pageOrder)));
         } else {
-            anno.setTarget(new SimpleResource(getManifestURI(pi)));
+            anno.setTarget(new SimpleResource(getRestBuilder().getManifestURI(pi)));
         }
 
         anno.setMotivation(Motivation.DESCRIBING);
@@ -180,9 +171,9 @@ public class WebAnnotationBuilder extends AbstractBuilder {
         try {
             FragmentSelector selector = new FragmentSelector(coordString);
             if (urlOnlyTarget) {
-                return new SpecificResourceURI(this.getCanvasURI(pi, pageOrder), selector);
+                return new SpecificResourceURI(getRestBuilder().getCanvasURI(pi, pageOrder), selector);
             } else {
-                return new SpecificResource(this.getCanvasURI(pi, pageOrder), selector);
+                return new SpecificResource(getRestBuilder().getCanvasURI(pi, pageOrder), selector);
             }
         } catch (IllegalArgumentException e) {
             //old UGC coords format
@@ -195,13 +186,13 @@ public class WebAnnotationBuilder extends AbstractBuilder {
                 int y2 = Math.round(Float.parseFloat(matcher.group(4)));
                 FragmentSelector selector = new FragmentSelector(new Rectangle(x1, y1, x2 - x1, y2 - y1));
                 if (urlOnlyTarget) {
-                    return new SpecificResourceURI(this.getCanvasURI(pi, pageOrder), selector);
+                    return new SpecificResourceURI(getRestBuilder().getCanvasURI(pi, pageOrder), selector);
                 } else {
-                    return new SpecificResource(this.getCanvasURI(pi, pageOrder), selector);
+                    return new SpecificResource(getRestBuilder().getCanvasURI(pi, pageOrder), selector);
                 }
             } else {
                 //failed to decipher selector
-                return new SimpleResource(getCanvasURI(pi, pageOrder));
+                return new SimpleResource(getRestBuilder().getCanvasURI(pi, pageOrder));
             }
         }
     }
@@ -213,7 +204,7 @@ public class WebAnnotationBuilder extends AbstractBuilder {
     public IResource createAnnnotationBodyFromUGCDocument(SolrDocument doc) {
         IResource body = null;
         if (doc.containsKey(SolrConstants.MD_BODY)) {
-            String bodyString = readSolrField(doc, doc.getFieldValue(SolrConstants.MD_BODY));
+            String bodyString = SolrSearchIndex.getSingleFieldStringValue(doc, SolrConstants.MD_BODY);
             try {                
                 JSONObject json = new JSONObject(bodyString);
                 body = new JSONResource(json);
@@ -221,7 +212,7 @@ public class WebAnnotationBuilder extends AbstractBuilder {
                 body = new TextualResource(bodyString);
             }
         } else if (doc.containsKey(SolrConstants.MD_TEXT)) {
-            String text = readSolrField(doc, doc.getFieldValue(SolrConstants.MD_TEXT));
+            String text = SolrSearchIndex.getSingleFieldStringValue(doc, SolrConstants.MD_TEXT);
             body = new TextualResource(text);
         }
         return body;
@@ -235,8 +226,8 @@ public class WebAnnotationBuilder extends AbstractBuilder {
      * @throws IndexUnreachableException 
      * @throws PresentationException 
      */
-    public IAnnotationCollection getCrowdsourcingAnnotationCollection(URI uri, String pi, boolean urlsOnly) throws PresentationException, IndexUnreachableException {
-        List<IAnnotation> annos = getCrowdsourcingAnnotations(pi, urlsOnly).values().stream().flatMap(List::stream).collect(Collectors.toList());
+    public IAnnotationCollection getCrowdsourcingAnnotationCollection(URI uri, String pi, boolean urlsOnly, HttpServletRequest request) throws PresentationException, IndexUnreachableException {
+        List<IAnnotation> annos = getCrowdsourcingAnnotations(pi, urlsOnly, request).values().stream().flatMap(List::stream).collect(Collectors.toList());
         AnnotationCollection collection = new AnnotationCollection(uri);
         AnnotationPage page = new AnnotationPage();
         collection.setFirst(page);
@@ -245,8 +236,8 @@ public class WebAnnotationBuilder extends AbstractBuilder {
         return collection;
     }
     
-    public IAnnotationCollection getCrowdsourcingAnnotationCollection(URI uri, String pi, Integer pageNo, boolean urlsOnly) throws PresentationException, IndexUnreachableException {
-        List<IAnnotation> annos = getCrowdsourcingAnnotations(pi, urlsOnly).entrySet().stream()
+    public IAnnotationCollection getCrowdsourcingAnnotationCollection(URI uri, String pi, Integer pageNo, boolean urlsOnly, HttpServletRequest request) throws PresentationException, IndexUnreachableException {
+        List<IAnnotation> annos = getCrowdsourcingAnnotations(pi, urlsOnly, request).entrySet().stream()
         .filter(entry -> ObjectUtils.equals(pageNo, entry.getKey()))
         .map(Entry::getValue)
         .flatMap(List::stream)
@@ -258,6 +249,7 @@ public class WebAnnotationBuilder extends AbstractBuilder {
         page.setItems(annos);
         return collection;
     }
+
 
 
 

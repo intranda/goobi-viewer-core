@@ -192,7 +192,7 @@ public class ManifestResource extends AbstractResource {
     public SearchResult searchInManifest(@PathParam("pi") String pi, @QueryParam("q") String query, @QueryParam("motivation") String motivation,
             @QueryParam("date") String date, @QueryParam("user") String user, @QueryParam("page") Integer page)
             throws IndexUnreachableException, PresentationException {
-        return new IIIFSearchBuilder(new ApiUrls(), query, pi).setMotivation(motivation).setDate(date).setUser(user).setPage(page).build();
+        return new IIIFSearchBuilder(new ApiUrls(), query, pi, servletRequest).setMotivation(motivation).setDate(date).setUser(user).setPage(page).build();
     }
 
     /**
@@ -216,7 +216,7 @@ public class ManifestResource extends AbstractResource {
     public AutoSuggestResult autoCompleteInManifest(@PathParam("pi") String pi, @QueryParam("q") String query,
             @QueryParam("motivation") String motivation, @QueryParam("date") String date, @QueryParam("user") String user,
             @QueryParam("page") Integer page) throws IndexUnreachableException, PresentationException {
-        return new IIIFSearchBuilder(new ApiUrls(), query, pi).setMotivation(motivation)
+        return new IIIFSearchBuilder(new ApiUrls(), query, pi, servletRequest).setMotivation(motivation)
                 .setDate(date)
                 .setUser(user)
                 .setPage(page)
@@ -298,7 +298,7 @@ public class ManifestResource extends AbstractResource {
         } else if (manifest instanceof Manifest) {
             getManifestBuilder().addAnchor((Manifest) manifest, mainDoc.getMetadataValue(SolrConstants.PI_ANCHOR));
 
-            getSequenceBuilder().addBaseSequence((Manifest) manifest, mainDoc, manifest.getId().toString());
+            getSequenceBuilder().addBaseSequence((Manifest) manifest, mainDoc, manifest.getId().toString(), servletRequest);
 
             String topLogId = mainDoc.getMetadataValue(SolrConstants.LOGID);
             if (StringUtils.isNotBlank(topLogId)) {
@@ -338,7 +338,7 @@ public class ManifestResource extends AbstractResource {
         if (manifest instanceof Collection) {
             throw new IllegalRequestException("Identifier refers to a collection which does not have a sequence");
         } else if (manifest instanceof Manifest) {
-            getSequenceBuilder().addBaseSequence((Manifest) manifest, doc, manifest.getId().toString());
+            getSequenceBuilder().addBaseSequence((Manifest) manifest, doc, manifest.getId().toString(), servletRequest);
             return ((Manifest) manifest).getSequences().get(0);
         }
         throw new ContentNotFoundException("Not manifest with identifier " + pi + " found");
@@ -379,7 +379,7 @@ public class ManifestResource extends AbstractResource {
             }
             getSequenceBuilder().setPreferredView(pageType)
                     .setBuildMode(BuildMode.THUMBS)
-                    .addBaseSequence((Manifest) manifest, doc, manifest.getId().toString());
+                    .addBaseSequence((Manifest) manifest, doc, manifest.getId().toString(), servletRequest);
             return ((Manifest) manifest).getSequences().get(0).getCanvases();
         }
         throw new ContentNotFoundException("Not manifest with identifier " + pi + " found");
@@ -442,7 +442,7 @@ public class ManifestResource extends AbstractResource {
                 getSequenceBuilder().addSeeAlsos(canvas, doc, page);
                 getSequenceBuilder().addOtherContent(doc, page, canvas, false);
                 getSequenceBuilder().addCrowdourcingAnnotations(Collections.singletonList(canvas),
-                        new OpenAnnotationBuilder(null).getCrowdsourcingAnnotations(pi, false), null);
+                        new OpenAnnotationBuilder(null).getCrowdsourcingAnnotations(pi, false, servletRequest), null);
                 return canvas;
             }
         }
@@ -489,7 +489,7 @@ public class ManifestResource extends AbstractResource {
                         annotations = new HashMap<>();
                         Map<AnnotationType, List<AnnotationList>> annoTempMap = new HashMap<>();
                         getSequenceBuilder().addCrowdourcingAnnotations(Collections.singletonList(canvas),
-                                new OpenAnnotationBuilder(null).getCrowdsourcingAnnotations(pi, false), annoTempMap);
+                                new OpenAnnotationBuilder(null).getCrowdsourcingAnnotations(pi, false, servletRequest), annoTempMap);
                         AnnotationList annoList = null;
                         if (annoTempMap.get(AnnotationType.CROWDSOURCING) != null) {
                             annoList = annoTempMap.get(AnnotationType.CROWDSOURCING).stream().findFirst().orElse(null);
@@ -558,7 +558,7 @@ public class ManifestResource extends AbstractResource {
                         (id, lang) -> ContentResource.getCMDIURI(id, lang));
             }
             if (AnnotationType.CROWDSOURCING.equals(type)) {
-                List<OpenAnnotation> workAnnotations = new OpenAnnotationBuilder(null).getCrowdsourcingAnnotations(pi, false).get(null);
+                List<OpenAnnotation> workAnnotations = new OpenAnnotationBuilder(null).getCrowdsourcingAnnotations(pi, false, servletRequest).get(null);
                 if (workAnnotations == null) {
                     workAnnotations = new ArrayList<>();
                 }
@@ -613,7 +613,7 @@ public class ManifestResource extends AbstractResource {
                     (id, lang) -> ContentResource.getCMDIURI(id, lang));
 
         } else {
-            Map<AnnotationType, List<AnnotationList>> annoLists = getSequenceBuilder().addBaseSequence(null, doc, "");
+            Map<AnnotationType, List<AnnotationList>> annoLists = getSequenceBuilder().addBaseSequence(null, doc, "", servletRequest);
             Layer layer = getLayerBuilder().generateLayer(pi, annoLists, type);
             return layer;
         }

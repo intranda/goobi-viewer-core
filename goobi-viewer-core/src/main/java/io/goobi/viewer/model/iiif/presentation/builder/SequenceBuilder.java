@@ -28,6 +28,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.servlet.http.HttpServletRequest;
+
 import org.apache.commons.lang3.StringUtils;
 import org.jdom2.JDOMException;
 import org.slf4j.Logger;
@@ -119,7 +121,7 @@ public class SequenceBuilder extends AbstractBuilder {
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
      */
-    public Map<AnnotationType, List<AnnotationList>> addBaseSequence(Manifest manifest, StructElement doc, String manifestId)
+    public Map<AnnotationType, List<AnnotationList>> addBaseSequence(Manifest manifest, StructElement doc, String manifestId, HttpServletRequest request)
             throws URISyntaxException, PresentationException, IndexUnreachableException, DAOException, ViewerConfigurationException {
 
         Map<AnnotationType, List<AnnotationList>> annotationMap = new HashMap<>();
@@ -156,7 +158,7 @@ public class SequenceBuilder extends AbstractBuilder {
 
         if (sequence.getCanvases() != null) {
             OpenAnnotationBuilder annoBuilder = new OpenAnnotationBuilder(urls);
-            addCrowdourcingAnnotations(sequence.getCanvases(), annoBuilder.getCrowdsourcingAnnotations(doc.getPi(), false), annotationMap);
+            addCrowdourcingAnnotations(sequence.getCanvases(), annoBuilder.getCrowdsourcingAnnotations(doc.getPi(), false, request), annotationMap);
         }
 
         if (manifest != null && sequence.getCanvases() != null) {

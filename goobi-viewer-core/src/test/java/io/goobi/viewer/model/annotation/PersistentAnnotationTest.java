@@ -81,7 +81,7 @@ public class PersistentAnnotationTest extends AbstractDatabaseEnabledTest {
     public static void setUpClass() throws Exception {
         AbstractDatabaseEnabledTest.setUpClass();
         urls = new ApiUrls(DataManager.getInstance().getConfiguration().getRestApiUrl());
-        annoBuilder = new AnnotationsResourceBuilder(urls);
+        annoBuilder = new AnnotationsResourceBuilder(urls, null);
 
         mapper = new ObjectMapper();
         mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);

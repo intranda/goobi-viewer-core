@@ -72,7 +72,7 @@ public class AnnotationResource {
     private AnnotationsResourceBuilder annoBuilder;
     
     public AnnotationResource() {
-        annoBuilder = new AnnotationsResourceBuilder(urls);
+        annoBuilder = new AnnotationsResourceBuilder(urls, servletRequest);
     }
     
     /**

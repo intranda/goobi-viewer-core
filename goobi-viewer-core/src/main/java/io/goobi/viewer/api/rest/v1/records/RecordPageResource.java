@@ -121,7 +121,7 @@ public class RecordPageResource {
     public IPresentationModelElement getSequence()
             throws ContentNotFoundException, PresentationException, IndexUnreachableException, URISyntaxException,
             ViewerConfigurationException, DAOException, IllegalRequestException {
-        IIIFPresentationResourceBuilder builder = new IIIFPresentationResourceBuilder(urls);
+        IIIFPresentationResourceBuilder builder = new IIIFPresentationResourceBuilder(urls, servletRequest);
         Sequence sequence = builder.getBaseSequence(pi);
         return sequence;
     }
@@ -135,7 +135,7 @@ public class RecordPageResource {
             @Parameter(description = "Page numer (1-based") @PathParam("pageNo") Integer pageNo)
             throws ContentNotFoundException, PresentationException, IndexUnreachableException, URISyntaxException,
             ViewerConfigurationException, DAOException, IllegalRequestException {
-        IIIFPresentationResourceBuilder builder = new IIIFPresentationResourceBuilder(urls);
+        IIIFPresentationResourceBuilder builder = new IIIFPresentationResourceBuilder(urls, servletRequest);
         return builder.getCanvas(pi, pageNo);
     }
     
@@ -151,10 +151,10 @@ public class RecordPageResource {
         ApiPath apiPath = urls.path(RECORDS_PAGES, RECORDS_PAGES_ANNOTATIONS).params(pi, pageNo);
         if ("oa".equalsIgnoreCase(format)) {
             URI uri = URI.create(apiPath.query("format", "oa").build());
-            return new OpenAnnotationBuilder(urls).getCrowdsourcingAnnotationCollection(uri, pi, pageNo, false);
+            return new OpenAnnotationBuilder(urls).getCrowdsourcingAnnotationCollection(uri, pi, pageNo, false, servletRequest);
         } else {
             URI uri = URI.create(apiPath.build());
-            return new WebAnnotationBuilder(urls).getCrowdsourcingAnnotationCollection(uri, pi, pageNo, false);
+            return new WebAnnotationBuilder(urls).getCrowdsourcingAnnotationCollection(uri, pi, pageNo, false, servletRequest);
         }
 
     }
@@ -172,10 +172,10 @@ public class RecordPageResource {
         ApiPath apiPath = urls.path(RECORDS_RECORD, RECORDS_COMMENTS).params(pi);
         if ("oa".equalsIgnoreCase(format)) {
             URI uri = URI.create(apiPath.query("format", "oa").build());
-            return new AnnotationsResourceBuilder(urls).getOAnnotationListForPageComments(pi, pageNo, uri);
+            return new AnnotationsResourceBuilder(urls, servletRequest).getOAnnotationListForPageComments(pi, pageNo, uri);
         } else {
             URI uri = URI.create(apiPath.build());
-            return new AnnotationsResourceBuilder(urls).getWebAnnotationCollectionForPageComments(pi, pageNo, uri);
+            return new AnnotationsResourceBuilder(urls, servletRequest).getWebAnnotationCollectionForPageComments(pi, pageNo, uri);
         }
     }
     
@@ -189,7 +189,7 @@ public class RecordPageResource {
             throws URISyntaxException, DAOException, JsonParseException, JsonMappingException, IOException, IllegalRequestException {
 
         URI uri = URI.create(urls.path(RECORDS_RECORD, RECORDS_COMMENTS).params(pi).build());
-        return new AnnotationsResourceBuilder(urls).getWebAnnotationPageForPageComments(pi, pageNo, uri, page);
+        return new AnnotationsResourceBuilder(urls, servletRequest).getWebAnnotationPageForPageComments(pi, pageNo, uri, page);
     }
     
     @GET

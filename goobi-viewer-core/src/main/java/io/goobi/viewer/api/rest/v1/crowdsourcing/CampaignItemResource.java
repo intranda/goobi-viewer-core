@@ -89,7 +89,6 @@ public class CampaignItemResource {
 
     @Inject
     protected AbstractApiUrlManager urls;
-    protected AnnotationsResourceBuilder annoBuilder = null;
 
     private final Long campaignId;
     
@@ -192,7 +191,7 @@ public class CampaignItemResource {
     @Path("/{pi}/annotations")
     @Produces({ MediaType.APPLICATION_JSON })
     @CORSBinding
-    public List<WebAnnotation> getAnnotationsForManifest(@PathParam("pi") String pi)
+    public List<WebAnnotation> getAnnotationsForManifest(@PathParam("pi") String pi, @Context HttpServletRequest request)
             throws URISyntaxException, DAOException {
 
         Campaign campaign = DataManager.getInstance().getDao().getCampaign(campaignId);
@@ -200,7 +199,7 @@ public class CampaignItemResource {
 
         List<WebAnnotation> webAnnotations = new ArrayList<>();
         for (PersistentAnnotation anno : annotations) {
-            WebAnnotation webAnno = getAnnoBuilder().getAsWebAnnotation(anno);
+            WebAnnotation webAnno = new AnnotationsResourceBuilder(urls, request).getAsWebAnnotation(anno);
             webAnnotations.add(webAnno);
         }
 
@@ -287,12 +286,6 @@ public class CampaignItemResource {
         return pAnno;
     }
 
-    public AnnotationsResourceBuilder getAnnoBuilder() {
-        if (this.annoBuilder == null) {
-            annoBuilder = new AnnotationsResourceBuilder(this.urls);
-        }
-        return annoBuilder;
-    }
 
     /**
      * Used to create or read a list of WebAnnotations sorted by their target (a iiif manifest or canvas)

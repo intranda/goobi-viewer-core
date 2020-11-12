@@ -24,9 +24,15 @@ import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_RECORD;
 
 import java.io.IOException;
 import java.net.URI;
+import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
+import javax.servlet.http.HttpServletRequest;
+
+import org.apache.commons.lang3.StringUtils;
+import org.apache.solr.common.SolrDocument;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -58,9 +64,17 @@ import de.unigoettingen.sub.commons.contentlib.exceptions.IllegalRequestExceptio
 import io.goobi.viewer.api.rest.AbstractApiUrlManager;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.DateTools;
+import io.goobi.viewer.controller.SolrConstants;
+import io.goobi.viewer.controller.SolrConstants.DocType;
 import io.goobi.viewer.exceptions.DAOException;
+import io.goobi.viewer.exceptions.IndexUnreachableException;
+import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.model.annotation.Comment;
 import io.goobi.viewer.model.annotation.PersistentAnnotation;
+import io.goobi.viewer.model.iiif.presentation.builder.OpenAnnotationBuilder;
+import io.goobi.viewer.model.iiif.presentation.builder.WebAnnotationBuilder;
+import io.goobi.viewer.model.security.AccessConditionUtils;
+import io.goobi.viewer.model.security.IPrivilegeHolder;
 
 /**
  * @author florian
@@ -69,36 +83,50 @@ import io.goobi.viewer.model.annotation.PersistentAnnotation;
 public class AnnotationsResourceBuilder {
 
     private final AbstractApiUrlManager urls;
+    private final HttpServletRequest request;
+    private final WebAnnotationBuilder waBuilder;
+    private final OpenAnnotationBuilder oaBuilder;
 
     private final static Logger logger = LoggerFactory.getLogger(AnnotationsResourceBuilder.class);
 
     private final static int MAX_ANNOTATIONS_PER_PAGE = 100;
 
-    public AnnotationsResourceBuilder(AbstractApiUrlManager urls) {
+    /**
+     * Default constructor
+     * 
+     * @param urls      TheApiUrlManager handling the creation of annotation urls/ids
+     * @param request   Used to check access to restricted annotations. 
+     * May be null, which prevents delivering any annotations with accessconditions other than OPENACCESS
+     */
+    public AnnotationsResourceBuilder(AbstractApiUrlManager urls, HttpServletRequest request) {
         this.urls = urls;
+        this.request = request;
+        this.waBuilder = new WebAnnotationBuilder(urls);
+        this.oaBuilder = new OpenAnnotationBuilder(urls);
     }
 
-    public AnnotationCollection getWebnnotationCollection() throws DAOException {
-        long count = DataManager.getInstance().getDao().getAnnotationCount(null);
+    public AnnotationCollection getWebAnnotationCollection() throws PresentationException, IndexUnreachableException {
+        long count = waBuilder.getAnnotationCount(request);
         URI uri = URI.create(urls.path(ANNOTATIONS).build());
         AnnotationCollectionBuilder builder = new AnnotationCollectionBuilder(uri, count);
         AnnotationCollection collection = builder.setItemsPerPage(MAX_ANNOTATIONS_PER_PAGE).buildCollection();
         return collection;
     }
 
-    public AnnotationPage getWebAnnotationPage(Integer page) throws DAOException, IllegalRequestException {
+    public AnnotationPage getWebAnnotationPage(Integer page) throws IllegalRequestException, PresentationException, IndexUnreachableException {
         if (page == null || page < 1) {
             throw new IllegalRequestException("Page number must be at least 1");
         }
         int first = (page - 1) * MAX_ANNOTATIONS_PER_PAGE;
         String sortField = "id";
-        List<PersistentAnnotation> data = DataManager.getInstance().getDao().getAnnotations(first, MAX_ANNOTATIONS_PER_PAGE, sortField, true, null);
+        List<SolrDocument> data = waBuilder.getAnnotationDocuments(waBuilder.getAnnotationQuery(), first, MAX_ANNOTATIONS_PER_PAGE, null, request);
+//        List<PersistentAnnotation> data = DataManager.getInstance().getDao().getAnnotations(first, MAX_ANNOTATIONS_PER_PAGE, sortField, true, null);
         if (data.isEmpty()) {
             throw new IllegalRequestException("Page number is out of bounds");
         }
         URI uri = URI.create(urls.path(ANNOTATIONS).build());
         AnnotationCollectionBuilder builder = new AnnotationCollectionBuilder(uri, data.size());
-        List<IAnnotation> annos = data.stream().map(this::getAsWebAnnotation).collect(Collectors.toList());
+        List<IAnnotation> annos = data.stream().map(doc -> waBuilder.createUGCWebAnnotation(doc, false)).collect(Collectors.toList());
         AnnotationPage annoPage = builder.setItemsPerPage(MAX_ANNOTATIONS_PER_PAGE).buildPage(annos, page);
         return annoPage;
     }
@@ -472,5 +500,26 @@ public class AnnotationsResourceBuilder {
 
         return annotation;
     }
+
+    /**
+     * @param id
+     * @return
+     * @throws IndexUnreachableException 
+     * @throws PresentationException 
+     */
+    public Optional<WebAnnotation> getWebAnnotation(Long id) throws PresentationException, IndexUnreachableException {
+        return waBuilder.getAnnotationDocument(id, request).map(doc -> waBuilder.createUGCWebAnnotation(doc, false));
+    }
+    
+    /**
+     * @param id
+     * @return
+     * @throws IndexUnreachableException 
+     * @throws PresentationException 
+     */
+    public Optional<OpenAnnotation> getOpenAnnotation(Long id) throws PresentationException, IndexUnreachableException {
+        return oaBuilder.getAnnotationDocument(id, request).map(doc -> oaBuilder.createUGCOpenAnnotation(doc, false));
+    }
+
 
 }

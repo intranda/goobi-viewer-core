@@ -35,6 +35,13 @@ import io.goobi.viewer.servlets.utils.ServletUtils;
  */
 public abstract class AbstractResource {
 
+    private static final Logger logger = LoggerFactory.getLogger(AbstractResource.class);
+    
+    @Context
+    protected HttpServletRequest servletRequest;
+    @Context
+    protected HttpServletResponse servletResponse;
+    
     /**
      * Default constructor
      */
@@ -52,7 +59,6 @@ public abstract class AbstractResource {
         this.servletResponse = response;
     }
 
-    private static final Logger logger = LoggerFactory.getLogger(AbstractResource.class);
 
     /**
      * <p>
@@ -77,9 +83,5 @@ public abstract class AbstractResource {
                 + servletRequest.getQueryString());
     }
 
-    @Context
-    protected HttpServletRequest servletRequest;
-    @Context
-    protected HttpServletResponse servletResponse;
 
 }
