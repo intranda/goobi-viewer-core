@@ -92,7 +92,7 @@ public class RecordsListResource {
         String finalQuery = createQuery(query, start, end, subtheme);
         logger.trace("final query: {}", finalQuery);
 
-        IIIFPresentationResourceBuilder builder = new IIIFPresentationResourceBuilder(urls);
+        IIIFPresentationResourceBuilder builder = new IIIFPresentationResourceBuilder(urls, servletRequest);
 
         List<IPresentationModelElement> items = builder.getManifestsForQuery(finalQuery, sort, firstRow, rows);
 

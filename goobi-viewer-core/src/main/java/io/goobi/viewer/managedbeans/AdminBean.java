@@ -58,6 +58,7 @@ import io.goobi.viewer.faces.validators.EmailValidator;
 import io.goobi.viewer.managedbeans.tabledata.TableDataProvider;
 import io.goobi.viewer.managedbeans.tabledata.TableDataProvider.SortOrder;
 import io.goobi.viewer.managedbeans.tabledata.TableDataSource;
+import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.messages.Messages;
 import io.goobi.viewer.messages.ViewerResourceBundle;
 import io.goobi.viewer.model.annotation.Comment;
@@ -1731,6 +1732,10 @@ public class AdminBean implements Serializable {
      */
     public String getUrlQueryForAccessCondition(String accessCondition) {
         String query = SearchHelper.getQueryForAccessCondition(accessCondition, true);
+        if (query == null) {
+            return null;
+        }
+        query = BeanUtils.escapeCriticalUrlChracters(query);
         try {
             return URLEncoder.encode(query, StringTools.DEFAULT_ENCODING);
         } catch (UnsupportedEncodingException e) {

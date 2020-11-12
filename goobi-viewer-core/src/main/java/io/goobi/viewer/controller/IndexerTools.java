@@ -184,7 +184,7 @@ public class IndexerTools {
                 DataManager.getInstance().getDao().getCampaignStatisticsForRecord(pi, CampaignRecordStatus.FINISHED);
         if (!statistics.isEmpty()) {
             AbstractApiUrlManager urls = new ApiUrls(DataManager.getInstance().getConfiguration().getRestApiUrl());
-            AnnotationsResourceBuilder annoBuilder = new AnnotationsResourceBuilder(urls);
+            AnnotationsResourceBuilder annoBuilder = new AnnotationsResourceBuilder(urls, null);
             for (CampaignRecordStatistic statistic : statistics) {
                 Campaign campaign = statistic.getOwner();
                 List<PersistentAnnotation> annotations = DataManager.getInstance().getDao().getAnnotationsForCampaignAndWork(campaign, pi);

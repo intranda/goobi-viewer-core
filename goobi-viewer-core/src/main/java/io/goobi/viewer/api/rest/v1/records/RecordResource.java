@@ -195,10 +195,10 @@ public class RecordResource {
         ApiPath apiPath = urls.path(RECORDS_RECORD, RECORDS_ANNOTATIONS).params(pi);
             if ("oa".equalsIgnoreCase(format)) {
                 URI uri = URI.create(apiPath.query("format", "oa").build());
-                return new OpenAnnotationBuilder(urls).getCrowdsourcingAnnotationCollection(uri, pi, false);
+                return new OpenAnnotationBuilder(urls).getCrowdsourcingAnnotationCollection(uri, pi, false, servletRequest);
             } else {
                 URI uri = URI.create(apiPath.build());
-                return new WebAnnotationBuilder(urls).getCrowdsourcingAnnotationCollection(uri, pi, false);
+                return new WebAnnotationBuilder(urls).getCrowdsourcingAnnotationCollection(uri, pi, false, servletRequest);
             }
 
         }
@@ -216,11 +216,11 @@ public class RecordResource {
         ApiPath apiPath = urls.path(RECORDS_RECORD, RECORDS_COMMENTS).params(pi);
         if ("oa".equalsIgnoreCase(format)) {
             URI uri = URI.create(apiPath.query("format", "oa").build());
-            return new AnnotationsResourceBuilder(urls).getOAnnotationListForRecordComments(pi, uri);
+            return new AnnotationsResourceBuilder(urls, servletRequest).getOAnnotationListForRecordComments(pi, uri);
         }
 
         URI uri = URI.create(apiPath.build());
-        return new AnnotationsResourceBuilder(urls).getWebAnnotationCollectionForRecordComments(pi, uri);
+        return new AnnotationsResourceBuilder(urls, servletRequest).getWebAnnotationCollectionForRecordComments(pi, uri);
     }
 
     @GET
@@ -231,7 +231,7 @@ public class RecordResource {
             throws DAOException, IllegalRequestException {
 
         URI uri = URI.create(urls.path(RECORDS_RECORD, RECORDS_COMMENTS).params(pi).build());
-        return new AnnotationsResourceBuilder(urls).getWebAnnotationPageForRecordComments(pi, uri, page);
+        return new AnnotationsResourceBuilder(urls, servletRequest).getWebAnnotationPageForRecordComments(pi, uri, page);
     }
 
     @GET
@@ -275,7 +275,7 @@ public class RecordResource {
                     description = "Build mode for manifest to select type of resources to include. Default is 'iiif' which returns the full IIIF manifest with all resources. 'thumbs' Does not read width and height of canvas resources and 'iiif_simple' ignores all resources from files") @QueryParam("mode") String mode)
             throws ContentNotFoundException, PresentationException, IndexUnreachableException, URISyntaxException, ViewerConfigurationException,
             DAOException {
-        IIIFPresentationResourceBuilder builder = new IIIFPresentationResourceBuilder(urls);
+        IIIFPresentationResourceBuilder builder = new IIIFPresentationResourceBuilder(urls, servletRequest);
         BuildMode buildMode = getBuildeMode(mode);
         return builder.getManifest(pi, buildMode);
     }
@@ -291,7 +291,7 @@ public class RecordResource {
                     description = "Build mode for manifes to select type of resources to include. Default is 'iiif' which returns the full IIIF manifest with all resources. 'thumbs' Does not read width and height of canvas resources and 'iiif_simple' ignores all resources from files") @QueryParam("mode") String mode)
             throws ContentNotFoundException, PresentationException, IndexUnreachableException, URISyntaxException, ViewerConfigurationException,
             DAOException, IllegalRequestException, IOException {
-        IIIFPresentationResourceBuilder builder = new IIIFPresentationResourceBuilder(urls);
+        IIIFPresentationResourceBuilder builder = new IIIFPresentationResourceBuilder(urls, servletRequest);
         BuildMode buildMode = getBuildeMode(mode);
         return builder.getLayer(pi, layerName);
     }
@@ -474,7 +474,7 @@ public class RecordResource {
     public SearchResult searchInManifest(@PathParam("pi") String pi, @QueryParam("q") String query, @QueryParam("motivation") String motivation,
             @QueryParam("date") String date, @QueryParam("user") String user, @QueryParam("page") Integer page)
             throws IndexUnreachableException, PresentationException {
-        return new IIIFSearchBuilder(urls, query, pi).setMotivation(motivation).setDate(date).setUser(user).setPage(page).build();
+        return new IIIFSearchBuilder(urls, query, pi, servletRequest).setMotivation(motivation).setDate(date).setUser(user).setPage(page).build();
     }
 
     /**
@@ -498,7 +498,7 @@ public class RecordResource {
     public AutoSuggestResult autoCompleteInManifest(@PathParam("pi") String pi, @QueryParam("q") String query,
             @QueryParam("motivation") String motivation, @QueryParam("date") String date, @QueryParam("user") String user,
             @QueryParam("page") Integer page) throws IndexUnreachableException, PresentationException {
-        return new IIIFSearchBuilder(urls, query, pi).setMotivation(motivation)
+        return new IIIFSearchBuilder(urls, query, pi, servletRequest).setMotivation(motivation)
                 .setDate(date)
                 .setUser(user)
                 .setPage(page)

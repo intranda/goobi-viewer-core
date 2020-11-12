@@ -84,9 +84,7 @@ public abstract class AbstractBuilder {
             SolrConstants.DATAREPOSITORY, SolrConstants.SOURCEDOCFORMAT };
 
     /** Constant <code>UGC_SOLR_FIELDS</code> */
-    public static final String[] UGC_SOLR_FIELDS = { SolrConstants.IDDOC, SolrConstants.PI_TOPSTRUCT, SolrConstants.ORDER, SolrConstants.UGCTYPE,
-            SolrConstants.MD_TEXT, SolrConstants.UGCCOORDS, SolrConstants.MD_BODY, SolrConstants.UGCTERMS };
-
+    
     protected final AbstractApiUrlManager urls;
 
     /**
@@ -764,7 +762,7 @@ public abstract class AbstractBuilder {
      * @throws java.net.URISyntaxException if any.
      */
     public URI getAnnotationURI(String pi, int order, AnnotationType type, int annoNum) throws URISyntaxException {
-        String urlString = this.urls.path(RECORDS_PAGES, RECORDS_PAGES_CANVAS).params(pi, order).build() + type.name() + "/annoNum/";
+        String urlString = this.urls.path(RECORDS_PAGES, RECORDS_PAGES_CANVAS).params(pi, order).build() + type.name() + "/" + annoNum + "/";
         return URI.create(urlString);
     }
 

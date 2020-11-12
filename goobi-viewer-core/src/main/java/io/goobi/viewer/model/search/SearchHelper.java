@@ -2298,6 +2298,7 @@ public final class SearchHelper {
             throw new IllegalArgumentException("rawQuery may not be null");
         }
 
+        logger.trace("rawQuery: {}", rawQuery);
         StringBuilder sbQuery = new StringBuilder();
         if (rawQuery.contains(AGGREGATION_QUERY_PREFIX)) {
             rawQuery = rawQuery.replace(AGGREGATION_QUERY_PREFIX, "");
@@ -2552,13 +2553,13 @@ public final class SearchHelper {
     /**
      * 
      * @param accessCondition
-     * @param escape
+     * @param escapeAccessCondition
      * @return
      * @should build escaped query correctly
      * @should build not escaped query correctly
      */
-    public static String getQueryForAccessCondition(String accessCondition, boolean escape) {
-        if (escape) {
+    public static String getQueryForAccessCondition(String accessCondition, boolean escapeAccessCondition) {
+        if (escapeAccessCondition) {
             accessCondition = BeanUtils.escapeCriticalUrlChracters(accessCondition);
         }
         return AGGREGATION_QUERY_PREFIX + "+(ISWORK:true ISANCHOR:true DOCTYPE:UGC)" + " +" + SolrConstants.ACCESSCONDITION + ":\"" + accessCondition

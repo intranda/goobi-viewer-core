@@ -95,7 +95,7 @@ public class ManifestBuilderTest extends AbstractDatabaseAndSolrEnabledTest {
         StructElement mainDoc = docs.get(0);
         IPresentationModelElement manifest = builder.generateManifest(mainDoc);
         ((Manifest) manifest).setContext(IIIFPresentationResponseFilter.CONTEXT);
-        sequenceBuilder.addBaseSequence((Manifest) manifest, mainDoc, manifest.getId().toString());
+        sequenceBuilder.addBaseSequence((Manifest) manifest, mainDoc, manifest.getId().toString(), null);
 
         String topLogId = mainDoc.getMetadataValue(SolrConstants.LOGID);
         if (StringUtils.isNotBlank(topLogId)) {
