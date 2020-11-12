@@ -692,7 +692,6 @@ public class CalendarBean implements Serializable {
             fields.add(SolrConstants._CALENDAR_YEAR);
             fields.add(SolrConstants._CALENDAR_DAY);
             StringBuilder sbSearchString = new StringBuilder();
-            //            sbSearchString.append("{!join from=PI_TOPSTRUCT to=PI}");
             if (collection != null && !collection.isEmpty()) {
                 sbSearchString.append(SolrConstants._CALENDAR_DAY)
                         .append(":* AND ")
