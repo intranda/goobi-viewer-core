@@ -77,7 +77,8 @@
                         type: "GET",
                         datatype: "JSON"
                     } ).then( function( data ) {
-                    	this.thumbnails = data;
+                    	this.thumbnails = data.canvases;//.map(c => c.thumbnail["@id"]);
+                    	console.log("loaded thumbs ", this.thumbnails);
                     	this.update();                       
                     }.bind( this ) );                        
     			}    			

@@ -24,6 +24,8 @@ import javax.ws.rs.core.Context;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import io.goobi.viewer.api.rest.AbstractApiUrlManager;
+import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.servlets.utils.ServletUtils;
 
 /**
@@ -41,11 +43,13 @@ public abstract class AbstractResource {
     protected HttpServletRequest servletRequest;
     @Context
     protected HttpServletResponse servletResponse;
-    
+    protected final AbstractApiUrlManager urls;
+
     /**
      * Default constructor
      */
     public AbstractResource() {
+        urls = DataManager.getInstance().getRestApiManager().getDataApiManager();
     }
 
     /**
@@ -55,6 +59,7 @@ public abstract class AbstractResource {
      * @param response a {@link javax.servlet.http.HttpServletResponse} object.
      */
     public AbstractResource(HttpServletRequest request, HttpServletResponse response) {
+        this();
         this.servletRequest = request;
         this.servletResponse = response;
     }

@@ -154,12 +154,12 @@ public class SequenceBuilder extends AbstractBuilder {
             } catch (DAOException e) {
                 logger.error(e.toString());
             }
+            if (sequence.getCanvases() != null) {
+                OpenAnnotationBuilder annoBuilder = new OpenAnnotationBuilder(urls);
+                addCrowdourcingAnnotations(sequence.getCanvases(), annoBuilder.getCrowdsourcingAnnotations(doc.getPi(), false, request), annotationMap);
+            }
         }
 
-        if (sequence.getCanvases() != null) {
-            OpenAnnotationBuilder annoBuilder = new OpenAnnotationBuilder(urls);
-            addCrowdourcingAnnotations(sequence.getCanvases(), annoBuilder.getCrowdsourcingAnnotations(doc.getPi(), false, request), annotationMap);
-        }
 
         if (manifest != null && sequence.getCanvases() != null) {
             manifest.setSequence(sequence);

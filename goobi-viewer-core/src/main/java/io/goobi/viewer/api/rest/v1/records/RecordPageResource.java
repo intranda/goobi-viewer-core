@@ -65,6 +65,7 @@ import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.exceptions.ViewerConfigurationException;
 import io.goobi.viewer.messages.ViewerResourceBundle;
+import io.goobi.viewer.model.iiif.presentation.builder.BuildMode;
 import io.goobi.viewer.model.iiif.presentation.builder.ManifestBuilder;
 import io.goobi.viewer.model.iiif.presentation.builder.OpenAnnotationBuilder;
 import io.goobi.viewer.model.iiif.presentation.builder.SequenceBuilder;
@@ -118,11 +119,13 @@ public class RecordPageResource {
     @Produces({ MediaType.APPLICATION_JSON })
     @Operation(tags = { "records", "iiif" }, summary = "Get IIIF base sequence")
     @IIIFPresentationBinding
-    public IPresentationModelElement getSequence()
+    public IPresentationModelElement getSequence(@Parameter(
+            description = "Build mode for manifes to select type of resources to include. Default is 'iiif' which returns the full IIIF manifest with all resources. 'thumbs' Does not read width and height of canvas resources and 'iiif_simple' ignores all resources from files") @QueryParam("mode") String mode)
             throws ContentNotFoundException, PresentationException, IndexUnreachableException, URISyntaxException,
             ViewerConfigurationException, DAOException, IllegalRequestException {
         IIIFPresentationResourceBuilder builder = new IIIFPresentationResourceBuilder(urls, servletRequest);
-        Sequence sequence = builder.getBaseSequence(pi);
+        BuildMode buildMode = RecordResource.getBuildeMode(mode);
+        Sequence sequence = builder.getBaseSequence(pi, buildMode);
         return sequence;
     }
 
