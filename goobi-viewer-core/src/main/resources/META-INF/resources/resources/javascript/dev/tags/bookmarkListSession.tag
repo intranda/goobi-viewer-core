@@ -4,18 +4,18 @@
 
 	
 	<li each="{bookmark in bookmarkList.items}">
-		<div class="row no-margin">
-			<div class="col-8 no-padding">
-				<h4>
-					<a class="bookmark-navigation__dropdown-title" href="{opts.bookmarks.config.root}{bookmark.url}">{bookmark.name}</a>
-				</h4>
-			</div>
-			<div class="col-4 no-padding">
-				<div class="{mainClass}-image"
-					style="background-image: url({bookmark.representativeImageUrl});">
+		<a class="bookmark-navigation__dropdown-title" href="{opts.bookmarks.config.root}{bookmark.url}">
+			<div class="row no-margin">
+				<div class="col-8 no-padding">
+					<h4>{bookmark.name}</h4>
+				</div>
+				<div class="col-4 no-padding">
+					<div class="{mainClass}-image"
+						style="background-image: url({bookmark.representativeImageUrl});">
+					</div>
 				</div>
 			</div>
-		</div>
+		</a>
 	</li>
 </ul>
 
