@@ -71,6 +71,8 @@ public class BeanUtils {
     public static final String QUESTION_MARK_REPLACEMENT = "U003F";
     /** Constant <code>PERCENT_REPLACEMENT="U0025"</code> */
     public static final String PERCENT_REPLACEMENT = "U0025";
+    /** Constant <code>PLUS_REPLACEMENT="U0025"</code> */
+    public static final String PLUS_REPLACEMENT = "U002B";
 
     private static Locale defaultLocale = null;
 
@@ -486,7 +488,8 @@ public class BeanUtils {
                 .replace("\\", BACKSLASH_REPLACEMENT)
                 .replace("|", PIPE_REPLACEMENT)
                 .replace("%7C", PIPE_REPLACEMENT)
-                .replace("?", QUESTION_MARK_REPLACEMENT);
+                .replace("?", QUESTION_MARK_REPLACEMENT)
+                .replace("+", PLUS_REPLACEMENT);
         if (escapePercentCharacters) {
             value = value.replace("%", PERCENT_REPLACEMENT);
         }
@@ -511,7 +514,8 @@ public class BeanUtils {
                 .replace(BACKSLASH_REPLACEMENT, "\\")
                 .replace(PIPE_REPLACEMENT, "|")
                 .replace(QUESTION_MARK_REPLACEMENT, "?")
-                .replace(PERCENT_REPLACEMENT, "%");
+                .replace(PERCENT_REPLACEMENT, "%")
+                .replace(PLUS_REPLACEMENT, "+");
     }
 
     /**

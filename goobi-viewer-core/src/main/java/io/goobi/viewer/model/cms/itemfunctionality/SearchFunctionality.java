@@ -175,7 +175,7 @@ public class SearchFunctionality implements Functionality, SearchInterface {
             return;
         }
         String facetString = getSearchBean().getFacets().getCurrentFacetString();
-        searchBean.getFacets().setCurrentFacetString(getCompleteFacetString(getSearchBean().getFacets().getCurrentFacetString()));
+        searchBean.getFacets().setCurrentFacetString(getCompleteFacetString(facetString));
         searchBean.search();
         searchBean.getFacets().setCurrentFacetString(facetString);
     }
