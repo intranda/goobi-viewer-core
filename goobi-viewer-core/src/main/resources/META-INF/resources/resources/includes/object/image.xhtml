@@ -163,7 +163,7 @@
         }
         
         // check for fullscreen and change container height 
-        if ( $( '#fullscreen' ).length > 0 ) {
+        if ( configViewer && $( '#fullscreen' ).length > 0 ) {
         	configViewer.global.adaptContainerHeight = false;
         	configViewer.global.topMargin = () => {
         	    var $header = $('#fullscreenHeader');
@@ -185,7 +185,7 @@
         
 
        	// desktop object view
-       	if ( access ) {
+       	if ( access && configViewer) {
            	var viewImage = new ImageView.Image( configViewer )
            	viewImage.load().then( function( image ) {
            	    $(".openseadragon-canvas").get(0).focus = () => {

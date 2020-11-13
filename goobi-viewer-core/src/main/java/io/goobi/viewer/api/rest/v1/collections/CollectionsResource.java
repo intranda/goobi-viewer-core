@@ -64,7 +64,7 @@ public class CollectionsResource {
     public CollectionsResource(
             @Parameter(description="Name of the SOLR field the collection is based on. Typically 'DC'")@PathParam("field")String solrField,
             @Context HttpServletRequest request) {
-        this.solrField = solrField;
+        this.solrField = solrField.toUpperCase();
         this.request = request;
     }
     

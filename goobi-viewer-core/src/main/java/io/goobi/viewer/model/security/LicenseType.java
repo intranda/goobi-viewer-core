@@ -550,7 +550,7 @@ public class LicenseType implements IPrivilegeHolder, ILicenseType {
         List<String> ret;
 
         if (isUgcType()) {
-            ret = Collections.singletonList(IPrivilegeHolder.PRIV_VIEW_UGC);
+            ret = new ArrayList<>(Arrays.asList(IPrivilegeHolder.PRIV_VIEW_UGC));
         } else {
             ret = new ArrayList<>(Arrays.asList(IPrivilegeHolder.PRIVS_RECORD));
         }

@@ -293,7 +293,7 @@ public class RecordResource {
             DAOException, IllegalRequestException, IOException {
         IIIFPresentationResourceBuilder builder = new IIIFPresentationResourceBuilder(urls, servletRequest);
         BuildMode buildMode = getBuildeMode(mode);
-        return builder.getLayer(pi, layerName);
+        return builder.getLayer(pi, layerName, buildMode);
     }
 
     @GET
@@ -509,7 +509,7 @@ public class RecordResource {
      * @param mode
      * @return
      */
-    public BuildMode getBuildeMode(String mode) {
+    public static BuildMode getBuildeMode(String mode) {
         if (StringUtils.isNotBlank(mode)) {
             switch (mode.toLowerCase()) {
                 case "iiif-simple":

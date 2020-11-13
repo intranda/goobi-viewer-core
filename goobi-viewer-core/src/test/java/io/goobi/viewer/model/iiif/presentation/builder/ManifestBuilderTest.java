@@ -40,6 +40,7 @@ import de.intranda.api.iiif.presentation.Range;
 import de.unigoettingen.sub.commons.contentlib.exceptions.ContentNotFoundException;
 import io.goobi.viewer.AbstractDatabaseAndSolrEnabledTest;
 import io.goobi.viewer.AbstractSolrEnabledTest;
+import io.goobi.viewer.api.rest.filters.IIIFPresentationResponseFilter;
 import io.goobi.viewer.api.rest.v1.ApiUrls;
 import io.goobi.viewer.controller.Configuration;
 import io.goobi.viewer.controller.DataManager;
@@ -55,7 +56,6 @@ import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.exceptions.ViewerConfigurationException;
 import io.goobi.viewer.managedbeans.ImageDeliveryBean;
 import io.goobi.viewer.model.viewer.StructElement;
-import io.goobi.viewer.servlets.rest.iiif.presentation.IIIFPresentationResponseFilter;
 
 /**
  * @author Florian

@@ -130,24 +130,24 @@ public class IIIFPresentationResourceBuilder {
         return range.orElseThrow(() -> new ContentNotFoundException("Not document with PI = " + pi + " and logId = " + logId + " found"));
     }
 
-    public Sequence getBaseSequence(String pi) throws PresentationException, IndexUnreachableException, URISyntaxException,
+    public Sequence getBaseSequence(String pi, BuildMode buildMode) throws PresentationException, IndexUnreachableException, URISyntaxException,
             ViewerConfigurationException, DAOException, IllegalRequestException, ContentNotFoundException {
 
         StructElement doc = getManifestBuilder().getDocument(pi);
-
-        IPresentationModelElement manifest = getManifestBuilder().generateManifest(doc);
+        
+        IPresentationModelElement manifest = new ManifestBuilder(urls).setBuildMode(buildMode).generateManifest(doc);
 
         if (manifest instanceof Collection) {
             throw new IllegalRequestException("Identifier refers to a collection which does not have a sequence");
         } else if (manifest instanceof Manifest) {
-            getSequenceBuilder().addBaseSequence((Manifest) manifest, doc, manifest.getId().toString(), request);
+            new SequenceBuilder(urls).setBuildMode(buildMode).addBaseSequence((Manifest) manifest, doc, manifest.getId().toString(), request);
             return ((Manifest) manifest).getSequences().get(0);
         }
         throw new ContentNotFoundException("Not manifest with identifier " + pi + " found");
 
     }
 
-    public Layer getLayer(String pi, String typeName) throws PresentationException, IndexUnreachableException,
+    public Layer getLayer(String pi, String typeName, BuildMode buildMode) throws PresentationException, IndexUnreachableException,
             URISyntaxException, ViewerConfigurationException, DAOException, ContentNotFoundException, IllegalRequestException, IOException {
         StructElement doc = getStructureBuilder().getDocument(pi);
         AnnotationType type = AnnotationType.valueOf(typeName.toUpperCase());
