@@ -77,7 +77,7 @@
 		<contentserver.version>2.5.0</contentserver.version>
 		<tei-conversion.version>1.2.0</tei-conversion.version>
 		<iiif-api-model.version>1.9.1</iiif-api-model.version>
-		<normdataimporter.version>1.5.1</normdataimporter.version>
+		<normdataimporter.version>1.5.2</normdataimporter.version>
 
 		<!-- other libraries -->
 		<cdi.version>2.0.SP1</cdi.version>
