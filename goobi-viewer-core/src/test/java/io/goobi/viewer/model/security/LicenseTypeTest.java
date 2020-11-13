@@ -15,7 +15,9 @@
  */
 package io.goobi.viewer.model.security;
 
+import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -94,5 +96,14 @@ public class LicenseTypeTest {
         Assert.assertEquals(1, result.size());
         Assert.assertEquals(IPrivilegeHolder.PRIV_VIEW_UGC, result.get(0));
     }
+    @Test
+    public void getAvailablePrivilegesHandleNonEmptyArgument() throws Exception {
+        LicenseType type = new LicenseType();
+        type.ugcType = true;
+        Set<String> privileges = new HashSet<>(Arrays.asList(IPrivilegeHolder.PRIV_VIEW_UGC));
+        List<String> result = type.getAvailablePrivileges(privileges);
+        Assert.assertEquals(0, result.size());
+    }
+
 
 }
