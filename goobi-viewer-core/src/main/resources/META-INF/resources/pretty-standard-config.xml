@@ -991,10 +991,11 @@
         <pattern value="/admin/crowdsourcing/annotations/" />
         <view-id value="/resources/crowdsourcing/adminCrowdAnnotations.xhtml" />
         <action onPostback="false">#{navigationHelper.resetTheme}</action>
+        <action onPostback="false">#{crowdsourcingBean.setTargetCampaign(null)}</action>
     </url-mapping>
     
     <!-- CROWDSOURCING -->
-     <url-mapping id="crowdCampaigns">
+    <url-mapping id="crowdCampaigns">
 		<pattern value="/campaigns/"/>
         <view-id value="/campaigns.xhtml" />
 		<action onPostback="false">#{navigationHelper.resetTheme}</action>
