@@ -37,6 +37,8 @@ public interface IPrivilegeHolder {
     public static final String PRIV_VIEW_VIDEO = "VIEW_VIDEO";
     /** Constant <code>PRIV_VIEW_AUDIO="VIEW_AUDIO"</code> */
     public static final String PRIV_VIEW_AUDIO = "VIEW_AUDIO";
+    /** Constant <code>PRIV_VIEW_UGC="PRIV_VIEW_UGC"</code> */
+    public static final String PRIV_VIEW_UGC = "VIEW_UGC";
     /** Constant <code>PRIV_DOWNLOAD_PDF="DOWNLOAD_PDF"</code> */
     public static final String PRIV_DOWNLOAD_PDF = "DOWNLOAD_PDF";
     /** Constant <code>PRIV_DOWNLOAD_PAGE_PDF="DOWNLOAD_PAGE_PDF"</code> */
@@ -47,10 +49,12 @@ public interface IPrivilegeHolder {
     public static final String PRIV_DOWNLOAD_METADATA = "DOWNLOAD_METADATA";
     /** Constant <code>PRIV_GENERATE_IIIF_MANIFEST="PRIV_GENERATE_IIIF_MANIFEST"</code> */
     public static final String PRIV_GENERATE_IIIF_MANIFEST = "GENERATE_IIIF_MANIFEST";
+
     /** Constant array containing all constants for record privileges. */
     public static final String[] PRIVS_RECORD =
             { PRIV_LIST, PRIV_VIEW_THUMBNAILS, PRIV_VIEW_IMAGES, PRIV_VIEW_VIDEO, PRIV_VIEW_AUDIO, PRIV_VIEW_FULLTEXT, PRIV_DOWNLOAD_ORIGINAL_CONTENT,
-                    PRIV_DOWNLOAD_PAGE_PDF, PRIV_DOWNLOAD_PDF, PRIV_DOWNLOAD_METADATA, PRIV_GENERATE_IIIF_MANIFEST };
+                    PRIV_DOWNLOAD_PAGE_PDF, PRIV_DOWNLOAD_PDF, PRIV_DOWNLOAD_METADATA, PRIV_GENERATE_IIIF_MANIFEST,
+                    PRIV_VIEW_UGC };
 
     // Role privileges
     /** Constant <code>PRIV_DELETE_OCR_PAGE="DELETE_OCR_PAGE"</code> */
@@ -75,11 +79,14 @@ public interface IPrivilegeHolder {
     public static final String PRIV_CMS_COLLECTIONS = "CMS_COLLECTIONS";
     /** Constant <code>PRIV_CMS_CATEGORIES="CMS_CATEGORIES"</code> */
     public static final String PRIV_CMS_CATEGORIES = "CMS_CATEGORIES";
+    
+    /** Constant array containing all constants for CMS privileges. */
     public static final String[] PRIVS_CMS =
             { PRIV_CMS_PAGES, PRIV_CMS_MENU, PRIV_CMS_STATIC_PAGES,
                     PRIV_CMS_COLLECTIONS,
                     PRIV_CMS_CATEGORIES };
 
+    // Crowdsourcing privileges
     /** Constant <code>PRIV_CROWDSOURCING_ALL_CAMPAIGNS="CROWDSOURCING_ALL_CAMPAIGNS"</code> */
     public static final String PRIV_CROWDSOURCING_ALL_CAMPAIGNS = "CROWDSOURCING_ALL_CAMPAIGNS";
     /** Constant <code>PRIV_CROWDSOURCING_ANNOTATE_CAMPAIGN="CROWDSOURCING_ANNOTATE_CAMPAIGN"</code> */
@@ -294,4 +301,22 @@ public interface IPrivilegeHolder {
      * @param priv a boolean.
      */
     public void setPrivCrowdsourcingReviewCampaign(boolean priv);
+
+    /**
+     * <p>
+     * isPrivViewUgc.
+     * </p>
+     *
+     * @return a boolean.
+     */
+    public boolean isPrivViewUgc();
+
+    /**
+     * <p>
+     * setPrivViewUgc.
+     * </p>
+     *
+     * @param priv a boolean.
+     */
+    public void setPrivViewUgc(boolean priv);
 }

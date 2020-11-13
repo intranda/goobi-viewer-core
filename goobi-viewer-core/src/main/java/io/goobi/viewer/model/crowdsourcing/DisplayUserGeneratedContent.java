@@ -15,21 +15,35 @@
  */
 package io.goobi.viewer.model.crowdsourcing;
 
+import java.nio.file.Paths;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.util.Comparator;
 import java.util.Date;
+import java.util.List;
+import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.solr.common.SolrDocument;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
+import de.intranda.api.annotation.ITypedResource;
+import de.intranda.api.annotation.wa.TextualResource;
+import de.intranda.api.annotation.wa.TypedResource;
 import io.goobi.viewer.controller.DateTools;
+import io.goobi.viewer.controller.HtmlParser;
 import io.goobi.viewer.controller.SolrConstants;
+import io.goobi.viewer.controller.SolrSearchIndex;
 import io.goobi.viewer.controller.StringTools;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
+import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.model.security.user.User;
+import io.goobi.viewer.model.viewer.PageType;
+import io.goobi.viewer.model.viewer.PhysicalElement;
 import io.goobi.viewer.model.viewer.StructElement;
 
 /**
@@ -43,7 +57,9 @@ public class DisplayUserGeneratedContent {
         CORPORATION,
         ADDRESS,
         COMMENT,
-        PICTURE;
+        PICTURE,
+        GEOLOCATION,
+        NORMDATA;
 
         public String getName() {
             return this.name();
@@ -70,17 +86,23 @@ public class DisplayUserGeneratedContent {
 
     private String pi;
 
-    private Integer page;
+    private Integer page = null;
 
     private String label;
+
+    private String extendendLabel = null;
 
     private String displayCoordinates;
 
     private String areaString;
 
+    private ITypedResource annotationBody = new TypedResource();
+
     private User updatedBy;
 
     private Date dateUpdated;
+
+    private String accessCondition;
 
     /**
      * Default constructor (needed for persistence).
@@ -208,6 +230,23 @@ public class DisplayUserGeneratedContent {
     }
 
     /**
+     * @return the extendendLabel
+     */
+    public String getExtendendLabel() {
+        if (StringUtils.isNotBlank(this.extendendLabel)) {
+            return extendendLabel;
+        }
+        return label;
+    }
+
+    /**
+     * @param extendendLabel the extendendLabel to set
+     */
+    public void setExtendendLabel(String extendendLabel) {
+        this.extendendLabel = extendendLabel;
+    }
+
+    /**
      * <p>
      * Getter for the field <code>updatedBy</code>.
      * </p>
@@ -277,6 +316,20 @@ public class DisplayUserGeneratedContent {
      */
     public void setDateUpdated(Date dateUpdated) {
         this.dateUpdated = dateUpdated;
+    }
+
+    /**
+     * @return the accessCondition
+     */
+    public String getAccessCondition() {
+        return accessCondition;
+    }
+
+    /**
+     * @param accessCondition the accessCondition to set
+     */
+    public void setAccessCondition(String accessCondition) {
+        this.accessCondition = accessCondition;
     }
 
     /**
@@ -405,14 +458,13 @@ public class DisplayUserGeneratedContent {
     }
 
     /**
-     * <p>
-     * isEmpty.
-     * </p>
+     * Check if the resource has either a label or an annotation body with a type
      *
-     * @return a boolean.
+     * @return true if neither label nor annotation body exist
      */
     public boolean isEmpty() {
-        return StringUtils.isEmpty(getLabel());
+        return StringUtils.isEmpty(getLabel())
+                && (this.annotationBody == null || StringUtils.isBlank(this.annotationBody.getType()));
     }
 
     /**
@@ -424,6 +476,43 @@ public class DisplayUserGeneratedContent {
      */
     public String getTypeAsString() {
         return getType().getName();
+    }
+
+    /**
+     * @return the annotationBody
+     */
+    public ITypedResource getAnnotationBody() {
+        return annotationBody;
+    }
+
+    /**
+     * @param annotationBody the annotationBody to set
+     */
+    public void setAnnotationBody(ITypedResource annotationBody) {
+        this.annotationBody = annotationBody;
+    }
+
+    public boolean setAnnotationBody(String json) {
+        if (StringUtils.isNotBlank(json) && !"{}".equals(json)) {
+
+            ObjectMapper mapper = new ObjectMapper();
+            try {
+                this.annotationBody = mapper.readValue(json, de.intranda.api.annotation.wa.TypedResource.class);
+                if (this.annotationBody == null) {
+                    throw new IllegalArgumentException("no content generated");
+                }
+                return true;
+            } catch (JsonProcessingException | IllegalArgumentException e) {
+                try {
+                    this.annotationBody = mapper.readValue(json, de.intranda.api.annotation.oa.TypedResource.class);
+                    return true;
+                } catch (JsonProcessingException e1) {
+                    this.annotationBody = new TextualResource(json, HtmlParser.isHtml(json) ? "text/html" : "text/plain");
+                }
+
+            }
+        }
+        return false;
     }
 
     /**
@@ -452,11 +541,95 @@ public class DisplayUserGeneratedContent {
         ret.setType(ContentType.getByName(type));
         ret.setAreaString((String) doc.getFieldValue(SolrConstants.UGCCOORDS));
         ret.setDisplayCoordinates((String) doc.getFieldValue(SolrConstants.UGCCOORDS));
+        ret.setPi((String) doc.getFieldValue(SolrConstants.PI_TOPSTRUCT));
+        ret.setAccessCondition(SolrSearchIndex.getSingleFieldStringValue(doc, SolrConstants.ACCESSCONDITION));
+        if (doc.containsKey(SolrConstants.MD_BODY)) {
+            Object body = doc.getFieldValue(SolrConstants.MD_BODY);
+            if (body instanceof List) {
+                @SuppressWarnings("unchecked")
+                List<String> features = (List<String>) body;
+                if (features.size() == 1) {
+                    ret.setAnnotationBody(features.get(0));
+                } else {
+                    String array = "[" + features.stream().collect(Collectors.joining(",")) + "]";
+                    ret.setAnnotationBody(array);
+                }
+            } else if (body instanceof String) {
+                ret.setAnnotationBody((String) body);
+            }
+            ret.setTypeFromBody();
+        }
+        Object pageNo = doc.getFieldValue(SolrConstants.ORDER);
+        if (pageNo != null && pageNo instanceof Number) {
+            ret.setPage(((Number) pageNo).intValue());
+        }
 
-        StructElement se = new StructElement(iddoc, doc);
-        ret.setLabel(generateUgcLabel(se));
+        if (StringUtils.isNotBlank(ret.getAnnotationBody().getType())) {
+            ret.setLabel(createLabelFromBody(ret.getType(), ret.getAnnotationBody()));
+            ret.setExtendendLabel(createExtendedLabelFromBody(ret.getType(), ret.getAnnotationBody()));
+        } else {
+            StructElement se = new StructElement(iddoc, doc);
+            ret.setLabel(generateUgcLabel(se));
+        }
 
         return ret;
+    }
+
+    /**
+     * @param type
+     * @param body
+     * @return the text if the body is a TextualResource. Otherwise return null
+     */
+    private static String createExtendedLabelFromBody(ContentType type, ITypedResource body) {
+        switch (type) {
+            case COMMENT:
+                if (body instanceof TextualResource) {
+                    return ((TextualResource) body).getText();
+                }
+            default:
+                break;
+        }
+
+        return null;
+    }
+
+    /**
+     * @param annotationBody2
+     * @return
+     */
+    private static String createLabelFromBody(ContentType type, ITypedResource body) {
+        switch (type) {
+            case GEOLOCATION:
+                return "admin__crowdsourcing_question_type_GEOLOCATION_POINT";
+            case NORMDATA:
+                return Paths.get(body.getId().getPath()).getFileName().toString();
+            case COMMENT:
+            default:
+                if (body instanceof TextualResource) {
+                    return HtmlParser.getPlaintext(((TextualResource) body).getText());
+                }
+                return "admin__crowdsourcing_question_type_" + type.toString();
+        }
+    }
+
+    /**
+     * If the annotation body has a type property of one of "Feature", "AuthorityResource" or "TextualBody" then the {@link #type} is set accordingly
+     */
+    private void setTypeFromBody() {
+        ContentType type = this.type;
+        if (StringUtils.isNotBlank(this.annotationBody.getType())) {
+            switch (this.annotationBody.getType()) {
+                case "Feature":
+                    type = ContentType.GEOLOCATION;
+                    break;
+                case "AuthorityResource":
+                    type = ContentType.NORMDATA;
+                    break;
+                case "TextualBody":
+                    type = ContentType.COMMENT;
+            }
+        }
+        this.type = type;
     }
 
     /**
@@ -555,6 +728,52 @@ public class DisplayUserGeneratedContent {
         }
 
         return se.getMetadataValue(SolrConstants.LABEL);
+    }
+
+    public boolean isOnThisPage(PhysicalElement page) {
+        return this.page != null && page.getOrder() == this.page;
+    }
+
+    public boolean isOnOtherPage(PhysicalElement page) {
+        return isOnAnyPage() && !isOnThisPage(page);
+    }
+
+    public boolean isOnAnyPage() {
+        return this.page != null;
+    }
+
+    public String getIconClass() {
+        switch (this.type) {
+            case ADDRESS:
+                return "fa fa-envelope";
+            case PERSON:
+                return "fa fa-user";
+            case CORPORATION:
+                return "fa fa-home";
+            case PICTURE:
+                return "fa fa-photo";
+            case GEOLOCATION:
+                return "fa fa-map-marker";
+            case NORMDATA:
+                return "fa fa fa-list-ul";
+            case COMMENT:
+            default:
+                return "fa fa-comment";
+        }
+    }
+
+    public String getPageUrl() {
+        return getPageUrl(BeanUtils.getNavigationHelper().getCurrentPageType());
+    }
+
+    public String getPageUrl(PageType pageType) {
+
+        String pageTypeUrl = BeanUtils.getNavigationHelper().getPageUrl(pageType); //no trailing slash
+        String pageUrl = pageTypeUrl + "/" + getPi() + "/";
+        if (getPage() != null) {
+            pageUrl = pageUrl + getPage() + "/#ugc=" + getId();
+        }
+        return pageUrl;
     }
 
 }

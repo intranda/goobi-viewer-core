@@ -21,7 +21,6 @@ import java.awt.Rectangle;
 import java.io.IOException;
 import java.net.URI;
 import java.time.LocalDateTime;
-import java.util.Date;
 import java.util.List;
 
 import javax.persistence.EntityManager;
@@ -82,7 +81,7 @@ public class PersistentAnnotationTest extends AbstractDatabaseEnabledTest {
     public static void setUpClass() throws Exception {
         AbstractDatabaseEnabledTest.setUpClass();
         urls = new ApiUrls(DataManager.getInstance().getConfiguration().getRestApiUrl());
-        annoBuilder = new AnnotationsResourceBuilder(urls);
+        annoBuilder = new AnnotationsResourceBuilder(urls, null);
 
         mapper = new ObjectMapper();
         mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
@@ -206,7 +205,7 @@ public class PersistentAnnotationTest extends AbstractDatabaseEnabledTest {
         Assert.assertEquals(webAnno.getTarget(), fromDAOWebAnno.getTarget());
         Assert.assertEquals(webAnno, fromDAOWebAnno);
 
-        Date changed = new Date();
+        LocalDateTime changed = LocalDateTime.now();
         fromDAO.setDateModified(changed);
         boolean updated = DataManager.getInstance().getDao().updateAnnotation(fromDAO);
 

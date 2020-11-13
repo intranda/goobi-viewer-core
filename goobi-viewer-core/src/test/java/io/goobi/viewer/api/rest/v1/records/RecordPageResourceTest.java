@@ -139,27 +139,7 @@ public class RecordPageResourceTest extends AbstractRestApiTest {
             String entity = response.readEntity(String.class);
             AnnotationCollection collection = mapper.readValue(entity, AnnotationCollection.class);
             assertNotNull(collection);
-            assertEquals(1, collection.getTotalItems());
-        }
-    }
-
-    /**
-     * Test method for {@link io.goobi.viewer.api.rest.v1.records.RecordResource#getAnnotationPageForRecord()}.
-     * @throws JsonProcessingException 
-     * @throws JsonMappingException 
-     */
-    @Test
-    public void testGetAnnotationPageForPage() throws JsonMappingException, JsonProcessingException {
-        try(Response response = target(urls.path(RECORDS_PAGES, RECORDS_PAGES_ANNOTATIONS).params(PI_ANNOTATIONS, PAGENO_ANNOTATIONS).build() + "1/")
-                .request()
-                .accept(MediaType.APPLICATION_JSON)
-                .get()) {
-            assertEquals("Should return status 200", 200, response.getStatus());
-            assertNotNull("Should return user object as json", response.getEntity());
-            String entity = response.readEntity(String.class);
-            AnnotationPage page = mapper.readValue(entity, AnnotationPage.class);
-            assertNotNull(page);
-            assertEquals(1l, page.getItems().size());
+            assertEquals(0, collection.getTotalItems()); //No annotations indexed
         }
     }
 

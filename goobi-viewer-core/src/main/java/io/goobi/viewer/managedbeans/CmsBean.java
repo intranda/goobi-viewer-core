@@ -17,11 +17,11 @@ package io.goobi.viewer.managedbeans;
 
 import java.io.IOException;
 import java.io.Serializable;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -48,6 +48,7 @@ import org.slf4j.LoggerFactory;
 import de.unigoettingen.sub.commons.contentlib.exceptions.ContentNotFoundException;
 import de.unigoettingen.sub.commons.contentlib.exceptions.IllegalRequestException;
 import io.goobi.viewer.controller.DataManager;
+import io.goobi.viewer.controller.DateTools;
 import io.goobi.viewer.controller.IndexerTools;
 import io.goobi.viewer.controller.SolrConstants;
 import io.goobi.viewer.controller.SolrSearchIndex;
@@ -241,7 +242,7 @@ public class CmsBean implements Serializable {
             });
             lazyModelPages.setEntriesPerPage(DEFAULT_ROWS_PER_PAGE);
             lazyModelPages.addFilter(CMSPAGES_FILTER);
-//            lazyModelPages.addFilter("CMSCategory", "name");
+            //            lazyModelPages.addFilter("CMSCategory", "name");
         }
         selectedLocale = getDefaultLocale();
     }
@@ -518,7 +519,7 @@ public class CmsBean implements Serializable {
         CMSPage page = template.createNewPage(locales);
         setUserRestrictedValues(page, userBean.getUser());
         // page.setId(System.currentTimeMillis());
-        page.setDateCreated(new Date());
+        page.setDateCreated(LocalDateTime.now());
         return page;
     }
 
@@ -888,7 +889,7 @@ public class CmsBean implements Serializable {
 
             // Save
             boolean success = false;
-            selectedPage.setDateUpdated(new Date());
+            selectedPage.setDateUpdated(LocalDateTime.now());
             logger.trace("update dao");
             if (selectedPage.getId() != null) {
                 success = DataManager.getInstance().getDao().updateCMSPage(selectedPage);
@@ -2618,7 +2619,14 @@ public class CmsBean implements Serializable {
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
     public Long getLastEditedTimestamp(long pageId) throws DAOException {
-        return Optional.ofNullable(getCMSPage(pageId)).map(CMSPage::getDateUpdated).map(Date::getTime).orElse(null);
+        //        return Optional.ofNullable(getCMSPage(pageId)).map(CMSPage::getDateUpdated).map(Date::getTime).orElse(null);
+
+        CMSPage page = getCMSPage(pageId);
+        if (page == null || page.getDateUpdated() == null) {
+            return null;
+        }
+        
+        return DateTools.getMillisFromLocalDateTime(page.getDateUpdated(), false);
     }
 
     /**
@@ -2816,9 +2824,10 @@ public class CmsBean implements Serializable {
 
         return "";
     }
-    
+
     /**
      * getter for jsf
+     * 
      * @return
      */
     public String getCmsPagesFilter() {

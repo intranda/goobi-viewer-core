@@ -132,21 +132,21 @@ public class UserGroup implements ILicensee, Serializable {
     }
 
     /**
-     * add User to group
+     * Adds membership relation between the given user and role and persists immediately.
      *
-     * @param user a {@link io.goobi.viewer.model.security.user.User} object.
-     * @param role a {@link io.goobi.viewer.model.security.Role} object.
-     * @return a boolean.
+     * @param user User to add
+     * @param role Role to add
+     * @return true if persistence successful, false otherwise
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
     public boolean addMember(User user, Role role) throws PresentationException, DAOException {
-        if (user != null && role != null) {
-            UserRole membership = new UserRole(this, user, role);
-            return DataManager.getInstance().getDao().addUserRole(membership);
+        if (user == null || role == null) {
+            return false;
         }
 
-        return false;
+        UserRole membership = new UserRole(this, user, role);
+        return DataManager.getInstance().getDao().addUserRole(membership);
     }
 
     /**
@@ -408,16 +408,16 @@ public class UserGroup implements ILicensee, Serializable {
 
         return ret;
     }
-    
+
     /**
      * 
      * @return true if group has members; false otherwise
-     * @throws DAOException 
+     * @throws DAOException
      */
     public boolean isHasMembers() throws DAOException {
         return getMemberCount() > 0;
     }
-    
+
     /**
      * 
      * @return
@@ -458,7 +458,7 @@ public class UserGroup implements ILicensee, Serializable {
 
         return ret;
     }
-    
+
     /**
      * 
      * @return

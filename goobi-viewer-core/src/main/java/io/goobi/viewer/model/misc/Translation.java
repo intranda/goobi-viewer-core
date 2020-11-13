@@ -28,6 +28,8 @@ import javax.persistence.MappedSuperclass;
 import org.apache.commons.lang3.StringUtils;
 
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
+import io.goobi.viewer.model.crowdsourcing.questions.Question;
+import io.goobi.viewer.model.crowdsourcing.questions.QuestionTranslation;
 import io.goobi.viewer.model.maps.MapTranslation;
 
 /**
@@ -36,7 +38,7 @@ import io.goobi.viewer.model.maps.MapTranslation;
  * </p>
  */
 @MappedSuperclass
-public abstract class Translation {
+public class Translation {
 
     /** Unique database ID. */
     @Id
@@ -146,6 +148,23 @@ public abstract class Translation {
         } else {
             return "";
         }
+    }
+    
+    public static void setTranslation(List<Translation> translations, String lang, String value, String tag) {
+        if (lang == null) {
+            throw new IllegalArgumentException("lang may not be null");
+        }
+        if (value == null) {
+            throw new IllegalArgumentException("value may not be null");
+        }
+
+        for (Translation translation : translations) {
+            if (translation.getTag().equals(tag) && translation.getLanguage().equals(lang)) {
+                translation.setValue(value);
+                return;
+            }
+        }
+        translations.add(new Translation(lang, tag, value));
     }
 
     /**

@@ -926,6 +926,19 @@ public class BrowseElement implements Serializable {
     }
 
     /**
+     * Returns the lowest <code>StructElementStub</code> in the list.
+     * 
+     * @return last StructElementStub in the list
+     */
+    public StructElementStub getBottomStructElement() {
+        if (structElements == null || structElements.isEmpty()) {
+            return null;
+        }
+
+        return structElements.get(structElements.size() - 1);
+    }
+
+    /**
      * <p>
      * Setter for the field <code>fulltext</code>.
      * </p>

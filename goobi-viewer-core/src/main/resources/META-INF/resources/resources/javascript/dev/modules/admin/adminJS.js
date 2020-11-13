@@ -38,8 +38,8 @@ var adminJS = ( function() {
             console.log( '##############################' );
         }
         
-        // init sidebar
-        adminJS.sidebar.init();
+        // init sticky elements (sidebars)
+        adminJS.stickyElements.init();
     };
     
     return admin;
@@ -48,9 +48,11 @@ var adminJS = ( function() {
 
 
 $( document ).ready(function() {
+
 // toggle help text for admin forms
 	$("body").on("click", '[data-toggle="helptext"]', function() {
 		$(this).closest('.form-group').children('.admin__form-input, .admin__license-functions-help').find('.admin__form-help-text').toggleClass('in');
+		$(this).parents().siblings('.admin__form-help-text').toggleClass('in');
 	});
 
 // hide license functions if open access toggle is yes
@@ -60,23 +62,21 @@ $( document ).ready(function() {
 		  }
 	// check if toggle status changes
 	$(".openAccessToggle input").change(function(){
-		  if ($('.openAccessToggle input:nth-of-type(2)').is(':checked'))
-		   $('.admin__license-functions').animate({
-			    height: "toggle",
-			    opacity: "toggle"
-			}, 250);
-		  else if ($('.openAccessToggle input:nth-of-type(1)').is(':checked'))
-			   $('.admin__license-functions').animate({
-				    height: "toggle",
-				    opacity: "toggle"
-				}, 250);
+	  if ($('.openAccessToggle input:nth-of-type(2)').is(':checked'))
+	   $('.admin__license-functions').animate({
+		    height: "toggle",
+		    opacity: "toggle"
+		}, 250);
+	  else if ($('.openAccessToggle input:nth-of-type(1)').is(':checked'))
+	   $('.admin__license-functions').animate({
+		    height: "toggle",
+		    opacity: "toggle"
+		}, 250);
 	});
-	
-
 
 // toggle next cms right block after radio button
 		// check if toggle yes on page load
-	
+
 	// $("body").on("click", '[data-toggle="helptext"]', function()
 			
 	$('.blockAfterRadioToggler').each(function() {
@@ -100,7 +100,7 @@ $( document ).ready(function() {
 			}
 		});
 	});
-	
+
 	// pdf quota radio switch - change color of box according to state
 	$('#pdf_download_quota_info_box').each(function() {
 		if ($(this).find("input:nth-of-type(1)").prop('checked')) {
@@ -116,16 +116,16 @@ $( document ).ready(function() {
 		}
 	});	
 
+	// vertical language tabs focus effect
+	$("body").on("focus", ".admin__language-tabs-vertical-textarea", function() {
+		$(this).siblings('.admin__language-tabs-vertical').find('.admin__language-tab-vertical.active a').css({"border-color": "#3365a9", "border-right-color": "#fff"})
+	});
+
+	$("body").on("focusout", ".admin__language-tabs-vertical-textarea", function() {
+		$(this).siblings('.admin__language-tabs-vertical').find('.admin__language-tab-vertical.active a').css({"border-color": "#ccc", "border-right-color": "#fff"})
+	});
 	
-	
-//END DOCUMENT READY
-});
- 
-
-
-
-// hiding the new tab option for cms menus if link value is '#'
-$(document).ready(function(){
+	// hiding the new tab option for cms menus if link value is '#'
 	$('.cms-module__option-url').each(function() {
 		if ($(this).val() == "#") {
 			$(this).parent().parent().next(".cms-module__option-group").hide();
@@ -142,4 +142,6 @@ $(document).ready(function(){
 			}
 		});
 	});
+	
+// END DOCUMENT READY
 });

@@ -124,7 +124,7 @@ public class RecordSectionResource {
     @Operation(tags = {"records", "iiif"}, summary = "Get IIIF range for section")
     @IIIFPresentationBinding
     public IPresentationModelElement getRange() throws ContentNotFoundException, PresentationException, IndexUnreachableException, URISyntaxException, ViewerConfigurationException, DAOException {
-        IIIFPresentationResourceBuilder builder = new IIIFPresentationResourceBuilder(urls);
+        IIIFPresentationResourceBuilder builder = new IIIFPresentationResourceBuilder(urls, servletRequest);
         return builder.getRange(pi, divId);
     }
 

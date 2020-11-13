@@ -15,54 +15,56 @@
         <h:messages id="messages" globalOnly="false" infoClass="alert alert-success" errorClass="alert alert-danger" />
     </div>
 
-    <div class="crowd">
-    
-	<div id="pageHeaderTop" class="page-header__top-wrapper">
-
-        <div class="container">
-            <div class="page-header__top">
+    <div class="crowdsourcing-annotations">
+		<div id="pageHeaderTop" class="crowdsourcing-annotations__top-wrapper">
+            <div class="crowdsourcing-annotations__header">
 	            <!-- OPEN MOBILE NAVIGATION -->
-            	<div class="page-header__top-mobile-nav">
+            	<div class="crowdsourcing-annotations__top-mobile-nav">
 					<button type="button" class="btn btn--clean" data-open="menu" aria-label="#{msg.aria_label__open_navigation}">
 						<span></span>
 					</button>
 				</div>
-            
+
                 <!-- PAGE HEADER TOP BRAND -->            
-                <div class="page-header__top-brand">
-                    <a href="https://www.intranda.com/" target="_blank" rel="noopener">Goobi viewer Crowdsourcing</a>
+                <div class="crowdsourcing-annotations__top-brand">
+                    <a href="#{request.contextPath}/campaigns/" target="_self" rel="noopener">#{configurationBean.name} #{msg.admin__crowdsourcing_title}</a>
+                </div>
+                
+                <!-- PAGE HEADER TOP CAMPAIGN TITLE -->            
+                <div class="crowdsourcing-annotations__top-title">
+                	<span>#{crowdsourcingBean.targetCampaign.displayTitle}</span>
                 </div>
 
+
                 <!-- PAGE HEADER TOP ACTIONS -->            
-                <div class="page-header__top-actions">
+                <div class="crowdsourcing-annotations__top-actions">
                     <!-- CHANGE LOCAL -->
-                    <div id="changeLocalWrapper" class="page-header__top-actions-language">
+                    <div id="changeLocalWrapper" class="crowdsourcing-annotations__top-actions-language">
                     	<button type="button" class="btn btn--clean" data-toggle="local" aria-label="#{msg.aria_label__switch_language}">
                     		#{msg['changeLocal_' += navigationHelper.localeString]}
                     	</button>
                         <viewerComponent:changeLocal toggleLanguage="false" showFlags="false" />
                     </div>
                     <!-- LOGIN NAVIGATION -->
-                    <div class="page-header__top-actions-login">
+                    <div class="crowdsourcing-annotations__top-actions-login">
                         <viewerComponent:loginNavigation />
                     </div>
                 </div>
 
 	            <!-- OPEN MOBILE NAVIGATION -->
-            	<div class="page-header__top-mobile-sidebar">
+            	<div class="crowdsourcing-annotations__top-mobile-sidebar">
 					<button type="button" class="btn btn--clean" data-open="sidebar" aria-label="#{msg.aria_label__open_sidebar}">
 						<span></span>
 					</button>
 				</div>
             </div>
-        </div>
-    </div>
+	    </div>
 
+		<!-- CONTENT -->
+		<main id="CrowdContent" class="crowdsourcing-annotations__main">
+			<!-- <ui:insert name="breadcrumbs" /> -->
+			<ui:insert name="content" />
+		</main>
 
-        <!-- CONTENT -->
-        <main id="CrowdContent" class="crowd__content">
-				<ui:insert name="breadcrumbs" />
-                <ui:insert name="content" />    
-        </main>
     </div>
 </ui:composition>

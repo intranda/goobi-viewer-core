@@ -24,7 +24,9 @@ package io.goobi.viewer.model.crowdsourcing.questions;
 public enum QuestionType {
 
     PLAINTEXT,
-    GEOLOCATION_POINT
+    RICHTEXT,
+    GEOLOCATION_POINT,
+    NORMDATA
     /**
      * Not implemented yet DATE_PICKER, GEOLOCATION_AREA, TRANSCRIPTION, KEY_VALUE_LIST
      **/

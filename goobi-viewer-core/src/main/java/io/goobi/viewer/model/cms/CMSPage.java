@@ -21,10 +21,10 @@ import java.net.URI;
 import java.nio.file.DirectoryStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.Date;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
@@ -46,8 +46,6 @@ import javax.persistence.ManyToMany;
 import javax.persistence.OneToMany;
 import javax.persistence.OrderBy;
 import javax.persistence.Table;
-import javax.persistence.Temporal;
-import javax.persistence.TemporalType;
 import javax.persistence.Transient;
 
 import org.apache.commons.collections4.comparators.NullComparator;
@@ -111,13 +109,11 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable {
     @Column(name = "template_id", nullable = false)
     private String templateId;
 
-    @Temporal(TemporalType.TIMESTAMP)
-    @Column(name = "date_created", nullable = false)
-    private Date dateCreated;
+    @Column(name = "date_created", nullable = false, columnDefinition = "TIMESTAMP(9)")
+    private LocalDateTime dateCreated;
 
-    @Temporal(TemporalType.TIMESTAMP)
-    @Column(name = "date_updated")
-    private Date dateUpdated;
+    @Column(name = "date_updated", columnDefinition = "TIMESTAMP(9)")
+    private LocalDateTime dateUpdated;
 
     @Column(name = "published", nullable = false)
     private boolean published = false;
@@ -233,8 +229,8 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable {
             this.id = Long.valueOf(original.id);
         }
         this.templateId = original.templateId;
-        this.dateCreated = new Date(original.dateCreated.getTime());
-        this.dateUpdated = new Date(original.dateUpdated.getTime());
+        this.dateCreated = original.dateCreated;
+        this.dateUpdated =original.dateUpdated;
         this.published = original.published;
         if (original.pageSorting != null) {
             this.pageSorting = Long.valueOf(original.pageSorting);
@@ -437,7 +433,7 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable {
      *
      * @return the dateCreated
      */
-    public Date getDateCreated() {
+    public LocalDateTime getDateCreated() {
         return dateCreated;
     }
 
@@ -448,13 +444,13 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable {
      *
      * @param dateCreated the dateCreated to set
      */
-    public void setDateCreated(Date dateCreated) {
+    public void setDateCreated(LocalDateTime dateCreated) {
         this.dateCreated = dateCreated;
     }
 
     /** {@inheritDoc} */
     @Override
-    public Date getDateUpdated() {
+    public LocalDateTime getDateUpdated() {
         return dateUpdated;
     }
 
@@ -465,7 +461,7 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable {
      *
      * @param dateUpdated the dateUpdated to set
      */
-    public void setDateUpdated(Date dateUpdated) {
+    public void setDateUpdated(LocalDateTime dateUpdated) {
         this.dateUpdated = dateUpdated;
     }
 

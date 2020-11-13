@@ -51,6 +51,7 @@ import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.model.annotation.PersistentAnnotation;
 import io.goobi.viewer.model.iiif.presentation.builder.AbstractBuilder;
+import io.goobi.viewer.model.iiif.presentation.builder.OpenAnnotationBuilder;
 
 /**
  * <p>
@@ -71,7 +72,7 @@ public class AnnotationResource {
     private AnnotationsResourceBuilder annoBuilder;
     
     public AnnotationResource() {
-        annoBuilder = new AnnotationsResourceBuilder(urls);
+        annoBuilder = new AnnotationsResourceBuilder(urls, servletRequest);
     }
     
     /**
@@ -107,7 +108,7 @@ public class AnnotationResource {
             }
             return anno;
         } else { 
-            AbstractBuilder builder = new AbstractBuilder(new ApiUrls(DataManager.getInstance().getConfiguration().getRestApiUrl())) {};
+            OpenAnnotationBuilder builder = new OpenAnnotationBuilder(new ApiUrls(DataManager.getInstance().getConfiguration().getRestApiUrl())) {};
             IAnnotation anno = builder.getCrowdsourcingAnnotation(id.toString());
             if(anno != null) {                
                 return anno;

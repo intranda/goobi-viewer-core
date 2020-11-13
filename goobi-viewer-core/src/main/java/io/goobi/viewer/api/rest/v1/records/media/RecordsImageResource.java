@@ -60,89 +60,96 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
  */
 @Path(RECORDS_RECORD)
 public class RecordsImageResource {
-    
+
     private static final Logger logger = LoggerFactory.getLogger(RecordsImageResource.class);
     @Context
     private HttpServletRequest servletRequest;
     @Context
     private HttpServletResponse servletResponse;
-    
-    
+
     private final String pi;
+
     /**
      * @param request
      * @param directory
      * @param filename
-     * @throws IndexUnreachableException 
-     * @throws PresentationException 
+     * @throws IndexUnreachableException
+     * @throws PresentationException
      */
     public RecordsImageResource(
-            @Parameter(description = "Persistent identifier of the record") @PathParam("pi") String pi)  {
+            @Parameter(description = "Persistent identifier of the record") @PathParam("pi") String pi) {
         this.pi = pi;
 
     }
-    
+
     @GET
     @Path(RECORDS_IMAGE)
     @Produces({ MediaType.APPLICATION_JSON, ContentServerResource.MEDIA_TYPE_APPLICATION_JSONLD })
-    @Operation(summary="IIIF image identifier for the representative image of the process given by the identifier", tags= {"iiif", "records"})
-    @ApiResponse(responseCode="200", description="Get the IIIF image information object as json")
-    @ApiResponse(responseCode="404", description="Either the record or the file for the representative image doesn't exist")
-    @ApiResponse(responseCode="500", description="Internal error reading image or querying index")
-    public Response getImageBase() throws PresentationException, IndexUnreachableException, ServletException, IOException, ContentNotFoundException, URISyntaxException {
+    @Operation(summary = "IIIF image identifier for the representative image of the process given by the identifier", tags = { "iiif", "records" })
+    @ApiResponse(responseCode = "200", description = "Get the IIIF image information object as json")
+    @ApiResponse(responseCode = "404", description = "Either the record or the file for the representative image doesn't exist")
+    @ApiResponse(responseCode = "500", description = "Internal error reading image or querying index")
+    public Response getImageBase()
+            throws PresentationException, IndexUnreachableException, ServletException, IOException, ContentNotFoundException, URISyntaxException {
         String forwardUrl = new ApiUrls(ApiUrls.API).path(ApiUrls.RECORDS_RECORD, ApiUrls.RECORDS_IMAGE_INFO).params(pi).build();
         Response resp =
-                Response.seeOther(PathConverter.toURI(servletRequest.getContextPath() + forwardUrl)).header("Content-Type", servletResponse.getContentType()).build();
+                Response.seeOther(PathConverter.toURI(servletRequest.getContextPath() + forwardUrl))
+                        .header("Content-Type", servletResponse.getContentType())
+                        .build();
         return resp;
     }
-    
+
     @GET
     @Path(RECORDS_IMAGE_INFO)
     @Produces({ MediaType.APPLICATION_JSON, ContentServerResource.MEDIA_TYPE_APPLICATION_JSONLD })
-    public void getImageInfo() throws PresentationException, IndexUnreachableException, ServletException, IOException, ContentNotFoundException {
+    public String getImageInfo() throws PresentationException, IndexUnreachableException, ServletException, IOException, ContentNotFoundException {
         String filename = getRepresentativeFilename(pi);
         String forwardUrl = new ApiUrls(ApiUrls.API).path(ApiUrls.RECORDS_FILES_IMAGE, ApiUrls.RECORDS_FILES_IMAGE_INFO).params(pi, filename).build();
         RequestDispatcher dispatcher = servletRequest.getRequestDispatcher(forwardUrl);
-              dispatcher.forward(servletRequest, servletResponse);
+        dispatcher.forward(servletRequest, servletResponse);
+        return "";
     }
-    
+
     @GET
     @Path(RECORDS_IMAGE_IIIF)
     @Produces({ "image/jpg", "image/png", "image/tif" })
-    public void getImage(
+    public String getImage(
             @PathParam("region") String region, @PathParam("size") String size,
-            @PathParam("rotation") String rotation, @PathParam("quality") String quality, 
-            @PathParam("format") String format
-            ) throws PresentationException, IndexUnreachableException, ServletException, IOException, ContentNotFoundException {
+            @PathParam("rotation") String rotation, @PathParam("quality") String quality,
+            @PathParam("format") String format)
+            throws PresentationException, IndexUnreachableException, ServletException, IOException, ContentNotFoundException {
         String filename = getRepresentativeFilename(pi);
-        String forwardUrl = new ApiUrls(ApiUrls.API).path(ApiUrls.RECORDS_FILES_IMAGE, ApiUrls.RECORDS_FILES_IMAGE_IIIF).params(pi, filename, region, size, rotation, quality, format).build();
+        String forwardUrl = new ApiUrls(ApiUrls.API).path(ApiUrls.RECORDS_FILES_IMAGE, ApiUrls.RECORDS_FILES_IMAGE_IIIF)
+                .params(pi, filename, region, size, rotation, quality, format)
+                .build();
         RequestDispatcher dispatcher = servletRequest.getRequestDispatcher(forwardUrl);
-              dispatcher.forward(servletRequest, servletResponse);
+        dispatcher.forward(servletRequest, servletResponse);
+        return "";
     }
-
 
     /**
      * @param pi
      * @return
-     * @throws PresentationException 
-     * @throws IndexUnreachableException 
-     * @throws ContentNotFoundException 
+     * @throws PresentationException
+     * @throws IndexUnreachableException
+     * @throws ContentNotFoundException
      */
-    private static String getRepresentativeFilename(String pi) throws PresentationException, IndexUnreachableException, ContentNotFoundException  {
+    private static String getRepresentativeFilename(String pi) throws PresentationException, IndexUnreachableException, ContentNotFoundException {
         SolrDocument doc = DataManager.getInstance().getSearchIndex().getDocumentByPI(pi);
-        if(doc == null) {
+        if (doc == null) {
             throw new ContentNotFoundException("Not record found with identifier " + pi);
-        } else if(doc.containsKey(SolrConstants.THUMBNAIL)) {
+        } else if (doc.containsKey(SolrConstants.THUMBNAIL)) {
             return (String) doc.getFieldValue(SolrConstants.THUMBNAIL);
         } else {
-            SolrDocumentList docs = DataManager.getInstance().getSearchIndex().search("+PI_TOPSTRUCT:" + pi + " +DOCTYPE:PAGE +ORDER:1", Collections.singletonList(SolrConstants.FILENAME));
-            if(docs != null && !docs.isEmpty()) {
+            SolrDocumentList docs = DataManager.getInstance()
+                    .getSearchIndex()
+                    .search("+PI_TOPSTRUCT:" + pi + " +DOCTYPE:PAGE +ORDER:1", Collections.singletonList(SolrConstants.FILENAME));
+            if (docs != null && !docs.isEmpty()) {
                 SolrDocument firstPage = docs.get(0);
                 return (String) firstPage.getFieldValue(SolrConstants.FILENAME);
             }
-        } 
+        }
         return "";
     }
-
 
 }

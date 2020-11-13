@@ -43,10 +43,15 @@ var Crowdsourcing = ( function(crowdsourcing) {
         
         this.id = item.campaign.id;
         this.reviewMode = false;
+        this.showLog = item.campaign.showLog;
+        if(this.showLog) {
+            this.log = item.log;
+        }
         this.translations = item.campaign.translations;
         this.questions = item.campaign.questions.map(question => new Crowdsourcing.Question(question, this));
         this.currentCanvasIndex = initialCanvasIndex ? initialCanvasIndex : 0;
         this.imageSource = item.source;
+        this.currentUser = {};
         this.imageOpenEvents = new rxjs.Subject();
         this.imageRotationEvents = new rxjs.Subject();
         this.annotationRelaodEvents = new rxjs.Subject();
@@ -58,6 +63,30 @@ var Crowdsourcing = ( function(crowdsourcing) {
         }
     };
 
+    crowdsourcing.Item.prototype.setCurrentUser = function(id, name, avatar) {
+        this.currentUser.userId = id;
+        this.currentUser.name = name;
+        this.currentUser.avatar = avatar;
+    }
+    
+    /**
+     * add a new message to the log and also to the messages to send back with the item status
+     */
+    crowdsourcing.Item.prototype.addLogMessage = function(message) {
+        this.log.push(message);
+        if(this.logEndpoint) {            
+            return fetch(this.logEndpoint, {
+                method: "POST",
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify(message),
+                cache: "no-cache",
+                mode: 'cors',
+            })
+        }
+    }
+
+
+ 
     /**
      * Takes an rxjs.Observable which should trigger every time a new image is
      */

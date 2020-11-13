@@ -64,7 +64,7 @@ public class Role {
     private Set<Role> inheritedRoles = new HashSet<>();
 
     /**
-     * Empty constructor for XStream.
+     * Empty constructor.
      */
     public Role() {
         // the emptiness inside

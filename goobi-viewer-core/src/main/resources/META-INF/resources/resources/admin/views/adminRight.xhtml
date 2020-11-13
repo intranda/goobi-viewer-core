@@ -111,7 +111,7 @@
                                 <!-- LICENSE TYPE SELECTION -->
                                 <h:panelGroup id="licenseTypeGroup" layout="block" styleClass="form-group form-row">
                                      <div class="col-sm-4">
-                                         <label for="currentLicense.licenseType" class="control-label">#{msg.admin__license_license_type_select_label}:</label>
+                                         <label for="currentLicense.licenseTypeSelection" class="control-label">#{msg.admin__license_license_type_select_label}:</label>
                                      </div>
                                      <div class="col-sm-8">
                                          <h:selectOneMenu
@@ -119,9 +119,9 @@
                                              value="#{adminBean.currentLicense.licenseType}"
                                              styleClass="form-control"
                                              immediate="true"
-                                             converter="licenseTypeConverter"
+                                             converter="iLicenseTypeConverter"
                                              disabled="#{adminBean.currentLicense.id != null}">
-
+                                             <f:converter converterId="iLicenseTypeConverter"   />
                                              <f:passThroughAttribute name="aria-label" value="#{msg.admin__license_license_type_select_label}" />
 
                                              <f:selectItem itemLabel="#{msg.select}" itemValue="#{null}" noSelectionOption="true" />
@@ -155,7 +155,9 @@
                                                     | #{msg.lastLoginDate}:
                                                     <h:outputText value="#{adminBean.currentLicense.user.lastLogin}">
                                                         <!-- Everything longer than MM in this pattern is treated as character for the month to be displayed -->
-                                                        <f:convertDateTime pattern="dd. MMMMMMMMMMMMMMM YYYY" />
+<!--                                                         <f:convertDateTime pattern="dd. MMMMMMMMMMMMMMM YYYY" /> -->
+                                                        <f:converter converterId="localDateTimeConverter" />
+                                                        <f:attribute name="pattern" value="#{navigationHelper.dateTimePattern}" />
                                                     </h:outputText>
                                                 </ui:fragment>
                                             </h:outputText>
@@ -172,15 +174,16 @@
                                             	<span class="admin__default-block-description-empty" aria-disabled="true">(#{msg.admin__label__no_description_available})</span>
                                             </h:outputText>
                                         </dd>
-                                        <dt class="col-4">#{msg[adminBean.currentLicense.licenseType.name]}</dt>
-                                        <dd class="col-8">
-                                            <ui:fragment rendered="#{adminBean.currentLicense.licenseType.description ne ''}">
-                                                #{msg[adminBean.currentLicense.licenseType.description]}
-                                            </ui:fragment>
-                                            <ui:fragment rendered="#{adminBean.currentLicense.licenseType.description eq ''}">
-                                                <span class="admin__default-block-description-empty" aria-disabled="true">(#{msg.admin__label__no_description_available})</span>
-                                            </ui:fragment>
-                                        </dd>
+                                        <!-- LICENSE TYPE INFO -->
+                                            <dt class="col-4">#{msg[adminBean.currentLicense.licenseType.name]}</dt>
+                                            <dd class="col-8">
+                                                <ui:fragment rendered="#{adminBean.currentLicense.licenseType.description ne ''}">
+                                                    #{msg[adminBean.currentLicense.licenseType.description]}
+                                                </ui:fragment>
+                                                <ui:fragment rendered="#{adminBean.currentLicense.licenseType.description eq ''}">
+                                                    <span class="admin__default-block-description-empty" aria-disabled="true">(#{msg.admin__label__no_description_available})</span>
+                                                </ui:fragment>
+                                            </dd>
                                     </dl>
                                 </div>
                                 </ui:fragment>
@@ -501,6 +504,7 @@
                                                 </div>
                                             </div>
                                         </ui:fragment>
+                                        
 
                                         <!-- RECORD RELATED FUNCTIONS -->
                                         <ui:fragment rendered="#{!adminBean.currentLicense.licenseType.core}">
@@ -551,6 +555,7 @@
                                                 </div>
                                             </div>
                                         </ui:fragment>
+
                                     </div>
                                 </ui:fragment>
                             </h:panelGroup>

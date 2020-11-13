@@ -44,42 +44,14 @@
                         <!-- TITLE ROW -->
                         <div class="row no-gutters admin__table-title">
                             <!-- NAME COL -->
-                            <div class="col-6 d-flex">
-                                <span>#{msg.admin__users}</span>
+                            <div class="col-6 d-flex -sorting-arrow-trigger">
                                 <!-- SORTING -->
-                                <div class="admin__table-sorting">
-                                    <h:commandLink styleClass="sort"
-                                        action="#{adminBean.lazyModelUsers.sortBy('email', 'ASCENDING')}">
-                                        <f:passThroughAttribute name="aria-label" value="sort ascending" />
-                                        <i class="fa fa-angle-down" aria-hidden="true"></i>
-                                        <f:ajax execute="@form" render="@form" />
-                                    </h:commandLink>
-                                    <h:commandLink styleClass="sort"
-                                        action="#{adminBean.lazyModelUsers.sortBy('email', 'DESCENDING')}">
-                                        <f:passThroughAttribute name="aria-label" value="sort descending" />
-                                        <i class="fa fa-angle-up" aria-hidden="true"></i>
-                                        <f:ajax execute="@form" render="@form" />
-                                    </h:commandLink>
-                                </div>
+                                <viewerComponent:sortingArrow filterType="email" colHeading="#{msg.admin__users}" list="#{adminBean.lazyModelUsers}" />
                             </div>
                             <!-- LAST LOGIN COL -->
-                            <div class="col-3 d-flex">
-                                <span>#{msg.lastLoginDate}</span>
+                            <div class="col-3 d-flex -sorting-arrow-trigger">
                                 <!-- SORTING -->
-                                <div class="admin__table-sorting">
-                                    <h:commandLink styleClass="sort"
-                                        action="#{adminBean.lazyModelUsers.sortBy('lastLogin', 'ASCENDING')}">
-                                        <f:passThroughAttribute name="aria-label" value="sort ascending" />
-                                        <i class="fa fa-angle-down" aria-hidden="true"></i>
-                                        <f:ajax execute="@form" render="@form" />
-                                    </h:commandLink>
-                                    <h:commandLink styleClass="sort"
-                                        action="#{adminBean.lazyModelUsers.sortBy('lastLogin', 'DESCENDING')}">
-                                        <f:passThroughAttribute name="aria-label" value="sort descending" />
-                                        <i class="fa fa-angle-up" aria-hidden="true"></i>
-                                        <f:ajax execute="@form" render="@form" />
-                                    </h:commandLink>
-                                </div>
+								<viewerComponent:sortingArrow filterType="lastLogin" colHeading="#{msg.lastLoginDate}" list="#{adminBean.lazyModelUsers}" />
                             </div>
                             <!-- USER GROUPS COL -->
                             <div class="col-3 d-flex">#{msg.admin__groups}</div>
@@ -117,7 +89,8 @@
                                 <div class="col-3 d-flex align-items-center">
                                     <span class="admin__table-last-login">
                                         <h:outputText value="#{user.lastLogin}">
-                                            <f:convertDateTime pattern="dd.MM.YYYY - HH:mm" type="both" dateStyle="short" timeStyle="short" />
+                                            <f:converter converterId="localDateTimeConverter" />
+                                            <f:attribute name="pattern" value="#{navigationHelper.dateTimePattern}" />
                                         </h:outputText>
                                     </span>
                                 </div>

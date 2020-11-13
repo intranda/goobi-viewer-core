@@ -16,8 +16,8 @@
 package io.goobi.viewer.model.transkribus;
 
 import java.io.Serializable;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 import javax.persistence.CollectionTable;
@@ -35,8 +35,6 @@ import javax.persistence.Inheritance;
 import javax.persistence.InheritanceType;
 import javax.persistence.JoinColumn;
 import javax.persistence.Table;
-import javax.persistence.Temporal;
-import javax.persistence.TemporalType;
 
 /**
  * <p>
@@ -107,9 +105,9 @@ public class TranskribusJob implements Serializable {
      * Timestamp of the last request for this download. This can be the time of the initial request, the time of generation completion or any
      * subsequent requests. This + TTL is the time of expiration.
      */
-    @Temporal(TemporalType.TIMESTAMP)
+    //    @Temporal(TemporalType.TIMESTAMP)
     @Column(name = "date_created", nullable = false)
-    private Date dateCreated;
+    private LocalDateTime dateCreated;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "status", nullable = false)
@@ -308,7 +306,7 @@ public class TranskribusJob implements Serializable {
      *
      * @return the dateCreated
      */
-    public Date getDateCreated() {
+    public LocalDateTime getDateCreated() {
         return dateCreated;
     }
 
@@ -319,7 +317,7 @@ public class TranskribusJob implements Serializable {
      *
      * @param dateCreated the dateCreated to set
      */
-    public void setDateCreated(Date dateCreated) {
+    public void setDateCreated(LocalDateTime dateCreated) {
         this.dateCreated = dateCreated;
     }
 

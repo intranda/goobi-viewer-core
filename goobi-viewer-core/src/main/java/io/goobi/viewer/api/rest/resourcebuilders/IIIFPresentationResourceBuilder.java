@@ -27,6 +27,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
+import javax.servlet.http.HttpServletRequest;
+
 import org.apache.commons.lang3.StringUtils;
 import org.apache.solr.common.SolrDocument;
 import org.apache.solr.common.SolrDocumentList;
@@ -58,6 +60,7 @@ import io.goobi.viewer.model.iiif.presentation.builder.BuildMode;
 import io.goobi.viewer.model.iiif.presentation.builder.CollectionBuilder;
 import io.goobi.viewer.model.iiif.presentation.builder.LayerBuilder;
 import io.goobi.viewer.model.iiif.presentation.builder.ManifestBuilder;
+import io.goobi.viewer.model.iiif.presentation.builder.OpenAnnotationBuilder;
 import io.goobi.viewer.model.iiif.presentation.builder.SequenceBuilder;
 import io.goobi.viewer.model.iiif.presentation.builder.StructureBuilder;
 import io.goobi.viewer.model.viewer.BrowseDcElement;
@@ -78,9 +81,11 @@ public class IIIFPresentationResourceBuilder {
     private LayerBuilder layerBuilder;
     private CollectionBuilder collectionBuilder;
     private final AbstractApiUrlManager urls;
+    private final HttpServletRequest request;
 
-    public IIIFPresentationResourceBuilder(AbstractApiUrlManager urls) {
+    public IIIFPresentationResourceBuilder(AbstractApiUrlManager urls, HttpServletRequest request) {
         this.urls = urls;
+        this.request  = request;
     }
 
     public IPresentationModelElement getManifest(String pi, BuildMode mode) throws PresentationException, IndexUnreachableException,
@@ -99,7 +104,7 @@ public class IIIFPresentationResourceBuilder {
         } else if (manifest instanceof Manifest) {
             getManifestBuilder().addAnchor((Manifest) manifest, mainDoc.getMetadataValue(SolrConstants.PI_ANCHOR));
 
-            getSequenceBuilder().addBaseSequence((Manifest) manifest, mainDoc, manifest.getId().toString());
+            getSequenceBuilder().addBaseSequence((Manifest) manifest, mainDoc, manifest.getId().toString(), request);
 
             String topLogId = mainDoc.getMetadataValue(SolrConstants.LOGID);
             if (StringUtils.isNotBlank(topLogId)) {
@@ -125,24 +130,24 @@ public class IIIFPresentationResourceBuilder {
         return range.orElseThrow(() -> new ContentNotFoundException("Not document with PI = " + pi + " and logId = " + logId + " found"));
     }
 
-    public Sequence getBaseSequence(String pi) throws PresentationException, IndexUnreachableException, URISyntaxException,
+    public Sequence getBaseSequence(String pi, BuildMode buildMode) throws PresentationException, IndexUnreachableException, URISyntaxException,
             ViewerConfigurationException, DAOException, IllegalRequestException, ContentNotFoundException {
 
         StructElement doc = getManifestBuilder().getDocument(pi);
-
-        IPresentationModelElement manifest = getManifestBuilder().generateManifest(doc);
+        
+        IPresentationModelElement manifest = new ManifestBuilder(urls).setBuildMode(buildMode).generateManifest(doc);
 
         if (manifest instanceof Collection) {
             throw new IllegalRequestException("Identifier refers to a collection which does not have a sequence");
         } else if (manifest instanceof Manifest) {
-            getSequenceBuilder().addBaseSequence((Manifest) manifest, doc, manifest.getId().toString());
+            new SequenceBuilder(urls).setBuildMode(buildMode).addBaseSequence((Manifest) manifest, doc, manifest.getId().toString(), request);
             return ((Manifest) manifest).getSequences().get(0);
         }
         throw new ContentNotFoundException("Not manifest with identifier " + pi + " found");
 
     }
 
-    public Layer getLayer(String pi, String typeName) throws PresentationException, IndexUnreachableException,
+    public Layer getLayer(String pi, String typeName, BuildMode buildMode) throws PresentationException, IndexUnreachableException,
             URISyntaxException, ViewerConfigurationException, DAOException, ContentNotFoundException, IllegalRequestException, IOException {
         StructElement doc = getStructureBuilder().getDocument(pi);
         AnnotationType type = AnnotationType.valueOf(typeName.toUpperCase());
@@ -159,7 +164,7 @@ public class IIIFPresentationResourceBuilder {
                     (id, lang) -> ContentResource.getCMDIURI(id, lang));
 
         } else {
-            Map<AnnotationType, List<AnnotationList>> annoLists = getSequenceBuilder().addBaseSequence(null, doc, "");
+            Map<AnnotationType, List<AnnotationList>> annoLists = getSequenceBuilder().addBaseSequence(null, doc, "", request);
             Layer layer = getLayerBuilder().generateLayer(pi, annoLists, type);
             return layer;
         }
@@ -185,7 +190,7 @@ public class IIIFPresentationResourceBuilder {
                 getSequenceBuilder().addSeeAlsos(canvas, doc, page);
                 getSequenceBuilder().addOtherContent(doc, page, canvas, false);
                 getSequenceBuilder().addCrowdourcingAnnotations(Collections.singletonList(canvas),
-                        getSequenceBuilder().getCrowdsourcingAnnotations(pi, false), null);
+                        new OpenAnnotationBuilder(urls).getCrowdsourcingAnnotations(pi, false, request), null);
                 return canvas;
             }
         }

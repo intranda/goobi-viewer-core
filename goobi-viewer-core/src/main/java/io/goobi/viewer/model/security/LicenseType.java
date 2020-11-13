@@ -17,6 +17,7 @@ package io.goobi.viewer.model.security;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -46,7 +47,10 @@ import org.slf4j.LoggerFactory;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.SolrConstants;
 import io.goobi.viewer.controller.SolrSearchIndex;
+import io.goobi.viewer.controller.SolrConstants.DocType;
 import io.goobi.viewer.exceptions.DAOException;
+import io.goobi.viewer.exceptions.IndexUnreachableException;
+import io.goobi.viewer.exceptions.PresentationException;
 
 /**
  * This class describes license types for record access conditions and also system user roles (not to be confused with the class Role, however), also
@@ -54,7 +58,7 @@ import io.goobi.viewer.exceptions.DAOException;
  */
 @Entity
 @Table(name = "license_types")
-public class LicenseType implements IPrivilegeHolder {
+public class LicenseType implements IPrivilegeHolder, ILicenseType {
 
     /** Logger for this class. */
     private static final Logger logger = LoggerFactory.getLogger(LicenseType.class);
@@ -121,6 +125,9 @@ public class LicenseType implements IPrivilegeHolder {
      */
     @Transient
     private Map<String, Boolean> restrictionsExpired = new HashMap<>();
+
+    @Transient
+    Boolean ugcType = null;
 
     /**
      * Empty constructor.
@@ -207,6 +214,7 @@ public class LicenseType implements IPrivilegeHolder {
      *
      * @return the name
      */
+    @Override
     public String getName() {
         return name;
     }
@@ -362,6 +370,47 @@ public class LicenseType implements IPrivilegeHolder {
     }
 
     /**
+     * Checks whether only Solr documents of the UGC type have the access condition upon which this license type is based.
+     * 
+     * @return the ugcType
+     * @throws IndexUnreachableException
+     * @throws PresentationException
+     */
+    public boolean isUgcType() {
+        if (ugcType == null) {
+            try {
+                ugcType = DataManager.getInstance()
+                        .getSearchIndex()
+                        .getHitCount(
+                                "+"
+                                        + SolrConstants.DOCTYPE
+                                        + ":"
+                                        + DocType.DOCSTRCT
+                                        + " +"
+                                        + SolrConstants.ACCESSCONDITION
+                                        + ":\""
+                                        + name
+                                        + "\"") == 0
+                        && DataManager.getInstance()
+                                .getSearchIndex()
+                                .getHitCount(
+                                        "+"
+                                                + SolrConstants.DOCTYPE
+                                                + ":"
+                                                + DocType.UGC
+                                                + " +"
+                                                + SolrConstants.ACCESSCONDITION
+                                                + ":\""
+                                                + name
+                                                + "\"") > 0;
+            } catch (IndexUnreachableException | PresentationException e) {
+                ugcType = false;
+            }
+        }
+        return ugcType;
+    }
+
+    /**
      * <p>
      * Getter for the field <code>conditions</code>.
      * </p>
@@ -494,9 +543,17 @@ public class LicenseType implements IPrivilegeHolder {
      * 
      * @param privileges Privileges to be removed from the returned list
      * @return Values in IPrivilegeHolder.PRIVS_RECORD minus the privileges already added
+     * @should only return priv view ugc if ugc type
+     * @should return record privileges if licenseType regular
      */
     public List<String> getAvailablePrivileges(Set<String> privileges) {
-        List<String> ret = new ArrayList<>(Arrays.asList(IPrivilegeHolder.PRIVS_RECORD));
+        List<String> ret;
+
+        if (isUgcType()) {
+            ret = new ArrayList<>(Arrays.asList(IPrivilegeHolder.PRIV_VIEW_UGC));
+        } else {
+            ret = new ArrayList<>(Arrays.asList(IPrivilegeHolder.PRIVS_RECORD));
+        }
         if (privileges != null) {
             ret.removeAll(privileges);
         }
@@ -805,6 +862,26 @@ public class LicenseType implements IPrivilegeHolder {
             privilegesCopy.add(IPrivilegeHolder.PRIV_CROWDSOURCING_REVIEW_CAMPAIGN);
         } else {
             privilegesCopy.remove(IPrivilegeHolder.PRIV_CROWDSOURCING_REVIEW_CAMPAIGN);
+        }
+    }
+
+    /* (non-Javadoc)
+     * @see io.goobi.viewer.model.security.IPrivilegeHolder#isPrivViewUgc()
+     */
+    @Override
+    public boolean isPrivViewUgc() {
+        return hasPrivilege(IPrivilegeHolder.PRIV_VIEW_UGC);
+    }
+
+    /* (non-Javadoc)
+     * @see io.goobi.viewer.model.security.IPrivilegeHolder#setPrivViewUgc(boolean)
+     */
+    @Override
+    public void setPrivViewUgc(boolean priv) {
+        if (priv) {
+            privilegesCopy.add(IPrivilegeHolder.PRIV_VIEW_UGC);
+        } else {
+            privilegesCopy.remove(IPrivilegeHolder.PRIV_VIEW_UGC);
         }
     }
 

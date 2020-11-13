@@ -61,6 +61,7 @@ var viewerJS = ( function( viewer ) {
         
         this.markerIdCounter = 1;
         this.markers = [];
+        this.highlighted = []; //list of currently highlighted colors
         
         
         this.onMapRightclick = new rxjs.Subject();
@@ -228,6 +229,27 @@ var viewerJS = ( function( viewer ) {
             //swallow
         }
     }
+    
+    viewer.GeoMap.prototype.highlightMarker = function(feature) {
+        if(feature) {            
+            let marker = this.getMarker(feature.id);
+            let icon  = marker.getIcon();
+            icon.options.defaultColor = icon.options.markerColor;
+            icon.options.markerColor = icon.options.highlightColor;
+            marker.setIcon(icon);
+            this.highlighted.push(marker);
+        } else {
+            this.highlighted.forEach(marker => {
+                let icon  = marker.getIcon();
+                icon.options.markerColor = icon.options.defaultColor;
+                icon.options.defaultColor = undefined;
+                marker.setIcon(icon);
+                let index = this.highlighted.indexOf(marker);
+                this.highlighted.splice(index, 1);
+            })
+        }
+    }
+
     
     viewer.GeoMap.prototype.setMarkerIcon = function(icon) {
         this.markerIcon = icon;

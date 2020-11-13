@@ -306,9 +306,9 @@ var viewerJS = (function () {
     viewer.initFragmentNavigation = function () {
         if (window.location.hash) {
             $(document).ready(function () {
-                var hash = window.location.hash.substring(1);
-                if(!hash.startsWith("xywh=")) {                    
-                    var $hashedElement = $("#" + hash);
+                var hash = window.location.hash;
+                if(!hash.includes("=")) {                    
+                    var $hashedElement = $(hash);
                     if ($hashedElement.length > 0) {
                         $hashedElement.get(0).scrollIntoView();
                         
