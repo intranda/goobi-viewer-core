@@ -60,22 +60,9 @@
                                 </div>
 
                                 <!-- DATE COL -->
-                                <div class="col-2 d-flex">
-                                    #{msg.cms_pageMetadata_lastEdited}
-                                    <!-- SORTING -->
-                                    <div class="admin__table-sorting">
-                                        <h:commandLink styleClass="sort" action="#{cmsBean.lazyModelPages.sortBy('dateUpdated', 'ASCENDING')}">
-                                            <f:passThroughAttribute name="aria-label" value="sort ascending" />
-                                            <i class="fa fa-angle-down" aria-hidden="true"></i>
-                                            <f:ajax execute="@form" render="@form" />
-                                        </h:commandLink>
-                                        <h:commandLink styleClass="sort" action="#{cmsBean.lazyModelPages.sortBy('dateUpdated', 'DESCENDING')}">
-                                            <f:passThroughAttribute name="aria-label" value="sort descending" />
-                                            <i class="fa fa-angle-up" aria-hidden="true"></i>
-                                            <f:ajax execute="@form" render="@form" />
-                                        </h:commandLink>
-                                    </div>
-                                </div>
+	                            <div class="col-2 d-flex">                            
+	                                <viewerComponent:sortingArrow filterType="dateUpdated" colHeading="#{msg.cms_pageMetadata_lastEdited}" list="#{cmsBean.lazyModelPages}" />
+	                            </div>
 
                                 <!-- TRANSLATIONS COL -->
                                 <div class="col-2">
@@ -133,7 +120,8 @@
                                     </div>
                                      <div class="col-2 d-flex align-items-center">
                                         <h:outputText value="#{page.dateUpdated}">
-                                            <f:convertDateTime pattern="dd.MM.YYYY - HH:mm" type="both" dateStyle="short" timeStyle="short" />
+                                            <f:converter converterId="localDateTimeConverter" />
+                                            <f:attribute name="pattern" value="#{navigationHelper.dateTimePattern}" />
                                         </h:outputText>
                                     </div>
                                     <div class="col-2 d-flex flex-column justify-content-center">

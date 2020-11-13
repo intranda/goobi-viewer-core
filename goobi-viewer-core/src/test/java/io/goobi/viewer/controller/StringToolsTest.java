@@ -81,6 +81,7 @@ public class StringToolsTest {
     public void stripJS_shouldRemoveJSBlocksCorrectly() throws Exception {
         Assert.assertEquals("foo  bar", StringTools.stripJS("foo <script type=\"javascript\">\nfunction f {\n alert();\n}\n</script> bar"));
         Assert.assertEquals("foo  bar", StringTools.stripJS("foo <SCRIPT>\nfunction f {\n alert();\n}\n</ScRiPt> bar"));
+        Assert.assertEquals("foo  bar", StringTools.stripJS("foo <SCRIPT src=\"http://dangerousscript.js\"/> bar"));
     }
 
     @Test

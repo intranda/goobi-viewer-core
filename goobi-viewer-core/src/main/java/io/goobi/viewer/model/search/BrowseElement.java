@@ -230,7 +230,7 @@ public class BrowseElement implements Serializable {
                                             new Metadata(anchorStructElement.getDocStructType(), null,
                                                     new MetadataParameter().setType(MetadataParameterType.FIELD)
                                                             .setKey(anchorStructElement.getDocStructType()),
-                                                    StringTools.intern(anchorLabel)));
+                                                    StringTools.intern(anchorLabel), locale));
                             position++;
                         }
                     }
@@ -247,7 +247,7 @@ public class BrowseElement implements Serializable {
                     this.metadataList.add(position,
                             new Metadata(topStructElement.getDocStructType(), null, new MetadataParameter().setType(MetadataParameterType.FIELD)
                                     .setKey(topStructElement.getDocStructType()),
-                                    StringTools.intern(topstructLabel)));
+                                    StringTools.intern(topstructLabel), locale));
                 }
             }
         }
@@ -517,8 +517,21 @@ public class BrowseElement implements Serializable {
             if (!skip && structElement.getMetadataFields().containsKey(sortField.getOne())) {
                 List<String> fieldValues = structElement.getMetadataFields().get(sortField.getOne());
                 for (String fieldValue : fieldValues) {
-                    metadataList.add(new Metadata(sortField.getOne(), "", fieldValue));
-                    additionalMetadataList.add(new Metadata(sortField.getOne(), "", fieldValue));
+                    MetadataParameterType type;
+                    switch (sortField.getOne()) {
+                        case SolrConstants.DATECREATED:
+                        case SolrConstants.DATEUPDATED:
+                            type = MetadataParameterType.MILLISFIELD;
+                            break;
+                        default:
+                            type = MetadataParameterType.FIELD;
+                            break;
+                    }
+
+                    Metadata md = new Metadata(sortField.getOne(), "", new MetadataParameter().setType(type), fieldValue, locale);
+
+                    metadataList.add(md);
+                    additionalMetadataList.add(md);
                 }
             }
         }
@@ -910,6 +923,19 @@ public class BrowseElement implements Serializable {
      */
     public List<StructElementStub> getStructElements() {
         return structElements;
+    }
+
+    /**
+     * Returns the lowest <code>StructElementStub</code> in the list.
+     * 
+     * @return last StructElementStub in the list
+     */
+    public StructElementStub getBottomStructElement() {
+        if (structElements == null || structElements.isEmpty()) {
+            return null;
+        }
+
+        return structElements.get(structElements.size() - 1);
     }
 
     /**

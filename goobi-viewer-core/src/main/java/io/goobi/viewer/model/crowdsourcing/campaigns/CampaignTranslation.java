@@ -61,6 +61,17 @@ public class CampaignTranslation extends Translation {
         super(language, tag, value);
         this.owner = owner;
     }
+    
+    public CampaignTranslation(CampaignTranslation orig) {
+        super(orig.language, orig.tag, orig.value);
+        this.id = orig.id;
+        this.owner = orig.owner;
+    }
+    
+    public CampaignTranslation(CampaignTranslation orig, Campaign owner) {
+        this(orig);
+        this.owner = owner;
+    }
 
     /**
      * <p>

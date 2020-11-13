@@ -17,7 +17,8 @@ package io.goobi.viewer.controller;
 
 import java.io.IOException;
 import java.net.URLEncoder;
-import java.util.Date;
+import java.time.LocalDateTime;
+//import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -380,7 +381,7 @@ public class TranskribusUtils {
         job.setViewerCollectionId(viewerCollectionId);
         job.setJobId(response);
         job.setStatus(JobStatus.WAITING);
-        job.setDateCreated(new Date());
+        job.setDateCreated(LocalDateTime.now());
 
         // TODO retrieve doc id
 

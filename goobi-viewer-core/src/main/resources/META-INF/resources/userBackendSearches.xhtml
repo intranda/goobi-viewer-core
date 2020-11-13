@@ -24,17 +24,17 @@
             <h2>#{msg.user_mySearches}</h2>
             
             <!-- WARNING IF NO SEARCHES EXISTS -->
-            <h:panelGroup rendered="#{userBean.searches.isEmpty()}">
+            <h:panelGroup rendered="#{userDataBean.searches.isEmpty()}">
                 <div class="alert alert-warning" role="alert">#{msg.searches_noSearchesWarning}</div>
             </h:panelGroup>
             
             <!-- SAVED SEARCHES -->
-            <h:panelGroup rendered="#{!userBean.searches.isEmpty()}">
+            <h:panelGroup rendered="#{!userDataBean.searches.isEmpty()}">
                 <h:form id="mySearchesForm" prependId="false">
                     <h:dataTable
                         id="mySearchesTable"
                         styleClass="table my-searches__table user-backend-table"
-                        value="#{userBean.searches}"
+                        value="#{userDataBean.searches}"
                         var="search">
                         <!-- NAME -->
                         <h:column>
@@ -110,7 +110,7 @@
                                                 data-dismiss="modal">#{msg.cancel}</button>
                                             <h:commandLink
                                                 value="#{msg.delete}"
-                                                action="#{userBean.deleteSearchAction(search)}"
+                                                action="#{userDataBean.deleteSearchAction(search)}"
                                                 styleClass="btn btn--success" />
                                         </div>
                                     </div>

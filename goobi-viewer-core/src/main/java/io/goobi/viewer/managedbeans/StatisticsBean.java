@@ -240,17 +240,9 @@ public class StatisticsBean implements Serializable {
         try {
             if (lastUpdateMap.get("getImportedFullTexts") == null || now - lastUpdateMap.get("getImportedFullTexts") >= DAY_MS) {
                 logger.debug("Refreshing number of imported fulltexts...");
-                // TODO filter query might not work for PAGE documents
-                long pages = DataManager.getInstance()
-                        .getSearchIndex()
-                        .getHitCount(SolrConstants.DOCTYPE + ":" + SolrConstants.DocType.PAGE.name() + " AND " + SolrConstants.FULLTEXTAVAILABLE
-                                + ":true" + SearchHelper.getAllSuffixes());
-                // Fallback for older indexes that do not have the DOCTYPE and/or FULLTEXTAVAILABLE fields (WAY slower)
-                if (pages == 0) {
-                    pages = DataManager.getInstance()
-                            .getSearchIndex()
-                            .getHitCount(SolrConstants.FULLTEXT + ":['' TO *]" + SearchHelper.getAllSuffixes());
-                }
+                String query = "+" + SolrConstants.DOCTYPE + ":" + SolrConstants.DocType.PAGE.name() + " +" + SolrConstants.FULLTEXTAVAILABLE
+                        + ":true" + SearchHelper.getAllSuffixes();
+                long pages = DataManager.getInstance().getSearchIndex().getHitCount(query);
                 valueMap.put("getImportedFullTexts", pages);
                 lastUpdateMap.put("getImportedFullTexts", now);
             }

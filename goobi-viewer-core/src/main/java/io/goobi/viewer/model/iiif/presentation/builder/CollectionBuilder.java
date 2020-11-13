@@ -69,8 +69,11 @@ public class CollectionBuilder extends AbstractBuilder {
 
     private static final Logger logger = LoggerFactory.getLogger(CollectionBuilder.class);
 
-    private static final String[] CONTAINED_WORKS_QUERY_FIELDS =
-            { SolrConstants.PI, SolrConstants.ISANCHOR, SolrConstants.LABEL, SolrConstants.TITLE, SolrConstants.DOCSTRCT };
+    /**
+     * Required field to create manifest stubs for works in collection
+     */
+    public static final String[] CONTAINED_WORKS_QUERY_FIELDS =
+            { SolrConstants.PI, SolrConstants.ISANCHOR, SolrConstants.ISWORK, SolrConstants.LABEL, SolrConstants.TITLE, SolrConstants.DOCSTRCT, SolrConstants.IDDOC };
     /** Constant <code>RSS_FEED_LABEL="Rss feed"</code> */
     public final static String RSS_FEED_LABEL = "Rss feed";
     /** Constant <code>RSS_FEED_FORMAT="Rss feed"</code> */

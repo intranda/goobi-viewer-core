@@ -21,10 +21,12 @@ import java.net.URISyntaxException;
 import java.util.List;
 
 import javax.inject.Inject;
+import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.GET;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
+import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 
 import org.apache.commons.lang3.StringUtils;
@@ -53,15 +55,17 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 @ViewerRestServiceBinding
 public class CollectionsResource {
     
-    private String solrField;
+    private final String solrField;
+    private final HttpServletRequest request;
     
     @Inject
     AbstractApiUrlManager urls;
 
     public CollectionsResource(
-            @Parameter(description="Name of the SOLR field the collection is based on. Typically 'DC'")@PathParam("field")String solrField
-            ) {
-        this.solrField = solrField;
+            @Parameter(description="Name of the SOLR field the collection is based on. Typically 'DC'")@PathParam("field")String solrField,
+            @Context HttpServletRequest request) {
+        this.solrField = solrField.toUpperCase();
+        this.request = request;
     }
     
     @GET
@@ -72,7 +76,7 @@ public class CollectionsResource {
             @Parameter(description ="Add values of this field to response to allow grouping of results")@QueryParam("grouping")String grouping
                     )
             throws PresentationException, IndexUnreachableException, DAOException, ContentLibException, URISyntaxException, ViewerConfigurationException {
-        IIIFPresentationResourceBuilder builder = new IIIFPresentationResourceBuilder(urls);
+        IIIFPresentationResourceBuilder builder = new IIIFPresentationResourceBuilder(urls, request);
         Collection collection;
         if(StringUtils.isBlank(grouping)) {            
             collection = builder.getCollections(solrField);
@@ -96,7 +100,7 @@ public class CollectionsResource {
             @Parameter(description ="Add values of this field to response to allow grouping of results")@QueryParam("grouping")String grouping
             )
             throws PresentationException, IndexUnreachableException, DAOException, ContentLibException, URISyntaxException, ViewerConfigurationException {
-        IIIFPresentationResourceBuilder builder = new IIIFPresentationResourceBuilder(urls);
+        IIIFPresentationResourceBuilder builder = new IIIFPresentationResourceBuilder(urls, request);
         collectionName = StringTools.decodeUrl(collectionName);
         Collection collection;
         if(StringUtils.isBlank(grouping)) {                   

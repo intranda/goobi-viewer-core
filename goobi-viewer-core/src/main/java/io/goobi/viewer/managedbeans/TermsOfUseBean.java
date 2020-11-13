@@ -54,9 +54,15 @@ public class TermsOfUseBean implements Serializable, IPolyglott {
     private Locale selectedLocale = BeanUtils.getDefaultLocale();
 
     @PostConstruct
-    public void init() throws DAOException {
-        TermsOfUse fromDatabase = DataManager.getInstance().getDao().getTermsOfUse();
-        termsOfUse = new TermsOfUse(fromDatabase);
+    public void init() {
+        TermsOfUse fromDatabase;
+        try {
+            fromDatabase = DataManager.getInstance().getDao().getTermsOfUse();
+            termsOfUse = new TermsOfUse(fromDatabase);
+        } catch (DAOException e) {
+            logger.error("Failed to load termsOfUse from database");
+            termsOfUse = new TermsOfUse();
+        }
     }
 
     public String getTitle() {
@@ -135,6 +141,11 @@ public class TermsOfUseBean implements Serializable, IPolyglott {
 
     }
 
+    @Override
+    public boolean isValid(Locale locale) {
+        return isComplete(locale);
+    }
+
     public String getTitleForDisplay() {
         return this.termsOfUse.getTitleIfExists(BeanUtils.getLocale().getLanguage())
                 .orElse(this.termsOfUse.getTitleIfExists(BeanUtils.getDefaultLocale().getLanguage())
@@ -146,5 +157,7 @@ public class TermsOfUseBean implements Serializable, IPolyglott {
                 .orElse(this.termsOfUse.getDescriptionIfExists(BeanUtils.getDefaultLocale().getLanguage())
                         .orElse(""));
     }
+
+
 
 }

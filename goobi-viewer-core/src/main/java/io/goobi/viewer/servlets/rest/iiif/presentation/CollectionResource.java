@@ -15,6 +15,10 @@
  */
 package io.goobi.viewer.servlets.rest.iiif.presentation;
 
+import static io.goobi.viewer.api.rest.v1.ApiUrls.COLLECTIONS;
+import static io.goobi.viewer.api.rest.v1.ApiUrls.COLLECTIONS_COLLECTION;
+
+import java.net.URI;
 import java.net.URISyntaxException;
 
 import javax.ws.rs.GET;
@@ -22,37 +26,37 @@ import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
+import javax.ws.rs.core.Response.Status;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import de.intranda.api.iiif.presentation.Collection;
 import de.unigoettingen.sub.commons.contentlib.exceptions.IllegalRequestException;
 import de.unigoettingen.sub.commons.contentlib.servlet.rest.CORSBinding;
 import io.goobi.viewer.api.rest.ViewerRestServiceBinding;
-import io.goobi.viewer.api.rest.v1.ApiUrls;
-import io.goobi.viewer.controller.DataManager;
+import io.goobi.viewer.api.rest.v1.collections.CollectionsResource;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.exceptions.ViewerConfigurationException;
-import io.goobi.viewer.model.iiif.presentation.builder.CollectionBuilder;
 import io.goobi.viewer.model.viewer.BrowseDcElement;
 
 /**
  * IIIF REST resource providing a collection object as defined in the IIIF presentation api
+ *
+ * @deprecated use {@link CollectionsResource} instead
  *
  * @author Florian Alpers
  */
 
 @Path("/iiif/collections")
 @ViewerRestServiceBinding
-@IIIFPresentationBinding
+@Deprecated
 public class CollectionResource extends AbstractResource {
 
     private static final Logger logger = LoggerFactory.getLogger(CollectionResource.class);
 
-    private CollectionBuilder collectionBuilder;
-
+    
     /**
      * Returns a iiif collection of all collections from the given solr-field The response includes the metadata and subcollections of the topmost
      * collections. Child collections may be accessed following the links in the @id properties in the member-collections Requires passing a language
@@ -70,13 +74,10 @@ public class CollectionResource extends AbstractResource {
     @Path("/{collectionField}")
     @Produces({ MediaType.APPLICATION_JSON })
     @CORSBinding
-    public Collection getCollections(@PathParam("collectionField") String collectionField)
+    public Response getCollections(@PathParam("collectionField") String collectionField)
             throws PresentationException, IndexUnreachableException, URISyntaxException, ViewerConfigurationException, IllegalRequestException {
-
-        Collection collection = getCollectionBuilder().generateCollection(collectionField, null, null,
-                DataManager.getInstance().getConfiguration().getCollectionSplittingChar(collectionField));
-
-        return collection;
+        URI canonical = URI.create(urls.path(COLLECTIONS).params(collectionField).build());
+        return Response.status(Status.MOVED_PERMANENTLY).location(canonical).build();
 
     }
     
@@ -97,15 +98,10 @@ public class CollectionResource extends AbstractResource {
     @Path("/{collectionField}/grouping/{groupingField}")
     @Produces({ MediaType.APPLICATION_JSON })
     @CORSBinding
-    public Collection getCollectionsWithGrouping(@PathParam("collectionField") String collectionField, @PathParam("groupingField") final String groupingField)
+    public Response getCollectionsWithGrouping(@PathParam("collectionField") String collectionField, @PathParam("groupingField") final String groupingField)
             throws PresentationException, IndexUnreachableException, URISyntaxException, ViewerConfigurationException, IllegalRequestException {
-
-        Collection collection = getCollectionBuilder().generateCollection(collectionField, null, groupingField,
-                DataManager.getInstance().getConfiguration().getCollectionSplittingChar(collectionField));
-        
-        getCollectionBuilder().addTagListService(collection, collectionField, groupingField, "grouping");
-        
-        return collection;
+        URI canonical = URI.create(urls.path(COLLECTIONS).params(collectionField).query("grouping", groupingField).build());
+        return Response.status(Status.MOVED_PERMANENTLY).location(canonical).build();
 
     }
 
@@ -127,13 +123,10 @@ public class CollectionResource extends AbstractResource {
     @Path("/{collectionField}/{topElement}")
     @Produces({ MediaType.APPLICATION_JSON })
     @CORSBinding
-    public Collection getCollection(@PathParam("collectionField") String collectionField, @PathParam("topElement") final String topElement)
+    public Response getCollection(@PathParam("collectionField") String collectionField, @PathParam("topElement") final String topElement)
             throws IndexUnreachableException, URISyntaxException, PresentationException, ViewerConfigurationException, IllegalRequestException {
-
-        Collection collection = getCollectionBuilder().generateCollection(collectionField, topElement, null,
-                DataManager.getInstance().getConfiguration().getCollectionSplittingChar(collectionField));
-
-        return collection;
+        URI canonical = URI.create(urls.path(COLLECTIONS, COLLECTIONS_COLLECTION).params(collectionField, topElement).build());
+        return Response.status(Status.MOVED_PERMANENTLY).location(canonical).build();
 
     }
     
@@ -156,34 +149,12 @@ public class CollectionResource extends AbstractResource {
     @Path("/{collectionField}/{topElement}/grouping/{groupingField}")
     @Produces({ MediaType.APPLICATION_JSON })
     @CORSBinding
-    public Collection getCollectionWithGrouping(@PathParam("collectionField") String collectionField, @PathParam("topElement") final String topElement, @PathParam("groupingField") final String facetField)
+    public Response getCollectionWithGrouping(@PathParam("collectionField") String collectionField, @PathParam("topElement") final String topElement, @PathParam("groupingField") final String facetField)
             throws IndexUnreachableException, URISyntaxException, PresentationException, ViewerConfigurationException, IllegalRequestException {
-
-        Collection collection = getCollectionBuilder().generateCollection(collectionField, topElement, facetField,
-                DataManager.getInstance().getConfiguration().getCollectionSplittingChar(collectionField));
-
-        getCollectionBuilder().addTagListService(collection, collectionField, facetField, "grouping");
-        
-        return collection;
+        URI canonical = URI.create(urls.path(COLLECTIONS, COLLECTIONS_COLLECTION).params(collectionField, topElement).query("grouping", facetField).build());
+        return Response.status(Status.MOVED_PERMANENTLY).location(canonical).build();
 
     }
 
-    /**
-     * <p>
-     * Getter for the field <code>collectionBuilder</code>.
-     * </p>
-     *
-     * @return the manifestBuilder
-     */
-    public CollectionBuilder getCollectionBuilder() {
-        if (this.collectionBuilder == null) {
-            try {
-                this.collectionBuilder = new CollectionBuilder(new ApiUrls(DataManager.getInstance().getConfiguration().getRestApiUrl()));
-            } catch (URISyntaxException e) {
-                throw new IllegalStateException(e);
-            }
-        }
-        return collectionBuilder;
-    }
 
 }

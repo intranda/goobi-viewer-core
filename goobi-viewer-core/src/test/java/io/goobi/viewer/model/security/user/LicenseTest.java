@@ -15,7 +15,7 @@
  */
 package io.goobi.viewer.model.security.user;
 
-import java.util.Calendar;
+import java.time.LocalDateTime;
 
 import org.junit.Assert;
 import org.junit.Test;
@@ -34,30 +34,22 @@ public class LicenseTest {
         Assert.assertTrue(lic.isValid());
         {
             // Start date before now: true
-            Calendar cal = Calendar.getInstance();
-            cal.set(1970, 01, 01);
-            lic.setStart(cal.getTime());
+            lic.setStart(LocalDateTime.of(1970, 1, 1, 0, 0));
             Assert.assertTrue(lic.isValid());
         }
         {
             // End date before now: false
-            Calendar cal = Calendar.getInstance();
-            cal.set(2000, 01, 01);
-            lic.setEnd(cal.getTime());
+            lic.setEnd(LocalDateTime.of(2000, 1, 1, 0, 0));
             Assert.assertFalse(lic.isValid());
         }
         {
             // End date after now: true
-            Calendar cal = Calendar.getInstance();
-            cal.set(2270, 01, 01);
-            lic.setEnd(cal.getTime());
+            lic.setEnd(LocalDateTime.of(2270, 1, 1, 0, 0));
             Assert.assertTrue(lic.isValid());
         }
         {
             // Start date after now: false
-            Calendar cal = Calendar.getInstance();
-            cal.set(2269, 01, 01);
-            lic.setStart(cal.getTime());
+            lic.setStart(LocalDateTime.of(2269, 1, 1, 0, 0));
             Assert.assertFalse(lic.isValid());
         }
     }

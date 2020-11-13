@@ -127,7 +127,7 @@ public class AdminBeanTest extends AbstractDatabaseEnabledTest {
         bean.init();
 
         List<SelectItem> items = bean.getGroupedLicenseTypeSelectItems();
-        Assert.assertEquals(2, items.size());
+        Assert.assertEquals(3, items.size());
         Assert.assertEquals(1, ((SelectItemGroup) items.get(0)).getSelectItems().length);
         Assert.assertEquals(5, ((SelectItemGroup) items.get(1)).getSelectItems().length);
     }

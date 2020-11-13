@@ -3,6 +3,7 @@
                 xmlns:f="http://xmlns.jcp.org/jsf/core"
                 xmlns:p="http://primefaces.org/ui"
                 xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+                xmlns:fn="http://java.sun.com/jsp/jstl/functions"
                 xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components"
                 xmlns:widgetComponent="http://xmlns.jcp.org/jsf/composite/components/widgets"
                 xmlns:adminWidget="http://xmlns.jcp.org/jsf/composite/admin/widgets"
@@ -16,7 +17,7 @@
 
     <ui:define name="content">
         <f:view contentType="text/html" encoding="utf-8">
-            <ui:fragment rendered="#{userBean.admin}">
+            <ui:fragment rendered="#{userBean.admin or userBean.user.isHasCmsPrivilege('CMS_PAGES') or crowdsourcingBean.isUserOwnsAnyCampaigns(userBean.user)}">
                 <div id="adminDashboard">
                     <div class="admin__title-bar">
                         <h2 class="admin__title">#{msg.admin__dashboard}</h2>
@@ -61,6 +62,7 @@
 
 
                             <!-- CMS PAGES -->
+                            <ui:fragment rendered="#{userBean.admin}">
                             <div class="admin__boxed-entry pb-0 -no-actions -w66">
                                 <div class="row">
                                     <h3 class="col-9">#{msg.cms_overview}</h3>
@@ -104,17 +106,20 @@
                                         </div>
                                         <div class="col-2 d-flex">
                                         	<h:outputText value="#{page.dateUpdated}">
-                                                <f:convertDateTime pattern="dd.MM.YYYY - HH:mm" type="both" dateStyle="short" timeStyle="short" />
+                                                <f:converter converterId="localDateTimeConverter" />
+                                                <f:attribute name="pattern" value="#{navigationHelper.dateTimePattern}" />
                                             </h:outputText>
                                         </div>
                                     </div>
                                     </ui:repeat>
                                 </div>
                             </div>
+                            </ui:fragment>
 
 
                             <!-- LICENSES -->
-                            <ui:fragment rendered="#{not empty adminBean.notConfiguredAccessConditions}">
+                            
+                            <ui:fragment rendered="#{userBean.admin and not empty adminBean.notConfiguredAccessConditions}">
                                 <h:form prependId="false" styleClass="admin__boxed-entry -no-actions -w33 -danger">
                                     <div class="row">
                                         <h3 class="col-9">#{msg.admin__licenses}</h3>
@@ -168,15 +173,17 @@
                                     <dd class="col-sm-7 mb-3">#{msg[statisticsBean.contentServerVersion]}</dd>
                                     
                                 </dl>
-                                <div class="row">
-                                    <h4 class="col-9">#{msg.admin__dashboard_versions_modules}</h4>
-                                </div>
-                                <dl class="row">
-                                    <ui:repeat var="module" value="#{configurationBean.modules}">
-                                        <dt class="col-sm-5 mb-3">#{module.name}:</dt>
-                                        <dd class="col-sm-7 mb-3">#{module.version}</dd>
-                                    </ui:repeat>
-                                </dl>
+                                <ui:fragment rendered="#{fn:length(configurationBean.modules) > 0}">
+                                    <div class="row">
+                                        <h4 class="col-9">#{msg.admin__dashboard_versions_modules}</h4>
+                                    </div>
+                                    <dl class="row">
+                                        <ui:repeat var="module" value="#{configurationBean.modules}">
+                                            <dt class="col-sm-5 mb-3">#{module.name}:</dt>
+                                            <dd class="col-sm-7 mb-3">#{module.version}</dd>
+                                        </ui:repeat>
+                                    </dl>
+                                </ui:fragment>
                             </div>
 
 
@@ -187,7 +194,7 @@
 
 
                             <!-- MATOMO -->
-                            <ui:fragment rendered="#{configurationBean.piwikTracking}">
+                            <ui:fragment rendered="#{userBean.admin and configurationBean.piwikTracking}">
                                 <div class="admin__boxed-entry -no-actions -w33">
                                     <div class="row">
                                         <h3 class="col-12">#{msg.admin__dashboard_matomo_title}</h3>

@@ -18,9 +18,11 @@ package io.goobi.viewer.controller;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Date;
 import java.util.List;
 
 import org.jdom2.Attribute;
@@ -52,15 +54,15 @@ public class ConvertAbbyyToAlto {
 
     private Element abbyy;
     private String inputfilename;
-    private Date creationtime;
+    private LocalDateTime creationtime;
 
     private int pageCount = 0;
     private int textBlockCount = 0;
     private int textLineCount = 0;
     private int stringCount = 0;
 
-    private int confidenceTotal = 0;
-    private int characterCount = 0;
+    //    private int confidenceTotal = 0;
+    //    private int characterCount = 0;
 
     private int pageBlockCount = 0;
 
@@ -76,7 +78,8 @@ public class ConvertAbbyyToAlto {
      */
     public Element convert(File input) throws JDOMException, IOException {
         SAXBuilder builder = new SAXBuilder();
-        creationtime = new Date(input.lastModified());
+        creationtime = Instant.ofEpochMilli(input.lastModified()).atZone(ZoneId.systemDefault()).toLocalDateTime();
+        DateTools.getLocalDateTimeFromMillis(input.lastModified(), false);
         Document abbyyDoc = builder.build(input);
         inputfilename = input.getName();
         abbyy = abbyyDoc.getRootElement();
@@ -390,11 +393,11 @@ public class ConvertAbbyyToAlto {
                 b = Integer.valueOf(abbyyCharParams.get(c).getAttributeValue("b"));
             }
             string += abbyyCharParams.get(c).getValue();
-            characterCount++;
-            if (abbyyCharParams.get(c).getAttributeValue("charConfidence") != null
-                    && abbyyCharParams.get(c).getAttributeValue("charConfidence").length() > 0) {
-                confidenceTotal += Integer.valueOf(abbyyCharParams.get(c).getAttributeValue("charConfidence"));
-            }
+            //            characterCount++;
+            //            if (abbyyCharParams.get(c).getAttributeValue("charConfidence") != null
+            //                    && abbyyCharParams.get(c).getAttributeValue("charConfidence").length() > 0) {
+            //                confidenceTotal += Integer.valueOf(abbyyCharParams.get(c).getAttributeValue("charConfidence"));
+            //            }
             try {
                 if (c + 1 == charCount || abbyyCharParams.get(c + 1).getValue().equals(" ")) {
                     stringCount++;
@@ -572,7 +575,7 @@ public class ConvertAbbyyToAlto {
         }
 
         ConvertAbbyyToAlto ab = new ConvertAbbyyToAlto();
-        ab.creationtime = new Date();
+        ab.creationtime = LocalDateTime.now();
         Document doc = new Document();
         for (File f : inputList) {
             doc.setRootElement(ab.convert(f));
@@ -610,9 +613,9 @@ public class ConvertAbbyyToAlto {
      * Getter for the field <code>creationtime</code>.
      * </p>
      *
-     * @return a {@link java.util.Date} object.
+     * @return a {@link java.time.LocalDateTime} object.
      */
-    public Date getCreationtime() {
+    public LocalDateTime getCreationtime() {
         return creationtime;
     }
 
@@ -621,9 +624,9 @@ public class ConvertAbbyyToAlto {
      * Setter for the field <code>creationtime</code>.
      * </p>
      *
-     * @param creationtime a {@link java.util.Date} object.
+     * @param creationtime a {@link java.time.LocalDateTime} object.
      */
-    public void setCreationtime(Date creationtime) {
+    public void setCreationtime(LocalDateTime creationtime) {
         this.creationtime = creationtime;
     }
 }

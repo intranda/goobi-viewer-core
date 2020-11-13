@@ -117,6 +117,7 @@ public final class SearchHelper {
     public static final int SEARCH_TYPE_CALENDAR = 3;
     /** Constant <code>SEARCH_FILTER_ALL</code> */
     public static final SearchFilter SEARCH_FILTER_ALL = new SearchFilter("filter_ALL", "ALL");
+    public static final String AGGREGATION_QUERY_PREFIX = "{!join from=PI_TOPSTRUCT to=PI}";
     /** Standard Solr query for all records and anchors. */
     public static final String ALL_RECORDS_QUERY = "+(ISWORK:true ISANCHOR:true)";
     /** Constant <code>DEFAULT_DOCSTRCT_WHITELIST_FILTER_QUERY="(ISWORK:true OR ISANCHOR:true) AND NOT("{trunked}</code> */
@@ -712,13 +713,13 @@ public final class SearchHelper {
     public static int[] getMinMaxYears(String subQuery) throws PresentationException, IndexUnreachableException {
         int[] ret = { -1, -1 };
 
-        StringBuilder sbSearchString = new StringBuilder();
-        sbSearchString.append(SolrConstants._CALENDAR_YEAR).append(":*");
-        if (StringUtils.isNotEmpty(subQuery)) {
-            sbSearchString.append(subQuery);
+        String searchString = String.format("+%s:*", SolrConstants._CALENDAR_YEAR);
+        if (StringUtils.isNotBlank(subQuery)) {
+            searchString += " " + subQuery;
         }
+
         // logger.debug("searchString: {}", searchString);
-        QueryResponse resp = searchCalendar(sbSearchString.toString(), Collections.singletonList(SolrConstants._CALENDAR_YEAR), 0, true);
+        QueryResponse resp = searchCalendar(searchString, Collections.singletonList(SolrConstants._CALENDAR_YEAR), 0, true);
 
         FieldStatsInfo info = resp.getFieldStatsInfo().get(SolrConstants._CALENDAR_YEAR);
         Object min = info.getMin();
@@ -2271,7 +2272,6 @@ public final class SearchHelper {
      *
      * @param rawQuery a {@link java.lang.String} object.
      * @param aggregateHits a boolean.
-     * @should add join statement if aggregateHits true
      * @return a {@link java.lang.String} object.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * 
@@ -2287,14 +2287,24 @@ public final class SearchHelper {
      * @param aggregateHits a boolean.
      * @param nh
      * @param request
-     * @should add join statement if aggregateHits true
      * @return a {@link java.lang.String} object.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
+     * @should add join statement if aggregateHits true
+     * @should not add join statement if aggregateHits false
+     * @should remove existing join statement
      */
     public static String buildFinalQuery(String rawQuery, boolean aggregateHits, HttpServletRequest request) throws IndexUnreachableException {
+        if (rawQuery == null) {
+            throw new IllegalArgumentException("rawQuery may not be null");
+        }
+
+        logger.trace("rawQuery: {}", rawQuery);
         StringBuilder sbQuery = new StringBuilder();
+        if (rawQuery.contains(AGGREGATION_QUERY_PREFIX)) {
+            rawQuery = rawQuery.replace(AGGREGATION_QUERY_PREFIX, "");
+        }
         if (aggregateHits) {
-            sbQuery.append("{!join from=PI_TOPSTRUCT to=PI}");
+            sbQuery.append(AGGREGATION_QUERY_PREFIX);
             // https://wiki.apache.org/solr/FieldCollapsing
             // https://wiki.apache.org/solr/Join
         }
@@ -2538,5 +2548,21 @@ public final class SearchHelper {
         }
 
         return s;
+    }
+
+    /**
+     * 
+     * @param accessCondition
+     * @param escapeAccessCondition
+     * @return
+     * @should build escaped query correctly
+     * @should build not escaped query correctly
+     */
+    public static String getQueryForAccessCondition(String accessCondition, boolean escapeAccessCondition) {
+        if (escapeAccessCondition) {
+            accessCondition = BeanUtils.escapeCriticalUrlChracters(accessCondition);
+        }
+        return AGGREGATION_QUERY_PREFIX + "+(ISWORK:true ISANCHOR:true DOCTYPE:UGC)" + " +" + SolrConstants.ACCESSCONDITION + ":\"" + accessCondition
+                + "\"";
     }
 }

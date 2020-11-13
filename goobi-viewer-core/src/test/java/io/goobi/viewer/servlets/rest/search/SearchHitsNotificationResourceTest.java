@@ -23,6 +23,7 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
+import io.goobi.viewer.AbstractDatabaseAndSolrEnabledTest;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
@@ -34,13 +35,14 @@ import io.goobi.viewer.model.search.SearchHit;
  * @author florian
  *
  */
-public class SearchHitsNotificationResourceTest {
+public class SearchHitsNotificationResourceTest extends AbstractDatabaseAndSolrEnabledTest {
 
     /**
      * @throws java.lang.Exception
      */
     @Before
     public void setUp() throws Exception {
+        super.setUp();
     }
 
     /**
@@ -48,6 +50,7 @@ public class SearchHitsNotificationResourceTest {
      */
     @After
     public void tearDown() throws Exception {
+        super.tearDown();
     }
 
     /**

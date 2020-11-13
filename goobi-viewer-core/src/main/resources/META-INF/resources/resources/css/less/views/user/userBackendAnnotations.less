@@ -1,0 +1,43 @@
+#myActivity {
+	.annotation {
+	
+		&__label {
+			font-weight: bold;
+			text-decoration: underline; 
+		}
+		&__body__authority__normdata_list {
+			display: flex;
+		}
+		&__body__authority dt {
+			float: none;
+			width: auto;
+			flex: 0 0 15rem;
+		}
+		&__body__authority dd {
+			padding-left: 0.5rem;
+			padding-right: 0.5rem;
+			word-wrap: anywhere;
+		}
+	}
+}
+
+/* BREAKPOINT FOR LARGE DESKTOPS */
+@media screen and (max-width: @largeBreakpoint) {} 
+
+/* BREAKPOINT FOR DESKTOPS */
+@media screen and (max-width: @mediumBreakpoint) {}
+
+/* BREAKPOINT FOR TABLETS */
+@media screen and (max-width: @smallBreakpoint) {}
+
+/* BREAKPOINT FOR SMARTPHONES */
+@media screen and (max-width: @xSmallBreakpoint) {
+#myActivity {
+		.annotation {
+			&__body__authority dt {
+				flex: 0 0 10rem;
+				min-width: unset;
+			}
+		}
+	}
+}

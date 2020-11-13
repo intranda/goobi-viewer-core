@@ -46,6 +46,9 @@
 		<class>io.goobi.viewer.model.transkribus.TranskribusJob</class>
 		<class>io.goobi.viewer.model.security.TermsOfUse</class>
 		<class>io.goobi.viewer.model.security.TermsOfUseTranslation</class>
+		<class>io.goobi.viewer.dao.converter.TranslatedTextConverter</class>
+		<class>io.goobi.viewer.model.log.LogMessage</class>
+		<class>io.goobi.viewer.model.crowdsourcing.campaigns.CampaignLogMessage</class>
 	
 
 		<properties>
@@ -116,6 +119,9 @@
 		<class>io.goobi.viewer.model.transkribus.TranskribusJob</class>
 		<class>io.goobi.viewer.model.security.TermsOfUse</class>
 		<class>io.goobi.viewer.model.security.TermsOfUseTranslation</class>
+		<class>io.goobi.viewer.dao.converter.TranslatedTextConverter</class>
+		<class>io.goobi.viewer.model.log.LogMessage</class>
+		<class>io.goobi.viewer.model.crowdsourcing.campaigns.CampaignLogMessage</class>
 		
 		<properties>
 			<property name="javax.persistence.jdbc.driver"
@@ -137,6 +143,8 @@
 			<property name="eclipselink.id-validation" value="NONE" />
 			<property name="logging.level" value="SEVERE" />
 			<property name="eclipselink.logging.level" value="SEVERE" />
+<!--             <property name="eclipselink.logging.level.sql" value="FINE"/> -->
+<!--             <property name="eclipselink.logging.parameters" value="true"/> -->
 		</properties>
 	</persistence-unit>
 </persistence>

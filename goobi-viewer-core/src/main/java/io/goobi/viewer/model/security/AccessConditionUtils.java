@@ -155,7 +155,6 @@ public class AccessConditionUtils {
             case "mp3":
             case "ogg":
             case "ogv":
-                break;
             case "txt":
             case "xml":
                 useFileName = useFileName.replace("." + extension, "");
@@ -834,6 +833,7 @@ public class AccessConditionUtils {
         Map<String, List<LicenseType>> licenseMap = getRelevantLicenseTypesOnly(allLicenseTypes, requiredAccessConditions, query, accessMap);
         // If no relevant license types found (configured), deny all
         if (licenseMap.isEmpty()) {
+            logger.trace("No relevant license types found.");
             accessMap.keySet().forEach(key -> accessMap.put(key, Boolean.FALSE));
             return accessMap;
         }

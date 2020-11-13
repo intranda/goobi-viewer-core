@@ -47,6 +47,7 @@ import io.goobi.viewer.controller.SolrSearchIndex;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.managedbeans.NavigationHelper;
+import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.model.search.SearchQueryGroup.SearchQueryGroupOperator;
 import io.goobi.viewer.model.search.SearchQueryItem.SearchItemOperator;
 import io.goobi.viewer.model.security.user.User;
@@ -1233,4 +1234,57 @@ public class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
         Assert.assertNotNull(resp);
         Assert.assertNotNull(resp.getFacetField(SearchHelper.facetifyField(bmfc.getField())));
     }
+
+    /**
+     * @see SearchHelper#getQueryForAccessCondition(String,boolean)
+     * @verifies build escaped query correctly
+     */
+    @Test
+    public void getQueryForAccessCondition_shouldBuildEscapedQueryCorrectly() throws Exception {
+        Assert.assertEquals(SearchHelper.AGGREGATION_QUERY_PREFIX +
+                "+(ISWORK:true ISANCHOR:true DOCTYPE:UGC) +" + SolrConstants.ACCESSCONDITION + ":\"foo" + BeanUtils.SLASH_REPLACEMENT + "bar\"",
+                SearchHelper.getQueryForAccessCondition("foo/bar", true));
+    }
+
+    /**
+     * @see SearchHelper#getQueryForAccessCondition(String,boolean)
+     * @verifies build not escaped query correctly
+     */
+    @Test
+    public void getQueryForAccessCondition_shouldBuildNotEscapedQueryCorrectly() throws Exception {
+        Assert.assertEquals(SearchHelper.AGGREGATION_QUERY_PREFIX +
+                "+(ISWORK:true ISANCHOR:true DOCTYPE:UGC) +" + SolrConstants.ACCESSCONDITION + ":\"foo/bar\"",
+                SearchHelper.getQueryForAccessCondition("foo/bar", false));
+    }
+
+    /**
+     * @see SearchHelper#buildFinalQuery(String,boolean,HttpServletRequest)
+     * @verifies add join statement if aggregateHits true
+     */
+    @Test
+    public void buildFinalQuery_shouldAddJoinStatementIfAggregateHitsTrue() throws Exception {
+        String finalQuery = SearchHelper.buildFinalQuery("DEFAULT:*", true, null);
+        Assert.assertEquals(SearchHelper.AGGREGATION_QUERY_PREFIX + "+(DEFAULT:*) -BOOL_HIDE:true -DC:collection1 -DC:collection2", finalQuery);
+    }
+
+    /**
+     * @see SearchHelper#buildFinalQuery(String,boolean,HttpServletRequest)
+     * @verifies not add join statement if aggregateHits false
+     */
+    @Test
+    public void buildFinalQuery_shouldNotAddJoinStatementIfAggregateHitsFalse() throws Exception {
+        String finalQuery = SearchHelper.buildFinalQuery("DEFAULT:*", false, null);
+        Assert.assertEquals("+(DEFAULT:*) -BOOL_HIDE:true -DC:collection1 -DC:collection2", finalQuery);
+    }
+
+    /**
+     * @see SearchHelper#buildFinalQuery(String,boolean,HttpServletRequest)
+     * @verifies remove existing join statement
+     */
+    @Test
+    public void buildFinalQuery_shouldRemoveExistingJoinStatement() throws Exception {
+        String finalQuery = SearchHelper.buildFinalQuery(SearchHelper.AGGREGATION_QUERY_PREFIX + "DEFAULT:*", true, null);
+        Assert.assertEquals(SearchHelper.AGGREGATION_QUERY_PREFIX + "+(DEFAULT:*) -BOOL_HIDE:true -DC:collection1 -DC:collection2", finalQuery);
+    }
+
 }

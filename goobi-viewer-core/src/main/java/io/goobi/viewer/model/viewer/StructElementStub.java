@@ -420,9 +420,9 @@ public class StructElementStub implements Comparable<StructElementStub>, Seriali
      * @return a boolean.
      */
     public boolean isLidoRecord() {
-        return "LIDO".equals(sourceDocFormat);
+        return SolrConstants._LIDO.equals(sourceDocFormat);
     }
-    
+
     /**
      * 
      * @return true if record has images; false otherwise
@@ -432,7 +432,7 @@ public class StructElementStub implements Comparable<StructElementStub>, Seriali
         if (imageAvailable == null || !Boolean.valueOf(imageAvailable)) {
             return false;
         }
-        
+
         return true;
     }
 
@@ -503,6 +503,7 @@ public class StructElementStub implements Comparable<StructElementStub>, Seriali
      * @param sourceDocFormat the sourceDocFormat to set
      */
     public void setSourceDocFormat(String sourceDocFormat) {
+        // logger.trace("setSourceDocFormat: {}", sourceDocFormat);
         this.sourceDocFormat = sourceDocFormat;
     }
 

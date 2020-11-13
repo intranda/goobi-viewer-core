@@ -13,8 +13,6 @@ if (getFacesConfigXmlVersion(facesContext).equals("2.3") || getWebXmlVersion(fac
 			<base-name>io.goobi.viewer.messages.ViewerResourceBundle</base-name>
 			<var>msg</var>
 		</resource-bundle>
-		
-		
 
 		<!-- <resource-bundle> <base-name>io.goobi.viewer.messages.StructtypesRessourceBundle</base-name> 
 			<var>msgstruct</var> </resource-bundle> -->

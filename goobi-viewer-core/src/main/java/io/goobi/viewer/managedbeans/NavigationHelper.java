@@ -681,13 +681,40 @@ public class NavigationHelper implements Serializable {
      * @return a {@link java.lang.String} object.
      */
     public String getDatePattern() {
+        if (locale == null) {
+            return "yyyy-MM-dd";
+        }
+
         switch (locale.getLanguage()) {
+            case "de":
+                return "dd.MM.yyyy";
             case "en":
                 return "MM/dd/yyyy";
             case "es":
                 return "dd/MM/yyyy";
             default:
-                return "dd.MM.yyyy";
+                return "yyyy-MM-dd";
+        }
+    }
+
+    /**
+     * 
+     * @return
+     */
+    public String getDateTimePattern() {
+        if (locale == null) {
+            return "yyyy-MM-dd - HH:mm";
+        }
+
+        switch (locale.getLanguage()) {
+            case "de":
+                return "dd.MM.yyyy - HH:mm";
+            case "en":
+                return "MM/dd/yyyy - h:mm a";
+            case "es":
+                return "dd/MM/yyyy - HH:mm";
+            default:
+                return "yyyy-MM-dd - HH:mm";
         }
     }
 
@@ -707,7 +734,8 @@ public class NavigationHelper implements Serializable {
      * @return a {@link java.lang.String} object.
      */
     public String getApplicationUrl() {
-        return BeanUtils.getServletPathWithHostAsUrlFromJsfContext() + "/";
+        String applicationUrl = BeanUtils.getServletPathWithHostAsUrlFromJsfContext() + "/";
+        return applicationUrl;
     }
 
     /**
