@@ -23,10 +23,10 @@ io.goobi.viewer.controller
 io.goobi.viewer.controller.imaging
 io.goobi.viewer.controller.language
 io.goobi.viewer.dao
+io.goobi.viewer.dao.converter
 io.goobi.viewer.dao.impl
 io.goobi.viewer.dao.update
 io.goobi.viewer.exceptions
-io.goobi.viewer.exceptions.streams
 io.goobi.viewer.faces.converters
 io.goobi.viewer.faces.validators
 io.goobi.viewer.filters
@@ -51,9 +51,11 @@ io.goobi.viewer.model.iiif.search
 io.goobi.viewer.model.iiif.search.model
 io.goobi.viewer.model.iiif.search.parser
 io.goobi.viewer.model.jsf
+io.goobi.viewer.model.log
 io.goobi.viewer.model.maps
 io.goobi.viewer.model.metadata
 io.goobi.viewer.model.misc
+io.goobi.viewer.model.normdata
 io.goobi.viewer.model.rss
 io.goobi.viewer.model.search
 io.goobi.viewer.model.security
@@ -80,13 +82,10 @@ io.goobi.viewer.servlets.rest.annotations
 io.goobi.viewer.servlets.rest.bookmarks
 io.goobi.viewer.servlets.rest.cms
 io.goobi.viewer.servlets.rest.content
-io.goobi.viewer.servlets.rest.crowdsourcing
 io.goobi.viewer.servlets.rest.dao
 io.goobi.viewer.servlets.rest.download
 io.goobi.viewer.servlets.rest.glossaries
 io.goobi.viewer.servlets.rest.iiif.discovery
-io.goobi.viewer.servlets.rest.iiif.image
-io.goobi.viewer.servlets.rest.iiif.pdf
 io.goobi.viewer.servlets.rest.iiif.presentation
 io.goobi.viewer.servlets.rest.media
 io.goobi.viewer.servlets.rest.metadata
