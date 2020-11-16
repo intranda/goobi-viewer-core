@@ -27,6 +27,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -45,6 +46,7 @@ import org.slf4j.LoggerFactory;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import de.intranda.metadata.multilanguage.IMetadataValue;
 import de.unigoettingen.sub.commons.contentlib.exceptions.ContentNotFoundException;
 import de.unigoettingen.sub.commons.contentlib.exceptions.IllegalRequestException;
 import de.unigoettingen.sub.commons.contentlib.exceptions.ServiceNotAllowedException;
@@ -79,6 +81,7 @@ import io.goobi.viewer.model.annotation.Comment;
 import io.goobi.viewer.model.security.AccessConditionUtils;
 import io.goobi.viewer.model.security.IPrivilegeHolder;
 import io.goobi.viewer.model.security.user.User;
+import io.goobi.viewer.model.toc.TocMaker;
 import io.goobi.viewer.model.viewer.StructElement.ShapeMetadata;
 
 /**
@@ -1793,7 +1796,13 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
             } else {
                 containedStructElements = new ArrayList<>(docstructDocs.size());
                 for (SolrDocument doc : docstructDocs) {
-                    containedStructElements.add(new StructElement(Long.valueOf((String) doc.getFieldValue(SolrConstants.IDDOC)), doc));
+                    StructElement ele = new StructElement(Long.valueOf((String) doc.getFieldValue(SolrConstants.IDDOC)), doc);
+                    IMetadataValue value = TocMaker.buildTocElementLabel(doc);
+                    String label = value.getValue(BeanUtils.getLocale()).orElse(value.getValue().orElse(""));
+                    if(StringUtils.isNotBlank(label)) {
+                        ele.setLabel(label);
+                    }
+                    containedStructElements.add(ele);
                 }
             }
         }
@@ -1803,9 +1812,6 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
 
     public String getContainedStructElementsAsJson() throws PresentationException, IndexUnreachableException, JsonProcessingException {
         List<StructElement> elements = getContainedStructElements();
-        elements.forEach(element -> {
-
-        });
 
         ObjectMapper mapper = new ObjectMapper();
         List<ShapeMetadata> shapes = elements.stream()

@@ -264,7 +264,7 @@ public class DataFileTools {
             throw new IllegalArgumentException("fileName may not be null or empty");
         }
         if (StringUtils.isEmpty(format)) {
-            throw new IllegalArgumentException("format may not be null or empty");
+            throw new IllegalArgumentException("format may not be null or empty (file name: " + fileName + ")");
         }
         switch (format) {
             case SolrConstants._METS:
@@ -417,11 +417,11 @@ public class DataFileTools {
         TextResourceBuilder builder = new TextResourceBuilder();
         if (altoFilePath != null) {
             // ALTO file
-                String alto = builder.getAltoDocument(FileTools.getBottomFolderFromPathString(altoFilePath),
-                        FileTools.getFilenameFromPathString(altoFilePath));
-                return alto;
+            String alto = builder.getAltoDocument(FileTools.getBottomFolderFromPathString(altoFilePath),
+                    FileTools.getFilenameFromPathString(altoFilePath));
+            return alto;
         }
-        
+
         throw new ContentNotFoundException("ALTO file " + altoFilePath + " not found");
     }
 
@@ -447,7 +447,7 @@ public class DataFileTools {
         TextResourceBuilder builder = new TextResourceBuilder();
         try {
             return builder.getTeiDocument(pi, language);
-        } catch (PresentationException | IndexUnreachableException |  ContentLibException e) {
+        } catch (PresentationException | IndexUnreachableException | ContentLibException e) {
             logger.error(e.toString());
             return null;
         }

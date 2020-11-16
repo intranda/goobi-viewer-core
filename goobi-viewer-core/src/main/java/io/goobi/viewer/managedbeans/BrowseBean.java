@@ -471,6 +471,10 @@ public class BrowseBean implements Serializable {
                     DataManager.getInstance().getConfiguration().isAggregateHits());
 
             for (int i = start; i < end; ++i) {
+                if(i >= terms.size()) {
+                    //filtered queries may return less results than max (why? SearchHelper.getFilteredTermsCount should already account for filtering)
+                    break;
+                }
                 BrowseTerm term = terms.get(i);
                 if (term.getTranslations() != null && term.getTranslations().getValue(locale).isPresent()) {
                     // Use translated label, if present

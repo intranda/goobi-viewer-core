@@ -15,6 +15,9 @@
  */
 package io.goobi.viewer.model.security;
 
+import java.util.Collections;
+import java.util.List;
+
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -154,5 +157,19 @@ public class LicenseTest {
             lic.setUserGroup(null);
             Assert.assertNotNull(lic.getIpRange());
         }
+    }
+
+    /**
+     * @see License#getAvailablePrivileges(Set)
+     * @verifies only return priv view ugc if licenseType ugc type
+     */
+    @Test
+    public void getAvailablePrivileges_shouldOnlyReturnPrivViewUgcIfLicenseTypeUgcType() throws Exception {
+       License lic = new License();
+       lic.setLicenseType(new LicenseType());
+       lic.getLicenseType().ugcType = true;
+       List<String> result = lic.getAvailablePrivileges(Collections.emptySet());
+       Assert.assertEquals(1, result.size());
+       Assert.assertEquals(IPrivilegeHolder.PRIV_VIEW_UGC, result.get(0));
     }
 }

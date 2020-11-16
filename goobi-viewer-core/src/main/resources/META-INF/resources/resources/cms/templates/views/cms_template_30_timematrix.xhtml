@@ -46,15 +46,17 @@
                 <!-- TEXT -->
                 <div class="tpl-timeMatrix__text">
                     <ui:include src="#{cmsPage.getContent('text01')}" />
-                </div>
-				
-				<ui:include src="/resources/includes/search/timematrix.xhtml" />
+                </div>				
+				<ui:include src="/resources/includes/search/timematrix.xhtml">
+							<ui:param name="subtheme" value="#{cmsPage.subThemeDiscriminatorValue}"/>
+				</ui:include>
 			</div>
 		</f:view>
 	</ui:define>
 
     <!-- SIDEBAR -->
 	<ui:define name="sidebar">
-		<ui:include src="/resources/cms/includes/cms_sidebar.xhtml" />
+		<ui:include src="/resources/cms/includes/cms_sidebar.xhtml">
+		</ui:include>
     </ui:define>
 </ui:composition>

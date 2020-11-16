@@ -20,7 +20,7 @@ import static org.junit.Assert.assertEquals;
 import java.awt.Rectangle;
 import java.io.IOException;
 import java.net.URI;
-import java.util.Date;
+import java.time.LocalDateTime;
 import java.util.List;
 
 import javax.persistence.EntityManager;
@@ -81,7 +81,7 @@ public class PersistentAnnotationTest extends AbstractDatabaseEnabledTest {
     public static void setUpClass() throws Exception {
         AbstractDatabaseEnabledTest.setUpClass();
         urls = new ApiUrls(DataManager.getInstance().getConfiguration().getRestApiUrl());
-        annoBuilder = new AnnotationsResourceBuilder(urls);
+        annoBuilder = new AnnotationsResourceBuilder(urls, null);
 
         mapper = new ObjectMapper();
         mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
@@ -106,8 +106,8 @@ public class PersistentAnnotationTest extends AbstractDatabaseEnabledTest {
         generator.setTargetSelector(TargetSelector.WHOLE_PAGE);
 
         annotation = new WebAnnotation(URI.create("http://www.example.com/anno/1"));
-        annotation.setCreated(DateTools.createDate(2019, 01, 22, 12, 54));
-        annotation.setModified(DateTools.createDate(2019, 8, 11, 17, 13));
+        annotation.setCreated(DateTools.convertLocalDateTimeToDateViaInstant(LocalDateTime.of(2019, 01, 22, 12, 54), false));
+        annotation.setModified(DateTools.convertLocalDateTimeToDateViaInstant(LocalDateTime.of(2019, 8, 11, 17, 13), false));
         annotation.setCreator(new Agent(URI.create(creator.getId().toString()), AgentType.PERSON, creator.getNickName()));
         annotation.setGenerator(new Agent(URI.create(generator.getId().toString()), AgentType.SOFTWARE, ""));
 
@@ -205,7 +205,7 @@ public class PersistentAnnotationTest extends AbstractDatabaseEnabledTest {
         Assert.assertEquals(webAnno.getTarget(), fromDAOWebAnno.getTarget());
         Assert.assertEquals(webAnno, fromDAOWebAnno);
 
-        Date changed = new Date();
+        LocalDateTime changed = LocalDateTime.now();
         fromDAO.setDateModified(changed);
         boolean updated = DataManager.getInstance().getDao().updateAnnotation(fromDAO);
 

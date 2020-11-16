@@ -27,7 +27,7 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import javax.annotation.PreDestroy;
+import jakarta.annotation.PreDestroy;
 import javax.faces.view.ViewScoped;
 import javax.inject.Named;
 

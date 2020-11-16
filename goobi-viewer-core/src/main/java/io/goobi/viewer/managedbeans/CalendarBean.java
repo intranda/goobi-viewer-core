@@ -27,7 +27,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import javax.annotation.PostConstruct;
+import jakarta.annotation.PostConstruct;
 import javax.enterprise.context.SessionScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -692,7 +692,6 @@ public class CalendarBean implements Serializable {
             fields.add(SolrConstants._CALENDAR_YEAR);
             fields.add(SolrConstants._CALENDAR_DAY);
             StringBuilder sbSearchString = new StringBuilder();
-            //            sbSearchString.append("{!join from=PI_TOPSTRUCT to=PI}");
             if (collection != null && !collection.isEmpty()) {
                 sbSearchString.append(SolrConstants._CALENDAR_DAY)
                         .append(":* AND ")

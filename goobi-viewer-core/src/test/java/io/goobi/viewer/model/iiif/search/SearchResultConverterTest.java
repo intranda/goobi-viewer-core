@@ -123,7 +123,7 @@ public class SearchResultConverterTest extends AbstractSolrEnabledTest {
         String query = "in";
         String queryRegex = AbstractSearchParser.getQueryRegex(query);
         SearchHit hit = converter.convertUGCToHit(queryRegex, ugc);
-        String url = urls.path(ANNOTATIONS, ANNOTATIONS_UGC).params(123456789).build();
+        String url = urls.path(ANNOTATIONS, ANNOTATIONS_ANNOTATION).params(123456789).build();
         Assert.assertNotNull(hit);
         Assert.assertEquals(url, hit.getAnnotations().get(0).getId().toString());
         Assert.assertEquals("in", hit.getMatch());

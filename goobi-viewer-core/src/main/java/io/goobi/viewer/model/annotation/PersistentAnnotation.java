@@ -19,7 +19,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.Date;
+import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -29,8 +29,6 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
-import javax.persistence.Temporal;
-import javax.persistence.TemporalType;
 
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -41,14 +39,16 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import de.intranda.api.annotation.ITypedResource;
 import de.intranda.api.annotation.oa.TextualResource;
-import de.intranda.api.annotation.oa.TypedResource;
 import de.intranda.api.annotation.wa.WebAnnotation;
 import io.goobi.viewer.controller.DataFileTools;
 import io.goobi.viewer.controller.DataManager;
+import io.goobi.viewer.controller.DateTools;
 import io.goobi.viewer.controller.FileTools;
+import io.goobi.viewer.controller.IndexerTools;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
+import io.goobi.viewer.exceptions.RecordNotFoundException;
 import io.goobi.viewer.exceptions.ViewerConfigurationException;
 import io.goobi.viewer.model.crowdsourcing.questions.Question;
 import io.goobi.viewer.model.security.user.User;
@@ -69,13 +69,11 @@ public class PersistentAnnotation {
     @Column(name = "annotation_id")
     private Long id;
 
-    @Temporal(TemporalType.TIMESTAMP)
     @Column(name = "date_created")
-    private Date dateCreated;
+    private LocalDateTime dateCreated;
 
-    @Temporal(TemporalType.TIMESTAMP)
     @Column(name = "date_modified")
-    private Date dateModified;
+    private LocalDateTime dateModified;
 
     @Column(name = "motivation")
     private String motivation;
@@ -118,6 +116,9 @@ public class PersistentAnnotation {
     @Column(name = "target_page")
     private Integer targetPageOrder;
 
+    @Column(name = "access_condition", nullable = true)
+    private String accessCondition;
+
     /**
      * empty constructor
      */
@@ -130,8 +131,8 @@ public class PersistentAnnotation {
      * @param source a {@link de.intranda.api.annotation.wa.WebAnnotation} object.
      */
     public PersistentAnnotation(WebAnnotation source, Long id, String targetPI, Integer targetPage) {
-        this.dateCreated = source.getCreated();
-        this.dateModified = source.getModified();
+        this.dateCreated = DateTools.convertDateToLocalDateTimeViaInstant(source.getCreated());
+        this.dateModified = DateTools.convertDateToLocalDateTimeViaInstant(source.getModified());
         this.motivation = source.getMotivation();
         this.id = id;
         this.creatorId = null;
@@ -201,7 +202,7 @@ public class PersistentAnnotation {
      *
      * @return the dateCreated
      */
-    public Date getDateCreated() {
+    public LocalDateTime getDateCreated() {
         return dateCreated;
     }
 
@@ -212,7 +213,7 @@ public class PersistentAnnotation {
      *
      * @param dateCreated the dateCreated to set
      */
-    public void setDateCreated(Date dateCreated) {
+    public void setDateCreated(LocalDateTime dateCreated) {
         this.dateCreated = dateCreated;
     }
 
@@ -223,7 +224,7 @@ public class PersistentAnnotation {
      *
      * @return the dateModified
      */
-    public Date getDateModified() {
+    public LocalDateTime getDateModified() {
         return dateModified;
     }
 
@@ -234,7 +235,7 @@ public class PersistentAnnotation {
      *
      * @param dateModified the dateModified to set
      */
-    public void setDateModified(Date dateModified) {
+    public void setDateModified(LocalDateTime dateModified) {
         this.dateModified = dateModified;
     }
 
@@ -247,8 +248,8 @@ public class PersistentAnnotation {
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
     public User getCreator() throws DAOException {
-        if (getCreatorId() != null) {
-            return DataManager.getInstance().getDao().getUser(getCreatorId());
+        if (creatorId != null) {
+            return DataManager.getInstance().getDao().getUser(creatorId);
         }
         return null;
     }
@@ -262,6 +263,34 @@ public class PersistentAnnotation {
      */
     public void setCreator(User creator) {
         this.creatorId = creator.getId();
+    }
+
+    /**
+     * <p>
+     * getReviewer.
+     * </p>
+     *
+     * @return the reviewer
+     * @throws io.goobi.viewer.exceptions.DAOException if any.
+     */
+    public User getReviewer() throws DAOException {
+        if (reviewerId != null) {
+            return DataManager.getInstance().getDao().getUser(reviewerId);
+        }
+        return null;
+    }
+
+    /**
+     * <p>
+     * setReviewer.
+     * </p>
+     *
+     * @param reviewer the reviewer to set
+     */
+    public void setReviewer(User reviewer) {
+        if (reviewer != null) {
+            this.reviewerId = reviewer.getId();
+        }
     }
 
     /**
@@ -481,9 +510,9 @@ public class PersistentAnnotation {
         try {
             Set<Path> filesToDelete = new HashSet<>();
             Path annotationFolder = DataFileTools.getDataFolder(targetPI, DataManager.getInstance().getConfiguration().getAnnotationFolder());
-            logger.trace("Annotation folder path: {}", annotationFolder.toAbsolutePath().toString());
+            logger.debug("Annotation folder path: {}", annotationFolder.toAbsolutePath().toString());
             if (!Files.isDirectory(annotationFolder)) {
-                logger.trace("Annotation folder not found - nothing to delete");
+                logger.debug("Annotation folder not found - nothing to delete");
                 return 0;
             }
 
@@ -534,18 +563,18 @@ public class PersistentAnnotation {
      * @throws java.io.IOException if any.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
-    public String getContentString() throws  IOException, DAOException {
-        
-        if(StringUtils.isNotBlank(body)) {
-            try {                
+    public String getContentString() throws IOException, DAOException {
+
+        if (StringUtils.isNotBlank(body)) {
+            try {
                 ITypedResource resource = new ObjectMapper().readValue(this.body, ITypedResource.class);
-                if(resource instanceof TextualResource) {
+                if (resource instanceof TextualResource) {
                     return ((TextualResource) resource).getText();
-                } else if(resource instanceof de.intranda.api.annotation.wa.TextualResource) {
+                } else if (resource instanceof de.intranda.api.annotation.wa.TextualResource) {
                     return ((de.intranda.api.annotation.wa.TextualResource) resource).getText();
                 }
-                
-            } catch(Throwable e) {
+
+            } catch (Throwable e) {
             }
         }
 
@@ -568,5 +597,43 @@ public class PersistentAnnotation {
         }
 
         return ret;
+    }
+
+    /**
+     * Deletes this annotation from the database. If successful, deletes any JSON files in the file system and creates a re-indexing job.
+     * 
+     * @return
+     * @throws DAOException
+     * @throws ViewerConfigurationException
+     */
+    public boolean delete() throws DAOException, ViewerConfigurationException {
+        if (!DataManager.getInstance().getDao().deleteAnnotation(this)) {
+            return false;
+        }
+
+        if (deleteExportedTextFiles() > 0) {
+            try {
+                IndexerTools.reIndexRecord(targetPI);
+                logger.debug("Re-indexing record: {}", targetPI);
+            } catch (RecordNotFoundException e) {
+                logger.error(e.getMessage());
+            }
+        }
+
+        return true;
+    }
+
+    /**
+     * @return the accessCondition
+     */
+    public String getAccessCondition() {
+        return accessCondition;
+    }
+
+    /**
+     * @param accessCondition the accessCondition to set
+     */
+    public void setAccessCondition(String accessCondition) {
+        this.accessCondition = accessCondition;
     }
 }

@@ -15,7 +15,10 @@
  */
 package io.goobi.viewer.api.rest.v1.crowdsourcing;
 
-import static io.goobi.viewer.api.rest.v1.ApiUrls.*;
+import static io.goobi.viewer.api.rest.v1.ApiUrls.ANNOTATIONS;
+import static io.goobi.viewer.api.rest.v1.ApiUrls.ANNOTATIONS_ANNOTATION;
+import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_PAGES;
+import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_PAGES_CANVAS;
 
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -40,22 +43,27 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import de.intranda.api.annotation.wa.TextualResource;
 import de.intranda.api.annotation.wa.WebAnnotation;
 import de.unigoettingen.sub.commons.contentlib.exceptions.ContentNotFoundException;
 import de.unigoettingen.sub.commons.contentlib.servlet.rest.CORSBinding;
 import io.goobi.viewer.api.rest.AbstractApiUrlManager;
+import io.goobi.viewer.api.rest.CrowdsourcingCampaignBinding;
 import io.goobi.viewer.api.rest.ViewerRestServiceBinding;
+import io.goobi.viewer.api.rest.filters.CrowdsourcingCampaignFilter;
 import io.goobi.viewer.api.rest.resourcebuilders.AnnotationsResourceBuilder;
 import io.goobi.viewer.controller.DataManager;
+import io.goobi.viewer.controller.HtmlParser;
 import io.goobi.viewer.controller.IndexerTools;
 import io.goobi.viewer.dao.IDAO;
 import io.goobi.viewer.exceptions.DAOException;
-import io.goobi.viewer.exceptions.streams.Try;
 import io.goobi.viewer.model.annotation.PersistentAnnotation;
 import io.goobi.viewer.model.crowdsourcing.campaigns.Campaign;
 import io.goobi.viewer.model.crowdsourcing.campaigns.CampaignItem;
 import io.goobi.viewer.model.crowdsourcing.campaigns.CampaignRecordStatistic.CampaignRecordStatus;
 import io.goobi.viewer.model.iiif.presentation.builder.ManifestBuilder;
+import io.goobi.viewer.model.log.LogMessage;
+import io.goobi.viewer.model.misc.IPolyglott;
 import io.goobi.viewer.model.security.user.User;
 
 /**
@@ -72,31 +80,32 @@ import io.goobi.viewer.model.security.user.User;
  *
  * @author florian
  */
-@Path("/crowdsourcing/campaigns")
+@Path("/crowdsourcing/campaigns/{campaignId}")
 @ViewerRestServiceBinding
+@CrowdsourcingCampaignBinding
 public class CampaignItemResource {
 
     private static final Logger logger = LoggerFactory.getLogger(CampaignItemResource.class);
 
-    @Context
-    private HttpServletRequest servletRequest;
-    @Context
-    private HttpServletResponse servletResponse;
-
     @Inject
     protected AbstractApiUrlManager urls;
-    protected AnnotationsResourceBuilder annoBuilder = null;
 
+    private final Long campaignId;
+    
     /**
      * <p>
      * Constructor for CampaignItemResource.
      * </p>
      */
-    public CampaignItemResource() {
+    public CampaignItemResource(@Context HttpServletRequest servletRequest, @PathParam("campaignId") Long campaignId) {
+        this.campaignId = campaignId;
+        servletRequest.setAttribute(CrowdsourcingCampaignFilter.CAMPAIGN_ID_REQUEST_ATTRIBUTE, campaignId);
     }
-    
-    public CampaignItemResource(AbstractApiUrlManager urls) {
+
+    public CampaignItemResource(@Context HttpServletRequest servletRequest, AbstractApiUrlManager urls, @PathParam("campaignId") Long campaignId) {
         this.urls = urls;
+        this.campaignId = campaignId;
+        servletRequest.setAttribute(CrowdsourcingCampaignFilter.CAMPAIGN_ID_REQUEST_ATTRIBUTE, campaignId);
     }
 
     /**
@@ -111,18 +120,26 @@ public class CampaignItemResource {
      * @throws de.unigoettingen.sub.commons.contentlib.exceptions.ContentNotFoundException if any.
      */
     @GET
-    @Path("/{campaignId}/{pi}")
+    @Path("/{pi}")
     @Produces({ MediaType.APPLICATION_JSON })
     @CORSBinding
-    public CampaignItem getItemForManifest(@PathParam("campaignId") Long campaignId, @PathParam("pi") String pi)
+    public CampaignItem getItemForManifest(@PathParam("pi") String pi, @Context HttpServletRequest servletRequest)
             throws URISyntaxException, DAOException, ContentNotFoundException {
+        
+        
         URI manifestURI = new ManifestBuilder(urls).getManifestURI(pi);
-
         Campaign campaign = DataManager.getInstance().getDao().getCampaign(campaignId);
         if (campaign != null) {
             CampaignItem item = new CampaignItem();
             item.setSource(manifestURI);
             item.setCampaign(campaign);
+            if (campaign.isShowLog()) {
+                item.setLog(campaign.getLogMessages()
+                        .stream()
+                        .filter(m -> m.getPi().equals(pi))
+                        .map(clm -> new LogMessage(clm, servletRequest))
+                        .collect(Collectors.toList()));
+            }
             return item;
         }
         throw new ContentNotFoundException("No campaign found with id " + campaignId);
@@ -138,10 +155,10 @@ public class CampaignItemResource {
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
     @PUT
-    @Path("/{campaignId}/{pi}/")
+    @Path("/{pi}")
     @Consumes({ MediaType.APPLICATION_JSON })
     @CORSBinding
-    public void setItemForManifest(CampaignItem item, @PathParam("campaignId") Long campaignId, @PathParam("pi") String pi) throws DAOException {
+    public void setItemForManifest(CampaignItem item, @PathParam("pi") String pi) throws DAOException {
         CampaignRecordStatus status = item.getRecordStatus();
 
         Campaign campaign = DataManager.getInstance().getDao().getCampaign(campaignId);
@@ -171,10 +188,10 @@ public class CampaignItemResource {
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
     @GET
-    @Path("/{campaignId}/{pi}/annotations")
+    @Path("/{pi}/annotations")
     @Produces({ MediaType.APPLICATION_JSON })
     @CORSBinding
-    public List<WebAnnotation> getAnnotationsForManifest(@PathParam("campaignId") Long campaignId, @PathParam("pi") String pi)
+    public List<WebAnnotation> getAnnotationsForManifest(@PathParam("pi") String pi, @Context HttpServletRequest request)
             throws URISyntaxException, DAOException {
 
         Campaign campaign = DataManager.getInstance().getDao().getCampaign(campaignId);
@@ -182,7 +199,7 @@ public class CampaignItemResource {
 
         List<WebAnnotation> webAnnotations = new ArrayList<>();
         for (PersistentAnnotation anno : annotations) {
-            WebAnnotation webAnno = getAnnoBuilder().getAsWebAnnotation(anno);
+            WebAnnotation webAnno = new AnnotationsResourceBuilder(urls, request).getAsWebAnnotation(anno);
             webAnnotations.add(webAnno);
         }
 
@@ -200,10 +217,10 @@ public class CampaignItemResource {
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
     @PUT
-    @Path("/{campaignId}/{pi}/annotations")
+    @Path("/{pi}/annotations")
     @Consumes({ MediaType.APPLICATION_JSON })
     @CORSBinding
-    public void setAnnotationsForManifest(List<AnnotationPage> pages, @PathParam("campaignId") Long campaignId, @PathParam("pi") String pi)
+    public void setAnnotationsForManifest(List<AnnotationPage> pages, @PathParam("pi") String pi)
             throws URISyntaxException, DAOException {
 
         IDAO dao = DataManager.getInstance().getDao();
@@ -213,66 +230,62 @@ public class CampaignItemResource {
             URI targetURI = URI.create(page.getId());
             String pageOrderString = urls.parseParameter(
                     urls.path(RECORDS_PAGES, RECORDS_PAGES_CANVAS).build(),
-                    targetURI.toString(), 
+                    targetURI.toString(),
                     "{pageNo}");
             Integer pageOrder = StringUtils.isBlank(pageOrderString) ? null : Integer.parseInt(pageOrderString);
 
             List<PersistentAnnotation> existingAnnotations = dao.getAnnotationsForCampaignAndTarget(campaign, pi, pageOrder);
-            List<PersistentAnnotation> newAnnotations = page.annotations.stream().map(anno -> {
-                Long id = null;
-                if(anno.getId() != null) {                    
-                    String uri = anno.getId().toString();
-                    String idString = urls.parseParameter(urls.path(ANNOTATIONS, ANNOTATIONS_ANNOTATION).build(), uri, "{id}");
-                    if(StringUtils.isNotBlank(idString)) {
-                        id = Long.parseLong(idString);
+            List<PersistentAnnotation> newAnnotations =
+                    page.annotations.stream().map(anno -> createPersistentAnnotation(pi, pageOrder, anno)).collect(Collectors.toList());
+
+            //delete existing annotations not contained in response
+            for (PersistentAnnotation anno : existingAnnotations) {
+                if (newAnnotations.stream().noneMatch(annoNew -> anno.getId().equals(annoNew.getId()))) {
+                    try {
+                        dao.deleteAnnotation(anno);
+                    } catch (DAOException e) {
+                        logger.error("Error deleting annotation " + e.toString());
                     }
                 }
-                PersistentAnnotation pAnno = new PersistentAnnotation(anno, id, pi, pageOrder);
-                return pAnno;
-            }).collect(Collectors.toList());
-
-            //delete existing annotations not in the new annotations list
-            List persistenceExceptions = existingAnnotations.stream()
-                    .filter(anno -> newAnnotations.stream().noneMatch(annoNew -> anno.getId().equals(annoNew.getId())))
-                    .map(Try.lift(dao::deleteAnnotation))
-                    .filter(t -> t.isException())
-                    .map(t -> t.getException().get())
-                    .collect(Collectors.toList());
-            for (Object exception : persistenceExceptions) {
-                logger.error("Error deleting annotation " + exception.toString());
             }
 
-            //add entirely new annotations
-
-            persistenceExceptions = newAnnotations.stream()
-                    .filter(anno -> anno.getId() == null)
-                    .map(Try.lift(dao::addAnnotation))
-                    .filter(either -> either.isException())
-                    .map(either -> either.getException().get())
-                    .collect(Collectors.toList());
-            for (Object exception : persistenceExceptions) {
-                logger.error("Error adding annotation " + exception.toString());
-            }
-
-            //update changed annotations
-            persistenceExceptions = newAnnotations.stream()
-                    .filter(anno -> anno.getId() != null)
-                    .map(Try.lift(dao::updateAnnotation))
-                    .filter(either -> either.isException())
-                    .map(either -> either.getException().get())
-                    .collect(Collectors.toList());
-            for (Object exception : persistenceExceptions) {
-                logger.error("Error updating annotation " + exception.toString());
+            //add new annotaion and update existing ones
+            for (PersistentAnnotation anno : newAnnotations) {
+                if(campaign != null && campaign.isRestrictAnnotationAccess()) {
+                    anno.setAccessCondition(campaign.getTitle(IPolyglott.getDefaultLocale().getLanguage()));
+                }
+                try {
+                    if (anno.getId() == null) {
+                        dao.addAnnotation(anno);
+                    } else {
+                        dao.updateAnnotation(anno);
+                    }
+                } catch (DAOException e) {
+                    logger.error("Error persisting annotation " + e.toString());
+                }
             }
         }
     }
-    
-    public AnnotationsResourceBuilder getAnnoBuilder() {
-        if(this.annoBuilder == null) {
-            annoBuilder = new AnnotationsResourceBuilder(this.urls);
+
+    /**
+     * @param pi
+     * @param pageOrder
+     * @param anno
+     * @return a {@link PersistentAnnotation}. Either with an existing database id, or without id if ann doesn't has an empty id property
+     */
+    public PersistentAnnotation createPersistentAnnotation(String pi, Integer pageOrder, WebAnnotation anno) {
+        Long id = null;
+        if (anno.getId() != null) {
+            String uri = anno.getId().toString();
+            String idString = urls.parseParameter(urls.path(ANNOTATIONS, ANNOTATIONS_ANNOTATION).build(), uri, "{id}");
+            if (StringUtils.isNotBlank(idString)) {
+                id = Long.parseLong(idString);
+            }
         }
-        return annoBuilder;
+        PersistentAnnotation pAnno = new PersistentAnnotation(anno, id, pi, pageOrder);
+        return pAnno;
     }
+
 
     /**
      * Used to create or read a list of WebAnnotations sorted by their target (a iiif manifest or canvas)

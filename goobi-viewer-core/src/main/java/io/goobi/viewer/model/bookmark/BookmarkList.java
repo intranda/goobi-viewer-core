@@ -234,6 +234,10 @@ public class BookmarkList implements Serializable {
                             .append(SolrConstants.LOGID)
                             .append(':')
                             .append(item.getLogId())
+                            .append(" AND ")
+                            .append(SolrConstants.DOCTYPE)
+                            .append(':')
+                            .append(DocType.DOCSTRCT.name())
                             .append(')');
                 } else {
                     // just PI

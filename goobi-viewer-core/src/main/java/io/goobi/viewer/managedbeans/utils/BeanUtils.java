@@ -44,6 +44,7 @@ import io.goobi.viewer.managedbeans.CalendarBean;
 import io.goobi.viewer.managedbeans.CmsBean;
 import io.goobi.viewer.managedbeans.CmsCollectionsBean;
 import io.goobi.viewer.managedbeans.CmsMediaBean;
+import io.goobi.viewer.managedbeans.ContentBean;
 import io.goobi.viewer.managedbeans.CreateRecordBean;
 import io.goobi.viewer.managedbeans.ImageDeliveryBean;
 import io.goobi.viewer.managedbeans.MetadataBean;
@@ -70,6 +71,10 @@ public class BeanUtils {
     public static final String QUESTION_MARK_REPLACEMENT = "U003F";
     /** Constant <code>PERCENT_REPLACEMENT="U0025"</code> */
     public static final String PERCENT_REPLACEMENT = "U0025";
+    /** Constant <code>PLUS_REPLACEMENT="U0025"</code> */
+    public static final String PLUS_REPLACEMENT = "U002B";
+
+    private static Locale defaultLocale = null;
 
     /**
      * Gets the current Request from the faces context
@@ -199,12 +204,15 @@ public class BeanUtils {
      * @return a {@link java.util.Locale} object.
      */
     public static Locale getDefaultLocale() {
-        NavigationHelper nh = BeanUtils.getNavigationHelper();
-        if (nh != null) {
-            return nh.getDefaultLocale();
+        if (defaultLocale == null) {
+            NavigationHelper nh = BeanUtils.getNavigationHelper();
+            if (nh != null) {
+                defaultLocale = nh.getDefaultLocale();
+            } else {
+                return Locale.ENGLISH;
+            }
         }
-
-        return Locale.ENGLISH;
+        return defaultLocale;
     }
 
     private static BeanManager getBeanManager() {
@@ -407,6 +415,17 @@ public class BeanUtils {
 
     /**
      * <p>
+     * getUserBean.
+     * </p>
+     *
+     * @return a {@link io.goobi.viewer.managedbeans.ContentBean} object.
+     */
+    public static ContentBean getContentBean() {
+        return (ContentBean) getBeanByName("contentBean", ContentBean.class);
+    }
+
+    /**
+     * <p>
      * getUserBeanFromRequest.
      * </p>
      *
@@ -469,7 +488,8 @@ public class BeanUtils {
                 .replace("\\", BACKSLASH_REPLACEMENT)
                 .replace("|", PIPE_REPLACEMENT)
                 .replace("%7C", PIPE_REPLACEMENT)
-                .replace("?", QUESTION_MARK_REPLACEMENT);
+                .replace("?", QUESTION_MARK_REPLACEMENT)
+                .replace("+", PLUS_REPLACEMENT);
         if (escapePercentCharacters) {
             value = value.replace("%", PERCENT_REPLACEMENT);
         }
@@ -494,7 +514,8 @@ public class BeanUtils {
                 .replace(BACKSLASH_REPLACEMENT, "\\")
                 .replace(PIPE_REPLACEMENT, "|")
                 .replace(QUESTION_MARK_REPLACEMENT, "?")
-                .replace(PERCENT_REPLACEMENT, "%");
+                .replace(PERCENT_REPLACEMENT, "%")
+                .replace(PLUS_REPLACEMENT, "+");
     }
 
     /**

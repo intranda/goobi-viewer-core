@@ -18,8 +18,6 @@ package io.goobi.viewer.managedbeans.utils;
 import org.junit.Assert;
 import org.junit.Test;
 
-import io.goobi.viewer.managedbeans.utils.BeanUtils;
-
 public class BeanUtilsTest {
 
     /**
@@ -28,7 +26,7 @@ public class BeanUtilsTest {
      */
     @Test
     public void escapeCriticalUrlChracters_shouldReplaceCharactersCorrectly() throws Exception {
-        Assert.assertEquals("AU002FU005CU007CU003FZ", BeanUtils.escapeCriticalUrlChracters("A/\\|?Z"));
+        Assert.assertEquals("U002BAU002FU005CU007CU003FZ", BeanUtils.escapeCriticalUrlChracters("+A/\\|?Z"));
         Assert.assertEquals("U007C", BeanUtils.escapeCriticalUrlChracters("%7C"));
     }
 
@@ -38,6 +36,6 @@ public class BeanUtilsTest {
      */
     @Test
     public void unescapeCriticalUrlChracters_shouldReplaceCharactersCorrectly() throws Exception {
-        Assert.assertEquals("A/\\|?Z", BeanUtils.unescapeCriticalUrlChracters("AU002FU005CU007CU003FZ"));
+        Assert.assertEquals("+A/\\|?Z", BeanUtils.unescapeCriticalUrlChracters("U002BAU002FU005CU007CU003FZ"));
     }
 }

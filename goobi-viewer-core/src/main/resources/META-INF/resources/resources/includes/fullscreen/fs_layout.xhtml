@@ -81,6 +81,19 @@
                         </div>
                     </ui:fragment>
 
+					<ui:fragment rendered="#{contentBean.getUserGeneratedContentsForDisplay(activeDocumentBean.viewManager.currentPage) != null}">
+	                <!-- ANNOTATIONS -->
+	                    <div id="panel-9" class="fullscreen__view-sidebar-accordeon-panel fs-annotations">
+	                        <h3 class="fullscreen__view-sidebar-accordeon-panel-title">
+	                            <span>#{msgcs.crowdsourcing_userGeneratedContent}</span>
+	                        </h3>
+	
+	                        <div class="fullscreen__view-sidebar-accordeon-panel-body">
+	                            <widgetComponent:widget_annotations />
+	                        </div>
+	                    </div>
+					</ui:fragment>
+
                     <!-- DOWNLOADS -->
                     <div id="panel-4" class="fullscreen__view-sidebar-accordeon-panel fs-downloads">
                         <h3 class="fullscreen__view-sidebar-accordeon-panel-title">

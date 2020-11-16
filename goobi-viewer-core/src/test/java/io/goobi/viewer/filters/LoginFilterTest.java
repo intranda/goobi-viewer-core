@@ -27,7 +27,8 @@ public class LoginFilterTest {
     @Test
     public void isRestrictedUri_shouldReturnTrueForCertainPrettyUris() throws Exception {
         Assert.assertTrue(LoginFilter.isRestrictedUri("/myactivity/"));
-        Assert.assertTrue(LoginFilter.isRestrictedUri("/mysearches/"));
+        Assert.assertTrue(LoginFilter.isRestrictedUri("/user/annotations/"));
+        Assert.assertTrue(LoginFilter.isRestrictedUri("/user/searches/"));
         Assert.assertTrue(LoginFilter.isRestrictedUri("/user/bookmarks/show"));
         Assert.assertTrue(LoginFilter.isRestrictedUri("/viewer/user/bookmarks/show"));
     }

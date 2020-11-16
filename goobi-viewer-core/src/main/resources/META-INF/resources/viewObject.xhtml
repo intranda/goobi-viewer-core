@@ -103,10 +103,7 @@
                     urlSuffix="#topDocAnchor"
                     rtl="#{activeDocumentBean.viewManager.topDocument.rtl}" />                    
 
-				<!-- USER GENERATED CONTENT -->
-				<ui:insert name="userGeneratedContent">
-                    <ui:include src="/resources/includes/user/userGeneratedContent.xhtml" />
-                </ui:insert>
+
 				
 				<!-- MODULE CONTRIBUTIONS -->
                 <c:forEach var="module" items="#{configurationBean.modules}">
@@ -169,7 +166,14 @@
 
         <widgetComponent:widget_metadata />
         
-        <widgetComponent:widget_geoMap widget="#{activeDocumentBean.mapWidget}" title="#{msg.NORM_LOCATION}" allowFullscreen="false" linkToSearch="false" />
+        <widgetComponent:widget_geoMap 
+        widget="#{activeDocumentBean.mapWidget}" 
+        title="#{msg.NORM_LOCATION}" 
+        allowFullscreen="false" 
+        linkToSearch="false" 
+        showAnnotations="true"/>
+        
+        <widgetComponent:widget_annotations />
                 
         <widgetComponent:widget_usage />
 

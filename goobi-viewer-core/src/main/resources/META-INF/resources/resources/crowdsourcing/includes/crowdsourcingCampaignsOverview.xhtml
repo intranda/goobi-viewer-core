@@ -10,7 +10,7 @@
     <div class="crowdsourcing-campaigns-overview">
     <h:form>
 		<ui:repeat var="campaign" value="#{crowdsourcingBean.getAllowedCampaigns(userBean.user)}">
-			<ui:fragment rendered="#{!campaign.hasEnded}">
+			<ui:fragment rendered="#{!campaign.hasEnded and campaign.ready}">
 				<div class="crowdsourcing-campaigns-overview__campaign">
 					<ui:fragment rendered="#{campaign.hasMediaItem()}"> 
 						<div class="crowdsourcing-campaigns-overview__campaign__image">
@@ -35,6 +35,9 @@
 						    <h:commandLink rendered="#{campaign.hasRecordsToReview(userBean.user) and campaign.isUserAllowedAction(userBean.user, 'REVIEW')}"
 						        action="#{crowdsourcingBean.forwardToCrowdsourcingReview(campaign)}"
 						        styleClass="btn btn--default">#{msg.action__crowdsourcing_review}</h:commandLink>
+                            <h:outputLink rendered="#{campaign.hasAnnotations}"
+                                value="#{navigationHelper.applicationUrl}campaigns/#{campaign.id}/annotations/"
+                                styleClass="btn btn--default">#{msg.annotations}</h:outputLink>
 						</ui:fragment>
 					</div>
 						<div class="crowdsourcing-campaigns-overview__campaign__statistics">

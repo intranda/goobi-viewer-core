@@ -70,18 +70,18 @@ var viewerJS = ( function( viewer ) {
             	
            	// toggle retrieve account
            	$( 'body' ).on( 'click', '[data-open="retrieve-account"]', function() {
-           		$( '#userLoginSelectLoginWrapper, #loginType, #loginTypeCreateAccount, #userLoginOpenId' ).hide();
+           		$( '#userLoginSelectLoginWrapper, #loginType, #loginTypeCreateAccount, #userLoginOpenId, #userLoginCreateAccount' ).hide();
         		$( '#loginTypeRetrieveAccount' ).fadeIn();
         		$( '[id*="userEMailToRetrieve"]' ).focus();
            	} );
            	$( 'body' ).on( 'click', '[data-close="retrieve-account"]', function() {
            		$( '#loginTypeExternal, #loginTypeRetrieveAccount, #loginTypeCreateAccount' ).hide();
-           		$( '#userLoginSelectLoginWrapper, #loginType, #userLoginOpenId' ).fadeIn();
+           		$( '#userLoginSelectLoginWrapper, #loginType, #userLoginOpenId, #userLoginCreateAccount' ).fadeIn();
            	} );            	
             	
            	// toggle create account
            	$( 'body' ).on( 'click', '[data-open="create-account"]', function() {
-           		$( '#userLoginSelectLoginWrapper, #loginType, #loginTypeRetrieveAccount, #userLoginOpenId, #userLoginFooter' ).hide();
+           		$( '#userLoginSelectLoginWrapper, #loginType, #loginTypeRetrieveAccount, #userLoginOpenId, #userLoginCreateAccount' ).hide();
            		$( '#loginTypeCreateAccount' ).fadeIn();
            		$( '[id*="userCreateAccountNick"]' ).focus();
            		$('.user-login-modal__header-title').hide();
@@ -90,7 +90,7 @@ var viewerJS = ( function( viewer ) {
            	} );
            	$( 'body' ).on( 'click', '[data-close="create-account"]', function() {
            		$( '#loginTypeExternal, #loginTypeRetrieveAccount, #loginTypeCreateAccount' ).hide();
-           		$( '#userLoginSelectLoginWrapper, #loginType, #userLoginOpenId, #userLoginFooter' ).fadeIn();
+           		$( '#userLoginSelectLoginWrapper, #loginType, #userLoginOpenId, #userLoginCreateAccount' ).fadeIn();
            		$('.user-login-modal__header-title-create-account').hide();
            		$('.user-login-modal__header-title').fadeIn();
            	} );

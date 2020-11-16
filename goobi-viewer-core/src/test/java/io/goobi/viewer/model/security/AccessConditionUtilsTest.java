@@ -290,22 +290,22 @@ public class AccessConditionUtilsTest extends AbstractDatabaseAndSolrEnabledTest
         }
         {
             String[] result = AccessConditionUtils.generateAccessCheckQuery("PPN123456789", "00000001.webm");
-            Assert.assertEquals("+" + SolrConstants.PI_TOPSTRUCT + ":PPN123456789 +" + SolrConstants.FILENAME + ":\"00000001.webm\"", result[0]);
+            Assert.assertEquals("+" + SolrConstants.PI_TOPSTRUCT + ":PPN123456789 +" + SolrConstants.FILENAME + ":00000001.*", result[0]);
             Assert.assertEquals(SolrConstants.FILENAME, result[1]);
         }
         {
             String[] result = AccessConditionUtils.generateAccessCheckQuery("PPN123456789", "00000001.mp4");
-            Assert.assertEquals("+" + SolrConstants.PI_TOPSTRUCT + ":PPN123456789 +" + SolrConstants.FILENAME + ":\"00000001.mp4\"", result[0]);
+            Assert.assertEquals("+" + SolrConstants.PI_TOPSTRUCT + ":PPN123456789 +" + SolrConstants.FILENAME + ":00000001.*", result[0]);
             Assert.assertEquals(SolrConstants.FILENAME, result[1]);
         }
         {
             String[] result = AccessConditionUtils.generateAccessCheckQuery("PPN123456789", "00000001.mp3");
-            Assert.assertEquals("+" + SolrConstants.PI_TOPSTRUCT + ":PPN123456789 +" + SolrConstants.FILENAME + ":\"00000001.mp3\"", result[0]);
+            Assert.assertEquals("+" + SolrConstants.PI_TOPSTRUCT + ":PPN123456789 +" + SolrConstants.FILENAME + ":00000001.*", result[0]);
             Assert.assertEquals(SolrConstants.FILENAME, result[1]);
         }
         {
             String[] result = AccessConditionUtils.generateAccessCheckQuery("PPN123456789", "00000001.ogg");
-            Assert.assertEquals("+" + SolrConstants.PI_TOPSTRUCT + ":PPN123456789 +" + SolrConstants.FILENAME + ":\"00000001.ogg\"", result[0]);
+            Assert.assertEquals("+" + SolrConstants.PI_TOPSTRUCT + ":PPN123456789 +" + SolrConstants.FILENAME + ":00000001.*", result[0]);
             Assert.assertEquals(SolrConstants.FILENAME, result[1]);
         }
     }

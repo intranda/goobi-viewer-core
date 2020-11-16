@@ -15,30 +15,11 @@
  */
 package io.goobi.viewer.model.iiif.presentation.builder;
 
-import static io.goobi.viewer.api.rest.v1.ApiUrls.ANNOTATIONS;
-import static io.goobi.viewer.api.rest.v1.ApiUrls.ANNOTATIONS_ANNOTATION;
-import static io.goobi.viewer.api.rest.v1.ApiUrls.ANNOTATIONS_COMMENT;
-import static io.goobi.viewer.api.rest.v1.ApiUrls.ANNOTATIONS_UGC;
-import static io.goobi.viewer.api.rest.v1.ApiUrls.COLLECTIONS;
-import static io.goobi.viewer.api.rest.v1.ApiUrls.COLLECTIONS_COLLECTION;
-import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_ANNOTATIONS;
-import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_LAYER;
-import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_MANIFEST;
-import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_MANIFEST_AUTOCOMPLETE;
-import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_MANIFEST_SEARCH;
-import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_PAGES;
-import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_PAGES_ANNOTATIONS;
-import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_PAGES_CANVAS;
-import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_PAGES_SEQUENCE;
-import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_RECORD;
-import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_SECTIONS;
-import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_SECTIONS_RANGE;
+import static io.goobi.viewer.api.rest.v1.ApiUrls.*;
 
-import java.awt.Rectangle;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -53,26 +34,15 @@ import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.solr.common.SolrDocument;
-import org.apache.solr.common.SolrDocumentList;
-import org.json.JSONException;
-import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import de.intranda.api.annotation.IAnnotation;
-import de.intranda.api.annotation.IResource;
-import de.intranda.api.annotation.JSONResource;
-import de.intranda.api.annotation.SimpleResource;
-import de.intranda.api.annotation.oa.FragmentSelector;
-import de.intranda.api.annotation.oa.Motivation;
 import de.intranda.api.annotation.oa.OpenAnnotation;
-import de.intranda.api.annotation.oa.SpecificResourceURI;
-import de.intranda.api.annotation.oa.TextualResource;
-import de.intranda.api.annotation.wa.SpecificResource;
 import de.intranda.api.iiif.presentation.AbstractPresentationModelElement;
 import de.intranda.api.iiif.presentation.AnnotationList;
 import de.intranda.api.iiif.presentation.Canvas;
 import de.intranda.api.iiif.presentation.enums.AnnotationType;
+import de.intranda.api.iiif.presentation.enums.Format;
 import de.intranda.metadata.multilanguage.IMetadataValue;
 import de.intranda.metadata.multilanguage.Metadata;
 import de.intranda.metadata.multilanguage.MultiLanguageMetadataValue;
@@ -114,11 +84,8 @@ public abstract class AbstractBuilder {
             SolrConstants.DATAREPOSITORY, SolrConstants.SOURCEDOCFORMAT };
 
     /** Constant <code>UGC_SOLR_FIELDS</code> */
-    public static final String[] UGC_SOLR_FIELDS = { SolrConstants.IDDOC, SolrConstants.PI_TOPSTRUCT, SolrConstants.ORDER, SolrConstants.UGCTYPE,
-            SolrConstants.MD_TEXT, SolrConstants.UGCCOORDS, SolrConstants.MD_BODY, SolrConstants.UGCTERMS };
-
+    
     protected final AbstractApiUrlManager urls;
-    protected final AnnotationsResourceBuilder annoBuilder;
 
     /**
      * <p>
@@ -134,7 +101,6 @@ public abstract class AbstractBuilder {
             apiUrlManager = new ApiUrls(apiUrl);
         }
         this.urls = apiUrlManager;
-        this.annoBuilder = new AnnotationsResourceBuilder(this.urls);
     }
 
     /**
@@ -283,6 +249,38 @@ public abstract class AbstractBuilder {
             }
         }
     }
+    
+
+    /**
+     * Add the annotations from the crowdsourcingAnnotations map to the respective canvases in the canvases list as well as to the given annotationMap
+     *
+     * @param canvases The list of canvases which should receive the annotations as otherContent
+     * @param crowdsourcingAnnotations A map of annotations by page number
+     * @param annotationMap A global annotation map for a whole manifest; may be null if not needed
+     */
+    public void addCrowdourcingAnnotations(List<Canvas> canvases, Map<Integer, List<OpenAnnotation>> crowdsourcingAnnotations,
+            Map<AnnotationType, List<AnnotationList>> annotationMap) {
+
+        for (Canvas canvas : canvases) {
+            Integer order = this.getPageOrderFromCanvasURI(canvas.getId());
+            String pi = this.getPIFromCanvasURI(canvas.getId());
+            if (crowdsourcingAnnotations.containsKey(order)) {
+                AnnotationList crowdList = new AnnotationList(getAnnotationListURI(pi, order, AnnotationType.CROWDSOURCING, true));
+                crowdList.setLabel(ViewerResourceBundle.getTranslations(AnnotationType.CROWDSOURCING.name()));
+                List<OpenAnnotation> annos = crowdsourcingAnnotations.get(order);
+                annos.forEach(anno -> crowdList.addResource(anno));
+                canvas.addOtherContent(crowdList);
+                if (annotationMap != null) {
+                    List<AnnotationList> crowdAnnos = annotationMap.get(AnnotationType.CROWDSOURCING);
+                    if (crowdAnnos == null) {
+                        crowdAnnos = new ArrayList<>();
+                        annotationMap.put(AnnotationType.CROWDSOURCING, crowdAnnos);
+                    }
+                    crowdAnnos.add(crowdList);
+                }
+            }
+        }
+    }
 
     /**
      * Return true if the field is contained in displayFields, accounting for wildcard characters
@@ -301,7 +299,7 @@ public abstract class AbstractBuilder {
      * @param allLocales
      * @return
      */
-    private static List<String> addLanguageFields(List<String> displayFields, List<Locale> locales) {
+    protected static List<String> addLanguageFields(List<String> displayFields, List<Locale> locales) {
         return displayFields.stream().flatMap(field -> getLanguageFields(field, locales, true).stream()).collect(Collectors.toList());
     }
 
@@ -455,135 +453,13 @@ public abstract class AbstractBuilder {
         return null;
     }
 
-    /**
-     * Get all annotations for the given PI from the SOLR index, sorted by page number. The annotations are stored as DOCTYPE:UGC in the SOLR and are
-     * converted to OpenAnnotations here
-     *
-     * @param pi The persistent identifier of the work to query
-     * @return A map of page numbers (1-based) mapped to a list of associated annotations
-     * @param urlOnlyTarget a boolean.
-     * @throws io.goobi.viewer.exceptions.PresentationException if any.
-     * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
-     */
-    public Map<Integer, List<OpenAnnotation>> getCrowdsourcingAnnotations(String pi, boolean urlOnlyTarget)
-            throws PresentationException, IndexUnreachableException {
-        String query = "DOCTYPE:UGC AND PI_TOPSTRUCT:" + pi;
-        List<String> displayFields = addLanguageFields(Arrays.asList(UGC_SOLR_FIELDS), ViewerResourceBundle.getAllLocales());
-        SolrDocumentList ugcDocs = DataManager.getInstance().getSearchIndex().getDocs(query, displayFields);
-        Map<Integer, List<OpenAnnotation>> annoMap = new HashMap<>();
-        if (ugcDocs != null && !ugcDocs.isEmpty()) {
-            for (SolrDocument doc : ugcDocs) {
-                OpenAnnotation anno = createUGCOpenAnnotation(pi, doc, urlOnlyTarget);
-                Integer page = Optional.ofNullable(doc.getFieldValue(SolrConstants.ORDER)).map(o -> (Integer) o).orElse(null);
-                List<OpenAnnotation> annoList = annoMap.get(page);
-                if (annoList == null) {
-                    annoList = new ArrayList<>();
-                    annoMap.put(page, annoList);
-                }
-                annoList.add(anno);
-            }
-        }
-        return annoMap;
-    }
 
-    public IAnnotation getCrowdsourcingAnnotation(String id) throws PresentationException, IndexUnreachableException {
-        StringBuilder queryBuilder = new StringBuilder();
-        queryBuilder.append(" +DOCTYPE:UGC");
-        queryBuilder.append(" +IDDOC:").append(id);
-
-        SolrDocumentList docList = DataManager.getInstance().getSearchIndex().search(queryBuilder.toString());
-        if (docList != null && !docList.isEmpty()) {
-            SolrDocument doc = docList.get(0);
-            IAnnotation anno = createUGCOpenAnnotation(doc, false);
-            return anno;
-        }
-
-        return null;
-    }
-
-    /**
-     * <p>
-     * createOpenAnnotation.
-     * </p>
-     *
-     * @param doc a {@link org.apache.solr.common.SolrDocument} object.
-     * @param urlOnlyTarget a boolean.
-     * @return a {@link de.intranda.api.annotation.oa.OpenAnnotation} object.
-     */
-    public OpenAnnotation createUGCOpenAnnotation(SolrDocument doc, boolean urlOnlyTarget) {
-        String pi = Optional.ofNullable(doc.getFieldValue(SolrConstants.PI_TOPSTRUCT)).map(Object::toString).orElse("");
-        return createUGCOpenAnnotation(pi, doc, urlOnlyTarget);
-
-    }
-
-    /**
-     * <p>
-     * createOpenAnnotation.
-     * </p>
-     *
-     * @param pi a {@link java.lang.String} object.
-     * @param doc a {@link org.apache.solr.common.SolrDocument} object.
-     * @param urlOnlyTarget a boolean.
-     * @return a {@link de.intranda.api.annotation.oa.OpenAnnotation} object.
-     */
-    public OpenAnnotation createUGCOpenAnnotation(String pi, SolrDocument doc, boolean urlOnlyTarget) {
-        OpenAnnotation anno;
-        String iddoc = Optional.ofNullable(doc.getFieldValue(SolrConstants.IDDOC)).map(Object::toString).orElse("");
-        String coordString = Optional.ofNullable(doc.getFieldValue(SolrConstants.UGCCOORDS)).map(Object::toString).orElse("");
-        Integer pageOrder = Optional.ofNullable(doc.getFieldValue(SolrConstants.ORDER)).map(o -> (Integer) o).orElse(null);
-        URI annoURI = URI.create(urls.path(ApiUrls.ANNOTATIONS, ANNOTATIONS_UGC).params(iddoc).build());
-        anno = new OpenAnnotation(annoURI);
-
-        IResource body = null;
-        if (doc.containsKey(SolrConstants.MD_BODY)) {
-            String bodyString = readSolrField(doc, doc.getFieldValue(SolrConstants.MD_BODY));
-            try {
-                JSONObject json = new JSONObject(bodyString);
-                body = new JSONResource(json);
-            } catch (JSONException e) {
-                logger.error("Error building annotation body from '" + bodyString + "'");
-            }
-        } else if (doc.containsKey(SolrConstants.MD_TEXT)) {
-            String text = readSolrField(doc, doc.getFieldValue(SolrConstants.MD_TEXT));
-            body = new TextualResource(text);
-        }
-        anno.setBody(body);
-
-        try {
-            FragmentSelector selector = new FragmentSelector(coordString);
-            if (urlOnlyTarget) {
-                anno.setTarget(new SpecificResourceURI(this.getCanvasURI(pi, pageOrder), selector));
-            } else {
-                anno.setTarget(new SpecificResource(this.getCanvasURI(pi, pageOrder), selector));
-            }
-        } catch (IllegalArgumentException e) {
-            //old UGC coords format
-            String regex = "([\\d\\.]+),\\s*([\\d\\.]+),\\s*([\\d\\.]+),\\s*([\\d\\.]+)";
-            Matcher matcher = Pattern.compile(regex).matcher(coordString);
-            if (matcher.find()) {
-                int x1 = Math.round(Float.parseFloat(matcher.group(1)));
-                int y1 = Math.round(Float.parseFloat(matcher.group(2)));
-                int x2 = Math.round(Float.parseFloat(matcher.group(3)));
-                int y2 = Math.round(Float.parseFloat(matcher.group(4)));
-                FragmentSelector selector = new FragmentSelector(new Rectangle(x1, y1, x2 - x1, y2 - y1));
-                if (urlOnlyTarget) {
-                    anno.setTarget(new SpecificResourceURI(this.getCanvasURI(pi, pageOrder), selector));
-                } else {
-                    anno.setTarget(new SpecificResource(this.getCanvasURI(pi, pageOrder), selector));
-                }
-            } else {
-                anno.setTarget(new SimpleResource(getCanvasURI(pi, pageOrder)));
-            }
-        }
-        anno.setMotivation(Motivation.DESCRIBING);
-        return anno;
-    }
-
+    
     /**
      * @param doc
      * @return
      */
-    private static String readSolrField(SolrDocument doc, Object fieldValue) {
+    protected static String readSolrField(SolrDocument doc, Object fieldValue) {
         String text;
         Object textObject = Optional.ofNullable(fieldValue).orElse("");
         if (textObject != null && textObject instanceof Collection) {
@@ -592,38 +468,6 @@ public abstract class AbstractBuilder {
             text = Optional.ofNullable(textObject).map(Object::toString).orElse("");
         }
         return text;
-    }
-
-    /**
-     * Add the annotations from the crowdsourcingAnnotations map to the respective canvases in the canvases list as well as to the given annotationMap
-     *
-     * @param canvases The list of canvases which should receive the annotations as otherContent
-     * @param crowdsourcingAnnotations A map of annotations by page number
-     * @param annotationMap A global annotation map for a whole manifest; may be null if not needed
-     */
-    public void addCrowdourcingAnnotations(List<Canvas> canvases, Map<Integer, List<OpenAnnotation>> crowdsourcingAnnotations,
-            Map<AnnotationType, List<AnnotationList>> annotationMap) {
-
-        for (Canvas canvas : canvases) {
-            Integer order = this.getPageOrderFromCanvasURI(canvas.getId());
-            String pi = this.getPIFromCanvasURI(canvas.getId());
-            if (crowdsourcingAnnotations.containsKey(order)) {
-                AnnotationList crowdList = new AnnotationList(getAnnotationListURI(pi, order, AnnotationType.CROWDSOURCING));
-                crowdList.setLabel(ViewerResourceBundle.getTranslations(AnnotationType.CROWDSOURCING.name()));
-                List<OpenAnnotation> annos = crowdsourcingAnnotations.get(order);
-                annos.forEach(anno -> crowdList.addResource(anno));
-                canvas.addOtherContent(crowdList);
-                if (annotationMap != null) {
-                    List<AnnotationList> crowdAnnos = annotationMap.get(AnnotationType.CROWDSOURCING);
-                    if (crowdAnnos == null) {
-                        crowdAnnos = new ArrayList<>();
-                        annotationMap.put(AnnotationType.CROWDSOURCING, crowdAnnos);
-                    }
-                    crowdAnnos.add(crowdList);
-                }
-            }
-        }
-
     }
 
     /**
@@ -822,10 +666,24 @@ public abstract class AbstractBuilder {
      * @param type a {@link de.intranda.api.iiif.presentation.enums.AnnotationType} object.
      * @return a {@link java.net.URI} object.
      */
-    public URI getAnnotationListURI(String pi, int pageNo, AnnotationType type) {
-        ApiPath url = this.urls.path(RECORDS_PAGES, RECORDS_PAGES_ANNOTATIONS).params(pi, pageNo);
-        if (type != null) {
-            url = url.query("type", type.name());
+    public URI getAnnotationListURI(String pi, int pageNo, AnnotationType type, boolean openAnnotation) {
+        ApiPath url;
+        switch(type) {
+            case COMMENT:
+                url = this.urls.path(RECORDS_PAGES, RECORDS_PAGES_COMMENTS).params(pi, pageNo);
+                break;
+            case CROWDSOURCING:
+                url = this.urls.path(RECORDS_PAGES, RECORDS_PAGES_ANNOTATIONS).params(pi, pageNo);
+                break;
+            case ALTO:
+            case FULLTEXT:
+            default:
+                url = this.urls.path(RECORDS_PAGES, RECORDS_PAGES_TEXT).params(pi, pageNo);
+        }
+        
+        
+        if (openAnnotation) {
+            url = url.query("format", "oa");
 
         }
 
@@ -887,7 +745,7 @@ public abstract class AbstractBuilder {
      * @return a {@link java.net.URI} object.
      */
     public URI getImageAnnotationURI(String pi, int order) {
-        String urlString = this.urls.path(RECORDS_PAGES, RECORDS_PAGES_CANVAS).params(pi, order).build() + "/image/1/";
+        String urlString = this.urls.path(RECORDS_PAGES, RECORDS_PAGES_CANVAS).params(pi, order).build() + "image/1/";
         return URI.create(urlString);
     }
 
@@ -904,7 +762,7 @@ public abstract class AbstractBuilder {
      * @throws java.net.URISyntaxException if any.
      */
     public URI getAnnotationURI(String pi, int order, AnnotationType type, int annoNum) throws URISyntaxException {
-        String urlString = this.urls.path(RECORDS_PAGES, RECORDS_PAGES_CANVAS).params(pi, order).build() + "/" + type.name() + "/annoNum/";
+        String urlString = this.urls.path(RECORDS_PAGES, RECORDS_PAGES_CANVAS).params(pi, order).build() + type.name() + "/" + annoNum + "/";
         return URI.create(urlString);
     }
 

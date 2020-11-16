@@ -42,7 +42,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 import java.util.stream.Collectors;
 
-import javax.annotation.PostConstruct;
+import jakarta.annotation.PostConstruct;
 import javax.enterprise.context.SessionScoped;
 import javax.faces.context.FacesContext;
 import javax.inject.Inject;
@@ -1096,12 +1096,16 @@ public class SearchBean implements SearchInterface, Serializable {
             inSearchString = "";
             guiSearchString = "";
         }
-        searchString = BeanUtils.unescapeCriticalUrlChracters(inSearchString);
+        searchString = inSearchString;
+        // First apply regular URL decoder
         try {
-            searchString = URLDecoder.decode(searchString, URL_ENCODING);
+            searchString = URLDecoder.decode(inSearchString, URL_ENCODING);
         } catch (UnsupportedEncodingException e) {
         } catch (IllegalArgumentException e) {
         }
+        // Then unescape custom sequences
+        searchString = BeanUtils.unescapeCriticalUrlChracters(searchString);
+        
         // Parse search terms from the query (unescape spaces first)
         String discriminatorValue = null;
         if (navigationHelper != null) {
@@ -1230,6 +1234,12 @@ public class SearchBean implements SearchInterface, Serializable {
                 }
             }
         }
+    }
+    
+    public String removeChronologyFacetAction() {
+        String facet = SolrConstants.YEAR + ":" + facets.getTempValue();
+        facets.setTempValue("");
+        return removeFacetAction(facet);
     }
 
     /**

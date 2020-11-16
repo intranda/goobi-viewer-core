@@ -55,7 +55,8 @@
             <!-- HIDDEN FORM TO UPDATE SEARCHHITS -->
             <h:form id="chronologySliderForm" prependId="false" styleClass="hidden">
                 <h:inputHidden id="chronologySliderInput" value="#{searchBean.facets.tempValue}" />
-                <h:commandButton action="#{searchBean.updateFacetItem('YEAR', false)}" />
+                <h:commandButton id="chronologySliderSet" action="#{searchBean.updateFacetItem('YEAR', false)}" />
+                <h:commandLink id="chronologySliderReset" action="#{searchBean.removeChronologyFacetAction()}" value="reset"/>
             </h:form>
     
             <script type="text/javascript">

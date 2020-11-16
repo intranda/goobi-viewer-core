@@ -23,7 +23,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
-import javax.annotation.PostConstruct;
+import jakarta.annotation.PostConstruct;
 import javax.enterprise.context.SessionScoped;
 import javax.faces.context.FacesContext;
 import javax.inject.Named;
@@ -129,7 +129,7 @@ public class BreadcrumbBean implements Serializable {
             if (breadcrumbs.isEmpty()) {
                 resetBreadcrumbs();
             }
-            logger.trace("Adding breadcrumb: {} ({})", newLink.getUrl(), newLink.getWeight());
+            // logger.trace("Adding breadcrumb: {} ({})", newLink.getUrl(), newLink.getWeight());
             // Determine the position at which to add the new link
             int position = breadcrumbs.size();
             for (int i = 0; i < breadcrumbs.size(); ++i) {

@@ -276,12 +276,12 @@ public class StructElement extends StructElementStub implements Comparable<Struc
      */
     private SolrDocument getDocument() throws PresentationException, IndexUnreachableException {
         // logger.trace("getDocument(): {}", luceneId);
-        SolrDocumentList hits = DataManager.getInstance()
+        SolrDocument doc = DataManager.getInstance()
                 .getSearchIndex()
-                .search(new StringBuilder(SolrConstants.IDDOC).append(':').append(luceneId).toString(), 1, null, null);
-        if (!hits.isEmpty()) {
+                .getFirstDoc(SolrConstants.IDDOC + ":" + luceneId, null);
+        if (doc != null) {
             exists = true;
-            return hits.get(0);
+            return doc;
         }
         logger.warn("Document not found in index: {}", luceneId);
         throw new PresentationException("errDocNotFound");

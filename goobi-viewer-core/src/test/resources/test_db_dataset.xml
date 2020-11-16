@@ -228,12 +228,9 @@
         
     <cs_campaign_translations translation_id="1" owner_id="1" language="en" tag="title" value="English title" />
     
-    <cs_questions question_id="1" owner_id="1" question_type="PLAINTEXT" target_selector="RECTANGLE" target_frequency="0" />
+    <cs_questions question_id="1" owner_id="1" text="{&quot;en&quot;:&quot;English text&quot;}" question_type="PLAINTEXT" target_selector="RECTANGLE" target_frequency="0" />
     <cs_questions question_id="2" owner_id="1" question_type="PLAINTEXT" target_selector="RECTANGLE" target_frequency="0" />
     <cs_questions question_id="3" owner_id="2" question_type="PLAINTEXT" target_selector="RECTANGLE" target_frequency="0" />
-    
-    <cs_question_translations translation_id="1" owner_id="1" language="en" tag="text" value="English text" />
-
 
     <cs_campaign_record_statistics campaign_record_statistic_id="1" owner_id="1" pi="PI_1" status="FINISHED" date_created="2019-08-30 00:00:00.000000000" />
     <cs_campaign_record_statistics campaign_record_statistic_id="2" owner_id="1" pi="PI_2" status="REVIEW" date_created="2019-08-30 00:00:00.000000000" />
@@ -247,8 +244,10 @@
     <cs_campaign_record_statistic_reviewers campaign_record_statistic_id="4" user_id="1"/>
     <cs_campaign_record_statistic_reviewers campaign_record_statistic_id="1" user_id="2"/>
     
-    <annotations annotation_id="1" body="&quot;a&quot;" date_created="2019-09-19 00:00:00.000000000" generator_id="1" target="&quot;aa&quot;" target_pi="PI_1" target_page="1" />
-    <annotations annotation_id="2" body="&quot;b&quot;" date_created="2019-09-19 00:00:00.000000000" generator_id="1" target="&quot;bb&quot;" target_pi="PI_2" target_page="6" />
+    <cs_campaign_log message_id="1" creator_id="1" campaign_id="1" pi="PI_1" date_created="2020-11-05 09:09:12" message="Eine Nachricht im Log"></cs_campaign_log>
+    
+    <annotations annotation_id="1" body="&quot;a&quot;" date_created="2019-09-19 00:00:00.000000000" creator_id="1" generator_id="1" target="&quot;aa&quot;" target_pi="PI_1" target_page="1" />
+    <annotations annotation_id="2" body="&quot;b&quot;" date_created="2019-09-19 00:00:00.000000000" reviewer_id="1" generator_id="1" target="&quot;bb&quot;" target_pi="PI_2" target_page="6" />
     <annotations annotation_id="3" body="&quot;c&quot;" date_created="2019-09-19 00:00:00.000000000" generator_id="2" target="&quot;cc&quot;" target_pi="PI_1" />
     <annotations annotation_id="4" body="&quot;d&quot;" date_created="2019-09-19 00:00:00.000000000" generator_id="3" target="&quot;dd&quot;" target_pi="PI_1" />
     <annotations annotation_id="5" body="&quot;e&quot;" date_created="2019-09-19 00:00:00.000000000" generator_id="3" target="&quot;ee&quot;" target_pi="PI_2" />

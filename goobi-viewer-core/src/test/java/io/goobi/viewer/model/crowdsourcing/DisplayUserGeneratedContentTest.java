@@ -16,15 +16,14 @@
 package io.goobi.viewer.model.crowdsourcing;
 
 import org.apache.solr.common.SolrDocument;
-import org.junit.BeforeClass;
 import org.junit.Assert;
+import org.junit.BeforeClass;
 import org.junit.Test;
 
 import io.goobi.viewer.AbstractSolrEnabledTest;
 import io.goobi.viewer.controller.Configuration;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.SolrConstants;
-import io.goobi.viewer.model.crowdsourcing.DisplayUserGeneratedContent;
 import io.goobi.viewer.model.crowdsourcing.DisplayUserGeneratedContent.ContentType;
 
 public class DisplayUserGeneratedContentTest extends AbstractSolrEnabledTest {
@@ -50,6 +49,7 @@ public class DisplayUserGeneratedContentTest extends AbstractSolrEnabledTest {
         doc.setField(SolrConstants.UGCCOORDS, coords);
         doc.setField("MD_FIRSTNAME", "John");
         doc.setField("MD_LASTNAME", "Doe");
+        doc.setField(SolrConstants.ACCESSCONDITION, "restricted");
 
         DisplayUserGeneratedContent ugc = DisplayUserGeneratedContent.buildFromSolrDoc(doc);
         Assert.assertNotNull(ugc);
@@ -58,5 +58,6 @@ public class DisplayUserGeneratedContentTest extends AbstractSolrEnabledTest {
         Assert.assertEquals(coords, ugc.getAreaString());
         Assert.assertEquals(coords, ugc.getDisplayCoordinates());
         Assert.assertEquals("Doe, John", ugc.getLabel());
+        Assert.assertEquals("restricted", ugc.getAccessCondition());
     }
 }

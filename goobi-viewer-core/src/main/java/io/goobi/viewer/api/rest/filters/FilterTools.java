@@ -39,7 +39,7 @@ import io.goobi.viewer.model.security.AccessConditionUtils;
 
 public class FilterTools {
 
-    private static final Logger logger = LoggerFactory.getLogger(ImageInformationRequestFilter.class);
+    private static final Logger logger = LoggerFactory.getLogger(FilterTools.class);
 
     /**
      * 
