@@ -4,26 +4,6 @@
 
 	
 	<li each="{bookmark in bookmarkList.items}">
-		<a class="bookmark-navigation__dropdown-title" href="{opts.bookmarks.config.root}{bookmark.url}">
-			<div class="row no-margin">
-				<div class="col-8 no-padding">
-					<h4>{bookmark.name}</h4>
-				</div>
-				<div class="col-4 no-padding">
-					<div class="{mainClass}-image"
-						style="background-image: url({bookmark.representativeImageUrl});">
-					</div>
-				</div>
-			</div>
-		</a>
-	</li>
-</ul>
-
-
-<ul if="{!opts.bookmarks.config.userLoggedIn}" each="{bookmarkList in getBookmarkLists()}" class="{mainClass} list">
-
-	
-	<li each="{bookmark in bookmarkList.items}">
 		<div class="row no-margin">
 			<div class="col-4 no-padding">
 				<div class="{mainClass}-image"
@@ -80,7 +60,6 @@
 			<i class="fa fa-th" aria-hidden="true"></i>
 		</a>
 	</div>
-	
 </div>
 
 <script> 
@@ -122,6 +101,18 @@ showLoader() {
  
 mayEmptyList(list) { 
     return list.items.length > 0;
+}
+
+remove(event) {
+    if(this.opts.bookmarks.config.userLoggedIn) {        
+	    let list = event.item.bookmarkList
+	    this.opts.bookmarks.removeFromBookmarkList(list.id, this.pi, this.page, this.logid, this.opts.bookmarks.isTypePage())
+	    .then( () => this.updateLists())
+    } else {
+        let bookmark = event.item.bookmark;
+        this.opts.bookmarks.removeFromBookmarkList(undefined, bookmark.pi, undefined, undefined, false)
+	    .then( () => this.updateLists())
+    }
 }
 
 deleteList(event) {
