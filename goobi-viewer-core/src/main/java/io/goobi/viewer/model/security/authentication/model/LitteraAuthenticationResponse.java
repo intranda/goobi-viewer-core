@@ -15,8 +15,8 @@
  */
 package io.goobi.viewer.model.security.authentication.model;
 
-import jakarta.xml.bind.annotation.XmlAttribute;
-import jakarta.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlRootElement;
 
 /**
  * Representation of the Littera authentication response which is delivered as xml. It only contains the single information if a login attempt
