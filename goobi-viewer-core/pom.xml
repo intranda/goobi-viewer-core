@@ -114,7 +114,7 @@
 		<jersey.version>2.32</jersey.version>
 		<jersey-guava.version>2.26-b03</jersey-guava.version>
 		<jgravatar.version>1.2</jgravatar.version>
-		<json.version>20200518</json.version>
+		<json.version>20201115</json.version>
 		<jsoup.version>1.13.1</jsoup.version>
 		<jstl.version>1.2</jstl.version>
 		<junit.version>4.13.1</junit.version>
