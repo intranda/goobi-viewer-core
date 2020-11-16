@@ -18,7 +18,7 @@ package io.goobi.viewer.servlets.rest.search;
 import java.util.Collections;
 import java.util.List;
 
-import javax.xml.bind.annotation.XmlRootElement;
+import jakarta.xml.bind.annotation.XmlRootElement;
 
 import io.goobi.viewer.model.search.SearchHit;
 
