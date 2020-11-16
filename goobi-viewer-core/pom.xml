@@ -9,7 +9,6 @@
 	<version>4.13.0-SNAPSHOT</version>
 	<packaging>jar</packaging>
 
-
 	<name>Goobi viewer - Core</name>
 	<description>The Goobi viewer is an open source solution for the presentation of digitized cultural assets.</description>
 	<url>https://github.com/intranda/goobi-viewer-core</url>
