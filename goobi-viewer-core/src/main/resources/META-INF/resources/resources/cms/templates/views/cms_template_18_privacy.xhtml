@@ -36,7 +36,7 @@
                 
                 <!-- PAGE UNPUBLISHED -->
                 <h:panelGroup rendered="#{!cmsPage.published}">
-                    <div class="alert alert-warning" role="alert">
+                    <div class="alert alert-warning tpl-privacy__text__top" role="alert">
                         #{msg.cms_pagePreviewNotPublished}
                     </div>
                 </h:panelGroup>
@@ -49,6 +49,12 @@
                 
                 <!-- PIWIK IFRAME -->
                 <iframe src="//#{configurationBean.piwikBaseURL}/index.php?module=CoreAdminHome&amp;action=optOut&amp;language=de"></iframe>
+			
+				<ui:fragment rendered="#{cmsPage.hasContent('text02')}">
+					<div class="tpl-privacy__text tpl-privacy__text__bottom">
+							<ui:include src="#{cmsPage.getContent('text02')}" />
+					</div>
+				</ui:fragment>
 			</div>
 		</f:view>
 	</ui:define>
