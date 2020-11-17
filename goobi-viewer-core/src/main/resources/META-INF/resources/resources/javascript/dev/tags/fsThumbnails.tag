@@ -67,7 +67,7 @@
             	}
             	
             	// show thumb wrapper
-        		$( this.wrapper ).width( this.thumbsWidth ).fadeToggle( 'fast' );
+        		$( this.wrapper ).outerWidth( this.thumbsWidth ).fadeToggle( 'fast' );
         		
     			// get thumbnail images
             	if ( this.thumbnails.length == 0 ) {
