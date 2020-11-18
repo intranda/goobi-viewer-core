@@ -18,11 +18,17 @@ package io.goobi.viewer.model.ead;
 import java.io.IOException;
 import java.io.StringReader;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.UUID;
 
+import org.apache.commons.configuration.ConfigurationException;
+import org.apache.commons.configuration.HierarchicalConfiguration;
+import org.apache.commons.configuration.XMLConfiguration;
+import org.apache.commons.configuration.reloading.FileChangedReloadingStrategy;
+import org.apache.commons.configuration.tree.xpath.XPathExpressionEngine;
 import org.apache.commons.lang.StringUtils;
 import org.apache.http.client.ClientProtocolException;
 import org.jdom2.Attribute;
@@ -39,6 +45,7 @@ import org.jdom2.xpath.XPathFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.NetTools;
 import io.goobi.viewer.exceptions.HTTPException;
 import io.goobi.viewer.model.viewer.StringPair;
@@ -50,6 +57,8 @@ public class BasexEADParser {
     public static final Namespace NAMESPACE_EAD = Namespace.getNamespace("ead", "urn:isbn:1-931666-22-9");
 
     private static XPathFactory xFactory = XPathFactory.instance();
+
+    private XMLConfiguration xmlConfig;
 
     private final String datastoreUrl;
 
@@ -65,7 +74,7 @@ public class BasexEADParser {
 
     private List<EadEntry> flatEntryList;
 
-    private EadEntry selectedEntry;
+    //    private EadEntry selectedEntry;
 
     //    private EadEntry destinationEntry;
 
@@ -79,8 +88,25 @@ public class BasexEADParser {
     private List<String> editorList;
     //    private SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
-    public BasexEADParser(String datastoreUrl) {
+    /**
+     * 
+     * @param datastoreUrl
+     * @param configFilePath
+     * @throws ConfigurationException
+     */
+    public BasexEADParser(String datastoreUrl, String configFilePath) throws ConfigurationException {
+        if (datastoreUrl == null) {
+            throw new IllegalArgumentException("datastoreUrl may not be null");
+        }
+        if (configFilePath == null) {
+            throw new IllegalArgumentException("configFilePath may not be null");
+        }
+
         this.datastoreUrl = datastoreUrl;
+        xmlConfig = new XMLConfiguration(configFilePath);
+        xmlConfig.setListDelimiter('&');
+        xmlConfig.setReloadingStrategy(new FileChangedReloadingStrategy());
+        xmlConfig.setExpressionEngine(new XPathExpressionEngine());
     }
 
     /**
@@ -129,13 +155,14 @@ public class BasexEADParser {
         // open selected database
         if (StringUtils.isNotBlank(selectedDatabase)) {
             String[] parts = selectedDatabase.split(" - ");
-
-            String response = NetTools.getWebContentGET(datastoreUrl + "db/" + parts[0] + "/" + parts[1]);
+            String url = datastoreUrl + "db/" + parts[0] + "/" + parts[1];
+            logger.trace("URL: {}", url);
+            String response = NetTools.getWebContentGET(url);
             // get xml root element
             Document document = openDocument(response);
             if (document != null) {
                 // get field definitions from config file
-                //                readConfiguration();
+                readConfiguration();
 
                 // parse ead file
                 parseEadFile(document);
@@ -428,15 +455,20 @@ public class BasexEADParser {
         return flatEntryList;
     }
 
-    public void setSelectedEntry(EadEntry entry) {
-        for (EadEntry other : flatEntryList) {
-            other.setSelected(false);
-        }
-        entry.setSelected(true);
-        this.selectedEntry = entry;
-    }
+    //    public void setSelectedEntry(EadEntry entry) {
+    //        for (EadEntry other : flatEntryList) {
+    //            other.setSelected(false);
+    //        }
+    //        entry.setSelected(true);
+    //        this.selectedEntry = entry;
+    //    }
 
     public void search() {
+        if (rootElement == null) {
+            logger.error("Database not loaded");
+            return;
+        }
+        
         if (StringUtils.isNotBlank(searchValue)) {
             // hide all elements
             rootElement.resetFoundList();
@@ -452,8 +484,15 @@ public class BasexEADParser {
         }
     }
 
+    /**
+     * 
+     * @param node
+     */
     private void searchInNode(EadEntry node) {
-        if (node.getLabel() != null && node.getLabel().toLowerCase().contains(searchValue.toLowerCase())) {
+        if (node.getId() != null && node.getId().equals(searchValue)) {
+            // ID match
+            node.markAsFound();
+        } else if (node.getLabel() != null && node.getLabel().toLowerCase().contains(searchValue.toLowerCase())) {
             // mark element + all parents as displayable
             node.markAsFound();
         }
@@ -471,6 +510,52 @@ public class BasexEADParser {
     }
 
     /**
+     * read in all parameters from the configuration file
+     * 
+     */
+    private void readConfiguration() {
+        configuredFields = new ArrayList<>();
+        HierarchicalConfiguration config = null;
+
+        try {
+            config = xmlConfig.configurationAt("//config[./archive = '" + selectedDatabase + "']");
+        } catch (IllegalArgumentException e) {
+            try {
+                config = xmlConfig.configurationAt("//config[./archive = '*']");
+            } catch (IllegalArgumentException e1) {
+
+            }
+        }
+
+        for (HierarchicalConfiguration hc : config.configurationsAt("/metadata")) {
+            EadMetadataField field = new EadMetadataField(hc.getString("@name"), hc.getInt("@level"), hc.getString("@xpath"),
+                    hc.getString("@xpathType", "element"), hc.getBoolean("@repeatable", false), hc.getBoolean("@visible", true),
+                    hc.getBoolean("@showField", false), hc.getString("@fieldType", "input"), hc.getString("@rulesetName", null),
+                    hc.getBoolean("@importMetadataInChild", false), hc.getString("@validationType", null), hc.getString("@regularExpression"));
+            configuredFields.add(field);
+            field.setValidationError(hc.getString("/validationError"));
+            if (field.getFieldType().equals("dropdown") || field.getFieldType().equals("multiselect")) {
+                List<String> valueList = Arrays.asList(hc.getStringArray("/value"));
+                field.setSelectItemList(valueList);
+            }
+        }
+    }
+
+    /**
+     * @return the selectedDatabase
+     */
+    public String getSelectedDatabase() {
+        return selectedDatabase;
+    }
+
+    /**
+     * @param selectedDatabase the selectedDatabase to set
+     */
+    public void setSelectedDatabase(String selectedDatabase) {
+        this.selectedDatabase = selectedDatabase;
+    }
+
+    /**
      * @return the searchValue
      */
     public String getSearchValue() {
@@ -484,8 +569,15 @@ public class BasexEADParser {
         this.searchValue = searchValue;
     }
 
-    public static void main(String[] args) {
-BasexEADParser ead = new BasexEADParser("http://basex.intranda.com/basex");
-
+    public static void main(String[] args) throws ClientProtocolException, IOException, HTTPException, ConfigurationException {
+        BasexEADParser ead = new BasexEADParser("http://basex.intranda.com/basex/", DataManager.getInstance().getConfiguration().getConfigLocalPath()
+                + "plugin_intranda_administration_archive_management.xml");
+        ead.selectedDatabase = "Test - EAD_StadtA_GOE_Dep__109_9227_2018_10_09_13_14_33.xml";
+        ead.loadSelectedDatabase();
+        ead.setSearchValue("v6340399");
+        ead.search();
+        for (EadEntry entry : ead.getFlatEntryList()) {
+            System.out.println(entry.getId() + ": " + entry.getLabel());
+        }
     }
 }

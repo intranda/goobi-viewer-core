@@ -19,15 +19,15 @@
 	</composite:interface>
 
 	<composite:implementation>
-	    <ui:fragment rendered="#{activeDocumentBean.recordLoaded and !activeDocumentBean.viewManager.topDocument.getMetadataValue('MD_TECTONICS_ID') != null}">
-		<div id="widgetViews" class="widget">
-			<h:form id="widgetViewsForm">
-				<h3>#{msg.tectonics}</h3>
-				Lorem
-				<br /><br />
-				Ipsum
-			</h:form>
-		</div>
+	    <ui:fragment rendered="#{activeDocumentBean.recordLoaded and activeDocumentBean.viewManager.tectonicsIdentifier != null}">
+            <div id="widgetViews" class="widget">
+                <h3>#{msg.tectonics}</h3>
+                <ui:repeat var="label" value="#{activeDocumentBean.viewManager.tectonicsHierarchy}">
+				    #{label}
+				    <br /><br />
+				</ui:repeat>
+				<h:outputLink value="">#{msg.openArchiveView}</h:outputLink>
+            </div>
 		</ui:fragment>
 	</composite:implementation>
 </ui:composition>
