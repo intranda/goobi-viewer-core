@@ -715,6 +715,7 @@
     <url-mapping id="adminGroupEdit">
         <pattern value="/admin/groups/edit/#{userGroupId:adminBean.currentUserGroupId}/" />
         <view-id value="/resources/admin/views/adminUserGroup.xhtml" />
+        <action onPostback="false">#{adminBean.resetCurrentUserRoleAction}</action>
         <action onPostback="false">#{navigationHelper.resetTheme}</action>
     </url-mapping>
     <url-mapping id="adminGroupNew">
