@@ -1,0 +1,536 @@
+package io.goobi.viewer.model.ead;
+
+import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.List;
+
+public class EadEntry {
+
+    // parent node
+    private EadEntry parentNode;
+
+    // list contains all child elements
+    private List<EadEntry> subEntryList = new ArrayList<>();
+
+    // order number of the current element within the current hierarchy
+    private Integer orderNumber;
+
+    // hierarchy level
+    private Integer hierarchy;
+
+    private String id; // c@id
+
+    // display label
+    private String label;
+    // node is open/closed
+    private boolean displayChildren;
+    // node is selected
+    private boolean selected;
+
+    // node can be selected as destination when moving nodes
+    private boolean selectable;
+
+    // node type -  @level
+    private String nodeType;
+
+    // display node in a search result
+    private boolean displaySearch;
+
+    /* 1. metadata for Identity Statement Area */
+    //    Reference code(s)
+    //    Title
+    //    private String unittitle; // did/unittitle
+    //    Date(s)
+    //    Level of description
+    //    Extent and medium of the unit of description (quantity, bulk, or size)
+    private List<EadMetadataField> identityStatementAreaList = new ArrayList<>();
+
+    /* 2. Context Area */
+    //    Name of creator(s)
+    //    Administrative | Biographical history
+    //    Archival history
+    //    Immediate source of acquisition or transfer
+    private List<EadMetadataField> contextAreaList = new ArrayList<>();
+
+    /* 3. Content and Structure Area */
+    //    Scope and content
+    //    Appraisal, destruction and scheduling information
+    //    Accruals
+    //    System of arrangement
+    private List<EadMetadataField> contentAndStructureAreaAreaList = new ArrayList<>();
+
+    /* 4. Condition of Access and Use Area */
+    //    Conditions governing access
+    //    Conditions governing reproduction
+    //    Language | Scripts of material
+    //    Physical characteristics and technical requirements
+    //    Finding aids
+    private List<EadMetadataField> accessAndUseAreaList = new ArrayList<>();
+
+    /* 5. Allied Materials Area */
+    //    Existence and location of originals
+    //    Existence and location of copies
+    //    Related units of description
+    //    Publication note
+    private List<EadMetadataField> alliedMaterialsAreaList = new ArrayList<>();
+
+    /* 6. Note Area */
+    //    Note
+    private List<EadMetadataField> notesAreaList = new ArrayList<>();
+
+    /* 7. Description Control Area */
+    //    Archivist's Note
+    //    Rules or Conventions
+    //    Date(s) of descriptions
+    private List<EadMetadataField> descriptionControlAreaList = new ArrayList<>();
+
+    // empty if no process was created, otherwise the name of othe process is stored
+    private String goobiProcessTitle;
+
+    // true if the validation of all metadata fields was successful
+    private boolean valid = true;
+
+    public EadEntry(Integer order, Integer hierarchy) {
+        this.orderNumber = order;
+        this.hierarchy = hierarchy;
+    }
+
+    public void addSubEntry(EadEntry other) {
+        subEntryList.add(other);
+        other.setParentNode(this);
+    }
+
+    public void removeSubEntry(EadEntry other) {
+        subEntryList.remove(other);
+        reOrderElements();
+    }
+
+    public void reOrderElements() {
+        int order = 0;
+        for (EadEntry entry : subEntryList) {
+            entry.setOrderNumber(order++);
+        }
+    }
+
+    public List<EadEntry> getAsFlatList() {
+        List<EadEntry> list = new LinkedList<>();
+        list.add(this);
+        if (displayChildren) {
+            if (subEntryList != null) {
+                for (EadEntry ds : subEntryList) {
+                    list.addAll(ds.getAsFlatList());
+                }
+            }
+        }
+        return list;
+    }
+
+    public boolean isHasChildren() {
+        return !subEntryList.isEmpty();
+    }
+
+    public List<EadEntry> getMoveToDestinationList(EadEntry entry) {
+        List<EadEntry> list = new LinkedList<>();
+        list.add(this);
+
+        if (entry.equals(this)) {
+            setSelectable(false);
+            parentNode.setSelectable(false);
+        } else if (subEntryList != null) {
+            for (EadEntry ds : subEntryList) {
+                list.addAll(ds.getMoveToDestinationList(entry));
+            }
+        }
+
+        return list;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        EadEntry other = (EadEntry) obj;
+        if (hierarchy == null) {
+            if (other.hierarchy != null) {
+                return false;
+            }
+        } else if (!hierarchy.equals(other.hierarchy)) {
+            return false;
+        }
+        if (orderNumber == null) {
+            if (other.orderNumber != null) {
+                return false;
+            }
+        } else if (!orderNumber.equals(other.orderNumber)) {
+            return false;
+        }
+        if (parentNode == null && other.parentNode == null) {
+            return true;
+        }
+        if (parentNode == null && other.parentNode != null) {
+            return false;
+        }
+        if (parentNode != null && other.parentNode == null) {
+            return false;
+        }
+
+        if (!parentNode.getOrderNumber().equals(other.parentNode.getOrderNumber())) {
+            return false;
+        }
+        if (!parentNode.getHierarchy().equals(other.parentNode.getHierarchy())) {
+            return false;
+        }
+
+        return true;
+    }
+
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + ((hierarchy == null) ? 0 : hierarchy.hashCode());
+        result = prime * result + ((orderNumber == null) ? 0 : orderNumber.hashCode());
+        result = prime * result + ((parentNode == null) ? 0 : parentNode.getHierarchy().hashCode());
+        result = prime * result + ((parentNode == null) ? 0 : parentNode.getOrderNumber().hashCode());
+        return result;
+    }
+
+    public void updateHierarchy() {
+        // root node
+        if (parentNode == null) {
+            hierarchy = 0;
+        } else {
+            hierarchy = parentNode.getHierarchy() + 1;
+        }
+
+        for (EadEntry child : subEntryList) {
+            child.updateHierarchy();
+        }
+    }
+
+    public void markAsFound() {
+        displaySearch = true;
+        selected = true;
+
+        if (parentNode != null) {
+            EadEntry node = parentNode;
+            while (!node.isDisplaySearch()) {
+                node.setDisplaySearch(true);
+                if (node.parentNode != null) {
+                    node = node.parentNode;
+                }
+            }
+        }
+    }
+
+    public void resetFoundList() {
+        displaySearch = false;
+        selected = false;
+        if (subEntryList != null) {
+            for (EadEntry ds : subEntryList) {
+                ds.resetFoundList();
+            }
+        }
+    }
+
+    public List<EadEntry> getSearchList() {
+        List<EadEntry> list = new LinkedList<>();
+        if (displaySearch) {
+            list.add(this);
+            if (subEntryList != null) {
+                for (EadEntry child : subEntryList) {
+                    list.addAll(child.getSearchList());
+                }
+            }
+        }
+        return list;
+    }
+
+    /**
+     * @return the parentNode
+     */
+    public EadEntry getParentNode() {
+        return parentNode;
+    }
+
+    /**
+     * @param parentNode the parentNode to set
+     */
+    public void setParentNode(EadEntry parentNode) {
+        this.parentNode = parentNode;
+    }
+
+    /**
+     * @return the subEntryList
+     */
+    public List<EadEntry> getSubEntryList() {
+        return subEntryList;
+    }
+
+    /**
+     * @param subEntryList the subEntryList to set
+     */
+    public void setSubEntryList(List<EadEntry> subEntryList) {
+        this.subEntryList = subEntryList;
+    }
+
+    /**
+     * @return the orderNumber
+     */
+    public Integer getOrderNumber() {
+        return orderNumber;
+    }
+
+    /**
+     * @param orderNumber the orderNumber to set
+     */
+    public void setOrderNumber(Integer orderNumber) {
+        this.orderNumber = orderNumber;
+    }
+
+    /**
+     * @return the hierarchy
+     */
+    public Integer getHierarchy() {
+        return hierarchy;
+    }
+
+    /**
+     * @param hierarchy the hierarchy to set
+     */
+    public void setHierarchy(Integer hierarchy) {
+        this.hierarchy = hierarchy;
+    }
+
+    /**
+     * @return the id
+     */
+    public String getId() {
+        return id;
+    }
+
+    /**
+     * @param id the id to set
+     */
+    public void setId(String id) {
+        this.id = id;
+    }
+
+    /**
+     * @return the label
+     */
+    public String getLabel() {
+        return label;
+    }
+
+    /**
+     * @param label the label to set
+     */
+    public void setLabel(String label) {
+        this.label = label;
+    }
+
+    /**
+     * @return the displayChildren
+     */
+    public boolean isDisplayChildren() {
+        return displayChildren;
+    }
+
+    /**
+     * @param displayChildren the displayChildren to set
+     */
+    public void setDisplayChildren(boolean displayChildren) {
+        this.displayChildren = displayChildren;
+    }
+
+    /**
+     * @return the selected
+     */
+    public boolean isSelected() {
+        return selected;
+    }
+
+    /**
+     * @param selected the selected to set
+     */
+    public void setSelected(boolean selected) {
+        this.selected = selected;
+    }
+
+    /**
+     * @return the selectable
+     */
+    public boolean isSelectable() {
+        return selectable;
+    }
+
+    /**
+     * @param selectable the selectable to set
+     */
+    public void setSelectable(boolean selectable) {
+        this.selectable = selectable;
+    }
+
+    /**
+     * @return the nodeType
+     */
+    public String getNodeType() {
+        return nodeType;
+    }
+
+    /**
+     * @param nodeType the nodeType to set
+     */
+    public void setNodeType(String nodeType) {
+        this.nodeType = nodeType;
+    }
+
+    /**
+     * @return the displaySearch
+     */
+    public boolean isDisplaySearch() {
+        return displaySearch;
+    }
+
+    /**
+     * @param displaySearch the displaySearch to set
+     */
+    public void setDisplaySearch(boolean displaySearch) {
+        this.displaySearch = displaySearch;
+    }
+
+    /**
+     * @return the identityStatementAreaList
+     */
+    public List<EadMetadataField> getIdentityStatementAreaList() {
+        return identityStatementAreaList;
+    }
+
+    /**
+     * @param identityStatementAreaList the identityStatementAreaList to set
+     */
+    public void setIdentityStatementAreaList(List<EadMetadataField> identityStatementAreaList) {
+        this.identityStatementAreaList = identityStatementAreaList;
+    }
+
+    /**
+     * @return the contextAreaList
+     */
+    public List<EadMetadataField> getContextAreaList() {
+        return contextAreaList;
+    }
+
+    /**
+     * @param contextAreaList the contextAreaList to set
+     */
+    public void setContextAreaList(List<EadMetadataField> contextAreaList) {
+        this.contextAreaList = contextAreaList;
+    }
+
+    /**
+     * @return the contentAndStructureAreaAreaList
+     */
+    public List<EadMetadataField> getContentAndStructureAreaAreaList() {
+        return contentAndStructureAreaAreaList;
+    }
+
+    /**
+     * @param contentAndStructureAreaAreaList the contentAndStructureAreaAreaList to set
+     */
+    public void setContentAndStructureAreaAreaList(List<EadMetadataField> contentAndStructureAreaAreaList) {
+        this.contentAndStructureAreaAreaList = contentAndStructureAreaAreaList;
+    }
+
+    /**
+     * @return the accessAndUseAreaList
+     */
+    public List<EadMetadataField> getAccessAndUseAreaList() {
+        return accessAndUseAreaList;
+    }
+
+    /**
+     * @param accessAndUseAreaList the accessAndUseAreaList to set
+     */
+    public void setAccessAndUseAreaList(List<EadMetadataField> accessAndUseAreaList) {
+        this.accessAndUseAreaList = accessAndUseAreaList;
+    }
+
+    /**
+     * @return the alliedMaterialsAreaList
+     */
+    public List<EadMetadataField> getAlliedMaterialsAreaList() {
+        return alliedMaterialsAreaList;
+    }
+
+    /**
+     * @param alliedMaterialsAreaList the alliedMaterialsAreaList to set
+     */
+    public void setAlliedMaterialsAreaList(List<EadMetadataField> alliedMaterialsAreaList) {
+        this.alliedMaterialsAreaList = alliedMaterialsAreaList;
+    }
+
+    /**
+     * @return the notesAreaList
+     */
+    public List<EadMetadataField> getNotesAreaList() {
+        return notesAreaList;
+    }
+
+    /**
+     * @param notesAreaList the notesAreaList to set
+     */
+    public void setNotesAreaList(List<EadMetadataField> notesAreaList) {
+        this.notesAreaList = notesAreaList;
+    }
+
+    /**
+     * @return the descriptionControlAreaList
+     */
+    public List<EadMetadataField> getDescriptionControlAreaList() {
+        return descriptionControlAreaList;
+    }
+
+    /**
+     * @param descriptionControlAreaList the descriptionControlAreaList to set
+     */
+    public void setDescriptionControlAreaList(List<EadMetadataField> descriptionControlAreaList) {
+        this.descriptionControlAreaList = descriptionControlAreaList;
+    }
+
+    /**
+     * @return the goobiProcessTitle
+     */
+    public String getGoobiProcessTitle() {
+        return goobiProcessTitle;
+    }
+
+    /**
+     * @param goobiProcessTitle the goobiProcessTitle to set
+     */
+    public void setGoobiProcessTitle(String goobiProcessTitle) {
+        this.goobiProcessTitle = goobiProcessTitle;
+    }
+
+    /**
+     * @return the valid
+     */
+    public boolean isValid() {
+        return valid;
+    }
+
+    /**
+     * @param valid the valid to set
+     */
+    public void setValid(boolean valid) {
+        this.valid = valid;
+    }
+
+}

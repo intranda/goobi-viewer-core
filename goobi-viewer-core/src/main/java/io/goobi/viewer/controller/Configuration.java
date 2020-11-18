@@ -4815,4 +4815,12 @@ public final class Configuration extends AbstractConfiguration {
         return licenses;
     }
 
+    /**
+     * 
+     * @return
+     * @should return correct value
+     */
+    public String getBaseXUrl() {
+        return getLocalString("basex.url", "http://basex.intranda.com/basex/");
+    }
 }
