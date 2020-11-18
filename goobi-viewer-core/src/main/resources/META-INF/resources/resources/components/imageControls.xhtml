@@ -366,7 +366,8 @@
 	                                        styleClass="btn btn--icon">
 	                                        <f:passThroughAttribute name="data-toggle" value="tooltip" />
 	                                    	<f:passThroughAttribute name="data-placement" value="#{cc.attrs.tooltipPlacement}" />
-	                                        <f:passThroughAttribute name="data-original-title" value="#{msg.label__crowdsourcing_campaign_record_discriminator}: #{campaign.getTitle(navigationHelper.locale, true)}" />
+	                                        <f:passThroughAttribute name="data-original-title" value="#{msg.label__crowdsourcing_campaign_record_discriminator}: #{campaign.getTitle(navigationHelper.locale, true)}" /> 
+	                                        <f:passThroughAttribute name="aria-label" value="#{msg.label__crowdsourcing_campaign_record_discriminator}: #{campaign.getTitle(navigationHelper.locale, true)}" />
 	                                        
 	                                        <i class="fa fa-lightbulb-o" aria-hidden="true"></i>
 	                                    </h:commandLink>
@@ -384,6 +385,7 @@
                                             <i class="fa fa-file-text-o" aria-hidden="true"></i>
                                         <f:passThroughAttribute name="data-toggle" value="tooltip" />
                                         <f:passThroughAttribute name="data-placement" value="#{cc.attrs.tooltipPlacement}" />
+                                        <f:passThroughAttribute name="aria-label" value="#{msg.fulltext}" />
                                     </h:outputLink>
                                 </li>
                             </ui:fragment>
@@ -392,7 +394,7 @@
                             <ui:fragment rendered="#{activeDocumentBean.viewManager.currentPage.mimeType == 'image' and !activeDocumentBean.viewManager.doublePageMode}">
                                 <li class="image-controls__option share-image-region">
                                     <a title="#{msg.action__share_image_region}" data-toggle="tooltip" data-placement="top"
-                                    data-popover-element="#share-image-area-popup">
+                                    data-popover-element="#share-image-area-popup" aria-label="#{msg.action__share_image_region}">
 	                                    <i class="fa fa-crop" aria-hidden="true"></i>
                                     </a>
                                 </li>
