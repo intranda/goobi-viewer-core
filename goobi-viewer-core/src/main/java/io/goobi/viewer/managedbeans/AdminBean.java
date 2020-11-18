@@ -608,16 +608,17 @@ public class AdminBean implements Serializable {
             ret.add(group);
         }
 
-        List<Campaign> campaigns = DataManager.getInstance().getDao().getAllCampaigns();
-        if (!campaigns.isEmpty()) {
-            SelectItemGroup group = new SelectItemGroup(ViewerResourceBundle.getTranslation("admin__crowdsourcing_campaigns", null));
-            SelectItem[] array = new SelectItem[campaigns.size()];
-            for (int i = 0; i < array.length; ++i) {
-                array[i] = new SelectItem(campaigns.get(i), ViewerResourceBundle.getTranslation(campaigns.get(i).getTitle(), null));
-            }
-            group.setSelectItems(array);
-            ret.add(group);
-        }
+        //        List<Campaign> campaigns = DataManager.getInstance().getDao().getAllCampaigns();
+        //        if (!campaigns.isEmpty()) {
+        //            SelectItemGroup group = new SelectItemGroup(ViewerResourceBundle.getTranslation("admin__crowdsourcing_campaigns", null));
+        //            SelectItem[] array = new SelectItem[campaigns.size()];
+        //            for (int i = 0; i < array.length; ++i) {
+        //                array[i] = new SelectItem(campaigns.get(i), ViewerResourceBundle.getTranslation(campaigns.get(i).getTitle(), null));
+        //            }
+        //            group.setSelectItems(array);
+        //            ret.add(group);
+        //        }
+
         return ret;
     }
 

@@ -16,7 +16,7 @@
 	</composite:interface>
 
 	<composite:implementation>
-		<nav id="alphabeticPaginator" class="alphabetic-paginator #{cc.attrs.rtl ? '-rtl' : '-ltr'}" role="navigation">
+		<nav id="alphabeticPaginator" class="alphabetic-paginator #{cc.attrs.rtl ? '-rtl' : '-ltr'}" aria-label="#{msg.sortBy}">
 			<h:form id="alphabeticPaginatorForm" prependId="false">
 				<ul>
 					<ui:repeat value="#{cc.attrs.filters}" var="filter">
