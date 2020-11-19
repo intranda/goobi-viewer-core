@@ -97,7 +97,7 @@ public class TranskribusUtils {
                     DataManager.getInstance().getConfiguration().getTranskribusDefaultCollection());
             if (userCollectionId == null) {
                 logger.error("Could not create add collection '{}' to the user acccount '{}'.",
-                        DataManager.getInstance().getConfiguration().getDefaultCollection(), userSession.getUserName());
+                        DataManager.getInstance().getConfiguration().getTranskribusDefaultCollection(), userSession.getUserName());
                 return null;
             }
         }
@@ -110,13 +110,13 @@ public class TranskribusUtils {
 
         // Check and create the default viewer instance collection
         String viewerCollectionId =
-                getCollectionId(restApiUrl, viewerSession.getSessionId(), DataManager.getInstance().getConfiguration().getDefaultCollection());
+                getCollectionId(restApiUrl, viewerSession.getSessionId(), DataManager.getInstance().getConfiguration().getTranskribusDefaultCollection());
         if (viewerCollectionId == null) {
             viewerCollectionId =
-                    createCollection(restApiUrl, viewerSession.getSessionId(), DataManager.getInstance().getConfiguration().getDefaultCollection());
+                    createCollection(restApiUrl, viewerSession.getSessionId(), DataManager.getInstance().getConfiguration().getTranskribusDefaultCollection());
             if (viewerCollectionId == null) {
                 logger.error("Could not create the default collection '{}' for the viewer instance.",
-                        DataManager.getInstance().getConfiguration().getDefaultCollection());
+                        DataManager.getInstance().getConfiguration().getTranskribusDefaultCollection());
                 return null;
             }
         }
