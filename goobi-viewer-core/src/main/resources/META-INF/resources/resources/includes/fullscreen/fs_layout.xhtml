@@ -81,7 +81,7 @@
                         </div>
                     </ui:fragment>
 
-					<ui:fragment rendered="#{contentBean.getUserGeneratedContentsForDisplay(activeDocumentBean.viewManager.currentPage) != null}">
+					<c:if test="#{!contentBean.getUserGeneratedContentsForDisplay(activeDocumentBean.viewManager.pi).isEmpty()}">
 	                <!-- ANNOTATIONS -->
 	                    <div id="panel-9" class="fullscreen__view-sidebar-accordeon-panel fs-annotations">
 	                        <h3 class="fullscreen__view-sidebar-accordeon-panel-title">
@@ -92,7 +92,7 @@
 	                            <widgetComponent:widget_annotations />
 	                        </div>
 	                    </div>
-					</ui:fragment>
+					</c:if>
 
                     <!-- DOWNLOADS -->
                     <div id="panel-4" class="fullscreen__view-sidebar-accordeon-panel fs-downloads">
