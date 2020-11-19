@@ -206,15 +206,6 @@ public class ConfigurationTest extends AbstractTest {
     }
 
     /**
-     * @see Configuration#getDefaultCollection()
-     * @verifies return correct value
-     */
-    @Test
-    public void getDefaultCollection_shouldReturnCorrectValue() throws Exception {
-        Assert.assertEquals("defaultCollection_value", DataManager.getInstance().getConfiguration().getDefaultCollection());
-    }
-
-    /**
      * @see Configuration#getDisplayBreadcrumbs()
      * @verifies return correct value
      */
@@ -602,14 +593,6 @@ public class ConfigurationTest extends AbstractTest {
         Assert.assertEquals("title_value", DataManager.getInstance().getConfiguration().getRssTitle());
     }
 
-    /**
-     * @see Configuration#getRulesetFilePath()
-     * @verifies return correct value
-     */
-    @Test
-    public void getRulesetFilePath_shouldReturnCorrectValue() throws Exception {
-        Assert.assertEquals("ruleset_value", DataManager.getInstance().getConfiguration().getRulesetFilePath());
-    }
 
     /**
      * @see Configuration#getSearchHitMetadataForTemplate(String)
@@ -1144,8 +1127,13 @@ public class ConfigurationTest extends AbstractTest {
      * @verifies return correct value
      */
     @Test
-    public void isOriginalContentDownload_shouldReturnCorrectValue() throws Exception {
-        Assert.assertEquals(false, DataManager.getInstance().getConfiguration().isOriginalContentDownload());
+    public void isDisplaySidebarWidgetDownload_shouldReturnCorrectValue() throws Exception {
+        Assert.assertEquals(true, DataManager.getInstance().getConfiguration().isDisplaySidebarWidgetDownload());
+    }
+    
+    @Test
+    public void getHideDownloadFileRegex_returnConfiguredValue() throws Exception {
+        Assert.assertEquals("(wug_.*|AK_.*)", DataManager.getInstance().getConfiguration().getHideDownloadFileRegex());
     }
 
     /**
