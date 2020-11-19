@@ -10,7 +10,9 @@
 	xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components"
 	xmlns:widgetComponent="http://xmlns.jcp.org/jsf/composite/components/widgets">
 
-	<composite:interface />
+	<composite:interface>
+		<composite:attribute name="collapsible" required="false" type="java.lang.Boolean" default="true"/>	
+	</composite:interface>
 
 	<composite:implementation>
 		<!-- USER GENERATED CONTENT -->
@@ -21,14 +23,14 @@
 
 				<!-- TODO: IF MORE THAN 3 annotations > ELEMENT COLLAPSED -->
 				<h3
-					class="widget__title #{activeDocumentBean.viewManager.metadataViewOnly ? '' : 'collapseable'}">
+					class="widget__title #{(!cc.attrs.collapsible or activeDocumentBean.viewManager.metadataViewOnly) ? '' : 'collapseable'}">
 					<span>#{msgcs.crowdsourcing_userGeneratedContent}</span> <i
 						class="fa fa-angle-down" aria-hidden="true"></i>
 				</h3>
 
 
 				<h:panelGroup layout="block"
-					styleClass="widget__body #{contentBean.getUserGeneratedContentsForDisplay(activeDocumentBean.viewManager.pi).size() gt 3 ? 'collapseable' : ''}">
+					styleClass="widget__body #{(cc.attrs.collapsible and contentBean.getUserGeneratedContentsForDisplay(activeDocumentBean.viewManager.pi).size() gt 3) ? 'collapseable' : ''}">
 					<nav id="user_generated_content_nav">
 						<ul>
 							<ui:repeat var="content"
@@ -90,42 +92,45 @@
 
 							<script type="text/javascript">
 								//<![CDATA[ 
-		                            var highlightCurrentSelection = function( $Obj ) {
-		                            	// reset styles for all li elements
-		                            	$( '#user_generated_content_nav li' ).removeClass( 'ugc-highlight' );
-		                            	
-		                            	// highlight clicked li element
-		                            	$Obj.addClass( 'ugc-highlight' );
-		                            };
-		                            
-		                            var coordinates = {
-		                            	name: 'ugc',
-		                            	displayTooltip: true,
-		                            	coordinates:  #{contentBean.getCurrentUGCCoords(activeDocumentBean.viewManager.currentPage)}
-		                            };
-		                           
-		                            // console.log("crowdsourcing coordinates: ", coordinates);
-		                            if(configViewer.image && coordinates) {
-		                            	if(!configViewer.image.highlightCoords) {
-		                            		configViewer.image.highlightCoords = [];
-		                            	}
-		                            	configViewer.image.highlightCoords.push(coordinates);
-		                            }
-		                            
-		                           
-		                            
-		                            var normdataConfig = {
-		                                path: "#{request.contextPath}",
-		                                lang: {
-		                                    popoverTitle: "#{msg.normdataPopverTitle}",
-		                                    popoverClose: "#{msg.normdataPopoverClose}",
-		                                    showNormdata: "#{msg.normdataExpand}"
-		                                },
-		                                elemWrapper: $( "#metadataElementWrapper" ),
-		                                linkSelector: ".widget-annotations__button"
-		                            };
-		                            
-		                            viewerJS.normdata.init( normdataConfig );
+								    function initView() {
+			                            var highlightCurrentSelection = function( $Obj ) {
+			                            	// reset styles for all li elements
+			                            	$( '#user_generated_content_nav li' ).removeClass( 'ugc-highlight' );
+			                            	
+			                            	// highlight clicked li element
+			                            	$Obj.addClass( 'ugc-highlight' );
+			                            };
+			                            
+			                            var coordinates = {
+			                            	name: 'ugc',
+			                            	displayTooltip: true,
+			                            	coordinates:  #{contentBean.getCurrentUGCCoords(activeDocumentBean.viewManager.currentPage)}
+			                            };
+			                           
+			                            // console.log("crowdsourcing coordinates: ", coordinates);
+			                            if(configViewer.image && coordinates) {
+			                            	if(!configViewer.image.highlightCoords) {
+			                            		configViewer.image.highlightCoords = [];
+			                            	}
+			                            	configViewer.image.highlightCoords.push(coordinates);
+			                            }
+			                            
+			                           
+			                            
+			                            var normdataConfig = {
+			                                path: "#{request.contextPath}",
+			                                lang: {
+			                                    popoverTitle: "#{msg.normdataPopverTitle}",
+			                                    popoverClose: "#{msg.normdataPopoverClose}",
+			                                    showNormdata: "#{msg.normdataExpand}"
+			                                },
+			                                elemWrapper: $( "#metadataElementWrapper" ),
+			                                linkSelector: ".widget-annotations__button"
+			                            };
+			                            
+			                            viewerJS.normdata.init( normdataConfig );
+								    }
+								    $(document).ready(() => initView());
 		                    	//]]>	
 		                    </script>
 						</ul>
