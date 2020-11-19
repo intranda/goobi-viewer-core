@@ -116,9 +116,11 @@
                 <!-- ACTION -->
 				<div class="form-group form-row">
 					<div class="col-sm-12 d-flex justify-content-end">
-                        <h:commandButton styleClass="btn btn--full" value="#{msg.submit}" action="#{userBean.submitFeedbackAction}" />
+                        <h:commandButton styleClass="btn btn--full" value="#{msg.submit}" action="#{userBean.submitFeedbackAction}">
+                        </h:commandButton>
 					</div>
 				</div>
+				
 				
 			</h:form>
 	</composite:implementation>

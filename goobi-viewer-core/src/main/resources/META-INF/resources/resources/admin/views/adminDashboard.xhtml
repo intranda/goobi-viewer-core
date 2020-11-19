@@ -4,6 +4,7 @@
                 xmlns:p="http://primefaces.org/ui"
                 xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
                 xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+                xmlns:c="http://java.sun.com/jsp/jstl/core"
                 xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components"
                 xmlns:widgetComponent="http://xmlns.jcp.org/jsf/composite/components/widgets"
                 xmlns:adminWidget="http://xmlns.jcp.org/jsf/composite/admin/widgets"
@@ -32,13 +33,19 @@
                                     <h3 class="col-9">#{msg.admin__dashboard_hello} #{userBean.user.nickName}</h3>
                                     <div class="col-3 d-flex justify-content-end">
                                         <!-- GRAVATAR -->
-                                        <ui:fragment rendered="#{user.useGravatar}">
-                                                <img src="#{user.getGravatarUrl(96)}" class="rounded-circle admin__dashboard-user-icon" alt="User Gravatar" />
-                                        </ui:fragment>
-                                        <!-- ICON -->
-                                        <ui:fragment rendered="#{!user.useGravatar}">
-                                            <img src="#{request.contextPath}/resources/images/backend/thumbnail_goobi_person.png" class="admin__dashboard-user-icon" alt="User avatar"/>
-                                        </ui:fragment>
+                                        <c:choose>
+											<c:when test="#{user.useGravatar}">
+												<img src="#{user.getGravatarUrl(96)}"
+													class="rounded-circle admin__dashboard-user-icon"
+													alt="User Gravatar" />
+											</c:when>
+											<c:otherwise>
+												<img
+													src="#{request.contextPath}/resources/images/backend/thumbnail_goobi_person.png"
+													class="admin__dashboard-user-icon" alt="User avatar" />
+											</c:otherwise>
+										</c:choose>
+
                                     </div>
                                 </div>
                                 <div class="row mb-3">
