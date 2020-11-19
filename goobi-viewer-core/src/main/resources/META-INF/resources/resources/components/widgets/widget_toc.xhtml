@@ -82,7 +82,7 @@
         														title="#{tocElement.label}"
         														value="#{tocElement.getUrl('fullscreen')}"
 																styleClass="#{tocElement.iddoc == activeDocumentBean.viewManager.currentDocumentIddoc ? 'active' : ''}">
-																<f:passThroughAttribute name="aria-label" value="#{msg.sidebarTocAnchor}: #{tocElement.label}"/>
+																<f:passThroughAttribute name="aria-label" value="#{msg.sidebarTocAnchor}: #{tocElement.label}, #{tocElement.logId}"/>
         														#{tocElement.label}
         													</h:outputLink>
         												</div>
@@ -95,7 +95,7 @@
                                                                 rendered="#{tocElement.label != null and tocElement.visible}" 
                                                                 title="#{tocElement.label}"
 																value="#{tocElement.url}">
-																<f:passThroughAttribute name="aria-label" value="#{msg.sidebarTocAnchor}: #{tocElement.label}"/>
+																<f:passThroughAttribute name="aria-label" value="#{msg.sidebarTocAnchor}: #{tocElement.label}, #{tocElement.logId}"/>
                                                                 #{tocElement.label}
                                                             </h:outputLink>
                                                         </div>
@@ -125,7 +125,7 @@
 													title="#{tocElement.label}" value="#{tocElement.url}"
 													styleClass="#{tocElement.iddoc == activeDocumentBean.viewManager.currentDocumentIddoc ? 'active' : ''}">
 													<h:outputText value="#{tocElement.label}" />
-													<f:passThroughAttribute name="aria-label" value="#{msg.sidebarTocAnchor}: #{tocElement.label}"/>
+													<f:passThroughAttribute name="aria-label" value="#{msg.sidebarTocAnchor}: #{tocElement.label}, #{tocElement.logId}" />
 												</h:outputLink>
 											</div> 
                                             <!-- PAGE NUMBER --> 

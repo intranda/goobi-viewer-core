@@ -136,11 +136,11 @@
 		<h:panelGroup rendered="#{browseBean.browsingMenuEnabled}">
 			<widgetComponent:widget_browsing />
 		</h:panelGroup>
-
-		<h:panelGroup
-			rendered="#{userBean.loggedIn and transcriptionBean.crowdsourcingEnabled}">
-			<widgetComponent:widget_crowdsourcing />
-		</h:panelGroup>
+        <c:forEach var="module" items="#{configurationBean.modules}">
+            <c:forEach var="contribution" items="#{module.sidebarContributions}">
+                <ui:include src="/#{contribution}" />
+            </c:forEach>
+        </c:forEach>
 	</ui:define>
 
 </ui:composition>

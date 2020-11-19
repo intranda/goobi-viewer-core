@@ -301,7 +301,7 @@ public class User implements ILicensee, HttpSessionBindingListener, Serializable
      * If the display name is the e-mail address and the logged in user (!= this user) is not an superuser, obfuscate the address.
      *
      * @return a {@link java.lang.String} object.
-     * @deprecated use {@link #getDisplayName()}  instead
+     * @deprecated use {@link #getDisplayName()} instead
      */
     @Deprecated
     public String getDisplayNameObfuscated() {
@@ -434,7 +434,7 @@ public class User implements ILicensee, HttpSessionBindingListener, Serializable
      */
     public boolean isGroupMember(UserGroup group) throws DAOException {
         for (UserRole membership : group.getMemberships()) {
-            if (membership.getUser().equals(this) && membership.getUserGroup().equals(group)) {
+            if (this.equals(membership.getUser()) && membership.getUserGroup().equals(group)) {
                 return true;
             }
         }
@@ -669,11 +669,10 @@ public class User implements ILicensee, HttpSessionBindingListener, Serializable
 
         return false;
     }
-    
+
     /**
-     * get the url for the avatar. If useGravatar is active, return {@link #getGravatarUrl(int size)}. 
-     * Otherwise build a resource url to 'resources/images/backend/thumbnail_goobi_person.png' 
-     * from the request or the JSF-Context if no request is provided
+     * get the url for the avatar. If useGravatar is active, return {@link #getGravatarUrl(int size)}. Otherwise build a resource url to
+     * 'resources/images/backend/thumbnail_goobi_person.png' from the request or the JSF-Context if no request is provided
      * 
      * @param size
      * @param request
@@ -684,15 +683,14 @@ public class User implements ILicensee, HttpSessionBindingListener, Serializable
             return getGravatarUrl(size);
         }
 
-        if(request != null) {
+        if (request != null) {
             String contextPath = request.getContextPath();
             return contextPath + "/resources/images/backend/thumbnail_goobi_person.png";
-        } else {            
-            return Optional.ofNullable(BeanUtils.getNavigationHelper())
-                    .map(NavigationHelper::getApplicationUrl)
-                    .orElse("/") + "resources/images/backend/thumbnail_goobi_person.png";
         }
-           
+        
+        return Optional.ofNullable(BeanUtils.getNavigationHelper())
+                .map(NavigationHelper::getApplicationUrl)
+                .orElse("/") + "resources/images/backend/thumbnail_goobi_person.png";
     }
 
     /**
@@ -703,18 +701,16 @@ public class User implements ILicensee, HttpSessionBindingListener, Serializable
     public String getAvatarUrl() {
         return getAvatarUrl(AVATAR_DEFAULT_SIZE, null);
     }
-    
+
     /**
      * 
      * @param request
      * @return {@link #getAvatarUrl(int size, HttpServletRequest request)} with size={@link #AVATAR_DEFAULT_SIZE}
      */
-    public String getAvatarUrl( HttpServletRequest request) {
+    public String getAvatarUrl(HttpServletRequest request) {
         return getAvatarUrl(AVATAR_DEFAULT_SIZE, request);
     }
 
-
-    
     /**
      * Used by the crowdsourcing module.
      *
