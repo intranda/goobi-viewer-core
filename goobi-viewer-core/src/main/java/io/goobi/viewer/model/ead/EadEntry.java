@@ -90,6 +90,12 @@ public class EadEntry {
     // true if the validation of all metadata fields was successful
     private boolean valid = true;
 
+    private int index;
+    private int parentIndex;
+    private boolean visible = true;
+    private boolean expanded = false;
+    private boolean hasChild = false;
+
     public EadEntry(Integer order, Integer hierarchy) {
         this.orderNumber = order;
         this.hierarchy = hierarchy;
@@ -115,13 +121,13 @@ public class EadEntry {
     public List<EadEntry> getAsFlatList() {
         List<EadEntry> list = new LinkedList<>();
         list.add(this);
-        if (displayChildren) {
+//        if (displayChildren) {
             if (subEntryList != null) {
                 for (EadEntry ds : subEntryList) {
                     list.addAll(ds.getAsFlatList());
                 }
             }
-        }
+//        }
         return list;
     }
 
@@ -533,4 +539,73 @@ public class EadEntry {
         this.valid = valid;
     }
 
+    /**
+     * @return the index
+     */
+    public int getIndex() {
+        return index;
+    }
+
+    /**
+     * @param index the index to set
+     */
+    public void setIndex(int index) {
+        this.index = index;
+    }
+
+    /**
+     * @return the parentIndex
+     */
+    public int getParentIndex() {
+        return parentIndex;
+    }
+
+    /**
+     * @param parentIndex the parentIndex to set
+     */
+    public void setParentIndex(int parentIndex) {
+        this.parentIndex = parentIndex;
+    }
+
+    /**
+     * @return the visible
+     */
+    public boolean isVisible() {
+        return visible;
+    }
+
+    /**
+     * @param visible the visible to set
+     */
+    public void setVisible(boolean visible) {
+        this.visible = visible;
+    }
+
+    /**
+     * @return the expanded
+     */
+    public boolean isExpanded() {
+        return expanded;
+    }
+
+    /**
+     * @param expanded the expanded to set
+     */
+    public void setExpanded(boolean expanded) {
+        this.expanded = expanded;
+    }
+
+    /**
+     * @return the hasChild
+     */
+    public boolean isHasChild() {
+        return hasChild;
+    }
+
+    /**
+     * @param hasChild the hasChild to set
+     */
+    public void setHasChild(boolean hasChild) {
+        this.hasChild = hasChild;
+    }
 }

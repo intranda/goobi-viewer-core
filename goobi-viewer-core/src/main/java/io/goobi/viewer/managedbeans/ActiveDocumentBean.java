@@ -145,7 +145,7 @@ public class ActiveDocumentBean implements Serializable {
     private String selectedRecordLanguage;
 
     private Boolean deleteRecordKeepTrace;
-    
+
     private CMSSidebarElement mapWidget = null;
 
     private int reloads = 0;
@@ -1888,18 +1888,20 @@ public class ActiveDocumentBean implements Serializable {
     }
 
     public CMSSidebarElement getMapWidget() throws PresentationException, DAOException {
-        if(this.mapWidget == null) {
+        if (this.mapWidget == null) {
             this.mapWidget = generateMapWidget();
         }
         return this.mapWidget;
     }
 
-    
     public CMSSidebarElement generateMapWidget() throws PresentationException, DAOException {
-
         CMSSidebarElement widget = new CMSSidebarElement();
         widget.setType("widgetGeoMap");
         try {
+            if ("-".equals(getPersistentIdentifier())) {
+                return null;
+            }
+            
             GeoMap map = new GeoMap();
             map.setId(Long.MAX_VALUE);
             map.setType(GeoMapType.SOLR_QUERY);
@@ -1907,7 +1909,7 @@ public class ActiveDocumentBean implements Serializable {
             map.setMarkerTitleField(null);
             map.setMarker("default");
             map.setSolrQuery(String.format("PI:%s OR PI_TOPSTRUCT:%s", getPersistentIdentifier(), getPersistentIdentifier()));
-            
+
             if (!map.getFeaturesAsString().equals("[]") || contentBean.hasGeoCoordinateAnnotations(getPersistentIdentifier())) {
                 widget.setGeoMap(map);
             }

@@ -468,7 +468,7 @@ public class BasexEADParser {
             logger.error("Database not loaded");
             return;
         }
-        
+
         if (StringUtils.isNotBlank(searchValue)) {
             // hide all elements
             rootElement.resetFoundList();
@@ -567,6 +567,13 @@ public class BasexEADParser {
      */
     public void setSearchValue(String searchValue) {
         this.searchValue = searchValue;
+    }
+
+    /**
+     * @return the rootElement
+     */
+    public EadEntry getRootElement() {
+        return rootElement;
     }
 
     public static void main(String[] args) throws ClientProtocolException, IOException, HTTPException, ConfigurationException {

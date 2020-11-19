@@ -38,9 +38,7 @@ import javax.faces.event.ValueChangeEvent;
 import javax.faces.model.SelectItem;
 import javax.servlet.http.HttpServletRequest;
 
-import org.apache.commons.configuration.ConfigurationException;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.http.client.ClientProtocolException;
 import org.apache.solr.common.SolrDocument;
 import org.jboss.weld.exceptions.IllegalArgumentException;
 import org.jdom2.JDOMException;
@@ -72,8 +70,6 @@ import io.goobi.viewer.managedbeans.UserBean;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.messages.Messages;
 import io.goobi.viewer.model.calendar.CalendarView;
-import io.goobi.viewer.model.ead.BasexEADParser;
-import io.goobi.viewer.model.ead.EadEntry;
 import io.goobi.viewer.model.metadata.Metadata;
 import io.goobi.viewer.model.metadata.MetadataTools;
 import io.goobi.viewer.model.search.SearchHelper;
@@ -146,7 +142,6 @@ public class ViewManager implements Serializable {
     private Long pagesWithAlto = null;
     private Boolean workHasTEIFiles = null;
     private Boolean metadataViewOnly = null;
-    private BasexEADParser eadParser = null;
 
     /**
      * <p>
@@ -3433,52 +3428,6 @@ public class ViewManager implements Serializable {
 
         logger.trace("getTectonicsIdentifier: {}", topDocument.getMetadataValue("MD_TECTONICS_ID"));
         return topDocument.getMetadataValue("MD_TECTONICS_ID");
-    }
-
-    /**
-     * @throws HTTPException
-     * @throws IOException
-     * @throws ClientProtocolException
-     * 
-     */
-    public List<String> getTectonicsHierarchy() throws ConfigurationException {
-        if (getTectonicsIdentifier() == null) {
-            return Collections.emptyList();
-        }
-
-        if (eadParser == null) {
-            eadParser = new BasexEADParser(DataManager.getInstance().getConfiguration().getBaseXUrl(),
-                    DataManager.getInstance().getConfiguration().getConfigLocalPath()
-                            + "plugin_intranda_administration_archive_management.xml");
-            // TODO configurable database name
-            eadParser.setSelectedDatabase("Test - EAD_StadtA_GOE_Dep__109_9227_2018_10_09_13_14_33.xml");
-            try {
-                eadParser.loadSelectedDatabase();
-            } catch (IOException | HTTPException e) {
-                // TODO Auto-generated catch block
-                logger.error(e.getMessage(), e);
-                eadParser = null;
-                return Collections.emptyList();
-            }
-        }
-
-        eadParser.setSearchValue(getTectonicsIdentifier());
-        eadParser.search();
-        if (eadParser.getFlatEntryList().isEmpty()) {
-            return Collections.emptyList();
-        }
-
-        if (eadParser.getFlatEntryList().size() == 1) {
-            return Collections.singletonList(eadParser.getFlatEntryList().get(0).getLabel());
-        }
-
-        List<String> ret = new ArrayList<>(eadParser.getFlatEntryList().size() - 1);
-        for (int i = 1; i < eadParser.getFlatEntryList().size(); ++i) {
-            EadEntry entry = eadParser.getFlatEntryList().get(i);
-            ret.add(entry.getLabel());
-        }
-
-        return ret;
     }
 
     /**

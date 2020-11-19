@@ -1,0 +1,176 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:h="http://xmlns.jcp.org/jsf/html"
+    xmlns:f="http://xmlns.jcp.org/jsf/core"
+    xmlns:c="http://java.sun.com/jsp/jstl/core"
+    xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+    xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+    template="/resources/themes/#{navigationHelper.theme}/template.html"
+    xmlns:viewer="http://xmlns.jcp.org/jsf/composite/components/partner"
+    xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components" 
+    xmlns:widgetComponent="http://xmlns.jcp.org/jsf/composite/components/widgets">
+
+    <ui:define name="metadata">
+        <f:metadata>
+            <f:event type="preRenderView" listener="#{navigationHelper.setCurrentView('tectonics')}" />
+        </f:metadata>
+    </ui:define> 
+	
+	<ui:define name="head">		
+		<f:view contentType="text/html" encoding="utf-8">
+	
+		</f:view>
+	</ui:define>
+
+    <ui:define name="content">
+		<f:view contentType="text/html" encoding="utf-8">
+            
+			<div id="tectonics" class="view-toc">
+				<div class="toc">
+					<h:form id="tocForm" prependId="false">
+						
+						<!-- TOC TREEVIEW -->
+						<h:panelGroup>
+							<c:set var="indent" value="#{configurationBean.tocIndentation}" scope="request" />
+							<!-- EXPANDABLE TREEVIEW -->
+							<h:panelGroup>
+								<!-- EXPAND ALL -->
+								<div class="toc__list-expandable-all clearfix">
+									<ul>
+										<li>
+											<h:commandLink action="#{tectonicsBean.hierarchy.collapseAll}" title="#{msg.allClose}">
+												<i class="fa fa-minus-square-o" aria-hidden="true"></i>
+												<f:passThroughAttribute name="data-toggle" value="tooltip" />
+												<f:passThroughAttribute name="data-placement" value="top" />
+												<f:passThroughAttribute name="aria-label" value="#{msg.allClose}" />
+												<f:ajax render="tocForm" />
+											</h:commandLink>
+										</li>
+										<li>
+											<h:commandLink action="#{tectonicsBean.hierarchy.expandAll}" title="#{msg.allOpen}">
+												<i class="fa fa-plus-square-o" aria-hidden="true"></i>
+												<f:passThroughAttribute name="data-toggle" value="tooltip" />
+												<f:passThroughAttribute name="data-placement" value="top" />
+												<f:passThroughAttribute name="aria-label" value="#{msg.allOpen}" />
+												<f:ajax render="tocForm" />
+											</h:commandLink>
+										</li>
+									</ul>
+								</div>
+
+								<nav class="toc__list-expandable clearfix">
+									<ul>
+										<ui:repeat var="entry" value="#{tectonicsBean.tectonicsTree.treeView}">
+											<h:panelGroup rendered="#{entry.visible}">
+												<li class="toc__list-expandable-elem #{entry.hasChild == true ? 'parent' : 'child' }" data-id="id_#{entry.id}" style="padding-left: #{tocElement.level * indent}px">
+													<div class="row">
+														<div class="col-12 col-sm-1">
+															<h:panelGroup rendered="#{entry.hasChild}">
+																<!-- EXPAND -->
+																<div class="toc__list-expandable-expand">
+																	<h:commandLink action="#{tectonicsBean.setChildrenVisible(entry)}" rendered="#{!entry.expanded}">
+																		<i class="fa fa-plus-square-o" aria-hidden="true"></i>
+																		<f:passThroughAttribute name="aria-label" value="#{msg.allOpen}" />
+																		<f:ajax render="@form" />
+																	</h:commandLink>
+																	<h:commandLink action="#{tectonicsBean.setChildrenInvisible(entry)}" rendered="#{entry.expanded}">
+																		<i class="fa fa-minus-square-o" aria-hidden="true"></i>
+																		<f:passThroughAttribute name="aria-label" value="#{msg.all}" />
+																		<f:ajax render="@form" />
+																	</h:commandLink>
+																</div>
+															</h:panelGroup>
+														</div>
+														<div class="col-12 col-sm-8 col-md-9">
+															<!-- TITLE -->
+															<div class="toc__list-expandable-title">
+																#{entry.label}
+															</div>
+														</div>
+														<div class="col-12 col-sm-3 col-md-2">
+
+														</div>
+													</div>
+												</li>
+											</h:panelGroup>
+										</ui:repeat>
+									</ul>
+								</nav>
+							</h:panelGroup>
+
+						</h:panelGroup>
+					</h:form>
+				</div>
+			</div>
+            
+            <h:panelGroup rendered="#{userBean.loggedIn}">
+                <input id="userEmail" type="hidden" value="#{userBean.user.email}" />
+            </h:panelGroup>            
+            
+            <script type="text/javascript">
+                $( '[data-toggle="mv-element"]' ).on( "click", function() {
+                    var currBtn = $( this );
+                    
+                    currBtn.toggleClass( "active" );
+                    currBtn.parents().next( ".toc__mv-element" ).slideToggle( {
+                        duration: 0,
+                        start: function() {
+                            currBtn.prev().toggleClass( "inactive" );                        
+                        }
+                    } );
+                } );
+                
+                 $( '[data-id*="id"] a' ).on( "click", function( event ) {
+                     event.preventDefault();
+                     
+                     var currId = $( this ).parents( "li" ).attr( "data-id" );
+                     var currUrl = $( this ).attr( "href" );
+                     
+                     sessionStorage.setItem( "currId", currId );
+                     location.href = currUrl;
+                 } );
+            
+                var downloadModalConfig = {
+                	downloadBtn: $( ".download-modal" ),
+                    path: "#{navigationHelper.applicationUrl}",
+                    iiifPath: "#{configurationBean.iiifApiUrl}",
+                    userEmail: $( "#userEmail" ).val(),
+                    useReCaptcha: #{configurationBean.useReCaptcha},
+                    reCaptchaSiteKey: "#{configurationBean.reCaptchaSiteKey}",
+                    messages: {
+                        downloadInfo: {
+                            text: "#{msg.downloadInfoText}",
+                            title: "#{msg.downloadInfoTitle}",
+                            part: "#{msg.downloadInfoPart}",
+                            fileSize: "#{msg.downloadInfoFileSize}"
+                        },
+                        reCaptchaText: "#{msg.downloadReCaptchaText}",
+                        rcInvalid: "#{msg.downloadRcInvalid}",
+                        rcValid: "#{msg.downloadRcValid}",
+                        eMailText: "#{msg.downloadEMailText}",
+                        eMailTextLoggedIn: "#{msg.downloadEMailTextLoggedIn}",
+                        eMail: "#{msg.downloadEmail}",
+                        closeBtn: "#{msg.downloadCloseModal}",
+                        saveBtn: "#{msg.downloadGenerateFile}",
+                    }
+                };
+            
+                viewerJS.downloadModal.init( downloadModalConfig );
+            </script>
+		</f:view>
+	</ui:define>
+
+    <ui:define name="sidebar">
+        
+        <c:forEach var="module" items="#{configurationBean.modules}">
+            <c:forEach var="contribution" items="#{module.sidebarContributions}">
+                <ui:include src="/#{contribution}" />
+            </c:forEach>
+        </c:forEach>
+        
+        <widgetComponent:widget_userInteractions />
+    </ui:define>
+    
+    <ui:define name="breadcrumbs">
+        <ui:include src="/resources/includes/breadcrumbs.xhtml" />
+    </ui:define>
+</ui:composition>

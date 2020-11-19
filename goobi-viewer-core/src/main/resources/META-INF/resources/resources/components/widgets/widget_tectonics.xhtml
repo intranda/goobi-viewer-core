@@ -22,7 +22,8 @@
 	    <ui:fragment rendered="#{activeDocumentBean.recordLoaded and activeDocumentBean.viewManager.tectonicsIdentifier != null}">
             <div id="widgetViews" class="widget">
                 <h3>#{msg.tectonics}</h3>
-                <ui:repeat var="label" value="#{activeDocumentBean.viewManager.tectonicsHierarchy}">
+                <ui:repeat var="label"
+                    value="#{activeDocumentBean.viewManager.getTectonicsHierarchyForIdentifier(activeDocumentBean.viewManager.tectonicsIdentifier)}">
 				    #{label}
 				    <br /><br />
 				</ui:repeat>

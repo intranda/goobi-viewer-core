@@ -104,6 +104,14 @@
 		<action onPostback="false">#{searchBean.setActiveSearchType(0)}</action>
 	</url-mapping>
 	
+    <!-- TECTONICS -->
+    <url-mapping id="tectonics">
+        <pattern value="/tectonics/" />
+        <view-id value="/tectonics.xhtml" />
+        <action onPostback="false">#{navigationHelper.resetTheme}</action>
+        <action onPostback="false">#{searchBean.setActiveSearchType(0)}</action>
+    </url-mapping>
+	
 	<!-- FEEDBACK -->
 	<url-mapping id="feedback">
 		<pattern value="/feedback/" />
