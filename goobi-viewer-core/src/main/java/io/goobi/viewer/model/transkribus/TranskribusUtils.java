@@ -13,7 +13,7 @@
  *
  * You should have received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
-package io.goobi.viewer.controller;
+package io.goobi.viewer.model.transkribus;
 
 import java.io.IOException;
 import java.net.URLEncoder;
@@ -31,11 +31,13 @@ import org.json.JSONTokener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import io.goobi.viewer.controller.DataManager;
+import io.goobi.viewer.controller.NetTools;
+import io.goobi.viewer.controller.StringTools;
+import io.goobi.viewer.controller.XmlTools;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.HTTPException;
-import io.goobi.viewer.model.transkribus.TranskribusJob;
 import io.goobi.viewer.model.transkribus.TranskribusJob.JobStatus;
-import io.goobi.viewer.model.transkribus.TranskribusSession;
 
 /**
  * <p>
@@ -97,7 +99,7 @@ public class TranskribusUtils {
                     DataManager.getInstance().getConfiguration().getTranskribusDefaultCollection());
             if (userCollectionId == null) {
                 logger.error("Could not create add collection '{}' to the user acccount '{}'.",
-                        DataManager.getInstance().getConfiguration().getDefaultCollection(), userSession.getUserName());
+                        DataManager.getInstance().getConfiguration().getTranskribusDefaultCollection(), userSession.getUserName());
                 return null;
             }
         }
@@ -110,13 +112,13 @@ public class TranskribusUtils {
 
         // Check and create the default viewer instance collection
         String viewerCollectionId =
-                getCollectionId(restApiUrl, viewerSession.getSessionId(), DataManager.getInstance().getConfiguration().getDefaultCollection());
+                getCollectionId(restApiUrl, viewerSession.getSessionId(), DataManager.getInstance().getConfiguration().getTranskribusDefaultCollection());
         if (viewerCollectionId == null) {
             viewerCollectionId =
-                    createCollection(restApiUrl, viewerSession.getSessionId(), DataManager.getInstance().getConfiguration().getDefaultCollection());
+                    createCollection(restApiUrl, viewerSession.getSessionId(), DataManager.getInstance().getConfiguration().getTranskribusDefaultCollection());
             if (viewerCollectionId == null) {
                 logger.error("Could not create the default collection '{}' for the viewer instance.",
-                        DataManager.getInstance().getConfiguration().getDefaultCollection());
+                        DataManager.getInstance().getConfiguration().getTranskribusDefaultCollection());
                 return null;
             }
         }

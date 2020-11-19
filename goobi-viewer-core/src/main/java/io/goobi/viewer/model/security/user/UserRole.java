@@ -39,11 +39,11 @@ public class UserRole {
     private Long id;
 
     @ManyToOne
-    @JoinColumn(name = "user_group_id")
+    @JoinColumn(name = "user_group_id", nullable = false)
     private UserGroup userGroup;
 
     @ManyToOne
-    @JoinColumn(name = "user_id")
+    @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
     @ManyToOne

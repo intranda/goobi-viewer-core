@@ -65,7 +65,6 @@ import io.goobi.viewer.model.annotation.Comment;
 import io.goobi.viewer.model.cms.CMSCategory;
 import io.goobi.viewer.model.cms.CMSPageTemplate;
 import io.goobi.viewer.model.cms.Selectable;
-import io.goobi.viewer.model.crowdsourcing.campaigns.Campaign;
 import io.goobi.viewer.model.search.SearchHelper;
 import io.goobi.viewer.model.security.License;
 import io.goobi.viewer.model.security.LicenseType;
@@ -108,6 +107,8 @@ public class AdminBean implements Serializable {
     private boolean deleteUserContributions =
             EmailValidator.validateEmailAddress(DataManager.getInstance().getConfiguration().getAnonymousUserEmailAddress()) ? false : true;
 
+    private Role memberRole;
+
     /**
      * <p>
      * Constructor for AdminBean.
@@ -126,6 +127,11 @@ public class AdminBean implements Serializable {
      */
     @PostConstruct
     public void init() {
+        try {
+            memberRole = DataManager.getInstance().getDao().getRole("member");
+        } catch (DAOException e) {
+            logger.error(e.getMessage(), e);
+        }
         {
             lazyModelUsers = new TableDataProvider<>(new TableDataSource<User>() {
 
@@ -496,7 +502,7 @@ public class AdminBean implements Serializable {
      * </p>
      */
     public void resetCurrentUserRoleAction() {
-        currentUserRole = new UserRole(getCurrentUserGroup(), null, null);
+        currentUserRole = new UserRole(getCurrentUserGroup(), null, memberRole);
     }
 
     /**
@@ -509,6 +515,12 @@ public class AdminBean implements Serializable {
     public void saveUserRoleAction() throws DAOException {
         if (currentUserRole == null) {
             logger.trace("currentUserRole not set");
+            Messages.info("errSave");
+            return;
+        }
+        if (currentUserRole.getUser() == null) {
+            logger.trace("currentUserRole: User not set");
+            Messages.info("errSave");
             return;
         }
 
