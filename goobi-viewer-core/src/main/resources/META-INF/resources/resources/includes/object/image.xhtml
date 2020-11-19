@@ -327,8 +327,9 @@
 			var hash = window.location.hash;
 			if(hash && hash.startsWith("#ugc=")) {
 			    let ugcId = hash.substring(5);
-			    console.log("hightlight ugc " + ugcId);
-			    $("html, body").scrollTop($('#viewObject').offset().top - 40);
+			    if($('#viewObject').length) {			        
+			    	$("html, body").scrollTop($('#viewObject').offset().top - 40);
+			    }
 			    if(viewImage && viewImage.overlays) {
 			        let widgetTitle = $("#widgetAnnotations").find(".widget__title.collapseable");
 			        if(widgetTitle.length > 0 && !widgetTitle.hasClass("in")) {			            
