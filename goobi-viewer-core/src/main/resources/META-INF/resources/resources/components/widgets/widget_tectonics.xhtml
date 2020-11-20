@@ -23,7 +23,7 @@
             <div id="widgetViews" class="widget">
                 <h3>#{msg.tectonics}</h3>
                 <ui:repeat var="label"
-                    value="#{activeDocumentBean.viewManager.getTectonicsHierarchyForIdentifier(activeDocumentBean.viewManager.tectonicsIdentifier)}">
+                    value="#{tectonicsBean.getTectonicsHierarchyForIdentifier(activeDocumentBean.viewManager.tectonicsIdentifier)}">
 				    #{label}
 				    <br /><br />
 				</ui:repeat>
