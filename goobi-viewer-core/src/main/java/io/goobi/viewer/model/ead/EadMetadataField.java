@@ -172,6 +172,14 @@ public class EadMetadataField {
         this.repeatable = repeatable;
     }
 
+    public String getValue() {
+        if (values == null || values.isEmpty()) {
+            return null;
+        }
+        
+        return values.get(0).getValue();
+    }
+
     /**
      * @return the values
      */

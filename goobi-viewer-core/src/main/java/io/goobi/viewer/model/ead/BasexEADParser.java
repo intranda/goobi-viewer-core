@@ -346,7 +346,7 @@ public class BasexEADParser {
     }
 
     /**
-     * Add the metaata to the configured level
+     * Add the metadata to the configured level
      * 
      * @param entry
      * @param emf

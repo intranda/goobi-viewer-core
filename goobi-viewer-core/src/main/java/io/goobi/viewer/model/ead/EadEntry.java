@@ -121,13 +121,13 @@ public class EadEntry {
     public List<EadEntry> getAsFlatList() {
         List<EadEntry> list = new LinkedList<>();
         list.add(this);
-//        if (displayChildren) {
-            if (subEntryList != null) {
-                for (EadEntry ds : subEntryList) {
-                    list.addAll(ds.getAsFlatList());
-                }
+        //        if (displayChildren) {
+        if (subEntryList != null) {
+            for (EadEntry ds : subEntryList) {
+                list.addAll(ds.getAsFlatList());
             }
-//        }
+        }
+        //        }
         return list;
     }
 
@@ -411,6 +411,16 @@ public class EadEntry {
      */
     public void setDisplaySearch(boolean displaySearch) {
         this.displaySearch = displaySearch;
+    }
+
+    public EadMetadataField getIdentityStatementAreaField(String name) {
+        for (EadMetadataField field : identityStatementAreaList) {
+            if (field.getName().equals(name)) {
+                return field;
+            }
+        }
+
+        return null;
     }
 
     /**

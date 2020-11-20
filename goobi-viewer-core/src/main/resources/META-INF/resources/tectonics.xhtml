@@ -91,6 +91,28 @@
 
 														</div>
 													</div>
+													<div>
+													    <c:if test="#{entry.getIdentityStatementAreaField('Shelfmark').filled}">
+													        #{msg[entry.getIdentityStatementAreaField('Shelfmark').name]}: #{entry.getIdentityStatementAreaField('Shelfmark').value}
+													    </c:if>
+													</div>
+													<ui:repeat var="field" value="#{entry.contentAndStructureAreaAreaList}">
+													    <h:outputText rendered="#{field.filled}">
+                                                            <br />#{field.name}: #{field.value}
+                                                        </h:outputText>
+													</ui:repeat>
+													<br /> identity: 
+                                                    <ui:repeat var="field" value="#{entry.identityStatementAreaList}">
+                                                        <h:outputText rendered="#{field.filled}">
+                                                            <br />#{field.name}: #{field.value}
+                                                        </h:outputText>
+                                                    </ui:repeat>
+                                                    <br />notes: 
+                                                    <ui:repeat var="field" value="#{entry.notesAreaList}">
+                                                        <h:outputText rendered="#{field.filled}">
+                                                            <br />#{field.name}: #{field.value}
+                                                        </h:outputText>
+                                                    </ui:repeat>
 												</li>
 											</h:panelGroup>
 										</ui:repeat>

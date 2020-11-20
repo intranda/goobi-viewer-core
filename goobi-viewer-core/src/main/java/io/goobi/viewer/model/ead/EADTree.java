@@ -67,6 +67,10 @@ public class EADTree implements Serializable {
         }
 
         List<EadEntry> tree = root.getAsFlatList();
+        // remove root
+//        if(tree.size() > 1) {
+//            tree = tree.subList(1, tree.size());
+//        }
         entryMap.put(DEFAULT_GROUP, tree);
     }
 
