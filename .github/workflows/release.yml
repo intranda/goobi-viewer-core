@@ -31,7 +31,7 @@ jobs:
       run: mvn -f goobi-viewer-core/pom.xml javadoc:javadoc
 
     - name: Publish Javadoc on Github pages
-      uses: JamesIves/github-pages-deploy-action@3.5.7
+      uses: JamesIves/github-pages-deploy-action@3.7.1
       with:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         BRANCH: gh-pages
