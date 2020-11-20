@@ -61,7 +61,8 @@
 									<ul>
 										<ui:repeat var="entry" value="#{tectonicsBean.tectonicsTree.treeView}">
 											<h:panelGroup rendered="#{entry.visible}">
-												<li class="toc__list-expandable-elem #{entry.hasChild == true ? 'parent' : 'child' }" data-id="id_#{entry.id}" style="padding-left: #{tocElement.level * indent}px">
+												<li class="toc__list-expandable-elem #{entry.hasChild == true ? 'parent' : 'child' }"
+												    data-id="id_#{entry.id}" style="padding-left: #{entry.hierarchy * indent}px">
 													<div class="row">
 														<div class="col-12 col-sm-1">
 															<h:panelGroup rendered="#{entry.hasChild}">
@@ -83,7 +84,7 @@
 														<div class="col-12 col-sm-8 col-md-9">
 															<!-- TITLE -->
 															<div class="toc__list-expandable-title">
-																#{entry.label}
+																#{entry.label} (#{entry.hierarchy})
 															</div>
 														</div>
 														<div class="col-12 col-sm-3 col-md-2">
