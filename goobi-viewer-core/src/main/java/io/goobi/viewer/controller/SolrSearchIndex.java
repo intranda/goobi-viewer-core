@@ -29,6 +29,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Random;
 import java.util.Set;
 import java.util.function.BinaryOperator;
 import java.util.regex.Matcher;
@@ -227,6 +228,10 @@ public final class SolrSearchIndex {
             for (int i = 0; i < sortFields.size(); ++i) {
                 StringPair sortField = sortFields.get(i);
                 if (StringUtils.isNotEmpty(sortField.getOne())) {
+                    // If RANDOM is used, generate a randomized sort field
+                    if ("RANDOM".equals(sortField.getOne())) {
+                        sortField.setOne(generateRandomSortField());
+                    }
                     solrQuery.addSort(sortField.getOne(), "desc".equals(sortField.getTwo()) ? ORDER.desc : ORDER.asc);
                 }
             }
@@ -1749,6 +1754,15 @@ public final class SolrSearchIndex {
         }
 
         return conditions.trim();
+    }
+    
+    /**
+     * Solr supports dynamic random_* sorting fields. Each value represents one particular order, so a random number is required.
+     * 
+     * @return Randomized sorting field
+     */
+    public static String generateRandomSortField() {
+        return "random_" + new Random().nextInt(Integer.MAX_VALUE);
     }
 
     /**

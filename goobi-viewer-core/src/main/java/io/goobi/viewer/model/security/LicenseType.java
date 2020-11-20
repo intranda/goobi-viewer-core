@@ -77,8 +77,6 @@ public class LicenseType implements IPrivilegeHolder, ILicenseType {
     public static final String LICENSE_TYPE_CROWDSOURCING_CAMPAIGNS = "licenseType_crowdsourcing_campaigns";
     private static final String LICENSE_TYPE_DESC_CROWDSOURCING_CAMPAIGNS = "licenseType_crowdsourcing_campaigns_desc";
 
-    //    private static final String CONDITIONS_QUERY = "QUERY:\\{(.*?)\\}";
-    private static final String CONDITIONS_FILENAME = "FILENAME:\\{(.*)\\}";
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -271,17 +269,6 @@ public class LicenseType implements IPrivilegeHolder, ILicenseType {
     }
 
     /**
-     * <p>
-     * getFilenameConditions.
-     * </p>
-     *
-     * @return a {@link java.lang.String} object.
-     */
-    public String getFilenameConditions() {
-        return getFilenameConditions(this.conditions);
-    }
-
-    /**
      * Get the conditions referring to a SOLR query. This is either the substring in {} after QUERY: or the entire string if neither QUERY:{...} nor
      * FILENAME:{...} is part of the given string
      * 
@@ -289,11 +276,7 @@ public class LicenseType implements IPrivilegeHolder, ILicenseType {
      * @return
      */
     private String getQueryConditions(String conditions) {
-        String filenameConditions = getMatch(conditions, CONDITIONS_FILENAME);
-        String queryConditions = conditions == null ? "" : conditions.replaceAll(CONDITIONS_FILENAME, "");
-        if (StringUtils.isBlank(queryConditions) && StringUtils.isBlank(filenameConditions)) {
-            return conditions == null ? "" : conditions;
-        }
+        String queryConditions = conditions == null ? "" : conditions;
         return queryConditions;
     }
 
@@ -315,18 +298,6 @@ public class LicenseType implements IPrivilegeHolder, ILicenseType {
             return matcher.group(1);
         }
         return "";
-    }
-
-    /**
-     * Get the conditions referring to filename matching. This is either the substring in {} after FILENAME: or null if neither QUERY:{...} nor
-     * FILENAME:{...} is part of the given string
-     * 
-     * @param conditions
-     * @return
-     */
-    private String getFilenameConditions(String conditions) {
-        String filenameConditions = getMatch(conditions, CONDITIONS_FILENAME);
-        return filenameConditions;
     }
 
     /**

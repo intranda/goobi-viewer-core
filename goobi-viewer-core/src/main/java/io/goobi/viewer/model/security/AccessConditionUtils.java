@@ -441,35 +441,24 @@ public class AccessConditionUtils {
     }
 
     /**
-     * Checks access conditions for all files in the given files list. If possible the conditions are stored in the request's session as a session
-     * attribute. Access is checked for general access, ip-range access, user access for both the given PI and the individual filenames if the
-     * relevant {@link io.goobi.viewer.model.security.LicenseType}s define a 'FILENAME' condition
+     * Checks if the record with the given identifier should allow access to the given request
      *
      * @param identifier The PI of the work to check
      * @param request The HttpRequest which may provide a {@link javax.servlet.http.HttpSession} to store the access map
-     * @param files The files to check access for. Must be non-empty
-     * @return A map of filePaths and their corresponding access rights
-     * @throws java.lang.SecurityException if no or an empty file list is given
+     * @return true if access is granted
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
-    @SuppressWarnings("unchecked")
-    public static Map<String, Boolean> checkContentFileAccessPermission(String identifier, HttpServletRequest request, List<Path> files)
+    public static boolean checkContentFileAccessPermission(String identifier, HttpServletRequest request)
             throws IndexUnreachableException, DAOException {
 
-        if (files == null || files.isEmpty()) {
-            throw new SecurityException("Must provide list of file to check access for");
-        }
-
         String attributeName = IPrivilegeHolder._PRIV_PREFIX + IPrivilegeHolder.PRIV_DOWNLOAD_ORIGINAL_CONTENT;
-        Map<String, Boolean> accessMap = new HashMap<>();
+        Boolean access = false;
         if (request != null && request.getSession() != null) {
             try {
-                accessMap = (Map<String, Boolean>) request.getSession().getAttribute(attributeName);
-                if (accessMap != null && accessMap.keySet().containsAll(files.stream().map(Path::toString).collect(Collectors.toList()))) {
-                    return accessMap;
-                } else if (accessMap == null) {
-                    accessMap = new HashMap<>();
+                access = (Boolean) request.getSession().getAttribute(attributeName);
+                if (access != null) {
+                    return access;
                 }
             } catch (ClassCastException e) {
                 logger.error("Cannot cast session attribute '" + attributeName + "' to Map", e);
@@ -479,8 +468,8 @@ public class AccessConditionUtils {
         // logger.trace("checkContentFileAccessPermission({})", identifier);
         if (StringUtils.isNotEmpty(identifier)) {
             try {
-                String query = "+" + SolrConstants.PI + ":" + identifier;
                 Set<String> requiredAccessConditions = new HashSet<>();
+                String query = "+" + SolrConstants.PI + ":" + identifier;
                 SolrDocumentList results = DataManager.getInstance()
                         .getSearchIndex()
                         .search(query, 1, null, Arrays.asList(new String[] { SolrConstants.ACCESSCONDITION }));
@@ -496,30 +485,17 @@ public class AccessConditionUtils {
                     }
                 }
 
-                User user = BeanUtils.getUserFromRequest(request);
-                if (user == null) {
-                    UserBean userBean = BeanUtils.getUserBean();
-                    if (userBean != null) {
-                        user = userBean.getUser();
-                    }
-                }
+                access = checkAccessPermission(requiredAccessConditions, IPrivilegeHolder.PRIV_DOWNLOAD_ORIGINAL_CONTENT, query, request);
 
-                Map<String, Boolean> lokalAccessMap =
-                        checkAccessPermission(DataManager.getInstance().getDao().getRecordLicenseTypes(), requiredAccessConditions,
-                                IPrivilegeHolder.PRIV_DOWNLOAD_ORIGINAL_CONTENT, user, NetTools.getIpAddress(request), query, files);
-                accessMap.putAll(lokalAccessMap);
             } catch (PresentationException e) {
                 logger.debug("PresentationException thrown here: {}", e.getMessage());
             }
         }
         if (request != null && request.getSession() != null) {
-            request.getSession().setAttribute(attributeName, accessMap);
+            request.getSession().setAttribute(attributeName, access);
         }
         //return only the access status for the relevant files
-        return accessMap.entrySet()
-                .stream()
-                .filter(entry -> files.contains(Paths.get(entry.getKey())))
-                .collect(Collectors.toMap(Entry::getKey, Entry::getValue));
+        return access;
     }
 
     /**
@@ -769,7 +745,7 @@ public class AccessConditionUtils {
      */
     public static boolean checkAccessPermission(List<LicenseType> allLicenseTypes, Set<String> requiredAccessConditions, String privilegeName,
             User user, String remoteAddress, String query) throws IndexUnreachableException, PresentationException, DAOException {
-        return !checkAccessPermission(allLicenseTypes, requiredAccessConditions, privilegeName, user, remoteAddress, query, null).values()
+        return !checkAccessPermissions(allLicenseTypes, requiredAccessConditions, privilegeName, user, remoteAddress, query).values()
                 .contains(Boolean.FALSE);
     }
 
@@ -796,17 +772,14 @@ public class AccessConditionUtils {
      * @should return true if ip range allows access
      * @should not return true if no ip range matches
      */
-    static Map<String, Boolean> checkAccessPermission(List<LicenseType> allLicenseTypes, Set<String> requiredAccessConditions,
-            String privilegeName, User user, String remoteAddress, String query, List<Path> files)
+    static Map<String, Boolean> checkAccessPermissions(List<LicenseType> allLicenseTypes, Set<String> requiredAccessConditions,
+            String privilegeName, User user, String remoteAddress, String query)
             throws IndexUnreachableException, PresentationException, DAOException {
         // logger.trace("checkAccessPermission({},{})", requiredAccessConditions, privilegeName);
 
         Map<String, Boolean> accessMap = new HashMap<>();
-        if (files != null) {
-            files.forEach(file -> accessMap.put(file.toString(), Boolean.FALSE));
-        } else {
-            accessMap.put("", Boolean.FALSE);
-        }
+        accessMap.put("", Boolean.FALSE);
+        
         // If user is superuser, allow immediately
         if (user != null && user.isSuperuser()) {
             accessMap.keySet().forEach(key -> accessMap.put(key, Boolean.TRUE));
@@ -887,7 +860,6 @@ public class AccessConditionUtils {
                 }
 
                 // If not within an allowed IP range, check the current user's satisfied access conditions
-
                 if (user != null && user.canSatisfyAllAccessConditions(requiredAccessConditions, privilegeName, null)) {
                     accessMap.put(key, Boolean.TRUE);
                 }
@@ -975,30 +947,14 @@ public class AccessConditionUtils {
                         query);
             }
 
-            String filenameConditions = licenseType.getFilenameConditions();
-            if (StringUtils.isNotBlank(filenameConditions)) {
-                for (String path : accessMap.keySet()) {
-                    if (StringUtils.isNotBlank(path)) {
-                        List<LicenseType> types = ret.get(path);
-                        if (types == null) {
-                            types = new ArrayList<>();
-                            ret.put(path, types);
-                        }
-                        if (Pattern.matches(licenseType.getFilenameConditions(), Paths.get(path).getFileName().toString())) {
-                            types.add(licenseType);
-                        }
-                    }
+            //no individual file conditions. Write same licenseTypes for all files
+            for (String key : accessMap.keySet()) {
+                List<LicenseType> types = ret.get(key);
+                if (types == null) {
+                    types = new ArrayList<>();
+                    ret.put(key, types);
                 }
-            } else {
-                //no individual file conditions. Write same licenseTypes for all files
-                for (String key : accessMap.keySet()) {
-                    List<LicenseType> types = ret.get(key);
-                    if (types == null) {
-                        types = new ArrayList<>();
-                        ret.put(key, types);
-                    }
-                    types.add(licenseType);
-                }
+                types.add(licenseType);
             }
         }
 

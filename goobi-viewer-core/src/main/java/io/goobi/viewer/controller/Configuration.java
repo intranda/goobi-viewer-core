@@ -683,7 +683,31 @@ public final class Configuration extends AbstractConfiguration {
     public boolean isDisplaySidebarRssFeed() {
         return getLocalBoolean("sidebar.sidebarRssFeed[@display]", true);
     }
-
+    
+    /**
+     * <p>
+     * isOriginalContentDownload.
+     * </p>
+     *
+     * @should return correct value
+     * @return a boolean.
+     */
+    public boolean isDisplaySidebarWidgetDownload() {
+        return getLocalBoolean("sidebar.sidebarWidgetDownloads[@visible]", false);
+    }
+    
+    /**
+     * <p>
+     * Returns a regex such that all download files which filenames fit this regex should not be visible
+     * in the downloads widget. If an empty string is returned, all downloads should remain visible
+     * </p>
+     *
+     * @return a regex or an empty string if no downloads should be hidden
+     */
+    public String getHideDownloadFileRegex() {
+        return getLocalString("sidebar.sidebarWidgetDownloads.hideFileRegex", "");
+    }
+    
     /**
      * <p>
      * isDisplayWidgetUsage.
@@ -2925,30 +2949,6 @@ public final class Configuration extends AbstractConfiguration {
 
     /**
      * <p>
-     * getRulesetFilePath.
-     * </p>
-     *
-     * @should return correct value
-     * @return a {@link java.lang.String} object.
-     */
-    public String getRulesetFilePath() {
-        return getLocalString("content.ruleset");
-    }
-
-    /**
-     * <p>
-     * getDefaultCollection.
-     * </p>
-     *
-     * @should return correct value
-     * @return a {@link java.lang.String} object.
-     */
-    public String getDefaultCollection() {
-        return getLocalString("content.defaultCollection");
-    }
-
-    /**
-     * <p>
      * getThumbnailsWidth.
      * </p>
      *
@@ -3421,17 +3421,7 @@ public final class Configuration extends AbstractConfiguration {
         return getLocalString("viewer.watermarkFormat", "jpg");
     }
 
-    /**
-     * <p>
-     * isOriginalContentDownload.
-     * </p>
-     *
-     * @should return correct value
-     * @return a boolean.
-     */
-    public boolean isOriginalContentDownload() {
-        return getLocalBoolean("content.originalContentDownload", false);
-    }
+
 
     /**
      * <p>

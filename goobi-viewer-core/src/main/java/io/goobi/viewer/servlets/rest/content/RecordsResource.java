@@ -22,7 +22,6 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.Collections;
 import java.util.LinkedList;
-import java.util.Random;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -150,9 +149,7 @@ public class RecordsResource {
         logger.trace("count: {}", count);
 
         JSONArray jsonArray = new JSONArray();
-        // Solr supports dynamic random_* sorting fields. Each value represents one particular order, so a random number is required.
-        Random random = new Random();
-        String sortfield = new StringBuilder().append("random_").append(random.nextInt(Integer.MAX_VALUE)).toString();
+        String sortfield = SolrSearchIndex.generateRandomSortField();
         SolrDocumentList result = DataManager.getInstance()
                 .getSearchIndex()
                 .search(query, 0, count, Collections.singletonList(new StringPair(sortfield, "asc")), null, null)
