@@ -1,0 +1,62 @@
+<ui:composition 
+    xmlns="http://www.w3.org/1999/xhtml" 
+    xmlns:h="http://xmlns.jcp.org/jsf/html" 
+    xmlns:f="http://xmlns.jcp.org/jsf/core" 
+    xmlns:p="http://primefaces.org/ui"
+    xmlns:ui="http://xmlns.jcp.org/jsf/facelets" 
+    xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components"
+    xmlns:widgetComponent="http://xmlns.jcp.org/jsf/composite/components/widgets" 
+    xmlns:adminWidget="http://xmlns.jcp.org/jsf/composite/admin/widgets"
+    template="/resources/themes/#{navigationHelper.theme}/templateArchives.html">
+
+	<ui:define name="metadata">
+		<f:metadata>
+			<f:event type="preRenderView" listener="#{navigationHelper.setCurrentPage('archives', false, true)}" />
+		</f:metadata>
+	</ui:define>
+    
+    <ui:define name="breadcrumbs">
+        <ui:include src="/resources/includes/breadcrumbs.xhtml" />
+    </ui:define>
+
+    <ui:define name="content">
+    
+        <f:view contentType="text/html" encoding="utf-8">
+        	<div class="tec-archives__wrapper">
+
+        		<!-- LEFT SIDE -->
+				<div class="tec-archives__left-side">
+					<div class="tec-archives__graphic-tree">
+					
+					<!-- ADD HERE: THE GRAPHIC TREE WITH ICONS -->
+					Lorem Ipsum
+					</div>
+				</div>
+				
+				<!-- RIGHT SIDE -->
+				<div class="tec-archives__right-side">
+					<div class="tec-archives__text-tree">
+					
+					<!-- ADD HERE: THE STRUCTURE TREE IN PURE TEXT FORM -->
+					Lorem Ipsum
+					</div>
+					
+					<div class="tec-archives__object-info">
+					
+					<!-- ADD HERE: PICTURE AND INFOS OF OBJECT -->
+					Lorem Ipsum
+					</div>
+
+				</div>
+
+			</div>
+        </f:view>
+        
+    </ui:define>
+
+    <!-- SIDEBAR -->
+    <ui:define name="sidebar">
+        <adminWidget:widget_admin />
+        <adminWidget:widget_cms />
+    </ui:define>
+</ui:composition>

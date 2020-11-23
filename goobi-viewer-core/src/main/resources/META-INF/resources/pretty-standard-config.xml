@@ -111,6 +111,14 @@
         <action onPostback="false">#{navigationHelper.resetTheme}</action>
         <action onPostback="false">#{searchBean.setActiveSearchType(0)}</action>
     </url-mapping>
+    
+    <!-- ARCHIVES -->
+    <url-mapping id="archives">
+        <pattern value="/archives/" />
+        <view-id value="/archivesContent.xhtml" />
+        <action onPostback="false">#{navigationHelper.resetTheme}</action>
+        <action onPostback="false">#{searchBean.setActiveSearchType(0)}</action>
+    </url-mapping>
 	
 	<!-- FEEDBACK -->
 	<url-mapping id="feedback">

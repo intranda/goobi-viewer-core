@@ -1,0 +1,231 @@
+/* ==============================================================
+   Crowdsourcing 
+   global style declarations for crowdsourcing_layout.xhtml
+   ==============================================================*/
+/* ADMIN LAYOUT */
+.tec-archives {
+	width: 100vw;
+	height: 100vh;
+	&__top-wrapper {
+		height: 60px;
+		position: sticky;
+		top: 0;
+		background-color:  #444;
+		z-index: 2020;		
+		.container {
+			width: auto;	
+		}
+		.login-navigation [data-login="true"] .login-navigation__user-dropdown {
+			top: calc(100% + 19px);
+		}
+	}
+	&__header {
+		display: -webkit-box;
+		display: -ms-flexbox;
+		display: flex;
+		-ms-flex-wrap: wrap;
+		flex-wrap: wrap;
+		-webkit-box-align: center;
+		-ms-flex-align: center;
+		align-items: center;
+		min-height: 60px;
+		color: white;
+		a, .btn, button {
+			color: white;
+			&:hover,
+			&:focus,
+			&:active {
+				color: white;
+			}
+		}
+	}
+	&__top {
+		display: flex;
+		flex-wrap: wrap;
+		align-items: center;
+		min-height: 60px;
+		color: white;
+		a, button {
+			color: white;
+			&:hover,
+			&:active,
+			&:focus {
+				text-decoration: none;
+			}
+		}
+		.bookmark-navigation {
+			&__dropdown-list {
+				a {
+					color: black;
+				}
+			}
+		}
+	}
+	&__top-mobile-nav,
+	&__top-mobile-sidebar {
+		display: none;
+		flex: 0 0 0%;
+		max-width: 0%;
+	}
+	&__top-brand {
+		flex: 1;
+		padding: 1.5rem;
+		margin-right: auto;
+		a {
+			&:hover {
+				text-decoration: none;
+			}
+		}
+	}
+	&__top-title {
+		flex: 1;
+		text-align: center;
+		font-weight: 700;
+		font-size: 1.6rem;
+	}
+	&__top-actions {
+		flex: 1;
+		margin-left: auto;
+		display: flex;
+		flex-wrap: wrap;
+		align-items: center;
+		justify-content: flex-end;	
+		padding: 1.5rem;
+	}
+	&__top-actions-language,
+	&__top-actions-bookmark,
+	&__top-actions-login {
+		margin-left: 1.5rem;
+	}
+	&__top-actions-language {
+		position: relative;
+		[data-toggle="local"] {
+			text-transform: uppercase;			
+		}
+		.change-local {
+			display: none;
+			position: absolute;
+			top: 3.2rem;
+			left: 50%;
+			margin-left: -2.35rem;
+			padding-top: .1rem;
+			z-index: 2000;
+			box-shadow: none;
+			ul {}
+			li {
+				display: list-item;
+				float: none;
+				margin: 0;
+				margin-bottom: .1rem;
+			}
+			a {
+				padding: .3rem 1.4rem;
+				&:hover,
+				&:active,
+				&:focus {
+				}
+				&.activeLang {
+				}
+			}
+			img {}
+		}
+	}
+	&__wrapper {
+		padding: 2rem;
+		display: flex;
+		justify-content: space-between;
+	}
+	&__left-side {
+		flex: 0 0 40%;
+		background: white;
+	} 
+	&__right-side {
+		flex: 0 0 59%;
+	}
+	&__graphic-tree {
+		padding: 2rem;
+	}
+	&__text-tree {
+		margin-bottom: 2rem;
+		padding: 2rem;
+		background: white;
+	}
+	&__object-info {
+		background: white;
+		padding: 2rem;
+		
+	}
+		
+	&__main {
+		background-color: #f2f3f4;
+		padding: 0 0 0 1.5rem;
+		height: calc(~"100vh - 60px");
+		width: 100vw;
+		display: block;
+	}
+	&__content-wrapper {
+		width: 100%;
+		display: flex;
+		align-items: stretch;
+		height: calc(~"100vh - 60px");
+	}
+	&__loader-wrapper {
+		position: absolute;
+		pointer-events: none;
+		width: 100vw;
+		height: 100vh;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+	}
+	&__content-left {
+		width: 50%;
+		background-color: white;
+		border: 1px solid #d5d5d5;
+		margin-top: 1.5rem;
+		margin-bottom: 1.5rem;
+		.imageview_wrapper {
+			width: 100%;
+			height:calc(~"100% - 50px") ;
+			.image-controls__actions {
+				width: 100%;
+				display: flex;
+				flex-wrap: wrap;
+				align-items: center;
+				justify-content: center;
+				margin: 0;
+				height: 50px;
+			}
+			.image_container {
+				width: 100%;
+				height: calc(~"100% - 50px") ;
+				.image {
+					width: 100%;
+					height:100%;
+				}
+			}
+		}
+	}
+	&__content-right {
+		margin-left: 1.5rem;
+		padding-right: 15px;
+		width: 50%;
+		overflow: auto;
+		padding-top: 1.5rem;
+	}
+	&__content-right-title {
+		margin-bottom: 10px;
+		margin-top: 0;
+		background-color: white;
+		padding: 1rem;
+		margin-bottom: 1rem;
+		border: 1px solid #d5d5d5;
+	}
+	&__questions-wrapper {
+		&.area-selector-question {
+			&.active {
+				border-width: 2px;
+			}
+		}
+	}
+}
