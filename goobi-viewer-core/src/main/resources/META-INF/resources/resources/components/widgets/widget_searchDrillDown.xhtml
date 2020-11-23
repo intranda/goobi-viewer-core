@@ -46,6 +46,7 @@
                                                     </div>
                                                     <f:passThroughAttribute name="data-toggle" value="tooltip" />
                                                     <f:passThroughAttribute name="data-placement" value="top" />
+                                                    <f:passThroughAttribute name="aria-label" value="#{msg[field.key.concat('_DD')]}: #{msg[facet.label]}" />
                                                 </h:commandLink>
                                             </li>
                                         </ui:repeat>
@@ -56,6 +57,7 @@
                                                 <li>
                                                     <h:outputLink value="#{navigationHelper.getSearchUrl(searchBean.activeSearchType)}/-/#{searchBean.exactSearchString}/#{searchBean.currentPage}/#{searchBean.sortString}/#{searchBean.facets.currentFacetStringPrefix}#{facet.urlEscapedLink}/">
                                                         #{msg[facet.label]} (#{facet.count})
+                                                        <f:passThroughAttribute name="aria-label" value="#{msg[field.key.concat('_DD')]}: #{msg[facet.label]}" />
                                                     </h:outputLink>
                                                 </li>
                                             </ui:fragment>
