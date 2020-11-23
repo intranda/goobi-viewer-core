@@ -16,8 +16,6 @@
         padding: 0;
     }
     li {
-    	text-overflow: ellipsis;
-    	overflow: hidden;
     	&.active {
     		a {}
     	}
@@ -29,6 +27,8 @@
     	}
     }
     a {
+		overflow: hidden;
+		text-overflow: ellipsis;
     	&:hover,
     	&:active,
     	&:focus {}
@@ -36,13 +36,16 @@
     dl {
         margin: 0;
     }
-    dt,
-    dd {
-    	text-overflow: ellipsis;
+    dt {
+		a {
+			text-overflow: ellipsis;
+    		overflow: hidden;
+		}
+	}
+	dd {
+		text-overflow: ellipsis;
     	overflow: hidden;
     }
-    dt {}
-    dd {}
     &__title {
     	display: flex;
     	align-items: center;
