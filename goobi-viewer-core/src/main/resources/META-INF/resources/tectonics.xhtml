@@ -86,6 +86,8 @@
 														<div class="col-12 col-sm-8 col-md-9">
 															<!-- TITLE -->
 															<div class="toc__list-expandable-title">
+															    <!-- TODO icon -->
+															    #{entry.descriptionLevel}
 																<h:commandLink action="#{entry.toggleMetadata}" >
 																    #{entry.label} (#{entry.hierarchy})
 																    <f:ajax render="metadata_#{status.count}" />
@@ -102,6 +104,15 @@
                                                                     <br />#{field.name}: #{field.value}
                                                                 </h:outputText>
                                                             </c:forEach>
+                                                            <h:outputLink target="_blank"
+                                                                value="TODO">
+                                                                #{msg.tectonics_archiveView}
+                                                            </h:outputLink>
+                                                            <!-- TODO view selection, representative page -->
+                                                            <h:outputLink rendered="#{entry.associatedRecordPi != ''}" target="_blank"
+                                                                value="#{navigationHelper.objectUrl}/#{entry.associatedRecordPi}/1/">
+                                                                #{msg.tectonics_showRecord}
+                                                            </h:outputLink>
 													   </h:panelGroup>
                                                     </h:panelGroup>
 												</li>

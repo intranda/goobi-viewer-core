@@ -68,9 +68,9 @@ public class EADTree implements Serializable {
 
         List<EadEntry> tree = root.getAsFlatList();
         // remove root
-//        if(tree.size() > 1) {
-//            tree = tree.subList(1, tree.size());
-//        }
+        //        if(tree.size() > 1) {
+        //            tree = tree.subList(1, tree.size());
+        //        }
         entryMap.put(DEFAULT_GROUP, tree);
     }
 
@@ -149,32 +149,31 @@ public class EADTree implements Serializable {
             if (entryMap == null) {
                 return;
             }
-            //                long start = System.nanoTime();
             int lastLevel = 0;
             int lastParent = 0;
-            for (EadEntry tocElement : entryMap.get(group)) {
+            for (EadEntry entry : entryMap.get(group)) {
                 // Current element index
-                int index = entryMap.get(group).indexOf(tocElement);
-                tocElement.setIndex(index);
-                if (tocElement.getHierarchy() > maxTocDepth) {
-                    maxTocDepth = tocElement.getHierarchy();
+                int index = entryMap.get(group).indexOf(entry);
+                entry.setIndex(index);
+                if (entry.getHierarchy() > maxTocDepth) {
+                    maxTocDepth = entry.getHierarchy();
                 }
 
-                if (lastLevel < tocElement.getHierarchy() && index > 0) {
-                    tocElement.setParentIndex(lastParent);
-                    entryMap.get(group).get(index - 1).setHasChild(true);
-                    if (tocElement.getHierarchy() > visibleLevel) {
+                if (lastLevel < entry.getHierarchy() && index > 0) {
+                    entry.setParentIndex(lastParent);
+                    //                    entryMap.get(group).get(index - 1).setHasChild(true);
+                    if (entry.getHierarchy() > visibleLevel) {
                         entryMap.get(group).get(index - 1).setExpanded(false);
-                        tocElement.setVisible(false);
+                        entry.setVisible(false);
                     } else {
                         entryMap.get(group).get(index - 1).setExpanded(true);
                     }
 
                     for (int i = index + 1; i < entryMap.get(group).size(); i++) {
                         EadEntry tc = entryMap.get(group).get(i);
-                        if (tc.getHierarchy() == tocElement.getHierarchy()) {
+                        if (tc.getHierarchy() == entry.getHierarchy()) {
                             // Elements on the same level as the current element get the same parent ID and are set visible
-                            tc.setParentIndex(tocElement.getParentIndex());
+                            tc.setParentIndex(entry.getParentIndex());
                         }
                         if (tc.getHierarchy() > visibleLevel) {
 
@@ -184,10 +183,8 @@ public class EADTree implements Serializable {
 
                 }
                 lastParent = index;
-                lastLevel = tocElement.getHierarchy();
+                lastLevel = entry.getHierarchy();
             }
-            //                long end = System.nanoTime();
-            //                logger.trace("Time for initial collapse: {} ns", (end - start));
             collapseTocForLength(collapseThreshold, lowestLevelToCollapse);
             treeBuilt = true;
         }

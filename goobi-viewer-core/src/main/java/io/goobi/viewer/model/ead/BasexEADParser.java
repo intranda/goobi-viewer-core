@@ -286,6 +286,7 @@ public class BasexEADParser {
         Element eadheader = element.getChild("eadheader", NAMESPACE_EAD);
 
         entry.setId(element.getAttributeValue("id"));
+
         if (eadheader != null) {
             entry.setLabel(
                     eadheader.getChild("filedesc", NAMESPACE_EAD).getChild("titlestmt", NAMESPACE_EAD).getChildText("titleproper", NAMESPACE_EAD));
@@ -322,6 +323,10 @@ public class BasexEADParser {
         if (StringUtils.isBlank(entry.getNodeType())) {
             entry.setNodeType("folder");
         }
+
+        // Set description level value
+        entry.setDescriptionLevel(element.getAttributeValue("level"));
+
         if (clist == null) {
             clist = element.getChildren("c", NAMESPACE_EAD);
         }
@@ -329,7 +334,6 @@ public class BasexEADParser {
             int subOrder = 0;
             int subHierarchy = hierarchy + 1;
             for (Element c : clist) {
-
                 EadEntry child = parseElement(subOrder, subHierarchy, c);
                 entry.addSubEntry(child);
                 child.setParentNode(entry);

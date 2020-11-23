@@ -16,7 +16,6 @@
 package io.goobi.viewer.model.viewer;
 
 import java.awt.Dimension;
-import java.io.File;
 import java.io.IOException;
 import java.io.Serializable;
 import java.io.UnsupportedEncodingException;
@@ -26,10 +25,8 @@ import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -1443,7 +1440,7 @@ public class ViewManager implements Serializable {
             Double im = (double) pageLoader.getNumPages();
 
             Double thumb = (double) DataManager.getInstance().getConfiguration().getViewerThumbnailsPerPage();
-            int answer = new Double(Math.floor(im / thumb)).intValue();
+            int answer = Double.valueOf(Math.floor(im / thumb)).intValue();
             if (im % thumb != 0 || answer == 0) {
                 answer++;
             }
@@ -2515,22 +2512,22 @@ public class ViewManager implements Serializable {
      * @throws IOException
      */
     private List<String> listDownloadableContent() throws PresentationException, IndexUnreachableException, DAOException, IOException {
-//        if (this.downloadFilenames == null) {
-            Path sourceFileDir = DataFileTools.getDataFolder(pi, DataManager.getInstance().getConfiguration().getOrigContentFolder());
-            if (Files.exists(sourceFileDir) && AccessConditionUtils.checkContentFileAccessPermission(pi,
-                    (HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest())) {
-                String hideDownloadFilesRegex = DataManager.getInstance().getConfiguration().getHideDownloadFileRegex();
-                try (Stream<Path> files = Files.list(sourceFileDir)) {
-                    Stream<String> filenames = files.map(path -> path.getFileName().toString());
-                    if (StringUtils.isNotEmpty(hideDownloadFilesRegex)) {
-                        filenames = filenames.filter(filename -> !filename.matches(hideDownloadFilesRegex));
-                    }
-                    this.downloadFilenames = filenames.collect(Collectors.toList());
+        //        if (this.downloadFilenames == null) {
+        Path sourceFileDir = DataFileTools.getDataFolder(pi, DataManager.getInstance().getConfiguration().getOrigContentFolder());
+        if (Files.exists(sourceFileDir) && AccessConditionUtils.checkContentFileAccessPermission(pi,
+                (HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest())) {
+            String hideDownloadFilesRegex = DataManager.getInstance().getConfiguration().getHideDownloadFileRegex();
+            try (Stream<Path> files = Files.list(sourceFileDir)) {
+                Stream<String> filenames = files.map(path -> path.getFileName().toString());
+                if (StringUtils.isNotEmpty(hideDownloadFilesRegex)) {
+                    filenames = filenames.filter(filename -> !filename.matches(hideDownloadFilesRegex));
                 }
-            } else {
-                this.downloadFilenames = Collections.emptyList();
+                this.downloadFilenames = filenames.collect(Collectors.toList());
             }
-//        }
+        } else {
+            this.downloadFilenames = Collections.emptyList();
+        }
+        //        }
         return this.downloadFilenames;
     }
 
@@ -2543,12 +2540,11 @@ public class ViewManager implements Serializable {
     public boolean isDisplayContentDownloadMenu() {
         if (!DataManager.getInstance().getConfiguration().isDisplaySidebarWidgetDownload()) {
             return false;
-        } else {
-            try {
-                return !listDownloadableContent().isEmpty();
-            } catch (PresentationException | IndexUnreachableException | DAOException | IOException e) {
-                logger.warn("Error listing downloadable content: " + e.toString());
-            }
+        }
+        try {
+            return !listDownloadableContent().isEmpty();
+        } catch (PresentationException | IndexUnreachableException | DAOException | IOException e) {
+            logger.warn("Error listing downloadable content: " + e.toString());
         }
 
         return false;
@@ -2561,7 +2557,7 @@ public class ViewManager implements Serializable {
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
-     * @throws IOException 
+     * @throws IOException
      */
     public List<LabeledLink> getContentDownloadLinksForWork() throws IOException, PresentationException, IndexUnreachableException, DAOException {
         AlphanumCollatorComparator comparator = new AlphanumCollatorComparator(null);
@@ -2601,9 +2597,9 @@ public class ViewManager implements Serializable {
     public Long getAnchorDocumentIddoc() {
         if (this.anchorDocument != null) {
             return anchorDocument.getLuceneId();
-        } else {
-            return null;
         }
+
+        return null;
     }
 
     /**
@@ -3411,8 +3407,8 @@ public class ViewManager implements Serializable {
             return null;
         }
 
-        logger.trace("getTectonicsIdentifier: {}", topDocument.getMetadataValue("MD_TECTONICS_ID"));
-        return topDocument.getMetadataValue("MD_TECTONICS_ID");
+        logger.trace("getTectonicsIdentifier: {}", topDocument.getMetadataValue(SolrConstants.TECTONICS_ID));
+        return topDocument.getMetadataValue(SolrConstants.TECTONICS_ID);
     }
 
     /**

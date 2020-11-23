@@ -1,10 +1,22 @@
 package io.goobi.viewer.model.ead;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
+import org.apache.solr.common.SolrDocument;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import io.goobi.viewer.controller.DataManager;
+import io.goobi.viewer.controller.SolrConstants;
+import io.goobi.viewer.exceptions.IndexUnreachableException;
+import io.goobi.viewer.exceptions.PresentationException;
+
 public class EadEntry {
+    
+    private static final Logger logger = LoggerFactory.getLogger(EadEntry.class);
 
     // parent node
     private EadEntry parentNode;
@@ -90,12 +102,15 @@ public class EadEntry {
     // true if the validation of all metadata fields was successful
     private boolean valid = true;
 
+    private String descriptionLevel;
+
     private int index;
     private int parentIndex;
     private boolean visible = true;
     private boolean expanded = false;
     private boolean hasChild = false;
     private boolean showMetadata = false;
+    private String associatedRecordPi;
 
     public EadEntry(Integer order, Integer hierarchy) {
         this.orderNumber = order;
@@ -123,26 +138,36 @@ public class EadEntry {
         List<EadEntry> list = new LinkedList<>();
         list.add(this);
         //        if (displayChildren) {
-        if (subEntryList != null) {
+        if (subEntryList != null && !subEntryList.isEmpty()) {
+            setHasChild(true);
             for (EadEntry ds : subEntryList) {
                 list.addAll(ds.getAsFlatList());
+                logger.trace("ID: {}, level {}", ds.getId(), ds.getHierarchy());
             }
         }
         //        }
         return list;
     }
-    
+
+    public void findAssociatedRecordPi() throws PresentationException, IndexUnreachableException {
+        if (id == null) {
+            associatedRecordPi = "";
+            return;
+        }
+
+        SolrDocument doc = DataManager.getInstance()
+                .getSearchIndex()
+                .getFirstDoc("+" + SolrConstants.TECTONICS_ID + ":" + id, Collections.singletonList(SolrConstants.PI));
+        if (doc != null) {
+            associatedRecordPi = (String) doc.getFieldValue(SolrConstants.PI);
+        } else {
+            associatedRecordPi = "";
+        }
+    }
+
     public String toggleMetadata() {
         showMetadata = !showMetadata;
         return "";
-    }
-
-    /**
-     * 
-     * @return the showMetadata
-     */
-    public boolean isShowMetadata() {
-        return showMetadata;
     }
 
     public boolean isHasChildren() {
@@ -583,6 +608,20 @@ public class EadEntry {
     }
 
     /**
+     * @return the descriptionLevel
+     */
+    public String getDescriptionLevel() {
+        return descriptionLevel;
+    }
+
+    /**
+     * @param descriptionLevel the descriptionLevel to set
+     */
+    public void setDescriptionLevel(String descriptionLevel) {
+        this.descriptionLevel = descriptionLevel;
+    }
+
+    /**
      * @return the index
      */
     public int getIndex() {
@@ -650,5 +689,32 @@ public class EadEntry {
      */
     public void setHasChild(boolean hasChild) {
         this.hasChild = hasChild;
+    }
+
+    /**
+     * @return the showMetadata
+     */
+    public boolean isShowMetadata() {
+        return showMetadata;
+    }
+
+    /**
+     * @param showMetadata the showMetadata to set
+     */
+    public void setShowMetadata(boolean showMetadata) {
+        this.showMetadata = showMetadata;
+    }
+
+    /**
+     * @return the associatedRecordPi
+     * @throws IndexUnreachableException
+     * @throws PresentationException
+     */
+    public String getAssociatedRecordPi() throws PresentationException, IndexUnreachableException {
+        if (associatedRecordPi == null) {
+            findAssociatedRecordPi();
+        }
+
+        return associatedRecordPi;
     }
 }
