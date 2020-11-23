@@ -82,7 +82,6 @@
                         });
                 	</script>
                 </div>
-                <ui:fragment rendered="#{!searchBean.showReducedSearchOptions}">
                     <div class="search-standard__filter-link">
                         <h:commandLink rendered="#{navigationHelper.cmsPage}" value="#{msg.searchAdvanced}" action="#{searchBean.setActiveSearchType(1)}">
                             <f:ajax render="searchArea #{renderOnSearchTypeChange}" />
@@ -91,7 +90,6 @@
                             <a href="#{request.contextPath}/searchadvanced/">#{msg.searchAdvanced}</a>
                         </ui:fragment>
                     </div>
-                </ui:fragment>
             </div>
 
             <!-- SEARCH STANDARD ACTION -->
