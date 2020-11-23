@@ -95,6 +95,7 @@ public class EadEntry {
     private boolean visible = true;
     private boolean expanded = false;
     private boolean hasChild = false;
+    private boolean showMetadata = false;
 
     public EadEntry(Integer order, Integer hierarchy) {
         this.orderNumber = order;
@@ -129,6 +130,19 @@ public class EadEntry {
         }
         //        }
         return list;
+    }
+    
+    public String toggleMetadata() {
+        showMetadata = !showMetadata;
+        return "";
+    }
+
+    /**
+     * 
+     * @return the showMetadata
+     */
+    public boolean isShowMetadata() {
+        return showMetadata;
     }
 
     public boolean isHasChildren() {
@@ -421,6 +435,25 @@ public class EadEntry {
         }
 
         return null;
+    }
+
+    public List<EadMetadataField> getAllAreaLists() {
+        List<EadMetadataField> ret = new ArrayList<>(getIdentityStatementAreaList().size()
+                + getContextAreaList().size()
+                + getContentAndStructureAreaAreaList().size()
+                + getAccessAndUseAreaList().size()
+                + getAlliedMaterialsAreaList().size()
+                + getNotesAreaList().size()
+                + getDescriptionControlAreaList().size());
+        ret.addAll(getIdentityStatementAreaList());
+        ret.addAll(getContextAreaList());
+        ret.addAll(getContentAndStructureAreaAreaList());
+        ret.addAll(getAccessAndUseAreaList());
+        ret.addAll(getAlliedMaterialsAreaList());
+        ret.addAll(getNotesAreaList());
+        ret.addAll(getDescriptionControlAreaList());
+
+        return ret;
     }
 
     /**

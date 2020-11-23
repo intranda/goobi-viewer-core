@@ -59,7 +59,7 @@
 
 								<nav class="toc__list-expandable clearfix">
 									<ul>
-										<ui:repeat var="entry" value="#{tectonicsBean.tectonicsTree.treeView}">
+										<c:forEach var="entry" items="#{tectonicsBean.tectonicsTree.treeView}" varStatus="status">
 											<h:panelGroup rendered="#{entry.visible}">
 												<li class="toc__list-expandable-elem #{entry.hasChild == true ? 'parent' : 'child' }"
 												    data-id="id_#{entry.id}" style="padding-left: #{entry.hierarchy * indent}px">
@@ -68,12 +68,14 @@
 															<h:panelGroup rendered="#{entry.hasChild}">
 																<!-- EXPAND -->
 																<div class="toc__list-expandable-expand">
-																	<h:commandLink action="#{tectonicsBean.setChildrenVisible(entry)}" rendered="#{!entry.expanded}">
+																	<h:commandLink action="#{tectonicsBean.setChildrenVisible(entry)}"
+																	    rendered="#{!entry.expanded}">
 																		<i class="fa fa-plus-square-o" aria-hidden="true"></i>
 																		<f:passThroughAttribute name="aria-label" value="#{msg.allOpen}" />
 																		<f:ajax render="@form" />
 																	</h:commandLink>
-																	<h:commandLink action="#{tectonicsBean.setChildrenInvisible(entry)}" rendered="#{entry.expanded}">
+																	<h:commandLink action="#{tectonicsBean.setChildrenInvisible(entry)}"
+																	    rendered="#{entry.expanded}">
 																		<i class="fa fa-minus-square-o" aria-hidden="true"></i>
 																		<f:passThroughAttribute name="aria-label" value="#{msg.all}" />
 																		<f:ajax render="@form" />
@@ -84,38 +86,27 @@
 														<div class="col-12 col-sm-8 col-md-9">
 															<!-- TITLE -->
 															<div class="toc__list-expandable-title">
-																#{entry.label} (#{entry.hierarchy})
+																<h:commandLink action="#{entry.toggleMetadata}" >
+																    #{entry.label} (#{entry.hierarchy})
+																    <f:ajax render="metadata_#{status.count}" />
+																</h:commandLink>
 															</div>
 														</div>
-														<div class="col-12 col-sm-3 col-md-2">
-
-														</div>
 													</div>
-													<div>
-													    <c:if test="#{entry.getIdentityStatementAreaField('Shelfmark').filled}">
-													        #{msg[entry.getIdentityStatementAreaField('Shelfmark').name]}: #{entry.getIdentityStatementAreaField('Shelfmark').value}
-													    </c:if>
-													</div>
-													<ui:repeat var="field" value="#{entry.contentAndStructureAreaAreaList}">
-													    <h:outputText rendered="#{field.filled}">
-                                                            <br />#{field.name}: #{field.value}
-                                                        </h:outputText>
-													</ui:repeat>
-													<br /> identity: 
-                                                    <ui:repeat var="field" value="#{entry.identityStatementAreaList}">
-                                                        <h:outputText rendered="#{field.filled}">
-                                                            <br />#{field.name}: #{field.value}
-                                                        </h:outputText>
-                                                    </ui:repeat>
-                                                    <br />notes: 
-                                                    <ui:repeat var="field" value="#{entry.notesAreaList}">
-                                                        <h:outputText rendered="#{field.filled}">
-                                                            <br />#{field.name}: #{field.value}
-                                                        </h:outputText>
-                                                    </ui:repeat>
+													
+													<!-- METADATA -->
+													<h:panelGroup class="row" id="metadata_#{status.count}">
+													   <h:panelGroup rendered="#{entry.showMetadata}">
+                                                            <c:forEach var="field" items="#{entry.allAreaLists}">
+                                                                <h:outputText rendered="#{field.filled and field.visible}">
+                                                                    <br />#{field.name}: #{field.value}
+                                                                </h:outputText>
+                                                            </c:forEach>
+													   </h:panelGroup>
+                                                    </h:panelGroup>
 												</li>
 											</h:panelGroup>
-										</ui:repeat>
+										</c:forEach>
 									</ul>
 								</nav>
 							</h:panelGroup>

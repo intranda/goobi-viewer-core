@@ -95,7 +95,7 @@ public class TectonicsBean implements Serializable {
      * @return
      */
     public EADTree getTectonicsTree() {
-        logger.trace("getTectonicsTree");
+        // logger.trace("getTectonicsTree");
         EADTree h = tectonicsTree;
         if (h == null) {
             synchronized (lock) {
@@ -108,9 +108,8 @@ public class TectonicsBean implements Serializable {
             }
         }
 
-        
-//        tectonicsTree =  generateHierarchy();
-        
+        //        tectonicsTree =  generateHierarchy();
+
         return tectonicsTree;
     }
 
