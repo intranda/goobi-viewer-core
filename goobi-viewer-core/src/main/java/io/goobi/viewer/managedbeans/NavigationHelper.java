@@ -50,6 +50,7 @@ import com.ocpsoft.pretty.PrettyContext;
 import com.ocpsoft.pretty.faces.config.mapping.PathParameter;
 import com.ocpsoft.pretty.faces.url.URL;
 
+import de.intranda.monitoring.timer.TimeAnalysis;
 import io.goobi.viewer.Version;
 import io.goobi.viewer.controller.Configuration;
 import io.goobi.viewer.controller.DataManager;

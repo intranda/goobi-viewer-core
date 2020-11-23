@@ -53,6 +53,7 @@ import org.json.JSONException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import de.intranda.monitoring.timer.Time;
 import de.unigoettingen.sub.commons.contentlib.exceptions.ContentNotFoundException;
 import de.unigoettingen.sub.commons.contentlib.exceptions.IllegalRequestException;
 import io.goobi.viewer.controller.DataManager;
@@ -62,6 +63,7 @@ import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.exceptions.ViewerConfigurationException;
+import io.goobi.viewer.managedbeans.CmsBean;
 import io.goobi.viewer.managedbeans.CmsMediaBean;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.model.cms.itemfunctionality.BookmarksFunktionality;
@@ -300,6 +302,9 @@ public class CMSContentItem implements Comparable<CMSContentItem>, CMSMediaHolde
 
     @Transient
     private int nestedPagesCount = 0;
+    
+    @Transient
+    private Map<String, CollectionResult> dcStrings = null;
 
     /**
      * Noop constructor for javax.persistence
@@ -936,6 +941,7 @@ public class CMSContentItem implements Comparable<CMSContentItem>, CMSMediaHolde
     public void setCollectionField(String collectionField) {
         this.collectionField = collectionField;
         this.collection = null;
+        this.dcStrings = null;
     }
 
     /**
@@ -1036,16 +1042,27 @@ public class CMSContentItem implements Comparable<CMSContentItem>, CMSMediaHolde
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      */
     public List<String> getPossibleBaseCollectionList() throws IndexUnreachableException {
-        if (StringUtils.isBlank(collectionField)) {
-            return Collections.singletonList("");
+            if (StringUtils.isBlank(collectionField)) {
+                return Collections.singletonList("");
+            } 
+            Map<String, CollectionResult> dcStrings = getColletionMap();
+            List<String> list = new ArrayList<>(dcStrings.keySet());
+            list.add(0, "");
+            Collections.sort(list);
+            return list;
+    }
+
+    /**
+     * @return
+     * @throws IndexUnreachableException
+     */
+    public Map<String, CollectionResult> getColletionMap() throws IndexUnreachableException {
+        if(dcStrings == null) {            
+            dcStrings =
+                    SearchHelper.findAllCollectionsFromField(collectionField, collectionField, getSearchPrefix(), true, true,
+                            DataManager.getInstance().getConfiguration().getCollectionSplittingChar(collectionField));
         }
-        Map<String, CollectionResult> dcStrings =
-                SearchHelper.findAllCollectionsFromField(collectionField, collectionField, getSearchPrefix(), true, true,
-                        DataManager.getInstance().getConfiguration().getCollectionSplittingChar(collectionField));
-        List<String> list = new ArrayList<>(dcStrings.keySet());
-        list.add(0, "");
-        Collections.sort(list);
-        return list;
+        return dcStrings;
     }
 
     /**
@@ -1058,9 +1075,7 @@ public class CMSContentItem implements Comparable<CMSContentItem>, CMSMediaHolde
         if (StringUtils.isBlank(collectionField)) {
             return Collections.singletonList("");
         }
-        Map<String, CollectionResult> dcStrings =
-                SearchHelper.findAllCollectionsFromField(collectionField, collectionField, getSearchPrefix(), true, true,
-                        DataManager.getInstance().getConfiguration().getCollectionSplittingChar(collectionField));
+        Map<String, CollectionResult> dcStrings = getColletionMap();
         List<String> list = new ArrayList<>(dcStrings.keySet());
         list = list.stream()
                 .filter(c -> StringUtils.isBlank(getBaseCollection()) || c.startsWith(getBaseCollection() + "."))
