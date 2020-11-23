@@ -95,7 +95,7 @@ public class SequenceBuilder extends AbstractBuilder {
 
     protected ImageDeliveryBean imageDelivery = BeanUtils.getImageDeliveryBean();
     private BuildMode buildMode = BuildMode.IIIF;
-    private PageType preferredView = PageType.viewObject;
+    private PageType preferedView = PageType.viewObject;
 
     /**
      * <p>
@@ -325,7 +325,7 @@ public class SequenceBuilder extends AbstractBuilder {
         Sequence parent = new Sequence(getSequenceURI(doc.getPi(), null));
         canvas.addWithin(parent);
 
-        LinkingContent viewerPage = new LinkingContent(new URI(getViewUrl(page, getPreferredView())));
+        LinkingContent viewerPage = new LinkingContent(new URI(getViewUrl(page, getPreferedView())));
         viewerPage.setLabel(new SimpleMetadataValue("goobi viewer"));
         canvas.addRendering(viewerPage);
 
@@ -564,8 +564,8 @@ public class SequenceBuilder extends AbstractBuilder {
      *
      * @return the preferredView
      */
-    public PageType getPreferredView() {
-        return preferredView;
+    public PageType getPreferedView() {
+        return preferedView;
     }
 
     /**
@@ -576,9 +576,10 @@ public class SequenceBuilder extends AbstractBuilder {
      * @param preferredView the preferredView to set
      * @return a {@link io.goobi.viewer.model.iiif.presentation.builder.SequenceBuilder} object.
      */
-    public SequenceBuilder setPreferredView(PageType preferredView) {
-        this.preferredView = preferredView;
+    public SequenceBuilder setPreferedView(PageType preferredView) {
+        this.preferedView = preferredView;
         return this;
     }
+
 
 }
