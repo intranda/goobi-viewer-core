@@ -15,7 +15,7 @@ wich passes clicks to the commandbutton
         <composite:attribute name="id" required="false" default="" />
         <composite:attribute name="id" required="false" default="#{cc.clientId}" />
         <composite:attribute name="value" required="false" default="" />
-        <composite:attribute name="ariaLabel" required="false" default=""/>
+        <composite:attribute name="ariaLabel" required="false" default="#{msg.search}"/>
         <composite:attribute name="action" method-signature="java.lang.String action(java.lang.String)" />
         <composite:actionSource name="actionEvent" targets="#{cc.attrs.id != '' ? cc.attrs.id : cc.clientId}" />
     </composite:interface>
@@ -27,7 +27,7 @@ wich passes clicks to the commandbutton
         		<f:passThroughAttribute name="data-click-target" value="#{cc.attrs.id}" />
         	</c:if>
 		</h:commandButton>
-		<button class="#{cc.attrs.styleClass}" id="#{cc.attrs.id}" type="#{cc.attrs.type}"
+		<button class="#{cc.attrs.styleClass}" id="#{cc.attrs.id}" type="#{cc.attrs.type}" aria-label="#{cc.attrs.ariaLabel}"
 			onclick="$('[data-click-target=#{cc.attrs.id}]').click()">
 			#{cc.attrs.value}		
 			<composite:insertChildren/>

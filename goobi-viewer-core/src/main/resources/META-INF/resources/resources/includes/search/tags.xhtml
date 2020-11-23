@@ -13,21 +13,21 @@
     <!-- TAGS -->
     <h:panelGroup rendered="#{tagCloudBean.tagsTitles.size() > 0}">
         <h3>#{msg.title}</h3>
-        <viewerComponent:tagCloud tagMethod="#{tagCloudBean.tagsTitles}" />
+        <viewerComponent:tagCloud tagMethod="#{tagCloudBean.tagsTitles}" ariaLabel="#{msg.title}" />
     </h:panelGroup>
 
     <h:panelGroup rendered="#{tagCloudBean.tagsPersons.size() > 0}">
         <h3>#{msg.persons}</h3>
-        <viewerComponent:tagCloud tagMethod="#{tagCloudBean.tagsPersons}" />
+        <viewerComponent:tagCloud tagMethod="#{tagCloudBean.tagsPersons}" ariaLabel="#{msg.persons}" />
     </h:panelGroup>
 
     <h:panelGroup rendered="#{tagCloudBean.tagsPlaces.size() > 0}">
         <h3>#{msg.places}</h3>
-        <viewerComponent:tagCloud tagMethod="#{tagCloudBean.tagsPlaces}" />
+        <viewerComponent:tagCloud tagMethod="#{tagCloudBean.tagsPlaces}" ariaLabel="#{msg.places}" />
     </h:panelGroup>
 
     <h:panelGroup rendered="#{tagCloudBean.tagsYears.size() > 0}">
         <h3>#{msg.years}</h3>
-        <viewerComponent:tagCloud tagMethod="#{tagCloudBean.tagsYears}" />
+        <viewerComponent:tagCloud tagMethod="#{tagCloudBean.tagsYears}" ariaLabel="#{msg.years}"/>
     </h:panelGroup>
 </ui:composition>
