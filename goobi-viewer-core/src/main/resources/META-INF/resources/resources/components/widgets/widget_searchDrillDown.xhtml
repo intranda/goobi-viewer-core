@@ -29,8 +29,10 @@
                                     
                                     <!-- FILTER FACETS -->
                                     <div class="widget-search-drilldown__filter">
-                                        <input type="text" id="collectionDrillDownFilter_#{status.index}" class="widget-search-drilldown__filter-input" placeholder="#{msg.placeholder__filter_search_results}" aria-label="#{msg.placeholder__filter_search_results}"/>
-                                        <button type="button" class="btn btn--clean" data-toggle="filter-input" aria-label="#{msg.placeholder__filter_search_results}"></button>
+                                        <input type="text" id="collectionDrillDownFilter_#{status.index}" tabindex="-1" class="widget-search-drilldown__filter-input -no-outline" placeholder="#{msg.placeholder__filter_search_results}" aria-label="#{msg.placeholder__filter_search_results}"/>
+                                        <button type="button" class="btn btn--clean" data-toggle="filter-input" aria-label="#{msg.placeholder__filter_search_results}">
+                                        	<i class="fa fa-search" aria-hidden="true"></i>
+                                        </button>
                                     </div>
                                         
                                     <ul>
@@ -46,6 +48,7 @@
                                                     </div>
                                                     <f:passThroughAttribute name="data-toggle" value="tooltip" />
                                                     <f:passThroughAttribute name="data-placement" value="top" />
+                                                    <f:passThroughAttribute name="aria-label" value="#{msg[field.key.concat('_DD')]}: #{msg[facet.label]}" />
                                                 </h:commandLink>
                                             </li>
                                         </ui:repeat>
@@ -56,6 +59,7 @@
                                                 <li>
                                                     <h:outputLink value="#{navigationHelper.getSearchUrl(searchBean.activeSearchType)}/-/#{searchBean.exactSearchString}/#{searchBean.currentPage}/#{searchBean.sortString}/#{searchBean.facets.currentFacetStringPrefix}#{facet.urlEscapedLink}/">
                                                         #{msg[facet.label]} (#{facet.count})
+                                                        <f:passThroughAttribute name="aria-label" value="#{msg[field.key.concat('_DD')]}: #{msg[facet.label]}" />
                                                     </h:outputLink>
                                                 </li>
                                             </ui:fragment>

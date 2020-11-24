@@ -64,6 +64,7 @@ import io.goobi.viewer.model.iiif.presentation.builder.OpenAnnotationBuilder;
 import io.goobi.viewer.model.iiif.presentation.builder.SequenceBuilder;
 import io.goobi.viewer.model.iiif.presentation.builder.StructureBuilder;
 import io.goobi.viewer.model.viewer.BrowseDcElement;
+import io.goobi.viewer.model.viewer.PageType;
 import io.goobi.viewer.model.viewer.PhysicalElement;
 import io.goobi.viewer.model.viewer.StringPair;
 import io.goobi.viewer.model.viewer.StructElement;
@@ -130,21 +131,37 @@ public class IIIFPresentationResourceBuilder {
         return range.orElseThrow(() -> new ContentNotFoundException("Not document with PI = " + pi + " and logId = " + logId + " found"));
     }
 
-    public Sequence getBaseSequence(String pi, BuildMode buildMode) throws PresentationException, IndexUnreachableException, URISyntaxException,
+    public Sequence getBaseSequence(String pi, BuildMode buildMode, String preferedViewName) throws PresentationException, IndexUnreachableException, URISyntaxException,
             ViewerConfigurationException, DAOException, IllegalRequestException, ContentNotFoundException {
 
         StructElement doc = getManifestBuilder().getDocument(pi);
+        PageType preferedView = getPreferedPageTypeForCanvas(preferedViewName);
         
         IPresentationModelElement manifest = new ManifestBuilder(urls).setBuildMode(buildMode).generateManifest(doc);
 
         if (manifest instanceof Collection) {
             throw new IllegalRequestException("Identifier refers to a collection which does not have a sequence");
         } else if (manifest instanceof Manifest) {
-            new SequenceBuilder(urls).setBuildMode(buildMode).addBaseSequence((Manifest) manifest, doc, manifest.getId().toString(), request);
+            new SequenceBuilder(urls).setBuildMode(buildMode).setPreferedView(preferedView).addBaseSequence((Manifest) manifest, doc, manifest.getId().toString(), request);
             return ((Manifest) manifest).getSequences().get(0);
         }
         throw new ContentNotFoundException("Not manifest with identifier " + pi + " found");
 
+    }
+
+    /**
+     * @param preferedViewName
+     * @return
+     */
+    public PageType getPreferedPageTypeForCanvas(String preferedViewName) {
+        PageType preferedView = PageType.viewObject;
+        if(StringUtils.isNotBlank(preferedViewName)) {
+            preferedView = PageType.getByName(preferedViewName);
+            if(preferedView == PageType.other) {
+                preferedView = PageType.viewObject;
+            }
+        }
+        return preferedView;
     }
 
     public Layer getLayer(String pi, String typeName, BuildMode buildMode) throws PresentationException, IndexUnreachableException,

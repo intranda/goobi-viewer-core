@@ -45,16 +45,16 @@
 				
 				<div class="tpl-privacy__text">
 					<ui:include src="#{cmsPage.getContent('text01')}" />
+
+	                <!-- PIWIK IFRAME -->
+	                <iframe title="web analytics" src="//#{configurationBean.piwikBaseURL}/index.php?module=CoreAdminHome&amp;action=optOut&amp;language=de"></iframe>	
+				
+					<ui:fragment rendered="#{cmsPage.hasContent('text02')}">
+						<div class="tpl-privacy__text-bottom">
+								<ui:include src="#{cmsPage.getContent('text02')}" />
+						</div>
+					</ui:fragment>
 				</div>
-                
-                <!-- PIWIK IFRAME -->
-                <iframe title="web analytics" src="//#{configurationBean.piwikBaseURL}/index.php?module=CoreAdminHome&amp;action=optOut&amp;language=de"></iframe>
-			
-				<ui:fragment rendered="#{cmsPage.hasContent('text02')}">
-					<div class="tpl-privacy__text tpl-privacy__text__bottom">
-							<ui:include src="#{cmsPage.getContent('text02')}" />
-					</div>
-				</ui:fragment>
 			</div>
 		</f:view>
 	</ui:define>

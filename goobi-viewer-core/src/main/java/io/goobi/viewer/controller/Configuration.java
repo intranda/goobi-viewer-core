@@ -884,7 +884,7 @@ public final class Configuration extends AbstractConfiguration {
             return subConfig.getString("splittingCharacter", ".");
         }
 
-        return getLocalString("viewer.splittingCharacter", ".");
+        return getLocalString("collections.splittingCharacter", ".");
     }
 
     /**

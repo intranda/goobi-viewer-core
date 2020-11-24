@@ -2147,7 +2147,6 @@ riot.tag2('fsthumbnails', '<div class="fullscreen__view-image-thumbs" ref="thumb
                         datatype: "JSON"
                     } ).then( function( data ) {
                     	this.thumbnails = data.canvases;
-                    	console.log("loaded thumbs ", this.thumbnails);
                     	this.update();
                     }.bind( this ) );
     			}

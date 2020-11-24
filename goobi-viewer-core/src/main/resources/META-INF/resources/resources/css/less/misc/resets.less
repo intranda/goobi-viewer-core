@@ -149,9 +149,7 @@ pre {
 	font-size: 1.2rem;
 }
 
-button:focus {
-	outline: 0;
-}
+button:focus {}
 
 .badge {
 	padding: .2em .6em .3em;
@@ -220,7 +218,6 @@ button:focus {
     &:focus {
         border-color: @blue;
         box-shadow: none;
-        outline: none;
     }
 }
 /*
@@ -339,6 +336,19 @@ display: flex;
 button {
 	border-radius: 0;
 }
-*:focus {
-	outline: none;
+
+/* add a focusring for better accessibility */
+/* set to important, because of styles in bootstrap.custom.css */
+*:focus, a:focus {
+	outline: 1px dotted !important;
 }
+
+.-no-outline:focus, .-no-outline:active {
+	outline: none !important;
+}
+
+.-active-border:focus, .-active-border:active {
+	border: 1px solid #3365a9 !important;
+}
+
+
