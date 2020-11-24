@@ -338,6 +338,15 @@ button {
 }
 
 /* add a focusring for better accessibility */
+/* set to important, because of styles in bootstrap.custom.css */
 *:focus, a:focus {
 	outline: 1px dotted !important;
+}
+
+.-no-outline:focus, .-no-outline:active {
+	outline: none !important;
+}
+
+.-active-border:focus, .-active-border:active {
+	border-color: #3365a9 !important;
 }
