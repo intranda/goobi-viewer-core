@@ -50,7 +50,7 @@
             <!-- SEARCH STANDARD INPUT -->
             <div class="search-standard__input">
                 <div class="search-standard__input-autocomplete">
-                    <p:autoComplete id="pfAutocomplete" completeMethod="#{search.autocomplete}" value="#{search.searchString}" maxResults="15" minQueryLength="3"
+                    <p:autoComplete id="pfAutocomplete" inputStyleClass="-no-outline -active-border" completeMethod="#{search.autocomplete}" value="#{search.searchString}" maxResults="15" minQueryLength="3"
                         autoHighlight="false">
                         <f:passThroughAttribute name="placeholder" value="#{msg.searchFieldDemoText}" />
                         <f:passThroughAttribute name="aria-label" value="#{msg.aria_label__search_form}" />
