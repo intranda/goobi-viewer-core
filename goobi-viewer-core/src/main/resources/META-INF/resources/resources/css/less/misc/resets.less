@@ -149,7 +149,9 @@ pre {
 	font-size: 1.2rem;
 }
 
-button:focus {}
+button:focus {
+	outline: none;
+}
 
 .badge {
 	padding: .2em .6em .3em;
@@ -218,6 +220,7 @@ button:focus {}
     &:focus {
         border-color: @blue;
         box-shadow: none;
+		outline: none;
     }
 }
 /*
@@ -337,8 +340,15 @@ button {
 	border-radius: 0;
 }
 
-/* add a focusring for better accessibility */
+*:focus {
+	outline: none;
+}
+
+/* add a focus ring for better accessibility */
 /* set to important, because of styles in bootstrap.custom.css */
+/* focus ring on form elements can be switched off (-no-outline), instead a blue border can be added
+/* another option using js: add a utility class (.show-outlines) to the body when tab is pressed, remove it when users click
+
 *:focus, a:focus {
 	outline: 1px dotted !important;
 }
@@ -351,4 +361,4 @@ button {
 	border: 1px solid #3365a9 !important;
 }
 
-
+*/

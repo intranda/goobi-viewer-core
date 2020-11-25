@@ -350,7 +350,7 @@ public class IIIFPresentationResourceBuilder {
             
             AbstractApiUrlManager imageUrls = DataManager.getInstance().getRestApiManager().getContentApiManager();
             
-            if(manifest.getThumbnails().isEmpty()) {            
+            if(imageUrls != null && manifest.getThumbnails().isEmpty()) {            
                 int thumbsWidth = DataManager.getInstance().getConfiguration().getThumbnailsWidth();
                 int thumbsHeight = DataManager.getInstance().getConfiguration().getThumbnailsHeight();
                 String thumbnailUrl = imageUrls.path(RECORDS_RECORD, RECORDS_IMAGE_IIIF).params(ele.getPi(), "full", "!" + thumbsWidth + "," + thumbsHeight, 0, "default", "jpg").build();

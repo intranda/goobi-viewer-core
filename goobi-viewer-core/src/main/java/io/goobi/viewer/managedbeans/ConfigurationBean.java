@@ -894,6 +894,7 @@ public class ConfigurationBean implements Serializable {
     public boolean isDisplayCrowdsourcingModuleLinks() {
         return DataManager.getInstance().getConfiguration().isDisplayCrowdsourcingModuleLinks();
     }
+    
 
     /**
      * <p>
@@ -921,6 +922,7 @@ public class ConfigurationBean implements Serializable {
         }
     }
 
+    
     /**
      * <p>
      * getTimeMatrixEndYear.

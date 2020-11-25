@@ -101,6 +101,7 @@
                                                                 <h:inputText id="advsearchValueText_#{statusGroup.count}-#{status.count}"
                                                                     styleClass="form-control value-text" value="#{queryItem.value}">
                                                                     <f:passThroughAttribute name="placeholder" value="#{msg.searchFieldDemoText}" />
+                                                                    <f:passThroughAttribute name="aria-label" value="#{msg.searchFieldDemoText}" />
                                                                 </h:inputText>
                                                                 <div class="input-group-append">
                                                                     <button type="button" class="btn btn--clean reset"
