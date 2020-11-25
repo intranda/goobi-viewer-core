@@ -258,6 +258,27 @@ public class EADTree implements Serializable {
     }
 
     /**
+     * 
+     * @return
+     */
+    public EadEntry getRootElement() {
+        return getRootElement(DEFAULT_GROUP);
+    }
+
+    /**
+     * 
+     * @param group
+     * @return
+     */
+    public EadEntry getRootElement(String group) {
+        if (group == null || entryMap == null || entryMap.isEmpty()) {
+            return null;
+        }
+
+        return entryMap.get(group).get(0);
+    }
+
+    /**
      * Collapses all elements below the element with the given ID.
      *
      * @param parentId

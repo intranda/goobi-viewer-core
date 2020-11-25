@@ -1,5 +1,6 @@
 <ui:composition 
     xmlns="http://www.w3.org/1999/xhtml" 
+    xmlns:c="http://java.sun.com/jsp/jstl/core"
     xmlns:h="http://xmlns.jcp.org/jsf/html" 
     xmlns:f="http://xmlns.jcp.org/jsf/core" 
     xmlns:p="http://primefaces.org/ui"
@@ -26,10 +27,118 @@
 
         		<!-- LEFT SIDE -->
 				<div class="tec-archives__left-side">
-					<div class="tec-archives__graphic-tree">
-					
-					<!-- ADD HERE: THE GRAPHIC TREE WITH ICONS -->
-					Lorem Ipsum
+				
+				                
+                    <div class="tec-archives__graphic-tree">
+                    
+                    <h:form id="tocForm" prependId="false">
+				
+				        <div class="search-standard__input">
+                            <div class="search-standard__input-autocomplete">
+                                <h:inputText id="tectonicsSearchField" inputStyleClass="-no-outline -active-border"
+                                    value="#{tectonicsBean.searchString}" immediate="true">
+                                    <f:ajax listener="#{tectonicsBean.searchAction}" render="tocTreeGroup" />
+                                </h:inputText>
+                            </div>
+                        </div>
+
+                        
+                        <!-- TOC TREEVIEW -->
+                        <h:panelGroup id="tocTreeGroup">
+                            <c:set var="indent" value="#{configurationBean.tocIndentation}" scope="request" />
+                            <!-- EXPANDABLE TREEVIEW -->
+                            <h:panelGroup>
+                                <!-- EXPAND ALL -->
+                                <div class="toc__list-expandable-all clearfix">
+                                    <ul>
+                                        <li>
+                                            <h:commandLink action="#{tectonicsBean.hierarchy.collapseAll}" title="#{msg.allClose}">
+                                                <i class="fa fa-minus-square-o" aria-hidden="true"></i>
+                                                <f:passThroughAttribute name="data-toggle" value="tooltip" />
+                                                <f:passThroughAttribute name="data-placement" value="top" />
+                                                <f:passThroughAttribute name="aria-label" value="#{msg.allClose}" />
+                                                <f:ajax render="tocForm" />
+                                            </h:commandLink>
+                                        </li>
+                                        <li>
+                                            <h:commandLink action="#{tectonicsBean.hierarchy.expandAll}" title="#{msg.allOpen}">
+                                                <i class="fa fa-plus-square-o" aria-hidden="true"></i>
+                                                <f:passThroughAttribute name="data-toggle" value="tooltip" />
+                                                <f:passThroughAttribute name="data-placement" value="top" />
+                                                <f:passThroughAttribute name="aria-label" value="#{msg.allOpen}" />
+                                                <f:ajax render="tocForm" />
+                                            </h:commandLink>
+                                        </li>
+                                    </ul>
+                                </div>
+
+                                <nav class="toc__list-expandable clearfix">
+                                    <ul>
+                                        <c:forEach var="entry" items="#{tectonicsBean.tectonicsTree.treeView}" varStatus="status">
+                                            <h:panelGroup rendered="#{entry.visible}">
+                                                <li class="toc__list-expandable-elem #{entry.hasChild == true ? 'parent' : 'child' }"
+                                                    data-id="id_#{entry.id}" style="padding-left: #{entry.hierarchy * indent}px">
+                                                    <div class="row">
+                                                        <div class="col-12 col-sm-1">
+                                                            <h:panelGroup rendered="#{entry.hasChild}">
+                                                                <!-- EXPAND -->
+                                                                <div class="toc__list-expandable-expand">
+                                                                    <h:commandLink action="#{tectonicsBean.setChildrenVisible(entry)}"
+                                                                        rendered="#{!entry.expanded}">
+                                                                        <i class="fa fa-plus-square-o" aria-hidden="true"></i>
+                                                                        <f:passThroughAttribute name="aria-label" value="#{msg.allOpen}" />
+                                                                        <f:ajax render="@form" />
+                                                                    </h:commandLink>
+                                                                    <h:commandLink action="#{tectonicsBean.setChildrenInvisible(entry)}"
+                                                                        rendered="#{entry.expanded}">
+                                                                        <i class="fa fa-minus-square-o" aria-hidden="true"></i>
+                                                                        <f:passThroughAttribute name="aria-label" value="#{msg.all}" />
+                                                                        <f:ajax render="@form" />
+                                                                    </h:commandLink>
+                                                                </div>
+                                                            </h:panelGroup>
+                                                        </div>
+                                                        <div class="col-12 col-sm-8 col-md-9">
+                                                            <!-- TITLE -->
+                                                            <div class="toc__list-expandable-title">
+                                                                <!-- TODO icon -->
+                                                                #{entry.descriptionLevel}
+                                                                <h:commandLink action="#{entry.toggleMetadata}" >
+                                                                    #{entry.label} (#{entry.hierarchy})
+                                                                    <f:ajax render="metadata_#{status.count}" />
+                                                                </h:commandLink>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    
+                                                    <!-- METADATA -->
+                                                    <h:panelGroup class="row" id="metadata_#{status.count}">
+                                                       <h:panelGroup rendered="#{entry.showMetadata}">
+                                                            <c:forEach var="field" items="#{entry.allAreaLists}">
+                                                                <h:outputText rendered="#{field.filled and field.visible}">
+                                                                    <br />#{field.name}: #{field.value}
+                                                                </h:outputText>
+                                                            </c:forEach>
+                                                            <h:outputLink target="_blank"
+                                                                value="#{navigationHelper.applicationUrl}archives/">
+                                                                #{msg.tectonics_archiveView}
+                                                            </h:outputLink>
+                                                            <!-- TODO view selection, representative page -->
+                                                            <h:outputLink rendered="#{entry.associatedRecordPi != ''}" target="_blank"
+                                                                value="#{navigationHelper.objectUrl}/#{entry.associatedRecordPi}/1/">
+                                                                #{msg.tectonics_showRecord}
+                                                            </h:outputLink>
+                                                       </h:panelGroup>
+                                                    </h:panelGroup>
+                                                </li>
+                                            </h:panelGroup>
+                                        </c:forEach>
+                                    </ul>
+                                </nav>
+                            </h:panelGroup>
+
+                        </h:panelGroup>
+                    </h:form>
 					</div>
 				</div>
 				

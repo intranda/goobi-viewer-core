@@ -59,6 +59,8 @@ public class TectonicsBean implements Serializable {
 
     private EADTree tectonicsTree;
 
+    private String searchString;
+
     /**
      * Empty constructor.
      */
@@ -196,5 +198,24 @@ public class TectonicsBean implements Serializable {
         }
 
         return ret;
+    }
+    
+    public String searchAction() {
+        logger.trace("searchAction: {}", searchString);
+        return "";
+    }
+
+    /**
+     * @return the searchString
+     */
+    public String getSearchString() {
+        return searchString;
+    }
+
+    /**
+     * @param searchString the searchString to set
+     */
+    public void setSearchString(String searchString) {
+        this.searchString = searchString;
     }
 }
