@@ -16,12 +16,13 @@
     <ui:param name="displayHitsPerPage" value="#{displayHitsPerPage != null ? displayHitsPerPage : true}"></ui:param>
 
     
-    <!-- THIS INCLUDE MUSST BE WRAPPED IN AN DIV WITH THE CLASS ".search-list"! -->
+    <!-- THIS INCLUDE MUST BE WRAPPED IN AN DIV WITH THE CLASS ".search-list"! -->
 
     <!-- SEARCH LIST HITS -->
     <div class="search-list__hits">
         <!-- SEARCH LIST SORTING -->
         <h:panelGroup rendered="#{showSortingOptions and search.hitsCount > 1}">
+        	<h3 class="-sr-only">#{msg.searchHitNavigation}:</h3>
             <div class="search-list__sorting">
             	<ui:fragment rendered="#{displayHitsPerPage}">
                     <div class="search-list__sorting__item">
