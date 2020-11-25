@@ -335,11 +335,14 @@
 																				<div>
 																					<ui:repeat id="metadataFields" var="field"
 																						value="#{question.metadataFields}">
-																						<div class="badge badge-info">
-																						<h:commandLink value="#{msg[field]}" action="#{question.removeMetadataField(field)}">
-																							<f:ajax render="createCampaignForm:questions:#{status.index}:question"></f:ajax>
+																						<h:commandLink action="#{question.removeMetadataField(field)}">
+																							<div class="badge badge-info">
+																								#{msg[field]}
+																								<f:ajax render="createCampaignForm:questions:#{status.index}:question"></f:ajax>
+																								<!-- remove button -->
+											                                                    <i class="fa fa-trash-o" aria-hidden="true"></i>
+																							</div>
 																						</h:commandLink>
-																						</div>
 																					</ui:repeat>
 																				</div>
 																				<h:selectOneMenu id="adminCrowdAddCampaignQueryMetadata" styleClass="form-control" value="#{question.metadataToAdd}">
