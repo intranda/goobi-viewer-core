@@ -30,6 +30,9 @@
                      <ui:include src="/resources/includes/search/searchHeader.xhtml">
 				 		<ui:param name="title" value="#{searchBean.activeSearchType == 0 ? msg.searchResults : msg.searchResultsAdvanced}:"></ui:param>
                      </ui:include>
+                     
+            <span class="topbar__item-filter-label">Sorting:</span>
+            <span>#{msg[fn:startsWith(fn:replace(searchBean.sortString, '!', ''), 'random_') ? 'searchSortingDropdown_random' : fn:replace(searchBean.sortString, '!', '')]} #{fn:startsWith(fn:replace(searchBean.sortString, '!', ''), 'random_') ? '' : (fn:startsWith(searchBean.sortString, '!') ?  msg.searchSortingDropdown_descending : msg.searchSortingDropdown_ascending)}</span>
 
                     <!-- SEARCH LIST -->
                     <div class="search-list">
