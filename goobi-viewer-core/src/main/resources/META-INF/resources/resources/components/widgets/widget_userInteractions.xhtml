@@ -112,6 +112,7 @@
                                         <f:selectItem itemLabel="#{msg.select}" itemValue="#{null}" />
                                         <f:selectItem itemLabel="#{msg.deleteRecord_select_delete}" itemValue="#{true}" />
                                         <f:selectItem itemLabel="#{msg.deleteRecord_select_purge}" itemValue="#{false}" />
+                                        <f:passThroughAttribute name="aria-label" value="#{msg.select}"/>
                                         <f:ajax render="@form" />
                                     </h:selectOneMenu>
                                 </div>
