@@ -11,10 +11,10 @@
 				<img src="{this.question.getImage(anno)}"></img>
 			</div>
 			<div class="crowdsourcing-annotations__question-metadata-list">
-				<div each="{field, fieldindex in this.metadataFields}" class="crowdsourcing-annotations__question-metadata-list-item">
-					<label>{Crowdsourcing.translate(field)}</label>
-					<div if="{this.hasOriginalValue(field)}">{this.getOriginalValue(field)}</div>
-					<input if="{!this.hasOriginalValue(field)}" disabled="{this.opts.item.isReviewMode() ? 'disabled' : ''}" ref="input_{index}_{fieldindex}" type="text" data-annotationindex="{index}" value="{anno.getValue(field)}" onChange="{setValueFromEvent}">
+				<div each="{field, fieldindex in this.metadataFields}" class="crowdsourcing-annotations__question-metadata-list-item mb-2">
+					<label class="crowdsourcing-annotations__question-metadata-list-item-label">{Crowdsourcing.translate(field)}:</label>
+					<div class="crowdsourcing-annotations__question-metadata-list-item-field" if="{this.hasOriginalValue(field)}">{this.getOriginalValue(field)}</div>
+					<input class="crowdsourcing-annotations__question-metadata-list-item-input form-control" if="{!this.hasOriginalValue(field)}" disabled="{this.opts.item.isReviewMode() ? 'disabled' : ''}" ref="input_{index}_{fieldindex}" type="text" data-annotationindex="{index}" value="{anno.getValue(field)}" onChange="{setValueFromEvent}">
 					</input>
 				</div>
 			</div>
