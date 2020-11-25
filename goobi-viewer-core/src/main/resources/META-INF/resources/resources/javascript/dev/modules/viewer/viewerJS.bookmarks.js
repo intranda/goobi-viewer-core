@@ -62,8 +62,8 @@ var viewerJS = ( function( viewer ) {
                 this.listsUpdated.subscribe( (list) => {
                     this.updateAddedStatus();
                 })
-                this.translator = new viewerJS.Translator(_messageKeys, this.config.rest, this.config.language);
-                this.translator.init()
+                this.translator = new viewerJS.Translator(this.config.rest.replace("/rest", "/api/v1"), this.config.language);
+                this.translator.init(_messageKeys)
                 .then(() => this.updateLists())
                 .then(() => {                    
                     this.prepareBookmarksPopup();

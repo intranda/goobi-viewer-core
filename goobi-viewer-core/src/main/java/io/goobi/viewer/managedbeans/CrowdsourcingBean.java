@@ -1060,4 +1060,6 @@ public class CrowdsourcingBean implements Serializable {
         }
         logger.trace("Added {} identifiers to the map.", DataManager.getInstance().getRecordCampaignMap().size());
     }
+    
+
 }

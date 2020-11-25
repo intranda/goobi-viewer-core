@@ -27,6 +27,7 @@
 					<richtextQuestion if="{question.questionType == 'RICHTEXT'}" question="{question}" item="{this.item}" index="{index}"></richtextQuestion>
 					<geoLocationQuestion if="{question.questionType == 'GEOLOCATION_POINT'}" question="{question}" item="{this.item}" index="{index}"></geoLocationQuestion>
 					<authorityResourceQuestion if="{question.questionType == 'NORMDATA'}" question="{question}" item="{this.item}" index="{index}"></authorityResourceQuestion>
+					<metadataQuestion if="{question.questionType == 'METADATA'}" question="{question}" item="{this.item}" index="{index}"></metadataQuestion>
 				</div>
 			</div>
 			<campaignItemLog if="{item.showLog}" item="{item}"></campaignItemLog>
