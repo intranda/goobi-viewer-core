@@ -136,22 +136,25 @@
 					
 					<div class="tec-archives__object-info">
 					
-                        <!-- METADATA -->
+
                         <h:panelGroup id="metadataGroup">
+                        
+                            <!-- METADATA -->
                             <c:forEach var="field" items="#{tectonicsBean.tectonicsTree.selectedEntry.allAreaLists}">
                                 <h:outputText rendered="#{field.filled and field.visible}">
                                     <br />#{field.name}: #{field.value}
                                 </h:outputText>
                             </c:forEach>
-                        </h:panelGroup>
                         
-                        <!-- ASSOCIATED RECORD -->
-                        <h:outputLink rendered="#{tectonicsBean.tectonicsTree.selectedEntry.associatedRecordPi != ''}" target="_blank"
-                            value="#{navigationHelper.objectUrl}/#{entry.associatedRecordPi}/1/">
-                            #{msg.tectonics_showRecord}
-                            <!-- TODO associated record thumbnail -->
-                            <!-- TODO view selection, representative page -->
-                        </h:outputLink>
+                            <!-- ASSOCIATED RECORD -->
+                            <h:outputLink rendered="#{tectonicsBean.tectonicsTree.selectedEntry.associatedRecordPi != ''}" target="_blank"
+                                value="#{navigationHelper.objectUrl}/#{tectonicsBean.tectonicsTree.selectedEntry.associatedRecordPi}/1/">
+                                    <!-- TODO less trivial image display -->
+                                    <img src="#{imageDelivery.thumbs.getThumbnailUrl(tectonicsBean.tectonicsTree.selectedEntry.associatedRecordPi)}" />
+                                    <!-- TODO view selection, representative page -->
+                            </h:outputLink>
+                        
+                        </h:panelGroup>
                         
 					</div>
 
