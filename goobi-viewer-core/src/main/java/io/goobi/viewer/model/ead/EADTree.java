@@ -40,6 +40,8 @@ public class EADTree implements Serializable {
     /** TOC element map. */
     private Map<String, List<EadEntry>> entryMap = new HashMap<>(1);
 
+    private EadEntry selectedEntry;
+
     private boolean treeBuilt = false;
 
     private int tocVisible = -1;
@@ -237,24 +239,38 @@ public class EADTree implements Serializable {
      *
      * @return a {@link io.goobi.viewer.model.toc.TOCElement} object.
      */
-    public EadEntry getActiveElement() {
-        EadEntry activeTocElement = null;
+    public EadEntry getActiveEntry() {
+        EadEntry ret = null;
         if (entryMap != null) {
             if (tocVisible != -1) {
                 expandTree(tocVisible);
-                activeTocElement = entryMap.get(DEFAULT_GROUP).get(tocVisible);
-                activeTocElement.setExpanded(true);
+                ret = entryMap.get(DEFAULT_GROUP).get(tocVisible);
+                ret.setExpanded(true);
                 tocVisible = -1;
             }
             if (tocInvisible != -1) {
                 collapseTree(tocInvisible);
-                activeTocElement = entryMap.get(DEFAULT_GROUP).get(tocInvisible);
-                activeTocElement.setExpanded(false);
+                ret = entryMap.get(DEFAULT_GROUP).get(tocInvisible);
+                ret.setExpanded(false);
                 tocInvisible = -1;
             }
         }
 
-        return activeTocElement;
+        return ret;
+    }
+
+    /**
+     * @return the selectedEntry
+     */
+    public EadEntry getSelectedEntry() {
+        return selectedEntry;
+    }
+
+    /**
+     * @param selectedEntry the selectedEntry to set
+     */
+    public void setSelectedEntry(EadEntry selectedEntry) {
+        this.selectedEntry = selectedEntry;
     }
 
     /**
@@ -397,13 +413,6 @@ public class EADTree implements Serializable {
      */
     Map<String, List<EadEntry>> getEntryMap() {
         return entryMap;
-    }
-
-    /**
-     * @param entryMap the entryMap to set
-     */
-    void setentryMap(Map<String, List<EadEntry>> entryMap) {
-        this.entryMap = entryMap;
     }
 
     /**

@@ -103,9 +103,9 @@
                                                             <div class="toc__list-expandable-title">
                                                                 <!-- TODO icon -->
                                                                 #{entry.descriptionLevel}
-                                                                <h:commandLink action="#{entry.toggleMetadata}" >
+                                                                <h:commandLink action="#{tectonicsBean.selectEntryAction(entry)}" >
                                                                     #{entry.label} (#{entry.hierarchy})
-                                                                    <f:ajax render="metadata_#{status.count}" />
+                                                                    <f:ajax render="metadata_#{status.count} hiearchyGroup" />
                                                                 </h:commandLink>
                                                             </div>
                                                         </div>
@@ -146,8 +146,13 @@
 				<div class="tec-archives__right-side">
 					<div class="tec-archives__text-tree">
 					
-					<!-- ADD HERE: THE STRUCTURE TREE IN PURE TEXT FORM -->
-					Lorem Ipsum
+					<h:panelGroup id="hiearchyGroup">
+                <ui:repeat var="label"
+                    value="#{tectonicsBean.getTectonicsHierarchyForIdentifier(tectonicsBean.tectonicsTree.selectedEntry.id)}">
+                    #{label}
+                    <br /><br />
+                </ui:repeat>
+                </h:panelGroup>
 					</div>
 					
 					<div class="tec-archives__object-info">

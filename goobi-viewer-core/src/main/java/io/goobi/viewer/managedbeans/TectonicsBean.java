@@ -15,7 +15,6 @@
  */
 package io.goobi.viewer.managedbeans;
 
-import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -27,13 +26,11 @@ import javax.inject.Named;
 
 import org.apache.commons.configuration.ConfigurationException;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.http.client.ClientProtocolException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.exceptions.DAOException;
-import io.goobi.viewer.exceptions.HTTPException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.exceptions.ViewerConfigurationException;
@@ -109,10 +106,18 @@ public class TectonicsBean implements Serializable {
         return tectonicsTree;
     }
 
+    /**
+     * 
+     * @return
+     */
     EADTree generateHierarchy() {
-        logger.trace("getTectonicsTree");
+        if (eadParser == null) {
+            return null;
+        }
+        
         EADTree ret = new EADTree();
         ret.generate(eadParser.getRootElement());
+        ret.setSelectedEntry(eadParser.getRootElement());
 
         return ret;
     }
@@ -135,7 +140,7 @@ public class TectonicsBean implements Serializable {
         }
         synchronized (tectonicsTree) {
             tectonicsTree.setChildVisible(element.getIndex());
-            tectonicsTree.getActiveElement();
+            tectonicsTree.getActiveEntry();
         }
     }
 
@@ -158,7 +163,7 @@ public class TectonicsBean implements Serializable {
 
         synchronized (tectonicsTree) {
             tectonicsTree.setChildInvisible(element.getIndex());
-            tectonicsTree.getActiveElement();
+            tectonicsTree.getActiveEntry();
         }
     }
 
@@ -192,6 +197,22 @@ public class TectonicsBean implements Serializable {
         }
 
         return ret;
+    }
+
+    /**
+     * 
+     * @param entry
+     * @return
+     */
+    public String selectEntryAction(EadEntry entry) {
+        if (entry == null || tectonicsTree == null) {
+            return "";
+        }
+
+        tectonicsTree.setSelectedEntry(entry);
+        entry.toggleMetadata();
+
+        return "";
     }
 
     public String searchAction() {
