@@ -73,8 +73,6 @@ public class BasexEADParser {
 
     private List<EadMetadataField> configuredFields;
 
-    private String searchValue;
-
     private List<StringPair> eventList;
     private List<String> editorList;
 
@@ -463,15 +461,7 @@ public class BasexEADParser {
         return flatEntryList;
     }
 
-    //    public void setSelectedEntry(EadEntry entry) {
-    //        for (EadEntry other : flatEntryList) {
-    //            other.setSelected(false);
-    //        }
-    //        entry.setSelected(true);
-    //        this.selectedEntry = entry;
-    //    }
-
-    public void search() {
+    public void search(String searchValue) {
         if (rootElement == null) {
             logger.error("Database not loaded");
             return;
@@ -483,7 +473,7 @@ public class BasexEADParser {
             // search in all/some metadata fields of all elements?
 
             // for now: search only labels
-            searchInNode(rootElement);
+            searchInNode(rootElement, searchValue);
 
             // fill flatList with displayable fields
             flatEntryList = rootElement.getSearchList();
@@ -495,8 +485,9 @@ public class BasexEADParser {
     /**
      * 
      * @param node
+     * @param searchValue
      */
-    private void searchInNode(EadEntry node) {
+    static void searchInNode(EadEntry node, String searchValue) {
         if (node.getId() != null && node.getId().equals(searchValue)) {
             // ID match
             node.markAsFound();
@@ -506,13 +497,12 @@ public class BasexEADParser {
         }
         if (node.getSubEntryList() != null) {
             for (EadEntry child : node.getSubEntryList()) {
-                searchInNode(child);
+                searchInNode(child, searchValue);
             }
         }
     }
 
     public void resetSearch() {
-        searchValue = null;
         rootElement.resetFoundList();
         flatEntryList = null;
     }
@@ -573,20 +563,6 @@ public class BasexEADParser {
      */
     public boolean isDatabaseLoaded() {
         return databaseLoaded;
-    }
-
-    /**
-     * @return the searchValue
-     */
-    public String getSearchValue() {
-        return searchValue;
-    }
-
-    /**
-     * @param searchValue the searchValue to set
-     */
-    public void setSearchValue(String searchValue) {
-        this.searchValue = searchValue;
     }
 
     /**

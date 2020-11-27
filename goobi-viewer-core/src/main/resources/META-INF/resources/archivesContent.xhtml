@@ -101,12 +101,19 @@
                                                         <div class="col-12 col-sm-8 col-md-9">
                                                             <!-- TITLE -->
                                                             <div class="toc__list-expandable-title">
-                                                                <!-- TODO icon -->
+                                                                <!-- TODO icon instead of descriptionLevel -->
                                                                 #{entry.descriptionLevel}
-                                                                <h:commandLink action="#{tectonicsBean.selectEntryAction(entry)}" >
+                                                                <!-- TODO highlight selected entry via CSS -->
+                                                                <h:outputLink rendered="#{entry == tectonicsBean.tectonicsTree.selectedEntry}"
+                                                                    value="#{navigationHelper.applicationUrl}archives/#{entry.id}/">
+                                                                    <strong>#{entry.label} (#{entry.hierarchy})</strong>
+                                                                    <f:ajax render="hiearchyGroup metadataGroup" />
+                                                                </h:outputLink>
+                                                                <h:outputLink rendered="#{entry != tectonicsBean.tectonicsTree.selectedEntry}"
+                                                                    value="#{navigationHelper.applicationUrl}archives/#{entry.id}/">
                                                                     #{entry.label} (#{entry.hierarchy})
-                                                                    <f:ajax render="metadata_#{status.count} hiearchyGroup metadataGroup" />
-                                                                </h:commandLink>
+                                                                    <f:ajax render="hiearchyGroup metadataGroup" />
+                                                                </h:outputLink>
                                                             </div>
                                                         </div>
                                                     </div>

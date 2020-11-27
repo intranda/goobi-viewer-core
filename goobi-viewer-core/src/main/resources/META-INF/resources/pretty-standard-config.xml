@@ -115,8 +115,11 @@
     <url-mapping id="archives">
         <pattern value="/archives/" />
         <view-id value="/archivesContent.xhtml" />
-        <action onPostback="false">#{navigationHelper.resetTheme}</action>
-        <action onPostback="false">#{searchBean.setActiveSearchType(0)}</action>
+        <action onPostback="false">#{tectonicsBean.setSelectedEntryId('-')}</action>
+    </url-mapping>
+    <url-mapping id="archives1">
+        <pattern value="/archives/#{selectedEntryId:tectonicsBean.selectedEntryId}/" />
+        <view-id value="/archivesContent.xhtml" />
     </url-mapping>
 	
 	<!-- FEEDBACK -->

@@ -30,12 +30,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import io.goobi.viewer.controller.DataManager;
-import io.goobi.viewer.controller.imaging.ThumbnailHandler;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.exceptions.ViewerConfigurationException;
-import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.model.ead.BasexEADParser;
 import io.goobi.viewer.model.ead.EADTree;
 import io.goobi.viewer.model.ead.EadEntry;
@@ -116,7 +114,7 @@ public class TectonicsBean implements Serializable {
         if (eadParser == null) {
             return null;
         }
-        
+
         EADTree ret = new EADTree();
         ret.generate(eadParser.getRootElement());
         ret.setSelectedEntry(eadParser.getRootElement());
@@ -130,13 +128,9 @@ public class TectonicsBean implements Serializable {
      * </p>
      *
      * @param element a {@link io.goobi.viewer.model.toc.TOCElement} object.
-     * @throws io.goobi.viewer.exceptions.PresentationException if any.
-     * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
-     * @throws io.goobi.viewer.exceptions.DAOException if any.
-     * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
      */
-    public void setChildrenVisible(EadEntry element)
-            throws PresentationException, IndexUnreachableException, DAOException, ViewerConfigurationException {
+    public void setChildrenVisible(EadEntry element) {
+        logger.trace("setChildrenVisible");
         if (tectonicsTree == null) {
             return;
         }
@@ -152,13 +146,9 @@ public class TectonicsBean implements Serializable {
      * </p>
      *
      * @param element a {@link io.goobi.viewer.model.toc.TOCElement} object.
-     * @throws io.goobi.viewer.exceptions.PresentationException if any.
-     * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
-     * @throws io.goobi.viewer.exceptions.DAOException if any.
-     * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
      */
-    public void setChildrenInvisible(EadEntry element)
-            throws PresentationException, IndexUnreachableException, DAOException, ViewerConfigurationException {
+    public void setChildrenInvisible(EadEntry element) {
+        logger.trace("setChildrenInvisible");
         if (tectonicsTree == null) {
             return;
         }
@@ -170,7 +160,10 @@ public class TectonicsBean implements Serializable {
     }
 
     /**
-     * @param identifier
+     * Returns the entry hierarchy from the root down to the entry with the given identifier.
+     * 
+     * @param identifier Entry identifier
+     * @param List of entries
      */
     public List<String> getTectonicsHierarchyForIdentifier(String identifier) {
         if (StringUtils.isEmpty(identifier)) {
@@ -182,8 +175,7 @@ public class TectonicsBean implements Serializable {
             return Collections.emptyList();
         }
 
-        eadParser.setSearchValue(identifier);
-        eadParser.search();
+        eadParser.search(identifier);
         if (eadParser.getFlatEntryList().isEmpty()) {
             return Collections.emptyList();
         }
@@ -234,5 +226,50 @@ public class TectonicsBean implements Serializable {
      */
     public void setSearchString(String searchString) {
         this.searchString = searchString;
+    }
+
+    /**
+     * 
+     * @return
+     */
+    public String getSelectedEntryId() {
+        if (tectonicsTree == null || tectonicsTree.getSelectedEntry() == null) {
+            return "-";
+        }
+
+        return tectonicsTree.getSelectedEntry().getId();
+    }
+
+    /**
+     * 
+     * @param id
+     */
+    public void setSelectedEntryId(String id) {
+        if (tectonicsTree == null || eadParser == null) {
+            return;
+        }
+
+        if ("-".equals(id)) {
+            tectonicsTree.setSelectedEntry(eadParser.getRootElement());
+            return;
+        }
+
+        logger.trace("ID: {}", id);
+        eadParser.search(id);
+        List<EadEntry> results = eadParser.getFlatEntryList();
+        if (results == null || results.isEmpty()) {
+            logger.warn("Entry not found: {}", id);
+            tectonicsTree.setSelectedEntry(eadParser.getRootElement());
+            return;
+        }
+
+        for (int i = 0; i < results.size(); ++i) {
+            if (i == results.size() - 1) {
+                tectonicsTree.setSelectedEntry(results.get(i));
+            } else {
+                setChildrenVisible(results.get(i));
+            }
+        }
+
     }
 }

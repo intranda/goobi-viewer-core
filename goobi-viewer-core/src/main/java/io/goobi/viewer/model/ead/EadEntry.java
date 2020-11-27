@@ -142,7 +142,7 @@ public class EadEntry {
             setHasChild(true);
             for (EadEntry ds : subEntryList) {
                 list.addAll(ds.getAsFlatList());
-                logger.trace("ID: {}, level {}", ds.getId(), ds.getHierarchy());
+                // logger.trace("ID: {}, level {}", ds.getId(), ds.getHierarchy());
             }
         }
         //        }

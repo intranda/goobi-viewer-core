@@ -345,6 +345,7 @@ public class EADTree implements Serializable {
                 break;
             }
         }
+        logger.trace("expandTree END");
     }
 
     /**

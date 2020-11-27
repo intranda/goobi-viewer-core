@@ -48,10 +48,10 @@ public class UserEndpoint {
 
     @OnOpen
     public void onOpen(Session session, EndpointConfig config) {
-        logger.trace("onOpen: {}", session.getId());
+        // logger.trace("onOpen: {}", session.getId());
         this.httpSession = (HttpSession) config.getUserProperties().get(HttpSession.class.getName());
         if (httpSession != null) {
-            logger.trace("HTTP session ID: {}", httpSession.getId());
+            // logger.trace("HTTP session ID: {}", httpSession.getId());
             cancelClearTimer(httpSession.getId());
         }
     }
@@ -66,7 +66,7 @@ public class UserEndpoint {
 
     @OnClose
     public void onClose(Session session) {
-        logger.trace("onClose {}", session.getId());
+        // logger.trace("onClose {}", session.getId());
         if (httpSession != null) {
             delayedRemoveLocksForSessionId(httpSession.getId(), 30000L);
         }
@@ -105,17 +105,17 @@ public class UserEndpoint {
             return;
         }
 
-        logger.trace("Starting timer for {}", sessionId);
+        // logger.trace("Starting timer for {}", sessionId);
         TimerTask task = new TimerTask() {
 
             @Override
             public void run() {
                 if (sessionClearTimers.containsKey(sessionId)) {
                     int count = DataManager.getInstance().getRecordLockManager().removeLocksForSessionId(sessionId, null);
-                    logger.trace("Removed {} record locks for session '{}'.", count, sessionId);
+                    // logger.trace("Removed {} record locks for session '{}'.", count, sessionId);
                     sessionClearTimers.remove(sessionId);
                 } else {
-                    logger.trace("Session {} has been refreshed and won't be cleared", sessionId);
+                    // logger.trace("Session {} has been refreshed and won't be cleared", sessionId);
                 }
             }
         };

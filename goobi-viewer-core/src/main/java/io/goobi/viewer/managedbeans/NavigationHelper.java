@@ -247,7 +247,7 @@ public class NavigationHelper implements Serializable {
      * @param resetCurrentDocument a boolean.
      */
     public void setCurrentPage(String currentPage, boolean resetBreadcrubs, boolean resetCurrentDocument) {
-        logger.trace("setCurrentPage: {}", currentPage);
+        // logger.trace("setCurrentPage: {}", currentPage);
         setCurrentPage(currentPage, resetBreadcrubs, resetCurrentDocument, false);
     }
 
