@@ -46,15 +46,19 @@ public class SelectionManager<T> implements Map<T, Boolean> {
     }
 
     public Boolean select(T item) {
-        return selectionMap.put(item, Boolean.TRUE);
+        return setSelected(item, Boolean.TRUE);
     }
 
     public Boolean deselect(T item) {
-        return selectionMap.put(item, Boolean.FALSE);
+        return setSelected(item, Boolean.FALSE);
     }
 
     public Boolean get(Object item) {
-        return Optional.ofNullable(selectionMap.get(item)).orElse(Boolean.FALSE);
+        if(isSelectAll()) {
+            return Boolean.TRUE;
+        } else {            
+            return Optional.ofNullable(selectionMap.get(item)).orElse(Boolean.FALSE);
+        }
     }
 
     public Boolean put(Object item, Boolean selected) {
@@ -70,6 +74,9 @@ public class SelectionManager<T> implements Map<T, Boolean> {
     }
 
     public Boolean setSelected(T item, Boolean selected) {
+        if(!selected) {
+            setSelectAll(false);
+        }
         return selectionMap.put(item, selected);
     }
 
@@ -78,8 +85,8 @@ public class SelectionManager<T> implements Map<T, Boolean> {
      */
     @Override
     public void clear() {
-        // TODO Auto-generated method stub
-        
+        this.setSelectAll(false);
+        selectionMap.clear();
     }
 
     /* (non-Javadoc)
@@ -87,8 +94,7 @@ public class SelectionManager<T> implements Map<T, Boolean> {
      */
     @Override
     public boolean containsKey(Object key) {
-        // TODO Auto-generated method stub
-        return false;
+        return selectionMap.containsKey(key);
     }
 
     /* (non-Javadoc)
@@ -96,8 +102,7 @@ public class SelectionManager<T> implements Map<T, Boolean> {
      */
     @Override
     public boolean containsValue(Object value) {
-        // TODO Auto-generated method stub
-        return false;
+        return selectionMap.containsValue(value);
     }
 
     /* (non-Javadoc)
@@ -105,8 +110,7 @@ public class SelectionManager<T> implements Map<T, Boolean> {
      */
     @Override
     public Set<Entry<T, Boolean>> entrySet() {
-        // TODO Auto-generated method stub
-        return null;
+        return selectionMap.entrySet();
     }
 
     /* (non-Javadoc)
@@ -114,8 +118,7 @@ public class SelectionManager<T> implements Map<T, Boolean> {
      */
     @Override
     public boolean isEmpty() {
-        // TODO Auto-generated method stub
-        return false;
+        return selectionMap.isEmpty();
     }
 
     /* (non-Javadoc)
@@ -123,8 +126,7 @@ public class SelectionManager<T> implements Map<T, Boolean> {
      */
     @Override
     public Set<T> keySet() {
-        // TODO Auto-generated method stub
-        return null;
+        return selectionMap.keySet();
     }
 
     /* (non-Javadoc)
@@ -132,8 +134,10 @@ public class SelectionManager<T> implements Map<T, Boolean> {
      */
     @Override
     public void putAll(Map<? extends T, ? extends Boolean> m) {
-        // TODO Auto-generated method stub
-        
+        if(m.containsValue(Boolean.FALSE)) {
+            setSelectAll(false);
+        }
+        selectionMap.putAll(m);
     }
 
     /* (non-Javadoc)
@@ -141,8 +145,7 @@ public class SelectionManager<T> implements Map<T, Boolean> {
      */
     @Override
     public Boolean remove(Object key) {
-        // TODO Auto-generated method stub
-        return null;
+        return selectionMap.remove(key);
     }
 
     /* (non-Javadoc)
@@ -150,8 +153,7 @@ public class SelectionManager<T> implements Map<T, Boolean> {
      */
     @Override
     public int size() {
-        // TODO Auto-generated method stub
-        return 0;
+        return selectionMap.size();
     }
 
     /* (non-Javadoc)
@@ -159,8 +161,7 @@ public class SelectionManager<T> implements Map<T, Boolean> {
      */
     @Override
     public Collection<Boolean> values() {
-        // TODO Auto-generated method stub
-        return null;
+        return selectionMap.values();
     }
 
 }

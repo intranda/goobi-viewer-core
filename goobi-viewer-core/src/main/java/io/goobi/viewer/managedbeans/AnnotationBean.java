@@ -222,4 +222,22 @@ public class AnnotationBean implements Serializable {
         }
         return Optional.empty();
     }
+    
+    /**
+     * Setter for {@link SelectionManager#setSelectAll(boolean) exportSelection#setSelectAll(boolean)} 
+     * is placed here to avoid jsf confusing it with setting a value of the map
+     * @param select
+     */
+    public void setSelectAll(boolean select) {
+        this.exportSelection.setSelectAll(select);
+    }
+    
+    /**
+     * Getter for {@link SelectionManager#isSelectAll() exportSelection#isSelectAll()} 
+     * is placed here to avoid jsf confusing it with getting a value of the map
+     * @param select
+     */
+    public boolean isSelectAll() {
+        return this.exportSelection.isSelectAll();
+    }
 }
