@@ -74,7 +74,7 @@ public class AnnotationBean implements Serializable {
     @PostConstruct
     public void init() {
         if (lazyModelAnnotations == null) {
-            lazyModelAnnotations = new TableDataProvider<>(new TableDataSource<PersistentAnnotation>() {
+            lazyModelAnnotations = new TableDataProvider<PersistentAnnotation>(new TableDataSource<PersistentAnnotation>() {
 
                 private Optional<Long> numCreatedPages = Optional.empty();
 
@@ -129,7 +129,16 @@ public class AnnotationBean implements Serializable {
                 public void resetTotalNumberOfRecords() {
                     numCreatedPages = Optional.empty();
                 }
-            });
+                
+                
+            }) {
+                
+                private static final long serialVersionUID = 2790557820504846016L;
+
+                protected void resetCurrentList() {
+                    //TODO: reset exportSelection
+                }
+            };
             lazyModelAnnotations.setEntriesPerPage(DEFAULT_ROWS_PER_PAGE);
             lazyModelAnnotations.setFilters("targetPI_body");
         }

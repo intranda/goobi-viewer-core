@@ -12,10 +12,15 @@
 	this.on("mount", () => {
 		this.dataSet = this.opts.resource.data;
 		this.dataFields = Object.keys(this.dataSet);
-		viewerJS.initialized.subscribe(() => {
-	        viewerJS.translator.addTranslations(this.dataFields)
+		if(viewerJS.translator) {
+		    viewerJS.translator.addTranslations(this.dataFields)
 			.then(() => this.update());
-		});
+		} else {		    
+			viewerJS.initialized.subscribe(() => {
+		        viewerJS.translator.addTranslations(this.dataFields)
+				.then(() => this.update());
+			});
+		}
 	})
 	
 	getValue(field) {
