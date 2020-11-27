@@ -105,31 +105,11 @@
                                                                 #{entry.descriptionLevel}
                                                                 <h:commandLink action="#{tectonicsBean.selectEntryAction(entry)}" >
                                                                     #{entry.label} (#{entry.hierarchy})
-                                                                    <f:ajax render="metadata_#{status.count} hiearchyGroup" />
+                                                                    <f:ajax render="metadata_#{status.count} hiearchyGroup metadataGroup" />
                                                                 </h:commandLink>
                                                             </div>
                                                         </div>
                                                     </div>
-                                                    
-                                                    <!-- METADATA -->
-                                                    <h:panelGroup class="row" id="metadata_#{status.count}">
-                                                       <h:panelGroup rendered="#{entry.showMetadata}">
-                                                            <c:forEach var="field" items="#{entry.allAreaLists}">
-                                                                <h:outputText rendered="#{field.filled and field.visible}">
-                                                                    <br />#{field.name}: #{field.value}
-                                                                </h:outputText>
-                                                            </c:forEach>
-                                                            <h:outputLink target="_blank"
-                                                                value="#{navigationHelper.applicationUrl}archives/">
-                                                                #{msg.tectonics_archiveView}
-                                                            </h:outputLink>
-                                                            <!-- TODO view selection, representative page -->
-                                                            <h:outputLink rendered="#{entry.associatedRecordPi != ''}" target="_blank"
-                                                                value="#{navigationHelper.objectUrl}/#{entry.associatedRecordPi}/1/">
-                                                                #{msg.tectonics_showRecord}
-                                                            </h:outputLink>
-                                                       </h:panelGroup>
-                                                    </h:panelGroup>
                                                 </li>
                                             </h:panelGroup>
                                         </c:forEach>
@@ -145,20 +125,34 @@
 				<!-- RIGHT SIDE -->
 				<div class="tec-archives__right-side">
 					<div class="tec-archives__text-tree">
-					
-					<h:panelGroup id="hiearchyGroup">
-                <ui:repeat var="label"
-                    value="#{tectonicsBean.getTectonicsHierarchyForIdentifier(tectonicsBean.tectonicsTree.selectedEntry.id)}">
-                    #{label}
-                    <br /><br />
-                </ui:repeat>
-                </h:panelGroup>
+                        <h:panelGroup id="hiearchyGroup">
+                            <ui:repeat var="label"
+                                value="#{tectonicsBean.getTectonicsHierarchyForIdentifier(tectonicsBean.tectonicsTree.selectedEntry.id)}">
+                                #{label}
+                                <br /><br />
+                            </ui:repeat>
+                        </h:panelGroup>
 					</div>
 					
 					<div class="tec-archives__object-info">
 					
-					<!-- ADD HERE: PICTURE AND INFOS OF OBJECT -->
-					Lorem Ipsum
+                        <!-- METADATA -->
+                        <h:panelGroup id="metadataGroup">
+                            <c:forEach var="field" items="#{tectonicsBean.tectonicsTree.selectedEntry.allAreaLists}">
+                                <h:outputText rendered="#{field.filled and field.visible}">
+                                    <br />#{field.name}: #{field.value}
+                                </h:outputText>
+                            </c:forEach>
+                        </h:panelGroup>
+                        
+                        <!-- ASSOCIATED RECORD -->
+                        <h:outputLink rendered="#{tectonicsBean.tectonicsTree.selectedEntry.associatedRecordPi != ''}" target="_blank"
+                            value="#{navigationHelper.objectUrl}/#{entry.associatedRecordPi}/1/">
+                            #{msg.tectonics_showRecord}
+                            <!-- TODO associated record thumbnail -->
+                            <!-- TODO view selection, representative page -->
+                        </h:outputLink>
+                        
 					</div>
 
 				</div>
