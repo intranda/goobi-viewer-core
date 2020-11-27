@@ -350,10 +350,15 @@ riot.tag2('datasetresource', '<div class="annotation__body__dataset"><dl class="
 	this.on("mount", () => {
 		this.dataSet = this.opts.resource.data;
 		this.dataFields = Object.keys(this.dataSet);
-		viewerJS.initialized.subscribe(() => {
-	        viewerJS.translator.addTranslations(this.dataFields)
+		if(viewerJS.translator) {
+		    viewerJS.translator.addTranslations(this.dataFields)
 			.then(() => this.update());
-		});
+		} else {
+			viewerJS.initialized.subscribe(() => {
+		        viewerJS.translator.addTranslations(this.dataFields)
+				.then(() => this.update());
+			});
+		}
 	})
 
 	this.getValue = function(field) {
