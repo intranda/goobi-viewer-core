@@ -331,15 +331,11 @@
 																				<label for="adminCrowdAddCampaignQueryMetadata">#{msg.metadata}:</label>
 																			</div>
 		
-																			<div class="col-9 admin__form-input">
+																			<div class="col-9 admin__form-input badge-hover">
 																				<div>
 																					<ui:repeat id="metadataFields" var="field"
 																						value="#{question.metadataFields}">
-																						<div class="badge badge-info">
-																						<h:commandLink value="#{msg[field]}" action="#{question.removeMetadataField(field)}">
-																							<f:ajax render="createCampaignForm:questions:#{status.index}:question"></f:ajax>
-																						</h:commandLink>
-																						</div>
+																						<h:commandLink action="#{question.removeMetadataField(field)}"><div class="badge badge-success">#{msg[field]}<f:ajax render="createCampaignForm:questions:#{status.index}:question"></f:ajax> <i class="fa fa-trash-o" aria-hidden="true"></i></div></h:commandLink>
 																					</ui:repeat>
 																				</div>
 <!-- 																				<viewerComponent:multiselectDropdown -->
