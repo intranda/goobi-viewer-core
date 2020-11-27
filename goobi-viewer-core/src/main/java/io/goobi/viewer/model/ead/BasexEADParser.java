@@ -45,7 +45,6 @@ import org.jdom2.xpath.XPathFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.NetTools;
 import io.goobi.viewer.exceptions.HTTPException;
 import io.goobi.viewer.model.viewer.StringPair;
@@ -60,23 +59,15 @@ public class BasexEADParser {
 
     private XMLConfiguration xmlConfig;
 
-    private final String datastoreUrl;
-
-    //    private String exportFolder = "/tmp/";
+    private final String basexUrl;
 
     private String selectedDatabase;
 
-    //    private String databaseName;
-
-    //    private String fileName;
+    private boolean databaseLoaded = false;
 
     private EadEntry rootElement = null;
 
     private List<EadEntry> flatEntryList;
-
-    //    private EadEntry selectedEntry;
-
-    //    private EadEntry destinationEntry;
 
     //    private XMLConfiguration xmlConfig;
 
@@ -86,27 +77,26 @@ public class BasexEADParser {
 
     private List<StringPair> eventList;
     private List<String> editorList;
-    //    private SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
     /**
      * 
-     * @param datastoreUrl
      * @param configFilePath
      * @throws ConfigurationException
      */
-    public BasexEADParser(String datastoreUrl, String configFilePath) throws ConfigurationException {
-        if (datastoreUrl == null) {
-            throw new IllegalArgumentException("datastoreUrl may not be null");
-        }
+    public BasexEADParser(String configFilePath) throws ConfigurationException {
         if (configFilePath == null) {
             throw new IllegalArgumentException("configFilePath may not be null");
         }
 
-        this.datastoreUrl = datastoreUrl;
         xmlConfig = new XMLConfiguration(configFilePath);
         xmlConfig.setListDelimiter('&');
         xmlConfig.setReloadingStrategy(new FileChangedReloadingStrategy());
         xmlConfig.setExpressionEngine(new XPathExpressionEngine());
+
+        this.basexUrl = xmlConfig.getString("/basexUrl", "http://localhost:8984/");
+        if (this.selectedDatabase == null) {
+            this.selectedDatabase = xmlConfig.getString("/defaultDatabase");
+        }
     }
 
     /**
@@ -118,7 +108,7 @@ public class BasexEADParser {
      * @throws ClientProtocolException
      */
     public List<String> getPossibleDatabases() throws ClientProtocolException, IOException, HTTPException {
-        String response = NetTools.getWebContentGET(datastoreUrl + "databases");
+        String response = NetTools.getWebContentGET(basexUrl + "databases");
         if (StringUtils.isBlank(response)) {
             return Collections.emptyList();
         }
@@ -151,13 +141,21 @@ public class BasexEADParser {
      * @throws IOException
      * @throws ClientProtocolException
      */
-    public void loadSelectedDatabase() throws ClientProtocolException, IOException, HTTPException {
+    public void loadSelectedDatabase() {
         // open selected database
         if (StringUtils.isNotBlank(selectedDatabase)) {
             String[] parts = selectedDatabase.split(" - ");
-            String url = datastoreUrl + "db/" + parts[0] + "/" + parts[1];
+            String url = basexUrl + "db/" + parts[0] + "/" + parts[1];
             logger.trace("URL: {}", url);
-            String response = NetTools.getWebContentGET(url);
+            String response;
+            try {
+                response = NetTools.getWebContentGET(url);
+            } catch (IOException | HTTPException e) {
+                databaseLoaded = false;
+                logger.error(e.getMessage(), e);
+                return;
+            }
+
             // get xml root element
             Document document = openDocument(response);
             if (document != null) {
@@ -166,10 +164,16 @@ public class BasexEADParser {
 
                 // parse ead file
                 parseEadFile(document);
+                databaseLoaded = true;
+                logger.info("Loaded EAD database: {}", selectedDatabase);
+                return;
             }
         } else {
             selectedDatabase = null;
         }
+
+        databaseLoaded = false;
+        logger.error("Could not load database: {}", selectedDatabase);
     }
 
     public List<String> getDistinctDatabaseNames() throws ClientProtocolException, IOException, HTTPException {
@@ -518,6 +522,11 @@ public class BasexEADParser {
      * 
      */
     private void readConfiguration() {
+        if (StringUtils.isEmpty(selectedDatabase)) {
+            logger.error("No database selected");
+            return;
+        }
+
         configuredFields = new ArrayList<>();
         HierarchicalConfiguration config = null;
 
@@ -560,6 +569,13 @@ public class BasexEADParser {
     }
 
     /**
+     * @return the databaseLoaded
+     */
+    public boolean isDatabaseLoaded() {
+        return databaseLoaded;
+    }
+
+    /**
      * @return the searchValue
      */
     public String getSearchValue() {
@@ -578,17 +594,5 @@ public class BasexEADParser {
      */
     public EadEntry getRootElement() {
         return rootElement;
-    }
-
-    public static void main(String[] args) throws ClientProtocolException, IOException, HTTPException, ConfigurationException {
-        BasexEADParser ead = new BasexEADParser("http://basex.intranda.com/basex/", DataManager.getInstance().getConfiguration().getConfigLocalPath()
-                + "plugin_intranda_administration_archive_management.xml");
-        ead.selectedDatabase = "Test - EAD_StadtA_GOE_Dep__109_9227_2018_10_09_13_14_33.xml";
-        ead.loadSelectedDatabase();
-        ead.setSearchValue("v6340399");
-        ead.search();
-        for (EadEntry entry : ead.getFlatEntryList()) {
-            System.out.println(entry.getId() + ": " + entry.getLabel());
-        }
     }
 }

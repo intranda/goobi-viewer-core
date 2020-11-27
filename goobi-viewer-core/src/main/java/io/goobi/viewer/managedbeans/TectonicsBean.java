@@ -53,8 +53,6 @@ public class TectonicsBean implements Serializable {
 
     private static final Object lock = new Object();
 
-    private static String database = "Test - EAD_StadtA_GOE_Dep__109_9227_2018_10_09_13_14_33.xml";
-
     private BasexEADParser eadParser = null;
 
     private EADTree tectonicsTree;
@@ -74,20 +72,12 @@ public class TectonicsBean implements Serializable {
     @PostConstruct
     public void init() {
         try {
-            eadParser = new BasexEADParser(DataManager.getInstance().getConfiguration().getBaseXUrl(),
+            eadParser = new BasexEADParser(
                     DataManager.getInstance().getConfiguration().getConfigLocalPath()
                             + CONFIG_FILE_NAME);
-
-            // TODO configurable database name
-            eadParser.setSelectedDatabase(database);
             eadParser.loadSelectedDatabase();
+            // TODO selection/reloading of different databases
         } catch (ConfigurationException e) {
-            logger.error(e.getMessage(), e);
-        } catch (ClientProtocolException e) {
-            logger.error(e.getMessage(), e);
-        } catch (IOException e) {
-            logger.error(e.getMessage(), e);
-        } catch (HTTPException e) {
             logger.error(e.getMessage(), e);
         }
     }
@@ -98,6 +88,10 @@ public class TectonicsBean implements Serializable {
      */
     public EADTree getTectonicsTree() {
         // logger.trace("getTectonicsTree");
+        if (!eadParser.isDatabaseLoaded()) {
+            return null;
+        }
+
         EADTree h = tectonicsTree;
         if (h == null) {
             synchronized (lock) {
@@ -199,7 +193,7 @@ public class TectonicsBean implements Serializable {
 
         return ret;
     }
-    
+
     public String searchAction() {
         logger.trace("searchAction: {}", searchString);
         return "";
