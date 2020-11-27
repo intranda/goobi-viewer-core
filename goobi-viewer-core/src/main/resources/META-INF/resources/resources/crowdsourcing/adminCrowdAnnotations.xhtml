@@ -28,13 +28,13 @@
                         <div class="admin__table-tools">
                             <!-- PAGINATOR -->
                             <div class="admin__table-paginator">
-                                <viewerComponent:dataTablePaginator tableValues="#{crowdsourcingBean.lazyModelAnnotations}" />
+                                <viewerComponent:dataTablePaginator tableValues="#{annotationBean.lazyModelAnnotations}" />
                             </div>
                             <!-- FILTER -->
                             <div class="admin__table-filter">
                                 <!-- TODO: ADD FILTER FOR targetPI, TOO -->
                                 <viewerComponent:dataTableColumnFilter key="admin__crowsourcing_annotations_search"
-                                    filter="#{crowdsourcingBean.lazyModelAnnotations.getFilter('targetPI_body')}" />
+                                    filter="#{annotationBean.lazyModelAnnotations.getFilter('targetPI_body')}" />
                             </div>
                         </div>
 
@@ -43,23 +43,33 @@
 
                             <!-- TITLE ROW -->
                             <div class="row no-gutters admin__table-title">
+                            	<!-- EXPORT CHECKBOX COL -->
+                                <div class="col-1 d-flex">
+                                	<h:selectBooleanCheckbox value="#{annotationBean.exportSelection.selectAll}"></h:selectBooleanCheckbox>
+                                </div>
                                 <!-- ANNOTATION COL -->
-                                <div class="col-8 d-flex">#{msg.admin__crowdsourcing_annotation}</div>
+                                <div class="col-7 d-flex">#{msg.admin__crowdsourcing_annotation}</div>
 
                                 <!-- TARGET COL -->
 	                            <div class="col-2 d-flex">                            
-	                                <viewerComponent:sortingArrow filterType="targetPI" colHeading="#{msg.admin__crowdsourcing_annotation_target}" list="#{crowdsourcingBean.lazyModelAnnotations}" />
+	                                <viewerComponent:sortingArrow filterType="targetPI" colHeading="#{msg.admin__crowdsourcing_annotation_target}" list="#{annotationBean.lazyModelAnnotations}" />
 	                            </div>
 
                                 <!-- DATE COL -->
 	                            <div class="col-2 d-flex">                            
-	                                <viewerComponent:sortingArrow filterType="dateCreated" colHeading="#{msg.date}" list="#{crowdsourcingBean.lazyModelAnnotations}" />
+	                                <viewerComponent:sortingArrow filterType="dateCreated" colHeading="#{msg.date}" list="#{annotationBean.lazyModelAnnotations}" />
 	                            </div>
                             </div>
 
                             <!-- INDIVIDUAL ANNOTATION ROWS -->
-                            <ui:repeat var="annotation" value="#{crowdsourcingBean.lazyModelAnnotations.paginatorList}">
+                            <ui:repeat var="annotation" value="#{annotationBean.lazyModelAnnotations.paginatorList}">
                                 <div class="row no-gutters admin__table-entry">
+                                    
+                                    <!-- EXPORT CHECKBOX COL -->
+	                                <div class="col-1 d-flex">
+	                                	<h:selectBooleanCheckbox value="#{annotationBean.exportSelection[annotation.id]}"></h:selectBooleanCheckbox>
+	                                </div>
+                                    
                                     <div class="col-8 d-flex" style="flex-direction:column;">
                                         <div id="annotation_body_#{annotation.id}" class="annotation__body__content_wrapper">#{contentBean.cleanUpValue(annotation.body.toString())}</div>
 										<annotationBody annotationid="#{annotation.id}" contentid="annotation_body_#{annotation.id}"/>
@@ -72,7 +82,7 @@
                                             <!-- DELETE -->
                                             <h:commandLink styleClass="admin__table-action-link -redlink"
                                                 onclick="if ( !confirm( &quot;#{msg.admin__crowdsourcing_annotation_deleteConfirmationText}&quot; ) ) { return false };"
-                                                action="#{crowdsourcingBean.deleteAnnotationAction(annotation)}">#{msg.delete}
+                                                action="#{annotationBean.deleteAnnotationAction(annotation)}">#{msg.delete}
                                             </h:commandLink>
                                         </div>
                                     </div>
