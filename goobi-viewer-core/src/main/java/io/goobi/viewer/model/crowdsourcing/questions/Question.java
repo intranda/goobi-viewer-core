@@ -402,7 +402,7 @@ public class Question {
         .filter(field -> field.startsWith("MD_"))
         .filter(field -> !field.endsWith("_UNTOKENIZED"))
         .map(field -> field.replaceAll("_LANG_.*", ""))
-        .filter(field -> !this.metadataFields.contains(field))
+//        .filter(field -> !this.metadataFields.contains(field))
         .distinct()
         .sorted((f1,f2) -> Messages.translate(f1, locale).compareToIgnoreCase(Messages.translate(f2, locale)))
         .collect(Collectors.toList());
