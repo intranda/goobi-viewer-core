@@ -88,17 +88,28 @@
 															<div class="toc__list-expandable-title">
 															    <!-- TODO icon -->
 															    #{entry.descriptionLevel}
-																<h:commandLink action="#{entry.toggleMetadata}" >
-																    #{entry.label} (#{entry.hierarchy})
-																    <f:ajax render="metadata_#{status.count}" />
-																</h:commandLink>
+<!-- 																<h:commandLink action="#{entry.toggleMetadata}" > -->
+<!-- 																    #{entry.label} (#{entry.hierarchy}) -->
+<!-- 																    <f:ajax render="metadata_#{status.count}" /> -->
+<!-- 																</h:commandLink> -->
+                                                                <!-- TODO highlight selected entry via CSS -->
+                                                                <h:outputLink rendered="#{entry == tectonicsBean.tectonicsTree.selectedEntry}"
+                                                                    value="#{navigationHelper.applicationUrl}tectonics/#{entry.id}/">
+                                                                    <strong>#{entry.label} (#{entry.hierarchy})</strong>
+                                                                    <f:ajax render="hiearchyGroup metadataGroup" />
+                                                                </h:outputLink>
+                                                                <h:outputLink rendered="#{entry != tectonicsBean.tectonicsTree.selectedEntry}"
+                                                                    value="#{navigationHelper.applicationUrl}tectonics/#{entry.id}/">
+                                                                    #{entry.label} (#{entry.hierarchy})
+                                                                    <f:ajax render="hiearchyGroup metadataGroup" />
+                                                                </h:outputLink>
 															</div>
 														</div>
 													</div>
 													
 													<!-- METADATA -->
 													<h:panelGroup class="row" id="metadata_#{status.count}">
-													   <h:panelGroup rendered="#{entry.showMetadata}">
+													   <h:panelGroup rendered="#{entry == tectonicsBean.tectonicsTree.selectedEntry}">
                                                             <c:forEach var="field" items="#{entry.allAreaLists}">
                                                                 <h:outputText rendered="#{field.filled and field.visible}">
                                                                     <br />#{field.name}: #{field.value}

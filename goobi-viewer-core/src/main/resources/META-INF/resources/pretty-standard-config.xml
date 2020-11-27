@@ -108,7 +108,10 @@
     <url-mapping id="tectonics">
         <pattern value="/tectonics/" />
         <view-id value="/tectonics.xhtml" />
-        <action onPostback="false">#{searchBean.setActiveSearchType(0)}</action>
+    </url-mapping>
+    <url-mapping id="tectonics1">
+        <pattern value="/tectonics/#{selectedEntryId:tectonicsBean.selectedEntryId}/" />
+        <view-id value="/tectonics.xhtml" />
     </url-mapping>
     
     <!-- ARCHIVES -->

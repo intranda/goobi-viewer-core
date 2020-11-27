@@ -109,6 +109,7 @@ public class EadEntry {
     private boolean visible = true;
     private boolean expanded = false;
     private boolean hasChild = false;
+    @Deprecated
     private boolean showMetadata = false;
     private String associatedRecordPi;
 

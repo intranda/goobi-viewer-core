@@ -30,10 +30,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import io.goobi.viewer.controller.DataManager;
-import io.goobi.viewer.exceptions.DAOException;
-import io.goobi.viewer.exceptions.IndexUnreachableException;
-import io.goobi.viewer.exceptions.PresentationException;
-import io.goobi.viewer.exceptions.ViewerConfigurationException;
 import io.goobi.viewer.model.ead.BasexEADParser;
 import io.goobi.viewer.model.ead.EADTree;
 import io.goobi.viewer.model.ead.EadEntry;
@@ -254,7 +250,7 @@ public class TectonicsBean implements Serializable {
             return;
         }
 
-        logger.trace("ID: {}", id);
+        // Find entry with given ID in the tree
         eadParser.search(id);
         List<EadEntry> results = eadParser.getFlatEntryList();
         if (results == null || results.isEmpty()) {
@@ -264,10 +260,13 @@ public class TectonicsBean implements Serializable {
         }
 
         for (int i = 0; i < results.size(); ++i) {
+            EadEntry entry = results.get(i);
             if (i == results.size() - 1) {
-                tectonicsTree.setSelectedEntry(results.get(i));
+                // Select last node
+                tectonicsTree.setSelectedEntry(entry);
             } else {
-                setChildrenVisible(results.get(i));
+                // Expand all parent nodes
+                setChildrenVisible(entry);
             }
         }
 
