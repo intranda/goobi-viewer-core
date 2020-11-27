@@ -32,7 +32,7 @@
 						    <h:commandLink rendered="#{campaign.hasRecordsToAnnotate(userBean.user) and campaign.isUserAllowedAction(userBean.user, 'ANNOTATE')}"
 						        action="#{crowdsourcingBean.forwardToCrowdsourcingAnnotation(campaign)}"
 						        styleClass="btn btn--default">#{msg.action__crowdsourcing_participate}</h:commandLink>
-						    <h:commandLink rendered="#{campaign.hasRecordsToReview(userBean.user) and campaign.isUserAllowedAction(userBean.user, 'REVIEW')}"
+						    <h:commandLink rendered="#{campaign.reviewModeActive and campaign.hasRecordsToReview(userBean.user) and campaign.isUserAllowedAction(userBean.user, 'REVIEW')}"
 						        action="#{crowdsourcingBean.forwardToCrowdsourcingReview(campaign)}"
 						        styleClass="btn btn--default">#{msg.action__crowdsourcing_review}</h:commandLink>
                             <h:outputLink rendered="#{campaign.hasAnnotations}"

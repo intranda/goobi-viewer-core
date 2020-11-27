@@ -338,6 +338,12 @@
 																						<h:commandLink action="#{question.removeMetadataField(field)}"><div class="badge badge-success">#{msg[field]}<f:ajax render="createCampaignForm:questions:#{status.index}:question"></f:ajax> <i class="fa fa-trash-o" aria-hidden="true"></i></div></h:commandLink>
 																					</ui:repeat>
 																				</div>
+<!-- 																				<viewerComponent:multiselectDropdown -->
+<!-- 																					id="metadataSelect" -->
+<!-- 																					value="#{question.metadataFields}" -->
+<!-- 																					items="#{question.getAvailableMetadataFields()}"> -->
+<!-- 																				</viewerComponent:multiselectDropdown> -->
+																				
 																				<h:selectOneMenu id="adminCrowdAddCampaignQueryMetadata" styleClass="form-control" value="#{question.metadataToAdd}">
 																					<f:selectItem itemLabel="#{msg.select}" itemValue=""></f:selectItem>
 																					<f:selectItems var="field"
@@ -598,6 +604,58 @@
                                                 
                                             </h:panelGroup>
 					                   	</div>
+					                   	
+					                   	<!-- REVIEW SETTING-->
+										<div class="admin__default-block crowdsourcing-annotations__review-settings">
+											<h:panelGroup id="reviewSettingsGroup" layout="block" styleClass="crowdsourcing-annotations__sidebar-review-settings">
+												<h3>#{msg.label__crowdsourcing_review}</h3>
+												<div class="admin__form-help-text in mb-2">
+												#{msg.admin__crowdsourcing_review__help}
+												</div>
+												<div class="mb-1 d-flex justify-content-between">
+												<h:selectOneMenu
+                                                            value="#{crowdsourcingBean.selectedCampaign.reviewMode}"
+                                                            styleClass="form-control mt-2"
+                                                            immediate="true">
+                                                            <!-- TODO aria label -->
+                                                            <f:selectItems 
+                                                            	value="#{crowdsourcingBean.getPossibleReviewModes()}"
+                                                            	var="mode"
+                                                            	itemLabel="#{msg[mode.label]}"
+                                                            	itemValue="#{mode}"></f:selectItems>
+                                                            <f:ajax event="change" render="reviewSettingsGroup" />
+                                                        </h:selectOneMenu>												
+                                                </div>
+												<c:if test="#{crowdsourcingBean.selectedCampaign.reviewMode == 'LIMIT_REVIEW_TO_USERGROUP'}">
+												<div class="form-group form-row admin__sidebar-divider-top">
+													<label>#{msg.admin__crowdsourcing_limit_review_to_group}: </label>
+													<div>
+														<h:selectOneMenu
+		                                                    value="#{crowdsourcingBean.selectedCampaign.reviewerUserGroup}"
+		                                                    styleClass="form-control"
+		                                                    immediate="true"
+		                                                    converter="userGroupConverter">
+	<!-- 	                                                    TODO aria label -->
+		                                                    <f:selectItem itemLabel="#{msg.select}" itemValue="#{null}" noSelectionOption="true" />
+		                                                    <f:selectItems value="#{adminBean.allUserGroups}" />
+		                                                    <f:ajax render="reviewSettingsGroup" />
+	                                                	</h:selectOneMenu>		
+													</div>
+                                                    <c:if test="#{crowdsourcingBean.selectedCampaign.reviewerUserGroup != null}">
+                                                     <div class="mt-1 d-flex justify-content-start crowdsourcing-annotations__sidebar-owner">
+                                                      <label for="campaignReviewerOwnerName" class="pr-1 mb-0">#{msg.owner}:</label>
+                                                      <h:outputLink id="campaignReviewerOwnerName"
+                                                          value="#{navigationHelper.applicationUrl}admin/users/edit/#{crowdsourcingBean.selectedCampaign.reviewerUserGroup.owner.id}/">
+                                                          <h:outputText value="#{crowdsourcingBean.selectedCampaign.reviewerUserGroup.owner.displayName}" />
+                                                      </h:outputLink>
+                                                     </div>
+                                                    </c:if>
+                                                </div>
+												</c:if>
+											</h:panelGroup>
+										</div>
+										
+
 					                   	
 					                   	<!-- ACCESS LICENCE WIDGET -->
 										<div class="admin__default-block crowdsourcing-annotations__access-licence">
