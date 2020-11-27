@@ -143,5 +143,38 @@ $( document ).ready(function() {
 		});
 	});
 	
+	// fancy checkbox logic annotations
+	// check all checkboxes by selecting the title checkbox
+	$('.admin__checkbox-column-all-entrys').on("click", function() {
+		if ($('#csAnnotiationCheckAll').is(":checked")) {
+			$(".admin__fancy-checkbox" ).prop("checked", false );
+			$("#csAnnotiationCheckAll").prop("checked", false );
+		}
+		else {
+			$(".admin__fancy-checkbox" ).prop("checked", true );
+			$("#csAnnotiationCheckAll").prop("checked", true );
+		}
+	}); 
+
+	// check if at least one checkbox is checked and show overlay bar
+	$('.admin__checkbox-column-all-entrys, .admin__checkbox-column-single-entry').on("click", function() {
+		if 	($('.admin__fancy-checkbox:checked').length > 0) {
+			$('.admin__overlay-bar').addClass('-showExportOptions');
+		}
+		else {
+			$('.admin__overlay-bar').removeClass('-showExportOptions');
+		}
+	});
+	
+	// automatically check title checkbox if every other checkbox is checked
+	$('.admin__checkbox-column-all-entrys, .admin__checkbox-column-single-entry').on("click", function() {	
+		if ($('.admin__checkbox-column-single-entry .admin__fancy-checkbox:not(:checked)').length == 0){ 
+			$("#csAnnotiationCheckAll").prop("checked", true );
+		}
+		else {
+			$("#csAnnotiationCheckAll").prop("checked", false );
+		}
+	});
+
 // END DOCUMENT READY
 });

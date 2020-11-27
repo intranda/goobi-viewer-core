@@ -43,8 +43,13 @@
 
                             <!-- TITLE ROW -->
                             <div class="row no-gutters admin__table-title">
+                                <!-- One Square to check them all! -->
+                                <div class="col-1 d-flex admin__checkbox-column-all-entrys">
+	                                <h:selectBooleanCheckbox value="checkboxValueFillMe" styleClass="admin__fancy-checkbox" id ="csAnnotiationCheckAll" />
+	                                <h:outputLabel value="" for="csAnnotiationCheckAll" />
+                                </div>
                                 <!-- ANNOTATION COL -->
-                                <div class="col-8 d-flex">#{msg.admin__crowdsourcing_annotation}</div>
+                                <div class="col-7 d-flex">#{msg.admin__crowdsourcing_annotation}</div>
 
                                 <!-- TARGET COL -->
 	                            <div class="col-2 d-flex">                            
@@ -60,7 +65,12 @@
                             <!-- INDIVIDUAL ANNOTATION ROWS -->
                             <ui:repeat var="annotation" value="#{crowdsourcingBean.lazyModelAnnotations.paginatorList}">
                                 <div class="row no-gutters admin__table-entry">
-                                    <div class="col-8 d-flex" style="flex-direction:column;">
+	                                <!-- Check single entrys/rows -->
+	                                <div class="col-1 d-flex admin__checkbox-column-single-entry">
+		                                <h:selectBooleanCheckbox value="checkboxValueFillMe" styleClass="admin__fancy-checkbox" id ="csAnnotiationCheckAll" />
+		                                <h:outputLabel value="" for="csAnnotiationCheckAll" />
+	                                </div>
+                                    <div class="col-7 d-flex" style="flex-direction:column;">
                                         <div id="annotation_body_#{annotation.id}" class="annotation__body__content_wrapper">#{contentBean.cleanUpValue(annotation.body.toString())}</div>
 										<annotationBody annotationid="#{annotation.id}" contentid="annotation_body_#{annotation.id}"/>
                                         <!-- ACTIONS -->
@@ -89,6 +99,10 @@
                             </ui:repeat>
                         </div>
                     </div>
+                    <div class="admin__overlay-bar">
+                    	<div>Here is the option to save all selected: <h:commandButton value="Save" onclick ="alert('exported them all');" /></div>
+                    </div>
+                    
 		            <script type="text/javascript">
 		                $( document ).ready( function() {
 		                    var displayDateUpdated = true;
