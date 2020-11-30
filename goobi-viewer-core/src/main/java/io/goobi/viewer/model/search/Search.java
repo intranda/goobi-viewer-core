@@ -114,7 +114,7 @@ public class Search implements Serializable {
     @Column(name = "sort_field")
     private String sortString;
 
-    @Column(name = "date_updated", nullable = false, columnDefinition = "TIMESTAMP(9)")
+    @Column(name = "date_updated", nullable = false, columnDefinition = "TIMESTAMP")
     private LocalDateTime dateUpdated;
 
     @Column(name = "last_hits_count")
