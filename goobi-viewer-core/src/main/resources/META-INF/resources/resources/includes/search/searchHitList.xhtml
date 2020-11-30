@@ -54,7 +54,8 @@
                             <select id="sortSelect">
                                 <option
                                     value="#{search.currentSearchUrlRoot}/-/#{search.exactSearchString}/#{search.currentPage}/-/#{search.facets.currentFacetString}/"
-                                    data-sortField="#gDropdown_relevance}">#{msg.searchSortingDropdown_relevance}
+                                    data-sortField="#gDropdown_relevance}">
+                                    #{configurationBean.defaultSortFieldRandom ?  msg.searchSortingDropdown_random : msg.searchSortingDropdown_relevance}
                                 </option>
                                 <ui:repeat var="sortField" value="#{configurationBean.sortFields}">
                                     <option
