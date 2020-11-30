@@ -381,7 +381,6 @@ riot.tag2('datasetresource', '<div class="annotation__body__dataset"><dl class="
 riot.tag2('geomapresource', '<div id="geomap_{opts.annotationid}" class="annotation__body__geomap geomap"></div>', '', '', function(opts) {
 
 this.on("mount", () => {
-    console.log("mount geoMap resource ", this.opts)
 	this.feature = this.opts.resource;
 	this.config = {
 	        popover: undefined,
@@ -391,7 +390,6 @@ this.on("mount", () => {
 	        mapBoxToken: this.opts.mapboxtoken
 	    };
     this.geoMap = new viewerJS.GeoMap(this.config);
-    console.log("init geomap with ", this.config);
     let view = this.feature.view;
     let features = [this.feature];
     this.geoMap.init(view, features);

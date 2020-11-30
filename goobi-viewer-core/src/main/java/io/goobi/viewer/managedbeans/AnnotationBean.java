@@ -15,35 +15,46 @@
  */
 package io.goobi.viewer.managedbeans;
 
+import java.io.IOException;
+import java.io.OutputStream;
 import java.io.Serializable;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.SessionScoped;
+import javax.faces.context.ExternalContext;
+import javax.faces.context.FacesContext;
 import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.dao.IDAO;
 import io.goobi.viewer.exceptions.DAOException;
+import io.goobi.viewer.exceptions.IndexUnreachableException;
+import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.exceptions.ViewerConfigurationException;
 import io.goobi.viewer.managedbeans.tabledata.TableDataProvider;
 import io.goobi.viewer.managedbeans.tabledata.TableDataSource;
 import io.goobi.viewer.managedbeans.tabledata.TableDataProvider.SortOrder;
 import io.goobi.viewer.messages.Messages;
 import io.goobi.viewer.model.annotation.PersistentAnnotation;
+import io.goobi.viewer.model.annotation.export.AnnotationSheetWriter;
 import io.goobi.viewer.model.crowdsourcing.campaigns.Campaign;
 import io.goobi.viewer.model.crowdsourcing.questions.Question;
 import io.goobi.viewer.model.misc.SelectionManager;
+import io.goobi.viewer.model.toc.export.pdf.TocWriter;
+import io.goobi.viewer.model.toc.export.pdf.WriteTocException;
 
 /**
  * @author florian
@@ -64,7 +75,7 @@ public class AnnotationBean implements Serializable {
     
     private TableDataProvider<PersistentAnnotation> lazyModelAnnotations;
     
-    private final SelectionManager<Long> exportSelection = new SelectionManager<>();
+    private SelectionManager<Long> exportSelection = new SelectionManager<>();
     
     private String ownerCampaignId = "";
     
@@ -89,6 +100,7 @@ public class AnnotationBean implements Serializable {
                         filters.putAll(getFilters());
                         List<PersistentAnnotation> ret =
                                 DataManager.getInstance().getDao().getAnnotations(first, pageSize, sortField, sortOrder.asBoolean(), filters);
+                        exportSelection = new SelectionManager<Long>(ret.stream().map(PersistentAnnotation::getId).collect(Collectors.toList()));
                         return ret;
                     } catch (DAOException e) {
                         logger.error("Could not initialize lazy model: {}", e.getMessage());
@@ -131,14 +143,7 @@ public class AnnotationBean implements Serializable {
                 }
                 
                 
-            }) {
-                
-                private static final long serialVersionUID = 2790557820504846016L;
-
-                protected void resetCurrentList() {
-                    //TODO: reset exportSelection
-                }
-            };
+            });
             lazyModelAnnotations.setEntriesPerPage(DEFAULT_ROWS_PER_PAGE);
             lazyModelAnnotations.setFilters("targetPI_body");
         }
@@ -245,8 +250,46 @@ public class AnnotationBean implements Serializable {
      * Getter for {@link SelectionManager#isSelectAll() exportSelection#isSelectAll()} 
      * is placed here to avoid jsf confusing it with getting a value of the map
      * @param select
+     * @return always false to deselect the select all button when loading the page
      */
     public boolean isSelectAll() {
-        return this.exportSelection.isSelectAll();
+        return false;//this.exportSelection.isSelectAll();
     }
+    
+    /**
+     * Create an excel sheet and write it to download stream
+     * @throws IOException 
+     */
+    public void downloadSelectedAnnotations() throws IOException {
+        List<PersistentAnnotation> selectedAnnos = this.exportSelection.getAllSelected().stream()
+                .map(this::getAnnotationById)
+                .filter(Optional::isPresent)
+                .map(Optional::get)
+                .collect(Collectors.toList());
+        logger.debug("Selected " + selectedAnnos.size() + " annotations for excel download");
+        downloadAnnotations(selectedAnnos);
+    }
+    
+    public void downloadAnnotations(List<PersistentAnnotation> annotations) throws IOException {
+            try {
+                String fileName = "annotations.xlsx";
+
+                FacesContext fc = FacesContext.getCurrentInstance();
+                ExternalContext ec = fc.getExternalContext();
+                ec.responseReset(); // Some JSF component library or some Filter might have set some headers in the buffer beforehand. We want to get rid of them, else it may collide.
+                ec.setResponseContentType("application/msexcel");
+                ec.setResponseHeader("Content-Disposition", "attachment; filename=\"" + fileName + "\"");
+                OutputStream os = ec.getResponseOutputStream();
+                AnnotationSheetWriter writer = new AnnotationSheetWriter();
+                writer.createExcelSheet(os, annotations);
+                fc.responseComplete(); // Important! Otherwise JSF will attempt to render the response which obviously will fail since it's already written with a file and closed.
+            } finally {
+                
+            }
+    }
+    
+    public Optional<PersistentAnnotation> getAnnotationById(Long id) {
+        return this.lazyModelAnnotations.getPaginatorList().stream().filter(anno -> id.equals(anno.getId())).findFirst();
+    }
+    
 }

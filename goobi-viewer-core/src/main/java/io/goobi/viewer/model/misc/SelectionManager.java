@@ -15,11 +15,14 @@
  */
 package io.goobi.viewer.model.misc;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * @author florian
@@ -27,9 +30,20 @@ import java.util.Set;
  */
 public class SelectionManager<T> implements Map<T, Boolean> {
 
-    private Map<T, Boolean> selectionMap = new HashMap<>();
+    private final Map<T, Boolean> selectionMap;
 
     private boolean selectAll = false;
+
+    /**
+     * @param collect
+     */
+    public SelectionManager(List<T> allEntries) {
+        this.selectionMap = allEntries.stream().collect(Collectors.toMap(t -> t, t -> false));
+    }
+    
+    public SelectionManager() {
+        this.selectionMap = new HashMap<>();
+    }
 
     /**
      * @return the selectAll
@@ -79,6 +93,18 @@ public class SelectionManager<T> implements Map<T, Boolean> {
         }
         return selectionMap.put(item, selected);
     }
+
+    /**
+     * 
+     */
+    public List<T> getAllSelected() {
+        if(isSelectAll()) {
+            return new ArrayList<>(selectionMap.keySet());
+        } else {
+            return selectionMap.entrySet().stream().filter(e -> Boolean.TRUE.equals(e.getValue())).map(e -> e.getKey()).collect(Collectors.toList());
+        }
+    }
+    
 
     /* (non-Javadoc)
      * @see java.util.Map#clear()
@@ -163,5 +189,7 @@ public class SelectionManager<T> implements Map<T, Boolean> {
     public Collection<Boolean> values() {
         return selectionMap.values();
     }
+
+
 
 }

@@ -24,11 +24,13 @@
 var viewerJS = ( function ( viewer ) {
     'use strict';
 
-    var _debug = false;
+    var _debug = true;
     var _defaults = {
             groupAttribute: "data-group",
             selectAllSelector: "[data-group-select='select-all']",
-            selectOneSelector: "[data-group-select='select-one']"            
+            selectOneSelector: "[data-group-select='select-one']",
+            reseter: undefined
+                
     };
 
     viewer.groupSelect = {
@@ -48,7 +50,15 @@ var viewerJS = ( function ( viewer ) {
                 if(groupName) {
                     this.initGroup(groupName, $groupSelectCheckbox);
                 }
-            })
+            });
+            
+            if(this.config.reseter) {
+                $(this.config.reseter).on("click", e => {
+                    if(_debug)console.log("group select reset by ", e.target);
+                    $(this.config.selectAllSelector).prop("checked", false);
+                    $(this.config.selectOneSelector).prop("checked", false);
+                })
+            }
         },
         
         initGroup: function(groupName) {
@@ -59,7 +69,7 @@ var viewerJS = ( function ( viewer ) {
             }))
             .subscribe(e => {
                 let checked = $(e.target).is(":checked");
-                $(this.getSelectOneSelector(groupName)).prop('checked', checked).trigger("change");
+                $(this.getSelectOneSelector(groupName)).prop('checked', checked);
                 e.allChecked = checked;
                 e.anyChecked = checked;
                 groupSelectObservable.next(e);
