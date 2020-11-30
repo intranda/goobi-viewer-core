@@ -22,9 +22,9 @@
 	    <ui:fragment rendered="#{activeDocumentBean.recordLoaded and activeDocumentBean.viewManager.tectonicsIdentifier != null}">
             <div id="widgetViews" class="widget">
                 <h3>#{msg.tectonics}</h3>
-                <ui:repeat var="label"
+                <ui:repeat var="entry"
                     value="#{tectonicsBean.getTectonicsHierarchyForIdentifier(activeDocumentBean.viewManager.tectonicsIdentifier)}">
-				    #{label}
+				    #{entry.label}
 				    <br /><br />
 				</ui:repeat>
 				<h:outputLink value="#{navigationHelper.applicationUrl}archives/">#{msg.openArchiveView}</h:outputLink>

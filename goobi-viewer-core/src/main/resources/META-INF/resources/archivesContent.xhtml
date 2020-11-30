@@ -132,24 +132,28 @@
 				<!-- RIGHT SIDE -->
 				<div class="tec-archives__right-side">
 					<div class="tec-archives__text-tree">
+					
+					    <!-- HIERARCHY OF THE CURRENT NODE -->
                         <h:panelGroup id="hiearchyGroup">
-                            <ui:repeat var="label"
+                            <ui:repeat var="entry"
                                 value="#{tectonicsBean.getTectonicsHierarchyForIdentifier(tectonicsBean.tectonicsTree.selectedEntry.id)}">
-                                #{label}
+                                <!-- TODO proper level tag -->
+                                <!-- TODO bold via CSS -->
+                                #{msg[entry.descriptionLevel]}: <strong>#{entry.label}</strong>
                                 <br /><br />
                             </ui:repeat>
                         </h:panelGroup>
 					</div>
 					
 					<div class="tec-archives__object-info">
-					
 
                         <h:panelGroup id="metadataGroup">
                         
                             <!-- METADATA -->
                             <c:forEach var="field" items="#{tectonicsBean.tectonicsTree.selectedEntry.allAreaLists}">
                                 <h:outputText rendered="#{field.filled and field.visible}">
-                                    <br />#{field.name}: #{field.value}
+                                    <!-- TODO bold via CSS -->
+                                    <br /><strong>#{field.name}:</strong> #{field.value}
                                 </h:outputText>
                             </c:forEach>
                         

@@ -30,6 +30,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import io.goobi.viewer.controller.DataManager;
+import io.goobi.viewer.messages.ViewerResourceBundle;
 import io.goobi.viewer.model.ead.BasexEADParser;
 import io.goobi.viewer.model.ead.EADTree;
 import io.goobi.viewer.model.ead.EadEntry;
@@ -161,7 +162,7 @@ public class TectonicsBean implements Serializable {
      * @param identifier Entry identifier
      * @param List of entries
      */
-    public List<String> getTectonicsHierarchyForIdentifier(String identifier) {
+    public List<EadEntry> getTectonicsHierarchyForIdentifier(String identifier) {
         if (StringUtils.isEmpty(identifier)) {
             return Collections.emptyList();
         }
@@ -177,16 +178,15 @@ public class TectonicsBean implements Serializable {
         }
 
         if (eadParser.getFlatEntryList().size() == 1) {
-            return Collections.singletonList(eadParser.getFlatEntryList().get(0).getLabel());
+            return Collections.singletonList(eadParser.getFlatEntryList().get(0));
         }
 
-        List<String> ret = new ArrayList<>(eadParser.getFlatEntryList().size() - 1);
-        for (int i = 1; i < eadParser.getFlatEntryList().size(); ++i) {
-            EadEntry entry = eadParser.getFlatEntryList().get(i);
-            ret.add(entry.getLabel());
+        List<EadEntry> ret = new ArrayList<>(eadParser.getFlatEntryList().size() - 1);
+        for (EadEntry entry : eadParser.getFlatEntryList().subList(1, eadParser.getFlatEntryList().size())) {
+            ret.add(entry);
         }
 
-        return ret;
+        return eadParser.getFlatEntryList().subList(1, eadParser.getFlatEntryList().size());
     }
 
     /**

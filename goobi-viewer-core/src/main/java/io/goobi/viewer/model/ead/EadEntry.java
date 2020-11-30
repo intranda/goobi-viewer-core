@@ -15,7 +15,7 @@ import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
 
 public class EadEntry {
-    
+
     private static final Logger logger = LoggerFactory.getLogger(EadEntry.class);
 
     // parent node
@@ -161,11 +161,13 @@ public class EadEntry {
                 .getFirstDoc("+" + SolrConstants.TECTONICS_ID + ":" + id, Collections.singletonList(SolrConstants.PI));
         if (doc != null) {
             associatedRecordPi = (String) doc.getFieldValue(SolrConstants.PI);
-        } else {
+        }
+        if (associatedRecordPi == null) {
             associatedRecordPi = "";
         }
     }
 
+    @Deprecated
     public String toggleMetadata() {
         showMetadata = !showMetadata;
         return "";
