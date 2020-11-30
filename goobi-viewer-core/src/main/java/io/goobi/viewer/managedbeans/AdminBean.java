@@ -49,7 +49,6 @@ import de.unigoettingen.sub.commons.util.CacheUtils;
 import io.goobi.viewer.controller.DataFileTools;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.SolrConstants;
-import io.goobi.viewer.controller.SolrSearchIndex;
 import io.goobi.viewer.controller.StringTools;
 import io.goobi.viewer.controller.XmlTools;
 import io.goobi.viewer.exceptions.DAOException;
@@ -59,6 +58,7 @@ import io.goobi.viewer.faces.validators.EmailValidator;
 import io.goobi.viewer.managedbeans.tabledata.TableDataProvider;
 import io.goobi.viewer.managedbeans.tabledata.TableDataProvider.SortOrder;
 import io.goobi.viewer.managedbeans.tabledata.TableDataSource;
+import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.messages.Messages;
 import io.goobi.viewer.messages.ViewerResourceBundle;
 import io.goobi.viewer.model.annotation.Comment;
@@ -107,6 +107,8 @@ public class AdminBean implements Serializable {
     private boolean deleteUserContributions =
             EmailValidator.validateEmailAddress(DataManager.getInstance().getConfiguration().getAnonymousUserEmailAddress()) ? false : true;
 
+    private Role memberRole;
+
     /**
      * <p>
      * Constructor for AdminBean.
@@ -125,6 +127,11 @@ public class AdminBean implements Serializable {
      */
     @PostConstruct
     public void init() {
+        try {
+            memberRole = DataManager.getInstance().getDao().getRole("member");
+        } catch (DAOException e) {
+            logger.error(e.getMessage(), e);
+        }
         {
             lazyModelUsers = new TableDataProvider<>(new TableDataSource<User>() {
 
@@ -495,7 +502,7 @@ public class AdminBean implements Serializable {
      * </p>
      */
     public void resetCurrentUserRoleAction() {
-        currentUserRole = new UserRole(getCurrentUserGroup(), null, null);
+        currentUserRole = new UserRole(getCurrentUserGroup(), null, memberRole);
     }
 
     /**
@@ -508,6 +515,12 @@ public class AdminBean implements Serializable {
     public void saveUserRoleAction() throws DAOException {
         if (currentUserRole == null) {
             logger.trace("currentUserRole not set");
+            Messages.info("errSave");
+            return;
+        }
+        if (currentUserRole.getUser() == null) {
+            logger.trace("currentUserRole: User not set");
+            Messages.info("errSave");
             return;
         }
 
@@ -587,26 +600,36 @@ public class AdminBean implements Serializable {
                 list2.add(licenseType);
             }
         }
-
         List<SelectItem> ret = new ArrayList<>(licenseTypes.size());
         {
-            SelectItemGroup group1 = new SelectItemGroup(ViewerResourceBundle.getTranslation("admin__license_function", null));
+            SelectItemGroup group = new SelectItemGroup(ViewerResourceBundle.getTranslation("admin__license_function", null));
             SelectItem[] array1 = new SelectItem[list1.size()];
             for (int i = 0; i < array1.length; ++i) {
                 array1[i] = new SelectItem(list1.get(i), ViewerResourceBundle.getTranslation(list1.get(i).getName(), null));
             }
-            group1.setSelectItems(array1);
-            ret.add(group1);
+            group.setSelectItems(array1);
+            ret.add(group);
         }
         {
-            SelectItemGroup group2 = new SelectItemGroup(ViewerResourceBundle.getTranslation("admin__license", null));
-            SelectItem[] array2 = new SelectItem[list2.size()];
-            for (int i = 0; i < array2.length; ++i) {
-                array2[i] = new SelectItem(list2.get(i), ViewerResourceBundle.getTranslation(list2.get(i).getName(), null));
+            SelectItemGroup group = new SelectItemGroup(ViewerResourceBundle.getTranslation("admin__license", null));
+            SelectItem[] array = new SelectItem[list2.size()];
+            for (int i = 0; i < array.length; ++i) {
+                array[i] = new SelectItem(list2.get(i), ViewerResourceBundle.getTranslation(list2.get(i).getName(), null));
             }
-            group2.setSelectItems(array2);
-            ret.add(group2);
+            group.setSelectItems(array);
+            ret.add(group);
         }
+
+        //        List<Campaign> campaigns = DataManager.getInstance().getDao().getAllCampaigns();
+        //        if (!campaigns.isEmpty()) {
+        //            SelectItemGroup group = new SelectItemGroup(ViewerResourceBundle.getTranslation("admin__crowdsourcing_campaigns", null));
+        //            SelectItem[] array = new SelectItem[campaigns.size()];
+        //            for (int i = 0; i < array.length; ++i) {
+        //                array[i] = new SelectItem(campaigns.get(i), ViewerResourceBundle.getTranslation(campaigns.get(i).getTitle(), null));
+        //            }
+        //            group.setSelectItems(array);
+        //            ret.add(group);
+        //        }
 
         return ret;
     }
@@ -1712,7 +1735,7 @@ public class AdminBean implements Serializable {
     public long getNumRecordsWithAccessCondition(String accessCondition) throws IndexUnreachableException, PresentationException {
         return DataManager.getInstance()
                 .getSearchIndex()
-                .getHitCount(SolrSearchIndex.getQueryForAccessCondition(accessCondition, false));
+                .getHitCount(SearchHelper.getQueryForAccessCondition(accessCondition, false));
     }
 
     /**
@@ -1721,7 +1744,11 @@ public class AdminBean implements Serializable {
      * @return
      */
     public String getUrlQueryForAccessCondition(String accessCondition) {
-        String query = SolrSearchIndex.getQueryForAccessCondition(accessCondition, true);
+        String query = SearchHelper.getQueryForAccessCondition(accessCondition, true);
+        if (query == null) {
+            return null;
+        }
+        query = BeanUtils.escapeCriticalUrlChracters(query);
         try {
             return URLEncoder.encode(query, StringTools.DEFAULT_ENCODING);
         } catch (UnsupportedEncodingException e) {

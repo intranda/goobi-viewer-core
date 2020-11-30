@@ -52,6 +52,7 @@
 				}
 			}
 			.search-list__hit-title {
+				padding: 1rem;
 				[data-bookmark-list-type="add"] {
 					top: 0;
 					right: 5px;
@@ -59,10 +60,13 @@
 				}
 			}
 			.search-list__hit-title h4 {
-			    text-align: center;
-			    padding: 10px;
-			    text-overflow: ellipsis;
-			    overflow: hidden;
+				text-align: center;
+				text-overflow: ellipsis;
+				display: -webkit-box;
+				-webkit-line-clamp: 7;
+				-webkit-box-orient: vertical;
+				overflow: hidden;
+				line-height: 1.4;
 			}
 			.search-list__hit-thumbnail img,
 			.search-list__hit-type,

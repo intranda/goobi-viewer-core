@@ -230,7 +230,7 @@ public class NetTools {
         return postMail(recipients, subject, body, DataManager.getInstance().getConfiguration().getSmtpServer(),
                 DataManager.getInstance().getConfiguration().getSmtpUser(), DataManager.getInstance().getConfiguration().getSmtpPassword(),
                 DataManager.getInstance().getConfiguration().getSmtpSenderAddress(), DataManager.getInstance().getConfiguration().getSmtpSenderName(),
-                DataManager.getInstance().getConfiguration().getSmtpSecurity());
+                DataManager.getInstance().getConfiguration().getSmtpSecurity(), DataManager.getInstance().getConfiguration().getSmtpPort());
     }
 
     /**
@@ -245,11 +245,12 @@ public class NetTools {
      * @param smtpSenderAddress
      * @param smtpSenderName
      * @param smtpSecurity
+     * @param smtpPort
      * @throws MessagingException
      * @throws UnsupportedEncodingException
      */
     private static boolean postMail(List<String> recipients, String subject, String body, String smtpServer, final String smtpUser,
-            final String smtpPassword, String smtpSenderAddress, String smtpSenderName, String smtpSecurity)
+            final String smtpPassword, String smtpSenderAddress, String smtpSenderName, String smtpSecurity, Integer smtpPort)
             throws MessagingException, UnsupportedEncodingException {
         if (recipients == null) {
             throw new IllegalArgumentException("recipients may not be null");
@@ -282,13 +283,15 @@ public class NetTools {
         if (StringUtils.isEmpty(smtpUser)) {
             auth = false;
         }
-        String security = DataManager.getInstance().getConfiguration().getSmtpSecurity();
         Properties props = new Properties();
-        switch (security.toUpperCase()) {
+        switch (smtpSecurity.toUpperCase()) {
             case "STARTTLS":
                 logger.debug("Using STARTTLS");
+                if (smtpPort == -1) {
+                    smtpPort = 25;
+                }
                 props.setProperty("mail.transport.protocol", "smtp");
-                props.setProperty("mail.smtp.port", "25");
+                props.setProperty("mail.smtp.port", String.valueOf(smtpPort));
                 props.setProperty("mail.smtp.host", smtpServer);
                 props.setProperty("mail.smtp.ssl.trust", "*");
                 props.setProperty("mail.smtp.starttls.enable", "true");
@@ -296,16 +299,22 @@ public class NetTools {
                 break;
             case "SSL":
                 logger.debug("Using SSL");
+                if (smtpPort == -1) {
+                    smtpPort = 465;
+                }
                 props.setProperty("mail.transport.protocol", "smtp");
                 props.setProperty("mail.smtp.host", smtpServer);
-                props.setProperty("mail.smtp.port", "465");
+                props.setProperty("mail.smtp.port", String.valueOf(smtpPort));
                 props.setProperty("mail.smtp.ssl.enable", "true");
                 props.setProperty("mail.smtp.ssl.trust", "*");
                 break;
             default:
                 logger.debug("Using no SMTP security");
+                if (smtpPort == -1) {
+                    smtpPort = 25;
+                }
                 props.setProperty("mail.transport.protocol", "smtp");
-                props.setProperty("mail.smtp.port", "25");
+                props.setProperty("mail.smtp.port", String.valueOf(smtpPort));
                 props.setProperty("mail.smtp.host", smtpServer);
         }
         props.setProperty("mail.smtp.connectiontimeout", "15000");

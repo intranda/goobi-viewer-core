@@ -67,7 +67,7 @@
             	}
             	
             	// show thumb wrapper
-        		$( this.wrapper ).width( this.thumbsWidth ).fadeToggle( 'fast' );
+        		$( this.wrapper ).outerWidth( this.thumbsWidth ).fadeToggle( 'fast' );
         		
     			// get thumbnail images
             	if ( this.thumbnails.length == 0 ) {
@@ -77,7 +77,7 @@
                         type: "GET",
                         datatype: "JSON"
                     } ).then( function( data ) {
-                    	this.thumbnails = data;
+                    	this.thumbnails = data.canvases;//.map(c => c.thumbnail["@id"]);
                     	this.update();                       
                     }.bind( this ) );                        
     			}    			

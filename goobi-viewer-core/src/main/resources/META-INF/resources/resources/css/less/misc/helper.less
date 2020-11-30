@@ -1,7 +1,20 @@
 /* ==============================================================
    CSS Helper Classes
    ==============================================================*/
-   
+
+
+// hide visually, but allow screen reader access
+.-sr-only {
+	position: absolute;
+	width: 1px;
+	height: 1px;
+	padding: 0;
+	margin: -1px;
+	overflow: hidden;
+	clip: rect(0, 0, 0, 0);
+	border: 0;
+}
+
 // modifier for non-selectable content
 .-noSelect {
   -webkit-touch-callout: none; 
@@ -35,7 +48,7 @@
 	border-radius: 50%;
 	color: @white;
 	top: 14px;
-	z-index: 5;
+	z-index: 50;
 	&.-success {
 	    background-color: @validSuccess;
 	    .fa-check {
@@ -70,6 +83,19 @@
     	border-color: @validDanger;
     }
 }
+
+/* JQUERY UI */
+.p-datepicker-panel {
+	background: @white;
+}
+.ui-datepicker-calendar {
+ 	td:hover {
+    	background: @neutralgray;
+	}
+}
+.ui-shadow {
+    box-shadow: 0 2px 5px rgba(0,0,0,0.5);
+    }
 
 /* HORIZONTAL LIST */
 /* BLOCK */

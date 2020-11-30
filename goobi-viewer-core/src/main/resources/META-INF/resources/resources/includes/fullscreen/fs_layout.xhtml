@@ -12,18 +12,18 @@
 
     <!-- VIEW -->
     <div id="fullscreenView" class="fullscreen__view">
-        <!-- SIDEBAR PANEL CONTROLS -->
-        <div id="fullscreenSidebarPanelControls" class="fullscreen__view-sidebar-panel-controls">
-            <button class="btn btn--clean" data-close="all-tabs" title="#{msg.allClose}" data-toggle="tooltip" data-placement="top"></button>
-            <button class="btn btn--clean" data-open="all-tabs" title="#{msg.allOpen}" data-toggle="tooltip" data-placement="top"></button>
-        </div>
-        
         <!-- SIDEBAR -->
-        <aside id="fullscreenViewSidebar" class="fullscreen__view-sidebar">        
+        <aside id="fullscreenViewSidebar" class="fullscreen__view-sidebar">
+            <!-- SIDEBAR PANEL CONTROLS -->
+            <div id="fullscreenSidebarPanelControls" class="fullscreen__view-sidebar-panel-controls">
+                <button class="btn btn--clean" data-close="all-tabs" title="#{msg.allClose}" data-toggle="tooltip" data-placement="top" aria-label="#{msg.allClose}"></button>
+                <button class="btn btn--clean" data-open="all-tabs" title="#{msg.allOpen}" data-toggle="tooltip" data-placement="top" aria-label="#{msg.allOpen}"></button>
+            </div>     
+            
             <div class="fullscreen__view-sidebar-inner">            
                 <!-- SIDEBAR CONTROLS -->
                 <div class="fullscreen__view-sidebar-controls">
-                    <button class="btn btn--clean" title="#{msg.fullscreen_hideSidebar}" data-close="fs-sidebar" data-toggle="tooltip" data-placement="right"></button>
+                    <button class="btn btn--clean" title="#{msg.fullscreen_hideSidebar}" data-close="fs-sidebar" data-toggle="tooltip" data-placement="right" aria-label="#{msg.fullscreen_hideSidebar}"></button>
                 </div>
                 
                 <div class="fullscreen__view-sidebar-share">
@@ -80,6 +80,19 @@
                             </div>
                         </div>
                     </ui:fragment>
+
+					<c:if test="#{!contentBean.getUserGeneratedContentsForDisplay(activeDocumentBean.viewManager.pi).isEmpty()}">
+	                <!-- ANNOTATIONS -->
+	                    <div id="panel-9" class="fullscreen__view-sidebar-accordeon-panel fs-annotations">
+	                        <h3 class="fullscreen__view-sidebar-accordeon-panel-title">
+	                            <span>#{msgcs.crowdsourcing_userGeneratedContent}</span>
+	                        </h3>
+	
+	                        <div class="fullscreen__view-sidebar-accordeon-panel-body">
+	                            <widgetComponent:widget_annotations collapsible="false" />
+	                        </div>
+	                    </div>
+					</c:if>
 
                     <!-- DOWNLOADS -->
                     <div id="panel-4" class="fullscreen__view-sidebar-accordeon-panel fs-downloads">
@@ -163,7 +176,11 @@
         <ui:include src="/resources/includes/fullscreen/fs_header.xhtml" />
 
         <!-- IMAGE -->
-        <section id="fullscreenViewImage" class="fullscreen__view-image">
+        <main id="fullscreenViewImage" class="fullscreen__view-image">
+        	
+        	<!-- heading for screen readers -->
+        	<h1 class="-sr-only">Goobi viewer</h1>
+            
             <div class="fullscreen__view-image-inner">
                 <!-- VIEW IMAGE -->
                 <ui:fragment rendered="#{activeDocumentBean.viewManager.currentPage.mimeType == 'image'}">
@@ -210,7 +227,7 @@
                 </div>
                 
             </div>
-        </section>
+        </main>
     </div>
     
 	<script type="text/javascript">

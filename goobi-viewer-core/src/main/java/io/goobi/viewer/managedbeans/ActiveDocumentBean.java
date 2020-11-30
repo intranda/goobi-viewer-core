@@ -112,6 +112,8 @@ public class ActiveDocumentBean implements Serializable {
     private ImageDeliveryBean imageDelivery;
     @Inject
     private BreadcrumbBean breadcrumbBean;
+    @Inject
+    private ContentBean contentBean;
 
     /** URL parameter 'action'. */
     private String action = "";
@@ -143,6 +145,8 @@ public class ActiveDocumentBean implements Serializable {
     private String selectedRecordLanguage;
 
     private Boolean deleteRecordKeepTrace;
+    
+    private CMSSidebarElement mapWidget = null;
 
     private int reloads = 0;
 
@@ -215,6 +219,7 @@ public class ActiveDocumentBean implements Serializable {
             prevHit = null;
             nextHit = null;
             group = false;
+            mapWidget = null; //mapWidget needs to be reset when PI changes
 
             // Any cleanup modules need to do when a record is unloaded
             for (IModule module : DataManager.getInstance().getModules()) {
@@ -1882,7 +1887,15 @@ public class ActiveDocumentBean implements Serializable {
         this.deleteRecordKeepTrace = deleteRecordKeepTrace;
     }
 
-    public CMSSidebarElement getMapWidget() throws PresentationException {
+    public CMSSidebarElement getMapWidget() throws PresentationException, DAOException {
+        if(this.mapWidget == null) {
+            this.mapWidget = generateMapWidget();
+        }
+        return this.mapWidget;
+    }
+
+    
+    public CMSSidebarElement generateMapWidget() throws PresentationException, DAOException {
 
         CMSSidebarElement widget = new CMSSidebarElement();
         widget.setType("widgetGeoMap");
@@ -1892,8 +1905,10 @@ public class ActiveDocumentBean implements Serializable {
             map.setType(GeoMapType.SOLR_QUERY);
             map.setShowPopover(false);
             map.setMarkerTitleField(null);
+            map.setMarker("default");
             map.setSolrQuery(String.format("PI:%s OR PI_TOPSTRUCT:%s", getPersistentIdentifier(), getPersistentIdentifier()));
-            if (!map.getFeaturesAsString().equals("[]")) {
+            
+            if (!map.getFeaturesAsString().equals("[]") || contentBean.hasGeoCoordinateAnnotations(getPersistentIdentifier())) {
                 widget.setGeoMap(map);
             }
         } catch (IndexUnreachableException e) {

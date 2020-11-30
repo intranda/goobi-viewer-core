@@ -147,6 +147,7 @@
 		<smtpSenderAddress>test-if-pd@intranda.com</smtpSenderAddress>
 		<smtpSenderName>Goobi viewer</smtpSenderName>
 		<smtpSecurity>SSL</smtpSecurity>
+		<smtpPort>465</smtpPort>
 		<feedbackEmailAddress>viewer@intranda.com</feedbackEmailAddress>
 		
 		<!-- anonymousUserEmailAddress: A user with this email address will be automatically created by the application.
@@ -1186,6 +1187,16 @@
 
 	<!-- ##### SHOW OR HIDE SECTIONS IN THE SIDEBAR GLOBALLY ##### -->
 	<sidebar>
+
+		<!-- sidebarWidgetDownloads: If true, the download widget within a records 
+			view for additional files from the source directory is displayed. Default 
+			is true. -->
+		<sidebarWidgetDownloads visible="true">
+	
+			<!-- hideFileRegex: If a regular expression is defined, files matching 
+				it are hidden from the widget display. The download is still possible. -->
+			<hideFileRegex>(wug_.*|AK_.*)</hideFileRegex>
+		</sidebarWidgetDownloads>
 	
 	    <!-- sidebarBrowsingTerms: If true, the sidebar term browsing widget it displayed. Default is true. -->
         <sidebarBrowsingTerms display="true" />
@@ -1412,14 +1423,6 @@
 			<docstruct>Manuscript</docstruct>
 		</allowedDocumentTypes>
 	</transkribus>
-
-	<!-- ##### CONTENT UPLOAD SETTINGS (CURRENTLY DISABLED) ##### -->
-	<content>
-		<ruleset>/opt/digiverso/viewer/config/ruleset.xml</ruleset>
-		<defaultCollection>Varia</defaultCollection>
-		<defaultDocstrct>OtherDocStrct</defaultDocstrct>
-		<originalContentDownload>true</originalContentDownload>
-	</content>
 
 	<!-- PIWIK-CONFIGURATION -->
 	<piwik>

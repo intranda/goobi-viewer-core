@@ -1,18 +1,18 @@
 <timematrix>
 
-<div class="timematrix__objects">
+	<div class="timematrix__objects">
 	<div each="{manifest in manifests}" class="timematrix__content">
-		<div id="imageMap" class="timematrix__img">
+			<div id="imageMap" class="timematrix__img">
 			<a href="{getViewerUrl(manifest)}"> <img src="{getImageUrl(manifest)}"
-				class="timematrix__image" data-viewer-thumbnail="thumbnail"
+				class="timematrix__image" data-viewer-thumbnail="thumbnail"  alt="" aria-hidden="true"
 				onError="this.onerror=null;this.src='/viewer/resources/images/access_denied.png'" />
-				<div class="timematrix__text">
-					<p if="{hasTitle(manifest)}" name="timetext" class="timetext">{getDisplayTitle(manifest)}</p>
-				</div>
-			</a>
-		</div>
+					<div class="timematrix__text">	
+						<p if="{hasTitle(manifest)}" name="timetext" class="timetext">{getDisplayTitle(manifest)}</p>
+					</div>
+				</a>
+			</div>	
+		</div> 
 	</div>
-</div>
 
 	<script>
 	    this.on( 'mount', function() {
@@ -31,8 +31,8 @@
 	                ).subscribe(json => { 
 	                    this.manifests = json.orderedItems;
 	                    console.log("got manifests ", this.manifests);
-	                    this.update()
-	                    this.opts.loading.hide()
+	                    this.update();
+	                    this.opts.loading.hide();
 	                })
 	             
 	
@@ -43,7 +43,10 @@
 	    } );
 	    
 	    getViewerUrl(manifest) {
-	        let viewer = manifest.rendering.find(r => r.format == "text/html");
+	        let viewer  = manifest.rendering;
+	        if(Array.isArray(viewer)) {
+	            viewer = viewer.find(r => r.format == "text/html");
+	        }
 	        if(viewer) {
 	            return viewer["@id"];
 	        } else {
@@ -72,7 +75,7 @@
 	        apiTarget += "api/v1/records/list";
 	        apiTarget += "?start=" + $( this.opts.startInput ).val();
 	        apiTarget += "&end=" + $( this.opts.endInput ).val();
-	        apiTarget += "&rows=" + $( this.opts.count ).val();
+	        apiTarget += "&count=" + $( this.opts.count ).val();
 	        apiTarget += "&sort=YEAR";
 	        if ( this.opts.subtheme ) {
 	            apiTarget += ( "&subtheme=" + this.opts.subtheme );

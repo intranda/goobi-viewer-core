@@ -34,8 +34,8 @@ var Crowdsourcing = ( function(crowdsourcing) {
                     value: "",
             }
         }
- 
     }
+    
     crowdsourcing.Annotation.Plaintext.prototype = Object.create(crowdsourcing.Annotation.prototype);
     
     crowdsourcing.Annotation.Plaintext.prototype.getText = function() {
@@ -44,7 +44,7 @@ var Crowdsourcing = ( function(crowdsourcing) {
     }
         
     crowdsourcing.Annotation.Plaintext.prototype.setText = function(text) {
-        if(this.body.valuie != text) {                
+        if(this.body.value != text) {                
             this.setModified(new Date());
         }
         this.body.value = text;

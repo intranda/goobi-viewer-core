@@ -141,7 +141,7 @@ var cmsJS = ( function( cms ) {
                 $gridItemCaption.html( item.caption );
                 
                 // grid item caption heading
-                $gridItemCaptionHeading = $( '<h4 />' );
+                $gridItemCaptionHeading = $( '<h3 />' );
                 $gridItemCaptionHeading.text( item.title );
                 $gridItemCaption.prepend( $gridItemCaptionHeading );
                 
@@ -163,6 +163,7 @@ var cmsJS = ( function( cms ) {
             // grid item image
             $gridItemImage = $( '<img />' );
             $gridItemImage.attr( 'src', item.name );
+			$gridItemImage.attr( 'alt', item.alt );
             $gridItemImage.addClass( 'img-fluid' );
             
             if ( item.url !== '' ) {

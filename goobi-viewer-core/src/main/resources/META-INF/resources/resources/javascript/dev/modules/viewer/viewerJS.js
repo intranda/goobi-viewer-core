@@ -130,7 +130,7 @@ var viewerJS = (function () {
         }
         
         // toggle work title body
-        $('body').on( 'click', '.title__header h3', function () {
+        $('body').on( 'click', '.title__header h2', function () {
         	$( this ).find( '.fa' ).toggleClass( 'in' );
         	$( '.title__body' ).slideToggle( 'fast' );        	
         } );
@@ -306,9 +306,9 @@ var viewerJS = (function () {
     viewer.initFragmentNavigation = function () {
         if (window.location.hash) {
             $(document).ready(function () {
-                var hash = window.location.hash.substring(1);
-                if(!hash.startsWith("xywh=")) {                    
-                    var $hashedElement = $("#" + hash);
+                var hash = window.location.hash;
+                if(!hash.includes("=")) {                    
+                    var $hashedElement = $(hash);
                     if ($hashedElement.length > 0) {
                         $hashedElement.get(0).scrollIntoView();
                         

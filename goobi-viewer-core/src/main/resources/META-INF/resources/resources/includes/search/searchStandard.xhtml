@@ -20,7 +20,7 @@
     <div class="search-standard">
         <!-- SEARCH STANDARD HELP -->
         <div class="search-standard__help pull-right clearfix">
-            <button type="button" data-toggle="modal" data-target="#searchHelpModal">
+            <button type="button" data-toggle="modal" data-target="#searchHelpModal" aria-label="#{msg.search_helpModalTitle}">
                 <i class="fa fa-question-circle" aria-hidden="true"></i>
             </button>
         </div>
@@ -50,9 +50,10 @@
             <!-- SEARCH STANDARD INPUT -->
             <div class="search-standard__input">
                 <div class="search-standard__input-autocomplete">
-                    <p:autoComplete id="pfAutocomplete" completeMethod="#{search.autocomplete}" value="#{search.searchString}" maxResults="15" minQueryLength="3"
+                    <p:autoComplete id="pfAutocomplete" inputStyleClass="-no-outline -active-border" completeMethod="#{search.autocomplete}" value="#{search.searchString}" maxResults="15" minQueryLength="3"
                         autoHighlight="false">
                         <f:passThroughAttribute name="placeholder" value="#{msg.searchFieldDemoText}" />
+                        <f:passThroughAttribute name="aria-label" value="#{msg.aria_label__search_form}" />
                     </p:autoComplete>
                 </div>
             </div>
@@ -81,7 +82,6 @@
                         });
                 	</script>
                 </div>
-                <ui:fragment rendered="#{!searchBean.showReducedSearchOptions}">
                     <div class="search-standard__filter-link">
                         <h:commandLink rendered="#{navigationHelper.cmsPage}" value="#{msg.searchAdvanced}" action="#{searchBean.setActiveSearchType(1)}">
                             <f:ajax render="searchArea #{renderOnSearchTypeChange}" />
@@ -90,7 +90,6 @@
                             <a href="#{request.contextPath}/searchadvanced/">#{msg.searchAdvanced}</a>
                         </ui:fragment>
                     </div>
-                </ui:fragment>
             </div>
 
             <!-- SEARCH STANDARD ACTION -->

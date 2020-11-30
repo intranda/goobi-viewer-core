@@ -26,6 +26,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import javax.servlet.http.HttpServletRequest;
+
+import org.apache.commons.lang.math.NumberUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.solr.common.SolrDocument;
 import org.apache.solr.common.SolrDocumentList;
@@ -49,6 +52,7 @@ import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.model.annotation.Comment;
 import io.goobi.viewer.model.iiif.presentation.builder.AbstractBuilder;
+import io.goobi.viewer.model.iiif.presentation.builder.OpenAnnotationBuilder;
 import io.goobi.viewer.model.iiif.search.model.AnnotationResultList;
 import io.goobi.viewer.model.iiif.search.model.SearchTermList;
 import io.goobi.viewer.model.iiif.search.parser.AbstractSearchParser;
@@ -76,6 +80,7 @@ public class IIIFSearchBuilder {
     private int page = 1;
     private int hitsPerPage = 20;
     private AbstractApiUrlManager urls;
+    private final HttpServletRequest request;
 
     /**
      * Initializes the builder with all required parameters
@@ -84,7 +89,7 @@ public class IIIFSearchBuilder {
      * @param query the query string
      * @param pi the pi of the manifest to search
      */
-    public IIIFSearchBuilder(AbstractApiUrlManager urls, String query, String pi) {
+    public IIIFSearchBuilder(AbstractApiUrlManager urls, String query, String pi, HttpServletRequest request) {
         if (query != null) {
             query = query.replace("+", " ");
         }
@@ -92,6 +97,7 @@ public class IIIFSearchBuilder {
         this.pi = pi;
         this.urls = urls;
         this.converter = new SearchResultConverter(urls, pi, 0);
+        this.request = request;
     }
 
     /**
@@ -313,7 +319,7 @@ public class IIIFSearchBuilder {
                 total += fulltextAnnotations.numHits;
             }
             if (motivation.isEmpty() || motivation.contains("non-painting") || motivation.contains("describing")) {
-                AnnotationResultList annotations = searchAnnotations(query, pi, getFirstHitIndex(getPage()), getHitsPerPage());
+                AnnotationResultList annotations = searchAnnotations(query, pi, getFirstHitIndex(getPage()), getHitsPerPage(), request);
                 resultList.add(annotations);
                 mostHits = Math.max(mostHits, annotations.numHits);
                 total += annotations.numHits;
@@ -373,7 +379,7 @@ public class IIIFSearchBuilder {
                 //add terms from fulltext?
             }
             if (motivation.isEmpty() || motivation.contains("non-painting") || motivation.contains("describing")) {
-                terms.addAll(autoSuggestAnnotations(query, getPi()));
+                terms.addAll(autoSuggestAnnotations(query, getPi(), request));
             }
             if (motivation.isEmpty() || motivation.contains("non-painting") || motivation.contains("describing")) {
                 terms.addAll(autoSuggestMetadata(query, getPi()));
@@ -525,7 +531,7 @@ public class IIIFSearchBuilder {
      * @param hitsPerPage2
      * @return
      */
-    private AnnotationResultList searchAnnotations(String query, String pi, int firstHitIndex, int hitsPerPage) {
+    private AnnotationResultList searchAnnotations(String query, String pi, int firstHitIndex, int hitsPerPage, HttpServletRequest request) {
 
         StringBuilder queryBuilder = new StringBuilder();
         queryBuilder.append(" +PI_TOPSTRUCT:").append(pi);
@@ -534,9 +540,7 @@ public class IIIFSearchBuilder {
 
         AnnotationResultList results = new AnnotationResultList();
         try {
-            SolrDocumentList docList = DataManager.getInstance()
-                    .getSearchIndex()
-                    .search(queryBuilder.toString(), SolrSearchIndex.MAX_HITS, getPageSortFields(), Arrays.asList(AbstractBuilder.UGC_SOLR_FIELDS));
+            List<SolrDocument> docList = new OpenAnnotationBuilder(urls).getAnnotationDocuments(query, request);
             if (firstHitIndex < docList.size()) {
                 List<SolrDocument> filteredDocList = docList.subList(firstHitIndex, Math.min(firstHitIndex + hitsPerPage, docList.size()));
                 for (SolrDocument doc : filteredDocList) {
@@ -550,7 +554,7 @@ public class IIIFSearchBuilder {
         return results;
     }
 
-    private SearchTermList autoSuggestAnnotations(String query, String pi) {
+    private SearchTermList autoSuggestAnnotations(String query, String pi, HttpServletRequest request) {
 
         StringBuilder queryBuilder = new StringBuilder();
         queryBuilder.append(" +PI_TOPSTRUCT:").append(pi);
@@ -559,9 +563,7 @@ public class IIIFSearchBuilder {
 
         SearchTermList terms = new SearchTermList();
         try {
-            SolrDocumentList docList = DataManager.getInstance()
-                    .getSearchIndex()
-                    .search(queryBuilder.toString(), SolrSearchIndex.MAX_HITS, getPageSortFields(), Arrays.asList(AbstractBuilder.UGC_SOLR_FIELDS));
+            List<SolrDocument> docList = new OpenAnnotationBuilder(urls).getAnnotationDocuments(query, request);
             for (SolrDocument doc : docList) {
                 terms.addAll(converter.getSearchTerms(AbstractSearchParser.getAutoSuggestRegex(query), doc,
                         Collections.singletonList(SolrConstants.UGCTERMS), getMotivation()));

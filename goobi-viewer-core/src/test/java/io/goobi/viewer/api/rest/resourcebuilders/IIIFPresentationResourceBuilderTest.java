@@ -50,7 +50,7 @@ public class IIIFPresentationResourceBuilderTest extends AbstractSolrEnabledTest
     @Before
     public void setUp() throws Exception {
         super.setUp();
-        testee = new IIIFPresentationResourceBuilder(new ApiUrls(""));
+        testee = new IIIFPresentationResourceBuilder(new ApiUrls(""), null);
     }
 
     /**

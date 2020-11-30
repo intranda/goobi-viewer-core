@@ -12,6 +12,7 @@
         <composite:attribute name="linkToSearch" required="false" default="true" />
     	<composite:attribute name="allowFullscreen" required="false" default="true" />
     	<composite:attribute name="title" required="false" default="#{cc.attrs.widget.geoMap.title}" />
+    	<composite:attribute name="showAnnotations" type="java.lang.Boolean" required="false" default="false"/>
     </composite:interface>
 
     <composite:implementation>
@@ -31,7 +32,7 @@
                     </h3>
 
                     <!-- MAP -->
-                    <viewerComponent:geoMap geoMap="#{cc.attrs.widget.geoMap}" linkToSearch="#{cc.attrs.linkToSearch}" mapId="widget_geoMap_#{cc.attrs.widget.geoMapId}"></viewerComponent:geoMap>
+                    <viewerComponent:geoMap showAnnotations="#{cc.attrs.showAnnotations}" geoMap="#{cc.attrs.widget.geoMap}" linkToSearch="#{cc.attrs.linkToSearch}" mapId="widget_geoMap_#{cc.attrs.widget.geoMapId}"></viewerComponent:geoMap>
                 </div>
             </h:panelGroup>
             <popover id="geoMapPopoverTemplate_#{cc.attrs.widget.geoMapId}">

@@ -115,7 +115,7 @@ public class NavigationHelper implements Serializable {
     /** Map for setting any navigation status variables. Replaces currentView, etc. */
     protected Map<String, String> statusMap = new HashMap<>();
 
-    private String theme = "";
+    private final String theme;
 
     /** Currently selected page from the main navigation bar. */
     private String currentPage = "index";
@@ -126,7 +126,7 @@ public class NavigationHelper implements Serializable {
      * Empty constructor.
      */
     public NavigationHelper() {
-        // the emptiness inside
+        theme = DataManager.getInstance().getConfiguration().getTheme();
     }
 
     /**
@@ -142,7 +142,6 @@ public class NavigationHelper implements Serializable {
             locale = Locale.GERMAN;
             logger.warn("Could not access FacesContext, locale set to DE.");
         }
-        theme = DataManager.getInstance().getConfiguration().getTheme();
         statusMap.put(KEY_CURRENT_PARTNER_PAGE, "");
         statusMap.put(KEY_SELECTED_NEWS_ARTICLE, "");
         statusMap.put(KEY_MENU_PAGE, "user");
@@ -681,13 +680,40 @@ public class NavigationHelper implements Serializable {
      * @return a {@link java.lang.String} object.
      */
     public String getDatePattern() {
+        if (locale == null) {
+            return "yyyy-MM-dd";
+        }
+
         switch (locale.getLanguage()) {
+            case "de":
+                return "dd.MM.yyyy";
             case "en":
                 return "MM/dd/yyyy";
             case "es":
                 return "dd/MM/yyyy";
             default:
-                return "dd.MM.yyyy";
+                return "yyyy-MM-dd";
+        }
+    }
+
+    /**
+     * 
+     * @return
+     */
+    public String getDateTimePattern() {
+        if (locale == null) {
+            return "yyyy-MM-dd - HH:mm";
+        }
+
+        switch (locale.getLanguage()) {
+            case "de":
+                return "dd.MM.yyyy - HH:mm";
+            case "en":
+                return "MM/dd/yyyy - h:mm a";
+            case "es":
+                return "dd/MM/yyyy - HH:mm";
+            default:
+                return "yyyy-MM-dd - HH:mm";
         }
     }
 
@@ -707,7 +733,8 @@ public class NavigationHelper implements Serializable {
      * @return a {@link java.lang.String} object.
      */
     public String getApplicationUrl() {
-        return BeanUtils.getServletPathWithHostAsUrlFromJsfContext() + "/";
+        String applicationUrl = BeanUtils.getServletPathWithHostAsUrlFromJsfContext() + "/";
+        return applicationUrl;
     }
 
     /**
@@ -1005,21 +1032,10 @@ public class NavigationHelper implements Serializable {
         logger.trace("resetTheme");
         // Resetting the current page here would result in the current record being flushed, which is bad for CMS overview pages
         //        resetCurrentPage();
-        theme = DataManager.getInstance().getConfiguration().getTheme();
         setCmsPage(false);
         setSubThemeDiscriminatorValue("");
     }
 
-    /**
-     * <p>
-     * Setter for the field <code>theme</code>.
-     * </p>
-     *
-     * @param theme a {@link java.lang.String} object.
-     */
-    public void setTheme(String theme) {
-        this.theme = theme;
-    }
 
     /**
      * <p>

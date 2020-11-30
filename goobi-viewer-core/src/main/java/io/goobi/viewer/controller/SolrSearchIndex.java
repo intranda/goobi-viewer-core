@@ -29,6 +29,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Random;
 import java.util.Set;
 import java.util.function.BinaryOperator;
 import java.util.regex.Matcher;
@@ -67,10 +68,8 @@ import io.goobi.viewer.controller.SolrConstants.DocType;
 import io.goobi.viewer.exceptions.HTTPException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
-import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.messages.ViewerResourceBundle;
 import io.goobi.viewer.model.crowdsourcing.DisplayUserGeneratedContent;
-import io.goobi.viewer.model.search.SearchHelper;
 import io.goobi.viewer.model.viewer.StringPair;
 import io.goobi.viewer.model.viewer.StructElement;
 import io.goobi.viewer.model.viewer.Tag;
@@ -229,6 +228,10 @@ public final class SolrSearchIndex {
             for (int i = 0; i < sortFields.size(); ++i) {
                 StringPair sortField = sortFields.get(i);
                 if (StringUtils.isNotEmpty(sortField.getOne())) {
+                    // If RANDOM is used, generate a randomized sort field
+                    if ("RANDOM".equals(sortField.getOne())) {
+                        sortField.setOne(generateRandomSortField());
+                    }
                     solrQuery.addSort(sortField.getOne(), "desc".equals(sortField.getTwo()) ? ORDER.desc : ORDER.asc);
                 }
             }
@@ -713,7 +716,8 @@ public final class SolrSearchIndex {
     public long getIddocByLogid(String pi, String logId) throws IndexUnreachableException, PresentationException {
         logger.trace("getIddocByLogid: {}:{}", pi, logId);
         String query = new StringBuilder("+")
-                .append(SolrConstants.PI_TOPSTRUCT).append(":")
+                .append(SolrConstants.PI_TOPSTRUCT)
+                .append(":")
                 .append(pi)
                 .append(" +")
                 .append(SolrConstants.LOGID)
@@ -815,22 +819,25 @@ public final class SolrSearchIndex {
      * @return a {@link java.util.List} object.
      */
     public static List<String> getMetadataValues(SolrDocument doc, String fieldName) {
-        if (doc != null) {
-            Collection<Object> values = doc.getFieldValues(fieldName);
-            if (values != null) {
-                List<String> ret = new ArrayList<>(values.size());
-                for (Object value : values) {
-                    if (value instanceof String) {
-                        ret.add((String) value);
-                    } else {
-                        ret.add(String.valueOf(value));
-                    }
-                }
-                return ret;
+        if (doc == null) {
+            return Collections.emptyList();
+        }
+
+        Collection<Object> values = doc.getFieldValues(fieldName);
+        if (values == null) {
+            return Collections.emptyList();
+        }
+
+        List<String> ret = new ArrayList<>(values.size());
+        for (Object value : values) {
+            if (value instanceof String) {
+                ret.add((String) value);
+            } else {
+                ret.add(String.valueOf(value));
             }
         }
 
-        return Collections.emptyList();
+        return ret;
     }
 
     /**
@@ -1568,6 +1575,48 @@ public final class SolrSearchIndex {
     }
 
     /**
+     * <p>
+     * getDisplayUserGeneratedContentsForPage.
+     * </p>
+     *
+     * @param pi a {@link java.lang.String} object.
+     * @param page a int.
+     * @return contents for the given page
+     * @throws io.goobi.viewer.exceptions.PresentationException if any.
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
+     */
+    public List<DisplayUserGeneratedContent> getDisplayUserGeneratedContentsForRecord(String pi)
+            throws PresentationException, IndexUnreachableException {
+        String query = new StringBuilder().append(SolrConstants.PI_TOPSTRUCT)
+                .append(":")
+                .append(pi)
+                .append(" AND ")
+                .append(SolrConstants.DOCTYPE)
+                .append(":")
+                .append(DocType.UGC.name())
+                .toString();
+
+        SolrDocumentList hits = search(query);
+        if (hits.isEmpty()) {
+            return Collections.emptyList();
+        }
+
+        List<DisplayUserGeneratedContent> ret = new ArrayList<>(hits.size());
+        for (SolrDocument doc : hits) {
+            DisplayUserGeneratedContent ugc = DisplayUserGeneratedContent.buildFromSolrDoc(doc);
+            if (ugc != null) {
+                ret.add(ugc);
+                logger.trace("Loaded UGC: {}", ugc.getLabel());
+            }
+        }
+        Collections.sort(ret, (c1, c2) -> Integer.compare(
+                c1.getPage() == null ? 0 : c1.getPage(),
+                c2.getPage() == null ? 0 : c2.getPage()));
+
+        return ret;
+    }
+
+    /**
      * Catches the filename of the page with the given order under the given ip
      *
      * @param pi The topstruct pi
@@ -1706,20 +1755,14 @@ public final class SolrSearchIndex {
 
         return conditions.trim();
     }
-
+    
     /**
+     * Solr supports dynamic random_* sorting fields. Each value represents one particular order, so a random number is required.
      * 
-     * @param accessCondition
-     * @param escape
-     * @return
-     * @should build escaped query correctly
-     * @should build not escaped query correctly
+     * @return Randomized sorting field
      */
-    public static String getQueryForAccessCondition(String accessCondition, boolean escape) {
-        if (escape) {
-            accessCondition = BeanUtils.escapeCriticalUrlChracters(accessCondition);
-        }
-        return SearchHelper.ALL_RECORDS_QUERY + " AND " + SolrConstants.ACCESSCONDITION + ":\"" + accessCondition + "\"";
+    public static String generateRandomSortField() {
+        return "random_" + new Random().nextInt(Integer.MAX_VALUE);
     }
 
     /**

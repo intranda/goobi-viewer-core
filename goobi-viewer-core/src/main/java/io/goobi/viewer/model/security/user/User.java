@@ -24,6 +24,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -42,6 +43,7 @@ import javax.persistence.JoinColumn;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Transient;
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSessionBindingEvent;
 import javax.servlet.http.HttpSessionBindingListener;
 
@@ -64,11 +66,11 @@ import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.managedbeans.ActiveDocumentBean;
+import io.goobi.viewer.managedbeans.NavigationHelper;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.messages.ViewerResourceBundle;
 import io.goobi.viewer.model.cms.CMSCategory;
 import io.goobi.viewer.model.cms.CMSPageTemplate;
-import io.goobi.viewer.model.crowdsourcing.campaigns.Campaign;
 import io.goobi.viewer.model.security.ILicensee;
 import io.goobi.viewer.model.security.IPrivilegeHolder;
 import io.goobi.viewer.model.security.License;
@@ -186,7 +188,7 @@ public class User implements ILicensee, HttpSessionBindingListener, Serializable
     private TranskribusSession transkribusSession;
 
     /**
-     * Empty constructor for XStream.
+     * Empty constructor.
      */
     public User() {
         // the emptiness inside
@@ -298,7 +300,9 @@ public class User implements ILicensee, HttpSessionBindingListener, Serializable
      * If the display name is the e-mail address and the logged in user (!= this user) is not an superuser, obfuscate the address.
      *
      * @return a {@link java.lang.String} object.
+     * @deprecated use {@link #getDisplayName()} instead
      */
+    @Deprecated
     public String getDisplayNameObfuscated() {
         String displayName = getDisplayName();
         if (!displayName.equals(nickName) && BeanUtils.getUserBean() != null && !BeanUtils.getUserBean().isAdmin()) {
@@ -327,7 +331,7 @@ public class User implements ILicensee, HttpSessionBindingListener, Serializable
                 // TODO why not do this check right at the beginning?
                 if (license.getPrivileges().contains(privilegeName) || license.getLicenseType().getPrivileges().contains(privilegeName)) {
                     if (StringUtils.isEmpty(license.getConditions())) {
-                        logger.debug("Permission found for user: {} ", id);
+                        // logger.trace("Permission found for user: {} ", id);
                         return true;
                     } else if (StringUtils.isNotEmpty(pi)) {
                         // If PI and Solr condition subquery are present, check via Solr
@@ -429,7 +433,7 @@ public class User implements ILicensee, HttpSessionBindingListener, Serializable
      */
     public boolean isGroupMember(UserGroup group) throws DAOException {
         for (UserRole membership : group.getMemberships()) {
-            if (membership.getUser().equals(this) && membership.getUserGroup().equals(group)) {
+            if (this.equals(membership.getUser()) && membership.getUserGroup().equals(group)) {
                 return true;
             }
         }
@@ -666,31 +670,55 @@ public class User implements ILicensee, HttpSessionBindingListener, Serializable
     }
 
     /**
-     * Used by the crowdsourcing module.
-     *
-     * @return a {@link java.lang.String} object.
+     * get the url for the avatar. If useGravatar is active, return {@link #getGravatarUrl(int size)}. Otherwise build a resource url to
+     * 'resources/images/backend/thumbnail_goobi_person.png' from the request or the JSF-Context if no request is provided
+     * 
+     * @param size
+     * @param request
+     * @return
      */
-    public String getAvatarUrl() {
+    public String getAvatarUrl(int size, HttpServletRequest request) {
         if (useGravatar) {
-            return getGravatarUrl(AVATAR_DEFAULT_SIZE);
+            return getGravatarUrl(size);
         }
 
-        return BeanUtils.getNavigationHelper().getApplicationUrl() + "resources/crowdsourcing/img/profile-small.png";
+        if (request != null) {
+            String contextPath = request.getContextPath();
+            return contextPath + "/resources/images/backend/thumbnail_goobi_person.png";
+        }
+        
+        return Optional.ofNullable(BeanUtils.getNavigationHelper())
+                .map(NavigationHelper::getApplicationUrl)
+                .orElse("/") + "resources/images/backend/thumbnail_goobi_person.png";
+    }
+
+    /**
+     * Used by the crowdsourcing module.
+     *
+     * @return {@link #getAvatarUrl(int size, HttpServletRequest request)} with size={@link #AVATAR_DEFAULT_SIZE} and request=null
+     */
+    public String getAvatarUrl() {
+        return getAvatarUrl(AVATAR_DEFAULT_SIZE, null);
+        }
+
+    /**
+     * 
+     * @param request
+     * @return {@link #getAvatarUrl(int size, HttpServletRequest request)} with size={@link #AVATAR_DEFAULT_SIZE}
+     */
+    public String getAvatarUrl(HttpServletRequest request) {
+        return getAvatarUrl(AVATAR_DEFAULT_SIZE, request);
     }
 
     /**
      * Used by the crowdsourcing module.
      *
      * @param size a int.
-     * @return a {@link java.lang.String} object.
+     * @return {@link #getAvatarUrl(int size, HttpServletRequest request)} with request=null
      */
     public String getAvatarUrl(int size) {
-        if (useGravatar) {
-            return getGravatarUrl(size);
+        return getAvatarUrl(size, null);
         }
-
-        return BeanUtils.getNavigationHelper().getApplicationUrl() + "resources/crowdsourcing/img/profile-small.png";
-    }
 
     /**
      * <p>
@@ -1083,76 +1111,6 @@ public class User implements ILicensee, HttpSessionBindingListener, Serializable
 
         return ret;
     }
-
-    /**
-     * <p>
-     * getAllowedCrowdsourcingCampaigns.
-     * </p>
-     *
-     * @param allCampaigns a {@link java.util.List} object.
-     * @return a {@link java.util.List} object.
-     */
-    public List<Campaign> getAllowedCrowdsourcingCampaigns(List<Campaign> allCampaigns) {
-        if (allCampaigns == null || allCampaigns.isEmpty()) {
-            return allCampaigns;
-        }
-
-        // Full admins get all values
-        if (isSuperuser()) {
-            return allCampaigns;
-        }
-
-        List<Campaign> ret = new ArrayList<>(allCampaigns.size());
-        for (Campaign campaign : allCampaigns) {
-            logger.trace("campaign: {}", campaign.getTitle());
-            // Skip inactive campaigns
-            if (!campaign.isHasStarted() || campaign.isHasEnded()) {
-                continue;
-            }
-            switch (campaign.getVisibility()) {
-                case PUBLIC:
-                    ret.add(campaign);
-                    break;
-                case RESTRICTED:
-                    // Check user licenses
-                    for (License license : licenses) {
-                        if (!LicenseType.LICENSE_TYPE_CROWDSOURCING_CAMPAIGNS.equals(license.getLicenseType().getName())) {
-                            continue;
-                        }
-                        if (license.getAllowedCrowdsourcingCampaigns().contains(campaign)) {
-                            ret.add(campaign);
-                            break;
-                        }
-                    }
-                    // Check user group licenses
-                    try {
-                        for (UserGroup userGroup : getUserGroupsWithMembership()) {
-                            for (License license : userGroup.getLicenses()) {
-                                if (!LicenseType.LICENSE_TYPE_CROWDSOURCING_CAMPAIGNS.equals(license.getLicenseType().getName())) {
-                                    continue;
-                                }
-                                if (license.getAllowedCrowdsourcingCampaigns().contains(campaign)) {
-                                    ret.add(campaign);
-                                    break;
-                                }
-                            }
-                        }
-                    } catch (DAOException e) {
-                        logger.error(e.getMessage(), e);
-                    }
-                    break;
-                default:
-                    break;
-            }
-        }
-
-        logger.trace("{} allowed campaigns", ret.size());
-        return ret;
-    }
-
-    /***********************************
-     * Getter and Setter
-     ***************************************/
 
     /**
      * <p>

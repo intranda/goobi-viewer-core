@@ -35,6 +35,7 @@ import javax.faces.context.FacesContext;
 import javax.inject.Inject;
 import javax.inject.Named;
 
+import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.solr.client.solrj.SolrServerException;
 import org.apache.solr.client.solrj.impl.BaseHttpSolrClient.RemoteSolrException;
@@ -47,12 +48,10 @@ import com.ocpsoft.pretty.PrettyContext;
 import com.ocpsoft.pretty.faces.url.URL;
 
 import io.goobi.viewer.controller.DataManager;
-import io.goobi.viewer.controller.IndexerTools;
 import io.goobi.viewer.controller.SolrConstants;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
-import io.goobi.viewer.exceptions.RecordNotFoundException;
 import io.goobi.viewer.exceptions.ViewerConfigurationException;
 import io.goobi.viewer.faces.validators.SolrQueryValidator;
 import io.goobi.viewer.managedbeans.tabledata.TableDataFilter;
@@ -63,11 +62,15 @@ import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.messages.Messages;
 import io.goobi.viewer.messages.ViewerResourceBundle;
 import io.goobi.viewer.model.annotation.PersistentAnnotation;
+import io.goobi.viewer.model.crowdsourcing.CrowdsourcingTools;
 import io.goobi.viewer.model.crowdsourcing.campaigns.Campaign;
 import io.goobi.viewer.model.crowdsourcing.campaigns.Campaign.CampaignVisibility;
 import io.goobi.viewer.model.crowdsourcing.campaigns.CampaignRecordStatistic.CampaignRecordStatus;
 import io.goobi.viewer.model.crowdsourcing.questions.Question;
+import io.goobi.viewer.model.security.License;
+import io.goobi.viewer.model.security.LicenseType;
 import io.goobi.viewer.model.security.user.User;
+import io.goobi.viewer.model.security.user.UserGroup;
 
 /**
  * <p>
@@ -104,10 +107,6 @@ public class CrowdsourcingBean implements Serializable {
      * The identifier (PI) of the work currently targeted by this campaign
      */
     private String targetIdentifier;
-    /**
-     * true if the campaign is an existing campaign currently edited in the viewer-backend; false otherwise
-     */
-    private boolean editMode = false;
 
     /**
      * Initialize all campaigns as lazily loaded list
@@ -126,10 +125,11 @@ public class CrowdsourcingBean implements Serializable {
                             sortField = "id";
                             sortOrder = SortOrder.DESCENDING;
                         }
-
-                        List<Campaign> ret =
-                                DataManager.getInstance().getDao().getCampaigns(first, pageSize, sortField, sortOrder.asBoolean(), filters);
-                        return ret;
+                        // Permanent filtering for non-admin group owners
+                        if (userBean.getUser() != null && !userBean.getUser().isSuperuser()) {
+                            filters.put("groupOwner", String.valueOf(userBean.getUser().getId()));
+                        }
+                        return DataManager.getInstance().getDao().getCampaigns(first, pageSize, sortField, sortOrder.asBoolean(), filters);
                     } catch (DAOException e) {
                         logger.error("Could not initialize lazy model: {}", e.getMessage());
                     }
@@ -141,6 +141,10 @@ public class CrowdsourcingBean implements Serializable {
                 public long getTotalNumberOfRecords(Map<String, String> filters) {
                     if (!numCreatedPages.isPresent()) {
                         try {
+                            // Permanent filtering for non-admin group owners
+                            if (userBean.getUser() != null && !userBean.getUser().isSuperuser()) {
+                                filters.put("groupOwner", String.valueOf(userBean.getUser().getId()));
+                            }
                             numCreatedPages = Optional.ofNullable(DataManager.getInstance().getDao().getCampaignCount(filters));
                         } catch (DAOException e) {
                             logger.error("Unable to retrieve total number of campaigns", e);
@@ -155,6 +159,7 @@ public class CrowdsourcingBean implements Serializable {
                 }
             });
             lazyModelCampaigns.setEntriesPerPage(DEFAULT_ROWS_PER_PAGE);
+            lazyModelCampaigns.setFilters("name");
         }
 
         if (lazyModelAnnotations == null) {
@@ -170,7 +175,10 @@ public class CrowdsourcingBean implements Serializable {
                             sortField = "id";
                             sortOrder = SortOrder.DESCENDING;
                         }
-
+                        // Permanent filtering for annotations for a specific campaign
+                        if (StringUtils.isNotEmpty(getTargetCampaignId())) {
+                            filters.put("generatorId", getTargetCampaignId());
+                        }
                         List<PersistentAnnotation> ret =
                                 DataManager.getInstance().getDao().getAnnotations(first, pageSize, sortField, sortOrder.asBoolean(), filters);
                         return ret;
@@ -185,6 +193,10 @@ public class CrowdsourcingBean implements Serializable {
                 public long getTotalNumberOfRecords(Map<String, String> filters) {
                     if (!numCreatedPages.isPresent()) {
                         try {
+                            // Permanent filtering for annotations for a specific campaign
+                            if (StringUtils.isNotEmpty(getTargetCampaignId())) {
+                                filters.put("generatorId", getTargetCampaignId());
+                            }
                             numCreatedPages = Optional.ofNullable(DataManager.getInstance().getDao().getAnnotationCount(filters));
                         } catch (DAOException e) {
                             logger.error("Unable to retrieve total number of campaigns", e);
@@ -213,7 +225,13 @@ public class CrowdsourcingBean implements Serializable {
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
     public long getCampaignCount(CampaignVisibility visibility) throws DAOException {
-        Map<String, String> filters = visibility != null ? Collections.singletonMap("visibility", visibility.name()) : null;
+        Map<String, String> filters = new HashMap<>();
+        if (visibility != null) {
+            filters.put("visibility", visibility.name());
+        }
+        if (userBean.getUser() != null && !userBean.getUser().isSuperuser()) {
+            filters.put("groupOwner", String.valueOf(userBean.getUser().getId()));
+        }
         return DataManager.getInstance().getDao().getCampaignCount(filters);
     }
 
@@ -262,7 +280,7 @@ public class CrowdsourcingBean implements Serializable {
      */
     public String createNewCampaignAction() {
         selectedCampaign = new Campaign(ViewerResourceBundle.getDefaultLocale());
-        return "pretty:adminCrowdAddCampaign";
+        return "";
     }
 
     /**
@@ -303,7 +321,6 @@ public class CrowdsourcingBean implements Serializable {
     public String addNewQuestionAction() {
         if (selectedCampaign != null) {
             selectedCampaign.getQuestions().add(new Question(selectedCampaign));
-            selectedCampaign.setDirty(true);
         }
 
         return "";
@@ -318,7 +335,6 @@ public class CrowdsourcingBean implements Serializable {
     public String removeQuestionAction(Question question) {
         if (selectedCampaign != null && question != null) {
             selectedCampaign.getQuestions().remove(question);
-            selectedCampaign.setDirty(true);
         }
 
         return "";
@@ -373,26 +389,35 @@ public class CrowdsourcingBean implements Serializable {
     /**
      * Returns the list of campaigns that are visible to the given user.
      *
-     * @param user a {@link io.goobi.viewer.model.security.user.User} object.
-     * @return list of campaigns visible to the given user; only public campaigns if user is null
-     * @throws io.goobi.viewer.exceptions.DAOException if any.
+     * @param user
+     * @return
+     * @throws DAOException
      */
     public List<Campaign> getAllowedCampaigns(User user) throws DAOException {
+        return getAllowedCampaigns(user, getAllCampaigns());
+    }
+
+    /**
+     * Returns the list of campaigns that are visible to the given user based on the given list of campaigns.
+     *
+     * @param user a {@link io.goobi.viewer.model.security.user.User} object.
+     * @param allCampaigns List of all available campaigns
+     * @return list of campaigns visible to the given user; only public campaigns if user is null
+     * @throws io.goobi.viewer.exceptions.DAOException if any.
+     * @should return all public campaigns if user not logged in
+     * @should return private campaigns within time period if user not logged in
+     * @should return private campaigns within time period if user logged in
+     */
+    List<Campaign> getAllowedCampaigns(User user, List<Campaign> allCampaigns) throws DAOException {
         logger.trace("getAllowedCampaigns");
-        List<Campaign> allCampaigns = getAllCampaigns();
-        if (allCampaigns.isEmpty()) {
+        if (allCampaigns == null || allCampaigns.isEmpty()) {
             logger.trace("No campaigns found");
             return Collections.emptyList();
         }
-        // Logged in
-        if (user != null) {
-            return user.getAllowedCrowdsourcingCampaigns(allCampaigns);
-        }
 
-        // Not logged in - only public campaigns
         List<Campaign> ret = new ArrayList<>(allCampaigns.size());
         for (Campaign campaign : allCampaigns) {
-            if (CampaignVisibility.PUBLIC.equals(campaign.getVisibility())) {
+            if (isAllowed(user, campaign)) {
                 ret.add(campaign);
             }
         }
@@ -401,22 +426,104 @@ public class CrowdsourcingBean implements Serializable {
     }
 
     /**
+     * 
+     * @param user
+     * @return
+     * @throws DAOException
+     */
+    public boolean isUserOwnsAnyCampaigns(User user) throws DAOException {
+        return CrowdsourcingTools.isUserOwnsAnyCampaigns(user);
+    }
+
+    /**
      * Check if the given user is allowed access to the given campaign from a rights management standpoint alone. If the user is null, access is
      * granted for public campaigns only, otherwise access is granted if the user has the appropriate rights
      *
      * @param user a {@link io.goobi.viewer.model.security.user.User} object.
      * @param campaign a {@link io.goobi.viewer.model.crowdsourcing.campaigns.Campaign} object.
-     * @return a boolean.
+     * @return true if campaign is allowed to the given user; false otherwise
      * @throws io.goobi.viewer.exceptions.DAOException if any.
+     * @should return true for public campaigns
+     * @should return false if private campaign within time period but boolean false
+     * @should return true if private campaign within time period and user null
+     * @should return true if private campaign within time period and user not null
+     * @should return false if private campaign outside time period
+     * @should return false if user group set and user null
+     * @should return false if user group set and user not member
+     * @should return true if user group set and user owner
+     * @should return false if user group set but boolean false
      */
-    public boolean isAllowed(User user, Campaign campaign) throws DAOException {
-        if (CampaignVisibility.PUBLIC.equals(campaign.getVisibility())) {
-            return true;
-        } else if (user != null) {
-            return !user.getAllowedCrowdsourcingCampaigns(Collections.singletonList(campaign)).isEmpty();
-        } else {
+    public static boolean isAllowed(User user, Campaign campaign) throws DAOException {
+        if (campaign == null) {
             return false;
         }
+
+        if (CampaignVisibility.PUBLIC.equals(campaign.getVisibility())) {
+            return true;
+        }
+
+        // Skip inactive campaigns
+        if (!campaign.isHasStarted() || campaign.isHasEnded()) {
+            return false;
+        }
+
+        // Allow campaigns with a set time frame, but no user group
+        if (campaign.isTimePeriodEnabled() && campaign.getDateStart() != null && campaign.getDateEnd() != null
+                && !campaign.isLimitToGroup()) {
+            return true;
+        }
+
+        switch (campaign.getVisibility()) {
+            case PRIVATE:
+                // Only logged in members may access campaigns limited to a user group
+                if (!campaign.isLimitToGroup() || campaign.getUserGroup() == null) {
+                    return false;
+                }
+                if (user == null) {
+                    return false;
+                }
+                if (user.isSuperuser()) {
+                    return true;
+                }
+                try {
+                    return campaign.getUserGroup().getMembersAndOwner().contains(user);
+                } catch (DAOException e) {
+                    logger.error(e.getMessage());
+            return false;
+        }
+            case RESTRICTED:
+                // Check user licenses
+                if (user != null) {
+                    for (License license : user.getLicenses()) {
+                        if (!LicenseType.LICENSE_TYPE_CROWDSOURCING_CAMPAIGNS.equals(license.getLicenseType().getName())) {
+                            continue;
+                        }
+                        if (license.getAllowedCrowdsourcingCampaigns().contains(campaign)) {
+                            return true;
+                        }
+                    }
+                    // Check user group licenses
+                    try {
+                        for (UserGroup userGroup : user.getUserGroupsWithMembership()) {
+                            for (License license : userGroup.getLicenses()) {
+                                if (!LicenseType.LICENSE_TYPE_CROWDSOURCING_CAMPAIGNS.equals(license.getLicenseType().getName())) {
+                                    continue;
+                                }
+                                if (license.getAllowedCrowdsourcingCampaigns().contains(campaign)) {
+                                    return true;
+                                }
+                            }
+                        }
+                    } catch (DAOException e) {
+                        logger.error(e.getMessage(), e);
+                    }
+                }
+                break;
+            default:
+                break;
+        }
+
+        return false;
     }
 
     /**
@@ -426,15 +533,16 @@ public class CrowdsourcingBean implements Serializable {
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      */
-    public void saveSelectedCampaign() throws DAOException, PresentationException, IndexUnreachableException {
+    public String saveSelectedCampaignAction() throws DAOException, PresentationException, IndexUnreachableException {
         logger.trace("saveSelectedCampaign");
-        try {
-            if (userBean == null || !userBean.getUser().isSuperuser()) {
+        if (selectedCampaign == null) {
+            Messages.error("admin__crowdsourcing_campaign_save_failure");
+            return "";
+        }
+        if (userBean == null || !selectedCampaign.isUserMayEdit(userBean.getUser())) {
                 // Only authorized admins may save
-                return;
-            }
-            if (selectedCampaign == null) {
-                return;
+            Messages.error("admin__crowdsourcing_campaign_save_failure");
+            return "";
             }
 
             // Save
@@ -450,18 +558,17 @@ public class CrowdsourcingBean implements Serializable {
                 success = DataManager.getInstance().getDao().addCampaign(selectedCampaign);
             }
             if (success) {
-                selectedCampaign.setDirty(false);
                 Messages.info("admin__crowdsourcing_campaign_save_success");
                 setSelectedCampaign(selectedCampaign);
                 lazyModelCampaigns.update();
                 // Update the map of active campaigns for record identifiers (in case a new Solr query changes the set)
                 updateActiveCampaigns();
-            } else {
-                Messages.error("admin__crowdsourcing_campaign_save_failure");
-            }
-        } finally {
+            return "pretty:adminCrowdCampaigns";
         }
-    }
+
+                Messages.error("admin__crowdsourcing_campaign_save_failure");
+        return "";
+            }
 
     /**
      * <p>
@@ -504,26 +611,19 @@ public class CrowdsourcingBean implements Serializable {
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
     public String deleteAnnotationAction(PersistentAnnotation annotation) throws DAOException {
-        if (annotation != null) {
-            if (DataManager.getInstance().getDao().deleteAnnotation(annotation)) {
+        if (annotation == null) {
+            return "";
+        }
+
                 try {
-                    if (annotation.deleteExportedTextFiles() > 0) {
-                        try {
-                            IndexerTools.reIndexRecord(annotation.getTargetPI());
-                            logger.debug("Re-indexing record: {}", annotation.getTargetPI());
-                        } catch (RecordNotFoundException e) {
-                            logger.error(e.getMessage());
+            if (annotation.delete()) {
+                Messages.info("admin__crowdsoucing_annotation_deleteSuccess");
+                lazyModelCampaigns.update();
                         }
-                    }
                 } catch (ViewerConfigurationException e) {
                     logger.error(e.getMessage());
                     Messages.error(e.getMessage());
                 }
-
-                Messages.info("admin__crowdsoucing_annotation_deleteSuccess");
-                lazyModelCampaigns.update();
-            }
-        }
 
         return "";
     }
@@ -540,36 +640,26 @@ public class CrowdsourcingBean implements Serializable {
     }
 
     /**
-     * <p>
-     * Setter for the field <code>selectedCampaign</code>.
-     * </p>
+     * Set the selected campaign to a clone of the given campaign
      *
      * @param selectedCampaign the selectedCampaign to set
      */
-    public void setSelectedCampaign(Campaign selectedCampaign) {
-        this.selectedCampaign = selectedCampaign;
+    public void setSelectedCampaign(Campaign campaign) {
+
+        if (campaign == null) {
+            this.selectedCampaign = null;
+        } else if (selectedCampaign == null || ObjectUtils.notEqual(selectedCampaign.getId(), campaign.getId())) {
+            this.selectedCampaign = new Campaign(campaign);
+    }
     }
 
     /**
-     * <p>
-     * isEditMode.
-     * </p>
-     *
-     * @return the editMode
+     * @param campaign
+     * @return
      */
-    public boolean isEditMode() {
-        return editMode;
-    }
-
-    /**
-     * <p>
-     * Setter for the field <code>editMode</code>.
-     * </p>
-     *
-     * @param editMode the editMode to set
-     */
-    public void setEditMode(boolean editMode) {
-        this.editMode = editMode;
+    @Deprecated
+    private boolean isSelected(Campaign campaign) {
+        return campaign != null && this.selectedCampaign != null && ObjectUtils.equals(campaign.getId(), this.selectedCampaign.getId());
     }
 
     /**
@@ -597,6 +687,17 @@ public class CrowdsourcingBean implements Serializable {
         } else {
             setSelectedCampaign(null);
         }
+    }
+
+    /**
+     * <p>
+     * isEditMode.
+     * </p>
+     *
+     * @return the editMode
+     */
+    public boolean isEditMode() {
+        return selectedCampaign != null && selectedCampaign.getId() != null;
     }
 
     /**
@@ -899,13 +1000,9 @@ public class CrowdsourcingBean implements Serializable {
         }
         logger.trace("Found {} total campaigns for {}", allActiveCampaigns.size(), pi);
 
-        if (userBean.isLoggedIn()) {
-            return userBean.getUser().getAllowedCrowdsourcingCampaigns(allActiveCampaigns);
-        }
-
         List<Campaign> ret = new ArrayList<>(allActiveCampaigns.size());
         for (Campaign campaign : allActiveCampaigns) {
-            if (CampaignVisibility.PUBLIC.equals(campaign.getVisibility())) {
+            if (isAllowed(userBean.getUser(), campaign)) {
                 ret.add(campaign);
             }
         }

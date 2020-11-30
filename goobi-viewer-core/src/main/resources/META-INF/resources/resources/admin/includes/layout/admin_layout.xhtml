@@ -37,17 +37,13 @@
     			</ul>
     		</div>
 
-			<!-- GO TO FRONTEND VIEW IN NEW WINDOW -->
-    		<a
-   			class="admin__topbar-view-frontend-link" 
-   			href="#{request.contextPath}/" 
-   			title="#{msg.admin__view_frontend}" 
-   			aria-label="#{msg.admin__view_frontend}" 
-   			target="_blank">
-   			<i class="fa fa-home" aria-hidden="true"></i> #{configurationBean.name}
+			<!-- GO TO FRONTEND VIEW -->
+            <a class="admin__topbar-view-frontend-link" href="#{request.contextPath}/" title="#{msg.admin__view_frontend}" aria-label="#{msg.admin__view_frontend}">
+                <i class="fa fa-home" aria-hidden="true"></i> #{configurationBean.name}
     		</a>
 
     		<!-- ADD SOMETHING NEW -->
+    		<ui:fragment rendered="#{userBean.user.superuser}">
     		<div class="admin__topbar-add -dropdown">
 	    		<i class="fa fa-plus" aria-hidden="true"></i><span>#{msg.admin__new}</span>
 	   			<ul class="admin__topbar-dropdown">
@@ -59,6 +55,7 @@
 	    			<li><a href="#{request.contextPath}/admin/cms/categories/new/" target="_self">#{msg.admin__category}</a></li>
 	   			</ul>
     		</div>
+    		</ui:fragment>
 
 			<!-- RIGHT AREA TOPBAR -->
 			<div class="admin__topbar-right">
@@ -105,7 +102,8 @@
                 </h1>
 
                 <!-- DASHBOARD -->
-                <ui:fragment rendered="#{userBean.admin}">
+                <ui:fragment
+                    rendered="#{userBean.admin or userBean.user.isHasCmsPrivilege('CMS_PAGES') or crowdsourcingBean.isUserOwnsAnyCampaigns(userBean.user)}">
                     <div class="admin__sidebar-dashboard admin-widget">
                         <div class="admin-widget__header">#{msg.admin__general_title}</div>
                         <ul>

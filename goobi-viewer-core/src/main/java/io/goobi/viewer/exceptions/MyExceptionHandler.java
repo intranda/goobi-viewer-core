@@ -267,7 +267,7 @@ public class MyExceptionHandler extends ExceptionHandlerWrapper {
                     requestMap.put("errMsg", msg);
                     requestMap.put("errorType", "general");
                     flash.put("errorType", "general");
-                    nav.handleNavigation(fc, null, "pretty:error");
+//                    nav.handleNavigation(fc, null, "pretty:error");
                     fc.renderResponse();
                 } finally {
                     i.remove();

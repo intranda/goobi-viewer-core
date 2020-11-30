@@ -304,7 +304,7 @@ public class JPADAO implements IDAO {
      * @param addWildCards if true, add '%' to the beginning and end of param
      * @return the sanitized parameter
      */
-    private String sanitizeQueryParam(String param, boolean addWildCards) {
+    private static String sanitizeQueryParam(String param, boolean addWildCards) {
         param = param.replaceAll("['\"\\(\\)]", "");
         param = param.toUpperCase();
         if (addWildCards) {
@@ -2429,62 +2429,258 @@ public class JPADAO implements IDAO {
     }
 
     static String createFilterQuery2(String staticFilterQuery, Map<String, String> filters, Map<String, String> params) {
-
         StringBuilder q = new StringBuilder(" ");
-        //placeholder keys (a,b,c,...) for all tables to query
-        Map<String, String> tableKeys = new HashMap<>();
-
         if (StringUtils.isNotEmpty(staticFilterQuery)) {
             q.append(staticFilterQuery);
         }
-        if (filters != null && !filters.isEmpty()) {
-            AlphabetIterator abc = new AlphabetIterator();
-            String mainTableKey = abc.next(); // = a
+        if (filters == null || filters.isEmpty()) {
+            return q.toString();
+        }
 
-            for (Entry<String, String> entry : filters.entrySet()) {
-                String key = entry.getKey();
-                String filterValue = entry.getValue();
-                if (StringUtils.isBlank(filterValue)) {
+        AlphabetIterator abc = new AlphabetIterator();
+        String mainTableKey = abc.next(); // = a
+        //placeholder keys (a,b,c,...) for all tables to query
+        Map<String, String> tableKeys = new HashMap<>();
+
+        for (Entry<String, String> entry : filters.entrySet()) {
+            String key = entry.getKey();
+            String filterValue = entry.getValue();
+            if (StringUtils.isBlank(filterValue)) {
+                continue;
+            }
+            String keyValueParam = key.replaceAll("[" + MULTIKEY_SEPARATOR + KEY_FIELD_SEPARATOR + "]", "");
+            params.put(keyValueParam, "%" + filterValue.toUpperCase() + "%");
+
+            List<String> joinStatements = new ArrayList<>();
+            List<String> whereStatements = new ArrayList<>();
+
+            //subkeys = all keys this filter applies to, each of the form [field] or [table]-[field]
+            String[] subKeys = key.split(MULTIKEY_SEPARATOR);
+            for (String subKey : subKeys) {
+                if (StringUtils.isBlank(subKey)) {
+                    continue;
+                } else if (subKey.contains(KEY_FIELD_SEPARATOR)) {
+                    String table = subKey.substring(0, subKey.indexOf(KEY_FIELD_SEPARATOR));
+                    String field = subKey.substring(subKey.indexOf(KEY_FIELD_SEPARATOR) + 1);
+                    String tableKey;
+                    if (!tableKeys.containsKey(table)) {
+                        tableKey = abc.next();
+                        tableKeys.put(table, tableKey);
+                        String join = "LEFT JOIN " + mainTableKey + "." + table + " " + tableKey;
+                        joinStatements.add(join); // JOIN mainTable.joinTable b
+                    } else {
+                        tableKey = tableKeys.get(table);
+                    }
+                    subKey = tableKey + "." + field;
+                } else {
+                    subKey = mainTableKey + "." + subKey;
+                }
+                String where;
+                if ("campaign".equals(subKey)) {
+                    where = "generatorId IN (SELECT q.id WHERE Question q WHERE q.ownerId IN " +
+                            "(SELECT t.ownerId from CampaignTranslation t WHERE UPPER(" + subKey + ") LIKE :" + keyValueParam;
+                } else {
+                    where = "UPPER(" + subKey + ") LIKE :" + keyValueParam;
+                }
+                whereStatements.add(where); // joinTable.field LIKE :param | field LIKE :param
+            }
+            String filterQuery = joinStatements.stream().collect(Collectors.joining(" "));
+            if (!whereStatements.isEmpty()) {
+                filterQuery += " WHERE (" + whereStatements.stream().collect(Collectors.joining(" OR ")) + ")";
+            }
+            q.append(filterQuery);
+        }
+
+        return q.toString();
+    }
+
+    /**
+     * 
+     * @param staticFilterQuery
+     * @param filters
+     * @param params
+     * @return
+     * @should create query correctly
+     */
+    static String createCampaignsFilterQuery(String staticFilterQuery, Map<String, String> filters, Map<String, Object> params) {
+        StringBuilder q = new StringBuilder();
+        if (StringUtils.isNotEmpty(staticFilterQuery)) {
+            q.append(" ").append(staticFilterQuery);
+        }
+        if (filters == null || filters.isEmpty()) {
+            return q.toString();
+        }
+
+        AlphabetIterator abc = new AlphabetIterator();
+        String mainTableKey = abc.next(); // = a
+        //placeholder keys (a,b,c,...) for all tables to query
+        Map<String, String> tableKeys = new HashMap<>();
+        List<String> whereStatements = new ArrayList<>();
+        for (Entry<String, String> entry : filters.entrySet()) {
+            String key = entry.getKey();
+            String filterValue = entry.getValue();
+            if (StringUtils.isBlank(filterValue)) {
+                continue;
+            }
+            String keyValueParam = key.replaceAll("[" + MULTIKEY_SEPARATOR + KEY_FIELD_SEPARATOR + "]", "");
+            if ("groupOwner".equals(key)) {
+                params.put(keyValueParam, Long.valueOf(filterValue));
+            } else {
+                params.put(keyValueParam, "%" + filterValue.toUpperCase() + "%");
+            }
+
+            //subkeys = all keys this filter applies to, each of the form [field] or [table]-[field]
+            String[] subKeys = key.split(MULTIKEY_SEPARATOR);
+            for (String subKey : subKeys) {
+                if (StringUtils.isBlank(subKey)) {
                     continue;
                 }
-                String keyValueParam = key.replaceAll("[" + MULTIKEY_SEPARATOR + KEY_FIELD_SEPARATOR + "]", "");
-                params.put(keyValueParam, "%" + filterValue.toUpperCase() + "%");
-
-                List<String> joinStatements = new ArrayList<>();
-                List<String> whereStatements = new ArrayList<>();
-
-                //subkeys = all keys this filter applies to, each of the form [field] or [table]-[field]
-                String[] subKeys = key.split(MULTIKEY_SEPARATOR);
-                for (String subKey : subKeys) {
-                    if (StringUtils.isBlank(subKey)) {
-                        continue;
-                    } else if (subKey.contains(KEY_FIELD_SEPARATOR)) {
-                        String table = subKey.substring(0, subKey.indexOf(KEY_FIELD_SEPARATOR));
-                        String field = subKey.substring(subKey.indexOf(KEY_FIELD_SEPARATOR) + 1);
-                        String tableKey;
-                        if (!tableKeys.containsKey(table)) {
-                            tableKey = abc.next();
-                            tableKeys.put(table, tableKey);
-                            String join = "LEFT JOIN " + mainTableKey + "." + table + " " + tableKey;
-                            joinStatements.add(join); // JOIN mainTable.joinTable b
-                        } else {
-                            tableKey = tableKeys.get(table);
-                        }
-                        subKey = tableKey + "." + field;
-                    } else {
-                        subKey = mainTableKey + "." + subKey;
-                    }
-                    String where = "UPPER(" + subKey + ") LIKE :" + keyValueParam;
-                    whereStatements.add(where); // joinTable.field LIKE :param | field LIKE :param
+                subKey = mainTableKey + "." + subKey;
+                String where = null;
+                switch (subKey) {
+                    case "a.groupOwner":
+                        where = mainTableKey + ".userGroup.owner IN (SELECT g.owner FROM UserGroup g WHERE g.owner.id=:" + keyValueParam + ")";
+                        break;
+                    case "a.name":
+                        where = mainTableKey + ".id IN (SELECT t.owner.id FROM CampaignTranslation t WHERE t.tag='title' AND UPPER(t.value) LIKE :"
+                                + keyValueParam + ")";
+                        break;
+                    default:
+                        where = "UPPER(" + subKey + ") LIKE :" + keyValueParam;
+                        break;
                 }
-                String filterQuery = joinStatements.stream().collect(Collectors.joining(" "));
-                if (!whereStatements.isEmpty()) {
-                    filterQuery += " WHERE (" + whereStatements.stream().collect(Collectors.joining(" OR ")) + ")";
-                }
-                q.append(filterQuery);
+
+                whereStatements.add(where);
             }
         }
+        if (!whereStatements.isEmpty()) {
+            StringBuilder sbOwner = new StringBuilder();
+            StringBuilder sbOtherStatements = new StringBuilder();
+            for (String whereStatement : whereStatements) {
+                if (whereStatement.startsWith("a.userGroup.owner")) {
+                    sbOwner.append(whereStatement);
+                } else {
+                    if (sbOtherStatements.length() != 0) {
+                        sbOtherStatements.append(" OR ");
+                    }
+                    sbOtherStatements.append(whereStatement);
+                }
+            }
+            String filterQuery = " WHERE " + (sbOwner.length() > 0 ? sbOwner.toString() : "");
+            if (sbOwner.length() > 0 && sbOtherStatements.length() > 0) {
+                filterQuery += " AND ";
+            }
+            if (sbOtherStatements.length() > 0) {
+                filterQuery += ("(" + sbOtherStatements.toString() + ")");
+            }
+            q.append(filterQuery);
+        }
+
         return q.toString();
+
+    }
+
+    /**
+     * 
+     * @param staticFilterQuery
+     * @param filters
+     * @param params
+     * @return
+     * @should create query correctly
+     */
+    static String createAnnotationsFilterQuery(String staticFilterQuery, Map<String, String> filters, Map<String, Object> params) {
+        StringBuilder q = new StringBuilder();
+        if (StringUtils.isNotEmpty(staticFilterQuery)) {
+            q.append(" ").append(staticFilterQuery);
+        }
+        if (filters == null || filters.isEmpty()) {
+            return q.toString();
+        }
+
+        AlphabetIterator abc = new AlphabetIterator();
+        String mainTableKey = abc.next(); // = a
+        //placeholder keys (a,b,c,...) for all tables to query
+        Map<String, String> tableKeys = new HashMap<>();
+        List<String> whereStatements = new ArrayList<>();
+        for (Entry<String, String> entry : filters.entrySet()) {
+            String key = entry.getKey();
+            String filterValue = entry.getValue();
+            if (StringUtils.isBlank(filterValue)) {
+                continue;
+            }
+            String keyValueParam = key.replaceAll("[" + MULTIKEY_SEPARATOR + KEY_FIELD_SEPARATOR + "]", "");
+            if ("creatorId_reviewerId".equals(key) || "campaignId".equals(key) || "generatorId".equals(key)) {
+                params.put(keyValueParam, Long.valueOf(filterValue));
+            } else {
+                params.put(keyValueParam, "%" + filterValue.toUpperCase() + "%");
+            }
+
+            //subkeys = all keys this filter applies to, each of the form [field] or [table]-[field]
+            String[] subKeys = key.split(MULTIKEY_SEPARATOR);
+            for (String subKey : subKeys) {
+                if (StringUtils.isBlank(subKey)) {
+                    continue;
+                }
+                subKey = mainTableKey + "." + subKey;
+                String where = null;
+                switch (subKey) {
+                    case "a.creatorId":
+                    case "a.reviewerId":
+                        where = subKey + "=:" + keyValueParam;
+                        break;
+                    case "a.generatorId":
+                        where = mainTableKey + ".generatorId IN (SELECT q.id FROM Question q WHERE q.owner IN " +
+                                "(SELECT c FROM Campaign c WHERE c.id=:" + keyValueParam + "))";
+                        break;
+                    case "a.campaign":
+                        where = mainTableKey + ".generatorId IN (SELECT q.id FROM Question q WHERE q.owner IN " +
+                                "(SELECT t.owner FROM CampaignTranslation t WHERE t.tag='title' AND UPPER(t.value) LIKE :" + keyValueParam + "))";
+                        break;
+                    default:
+                        where = "UPPER(" + subKey + ") LIKE :" + keyValueParam;
+                        break;
+                }
+
+                whereStatements.add(where);
+            }
+        }
+        if (!whereStatements.isEmpty()) {
+            StringBuilder sbCreatorReviewer = new StringBuilder();
+            StringBuilder sbGenerator = new StringBuilder();
+            StringBuilder sbOtherStatements = new StringBuilder();
+            for (String whereStatement : whereStatements) {
+                if (whereStatement.startsWith("a.creatorId")) {
+                    sbCreatorReviewer.append(whereStatement);
+                } else if (whereStatement.startsWith("a.reviewerId")) {
+                    sbCreatorReviewer.append(" OR ").append(whereStatement);
+                } else if (whereStatement.startsWith("a.generatorId")) {
+                    sbGenerator.append(whereStatement);
+                } else {
+                    if (sbOtherStatements.length() != 0) {
+                        sbOtherStatements.append(" OR ");
+                    }
+                    sbOtherStatements.append(whereStatement);
+                }
+            }
+            String filterQuery = " WHERE " + (sbCreatorReviewer.length() > 0 ? "(" + sbCreatorReviewer.toString() + ")" : "");
+
+            if (sbCreatorReviewer.length() > 0 && (sbGenerator.length() > 0 || sbOtherStatements.length() > 0)) {
+                filterQuery += " AND ";
+            }
+            if (sbGenerator.length() > 0) {
+                filterQuery += "(" + sbGenerator.toString() + ")";
+                if (sbOtherStatements.length() > 0) {
+                    filterQuery += " AND ";
+                }
+            }
+            if (sbOtherStatements.length() > 0) {
+                filterQuery += "(" + sbOtherStatements.toString() + ")";
+            }
+            q.append(filterQuery);
+        }
+
+        return q.toString();
+
     }
 
     /**
@@ -2567,6 +2763,17 @@ public class JPADAO implements IDAO {
                     } else if ("classifications".equals(joinTable)) {
                         join.append(" JOIN ").append(pageKey).append(".").append(joinTable).append(" ").append(tableKey);
                         //                            .append(" ON ").append(" (").append(pageKey).append(".id = ").append(tableKey).append(".ownerPage.id)");
+                    } else if ("groupOwner".equals(joinTable)) {
+                        join.append(" JOIN ")
+                                .append(joinTable)
+                                .append(" ")
+                                .append(tableKey)
+                                .append(" ON")
+                                .append(" (")
+                                .append(pageKey)
+                                .append(".id = ")
+                                .append(tableKey)
+                                .append(".owner.id)");
                     }
                     params.put(key.replaceAll(MULTIKEY_SEPARATOR, "").replace("-", ""), "%" + value.toUpperCase() + "%");
                 }
@@ -2807,6 +3014,14 @@ public class JPADAO implements IDAO {
             }
             return false;
         }
+    }
+
+    private void updateCampaignsFromDatabase() throws DAOException {
+        List<Campaign> campaigns = this.getAllCampaigns();
+        for (Campaign campaign : campaigns) {
+            updateFromDatabase(campaign.getId(), Campaign.class);
+        }
+
     }
 
     @SuppressWarnings({ "unchecked", "rawtypes" })
@@ -3238,7 +3453,13 @@ public class JPADAO implements IDAO {
     /** {@inheritDoc} */
     @Override
     public long getCampaignCount(Map<String, String> filters) throws DAOException {
-        return getRowCount("Campaign", null, filters);
+        preQuery();
+        StringBuilder sbQuery = new StringBuilder("SELECT count(a) FROM Campaign a");
+        Map<String, Object> params = new HashMap<>();
+        Query q = em.createQuery(sbQuery.append(createCampaignsFilterQuery(null, filters, params)).toString());
+        params.entrySet().forEach(entry -> q.setParameter(entry.getKey(), entry.getValue()));
+
+        return (long) q.getSingleResult();
     }
 
     /** {@inheritDoc} */
@@ -3251,9 +3472,9 @@ public class JPADAO implements IDAO {
             StringBuilder sbQuery = new StringBuilder("SELECT DISTINCT a FROM Campaign a");
             StringBuilder order = new StringBuilder();
             try {
-                Map<String, String> params = new HashMap<>();
+                Map<String, Object> params = new HashMap<>();
 
-                String filterString = createFilterQuery(null, filters, params);
+                String filterString = createCampaignsFilterQuery(null, filters, params);
                 if (StringUtils.isNotEmpty(sortField)) {
                     order.append(" ORDER BY a.").append(sortField);
                     if (descending) {
@@ -3287,7 +3508,7 @@ public class JPADAO implements IDAO {
             try {
                 Campaign o = em.getReference(Campaign.class, id);
                 if (o != null) {
-                    updateFromDatabase(id, Campaign.class);
+                    //                    updateFromDatabase(id, Campaign.class);
                 }
                 return o;
             } catch (EntityNotFoundException e) {
@@ -3304,9 +3525,6 @@ public class JPADAO implements IDAO {
             preQuery();
             try {
                 Question o = em.getReference(Question.class, id);
-                if (o != null) {
-                    updateFromDatabase(id, Question.class);
-                }
                 return o;
             } catch (EntityNotFoundException e) {
                 return null;
@@ -3349,14 +3567,14 @@ public class JPADAO implements IDAO {
     public boolean addCampaign(Campaign campaign) throws DAOException {
         synchronized (crowdsourcingRequestLock) {
             preQuery();
-            EntityManager em = factory.createEntityManager();
             try {
+                campaign.onPrePersist();
                 em.getTransaction().begin();
                 em.persist(campaign);
                 em.getTransaction().commit();
-                return updateFromDatabase(campaign.getId(), Campaign.class);
-            } finally {
-                em.close();
+                return true;
+            } catch (RollbackException e) {
+                return false;
             }
         }
     }
@@ -3369,14 +3587,17 @@ public class JPADAO implements IDAO {
     public boolean updateCampaign(Campaign campaign) throws DAOException {
         synchronized (cmsRequestLock) {
             preQuery();
-            EntityManager em = factory.createEntityManager();
+            campaign.onPreUpdate();
             try {
                 em.getTransaction().begin();
-                em.merge(campaign);
+                em.setFlushMode(FlushModeType.COMMIT);
+                Campaign c = em.merge(campaign);
                 em.getTransaction().commit();
+                //solrQueryResults remains unchanged in managed campaign even after merge. Manually reset results to account for changed solrquery
+                c.resetSolrQueryResults();
                 return true;
-            } finally {
-                em.close();
+            } catch (RollbackException e) {
+                return false;
             }
         }
     }
@@ -3390,17 +3611,14 @@ public class JPADAO implements IDAO {
         synchronized (cmsRequestLock) {
 
             preQuery();
-            EntityManager em = factory.createEntityManager();
             try {
                 em.getTransaction().begin();
                 Campaign o = em.getReference(Campaign.class, campaign.getId());
                 em.remove(o);
                 em.getTransaction().commit();
-                return !updateFromDatabase(campaign.getId(), Campaign.class);
+                return true;
             } catch (RollbackException e) {
                 return false;
-            } finally {
-                em.close();
             }
         }
     }
@@ -3416,60 +3634,6 @@ public class JPADAO implements IDAO {
             return 0;
         }
 
-        //        List<Campaign> campaigns = new ArrayList<>();
-        //        Set<CampaignRecordStatistic> statistics = new HashSet<>();
-        //        {
-        //            StringBuilder sbQuery =
-        //                    new StringBuilder();
-        //            List<CampaignRecordStatistic> result =
-        //                    em.createQuery("SELECT o FROM CampaignRecordStatistic o WHERE :user MEMBER OF o.annotators")
-        //                            .setParameter("user", user)
-        //                            .getResultList();
-        //            statistics.addAll(result);
-        //        }
-        //        {
-        //            StringBuilder sbQuery =
-        //                    new StringBuilder();
-        //            List<CampaignRecordStatistic> result =
-        //                    em.createQuery("SELECT o FROM CampaignRecordStatistic o WHERE :user MEMBER OF o.reviewers")
-        //                            .setParameter("user", user)
-        //                            .getResultList();
-        //            statistics.addAll(result);
-        //        }
-        //        for (CampaignRecordStatistic statistic : statistics) {
-        //            boolean annotator = false;
-        //            boolean reviewer = false;
-        //            while (statistic.getAnnotators().contains(user)) {
-        //                annotator = true;
-        //                statistic.getAnnotators().remove(user);
-        //            }
-        //            while (statistic.getReviewers().contains(user)) {
-        //                reviewer = true;
-        //                statistic.getReviewers().remove(user);
-        //            }
-        //            if (!campaigns.contains(statistic.getOwner())) {
-        //                campaigns.add(statistic.getOwner());
-        //            }
-        //            // Lazy load the lists where the user was removed, otherwise they won't be updated when saving the campaign
-        //            if (annotator) {
-        //                statistic.getOwner().getStatistics().get(statistic.getPi()).getAnnotators();
-        //            }
-        //            if (reviewer) {
-        //                statistic.getOwner().getStatistics().get(statistic.getPi()).getReviewers();
-        //            }
-        //        }
-        //
-        //        int count = 0;
-        //        if (!campaigns.isEmpty()) {
-        //            for (Campaign campaign : campaigns) {
-        //                if (updateCampaign(campaign)) {
-        //                    count++;
-        //                }
-        //            }
-        //        }
-        //
-        //        return count;
-
         EntityManager emLocal = factory.createEntityManager();
         try {
             emLocal.getTransaction().begin();
@@ -3482,6 +3646,7 @@ public class JPADAO implements IDAO {
                             "DELETE FROM cs_campaign_record_statistic_reviewers WHERE user_id=" + user.getId())
                     .executeUpdate();
             emLocal.getTransaction().commit();
+            updateCampaignsFromDatabase();
             return rows;
         } finally {
             emLocal.close();
@@ -3502,117 +3667,6 @@ public class JPADAO implements IDAO {
         List<Campaign> campaignsToUpdate = new ArrayList<>();
         Set<CampaignRecordStatistic> statistics = new HashSet<>();
 
-        //        List<Campaign> allCampaigns = DataManager.getInstance().getDao().getAllCampaigns();
-        //        for (Campaign campaign : allCampaigns) {
-        //            logger.trace("");
-        //            for (String pi : campaign.getStatistics().keySet()) {
-        //                CampaignRecordStatistic statistic = campaign.getStatistics().get(pi);
-        //                boolean annotator = false;
-        //                boolean reviewer = false;
-        //                if (statistic.getPi().equals("mnha16210")) {
-        //                    for (User user : statistic.getAnnotators()) {
-        //                        logger.trace("annotator: " + user.getId());
-        //                    }
-        //                    for (User user : statistic.getReviewers()) {
-        //                        logger.trace("reviewer: " + user.getId());
-        //                    }
-        //                }
-        //                while (statistic.getAnnotators().contains(fromUser)) {
-        //                    annotator = true;
-        //                    int index = statistic.getAnnotators().indexOf(fromUser);
-        //                    statistic.getAnnotators().remove(index);
-        //                    logger.trace("removed annotator {} from statistic {}", fromUser.getId(), statistic.getId());
-        //                    if (!statistic.getAnnotators().contains(toUser)) {
-        //                        statistic.getAnnotators().add(index, toUser);
-        //                        logger.trace("added annotator {} to statistic {}", toUser.getId(), statistic.getId());
-        //                    }
-        //                }
-        //                while (statistic.getReviewers().contains(fromUser)) {
-        //                    reviewer = true;
-        //                    int index = statistic.getReviewers().indexOf(fromUser);
-        //                    statistic.getReviewers().remove(index);
-        //                    logger.trace("removed reviewer {} from statistic {}", fromUser.getId(), statistic.getId());
-        //                    if (!statistic.getReviewers().contains(toUser)) {
-        //                        statistic.getReviewers().add(index, toUser);
-        //                        logger.trace("added reviewer {} to statistic {}", toUser.getId(), statistic.getId());
-        //                    }
-        //                }
-        //                if ((annotator || reviewer) && !campaignsToUpdate.contains(statistic.getOwner())) {
-        //                    logger.trace("statistic contains user: {}", statistic.getId());
-        //                    campaignsToUpdate.add(statistic.getOwner());
-        //                }
-        //            }
-        //        }
-
-        //        {
-        //            List<CampaignRecordStatistic> result =
-        //                    em.createQuery(
-        //                            "SELECT DISTINCT o FROM CampaignRecordStatistic o WHERE :fromUser MEMBER OF o.annotators")
-        //                            .setParameter("fromUser", fromUser)
-        //                            .getResultList();
-        //            statistics.addAll(result);
-        //        }
-        //        {
-        //            List<CampaignRecordStatistic> result =
-        //                    em.createQuery(
-        //                            "SELECT DISTINCT o FROM CampaignRecordStatistic o WHERE :fromUser MEMBER OF o.reviewers")
-        //                            .setParameter("fromUser", fromUser)
-        //                            .getResultList();
-        //            statistics.addAll(result);
-        //        }
-        //        logger.trace("found {} campaign statistic rows with user {}", statistics.size(), fromUser.getId());
-        //        for (CampaignRecordStatistic statistic : statistics) {
-        //            logger.trace("statistic {}", statistic.getId());
-        //            boolean annotator = false;
-        //            boolean reviewer = false;
-        //            while (statistic.getAnnotators().contains(fromUser)) {
-        //                annotator = true;
-        //                int index = statistic.getAnnotators().indexOf(fromUser);
-        //                statistic.getAnnotators().remove(index);
-        //                logger.trace("removed annotator {} from statistic {}", fromUser.getId(), statistic.getId());
-        //                if (!statistic.getAnnotators().contains(toUser)) {
-        //                    statistic.getAnnotators().add(index, toUser);
-        //                    logger.trace("added annotator {} to statistic {}", toUser.getId(), statistic.getId());
-        //                }
-        //            }
-        //            while (statistic.getReviewers().contains(fromUser)) {
-        //                reviewer = true;
-        //                int index = statistic.getReviewers().indexOf(fromUser);
-        //                statistic.getReviewers().remove(index);
-        //                logger.trace("removed reviewer {} from statistic {}", fromUser.getId(), statistic.getId());
-        //                if (!statistic.getReviewers().contains(toUser)) {
-        //                    statistic.getReviewers().add(index, toUser);
-        //                    logger.trace("added reviewer {} to statistic {}", toUser.getId(), statistic.getId());
-        //                }
-        //            }
-        //            if ((annotator || reviewer) && !campaignsToUpdate.contains(statistic.getOwner())) {
-        //                campaignsToUpdate.add(statistic.getOwner());
-        //            }
-        //            // Lazy load the lists where the user was replaced, otherwise they won't be updated when saving the campaign
-        //            if (annotator) {
-        //                logger.trace("lazy loading annotators");
-        //                statistic.getOwner().getStatistics().get(statistic.getPi()).getAnnotators();
-        //            }
-        //            if (reviewer) {
-        //                logger.trace("lazy loading reviewers");
-        //                statistic.getOwner().getStatistics().get(statistic.getPi()).getReviewers();
-        //            }
-        //        }
-
-        // Refresh objects in context
-        //        em.createQuery("SELECT o FROM CampaignRecordStatistic o WHERE :user MEMBER OF o.annotators")
-        //                .setParameter("user", toUser)
-        //                .setHint("javax.persistence.cache.storeMode", "REFRESH")
-        //                .getResultList()
-        //                .size();
-        //        em.createQuery("SELECT o FROM CampaignRecordStatistic o WHERE  :user MEMBER OF o.reviewers")
-        //                .setParameter("user", toUser)
-        //                .setHint("javax.persistence.cache.storeMode", "REFRESH")
-        //                .getResultList()
-        //                .size();
-
-        //        return count;
-
         EntityManager emLocal = factory.createEntityManager();
         try {
             emLocal.getTransaction().begin();
@@ -3625,6 +3679,7 @@ public class JPADAO implements IDAO {
                             "UPDATE cs_campaign_record_statistic_reviewers SET user_id=" + toUser.getId() + " WHERE user_id=" + fromUser.getId())
                     .executeUpdate();
             emLocal.getTransaction().commit();
+            updateCampaignsFromDatabase();
             return rows;
         } finally {
             emLocal.close();
@@ -4411,54 +4466,6 @@ public class JPADAO implements IDAO {
         return (long) q.getResultList().get(0);
     }
 
-    /* (non-Javadoc)
-     * @see io.goobi.viewer.dao.IDAO#getCampaignContributorCount(java.utils.List)
-     */
-    /** {@inheritDoc} */
-    @SuppressWarnings("unchecked")
-    @Override
-    @Deprecated
-    public long getCampaignContributorCount(List<Long> questionIds) throws DAOException {
-        if (questionIds == null) {
-            throw new IllegalArgumentException("questionIds may not be null");
-        }
-        if (questionIds.isEmpty()) {
-            return 0;
-        }
-
-        StringBuilder sbSubQuery = new StringBuilder();
-        for (long questionId : questionIds) {
-            if (sbSubQuery.length() > 0) {
-                sbSubQuery.append(" OR ");
-            }
-            sbSubQuery.append("a.generatorId = :generatorId" + questionId);
-        }
-
-        Set<Long> creators = new HashSet<>();
-        Set<Long> reviewers = new HashSet<>();
-        {
-            preQuery();
-            String query = "SELECT DISTINCT a.creatorId FROM PersistentAnnotation a WHERE (" + sbSubQuery.toString() + ")";
-            Query q = em.createQuery(query);
-            for (long questionId : questionIds) {
-                q.setParameter("generatorId" + questionId, questionId);
-            }
-            creators.addAll(q.getResultList());
-        }
-        {
-            preQuery();
-            String query = "SELECT DISTINCT a.reviewerId FROM PersistentAnnotation a WHERE (" + sbSubQuery.toString() + ")";
-            Query q = em.createQuery(query);
-            for (long questionId : questionIds) {
-                q.setParameter("generatorId" + questionId, questionId);
-            }
-            reviewers.addAll(q.getResultList());
-        }
-        creators.addAll(reviewers);
-
-        return creators.size();
-    }
-
     /** {@inheritDoc} */
     @SuppressWarnings("unchecked")
     @Override
@@ -4515,19 +4522,40 @@ public class JPADAO implements IDAO {
         return q.getResultList();
     }
 
-    /** {@inheritDoc} */
+    /**
+     * @see io.goobi.viewer.dao.IDAO#getAnnotationsForUser(java.lang.Long)
+     * @should return correct rows
+     */
     @SuppressWarnings("unchecked")
     @Override
-    public List<PersistentAnnotation> getAnnotations(int first, int pageSize, String sortField, boolean descending, Map<String, String> filters)
-            throws DAOException {
+    public List<PersistentAnnotation> getAnnotationsForUserId(Long userId) throws DAOException {
+        if (userId == null) {
+            return Collections.emptyList();
+        }
+
+        preQuery();
+        String query = "SELECT a FROM PersistentAnnotation a WHERE a.creatorId = :userId OR a.reviewerId = :userId";
+
+        return em.createQuery(query).setParameter("userId", userId).getResultList();
+    }
+
+    /**
+     * {@inheritDoc}
+     * 
+     * @should return correct rows
+     * @should filter by campaign name correctly
+     */
+    @SuppressWarnings("unchecked")
+    @Override
+    public List<PersistentAnnotation> getAnnotations(int first, int pageSize, String sortField, boolean descending,
+            Map<String, String> filters) throws DAOException {
         synchronized (crowdsourcingRequestLock) {
             preQuery();
             StringBuilder sbQuery = new StringBuilder("SELECT DISTINCT a FROM PersistentAnnotation a");
             StringBuilder order = new StringBuilder();
             try {
-                Map<String, String> params = new HashMap<>();
-
-                String filterString = createFilterQuery(null, filters, params);
+                Map<String, Object> params = new HashMap<>();
+                String filterString = createAnnotationsFilterQuery(null, filters, params);
                 if (StringUtils.isNotEmpty(sortField)) {
                     order.append(" ORDER BY a.").append(sortField);
                     if (descending) {
@@ -4544,7 +4572,6 @@ public class JPADAO implements IDAO {
                 q.setMaxResults(pageSize);
                 q.setFlushMode(FlushModeType.COMMIT);
                 // q.setHint("javax.persistence.cache.storeMode", "REFRESH");
-
                 return q.getResultList();
             } catch (PersistenceException e) {
                 logger.error("Exception \"" + e.toString() + "\" when trying to get CS campaigns. Returning empty list");
@@ -4556,7 +4583,13 @@ public class JPADAO implements IDAO {
     /** {@inheritDoc} */
     @Override
     public long getAnnotationCount(Map<String, String> filters) throws DAOException {
-        return getRowCount("PersistentAnnotation", null, filters);
+        preQuery();
+        StringBuilder sbQuery = new StringBuilder("SELECT count(a) FROM PersistentAnnotation a");
+        Map<String, Object> params = new HashMap<>();
+        Query q = em.createQuery(sbQuery.append(createAnnotationsFilterQuery(null, filters, params)).toString());
+        params.entrySet().forEach(entry -> q.setParameter(entry.getKey(), entry.getValue()));
+
+        return (long) q.getSingleResult();
     }
 
     /** {@inheritDoc} */
@@ -4792,9 +4825,8 @@ public class JPADAO implements IDAO {
         if (results.isEmpty()) {
             //No results. Just return a new object which may be saved later
             return new TermsOfUse();
-        } else {
-            return (TermsOfUse) results.get(0);
         }
+        return (TermsOfUse) results.get(0);
     }
 
     /* (non-Javadoc)
@@ -4808,9 +4840,8 @@ public class JPADAO implements IDAO {
         if (results.isEmpty()) {
             //If no terms of use object exists, it is inactive
             return false;
-        } else {
-            return (boolean) results.get(0);
         }
+        return (boolean) results.get(0);
     }
 
     /* (non-Javadoc)

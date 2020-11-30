@@ -69,6 +69,7 @@ import io.goobi.viewer.messages.ViewerResourceBundle;
 import io.goobi.viewer.model.annotation.AltoAnnotationBuilder;
 import io.goobi.viewer.model.annotation.Comment;
 import io.goobi.viewer.model.iiif.presentation.builder.AbstractBuilder;
+import io.goobi.viewer.model.iiif.presentation.builder.OpenAnnotationBuilder;
 import io.goobi.viewer.model.iiif.search.model.AnnotationResultList;
 import io.goobi.viewer.model.iiif.search.model.SearchTermList;
 import io.goobi.viewer.model.iiif.search.parser.AbstractSearchParser;
@@ -240,7 +241,7 @@ public class SearchResultConverter {
                 }
             }
             hit.setMatch(match);
-            OpenAnnotation anno = getPresentationBuilder().createUGCOpenAnnotation(ugc, true);
+            OpenAnnotation anno = new OpenAnnotationBuilder(urls).createUGCOpenAnnotation(ugc, true);
             hit.addAnnotation(anno);
         }
         return hit;
@@ -574,7 +575,7 @@ public class SearchResultConverter {
      */
     private URI getAnnotationListURI(String pi, Integer pageNo, AnnotationType type) {
         if (pageNo != null) {
-            return presentationBuilder.getAnnotationListURI(pi, pageNo, type);
+            return presentationBuilder.getAnnotationListURI(pi, pageNo, type, true);
         } else {
             return presentationBuilder.getAnnotationListURI(pi, type);
         }

@@ -7,6 +7,7 @@
 
 	<composite:interface>
 		<composite:attribute name="tagMethod" required="true"/>
+		<composite:attribute name="ariaLabel" required="false"/>
 	</composite:interface>
 
 	<composite:implementation>
@@ -20,7 +21,8 @@
 				<ui:repeat value="#{cc.attrs.tagMethod}" var="tag">
 					<div class="tagcloudElement tag#{tag.css}">
 					<h:outputLink value="#{navigationHelper.searchUrl}/-/#{tag.field}:#{tag.escapedName}/1/-/-/-/">
-						<h:outputText value="#{tag.name}"/>					
+						<h:outputText value="#{tag.name}"/>	
+						<f:passThroughAttribute name="aria-label" value="#{cc.attrs.ariaLabel}: #{tag.name}"/>				
 					</h:outputLink>
 					</div>
 				</ui:repeat>

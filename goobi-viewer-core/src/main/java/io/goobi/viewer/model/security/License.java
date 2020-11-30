@@ -113,7 +113,7 @@ public class License implements IPrivilegeHolder, Serializable {
     @Column(name = "license_id")
     private Long id;
 
-    @JoinColumn(name = "license_type_id", nullable = false)
+    @JoinColumn(name = "license_type_id")
     private LicenseType licenseType;
 
     @ManyToOne
@@ -465,6 +465,26 @@ public class License implements IPrivilegeHolder, Serializable {
         }
     }
 
+    /* (non-Javadoc)
+     * @see io.goobi.viewer.model.security.IPrivilegeHolder#isPrivViewUgc()
+     */
+    @Override
+    public boolean isPrivViewUgc() {
+        return hasPrivilege(IPrivilegeHolder.PRIV_VIEW_UGC);
+    }
+
+    /* (non-Javadoc)
+     * @see io.goobi.viewer.model.security.IPrivilegeHolder#setPrivViewUgc(boolean)
+     */
+    @Override
+    public void setPrivViewUgc(boolean priv) {
+        if (priv) {
+            privilegesCopy.add(IPrivilegeHolder.PRIV_VIEW_UGC);
+        } else {
+            privilegesCopy.remove(IPrivilegeHolder.PRIV_VIEW_UGC);
+        }
+    }
+
     /**
      * Resets all working copies of lists of various privileges.
      */
@@ -488,11 +508,19 @@ public class License implements IPrivilegeHolder, Serializable {
      * Returns the list of available record privileges for adding to this license (using the given privileges list).
      * 
      * @return Values in IPrivilegeHolder.PRIVS_RECORD minus the privileges already added
+     * @should return cms privileges if licenseType cms type
+     * @should only return priv view ugc if licenseType ugc type
+     * @should return record privileges if licenseType regular
      */
     public List<String> getAvailablePrivileges(Set<String> privileges) {
-        if (licenseType != null && licenseType.isCmsType()) {
-            return getAvailablePrivileges(privileges, Arrays.asList(IPrivilegeHolder.PRIVS_CMS));
+        if (licenseType != null) {
+            if (licenseType.isCmsType()) {
+                return getAvailablePrivileges(privileges, Arrays.asList(IPrivilegeHolder.PRIVS_CMS));
+            } else if (licenseType.isUgcType()) {
+                return getAvailablePrivileges(privileges, Collections.singletonList(IPrivilegeHolder.PRIV_VIEW_UGC));
+            }
         }
+
         return getAvailablePrivileges(privileges, Arrays.asList(IPrivilegeHolder.PRIVS_RECORD));
     }
 

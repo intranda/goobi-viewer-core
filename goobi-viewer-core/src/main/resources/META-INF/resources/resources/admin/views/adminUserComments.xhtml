@@ -41,61 +41,22 @@
 
                             <!-- TITLE ROW -->
                             <div class="row no-gutters admin__table-title">
-
                                 <!-- COMMENT COL -->
-                                <div class="col-8 d-flex">
-                                    #{msg.Comment}
-                                    <div class="admin__table-sorting">
-                                        <h:commandLink styleClass="sort" action="#{adminBean.lazyModelComments.sortBy('text', 'ASCENDING')}">
-                                            <f:passThroughAttribute name="aria-label" value="sort ascending" />
-                                            <i class="fa fa-angle-down" aria-hidden="true"></i>
-                                            <f:ajax execute="@form" render="@form" />
-                                        </h:commandLink>
-                                        <h:commandLink styleClass="sort" action="#{adminBean.lazyModelComments.sortBy('text', 'DESCENDING')}">
-                                            <f:passThroughAttribute name="aria-label" value="sort descending" />
-                                            <i class="fa fa-angle-up" aria-hidden="true"></i>
-                                            <f:ajax execute="@form" render="@form" />
-                                        </h:commandLink>
-                                    </div>
-                                </div>
+	                            <div class="col-8 d-flex">                            
+	                                <viewerComponent:sortingArrow filterType="text" colHeading="#{msg.Comment}" list="#{adminBean.lazyModelComments}" />
+	                            </div>
 
                                 <!-- USER COL -->
-                                <div class="col-2 d-flex">
-                                    Benutzer
-                                    <div class="admin__table-sorting">
-                                        <h:commandLink styleClass="sort" action="#{adminBean.lazyModelComments.sortBy('owner', 'ASCENDING')}">
-                                            <f:passThroughAttribute name="aria-label" value="sort ascending" />
-                                            <i class="fa fa-angle-down" aria-hidden="true"></i>
-                                            <f:ajax execute="@form" render="@form" />
-                                        </h:commandLink>
-                                        <h:commandLink styleClass="sort" action="#{adminBean.lazyModelComments.sortBy('owner', 'DESCENDING')}">
-                                            <f:passThroughAttribute name="aria-label" value="sort descending" />
-                                            <i class="fa fa-angle-up" aria-hidden="true"></i>
-                                            <f:ajax execute="@form" render="@form" />
-                                        </h:commandLink>
-                                    </div>
-                                </div>
+	                            <div class="col-2 d-flex">                            
+	                                <viewerComponent:sortingArrow filterType="owner" colHeading="#{msg.user}" list="#{adminBean.lazyModelComments}" />
+	                            </div>
 
                                 <!-- DATE COL -->
-                                <div class="col-2 d-flex">
-                                    #{msg.date}
-                                    <div class="admin__table-sorting">
-                                        <h:commandLink styleClass="sort" action="#{adminBean.lazyModelComments.sortBy('dateCreated', 'ASCENDING')}">
-                                            <f:passThroughAttribute name="aria-label" value="sort ascending" />
-                                            <i class="fa fa-angle-down" aria-hidden="true"></i>
-                                            <f:ajax execute="@form" render="@form" />
-                                        </h:commandLink>
-                                        <h:commandLink styleClass="sort" action="#{adminBean.lazyModelComments.sortBy('dateCreated', 'DESCENDING')}">
-                                            <f:passThroughAttribute name="aria-label" value="sort descending" />
-                                            <i class="fa fa-angle-up" aria-hidden="true"></i>
-                                            <f:ajax execute="@form" render="@form" />
-                                        </h:commandLink>
-                                    </div>
-                                </div>
-
+	                            <div class="col-2 d-flex">                            
+	                                <viewerComponent:sortingArrow filterType="dateCreated" colHeading="#{msg.date}" list="#{adminBean.lazyModelComments}" />
+	                            </div>
                             </div>
-
-
+                           
                             <!-- INDIVIDUAL COMMENTS -->
                             <ui:repeat var="comment" value="#{adminBean.pageComments}">
                                 <div class="row no-gutters admin__table-entry">
@@ -118,7 +79,7 @@
                                     <div class="col-2 d-flex">#{comment.owner}</div>
                                     <div class="col-2 d-flex">
                                         <h:outputText value="#{comment.dateCreated}">
-                                            <f:convertDateTime pattern="dd.MM.YYYY - HH:mm" type="both" dateStyle="short" timeStyle="short" />
+                                            <f:convertDateTime pattern="#{navigationHelper.dateTimePattern}" type="both" dateStyle="short" timeStyle="short" />
                                         </h:outputText>
                                     </div>
                                </div>

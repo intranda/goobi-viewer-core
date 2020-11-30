@@ -291,11 +291,13 @@ var Crowdsourcing = ( function(crowdsourcing) {
 
     
     crowdsourcing.Question.Type.PLAINTEXT = "PLAINTEXT";
+    crowdsourcing.Question.Type.RICHTEXT = "RICHTEXT";
     crowdsourcing.Question.Type.DATE_PICKER = "DATE_PICKER";
     crowdsourcing.Question.Type.GEOLOCATION_POINT = "GEOLOCATION_POINT";
     crowdsourcing.Question.Type.GEOLOCATION_AREA = "GEOLOCATION_AREA";
     crowdsourcing.Question.Type.TRANSCRIPTION = "TRANSCRIPTION";
     crowdsourcing.Question.Type.KEY_VALUE_LIST = "KEY_VALUE_LIST";
+    crowdsourcing.Question.Type.NORMDATA = "NORMDATA";
     crowdsourcing.Question.Type.get = function(text) {
         return crowdsourcing.Question.Type[text];
     }

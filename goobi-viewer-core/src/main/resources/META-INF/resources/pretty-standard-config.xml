@@ -671,115 +671,103 @@
 		<action onPostback="false">#{navigationHelper.resetTheme}</action>
 	</url-mapping>
 
-	<!-- MY SEARCHES -->
-	<url-mapping id="userMenuMySearches">
-		<pattern value="/mysearches/" />
+	<!-- USER PAGES -->
+	<url-mapping id="userMenuSearches">
+		<pattern value="/user/searches/" />
 		<view-id value="/userBackendSearches.xhtml" />
 		<action onPostback="false">#{navigationHelper.resetTheme}</action>
 	</url-mapping>
+    <url-mapping id="userMenuAnnotations">
+        <pattern value="/user/annotations/" />
+        <view-id value="/userBackendAnnotations.xhtml" />
+        <action onPostback="false">#{navigationHelper.resetTheme}</action>
+    </url-mapping>
 	
 	<!-- ADMIN -->
 	<url-mapping id="admin">
 		<pattern value="/admin/" />
 		<view-id value="/resources/admin/views/adminDashboard.xhtml" />
-		<action onPostback="false">#{navigationHelper.resetTheme}</action>
 	</url-mapping>
 	<url-mapping id="adminUsers">
 		<pattern value="/admin/users/" />
 		<view-id value="/resources/admin/views/adminUsers.xhtml" />
 		<action onPostback="false">#{adminBean.setCurrentUser(null)}</action>
-		<action onPostback="false">#{navigationHelper.resetTheme}</action>
 	</url-mapping>
     <url-mapping id="adminUserEdit">
         <pattern value="/admin/users/edit/#{userId:adminBean.currentUserId}/" />
         <view-id value="/resources/admin/views/adminUser.xhtml" />
-        <action onPostback="false">#{navigationHelper.resetTheme}</action>
     </url-mapping>
     <url-mapping id="adminUserNew">
         <pattern value="/admin/users/new/" />
         <view-id value="/resources/admin/views/adminUser.xhtml" />
         <action onPostback="false">#{adminBean.resetCurrentUserAction}</action>
-        <action onPostback="false">#{navigationHelper.resetTheme}</action>
     </url-mapping>
 	<url-mapping id="adminGroups">
 		<pattern value="/admin/groups/" />
 		<view-id value="/resources/admin/views/adminUserGroups.xhtml" />
 		<action onPostback="false">#{adminBean.setCurrentUserGroup(null)}</action>
-		<action onPostback="false">#{navigationHelper.resetTheme}</action>
 	</url-mapping>
     <url-mapping id="adminGroupEdit">
         <pattern value="/admin/groups/edit/#{userGroupId:adminBean.currentUserGroupId}/" />
         <view-id value="/resources/admin/views/adminUserGroup.xhtml" />
-        <action onPostback="false">#{navigationHelper.resetTheme}</action>
+        <action onPostback="false">#{adminBean.resetCurrentUserRoleAction}</action>
     </url-mapping>
     <url-mapping id="adminGroupNew">
         <pattern value="/admin/groups/new/" />
         <view-id value="/resources/admin/views/adminUserGroup.xhtml" />
         <action onPostback="false">#{adminBean.resetCurrentUserGroupAction}</action>
-        <action onPostback="false">#{navigationHelper.resetTheme}</action>
+        <action onPostback="false">#{adminBean.resetCurrentUserRoleAction}</action>
     </url-mapping>
 	<url-mapping id="adminIpRanges">
 		<pattern value="/admin/ipranges/" />
 		<view-id value="/resources/admin/views/adminIpRanges.xhtml" />
 		<action onPostback="false">#{adminBean.setCurrentIpRange(null)}</action>
-		<action onPostback="false">#{navigationHelper.resetTheme}</action>
 	</url-mapping>
     <url-mapping id="adminIpRangeEdit">
         <pattern value="/admin/ipranges/edit/#{ipRangeId:adminBean.currentIpRangeId}/" />
         <view-id value="/resources/admin/views/adminIpRange.xhtml" />
-        <action onPostback="false">#{navigationHelper.resetTheme}</action>
     </url-mapping>
 	<url-mapping id="adminIpRangeNew">
 		<pattern value="/admin/ipranges/new/" />
 		<view-id value="/resources/admin/views/adminIpRange.xhtml" />
 		<action onPostback="false">#{adminBean.resetCurrentIpRangeAction}</action>
-		<action onPostback="false">#{navigationHelper.resetTheme}</action>
 	</url-mapping>
 	<url-mapping id="adminLicenses">
 		<pattern value="/admin/licenses/" />
 		<view-id value="/resources/admin/views/adminLicenses.xhtml" />
-		<action onPostback="false">#{navigationHelper.resetTheme}</action>
 	</url-mapping>
 	<url-mapping id="adminLicenseEdit">
 		<pattern value="/admin/licenses/edit/#{licenseTypeId:adminBean.currentLicenseTypeId}/" />
 		<view-id value="/resources/admin/views/adminLicense.xhtml" />
-		<action onPostback="false">#{navigationHelper.resetTheme}</action>
 	</url-mapping>
     <url-mapping id="adminLicenseNew">
         <pattern value="/admin/licenses/new/" />
         <view-id value="/resources/admin/views/adminLicense.xhtml" />
-        <action onPostback="false">#{navigationHelper.resetTheme}</action>
     </url-mapping>
 	<url-mapping id="adminRights">
 		<pattern value="/admin/rights/" />
 		<view-id value="/resources/admin/views/adminRights.xhtml" />
-		<action onPostback="false">#{navigationHelper.resetTheme}</action>
 	</url-mapping>
     <url-mapping id="adminRightsEdit">
         <pattern value="/admin/rights/edit/#{licenseId:adminBean.currentLicenseId}/" />
         <view-id value="/resources/admin/views/adminRight.xhtml" />
-        <action onPostback="false">#{navigationHelper.resetTheme}</action>
     </url-mapping>
     <url-mapping id="adminRightsNew">
         <pattern value="/admin/rights/new/" />
         <view-id value="/resources/admin/views/adminRight.xhtml" />
         <action onPostback="false">#{adminBean.newCurrentLicenseAction}</action>
-        <action onPostback="false">#{navigationHelper.resetTheme}</action>
     </url-mapping>
     <url-mapping id="adminUserComments">
         <pattern value="/admin/comments/" />
         <view-id value="/resources/admin/views/adminUserComments.xhtml" />
-        <action onPostback="false">#{navigationHelper.resetTheme}</action>
     </url-mapping>
     <url-mapping id="adminUserTerms">
         <pattern value="/admin/userterms/" />
         <view-id value="/resources/admin/views/adminUserTerms.xhtml" />
-        <action onPostback="false">#{navigationHelper.resetTheme}</action>
     </url-mapping>
     <url-mapping id="adminCreateRecord">
         <pattern value="/admin/record/new/" />
         <view-id value="/resources/admin/views/adminCreateRecord.xhtml" />
-        <action onPostback="false">#{navigationHelper.resetTheme}</action>
     </url-mapping>
 
 	<!-- CMS ADMIN -->
@@ -978,7 +966,7 @@
         <action onPostback="false">#{navigationHelper.resetTheme}</action>
     </url-mapping>
     <url-mapping id="adminCrowdEditCampaign">
-        <pattern value="/admin/crowdsourcing/campaigns/edit/" />
+        <pattern value="/admin/crowdsourcing/campaigns/edit/#{campaignId:crowdsourcingBean.selectedCampaignId}/" />
         <view-id value="/resources/crowdsourcing/adminCrowdAddCampaign.xhtml" />
         <action onPostback="false">#{navigationHelper.resetTheme}</action>
     </url-mapping>
@@ -986,15 +974,21 @@
         <pattern value="/admin/crowdsourcing/annotations/" />
         <view-id value="/resources/crowdsourcing/adminCrowdAnnotations.xhtml" />
         <action onPostback="false">#{navigationHelper.resetTheme}</action>
+        <action onPostback="false">#{crowdsourcingBean.setTargetCampaign(null)}</action>
     </url-mapping>
     
     <!-- CROWDSOURCING -->
-     <url-mapping id="crowdCampaigns">
+    <url-mapping id="crowdCampaigns">
 		<pattern value="/campaigns/"/>
         <view-id value="/campaigns.xhtml" />
 		<action onPostback="false">#{navigationHelper.resetTheme}</action>
 		<action onPostback="false">#{crowdsourcingBean.resetTarget}</action>
 	</url-mapping>
+    <url-mapping id="crowdCampaignAnnotations">
+        <pattern value="/campaigns/#{campaign:crowdsourcingBean.targetCampaignId}/annotations/"/>
+        <view-id value="/resources/crowdsourcing/campaignAnnotations.xhtml" />
+        <action onPostback="false">#{navigationHelper.resetTheme}</action>
+    </url-mapping>
     <url-mapping id="crowdCampaignAnnotate1">
 		<pattern value="/campaigns/#{campaign:crowdsourcingBean.targetCampaignId}/annotate/"/>
         <view-id value="/resources/crowdsourcing/views/CampaignEdit.xhtml" />

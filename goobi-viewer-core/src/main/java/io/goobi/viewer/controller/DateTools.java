@@ -302,7 +302,7 @@ public class DateTools {
      */
     public static Date convertLocalDateTimeToDateViaInstant(LocalDateTime dateToConvert, boolean utc) {
         if (dateToConvert == null) {
-            throw new IllegalArgumentException("dateToConvert may not be null");
+            return null;
         }
         return Date.from(dateToConvert.atZone(utc ? ZoneOffset.UTC : ZoneOffset.systemDefault()).toInstant());
     }
@@ -314,7 +314,7 @@ public class DateTools {
      */
     public static LocalDateTime convertDateToLocalDateTimeViaInstant(Date dateToConvert) {
         if (dateToConvert == null) {
-            throw new IllegalArgumentException("dateToConvert may not be null");
+            return null;
         }
         return dateToConvert.toInstant()
                 .atZone(ZoneId.systemDefault())

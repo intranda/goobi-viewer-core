@@ -42,14 +42,16 @@
   	                                    	data-container="body"
   	                                    	data-trigger="hover"
   	                                    	data-html="true"
-  	                                    	data-content="#{browseDcElement.info.description}">
+											data-content="#{browseDcElement.info.description}"
+											tabindex="-1" 
+											aria-hidden="true">
   	                                    	<img data-src="#{browseDcElement.info.iconURI}" alt="" class="img-fluid" data-viewer-thumbnail="thumbnail"/>
   	                                    </a>
  	                                    </ui:fragment>
  	                                    
  	                                    <!-- WITHOUT DESCRIPTION -->
  	                                    <ui:fragment rendered="#{!browseDcElement.info.hasDescription()}">
-  	                                    <a href="#{collection.getCollectionUrl(browseDcElement)}">
+  	                                    <a href="#{collection.getCollectionUrl(browseDcElement)}" tabindex="-1" aria-hidden="true">
   	                                    	<img data-src="#{browseDcElement.info.iconURI}" alt="" class="img-fluid" data-viewer-thumbnail="thumbnail" />
   	                                    </a>
  	                                    </ui:fragment>
@@ -77,14 +79,16 @@
   	                                    	data-container="body"
   	                                    	data-trigger="hover"
   	                                    	data-html="true"
-  	                                    	data-content="#{browseDcElement.info.description}">
+											data-content="#{browseDcElement.info.description}"
+											tabindex="-1" 
+											aria-hidden="true">
   	                                    	<img data-src="#{browseDcElement.info.iconURI}" alt="" class="img-fluid" data-viewer-thumbnail="thumbnail"/>
   	                                    </a>
  	                                    </ui:fragment>
  	                                    
  	                                    <!-- WITHOUT DESCRIPTION -->
  	                                    <ui:fragment rendered="#{!browseDcElement.info.hasDescription()}">
-  	                                    <a href="#{collection.getCollectionUrl(browseDcElement)}">
+  	                                    <a href="#{collection.getCollectionUrl(browseDcElement)}" tabindex="-1" aria-hidden="true">
   	                                    	<img data-src="#{browseDcElement.info.iconURI}" alt="" class="img-fluid" data-viewer-thumbnail="thumbnail" />
   	                                    </a>
  	                                    </ui:fragment>

@@ -15,7 +15,7 @@
 	<composite:implementation>
         <h:panelGroup rendered="#{configurationBean.displayBreadcrumbs}">
             <div id="breadcrumbs" class="breadcrumbs-wrapper">
-                <nav class="breadcrumbs">
+                <nav class="breadcrumbs" aria-label="Breadcrumbs">
     				<ul>
     					<li class="breadcrumbs__starttext">
     						<span>#{msg.breadcrumbStartText}:</span>
@@ -29,7 +29,7 @@
     							</li>
     						</h:panelGroup>
     						<h:panelGroup rendered="#{status.last or !breadcrumb.link}">
-    							<li class="breadcrumbs__crumb">
+    							<li class="breadcrumbs__crumb" aria-current="page">
     								<span>
     									<h:outputText escape="false" value="#{msg[breadcrumb.name]}" />
     								</span>

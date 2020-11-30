@@ -32,6 +32,7 @@
 								value="#{navigationHelper.imageActiveUrl}#{activeDocumentBean.logPart}">
 								<h:outputText
 									value="#{msg[activeDocumentBean.viewManager.currentPage.pageLinkLabel]}" />
+								<f:passThroughAttribute name="aria-label" value="#{msg.view}: #{msg[activeDocumentBean.viewManager.currentPage.pageLinkLabel]}"/>
 							</h:outputLink>
 						</li>
 					</h:panelGroup>
@@ -43,6 +44,7 @@
 							<h:outputLink
 								value="#{navigationHelper.calendarActiveUrl}#{activeDocumentBean.logPart}">
 								<h:outputText value="#{msg.calendar}" />
+								<f:passThroughAttribute name="aria-label" value="#{msg.view}: #{msg.calendar}"/>
 							</h:outputLink>
 						</li>
 					</h:panelGroup>
@@ -53,6 +55,7 @@
 							<h:outputLink value="#{navigationHelper.tocActiveUrl}#{activeDocumentBean.logPart}">
 								<h:outputText value="#{msg.tocAnchor}" rendered="#{activeDocumentBean.anchor}" escape="false" />
 								<h:outputText value="#{msg.toc}" rendered="#{!activeDocumentBean.anchor}" escape="false" />
+								<f:passThroughAttribute name="aria-label" value="#{msg.view}: #{activeDocumentBean.anchor ? msg.tocAnchor : msg.toc}"/>
 							</h:outputLink></li>
 					</h:panelGroup>
 
@@ -63,6 +66,7 @@
 							<h:outputLink
 								value="#{navigationHelper.thumbsActiveUrl}#{activeDocumentBean.thumbPart}">
 								<h:outputText value="#{msg.thumbGal}" />
+								<f:passThroughAttribute name="aria-label" value="#{msg.view}: #{msg.thumbGal}"/>
 							</h:outputLink>
 						</li>
 					</h:panelGroup>
@@ -77,6 +81,7 @@
 									value="#{msg.bibData}" />
 								<h:outputText rendered="#{activeDocumentBean.viewManager.topDocument.lidoRecord}"
 									value="#{msg.metadata}" />
+								<f:passThroughAttribute name="aria-label" value="#{msg.view}: #{activeDocumentBean.viewManager.topDocument.lidoRecord ? msg.metadata : msg.bibData}"/>
 							</h:outputLink>
 						</li>
 					</h:panelGroup>
@@ -88,6 +93,7 @@
 							<h:outputLink
 								value="#{navigationHelper.fulltextActiveUrl}/#{activeDocumentBean.persistentIdentifier}/#{activeDocumentBean.imageToShow}/">
 								<h:outputText value="#{msg.fulltext}" />
+								<f:passThroughAttribute name="aria-label" value="#{msg.view}: #{msg.fulltext}"/>
 							</h:outputLink>
 						</li>
 					</h:panelGroup>
@@ -98,6 +104,7 @@
 								value="#{activeDocumentBean.viewManager.topDocument.getMetadataValue('MD_LOCATION_URL_EXTERNALFULLTEXT')}"
 								target="_blank">
 								<h:outputText value="#{msg.fulltextExternal}" />
+								<f:passThroughAttribute name="aria-label" value="#{msg.view}: #{msg.fulltextExternal}"/>
 							</h:outputLink></li>
 					</h:panelGroup>
 
@@ -107,6 +114,7 @@
 							<h:outputLink
 								value="#{request.contextPath}/ner/#{activeDocumentBean.persistentIdentifier}/">
 								<h:outputText value="#{msg.widgetNerFacetting}" />
+								<f:passThroughAttribute name="aria-label" value="#{msg.view}: #{msg.widgetNerFacetting}"/>
 							</h:outputLink>
 						</li>
 					</h:panelGroup>
@@ -117,7 +125,8 @@
                             <a 
                                 href="#{activeDocumentBean.viewManager.topDocument.getMetadataValue('MD_LOCATION_URL_EXTERNALRESOLVER')}"
                                 target="_blank"
-                                rel="noopner">
+								rel="noopner"
+								aria-label="#{msg.view}: #{msg.externalRepository}">
                                 #{msg.externalRepository}
                             </a>
 						</li>
@@ -127,7 +136,8 @@
                     <h:panelGroup rendered="#{configurationBean.sidebarOpacLinkVisible and activeDocumentBean.viewManager.opacUrl != null}">
                         <li>
                             <h:outputLink value="#{activeDocumentBean.viewManager.opacUrl}" target="_blank">
-                                #{msg.opacLink}
+								#{msg.opacLink}
+								<f:passThroughAttribute name="aria-label" value="#{msg.view}: #{msg.opacLink}"/>
                             </h:outputLink>
                         </li>
                     </h:panelGroup>
@@ -138,7 +148,8 @@
 	                        <ui:fragment rendered="#{relatedPage.published || cmsBean.mayEdit(relatedPage)}">
 		                        <li class="#{cc.attrs.pageName != '' and cc.attrs.pageName == relatedPage.title ? 'active' : ''} #{relatedPage.published ? '' : 'unpublished'}">
 		                            <h:outputLink value="#{relatedPage.pageUrl}">
-		                                <h:outputText value="#{msg[relatedPage.menuTitleOrTitle]}" />
+										<h:outputText value="#{msg[relatedPage.menuTitleOrTitle]}" />
+										<f:passThroughAttribute name="aria-label" value="#{msg.view}: #{msg[relatedPage.menuTitleOrTitle]}"/>
 		                            </h:outputLink>
 		                        </li>
 	                        </ui:fragment>

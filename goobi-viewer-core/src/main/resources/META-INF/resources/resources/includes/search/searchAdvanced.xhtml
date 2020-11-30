@@ -37,6 +37,7 @@
                             <i class="fa fa-times-circle" aria-hidden="true"></i>
                             <f:passThroughAttribute name="data-toggle" value="tooltip" />
                             <f:passThroughAttribute name="data-placement" value="top" />
+                            <f:passThroughAttribute name="aria-label" value="#{msg.searchAdvanved_deleteSearchGroup}"/>
                             <f:ajax render="@form" />
                         </h:commandLink>
 
@@ -45,6 +46,8 @@
                             #{msg.searchAdvanced_operatorItems}:
                             <div class="custom-control custom-control--select">
                                 <h:selectOneMenu id="advsearch_group_operator_#{statusGroup.count}" styleClass="value-text" value="#{queryGroup.operator}">
+                                	<f:passThroughAttribute name="aria-label" value="#{msg.searchAdvanced_operatorItems}"/>
+                                	<f:passThroughAttribute name="aria-haspopup" value="listbox"/>
                                     <f:selectItems value="#{queryGroup.availableOperators}" var="operator" itemValue="#{operator}" itemLabel="#{operator.label}" />
                                 </h:selectOneMenu>
                             </div>
@@ -63,6 +66,8 @@
                                                 <h:selectOneMenu id="advsearch_field_#{statusGroup.count}-#{status.count}" styleClass="value-text" value="#{queryItem.field}"
                                                     valueChangeListener="#{queryItem.selectOneMenuListener}">
                                                     <c:forEach var="field" items="#{searchBean.advancedSearchAllowedFields}">
+                                                    	<f:passThroughAttribute name="aria-label" value="#{msg.searchIn}"/>
+														<f:passThroughAttribute name="aria-haspopup" value="listbox"/>
                                                         <f:selectItem itemValue="#{field.field}" itemLabel="#{msg[field.label]}" itemDisabled="#{field.disabled}" />
                                                     </c:forEach>
                                                     <f:ajax
@@ -96,11 +101,13 @@
                                                                 <h:inputText id="advsearchValueText_#{statusGroup.count}-#{status.count}"
                                                                     styleClass="form-control value-text" value="#{queryItem.value}">
                                                                     <f:passThroughAttribute name="placeholder" value="#{msg.searchFieldDemoText}" />
+                                                                    <f:passThroughAttribute name="aria-label" value="#{msg.searchFieldDemoText}" />
                                                                 </h:inputText>
                                                                 <div class="input-group-append">
                                                                     <button type="button" class="btn btn--clean reset"
                                                                         data-toggle="tooltip" data-placement="top"
-                                                                        title="#{msg.searchAdvanved_resetCurrentValue}">
+                                                                        title="#{msg.searchAdvanved_resetCurrentValue}"
+                                                                        aria-label="#{msg.searchAdvanved_resetCurrentValue}">
                                                                         <i class="fa fa-times-circle" aria-hidden="true"></i>
                                                                     </button>
                                                             </div>
@@ -127,6 +134,8 @@
                                             <div class="custom-control custom-control--select">
                                                 <h:selectOneMenu id="advsearch_item_operator_#{statusGroup.count}-#{status.count}" styleClass="value-text"
                                                     value="#{queryItem.operator}" disabled="#{queryItem.displaySelectItems or queryItem.range}">
+                                                    <f:passThroughAttribute name="aria-label" value="#{msg.aria_label__search_adv_search_link_search_terms}"/>
+													<f:passThroughAttribute name="aria-haspopup" value="listbox"/>
                                                     <f:selectItems value="#{queryItem.availableOperators}" var="operator" itemValue="#{operator}" itemLabel="#{operator.label}" />
                                                 </h:selectOneMenu>
                                             </div>
@@ -139,6 +148,7 @@
                                                 <i class="fa fa-times-circle" aria-hidden="true"></i>
                                                 <f:passThroughAttribute name="data-toggle" value="tooltip" />
                                                 <f:passThroughAttribute name="data-placement" value="top" />
+                                                <f:passThroughAttribute name="aria-label" value="#{msg.searchAdvanved_deleteSelection}" />
                                                 <f:ajax render="@form" />
                                             </h:commandLink>
                                             <h:commandLink role="button" title="#{msg.searchAdvanved_addSelection}" action="#{queryGroup.addNewQueryItem}"
@@ -146,6 +156,7 @@
                                                 <i class="fa fa-plus-square-o" aria-hidden="true"></i>
                                                 <f:passThroughAttribute name="data-toggle" value="tooltip" />
                                                 <f:passThroughAttribute name="data-placement" value="top" />
+                                                <f:passThroughAttribute name="aria-label" value="#{msg.searchAdvanved_addSelection}" />
                                                 <f:ajax render="@form" />
                                             </h:commandLink>
                                         </div>
@@ -163,6 +174,8 @@
                         <div class="custom-control custom-control--select">
                             <h:selectOneMenu id="advsearch_group_operator_#{statusGroup.count}" styleClass="custom-control custom-control--select value-text"
                                 value="#{searchBean.advancedSearchGroupOperator}">
+                                <f:passThroughAttribute name="aria-label" value="#{msg.searchAdvanved_operatorGroups}"/>
+								<f:passThroughAttribute name="aria-haspopup" value="listbox"/>                        
                                 <f:selectItem itemLabel="#{msg.searchAdvanced_connectGroupsAND}" itemValue="0" />
                                 <f:selectItem itemLabel="#{msg.searchAdvanced_connectGroupsOR}" itemValue="1" />
                             </h:selectOneMenu>

@@ -18,12 +18,15 @@ package io.goobi.viewer.model.crowdsourcing.questions;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
+import java.util.Locale;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
+import javax.persistence.Convert;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
@@ -42,12 +45,13 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
-import io.goobi.viewer.api.rest.serialization.TranslationListSerializer;
 import io.goobi.viewer.controller.DataManager;
+import io.goobi.viewer.dao.converter.TranslatedTextConverter;
 import io.goobi.viewer.model.crowdsourcing.campaigns.Campaign;
-import io.goobi.viewer.model.misc.Translation;
+import io.goobi.viewer.model.misc.IPolyglott;
+import io.goobi.viewer.model.misc.TranslatedText;
+import io.goobi.viewer.model.normdata.NormdataAuthority;
 
 /**
  * An annotation generator to create a specific type of annotation for a specific question. One or more of these may be contained within a
@@ -74,11 +78,19 @@ public class Question {
     @JsonIgnore
     private Campaign owner;
 
-    /** Translated metadata. */
+    /**
+     * @deprecated replaced by {@link #text}. Keep for backward database compatibility
+     */
     @OneToMany(mappedBy = "owner", fetch = FetchType.EAGER, cascade = { CascadeType.ALL })
     @PrivateOwned
-    @JsonSerialize(using = TranslationListSerializer.class)
-    private List<QuestionTranslation> translations = new ArrayList<>();
+    //    @JsonSerialize(using = TranslationListSerializer.class)
+    @JsonIgnore
+    @Deprecated
+    private List<QuestionTranslation> translationsLegacy = new ArrayList<>();
+
+    @Column(name = "text", nullable = true, columnDefinition = "LONGTEXT")
+    @Convert(converter = TranslatedTextConverter.class)
+    private TranslatedText text;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "question_type", nullable = false)
@@ -95,6 +107,7 @@ public class Question {
      * Empty constructor.
      */
     public Question() {
+        text = new TranslatedText();
     }
 
     /**
@@ -103,6 +116,7 @@ public class Question {
      * @param owner a {@link io.goobi.viewer.model.crowdsourcing.campaigns.Campaign} object.
      */
     public Question(Campaign owner) {
+        this();
         this.owner = owner;
     }
 
@@ -116,30 +130,80 @@ public class Question {
      * @param owner a {@link io.goobi.viewer.model.crowdsourcing.campaigns.Campaign} object.
      */
     public Question(QuestionType questionType, TargetSelector targetSelector, int targetFrequency, Campaign owner) {
+        this(owner);
         this.questionType = questionType;
         this.targetSelector = targetSelector;
         this.targetFrequency = targetFrequency;
-        this.owner = owner;
+    }
+
+    public Question(Question orig) {
+        this.id = orig.id;
+        this.owner = orig.owner;
+        this.questionType = orig.questionType;
+        this.targetFrequency = orig.targetFrequency;
+        this.targetSelector = orig.targetSelector;
+        this.text = new TranslatedText(orig.text, IPolyglott.getLocalesStatic(), IPolyglott.getCurrentLocale());
     }
 
     /**
-     * <p>
-     * getText.
-     * </p>
-     *
-     * @return translation of the 'text' attribute for the currently selected locale in the owner campaign
+     * Create a clone of the given question with the given campaign as owner
+     * 
+     * @param q
+     * @param campaign
      */
-    public String getText() {
-        return Translation.getTranslation(translations, owner.getSelectedLocale().getLanguage(), "text");
+    public Question(Question orig, Campaign campaign) {
+        this(orig);
+        this.owner = campaign;
     }
 
     /**
-     * Sets the translation of the 'text' attribute for the currently selected locale in the owner campaign
-     *
-     * @param text a {@link java.lang.String} object.
+     * No @PrePersist annotation because it is called from owning campaign
      */
-    public void setText(String text) {
-        QuestionTranslation.setTranslation(translations, owner.getSelectedLocale().getLanguage(), text, "text", this);
+    public void onPrePersist() {
+        serializeTranslations();
+    }
+
+    /**
+     * No @PreUpdate annotation because it is called from owning campaign
+     */
+    public void onPreUpdate() {
+        serializeTranslations();
+    }
+
+    /**
+     * No @PostLoad annotation because it is called from owning campaign
+     */
+    public void onPostLoad() {
+        deserializeTranslations();
+    }
+
+    private void serializeTranslations() {
+
+        this.translationsLegacy = Collections.emptyList();
+
+        //        Map<Locale, String> locationsMap = this.text.map();
+        //        for (Entry<Locale, String> entry : locationsMap.entrySet()) {
+        //            Locale locale = entry.getKey();
+        //            String value = entry.getValue();
+        //            QuestionTranslation translation = translations.stream().filter(t -> t.getLanguage().equals(locale.getLanguage())).findAny()
+        //                    .orElseGet(() -> this.addTranslation(locale));
+        //            translation.setValue(value);
+        //        }
+        //        
+        //        
+        //        this.translations = this.text.stream().map(t -> new QuestionTranslation(t, this)).collect(Collectors.toList());
+    }
+
+    private void deserializeTranslations() {
+        if (this.translationsLegacy != null && !this.translationsLegacy.isEmpty()) {
+            this.text = new TranslatedText();
+            for (QuestionTranslation translation : translationsLegacy) {
+                Locale locale = Locale.forLanguageTag(translation.getLanguage());
+                if (this.text.hasLocale(locale)) {
+                    this.text.setText(translation.getValue(), locale);
+                }
+            }
+        }
     }
 
     /**
@@ -212,25 +276,10 @@ public class Question {
     }
 
     /**
-     * <p>
-     * Getter for the field <code>translations</code>.
-     * </p>
-     *
-     * @return the translations
+     * @return the tempTranslations
      */
-    public List<QuestionTranslation> getTranslations() {
-        return translations;
-    }
-
-    /**
-     * <p>
-     * Setter for the field <code>translations</code>.
-     * </p>
-     *
-     * @param translations the translations to set
-     */
-    public void setTranslations(List<QuestionTranslation> translations) {
-        this.translations = translations;
+    public TranslatedText getText() {
+        return text;
     }
 
     /**
@@ -342,6 +391,20 @@ public class Question {
     public URI getIdAsURI() {
         return URI
                 .create(URI_ID_TEMPLATE.replace("{campaignId}", this.getOwner().getId().toString()).replace("{questionId}", this.getId().toString()));
+    }
+
+    /**
+     * Currently only returns GND authority data.
+     * 
+     * @return Normdata authority data if the question type is NORMDATA, otherwise null
+     */
+    @JsonProperty("authorityData")
+    public NormdataAuthority getAuthorityData() {
+        if (QuestionType.NORMDATA.equals(getQuestionType())) {
+            return NormdataAuthority.GND;
+        }
+
+        return null;
     }
 
 }

@@ -15,13 +15,10 @@
  */
 package io.goobi.viewer.model.crowdsourcing.questions;
 
-import java.util.List;
-
 import javax.persistence.Entity;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
+import io.goobi.viewer.model.misc.PersistentTranslation;
 import io.goobi.viewer.model.misc.Translation;
 
 /**
@@ -31,84 +28,20 @@ import io.goobi.viewer.model.misc.Translation;
  */
 @Entity
 @Table(name = "cs_question_translations")
-public class QuestionTranslation extends Translation {
+public class QuestionTranslation extends PersistentTranslation<Question> {
 
-    /** Reference to the owning {@link PersistentEntity}. */
-    @ManyToOne
-    @JoinColumn(name = "owner_id", nullable = false)
-    private Question owner;
-
-    /**
-     * <p>
-     * Constructor for QuestionTranslation.
-     * </p>
-     */
     public QuestionTranslation() {
         super();
     }
-
-    /**
-     * <p>
-     * Constructor for QuestionTranslation.
-     * </p>
-     *
-     * @param language a {@link java.lang.String} object.
-     * @param tag a {@link java.lang.String} object.
-     * @param value a {@link java.lang.String} object.
-     * @param owner a {@link io.goobi.viewer.model.crowdsourcing.questions.Question} object.
-     */
-    public QuestionTranslation(String language, String tag, String value, Question owner) {
-        super(language, tag, value);
-        this.owner = owner;
+    
+    public QuestionTranslation(Translation t, Question q) {
+        super(t, q);
+    }
+    
+    public QuestionTranslation(Question q, String language, String value) {
+        super(q);
+        this.language = language;
+        this.value = value;
     }
 
-    /**
-     * <p>
-     * setTranslation.
-     * </p>
-     *
-     * @param translations a {@link java.util.List} object.
-     * @param lang a {@link java.lang.String} object.
-     * @param value a {@link java.lang.String} object.
-     * @param tag a {@link java.lang.String} object.
-     * @param owner a {@link io.goobi.viewer.model.crowdsourcing.questions.Question} object.
-     */
-    public static void setTranslation(List<QuestionTranslation> translations, String lang, String value, String tag, Question owner) {
-        if (lang == null) {
-            throw new IllegalArgumentException("lang may not be null");
-        }
-        if (value == null) {
-            throw new IllegalArgumentException("value may not be null");
-        }
-
-        for (Translation translation : translations) {
-            if (translation.getTag().equals(tag) && translation.getLanguage().equals(lang)) {
-                translation.setValue(value);
-                return;
-            }
-        }
-        translations.add(new QuestionTranslation(lang, tag, value, owner));
-    }
-
-    /**
-     * <p>
-     * Getter for the field <code>owner</code>.
-     * </p>
-     *
-     * @return the owner
-     */
-    public Question getOwner() {
-        return owner;
-    }
-
-    /**
-     * <p>
-     * Setter for the field <code>owner</code>.
-     * </p>
-     *
-     * @param owner the owner to set
-     */
-    public void setOwner(Question owner) {
-        this.owner = owner;
-    }
 }

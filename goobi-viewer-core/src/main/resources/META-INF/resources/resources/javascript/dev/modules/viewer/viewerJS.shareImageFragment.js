@@ -70,7 +70,7 @@ var viewerJS = ( function( viewer ) {
         //fullscreen controls
         let $panels = $(".fullscreen__view-sidebar-accordeon-panel h3");
         $panels.on("click", (e) => {
-            let $panel = $(e.target).closest(".fullscreen__view-sidebar-accordeon-panel h3");
+            let $panel = $(e.target).closest(".fullscreen__view-sidebar-accordeon-panel h2");
             this.toggleImageShare($panel);
         });
         $(".share-image-area [data-popover='close']").on("click", (e) => {

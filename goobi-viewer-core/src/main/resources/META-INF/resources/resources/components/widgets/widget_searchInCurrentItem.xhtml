@@ -2,8 +2,12 @@
     xmlns="http://www.w3.org/1999/xhtml" 
     xmlns:ui="http://xmlns.jcp.org/jsf/facelets" 
     xmlns:composite="http://xmlns.jcp.org/jsf/composite"
+    xmlns:goobi="http://xmlns.jcp.org/jsf/composite/components" 
     xmlns:f="http://xmlns.jcp.org/jsf/core" 
-    xmlns:h="http://xmlns.jcp.org/jsf/html">
+    xmlns:h="http://xmlns.jcp.org/jsf/html"
+    xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components" 
+    xmlns:c="http://java.sun.com/jsp/jstl/core">
+
 
     <composite:interface />
 
@@ -12,49 +16,52 @@
             <div id="widgetSearchInCurrentItem" class="widget widget-search-in-current-item">
                 <h:form id="searchInCurrentItemForm" styleClass="form-inline" prependId="false">
                     <div class="form-group">
-                        <label for="searchInCurrentItemInput" class="sr-only">#{msg.searchIn}</label>
+                        <label for="searchInCurrentItemInput" id="searchInLabel" class="sr-only">#{msg.searchIn}</label>
                         <div class="input-group">
                             <h:inputText value="#{searchBean.advancedQueryGroups[0].queryItems[1].value}" id="searchInCurrentItemInput" styleClass="form-control">
                                 <f:passThroughAttribute name="placeholder" value="#{msg.searchIn}: #{msg[activeDocumentBean.topDocument.label]}" />
+                                <f:passThroughAttribute name="aria-labelledby" value="searchInLabel"/>
                             </h:inputText>
                             <div class="input-group-addon">
                                 <!-- Volumes -->
-                                <h:commandButton rendered="#{!activeDocumentBean.anchor and !activeDocumentBean.group}" action="#{searchBean.searchAdvanced}">
-                                    <f:setPropertyActionListener value="#{activeDocumentBean.persistentIdentifier}"
+                                <viewerComponent:commandButton styleClass="btn btn-default" ariaLabel="#{msg.search}" rendered="#{!activeDocumentBean.anchor and !activeDocumentBean.group}" action="#{searchBean.searchAdvanced}">
+                                    <f:setPropertyActionListener for="actionEvent" value="#{activeDocumentBean.persistentIdentifier}"
                                         target="#{searchBean.advancedQueryGroups[0].queryItems[0].value}" />
-                                    <f:setPropertyActionListener value="PI_TOPSTRUCT" target="#{searchBean.advancedQueryGroups[0].queryItems[0].field}" />
-                                    <f:setPropertyActionListener value="IS" target="#{searchBean.advancedQueryGroups[0].queryItems[0].operator}" />
-                                    <f:setPropertyActionListener value="searchAdvanced_allFields" target="#{searchBean.advancedQueryGroups[0].queryItems[1].field}" />
-                                    <f:setPropertyActionListener value="AUTO" target="#{searchBean.advancedQueryGroups[0].queryItems[1].operator}" />
-                                    <f:setPropertyActionListener value="1" target="#{searchBean.activeSearchType}" />
-                                    <f:setPropertyActionListener value="#{searchBean.advancedQueryGroups[0].queryItems[1].value}"
+                                    <f:setPropertyActionListener for="actionEvent" value="PI_TOPSTRUCT" target="#{searchBean.advancedQueryGroups[0].queryItems[0].field}" />
+                                    <f:setPropertyActionListener for="actionEvent" value="IS" target="#{searchBean.advancedQueryGroups[0].queryItems[0].operator}" />
+                                    <f:setPropertyActionListener for="actionEvent" value="searchAdvanced_allFields" target="#{searchBean.advancedQueryGroups[0].queryItems[1].field}" />
+                                    <f:setPropertyActionListener for="actionEvent" value="AUTO" target="#{searchBean.advancedQueryGroups[0].queryItems[1].operator}" />
+                                    <f:setPropertyActionListener for="actionEvent" value="1" target="#{searchBean.activeSearchType}" />
+                                    <f:setPropertyActionListener for="actionEvent" value="#{searchBean.advancedQueryGroups[0].queryItems[1].value}"
                                         target="#{searchBean.advancedQueryGroups[0].queryItems[1].value}" />
-                                </h:commandButton>
+                                    <f:passThroughAttribute name="aria-label" value="#{msg.search}" />
+                                    <i class="fa fa-search"/>
+                                </viewerComponent:commandButton>
                                 <!-- Anchors -->
-                                <h:commandButton rendered="#{activeDocumentBean.anchor}" action="#{searchBean.searchAdvanced}">
-                                    <f:setPropertyActionListener value="#{activeDocumentBean.persistentIdentifier}"
+                                <viewerComponent:commandButton styleClass="btn btn-default" ariaLabel="#{msg.search}" rendered="#{activeDocumentBean.anchor}" action="#{searchBean.searchAdvanced}">
+                                    <f:setPropertyActionListener for="actionEvent" value="#{activeDocumentBean.persistentIdentifier}"
                                         target="#{searchBean.advancedQueryGroups[0].queryItems[0].value}" />
-                                    <f:setPropertyActionListener value="PI_ANCHOR" target="#{searchBean.advancedQueryGroups[0].queryItems[0].field}" />
-                                    <f:setPropertyActionListener value="IS" target="#{searchBean.advancedQueryGroups[0].queryItems[0].operator}" />
-                                    <f:setPropertyActionListener value="searchAdvanced_allFields" target="#{searchBean.advancedQueryGroups[0].queryItems[1].field}" />
-                                    <f:setPropertyActionListener value="AUTO" target="#{searchBean.advancedQueryGroups[0].queryItems[1].operator}" />
-                                    <f:setPropertyActionListener value="1" target="#{searchBean.activeSearchType}" />
-                                    <f:setPropertyActionListener value="#{searchBean.advancedQueryGroups[0].queryItems[1].value}"
+                                    <f:setPropertyActionListener for="actionEvent" value="PI_ANCHOR" target="#{searchBean.advancedQueryGroups[0].queryItems[0].field}" />
+                                    <f:setPropertyActionListener for="actionEvent" value="IS" target="#{searchBean.advancedQueryGroups[0].queryItems[0].operator}" />
+                                    <f:setPropertyActionListener for="actionEvent" value="searchAdvanced_allFields" target="#{searchBean.advancedQueryGroups[0].queryItems[1].field}" />
+                                    <f:setPropertyActionListener for="actionEvent" value="AUTO" target="#{searchBean.advancedQueryGroups[0].queryItems[1].operator}" />
+                                    <f:setPropertyActionListener for="actionEvent" value="1" target="#{searchBean.activeSearchType}" />
+                                    <f:setPropertyActionListener for="actionEvent" value="#{searchBean.advancedQueryGroups[0].queryItems[1].value}"
                                         target="#{searchBean.advancedQueryGroups[0].queryItems[1].value}" />
-                                </h:commandButton>
+                                </viewerComponent:commandButton>
                                 <!-- Groups -->
-                                <h:commandButton rendered="#{activeDocumentBean.group}" action="#{searchBean.searchAdvanced}">
-                                    <f:setPropertyActionListener value="#{activeDocumentBean.persistentIdentifier}"
+                                <viewerComponent:commandButton styleClass="btn btn-default" ariaLabel="#{msg.search}" rendered="#{activeDocumentBean.group}" action="#{searchBean.searchAdvanced}">
+                                    <f:setPropertyActionListener for="actionEvent" value="#{activeDocumentBean.persistentIdentifier}"
                                         target="#{searchBean.advancedQueryGroups[0].queryItems[0].value}" />
-                                    <f:setPropertyActionListener value="#{activeDocumentBean.viewManager.topDocument.groupIdField}"
+                                    <f:setPropertyActionListener for="actionEvent" value="#{activeDocumentBean.viewManager.topDocument.groupIdField}"
                                         target="#{searchBean.advancedQueryGroups[0].queryItems[0].field}" />
-                                    <f:setPropertyActionListener value="IS" target="#{searchBean.advancedQueryGroups[0].queryItems[0].operator}" />
-                                    <f:setPropertyActionListener value="searchAdvanced_allFields" target="#{searchBean.advancedQueryGroups[0].queryItems[1].field}" />
-                                    <f:setPropertyActionListener value="AUTO" target="#{searchBean.advancedQueryGroups[0].queryItems[1].operator}" />
-                                    <f:setPropertyActionListener value="1" target="#{searchBean.activeSearchType}" />
-                                    <f:setPropertyActionListener value="#{searchBean.advancedQueryGroups[0].queryItems[1].value}"
+                                    <f:setPropertyActionListener for="actionEvent" value="IS" target="#{searchBean.advancedQueryGroups[0].queryItems[0].operator}" />
+                                    <f:setPropertyActionListener for="actionEvent" value="searchAdvanced_allFields" target="#{searchBean.advancedQueryGroups[0].queryItems[1].field}" />
+                                    <f:setPropertyActionListener for="actionEvent" value="AUTO" target="#{searchBean.advancedQueryGroups[0].queryItems[1].operator}" />
+                                    <f:setPropertyActionListener for="actionEvent" value="1" target="#{searchBean.activeSearchType}" />
+                                    <f:setPropertyActionListener for="actionEvent" value="#{searchBean.advancedQueryGroups[0].queryItems[1].value}"
                                         target="#{searchBean.advancedQueryGroups[0].queryItems[1].value}" />
-                                </h:commandButton>
+                                </viewerComponent:commandButton>
                             </div>
                         </div>
                     </div>

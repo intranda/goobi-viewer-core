@@ -61,6 +61,7 @@ var viewerJS = ( function( viewer ) {
         
         this.markerIdCounter = 1;
         this.markers = [];
+        this.highlighted = []; //list of currently highlighted colors
         
         
         this.onMapRightclick = new rxjs.Subject();
@@ -229,6 +230,27 @@ var viewerJS = ( function( viewer ) {
         }
     }
     
+    viewer.GeoMap.prototype.highlightMarker = function(feature) {
+        if(feature) {            
+            let marker = this.getMarker(feature.id);
+            let icon  = marker.getIcon();
+            icon.options.defaultColor = icon.options.markerColor;
+            icon.options.markerColor = icon.options.highlightColor;
+            marker.setIcon(icon);
+            this.highlighted.push(marker);
+        } else {
+            this.highlighted.forEach(marker => {
+                let icon  = marker.getIcon();
+                icon.options.markerColor = icon.options.defaultColor;
+                icon.options.defaultColor = undefined;
+                marker.setIcon(icon);
+                let index = this.highlighted.indexOf(marker);
+                this.highlighted.splice(index, 1);
+            })
+        }
+    }
+
+    
     viewer.GeoMap.prototype.setMarkerIcon = function(icon) {
         this.markerIcon = icon;
         if(this.markerIcon) {            
@@ -291,14 +313,14 @@ var viewerJS = ( function( viewer ) {
      */
     viewer.GeoMap.prototype.setView = function(view) {
         if(_debug) {
-            console.log("set view to ", view);
         }
+        console.log("set view to ", view);
         if(!view) {
             return;
         } else if(typeof view === "string") {
             view = JSON.parse(view);
         }
-        view.zoom = Math.max(view.zoom, 1);
+        view.zoom = (view.zoom == undefined || Number.isNaN(view.zoom)) ? 1 : Math.max(view.zoom, 1);
         if(view.center) {
             let center = L.latLng(view.center[1], view.center[0]);
             if(view.zoom) {

@@ -5,6 +5,7 @@
     <icon>cms_template_18_privacy.png</icon>
     <html>cms_template_18_privacy.xhtml</html>
     <content>
-        <item id="text01" label="cms__template_18__text__label" type="HTML" mandatory="true" />
+        <item id="text01" label="cms__template_18__text_top__label" type="HTML" mandatory="true" />
+        <item id="text02" label="cms__template_18__text_bottom__label" type="HTML" mandatory="false" />
     </content>
 </cms_page_template>

@@ -137,6 +137,7 @@
 		<smtpSenderAddress>smtpSenderAddress_value</smtpSenderAddress>
 		<smtpSenderName>smtpSenderName_value</smtpSenderName>
 		<smtpSecurity>smtpSecurity_value</smtpSecurity>
+		<smtpPort>25</smtpPort>
 		<feedbackEmailAddress>feedbackEmailAddress_value
 		</feedbackEmailAddress>
 		
@@ -880,6 +881,16 @@
 	<!-- ##### SHOW OR HIDE SECTIONS IN THE SIDEBAR GLOBALLY ##### -->
 	<sidebar>
 	
+		<!-- sidebarWidgetDownloads: If true, the download widget within a records 
+			view for additional files from the source directory is displayed. Default 
+			is true. -->
+		<sidebarWidgetDownloads visible="true">
+	
+			<!-- hideFileRegex: If a regular expression is defined, files matching 
+				it are hidden from the widget display. The download is still possible. -->
+			<hideFileRegex>(wug_.*|AK_.*)</hideFileRegex>
+		</sidebarWidgetDownloads>
+	
 	    <!-- sidebarBrowsingTerms: If true, the sidebar term browsing widget it displayed. Default is true. -->
         <sidebarBrowsingTerms display="false" />
         
@@ -1109,13 +1120,6 @@
 		</allowedDocumentTypes>
 	</transkribus>
 
-	<!-- ##### CONTENT UPLOAD SETTINGS (CURRENTLY DISABLED) ##### -->
-	<content>
-		<ruleset>ruleset_value</ruleset>
-		<defaultCollection>defaultCollection_value</defaultCollection>
-		<defaultDocstrct>defaultDocstrct_value</defaultDocstrct>
-		<originalContentDownload>false</originalContentDownload>
-	</content>
 
 	<!-- PIWIK-CONFIGURATION -->
 	<piwik>

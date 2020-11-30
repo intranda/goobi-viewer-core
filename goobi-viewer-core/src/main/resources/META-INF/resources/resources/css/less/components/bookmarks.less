@@ -54,18 +54,17 @@
 		    padding: 5px;
 		    font-size: @fontMedium;
 		}
-		a {
+	}
+	&__dropdown-title {
 			display: block;
 			width: 100%;
-			padding: 5px;
     		text-overflow: ellipsis;
 			overflow: hidden;
-		}
+			font-weight: 400;
 	}
 	&__dropdown-list-counter {
 		display: inline-block;
 		float: right;
-		margin-top: 5px;
 		padding: 0 3px;
 		font-size: @fontSmall;
 		color: @white;
@@ -76,7 +75,7 @@
 		height: 75px;
 		background-repeat: no-repeat;
 		background-position: center center;
-		background-size: cover;
+		background-size: contain;
 	}
 	&__dropdown-list-remove {
 		text-align: center;
@@ -267,7 +266,6 @@
 	}
 	&__list {}
 }
-
 /* ACTION BUTTONS */
 [data-bookmark-list-type="dropdown"],
 [data-bookmark-list-type="get"],
@@ -280,12 +278,9 @@
 	background-position: center center;	
 }
 [data-bookmark-list-type="counter"] {
-	visibility: hidden;
-	&.in {
-		visibility: visible;
-	}
 }
 [data-bookmark-list-type="dropdown"] {
+	visibility: hidden;
 	display: flex;
     align-items: center;
 }

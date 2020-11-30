@@ -31,6 +31,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.SessionScoped;
@@ -150,6 +151,8 @@ public class CmsBean implements Serializable {
     private List<String> solrSortFields = null;
     private List<String> solrGroupFields = null;
 
+    private List<String> luceneFields = null;
+    
     /**
      * <p>
      * init.
@@ -2066,7 +2069,7 @@ public class CmsBean implements Serializable {
      *
      * @return a {@link java.util.List} object.
      */
-    public static List<String> getLuceneFields() {
+    public List<String> getLuceneFields() {
         return getLuceneFields(false, false);
     }
 
@@ -2078,7 +2081,7 @@ public class CmsBean implements Serializable {
      * @param includeUntokenized a boolean.
      * @return a {@link java.util.List} object.
      */
-    public static List<String> getLuceneFields(boolean includeUntokenized) {
+    public List<String> getLuceneFields(boolean includeUntokenized) {
         return getLuceneFields(includeUntokenized, false);
     }
 
@@ -2091,21 +2094,23 @@ public class CmsBean implements Serializable {
      * @param excludeTokenizedMetadataFields a boolean.
      * @return a {@link java.util.List} object.
      */
-    public static List<String> getLuceneFields(boolean includeUntokenized, boolean excludeTokenizedMetadataFields) {
-        List<String> constants;
+    public List<String> getLuceneFields(boolean includeUntokenized, boolean excludeTokenizedMetadataFields) {
         try {
-            constants = DataManager.getInstance().getSearchIndex().getAllFieldNames();
-            Iterator<String> iterator = constants.iterator();
-            while (iterator.hasNext()) {
-                String name = iterator.next();
-                if (name.startsWith("_") || name.startsWith("FACET_") || name.startsWith("NORM_")
-                        || (!includeUntokenized && name.endsWith(SolrConstants._UNTOKENIZED))
-                        || (excludeTokenizedMetadataFields && name.startsWith("MD_") && !name.endsWith(SolrConstants._UNTOKENIZED))) {
-                    iterator.remove();
-                }
+            if(this.luceneFields == null)  {                
+                this.luceneFields  = DataManager.getInstance().getSearchIndex().getAllFieldNames();
             }
-            Collections.sort(constants);
-            return constants;
+            
+            Stream<String> filteredLuceneFields = this.luceneFields.stream()
+                    .filter(name -> !(name.startsWith("_") || name.startsWith("FACET_") || name.startsWith("NORM_")));
+            if(!includeUntokenized) {
+                filteredLuceneFields = filteredLuceneFields.filter(name -> !name.endsWith(SolrConstants._UNTOKENIZED));
+            }
+            if(excludeTokenizedMetadataFields) {
+                filteredLuceneFields = filteredLuceneFields.filter(name -> !(name.startsWith("MD_") && !name.endsWith(SolrConstants._UNTOKENIZED)));
+            }
+            filteredLuceneFields = filteredLuceneFields.sorted();
+            return filteredLuceneFields.collect(Collectors.toList());
+
         } catch (SolrServerException | IOException e) {
             logger.error("Error retrieving solr fields", e);
             return Collections.singletonList("");
@@ -2577,20 +2582,13 @@ public class CmsBean implements Serializable {
      * @throws java.io.IOException if any.
      */
     public List<String> getPossibleGroupFields() throws SolrServerException, IOException {
+            
+            if (this.solrGroupFields == null) {
+                this.solrGroupFields = DataManager.getInstance().getSearchIndex().getAllGroupFieldNames();
+                Collections.sort(solrGroupFields);
+            }
+            return this.solrGroupFields;
 
-        if (this.solrGroupFields == null) {
-            this.solrGroupFields = DataManager.getInstance().getSearchIndex().getAllGroupFieldNames();
-            Collections.sort(solrGroupFields);
-        }
-        return this.solrGroupFields;
-
-        //        List<String> fields = new ArrayList<>();
-        //        fields.add(SolrConstants.SORTNUM_YEAR);
-        //        fields.add(SolrConstants.DOCSTRCT);
-        //        fields.add(SolrConstants.DC);
-        //        fields.add(SolrConstants.PI_ANCHOR);
-        //        fields.add(DataManager.getInstance().getConfiguration().getSubthemeDiscriminatorField());
-        //        return fields;
     }
 
     /**

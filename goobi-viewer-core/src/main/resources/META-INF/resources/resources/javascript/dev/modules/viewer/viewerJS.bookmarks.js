@@ -29,7 +29,9 @@ var viewerJS = ( function( viewer ) {
     var _messageKeys = ['bookmarkList_reset', 'bookmarkList_delete', 'bookmarkList_session_mail_sendList', 
         'action__search_in_bookmarks', 'bookmarkList_resetConfirm', 'bookmarkList_noItemsAvailable', 
         'bookmarkList_selectBookmarkList', 'bookmarkList_addNewBookmarkList', 'viewMiradorComparison',
-        'bookmarkList_type_label', 'bookmarkList_typeRecord', 'bookmarkList_typePage'];
+        'bookmarkList_type_label', 'bookmarkList_typeRecord', 'bookmarkList_typePage', 'bookmarkList_overview_all',
+        'admin__crowdsourcing_campaign_statistics_numRecords', 'bookmarkList_removeFromBookmarkList', 'bookmarks'];
+
     var _defaults = {
         root: '',
         rest: '',
@@ -62,10 +64,10 @@ var viewerJS = ( function( viewer ) {
                 })
                 this.translator = new viewerJS.Translator(_messageKeys, this.config.rest, this.config.language);
                 this.translator.init()
+                .then(() => this.updateLists())
                 .then(() => {                    
                     this.prepareBookmarksPopup();
                     this.renderBookmarksNavigationList();
-                    this.renderCounter();
                 })
             },
             
@@ -82,9 +84,11 @@ var viewerJS = ( function( viewer ) {
                     if(added) {
                         $button.addClass("added");
                         $span.tooltip('hide').attr("title", $span.attr("data-bookmark-list-title-added")).tooltip("_fixTitle");
+                        $button.attr('aria-checked', true);
                     } else {
                         $button.removeClass("added");
                         $span.tooltip('hide').attr("title", $span.attr("data-bookmark-list-title-add")).tooltip("_fixTitle");
+                        $button.attr('aria-checked', false);
                     }
                     
                 } );
@@ -95,8 +99,7 @@ var viewerJS = ( function( viewer ) {
             renderCounter: function() {
                 var $counter = $(this.config.counter);
                 if($counter.length > 0) {
-                    $counter.addClass("in");
-                    this.listsUpdated.subscribe((list) => {
+                    this.listsUpdated.pipe(rxjs.operators.merge(rxjs.of(""))).subscribe((list) => {
                         let count = 0;
                         if(this.bookmarkLists) {
                             count = this.getBookmarksCount();
@@ -123,34 +126,53 @@ var viewerJS = ( function( viewer ) {
                 $(this.config.counter).html(count);
             },
             renderBookmarksNavigationList: function() {
+                
+                if(!this.config.userLoggedIn) {                    
+                    
+                    if(this.getBookmarksCount() > 0) {                        
+                        this.renderSessionBookmarksDropdown();
+                        this.renderCounter();
+                    }
+                    this.listsUpdated.subscribe(() => {
+                        let sessionListMounted = $("bookmarklistsession").length > 0;
+                        if(!sessionListMounted && this.getBookmarksCount() > 0) {
+                            this.renderSessionBookmarksDropdown();
+                            this.renderCounter();
+                        } else if(sessionListMounted && this.getBookmarksCount() == 0){
+                            this.hideSessionBookmarksDropdown();
+                        }
+                    });
+                   
+                } else {
+                    this.renderUserBookmarksDropdown();                    
+                }
+                
+            },
+            renderUserBookmarksDropdown: function() {
+                
                 var $button = $('[data-bookmark-list-type="dropdown"]');
                 if($button.length == 0) {
                     return;
                 }
-                var dropdownWidth = 275;
-                var buttonPosition = $button.offset();
-                var buttonSize = {
-                        width: $button.width(),
-                        height: $button.height()
-                }
-
-                var $dropdown = $("<bookmarkList></bookmarkList>");
-                $dropdown.addClass("bookmark-navigation__dropdown");
                 
-                $button.after($dropdown);
-                riot.mount('bookmarkList', {
+                var $bookmarkPosition = $('.login-navigation__bookmarks-list');
+                var $dropdownUserLogin = $("<bookmarkListLoggedIn></bookmarkListLoggedIn>");
+                $dropdownUserLogin.addClass("login-navigation__bookmarks-dropdown");
+                
+                $bookmarkPosition.after($dropdownUserLogin);
+                riot.mount('bookmarkListLoggedIn', {
                     data: {        
                         pi: '',
                         logid: '',
                         page: ''
                     },
                     style: {
-                        mainClass : "bookmark-navigation__dropdown-list"
+                        mainClass : "login-navigation__bookmarks"
                     },
-                    button: '[data-bookmark-list-type="dropdown"]',
+                    bookmarkPosition: '.login-navigation__bookmarks-list',
                     bookmarks: this,
                 });
-                
+
                 // handle closing dropdown
                 let toggle = function() {
                     $dropdown.slideToggle( 'fast' );
@@ -159,7 +181,7 @@ var viewerJS = ( function( viewer ) {
                 // bookmark list dropdown toggle 
                 $button.on("click", (event) => {
                     if( (this.config.userLoggedIn && this.getBookmarkListsCount() > 0) || this.getBookmarksCount() > 0) {                        
-                    	$(event.currentTarget).next('.bookmark-navigation__dropdown').slideToggle('fast');
+                        $(event.currentTarget).next('.bookmark-navigation__dropdown').fadeToggle('fast');
                     }
                 })
                 $("body").on("click", (event) => {
@@ -171,12 +193,62 @@ var viewerJS = ( function( viewer ) {
                         return; // click on bookmark list. Don't close
                     }
                     if ($('.bookmark-navigation__dropdown').is(":visible")) {                        
-                		$('.bookmark-navigation__dropdown').slideUp( 'fast');
+                        $('.bookmark-navigation__dropdown').fadeOut( 'fast');
                     }
                 })
                 
+                // Trigger bookmarks dropdown in login navigation dropdown
+                $('body').on('click', '.login-navigation__bookmarks-trigger', function(){
+                    event.preventDefault();
+                    $('.login-navigation__bookmarks-small-list').slideToggle('fast');
+                    $('.login-navigation__bookmarks-list').toggleClass('-opened');
+                });
+                   
 //                $dropdown.on("click", (event) => event.stopPropagation());
-                
+            },
+            renderSessionBookmarksDropdown: function() {
+                var $button = $('[data-bookmark-list-type="dropdown"]');
+                if($button.length == 0) {
+                    return;
+                }
+                $button.css("visibility", "visible");
+                var buttonPosition = $button.offset();
+                var buttonSize = {
+                        width: $button.width(),
+                        height: $button.height()
+                }
+
+                var $dropdown = $("<bookmarklistsession></bookmarklistsession>");
+                $dropdown.addClass("bookmark-navigation__dropdown");
+                $button.on("click", (event) => {
+                    $(event.currentTarget).next('.bookmark-navigation__dropdown').fadeToggle('fast');
+                })
+                $button.after($dropdown);
+                this.sessionBookmarkDropdown = riot.mount('bookmarklistsession', {
+                    data: {        
+                        pi: '',
+                        logid: '',
+                        page: ''
+                    },
+                    style: {
+                        mainClass : "bookmark-navigation__dropdown-list"
+                    },
+                    button: '[data-bookmark-list-type="dropdown"]',
+                    bookmarks: this,
+                });
+            },
+            hideSessionBookmarksDropdown: function() {
+                var $button = $('[data-bookmark-list-type="dropdown"]');
+                if($button.length == 0) {
+                    return;
+                }
+                $button.off("click");
+                $button.css("visibility", "hidden");
+                if(this.sessionBookmarkDropdown) {
+                    this.sessionBookmarkDropdown.forEach(component => {
+                        component.unmount();
+                    })
+                }
             },
             prepareBookmarksPopup: function() {
                 
@@ -246,7 +318,7 @@ var viewerJS = ( function( viewer ) {
             },
             
             updateLists: function() {
-                this.loadBookmarkLists()
+                return this.loadBookmarkLists()
                 .then(lists => this.bookmarkLists = lists)
                 .then(() => this.listsUpdated.next(this.bookmarkLists));
             },
@@ -293,7 +365,6 @@ var viewerJS = ( function( viewer ) {
                 .catch(error => {
                     console.log(error);
                 })
-                
             },
             
             addBookmarkList: function(name) {

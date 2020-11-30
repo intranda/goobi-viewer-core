@@ -163,7 +163,7 @@
         }
         
         // check for fullscreen and change container height 
-        if ( $( '#fullscreen' ).length > 0 ) {
+        if ( configViewer && $( '#fullscreen' ).length > 0 ) {
         	configViewer.global.adaptContainerHeight = false;
         	configViewer.global.topMargin = () => {
         	    var $header = $('#fullscreenHeader');
@@ -185,7 +185,7 @@
         
 
        	// desktop object view
-       	if ( access ) {
+       	if ( access && configViewer) {
            	var viewImage = new ImageView.Image( configViewer )
            	viewImage.load().then( function( image ) {
            	    $(".openseadragon-canvas").get(0).focus = () => {
@@ -315,10 +315,30 @@
        	 	    if(originClean) {
        	    		drawPageAreas(pageAreaConfig, viewImage);
        	 	    }
+       			highlightUGC();
 		    })
 		    
 		} else {
 		    console.error("viewImage is not defined");
+		}
+		
+		// Focus UGC
+		function highlightUGC() {		    
+			var hash = window.location.hash;
+			if(hash && hash.startsWith("#ugc=")) {
+			    let ugcId = hash.substring(5);
+			    if($('#viewObject').length) {			        
+			    	$("html, body").scrollTop($('#viewObject').offset().top - 40);
+			    }
+			    if(viewImage && viewImage.overlays) {
+			        let widgetTitle = $("#widgetAnnotations").find(".widget__title.collapseable");
+			        if(widgetTitle.length > 0 && !widgetTitle.hasClass("in")) {			            
+			            widgetTitle.toggleClass('in').next().slideToggle('fast');
+			        }
+			        $("#words-" + ugcId).addClass("ugc-highlight");
+			        viewImage.overlays.focusBox("ugc", ugcId);
+			    }
+			}
 		}
 		       	
       	//]]>

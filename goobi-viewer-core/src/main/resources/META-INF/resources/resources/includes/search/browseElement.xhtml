@@ -17,7 +17,7 @@
 	             <div class="search-list__hit-title #{browseElement.showThumbnail ? '' : '-noThumbnail'}">
 	                 <!-- ADD TO BOOKMARKS ICON FOR OBJECTS WITHOUT THUMBS -->
 	                 <ui:fragment rendered="#{configurationBean.bookshelvesEnabled and !browseElement.showThumbnail}">
-	                     <button type="button" class="btn btn--icon search-list__no-thumb-bookmark" data-bookmark-list-type="add" data-pi="#{browseElement.pi}">
+	                     <button type="button" class="btn btn--icon search-list__no-thumb-bookmark" data-bookmark-list-type="add" data-pi="#{browseElement.pi}" aria-label="#{msg.bookmarkList_addToBookmarkList}" role="switch" aria-checked="false">
 	                         <span data-bookmark-list-title-add="#{msg.bookmarkList_addToBookmarkList}" data-bookmark-list-title-added="#{msg.bookmarkList_removeFromBookmarkList}" data-toggle="tooltip" data-placement="bottom">
 	                             <i class="fa #{msg.bookmarkList_icon}" aria-hidden="true"></i>
 	                             <i class="fa #{msg.bookmarkList_iconAdded}" aria-hidden="true"></i>
@@ -36,11 +36,12 @@
 	                 <!-- DOCTSTRUCT HIERACHY BREADCRUMBS -->
 	                 <h:panelGroup
 	                     rendered="#{fn:length(browseElement.structElements) > 0 and browseElement.metadataGroupType == NULL and configurationBean.displayStructType}">
-	                     <nav class="search-list__hit-docstruct">
+	                     <nav class="search-list__hit-docstruct" aria-label="#{msg[browseElement.labelShort]}">
 	                         <ul>
 	                             <ui:repeat value="#{browseElement.structElements}" varStatus="stat" var="struct">
 	                                 <li>
 	                                     <h:outputLink value="#{struct.url}" rendered="#{browseElement.hasImages or browseElement.anchor}">
+	                                         <f:passThroughAttribute name="aria-label" value="#{msg[browseElement.labelShort]}"/>
 	                                         <h:outputText value="#{msg[struct.docStructType]}" />
 	                                     </h:outputLink>
 	                                     <h:outputLink value="#{struct.metadataUrl}" rendered="#{!browseElement.hasImages and !browseElement.anchor}">
@@ -119,7 +120,7 @@
 	
 	                          <!-- ADD TO BOOKMARKS -->
 	                 <ui:fragment rendered="#{showBookmarkIcon}">
-	                     <button type="button" class="btn btn--icon" data-bookmark-list-type="add" data-pi="#{browseElement.pi}">
+	                     <button type="button" class="btn btn--icon" data-bookmark-list-type="add" data-pi="#{browseElement.pi}" aria-label="#{msg.bookmarkList_addToBookmarkList}" role="switch" aria-checked="false">
 	                         <span data-bookmark-list-title-add="#{msg.bookmarkList_addToBookmarkList}" data-bookmark-list-title-added="#{msg.bookmarkList_removeFromBookmarkList}" data-toggle="tooltip" data-placement="bottom">
 	                             <i class="fa #{msg.bookmarkList_icon}" aria-hidden="true"></i>
 	                             <i class="fa #{msg.bookmarkList_iconAdded}" aria-hidden="true"></i>

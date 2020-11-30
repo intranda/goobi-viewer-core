@@ -13,13 +13,13 @@
         <ui:fragment rendered="#{configurationBean.displayWidgetUsage and !activeDocumentBean.group}">
             <div id="widgetUsage" class="widget widget-usage">
                 <!-- WIDGET TITLE -->
-		<h3 class="widget__title #{activeDocumentBean.viewManager.metadataViewOnly ? '' : 'collapseable'}">
+				<h3 class="widget__title #{activeDocumentBean.viewManager.metadataViewOnly ? '' : 'collapseable'}">
                     <span>#{msg.widgetUsage}</span>
                     <i class="fa fa-angle-down" aria-hidden="true"></i>
                 </h3>
                 
                 <!-- WIDGET BODY -->
-		<div class="widget__body #{activeDocumentBean.viewManager.metadataViewOnly ? '' : 'collapseable'}">
+				<div class="widget__body #{activeDocumentBean.viewManager.metadataViewOnly ? '' : 'collapseable'}">
                     <!-- LICENSE TEXT -->
                     <p id="licenseText" class="widget-usage__license-text">
                         <viewerComponent:metadata metadata="#{activeDocumentBean.viewManager.usageWidgetAccessCondition}" displayLabel="false" />
@@ -41,19 +41,21 @@
                                     id="lidomets" 
                                     class="badge badge-dark widget-usage__work-download-lido-mets" 
                                     title="#{msg.metadata_dl_mets}" 
-                                    target="_blank" rel="nofollow"> 
+                                    target="_blank" rel="nofollow noopener"
+                                    aria-label="#{msg[activeDocumentBean.viewManager.topDocument.docStructType]}: #{msg.downloadMetsButtonLabel}"> 
                                     #{msg.downloadMetsButtonLabel}
                                 </a>
-                                <ui:fragment rendered="#{activeDocumentBean.viewManager.anchorMetsResolverUrl != null}">
-                                    <a 
-                                        href="#{activeDocumentBean.viewManager.anchorMetsResolverUrl}"
-                                        id="metsanchor" 
-                                        class="badge badge-dark widget-usage__work-download-mets-anchor" 
-                                        title="#{msg.metadata_dl_metsAnchor}" 
-                                        target="_blank" rel="nofollow"> 
-                                        #{msg.downloadAnchorMetsButtonLabel}
-                                    </a>
-                                </ui:fragment>
+                            <ui:fragment rendered="#{activeDocumentBean.viewManager.anchorMetsResolverUrl != null}">
+                                <a 
+                                    href="#{activeDocumentBean.viewManager.anchorMetsResolverUrl}"
+                                    id="metsanchor" 
+                                    class="badge badge-dark widget-usage__work-download-mets-anchor" 
+                                    title="#{msg.metadata_dl_metsAnchor}" 
+                                    target="_blank" rel="nofollow noopener"
+                                    aria-label="#{msg[activeDocumentBean.viewManager.topDocument.docStructType]}: #{msg.downloadAnchorMetsButtonLabel}"> 
+                                    #{msg.downloadAnchorMetsButtonLabel}
+                                </a>
+                            </ui:fragment>
                             </ui:fragment>
                         
                             <!-- LIDO -->
@@ -63,7 +65,8 @@
                                     id="lidomets" 
                                     class="badge badge-dark widget-usage__work-download-lido-mets" 
                                     title="#{msg.metadata_dl_lido}" 
-                                    target="_blank" rel="nofollow"> 
+                                    target="_blank" rel="nofollow noopener"
+                                    aria-label="#{msg[activeDocumentBean.viewManager.topDocument.docStructType]}: #{msg.downloadLidoButtonLabel}"> 
                                     #{msg.downloadLidoButtonLabel}
                                 </a>
                             </ui:fragment>
@@ -75,7 +78,8 @@
                                     id="denkxweb"
                                     class="badge badge-dark widget-usage__work-download-lido-mets" 
                                     title="#{msg.metadata_dl_denkxweb}" 
-                                    target="_blank" rel="nofollow"> 
+                                    target="_blank" rel="nofollow noopener"
+                                    aria-label="#{msg[activeDocumentBean.viewManager.topDocument.docStructType]}: #{msg.downloadDenkxwebButtonLabel}"> 
                                     #{msg.downloadDenkxwebButtonLabel}
                                 </a>
                             </ui:fragment>
@@ -87,7 +91,8 @@
                                     id="dublincorexml"
                                     class="badge badge-dark widget-usage__work-download-lido-mets" 
                                     title="#{msg.metadata_dl_dublincore}" 
-                                    target="_blank" rel="nofollow"> 
+                                    target="_blank" rel="nofollow noopener"
+                                    aria-label="#{msg[activeDocumentBean.viewManager.topDocument.docStructType]}: #{msg.downloadDublinCoreButtonLabel}"> 
                                     #{msg.downloadDublinCoreButtonLabel}
                                 </a>
                             </ui:fragment>
@@ -99,7 +104,10 @@
                                     href="#{activeDocumentBean.viewManager.oaiMarcUrl}"
                                     class="badge badge-dark widget-usage__work-download-oai-marc"
                                     title="#{msg.metadata_dl_marc}"
-                                    target="_blank" rel="nofollow"> #{msg.marcLink} </a>
+                                    target="_blank" rel="nofollow noopener"
+                                    aria-label="#{msg[activeDocumentBean.viewManager.topDocument.docStructType]}: #{msg.marcLink}">
+                                    #{msg.marcLink}
+                                </a>
                             </ui:fragment>
                         
                             <!-- OAI DC -->
@@ -109,7 +117,8 @@
                                     href="#{activeDocumentBean.viewManager.oaiDcUrl}"
                                     class="badge badge-dark widget-usage__work-download-oai-dc"
                                     title="#{msg.metadata_dl_dublinCore}"
-                                    target="_blank" rel="nofollow"> 
+                                    target="_blank" rel="nofollow noopener"
+                                    aria-label="#{msg[activeDocumentBean.viewManager.topDocument.docStructType]}: #{msg.dcLink}"> 
                                     #{msg.dcLink} 
                                 </a>
                             </ui:fragment>
@@ -120,7 +129,10 @@
                                     id="ris"
                                     class="badge badge-dark widget-usage__work-download-ris" 
                                     title="#{msg.risLinkTopstruct}" 
-                                    rel="nofollow"> #{msg.risLinkTopstruct} </a>
+                                    rel="nofollow"
+                                    aria-label="#{msg[activeDocumentBean.viewManager.topDocument.docStructType]}: #{msg.risLinkTopstruct}"> 
+                                    #{msg.risLinkTopstruct} 
+                                </a>
                             </ui:fragment>
                         
                         </ui:fragment>
@@ -131,12 +143,13 @@
                             <!-- IIIF MANIFEST -->
                             <ui:fragment rendered="#{!activeDocumentBean.viewManager.bornDigital and activeDocumentBean.viewManager.currentPage.displayImage}">
 	                           <a 
-	                               id="iiifManifest" 
-	                                class="badge badge-dark widget-usage__work-download-iiif" 
+                                   id="iiifManifest"
+                                   class="badge badge-dark widget-usage__work-download-iiif" 
 	                               data-copy="iiif-manifest" 
 	                               data-clipboard-text="#{imageDelivery.iiifManifest}" 
 	                               data-copy-done="#{msg.copyUrlDone}"
-	                               title="#{msg.copyUrl}"> 
+                                   title="#{msg.copyUrl}"
+                                   aria-label="#{msg[activeDocumentBean.viewManager.topDocument.docStructType]}: #{msg.iiif}"> 
 	                               #{msg.iiif}
 	                           </a> 
 	                       </ui:fragment>      
@@ -149,7 +162,8 @@
                                         id="mirador"
                                         class="badge badge-dark widget-usage__work-link-mirador-viewer" 
                                         title="#{msg.action__view_in_mirador__tooltip}" 
-                                        target="_blank" rel="nofollow"> 
+                                        target="_blank" rel="nofollow noopener"
+                                        aria-label="#{msg[activeDocumentBean.viewManager.topDocument.docStructType]}: #{msg.action__view_in_mirador}"> 
                                         #{msg.action__view_in_mirador}
                                     </a>
                             </ui:fragment>
@@ -166,7 +180,8 @@
                                 id="alto" 
                                 class="badge badge-dark widget-usage__work-download-alto" 
                                 title="#{msg.metadata_dl_alto_work}"
-                                target="_blank" rel="nofollow"> 
+                                target="_blank" rel="nofollow noopener"
+                                aria-label="#{msg[activeDocumentBean.viewManager.topDocument.docStructType]}: #{msg.downloadAltoWorkButtonLabel}"> 
                                 #{msg.downloadAltoWorkButtonLabel}
                             </a>
                         </ui:fragment>
@@ -175,10 +190,11 @@
                         <ui:fragment rendered="#{activeDocumentBean.viewManager.teiAvailableForWork}">
                             <a 
                                 href="#{activeDocumentBean.viewManager.teiUrlForAllPages}"
-                                id="textWork" 
+                                id="teiWork" 
                                 class="badge badge-dark widget-usage__work-download-tei" 
                                 title="#{msg.downloadWorkTei}"
-                                target="_blank" rel="nofollow">
+                                target="_blank" rel="nofollow noopener"
+                                aria-label="#{msg[activeDocumentBean.viewManager.topDocument.docStructType]}: #{msg.TEI}">
                                 #{msg.TEI}
                             </a>
                         </ui:fragment>
@@ -190,7 +206,8 @@
                                 id="textWork" 
                                 class="badge badge-dark widget-usage__work-download-fulltext" 
                                 title="#{msg.downloadWorkFulltext}"
-                                target="_blank" rel="nofollow">
+                                target="_blank" rel="nofollow noopener"
+                                aria-label="#{msg[activeDocumentBean.viewManager.topDocument.docStructType]}: #{msg.fulltext}">
                                 #{msg.fulltext}
                             </a>
                         </ui:fragment>
@@ -206,7 +223,8 @@
                                     id="pdfWork" 
                                     class="badge badge-dark widget-usage__work-download-pdf" 
                                     title="#{msg.label__pdf_download_record}" 
-                                    target="_blank" rel="nofollow">
+                                    target="_blank" rel="nofollow noopener"
+                                    aria-label="#{msg[activeDocumentBean.viewManager.topDocument.docStructType]}: #{msg.label__pdf_download}">
                                     <i class="fa fa-file-pdf-o" aria-hidden="true"></i>
                                     #{msg.label__pdf_download}</a>
                             </ui:fragment>
@@ -219,7 +237,8 @@
                                     data-title="#{activeDocumentBean.titleBarLabel}" 
                                     data-id=""
                                     data-pi="#{activeDocumentBean.viewManager.pi}" 
-                                    title="#{msg.label__pdf_download_record}">
+                                    title="#{msg.label__pdf_download_record}"
+                                    aria-label="#{msg[activeDocumentBean.viewManager.topDocument.docStructType]}: #{msg.label__pdf_download}">
                                     <i class="fa fa-file-pdf-o" aria-hidden="true"></i>
                                     #{msg.label__pdf_download}
                                 </a>    
@@ -235,7 +254,8 @@
                                 data-title="#{activeDocumentBean.titleBarLabel}" 
                                 data-id=""
                                 data-pi="#{activeDocumentBean.viewManager.pi}" 
-                                title="#{msg.epubDownload}">
+                                title="#{msg.epubDownload}"
+                                aria-label="#{msg[activeDocumentBean.viewManager.topDocument.docStructType]}: #{msg.epub}">
                                 #{msg.epub}
                             </a>
                         </ui:fragment>
@@ -248,7 +268,8 @@
                                 id="dfgViewer" 
                                 class="badge badge-dark widget-usage__work-link-dfg-viewer" 
                                 title="#{msg.dfgViewerLink}" 
-                                target="_blank" rel="nofollow"> 
+                                target="_blank" rel="nofollow noopener"
+                                aria-label="#{msg[activeDocumentBean.viewManager.topDocument.docStructType]}: #{msg.dfgViewerLink}"> 
                                #{msg.dfgViewerLink}
                             </a>
                         </ui:fragment>
@@ -259,7 +280,10 @@
                                 id="opac"
                                 class="badge badge-dark widget-usage__work-link-opac" 
                                 title="#{msg.opacLink}" 
-                                target="_blank" rel="nofollow"> #{msg.opacLink} </a>
+                                target="_blank" rel="nofollow noopener"
+                                aria-label="#{msg[activeDocumentBean.viewManager.topDocument.docStructType]}: #{msg.opacLink}">
+                                #{msg.opacLink} 
+                            </a>
                         </ui:fragment>
                       
                     </div>
@@ -283,7 +307,8 @@
 	                                    id="pdfStruct" 
 	                                    class="badge badge-dark widget-usage__struct-download-pdf" 
 	                                    title="#{msg.label__pdf_download_section}" 
-	                                    target="_blank" rel="nofollow">
+                                        target="_blank" rel="nofollow noopener"
+                                        aria-label="#{msg[activeDocumentBean.viewManager.currentDocument.docStructType]}: #{msg.label__pdf_download}">
                                     	<i class="fa fa-file-pdf-o" aria-hidden="true"></i>
 	                                    #{msg.label__pdf_download}</a>
 	                            </ui:fragment>
@@ -296,7 +321,8 @@
 	                                    data-title="#{activeDocumentBean.titleBarLabel}" 
 	                                    data-id="#{activeDocumentBean.viewManager.currentDocument.logid}"
 	                                    data-pi="#{activeDocumentBean.viewManager.pi}" 
-	                                    title="#{msg.label__pdf_download_section}">
+                                        title="#{msg.label__pdf_download_section}"
+                                        aria-label="#{msg[activeDocumentBean.viewManager.currentDocument.docStructType]}: #{msg.label__pdf_download}">
 	                                    <i class="fa fa-file-pdf-o" aria-hidden="true"></i>
 	                                    #{msg.label__pdf_download}
 	                                </a>    
@@ -306,11 +332,13 @@
                             <!-- RIS (current) -->
                             <ui:fragment rendered="#{activeDocumentBean.viewManager.currentDocument.accessPermissionDownloadMetadata}">
                                 <a href="#{configurationBean.restApiUrl}records/ris/file/#{activeDocumentBean.viewManager.currentDocumentIddoc}"
-                                    id="ris"
+                                    id="risCurrent"
                                     class="badge badge-dark widget-usage__struct-download-ris" 
                                     title="#{msg.risLinkTopstruct}"
-                                    rel="nofollow">
-                                    #{msg.risLinkTopstruct} </a>
+                                    rel="nofollow"
+                                    aria-label="#{msg[activeDocumentBean.viewManager.currentDocument.docStructType]}: #{msg.risLinkTopstruct}">
+                                    #{msg.risLinkTopstruct}
+                                </a>
                             </ui:fragment>
                         
 						</div>
@@ -319,7 +347,7 @@
                     <!-- PAGE -->
 					<ui:fragment
 						rendered="#{!activeDocumentBean.viewManager.bornDigital and activeDocumentBean.viewManager.currentPage.displayImage and (activeDocumentBean.viewManager.currentPage.accessPermissionPdf or (activeDocumentBean.viewManager.currentPage.accessPermissionImage and configurationBean.displaySidebarUsageWidgetLinkToJpegImage or configurationBean.displaySidebarUsageWidgetLinkToMasterImage) or activeDocumentBean.viewManager.currentPage.altoAvailable or activeDocumentBean.viewManager.currentPage.teiAvailable or activeDocumentBean.viewManager.currentPage.displayFulltext)}">
-						<h4 id="titlePage" class="widget-usage__subtitle">#{msg.image}</h4>
+						<h4 id="titleImage" class="widget-usage__subtitle">#{msg.image}</h4>
 
 						<!-- PAGE DOWNLOADS -->
 						<div class="widget-usage__page-downloads">
@@ -330,7 +358,8 @@
 								<a href="#{activeDocumentBean.viewManager.pdfPageDownloadLink}"
 									id="pdfPage"
 									class="badge badge-dark widget-usage__page-download-pdf"
-									title="#{msg.label__pdf_download_image}" target="_blank" rel="nofollow">
+                                    title="#{msg.label__pdf_download_image}" target="_blank" rel="nofollow noopener"
+                                    aria-label="#{msg.image}: #{msg.label__pdf_download}">
 									<i class="fa fa-file-pdf-o" aria-hidden="true"></i>
 									#{msg.label__pdf_download} </a>
 							</ui:fragment>
@@ -342,7 +371,8 @@
 								    <a href="#{activeDocumentBean.viewManager.jpegUrlForDownload}"
 									    id="jpeg"
 									    class="badge badge-dark widget-usage__page-download-jpeg"
-									    title="#{msg.imageLinkDesc}" target="_blank" rel="nofollow">
+                                        title="#{msg.imageLinkDesc}" target="_blank" rel="nofollow noopener"
+                                        aria-label="#{msg.image}: #{msg.imageLink}">
 									    #{msg.imageLink} </a>
 							    </ui:fragment>
 							
@@ -352,7 +382,8 @@
                                     <a href="#{activeDocumentBean.viewManager.masterImageUrlForDownload}"
                                         id="tiff"
                                         class="badge badge-dark widget-usage__page-download-tiff"
-                                        title="#{msg.action__downloadMasterImage}" target="_blank" rel="nofollow">
+                                        title="#{msg.action__downloadMasterImage}" target="_blank" rel="nofollow noopener"
+                                        aria-label="#{msg.image}: #{msg.imageLink} (#{activeDocumentBean.viewManager.currentPage.fileNameExtension.toUpperCase()})">
                                         #{msg.imageLinkMaster} (#{activeDocumentBean.viewManager.currentPage.fileNameExtension.toUpperCase()}) </a>
                                 </ui:fragment>
                             </ui:fragment>
@@ -366,7 +397,8 @@
 								    <a href="#{activeDocumentBean.viewManager.altoUrl}"
 									   id="altoPage"
 									   class="badge badge-dark widget-usage__page-download-alto"
-									   title="#{msg.metadata_dl_alto_page}" target="_blank" rel="nofollow">
+                                       title="#{msg.metadata_dl_alto_page}" target="_blank" rel="nofollow noopener"
+                                       aria-label="#{msg.image}: #{msg.downloadAltoPageButtonLabel}">
 									   #{msg.downloadAltoPageButtonLabel} </a>
                                 </ui:fragment>
 
@@ -374,9 +406,11 @@
                                     <!-- TEI (PAGE) -->
                                     <ui:fragment
 								        rendered="#{activeDocumentBean.viewManager.currentPage.teiAvailable}">
-								        <a href="#{activeDocumentBean.viewManager.teiUrl}" id="textPage"
+								        <a href="#{activeDocumentBean.viewManager.teiUrl}" id="teiPage"
 									       class="badge badge-dark widget-usage__page-download-tei"
-									       title="#{msg.downloadPageTei}" target="_blank" rel="nofollow"> #{msg.TEI}
+                                           title="#{msg.downloadPageTei}" target="_blank" rel="nofollow noopener"
+                                           aria-label="#{msg.image}: #{msg.TEI}"> 
+                                           #{msg.TEI}
 								        </a>
                                     </ui:fragment>
 
@@ -386,7 +420,8 @@
 								        <a href="#{activeDocumentBean.viewManager.fulltextUrl}"
 									       id="textPage"
 									       class="badge badge-dark widget-usage__page-download-fulltext"
-									       title="#{msg.downloadPageFulltext}" target="_blank" rel="nofollow">
+                                           title="#{msg.downloadPageFulltext}" target="_blank" rel="nofollow noopener"
+                                           aria-label="#{msg.image}: #{msg.fulltext}">
 									       #{msg.fulltext} </a>
                                     </ui:fragment>
                                 </ui:fragment>
@@ -398,18 +433,24 @@
 					<!-- IMAGE FRAGMENT -->
 					<ui:fragment rendered="#{activeDocumentBean.viewManager.currentPage.accessPermissionImage}">
 						<div class="widget-usage__image-fragment__wrapper">
-							<h4 id="titlePage" class="widget-usage__subtitle">#{msg.image_fragment}</h4>
+							<h4 id="imgFragment" class="widget-usage__subtitle">#{msg.image_fragment}</h4>
 	
 							<div class="widget-usage__image-fragment">
 							
 								<a class="badge badge-dark widget-usage__image-fragment-page"  id="imageFragmentPage" 
 									data-copy="image-region-page"
 									data-copy-done="#{msg.copyUrlDone}"
-									title="#{msg.copyUrl}" >#{msg.label__share_image_region_page}</a>
+                                    title="#{msg.copyUrl}" 
+                                    aria-label="#{msg.image}: #{msg.label__share_image_region_page}">
+                                    #{msg.label__share_image_region_page}
+                                </a>
 								<a class="badge badge-dark widget-usage__image-fragment-image"  id="imageFragmentImage" 
 									data-copy="image-region-image"
 									data-copy-done="#{msg.copyUrlDone}"
-									title="#{msg.copyUrl}" >#{msg.label__share_image_region_image}</a>
+                                    title="#{msg.copyUrl}" 
+                                    aria-label="#{msg.image}: #{msg.label__share_image_region_image}">
+                                    #{msg.label__share_image_region_image}
+                                </a>
 							</div>
 						</div>
 					</ui:fragment>
@@ -424,7 +465,8 @@
                                 class="badge badge-dark widget-usage__citelink-work" 
                                 data-copy="work-citelink"
                                 data-clipboard-text="#{activeDocumentBean.viewManager.citeLinkWork}" 
-                                data-copy-done="#{msg.copyUrlDone}" title="#{msg.copyUrl}">
+                                data-copy-done="#{msg.copyUrlDone}" title="#{msg.copyUrl}"
+                                aria-label="#{msg.citeLinks}: #{msg.copyUrl}">
                                 #{msg.citeLinkWork}
                             </a>
                         </ui:fragment>
@@ -435,7 +477,8 @@
                                 data-copy="page-citelink"
                                 data-clipboard-text="#{activeDocumentBean.viewManager.citeLinkPage}" 
                                 data-copy-done="#{msg.copyUrlDone}" 
-                                title="#{msg.copyUrl}">
+                                title="#{msg.copyUrl}"
+                                aria-label="#{msg.citeLinks}: #{msg.citeLinkPage}">
                                 #{msg.citeLinkPage}
                            </a>
                         </ui:fragment>

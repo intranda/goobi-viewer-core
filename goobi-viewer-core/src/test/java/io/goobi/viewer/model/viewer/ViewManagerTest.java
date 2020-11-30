@@ -15,18 +15,26 @@
  */
 package io.goobi.viewer.model.viewer;
 
+import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
+
+import javax.faces.context.FacesContext;
 
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
 import io.goobi.viewer.AbstractDatabaseAndSolrEnabledTest;
+import io.goobi.viewer.TestUtils;
 import io.goobi.viewer.controller.Configuration;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.SolrConstants;
+import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IDDOCNotFoundException;
+import io.goobi.viewer.exceptions.IndexUnreachableException;
+import io.goobi.viewer.exceptions.PresentationException;
+import io.goobi.viewer.exceptions.ViewerConfigurationException;
 import io.goobi.viewer.managedbeans.ImageDeliveryBean;
 import io.goobi.viewer.model.viewer.pageloader.EagerPageLoader;
 
@@ -248,5 +256,37 @@ public class ViewManagerTest extends AbstractDatabaseAndSolrEnabledTest {
         ViewManager viewManager = new ViewManager(se, new EagerPageLoader(se), se.getLuceneId(), null, null, new ImageDeliveryBean());
 
         Assert.assertTrue(viewManager.isBelowFulltextThreshold(0));
+    }
+    
+    @Test
+    public void testDisplayDownloadWidget() throws IndexUnreachableException, PresentationException, DAOException, ViewerConfigurationException {
+        String pi = "PPN123";
+        String docstructType = "Catalogue";
+
+        StructElement se = new StructElement(123L);
+        se.setDocStructType(docstructType);
+        se.getMetadataFields().put(SolrConstants.PI_TOPSTRUCT, Collections.singletonList(pi));
+
+        FacesContext context = TestUtils.mockFacesContext();
+        
+        ViewManager viewManager = new ViewManager(se, new EagerPageLoader(se), se.getLuceneId(), null, null, new ImageDeliveryBean());
+        boolean display = viewManager.isDisplayContentDownloadMenu();
+        Assert.assertTrue(display);
+    }
+    
+    @Test
+    public void testListDownloadLinksForWork() throws IndexUnreachableException, PresentationException, DAOException, ViewerConfigurationException, IOException {
+        String pi = "PPN123";
+        String docstructType = "Catalogue";
+
+        StructElement se = new StructElement(123L);
+        se.setDocStructType(docstructType);
+        se.getMetadataFields().put(SolrConstants.PI_TOPSTRUCT, Collections.singletonList(pi));
+
+        FacesContext context = TestUtils.mockFacesContext();
+        
+        ViewManager viewManager = new ViewManager(se, new EagerPageLoader(se), se.getLuceneId(), null, null, new ImageDeliveryBean());
+        List<LabeledLink> links = viewManager.getContentDownloadLinksForWork();
+        Assert.assertEquals(2, links.size());
     }
 }

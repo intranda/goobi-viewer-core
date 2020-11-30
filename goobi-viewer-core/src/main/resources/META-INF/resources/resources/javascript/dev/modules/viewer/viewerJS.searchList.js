@@ -283,12 +283,14 @@ var viewerJS = ( function( viewer ) {
                     $thumbToggle
                         .addClass("-active")
                         .attr("title", activeTitle)
-                        .tooltip('_fixTitle');
+                        .tooltip('_fixTitle')
+                        .attr('aria-checked', true);
                 } else {
                     $thumbToggle
                     .removeClass("-active")
                     .attr("title", inactiveTitle)
-                    .tooltip('_fixTitle');
+                    .tooltip('_fixTitle')
+                    .attr('aria-checked', false);
                 }
                 
                 $thumbToggle.on("click", (event) => {
@@ -299,14 +301,16 @@ var viewerJS = ( function( viewer ) {
                             .addClass("-active")
                             .attr("title", activeTitle)
                             .tooltip('_fixTitle')
-                            .tooltip('show');
+                            .tooltip('show')
+                            .attr('aria-checked', true);
                         $(".search-list__subhit-thumbnail").show();
                     } else {
                         $thumbToggle
                             .removeClass("-active")
                             .attr("title", inactiveTitle)
                             .tooltip('_fixTitle')
-                            .tooltip('show');
+                            .tooltip('show')
+                            .attr('aria-checked', false);
                         $(".search-list__subhit-thumbnail").hide();
                     }
                     sessionStorage.setItem( 'searchListShowThumbs', _searchListShowThumbs );

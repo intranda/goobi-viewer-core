@@ -51,6 +51,7 @@ import io.goobi.viewer.model.cms.CMSPageTemplateEnabled;
 import io.goobi.viewer.model.cms.CMSStaticPage;
 import io.goobi.viewer.model.cms.CMSTemplateManager;
 import io.goobi.viewer.model.crowdsourcing.campaigns.Campaign;
+import io.goobi.viewer.model.crowdsourcing.campaigns.CampaignLogMessage;
 import io.goobi.viewer.model.crowdsourcing.campaigns.Campaign.CampaignVisibility;
 import io.goobi.viewer.model.crowdsourcing.campaigns.CampaignRecordStatistic.CampaignRecordStatus;
 import io.goobi.viewer.model.crowdsourcing.questions.Question;
@@ -58,6 +59,7 @@ import io.goobi.viewer.model.crowdsourcing.questions.QuestionType;
 import io.goobi.viewer.model.crowdsourcing.questions.TargetSelector;
 import io.goobi.viewer.model.download.DownloadJob;
 import io.goobi.viewer.model.download.DownloadJob.JobStatus;
+import io.goobi.viewer.model.log.LogMessage;
 import io.goobi.viewer.model.download.EPUBDownloadJob;
 import io.goobi.viewer.model.download.PDFDownloadJob;
 import io.goobi.viewer.model.maps.GeoMap;
@@ -2262,13 +2264,42 @@ public class JPADAOTest extends AbstractDatabaseEnabledTest {
         Assert.assertEquals("English title", campaign.getTitle());
 
         Assert.assertEquals(2, campaign.getQuestions().size());
-        Assert.assertEquals("English text", campaign.getQuestions().get(0).getText());
+        Assert.assertEquals("English text", campaign.getQuestions().get(0).getText().getText(Locale.ENGLISH));
 
         Assert.assertEquals(4, campaign.getStatistics().size());
         Assert.assertNotNull(campaign.getStatistics().get("PI_1"));
         Assert.assertNotNull(campaign.getStatistics().get("PI_2"));
         Assert.assertNotNull(campaign.getStatistics().get("PI_3"));
         Assert.assertNotNull(campaign.getStatistics().get("PI_4"));
+    }
+    
+    @Test
+    public void testLoadCampaignWithLogMessage() throws Exception {
+        Campaign campaign = DataManager.getInstance().getDao().getCampaign(1L);
+        Assert.assertNotNull(campaign);
+        Assert.assertEquals(1, campaign.getLogMessages().size());
+        
+        CampaignLogMessage message = campaign.getLogMessages().get(0);
+        Assert.assertEquals("Eine Nachricht im Log", message.getMessage());
+        Assert.assertEquals(new Long(1), message.getCreatorId());
+        Assert.assertEquals("PI_1", message.getPi());
+        Assert.assertEquals(campaign, message.getCampaign());
+    }
+    
+    @Test
+    public void testUpdateCampaignWithLogMessage() throws Exception {
+        Campaign campaign = DataManager.getInstance().getDao().getCampaign(2L);
+        Assert.assertNotNull(campaign);
+        
+        LogMessage message = new LogMessage("Test", 1l, new Date(), null);
+        campaign.addLogMessage(message, "PI_10");
+        Assert.assertEquals("Test", campaign.getLogMessages().get(0).getMessage());
+        
+        DataManager.getInstance().getDao().updateCampaign(campaign);
+        campaign = DataManager.getInstance().getDao().getCampaign(2L);
+        Assert.assertEquals("Test", campaign.getLogMessages().get(0).getMessage());
+
+        
     }
 
     /**
@@ -2281,7 +2312,7 @@ public class JPADAOTest extends AbstractDatabaseEnabledTest {
         Assert.assertNotNull(q);
         Assert.assertEquals(Long.valueOf(1), q.getId());
         Assert.assertEquals(Long.valueOf(1), q.getOwner().getId());
-        Assert.assertEquals("English text", q.getText());
+        Assert.assertEquals("English text", q.getText().getText(Locale.ENGLISH));
         Assert.assertEquals(QuestionType.PLAINTEXT, q.getQuestionType());
         Assert.assertEquals(TargetSelector.RECTANGLE, q.getTargetSelector());
         Assert.assertEquals(0, q.getTargetFrequency());
@@ -2412,6 +2443,19 @@ public class JPADAOTest extends AbstractDatabaseEnabledTest {
     }
 
     /**
+     * @see JPADAO#getAnnotationsForUserId(Long)
+     * @verifies return correct rows
+     */
+    @Test
+    public void getAnnotationsForUserId_shouldReturnCorrectRows() throws Exception {
+        List<PersistentAnnotation> result = DataManager.getInstance().getDao().getAnnotationsForUserId(1L);
+        Assert.assertNotNull(result);
+        Assert.assertEquals(2, result.size());
+        Assert.assertEquals(Long.valueOf(1), result.get(0).getId());
+        Assert.assertEquals(Long.valueOf(2), result.get(1).getId());
+    }
+
+    /**
      * @see JPADAO#getAnnotationCount(Map)
      * @verifies return correct count
      */
@@ -2430,6 +2474,17 @@ public class JPADAOTest extends AbstractDatabaseEnabledTest {
         Assert.assertEquals(5, DataManager.getInstance().getDao().getAnnotations(0, 10, null, false, null).size());
         Assert.assertEquals(2,
                 DataManager.getInstance().getDao().getAnnotations(0, 10, null, false, Collections.singletonMap("targetPI", "PI_2")).size());
+    }
+
+    /**
+     * @see JPADAO#getAnnotations(int,int,String,boolean,Map)
+     * @verifies filter by campaign name correctly
+     */
+    @Test
+    public void getAnnotations_shouldFilterByCampaignNameCorrectly() throws Exception {
+        List<PersistentAnnotation> result =
+                DataManager.getInstance().getDao().getAnnotations(0, 10, null, false, Collections.singletonMap("campaign", "english"));
+        Assert.assertEquals(3, result.size());
     }
 
     @Test
@@ -2690,5 +2745,84 @@ public class JPADAOTest extends AbstractDatabaseEnabledTest {
         //now noone has agreed again
         users = DataManager.getInstance().getDao().getAllUsers(true);
         Assert.assertTrue(users.stream().allMatch(u -> !u.isAgreedToTermsOfUse()));
+    }
+    
+
+    /**
+     * @see JPADAO#createCampaignsFilterQuery(String,Map,Map)
+     * @verifies create query correctly
+     */
+    @Test
+    public void createCampaignsFilterQuery_shouldCreateQueryCorrectly() throws Exception {
+        Map<String, String> filters = new HashMap<>(1);
+        filters.put("groupOwner", "1");
+        Map<String, Object> params = new HashMap<>(1);
+        Assert.assertEquals(
+                " prefix WHERE a.userGroup.owner IN (SELECT g.owner FROM UserGroup g WHERE g.owner.id=:groupOwner)",
+                JPADAO.createCampaignsFilterQuery("prefix", filters, params));
+        Assert.assertEquals(1, params.size());
+        Assert.assertEquals(1L, params.get("groupOwner"));
+    }
+
+    /**
+     * @see JPADAO#createAnnotationsFilterQuery(String,Map,Map)
+     * @verifies create query correctly
+     */
+    @Test
+    public void createAnnotationsFilterQuery_shouldCreateQueryCorrectly() throws Exception {
+        {
+            // creator/reviewer and campaign name
+            Map<String, String> filters = new HashMap<>(2);
+            filters.put("creatorId_reviewerId", "1");
+            filters.put("campaign", "geo");
+            Map<String, Object> params = new HashMap<>(2);
+            Assert.assertEquals(
+                    " prefix WHERE (a.creatorId=:creatorIdreviewerId OR a.reviewerId=:creatorIdreviewerId) AND (a.generatorId IN (SELECT q.id FROM Question q WHERE q.owner IN (SELECT t.owner FROM CampaignTranslation t WHERE t.tag='title' AND UPPER(t.value) LIKE :campaign)))",
+                    JPADAO.createAnnotationsFilterQuery("prefix", filters, params));
+            Assert.assertEquals(2, params.size());
+            Assert.assertEquals("%GEO%", params.get("campaign"));
+            Assert.assertEquals(1L, params.get("creatorIdreviewerId"));
+        }
+        {
+            // just creator/reviewer
+            Map<String, String> filters = new HashMap<>(1);
+            filters.put("creatorId_reviewerId", "1");
+            Map<String, Object> params = new HashMap<>(1);
+            Assert.assertEquals(" prefix WHERE (a.creatorId=:creatorIdreviewerId OR a.reviewerId=:creatorIdreviewerId)",
+                    JPADAO.createAnnotationsFilterQuery("prefix", filters, params));
+        }
+        {
+            // just campaign name
+            Map<String, String> filters = new HashMap<>(1);
+            filters.put("campaign", "geo");
+            Map<String, Object> params = new HashMap<>(1);
+            Assert.assertEquals(
+                    " prefix WHERE (a.generatorId IN (SELECT q.id FROM Question q WHERE q.owner IN (SELECT t.owner FROM CampaignTranslation t WHERE t.tag='title' AND UPPER(t.value) LIKE :campaign)))",
+                    JPADAO.createAnnotationsFilterQuery("prefix", filters, params));
+        }
+        {
+            // just campaign ID
+            Map<String, String> filters = new HashMap<>(2);
+            filters.put("generatorId", "1");
+            Map<String, Object> params = new HashMap<>(2);
+            Assert.assertEquals(
+                    " prefix WHERE (a.generatorId IN (SELECT q.id FROM Question q WHERE q.owner IN (SELECT c FROM Campaign c WHERE c.id=:generatorId)))",
+                    JPADAO.createAnnotationsFilterQuery("prefix", filters, params));
+            Assert.assertEquals(1, params.size());
+            Assert.assertEquals(1L, params.get("generatorId"));
+        }
+        {
+            // campaign ID and record identifier
+            Map<String, String> filters = new HashMap<>(2);
+            filters.put("generatorId", "1");
+            filters.put("targetPI_body", "ppn123");
+            Map<String, Object> params = new HashMap<>(2);
+            Assert.assertEquals(
+                    " prefix WHERE (a.generatorId IN (SELECT q.id FROM Question q WHERE q.owner IN (SELECT c FROM Campaign c WHERE c.id=:generatorId))) AND (UPPER(a.targetPI) LIKE :targetPIbody OR UPPER(a.body) LIKE :targetPIbody)",
+                    JPADAO.createAnnotationsFilterQuery("prefix", filters, params));
+            Assert.assertEquals(2, params.size());
+            Assert.assertEquals(1L, params.get("generatorId"));
+            Assert.assertEquals("%PPN123%", params.get("targetPIbody"));
+        }
     }
 }

@@ -15,15 +15,17 @@
  */
 package io.goobi.viewer.model.security;
 
-import static org.junit.Assert.*;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 import org.apache.commons.lang3.StringUtils;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-
-import io.goobi.viewer.model.security.LicenseType;
 
 /**
  * @author Florian Alpers
@@ -32,7 +34,6 @@ import io.goobi.viewer.model.security.LicenseType;
 public class LicenseTypeTest {
 
     private static final String CONDITION_QUERY_1 = "(DOCTYPE:Monograph AND isWork:true) -DC:privatecollection";
-    private static final String CONDITION_FILENAME_1 = "(private|secret)\\..{2-4}";
 
     /**
      * @throws java.lang.Exception
@@ -51,35 +52,32 @@ public class LicenseTypeTest {
     @Test
     public void testGetProcessedConditions() {
         LicenseType type = new LicenseType();
-        type.setConditions("FILENAME:{" + CONDITION_FILENAME_1 + "}");
-        Assert.assertTrue("processed conditions are " + type.getProcessedConditions(), StringUtils.isBlank(type.getProcessedConditions()));
-
-        type.setConditions("FILENAME:{" + CONDITION_FILENAME_1 + "} " + CONDITION_QUERY_1);
-        Assert.assertTrue("processed conditions are " + type.getProcessedConditions(), type.getProcessedConditions().equals(CONDITION_QUERY_1));
-        ;
-
-        type.setConditions(CONDITION_QUERY_1 + "FILENAME:{" + CONDITION_FILENAME_1 + "}");
-        Assert.assertTrue("processed conditions are " + type.getProcessedConditions(), type.getProcessedConditions().equals(CONDITION_QUERY_1));
 
         type.setConditions(CONDITION_QUERY_1);
         Assert.assertTrue("processed conditions are " + type.getProcessedConditions(), type.getProcessedConditions().equals(CONDITION_QUERY_1));
     }
 
+
+    /**
+     * @see LicenseType#getAvailablePrivileges(Set)
+     * @verifies only return priv view ugc if ugc type
+     */
     @Test
-    public void testGetFilenameConditions() {
+    public void getAvailablePrivileges_shouldOnlyReturnPrivViewUgcIfUgcType() throws Exception {
         LicenseType type = new LicenseType();
-        type.setConditions("FILENAME:{" + CONDITION_FILENAME_1 + "}");
-        Assert.assertTrue("filename conditions are " + type.getFilenameConditions(), type.getFilenameConditions().equals(CONDITION_FILENAME_1));
-
-        type.setConditions("FILENAME:{" + CONDITION_FILENAME_1 + "} " + CONDITION_QUERY_1);
-        Assert.assertTrue("filename conditions are " + type.getFilenameConditions(), type.getFilenameConditions().equals(CONDITION_FILENAME_1));
-        ;
-
-        type.setConditions(CONDITION_QUERY_1 + "FILENAME:{" + CONDITION_FILENAME_1 + "}");
-        Assert.assertTrue("filename conditions are " + type.getFilenameConditions(), type.getFilenameConditions().equals(CONDITION_FILENAME_1));
-
-        type.setConditions(CONDITION_QUERY_1);
-        Assert.assertTrue("filename conditions are " + type.getFilenameConditions(), StringUtils.isBlank(type.getFilenameConditions()));
+        type.ugcType = true;
+        List<String> result = type.getAvailablePrivileges(Collections.emptySet());
+        Assert.assertEquals(1, result.size());
+        Assert.assertEquals(IPrivilegeHolder.PRIV_VIEW_UGC, result.get(0));
     }
+    @Test
+    public void getAvailablePrivilegesHandleNonEmptyArgument() throws Exception {
+        LicenseType type = new LicenseType();
+        type.ugcType = true;
+        Set<String> privileges = new HashSet<>(Arrays.asList(IPrivilegeHolder.PRIV_VIEW_UGC));
+        List<String> result = type.getAvailablePrivileges(privileges);
+        Assert.assertEquals(0, result.size());
+    }
+
 
 }

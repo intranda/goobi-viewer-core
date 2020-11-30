@@ -34,6 +34,7 @@ import org.slf4j.LoggerFactory;
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 
+import de.intranda.api.annotation.wa.WebAnnotation;
 import io.goobi.viewer.api.rest.AbstractApiUrlManager;
 import io.goobi.viewer.api.rest.resourcebuilders.AnnotationsResourceBuilder;
 import io.goobi.viewer.api.rest.v1.ApiUrls;
@@ -119,7 +120,7 @@ public class IndexerTools {
                     .getFirstDoc(SolrConstants.PI + ":" + pi,
                             Arrays.asList(new String[] { SolrConstants.DATAREPOSITORY, SolrConstants.SOURCEDOCFORMAT }));
             if (doc == null) {
-                throw new RecordNotFoundException(pi);
+                throw new RecordNotFoundException("Record not found in index: " + pi);
             }
             dataRepository = (String) doc.getFieldValue(SolrConstants.DATAREPOSITORY);
             recordType = (String) doc.getFieldValue(SolrConstants.SOURCEDOCFORMAT);
@@ -183,7 +184,7 @@ public class IndexerTools {
                 DataManager.getInstance().getDao().getCampaignStatisticsForRecord(pi, CampaignRecordStatus.FINISHED);
         if (!statistics.isEmpty()) {
             AbstractApiUrlManager urls = new ApiUrls(DataManager.getInstance().getConfiguration().getRestApiUrl());
-            AnnotationsResourceBuilder annoBuilder = new AnnotationsResourceBuilder(urls);
+            AnnotationsResourceBuilder annoBuilder = new AnnotationsResourceBuilder(urls, null);
             for (CampaignRecordStatistic statistic : statistics) {
                 Campaign campaign = statistic.getOwner();
                 List<PersistentAnnotation> annotations = DataManager.getInstance().getDao().getAnnotationsForCampaignAndWork(campaign, pi);
@@ -193,7 +194,12 @@ public class IndexerTools {
                             new File(DataManager.getInstance().getConfiguration().getHotfolder(), sbNamingScheme.toString() + SUFFIX_ANNOTATIONS);
                     for (PersistentAnnotation annotation : annotations) {
                         try {
-                            String json = annoBuilder.getAsWebAnnotation(annotation).toString();
+                            WebAnnotation webAnno = annoBuilder.getAsWebAnnotation(annotation);
+                            //Write access condition info into annotation for indexing. Normally that field is not written
+                            if(StringUtils.isNotBlank(annotation.getAccessCondition())) {
+                                webAnno.setRights(annotation.getAccessCondition());
+                            }
+                            String json = webAnno.toString();
                             String jsonFileName = annotation.getTargetPI() + "_" + annotation.getId() + ".json";
                             FileUtils.writeStringToFile(new File(annotationDir, jsonFileName), json, Charset.forName(StringTools.DEFAULT_ENCODING));
                         } catch (JsonParseException e) {
