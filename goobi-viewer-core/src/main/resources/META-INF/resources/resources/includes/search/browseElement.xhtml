@@ -41,7 +41,7 @@
 	                             <ui:repeat value="#{browseElement.structElements}" varStatus="stat" var="struct">
 	                                 <li>
 	                                     <h:outputLink value="#{struct.url}" rendered="#{browseElement.hasImages or browseElement.anchor}">
-	                                       <!--  <f:passThroughAttribute name="aria-label" value="#{msg[browseElement.label]}"/> -->
+	                                         <f:passThroughAttribute name="aria-label" value="#{msg[browseElement.label]}"/>
 	                                         <h:outputText value="#{msg[struct.docStructType]}" />
 	                                     </h:outputLink>
 	                                     <h:outputLink value="#{struct.metadataUrl}" rendered="#{!browseElement.hasImages and !browseElement.anchor}">
