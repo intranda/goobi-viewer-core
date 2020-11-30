@@ -1997,6 +1997,15 @@ public final class Configuration extends AbstractConfiguration {
     public String getSmtpSecurity() {
         return getLocalString("user.smtpSecurity", "none");
     }
+    
+    /**
+     * 
+     * @return Configured SMTP port number; -1 if not configured
+     * @should return correct value
+     */
+    public int getSmtpPort() {
+        return getLocalInt("user.smtpPort", -1);
+    }
 
     /**
      * <p>
