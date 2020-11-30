@@ -33,6 +33,7 @@ var viewerJS = ( function ( viewer ) {
 
     viewer.groupSelect = {
 
+        checkObservables: new Map(),
         init: function( config ) {
             this.config = $.extend( true, {}, _defaults, config );
             if(_debug) {
@@ -45,26 +46,57 @@ var viewerJS = ( function ( viewer ) {
                 let groupName = $(groupSelectCheckbox).attr(this.config.groupAttribute);
                 if(_debug)console.log("Set up selection group " + groupName);
                 if(groupName) {
-                    let groupSelector = "[" + this.config.groupAttribute + "='" + groupName + "']";
-                    let $singleSelects = $(groupSelector + this.config.selectOneSelector)
-                    if(_debug)console.log("add change event to ", $groupSelectCheckbox);
-                    $groupSelectCheckbox.on("change", event => {
-                        console.log("changed ", event.target);
-                        let checked = $groupSelectCheckbox.is(":checked");
-                        if(_debug)console.log("set all checkboxed to " + checked);
-                        $singleSelects.prop('checked', checked).trigger("change");
-                    });
-                    
-                    if(_debug)console.log("add change event to ", $singleSelects);
-                    $singleSelects.on("click", event => {
-                        let anyNotChecked = $singleSelects.is(':not(:checked)');
-                        if(_debug)console.log("anyNotChecked", anyNotChecked);
-                        $groupSelectCheckbox.prop('checked', !anyNotChecked);
-                    });
+                    this.initGroup(groupName, $groupSelectCheckbox);
                 }
             })
+        },
+        
+        initGroup: function(groupName) {
+            let groupSelectObservable = new rxjs.Subject();
+            rxjs.fromEvent(document, "click")
+            .pipe(rxjs.operators.filter(e => {
+                return e.target.matches(this.getSelectAllSelector(groupName));
+            }))
+            .subscribe(e => {
+                let checked = $(e.target).is(":checked");
+                $(this.getSelectOneSelector(groupName)).prop('checked', checked).trigger("change");
+                e.allChecked = checked;
+                e.anyChecked = checked;
+                groupSelectObservable.next(e);
+            })
+            rxjs.fromEvent(document, "click")
+            .pipe(rxjs.operators.filter(e => {
+                return e.target.matches(this.getSelectOneSelector(groupName));
+            }))
+            .subscribe(e => {
+                let checked = $(e.target).is(":checked");
+                let numChecked = $(this.getSelectOneSelector(groupName) + ":checked").length;
+                let numTotal = $(this.getSelectOneSelector(groupName)).length;
+                if(_debug)console.log(numChecked + " out of " + numTotal + " checkboxed checked");
+                e.allChecked = numChecked == numTotal;
+                e.anyChecked = numChecked > 0;
+                $(this.getSelectAllSelector(groupName)).prop('checked', e.allChecked)
+                groupSelectObservable.next(e);
+            })
+            this.checkObservables.set(groupName, groupSelectObservable);
 
-            
+        },
+        
+        getGroupSelector: function(groupName) {
+            let groupSelector = "[" + this.config.groupAttribute + "='" + groupName + "']";
+            return groupSelector;
+        },
+        getSelectAllSelector: function(groupName) {
+            let selector = this.getGroupSelector(groupName) + this.config.selectAllSelector;
+            return selector;
+        },
+        getSelectOneSelector: function(groupName) {
+            let selector = this.getGroupSelector(groupName) + this.config.selectOneSelector;
+            return selector;
+        },
+        
+        onChange: function(groupName) {
+            return this.checkObservables.get(groupName);
         }
     }
 
