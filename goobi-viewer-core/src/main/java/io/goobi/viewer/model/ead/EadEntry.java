@@ -471,6 +471,7 @@ public class EadEntry {
     }
 
     public List<EadMetadataField> getAllAreaLists() {
+        logger.trace("getAllAreaLists ({})", id);
         List<EadMetadataField> ret = new ArrayList<>(getIdentityStatementAreaList().size()
                 + getContextAreaList().size()
                 + getContentAndStructureAreaAreaList().size()
@@ -486,6 +487,7 @@ public class EadEntry {
         ret.addAll(getNotesAreaList());
         ret.addAll(getDescriptionControlAreaList());
 
+        logger.trace("getAllAreaLists END");
         return ret;
     }
 
