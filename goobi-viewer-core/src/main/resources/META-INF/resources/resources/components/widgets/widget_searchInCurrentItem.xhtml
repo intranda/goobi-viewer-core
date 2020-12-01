@@ -25,13 +25,13 @@
                             <div class="input-group-addon">
                                 <!-- Volumes -->
                                 <viewerComponent:commandButton styleClass="btn btn-default" ariaLabel="#{msg.search}" rendered="#{!activeDocumentBean.anchor and !activeDocumentBean.group}" 
-                                action="#{searchBean.searchInRecord('PI_TOPSTRUCT', null)}">
+                                action="#{searchBean.searchInRecord('PI_TOPSTRUCT', activeDocumentBean.persistentIdentifier)}">
                                     <f:passThroughAttribute name="aria-label" value="#{msg.search}" />
                                     <i class="fa fa-search"/>
                                 </viewerComponent:commandButton>
                                 <!-- Anchors -->
                                 <viewerComponent:commandButton styleClass="btn btn-default" ariaLabel="#{msg.search}" rendered="#{activeDocumentBean.anchor}" 
-                                action="#{searchBean.searchInRecord('PI_ANCHOR', null)}">
+                                action="#{searchBean.searchInRecord('PI_ANCHOR', activeDocumentBean.persistentIdentifier)}">
                                 	<f:passThroughAttribute name="aria-label" value="#{msg.search}" />
                                     <i class="fa fa-search"/>
                                 </viewerComponent:commandButton>
