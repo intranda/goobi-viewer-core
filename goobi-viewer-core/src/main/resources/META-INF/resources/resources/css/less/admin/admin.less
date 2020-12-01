@@ -691,6 +691,10 @@
 		    font: normal normal normal 17px/1 FontAwesome;
 	    }
 	}
+	&__checkbox-column-all-entrys,
+	&__checkbox-column-single-entry {
+		flex: 0 0 30px;
+	}
 	
 	&__overlay-bar {
 		display: none;
@@ -698,17 +702,21 @@
 		bottom: 0;
 		right: 0;
 		width: calc(~"100% - 250px");
-		height: 40px;
-		background: #444;
+		height: 100px;
+		background: rgba(0,0,0,0.85);
 		z-index: 1001;
 		color: @white;
-		padding-right: 2rem;
 		align-items: center;
-		justify-content: flex-end;
+		justify-content: center;
+		flex-direction: column;
 		&.-showExportOptions {
 			display: flex;
 			animation: slideInUp 0.25s ease 0s 1 forwards;
 		}
+	}
+	&__overlay-bar-message {
+		margin-bottom: 1rem;
+		text-align: center;
 	}
 
 	// TOPBAR
