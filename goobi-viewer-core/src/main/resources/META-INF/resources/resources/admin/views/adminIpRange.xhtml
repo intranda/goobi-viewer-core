@@ -23,8 +23,8 @@
                             <h:outputText value="#{msg.admin__ip_range_edit}" rendered="#{adminBean.currentIpRange.id != null}" />
                         </h2>
                     </div>
-                    <div class="admin__content-inner-content">
-                        <h:form id="editIpRangeGeneralForm" styleClass="form-horizontal" role="form" prependId="false">
+                    <div class="admin__content-inner-content" role="form">
+                        <h:form id="editIpRangeGeneralForm" styleClass="form-horizontal" prependId="false">
                             <h3>#{msg.admin__ip_range_general}</h3>
                             <div class="admin__default-block">
                                 <fieldset>
