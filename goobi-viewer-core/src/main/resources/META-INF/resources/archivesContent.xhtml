@@ -37,8 +37,11 @@
                             <div class="search-standard__input-autocomplete">
                                 <h:inputText id="tectonicsSearchField" inputStyleClass="-no-outline -active-border"
                                     value="#{tectonicsBean.searchString}" immediate="true">
-                                    <f:ajax listener="#{tectonicsBean.searchAction}" render="tocTreeGroup" />
+                                    <f:passThroughAttribute name="placeholder" value="#{msg.searchFieldDemoText}" />
                                 </h:inputText>
+                                <h:commandButton style="visibility:hidden" value="#{msg.search}" action="#{tectonicsBean.searchAction}">
+<!--                                   <f:ajax render="tocForm" /> -->
+                                </h:commandButton>
                             </div>
                         </div>
 
@@ -104,14 +107,14 @@
                                                                 <!-- TODO icon instead of descriptionLevel -->
                                                                 #{entry.descriptionLevel}
                                                                 <!-- TODO highlight selected entry via CSS -->
-                                                                <h:outputLink rendered="#{entry == tectonicsBean.tectonicsTree.selectedEntry}"
+                                                                <h:outputLink rendered="#{entry.id == tectonicsBean.tectonicsTree.selectedEntry.id}"
                                                                     value="#{navigationHelper.applicationUrl}archives/#{entry.id}/">
-                                                                    <strong>#{entry.label} (#{entry.hierarchy})</strong>
+                                                                    <strong>#{entry.label}</strong>
                                                                     <f:ajax render="hiearchyGroup metadataGroup" />
                                                                 </h:outputLink>
-                                                                <h:outputLink rendered="#{entry != tectonicsBean.tectonicsTree.selectedEntry}"
+                                                                <h:outputLink rendered="#{entry.id != tectonicsBean.tectonicsTree.selectedEntry.id}"
                                                                     value="#{navigationHelper.applicationUrl}archives/#{entry.id}/">
-                                                                    #{entry.label} (#{entry.hierarchy})
+                                                                    #{entry.label}
                                                                     <f:ajax render="hiearchyGroup metadataGroup" />
                                                                 </h:outputLink>
                                                             </div>
@@ -139,7 +142,7 @@
                                 value="#{tectonicsBean.getTectonicsHierarchyForIdentifier(tectonicsBean.tectonicsTree.selectedEntry.id)}">
                                 <!-- TODO proper level tag -->
                                 <!-- TODO bold via CSS -->
-                                #{msg[entry.descriptionLevel]}: <strong>#{entry.label}</strong>
+                                <h:outputText rendered="#{entry.descriptionLevel != null}" value="#{msg[entry.descriptionLevel]}:" /> <strong>#{entry.label}</strong>
                                 <br /><br />
                             </ui:repeat>
                         </h:panelGroup>

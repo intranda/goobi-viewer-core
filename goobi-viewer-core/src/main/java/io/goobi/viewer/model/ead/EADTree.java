@@ -68,7 +68,7 @@ public class EADTree implements Serializable {
             throw new IllegalArgumentException("root may not be null");
         }
 
-        List<EadEntry> tree = root.getAsFlatList();
+        List<EadEntry> tree = root.getAsFlatList(true);
         // remove root
         //        if(tree.size() > 1) {
         //            tree = tree.subList(1, tree.size());
@@ -241,19 +241,21 @@ public class EADTree implements Serializable {
      */
     public EadEntry getActiveEntry() {
         EadEntry ret = null;
-        if (entryMap != null) {
-            if (tocVisible != -1) {
-                expandTree(tocVisible);
-                ret = entryMap.get(DEFAULT_GROUP).get(tocVisible);
-                ret.setExpanded(true);
-                tocVisible = -1;
-            }
-            if (tocInvisible != -1) {
-                collapseTree(tocInvisible);
-                ret = entryMap.get(DEFAULT_GROUP).get(tocInvisible);
-                ret.setExpanded(false);
-                tocInvisible = -1;
-            }
+        if (entryMap == null) {
+            return ret;
+        }
+
+        if (tocVisible != -1) {
+            expandTree(tocVisible);
+            ret = entryMap.get(DEFAULT_GROUP).get(tocVisible);
+            ret.setExpanded(true);
+            tocVisible = -1;
+        }
+        if (tocInvisible != -1) {
+            collapseTree(tocInvisible);
+            ret = entryMap.get(DEFAULT_GROUP).get(tocInvisible);
+            ret.setExpanded(false);
+            tocInvisible = -1;
         }
 
         return ret;
@@ -270,6 +272,7 @@ public class EADTree implements Serializable {
      * @param selectedEntry the selectedEntry to set
      */
     public void setSelectedEntry(EadEntry selectedEntry) {
+        logger.trace("setSelectedEntry: {}", selectedEntry != null ? selectedEntry.getId() : null);
         this.selectedEntry = selectedEntry;
     }
 
@@ -324,7 +327,7 @@ public class EADTree implements Serializable {
      * @param parentId
      */
     private void expandTree(int parentId) {
-        logger.trace("expandTree: {}", parentId);
+        // logger.trace("expandTree: {}", parentId);
         if (entryMap == null) {
             return;
         }
@@ -345,7 +348,7 @@ public class EADTree implements Serializable {
                 break;
             }
         }
-        logger.trace("expandTree END");
+        // logger.trace("expandTree END");
     }
 
     /**
@@ -373,6 +376,18 @@ public class EADTree implements Serializable {
      * </p>
      */
     public void collapseAll() {
+        if (entryMap == null) {
+            return;
+        }
+
+        collapseAll(false);
+    }
+
+    /**
+     * 
+     * @param collapseAllEntries If true, all invisible child children will also be collapsed
+     */
+    public void collapseAll(boolean collapseAllEntries) {
         logger.trace("collapseAll");
         if (entryMap == null) {
             return;
@@ -382,6 +397,9 @@ public class EADTree implements Serializable {
             if (tcElem.getHierarchy() == 0) {
                 tcElem.setExpanded(false);
             } else {
+                if (collapseAllEntries) {
+                    tcElem.setExpanded(false);
+                }
                 tcElem.setVisible(false);
             }
         }

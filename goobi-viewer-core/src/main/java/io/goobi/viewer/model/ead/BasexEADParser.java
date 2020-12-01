@@ -455,7 +455,7 @@ public class BasexEADParser {
         if (flatEntryList == null) {
             if (rootElement != null) {
                 flatEntryList = new LinkedList<>();
-                flatEntryList.addAll(rootElement.getAsFlatList());
+                flatEntryList.addAll(rootElement.getAsFlatList(false));
             }
         }
         return flatEntryList;
