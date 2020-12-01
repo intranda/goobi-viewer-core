@@ -332,26 +332,43 @@
 																			</div>
 		
 																			<div class="col-9 admin__form-input badge-hover">
-																				<div>
-																					<ui:repeat id="metadataFields" var="field"
-																						value="#{question.metadataFields}">
+																				<h:panelGroup id="metadataFields" layout="block">
+																					<ui:repeat id="metadataFieldLoop" var="field"
+																						value="#{question.selectedMetadataFields}">
 																						<h:commandLink action="#{question.removeMetadataField(field)}"><div class="badge badge-success">#{msg[field]}<f:ajax render="createCampaignForm:questions:#{status.index}:question"></f:ajax> <i class="fa fa-trash-o" aria-hidden="true"></i></div></h:commandLink>
 																					</ui:repeat>
-																				</div>
+																				</h:panelGroup>
 <!-- 																				<viewerComponent:multiselectDropdown -->
 <!-- 																					id="metadataSelect" -->
 <!-- 																					value="#{question.metadataFields}" -->
-<!-- 																					items="#{question.getAvailableMetadataFields()}"> -->
+<!-- 																					items="#{question.getAvailableMetadataFields()}" -->
+<!-- 																					render="question"> -->
 <!-- 																				</viewerComponent:multiselectDropdown> -->
 																				
-																				<h:selectOneMenu id="adminCrowdAddCampaignQueryMetadata" styleClass="form-control" value="#{question.metadataToAdd}">
-																					<f:selectItem itemLabel="#{msg.select}" itemValue=""></f:selectItem>
-																					<f:selectItems var="field"
-																						value="#{question.getAvailableMetadataFields()}"
-																						itemLabel="#{msg[field]}"
-																						itemValue="#{field}" />
-																					<f:ajax event="change" render="question" execute="@this"></f:ajax>
-																				</h:selectOneMenu>
+					                                                                   <div class="multiselect-dropdown">
+					                                                                       <div class="multiselect-dropdown-trigger" data-toggle="option-dropdown">#{msg.select}</div>
+					                                                                       <ul>
+					                                                                           <ui:repeat var="field" value="#{question.availableMetadataFields}">
+					                                                                               <li>
+					                                                                                   <label>
+					                                                                                       <h:selectBooleanCheckbox  type="checkbox" value="#{question.metadataFieldSelection[field]}">
+					                                                                                           <f:ajax event="change" render="createCampaignForm:questions:#{status.index}:metadataFields" execute="@this"></f:ajax>
+					                                                                                       </h:selectBooleanCheckbox>
+					                                                                                       #{msg[field]}
+					                                                                                   </label>
+					                                                                               </li>
+					                                                                           </ui:repeat>
+					                                                                       </ul>
+					                                                                   </div>
+																				
+<!-- 																				<h:selectOneMenu id="adminCrowdAddCampaignQueryMetadata" styleClass="form-control" value="#{question.metadataToAdd}"> -->
+<!-- 																					<f:selectItem itemLabel="#{msg.select}" itemValue=""></f:selectItem> -->
+<!-- 																					<f:selectItems var="field" -->
+<!-- 																						value="#{question.getAvailableMetadataFields()}" -->
+<!-- 																						itemLabel="#{msg[field]}" -->
+<!-- 																						itemValue="#{field}" /> -->
+<!-- 																					<f:ajax event="change" render="question" execute="@this"></f:ajax> -->
+<!-- 																				</h:selectOneMenu> -->
 																				<span class="admin__form-help-text">#{msg.admin__help_crowdsourcing_question_metadata}</span>	
 																			</div>
 																			
