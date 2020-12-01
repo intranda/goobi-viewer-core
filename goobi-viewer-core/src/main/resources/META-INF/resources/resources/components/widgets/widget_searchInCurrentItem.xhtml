@@ -24,43 +24,22 @@
                             </h:inputText>
                             <div class="input-group-addon">
                                 <!-- Volumes -->
-                                <viewerComponent:commandButton styleClass="btn btn-default" ariaLabel="#{msg.search}" rendered="#{!activeDocumentBean.anchor and !activeDocumentBean.group}" action="#{searchBean.searchAdvanced}">
-                                    <f:setPropertyActionListener for="actionEvent" value="#{activeDocumentBean.persistentIdentifier}"
-                                        target="#{searchBean.advancedQueryGroups[0].queryItems[0].value}" />
-                                    <f:setPropertyActionListener for="actionEvent" value="PI_TOPSTRUCT" target="#{searchBean.advancedQueryGroups[0].queryItems[0].field}" />
-                                    <f:setPropertyActionListener for="actionEvent" value="IS" target="#{searchBean.advancedQueryGroups[0].queryItems[0].operator}" />
-                                    <f:setPropertyActionListener for="actionEvent" value="searchAdvanced_allFields" target="#{searchBean.advancedQueryGroups[0].queryItems[1].field}" />
-                                    <f:setPropertyActionListener for="actionEvent" value="AUTO" target="#{searchBean.advancedQueryGroups[0].queryItems[1].operator}" />
-                                    <f:setPropertyActionListener for="actionEvent" value="1" target="#{searchBean.activeSearchType}" />
-                                    <f:setPropertyActionListener for="actionEvent" value="#{searchBean.advancedQueryGroups[0].queryItems[1].value}"
-                                        target="#{searchBean.advancedQueryGroups[0].queryItems[1].value}" />
+                                <viewerComponent:commandButton styleClass="btn btn-default" ariaLabel="#{msg.search}" rendered="#{!activeDocumentBean.anchor and !activeDocumentBean.group}" 
+                                action="#{searchBean.searchInRecord('PI_TOPSTRUCT', activeDocumentBean.persistentIdentifier)}">
                                     <f:passThroughAttribute name="aria-label" value="#{msg.search}" />
                                     <i class="fa fa-search"/>
                                 </viewerComponent:commandButton>
                                 <!-- Anchors -->
-                                <viewerComponent:commandButton styleClass="btn btn-default" ariaLabel="#{msg.search}" rendered="#{activeDocumentBean.anchor}" action="#{searchBean.searchAdvanced}">
-                                    <f:setPropertyActionListener for="actionEvent" value="#{activeDocumentBean.persistentIdentifier}"
-                                        target="#{searchBean.advancedQueryGroups[0].queryItems[0].value}" />
-                                    <f:setPropertyActionListener for="actionEvent" value="PI_ANCHOR" target="#{searchBean.advancedQueryGroups[0].queryItems[0].field}" />
-                                    <f:setPropertyActionListener for="actionEvent" value="IS" target="#{searchBean.advancedQueryGroups[0].queryItems[0].operator}" />
-                                    <f:setPropertyActionListener for="actionEvent" value="searchAdvanced_allFields" target="#{searchBean.advancedQueryGroups[0].queryItems[1].field}" />
-                                    <f:setPropertyActionListener for="actionEvent" value="AUTO" target="#{searchBean.advancedQueryGroups[0].queryItems[1].operator}" />
-                                    <f:setPropertyActionListener for="actionEvent" value="1" target="#{searchBean.activeSearchType}" />
-                                    <f:setPropertyActionListener for="actionEvent" value="#{searchBean.advancedQueryGroups[0].queryItems[1].value}"
-                                        target="#{searchBean.advancedQueryGroups[0].queryItems[1].value}" />
+                                <viewerComponent:commandButton styleClass="btn btn-default" ariaLabel="#{msg.search}" rendered="#{activeDocumentBean.anchor}" 
+                                action="#{searchBean.searchInRecord('PI_ANCHOR', activeDocumentBean.persistentIdentifier)}">
+                                	<f:passThroughAttribute name="aria-label" value="#{msg.search}" />
+                                    <i class="fa fa-search"/>
                                 </viewerComponent:commandButton>
                                 <!-- Groups -->
-                                <viewerComponent:commandButton styleClass="btn btn-default" ariaLabel="#{msg.search}" rendered="#{activeDocumentBean.group}" action="#{searchBean.searchAdvanced}">
-                                    <f:setPropertyActionListener for="actionEvent" value="#{activeDocumentBean.persistentIdentifier}"
-                                        target="#{searchBean.advancedQueryGroups[0].queryItems[0].value}" />
-                                    <f:setPropertyActionListener for="actionEvent" value="#{activeDocumentBean.viewManager.topDocument.groupIdField}"
-                                        target="#{searchBean.advancedQueryGroups[0].queryItems[0].field}" />
-                                    <f:setPropertyActionListener for="actionEvent" value="IS" target="#{searchBean.advancedQueryGroups[0].queryItems[0].operator}" />
-                                    <f:setPropertyActionListener for="actionEvent" value="searchAdvanced_allFields" target="#{searchBean.advancedQueryGroups[0].queryItems[1].field}" />
-                                    <f:setPropertyActionListener for="actionEvent" value="AUTO" target="#{searchBean.advancedQueryGroups[0].queryItems[1].operator}" />
-                                    <f:setPropertyActionListener for="actionEvent" value="1" target="#{searchBean.activeSearchType}" />
-                                    <f:setPropertyActionListener for="actionEvent" value="#{searchBean.advancedQueryGroups[0].queryItems[1].value}"
-                                        target="#{searchBean.advancedQueryGroups[0].queryItems[1].value}" />
+                                <viewerComponent:commandButton styleClass="btn btn-default" ariaLabel="#{msg.search}" rendered="#{activeDocumentBean.group}" 
+                                action="#{searchBean.searchInRecord(activeDocumentBean.viewManager.topDocument.groupIdField, activeDocumentBean.persistentIdentifier)}">
+                                	<f:passThroughAttribute name="aria-label" value="#{msg.search}" />
+                                    <i class="fa fa-search"/>
                                 </viewerComponent:commandButton>
                             </div>
                         </div>

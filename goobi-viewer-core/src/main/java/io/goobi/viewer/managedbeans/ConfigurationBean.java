@@ -1494,4 +1494,12 @@ public class ConfigurationBean implements Serializable {
     public boolean isAnonymousUserEmailAddressValid() {
         return EmailValidator.validateEmailAddress(DataManager.getInstance().getConfiguration().getAnonymousUserEmailAddress());
     }
+    
+    /**
+     * 
+     * @return true if default sorting field is 'RANDOM'; false otherwise
+     */
+    public boolean isDefaultSortFieldRandom() {
+        return "RANDOM".equals(DataManager.getInstance().getConfiguration().getDefaultSortField());
+    }
 }

@@ -137,6 +137,7 @@
 		<smtpSenderAddress>smtpSenderAddress_value</smtpSenderAddress>
 		<smtpSenderName>smtpSenderName_value</smtpSenderName>
 		<smtpSecurity>smtpSecurity_value</smtpSecurity>
+		<smtpPort>25</smtpPort>
 		<feedbackEmailAddress>feedbackEmailAddress_value
 		</feedbackEmailAddress>
 		
