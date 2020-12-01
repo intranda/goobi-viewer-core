@@ -52,7 +52,7 @@
                                 <div class="toc__list-expandable-all clearfix">
                                     <ul>
                                         <li>
-                                            <h:commandLink action="#{tectonicsBean.hierarchy.collapseAll}" title="#{msg.allClose}">
+                                            <h:commandLink action="#{tectonicsBean.tectonicsTree.collapseAll}" title="#{msg.allClose}">
                                                 <i class="fa fa-minus-square-o" aria-hidden="true"></i>
                                                 <f:passThroughAttribute name="data-toggle" value="tooltip" />
                                                 <f:passThroughAttribute name="data-placement" value="top" />
@@ -61,7 +61,7 @@
                                             </h:commandLink>
                                         </li>
                                         <li>
-                                            <h:commandLink action="#{tectonicsBean.hierarchy.expandAll}" title="#{msg.allOpen}">
+                                            <h:commandLink action="#{tectonicsBean.tectonicsTree.expandAll}" title="#{msg.allOpen}">
                                                 <i class="fa fa-plus-square-o" aria-hidden="true"></i>
                                                 <f:passThroughAttribute name="data-toggle" value="tooltip" />
                                                 <f:passThroughAttribute name="data-placement" value="top" />
