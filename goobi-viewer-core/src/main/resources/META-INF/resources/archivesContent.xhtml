@@ -153,12 +153,13 @@
                         <h:panelGroup id="metadataGroup">
                         
                             <!-- METADATA -->
-                            <c:forEach var="field" items="#{tectonicsBean.tectonicsTree.selectedEntry.allAreaLists}">
+                            <!-- Replacing this with c:forEach will result in getAllAreaLists() being called for each iteration -->
+                            <ui:repeat var="field" value="#{tectonicsBean.tectonicsTree.selectedEntry.allAreaLists}">
                                 <h:outputText rendered="#{field.filled and field.visible}">
                                     <!-- TODO bold via CSS -->
                                     <br /><strong>#{field.name}:</strong> #{field.value}
                                 </h:outputText>
-                            </c:forEach>
+                            </ui:repeat>
                         
                             <!-- ASSOCIATED RECORD -->
                             <h:outputLink rendered="#{tectonicsBean.tectonicsTree.selectedEntry.associatedRecordPi != ''}" target="_blank"
@@ -176,7 +177,6 @@
 
 			</div>
         </f:view>
-        
     </ui:define>
 
     <!-- SIDEBAR -->
