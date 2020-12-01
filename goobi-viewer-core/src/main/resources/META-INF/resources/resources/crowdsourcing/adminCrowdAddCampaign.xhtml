@@ -335,7 +335,8 @@
 																				<h:panelGroup id="metadataFields" layout="block">
 																					<ui:repeat id="metadataFieldLoop" var="field"
 																						value="#{question.selectedMetadataFields}">
-																						<h:commandLink action="#{question.removeMetadataField(field)}"><div class="badge badge-success">#{msg[field]}<f:ajax render="createCampaignForm:questions:#{status.index}:question"></f:ajax> <i class="fa fa-trash-o" aria-hidden="true"></i></div></h:commandLink>
+																						<!-- NON FUNCTIONAL LINK -->
+																						<h:commandLink styleClass="-defaultCursor" action="#{question.removeMetadataField(field)}"><div class="badge badge-info">#{msg[field]}<f:ajax render="createCampaignForm:questions:#{status.index}:question"></f:ajax></div></h:commandLink>
 																					</ui:repeat>
 																				</h:panelGroup>
 <!-- 																				<viewerComponent:multiselectDropdown -->
@@ -623,13 +624,12 @@
 					                   	</div>
 					                   	
 					                   	<!-- REVIEW SETTING-->
-										<div class="admin__default-block crowdsourcing-annotations__review-settings">
-											<h:panelGroup id="reviewSettingsGroup" layout="block" styleClass="crowdsourcing-annotations__sidebar-review-settings">
+											<h:panelGroup id="reviewSettingsGroup" layout="block" styleClass="admin__default-block crowdsourcing-annotations__sidebar-review-settings">
 												<h3>#{msg.label__crowdsourcing_review}</h3>
 												<div class="admin__form-help-text in mb-2">
 												#{msg.admin__crowdsourcing_review__help}
 												</div>
-												<div class="mb-1 d-flex justify-content-between">
+												<div class="d-flex justify-content-between crowdsourcing-annotations__sidebar-review-dropdown">
 												<h:selectOneMenu
                                                             value="#{crowdsourcingBean.selectedCampaign.reviewMode}"
                                                             styleClass="form-control mt-2"
@@ -645,8 +645,8 @@
                                                 </div>
 												<c:if test="#{crowdsourcingBean.selectedCampaign.reviewMode == 'LIMIT_REVIEW_TO_USERGROUP'}">
 												<div class="form-group form-row admin__sidebar-divider-top">
-													<label>#{msg.admin__crowdsourcing_limit_review_to_group}: </label>
-													<div>
+													<label class="col-12">#{msg.admin__crowdsourcing_limit_review_to_group}: </label>
+													<div class="col-12">
 														<h:selectOneMenu
 		                                                    value="#{crowdsourcingBean.selectedCampaign.reviewerUserGroup}"
 		                                                    styleClass="form-control"
@@ -659,7 +659,7 @@
 	                                                	</h:selectOneMenu>		
 													</div>
                                                     <c:if test="#{crowdsourcingBean.selectedCampaign.reviewerUserGroup != null}">
-                                                     <div class="mt-1 d-flex justify-content-start crowdsourcing-annotations__sidebar-owner">
+                                                     <div class="col-12 mt-1 d-flex justify-content-start crowdsourcing-annotations__sidebar-owner">
                                                       <label for="campaignReviewerOwnerName" class="pr-1 mb-0">#{msg.owner}:</label>
                                                       <h:outputLink id="campaignReviewerOwnerName"
                                                           value="#{navigationHelper.applicationUrl}admin/users/edit/#{crowdsourcingBean.selectedCampaign.reviewerUserGroup.owner.id}/">
@@ -670,7 +670,6 @@
                                                 </div>
 												</c:if>
 											</h:panelGroup>
-										</div>
 										
 
 					                   	
