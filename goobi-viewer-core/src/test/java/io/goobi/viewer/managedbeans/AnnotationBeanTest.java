@@ -66,7 +66,6 @@ public class AnnotationBeanTest extends AbstractDatabaseEnabledTest {
     public void testGetAllConfiguredAnnotations() {
         List<PersistentAnnotation> firstPageAnnotations = bean.getLazyModelAnnotations().getPaginatorList();   
         
-        firstPageAnnotations.stream().forEach(System.out::println);
 //        firstPageAnnotations.stream().map(anno -> anno.getGeneratorId()).forEach(System.out::println);
 //        firstPageAnnotations.stream().map(anno -> bean.getOwningCampaign(anno).orElse(null)).filter(c -> c != null).map(c -> c.getId()).forEach(System.out::println);
         

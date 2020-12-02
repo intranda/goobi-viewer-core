@@ -2293,6 +2293,10 @@ public class JPADAOTest extends AbstractDatabaseEnabledTest {
         campaign.setId(2L);
         campaign.setSolrQuery("*:*");
         campaign.setDateCreated(LocalDateTime.now());
+        
+        Campaign campaign2 = DataManager.getInstance().getDao().getCampaign(2L);
+
+        
         Assert.assertTrue(DataManager.getInstance().getDao().updateCampaign(campaign));
         campaign = DataManager.getInstance().getDao().getCampaign(2L);
         Assert.assertEquals("Test titel", campaign.getTitle());
@@ -2306,9 +2310,7 @@ public class JPADAOTest extends AbstractDatabaseEnabledTest {
         LogMessage message = new LogMessage("Test", 1l, new Date(), null);
         campaign.addLogMessage(message, "PI_10");
         Assert.assertEquals("Test", campaign.getLogMessages().get(0).getMessage());
-        
-        DataManager.getInstance().getDao().updateCampaign(campaign);
-        
+                
         DataManager.getInstance().getDao().updateCampaign(campaign);
         campaign = DataManager.getInstance().getDao().getCampaign(2L);
         Assert.assertEquals("Test", campaign.getLogMessages().get(0).getMessage());
