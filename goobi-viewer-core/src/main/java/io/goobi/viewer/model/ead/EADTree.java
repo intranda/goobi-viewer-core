@@ -23,7 +23,10 @@ import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import de.intranda.monitoring.timer.Time;
 import io.goobi.viewer.controller.DataManager;
+import io.goobi.viewer.managedbeans.TectonicsBean;
+import io.goobi.viewer.managedbeans.utils.BeanUtils;
 
 /**
  * Table of contents and associated functionality for a record.
@@ -102,13 +105,15 @@ public class EADTree implements Serializable {
      * @return a {@link java.util.List} object.
      */
     public List<EadEntry> getTreeViewForGroup(String group) {
-        if (!treeBuilt) {
-            int visibleLevel = DataManager.getInstance().getConfiguration().getSidebarTocInitialCollapseLevel();
-            int collapseThreshold = DataManager.getInstance().getConfiguration().getSidebarTocCollapseLengthThreshold();
-            int lowestLevelToCollapse = DataManager.getInstance().getConfiguration().getSidebarTocLowestLevelToCollapseForLength();
-            buildTree(group, visibleLevel, collapseThreshold, lowestLevelToCollapse);
+        try (Time t = DataManager.getInstance().getTiming().takeTime("get tree view for group")){            
+            if (!treeBuilt) {
+                int visibleLevel = DataManager.getInstance().getConfiguration().getSidebarTocInitialCollapseLevel();
+                int collapseThreshold = DataManager.getInstance().getConfiguration().getSidebarTocCollapseLengthThreshold();
+                int lowestLevelToCollapse = DataManager.getInstance().getConfiguration().getSidebarTocLowestLevelToCollapseForLength();
+                buildTree(group, visibleLevel, collapseThreshold, lowestLevelToCollapse);
+            }
+            return getViewForGroup(group);
         }
-        return getViewForGroup(group);
     }
 
     /**

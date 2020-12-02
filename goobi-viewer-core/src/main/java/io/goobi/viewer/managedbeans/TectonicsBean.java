@@ -29,6 +29,8 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import de.intranda.monitoring.timer.Time;
+import de.intranda.monitoring.timer.TimeAnalysis;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.messages.ViewerResourceBundle;
 import io.goobi.viewer.model.ead.BasexEADParser;
@@ -52,7 +54,7 @@ public class TectonicsBean implements Serializable {
     private EADTree tectonicsTree;
 
     private String searchString;
-
+    
     /**
      * Empty constructor.
      */
@@ -65,7 +67,7 @@ public class TectonicsBean implements Serializable {
      */
     @PostConstruct
     public void init() {
-        try {
+        try(Time t = DataManager.getInstance().getTiming().takeTime("load ead database")) {
             eadParser = new BasexEADParser(
                     DataManager.getInstance().getConfiguration().getConfigLocalPath()
                             + CONFIG_FILE_NAME);
@@ -88,12 +90,14 @@ public class TectonicsBean implements Serializable {
 
         EADTree h = tectonicsTree;
         if (h == null) {
-            synchronized (lock) {
-                // Another thread might have initialized hierarchy by now
-                h = tectonicsTree;
-                if (h == null) {
-                    h = generateHierarchy();
-                    tectonicsTree = h;
+            try (Time t = DataManager.getInstance().getTiming().takeTime("generate tree") ){                
+                synchronized (lock) {
+                    // Another thread might have initialized hierarchy by now
+                    h = tectonicsTree;
+                    if (h == null) {
+                        h = generateHierarchy();
+                        tectonicsTree = h;
+                    }
                 }
             }
         }
@@ -171,22 +175,24 @@ public class TectonicsBean implements Serializable {
             logger.error("EAD parser not intialized");
             return Collections.emptyList();
         }
-
-        eadParser.search(identifier);
-        if (eadParser.getFlatEntryList().isEmpty()) {
-            return Collections.emptyList();
+        
+        try (Time t = DataManager.getInstance().getTiming().takeTime("getTectonicsHierarchyForIdentifier")){
+            eadParser.search(identifier);
+            if (eadParser.getFlatEntryList().isEmpty()) {
+                return Collections.emptyList();
+            }
+            
+            if (eadParser.getFlatEntryList().size() == 1) {
+                return Collections.singletonList(eadParser.getFlatEntryList().get(0));
+            }
+            
+            List<EadEntry> ret = new ArrayList<>(eadParser.getFlatEntryList().size() - 1);
+            for (EadEntry entry : eadParser.getFlatEntryList().subList(1, eadParser.getFlatEntryList().size())) {
+                ret.add(entry);
+            }
+            
+            return eadParser.getFlatEntryList().subList(1, eadParser.getFlatEntryList().size());
         }
-
-        if (eadParser.getFlatEntryList().size() == 1) {
-            return Collections.singletonList(eadParser.getFlatEntryList().get(0));
-        }
-
-        List<EadEntry> ret = new ArrayList<>(eadParser.getFlatEntryList().size() - 1);
-        for (EadEntry entry : eadParser.getFlatEntryList().subList(1, eadParser.getFlatEntryList().size())) {
-            ret.add(entry);
-        }
-
-        return eadParser.getFlatEntryList().subList(1, eadParser.getFlatEntryList().size());
     }
 
     /**
@@ -271,4 +277,5 @@ public class TectonicsBean implements Serializable {
         }
 
     }
+
 }

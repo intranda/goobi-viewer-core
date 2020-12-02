@@ -9,6 +9,7 @@ import org.apache.solr.common.SolrDocument;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import de.intranda.monitoring.timer.Time;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.SolrConstants;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
@@ -151,6 +152,7 @@ public class EadEntry {
     }
 
     public void findAssociatedRecordPi() throws PresentationException, IndexUnreachableException {
+        try(Time t = DataManager.getInstance().getTiming().takeTime("findAssociatedRecordPi")) {
         if (id == null) {
             associatedRecordPi = "";
             return;
@@ -164,6 +166,7 @@ public class EadEntry {
         }
         if (associatedRecordPi == null) {
             associatedRecordPi = "";
+        }
         }
     }
 

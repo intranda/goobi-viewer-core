@@ -15,13 +15,16 @@
  */
 package io.goobi.viewer.api.rest.v1;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 import javax.inject.Inject;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 
-import io.goobi.viewer.Version;
+import de.intranda.monitoring.timer.TimingStatistics;
 import io.goobi.viewer.api.rest.AbstractApiUrlManager;
 import io.goobi.viewer.api.rest.AbstractApiUrlManager.ApiInfo;
 import io.goobi.viewer.controller.DataManager;
@@ -44,5 +47,14 @@ public class ApplicationResource {
         info.version = "v1";
         info.specification = urls.getApiUrl() + "/openapi.json";
         return info;
+    }
+    
+    @GET
+    @Path("timing")
+    @Produces(MediaType.TEXT_PLAIN)
+    public String getTimeAnalysis() {
+        List<TimingStatistics> times = DataManager.getInstance().getTiming().geStatistics();
+        DataManager.getInstance().resetTiming();
+        return times.stream().map(TimingStatistics::toString).collect(Collectors.joining("\n\n"));
     }
 }
