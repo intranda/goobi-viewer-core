@@ -2295,7 +2295,7 @@ public class JPADAOTest extends AbstractDatabaseEnabledTest {
         campaign.addLogMessage(message, "PI_10");
         Assert.assertEquals("Test", campaign.getLogMessages().get(0).getMessage());
         
-        DataManager.getInstance().getDao().updateCampaign(campaign);
+//        DataManager.getInstance().getDao().updateCampaign(campaign);
         campaign = DataManager.getInstance().getDao().getCampaign(2L);
         Assert.assertEquals("Test", campaign.getLogMessages().get(0).getMessage());
 

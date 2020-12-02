@@ -78,7 +78,7 @@ public class QuestionTest extends AbstractDatabaseEnabledTest {
         Campaign campaign = DataManager.getInstance().getDao().getCampaign(1l);
         Question question = campaign.getQuestions().stream().filter(q -> q.getId().equals(1l)).findFirst().orElse(null);
         question.getText().setText("TEST", Locale.GERMAN);
-        DataManager.getInstance().getDao().updateCampaign(campaign);
+//        DataManager.getInstance().getDao().updateCampaign(campaign);
         
         campaign = DataManager.getInstance().getDao().getCampaign(1l);
         question = campaign.getQuestions().stream().filter(q -> q.getId().equals(1l)).findFirst().orElse(null);
