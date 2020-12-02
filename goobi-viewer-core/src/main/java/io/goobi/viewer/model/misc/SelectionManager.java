@@ -68,7 +68,6 @@ public class SelectionManager<T> implements Map<T, Boolean> {
     }
 
     public Boolean get(Object item) {
-        System.out.println("Get " + item);
         if(isSelectAll()) {
             return Boolean.TRUE;
         } else {            
@@ -77,7 +76,6 @@ public class SelectionManager<T> implements Map<T, Boolean> {
     }
 
     public Boolean put(Object item, Boolean selected) {
-        System.out.println("Put " + item + ": " + selected);
         try {
             return setSelected((T) item, selected);
         } catch (ClassCastException e) {
