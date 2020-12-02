@@ -3508,7 +3508,7 @@ public class JPADAO implements IDAO {
             try {
                 Campaign o = em.getReference(Campaign.class, id);
                 if (o != null) {
-                    //                    updateFromDatabase(id, Campaign.class);
+//                    em.refresh(o);
                 }
                 return o;
             } catch (EntityNotFoundException e) {
@@ -3597,7 +3597,7 @@ public class JPADAO implements IDAO {
                 c.resetSolrQueryResults();
                 return true;
             } catch (RollbackException e) {
-                return false;
+                throw new PersistenceException("Failed to persist campaign " + campaign, e);
             }
         }
     }

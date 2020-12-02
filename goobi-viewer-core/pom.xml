@@ -75,7 +75,7 @@
 		<alto.version>1.5.5</alto.version>
 		<contentserver.version>2.5.0</contentserver.version>
 		<tei-conversion.version>1.2.0</tei-conversion.version>
-		<iiif-api-model.version>1.9.2</iiif-api-model.version>
+		<iiif-api-model.version>1.10.0-SNAPSHOT</iiif-api-model.version>
 		<normdataimporter.version>1.5.2</normdataimporter.version>
 
 		<!-- other libraries -->
@@ -94,7 +94,7 @@
         <eclipselink.version>2.7.7</eclipselink.version>
 		<h2.version>1.4.200</h2.version>
 		<httpclient.version>4.5.13</httpclient.version>
-		<httpcore.version>4.4.13</httpcore.version>
+		<httpcore.version>4.4.14</httpcore.version>
 		<httpunit.version>1.7.3</httpunit.version>
 		<icu.version>68.1</icu.version>
 		<inject.version>1</inject.version>

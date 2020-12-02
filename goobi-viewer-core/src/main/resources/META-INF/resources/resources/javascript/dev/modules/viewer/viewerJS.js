@@ -42,14 +42,16 @@ var viewerJS = (function () {
         notFoundImage: '',
         activateDrilldownFilter: true
     };
+    
 
     var viewer = {};
+    viewer.initialized = new rxjs.Subject();
 
     viewer.init = function (config) {
         if (_debug) {
-            console.log('Initializing: viewerJS.init');
-            console.log('--> config = ', config);
         }
+        console.log('Initializing: viewerJS.init');
+        console.log('--> config = ', config);
 
         $.extend(true, _defaults, config);
         if(_debug)console.log("init ", _defaults);
@@ -299,7 +301,14 @@ var viewerJS = (function () {
 		}).blur(function(){
 			$('.widget-chronology-slider__item-input[data-toggle="tooltip"]').tooltip('enable');
 		});
+		
+		//init empty translator instance
+	    var restApiURL = restURL.replace("/rest", "/api/v1");
+	    viewer.translator = new viewerJS.Translator(restApiURL, currentLang);
      
+		viewer.initialized.next();
+		viewer.initialized.complete();
+		
 	// EOL viewerJS function
     };
 

@@ -604,6 +604,7 @@ public class TableDataProvider<T> implements Serializable {
      */
     void resetTotalNumberOfRecords() {
         source.resetTotalNumberOfRecords();
+        resetCurrentList();
     }
 
     /**

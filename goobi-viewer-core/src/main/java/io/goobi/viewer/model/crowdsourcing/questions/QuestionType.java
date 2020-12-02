@@ -26,10 +26,7 @@ public enum QuestionType {
     PLAINTEXT,
     RICHTEXT,
     GEOLOCATION_POINT,
-    NORMDATA
-    /**
-     * Not implemented yet DATE_PICKER, GEOLOCATION_AREA, TRANSCRIPTION, KEY_VALUE_LIST
-     **/
-    ;
+    NORMDATA,
+    METADATA;
 
 }

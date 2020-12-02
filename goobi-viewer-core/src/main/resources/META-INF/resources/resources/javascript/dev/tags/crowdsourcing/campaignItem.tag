@@ -27,17 +27,19 @@
 					<richtextQuestion if="{question.questionType == 'RICHTEXT'}" question="{question}" item="{this.item}" index="{index}"></richtextQuestion>
 					<geoLocationQuestion if="{question.questionType == 'GEOLOCATION_POINT'}" question="{question}" item="{this.item}" index="{index}"></geoLocationQuestion>
 					<authorityResourceQuestion if="{question.questionType == 'NORMDATA'}" question="{question}" item="{this.item}" index="{index}"></authorityResourceQuestion>
+					<metadataQuestion if="{question.questionType == 'METADATA'}" question="{question}" item="{this.item}" index="{index}"></metadataQuestion>
 				</div>
 			</div>
 			<campaignItemLog if="{item.showLog}" item="{item}"></campaignItemLog>
 			<div if="{!item.isReviewMode()}" class="crowdsourcing-annotations__options-wrapper crowdsourcing-annotations__options-wrapper-annotate">
 				<button onclick="{saveAnnotations}" class="crowdsourcing-annotations__options-wrapper__option btn btn--default" id="save">{Crowdsourcing.translate("button__save")}</button>
 				<div>{Crowdsourcing.translate("label__or")}</div>
-				<button onclick="{submitForReview}" class="options-wrapper__option btn btn--success" id="review">{Crowdsourcing.translate("action__submit_for_review")}</button>
+				<button if="{item.isReviewActive()}" onclick="{submitForReview}" class="options-wrapper__option btn btn--success" id="review">{Crowdsourcing.translate("action__submit_for_review")}</button>
+				<button if="{!item.isReviewActive()}" onclick="{acceptReview}" class="options-wrapper__option btn btn--success" id="review">{Crowdsourcing.translate("action__accept_review")}</button>
 				<div>{Crowdsourcing.translate("label__or")}</div>
 				<button if="{this.opts.nextitemurl}" onclick="{skipItem}" class="options-wrapper__option btn btn--link" id="skip">{Crowdsourcing.translate("action__skip_item")}</button>
 			</div>
-			<div if="{item.isReviewMode()}" class="crowdsourcing-annotations__options-wrapper crowdsourcing-annotations__options-wrapper-review">
+			<div if="{item.isReviewActive() && item.isReviewMode()}" class="crowdsourcing-annotations__options-wrapper crowdsourcing-annotations__options-wrapper-review">
 				<button onclick="{acceptReview}" class="options-wrapper__option btn btn--success" id="accept">{Crowdsourcing.translate("action__accept_review")}</button>
 				<div>{Crowdsourcing.translate("label__or")}</div>
 				<button onclick="{rejectReview}" class="options-wrapper__option btn btn--danger" id="reject">{Crowdsourcing.translate("action__reject_review")}</button>

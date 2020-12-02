@@ -547,7 +547,7 @@ public class AdminBean implements Serializable {
                 Messages.error("userGroup_memberAddFailure");
             }
         }
-        setCurrentUserRole(null);
+        resetCurrentUserRoleAction();
     }
 
     /**
