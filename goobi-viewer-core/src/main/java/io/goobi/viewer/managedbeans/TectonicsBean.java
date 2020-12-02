@@ -32,7 +32,6 @@ import org.slf4j.LoggerFactory;
 import de.intranda.monitoring.timer.Time;
 import de.intranda.monitoring.timer.TimeAnalysis;
 import io.goobi.viewer.controller.DataManager;
-import io.goobi.viewer.messages.ViewerResourceBundle;
 import io.goobi.viewer.model.ead.BasexEADParser;
 import io.goobi.viewer.model.ead.EADTree;
 import io.goobi.viewer.model.ead.EadEntry;
@@ -84,7 +83,7 @@ public class TectonicsBean implements Serializable {
      */
     public EADTree getTectonicsTree() {
         // logger.trace("getTectonicsTree");
-        if (!eadParser.isDatabaseLoaded()) {
+        if (eadParser == null || !eadParser.isDatabaseLoaded()) {
             return null;
         }
 
@@ -102,8 +101,6 @@ public class TectonicsBean implements Serializable {
             }
         }
 
-        //        tectonicsTree =  generateHierarchy();
-
         return tectonicsTree;
     }
 
@@ -112,7 +109,7 @@ public class TectonicsBean implements Serializable {
      * @return
      */
     EADTree generateHierarchy() {
-        if (eadParser == null) {
+        if (eadParser == null || !eadParser.isDatabaseLoaded()) {
             return null;
         }
 
@@ -131,7 +128,7 @@ public class TectonicsBean implements Serializable {
      * @param element a {@link io.goobi.viewer.model.toc.TOCElement} object.
      */
     public void setChildrenVisible(EadEntry element) {
-        logger.trace("setChildrenVisible");
+        // logger.trace("setChildrenVisible");
         if (tectonicsTree == null) {
             return;
         }
@@ -149,7 +146,7 @@ public class TectonicsBean implements Serializable {
      * @param element a {@link io.goobi.viewer.model.toc.TOCElement} object.
      */
     public void setChildrenInvisible(EadEntry element) {
-        logger.trace("setChildrenInvisible");
+        // logger.trace("setChildrenInvisible");
         if (tectonicsTree == null) {
             return;
         }
@@ -211,8 +208,27 @@ public class TectonicsBean implements Serializable {
         return "";
     }
 
+    /**
+     * 
+     * @return
+     */
     public String searchAction() {
         logger.trace("searchAction: {}", searchString);
+        if (eadParser == null || !eadParser.isDatabaseLoaded() || tectonicsTree == null) {
+            logger.warn("Tree not loaded, cannot search.");
+            return "";
+        }
+
+        eadParser.search(searchString);
+        List<EadEntry> results = eadParser.getFlatEntryList();
+        if (results == null || results.isEmpty()) {
+            return "";
+        }
+
+        tectonicsTree.collapseAll(true);
+        selectAndExpandEntry(results);
+        logger.trace("Found entry: {}", tectonicsTree.getSelectedEntry().getLabel());
+
         return "";
     }
 
@@ -227,6 +243,7 @@ public class TectonicsBean implements Serializable {
      * @param searchString the searchString to set
      */
     public void setSearchString(String searchString) {
+        logger.trace("setSearchString: {}", searchString);
         this.searchString = searchString;
     }
 
@@ -247,6 +264,7 @@ public class TectonicsBean implements Serializable {
      * @param id
      */
     public void setSelectedEntryId(String id) {
+        logger.trace("setSelectedEntryId: {}", id);
         if (tectonicsTree == null || eadParser == null) {
             return;
         }
@@ -265,17 +283,30 @@ public class TectonicsBean implements Serializable {
             return;
         }
 
-        for (int i = 0; i < results.size(); ++i) {
-            EadEntry entry = results.get(i);
-            if (i == results.size() - 1) {
+        selectAndExpandEntry(results);
+    }
+
+    /**
+     * 
+     * @param hierarchy
+     */
+    void selectAndExpandEntry(List<EadEntry> hierarchy) {
+        if (hierarchy == null || hierarchy.isEmpty() || tectonicsTree == null) {
+            return;
+        }
+
+        logger.trace("hierarchy size: {}", hierarchy.size());
+        for (int i = 0; i < hierarchy.size(); ++i) {
+            EadEntry entry = hierarchy.get(i);
+            if (i == hierarchy.size() - 1) {
                 // Select last node
                 tectonicsTree.setSelectedEntry(entry);
             } else {
                 // Expand all parent nodes
+                entry.setExpanded(true);
                 setChildrenVisible(entry);
             }
         }
-
     }
 
 }

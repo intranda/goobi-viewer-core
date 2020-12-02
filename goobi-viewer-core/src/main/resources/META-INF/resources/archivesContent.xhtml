@@ -37,8 +37,11 @@
                             <div class="search-standard__input-autocomplete">
                                 <h:inputText id="tectonicsSearchField" inputStyleClass="-no-outline -active-border"
                                     value="#{tectonicsBean.searchString}" immediate="true">
-                                    <f:ajax listener="#{tectonicsBean.searchAction}" render="tocTreeGroup" />
+                                    <f:passThroughAttribute name="placeholder" value="#{msg.searchFieldDemoText}" />
                                 </h:inputText>
+                                <h:commandButton style="visibility:hidden" value="#{msg.search}" action="#{tectonicsBean.searchAction}">
+<!--                                   <f:ajax render="tocForm" /> -->
+                                </h:commandButton>
                             </div>
                         </div>
 
@@ -52,7 +55,7 @@
                                 <div class="toc__list-expandable-all clearfix">
                                     <ul>
                                         <li>
-                                            <h:commandLink action="#{tectonicsBean.hierarchy.collapseAll}" title="#{msg.allClose}">
+                                            <h:commandLink action="#{tectonicsBean.tectonicsTree.collapseAll}" title="#{msg.allClose}">
                                                 <i class="fa fa-minus-square-o" aria-hidden="true"></i>
                                                 <f:passThroughAttribute name="data-toggle" value="tooltip" />
                                                 <f:passThroughAttribute name="data-placement" value="top" />
@@ -61,7 +64,7 @@
                                             </h:commandLink>
                                         </li>
                                         <li>
-                                            <h:commandLink action="#{tectonicsBean.hierarchy.expandAll}" title="#{msg.allOpen}">
+                                            <h:commandLink action="#{tectonicsBean.tectonicsTree.expandAll}" title="#{msg.allOpen}">
                                                 <i class="fa fa-plus-square-o" aria-hidden="true"></i>
                                                 <f:passThroughAttribute name="data-toggle" value="tooltip" />
                                                 <f:passThroughAttribute name="data-placement" value="top" />
@@ -104,14 +107,14 @@
                                                                 <!-- TODO icon instead of descriptionLevel -->
                                                                 #{entry.descriptionLevel}
                                                                 <!-- TODO highlight selected entry via CSS -->
-                                                                <h:outputLink rendered="#{entry == tectonicsBean.tectonicsTree.selectedEntry}"
+                                                                <h:outputLink rendered="#{entry.id == tectonicsBean.tectonicsTree.selectedEntry.id}"
                                                                     value="#{navigationHelper.applicationUrl}archives/#{entry.id}/">
-                                                                    <strong>#{entry.label} (#{entry.hierarchy})</strong>
+                                                                    <strong>#{entry.label}</strong>
                                                                     <f:ajax render="hiearchyGroup metadataGroup" />
                                                                 </h:outputLink>
-                                                                <h:outputLink rendered="#{entry != tectonicsBean.tectonicsTree.selectedEntry}"
+                                                                <h:outputLink rendered="#{entry.id != tectonicsBean.tectonicsTree.selectedEntry.id}"
                                                                     value="#{navigationHelper.applicationUrl}archives/#{entry.id}/">
-                                                                    #{entry.label} (#{entry.hierarchy})
+                                                                    #{entry.label}
                                                                     <f:ajax render="hiearchyGroup metadataGroup" />
                                                                 </h:outputLink>
                                                             </div>
@@ -139,7 +142,7 @@
                                 value="#{tectonicsBean.getTectonicsHierarchyForIdentifier(tectonicsBean.tectonicsTree.selectedEntry.id)}">
                                 <!-- TODO proper level tag -->
                                 <!-- TODO bold via CSS -->
-                                #{msg[entry.descriptionLevel]}: <strong>#{entry.label}</strong>
+                                <h:outputText rendered="#{entry.descriptionLevel != null}" value="#{msg[entry.descriptionLevel]}:" /> <strong>#{entry.label}</strong>
                                 <br /><br />
                             </ui:repeat>
                         </h:panelGroup>
@@ -150,12 +153,13 @@
                         <h:panelGroup id="metadataGroup">
                         
                             <!-- METADATA -->
-                            <c:forEach var="field" items="#{tectonicsBean.tectonicsTree.selectedEntry.allAreaLists}">
+                            <!-- Replacing this with c:forEach will result in getAllAreaLists() being called for each iteration -->
+                            <ui:repeat var="field" value="#{tectonicsBean.tectonicsTree.selectedEntry.allAreaLists}">
                                 <h:outputText rendered="#{field.filled and field.visible}">
                                     <!-- TODO bold via CSS -->
                                     <br /><strong>#{field.name}:</strong> #{field.value}
                                 </h:outputText>
-                            </c:forEach>
+                            </ui:repeat>
                         
                             <!-- ASSOCIATED RECORD -->
                             <h:outputLink rendered="#{tectonicsBean.tectonicsTree.selectedEntry.associatedRecordPi != ''}" target="_blank"
@@ -173,7 +177,6 @@
 
 			</div>
         </f:view>
-        
     </ui:define>
 
     <!-- SIDEBAR -->

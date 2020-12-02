@@ -136,18 +136,23 @@ public class EadEntry {
         }
     }
 
-    public List<EadEntry> getAsFlatList() {
+    /**
+     * 
+     * @param ignoreDisplayChildren
+     * @return
+     */
+    public List<EadEntry> getAsFlatList(boolean ignoreDisplayChildren) {
         List<EadEntry> list = new LinkedList<>();
         list.add(this);
-        //        if (displayChildren) {
-        if (subEntryList != null && !subEntryList.isEmpty()) {
-            setHasChild(true);
-            for (EadEntry ds : subEntryList) {
-                list.addAll(ds.getAsFlatList());
-                // logger.trace("ID: {}, level {}", ds.getId(), ds.getHierarchy());
+        if (displayChildren || ignoreDisplayChildren) {
+            if (subEntryList != null && !subEntryList.isEmpty()) {
+                setHasChild(true);
+                for (EadEntry ds : subEntryList) {
+                    list.addAll(ds.getAsFlatList(ignoreDisplayChildren));
+                    // logger.trace("ID: {}, level {}", ds.getId(), ds.getHierarchy());
+                }
             }
         }
-        //        }
         return list;
     }
 
@@ -469,6 +474,7 @@ public class EadEntry {
     }
 
     public List<EadMetadataField> getAllAreaLists() {
+        logger.trace("getAllAreaLists ({})", id);
         List<EadMetadataField> ret = new ArrayList<>(getIdentityStatementAreaList().size()
                 + getContextAreaList().size()
                 + getContentAndStructureAreaAreaList().size()
@@ -484,6 +490,7 @@ public class EadEntry {
         ret.addAll(getNotesAreaList());
         ret.addAll(getDescriptionControlAreaList());
 
+        logger.trace("getAllAreaLists END");
         return ret;
     }
 
