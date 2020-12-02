@@ -74,15 +74,20 @@ public class QuestionTest extends AbstractDatabaseEnabledTest {
     }
 
     @Test
-    public void persistTranslation() throws DAOException {
-        Campaign campaign = DataManager.getInstance().getDao().getCampaign(1l);
-        Question question = campaign.getQuestions().stream().filter(q -> q.getId().equals(1l)).findFirst().orElse(null);
-        question.getText().setText("TEST", Locale.GERMAN);
-        DataManager.getInstance().getDao().updateCampaign(campaign);
+    public void persistTranslation() {
+        try {
+            Campaign campaign = DataManager.getInstance().getDao().getCampaign(1l);
+            Question question = campaign.getQuestions().stream().filter(q -> q.getId().equals(1l)).findFirst().orElse(null);
+            question.getText().setText("TEST", Locale.GERMAN);
+            DataManager.getInstance().getDao().updateCampaign(campaign);
 
-        campaign = DataManager.getInstance().getDao().getCampaign(1l);
-        question = campaign.getQuestions().stream().filter(q -> q.getId().equals(1l)).findFirst().orElse(null);
-        Assert.assertEquals("TEST", question.getText().getText(Locale.GERMAN));
+            campaign = DataManager.getInstance().getDao().getCampaign(1l);
+            question = campaign.getQuestions().stream().filter(q -> q.getId().equals(1l)).findFirst().orElse(null);
+            Assert.assertEquals("TEST", question.getText().getText(Locale.GERMAN));
+        } catch (Throwable e) {
+            e.printStackTrace();
+            Assert.fail(e.toString());
+        }
     }
 
 }

@@ -59,6 +59,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.dao.converter.StringListConverter;
 import io.goobi.viewer.dao.converter.TranslatedTextConverter;
+import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.messages.Messages;
 import io.goobi.viewer.model.crowdsourcing.campaigns.Campaign;
@@ -209,10 +210,8 @@ public class Question {
     }
     
     private void serializeMetadataFields() {
-        try {
+        if(QuestionType.METADATA.equals(getQuestionType())) {            
             this.metadataFields = getMetadataFieldSelection().entrySet().stream().filter(e -> e.getValue()).map(e -> e.getKey()).collect(Collectors.toList());
-        } catch (SolrServerException | IOException e) {
-            logger.error("Error searilizing metadata fields ", e);
         }
     }
 
@@ -404,7 +403,7 @@ public class Question {
      * @throws SolrServerException 
      */
     @JsonIgnore
-    public List<String> getAvailableMetadataFields() throws SolrServerException, IOException {
+    public List<String> getAvailableMetadataFields() throws DAOException {
         Locale locale = BeanUtils.getLocale();
         return DataManager.getInstance().getSearchIndex().getAllFieldNames().stream()
         .filter(field -> field.startsWith("MD_"))
@@ -490,9 +489,15 @@ public class Question {
      * @throws IOException 
      * @throws SolrServerException 
      */
-    public Map<String, Boolean> getMetadataFieldSelection() throws SolrServerException, IOException {
+    public Map<String, Boolean> getMetadataFieldSelection() {
         if(this.metadataFieldSelection == null) {
-            this.metadataFieldSelection = getAvailableMetadataFields().stream().collect(Collectors.toMap(field -> field, field -> this.metadataFields.contains(field)));
+            try {                
+                this.metadataFieldSelection = getAvailableMetadataFields().stream().collect(Collectors.toMap(field -> field, field -> this.metadataFields.contains(field)));
+            } catch(DAOException e) {
+                //If the possible fields cannot be retrieved from solr, just show the already selected ones
+                logger.warn("Failed to load all possible metadata fields " + e.toString());
+                this.metadataFieldSelection = this.metadataFields.stream().collect(Collectors.toMap(field -> field, field -> Boolean.TRUE));
+            }
         }
         return metadataFieldSelection;
     }
