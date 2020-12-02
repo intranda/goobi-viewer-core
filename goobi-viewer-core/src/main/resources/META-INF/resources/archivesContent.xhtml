@@ -34,11 +34,12 @@
                     <h:form id="tocForm" prependId="false">
 				
 				        <div class="search-standard__input">
-                            <div class="search-standard__input-autocomplete">
+                            <div class="admin__search-input-wrapper">
                                 <h:inputText id="tectonicsSearchField" inputStyleClass="-no-outline -active-border"
                                     value="#{tectonicsBean.searchString}" immediate="true">
                                     <f:passThroughAttribute name="placeholder" value="#{msg.searchFieldDemoText}" />
                                 </h:inputText>
+                                <div class="admin__search-clear">x</div>
                                 <h:commandButton style="visibility:hidden" value="#{msg.search}" action="#{tectonicsBean.searchAction}">
 <!--                                   <f:ajax render="tocForm" /> -->
                                 </h:commandButton>
@@ -107,16 +108,22 @@
                                                                 <!-- TODO icon instead of descriptionLevel -->
                                                                 #{entry.descriptionLevel}
                                                                 <!-- TODO highlight selected entry via CSS -->
-                                                                <h:outputLink rendered="#{entry.id == tectonicsBean.tectonicsTree.selectedEntry.id}"
-                                                                    value="#{navigationHelper.applicationUrl}archives/#{entry.id}/">
-                                                                    <strong>#{entry.label}</strong>
-                                                                    <f:ajax render="hiearchyGroup metadataGroup" />
-                                                                </h:outputLink>
-                                                                <h:outputLink rendered="#{entry.id != tectonicsBean.tectonicsTree.selectedEntry.id}"
-                                                                    value="#{navigationHelper.applicationUrl}archives/#{entry.id}/">
-                                                                    #{entry.label}
-                                                                    <f:ajax render="hiearchyGroup metadataGroup" />
-                                                                </h:outputLink>
+                                                                <c:choose>
+                                                                    <c:when test="#{entry.id == tectonicsBean.tectonicsTree.selectedEntry.id}">
+                                                                        <h:outputLink value="#{navigationHelper.applicationUrl}tectonics/#{entry.id}/">
+                                                                            <strong>#{entry.label} (#{entry.hierarchy})</strong>
+                                                                            <f:ajax render="hiearchyGroup metadataGroup" />
+                                                                        </h:outputLink>
+                                                                    </c:when>
+                                                                    <c:otherwise>
+                                                                        <h:outputLink value="#{navigationHelper.applicationUrl}tectonics/#{entry.id}/">
+                                                                            <h:outputText style="#{entry.selected ? 'color:#5BA2E5' : 'color:black'}"
+                                                                                value="#{entry.label} (#{entry.hierarchy})">
+                                                                            </h:outputText>
+                                                                            <f:ajax render="hiearchyGroup metadataGroup" />
+                                                                        </h:outputLink>
+                                                                    </c:otherwise>
+                                                                </c:choose>
                                                             </div>
                                                         </div>
                                                     </div>
