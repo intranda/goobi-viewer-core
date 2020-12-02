@@ -29,13 +29,13 @@
                             <!-- NAME -->
                             <div class="cms-edit-collection__text name">
                                 <div class="cms-edit-collection__text-label">
-                                    <h4>#{msg.cms_collections_label}</h4>
+                                    <h3 class="admin__h3">#{msg.cms_collections_label}</h3>
                                 </div>
                                 <div class="cms-edit-collection__text-translation">
                                     <ul class="nav nav-tabs" role="tablist">
                                         <ui:repeat value="#{navigationHelper.supportedLanguages}" var="language" varStatus="status">
                                             <li role="presentation" class="#{status.index == 0 ? 'active' : ''}">
-                                                <a href="#nameLanguage-#{status.index}" aria-controls="nameLanguage-#{count}" role="tab" data-toggle="tab">#{language}</a>
+                                                <a href="#nameLanguage-#{status.index}" aria-controls="nameLanguage-#{status.index}" role="tab" data-toggle="tab">#{language}</a>
                                             </li>
                                         </ui:repeat>
                                     </ul>
@@ -43,7 +43,9 @@
                                     <div class="tab-content">
                                         <ui:repeat value="#{navigationHelper.supportedLanguages}" var="language" varStatus="status">
                                             <div role="tabpanel" class="tab-pane #{status.index == 0 ? 'active' : ''}" id="nameLanguage-#{status.index}">
-                                                <h:inputTextarea value="#{cmsCollectionsBean.getCurrentLabel(language).value}" styleClass="form-control" />
+                                                <h:inputTextarea value="#{cmsCollectionsBean.getCurrentLabel(language).value}" styleClass="form-control">
+													<f:passThroughAttribute name="aria-label" value="#{msg.aria_label__collections_label}"/>
+												</h:inputTextarea>
                                             </div>
                                         </ui:repeat>
                                     </div>
@@ -53,14 +55,14 @@
                             <!-- DESCRIPTION -->
                             <div class="cms-edit-collection__text description">
                                 <div class="cms-edit-collection__text-label">
-                                    <h4>#{msg.cms_collections_description}</h4>
+                                    <h3 class="admin__h3">#{msg.cms_collections_description}</h3>
                                 </div>
     
                                 <div class="cms-edit-collection__text-translation">
                                     <ul class="nav nav-tabs" role="tablist">
                                         <ui:repeat value="#{navigationHelper.supportedLanguages}" var="language" varStatus="status">
                                             <li role="presentation" class="#{status.index == 0 ? 'active' : ''}">
-                                                <a href="#descriptionLanguage-#{status.index}" aria-controls="descriptionLanguage-#{count}" role="tab" data-toggle="tab">#{language}</a>
+                                                <a href="#descriptionLanguage-#{status.index}" aria-controls="descriptionLanguage-#{status.index}" role="tab" data-toggle="tab">#{language}</a>
                                             </li>
                                         </ui:repeat>
                                     </ul>
@@ -68,7 +70,9 @@
                                     <div class="tab-content">
                                         <ui:repeat value="#{navigationHelper.supportedLanguages}" var="language" varStatus="status">
                                             <div role="tabpanel" class="tab-pane #{status.index == 0 ? 'active' : ''}" id="descriptionLanguage-#{status.index}">
-                                                <h:inputTextarea value="#{cmsCollectionsBean.getCurrentDescription(language).value}" styleClass="form-control" />
+                                                <h:inputTextarea value="#{cmsCollectionsBean.getCurrentDescription(language).value}" styleClass="form-control">
+													<f:passThroughAttribute name="aria-label" value="#{msg.aria_label__collections_description}"/>
+                                                </h:inputTextarea>
                                             </div>
                                         </ui:repeat>
                                     </div>
@@ -89,10 +93,10 @@
                         <!-- PI -->
                         <div class="cms-edit-collection__text pi">
                             <div class="cms-edit-collection__text-label">
-                                <label id="labelPI">#{msg.cms_collections_set_representative}</label>
+                                <label for="workPI" id="labelPI">#{msg.cms_collections_set_representative}</label>
                             </div>
                             <div class="cms-edit-collection__text-control">
-                                <h:inputText styleClass="form-control" validator="#{cmsCollectionsBean.validatePI}" value="#{cmsCollectionsBean.currentCollection.representativeWorkPI}">
+                                <h:inputText id="workPI" styleClass="form-control" validator="#{cmsCollectionsBean.validatePI}" value="#{cmsCollectionsBean.currentCollection.representativeWorkPI}">
                                     <!--                                 validator="piInSolrValidator" -->
                                     <f:ajax render="@all"></f:ajax>
                                 </h:inputText>
