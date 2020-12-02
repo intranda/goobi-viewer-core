@@ -82,7 +82,14 @@ var Crowdsourcing = ( function() {
        } else {
            return crowdsourcing.translator.translate(key, language);
        }
-
+    }
+    
+    crowdsourcing.loadTranslations = function(keys) {
+        if(crowdsourcing.translator) {            
+            return crowdsourcing.translator.addTranslations(keys);
+        } else {
+            throw "Translator not initialized";
+        }
     }
 
     return crowdsourcing;

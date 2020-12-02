@@ -74,7 +74,7 @@ public class UserEndpoint {
 
     @OnError
     public void onError(Session session, Throwable t) {
-        logger.error(t.getMessage());
+        logger.warn(t.getMessage());
     }
 
     /**

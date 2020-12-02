@@ -12,10 +12,12 @@
       <!-- BULK ACTIONS -->
 	  <ui:fragment rendered="#{bulkaction == true}">
       	<div class="admin-cms-media__bulk-actions">
-	          <label for="selectAllMediaItems" class="custom-control custom-control--checkbox">
-	              <h:selectBooleanCheckbox id="selectAllMediaItems" name="selectAllMediaItems" value="#{cmsMediaBean.allSelected}">
-	     	<f:ajax render="@none" execute="@this"/>
-	     	</h:selectBooleanCheckbox>
+          <label for="selectAllMediaItems" class="custom-control custom-control--checkbox">
+          <h:selectBooleanCheckbox id="selectAllMediaItems" name="selectAllMediaItems" value="#{cmsMediaBean.allSelected}">
+	          <f:passThroughAttribute name="aria-label" value="#{msg.aria_label__select_all}"/>
+	          <f:ajax render="@none" execute="@this"/>
+          </h:selectBooleanCheckbox>
+          
 	              <span class="custom-control__icon">
 	                  <i class="fa fa-square-o" aria-hidden="true"></i>
 	                  <i class="fa fa-check-square-o" aria-hidden="true"></i>
@@ -23,13 +25,13 @@
 	          </label>
 	
 	          <div class="custom-control custom-control--select">
-	              <select id="bulkActionSelect" name="bulkActionSelect">
+	              <select id="bulkActionSelect" name="bulkActionSelect" aria-label="#{msg.admin__media_bulk_actions}"> 
 	                  <option value="bulk">#{msg.admin__media_bulk_actions}</option>
 	                  <option value="edit">#{msg.admin__media_bulk_edit}</option>
 	                  <option value="delete">#{msg.admin__media_bulk_delete}</option>
 	              </select>
 	          </div>
-	          <h:commandLink id="deleteSelectedItemsButton" action="#{cmsMediaBean.deleteSelectedItems}">
+	          <h:commandLink id="deleteSelectedItemsButton" styleClass="d-none" action="#{cmsMediaBean.deleteSelectedItems}">
 	          	<f:ajax render="adminCmsMediaFilesForm :messages" onevent="reload"></f:ajax>
 	          </h:commandLink>
       	</div>
@@ -38,10 +40,10 @@
       <!-- VIEW SWITCH -->
       <ui:fragment rendered="#{ viewswitch == true}">
       	  <div class="admin-cms-media__switch">
-	          <button type="button" class="btn btn--clean" data-switch="list">
+	          <button type="button" class="btn btn--clean" data-switch="list" aria-label="#{msg.searchListDetailView}">
 	              <i class="fa fa-list" aria-hidden="true"></i>
 	          </button>
-	          <button type="button" class="btn btn--clean" data-switch="grid">
+	          <button type="button" class="btn btn--clean" data-switch="grid" aria-label="#{msg.searchListTileView}">
 	              <i class="fa fa-th" aria-hidden="true"></i>
 	          </button>
       	  </div>

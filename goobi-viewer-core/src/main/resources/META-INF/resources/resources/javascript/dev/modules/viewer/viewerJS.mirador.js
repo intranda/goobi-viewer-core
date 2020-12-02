@@ -73,8 +73,7 @@ var viewerJS = ( function( viewer ) {
             
             var manifests = _getManifestsFromUrlQuery(_defaults);
             
-            var translator = new viewerJS.Translator(
-                    messageKeys, _defaults.restEndpoint, 
+            var translator = new viewerJS.Translator(_defaults.restEndpoint.replace("/rest", "/api/v1"), 
                     "#{navigationHelper.localeString}");
             
             let miradorConfigPromise = null;
@@ -100,7 +99,7 @@ var viewerJS = ( function( viewer ) {
                         console.log("elements ", elements)
                         Mirador( elements );
                         // Override window title if more than one record
-                        translator.init()
+                        translator.init(messageKeys)
                         .then(function() {
                             if (elements.data.length > 1) {
                                 document.title = translator.translate('viewMiradorComparison');
