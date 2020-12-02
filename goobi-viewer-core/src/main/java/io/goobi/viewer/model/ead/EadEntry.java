@@ -495,6 +495,7 @@ public class EadEntry {
      * @return the identityStatementAreaList
      */
     public List<EadMetadataField> getIdentityStatementAreaList() {
+        logger.trace("getIdentityStatementAreaList ({})", id);
         return identityStatementAreaList;
     }
 
@@ -509,6 +510,7 @@ public class EadEntry {
      * @return the contextAreaList
      */
     public List<EadMetadataField> getContextAreaList() {
+        logger.trace("getContextAreaList ({})", id);
         return contextAreaList;
     }
 
@@ -523,6 +525,7 @@ public class EadEntry {
      * @return the contentAndStructureAreaAreaList
      */
     public List<EadMetadataField> getContentAndStructureAreaAreaList() {
+        logger.trace("getContentAndStructureAreaAreaList ({})", id);
         return contentAndStructureAreaAreaList;
     }
 
@@ -537,6 +540,7 @@ public class EadEntry {
      * @return the accessAndUseAreaList
      */
     public List<EadMetadataField> getAccessAndUseAreaList() {
+        logger.trace("getAccessAndUseAreaList ({})", id);
         return accessAndUseAreaList;
     }
 
@@ -551,6 +555,7 @@ public class EadEntry {
      * @return the alliedMaterialsAreaList
      */
     public List<EadMetadataField> getAlliedMaterialsAreaList() {
+        logger.trace("getAlliedMaterialsAreaList ({})", id);
         return alliedMaterialsAreaList;
     }
 
@@ -565,6 +570,7 @@ public class EadEntry {
      * @return the notesAreaList
      */
     public List<EadMetadataField> getNotesAreaList() {
+        logger.trace("getNotesAreaList ({})", id);
         return notesAreaList;
     }
 
@@ -579,6 +585,7 @@ public class EadEntry {
      * @return the descriptionControlAreaList
      */
     public List<EadMetadataField> getDescriptionControlAreaList() {
+        logger.trace("getDescriptionControlAreaList ({})", id);
         return descriptionControlAreaList;
     }
 
