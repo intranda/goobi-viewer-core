@@ -3597,7 +3597,7 @@ public class JPADAO implements IDAO {
                 c.resetSolrQueryResults();
                 return true;
             } catch (RollbackException e) {
-                return false;
+                throw new PersistenceException("Failed to persist campaign " + campaign, e);
             }
         }
     }

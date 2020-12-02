@@ -34,6 +34,7 @@ import javax.annotation.PostConstruct;
 import javax.enterprise.context.SessionScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
+import javax.persistence.PersistenceException;
 
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -492,7 +493,12 @@ public class CrowdsourcingBean implements Serializable {
         }
         selectedCampaign.setDateUpdated(now);
         if (selectedCampaign.getId() != null) {
-            success = DataManager.getInstance().getDao().updateCampaign(selectedCampaign);
+            try {                
+                success = DataManager.getInstance().getDao().updateCampaign(selectedCampaign);
+            } catch(PersistenceException e) {
+                logger.error("Updating campaign " + selectedCampaign + " in database failed ", e);
+                success = false;
+            }
         } else {
             success = DataManager.getInstance().getDao().addCampaign(selectedCampaign);
         }
