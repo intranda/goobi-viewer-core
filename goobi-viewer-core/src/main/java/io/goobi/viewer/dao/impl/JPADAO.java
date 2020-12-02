@@ -3508,7 +3508,7 @@ public class JPADAO implements IDAO {
             try {
                 Campaign o = em.getReference(Campaign.class, id);
                 if (o != null) {
-                    //                    updateFromDatabase(id, Campaign.class);
+                    em.refresh(o);
                 }
                 return o;
             } catch (EntityNotFoundException e) {
