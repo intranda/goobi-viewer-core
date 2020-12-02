@@ -213,15 +213,27 @@ public class TectonicsBean implements Serializable {
             return "";
         }
 
+        if (StringUtils.isEmpty(searchString)) {
+            eadParser.resetSearch();
+            tectonicsTree.resetCollapseLevel(tectonicsTree.getRootElement(), 2);
+            return "";
+        }
+
         eadParser.search(searchString);
         List<EadEntry> results = eadParser.getFlatEntryList();
         if (results == null || results.isEmpty()) {
             return "";
         }
+        logger.trace("result entries: {}", results.size());
 
+        tectonicsTree.setSelectedEntry(null);
         tectonicsTree.collapseAll(true);
-        selectAndExpandEntry(results);
-        logger.trace("Found entry: {}", tectonicsTree.getSelectedEntry().getLabel());
+        for (EadEntry entry : results) {
+            if (entry.isSelected()) {
+                expandEntry(entry);
+            }
+        }
+        //        selectAndExpandEntry(results);
 
         return "";
     }
@@ -264,6 +276,7 @@ public class TectonicsBean implements Serializable {
         }
 
         if ("-".equals(id)) {
+            // tectonicsTree.resetCollapseLevel();
             tectonicsTree.setSelectedEntry(eadParser.getRootElement());
             return;
         }
@@ -272,12 +285,29 @@ public class TectonicsBean implements Serializable {
         eadParser.search(id);
         List<EadEntry> results = eadParser.getFlatEntryList();
         if (results == null || results.isEmpty()) {
-            logger.warn("Entry not found: {}", id);
+            logger.debug("Entry not found: {}", id);
             tectonicsTree.setSelectedEntry(eadParser.getRootElement());
             return;
         }
 
-        selectAndExpandEntry(results);
+        EadEntry entry = results.get(results.size() - 1);
+        tectonicsTree.setSelectedEntry(entry);
+        expandEntry(entry);
+    }
+
+    /**
+     * 
+     * @param entry
+     */
+    void expandEntry(EadEntry entry) {
+        if (entry == null || tectonicsTree == null) {
+            return;
+        }
+
+        entry.setVisible(true);
+        entry.setExpanded(true);
+
+        expandEntry(entry.getParentNode());
     }
 
     /**

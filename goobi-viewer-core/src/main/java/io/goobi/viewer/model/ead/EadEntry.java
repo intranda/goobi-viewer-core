@@ -284,6 +284,7 @@ public class EadEntry {
     }
 
     public void resetFoundList() {
+        // logger.trace("resetFoundList: {}", id);
         displaySearch = false;
         selected = false;
         if (subEntryList != null) {

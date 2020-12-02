@@ -106,19 +106,19 @@
                                                             <!-- TITLE -->
                                                             <div class="toc__list-expandable-title">
                                                                 <!-- TODO icon instead of descriptionLevel -->
-                                                                #{entry.descriptionLevel}
+                                                                #{entry.nodeType}
                                                                 <!-- TODO highlight selected entry via CSS -->
                                                                 <c:choose>
                                                                     <c:when test="#{entry.id == tectonicsBean.tectonicsTree.selectedEntry.id}">
                                                                         <h:outputLink value="#{navigationHelper.applicationUrl}tectonics/#{entry.id}/">
-                                                                            <strong>#{entry.label} (#{entry.hierarchy})</strong>
+                                                                            <strong>#{entry.label}</strong>
                                                                             <f:ajax render="hiearchyGroup metadataGroup" />
                                                                         </h:outputLink>
                                                                     </c:when>
                                                                     <c:otherwise>
-                                                                        <h:outputLink value="#{navigationHelper.applicationUrl}tectonics/#{entry.id}/">
+                                                                        <h:outputLink value="#{navigationHelper.applicationUrl}archives/#{entry.id}/">
                                                                             <h:outputText style="#{entry.selected ? 'color:#5BA2E5' : 'color:black'}"
-                                                                                value="#{entry.label} (#{entry.hierarchy})">
+                                                                                value="#{entry.label}">
                                                                             </h:outputText>
                                                                             <f:ajax render="hiearchyGroup metadataGroup" />
                                                                         </h:outputLink>
@@ -229,7 +229,8 @@
                             </c:if>
                         
                             <!-- ASSOCIATED RECORD -->
-                            <h:outputLink rendered="#{tectonicsBean.tectonicsTree.selectedEntry.associatedRecordPi != ''}" target="_blank"
+                            <h:outputLink
+                                rendered="#{tectonicsBean.tectonicsTree.selectedEntry != null and tectonicsBean.tectonicsTree.selectedEntry.associatedRecordPi != ''}" target="_blank"
                                 value="#{navigationHelper.objectUrl}/#{tectonicsBean.tectonicsTree.selectedEntry.associatedRecordPi}/1/">
                                     <!-- TODO less trivial image display -->
                                     <img src="#{imageDelivery.thumbs.getThumbnailUrl(tectonicsBean.tectonicsTree.selectedEntry.associatedRecordPi)}" />
