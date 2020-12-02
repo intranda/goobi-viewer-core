@@ -147,6 +147,7 @@
 		<smtpSenderAddress>test-if-pd@intranda.com</smtpSenderAddress>
 		<smtpSenderName>Goobi viewer</smtpSenderName>
 		<smtpSecurity>SSL</smtpSecurity>
+		<smtpPort>465</smtpPort>
 		<feedbackEmailAddress>viewer@intranda.com</feedbackEmailAddress>
 		
 		<!-- anonymousUserEmailAddress: A user with this email address will be automatically created by the application.

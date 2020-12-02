@@ -15,7 +15,7 @@
     
     <!-- IMPLEMENTATION -->
     <composite:implementation>
-        <nav id="imageControls" role="navigation" class="#{activeDocumentBean.viewManager.topDocument.rtl ? 'image-controls -rtl' : 'image-controls -ltr'}">
+        <nav id="imageControls" aria-label="#{msg.aria_label__nav_image_controls}" class="#{activeDocumentBean.viewManager.topDocument.rtl ? 'image-controls -rtl' : 'image-controls -ltr'}">
             <!-- FORM -->
             <h:form id="imageControlsForm" prependId="false">
                 <!-- ACTIONS -->

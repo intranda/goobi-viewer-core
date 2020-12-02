@@ -109,10 +109,10 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable {
     @Column(name = "template_id", nullable = false)
     private String templateId;
 
-    @Column(name = "date_created", nullable = false, columnDefinition = "TIMESTAMP(9)")
+    @Column(name = "date_created", nullable = false, columnDefinition = "TIMESTAMP")
     private LocalDateTime dateCreated;
 
-    @Column(name = "date_updated", columnDefinition = "TIMESTAMP(9)")
+    @Column(name = "date_updated", columnDefinition = "TIMESTAMP")
     private LocalDateTime dateUpdated;
 
     @Column(name = "published", nullable = false)

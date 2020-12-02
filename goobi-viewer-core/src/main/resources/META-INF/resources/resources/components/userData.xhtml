@@ -68,7 +68,7 @@
 				<div class="modal-content">
 					<h:form id="userEditDataForm" styleClass="form-horizontal" prependId="false">
 						<div class="modal-header">
-							<h4 class="modal-title" id="editUserdataModalLabel">#{msg.changeUserData}</h4>
+							<h3 class="modal-title" id="editUserdataModalLabel">#{msg.changeUserData}</h3>
 							<button type="button" class="close" data-dismiss="modal" aria-label="Close">
 								<span aria-hidden="true"> 
 									<h:outputText value="&amp;times;" escape="false" />
@@ -85,58 +85,86 @@
 							<h3>#{msg.userCP}</h3>
 
 							<div class="form-group form-row">
-								<h:outputLabel value="#{msg.nameNick}*:" styleClass="col-12 col-sm-5 control-label" />
+								<h:outputLabel value="#{msg.nameNick}*:" styleClass="col-12 col-sm-5 control-label">
+									<f:passThroughAttribute name="id" value="labelNameNick" />
+								</h:outputLabel>
 								<div class="col-12 col-sm-7">
                                     <h:inputText value="#{userBean.user.nickName}" required="true" requiredMessage="#{msg.loginEnterNickName}" styleClass="form-control" disabled="#{!userBean.allowNickNameChange}">
                                     	<f:validator validatorId="nicknameValidator" />
+                                    	<f:passThroughAttribute name="aria-labelledby" value="labelNameNick" />
                                     </h:inputText>
 								</div>
 							</div>
 							<div class="form-group form-row">
-								<h:outputLabel value="#{msg.nameFirst}:" styleClass="col-12 col-sm-5 control-label" />
+								<h:outputLabel value="#{msg.nameFirst}:" styleClass="col-12 col-sm-5 control-label">
+									<f:passThroughAttribute name="id" value="labelNameFirst"/>
+								</h:outputLabel>
 								<div class="col-12 col-sm-7">
-									<h:inputText value="#{userBean.user.firstName}" styleClass="form-control" />
+									<h:inputText value="#{userBean.user.firstName}" styleClass="form-control">
+										<f:passThroughAttribute name="aria-labelledby" value="labelNameFirst" />
+									</h:inputText>
 								</div>
 							</div>
 							<div class="form-group form-row">
-								<h:outputLabel value="#{msg.nameLast}:" styleClass="col-12 col-sm-5 control-label" />
+								<h:outputLabel value="#{msg.nameLast}:" styleClass="col-12 col-sm-5 control-label" >
+									<f:passThroughAttribute name="id" value="labelNameLast"/>
+								</h:outputLabel>
 								<div class="col-12 col-sm-7">
-									<h:inputText value="#{userBean.user.lastName}" styleClass="form-control" />
+									<h:inputText value="#{userBean.user.lastName}" styleClass="form-control">
+										<f:passThroughAttribute name="aria-labelledby" value="labelNameLast" />
+									</h:inputText>
 								</div>
 							</div>
 							<div class="form-group form-row">
-								<h:outputLabel value="#{msg.email}:" styleClass="col-12 col-sm-5 control-label" />
+								<h:outputLabel value="#{msg.email}:" styleClass="col-12 col-sm-5 control-label">
+									<f:passThroughAttribute name="id" value="labelEmail"/>
+								</h:outputLabel>
 								<div class="col-12 col-sm-7">
 									<h:inputText value="#{userBean.user.email}" styleClass="form-control" disabled="#{!userBean.allowEmailChange}">
                                     	<f:validator validatorId="emailValidator" />
                                         <f:validator validatorId="emailAvailableValidator"></f:validator>
+										<f:passThroughAttribute name="aria-labelledby" value="labelEmail" />
                                     </h:inputText>
 								</div>
 							</div>
 							<div class="form-group form-row">
-								<h:outputLabel value="#{msg.user_useGravatar}:" styleClass="col-5 control-label" />
+								<h:outputLabel value="#{msg.user_useGravatar}:" styleClass="col-5 control-label">
+									<f:passThroughAttribute name="id" value="labelGravatar"/>
+								</h:outputLabel>
 								<div class="col-7 align-self-center">
-									<h:selectBooleanCheckbox value="#{userBean.user.useGravatar}" />
+									<h:selectBooleanCheckbox value="#{userBean.user.useGravatar}">
+										<f:passThroughAttribute name="aria-labelledby" value="labelGravatar" />
+									</h:selectBooleanCheckbox>
 								</div>
 							</div>
 							<h:panelGroup rendered="#{userBean.allowPasswordChange}">
 								<div class="form-group form-row">
-									<h:outputLabel value="#{msg.user_newPasswordOne}:" styleClass="col-12 col-sm-5 control-label" />
+									<h:outputLabel value="#{msg.user_newPasswordOne}:" styleClass="col-12 col-sm-5 control-label">
+										<f:passThroughAttribute name="id" value="labelNewPasswordOne"/>
+									</h:outputLabel>
 									<div class="col-12 col-sm-7">
-										<h:inputSecret value="#{userBean.passwordOne}" styleClass="form-control" />
+										<h:inputSecret value="#{userBean.passwordOne}" styleClass="form-control">
+											<f:passThroughAttribute name="aria-labelledby" value="labelNewPasswordOne" />
+										</h:inputSecret>
 									</div>
 								</div>
 								<div class="form-group form-row">
-									<h:outputLabel value="#{msg.user_newPasswordTwo}:" styleClass="col-12 col-sm-5 control-label" />
+									<h:outputLabel value="#{msg.user_newPasswordTwo}:" styleClass="col-12 col-sm-5 control-label" >
+										<f:passThroughAttribute name="id" value="labelNewPasswordTwo" />
+									</h:outputLabel>
 									<div class="col-12 col-sm-7">
-										<h:inputSecret value="#{userBean.passwordTwo}" styleClass="form-control" />
+										<h:inputSecret value="#{userBean.passwordTwo}" styleClass="form-control">
+											<f:passThroughAttribute name="aria-labelledby" value="labelNewPasswordTwo" />
+										</h:inputSecret>
 									</div>
 								</div>
 							</h:panelGroup>
 						</div>
 						<div class="modal-footer">
 							<button type="button" class="btn" data-dismiss="modal">#{msg.cancel}</button>
-							<h:commandButton value="#{msg.save}" action="#{userBean.saveUserAction}" styleClass="btn btn--success" />
+							<h:commandButton value="#{msg.save}" action="#{userBean.saveUserAction}" styleClass="btn btn--success">
+								<f:passThroughAttribute name="aria-label" value="#{msg.save}" />
+							</h:commandButton>
 						</div>
 					</h:form>
 				</div>

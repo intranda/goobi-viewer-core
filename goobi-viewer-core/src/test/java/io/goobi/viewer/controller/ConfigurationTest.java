@@ -593,7 +593,6 @@ public class ConfigurationTest extends AbstractTest {
         Assert.assertEquals("title_value", DataManager.getInstance().getConfiguration().getRssTitle());
     }
 
-
     /**
      * @see Configuration#getSearchHitMetadataForTemplate(String)
      * @verifies return correct template configuration
@@ -711,6 +710,15 @@ public class ConfigurationTest extends AbstractTest {
     @Test
     public void getSmtpSecurity_shouldReturnCorrectValue() throws Exception {
         Assert.assertEquals("smtpSecurity_value", DataManager.getInstance().getConfiguration().getSmtpSecurity());
+    }
+
+    /**
+     * @see Configuration#getSmtpPort()
+     * @verifies return correct value
+     */
+    @Test
+    public void getSmtpPort_shouldReturnCorrectValue() throws Exception {
+        Assert.assertEquals(25, DataManager.getInstance().getConfiguration().getSmtpPort());
     }
 
     /**
@@ -1130,7 +1138,7 @@ public class ConfigurationTest extends AbstractTest {
     public void isDisplaySidebarWidgetDownload_shouldReturnCorrectValue() throws Exception {
         Assert.assertEquals(true, DataManager.getInstance().getConfiguration().isDisplaySidebarWidgetDownload());
     }
-    
+
     @Test
     public void getHideDownloadFileRegex_returnConfiguredValue() throws Exception {
         Assert.assertEquals("(wug_.*|AK_.*)", DataManager.getInstance().getConfiguration().getHideDownloadFileRegex());
