@@ -65,6 +65,7 @@ import org.slf4j.LoggerFactory;
 import de.intranda.metadata.multilanguage.IMetadataValue;
 import de.intranda.metadata.multilanguage.MultiLanguageMetadataValue;
 import io.goobi.viewer.controller.SolrConstants.DocType;
+import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.HTTPException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
@@ -1385,25 +1386,30 @@ public final class SolrSearchIndex {
      * </p>
      *
      * @return a {@link java.util.List} object.
+     * @throws DAOException 
      * @throws org.apache.solr.client.solrj.SolrServerException if any.
      * @throws java.io.IOException if any.
      */
-    public List<String> getAllFieldNames() throws SolrServerException, IOException {
-        if(this.solrFields == null) {            
-            LukeRequest lukeRequest = new LukeRequest();
-            lukeRequest.setNumTerms(0);
-            LukeResponse lukeResponse = lukeRequest.process(client);
-            Map<String, FieldInfo> fieldInfoMap = lukeResponse.getFieldInfo();
-            
-            List<String> list = new ArrayList<>();
-            for (String name : fieldInfoMap.keySet()) {
-                FieldInfo info = fieldInfoMap.get(name);
-                if (info != null && info.getType() != null && (info.getType().toLowerCase().contains("string")
-                        || info.getType().toLowerCase().contains("text") || info.getType().toLowerCase().contains("tlong"))) {
-                    list.add(name);
+    public List<String> getAllFieldNames() throws DAOException {
+        try {            
+            if(this.solrFields == null) {            
+                LukeRequest lukeRequest = new LukeRequest();
+                lukeRequest.setNumTerms(0);
+                LukeResponse lukeResponse = lukeRequest.process(client);
+                Map<String, FieldInfo> fieldInfoMap = lukeResponse.getFieldInfo();
+                
+                List<String> list = new ArrayList<>();
+                for (String name : fieldInfoMap.keySet()) {
+                    FieldInfo info = fieldInfoMap.get(name);
+                    if (info != null && info.getType() != null && (info.getType().toLowerCase().contains("string")
+                            || info.getType().toLowerCase().contains("text") || info.getType().toLowerCase().contains("tlong"))) {
+                        list.add(name);
+                    }
                 }
+                this.solrFields = list;
             }
-            this.solrFields = list;
+        } catch(IllegalStateException | SolrServerException | IOException  e) {
+            throw new DAOException("Failed to load SOLR field names: " + e.toString());
         }
 
         return this.solrFields;
