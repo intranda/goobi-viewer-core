@@ -51,9 +51,7 @@ import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.exceptions.RecordNotFoundException;
 import io.goobi.viewer.exceptions.ViewerConfigurationException;
 import io.goobi.viewer.model.crowdsourcing.questions.Question;
-import io.goobi.viewer.model.iiif.presentation.builder.WebAnnotationBuilder;
 import io.goobi.viewer.model.security.user.User;
-import io.goobi.viewer.servlets.rest.content.WebAnnotationResource;
 
 /**
  * An Annotation class to store annotation in a database
@@ -71,10 +69,10 @@ public class PersistentAnnotation {
     @Column(name = "annotation_id")
     private Long id;
 
-    @Column(name = "date_created")
+    @Column(name = "date_created", columnDefinition = "TIMESTAMP")
     private LocalDateTime dateCreated;
 
-    @Column(name = "date_modified")
+    @Column(name = "date_modified", columnDefinition = "TIMESTAMP")
     private LocalDateTime dateModified;
 
     @Column(name = "motivation")

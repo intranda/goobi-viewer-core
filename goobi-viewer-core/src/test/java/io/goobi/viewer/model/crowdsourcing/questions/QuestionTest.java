@@ -15,8 +15,6 @@
  */
 package io.goobi.viewer.model.crowdsourcing.questions;
 
-import static org.junit.Assert.*;
-
 import java.util.Locale;
 
 import org.junit.After;
@@ -28,7 +26,6 @@ import io.goobi.viewer.AbstractDatabaseEnabledTest;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.model.crowdsourcing.campaigns.Campaign;
-import io.goobi.viewer.model.misc.Translation;
 
 /**
  * @author florian
@@ -39,6 +36,7 @@ public class QuestionTest extends AbstractDatabaseEnabledTest {
     /**
      * @throws java.lang.Exception
      */
+    @Override
     @Before
     public void setUp() throws Exception {
         super.setUp();
@@ -47,6 +45,7 @@ public class QuestionTest extends AbstractDatabaseEnabledTest {
     /**
      * @throws java.lang.Exception
      */
+    @Override
     @After
     public void tearDown() throws Exception {
         super.tearDown();
@@ -54,13 +53,14 @@ public class QuestionTest extends AbstractDatabaseEnabledTest {
 
     @Test
     public void loadTranslation() throws DAOException {
-        Question question1 = DataManager.getInstance().getDao().getCampaign(1l).getQuestions().stream().filter(q -> q.getId().equals(1l)).findFirst().orElse(null);
+        Question question1 =
+                DataManager.getInstance().getDao().getCampaign(1l).getQuestions().stream().filter(q -> q.getId().equals(1l)).findFirst().orElse(null);
         Assert.assertNotNull(question1);
         String trEnglish = question1.getText().getText(Locale.ENGLISH);
         Assert.assertNotNull(trEnglish);
         Assert.assertEquals("English text", trEnglish);
     }
-    
+
     @Test
     public void addTranslation() throws DAOException {
         Campaign campaign = DataManager.getInstance().getDao().getCampaign(1l);
@@ -72,14 +72,14 @@ public class QuestionTest extends AbstractDatabaseEnabledTest {
         Assert.assertEquals("deutscher Text", question1.getText().getText(Locale.GERMAN));
         Assert.assertEquals(2, question1.getText().toMap().size());
     }
-    
+
     @Test
     public void persistTranslation() throws DAOException {
         Campaign campaign = DataManager.getInstance().getDao().getCampaign(1l);
         Question question = campaign.getQuestions().stream().filter(q -> q.getId().equals(1l)).findFirst().orElse(null);
         question.getText().setText("TEST", Locale.GERMAN);
         DataManager.getInstance().getDao().updateCampaign(campaign);
-        
+
         campaign = DataManager.getInstance().getDao().getCampaign(1l);
         question = campaign.getQuestions().stream().filter(q -> q.getId().equals(1l)).findFirst().orElse(null);
         Assert.assertEquals("TEST", question.getText().getText(Locale.GERMAN));

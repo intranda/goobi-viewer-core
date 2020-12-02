@@ -164,11 +164,11 @@ public class Campaign implements CMSMediaHolder, ILicenseType, IPolyglott {
     @Column(name = "campaign_id")
     private Long id;
 
-    @Column(name = "date_created", nullable = false)
+    @Column(name = "date_created", nullable = false, columnDefinition = "TIMESTAMP")
     @JsonIgnore
     private LocalDateTime dateCreated;
 
-    @Column(name = "date_updated")
+    @Column(name = "date_updated", columnDefinition = "TIMESTAMP")
     @JsonIgnore
     private LocalDateTime dateUpdated;
 
@@ -177,11 +177,11 @@ public class Campaign implements CMSMediaHolder, ILicenseType, IPolyglott {
     @JsonIgnore
     private CampaignVisibility visibility = CampaignVisibility.PRIVATE;
 
-    @Column(name = "date_start")
+    @Column(name = "date_start", columnDefinition = "TIMESTAMP")
     @JsonIgnore
     private LocalDateTime dateStart;
 
-    @Column(name = "date_end")
+    @Column(name = "date_end", columnDefinition = "TIMESTAMP")
     @JsonIgnore
     private LocalDateTime dateEnd;
 
