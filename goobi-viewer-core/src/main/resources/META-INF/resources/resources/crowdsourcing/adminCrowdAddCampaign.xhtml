@@ -339,12 +339,6 @@
 																						<h:commandLink styleClass="-defaultCursor" action="#{question.removeMetadataField(field)}"><div class="badge badge-info">#{msg[field]}<f:ajax render="createCampaignForm:questions:#{status.index}:question"></f:ajax></div></h:commandLink>
 																					</ui:repeat>
 																				</h:panelGroup>
-<!-- 																				<viewerComponent:multiselectDropdown -->
-<!-- 																					id="metadataSelect" -->
-<!-- 																					value="#{question.metadataFields}" -->
-<!-- 																					items="#{question.getAvailableMetadataFields()}" -->
-<!-- 																					render="question"> -->
-<!-- 																				</viewerComponent:multiselectDropdown> -->
 																				
 					                                                                   <div class="multiselect-dropdown">
 					                                                                       <div class="multiselect-dropdown-trigger" data-toggle="option-dropdown">#{msg.select}</div>
@@ -361,15 +355,7 @@
 					                                                                           </ui:repeat>
 					                                                                       </ul>
 					                                                                   </div>
-																				
-<!-- 																				<h:selectOneMenu id="adminCrowdAddCampaignQueryMetadata" styleClass="form-control" value="#{question.metadataToAdd}"> -->
-<!-- 																					<f:selectItem itemLabel="#{msg.select}" itemValue=""></f:selectItem> -->
-<!-- 																					<f:selectItems var="field" -->
-<!-- 																						value="#{question.getAvailableMetadataFields()}" -->
-<!-- 																						itemLabel="#{msg[field]}" -->
-<!-- 																						itemValue="#{field}" /> -->
-<!-- 																					<f:ajax event="change" render="question" execute="@this"></f:ajax> -->
-<!-- 																				</h:selectOneMenu> -->
+
 																				<span class="admin__form-help-text">#{msg.admin__help_crowdsourcing_question_metadata}</span>	
 																			</div>
 																			
