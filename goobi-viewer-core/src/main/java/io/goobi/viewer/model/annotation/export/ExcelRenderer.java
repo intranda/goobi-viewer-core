@@ -125,7 +125,7 @@ public class ExcelRenderer {
         HSSFCell campaignCell = row.createCell(3, CellType.STRING);
         campaignCell.setCellValue(Optional.ofNullable(annotation.getGenerator()).map(Question::getOwner).map(Campaign::getTitle).orElse(""));
         HSSFCell authorCell = row.createCell(4, CellType.STRING);
-        authorCell.setCellValue(annotation.getCreator().getDisplayName());
+        authorCell.setCellValue(Optional.ofNullable(annotation.getCreator()).map(User::getDisplayName).orElse(""));
         HSSFCell bodyCell = row.createCell(5, CellType.STRING);
         bodyCell.setCellValue(getBodyValues(annotation).get(0));
         
