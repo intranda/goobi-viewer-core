@@ -51,7 +51,9 @@ import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.exceptions.RecordNotFoundException;
 import io.goobi.viewer.exceptions.ViewerConfigurationException;
 import io.goobi.viewer.model.crowdsourcing.questions.Question;
+import io.goobi.viewer.model.iiif.presentation.builder.WebAnnotationBuilder;
 import io.goobi.viewer.model.security.user.User;
+import io.goobi.viewer.servlets.rest.content.WebAnnotationResource;
 
 /**
  * An Annotation class to store annotation in a database
@@ -635,5 +637,21 @@ public class PersistentAnnotation {
      */
     public void setAccessCondition(String accessCondition) {
         this.accessCondition = accessCondition;
+    }
+    
+    /* (non-Javadoc)
+     * @see java.lang.Object#toString()
+     */
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder("Crowdsourcing Annotation");
+        sb.append("\n\t").append("Body:").append(getBody());
+        sb.append("\n\t").append("Target:").append(getTarget());
+        sb.append("\n\t").append("GeneratorId:").append(getGeneratorId());
+        sb.append("\n\t").append("CreatorId:").append(getCreatorId());
+        sb.append("\n\t").append("ReviewerId:").append(getReviewerId());
+        
+        return sb.toString();
+
     }
 }

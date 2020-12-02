@@ -51,6 +51,8 @@ var Crowdsourcing = ( function(crowdsourcing) {
         this.questions = item.campaign.questions.map(question => new Crowdsourcing.Question(question, this));
         this.currentCanvasIndex = initialCanvasIndex ? initialCanvasIndex : 0;
         this.imageSource = item.source;
+        this.metadata = item.metadata;
+        this.reviewActive = item.campaign.reviewMode != "NO_REVIEW";
         this.currentUser = {};
         this.imageOpenEvents = new rxjs.Subject();
         this.imageRotationEvents = new rxjs.Subject();
@@ -285,6 +287,10 @@ var Crowdsourcing = ( function(crowdsourcing) {
 
     crowdsourcing.Item.prototype.isReviewMode = function() {
         return this.reviewMode;
+    }
+    
+    crowdsourcing.Item.prototype.isReviewActive = function() {
+        return this.reviewActive;
     }
 
     

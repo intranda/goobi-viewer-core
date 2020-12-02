@@ -377,6 +377,7 @@
         padding-left:2rem;
         margin-right:-2rem;
         padding-right:2rem;
+        z-index: 1001;
 
 	}
 	// SORTING ARROW
@@ -669,6 +670,53 @@
 			height: 2rem;
 	 		width: 2rem;
 		}
+	}
+	
+	// FONT AWESOME CHECKBOXES 
+	&__fancy-checkbox {
+		display: none;
+		& + label {
+			cursor: pointer;
+			margin: 0;
+			width: 100%;
+		}
+		& + label::before {
+			display: inline-block;
+			content: "\f096";
+		    font: normal normal normal 17px/1 FontAwesome;
+		}
+		&:checked + label::before {
+			animation: fadeIn 0.15s ease-in 0s 1 forwards;
+		    content: "\f046";
+		    font: normal normal normal 17px/1 FontAwesome;
+	    }
+	}
+	&__checkbox-column-all-entrys,
+	&__checkbox-column-single-entry {
+		flex: 0 0 30px;
+	}
+	
+	&__overlay-bar {
+		display: none;
+		position: fixed;
+		bottom: 0;
+		right: 0;
+		width: calc(~"100% - 250px");
+		height: 100px;
+		background: rgba(0,0,0,0.85);
+		z-index: 1001;
+		color: @white;
+		align-items: center;
+		justify-content: center;
+		flex-direction: column;
+		&.-showExportOptions {
+			display: flex;
+			animation: slideInUp 0.25s ease 0s 1 forwards;
+		}
+	}
+	&__overlay-bar-message {
+		margin-bottom: 1rem;
+		text-align: center;
 	}
 
 	// TOPBAR
@@ -1152,6 +1200,36 @@ html[lang="es"] .admin__radio-switch {
 @keyframes fadeIn {
   from { opacity: 0; }
   to { opacity: 1; }
+}
+
+@-webkit-keyframes slideInUp {
+  from {
+    -webkit-transform: translate3d(0, 100%, 0);
+    transform: translate3d(0, 100%, 0);
+    visibility: visible;
+  }
+
+  to {
+    -webkit-transform: translate3d(0, 0, 0);
+    transform: translate3d(0, 0, 0);
+  }
+}
+@keyframes slideInUp {
+  from {
+    -webkit-transform: translate3d(0, 100%, 0);
+    transform: translate3d(0, 100%, 0);
+    visibility: visible;
+  }
+
+  to {
+    -webkit-transform: translate3d(0, 0, 0);
+    transform: translate3d(0, 0, 0);
+  }
+}
+
+.-slideInUp {
+  -webkit-animation-name: slideInUp;
+  animation-name: slideInUp;
 }
 
 /*

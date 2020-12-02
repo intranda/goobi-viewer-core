@@ -25,6 +25,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
+import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -137,6 +138,20 @@ public class Campaign implements CMSMediaHolder, ILicenseType, IPolyglott {
             return null;
         }
     }
+    
+    public enum ReviewMode {
+        REQUIRE_REVIEW("label__require_review"),
+        NO_REVIEW("label__no_review"),
+        LIMIT_REVIEW_TO_USERGROUP("label__limit_review_to_usergroup");
+        
+        private final String label;
+        private ReviewMode(String label) {
+            this.label = label;
+        }
+        public String getLabel() {
+            return this.label;
+        }
+    }
 
     private static final Logger logger = LoggerFactory.getLogger(Campaign.class);
 
@@ -193,6 +208,14 @@ public class Campaign implements CMSMediaHolder, ILicenseType, IPolyglott {
     @JoinColumn(name = "user_group_id")
     @JsonIgnore
     private UserGroup userGroup;
+    
+    @Column(name = "review_mode")
+    private ReviewMode reviewMode = ReviewMode.REQUIRE_REVIEW;
+
+    @ManyToOne
+    @JoinColumn(name = "revewier_user_group_id")
+    @JsonIgnore
+    private UserGroup reviewerUserGroup;
 
     @Column(name = "time_period_enabled")
     @JsonIgnore
@@ -284,6 +307,8 @@ public class Campaign implements CMSMediaHolder, ILicenseType, IPolyglott {
         this.timePeriodEnabled = orig.timePeriodEnabled;
         this.userGroup = orig.userGroup;
         this.limitToGroup = orig.limitToGroup;
+        this.reviewMode = orig.reviewMode;
+        this.reviewerUserGroup = orig.reviewerUserGroup;
     }
 
     /**
@@ -569,26 +594,36 @@ public class Campaign implements CMSMediaHolder, ILicenseType, IPolyglott {
      */
     public boolean isUserAllowedAction(User user, CampaignRecordStatus status) throws PresentationException, IndexUnreachableException, DAOException {
         // logger.trace("isUserAllowedAction: {}", status);
-        if (CampaignVisibility.PUBLIC.equals(visibility)) {
-            return true;
-        }
-        if (user == null || status == null) {
+        if (status == null) {
             return false;
         }
         if (!isHasStarted() || isHasEnded()) {
             return false;
         }
-        if (user.isSuperuser()) {
+        if (user != null && user.isSuperuser()) {
             return true;
-        }
-        if (CampaignVisibility.PRIVATE.equals(visibility) && isGroupLimitActive()) {
-            return userGroup.getMembersAndOwner().contains(user);
         }
         switch (status) {
             case ANNOTATE:
-                return user.isHasCrowdsourcingPrivilege(IPrivilegeHolder.PRIV_CROWDSOURCING_ANNOTATE_CAMPAIGN);
+                if (CampaignVisibility.PUBLIC.equals(visibility)) {
+                    return true;
+                } else if(user == null) {
+                    return false;
+                } else if (CampaignVisibility.PRIVATE.equals(visibility) && isGroupLimitActive()) {
+                    return userGroup.getMembersAndOwner().contains(user);
+                } else {                    
+                    return user.isHasCrowdsourcingPrivilege(IPrivilegeHolder.PRIV_CROWDSOURCING_ANNOTATE_CAMPAIGN);
+                }
             case REVIEW:
-                return user.isHasCrowdsourcingPrivilege(IPrivilegeHolder.PRIV_CROWDSOURCING_REVIEW_CAMPAIGN);
+                if (isReviewGroupLimitActive()) {
+                    return user != null && reviewerUserGroup.getMembersAndOwner().contains(user);
+                } else if (CampaignVisibility.PUBLIC.equals(visibility)) {
+                    return true;
+                } else if(user == null) {
+                    return false;
+                } else {                      
+                    return user.isHasCrowdsourcingPrivilege(IPrivilegeHolder.PRIV_CROWDSOURCING_REVIEW_CAMPAIGN);
+                }
             default:
                 return false;
         }
@@ -1459,6 +1494,14 @@ public class Campaign implements CMSMediaHolder, ILicenseType, IPolyglott {
     public boolean isGroupLimitActive() {
         return limitToGroup && userGroup != null;
     }
+    
+    public boolean isReviewGroupLimitActive() {
+        return ReviewMode.LIMIT_REVIEW_TO_USERGROUP.equals(this.reviewMode) && reviewerUserGroup != null;
+    }
+    
+    public boolean isReviewModeActive() {
+        return !ReviewMode.NO_REVIEW.equals(this.reviewMode);
+    }
 
     /**
      * Updates record status in the campaign statistics.
@@ -1550,7 +1593,21 @@ public class Campaign implements CMSMediaHolder, ILicenseType, IPolyglott {
     public void setLimitToGroup(boolean limitToGroup) {
         this.limitToGroup = limitToGroup;
     }
-
+    
+    /**
+     * @return the reviewMode
+     */
+    public ReviewMode getReviewMode() {
+        return reviewMode;
+    }
+    
+    /**
+     * @param reviewMode the reviewMode to set
+     */
+    public void setReviewMode(ReviewMode reviewMode) {
+        this.reviewMode = reviewMode;
+    }
+    
     /**
      * @return the userGroup
      */
@@ -1563,6 +1620,20 @@ public class Campaign implements CMSMediaHolder, ILicenseType, IPolyglott {
      */
     public void setUserGroup(UserGroup userGroup) {
         this.userGroup = userGroup;
+    }
+    
+    /**
+     * @return the reviewerUserGroup
+     */
+    public UserGroup getReviewerUserGroup() {
+        return reviewerUserGroup;
+    }
+    
+    /**
+     * @param reviewerUserGroup the reviewerUserGroup to set
+     */
+    public void setReviewerUserGroup(UserGroup reviewerUserGroup) {
+        this.reviewerUserGroup = reviewerUserGroup;
     }
 
     /**
@@ -1636,6 +1707,13 @@ public class Campaign implements CMSMediaHolder, ILicenseType, IPolyglott {
 
         return null;
     }
-
+    
+    /* (non-Javadoc)
+     * @see java.lang.Object#toString()
+     */
+    @Override
+    public String toString() {
+        return getTitle();
+    }
 
 }

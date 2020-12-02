@@ -100,6 +100,8 @@ public final class SolrSearchIndex {
     Map<String, String> dataRepositoryNames = new HashMap<>();
 
     private SolrClient client;
+    
+    private List<String> solrFields = null;
 
     /**
      * <p>
@@ -1387,21 +1389,24 @@ public final class SolrSearchIndex {
      * @throws java.io.IOException if any.
      */
     public List<String> getAllFieldNames() throws SolrServerException, IOException {
-        LukeRequest lukeRequest = new LukeRequest();
-        lukeRequest.setNumTerms(0);
-        LukeResponse lukeResponse = lukeRequest.process(client);
-        Map<String, FieldInfo> fieldInfoMap = lukeResponse.getFieldInfo();
-
-        List<String> list = new ArrayList<>();
-        for (String name : fieldInfoMap.keySet()) {
-            FieldInfo info = fieldInfoMap.get(name);
-            if (info != null && info.getType() != null && (info.getType().toLowerCase().contains("string")
-                    || info.getType().toLowerCase().contains("text") || info.getType().toLowerCase().contains("tlong"))) {
-                list.add(name);
+        if(this.solrFields == null) {            
+            LukeRequest lukeRequest = new LukeRequest();
+            lukeRequest.setNumTerms(0);
+            LukeResponse lukeResponse = lukeRequest.process(client);
+            Map<String, FieldInfo> fieldInfoMap = lukeResponse.getFieldInfo();
+            
+            List<String> list = new ArrayList<>();
+            for (String name : fieldInfoMap.keySet()) {
+                FieldInfo info = fieldInfoMap.get(name);
+                if (info != null && info.getType() != null && (info.getType().toLowerCase().contains("string")
+                        || info.getType().toLowerCase().contains("text") || info.getType().toLowerCase().contains("tlong"))) {
+                    list.add(name);
+                }
             }
+            this.solrFields = list;
         }
 
-        return list;
+        return this.solrFields;
     }
 
     /**

@@ -263,18 +263,19 @@
 														class="admin__default-block">
 	
 														<div class="edit-content-page edit-content-page-questions">
-															<ui:repeat var="question"
+															<ui:repeat id="questions" var="question"
 																value="#{crowdsourcingBean.selectedCampaign.questions}"
 																varStatus="status">
 																
 																
-																<div class="edit-content-page edit-content-page-single-question">
+																<h:panelGroup layout="block" id="question" styleClass="edit-content-page edit-content-page-single-question">
 	
 																	<!-- TEXT -->
 																	<div class="form-group form-row">
 																	
 																		<div class="col-2 admin__form-label">
-																			<label for="adminCrowdAddCampaignQuestionText_#{status.count}">
+																			<label
+																				for="adminCrowdAddCampaignQuestionText_#{status.count}">
 																				#{msg.admin__crowdsourcing_question_text}:
 																				<ui:fragment
 																					rendered="#{termsOfUseBean.isDefaultLocaleSelected()}">
@@ -315,7 +316,7 @@
 																						value="#{question.availableQuestionTypes}"
 																						itemLabel="#{msg['admin__crowdsourcing_question_type_' += type]}" />
 																					<f:passThroughAttribute name="aria-label" value="#{msg.admin__help_crowdsourcing_question_text}"/>
-																					<f:ajax event="change" render="@none" execute="@this"></f:ajax>
+																					<f:ajax event="change" render="question" execute="@this"></f:ajax>
 																				</h:selectOneMenu>
 																			<span class="admin__form-help-text">#{msg.admin__help_crowdsourcing_question_type}</span>	
 																		</div>
@@ -328,6 +329,53 @@
 																		</div>
 																			
 																	</div>
+																	
+																	<!-- METADATA -->
+<!-- 																	<c:if test="#{question.questionType == 'METADATA'}"> -->
+																		<ui:fragment rendered="#{question.questionType == 'METADATA'}">
+																		<div class="form-row form-group">
+	
+																			<div class="col-2 admin__form-label">
+																				<label for="adminCrowdAddCampaignQueryMetadata">#{msg.metadata}:</label>
+																			</div>
+		
+																			<div class="col-9 admin__form-input badge-hover">
+																				<h:panelGroup id="metadataFields" layout="block">
+																					<ui:repeat id="metadataFieldLoop" var="field"
+																						value="#{question.selectedMetadataFields}">
+																						<!-- NON FUNCTIONAL LINK -->
+																						<h:commandLink styleClass="-defaultCursor" action="#{question.removeMetadataField(field)}"><div class="badge badge-info">#{msg[field]}<f:ajax render="createCampaignForm:questions:#{status.index}:question"></f:ajax></div></h:commandLink>
+																					</ui:repeat>
+																				</h:panelGroup>
+																				
+					                                                                   <div class="multiselect-dropdown">
+					                                                                       <div class="multiselect-dropdown-trigger" data-toggle="option-dropdown">#{msg.select}</div>
+					                                                                       <ul>
+					                                                                           <ui:repeat var="field" value="#{question.availableMetadataFields}">
+					                                                                               <li>
+					                                                                                   <label>
+					                                                                                       <h:selectBooleanCheckbox  type="checkbox" value="#{question.metadataFieldSelection[field]}">
+					                                                                                           <f:ajax event="change" render="createCampaignForm:questions:#{status.index}:metadataFields" execute="@this"></f:ajax>
+					                                                                                       </h:selectBooleanCheckbox>
+					                                                                                       #{msg[field]}
+					                                                                                   </label>
+					                                                                               </li>
+					                                                                           </ui:repeat>
+					                                                                       </ul>
+					                                                                   </div>
+
+																				<span class="admin__form-help-text">#{msg.admin__help_crowdsourcing_question_metadata}</span>	
+																			</div>
+																			
+																			<div class="col-1 admin__form-help-icon">
+																				<button type="button" class="btn btn--clean"
+																					data-toggle="helptext" aria-label="inline help icon">
+																					<i class="fa fa-question-circle" aria-hidden="true"></i>
+																				</button>
+																			</div>																			
+																		</div>
+																		</ui:fragment>
+<!-- 																	</c:if> -->
 	
 																	<!-- TARGET SELECTOR -->
 																	<div class="form-row form-group">
@@ -364,7 +412,7 @@
 																		</div>
 																		
 																		<div class="col-9 admin__form-input">
-																			<h:selectOneMenu value="#{question.targetFrequency}" styleClass="form-control">
+																			<h:selectOneMenu id="adminCrowdAddCampaignQuestionTargetFrequency" value="#{question.targetFrequency}" styleClass="form-control">
 																				<f:selectItem
 																					itemLabel="#{msg.admin__crowdsourcing_question_targetFrequency_one}"
 																					itemValue="1" noSelectionOption="true" />
@@ -394,7 +442,7 @@
 	                                                   					#{msg.delete}
 	                                              	 					</h:commandLink>
 																	</div>
-																</div>
+																</h:panelGroup>
 															</ui:repeat>
 														</div>
 													</div>
@@ -433,7 +481,7 @@
 												</div>
 
 							                    <div class="col-12 admin__form-input">
-							                        <h:selectOneMenu value="#{crowdsourcingBean.selectedCampaign.visibility}" styleClass="form-control">
+							                        <h:selectOneMenu id="adminCrowdVisibleStatus" value="#{crowdsourcingBean.selectedCampaign.visibility}" styleClass="form-control">
 							                            <f:selectItems itemLabel="#{msg['admin__crowdsourcing_campaign_visibility_' += val]}"
 							                                var="val" value="#{crowdsourcingBean.selectedCampaign.campaignVisibilityValues}"/> 
 															<f:passThroughAttribute name="aria-label" value="#{crowdsourcingBean.selectedCampaign.visibility}"/>
@@ -571,6 +619,56 @@
                                                 
                                             </h:panelGroup>
 					                   	</div>
+					                   	
+					                   	<!-- REVIEW SETTING-->
+											<h:panelGroup id="reviewSettingsGroup" layout="block" styleClass="admin__default-block crowdsourcing-annotations__sidebar-review-settings">
+												<h3>#{msg.label__crowdsourcing_review}</h3>
+												<div class="admin__form-help-text in mb-2">
+												#{msg.admin__crowdsourcing_review__help}
+												</div>
+												<div class="d-flex justify-content-between crowdsourcing-annotations__sidebar-review-dropdown">
+												<h:selectOneMenu
+                                                            value="#{crowdsourcingBean.selectedCampaign.reviewMode}"
+                                                            styleClass="form-control mt-2"
+                                                            immediate="true">
+                                                            <!-- TODO aria label -->
+                                                            <f:selectItems 
+                                                            	value="#{crowdsourcingBean.getPossibleReviewModes()}"
+                                                            	var="mode"
+                                                            	itemLabel="#{msg[mode.label]}"
+                                                            	itemValue="#{mode}"></f:selectItems>
+                                                            <f:ajax event="change" render="reviewSettingsGroup" />
+                                                        </h:selectOneMenu>												
+                                                </div>
+												<c:if test="#{crowdsourcingBean.selectedCampaign.reviewMode == 'LIMIT_REVIEW_TO_USERGROUP'}">
+												<div class="form-group form-row admin__sidebar-divider-top">
+													<label class="col-12">#{msg.admin__crowdsourcing_limit_review_to_group}: </label>
+													<div class="col-12">
+														<h:selectOneMenu
+		                                                    value="#{crowdsourcingBean.selectedCampaign.reviewerUserGroup}"
+		                                                    styleClass="form-control"
+		                                                    immediate="true"
+		                                                    converter="userGroupConverter">
+	<!-- 	                                                    TODO aria label -->
+		                                                    <f:selectItem itemLabel="#{msg.select}" itemValue="#{null}" noSelectionOption="true" />
+		                                                    <f:selectItems value="#{adminBean.allUserGroups}" />
+		                                                    <f:ajax render="reviewSettingsGroup" />
+	                                                	</h:selectOneMenu>		
+													</div>
+                                                    <c:if test="#{crowdsourcingBean.selectedCampaign.reviewerUserGroup != null}">
+                                                     <div class="col-12 mt-1 d-flex justify-content-start crowdsourcing-annotations__sidebar-owner">
+                                                      <label for="campaignReviewerOwnerName" class="pr-1 mb-0">#{msg.owner}:</label>
+                                                      <h:outputLink id="campaignReviewerOwnerName"
+                                                          value="#{navigationHelper.applicationUrl}admin/users/edit/#{crowdsourcingBean.selectedCampaign.reviewerUserGroup.owner.id}/">
+                                                          <h:outputText value="#{crowdsourcingBean.selectedCampaign.reviewerUserGroup.owner.displayName}" />
+                                                      </h:outputLink>
+                                                     </div>
+                                                    </c:if>
+                                                </div>
+												</c:if>
+											</h:panelGroup>
+										
+
 					                   	
 					                   	<!-- ACCESS LICENCE WIDGET -->
 										<div class="admin__default-block crowdsourcing-annotations__access-licence">
