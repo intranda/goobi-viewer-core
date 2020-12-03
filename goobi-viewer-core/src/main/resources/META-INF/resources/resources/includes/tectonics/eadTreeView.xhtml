@@ -82,7 +82,9 @@
 <!-- 											</c:otherwise> -->
 <!-- 										</c:choose> -->
 									</div>
-								</c:if> <!-- TITLE -->
+								</c:if>
+								
+								<!-- TITLE -->
 								<div class="tectonics-tree__list-expandable-title">
 
 									<!-- TODO icon -->
@@ -92,26 +94,42 @@
 									<c:choose>
 										<c:when
 											test="#{entry.id == tectonicsBean.tectonicsTree.selectedEntry.id}">
-											<!-- 	                                                        	<i class="fa fa-file-o -tectonics-selected" aria-hidden="true"></i> -->
+											<!-- <i class="fa fa-file-o -tectonics-selected" aria-hidden="true"></i> -->
 											<span class="fa-stack" aria-hidden="true"><i
 												class="fa fa-file-o -tectonics-selected"></i><i
 												class="fa fa-stack-text -tectonics-selected">F</i></span>
 											<a class="tectonics-tree__selected" name="selected"></a>
 											<h:outputLink styleClass="tectonics-tree__active-title"
-												value="#{navigationHelper.applicationUrl}#{view}/#{entry.id}/">#{entry.label} (#{entry.hierarchy})<f:ajax
-													render="hiearchyGroup metadataGroup" />
+												value="#{navigationHelper.applicationUrl}#{view}/#{entry.id}/">
+												#{entry.label}
+												<f:ajax render="hiearchyGroup metadataGroup" />
 											</h:outputLink>
 										</c:when>
+                                        <c:when test="#{entry.searchHit}">
+                                            <span class="fa-stack" aria-hidden="true"><i
+                                                class="fa fa-file-o -tectonics-selected"></i><i
+                                                class="fa fa-stack-text -tectonics-selected">F</i></span>
+                                            <a class="tectonics-tree__search_hit" name="search_hit"></a>
+                                            <h:outputLink styleClass="tectonics-tree__inactive-title" style="color:#5BA2E5"
+                                                value="#{navigationHelper.applicationUrl}#{view}/#{entry.id}/">
+                                                #{entry.label}
+                                                <f:ajax render="hiearchyGroup metadataGroup" />
+                                            </h:outputLink>
+                                        </c:when>
 										<c:otherwise>
 											<span class="fa-stack" aria-hidden="true"><i
 												class="fa fa-file-o"></i><i class="fa fa-stack-text">F</i></span>
 											<h:outputLink styleClass="tectonics-tree__inactive-title"
-												value="#{navigationHelper.applicationUrl}#{view}/#{entry.id}#selected">#{entry.label} (#{entry.hierarchy})<f:ajax
-													render="hiearchyGroup metadataGroup" />
+												value="#{navigationHelper.applicationUrl}#{view}/#{entry.id}#selected">
+												#{entry.label}
+												<f:ajax render="hiearchyGroup metadataGroup" />
 											</h:outputLink>
 										</c:otherwise>
 									</c:choose>
-								</div> <!-- METADATA --> <c:if
+								</div>
+								
+								<!-- METADATA -->
+								<c:if
 									test="#{view == 'tectonics' and entry.id == tectonicsBean.tectonicsTree.selectedEntry.id}">
 									<h:panelGroup layout="block"
 										class="tectonics-tree__metadata-box"

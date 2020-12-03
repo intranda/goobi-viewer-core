@@ -19,15 +19,11 @@ import java.io.Serializable;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import de.intranda.monitoring.timer.Time;
 import io.goobi.viewer.controller.DataManager;
-import io.goobi.viewer.managedbeans.TectonicsBean;
-import io.goobi.viewer.managedbeans.utils.BeanUtils;
 
 /**
  * Table of contents and associated functionality for a record.
@@ -40,6 +36,8 @@ public class EADTree implements Serializable {
 
     /** Constant <code>DEFAULT_GROUP="_DEFAULT"</code> */
     public static final String DEFAULT_GROUP = "_DEFAULT";
+
+    public static int defaultCollapseLevel = 2;
 
     /** TOC element map. */
     private Map<String, List<EadEntry>> entryMap = new HashMap<>(1);
@@ -89,7 +87,7 @@ public class EADTree implements Serializable {
      * @return a {@link java.util.List} object.
      */
     public List<EadEntry> getViewForGroup(String group) {
-        if (entryMap != null) {            
+        if (entryMap != null) {
             return entryMap.get(group);
         }
 
@@ -106,13 +104,10 @@ public class EADTree implements Serializable {
      * @return a {@link java.util.List} object.
      */
     public List<EadEntry> getTreeViewForGroup(String group) {
-            if (!treeBuilt) {
-                int visibleLevel = DataManager.getInstance().getConfiguration().getSidebarTocInitialCollapseLevel();
-                int collapseThreshold = DataManager.getInstance().getConfiguration().getSidebarTocCollapseLengthThreshold();
-                int lowestLevelToCollapse = DataManager.getInstance().getConfiguration().getSidebarTocLowestLevelToCollapseForLength();
-                buildTree(group, visibleLevel, collapseThreshold, lowestLevelToCollapse);
-            }
-            return getViewForGroup(group);
+        if (!treeBuilt) {
+            buildTree(group, defaultCollapseLevel);
+        }
+        return getViewForGroup(group);
     }
 
     /**
@@ -141,11 +136,9 @@ public class EADTree implements Serializable {
     /**
      *
      * @param group
-     * @param visibleLevel
-     * @param collapseThreshold
-     * @param lowestLevelToCollapse
+     * @param collapseLevel
      */
-    private void buildTree(String group, int visibleLevel, int collapseThreshold, int lowestLevelToCollapse) {
+    private void buildTree(String group, int collapseLevel) {
         logger.trace("buildTree");
         if (group == null) {
             throw new IllegalArgumentException("group may not be null");
@@ -168,7 +161,7 @@ public class EADTree implements Serializable {
                 if (lastLevel < entry.getHierarchy() && index > 0) {
                     entry.setParentIndex(lastParent);
                     //                    entryMap.get(group).get(index - 1).setHasChild(true);
-                    if (entry.getHierarchy() > visibleLevel) {
+                    if (entry.getHierarchy() > collapseLevel) {
                         entryMap.get(group).get(index - 1).setExpanded(false);
                         entry.setVisible(false);
                     } else {
@@ -181,8 +174,7 @@ public class EADTree implements Serializable {
                             // Elements on the same level as the current element get the same parent ID and are set visible
                             tc.setParentIndex(entry.getParentIndex());
                         }
-                        if (tc.getHierarchy() > visibleLevel) {
-
+                        if (tc.getHierarchy() > collapseLevel) {
                             tc.setVisible(false);
                         }
                     }
@@ -191,8 +183,8 @@ public class EADTree implements Serializable {
                 lastParent = index;
                 lastLevel = entry.getHierarchy();
             }
-            collapseTocForLength(group, collapseThreshold, lowestLevelToCollapse);
             treeBuilt = true;
+            resetCollapseLevel(getRootElement(), collapseLevel);
         }
     }
 
@@ -219,51 +211,6 @@ public class EADTree implements Serializable {
                 resetCollapseLevel(child, maxDepth);
             }
         }
-    }
-
-    private void collapseTocForLength(String group, int collapseThreshold, int lowestLevelToCollapse) {
-        logger.trace("collapseThreshold: {}", collapseThreshold);
-        if (collapseThreshold == 0 || group == null || entryMap == null || entryMap.get(group) == null) {
-            //            return;
-        }
-
-        // long start = System.nanoTime();
-        int index = 0;
-        int hideLevel = -1;
-        boolean hide = false;
-        for (index = 0; index < entryMap.get(group).size(); index++) {
-            EadEntry tocElem = entryMap.get(group).get(index);
-
-            if (tocElem.getHierarchy() < hideLevel || tocElem.getHierarchy() < lowestLevelToCollapse) {
-                //if we return above the hidden level, reset flags
-                hide = false;
-                hideLevel = -1;
-            } else if (hide) {
-                //if hide flag is set from previous sibling, hide and collapse this element
-                tocElem.setExpanded(false);
-                tocElem.setVisible(false);
-            } else {
-                //else check if we need to hide this and following siblings
-                int levelLength = 0;
-                for (int i = index; i < entryMap.get(group).size(); i++) {
-                    EadEntry tempElem = entryMap.get(group).get(i);
-                    if (tempElem.getHierarchy() < tocElem.getHierarchy()) {
-                        break;
-                    } else if (tempElem.getHierarchy() == tocElem.getHierarchy()) {
-                        levelLength++;
-                    }
-                }
-                if (levelLength > collapseThreshold) {
-                    entryMap.get(group).get(index - 1).setExpanded(false); //collapse parent
-                    hideLevel = tocElem.getHierarchy();
-                    hide = true;
-                    tocElem.setExpanded(false);
-                    tocElem.setVisible(false);
-                }
-            }
-        }
-        // long end = System.nanoTime();
-        // logger.trace("Time for length collapse: {} ns", (end - start));
     }
 
     /**

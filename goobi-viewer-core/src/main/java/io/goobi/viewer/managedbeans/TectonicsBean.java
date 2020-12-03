@@ -29,8 +29,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import de.intranda.monitoring.timer.Time;
-import de.intranda.monitoring.timer.TimeAnalysis;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.model.ead.BasexEADParser;
 import io.goobi.viewer.model.ead.EADTree;
@@ -53,7 +51,7 @@ public class TectonicsBean implements Serializable {
     private EADTree tectonicsTree;
 
     private String searchString;
-    
+
     /**
      * Empty constructor.
      */
@@ -89,14 +87,14 @@ public class TectonicsBean implements Serializable {
 
         EADTree h = tectonicsTree;
         if (h == null) {
-                synchronized (lock) {
-                    // Another thread might have initialized hierarchy by now
-                    h = tectonicsTree;
-                    if (h == null) {
-                        h = generateHierarchy();
-                        tectonicsTree = h;
-                    }
+            synchronized (lock) {
+                // Another thread might have initialized hierarchy by now
+                h = tectonicsTree;
+                if (h == null) {
+                    h = generateHierarchy();
+                    tectonicsTree = h;
                 }
+            }
         }
 
         return tectonicsTree;
@@ -113,7 +111,11 @@ public class TectonicsBean implements Serializable {
 
         EADTree ret = new EADTree();
         ret.generate(eadParser.getRootElement());
-        ret.setSelectedEntry(eadParser.getRootElement());
+        if (ret.getSelectedEntry() == null) {
+            ret.setSelectedEntry(eadParser.getRootElement());
+        }
+        // This should happen before the tree is expanded to the selected entry, otherwise the collapse level will be reset
+        ret.getTreeView();
 
         return ret;
     }
@@ -170,22 +172,22 @@ public class TectonicsBean implements Serializable {
             logger.error("EAD parser not intialized");
             return Collections.emptyList();
         }
-        
-            eadParser.search(identifier);
-            if (eadParser.getFlatEntryList().isEmpty()) {
-                return Collections.emptyList();
-            }
-            
-            if (eadParser.getFlatEntryList().size() == 1) {
-                return Collections.singletonList(eadParser.getFlatEntryList().get(0));
-            }
-            
-            List<EadEntry> ret = new ArrayList<>(eadParser.getFlatEntryList().size() - 1);
-            for (EadEntry entry : eadParser.getFlatEntryList().subList(1, eadParser.getFlatEntryList().size())) {
-                ret.add(entry);
-            }
-            
-            return eadParser.getFlatEntryList().subList(1, eadParser.getFlatEntryList().size());
+
+        eadParser.search(identifier);
+        if (eadParser.getFlatEntryList().isEmpty()) {
+            return Collections.emptyList();
+        }
+
+        if (eadParser.getFlatEntryList().size() == 1) {
+            return Collections.singletonList(eadParser.getFlatEntryList().get(0));
+        }
+
+        List<EadEntry> ret = new ArrayList<>(eadParser.getFlatEntryList().size() - 1);
+        for (EadEntry entry : eadParser.getFlatEntryList().subList(1, eadParser.getFlatEntryList().size())) {
+            ret.add(entry);
+        }
+
+        return eadParser.getFlatEntryList().subList(1, eadParser.getFlatEntryList().size());
     }
 
     /**
@@ -199,7 +201,6 @@ public class TectonicsBean implements Serializable {
         }
 
         tectonicsTree.setSelectedEntry(entry);
-        entry.toggleMetadata();
 
         return "";
     }
@@ -217,7 +218,7 @@ public class TectonicsBean implements Serializable {
 
         if (StringUtils.isEmpty(searchString)) {
             eadParser.resetSearch();
-            tectonicsTree.resetCollapseLevel(tectonicsTree.getRootElement(), 2);
+            tectonicsTree.resetCollapseLevel(tectonicsTree.getRootElement(), EADTree.defaultCollapseLevel);
             return "";
         }
 
@@ -231,11 +232,11 @@ public class TectonicsBean implements Serializable {
         tectonicsTree.setSelectedEntry(null);
         tectonicsTree.collapseAll(true);
         for (EadEntry entry : results) {
-            if (entry.isSelected()) {
-                expandEntry(entry);
+            if (entry.isSearchHit()) {
+                expandHierarchyToEntry(entry, false);
             }
         }
-        //        selectAndExpandEntry(results);
+        tectonicsTree.getActiveEntry();
 
         return "";
     }
@@ -273,7 +274,7 @@ public class TectonicsBean implements Serializable {
      */
     public void setSelectedEntryId(String id) {
         logger.trace("setSelectedEntryId: {}", id);
-        if (tectonicsTree == null || eadParser == null) {
+        if (getTectonicsTree() == null || eadParser == null) {
             return;
         }
 
@@ -294,21 +295,29 @@ public class TectonicsBean implements Serializable {
 
         EadEntry entry = results.get(results.size() - 1);
         tectonicsTree.setSelectedEntry(entry);
+        expandHierarchyToEntry(entry, false);
+        tectonicsTree.getActiveEntry();
     }
 
     /**
      * 
      * @param entry
+     * @param expand
      */
-    void expandEntry(EadEntry entry) {
+    void expandHierarchyToEntry(EadEntry entry, boolean expand) {
         if (entry == null || tectonicsTree == null) {
             return;
         }
 
         entry.setVisible(true);
-        entry.setExpanded(true);
+        entry.setExpanded(expand);
+        //        if (expand) {
+        //            setChildrenVisible(entry);
+        //        } else {
+        //            setChildrenInvisible(entry);
+        //        }
 
-        expandEntry(entry.getParentNode());
+        expandHierarchyToEntry(entry.getParentNode(), true);
     }
 
     /**

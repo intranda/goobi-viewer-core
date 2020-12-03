@@ -9,7 +9,6 @@ import org.apache.solr.common.SolrDocument;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import de.intranda.monitoring.timer.Time;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.SolrConstants;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
@@ -37,8 +36,8 @@ public class EadEntry {
     private String label;
     // node is open/closed
     private boolean displayChildren;
-    // node is selected
-    private boolean selected;
+    // node is saerch hit
+    private boolean searchHit;
 
     // node can be selected as destination when moving nodes
     private boolean selectable;
@@ -271,7 +270,7 @@ public class EadEntry {
 
     public void markAsFound() {
         displaySearch = true;
-        selected = true;
+        searchHit = true;
 
         if (parentNode != null) {
             EadEntry node = parentNode;
@@ -287,7 +286,7 @@ public class EadEntry {
     public void resetFoundList() {
         // logger.trace("resetFoundList: {}", id);
         displaySearch = false;
-        selected = false;
+        searchHit = false;
         if (subEntryList != null) {
             for (EadEntry ds : subEntryList) {
                 ds.resetFoundList();
@@ -407,17 +406,17 @@ public class EadEntry {
     }
 
     /**
-     * @return the selected
+     * @return the searchHit
      */
-    public boolean isSelected() {
-        return selected;
+    public boolean isSearchHit() {
+        return searchHit;
     }
 
     /**
-     * @param selected the selected to set
+     * @param searchHit the searchHit to set
      */
-    public void setSelected(boolean selected) {
-        this.selected = selected;
+    public void setSearchHit(boolean searchHit) {
+        this.searchHit = searchHit;
     }
 
     /**
@@ -497,7 +496,7 @@ public class EadEntry {
      * @return the identityStatementAreaList
      */
     public List<EadMetadataField> getIdentityStatementAreaList() {
-        logger.trace("getIdentityStatementAreaList ({})", id);
+      logger.trace("getIdentityStatementAreaList ({})", id);
         return identityStatementAreaList;
     }
 
@@ -512,7 +511,7 @@ public class EadEntry {
      * @return the contextAreaList
      */
     public List<EadMetadataField> getContextAreaList() {
-        logger.trace("getContextAreaList ({})", id);
+     // logger.trace("getContextAreaList ({})", id);
         return contextAreaList;
     }
 
@@ -527,7 +526,7 @@ public class EadEntry {
      * @return the contentAndStructureAreaAreaList
      */
     public List<EadMetadataField> getContentAndStructureAreaAreaList() {
-        logger.trace("getContentAndStructureAreaAreaList ({})", id);
+     // logger.trace("getContentAndStructureAreaAreaList ({})", id);
         return contentAndStructureAreaAreaList;
     }
 
@@ -542,7 +541,7 @@ public class EadEntry {
      * @return the accessAndUseAreaList
      */
     public List<EadMetadataField> getAccessAndUseAreaList() {
-        logger.trace("getAccessAndUseAreaList ({})", id);
+     // logger.trace("getAccessAndUseAreaList ({})", id);
         return accessAndUseAreaList;
     }
 
@@ -557,7 +556,7 @@ public class EadEntry {
      * @return the alliedMaterialsAreaList
      */
     public List<EadMetadataField> getAlliedMaterialsAreaList() {
-        logger.trace("getAlliedMaterialsAreaList ({})", id);
+        // logger.trace("getAlliedMaterialsAreaList ({})", id);
         return alliedMaterialsAreaList;
     }
 
@@ -572,7 +571,7 @@ public class EadEntry {
      * @return the notesAreaList
      */
     public List<EadMetadataField> getNotesAreaList() {
-        logger.trace("getNotesAreaList ({})", id);
+     // logger.trace("getNotesAreaList ({})", id);
         return notesAreaList;
     }
 
@@ -587,7 +586,7 @@ public class EadEntry {
      * @return the descriptionControlAreaList
      */
     public List<EadMetadataField> getDescriptionControlAreaList() {
-        logger.trace("getDescriptionControlAreaList ({})", id);
+     // logger.trace("getDescriptionControlAreaList ({})", id);
         return descriptionControlAreaList;
     }
 
