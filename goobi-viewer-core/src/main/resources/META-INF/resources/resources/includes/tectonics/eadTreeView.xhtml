@@ -1,0 +1,145 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+	xmlns:c="http://java.sun.com/jsp/jstl/core"
+	xmlns:h="http://xmlns.jcp.org/jsf/html"
+	xmlns:f="http://xmlns.jcp.org/jsf/core"
+	xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+	xmlns:jsf="http://xmlns.jcp.org/jsf"
+	xmlns:pt="http://xmlns.jcp.org/jsf/passthrough">
+
+	<!-- the view type, one of 'tectonics' and 'archives'. The view is used to construct the url to open an entry. 
+	Also, only if the view is 'tectonics' the metadata of an entry will be rendered within the tree -->
+	<c:set var="view" value="#{view != null ? view : 'tectonics'}" scope="view"></c:set>
+	
+	<!-- A list of  EadEntry object which should be displayed in the tree.
+	Note: all entries in the list are displayed. The list must be filtered for visible elements beforehand-->
+	<c:set var="visibleTree"
+		value="#{tectonicsBean.tectonicsTree.treeView.stream().filter(e -> e.visible).toList()}"
+		scope="request" />
+	
+	<!-- The indentation of each hierarchical level in pixel -->
+	<c:set var="indent" value="#{indent != null ? indent : configurationBean.tocIndentation}" scope="view" />
+
+	<h:form id="tectonicsForm" prependId="false">
+
+		<!-- TECTONICS TREEVIEW -->
+		<h:panelGroup>
+
+
+			<!-- EXPANDABLE TREEVIEW -->
+			<h:panelGroup>
+
+				<!-- EXPAND ALL -->
+				<div class="tectonics-tree__expand-minimize-all">
+					<h:commandLink
+						action="#{tectonicsBean.tectonicsTree.collapseAll(true)}"
+						title="#{msg.allClose}">
+						<i class="fa fa-minus-square-o" aria-hidden="true"></i>
+						<f:passThroughAttribute name="data-toggle" value="tooltip" />
+						<f:passThroughAttribute name="data-placement" value="top" />
+						<f:passThroughAttribute name="aria-label" value="#{msg.allClose}" />
+						<f:ajax render="tectonicsForm" />
+					</h:commandLink>
+					<h:commandLink action="#{tectonicsBean.tectonicsTree.expandAll}"
+						title="#{msg.allOpen}">
+						<i class="fa fa-plus-square-o" aria-hidden="true"></i>
+						<f:passThroughAttribute name="data-toggle" value="tooltip" />
+						<f:passThroughAttribute name="data-placement" value="top" />
+						<f:passThroughAttribute name="aria-label" value="#{msg.allOpen}" />
+						<f:ajax render="tectonicsForm" />
+					</h:commandLink>
+				</div>
+
+				<nav class="tectonics-tree__list">
+					<ul>
+						<c:forEach var="entry" items="#{visibleTree}" varStatus="status">
+							<!-- This will break indentation if replaced with a c:if -->
+							<li
+								class="tectonics-tree__entry #{entry.hasChild == true ? 'parent' : 'child' }"
+								data-id="id_#{entry.id}"
+								style="padding-left: #{entry.hierarchy * indent}px"><c:if
+									test="#{entry.hasChild}">
+									<!-- EXPAND OPTION -->
+									<div class="tectonics-tree__expandable-icon">
+<!-- 										<c:choose> -->
+<!-- 											<c:when test="#{!entry.expanded}"> -->
+												<h:commandLink rendered="#{!entry.expanded}"
+													action="#{tectonicsBean.setChildrenVisible(entry)}">
+													<i class="fa fa-plus-square-o" aria-hidden="true"></i>
+													<f:passThroughAttribute name="aria-label"
+														value="#{msg.allOpen}" />
+													<f:ajax render="@form" />
+												</h:commandLink>
+<!-- 											</c:when> -->
+<!-- 											<c:otherwise> -->
+												<h:commandLink rendered="#{entry.expanded}"
+													action="#{tectonicsBean.setChildrenInvisible(entry)}">
+													<i class="fa fa-minus-square-o" aria-hidden="true"></i>
+													<f:passThroughAttribute name="aria-label"
+														value="#{msg.all}" />
+													<f:ajax render="@form" />
+												</h:commandLink>
+<!-- 											</c:otherwise> -->
+<!-- 										</c:choose> -->
+									</div>
+								</c:if> <!-- TITLE -->
+								<div class="tectonics-tree__list-expandable-title">
+
+									<!-- TODO icon -->
+									<!-- #{entry.descriptionLevel} -->
+									<!-- TODO highlight selected entry via CSS -->
+
+									<c:choose>
+										<c:when
+											test="#{entry.id == tectonicsBean.tectonicsTree.selectedEntry.id}">
+											<!-- 	                                                        	<i class="fa fa-file-o -tectonics-selected" aria-hidden="true"></i> -->
+											<span class="fa-stack" aria-hidden="true"><i
+												class="fa fa-file-o -tectonics-selected"></i><i
+												class="fa fa-stack-text -tectonics-selected">F</i></span>
+											<a class="tectonics-tree__selected" name="selected"></a>
+											<h:outputLink styleClass="tectonics-tree__active-title"
+												value="#{navigationHelper.applicationUrl}tectonics/#{entry.id}/">#{entry.label} (#{entry.hierarchy})<f:ajax
+													render="hiearchyGroup metadataGroup" />
+											</h:outputLink>
+										</c:when>
+										<c:otherwise>
+											<span class="fa-stack" aria-hidden="true"><i
+												class="fa fa-file-o"></i><i class="fa fa-stack-text">F</i></span>
+											<h:outputLink styleClass="tectonics-tree__inactive-title"
+												value="#{navigationHelper.applicationUrl}#{view}/#{entry.id}#selected">#{entry.label} (#{entry.hierarchy})<f:ajax
+													render="hiearchyGroup metadataGroup" />
+											</h:outputLink>
+										</c:otherwise>
+									</c:choose>
+								</div> <!-- METADATA --> <c:if
+									test="#{view == 'tectonics' and entry.id == tectonicsBean.tectonicsTree.selectedEntry.id}">
+									<h:panelGroup layout="block"
+										class="tectonics-tree__metadata-box"
+										id="metadata_#{status.count}">
+										<!-- Replacing this with c:forEach will result in getAllAreaLists() being called for each iteration -->
+										<ui:repeat var="field" value="#{entry.allAreaLists}">
+											<h:outputText rendered="#{field.filled and field.visible}">
+												<div class="tectonics-tree__metadata-box-fields-row">
+													<div class="tectonics-tree__metadata-box-field-name">#{field.name}:</div>
+													<div class="tectonics-tree__metadata-box-field-value">#{field.value}</div>
+												</div>
+											</h:outputText>
+										</ui:repeat>
+										<div class="tectonics-tree__metadata-box-links">
+											<h:outputLink target="_blank"
+												value="#{navigationHelper.applicationUrl}archives/">#{msg.tectonics_archiveView}</h:outputLink>
+											<!-- TODO view selection, representative page -->
+											<h:outputLink rendered="#{entry.associatedRecordPi != ''}"
+												target="_blank"
+												value="#{navigationHelper.objectUrl}/#{entry.associatedRecordPi}/1/">#{msg.tectonics_showRecord}</h:outputLink>
+										</div>
+									</h:panelGroup>
+								</c:if></li>
+						</c:forEach>
+					</ul>
+				</nav>
+			</h:panelGroup>
+		</h:panelGroup>
+	</h:form>
+
+</ui:composition>

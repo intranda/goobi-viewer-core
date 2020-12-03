@@ -31,8 +31,7 @@
 				                
                     <div class="tec-archives__graphic-tree">
                     
-                    <h:form id="tocForm" prependId="false">
-				
+                    <h:form id="searchForm" prependId="false">
 				        <div class="search-standard__input">
                             <div class="admin__search-input-wrapper">
                                 <h:inputText id="tectonicsSearchField" inputStyleClass="-no-outline -active-border"
@@ -45,96 +44,12 @@
                                 </h:commandButton>
                             </div>
                         </div>
-
-                        
-                        <!-- TOC TREEVIEW -->
-                        <h:panelGroup id="tocTreeGroup">
-                            <c:set var="indent" value="#{configurationBean.tocIndentation}" scope="request" />
-                            <!-- EXPANDABLE TREEVIEW -->
-                            <h:panelGroup>
-                                <!-- EXPAND ALL -->
-                                <div class="toc__list-expandable-all clearfix">
-                                    <ul>
-                                        <li>
-                                            <h:commandLink action="#{tectonicsBean.tectonicsTree.collapseAll(true)}" title="#{msg.allClose}">
-                                                <i class="fa fa-minus-square-o" aria-hidden="true"></i>
-                                                <f:passThroughAttribute name="data-toggle" value="tooltip" />
-                                                <f:passThroughAttribute name="data-placement" value="top" />
-                                                <f:passThroughAttribute name="aria-label" value="#{msg.allClose}" />
-                                                <f:ajax render="tocForm" />
-                                            </h:commandLink>
-                                        </li>
-                                        <li>
-                                            <h:commandLink action="#{tectonicsBean.tectonicsTree.expandAll}" title="#{msg.allOpen}">
-                                                <i class="fa fa-plus-square-o" aria-hidden="true"></i>
-                                                <f:passThroughAttribute name="data-toggle" value="tooltip" />
-                                                <f:passThroughAttribute name="data-placement" value="top" />
-                                                <f:passThroughAttribute name="aria-label" value="#{msg.allOpen}" />
-                                                <f:ajax render="tocForm" />
-                                            </h:commandLink>
-                                        </li>
-                                    </ul>
-                                </div>
-
-                                <nav class="toc__list-expandable clearfix">
-                                    <ul>
-                                        <c:set var="visibleTree" value="#{tectonicsBean.tectonicsTree.treeView.stream().filter(e -> e.visible).toList()}" scope="request" />
-										<c:forEach var="entry" items="#{visibleTree}" varStatus="status">
-                                                <li class="toc__list-expandable-elem #{entry.hasChild == true ? 'parent' : 'child' }"
-                                                    data-id="id_#{entry.id}" style="padding-left: #{entry.hierarchy * indent}px">
-                                                    <div class="row">
-                                                        <div class="col-12 col-sm-1">
-                                                            <h:panelGroup rendered="#{entry.hasChild}">
-                                                                <!-- EXPAND -->
-                                                                <div class="toc__list-expandable-expand">
-                                                                    <h:commandLink action="#{tectonicsBean.setChildrenVisible(entry)}"
-                                                                        rendered="#{!entry.expanded}">
-                                                                        <i class="fa fa-plus-square-o" aria-hidden="true"></i>
-                                                                        <f:passThroughAttribute name="aria-label" value="#{msg.allOpen}" />
-                                                                        <f:ajax render="@form" />
-                                                                    </h:commandLink>
-                                                                    <h:commandLink action="#{tectonicsBean.setChildrenInvisible(entry)}"
-                                                                        rendered="#{entry.expanded}">
-                                                                        <i class="fa fa-minus-square-o" aria-hidden="true"></i>
-                                                                        <f:passThroughAttribute name="aria-label" value="#{msg.all}" />
-                                                                        <f:ajax render="@form" />
-                                                                    </h:commandLink>
-                                                                </div>
-                                                            </h:panelGroup>
-                                                        </div>
-                                                        <div class="col-12 col-sm-8 col-md-9">
-                                                            <!-- TITLE -->
-                                                            <div class="toc__list-expandable-title">
-                                                                <!-- TODO icon instead of descriptionLevel -->
-                                                                #{entry.nodeType}
-                                                                <!-- TODO highlight selected entry via CSS -->
-                                                                <c:choose>
-                                                                    <c:when test="#{entry.id == tectonicsBean.tectonicsTree.selectedEntry.id}">
-                                                                        <h:outputLink value="#{navigationHelper.applicationUrl}tectonics/#{entry.id}/">
-                                                                            <strong>#{entry.label}</strong>
-                                                                            <f:ajax render="hiearchyGroup metadataGroup" />
-                                                                        </h:outputLink>
-                                                                    </c:when>
-                                                                    <c:otherwise>
-                                                                        <h:outputLink value="#{navigationHelper.applicationUrl}archives/#{entry.id}/">
-                                                                            <h:outputText style="#{entry.selected ? 'color:#5BA2E5' : 'color:black'}"
-                                                                                value="#{entry.label}">
-                                                                            </h:outputText>
-                                                                            <f:ajax render="hiearchyGroup metadataGroup" />
-                                                                        </h:outputLink>
-                                                                    </c:otherwise>
-                                                                </c:choose>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                </li>
-										</c:forEach>
-                                    </ul>
-                                </nav>
-                            </h:panelGroup>
-
-                        </h:panelGroup>
                     </h:form>
+	                    <ui:include src="/resources/includes/tectonics/eadTreeView.xhtml">
+	                    	<ui:param name="view" value="archives" />
+	                    	<ui:param name="indent" value="#{configurationBean.tocIndentation}"/>
+	                    </ui:include>
+                   
 					</div>
 				</div>
 				
