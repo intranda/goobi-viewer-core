@@ -185,7 +185,6 @@ public class Question {
      */
     public void onPrePersist() {
         serializeTranslations();
-        serializeMetadataFields();
     }
 
     /**
@@ -193,7 +192,6 @@ public class Question {
      */
     public void onPreUpdate() {
         serializeTranslations();
-        serializeMetadataFields();
     }
 
     /**
@@ -209,7 +207,10 @@ public class Question {
 
     }
     
-    private void serializeMetadataFields() {
+    /**
+     * Call when metadata list changes
+     */
+    public void serializeMetadataFields() {
         if(QuestionType.METADATA.equals(getQuestionType())) {            
             this.metadataFields = getMetadataFieldSelection().entrySet().stream().filter(e -> e.getValue()).map(e -> e.getKey()).collect(Collectors.toList());
         }
@@ -495,7 +496,7 @@ public class Question {
                 this.metadataFieldSelection = getAvailableMetadataFields().stream().collect(Collectors.toMap(field -> field, field -> this.metadataFields.contains(field)));
             } catch(DAOException e) {
                 //If the possible fields cannot be retrieved from solr, just show the already selected ones
-                logger.warn("Failed to load all possible metadata fields " + e.toString());
+                logger.error("Failed to load all possible metadata fields " + e.toString());
                 this.metadataFieldSelection = this.metadataFields.stream().collect(Collectors.toMap(field -> field, field -> Boolean.TRUE));
             }
         }

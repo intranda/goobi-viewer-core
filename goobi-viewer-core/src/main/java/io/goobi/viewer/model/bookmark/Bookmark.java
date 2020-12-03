@@ -32,10 +32,9 @@ import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 import javax.persistence.Transient;
 
-import org.apache.commons.text.StringEscapeUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.text.StringEscapeUtils;
 import org.apache.solr.common.SolrDocument;
-import org.apache.solr.common.SolrDocumentList;
 import org.apache.solr.common.SolrException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -56,7 +55,6 @@ import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.model.metadata.MetadataElement;
 import io.goobi.viewer.model.search.BrowseElement;
 import io.goobi.viewer.model.search.SearchHit;
-import io.goobi.viewer.model.viewer.PageType;
 import io.goobi.viewer.model.viewer.StructElement;
 
 /**
@@ -74,7 +72,8 @@ public class Bookmark implements Serializable {
     private static final Logger logger = LoggerFactory.getLogger(Bookmark.class);
 
     private static final String[] FIELDS =
-            { SolrConstants.THUMBNAIL, SolrConstants.DATAREPOSITORY, SolrConstants.MIMETYPE, SolrConstants.IDDOC, SolrConstants.PI, SolrConstants.ISWORK, SolrConstants.ISANCHOR };
+            { SolrConstants.THUMBNAIL, SolrConstants.DATAREPOSITORY, SolrConstants.MIMETYPE, SolrConstants.IDDOC, SolrConstants.PI,
+                    SolrConstants.ISWORK, SolrConstants.ISANCHOR };
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -114,13 +113,13 @@ public class Bookmark implements Serializable {
 
     @Transient
     private String url;
-    
-    @Transient 
+
+    @Transient
     private BrowseElement browseElement = null;
 
-    @Transient 
-    private Boolean hasImages = null; 
-   
+    @Transient
+    private Boolean hasImages = null;
+
     /**
      * Empty constructor.
      */
@@ -318,9 +317,9 @@ public class Bookmark implements Serializable {
         ThumbnailHandler thumbs = BeanUtils.getImageDeliveryBean().getThumbs();
         if (order != null) {
             return thumbs.getThumbnailUrl(order, pi, width, height);
-        } else {
-            return thumbs.getThumbnailUrl(pi, width, height);
         }
+
+        return thumbs.getThumbnailUrl(pi, width, height);
     }
 
     /**
@@ -589,18 +588,18 @@ public class Bookmark implements Serializable {
     public void setMainTitle(String mainTitle) {
         this.mainTitle = mainTitle;
     }
-    
+
     @JsonIgnore
     public MetadataElement getMetadataElement() throws IndexUnreachableException {
         SolrDocument doc = retrieveSolrDocument();
-        Long iddoc = Long.parseLong((String)doc.getFirstValue(SolrConstants.IDDOC));
+        Long iddoc = Long.parseLong((String) doc.getFirstValue(SolrConstants.IDDOC));
         StructElement se = new StructElement(iddoc, doc);
         Locale sessionLocale = BeanUtils.getLocale();
         String selectedRecordLanguage = sessionLocale.getLanguage();
         try {
             MetadataElement md = new MetadataElement(se, sessionLocale, selectedRecordLanguage);
             return md;
-        } catch(DAOException | PresentationException e) {
+        } catch (DAOException | PresentationException e) {
             throw new IndexUnreachableException(e.getMessage());
         }
     }
@@ -611,11 +610,11 @@ public class Bookmark implements Serializable {
      * @throws IndexUnreachableException
      */
     private SolrDocument retrieveSolrDocument() throws IndexUnreachableException {
-        try {            
+        try {
             String query = getSolrQueryForDocument();
             SolrDocument doc = DataManager.getInstance().getSearchIndex().getFirstDoc(query, null);
             return doc;
-        } catch(PresentationException e) {
+        } catch (PresentationException e) {
             throw new IndexUnreachableException(e.toString());
         }
     }
@@ -626,7 +625,7 @@ public class Bookmark implements Serializable {
     @JsonIgnore
     public String getSolrQueryForDocument() {
         String query = "+PI_TOPSTRUCT:%s";
-        if(StringUtils.isNotBlank(logId)) {
+        if (StringUtils.isNotBlank(logId)) {
             query += " +LOGID:%s";
             query = String.format(query, this.pi, this.logId);
         } else {
@@ -635,45 +634,47 @@ public class Bookmark implements Serializable {
         }
         return query;
     }
-    
+
     @JsonIgnore
     public BrowseElement getBrowseElement() throws IndexUnreachableException {
-        if(this.browseElement == null) {            
-            try {                
+        if (this.browseElement == null) {
+            try {
                 SolrDocument doc = retrieveSolrDocument();
-                if(doc != null) {                    
+                if (doc != null) {
                     Locale locale = BeanUtils.getLocale();
-                    SearchHit sh = SearchHit.createSearchHit(doc, null, null, locale, "", null, null, null, false, null, null, SearchHit.HitType.DOCSTRCT);
+                    SearchHit sh = SearchHit.createSearchHit(doc, null, null, locale, "", null, null, null, null, null,
+                            SearchHit.HitType.DOCSTRCT, BeanUtils.getImageDeliveryBean().getThumbs());
                     this.browseElement = sh.getBrowseElement();
                 }
-            } catch(PresentationException | DAOException | ViewerConfigurationException e) {
+            } catch (PresentationException | DAOException | ViewerConfigurationException e) {
                 throw new IndexUnreachableException(e.toString());
             }
         }
-        
+
         return this.browseElement;
     }
-    
+
     @JsonIgnore
     public boolean isHasImages() {
         try {
-            if(this.hasImages != null) {
+            if (this.hasImages != null) {
                 //no action required
-            } else if(this.browseElement != null) {
+            } else if (this.browseElement != null) {
                 this.hasImages = this.browseElement.isHasImages();
             } else {
                 this.hasImages = isHasImagesFromSolr();
             }
-        } catch(IndexUnreachableException | PresentationException e) {
+        } catch (IndexUnreachableException | PresentationException e) {
             logger.error("Unable to get browse element for bookmark", e);
             return false;
         }
         return this.hasImages;
     }
 
-    
     private boolean isHasImagesFromSolr() throws IndexUnreachableException, PresentationException {
-        SolrDocument doc = DataManager.getInstance().getSearchIndex().getFirstDoc(getSolrQueryForDocument(), Arrays.asList(SolrConstants.THUMBNAIL, SolrConstants.FILENAME));
+        SolrDocument doc = DataManager.getInstance()
+                .getSearchIndex()
+                .getFirstDoc(getSolrQueryForDocument(), Arrays.asList(SolrConstants.THUMBNAIL, SolrConstants.FILENAME));
         return SolrSearchIndex.isHasImages(doc);
     }
 

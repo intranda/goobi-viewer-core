@@ -50,6 +50,7 @@ import io.goobi.viewer.controller.SolrConstants;
 import io.goobi.viewer.controller.SolrConstants.DocType;
 import io.goobi.viewer.controller.SolrSearchIndex;
 import io.goobi.viewer.controller.TEITools;
+import io.goobi.viewer.controller.imaging.ThumbnailHandler;
 import io.goobi.viewer.exceptions.CmsElementNotFoundException;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
@@ -212,10 +213,10 @@ public class SearchHit implements Comparable<SearchHit> {
      * @param searchTerms a {@link java.util.Map} object.
      * @param exportFields Optional fields for (Excel) export purposes.
      * @param sortFields
-     * @param useThumbnail a boolean.
      * @param ignoreAdditionalFields a {@link java.util.Set} object.
      * @param translateAdditionalFields a {@link java.util.Set} object.
      * @param overrideType a {@link io.goobi.viewer.model.search.SearchHit.HitType} object.
+     * @param thumbnailHandler
      * @should add export fields correctly
      * @return a {@link io.goobi.viewer.model.search.SearchHit} object.
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
@@ -223,11 +224,10 @@ public class SearchHit implements Comparable<SearchHit> {
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
      */
-    public static SearchHit createSearchHit(SolrDocument doc, SolrDocument ownerDoc, Set<String> ownerAlreadyHasMetadata, Locale locale,
-            String fulltext,
-            Map<String, Set<String>> searchTerms, List<String> exportFields, List<StringPair> sortFields, boolean useThumbnail,
-            Set<String> ignoreAdditionalFields,
-            Set<String> translateAdditionalFields, HitType overrideType)
+    public static SearchHit createSearchHit(SolrDocument doc, SolrDocument ownerDoc, Set<String> ownerAlreadyHasMetadata,
+            Locale locale, String fulltext, Map<String, Set<String>> searchTerms, List<String> exportFields,
+            List<StringPair> sortFields, Set<String> ignoreAdditionalFields, Set<String> translateAdditionalFields,
+            HitType overrideType, ThumbnailHandler thumbnailHandler)
             throws PresentationException, IndexUnreachableException, DAOException, ViewerConfigurationException {
         List<String> fulltextFragments =
                 (fulltext == null || searchTerms == null) ? null : SearchHelper.truncateFulltext(searchTerms.get(SolrConstants.FULLTEXT), fulltext,
@@ -240,8 +240,8 @@ public class SearchHit implements Comparable<SearchHit> {
 
         List<Metadata> metadataList = DataManager.getInstance().getConfiguration().getSearchHitMetadataForTemplate(docstructType);
         BrowseElement browseElement = new BrowseElement(se, metadataList, locale,
-                (fulltextFragments != null && !fulltextFragments.isEmpty()) ? fulltextFragments.get(0) : null, useThumbnail, searchTerms,
-                BeanUtils.getImageDeliveryBean().getThumbs());
+                (fulltextFragments != null && !fulltextFragments.isEmpty()) ? fulltextFragments.get(0) : null, searchTerms,
+                thumbnailHandler);
         // Add additional metadata fields that aren't configured for search hits but contain search term values
         browseElement.addAdditionalMetadataContainingSearchTerms(se, searchTerms, ignoreAdditionalFields, translateAdditionalFields);
         // Add sorting fields (should be added after all other metadata to avoid duplicates)
@@ -498,33 +498,16 @@ public class SearchHit implements Comparable<SearchHit> {
      * </p>
      *
      * @param number a int.
-     * @param locale a {@link java.util.Locale} object.
-     * @param request a {@link javax.servlet.http.HttpServletRequest} object.
-     * @throws io.goobi.viewer.exceptions.PresentationException if any.
-     * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
-     * @throws io.goobi.viewer.exceptions.DAOException if any.
-     * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
-     */
-    public void populateChildren(int number, Locale locale, HttpServletRequest request)
-            throws PresentationException, IndexUnreachableException, DAOException, ViewerConfigurationException {
-        populateChildren(number, 0, locale, request);
-    }
-
-    /**
-     * <p>
-     * populateChildren.
-     * </p>
-     *
-     * @param number a int.
-     * @param locale a {@link java.util.Locale} object.
-     * @param request a {@link javax.servlet.http.HttpServletRequest} object.
      * @param skip a int.
+     * @param locale a {@link java.util.Locale} object.
+     * @param request a {@link javax.servlet.http.HttpServletRequest} object.
+     * @param thumbnailHandler
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
      */
-    public void populateChildren(int number, int skip, Locale locale, HttpServletRequest request)
+    public void populateChildren(int number, int skip, Locale locale, HttpServletRequest request, ThumbnailHandler thumbnailHandler)
             throws PresentationException, IndexUnreachableException, DAOException, ViewerConfigurationException {
         logger.trace("populateChildren START");
 
@@ -534,7 +517,7 @@ public class SearchHit implements Comparable<SearchHit> {
             logger.trace("Nothing to populate");
             return;
         }
-        
+
         logger.trace("{} child hits found for {}", childDocs.size(), pi);
         if (number + skip > childDocs.size()) {
             number = childDocs.size() - skip;
@@ -591,9 +574,8 @@ public class SearchHit implements Comparable<SearchHit> {
                     if (ownerHit == null) {
                         SolrDocument ownerDoc = DataManager.getInstance().getSearchIndex().getDocumentByIddoc(ownerIddoc);
                         if (ownerDoc != null) {
-                            ownerHit = createSearchHit(ownerDoc, null, null, locale, fulltext, searchTerms, null, null, false, ignoreFields,
-                                    translateFields,
-                                    null);
+                            ownerHit = createSearchHit(ownerDoc, null, null, locale, fulltext, searchTerms, null, null, ignoreFields,
+                                    translateFields, null, thumbnailHandler);
                             children.add(ownerHit);
                             ownerHits.put(ownerIddoc, ownerHit);
                             ownerDocs.put(ownerIddoc, ownerDoc);
@@ -607,10 +589,10 @@ public class SearchHit implements Comparable<SearchHit> {
                     }
                     {
                         SearchHit childHit =
-                                createSearchHit(childDoc, ownerDocs.get(ownerIddoc), ownerHit.getBrowseElement().getExistingMetadataFields(),
-                                        locale, fulltext, searchTerms, null, null,
-                                        false,
-                                        ignoreFields, translateFields, acccessDeniedType ? HitType.ACCESSDENIED : null);
+                                createSearchHit(childDoc, ownerDocs.get(ownerIddoc),
+                                        ownerHit.getBrowseElement().getExistingMetadataFields(), locale, fulltext, searchTerms, null,
+                                        null, ignoreFields, translateFields, acccessDeniedType ? HitType.ACCESSDENIED : null,
+                                        thumbnailHandler);
                         // Skip grouped metadata child hits that have no additional (unique) metadata to display
                         if (DocType.METADATA.equals(docType) && childHit.getFoundMetadata().isEmpty()) {
                             continue;
@@ -639,9 +621,8 @@ public class SearchHit implements Comparable<SearchHit> {
                     String iddoc = (String) childDoc.getFieldValue(SolrConstants.IDDOC);
                     if (!ownerHits.containsKey(iddoc)) {
                         SearchHit childHit =
-                                createSearchHit(childDoc, null, null, locale, fulltext, searchTerms, null, null, false, ignoreFields,
-                                        translateFields,
-                                        null);
+                                createSearchHit(childDoc, null, null, locale, fulltext, searchTerms, null, null, ignoreFields,
+                                        translateFields, null, thumbnailHandler);
                         children.add(childHit);
                         ownerHits.put(iddoc, childHit);
                         ownerDocs.put(iddoc, childDoc);

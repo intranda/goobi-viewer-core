@@ -564,7 +564,7 @@ public class AdminBean implements Serializable {
         } else {
             Messages.error("deleteFailure");
         }
-        setCurrentUserRole(null);
+        resetCurrentUserRoleAction();
     }
 
     // LicenseType
