@@ -30,7 +30,10 @@
 	                <ui:repeat var="entry" value="#{tectonicsBean.getTectonicsHierarchyForIdentifier(activeDocumentBean.viewManager.tectonicsIdentifier)}">
 					    <li class="widget-tectonics__entry">#{entry.label}</li>
 					</ui:repeat>
-					<li class="widget-tectonics__archives-link"><h:outputLink value="#{navigationHelper.applicationUrl}archives/">#{msg.openArchiveView}</h:outputLink></li>
+					<li class="widget-tectonics__archives-link">
+					    <h:outputLink
+					        value="#{navigationHelper.applicationUrl}archives/#{activeDocumentBean.viewManager.tectonicsIdentifier}">#{msg.openArchiveView}</h:outputLink>
+					</li>
 				</ul>
             </div>
 		</ui:fragment>
