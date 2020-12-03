@@ -20,14 +20,18 @@
 
 	<composite:implementation>
 	    <ui:fragment rendered="#{activeDocumentBean.recordLoaded and activeDocumentBean.viewManager.tectonicsIdentifier != null}">
-            <div id="widgetViews" class="widget">
-                <h3>#{msg.tectonics}</h3>
-                <ui:repeat var="entry"
-                    value="#{tectonicsBean.getTectonicsHierarchyForIdentifier(activeDocumentBean.viewManager.tectonicsIdentifier)}">
-				    #{entry.label}
-				    <br /><br />
-				</ui:repeat>
-				<h:outputLink value="#{navigationHelper.applicationUrl}archives/">#{msg.openArchiveView}</h:outputLink>
+            <div id="widgetTectonics" class="widget widget-tectonics">
+                <h3 class="widget-tectonics__heading">
+	                <span>#{msg.tectonics}</span>
+	                <button class="widget-tectonics__level-up"><i class="fa fa-arrow-circle-left" aria-hidden="true"></i></button>
+	                <button class="widget-tectonics__level-down"><i class="fa fa-arrow-circle-right" aria-hidden="true"></i></button>
+                </h3>
+                <ul>
+	                <ui:repeat var="entry" value="#{tectonicsBean.getTectonicsHierarchyForIdentifier(activeDocumentBean.viewManager.tectonicsIdentifier)}">
+					    <li class="widget-tectonics__entry">#{entry.label}</li>
+					</ui:repeat>
+					<li class="widget-tectonics__archives-link"><h:outputLink value="#{navigationHelper.applicationUrl}archives/">#{msg.openArchiveView}</h:outputLink></li>
+				</ul>
             </div>
 		</ui:fragment>
 	</composite:implementation>
