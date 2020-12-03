@@ -157,7 +157,6 @@ public class EadEntry {
     }
 
     public void findAssociatedRecordPi() throws PresentationException, IndexUnreachableException {
-        try(Time t = DataManager.getInstance().getTiming().takeTime("findAssociatedRecordPi")) {
         if (id == null) {
             associatedRecordPi = "";
             return;
@@ -171,7 +170,6 @@ public class EadEntry {
         }
         if (associatedRecordPi == null) {
             associatedRecordPi = "";
-        }
         }
     }
 

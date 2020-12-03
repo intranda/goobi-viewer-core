@@ -66,7 +66,7 @@ public class TectonicsBean implements Serializable {
      */
     @PostConstruct
     public void init() {
-        try(Time t = DataManager.getInstance().getTiming().takeTime("load ead database")) {
+        try {
             eadParser = new BasexEADParser(
                     DataManager.getInstance().getConfiguration().getConfigLocalPath()
                             + CONFIG_FILE_NAME);
@@ -89,7 +89,6 @@ public class TectonicsBean implements Serializable {
 
         EADTree h = tectonicsTree;
         if (h == null) {
-            try (Time t = DataManager.getInstance().getTiming().takeTime("generate tree") ){                
                 synchronized (lock) {
                     // Another thread might have initialized hierarchy by now
                     h = tectonicsTree;
@@ -98,7 +97,6 @@ public class TectonicsBean implements Serializable {
                         tectonicsTree = h;
                     }
                 }
-            }
         }
 
         return tectonicsTree;
@@ -173,7 +171,6 @@ public class TectonicsBean implements Serializable {
             return Collections.emptyList();
         }
         
-        try (Time t = DataManager.getInstance().getTiming().takeTime("getTectonicsHierarchyForIdentifier")){
             eadParser.search(identifier);
             if (eadParser.getFlatEntryList().isEmpty()) {
                 return Collections.emptyList();
@@ -189,7 +186,6 @@ public class TectonicsBean implements Serializable {
             }
             
             return eadParser.getFlatEntryList().subList(1, eadParser.getFlatEntryList().size());
-        }
     }
 
     /**

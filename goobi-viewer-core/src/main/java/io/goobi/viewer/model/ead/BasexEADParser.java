@@ -45,6 +45,8 @@ import org.jdom2.xpath.XPathFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import de.intranda.monitoring.timer.Time;
+import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.NetTools;
 import io.goobi.viewer.exceptions.HTTPException;
 import io.goobi.viewer.model.viewer.StringPair;
@@ -195,34 +197,34 @@ public class BasexEADParser {
         eventList = new ArrayList<>();
         editorList = new ArrayList<>();
 
-        Element collection = document.getRootElement();
-        Element eadElement = collection.getChild("ead", NAMESPACE_EAD);
-        rootElement = parseElement(1, 0, eadElement);
-        rootElement.setDisplayChildren(true);
+            Element collection = document.getRootElement();
+            Element eadElement = collection.getChild("ead", NAMESPACE_EAD);
+            rootElement = parseElement(1, 0, eadElement);
+            rootElement.setDisplayChildren(true);
 
-        Element archdesc = eadElement.getChild("archdesc", NAMESPACE_EAD);
-        if (archdesc != null) {
-            Element processinfoElement = archdesc.getChild("processinfo", NAMESPACE_EAD);
-            if (processinfoElement != null) {
-                Element list = processinfoElement.getChild("list", NAMESPACE_EAD);
-                List<Element> entries = list.getChildren("item", NAMESPACE_EAD);
-                for (Element item : entries) {
-                    editorList.add(item.getText());
+            Element archdesc = eadElement.getChild("archdesc", NAMESPACE_EAD);
+            if (archdesc != null) {
+                Element processinfoElement = archdesc.getChild("processinfo", NAMESPACE_EAD);
+                if (processinfoElement != null) {
+                    Element list = processinfoElement.getChild("list", NAMESPACE_EAD);
+                    List<Element> entries = list.getChildren("item", NAMESPACE_EAD);
+                    for (Element item : entries) {
+                        editorList.add(item.getText());
+                    }
                 }
             }
-        }
-        Element control = eadElement.getChild("control", NAMESPACE_EAD);
-        if (control != null) {
-            Element maintenancehistory = control.getChild("maintenancehistory", NAMESPACE_EAD);
-            if (maintenancehistory != null) {
-                List<Element> events = maintenancehistory.getChildren("maintenancehistory", NAMESPACE_EAD);
-                for (Element event : events) {
-                    String type = event.getChildText("eventtype", NAMESPACE_EAD);
-                    String date = event.getChildText("eventdatetime", NAMESPACE_EAD);
-                    eventList.add(new StringPair(type, date));
+            Element control = eadElement.getChild("control", NAMESPACE_EAD);
+            if (control != null) {
+                Element maintenancehistory = control.getChild("maintenancehistory", NAMESPACE_EAD);
+                if (maintenancehistory != null) {
+                    List<Element> events = maintenancehistory.getChildren("maintenancehistory", NAMESPACE_EAD);
+                    for (Element event : events) {
+                        String type = event.getChildText("eventtype", NAMESPACE_EAD);
+                        String date = event.getChildText("eventdatetime", NAMESPACE_EAD);
+                        eventList.add(new StringPair(type, date));
+                    }
                 }
             }
-        }
     }
 
     /**
@@ -433,7 +435,7 @@ public class BasexEADParser {
         builder.setFeature("http://apache.org/xml/features/nonvalidating/load-dtd-grammar", false);
         builder.setFeature("http://apache.org/xml/features/nonvalidating/load-external-dtd", false);
 
-        try {
+        try  {
             Document document = builder.build(new StringReader(response), "utf-8");
             return document;
 

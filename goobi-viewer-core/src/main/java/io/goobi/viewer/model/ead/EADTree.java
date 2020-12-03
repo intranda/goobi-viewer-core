@@ -106,7 +106,6 @@ public class EADTree implements Serializable {
      * @return a {@link java.util.List} object.
      */
     public List<EadEntry> getTreeViewForGroup(String group) {
-        try (Time t = DataManager.getInstance().getTiming().takeTime("get tree view for group")){            
             if (!treeBuilt) {
                 int visibleLevel = DataManager.getInstance().getConfiguration().getSidebarTocInitialCollapseLevel();
                 int collapseThreshold = DataManager.getInstance().getConfiguration().getSidebarTocCollapseLengthThreshold();
@@ -114,7 +113,6 @@ public class EADTree implements Serializable {
                 buildTree(group, visibleLevel, collapseThreshold, lowestLevelToCollapse);
             }
             return getViewForGroup(group);
-        }
     }
 
     /**

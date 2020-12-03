@@ -143,10 +143,8 @@ public class ThumbnailHandler {
      * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
      */
     public String getThumbnailUrl(String pi) throws IndexUnreachableException, PresentationException, ViewerConfigurationException {
-        try(Time t = DataManager.getInstance().getTiming().takeTime("get thumbnail url")) {            
             return getThumbnailUrl(pi, DataManager.getInstance().getConfiguration().getThumbnailsWidth(),
                     DataManager.getInstance().getConfiguration().getThumbnailsHeight());
-        }
     }
 
     /**
