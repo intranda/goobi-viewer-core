@@ -244,8 +244,8 @@ public final class SearchHelper {
             }
 
             SearchHit hit =
-                    SearchHit.createSearchHit(doc, ownerDoc, null, locale, fulltext, searchTerms, exportFields, sortFields, true, ignoreFields,
-                            translateFields, null);
+                    SearchHit.createSearchHit(doc, ownerDoc, null, locale, fulltext, searchTerms, exportFields, sortFields,
+                            ignoreFields, translateFields, null);
             if (keepSolrDoc) {
                 hit.setSolrDoc(doc);
             }
@@ -303,9 +303,9 @@ public final class SearchHelper {
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
      */
-    public static List<SearchHit> searchWithAggregation(String query, int first, int rows, List<StringPair> sortFields, List<String> resultFields,
-            List<String> filterQueries, Map<String, String> params, Map<String, Set<String>> searchTerms, List<String> exportFields, Locale locale,
-            boolean keepSolrDoc)
+    public static List<SearchHit> searchWithAggregation(String query, int first, int rows, List<StringPair> sortFields,
+            List<String> resultFields, List<String> filterQueries, Map<String, String> params, Map<String, Set<String>> searchTerms,
+            List<String> exportFields, Locale locale, boolean keepSolrDoc)
             throws PresentationException, IndexUnreachableException, DAOException, ViewerConfigurationException {
         logger.trace("searchWithAggregation: {}", query);
         QueryResponse resp =
@@ -324,9 +324,8 @@ public final class SearchHelper {
             // Create main hit
             // logger.trace("Creating search hit from {}", doc);
             SearchHit hit =
-                    SearchHit.createSearchHit(doc, null, null, locale, null, searchTerms, exportFields, sortFields, true, ignoreFields,
-                            translateFields,
-                            null);
+                    SearchHit.createSearchHit(doc, null, null, locale, null, searchTerms, exportFields, sortFields, ignoreFields,
+                            translateFields, null);
             if (keepSolrDoc) {
                 hit.setSolrDoc(doc);
             }
