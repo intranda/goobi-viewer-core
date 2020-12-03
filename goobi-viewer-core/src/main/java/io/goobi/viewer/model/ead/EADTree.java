@@ -89,10 +89,7 @@ public class EADTree implements Serializable {
      * @return a {@link java.util.List} object.
      */
     public List<EadEntry> getViewForGroup(String group) {
-        if (entryMap != null) {
-            String nodeTypes = entryMap.get(group).stream().map(EadEntry::getNodeType).distinct().collect(Collectors.joining(","));
-            System.out.println("Node types: " + nodeTypes); 
-            
+        if (entryMap != null) {            
             return entryMap.get(group);
         }
 

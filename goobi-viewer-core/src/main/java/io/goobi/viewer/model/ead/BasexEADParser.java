@@ -299,7 +299,8 @@ public class BasexEADParser {
         List<Element> clist = null;
         Element archdesc = element.getChild("archdesc", NAMESPACE_EAD);
         if (archdesc != null) {
-            entry.setNodeType(archdesc.getAttributeValue("localtype"));
+            String type = archdesc.getAttributeValue("localtype");
+            entry.setNodeType(type);
             Element dsc = archdesc.getChild("dsc", NAMESPACE_EAD);
             if (dsc != null) {
                 // read process title
@@ -313,7 +314,8 @@ public class BasexEADParser {
             }
 
         } else {
-            entry.setNodeType(element.getAttributeValue("otherlevel"));
+            String type = element.getAttributeValue("otherlevel");
+            entry.setNodeType(type);
             List<Element> altformavailList = element.getChildren("altformavail", NAMESPACE_EAD);
             for (Element altformavail : altformavailList) {
                 if ("goobi_process".equals(altformavail.getAttributeValue("localtype"))) {
