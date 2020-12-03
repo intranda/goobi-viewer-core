@@ -57,11 +57,13 @@ import io.goobi.viewer.controller.JsonTools;
 import io.goobi.viewer.controller.SolrConstants;
 import io.goobi.viewer.controller.SolrSearchIndex;
 import io.goobi.viewer.controller.StringTools;
+import io.goobi.viewer.controller.imaging.ThumbnailHandler;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.exceptions.RecordNotFoundException;
 import io.goobi.viewer.exceptions.ViewerConfigurationException;
+import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.model.metadata.CompareYearSolrDocWrapper;
 import io.goobi.viewer.model.metadata.MetadataTools;
 import io.goobi.viewer.model.search.SearchHelper;
@@ -163,9 +165,11 @@ public class RecordsResource {
         }
 
         Collections.sort(sortDocResult);
+        ThumbnailHandler thumbs = BeanUtils.getImageDeliveryBean().getThumbs();
         for (CompareYearSolrDocWrapper solrWrapper : sortDocResult) {
             SolrDocument doc = solrWrapper.getSolrDocument();
-            JSONObject jsonObj = JsonTools.getRecordJsonObject(doc, ServletUtils.getServletPathWithHostAsUrlFromRequest(servletRequest));
+            JSONObject jsonObj =
+                    JsonTools.getRecordJsonObject(doc, ServletUtils.getServletPathWithHostAsUrlFromRequest(servletRequest), thumbs);
             jsonArray.put(jsonObj);
         }
 

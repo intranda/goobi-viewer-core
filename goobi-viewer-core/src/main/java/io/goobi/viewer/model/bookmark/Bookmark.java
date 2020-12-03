@@ -318,7 +318,7 @@ public class Bookmark implements Serializable {
         if (order != null) {
             return thumbs.getThumbnailUrl(order, pi, width, height);
         }
-        
+
         return thumbs.getThumbnailUrl(pi, width, height);
     }
 
@@ -643,7 +643,7 @@ public class Bookmark implements Serializable {
                 if (doc != null) {
                     Locale locale = BeanUtils.getLocale();
                     SearchHit sh = SearchHit.createSearchHit(doc, null, null, locale, "", null, null, null, null, null,
-                            SearchHit.HitType.DOCSTRCT);
+                            SearchHit.HitType.DOCSTRCT, BeanUtils.getImageDeliveryBean().getThumbs());
                     this.browseElement = sh.getBrowseElement();
                 }
             } catch (PresentationException | DAOException | ViewerConfigurationException e) {

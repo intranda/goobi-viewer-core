@@ -29,7 +29,7 @@ public class JsonToolsTest extends AbstractSolrEnabledTest {
         QueryResponse response = DataManager.getInstance().getSearchIndex().search(SolrConstants.PI + ":" + PI, 0, 1, null, null, null);
         Assert.assertFalse("Required Solr document not found in index: " + PI, response.getResults().isEmpty());
         SolrDocument doc = response.getResults().get(0);
-        JSONObject json = JsonTools.getRecordJsonObject(doc, rootUrl);
+        JSONObject json = JsonTools.getRecordJsonObject(doc, rootUrl, null);
         Assert.assertNotNull(json);
         Assert.assertTrue(json.has("id"));
         Assert.assertEquals(PI, json.get("id"));

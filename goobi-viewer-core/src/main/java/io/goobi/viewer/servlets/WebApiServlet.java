@@ -39,10 +39,12 @@ import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.JsonTools;
 import io.goobi.viewer.controller.SolrConstants;
 import io.goobi.viewer.controller.SolrSearchIndex;
+import io.goobi.viewer.controller.imaging.ThumbnailHandler;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.exceptions.ViewerConfigurationException;
+import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.model.metadata.CompareYearSolrDocWrapper;
 import io.goobi.viewer.model.search.SearchHelper;
 import io.goobi.viewer.model.viewer.StringPair;
@@ -76,7 +78,6 @@ public class WebApiServlet extends HttpServlet implements Serializable {
 
     /** {@inheritDoc} */
     @Override
-    @SuppressWarnings("unchecked")
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         String action = null;
         String encoding = "utf-8";
@@ -174,9 +175,11 @@ public class WebApiServlet extends HttpServlet implements Serializable {
                         }
 
                         Collections.sort(sortDocResult);
+                        ThumbnailHandler thumbs = BeanUtils.getImageDeliveryBean().getThumbs();
                         for (CompareYearSolrDocWrapper solrWrapper : sortDocResult) {
                             SolrDocument doc = solrWrapper.getSolrDocument();
-                            JSONObject jsonObj = JsonTools.getRecordJsonObject(doc, ServletUtils.getServletPathWithHostAsUrlFromRequest(request));
+                            JSONObject jsonObj =
+                                    JsonTools.getRecordJsonObject(doc, ServletUtils.getServletPathWithHostAsUrlFromRequest(request), thumbs);
                             jsonArray.put(jsonObj);
                         }
                     } catch (PresentationException e) {

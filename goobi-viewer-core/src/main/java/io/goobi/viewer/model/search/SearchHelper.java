@@ -67,6 +67,7 @@ import io.goobi.viewer.controller.SolrConstants;
 import io.goobi.viewer.controller.SolrConstants.DocType;
 import io.goobi.viewer.controller.SolrSearchIndex;
 import io.goobi.viewer.controller.StringTools;
+import io.goobi.viewer.controller.imaging.ThumbnailHandler;
 import io.goobi.viewer.controller.language.LocaleComparator;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
@@ -198,6 +199,7 @@ public final class SearchHelper {
         logger.trace("hits found: {}; results returned: {}", resp.getResults().getNumFound(), resp.getResults().size());
         List<SearchHit> ret = new ArrayList<>(resp.getResults().size());
         int count = 0;
+        ThumbnailHandler thumbs = BeanUtils.getImageDeliveryBean().getThumbs();
         for (SolrDocument doc : resp.getResults()) {
             logger.trace("result iddoc: {}", doc.getFieldValue(SolrConstants.IDDOC));
             String fulltext = null;
@@ -245,7 +247,7 @@ public final class SearchHelper {
 
             SearchHit hit =
                     SearchHit.createSearchHit(doc, ownerDoc, null, locale, fulltext, searchTerms, exportFields, sortFields,
-                            ignoreFields, translateFields, null);
+                            ignoreFields, translateFields, null, thumbs);
             if (keepSolrDoc) {
                 hit.setSolrDoc(doc);
             }
@@ -277,8 +279,9 @@ public final class SearchHelper {
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
      */
-    public static List<SearchHit> searchWithAggregation(String query, int first, int rows, List<StringPair> sortFields, List<String> resultFields,
-            List<String> filterQueries, Map<String, String> params, Map<String, Set<String>> searchTerms, List<String> exportFields, Locale locale)
+    public static List<SearchHit> searchWithAggregation(String query, int first, int rows, List<StringPair> sortFields,
+            List<String> resultFields, List<String> filterQueries, Map<String, String> params, Map<String, Set<String>> searchTerms,
+            List<String> exportFields, Locale locale)
             throws PresentationException, IndexUnreachableException, DAOException, ViewerConfigurationException {
         return searchWithAggregation(query, first, rows, sortFields, resultFields, filterQueries, params, searchTerms, exportFields, locale, false);
     }
@@ -317,6 +320,7 @@ public final class SearchHelper {
         Set<String> translateFields = new HashSet<>(DataManager.getInstance().getConfiguration().getDisplayAdditionalMetadataTranslateFields());
         logger.trace("hits found: {}; results returned: {}", resp.getResults().getNumFound(), resp.getResults().size());
         List<SearchHit> ret = new ArrayList<>(resp.getResults().size());
+        ThumbnailHandler thumbs = BeanUtils.getImageDeliveryBean().getThumbs();
         for (SolrDocument doc : resp.getResults()) {
             // logger.trace("result iddoc: {}", doc.getFieldValue(SolrConstants.IDDOC));
             Map<String, SolrDocumentList> childDocs = resp.getExpandedResults();
@@ -325,7 +329,7 @@ public final class SearchHelper {
             // logger.trace("Creating search hit from {}", doc);
             SearchHit hit =
                     SearchHit.createSearchHit(doc, null, null, locale, null, searchTerms, exportFields, sortFields, ignoreFields,
-                            translateFields, null);
+                            translateFields, null, thumbs);
             if (keepSolrDoc) {
                 hit.setSolrDoc(doc);
             }
