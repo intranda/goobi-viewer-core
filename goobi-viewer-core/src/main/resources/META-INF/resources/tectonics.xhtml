@@ -59,9 +59,8 @@
 
 								<nav class="toc__list-expandable clearfix">
 									<ul>
-										<c:forEach var="entry" items="#{tectonicsBean.tectonicsTree.treeView}" varStatus="status">
-										    <!-- This will break indentation if replaced with a c:if -->
-											<h:panelGroup rendered="#{entry.visible}">
+										<c:set var="visibleTree" value="#{tectonicsBean.tectonicsTree.treeView.stream().filter(e -> e.visible).toList()}" scope="request" />
+                                        <ui:repeat var="entry" value="#{visibleTree}" varStatus="status">
 												<li class="toc__list-expandable-elem #{entry.hasChild == true ? 'parent' : 'child' }"
 												    data-id="id_#{entry.id}" style="padding-left: #{entry.hierarchy * indent}px">
 													<div class="row">
@@ -137,8 +136,7 @@
 													   </c:if>
                                                     </h:panelGroup>
 												</li>
-											</h:panelGroup>
-										</c:forEach>
+										</ui:repeat>
 									</ul>
 								</nav>
 							</h:panelGroup>
