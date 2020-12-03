@@ -128,10 +128,10 @@ public class License implements IPrivilegeHolder, Serializable {
     @JoinColumn(name = "ip_range_id")
     private IpRange ipRange;
 
-    @Column(name = "date_start")
+    @Column(name = "date_start", columnDefinition = "TIMESTAMP")
     private LocalDateTime start;
 
-    @Column(name = "date_end")
+    @Column(name = "date_end", columnDefinition = "TIMESTAMP")
     private LocalDateTime end;
 
     @ElementCollection(fetch = FetchType.EAGER)

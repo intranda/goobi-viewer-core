@@ -1,6 +1,6 @@
 <canvasPaginator>
 
-<nav class="numeric-paginator" aria-label="{msg.aria_label__nav_pagination}">
+<nav class="numeric-paginator" aria-label="{Crowdsourcing.translate(aria_label__nav_pagination)}">
 
 	<ul>
 		<li if="{getCurrentIndex() > 0}" class="numeric-paginator__navigate navigate_prev">

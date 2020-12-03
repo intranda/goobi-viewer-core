@@ -298,6 +298,7 @@ var Crowdsourcing = ( function(crowdsourcing) {
     crowdsourcing.Question.Type.TRANSCRIPTION = "TRANSCRIPTION";
     crowdsourcing.Question.Type.KEY_VALUE_LIST = "KEY_VALUE_LIST";
     crowdsourcing.Question.Type.NORMDATA = "NORMDATA";
+    crowdsourcing.Question.Type.METADATA = "METADATA";
     crowdsourcing.Question.Type.get = function(text) {
         return crowdsourcing.Question.Type[text];
     }

@@ -42,7 +42,7 @@
 	/* VISIBLE/AVAILABLE ITEMS */
 	&__visible-items,
 	&__available-items {
-		h4 {
+	h4 {
 			margin-bottom: 10px;
 		}
 		.cms-menu__available-item-level {
@@ -136,7 +136,7 @@
 				border-top: 1px solid @middlegray;
 			}
 		}
-		h5 {
+		& .available-item__heading, h5 {
 			display: flex;
 			align-items: center;
 			justify-content: space-between;
@@ -144,6 +144,7 @@
 			padding: 12px;
 			border-bottom: 1px solid @middlegray;
 			cursor: pointer;
+			font-size: 1.6rem;
 			.fa {
 				transition: all 0.2s linear;				
 			}

@@ -19,6 +19,7 @@ import java.io.Serializable;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -89,6 +90,9 @@ public class EADTree implements Serializable {
      */
     public List<EadEntry> getViewForGroup(String group) {
         if (entryMap != null) {
+            String nodeTypes = entryMap.get(group).stream().map(EadEntry::getNodeType).distinct().collect(Collectors.joining(","));
+            System.out.println("Node types: " + nodeTypes); 
+            
             return entryMap.get(group);
         }
 
@@ -192,51 +196,79 @@ public class EADTree implements Serializable {
                 lastParent = index;
                 lastLevel = entry.getHierarchy();
             }
-            collapseTocForLength(collapseThreshold, lowestLevelToCollapse);
+            collapseTocForLength(group, collapseThreshold, lowestLevelToCollapse);
             treeBuilt = true;
         }
     }
 
-    private void collapseTocForLength(int collapseThreshold, int lowestLevelToCollapse) {
-        if (collapseThreshold > 0 && entryMap != null) {
-            //        long start = System.nanoTime();
-            int index = 0;
-            int hideLevel = -1;
-            boolean hide = false;
-            for (index = 0; index < entryMap.get(DEFAULT_GROUP).size(); index++) {
-                EadEntry tocElem = entryMap.get(DEFAULT_GROUP).get(index);
+    /**
+     * 
+     * @param entry
+     * @param maxDepth
+     */
+    public void resetCollapseLevel(EadEntry entry, int maxDepth) {
+        if (entry == null) {
+            return;
+        }
 
-                if (tocElem.getHierarchy() < hideLevel || tocElem.getHierarchy() < lowestLevelToCollapse) {
-                    //if we return above the hidden level, reset flags
-                    hide = false;
-                    hideLevel = -1;
-                } else if (hide) {
-                    //if hide flag is set from previous sibling, hide and collapse this element
-                    tocElem.setExpanded(false);
-                    tocElem.setVisible(false);
-                } else {
-                    //else check if we need to hide this and following siblings
-                    int levelLength = 0;
-                    for (int i = index; i < entryMap.get(DEFAULT_GROUP).size(); i++) {
-                        EadEntry tempElem = entryMap.get(DEFAULT_GROUP).get(i);
-                        if (tempElem.getHierarchy() < tocElem.getHierarchy()) {
-                            break;
-                        } else if (tempElem.getHierarchy() == tocElem.getHierarchy()) {
-                            levelLength++;
-                        }
-                    }
-                    if (levelLength > collapseThreshold) {
-                        entryMap.get(DEFAULT_GROUP).get(index - 1).setExpanded(false); //collapse parent
-                        hideLevel = tocElem.getHierarchy();
-                        hide = true;
-                        tocElem.setExpanded(false);
-                        tocElem.setVisible(false);
+        if (entry.getHierarchy() <= maxDepth) {
+            entry.setVisible(true);
+            entry.setExpanded(entry.getHierarchy() != maxDepth);
+        } else {
+            entry.setVisible(false);
+            entry.setExpanded(false);
+        }
+
+        if (entry.getSubEntryList() != null && !entry.getSubEntryList().isEmpty()) {
+            for (EadEntry child : entry.getSubEntryList()) {
+                resetCollapseLevel(child, maxDepth);
+            }
+        }
+    }
+
+    private void collapseTocForLength(String group, int collapseThreshold, int lowestLevelToCollapse) {
+        logger.trace("collapseThreshold: {}", collapseThreshold);
+        if (collapseThreshold == 0 || group == null || entryMap == null || entryMap.get(group) == null) {
+            //            return;
+        }
+
+        // long start = System.nanoTime();
+        int index = 0;
+        int hideLevel = -1;
+        boolean hide = false;
+        for (index = 0; index < entryMap.get(group).size(); index++) {
+            EadEntry tocElem = entryMap.get(group).get(index);
+
+            if (tocElem.getHierarchy() < hideLevel || tocElem.getHierarchy() < lowestLevelToCollapse) {
+                //if we return above the hidden level, reset flags
+                hide = false;
+                hideLevel = -1;
+            } else if (hide) {
+                //if hide flag is set from previous sibling, hide and collapse this element
+                tocElem.setExpanded(false);
+                tocElem.setVisible(false);
+            } else {
+                //else check if we need to hide this and following siblings
+                int levelLength = 0;
+                for (int i = index; i < entryMap.get(group).size(); i++) {
+                    EadEntry tempElem = entryMap.get(group).get(i);
+                    if (tempElem.getHierarchy() < tocElem.getHierarchy()) {
+                        break;
+                    } else if (tempElem.getHierarchy() == tocElem.getHierarchy()) {
+                        levelLength++;
                     }
                 }
+                if (levelLength > collapseThreshold) {
+                    entryMap.get(group).get(index - 1).setExpanded(false); //collapse parent
+                    hideLevel = tocElem.getHierarchy();
+                    hide = true;
+                    tocElem.setExpanded(false);
+                    tocElem.setVisible(false);
+                }
             }
-            //        long end = System.nanoTime();
-            //          logger.trace("Time for length collapse: {} ns", (end - start))
         }
+        // long end = System.nanoTime();
+        // logger.trace("Time for length collapse: {} ns", (end - start));
     }
 
     /**

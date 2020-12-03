@@ -34,11 +34,12 @@
                     <h:form id="tocForm" prependId="false">
 				
 				        <div class="search-standard__input">
-                            <div class="search-standard__input-autocomplete">
+                            <div class="admin__search-input-wrapper">
                                 <h:inputText id="tectonicsSearchField" inputStyleClass="-no-outline -active-border"
                                     value="#{tectonicsBean.searchString}" immediate="true">
                                     <f:passThroughAttribute name="placeholder" value="#{msg.searchFieldDemoText}" />
                                 </h:inputText>
+                                <div class="admin__search-clear">x</div>
                                 <h:commandButton style="visibility:hidden" value="#{msg.search}" action="#{tectonicsBean.searchAction}">
 <!--                                   <f:ajax render="tocForm" /> -->
                                 </h:commandButton>
@@ -55,7 +56,7 @@
                                 <div class="toc__list-expandable-all clearfix">
                                     <ul>
                                         <li>
-                                            <h:commandLink action="#{tectonicsBean.tectonicsTree.collapseAll}" title="#{msg.allClose}">
+                                            <h:commandLink action="#{tectonicsBean.tectonicsTree.collapseAll(true)}" title="#{msg.allClose}">
                                                 <i class="fa fa-minus-square-o" aria-hidden="true"></i>
                                                 <f:passThroughAttribute name="data-toggle" value="tooltip" />
                                                 <f:passThroughAttribute name="data-placement" value="top" />
@@ -78,7 +79,7 @@
                                 <nav class="toc__list-expandable clearfix">
                                     <ul>
                                         <c:set var="visibleTree" value="#{tectonicsBean.tectonicsTree.treeView.stream().filter(e -> e.visible).toList()}" scope="request" />
-                                        <ui:repeat var="entry" value="#{visibleTree}" varStatus="status">
+										<c:forEach var="entry" items="#{visibleTree}" varStatus="status">
                                                 <li class="toc__list-expandable-elem #{entry.hasChild == true ? 'parent' : 'child' }"
                                                     data-id="id_#{entry.id}" style="padding-left: #{entry.hierarchy * indent}px">
                                                     <div class="row">
@@ -105,23 +106,29 @@
                                                             <!-- TITLE -->
                                                             <div class="toc__list-expandable-title">
                                                                 <!-- TODO icon instead of descriptionLevel -->
-                                                                #{entry.descriptionLevel}
+                                                                #{entry.nodeType}
                                                                 <!-- TODO highlight selected entry via CSS -->
-                                                                <h:outputLink rendered="#{entry.id == tectonicsBean.tectonicsTree.selectedEntry.id}"
-                                                                    value="#{navigationHelper.applicationUrl}archives/#{entry.id}/">
-                                                                    <strong>#{entry.label}</strong>
-                                                                    <f:ajax render="hiearchyGroup metadataGroup" />
-                                                                </h:outputLink>
-                                                                <h:outputLink rendered="#{entry.id != tectonicsBean.tectonicsTree.selectedEntry.id}"
-                                                                    value="#{navigationHelper.applicationUrl}archives/#{entry.id}/">
-                                                                    #{entry.label}
-                                                                    <f:ajax render="hiearchyGroup metadataGroup" />
-                                                                </h:outputLink>
+                                                                <c:choose>
+                                                                    <c:when test="#{entry.id == tectonicsBean.tectonicsTree.selectedEntry.id}">
+                                                                        <h:outputLink value="#{navigationHelper.applicationUrl}tectonics/#{entry.id}/">
+                                                                            <strong>#{entry.label}</strong>
+                                                                            <f:ajax render="hiearchyGroup metadataGroup" />
+                                                                        </h:outputLink>
+                                                                    </c:when>
+                                                                    <c:otherwise>
+                                                                        <h:outputLink value="#{navigationHelper.applicationUrl}archives/#{entry.id}/">
+                                                                            <h:outputText style="#{entry.selected ? 'color:#5BA2E5' : 'color:black'}"
+                                                                                value="#{entry.label}">
+                                                                            </h:outputText>
+                                                                            <f:ajax render="hiearchyGroup metadataGroup" />
+                                                                        </h:outputLink>
+                                                                    </c:otherwise>
+                                                                </c:choose>
                                                             </div>
                                                         </div>
                                                     </div>
                                                 </li>
-                                        </ui:repeat>
+										</c:forEach>
                                     </ul>
                                 </nav>
                             </h:panelGroup>
@@ -152,16 +159,77 @@
                         <h:panelGroup id="metadataGroup">
                         
                             <!-- METADATA -->
-                            <!-- Replacing this with c:forEach will result in getAllAreaLists() being called for each iteration -->
-                            <ui:repeat var="field" value="#{tectonicsBean.tectonicsTree.selectedEntry.allAreaLists}">
-                                <h:outputText rendered="#{field.filled and field.visible}">
-                                    <!-- TODO bold via CSS -->
-                                    <br /><strong>#{field.name}:</strong> #{field.value}
-                                </h:outputText>
-                            </ui:repeat>
+                            <!-- Replacing these with c:forEach will result in get*List() being called for each iteration -->
+                            
+                            <!-- TODO bold via CSS -->
+                            
+                            <!-- Identity statement metadata -->
+                            <c:if test="#{not empty tectonicsBean.tectonicsTree.selectedEntry.identityStatementAreaList}">
+                                <label>#{msg.plugin_administration_archive_area_identity}</label>
+                                <ui:repeat var="field" value="#{tectonicsBean.tectonicsTree.selectedEntry.identityStatementAreaList}">
+                                    <h:outputText rendered="#{field.filled and field.visible}">
+                                        <br /><strong>#{field.name}:</strong> #{field.value}
+                                    </h:outputText>
+                                </ui:repeat>
+                            </c:if>
+                            <!-- Context metadata -->
+                            <c:if test="#{not empty tectonicsBean.tectonicsTree.selectedEntry.contextAreaList}">
+                                <label>#{msg.plugin_administration_archive_area_context}</label>
+                                <ui:repeat var="field" value="#{tectonicsBean.tectonicsTree.selectedEntry.contextAreaList}">
+                                    <h:outputText rendered="#{field.filled and field.visible}">
+                                        <br /><strong>#{field.name}:</strong> #{field.value}
+                                    </h:outputText>
+                                </ui:repeat>
+                            </c:if>
+                            <!-- Content and structure metadata -->
+                            <c:if test="#{not empty tectonicsBean.tectonicsTree.selectedEntry.contentAndStructureAreaAreaList}">
+                                <label>#{msg.plugin_administration_archive_area_content}</label>
+                                <ui:repeat var="field" value="#{tectonicsBean.tectonicsTree.selectedEntry.contentAndStructureAreaAreaList}">
+                                    <h:outputText rendered="#{field.filled and field.visible}">
+                                        <br /><strong>#{field.name}:</strong> #{field.value}
+                                    </h:outputText>
+                                </ui:repeat>
+                            </c:if>
+                            <!-- Access and terms of usage metadata -->
+                            <c:if test="#{not empty tectonicsBean.tectonicsTree.selectedEntry.accessAndUseAreaList}">
+                                <label>#{msg.plugin_administration_archive_area_access}</label>
+                                <ui:repeat var="field" value="#{tectonicsBean.tectonicsTree.selectedEntry.accessAndUseAreaList}">
+                                    <h:outputText rendered="#{field.filled and field.visible}">
+                                        <br /><strong>#{field.name}:</strong> #{field.value}
+                                    </h:outputText>
+                                </ui:repeat>
+                            </c:if>
+                            <!-- Related matarials metadata -->
+                            <c:if test="#{not empty tectonicsBean.tectonicsTree.selectedEntry.alliedMaterialsAreaList}">
+                                <label>#{msg.plugin_administration_archive_area_materials}</label>
+                                <ui:repeat var="field" value="#{tectonicsBean.tectonicsTree.selectedEntry.alliedMaterialsAreaList}">
+                                    <h:outputText rendered="#{field.filled and field.visible}">
+                                        <br /><strong>#{field.name}:</strong> #{field.value}
+                                    </h:outputText>
+                                </ui:repeat>
+                            </c:if>
+                            <!-- Notes metadata -->
+                            <c:if test="#{not empty tectonicsBean.tectonicsTree.selectedEntry.notesAreaList}">
+                                <label>#{msg.plugin_administration_archive_area_notes}</label>
+                                <ui:repeat var="field" value="#{tectonicsBean.tectonicsTree.selectedEntry.notesAreaList}">
+                                    <h:outputText rendered="#{field.filled and field.visible}">
+                                        <br /><strong>#{field.name}:</strong> #{field.value}
+                                    </h:outputText>
+                                </ui:repeat>
+                            </c:if>
+                            <!-- Description control metadata -->
+                            <c:if test="#{not empty tectonicsBean.tectonicsTree.selectedEntry.descriptionControlAreaList}}">
+                                <label>#{msg.plugin_administration_archive_area_descriptionControl}</label>
+                                <ui:repeat var="field" value="#{tectonicsBean.tectonicsTree.selectedEntry.descriptionControlAreaList}">
+                                    <h:outputText rendered="#{field.filled and field.visible}">
+                                        <br /><strong>#{field.name}:</strong> #{field.value}
+                                    </h:outputText>
+                                </ui:repeat>
+                            </c:if>
                         
                             <!-- ASSOCIATED RECORD -->
-                            <h:outputLink rendered="#{tectonicsBean.tectonicsTree.selectedEntry.associatedRecordPi != ''}" target="_blank"
+                            <h:outputLink
+                                rendered="#{tectonicsBean.tectonicsTree.selectedEntry != null and tectonicsBean.tectonicsTree.selectedEntry.associatedRecordPi != ''}" target="_blank"
                                 value="#{navigationHelper.objectUrl}/#{tectonicsBean.tectonicsTree.selectedEntry.associatedRecordPi}/1/">
                                     <!-- TODO less trivial image display -->
                                     <img src="#{imageDelivery.thumbs.getThumbnailUrl(tectonicsBean.tectonicsTree.selectedEntry.associatedRecordPi)}" />

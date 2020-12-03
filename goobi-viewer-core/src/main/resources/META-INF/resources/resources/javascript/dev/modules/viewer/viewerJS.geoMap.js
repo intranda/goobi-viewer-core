@@ -313,8 +313,8 @@ var viewerJS = ( function( viewer ) {
      */
     viewer.GeoMap.prototype.setView = function(view) {
         if(_debug) {
+            console.log("set view to ", view);
         }
-        console.log("set view to ", view);
         if(!view) {
             return;
         } else if(typeof view === "string") {

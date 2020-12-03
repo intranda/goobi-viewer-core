@@ -48,6 +48,7 @@ import de.unigoettingen.sub.commons.contentlib.servlet.rest.CORSBinding;
 import io.goobi.viewer.api.rest.ViewerRestServiceBinding;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.StringTools;
+import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.messages.ViewerResourceBundle;
 
@@ -95,13 +96,14 @@ public class NormdataResource {
      * @throws java.net.MalformedURLException if any.
      * @throws de.unigoettingen.sub.commons.contentlib.exceptions.ContentNotFoundException if any.
      * @throws de.unigoettingen.sub.commons.contentlib.exceptions.ServiceNotAllowedException if any.
+     * @throws PresentationException 
      */
     @GET
     @Path("/get/{url}/{template}/{lang}")
     @Produces({ MediaType.APPLICATION_JSON })
     @CORSBinding
     public String getNormData(@PathParam("url") String url, @PathParam("template") String template, @PathParam("lang") String lang)
-            throws MalformedURLException, ContentNotFoundException, ServiceNotAllowedException {
+            throws MalformedURLException, ContentNotFoundException, ServiceNotAllowedException, PresentationException {
         logger.trace("getNormData: {}", url);
         if (servletResponse != null) {
             servletResponse.setCharacterEncoding(StringTools.DEFAULT_ENCODING);
@@ -186,8 +188,12 @@ public class NormdataResource {
                 jsonArray.put(addNormDataValuesToJSON(normData, locale));
             }
         }
-
-        return jsonArray.toString();
+        
+        try {            
+            return jsonArray.toString();
+        } catch(NoSuchMethodError e) {
+            throw new PresentationException("Error creating json of normdata from " + url);
+        }
     }
 
     /**
@@ -251,12 +257,13 @@ public class NormdataResource {
      * @throws java.net.MalformedURLException if any.
      * @throws de.unigoettingen.sub.commons.contentlib.exceptions.ContentNotFoundException if any.
      * @throws de.unigoettingen.sub.commons.contentlib.exceptions.ServiceNotAllowedException if any.
+     * @throws PresentationException 
      */
     @GET
     @Path("/get/{url}/{lang}")
     @Produces({ MediaType.APPLICATION_JSON })
     public String getNormData(@PathParam("url") String url, @PathParam("lang") String lang)
-            throws MalformedURLException, ContentNotFoundException, ServiceNotAllowedException {
+            throws MalformedURLException, ContentNotFoundException, ServiceNotAllowedException, PresentationException {
         return getNormData(url, "_DEFAULT", lang);
     }
 }

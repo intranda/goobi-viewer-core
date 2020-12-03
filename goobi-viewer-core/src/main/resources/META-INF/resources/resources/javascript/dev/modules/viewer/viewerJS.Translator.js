@@ -26,8 +26,8 @@ var viewerJS = ( function( viewer ) {
     'use strict';
     
 
-    viewer.Translator = function(keys, restApiUrl, defaultLanguage) {
-        this.keys = keys;
+    viewer.Translator = function(restApiUrl, defaultLanguage) {
+        this.keys = [];
         this.restApiUrl = restApiUrl;
         this.language = defaultLanguage
     }
@@ -41,22 +41,38 @@ var viewerJS = ( function( viewer ) {
      * @defaultLanguage the language to be used as default
      * 
      */
-    viewer.Translator.prototype.init = function() {
-        if(viewer.isString(this.keys)) {
-            this.keys = [this.keys];
-        }
-        let keyList = this.keys.join("$");
-        let url = this.restApiUrl + "messages/translate/" + keyList;
-        return fetch(url)
-        .then( response => response.json() )
-        .then( function(json) {
-            this.translations = json;
-        }.bind(this))
-        .catch(error => {
-            console.error("Error fetching " + url + ": " + error);
-            this.translations = {};
-        });
+    viewer.Translator.prototype.init = function(keys) {
+        return this.addTranslations(keys);
     }
+    
+    viewer.Translator.prototype.addTranslations = function(keys) {
+        if(viewer.isString(keys)) {
+            keys = [keys];
+        }
+        keys = keys.filter(key => this.keys && !this.keys.includes(key));
+        this.keys = this.keys ? this.keys.concat(keys) : keys;
+        
+        if(keys && keys.length > 0) {            
+            let keyList = keys.join(",");
+            let url = this.restApiUrl + "localization/translations?keys=" + keyList;
+            return fetch(url)
+            .then( response => response.json() )
+            .then( function(json) {
+                if(this.translations) {
+                    this.translations = $.extend(true, this.translations, json);
+                } else {                
+                    this.translations = json;
+                }
+            }.bind(this))
+            .catch(error => {
+                console.error("Error fetching " + url + ": " + error);
+                this.translations = {};
+            });
+        } else {
+            return Promise.resolve();
+        }
+    }
+
     
     /**
      * Returns a translation for the given message key in the given language. 

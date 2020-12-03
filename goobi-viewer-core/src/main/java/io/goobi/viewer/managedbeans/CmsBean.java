@@ -2111,7 +2111,7 @@ public class CmsBean implements Serializable {
             filteredLuceneFields = filteredLuceneFields.sorted();
             return filteredLuceneFields.collect(Collectors.toList());
 
-        } catch (SolrServerException | IOException e) {
+        } catch (DAOException e) {
             logger.error("Error retrieving solr fields", e);
             return Collections.singletonList("");
         }

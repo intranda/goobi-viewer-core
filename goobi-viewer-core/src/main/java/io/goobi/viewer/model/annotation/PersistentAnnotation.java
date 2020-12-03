@@ -69,10 +69,10 @@ public class PersistentAnnotation {
     @Column(name = "annotation_id")
     private Long id;
 
-    @Column(name = "date_created")
+    @Column(name = "date_created", columnDefinition = "TIMESTAMP")
     private LocalDateTime dateCreated;
 
-    @Column(name = "date_modified")
+    @Column(name = "date_modified", columnDefinition = "TIMESTAMP")
     private LocalDateTime dateModified;
 
     @Column(name = "motivation")
@@ -635,5 +635,21 @@ public class PersistentAnnotation {
      */
     public void setAccessCondition(String accessCondition) {
         this.accessCondition = accessCondition;
+    }
+    
+    /* (non-Javadoc)
+     * @see java.lang.Object#toString()
+     */
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder("Crowdsourcing Annotation");
+        sb.append("\n\t").append("Body:").append(getBody());
+        sb.append("\n\t").append("Target:").append(getTarget());
+        sb.append("\n\t").append("GeneratorId:").append(getGeneratorId());
+        sb.append("\n\t").append("CreatorId:").append(getCreatorId());
+        sb.append("\n\t").append("ReviewerId:").append(getReviewerId());
+        
+        return sb.toString();
+
     }
 }

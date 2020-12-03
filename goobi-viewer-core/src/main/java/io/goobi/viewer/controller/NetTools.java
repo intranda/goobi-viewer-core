@@ -320,6 +320,7 @@ public class NetTools {
         props.setProperty("mail.smtp.connectiontimeout", "15000");
         props.setProperty("mail.smtp.timeout", "15000");
         props.setProperty("mail.smtp.auth", String.valueOf(auth));
+        logger.debug("Connecting to email server " + smtpServer + " on port " + String.valueOf(smtpPort) + " via SMTP security " + smtpSecurity.toUpperCase());
         // logger.trace(props.toString());
 
         Session session;
