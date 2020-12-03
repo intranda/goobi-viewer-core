@@ -331,7 +331,6 @@
 																	</div>
 																	
 																	<!-- METADATA -->
-<!-- 																	<c:if test="#{question.questionType == 'METADATA'}"> -->
 																		<ui:fragment rendered="#{question.questionType == 'METADATA'}">
 																		<div class="form-row form-group">
 	
@@ -343,8 +342,7 @@
 																				<h:panelGroup id="metadataFields" layout="block">
 																					<ui:repeat id="metadataFieldLoop" var="field"
 																						value="#{question.selectedMetadataFields}">
-																						<!-- NON FUNCTIONAL LINK -->
-																						<h:commandLink styleClass="-defaultCursor" action="#{question.removeMetadataField(field)}"><div class="badge badge-info">#{msg[field]}<f:ajax render="createCampaignForm:questions:#{status.index}:question"></f:ajax></div></h:commandLink>
+																						<div class="badge badge-info">#{msg[field]}</div>
 																					</ui:repeat>
 																				</h:panelGroup>
 																				
@@ -354,10 +352,10 @@
 					                                                                           <ui:repeat var="field" value="#{question.availableMetadataFields}">
 					                                                                               <li>
 					                                                                                   <label>
-					                                                                                       <h:selectBooleanCheckbox  type="checkbox" value="#{question.metadataFieldSelection[field]}">
-					                                                                                           <f:ajax event="change" render="createCampaignForm:questions:#{status.index}:metadataFields" execute="@this"></f:ajax>
+					                                                                                       <h:selectBooleanCheckbox type="checkbox" value="#{question.metadataFieldSelection[field]}">
+					                                                                                           <f:ajax  listener="#{question.serializeMetadataFields}" event="change" render="createCampaignForm:questions:#{status.index}:metadataFields" execute="@this"></f:ajax>
 					                                                                                       </h:selectBooleanCheckbox>
-					                                                                                       #{msg[field]}
+					                                                                                       <label title="#{field}">#{msg[field]}</label>
 					                                                                                   </label>
 					                                                                               </li>
 					                                                                           </ui:repeat>
