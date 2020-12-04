@@ -205,33 +205,45 @@ public class TectonicsBean implements Serializable {
      */
     public String searchAction() {
         logger.trace("searchAction: {}", searchString);
+        search(true, true);
+
+        return "";
+    }
+
+    /**
+     * Executes search for searchString.
+     * 
+     * @param resetSelectedEntry If true, selected entry will be set to null
+     * @param collapseAll If true, all elements will be collapsed before expanding path to search hits
+     */
+    void search(boolean resetSelectedEntry, boolean collapseAll) {
         if (eadParser == null || !eadParser.isDatabaseLoaded() || tectonicsTree == null) {
             logger.warn("Tree not loaded, cannot search.");
-            return "";
+            return;
         }
 
         if (StringUtils.isEmpty(searchString)) {
             eadParser.resetSearch();
             tectonicsTree.resetCollapseLevel(tectonicsTree.getRootElement(), EADTree.defaultCollapseLevel);
-            return "";
+            return;
         }
 
         eadParser.search(searchString);
         List<EadEntry> results = eadParser.getFlatEntryList();
         if (results == null || results.isEmpty()) {
-            return "";
+            return;
         }
         logger.trace("result entries: {}", results.size());
 
-        tectonicsTree.setSelectedEntry(null);
-        tectonicsTree.collapseAll(true);
+        if (resetSelectedEntry) {
+            setSelectedEntryId(null);
+        }
+        tectonicsTree.collapseAll(collapseAll);
         for (EadEntry entry : results) {
             if (entry.isSearchHit()) {
                 entry.expandUp();
             }
         }
-
-        return "";
     }
 
     /**
@@ -262,20 +274,22 @@ public class TectonicsBean implements Serializable {
     }
 
     /**
+     * Setter for the URL parameter. Loads the entry that has the given ID. Loads the tree, if this is a new sessions.
      * 
-     * @param id
+     * @param id Entry ID
      */
     public void setSelectedEntryId(String id) {
         logger.trace("setSelectedEntryId: {}", id);
+
+        // getTectonicsTree() will also load the tree, if not yet loaded
         if (getTectonicsTree() == null || eadParser == null) {
             return;
         }
+        // Select root element if no ID given
         if (StringUtils.isBlank(id)) {
-            tectonicsTree.setSelectedEntry(null);
-            return;
+            id = "-";
         }
         if ("-".equals(id)) {
-            // tectonicsTree.resetCollapseLevel();
             tectonicsTree.setSelectedEntry(eadParser.getRootElement());
             return;
         }
@@ -285,16 +299,23 @@ public class TectonicsBean implements Serializable {
         }
 
         // Find entry with given ID in the tree
-        eadParser.search(id);
-        List<EadEntry> results = eadParser.getFlatEntryList();
-        if (results == null || results.isEmpty()) {
-            logger.debug("Entry not found: {}", id);
-            tectonicsTree.setSelectedEntry(eadParser.getRootElement());
-            return;
-        }
+        try {
+            eadParser.search(id);
+            List<EadEntry> results = eadParser.getFlatEntryList();
+            if (results == null || results.isEmpty()) {
+                logger.debug("Entry not found: {}", id);
+                tectonicsTree.setSelectedEntry(eadParser.getRootElement());
+                return;
+            }
 
-        EadEntry entry = results.get(results.size() - 1);
-        tectonicsTree.setSelectedEntry(entry);
-        entry.expandUp();
+            EadEntry entry = results.get(results.size() - 1);
+            tectonicsTree.setSelectedEntry(entry);
+            entry.expandUp();
+        } finally {
+            // If there are current search results, restore them
+            if (StringUtils.isNotEmpty(searchString)) {
+                search(false, false);
+            }
+        }
     }
 }

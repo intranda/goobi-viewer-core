@@ -324,9 +324,8 @@ public class EadEntry {
      * Expands this entry and sets all sub-entries visible if their immediate parent is expanded.
      */
     public void expand() {
-        logger.trace("expand: {}", id);
+        // logger.trace("expand: {}", id);
         if (!isHasChildren()) {
-            logger.trace("{} has no children", id);
             return;
         }
 
@@ -338,9 +337,8 @@ public class EadEntry {
      * Collapses this entry and hides all sub-entries.
      */
     public void collapse() {
-        logger.trace("collapse: {}", id);
+        // logger.trace("collapse: {}", id);
         if (!isHasChildren()) {
-            logger.trace("{} has no children", id);
             return;
         }
 
