@@ -5,11 +5,10 @@
 .widget-tectonics {
 	.widget-tectonics {
 		&__entry {
-			margin-bottom: 0.3rem;
 			text-align: center;
 			&:after {
 				font: normal normal normal 14px/1 FontAwesome;
-				content: "\f063";
+				content: "\f107";
 				font-size: 1.4rem;
 				display: inline-block;
 				width: 100%;
@@ -23,50 +22,22 @@
 		}
 		&__archives-link {
 			width: 100%;
-			background: #0ea67c;
-			margin-top: 1rem;
-			margin: 1rem 0 0.5rem 0;
-			a {
-				color: @white;
-				padding: .5rem 3rem .5rem .8rem;
-				font-weight: 700;
-				position: relative;
-				display: flex;
-				align-items: center;
-				&::after {
-					font: normal normal normal 14px/1 FontAwesome;
-					content: "\f114";
-					font-size: 1.4rem;
-					display: inline-block;
-					position: absolute;
-					right: 1rem;
-					width: 16px;
-				}
-				&:hover,
-				&:active,
-				&:focus {
-					text-decoration: none;
-					color: @white;
-					&::after {
-						content: "\f115";
-					}
-				}
-			}
+			margin-top: .6rem;
+			text-align: center;
 		}
 		&__heading {
 			display: flex;
 			align-items: flex-start;
 		}
-		&__level-up,
-		&__level-down {
-			display: none;
+		&__prev,
+		&__next {
 			padding: 0;
 			line-height: inherit;
 			color: inherit;
 			border: none;
 			background: transparent;
 		}
-		&__level-up {
+		&__prev {
 			margin-left: auto;
 			margin-right: 1.8rem;
 		}
