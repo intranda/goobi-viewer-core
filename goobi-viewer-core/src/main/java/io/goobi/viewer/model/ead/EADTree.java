@@ -46,9 +46,9 @@ public class EADTree implements Serializable {
 
     private boolean treeBuilt = false;
 
-    private int tocVisible = -1;
+    private int toExpandIndex = -1;
 
-    private int tocInvisible = -1;
+    private int toCollapseIndex = -1;
 
     private int maxTocDepth = 0;
 
@@ -218,25 +218,23 @@ public class EADTree implements Serializable {
      *
      * @return a {@link io.goobi.viewer.model.toc.TOCElement} object.
      */
-    public EadEntry getActiveEntry() {
+    public EadEntry updateTree() {
         EadEntry ret = null;
         if (entryMap == null) {
             return ret;
         }
 
-        logger.trace("getActiveEntry  {}/{}", tocVisible, tocInvisible);
-
-        if (tocVisible != -1) {
-            expandTree(tocVisible);
-            ret = entryMap.get(DEFAULT_GROUP).get(tocVisible);
+        if (toExpandIndex != -1) {
+            expandSubtree(toExpandIndex);
+            ret = entryMap.get(DEFAULT_GROUP).get(toExpandIndex);
             ret.setExpanded(true);
-            tocVisible = -1;
+            toExpandIndex = -1;
         }
-        if (tocInvisible != -1) {
-            collapseTree(tocInvisible);
-            ret = entryMap.get(DEFAULT_GROUP).get(tocInvisible);
+        if (toCollapseIndex != -1) {
+            collapseSubtree(toCollapseIndex);
+            ret = entryMap.get(DEFAULT_GROUP).get(toCollapseIndex);
             ret.setExpanded(false);
-            tocInvisible = -1;
+            toCollapseIndex = -1;
         }
 
         return ret;
@@ -283,8 +281,8 @@ public class EADTree implements Serializable {
      *
      * @param parentIndex
      */
-    private void collapseTree(int parentIndex) {
-        logger.trace("collapseTree: {}", parentIndex);
+    private void collapseSubtree(int parentIndex) {
+        logger.trace("collapseSubtree: {}", parentIndex);
         if (entryMap == null) {
             return;
         }
@@ -307,8 +305,8 @@ public class EADTree implements Serializable {
      *
      * @param parentId
      */
-    private void expandTree(int parentId) {
-        // logger.trace("expandTree: {}", parentId);
+    private void expandSubtree(int parentId) {
+        // logger.trace("expandSubtree: {}", parentId);
         if (entryMap == null) {
             return;
         }
@@ -321,7 +319,7 @@ public class EADTree implements Serializable {
                 child.setVisible(true);
                 // Elements further down the tree are handled recursively
                 if (child.isHasChild() && child.isExpanded()) {
-                    expandTree(child.getIndex());
+                    expandSubtree(child.getIndex());
                 }
             } else if (child.getHierarchy() <= level) {
                 // Rest of the elements are irrelevant because they belong
@@ -388,24 +386,24 @@ public class EADTree implements Serializable {
 
     /**
      * <p>
-     * setChildVisible.
+     * setToExpandIndex.
      * </p>
      *
      * @param id a int.
      */
-    public void setChildVisible(int id) {
-        this.tocVisible = id;
+    public void setToExpandIndex(int toExpandIndex) {
+        this.toExpandIndex = toExpandIndex;
     }
 
     /**
      * <p>
-     * setChildInvisible.
+     * setToCollapseIndexs.
      * </p>
      *
      * @param id a int.
      */
-    public void setChildInvisible(int id) {
-        this.tocInvisible = id;
+    public void setToCollapseIndex(int toCollapseIndex) {
+        this.toCollapseIndex = toCollapseIndex;
     }
 
     /**
@@ -428,50 +426,6 @@ public class EADTree implements Serializable {
         }
 
         return null;
-    }
-
-    /**
-     * <p>
-     * Getter for the field <code>tocVisible</code>.
-     * </p>
-     *
-     * @return the tocVisible
-     */
-    public int getTocVisible() {
-        return tocVisible;
-    }
-
-    /**
-     * <p>
-     * Setter for the field <code>tocVisible</code>.
-     * </p>
-     *
-     * @param tocVisible the tocVisible to set
-     */
-    public void setTocVisible(int tocVisible) {
-        this.tocVisible = tocVisible;
-    }
-
-    /**
-     * <p>
-     * Getter for the field <code>tocInvisible</code>.
-     * </p>
-     *
-     * @return the tocInvisible
-     */
-    public int getTocInvisible() {
-        return tocInvisible;
-    }
-
-    /**
-     * <p>
-     * Setter for the field <code>tocInvisible</code>.
-     * </p>
-     *
-     * @param tocInvisible the tocInvisible to set
-     */
-    public void setTocInvisible(int tocInvisible) {
-        this.tocInvisible = tocInvisible;
     }
 
     /**
