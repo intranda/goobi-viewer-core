@@ -25,7 +25,6 @@ import javax.inject.Named;
 
 import org.apache.commons.configuration.ConfigurationException;
 import org.apache.commons.configuration.HierarchicalConfiguration;
-import org.apache.commons.configuration.SubnodeConfiguration;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -42,8 +41,6 @@ public class TectonicsBean implements Serializable {
     private static final long serialVersionUID = -1755934299534933504L;
 
     private static final Logger logger = LoggerFactory.getLogger(TectonicsBean.class);
-
-    private static final String CONFIG_FILE_NAME = "plugin_intranda_administration_archive_management.xml";
 
     private static final Object lock = new Object();
 
@@ -135,8 +132,7 @@ public class TectonicsBean implements Serializable {
             return;
         }
         synchronized (tectonicsTree) {
-            tectonicsTree.setToExpandIndex(entry.getIndex());
-            tectonicsTree.updateTree();
+            entry.expand();
         }
     }
 
@@ -154,8 +150,7 @@ public class TectonicsBean implements Serializable {
         }
 
         synchronized (tectonicsTree) {
-            tectonicsTree.setToCollapseIndex(entry.getIndex());
-            tectonicsTree.updateTree();
+            entry.collapse();
         }
     }
 
@@ -235,7 +230,6 @@ public class TectonicsBean implements Serializable {
                 expandHierarchyToEntry(entry, false);
             }
         }
-        tectonicsTree.updateTree();
 
         return "";
     }
@@ -279,25 +273,30 @@ public class TectonicsBean implements Serializable {
         if (StringUtils.isBlank(id)) {
             tectonicsTree.setSelectedEntry(null);
             return;
-        } else if ("-".equals(id)) {
+        }
+        if ("-".equals(id)) {
             // tectonicsTree.resetCollapseLevel();
             tectonicsTree.setSelectedEntry(eadParser.getRootElement());
             return;
-        } else {
-            // Find entry with given ID in the tree
-            eadParser.search(id);
-            List<EadEntry> results = eadParser.getFlatEntryList();
-            if (results == null || results.isEmpty()) {
-                logger.debug("Entry not found: {}", id);
-                tectonicsTree.setSelectedEntry(eadParser.getRootElement());
-                return;
-            }
-
-            EadEntry entry = results.get(results.size() - 1);
-            tectonicsTree.setSelectedEntry(entry);
-            expandHierarchyToEntry(entry, false);
-            tectonicsTree.updateTree();
         }
+        // Requested entry is already selected
+        if (tectonicsTree.getSelectedEntry() != null && tectonicsTree.getSelectedEntry().getId().equals(id)) {
+            return;
+        }
+
+        // Find entry with given ID in the tree
+        eadParser.search(id);
+        List<EadEntry> results = eadParser.getFlatEntryList();
+        if (results == null || results.isEmpty()) {
+            logger.debug("Entry not found: {}", id);
+            tectonicsTree.setSelectedEntry(eadParser.getRootElement());
+            return;
+        }
+
+        EadEntry entry = results.get(results.size() - 1);
+        tectonicsTree.setSelectedEntry(entry);
+        expandHierarchyToEntry(entry, false);
+
     }
 
     /**

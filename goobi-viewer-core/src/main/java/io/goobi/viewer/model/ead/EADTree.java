@@ -218,6 +218,7 @@ public class EADTree implements Serializable {
      *
      * @return a {@link io.goobi.viewer.model.toc.TOCElement} object.
      */
+    @Deprecated
     public EadEntry updateTree() {
         EadEntry ret = null;
         if (entryMap == null) {
@@ -281,6 +282,7 @@ public class EADTree implements Serializable {
      *
      * @param parentIndex
      */
+    @Deprecated
     private void collapseSubtree(int parentIndex) {
         logger.trace("collapseSubtree: {}", parentIndex);
         if (entryMap == null) {
@@ -292,6 +294,7 @@ public class EADTree implements Serializable {
             EadEntry child = entryMap.get(DEFAULT_GROUP).get(i);
             if (child.getHierarchy() > level) {
                 child.setVisible(false);
+                logger.trace("Collapsed entry: {}", child);
             } else {
                 // Rest of the elements are irrelevant because they belong
                 // to a different subtree on the same level
@@ -303,20 +306,22 @@ public class EADTree implements Serializable {
     /**
      * Recursively expands the child elements of the element with the given ID.
      *
-     * @param parentId
+     * @param parentIndex
      */
-    private void expandSubtree(int parentId) {
-        // logger.trace("expandSubtree: {}", parentId);
+    @Deprecated
+    private void expandSubtree(int parentIndex) {
+        logger.trace("expandSubtree: {}", parentIndex);
         if (entryMap == null) {
             return;
         }
 
-        int level = entryMap.get(DEFAULT_GROUP).get(parentId).getHierarchy();
-        for (int i = parentId + 1; i < entryMap.get(DEFAULT_GROUP).size(); i++) {
+        int level = entryMap.get(DEFAULT_GROUP).get(parentIndex).getHierarchy();
+        for (int i = parentIndex + 1; i < entryMap.get(DEFAULT_GROUP).size(); i++) {
             EadEntry child = entryMap.get(DEFAULT_GROUP).get(i);
             if (child.getHierarchy() == level + 1) {
                 // Set immediate children visible
                 child.setVisible(true);
+                logger.trace("Expanded entry: {}", child);
                 // Elements further down the tree are handled recursively
                 if (child.isHasChild() && child.isExpanded()) {
                     expandSubtree(child.getIndex());
