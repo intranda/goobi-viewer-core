@@ -308,6 +308,19 @@ public class EadEntry {
     }
 
     /**
+     * Expands and sets visible all ancestors of this node and expands siblings of this node.
+     */
+    public void expandUp() {
+        if (parentNode == null) {
+            return;
+        }
+
+        parentNode.setVisible(visible);
+        parentNode.expand();
+        parentNode.expandUp();
+    }
+
+    /**
      * Expands this entry and sets all sub-entries visible if their immediate parent is expanded.
      */
     public void expand() {

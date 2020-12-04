@@ -227,7 +227,7 @@ public class TectonicsBean implements Serializable {
         tectonicsTree.collapseAll(true);
         for (EadEntry entry : results) {
             if (entry.isSearchHit()) {
-                expandHierarchyToEntry(entry, false);
+                entry.expandUp();
             }
         }
 
@@ -295,53 +295,6 @@ public class TectonicsBean implements Serializable {
 
         EadEntry entry = results.get(results.size() - 1);
         tectonicsTree.setSelectedEntry(entry);
-        expandHierarchyToEntry(entry, false);
-
+        entry.expandUp();
     }
-
-    /**
-     * 
-     * @param entry
-     * @param expand
-     */
-    void expandHierarchyToEntry(EadEntry entry, boolean expand) {
-        logger.trace("expandHierarchyToEntry: {}", entry);
-        if (entry == null || tectonicsTree == null) {
-            return;
-        }
-
-        entry.setVisible(true);
-        entry.setExpanded(expand);
-        //        if (expand) {
-        //            setChildrenVisible(entry);
-        //        } else {
-        //            setChildrenInvisible(entry);
-        //        }
-
-        expandHierarchyToEntry(entry.getParentNode(), true);
-    }
-
-    /**
-     * 
-     * @param hierarchy
-     */
-    void selectAndExpandEntry(List<EadEntry> hierarchy) {
-        if (hierarchy == null || hierarchy.isEmpty() || tectonicsTree == null) {
-            return;
-        }
-
-        logger.trace("hierarchy size: {}", hierarchy.size());
-        for (int i = 0; i < hierarchy.size(); ++i) {
-            EadEntry entry = hierarchy.get(i);
-            if (i == hierarchy.size() - 1) {
-                // Select last node
-                tectonicsTree.setSelectedEntry(entry);
-            } else {
-                // Expand all parent nodes
-                entry.setExpanded(true);
-                expandEntry(entry);
-            }
-        }
-    }
-
 }
