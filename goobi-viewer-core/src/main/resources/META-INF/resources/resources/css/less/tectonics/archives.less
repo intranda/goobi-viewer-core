@@ -5,7 +5,6 @@
 /* ADMIN LAYOUT */
 .tec-archives {
 	width: 100vw;
-	height: 100vh;
 	&__top-wrapper {
 		height: 60px;
 		position: fixed;
@@ -155,6 +154,7 @@
 	&__object-info {
 		background: white;
 		padding: 2rem;
+		display: flex;
 	}
 	&__main {
 		background-color: #f2f3f4;
@@ -166,7 +166,6 @@
 		width: 100%;
 		display: flex;
 		align-items: stretch;
-		height: calc(~"100vh - 60px");
 	}
 	&__loader-wrapper {
 		position: absolute;
@@ -205,6 +204,27 @@
 			}
 		}
 	}
+	&__search-input-wrapper {
+		position: relative;
+	}
+	&__search-input {
+		width: 100%;
+		border: 1px solid #d5d5d5;
+		padding: .5rem 3rem .5rem 1rem;
+	}
+	&__search-submit-button {
+		display: none;
+	}
+	&__search-clear {
+		display: none;
+		cursor: pointer;
+		padding: 1rem;
+		position: absolute;
+		right: 5px;
+		top: 0;
+		font-size: 1.6rem;
+		line-height: 1.1rem;
+	}
 	&__content-right {
 		margin-left: 1.5rem;
 		padding-right: 15px;
@@ -227,7 +247,15 @@
 			}
 		}
 	}
-	.login-navigation [data-login="true"] .login-navigation__user-dropdown-item {
+	&__search-input {}
+	
+	.login-navigation [data-login="true"] .login-navigation__bookmarks-list {
 		display: none;
+	}
+	.tectonics-tree__inactive-title,
+	.tectonics-tree__active-title {
+		&::after {
+			display: none;
+		}
 	}
 }
