@@ -108,6 +108,7 @@
     <url-mapping id="tectonics">
         <pattern value="/tectonics/" />
         <view-id value="/tectonics.xhtml" />
+        <action onPostback="false">#{tectonicsBean.setSelectedEntryId('-')}</action>
     </url-mapping>
     <url-mapping id="tectonics1">
         <pattern value="/tectonics/#{selectedEntryId:tectonicsBean.selectedEntryId}/" />

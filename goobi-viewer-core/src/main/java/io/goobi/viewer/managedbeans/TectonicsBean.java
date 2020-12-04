@@ -16,7 +16,6 @@
 package io.goobi.viewer.managedbeans;
 
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
@@ -25,6 +24,7 @@ import javax.enterprise.context.SessionScoped;
 import javax.inject.Named;
 
 import org.apache.commons.configuration.ConfigurationException;
+import org.apache.commons.configuration.HierarchicalConfiguration;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -41,8 +41,6 @@ public class TectonicsBean implements Serializable {
     private static final long serialVersionUID = -1755934299534933504L;
 
     private static final Logger logger = LoggerFactory.getLogger(TectonicsBean.class);
-
-    private static final String CONFIG_FILE_NAME = "plugin_intranda_administration_archive_management.xml";
 
     private static final Object lock = new Object();
 
@@ -65,9 +63,10 @@ public class TectonicsBean implements Serializable {
     @PostConstruct
     public void init() {
         try {
-            eadParser = new BasexEADParser(
-                    DataManager.getInstance().getConfiguration().getConfigLocalPath()
-                            + CONFIG_FILE_NAME);
+            String databaseUrl = DataManager.getInstance().getConfiguration().getBaseXUrl();
+            String databaseName = DataManager.getInstance().getConfiguration().getBaseXDatabase();
+            HierarchicalConfiguration baseXMetadataConfig = DataManager.getInstance().getConfiguration().getBaseXMetadataConfig();
+            eadParser = new BasexEADParser(databaseUrl, databaseName, baseXMetadataConfig);
             eadParser.loadSelectedDatabase();
             // TODO selection/reloading of different databases
         } catch (ConfigurationException e) {
@@ -122,38 +121,36 @@ public class TectonicsBean implements Serializable {
 
     /**
      * <p>
-     * setChildrenVisible.
+     * expandEntry.
      * </p>
      *
-     * @param element a {@link io.goobi.viewer.model.toc.TOCElement} object.
+     * @param entry a {@link io.goobi.viewer.model.toc.TOCElement} object.
      */
-    public void setChildrenVisible(EadEntry element) {
-        // logger.trace("setChildrenVisible");
+    public void expandEntry(EadEntry entry) {
+        logger.trace("expandEntry: {}", entry);
         if (tectonicsTree == null) {
             return;
         }
         synchronized (tectonicsTree) {
-            tectonicsTree.setChildVisible(element.getIndex());
-            tectonicsTree.getActiveEntry();
+            entry.expand();
         }
     }
 
     /**
      * <p>
-     * setChildrenInvisible.
+     * collapseEntry.
      * </p>
      *
-     * @param element a {@link io.goobi.viewer.model.toc.TOCElement} object.
+     * @param entry a {@link io.goobi.viewer.model.toc.TOCElement} object.
      */
-    public void setChildrenInvisible(EadEntry element) {
-        // logger.trace("setChildrenInvisible");
+    public void collapseEntry(EadEntry entry) {
+        logger.trace("collapseEntry: {}", entry);
         if (tectonicsTree == null) {
             return;
         }
 
         synchronized (tectonicsTree) {
-            tectonicsTree.setChildInvisible(element.getIndex());
-            tectonicsTree.getActiveEntry();
+            entry.collapse();
         }
     }
 
@@ -233,7 +230,6 @@ public class TectonicsBean implements Serializable {
                 expandHierarchyToEntry(entry, false);
             }
         }
-        tectonicsTree.getActiveEntry();
 
         return "";
     }
@@ -274,10 +270,17 @@ public class TectonicsBean implements Serializable {
         if (getTectonicsTree() == null || eadParser == null) {
             return;
         }
-
+        if (StringUtils.isBlank(id)) {
+            tectonicsTree.setSelectedEntry(null);
+            return;
+        }
         if ("-".equals(id)) {
             // tectonicsTree.resetCollapseLevel();
             tectonicsTree.setSelectedEntry(eadParser.getRootElement());
+            return;
+        }
+        // Requested entry is already selected
+        if (tectonicsTree.getSelectedEntry() != null && tectonicsTree.getSelectedEntry().getId().equals(id)) {
             return;
         }
 
@@ -293,7 +296,7 @@ public class TectonicsBean implements Serializable {
         EadEntry entry = results.get(results.size() - 1);
         tectonicsTree.setSelectedEntry(entry);
         expandHierarchyToEntry(entry, false);
-        tectonicsTree.getActiveEntry();
+
     }
 
     /**
@@ -336,7 +339,7 @@ public class TectonicsBean implements Serializable {
             } else {
                 // Expand all parent nodes
                 entry.setExpanded(true);
-                setChildrenVisible(entry);
+                expandEntry(entry);
             }
         }
     }

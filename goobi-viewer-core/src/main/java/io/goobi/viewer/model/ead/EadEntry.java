@@ -308,6 +308,51 @@ public class EadEntry {
     }
 
     /**
+     * Expands this entry and sets all sub-entries visible if their immediate parent is expanded.
+     */
+    public void expand() {
+        logger.trace("expand: {}", id);
+        if (!isHasChildren()) {
+            logger.trace("{} has no children", id);
+            return;
+        }
+
+        setExpanded(true);
+        setChildrenVisibility(true);
+    }
+
+    /**
+     * Collapses this entry and hides all sub-entries.
+     */
+    public void collapse() {
+        logger.trace("collapse: {}", id);
+        if (!isHasChildren()) {
+            logger.trace("{} has no children", id);
+            return;
+        }
+
+        setExpanded(false);
+        setChildrenVisibility(false);
+    }
+
+    /**
+     * 
+     * @param visible
+     */
+    void setChildrenVisibility(boolean visible) {
+        if (!isHasChildren()) {
+            return;
+        }
+
+        for (EadEntry sub : subEntryList) {
+            sub.setVisible(visible);
+            if (sub.isExpanded() && sub.isHasChildren()) {
+                sub.setChildrenVisibility(visible);
+            }
+        }
+    }
+
+    /**
      * @return the parentNode
      */
     public EadEntry getParentNode() {
@@ -734,5 +779,10 @@ public class EadEntry {
         }
 
         return associatedRecordPi;
+    }
+
+    @Override
+    public String toString() {
+        return id;
     }
 }

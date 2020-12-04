@@ -4812,4 +4812,26 @@ public final class Configuration extends AbstractConfiguration {
 
         return licenses;
     }
+
+    /**
+     * @return
+     */
+    public String getBaseXUrl() {
+        return getLocalString("urls.basex.url");
+    }
+
+    /**
+     * @return
+     */
+    public String getBaseXDatabase() {
+        return getLocalString("urls.basex.defaultDatabase");
+
+    }
+
+    /**
+     * @return
+     */
+    public HierarchicalConfiguration getBaseXMetadataConfig() {
+        return getLocalConfigurationAt("metadata.basexMetadataList");
+    }
 }
