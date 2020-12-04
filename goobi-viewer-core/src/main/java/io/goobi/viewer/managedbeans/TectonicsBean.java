@@ -290,7 +290,7 @@ public class TectonicsBean implements Serializable {
             id = "-";
         }
         if ("-".equals(id)) {
-            tectonicsTree.setSelectedEntry(eadParser.getRootElement());
+            tectonicsTree.setSelectedEntry(tectonicsTree.getRootElement());
             return;
         }
         // Requested entry is already selected

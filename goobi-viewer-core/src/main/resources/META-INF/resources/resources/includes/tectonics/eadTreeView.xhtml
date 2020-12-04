@@ -25,7 +25,6 @@
 		<!-- TECTONICS TREEVIEW -->
 		<h:panelGroup>
 
-
 			<!-- EXPANDABLE TREEVIEW -->
 			<h:panelGroup>
 
@@ -54,8 +53,7 @@
 					<ul>
 						<c:forEach var="entry" items="#{visibleTree}" varStatus="status">
 							<!-- This will break indentation if replaced with a c:if -->
-							<li
-								class="tectonics-tree__entry #{entry.hasChild == true ? 'parent' : 'child' }"
+							<li class="tectonics-tree__entry #{entry.hasChild == true ? 'parent' : 'child' }"
 								data-id="id_#{entry.id}"
 								style="padding-left: #{entry.hierarchy * indent}px"><c:if
 									test="#{entry.hasChild}">
@@ -86,11 +84,6 @@
 								
 								<!-- TITLE -->
 								<div class="tectonics-tree__list-expandable-title">
-
-									<!-- TODO icon -->
-									<!-- #{entry.descriptionLevel} -->
-									<!-- TODO highlight selected entry via CSS -->
-
 									<c:choose>
 										<c:when
 											test="#{entry.id == tectonicsBean.tectonicsTree.selectedEntry.id}">
@@ -127,8 +120,7 @@
 								</div>
 								
 								<!-- METADATA -->
-								<c:if
-									test="#{view == 'tectonics' and entry.id == tectonicsBean.tectonicsTree.selectedEntry.id}">
+								<c:if test="#{view == 'tectonics' and entry.id == tectonicsBean.tectonicsTree.selectedEntry.id}">
 									<h:panelGroup layout="block"
 										class="tectonics-tree__metadata-box"
 										id="metadata_#{status.count}">
@@ -150,7 +142,8 @@
 												value="#{navigationHelper.objectUrl}/#{entry.associatedRecordPi}/1/">#{msg.tectonics_showRecord}</h:outputLink>
 										</div>
 									</h:panelGroup>
-								</c:if></li>
+								</c:if>
+							</li>
 						</c:forEach>
 					</ul>
 				</nav>

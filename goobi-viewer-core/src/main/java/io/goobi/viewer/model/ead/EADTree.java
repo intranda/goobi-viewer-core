@@ -70,11 +70,13 @@ public class EADTree implements Serializable {
             throw new IllegalArgumentException("root may not be null");
         }
 
+        // If root has just one child, use it as new root
+        if (root.getSubEntryList().size() == 1) {
+            root = root.getSubEntryList().get(0);
+            root.shiftHierarchy(-1);
+        }
+        
         List<EadEntry> tree = root.getAsFlatList(true);
-        // remove root
-        //        if(tree.size() > 1) {
-        //            tree = tree.subList(1, tree.size());
-        //        }
         entryMap.put(DEFAULT_GROUP, tree);
     }
 

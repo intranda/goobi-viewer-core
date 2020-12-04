@@ -306,6 +306,19 @@ public class EadEntry {
         }
         return list;
     }
+    
+    /**
+     * 
+     * @param offset
+     */
+    public void shiftHierarchy(int offset) {
+        this.hierarchy += offset;
+        if(isHasChildren()) {
+            for(EadEntry sub : subEntryList) {
+                sub.shiftHierarchy(offset);
+            }
+        }
+    }
 
     /**
      * Expands and sets visible all ancestors of this node and expands siblings of this node.
