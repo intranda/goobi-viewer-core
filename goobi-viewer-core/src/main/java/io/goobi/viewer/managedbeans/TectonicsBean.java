@@ -132,8 +132,8 @@ public class TectonicsBean implements Serializable {
             return;
         }
         synchronized (tectonicsTree) {
-            tectonicsTree.setChildVisible(entry.getIndex());
-            tectonicsTree.getActiveEntry();
+            tectonicsTree.setToExpandIndex(entry.getIndex());
+            tectonicsTree.updateTree();
         }
     }
 
@@ -151,8 +151,8 @@ public class TectonicsBean implements Serializable {
         }
 
         synchronized (tectonicsTree) {
-            tectonicsTree.setChildInvisible(entry.getIndex());
-            tectonicsTree.getActiveEntry();
+            tectonicsTree.setToCollapseIndex(entry.getIndex());
+            tectonicsTree.updateTree();
         }
     }
 
@@ -232,7 +232,7 @@ public class TectonicsBean implements Serializable {
                 expandHierarchyToEntry(entry, false);
             }
         }
-        tectonicsTree.getActiveEntry();
+        tectonicsTree.updateTree();
 
         return "";
     }
@@ -292,7 +292,7 @@ public class TectonicsBean implements Serializable {
         EadEntry entry = results.get(results.size() - 1);
         tectonicsTree.setSelectedEntry(entry);
         expandHierarchyToEntry(entry, false);
-        tectonicsTree.getActiveEntry();
+        tectonicsTree.updateTree();
     }
 
     /**
