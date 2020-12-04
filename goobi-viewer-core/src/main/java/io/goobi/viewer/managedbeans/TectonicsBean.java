@@ -16,7 +16,6 @@
 package io.goobi.viewer.managedbeans;
 
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
@@ -125,37 +124,37 @@ public class TectonicsBean implements Serializable {
 
     /**
      * <p>
-     * setChildrenVisible.
+     * expandEntry.
      * </p>
      *
-     * @param element a {@link io.goobi.viewer.model.toc.TOCElement} object.
+     * @param entry a {@link io.goobi.viewer.model.toc.TOCElement} object.
      */
-    public void setChildrenVisible(EadEntry element) {
-        // logger.trace("setChildrenVisible");
+    public void expandEntry(EadEntry entry) {
+        logger.trace("expandEntry: {}", entry);
         if (tectonicsTree == null) {
             return;
         }
         synchronized (tectonicsTree) {
-            tectonicsTree.setChildVisible(element.getIndex());
+            tectonicsTree.setChildVisible(entry.getIndex());
             tectonicsTree.getActiveEntry();
         }
     }
 
     /**
      * <p>
-     * setChildrenInvisible.
+     * collapseEntry.
      * </p>
      *
-     * @param element a {@link io.goobi.viewer.model.toc.TOCElement} object.
+     * @param entry a {@link io.goobi.viewer.model.toc.TOCElement} object.
      */
-    public void setChildrenInvisible(EadEntry element) {
-        // logger.trace("setChildrenInvisible");
+    public void collapseEntry(EadEntry entry) {
+        logger.trace("collapseEntry: {}", entry);
         if (tectonicsTree == null) {
             return;
         }
 
         synchronized (tectonicsTree) {
-            tectonicsTree.setChildInvisible(element.getIndex());
+            tectonicsTree.setChildInvisible(entry.getIndex());
             tectonicsTree.getActiveEntry();
         }
     }
@@ -177,20 +176,17 @@ public class TectonicsBean implements Serializable {
         }
 
         eadParser.search(identifier);
-        if (eadParser.getFlatEntryList().isEmpty()) {
-            return Collections.emptyList();
-        }
 
-        if (eadParser.getFlatEntryList().size() == 1) {
-            return Collections.singletonList(eadParser.getFlatEntryList().get(0));
+        switch (eadParser.getFlatEntryList().size()) {
+            case 0:
+                return Collections.emptyList();
+            case 1:
+            case 2:
+                return Collections.singletonList(eadParser.getFlatEntryList().get(0));
+            default:
+                // Remove root and the entry with the given identifier
+                return eadParser.getFlatEntryList().subList(1, eadParser.getFlatEntryList().size() - 1);
         }
-
-        List<EadEntry> ret = new ArrayList<>(eadParser.getFlatEntryList().size() - 1);
-        for (EadEntry entry : eadParser.getFlatEntryList().subList(1, eadParser.getFlatEntryList().size())) {
-            ret.add(entry);
-        }
-
-        return eadParser.getFlatEntryList().subList(1, eadParser.getFlatEntryList().size());
     }
 
     /**
@@ -310,6 +306,7 @@ public class TectonicsBean implements Serializable {
      * @param expand
      */
     void expandHierarchyToEntry(EadEntry entry, boolean expand) {
+        logger.trace("expandHierarchyToEntry: {}", entry);
         if (entry == null || tectonicsTree == null) {
             return;
         }
@@ -343,7 +340,7 @@ public class TectonicsBean implements Serializable {
             } else {
                 // Expand all parent nodes
                 entry.setExpanded(true);
-                setChildrenVisible(entry);
+                expandEntry(entry);
             }
         }
     }
