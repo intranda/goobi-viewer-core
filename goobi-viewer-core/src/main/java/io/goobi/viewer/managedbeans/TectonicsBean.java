@@ -76,6 +76,18 @@ public class TectonicsBean implements Serializable {
 
     /**
      * 
+     * @return actual root element of the document, even if it's not in the displayed tree
+     */
+    public EadEntry getTrueRoot() {
+        if (eadParser == null || !eadParser.isDatabaseLoaded()) {
+            return null;
+        }
+
+        return eadParser.getRootElement();
+    }
+
+    /**
+     * 
      * @return
      */
     public EADTree getTectonicsTree() {
