@@ -54,7 +54,7 @@
 				</div>
 				
 				<!-- RIGHT SIDE -->
-				<div class="tec-archives__right-side">
+				<div class="tec-archives__right-side -sticky">
 					<div class="tec-archives__text-tree">
 					
 					    <!-- HIERARCHY OF THE CURRENT NODE -->
@@ -63,19 +63,22 @@
                                 value="#{tectonicsBean.getTectonicsHierarchyForIdentifier(tectonicsBean.tectonicsTree.selectedEntry.id)}">
                                 <!-- TODO proper level tag -->
                                 <!-- TODO bold via CSS -->
-                                <h:outputText rendered="#{entry.descriptionLevel != null}" value="#{msg[entry.descriptionLevel]}:" /> <strong>#{entry.label}</strong>
-                                <br /><br />
+                                <div class="tec-archives__text-tree-entry">
+	                                <div class="tec-archives__text-tree-level">
+	                                	<h:outputText rendered="#{entry.descriptionLevel != null}" value="#{msg[entry.descriptionLevel]}:" />
+	                                </div>
+	                                <div class="tec-archives__text-tree-entry">
+		                                <strong>#{entry.label}</strong>
+	                                </div>
+                                </div>
                             </ui:repeat>
                         </h:panelGroup>
 					</div>
 					
 					<div class="tec-archives__object-info">
-
                         <h:panelGroup id="metadataGroup">
-                        
                             <!-- METADATA -->
                             <!-- Replacing these with c:forEach will result in get*List() being called for each iteration -->
-                            
                             <!-- TODO bold via CSS -->
                             
                             <!-- Identity statement metadata -->

@@ -8,10 +8,11 @@
 	height: 100vh;
 	&__top-wrapper {
 		height: 60px;
-		position: sticky;
+		position: fixed;
 		top: 0;
-		background-color:  #444;
-		z-index: 2020;		
+		background-color: #444;
+		z-index: 2020;
+		width: 100%;
 		.container {
 			width: auto;	
 		}
@@ -134,6 +135,7 @@
 		padding: 2rem;
 		display: flex;
 		justify-content: space-between;
+		align-items: flex-start;
 	}
 	&__left-side {
 		flex: 0 0 40%;
@@ -153,15 +155,12 @@
 	&__object-info {
 		background: white;
 		padding: 2rem;
-		
 	}
-		
 	&__main {
 		background-color: #f2f3f4;
-		padding: 0 0 0 1.5rem;
-		height: calc(~"100vh - 60px");
 		width: 100vw;
 		display: block;
+		margin-top: 60px;
 	}
 	&__content-wrapper {
 		width: 100%;
@@ -227,5 +226,8 @@
 				border-width: 2px;
 			}
 		}
+	}
+	.login-navigation [data-login="true"] .login-navigation__user-dropdown-item {
+		display: none;
 	}
 }
