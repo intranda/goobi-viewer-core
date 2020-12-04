@@ -224,6 +224,8 @@ public class EADTree implements Serializable {
             return ret;
         }
 
+        logger.trace("getActiveEntry  {}/{}", tocVisible, tocInvisible);
+
         if (tocVisible != -1) {
             expandTree(tocVisible);
             ret = entryMap.get(DEFAULT_GROUP).get(tocVisible);
@@ -279,16 +281,16 @@ public class EADTree implements Serializable {
     /**
      * Collapses all elements below the element with the given ID.
      *
-     * @param parentId
+     * @param parentIndex
      */
-    private void collapseTree(int parentId) {
-        logger.trace("collapseTree: {}", parentId);
+    private void collapseTree(int parentIndex) {
+        logger.trace("collapseTree: {}", parentIndex);
         if (entryMap == null) {
             return;
         }
 
-        int level = entryMap.get(DEFAULT_GROUP).get(parentId).getHierarchy();
-        for (int i = parentId + 1; i < entryMap.get(DEFAULT_GROUP).size(); i++) {
+        int level = entryMap.get(DEFAULT_GROUP).get(parentIndex).getHierarchy();
+        for (int i = parentIndex + 1; i < entryMap.get(DEFAULT_GROUP).size(); i++) {
             EadEntry child = entryMap.get(DEFAULT_GROUP).get(i);
             if (child.getHierarchy() > level) {
                 child.setVisible(false);

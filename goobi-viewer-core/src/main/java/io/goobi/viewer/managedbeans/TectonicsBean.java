@@ -16,7 +16,6 @@
 package io.goobi.viewer.managedbeans;
 
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
@@ -122,37 +121,37 @@ public class TectonicsBean implements Serializable {
 
     /**
      * <p>
-     * setChildrenVisible.
+     * expandEntry.
      * </p>
      *
-     * @param element a {@link io.goobi.viewer.model.toc.TOCElement} object.
+     * @param entry a {@link io.goobi.viewer.model.toc.TOCElement} object.
      */
-    public void setChildrenVisible(EadEntry element) {
-        // logger.trace("setChildrenVisible");
+    public void expandEntry(EadEntry entry) {
+        logger.trace("expandEntry: {}", entry);
         if (tectonicsTree == null) {
             return;
         }
         synchronized (tectonicsTree) {
-            tectonicsTree.setChildVisible(element.getIndex());
+            tectonicsTree.setChildVisible(entry.getIndex());
             tectonicsTree.getActiveEntry();
         }
     }
 
     /**
      * <p>
-     * setChildrenInvisible.
+     * collapseEntry.
      * </p>
      *
-     * @param element a {@link io.goobi.viewer.model.toc.TOCElement} object.
+     * @param entry a {@link io.goobi.viewer.model.toc.TOCElement} object.
      */
-    public void setChildrenInvisible(EadEntry element) {
-        // logger.trace("setChildrenInvisible");
+    public void collapseEntry(EadEntry entry) {
+        logger.trace("collapseEntry: {}", entry);
         if (tectonicsTree == null) {
             return;
         }
 
         synchronized (tectonicsTree) {
-            tectonicsTree.setChildInvisible(element.getIndex());
+            tectonicsTree.setChildInvisible(entry.getIndex());
             tectonicsTree.getActiveEntry();
         }
     }
@@ -336,7 +335,7 @@ public class TectonicsBean implements Serializable {
             } else {
                 // Expand all parent nodes
                 entry.setExpanded(true);
-                setChildrenVisible(entry);
+                expandEntry(entry);
             }
         }
     }

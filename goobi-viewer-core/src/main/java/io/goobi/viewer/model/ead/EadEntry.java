@@ -735,4 +735,9 @@ public class EadEntry {
 
         return associatedRecordPi;
     }
+
+    @Override
+    public String toString() {
+        return id;
+    }
 }
