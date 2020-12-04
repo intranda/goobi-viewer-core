@@ -25,6 +25,8 @@ import javax.enterprise.context.SessionScoped;
 import javax.inject.Named;
 
 import org.apache.commons.configuration.ConfigurationException;
+import org.apache.commons.configuration.HierarchicalConfiguration;
+import org.apache.commons.configuration.SubnodeConfiguration;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -65,9 +67,10 @@ public class TectonicsBean implements Serializable {
     @PostConstruct
     public void init() {
         try {
-            eadParser = new BasexEADParser(
-                    DataManager.getInstance().getConfiguration().getConfigLocalPath()
-                            + CONFIG_FILE_NAME);
+            String databaseUrl = DataManager.getInstance().getConfiguration().getBaseXUrl();
+            String databaseName = DataManager.getInstance().getConfiguration().getBaseXDatabase();
+            HierarchicalConfiguration baseXMetadataConfig = DataManager.getInstance().getConfiguration().getBaseXMetadataConfig();
+            eadParser = new BasexEADParser(databaseUrl, databaseName, baseXMetadataConfig);
             eadParser.loadSelectedDatabase();
             // TODO selection/reloading of different databases
         } catch (ConfigurationException e) {
@@ -277,26 +280,28 @@ public class TectonicsBean implements Serializable {
         if (getTectonicsTree() == null || eadParser == null) {
             return;
         }
-
-        if ("-".equals(id)) {
+        if (StringUtils.isBlank(id)) {
+            tectonicsTree.setSelectedEntry(null);
+            return;
+        } else if ("-".equals(id)) {
             // tectonicsTree.resetCollapseLevel();
             tectonicsTree.setSelectedEntry(eadParser.getRootElement());
             return;
-        }
+        } else {
+            // Find entry with given ID in the tree
+            eadParser.search(id);
+            List<EadEntry> results = eadParser.getFlatEntryList();
+            if (results == null || results.isEmpty()) {
+                logger.debug("Entry not found: {}", id);
+                tectonicsTree.setSelectedEntry(eadParser.getRootElement());
+                return;
+            }
 
-        // Find entry with given ID in the tree
-        eadParser.search(id);
-        List<EadEntry> results = eadParser.getFlatEntryList();
-        if (results == null || results.isEmpty()) {
-            logger.debug("Entry not found: {}", id);
-            tectonicsTree.setSelectedEntry(eadParser.getRootElement());
-            return;
+            EadEntry entry = results.get(results.size() - 1);
+            tectonicsTree.setSelectedEntry(entry);
+            expandHierarchyToEntry(entry, false);
+            tectonicsTree.getActiveEntry();
         }
-
-        EadEntry entry = results.get(results.size() - 1);
-        tectonicsTree.setSelectedEntry(entry);
-        expandHierarchyToEntry(entry, false);
-        tectonicsTree.getActiveEntry();
     }
 
     /**
