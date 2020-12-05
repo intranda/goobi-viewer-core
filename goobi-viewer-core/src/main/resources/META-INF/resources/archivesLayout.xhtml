@@ -34,12 +34,12 @@
 
                 <!-- PAGE HEADER TOP BRAND -->            
                 <div class="tec-archives__top-brand">
-                    <a href="#{request.contextPath}/campaigns/" target="_self" rel="noopener">#{configurationBean.name} #{msg.admin__crowdsourcing_title}</a>
+                    <a href="#{request.contextPath}/campaigns/" target="_self" rel="noopener">#{configurationBean.name} #{msg.tectonics}</a>
                 </div>
                 
                 <!-- PAGE HEADER TOP CAMPAIGN TITLE -->            
                 <div class="tec-archives__top-title">
-                	<span>#{tectonicsBean.tectonicsTree.rootElement.label}</span>
+                	<span>#{tectonicsBean.trueRoot.label}</span>
                 </div>
 
                 <!-- PAGE HEADER TOP ACTIONS -->            
@@ -71,6 +71,10 @@
 			<!-- <ui:insert name="breadcrumbs" /> -->
 			<ui:insert name="content" />
 		</main>
+		
+		    <!-- USER LOGIN + TERMS -->
+		<viewerComponent:modalUserLogin id="userLoginModal"/>
+		<viewerComponent:modalUserTerms id="userTermsModal"/>
 
     </div>
 </ui:composition>

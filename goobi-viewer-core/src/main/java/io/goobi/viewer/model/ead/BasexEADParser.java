@@ -18,7 +18,6 @@ package io.goobi.viewer.model.ead;
 import java.io.IOException;
 import java.io.StringReader;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
@@ -26,8 +25,6 @@ import java.util.UUID;
 
 import org.apache.commons.configuration.ConfigurationException;
 import org.apache.commons.configuration.HierarchicalConfiguration;
-import org.apache.commons.configuration.XMLConfiguration;
-import org.apache.commons.configuration.reloading.FileChangedReloadingStrategy;
 import org.apache.commons.configuration.tree.xpath.XPathExpressionEngine;
 import org.apache.commons.lang.StringUtils;
 import org.apache.http.client.ClientProtocolException;
@@ -45,8 +42,6 @@ import org.jdom2.xpath.XPathFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import de.intranda.monitoring.timer.Time;
-import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.NetTools;
 import io.goobi.viewer.exceptions.HTTPException;
 import io.goobi.viewer.model.viewer.StringPair;
@@ -57,13 +52,13 @@ public class BasexEADParser {
 
     public static final Namespace NAMESPACE_EAD = Namespace.getNamespace("ead", "urn:isbn:1-931666-22-9");
 
-    private static XPathFactory xFactory = XPathFactory.instance();
+    private static final XPathFactory xFactory = XPathFactory.instance();
 
-    private XMLConfiguration xmlConfig;
+    private final HierarchicalConfiguration metadataConfig;
 
     private final String basexUrl;
 
-    private String selectedDatabase;
+    private final String selectedDatabase;
 
     private boolean databaseLoaded = false;
 
@@ -83,20 +78,14 @@ public class BasexEADParser {
      * @param configFilePath
      * @throws ConfigurationException
      */
-    public BasexEADParser(String configFilePath) throws ConfigurationException {
-        if (configFilePath == null) {
-            throw new IllegalArgumentException("configFilePath may not be null");
-        }
-
-        xmlConfig = new XMLConfiguration(configFilePath);
-        xmlConfig.setListDelimiter('&');
-        xmlConfig.setReloadingStrategy(new FileChangedReloadingStrategy());
-        xmlConfig.setExpressionEngine(new XPathExpressionEngine());
-
-        this.basexUrl = xmlConfig.getString("/basexUrl", "http://localhost:8984/");
-        if (this.selectedDatabase == null) {
-            this.selectedDatabase = xmlConfig.getString("/defaultDatabase");
-        }
+    public BasexEADParser(String basexUrl, String databaseName, HierarchicalConfiguration metadataConfig) throws ConfigurationException {
+        
+        metadataConfig.setListDelimiter('&');
+        metadataConfig.setExpressionEngine(new XPathExpressionEngine());
+        this.metadataConfig = metadataConfig;
+        this.basexUrl = basexUrl;
+        this.selectedDatabase = databaseName;
+            
     }
 
     /**
@@ -113,25 +102,28 @@ public class BasexEADParser {
             return Collections.emptyList();
         }
 
-        Document document = openDocument(response);
-        if (document == null) {
+        Document document;
+        try {
+            document = openDocument(response);
+            
+            Element root = document.getRootElement();
+            List<Element> databaseList = root.getChildren("database");
+            List<String> ret = new ArrayList<>();
+            for (Element db : databaseList) {
+                String dbName = db.getChildText("name");
+                
+                Element details = db.getChild("details");
+                for (Element resource : details.getChildren()) {
+                    ret.add(dbName + " - " + resource.getText());
+                }
+                
+            }
+            
+            return ret;
+        } catch (JDOMException e) {
+            logger.error("Failed to parse response from " + (basexUrl + "databases"), e);
             return Collections.emptyList();
         }
-
-        Element root = document.getRootElement();
-        List<Element> databaseList = root.getChildren("database");
-        List<String> ret = new ArrayList<>();
-        for (Element db : databaseList) {
-            String dbName = db.getChildText("name");
-
-            Element details = db.getChild("details");
-            for (Element resource : details.getChildren()) {
-                ret.add(dbName + " - " + resource.getText());
-            }
-
-        }
-
-        return ret;
     }
 
     /**
@@ -143,37 +135,31 @@ public class BasexEADParser {
      */
     public void loadSelectedDatabase() {
         // open selected database
-        if (StringUtils.isNotBlank(selectedDatabase)) {
-            String[] parts = selectedDatabase.split(" - ");
-            String url = basexUrl + "db/" + parts[0] + "/" + parts[1];
-            logger.trace("URL: {}", url);
-            String response;
-            try {
-                response = NetTools.getWebContentGET(url);
-            } catch (IOException | HTTPException e) {
-                databaseLoaded = false;
-                logger.error(e.getMessage(), e);
-                return;
+        try {
+            if (StringUtils.isNotBlank(selectedDatabase)) {
+                String[] parts = selectedDatabase.split(" - ");
+                String url = basexUrl + "db/" + parts[0] + "/" + parts[1];
+                logger.trace("URL: {}", url);
+                String response;
+                    response = NetTools.getWebContentGET(url);
+    
+                // get xml root element
+                Document document = openDocument(response);
+                if (document != null) {
+                    // get field definitions from config file
+                    readConfiguration();
+    
+                    // parse ead file
+                    parseEadFile(document);
+                    databaseLoaded = true;
+                    logger.info("Loaded EAD database: {}", selectedDatabase);
+                }
             }
-
-            // get xml root element
-            Document document = openDocument(response);
-            if (document != null) {
-                // get field definitions from config file
-                readConfiguration();
-
-                // parse ead file
-                parseEadFile(document);
-                databaseLoaded = true;
-                logger.info("Loaded EAD database: {}", selectedDatabase);
-                return;
-            }
-        } else {
-            selectedDatabase = null;
+        } catch (IOException | HTTPException | JDOMException e) {
+            databaseLoaded = false;
+            logger.error("Could not load database: " + this.selectedDatabase, e);
         }
 
-        databaseLoaded = false;
-        logger.error("Could not load database: {}", selectedDatabase);
     }
 
     public List<String> getDistinctDatabaseNames() throws ClientProtocolException, IOException, HTTPException {
@@ -368,27 +354,15 @@ public class BasexEADParser {
             entry.setLabel(stringValues.get(0));
         }
         EadMetadataField toAdd = new EadMetadataField(emf.getName(), emf.getLevel(), emf.getXpath(), emf.getXpathType(), emf.isRepeatable(),
-                emf.isVisible(), emf.isShowField(), emf.getFieldType(), emf.getMetadataName(), emf.isImportMetadataInChild(), emf.getValidationType(),
-                emf.getRegularExpression());
-        toAdd.setValidationError(emf.getValidationError());
-        toAdd.setSelectItemList(emf.getSelectItemList());
+                emf.isVisible());
         toAdd.setEadEntry(entry);
 
         if (stringValues != null && !stringValues.isEmpty()) {
-            toAdd.setShowField(true);
 
             // split single value into multiple fields
             for (String stringValue : stringValues) {
                 FieldValue fv = new FieldValue(toAdd);
-
-                if (toAdd.getFieldType().equals("multiselect") && StringUtils.isNotBlank(stringValue)) {
-                    String[] splittedValues = stringValue.split("; ");
-                    for (String val : splittedValues) {
-                        fv.setMultiselectValue(val);
-                    }
-                } else {
-                    fv.setValue(stringValue);
-                }
+                fv.setValue(stringValue);
                 toAdd.addFieldValue(fv);
             }
         } else {
@@ -427,22 +401,19 @@ public class BasexEADParser {
      * 
      * @param response
      * @return
+     * @throws IOException 
+     * @throws JDOMException 
      */
-    private static Document openDocument(String response) {
+    private static Document openDocument(String response) throws JDOMException, IOException {
         // read response
         SAXBuilder builder = new SAXBuilder(XMLReaders.NONVALIDATING);
         builder.setFeature("http://xml.org/sax/features/validation", false);
         builder.setFeature("http://apache.org/xml/features/nonvalidating/load-dtd-grammar", false);
         builder.setFeature("http://apache.org/xml/features/nonvalidating/load-external-dtd", false);
 
-        try  {
-            Document document = builder.build(new StringReader(response), "utf-8");
-            return document;
+        Document document = builder.build(new StringReader(response), "utf-8");
+        return document;
 
-        } catch (JDOMException | IOException e) {
-            logger.error(e.getMessage(), e);
-        }
-        return null;
     }
 
     public void resetFlatList() {
@@ -522,29 +493,11 @@ public class BasexEADParser {
         }
 
         configuredFields = new ArrayList<>();
-        HierarchicalConfiguration config = null;
 
-        try {
-            config = xmlConfig.configurationAt("//config[./archive = '" + selectedDatabase + "']");
-        } catch (IllegalArgumentException e) {
-            try {
-                config = xmlConfig.configurationAt("//config[./archive = '*']");
-            } catch (IllegalArgumentException e1) {
-
-            }
-        }
-
-        for (HierarchicalConfiguration hc : config.configurationsAt("/metadata")) {
-            EadMetadataField field = new EadMetadataField(hc.getString("@name"), hc.getInt("@level"), hc.getString("@xpath"),
-                    hc.getString("@xpathType", "element"), hc.getBoolean("@repeatable", false), hc.getBoolean("@visible", true),
-                    hc.getBoolean("@showField", false), hc.getString("@fieldType", "input"), hc.getString("@rulesetName", null),
-                    hc.getBoolean("@importMetadataInChild", false), hc.getString("@validationType", null), hc.getString("@regularExpression"));
+        for (HierarchicalConfiguration hc : this.metadataConfig.configurationsAt("/metadata")) {
+            EadMetadataField field = new EadMetadataField(hc.getString("[@name]"), hc.getInt("[@level]"), hc.getString("[@xpath]"),
+                    hc.getString("[@xpathType]", "element"), hc.getBoolean("[@repeatable]", false), hc.getBoolean("[@visible]", true));
             configuredFields.add(field);
-            field.setValidationError(hc.getString("/validationError"));
-            if (field.getFieldType().equals("dropdown") || field.getFieldType().equals("multiselect")) {
-                List<String> valueList = Arrays.asList(hc.getStringArray("/value"));
-                field.setSelectItemList(valueList);
-            }
         }
     }
 
@@ -553,13 +506,6 @@ public class BasexEADParser {
      */
     public String getSelectedDatabase() {
         return selectedDatabase;
-    }
-
-    /**
-     * @param selectedDatabase the selectedDatabase to set
-     */
-    public void setSelectedDatabase(String selectedDatabase) {
-        this.selectedDatabase = selectedDatabase;
     }
 
     /**

@@ -23,8 +23,8 @@
             <div id="widgetTectonics" class="widget widget-tectonics">
                 <h3 class="widget-tectonics__heading">
 	                <span>#{msg.tectonics}</span>
-	                <button class="widget-tectonics__level-up"><i class="fa fa-arrow-circle-left" aria-hidden="true"></i></button>
-	                <button class="widget-tectonics__level-down"><i class="fa fa-arrow-circle-right" aria-hidden="true"></i></button>
+	                <button class="widget-tectonics__prev"><i class="fa fa-arrow-circle-left" aria-hidden="true"></i></button>
+	                <button class="widget-tectonics__next"><i class="fa fa-arrow-circle-right" aria-hidden="true"></i></button>
                 </h3>
                 <ul>
 	                <ui:repeat var="entry" value="#{tectonicsBean.getTectonicsHierarchyForIdentifier(activeDocumentBean.viewManager.tectonicsIdentifier)}">

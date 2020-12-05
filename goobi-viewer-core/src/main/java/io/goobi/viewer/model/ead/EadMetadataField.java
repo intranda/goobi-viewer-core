@@ -39,51 +39,20 @@ public class EadMetadataField {
     /** defines if the field is displayed on the UI, values can be true/false, default is true */
     private boolean visible;
 
-    /** defines if the field is displayed as input field (true) or badge (false, default), affects only visible metadata */
-    private boolean showField;
-
-    /** contains the list of possible values for dropdown or multiselect */
-    private List<String> selectItemList;
-
-    /** defines the type of the input field. Posible values are input (default), textarea, dropdown, multiselect */
-    private String fieldType;
-
-    /** links to the ead node */
+    /** links to the ead node. Required to set the title field for the entry while parsing metadata */
     //    @ToString.Exclude
     private EadEntry eadEntry;
 
-    /** internal name of the metadata field */
-    private String metadataName;
 
-    /** defines if this field gets inherited when a child node is created */
-    private boolean importMetadataInChild;
 
-    /** defines the validation type, possible values are unique, required, unique+required, regex, regex+required */
-    private String validationType;
 
-    /** contains the regular expression used to validate regex or regex+required */
-    private String regularExpression;
-
-    /** contains the result of the validation */
-    private boolean valid = true;
-
-    /** contains a human readable error text */
-    private String validationError;
-
-    public EadMetadataField(String name, Integer level, String xpath, String xpathType, boolean repeatable, boolean visible, boolean showField,
-            String fieldType, String metadataName, boolean importMetadataInChild, String validationType, String regularExpression) {
+    public EadMetadataField(String name, Integer level, String xpath, String xpathType, boolean repeatable, boolean visible) {
         this.name = name;
         this.level = level;
         this.xpath = xpath;
         this.xpathType = xpathType;
         this.repeatable = repeatable;
         this.visible = visible;
-        this.showField = showField;
-        this.fieldType = fieldType;
-        this.metadataName = metadataName;
-        this.importMetadataInChild = importMetadataInChild;
-        this.validationType = validationType;
-        this.regularExpression = regularExpression;
     }
 
     public boolean isFilled() {
@@ -209,118 +178,6 @@ public class EadMetadataField {
     }
 
     /**
-     * @return the showField
-     */
-    public boolean isShowField() {
-        return showField;
-    }
-
-    /**
-     * @param showField the showField to set
-     */
-    public void setShowField(boolean showField) {
-        this.showField = showField;
-    }
-
-    /**
-     * @return the fieldType
-     */
-    public String getFieldType() {
-        return fieldType;
-    }
-
-    /**
-     * @param fieldType the fieldType to set
-     */
-    public void setFieldType(String fieldType) {
-        this.fieldType = fieldType;
-    }
-
-    /**
-     * @return the metadataName
-     */
-    public String getMetadataName() {
-        return metadataName;
-    }
-
-    /**
-     * @param metadataName the metadataName to set
-     */
-    public void setMetadataName(String metadataName) {
-        this.metadataName = metadataName;
-    }
-
-    /**
-     * @return the importMetadataInChild
-     */
-    public boolean isImportMetadataInChild() {
-        return importMetadataInChild;
-    }
-
-    /**
-     * @param importMetadataInChild the importMetadataInChild to set
-     */
-    public void setImportMetadataInChild(boolean importMetadataInChild) {
-        this.importMetadataInChild = importMetadataInChild;
-    }
-
-    /**
-     * @return the validationType
-     */
-    public String getValidationType() {
-        return validationType;
-    }
-
-    /**
-     * @param validationType the validationType to set
-     */
-    public void setValidationType(String validationType) {
-        this.validationType = validationType;
-    }
-
-    /**
-     * @return the regularExpression
-     */
-    public String getRegularExpression() {
-        return regularExpression;
-    }
-
-    /**
-     * @param regularExpression the regularExpression to set
-     */
-    public void setRegularExpression(String regularExpression) {
-        this.regularExpression = regularExpression;
-    }
-
-    /**
-     * @return the valid
-     */
-    public boolean isValid() {
-        return valid;
-    }
-
-    /**
-     * @param valid the valid to set
-     */
-    public void setValid(boolean valid) {
-        this.valid = valid;
-    }
-
-    /**
-     * @return the validationError
-     */
-    public String getValidationError() {
-        return validationError;
-    }
-
-    /**
-     * @param validationError the validationError to set
-     */
-    public void setValidationError(String validationError) {
-        this.validationError = validationError;
-    }
-
-    /**
      * @return the xpath
      */
     public String getXpath() {
@@ -332,20 +189,6 @@ public class EadMetadataField {
      */
     public void setXpath(String xpath) {
         this.xpath = xpath;
-    }
-
-    /**
-     * @return the selectItemList
-     */
-    public List<String> getSelectItemList() {
-        return selectItemList;
-    }
-
-    /**
-     * @param selectItemList the selectItemList to set
-     */
-    public void setSelectItemList(List<String> selectItemList) {
-        this.selectItemList = selectItemList;
     }
 
     /**

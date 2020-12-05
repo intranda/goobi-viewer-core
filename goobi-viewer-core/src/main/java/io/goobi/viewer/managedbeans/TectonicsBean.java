@@ -16,7 +16,6 @@
 package io.goobi.viewer.managedbeans;
 
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
@@ -25,6 +24,7 @@ import javax.enterprise.context.SessionScoped;
 import javax.inject.Named;
 
 import org.apache.commons.configuration.ConfigurationException;
+import org.apache.commons.configuration.HierarchicalConfiguration;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -41,8 +41,6 @@ public class TectonicsBean implements Serializable {
     private static final long serialVersionUID = -1755934299534933504L;
 
     private static final Logger logger = LoggerFactory.getLogger(TectonicsBean.class);
-
-    private static final String CONFIG_FILE_NAME = "plugin_intranda_administration_archive_management.xml";
 
     private static final Object lock = new Object();
 
@@ -65,14 +63,27 @@ public class TectonicsBean implements Serializable {
     @PostConstruct
     public void init() {
         try {
-            eadParser = new BasexEADParser(
-                    DataManager.getInstance().getConfiguration().getConfigLocalPath()
-                            + CONFIG_FILE_NAME);
+            String databaseUrl = DataManager.getInstance().getConfiguration().getBaseXUrl();
+            String databaseName = DataManager.getInstance().getConfiguration().getBaseXDatabase();
+            HierarchicalConfiguration baseXMetadataConfig = DataManager.getInstance().getConfiguration().getBaseXMetadataConfig();
+            eadParser = new BasexEADParser(databaseUrl, databaseName, baseXMetadataConfig);
             eadParser.loadSelectedDatabase();
             // TODO selection/reloading of different databases
         } catch (ConfigurationException e) {
             logger.error(e.getMessage(), e);
         }
+    }
+
+    /**
+     * 
+     * @return actual root element of the document, even if it's not in the displayed tree
+     */
+    public EadEntry getTrueRoot() {
+        if (eadParser == null || !eadParser.isDatabaseLoaded()) {
+            return null;
+        }
+
+        return eadParser.getRootElement();
     }
 
     /**
@@ -122,38 +133,36 @@ public class TectonicsBean implements Serializable {
 
     /**
      * <p>
-     * setChildrenVisible.
+     * expandEntry.
      * </p>
      *
-     * @param element a {@link io.goobi.viewer.model.toc.TOCElement} object.
+     * @param entry a {@link io.goobi.viewer.model.toc.TOCElement} object.
      */
-    public void setChildrenVisible(EadEntry element) {
-        // logger.trace("setChildrenVisible");
+    public void expandEntry(EadEntry entry) {
+        logger.trace("expandEntry: {}", entry);
         if (tectonicsTree == null) {
             return;
         }
         synchronized (tectonicsTree) {
-            tectonicsTree.setChildVisible(element.getIndex());
-            tectonicsTree.getActiveEntry();
+            entry.expand();
         }
     }
 
     /**
      * <p>
-     * setChildrenInvisible.
+     * collapseEntry.
      * </p>
      *
-     * @param element a {@link io.goobi.viewer.model.toc.TOCElement} object.
+     * @param entry a {@link io.goobi.viewer.model.toc.TOCElement} object.
      */
-    public void setChildrenInvisible(EadEntry element) {
-        // logger.trace("setChildrenInvisible");
+    public void collapseEntry(EadEntry entry) {
+        logger.trace("collapseEntry: {}", entry);
         if (tectonicsTree == null) {
             return;
         }
 
         synchronized (tectonicsTree) {
-            tectonicsTree.setChildInvisible(element.getIndex());
-            tectonicsTree.getActiveEntry();
+            entry.collapse();
         }
     }
 
@@ -174,20 +183,17 @@ public class TectonicsBean implements Serializable {
         }
 
         eadParser.search(identifier);
-        if (eadParser.getFlatEntryList().isEmpty()) {
-            return Collections.emptyList();
-        }
 
-        if (eadParser.getFlatEntryList().size() == 1) {
-            return Collections.singletonList(eadParser.getFlatEntryList().get(0));
+        switch (eadParser.getFlatEntryList().size()) {
+            case 0:
+                return Collections.emptyList();
+            case 1:
+            case 2:
+                return Collections.singletonList(eadParser.getFlatEntryList().get(0));
+            default:
+                // Remove root and the entry with the given identifier
+                return eadParser.getFlatEntryList().subList(1, eadParser.getFlatEntryList().size() - 1);
         }
-
-        List<EadEntry> ret = new ArrayList<>(eadParser.getFlatEntryList().size() - 1);
-        for (EadEntry entry : eadParser.getFlatEntryList().subList(1, eadParser.getFlatEntryList().size())) {
-            ret.add(entry);
-        }
-
-        return eadParser.getFlatEntryList().subList(1, eadParser.getFlatEntryList().size());
     }
 
     /**
@@ -211,34 +217,45 @@ public class TectonicsBean implements Serializable {
      */
     public String searchAction() {
         logger.trace("searchAction: {}", searchString);
+        search(true, true);
+
+        return "";
+    }
+
+    /**
+     * Executes search for searchString.
+     * 
+     * @param resetSelectedEntry If true, selected entry will be set to null
+     * @param collapseAll If true, all elements will be collapsed before expanding path to search hits
+     */
+    void search(boolean resetSelectedEntry, boolean collapseAll) {
         if (eadParser == null || !eadParser.isDatabaseLoaded() || tectonicsTree == null) {
             logger.warn("Tree not loaded, cannot search.");
-            return "";
+            return;
         }
 
         if (StringUtils.isEmpty(searchString)) {
             eadParser.resetSearch();
             tectonicsTree.resetCollapseLevel(tectonicsTree.getRootElement(), EADTree.defaultCollapseLevel);
-            return "";
+            return;
         }
 
         eadParser.search(searchString);
         List<EadEntry> results = eadParser.getFlatEntryList();
         if (results == null || results.isEmpty()) {
-            return "";
+            return;
         }
         logger.trace("result entries: {}", results.size());
 
-        tectonicsTree.setSelectedEntry(null);
-        tectonicsTree.collapseAll(true);
+        if (resetSelectedEntry) {
+            setSelectedEntryId(null);
+        }
+        tectonicsTree.collapseAll(collapseAll);
         for (EadEntry entry : results) {
             if (entry.isSearchHit()) {
-                expandHierarchyToEntry(entry, false);
+                entry.expandUp();
             }
         }
-        tectonicsTree.getActiveEntry();
-
-        return "";
     }
 
     /**
@@ -269,78 +286,48 @@ public class TectonicsBean implements Serializable {
     }
 
     /**
+     * Setter for the URL parameter. Loads the entry that has the given ID. Loads the tree, if this is a new sessions.
      * 
-     * @param id
+     * @param id Entry ID
      */
     public void setSelectedEntryId(String id) {
         logger.trace("setSelectedEntryId: {}", id);
+
+        // getTectonicsTree() will also load the tree, if not yet loaded
         if (getTectonicsTree() == null || eadParser == null) {
             return;
         }
-
+        // Select root element if no ID given
+        if (StringUtils.isBlank(id)) {
+            id = "-";
+        }
         if ("-".equals(id)) {
-            // tectonicsTree.resetCollapseLevel();
-            tectonicsTree.setSelectedEntry(eadParser.getRootElement());
+            tectonicsTree.setSelectedEntry(tectonicsTree.getRootElement());
+            return;
+        }
+        // Requested entry is already selected
+        if (tectonicsTree.getSelectedEntry() != null && tectonicsTree.getSelectedEntry().getId().equals(id)) {
             return;
         }
 
         // Find entry with given ID in the tree
-        eadParser.search(id);
-        List<EadEntry> results = eadParser.getFlatEntryList();
-        if (results == null || results.isEmpty()) {
-            logger.debug("Entry not found: {}", id);
-            tectonicsTree.setSelectedEntry(eadParser.getRootElement());
-            return;
-        }
+        try {
+            eadParser.search(id);
+            List<EadEntry> results = eadParser.getFlatEntryList();
+            if (results == null || results.isEmpty()) {
+                logger.debug("Entry not found: {}", id);
+                tectonicsTree.setSelectedEntry(eadParser.getRootElement());
+                return;
+            }
 
-        EadEntry entry = results.get(results.size() - 1);
-        tectonicsTree.setSelectedEntry(entry);
-        expandHierarchyToEntry(entry, false);
-        tectonicsTree.getActiveEntry();
-    }
-
-    /**
-     * 
-     * @param entry
-     * @param expand
-     */
-    void expandHierarchyToEntry(EadEntry entry, boolean expand) {
-        if (entry == null || tectonicsTree == null) {
-            return;
-        }
-
-        entry.setVisible(true);
-        entry.setExpanded(expand);
-        //        if (expand) {
-        //            setChildrenVisible(entry);
-        //        } else {
-        //            setChildrenInvisible(entry);
-        //        }
-
-        expandHierarchyToEntry(entry.getParentNode(), true);
-    }
-
-    /**
-     * 
-     * @param hierarchy
-     */
-    void selectAndExpandEntry(List<EadEntry> hierarchy) {
-        if (hierarchy == null || hierarchy.isEmpty() || tectonicsTree == null) {
-            return;
-        }
-
-        logger.trace("hierarchy size: {}", hierarchy.size());
-        for (int i = 0; i < hierarchy.size(); ++i) {
-            EadEntry entry = hierarchy.get(i);
-            if (i == hierarchy.size() - 1) {
-                // Select last node
-                tectonicsTree.setSelectedEntry(entry);
-            } else {
-                // Expand all parent nodes
-                entry.setExpanded(true);
-                setChildrenVisible(entry);
+            EadEntry entry = results.get(results.size() - 1);
+            tectonicsTree.setSelectedEntry(entry);
+            entry.expandUp();
+        } finally {
+            // If there are current search results, restore them
+            if (StringUtils.isNotEmpty(searchString)) {
+                search(false, false);
             }
         }
     }
-
 }
