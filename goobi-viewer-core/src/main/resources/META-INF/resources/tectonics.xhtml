@@ -36,7 +36,10 @@
 	</ui:define>
 
     <ui:define name="sidebar">
-        
+        <h:panelGroup rendered="#{browseBean.browsingMenuEnabled}">
+            <widgetComponent:widget_browsing />
+        </h:panelGroup> 
+
         <c:forEach var="module" items="#{configurationBean.modules}">
             <c:forEach var="contribution" items="#{module.sidebarContributions}">
                 <ui:include src="/#{contribution}" />
@@ -45,7 +48,11 @@
         
         <widgetComponent:widget_userInteractions />
     </ui:define>
-    
+
+    <ui:define name="rssFeed">
+        <ui:include src="resources/includes/rssFeed.xhtml" />
+    </ui:define>
+
     <ui:define name="breadcrumbs">
         <ui:include src="/resources/includes/breadcrumbs.xhtml" />
     </ui:define>
