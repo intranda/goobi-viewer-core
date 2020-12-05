@@ -37,7 +37,7 @@ public class EADTree implements Serializable {
     /** Constant <code>DEFAULT_GROUP="_DEFAULT"</code> */
     public static final String DEFAULT_GROUP = "_DEFAULT";
 
-    public static int defaultCollapseLevel = 2;
+    public static int defaultCollapseLevel = 1;
 
     /** TOC element map. */
     private Map<String, List<EadEntry>> entryMap = new HashMap<>(1);
