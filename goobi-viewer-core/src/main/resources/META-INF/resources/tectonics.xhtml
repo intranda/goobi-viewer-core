@@ -12,6 +12,7 @@
     <ui:define name="metadata">
         <f:metadata>
             <f:event type="preRenderView" listener="#{navigationHelper.setCurrentView('tectonics')}" />
+            <f:event type="preRenderView" listener="#{breadcrumbBean.addStaticLinkToBreadcrumb(msg.tectonics,1)}" />
         </f:metadata>
     </ui:define> 
 	
@@ -24,7 +25,7 @@
     <ui:define name="content">
 		<f:view contentType="text/html" encoding="utf-8">
             
-            <h2>Tectonics</h2>
+            <h2>#{msg.tectonics}</h2>
             
 			<div id="tectonicsView" class="tectonics-tree">
 					<ui:include src="/resources/includes/tectonics/eadTreeView.xhtml">
