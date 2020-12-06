@@ -57,7 +57,6 @@ var viewerJS = ( function( viewer ) {
             	    $('.tec-archives__search-submit-button').click();
             	});
             	
-
 //            	if($('.admin__table-entry').length == 0) {
 //            		$('.admin__table-content').append('<br/><p class="">#{msg.hitsZero}</p>');
 //            	}
