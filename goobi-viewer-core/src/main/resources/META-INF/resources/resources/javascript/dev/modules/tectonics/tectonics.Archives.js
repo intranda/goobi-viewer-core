@@ -17,49 +17,70 @@
  * program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-jQuery(document).ready(function($) {
-	// Sticky right side of archives view
-	$('.tec-archives__right-side').hcSticky({
-		stickTo: $('.tec-archives__wrapper')[0],
-		top: 80,
-		bottom: 20
-	});
-	
-	// Sticky left side of archives view
-	$('.tec-archives__left-side').hcSticky({
-		stickTo: $('.tec-archives__wrapper')[0],
-		top: 80,
-		bottom: 20
-	});
+var viewerJS = ( function( viewer ) {
+    'use strict';
 
-	/* check search field for input value and show clear button */
-    if(!$('.tec-archives__search-input').val() == ''){
-		$('.tec-archives__search-clear').show();
-    }
-	$('.tec-archives__search-clear').click(function(){
-		/* clear value on click*/
-    $('.tec-archives__search-input').val("");
-	    /* trigger empty search on click */
-	    $('.tec-archives__search-submit-button').click();
-	});
-	
+    var _debug = false;
+ 
+    viewer.tectonicsArchivesView = {
+        init: function( config ) {
+            if ( _debug ) {
+                console.log( '##############################' );
+                console.log( 'viewer.tectonicsArchivesView.init' );
+                console.log( '##############################' );
+                console.log( 'viewer.tectonicsArchivesView.init: config - ', config );
+            }
 
-//	if($('.admin__table-entry').length == 0) {
-//		$('.admin__table-content').append('<br/><p class="">#{msg.hitsZero}</p>');
-//	}
-	
-	
-	 // auto submit search after typing
-	 let timeSearchInputField = 0;
+            jQuery(document).ready(function($) {
+            	// Sticky right side of archives view
+            	$('.tec-archives__right-side').hcSticky({
+            		stickTo: $('.tec-archives__wrapper')[0],
+            		top: 80,
+            		bottom: 20
+            	});
+            	
+            	// Sticky left side of archives view
+            	$('.tec-archives__left-side').hcSticky({
+            		stickTo: $('.tec-archives__wrapper')[0],
+            		top: 80,
+            		bottom: 20
+            	});
 
-	 $('.tec-archives__search-input').on('input', function () {
-	     // Reset the timer while still typing
-	     clearTimeout(timeSearchInputField);
+            	/* check search field for input value and show clear button */
+                if(!$('.tec-archives__search-input').val() == ''){
+            		$('.tec-archives__search-clear').show();
+                }
+            	$('.tec-archives__search-clear').click(function(){
+            		/* clear value on click*/
+                $('.tec-archives__search-input').val("");
+            	    /* trigger empty search on click */
+            	    $('.tec-archives__search-submit-button').click();
+            	});
+            	
 
-	     timeSearchInputField = setTimeout(function() {
-	         // submit search query
-	    	 $('.tec-archives__search-submit-button').click();
-	     }, 1300);
-	 });
-	
-});
+//            	if($('.admin__table-entry').length == 0) {
+//            		$('.admin__table-content').append('<br/><p class="">#{msg.hitsZero}</p>');
+//            	}
+            	
+            	
+            	 // auto submit search after typing
+            	 let timeSearchInputField = 0;
+
+            	 $('.tec-archives__search-input').on('input', function () {
+            	     // Reset the timer while still typing
+            	     clearTimeout(timeSearchInputField);
+
+            	     timeSearchInputField = setTimeout(function() {
+            	         // submit search query
+            	    	 $('.tec-archives__search-submit-button').click();
+            	     }, 1300);
+            	 });
+            	
+            });            
+            
+        }
+    };
+
+
+    return viewer;
+} )( viewerJS || {}, jQuery );
