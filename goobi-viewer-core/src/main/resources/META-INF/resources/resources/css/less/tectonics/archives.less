@@ -135,13 +135,18 @@
 		display: flex;
 		justify-content: space-between;
 		align-items: flex-start;
+		flex-wrap: wrap;
 	}
 	&__left-side {
-		flex: 0 0 40%;
+		flex: calc(~"40% - 2rem");
+		max-width: calc(~"40% - 2rem");
 		background: white;
+		margin-right: 2rem;
+		margin-bottom: 2rem;
 	} 
 	&__right-side {
-		flex: 0 0 59%;
+		flex: 0 0 60%;
+		max-width: 60%;
 	}
 	&__graphic-tree {
 		padding: 2rem;
@@ -152,17 +157,14 @@
 		padding: 2rem;
 		cursor: pointer;
 		&.-showAsOneLine {
-			display: flex;
-			flex-wrap: wrap;
+			display: block;
 			.tec-archives__text-tree-entry {
-				&::after {
-					content: '›';
-					margin-left: 1rem;
-					margin-right: 1rem;
-				}
+				display: inline;
 				&:last-child {
-					&::after {
-						display: none;
+					.tec-archives__text-tree-value {
+						&::after {
+							display: none;
+						}
 					}
 				}
 			}
@@ -174,6 +176,11 @@
 				display: none;
 			}
 			.tec-archives__text-tree-value {
+				&::after {
+					content: '›';
+					margin-left: 1rem;
+					margin-right: 0.7rem;
+				}
 			}
 		}
 	// adding more padding to every following child element
@@ -228,7 +235,7 @@
 		margin-bottom: 1.5rem;
 		.imageview_wrapper {
 			width: 100%;
-			height:calc(~"100% - 50px") ;
+			height:calc(~"100% - 50px");
 			.image-controls__actions {
 				width: 100%;
 				display: flex;
@@ -250,6 +257,7 @@
 	}
 	&__search-input-wrapper {
 		position: relative;
+		margin-bottom: 2rem;
 	}
 	&__search-input {
 		width: 100%;
@@ -301,5 +309,30 @@
 		&::after {
 			display: none;
 		}
+	}
+}
+
+/* BREAKPOINT FOR LARGE DESKTOPS */
+@media screen and (max-width: @largeBreakpoint) {}
+
+/* BREAKPOINT FOR DESKTOPS */
+@media screen and (max-width: @mediumBreakpoint) {
+	.tec-archives__right-side, .tec-archives__left-side {
+		flex: 0 0 100%;
+		max-width: 100%;
+	}
+	.tec-archives__top-title {
+		display: none;
+	}
+}
+
+/* BREAKPOINT FOR TABLETS */
+@media screen and (max-width: @smallBreakpoint) {
+}
+
+/* BREAKPOINT FOR SMARTPHONES */
+@media screen and (max-width: @xSmallBreakpoint) {
+	.tec-archives__text-tree .tec-archives__text-tree-entry:nth-child(n+0) {
+		padding-left: 0;
 	}
 }

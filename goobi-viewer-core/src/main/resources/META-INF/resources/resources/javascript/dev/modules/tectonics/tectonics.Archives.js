@@ -36,14 +36,24 @@ var viewerJS = ( function( viewer ) {
             	$('.tec-archives__right-side').hcSticky({
             		stickTo: $('.tec-archives__wrapper')[0],
             		top: 80,
-            		bottom: 20
+            		bottom: 20,
+        		    responsive: {
+        		    	993: {
+        			      disable: true
+        			    }
+        			}
             	});
             	
             	// Sticky left side of archives view
             	$('.tec-archives__left-side').hcSticky({
             		stickTo: $('.tec-archives__wrapper')[0],
             		top: 80,
-            		bottom: 20
+            		bottom: 20,
+        		    responsive: {
+        			    993: {
+        			      disable: true
+        			    }
+        			}
             	});
 
             	/* check search field for input value and show clear button */

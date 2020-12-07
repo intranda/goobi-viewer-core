@@ -31,18 +31,16 @@
 				                
                     <div class="tec-archives__graphic-tree">
                     
-                    <h:form id="searchForm" prependId="false">
-				        <div class="search-standard__input">
-                            <div class="tec-archives__search-input-wrapper">
-                                <h:inputText id="tectonicsSearchField" styleClass="form-control filter-input tec-archives__search-input"
-                                    value="#{tectonicsBean.searchString}" immediate="true">
-                                    <f:passThroughAttribute name="placeholder" value="#{msg.searchFieldDemoText}" />
-                                </h:inputText>
-                                <div class="tec-archives__search-clear">x</div>
-                                <h:commandButton styleClass="tec-archives__search-submit-button" value="#{msg.search}" action="#{tectonicsBean.searchAction}"></h:commandButton>
-                            </div>
-                        </div>
-                    </h:form>
+                    <div class="tec-archives__search-input-wrapper">
+	                    <h:form id="searchForm" prependId="false">
+	                        <h:inputText id="tectonicsSearchField" styleClass="form-control filter-input tec-archives__search-input"
+	                            value="#{tectonicsBean.searchString}" immediate="true">
+	                            <f:passThroughAttribute name="placeholder" value="#{msg.searchFieldDemoText}" />
+	                        </h:inputText>
+	                        <div class="tec-archives__search-clear">x</div>
+	                        <h:commandButton styleClass="tec-archives__search-submit-button" value="#{msg.search}" action="#{tectonicsBean.searchAction}"></h:commandButton>
+	            		</h:form>
+                    </div>
 	                    <ui:include src="/resources/includes/tectonics/eadTreeView.xhtml">
 	                    	<ui:param name="view" value="archives" />
 	                    	<ui:param name="indent" value="#{configurationBean.tocIndentation * 1.5}"/>
@@ -63,8 +61,8 @@
                           <div class="tec-archives__text-tree-level">
                           	<h:outputText rendered="#{entry.descriptionLevel != null}" value="#{msg[entry.descriptionLevel]}:" />
                           </div>
-                          <div class="tec-archives__text-tree-value">#{entry.label}</div>
-                         </div>
+                          	<span class="tec-archives__text-tree-value">#{entry.label}</span>
+                          </div>
                      </ui:repeat>
                  </h:panelGroup>
 					

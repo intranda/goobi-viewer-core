@@ -7,17 +7,33 @@
 .tectonics-tree {
 		font-size: 1.5rem;
 		margin: 0;
-		padding: 2rem;
 		border: 1px solid #d5d5d5;
 		background-color: #fff;
+		padding: 2rem;
+	&__inner {
+		position: relative;
+	}
 	&__expand-minimize-all {
 		display: flex;
 		justify-content: flex-end;
+		position: absolute;
+		right: 0;
+		a {
+			color: @black;
+			&:last-child {
+				margin-left: 0.7rem;
+			}
+		}
 	}
 	&__entry {
 		display: flex;
 		flex-wrap: wrap;
 		margin-bottom: 1rem;
+		&:first-child {
+			.tectonics-tree__list-expandable-title {
+				max-width: calc(100% - 60px);
+			}
+		}
 		&.child {
 			margin-left: 25px;
 			.tectonics-tree__metadata-box {
@@ -150,7 +166,7 @@
 				padding-left: 0 !important;
 			}
 			&.child {
-				padding-left: 40px !important;
+				padding-left: 28px !important;
 			}
 		}
 		&__metadata-box-fields-row {
