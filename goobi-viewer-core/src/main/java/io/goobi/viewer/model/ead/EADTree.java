@@ -37,7 +37,7 @@ public class EADTree implements Serializable {
     /** Constant <code>DEFAULT_GROUP="_DEFAULT"</code> */
     public static final String DEFAULT_GROUP = "_DEFAULT";
 
-    public static int defaultCollapseLevel = 2;
+    public static int defaultCollapseLevel = 1;
 
     /** TOC element map. */
     private Map<String, List<EadEntry>> entryMap = new HashMap<>(1);
@@ -46,9 +46,9 @@ public class EADTree implements Serializable {
 
     private boolean treeBuilt = false;
 
-    private int tocVisible = -1;
+    private int toExpandIndex = -1;
 
-    private int tocInvisible = -1;
+    private int toCollapseIndex = -1;
 
     private int maxTocDepth = 0;
 
@@ -70,11 +70,13 @@ public class EADTree implements Serializable {
             throw new IllegalArgumentException("root may not be null");
         }
 
+        // If root has just one child, use it as new root
+        if (root.getSubEntryList().size() == 1) {
+            root = root.getSubEntryList().get(0);
+            root.shiftHierarchy(-1);
+        }
+        
         List<EadEntry> tree = root.getAsFlatList(true);
-        // remove root
-        //        if(tree.size() > 1) {
-        //            tree = tree.subList(1, tree.size());
-        //        }
         entryMap.put(DEFAULT_GROUP, tree);
     }
 
@@ -218,25 +220,24 @@ public class EADTree implements Serializable {
      *
      * @return a {@link io.goobi.viewer.model.toc.TOCElement} object.
      */
-    public EadEntry getActiveEntry() {
+    @Deprecated
+    public EadEntry updateTree() {
         EadEntry ret = null;
         if (entryMap == null) {
             return ret;
         }
 
-        logger.trace("getActiveEntry  {}/{}", tocVisible, tocInvisible);
-
-        if (tocVisible != -1) {
-            expandTree(tocVisible);
-            ret = entryMap.get(DEFAULT_GROUP).get(tocVisible);
+        if (toExpandIndex != -1) {
+            expandSubtree(toExpandIndex);
+            ret = entryMap.get(DEFAULT_GROUP).get(toExpandIndex);
             ret.setExpanded(true);
-            tocVisible = -1;
+            toExpandIndex = -1;
         }
-        if (tocInvisible != -1) {
-            collapseTree(tocInvisible);
-            ret = entryMap.get(DEFAULT_GROUP).get(tocInvisible);
+        if (toCollapseIndex != -1) {
+            collapseSubtree(toCollapseIndex);
+            ret = entryMap.get(DEFAULT_GROUP).get(toCollapseIndex);
             ret.setExpanded(false);
-            tocInvisible = -1;
+            toCollapseIndex = -1;
         }
 
         return ret;
@@ -283,8 +284,9 @@ public class EADTree implements Serializable {
      *
      * @param parentIndex
      */
-    private void collapseTree(int parentIndex) {
-        logger.trace("collapseTree: {}", parentIndex);
+    @Deprecated
+    private void collapseSubtree(int parentIndex) {
+        logger.trace("collapseSubtree: {}", parentIndex);
         if (entryMap == null) {
             return;
         }
@@ -294,6 +296,7 @@ public class EADTree implements Serializable {
             EadEntry child = entryMap.get(DEFAULT_GROUP).get(i);
             if (child.getHierarchy() > level) {
                 child.setVisible(false);
+                logger.trace("Collapsed entry: {}", child);
             } else {
                 // Rest of the elements are irrelevant because they belong
                 // to a different subtree on the same level
@@ -305,23 +308,25 @@ public class EADTree implements Serializable {
     /**
      * Recursively expands the child elements of the element with the given ID.
      *
-     * @param parentId
+     * @param parentIndex
      */
-    private void expandTree(int parentId) {
-        // logger.trace("expandTree: {}", parentId);
+    @Deprecated
+    private void expandSubtree(int parentIndex) {
+        logger.trace("expandSubtree: {}", parentIndex);
         if (entryMap == null) {
             return;
         }
 
-        int level = entryMap.get(DEFAULT_GROUP).get(parentId).getHierarchy();
-        for (int i = parentId + 1; i < entryMap.get(DEFAULT_GROUP).size(); i++) {
+        int level = entryMap.get(DEFAULT_GROUP).get(parentIndex).getHierarchy();
+        for (int i = parentIndex + 1; i < entryMap.get(DEFAULT_GROUP).size(); i++) {
             EadEntry child = entryMap.get(DEFAULT_GROUP).get(i);
             if (child.getHierarchy() == level + 1) {
                 // Set immediate children visible
                 child.setVisible(true);
+                logger.trace("Expanded entry: {}", child);
                 // Elements further down the tree are handled recursively
                 if (child.isHasChild() && child.isExpanded()) {
-                    expandTree(child.getIndex());
+                    expandSubtree(child.getIndex());
                 }
             } else if (child.getHierarchy() <= level) {
                 // Rest of the elements are irrelevant because they belong
@@ -388,24 +393,24 @@ public class EADTree implements Serializable {
 
     /**
      * <p>
-     * setChildVisible.
+     * setToExpandIndex.
      * </p>
      *
      * @param id a int.
      */
-    public void setChildVisible(int id) {
-        this.tocVisible = id;
+    public void setToExpandIndex(int toExpandIndex) {
+        this.toExpandIndex = toExpandIndex;
     }
 
     /**
      * <p>
-     * setChildInvisible.
+     * setToCollapseIndexs.
      * </p>
      *
      * @param id a int.
      */
-    public void setChildInvisible(int id) {
-        this.tocInvisible = id;
+    public void setToCollapseIndex(int toCollapseIndex) {
+        this.toCollapseIndex = toCollapseIndex;
     }
 
     /**
@@ -428,50 +433,6 @@ public class EADTree implements Serializable {
         }
 
         return null;
-    }
-
-    /**
-     * <p>
-     * Getter for the field <code>tocVisible</code>.
-     * </p>
-     *
-     * @return the tocVisible
-     */
-    public int getTocVisible() {
-        return tocVisible;
-    }
-
-    /**
-     * <p>
-     * Setter for the field <code>tocVisible</code>.
-     * </p>
-     *
-     * @param tocVisible the tocVisible to set
-     */
-    public void setTocVisible(int tocVisible) {
-        this.tocVisible = tocVisible;
-    }
-
-    /**
-     * <p>
-     * Getter for the field <code>tocInvisible</code>.
-     * </p>
-     *
-     * @return the tocInvisible
-     */
-    public int getTocInvisible() {
-        return tocInvisible;
-    }
-
-    /**
-     * <p>
-     * Setter for the field <code>tocInvisible</code>.
-     * </p>
-     *
-     * @param tocInvisible the tocInvisible to set
-     */
-    public void setTocInvisible(int tocInvisible) {
-        this.tocInvisible = tocInvisible;
     }
 
     /**

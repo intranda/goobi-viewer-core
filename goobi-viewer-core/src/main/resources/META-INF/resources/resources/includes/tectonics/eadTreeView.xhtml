@@ -25,7 +25,6 @@
 		<!-- TECTONICS TREEVIEW -->
 		<h:panelGroup>
 
-
 			<!-- EXPANDABLE TREEVIEW -->
 			<h:panelGroup>
 
@@ -54,8 +53,7 @@
 					<ul>
 						<c:forEach var="entry" items="#{visibleTree}" varStatus="status">
 							<!-- This will break indentation if replaced with a c:if -->
-							<li
-								class="tectonics-tree__entry #{entry.hasChild == true ? 'parent' : 'child' }"
+							<li class="tectonics-tree__entry #{entry.hasChild == true ? 'parent' : 'child' }"
 								data-id="id_#{entry.id}"
 								style="padding-left: #{entry.hierarchy * indent}px"><c:if
 									test="#{entry.hasChild}">
@@ -80,12 +78,8 @@
 								
 								<!-- TITLE -->
 								<div class="tectonics-tree__list-expandable-title">
-
-									<!-- TODO icon -->
-									<!-- #{entry.descriptionLevel} -->
-									<!-- TODO highlight selected entry via CSS -->
-
 									<ui:fragment rendered="#{entry.id == tectonicsBean.tectonicsTree.selectedEntry.id and !entry.searchHit}">
+
 											<!-- <i class="fa fa-file-o -tectonics-selected" aria-hidden="true"></i> -->
 											<span class="fa-stack" aria-hidden="true"><i
 												class="fa fa-file-o -tectonics-selected"></i><i
@@ -93,7 +87,8 @@
 												<a class="tectonics-tree__selected" name="selected"></a>
 												<h:commandLink styleClass="tectonics-tree__active-title"
 													action="#{tectonicsBean.tectonicsTree.setSelectedEntry(null)}"
-												    value="#{entry.label}">
+												    value="#{entry.label}"
+												    onclick="return viewerJS.setUrlQuery('selected', '')">
 <!-- 												    value="#{navigationHelper.applicationUrl}#{view}/#{entry.id}/"> -->
 												    <f:ajax render="@all" />
 												</h:commandLink>
@@ -105,7 +100,8 @@
                                             <a class="tectonics-tree__search_hit" name="search_hit"></a>
                                             <h:commandLink styleClass="tectonics-tree__inactive-title" style="color:#5BA2E5"
                                             	action="#{tectonicsBean.tectonicsTree.setSelectedEntry(entry)}"
-												    value="#{entry.label}">
+												    value="#{entry.label}"
+												    onclick="return viewerJS.setUrlQuery('selected', '#{entry.id}')">
 <!--                                                 value="#{navigationHelper.applicationUrl}#{view}/#{entry.id}/"> -->
 <!--                                                 #{entry.label} -->
 												    <f:ajax render="@all" />
@@ -116,7 +112,8 @@
 												class="fa fa-file-o"></i><i class="fa fa-stack-text">F</i></span>
 											<h:commandLink styleClass="tectonics-tree__inactive-title"
 											action="#{tectonicsBean.tectonicsTree.setSelectedEntry(entry)}"
-												    value="#{entry.label}">
+												    value="#{entry.label}"
+												    onclick="return viewerJS.setUrlQuery('selected', '#{entry.id}')">
 <!-- 												value="#{navigationHelper.applicationUrl}#{view}/#{entry.id}#selected"> -->
 <!-- 												#{entry.label} -->
 												    <f:ajax render="@all" />
@@ -126,6 +123,7 @@
 								
 								<!-- METADATA -->
 								<ui:fragment rendered="#{view == 'tectonics' and entry.id == tectonicsBean.tectonicsTree.selectedEntry.id}">
+
 									<h:panelGroup layout="block"
 										class="tectonics-tree__metadata-box"
 										id="metadata_#{status.count}">
@@ -140,11 +138,11 @@
 										</ui:repeat>
 										<div class="tectonics-tree__metadata-box-links">
 											<h:outputLink target="_blank"
-												value="#{navigationHelper.applicationUrl}archives/">#{msg.tectonics_archiveView}</h:outputLink>
+												value="#{navigationHelper.applicationUrl}archives/">#{msg.tectonics__archiveView}</h:outputLink>
 											<!-- TODO view selection, representative page -->
 											<h:outputLink rendered="#{entry.associatedRecordPi != ''}"
 												target="_blank"
-												value="#{navigationHelper.objectUrl}/#{entry.associatedRecordPi}/1/">#{msg.tectonics_showRecord}</h:outputLink>
+												value="#{navigationHelper.objectUrl}/#{entry.associatedRecordPi}/1/">#{msg.tectonics__showRecord}</h:outputLink>
 										</div>
 									</h:panelGroup>
 								</ui:fragment>

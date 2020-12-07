@@ -306,6 +306,75 @@ public class EadEntry {
         }
         return list;
     }
+    
+    /**
+     * 
+     * @param offset
+     */
+    public void shiftHierarchy(int offset) {
+        this.hierarchy += offset;
+        if(isHasChildren()) {
+            for(EadEntry sub : subEntryList) {
+                sub.shiftHierarchy(offset);
+            }
+        }
+    }
+
+    /**
+     * Expands and sets visible all ancestors of this node and expands siblings of this node.
+     */
+    public void expandUp() {
+        if (parentNode == null) {
+            return;
+        }
+
+        parentNode.setVisible(visible);
+        parentNode.expand();
+        parentNode.expandUp();
+    }
+
+    /**
+     * Expands this entry and sets all sub-entries visible if their immediate parent is expanded.
+     */
+    public void expand() {
+        // logger.trace("expand: {}", id);
+        if (!isHasChildren()) {
+            return;
+        }
+
+        setExpanded(true);
+        setChildrenVisibility(true);
+    }
+
+    /**
+     * Collapses this entry and hides all sub-entries.
+     */
+    public void collapse() {
+        // logger.trace("collapse: {}", id);
+        if (!isHasChildren()) {
+            return;
+        }
+
+        setExpanded(false);
+        setChildrenVisibility(false);
+    }
+
+    /**
+     * 
+     * @param visible
+     */
+    void setChildrenVisibility(boolean visible) {
+        if (!isHasChildren()) {
+            return;
+        }
+
+        for (EadEntry sub : subEntryList) {
+            sub.setVisible(visible);
+            if (sub.isExpanded() && sub.isHasChildren()) {
+                sub.setChildrenVisibility(visible);
+            }
+        }
+    }
 
     /**
      * @return the parentNode

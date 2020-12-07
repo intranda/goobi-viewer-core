@@ -12,6 +12,7 @@
     <ui:define name="metadata">
         <f:metadata>
             <f:event type="preRenderView" listener="#{navigationHelper.setCurrentView('tectonics')}" />
+            <f:event type="preRenderView" listener="#{breadcrumbBean.addStaticLinkToBreadcrumb(msg.tectonics,1)}" />
         </f:metadata>
     </ui:define> 
 	
@@ -24,19 +25,22 @@
     <ui:define name="content">
 		<f:view contentType="text/html" encoding="utf-8">
             
-            <h2>Tectonics</h2>
+            <h2>#{msg.tectonics}</h2>
             
 			<div id="tectonicsView" class="tectonics-tree">
 					<ui:include src="/resources/includes/tectonics/eadTreeView.xhtml">
                     	<ui:param name="view" value="tectonics" />
-                    	<ui:param name="indent" value="#{configurationBean.tocIndentation * 2.5}"/>
+                    	<ui:param name="indent" value="#{configurationBean.tocIndentation * 1.5}"/>
                     </ui:include>
 			</div>
 		</f:view>
 	</ui:define>
 
     <ui:define name="sidebar">
-        
+        <h:panelGroup rendered="#{browseBean.browsingMenuEnabled}">
+            <widgetComponent:widget_browsing />
+        </h:panelGroup> 
+
         <c:forEach var="module" items="#{configurationBean.modules}">
             <c:forEach var="contribution" items="#{module.sidebarContributions}">
                 <ui:include src="/#{contribution}" />
@@ -45,7 +49,11 @@
         
         <widgetComponent:widget_userInteractions />
     </ui:define>
-    
+
+    <ui:define name="rssFeed">
+        <ui:include src="resources/includes/rssFeed.xhtml" />
+    </ui:define>
+
     <ui:define name="breadcrumbs">
         <ui:include src="/resources/includes/breadcrumbs.xhtml" />
     </ui:define>

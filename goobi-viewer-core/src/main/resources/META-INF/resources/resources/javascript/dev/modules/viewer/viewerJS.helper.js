@@ -419,11 +419,34 @@ var viewerJS = ( function( viewer ) {
                context = context[namespaces[i]];
              }
              return context[func];
+          },
+          getUrlSearchParamMap: function() {
+              let searchParams = document.location.search.substr(1).split('&');
+              let paramMap = new Map();
+              searchParams.forEach(param => {
+                  let parts = param.split("=");
+                  paramMap.set(parts[0], parts[1]);
+              })
+              return paramMap;
+          },
+          setUrlSearchParams: function(map) {
+              let paramList = [];
+              map.forEach(entry => {
+                  paramList.push(entry[0] + "=" + entry[1]);
+              })
+              document.location.search = paramList.join("&");
           }
+         
 
     };
     
     viewer.localStoragePossible = viewer.helper.checkLocalStorage();
+    
+    viewer.setUrlQuery = function(param, value) {
+        console.log("set url query param ", param, value, window.location);
+        
+        return true;
+    }
     
     viewer.getMapBoxToken = function() {
         if(typeof mapBoxToken != "undefined") {

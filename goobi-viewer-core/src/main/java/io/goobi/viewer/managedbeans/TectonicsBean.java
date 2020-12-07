@@ -25,7 +25,6 @@ import javax.inject.Named;
 
 import org.apache.commons.configuration.ConfigurationException;
 import org.apache.commons.configuration.HierarchicalConfiguration;
-import org.apache.commons.configuration.SubnodeConfiguration;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -42,8 +41,6 @@ public class TectonicsBean implements Serializable {
     private static final long serialVersionUID = -1755934299534933504L;
 
     private static final Logger logger = LoggerFactory.getLogger(TectonicsBean.class);
-
-    private static final String CONFIG_FILE_NAME = "plugin_intranda_administration_archive_management.xml";
 
     private static final Object lock = new Object();
 
@@ -75,6 +72,18 @@ public class TectonicsBean implements Serializable {
         } catch (ConfigurationException e) {
             logger.error(e.getMessage(), e);
         }
+    }
+
+    /**
+     * 
+     * @return actual root element of the document, even if it's not in the displayed tree
+     */
+    public EadEntry getTrueRoot() {
+        if (eadParser == null || !eadParser.isDatabaseLoaded()) {
+            return null;
+        }
+
+        return eadParser.getRootElement();
     }
 
     /**
@@ -135,8 +144,7 @@ public class TectonicsBean implements Serializable {
             return;
         }
         synchronized (tectonicsTree) {
-            tectonicsTree.setChildVisible(entry.getIndex());
-            tectonicsTree.getActiveEntry();
+            entry.expand();
         }
     }
 
@@ -154,8 +162,7 @@ public class TectonicsBean implements Serializable {
         }
 
         synchronized (tectonicsTree) {
-            tectonicsTree.setChildInvisible(entry.getIndex());
-            tectonicsTree.getActiveEntry();
+            entry.collapse();
         }
     }
 
@@ -210,34 +217,45 @@ public class TectonicsBean implements Serializable {
      */
     public String searchAction() {
         logger.trace("searchAction: {}", searchString);
+        search(true, true);
+
+        return "";
+    }
+
+    /**
+     * Executes search for searchString.
+     * 
+     * @param resetSelectedEntry If true, selected entry will be set to null
+     * @param collapseAll If true, all elements will be collapsed before expanding path to search hits
+     */
+    void search(boolean resetSelectedEntry, boolean collapseAll) {
         if (eadParser == null || !eadParser.isDatabaseLoaded() || tectonicsTree == null) {
             logger.warn("Tree not loaded, cannot search.");
-            return "";
+            return;
         }
 
         if (StringUtils.isEmpty(searchString)) {
             eadParser.resetSearch();
             tectonicsTree.resetCollapseLevel(tectonicsTree.getRootElement(), EADTree.defaultCollapseLevel);
-            return "";
+            return;
         }
 
         eadParser.search(searchString);
         List<EadEntry> results = eadParser.getFlatEntryList();
         if (results == null || results.isEmpty()) {
-            return "";
+            return;
         }
         logger.trace("result entries: {}", results.size());
 
-        tectonicsTree.setSelectedEntry(null);
-        tectonicsTree.collapseAll(true);
+        if (resetSelectedEntry) {
+            setSelectedEntryId(null);
+        }
+        tectonicsTree.collapseAll(collapseAll);
         for (EadEntry entry : results) {
             if (entry.isSearchHit()) {
-                expandHierarchyToEntry(entry, false);
+                entry.expandUp();
             }
         }
-        tectonicsTree.getActiveEntry();
-
-        return "";
     }
 
     /**
@@ -268,23 +286,32 @@ public class TectonicsBean implements Serializable {
     }
 
     /**
+     * Setter for the URL parameter. Loads the entry that has the given ID. Loads the tree, if this is a new sessions.
      * 
-     * @param id
+     * @param id Entry ID
      */
     public void setSelectedEntryId(String id) {
         logger.trace("setSelectedEntryId: {}", id);
+
+        // getTectonicsTree() will also load the tree, if not yet loaded
         if (getTectonicsTree() == null || eadParser == null) {
             return;
         }
+        // Select root element if no ID given
         if (StringUtils.isBlank(id)) {
-            tectonicsTree.setSelectedEntry(null);
+            id = "-";
+        }
+        if ("-".equals(id)) {
+            tectonicsTree.setSelectedEntry(tectonicsTree.getRootElement());
             return;
-        } else if ("-".equals(id)) {
-            // tectonicsTree.resetCollapseLevel();
-            tectonicsTree.setSelectedEntry(eadParser.getRootElement());
+        }
+        // Requested entry is already selected
+        if (tectonicsTree.getSelectedEntry() != null && tectonicsTree.getSelectedEntry().getId().equals(id)) {
             return;
-        } else {
-            // Find entry with given ID in the tree
+        }
+
+        // Find entry with given ID in the tree
+        try {
             eadParser.search(id);
             List<EadEntry> results = eadParser.getFlatEntryList();
             if (results == null || results.isEmpty()) {
@@ -296,54 +323,12 @@ public class TectonicsBean implements Serializable {
             EadEntry entry = results.get(results.size() - 1);
             eadParser.resetSearch();
             tectonicsTree.setSelectedEntry(entry);
-            expandHierarchyToEntry(entry, false);
-            tectonicsTree.getActiveEntry();
-        }
-    }
-
-    /**
-     * 
-     * @param entry
-     * @param expand
-     */
-    void expandHierarchyToEntry(EadEntry entry, boolean expand) {
-        logger.trace("expandHierarchyToEntry: {}", entry);
-        if (entry == null || tectonicsTree == null) {
-            return;
-        }
-
-        entry.setVisible(true);
-        entry.setExpanded(expand);
-        //        if (expand) {
-        //            setChildrenVisible(entry);
-        //        } else {
-        //            setChildrenInvisible(entry);
-        //        }
-
-        expandHierarchyToEntry(entry.getParentNode(), true);
-    }
-
-    /**
-     * 
-     * @param hierarchy
-     */
-    void selectAndExpandEntry(List<EadEntry> hierarchy) {
-        if (hierarchy == null || hierarchy.isEmpty() || tectonicsTree == null) {
-            return;
-        }
-
-        logger.trace("hierarchy size: {}", hierarchy.size());
-        for (int i = 0; i < hierarchy.size(); ++i) {
-            EadEntry entry = hierarchy.get(i);
-            if (i == hierarchy.size() - 1) {
-                // Select last node
-                tectonicsTree.setSelectedEntry(entry);
-            } else {
-                // Expand all parent nodes
-                entry.setExpanded(true);
-                expandEntry(entry);
+            entry.expandUp();
+        } finally {
+            // If there are current search results, restore them
+            if (StringUtils.isNotEmpty(searchString)) {
+                search(false, false);
             }
         }
     }
-
 }
