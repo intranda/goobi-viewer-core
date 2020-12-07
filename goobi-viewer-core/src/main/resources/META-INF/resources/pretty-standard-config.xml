@@ -110,16 +110,11 @@
         <view-id value="/tectonics.xhtml" />
         <query-param name="selected">#{tectonicsBean.selectedEntryId}</query-param>
     </url-mapping>
-<!--     <url-mapping id="tectonics1"> -->
-<!--         <pattern value="/tectonics/#{selectedEntryId:tectonicsBean.selectedEntryId}/" /> -->
-<!--         <view-id value="/tectonics.xhtml" /> -->
-<!--     </url-mapping> -->
-    
     <!-- ARCHIVES -->
     <url-mapping id="archives">
         <pattern value="/archives/" />
         <view-id value="/archivesContent.xhtml" />
-        <action onPostback="false">#{tectonicsBean.setSelectedEntryId('-')}</action>
+        <query-param name="selected">#{tectonicsBean.selectedEntryId}</query-param>
     </url-mapping>
     <url-mapping id="archives1">
         <pattern value="/archives/#{selectedEntryId:tectonicsBean.selectedEntryId}/" />

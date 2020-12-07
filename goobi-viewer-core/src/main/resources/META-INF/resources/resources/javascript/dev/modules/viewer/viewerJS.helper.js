@@ -421,7 +421,7 @@ var viewerJS = ( function( viewer ) {
              return context[func];
           },
           getUrlSearchParamMap: function() {
-              let searchParams = document.location.search.substr(1).split('&');
+              let searchParams = document.location.search.substr(1).split('&').filter(p => p != undefined && p.length > 0);
               let paramMap = new Map();
               searchParams.forEach(param => {
                   let parts = param.split("=");
@@ -431,8 +431,8 @@ var viewerJS = ( function( viewer ) {
           },
           setUrlSearchParams: function(map) {
               let paramList = [];
-              map.forEach(entry => {
-                  paramList.push(entry[0] + "=" + entry[1]);
+              map.forEach((value, key) => {
+                  paramList.push(key + "=" + value);
               })
               document.location.search = paramList.join("&");
           }
@@ -443,8 +443,18 @@ var viewerJS = ( function( viewer ) {
     viewer.localStoragePossible = viewer.helper.checkLocalStorage();
     
     viewer.setUrlQuery = function(param, value) {
-        console.log("set url query param ", param, value, window.location);
-        
+        let paramMap = viewer.helper.getUrlSearchParamMap();
+        if(!value || value.length == 0) {
+            paramMap.delete(param);
+        } else {
+            paramMap.set(param, value);
+        }
+        viewer.helper.setUrlSearchParams(paramMap);
+        return true;
+    }
+    
+    viewer.setUrlHash = function(hash) {
+        document.location.hash = "#" + hash;
         return true;
     }
     

@@ -108,7 +108,7 @@ module.exports = function (grunt) {
 	                '<%=src.jsDevFolderModules %>crowdsourcing/Crowdsourcing.js',
 					'<%=src.jsDevFolderModules %>crowdsourcing/Crowdsourcing.Annotation.js',
 	                '<%=src.jsDevFolderModules %>crowdsourcing/Crowdsourcing.*.js',
-	                '<%=src.jsDevFolderModules %>tectonics/tectonics.*.js',
+	                '<%=src.jsDevFolderModules %>tectonics/*.js',
 
 				], 
 				dest: '<%=src.jsDistFolder%>viewer.min.js'

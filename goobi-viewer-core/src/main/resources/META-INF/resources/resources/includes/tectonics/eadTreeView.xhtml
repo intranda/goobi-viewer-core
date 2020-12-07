@@ -87,8 +87,7 @@
 												<a class="tectonics-tree__selected" name="selected"></a>
 												<h:commandLink styleClass="tectonics-tree__active-title"
 													action="#{tectonicsBean.tectonicsTree.setSelectedEntry(null)}"
-												    value="#{entry.label}"
-												    onclick="return viewerJS.setUrlQuery('selected', '')">
+												    value="#{entry.label}" pt:data-select-entry="">
 <!-- 												    value="#{navigationHelper.applicationUrl}#{view}/#{entry.id}/"> -->
 												    <f:ajax render="@all" />
 												</h:commandLink>
@@ -101,7 +100,7 @@
                                             <h:commandLink styleClass="tectonics-tree__inactive-title" style="color:#5BA2E5"
                                             	action="#{tectonicsBean.tectonicsTree.setSelectedEntry(entry)}"
 												    value="#{entry.label}"
-												    onclick="return viewerJS.setUrlQuery('selected', '#{entry.id}')">
+												    pt:data-select-entry="#{entry.id}">
 <!--                                                 value="#{navigationHelper.applicationUrl}#{view}/#{entry.id}/"> -->
 <!--                                                 #{entry.label} -->
 												    <f:ajax render="@all" />
@@ -113,7 +112,7 @@
 											<h:commandLink styleClass="tectonics-tree__inactive-title"
 											action="#{tectonicsBean.tectonicsTree.setSelectedEntry(entry)}"
 												    value="#{entry.label}"
-												    onclick="return viewerJS.setUrlQuery('selected', '#{entry.id}')">
+												    pt:data-select-entry="#{entry.id}">
 <!-- 												value="#{navigationHelper.applicationUrl}#{view}/#{entry.id}#selected"> -->
 <!-- 												#{entry.label} -->
 												    <f:ajax render="@all" />
@@ -138,7 +137,7 @@
 										</ui:repeat>
 										<div class="tectonics-tree__metadata-box-links">
 											<h:outputLink target="_blank"
-												value="#{navigationHelper.applicationUrl}archives/">#{msg.tectonics__archiveView}</h:outputLink>
+												value="#{navigationHelper.applicationUrl}archives/?selected=#{entry.id}#selected">#{msg.tectonics__archiveView}</h:outputLink>
 											<!-- TODO view selection, representative page -->
 											<h:outputLink rendered="#{entry.associatedRecordPi != ''}"
 												target="_blank"
