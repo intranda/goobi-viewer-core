@@ -635,6 +635,7 @@
                                                             	var="mode"
                                                             	itemLabel="#{msg[mode.label]}"
                                                             	itemValue="#{mode}"></f:selectItems>
+															<f:passThroughAttribute name="aria-label" value="#{msg.aria_label__campaigns_review}"/>
                                                             <f:ajax event="change" render="reviewSettingsGroup" />
                                                         </h:selectOneMenu>												
                                                 </div>
