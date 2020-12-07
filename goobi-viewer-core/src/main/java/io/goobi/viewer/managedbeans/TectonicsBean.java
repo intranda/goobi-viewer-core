@@ -294,6 +294,7 @@ public class TectonicsBean implements Serializable {
             }
 
             EadEntry entry = results.get(results.size() - 1);
+            eadParser.resetSearch();
             tectonicsTree.setSelectedEntry(entry);
             expandHierarchyToEntry(entry, false);
             tectonicsTree.getActiveEntry();
