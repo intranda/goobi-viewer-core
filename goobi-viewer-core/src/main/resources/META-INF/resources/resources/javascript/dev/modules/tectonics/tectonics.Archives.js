@@ -74,6 +74,11 @@ var viewerJS = ( function( viewer ) {
             	    	 $('.tec-archives__search-submit-button').click();
             	     }, 1300);
             	 });
+            	 
+            	 // toggle text-tree view from stairs to one line
+            	 $('.tec-archives__text-tree').click(function() {
+            		 $('.tec-archives__text-tree').toggleClass('-showAsOneLine');
+            	 });
             	
             });            
             

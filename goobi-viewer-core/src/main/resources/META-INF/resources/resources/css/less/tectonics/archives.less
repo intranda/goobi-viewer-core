@@ -147,10 +147,54 @@
 		padding: 2rem;
 	}
 	&__text-tree {
+		background: white;
 		margin-bottom: 2rem;
 		padding: 2rem;
-		background: white;
+		cursor: pointer;
+		&.-showAsOneLine {
+			display: flex;
+			flex-wrap: wrap;
+			.tec-archives__text-tree-entry {
+				&::after {
+					content: '›';
+					margin-left: 1rem;
+					margin-right: 1rem;
+				}
+				&:last-child {
+					&::after {
+						display: none;
+					}
+				}
+			}
+			// adding zero padding child elements
+			.tec-archives__text-tree-entry:nth-child(n+0){
+					padding-left: 0;
+		 	}
+			.tec-archives__text-tree-level {
+				display: none;
+			}
+			.tec-archives__text-tree-value {
+			}
+		}
+	// adding more padding to every following child element
+	.tec-archives__text-tree-staircase (@indexstart,@index) when (@indexstart < @index ){
+		.tec-archives__text-tree-entry:nth-child(@{indexstart}){
+				padding-left: (@indexstart - 1 ) * 20px + 20px;
+	 	}
+		.tec-archives__text-tree-staircase (@indexstart + 1,@index);
 	}
+	.tec-archives__text-tree-staircase (2,15);
+	}
+	&__text-tree-entry {
+		display: flex;
+	}
+	&__text-tree-level {
+		padding-right: 1rem;
+	}
+	&__text-tree-value {
+		font-weight: 700;
+	}
+	&__text-tree-entry {}
 	&__object-info {
 		background: white;
 		padding: 2rem;
