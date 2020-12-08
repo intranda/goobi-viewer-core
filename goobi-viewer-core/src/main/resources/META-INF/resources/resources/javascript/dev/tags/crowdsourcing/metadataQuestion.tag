@@ -39,8 +39,6 @@
 	    this.initOriginalMetadata(this.question);
 	    this.question.initializeView((anno) => new Crowdsourcing.Annotation.Metadata(anno, this.originalData), this.update, this.update, this.focusAnnotation);	    
 	    console.log("mounted ", this);
-	    Crowdsourcing.translator.addTranslations(this.question.metadataFields)
-	    .then(() => {	        
 		    this.opts.item.onImageOpen(function() {
 		        switch(this.question.targetSelector) {
 		            case Crowdsourcing.Question.Selector.WHOLE_PAGE:
@@ -49,9 +47,10 @@
 		                    this.question.addAnnotation();
 		                }
 		        }
-		        this.update()
+		        this.update();
 		    }.bind(this));
-	    })
+	    Crowdsourcing.translator.addTranslations(this.question.metadataFields)
+	    .then(() => this.update());
 	});
 
 	initOriginalMetadata(question) {
