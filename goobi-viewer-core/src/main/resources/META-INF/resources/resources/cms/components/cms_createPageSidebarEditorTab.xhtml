@@ -18,6 +18,7 @@
 					<h:selectBooleanCheckbox id="checkboxUseDefaultSidebar" value="#{cmsBean.selectedPage.useDefaultSidebar}" onclick="cmsJS.createPage.disablePreview();">
 						<h:outputText value="#{msg.cms_pageSidebarUseDefault}" />
 						<f:ajax render="cmsCreatePageAccessControl" />
+						<f:passThroughAttribute name="aria-label" value="#{msg.cms_pageSidebarUseDefault}" />
 					</h:selectBooleanCheckbox>
 					<script type="text/javascript">
 					function initSortables( data ) {
@@ -49,7 +50,7 @@
 							<div class="row">
 								<div class="col-12 col-sm-12 col-md-6 col-lg-6">
 									<div class="sidebar-editor-editor-left">
-										<h4>#{msg.cms_menu_visibleComponents}</h4>
+										<h3 class="admin__h3">#{msg.cms_menu_visibleComponents}</h3>
 
 										<ul id="visibleItemList">
 											<ui:repeat var="element" varStatus="status" value="#{cmsBean.selectedPage.sidebarElements}" prependId="false">
@@ -359,6 +360,7 @@
 											<div class="col-sm-9">
 												<h:inputText value="#{cmsBean.selectedSidebarElement.type}" styleClass="form-control">
 													<f:ajax render="@this" event="change" />
+													<f:passThroughAttribute name="aria-label" value="#{msg.cms_sidebarElement_title}" />
 												</h:inputText>
 											</div>
 										</div>
@@ -367,6 +369,7 @@
 											<div class="col-sm-9">
 												<h:inputTextarea value="#{cmsBean.selectedSidebarElement.html}" styleClass="form-control">
 													<f:ajax render="@this" event="change" />
+													<f:passThroughAttribute name="aria-label" value="#{msg.cms_sidebarElement_html}" />
 												</h:inputTextarea>
 											</div>
 										</div>
@@ -381,7 +384,9 @@
 										<div class="form-group">
 											<label for="sidebarElementCssClass" class="col-sm-3 control-label">#{msg.cms_sidebarElement_css}:</label>
 											<div class="col-sm-9">
-												<h:inputText value="#{cmsBean.selectedSidebarElement.cssClass}" styleClass="form-control"></h:inputText>
+												<h:inputText value="#{cmsBean.selectedSidebarElement.cssClass}" styleClass="form-control">
+													<f:passThroughAttribute name="aria-label" value="#{msg.cms_sidebarElement_css}" />
+												</h:inputText>
 												<span class="help-block">#{msg.cms_sidebarElement_css_help}</span>
 											</div>
 										</div>
