@@ -35,6 +35,7 @@
                     styleClass="form-control"
                     value="#{contentItem.elementsPerPage}"> 
                     <f:ajax event="change" render="@this" />
+                    <f:passThroughAttribute name="aria-label" value="#{msg[contentItem.itemLabel]}" />
                 </h:inputText>
             </h:panelGroup>
             

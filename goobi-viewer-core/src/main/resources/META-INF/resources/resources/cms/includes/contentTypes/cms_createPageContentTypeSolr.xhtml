@@ -27,6 +27,7 @@
                 <h:inputText id="solrQueryInput" value="#{contentItem.solrQuery}" styleClass="form-control">
                     <f:validator validatorId="solrQueryValidator" for="solrQueryInput" />
                     <f:ajax event="blur" render="solrQueryInputGroup" />
+                    <f:passThroughAttribute name="aria-label" value="#{msg.cms_itemSolrQuery}" />
                 </h:inputText>
             </h:panelGroup>
             <span class="cms-module__option-control-helptext">#{msg.inline_help__input_solr_query}</span>
@@ -52,6 +53,7 @@
                         <f:selectItem itemValue="!#{field}" itemLabel="#{msg[field]} (#{msg.searchSortingDropdown_descending})" />
                     </c:forEach>
 <!--                     <f:ajax event="change" render="@this" /> -->
+                    <f:passThroughAttribute name="aria-label" value="#{msg.cms_itemSolrSortFields}" />
                 </h:selectOneMenu>
             </div>
             <span class="cms-module__option-control-helptext">#{msg.inline_help__solr_sort_fields}</span>
@@ -76,6 +78,7 @@
                     	var="field"
                     	itemValue="#{field}" 
                     	itemLabel="#{msg[field]} (#{field})" />
+                    <f:passThroughAttribute name="aria-label" value="#{msg.cms_itemGroupByField}" />
                 </h:selectOneMenu>
             </div>
             <span class="cms-module__option-control-helptext">#{msg.inline_help__group_by_field}</span>
@@ -94,7 +97,8 @@
         </div>
         <div class="cms-module__option-control">
             <h:inputText id="itemCount" styleClass="form-control" value="#{contentItem.elementsPerPage}">
-<!--                 <f:ajax event="change" render="@this" /> -->
+            	<f:passThroughAttribute name="aria-label" value="#{msg.cms_itemGroupByField}" />
+				<!-- <f:ajax event="change" render="@this" /> -->
             </h:inputText>
             <span class="cms-module__option-control-helptext">#{msg.inline_help__solr_item_count}</span>
         </div>

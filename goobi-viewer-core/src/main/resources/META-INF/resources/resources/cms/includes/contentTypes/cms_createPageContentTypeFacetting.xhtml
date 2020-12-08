@@ -33,7 +33,9 @@
                 <h:inputText
                     id="facetting" 
                     styleClass="form-control" 
-                    value="#{contentItem.searchPrefix}" />
+                    value="#{contentItem.searchPrefix}">
+                    <f:passThroughAttribute name="aria-label" value="#{msg.cms_collectionDisplayParents}" />
+				</h:inputText>
             </h:panelGroup>
             
             <!-- INLINE HELP -->

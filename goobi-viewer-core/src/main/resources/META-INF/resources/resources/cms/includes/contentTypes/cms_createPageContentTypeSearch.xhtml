@@ -34,7 +34,9 @@
                 <h:selectBooleanCheckbox 
                     id="emptySearchResults" 
                     value="#{contentItem.displayEmptySearchResults}" 
-                    onclick="cmsJS.createPage.disablePreview();" />
+                    onclick="cmsJS.createPage.disablePreview();">
+                    <f:passThroughAttribute name="aria-label" value="#{msg[contentItem.itemLabel]}" />
+				</h:selectBooleanCheckbox>
             </h:panelGroup>
             
             <!-- INLINE HELP -->
@@ -76,7 +78,9 @@
                 <h:selectBooleanCheckbox 
                     id="advancedSearchOption" 
                     value="#{contentItem.advancedSearch}" 
-                    onclick="cmsJS.createPage.disablePreview();" />
+                    onclick="cmsJS.createPage.disablePreview();">
+                    <f:passThroughAttribute name="aria-label" value="#{msg.cms_advancedSearch}" />
+				</h:selectBooleanCheckbox>
             </h:panelGroup>
             
             <!-- INLINE HELP -->

@@ -36,7 +36,8 @@
                             class="admin__content-inner-title-exit"
                             data-toggle="tooltip"
                             data-placement="bottom"
-                            title="#{msg.admin__cms_back_to_page}">
+                            title="#{msg.admin__cms_back_to_page}"
+                            aria-label="#{msg.admin__cms_back_to_page}">
                         </a>
                     </h2>
 
@@ -46,15 +47,15 @@
                                 <div class="col-12 col-sm-12 col-md-9 col-lg-9 create-page-left">
                                     <!-- CREATE PAGE WRAPPER -->
                                     <div class="cms-create-page__wrapper">
-                                        <div role="tabpanel">
+                                        <div>
                                             <!-- NAV TABS -->
-                                            <ul class="nav nav-tabs" role="tablist">
+                                            <ul class="nav nav-tabs">
                                                 <c:forEach var="locale" items="#{cmsBean.getAllLocales()}">
-                                                    <li role="presentation" class="#{cmsBean.selectedLocale == locale ? 'active':''}">
+                                                    <li class="#{cmsBean.selectedLocale == locale ? 'active':''}">
                                                         <h:commandLink value="#{locale}" action="#{cmsBean.setSelectedLocale(locale)}" immediate="false" />
                                                     </li>
                                                 </c:forEach>
-                                                <li role="presentation" class="#{cmsBean.selectedLocale == null ? 'active':''}">
+                                                <li class="#{cmsBean.selectedLocale == null ? 'active':''}">
                                                     <h:commandLink value="#{msg.cms_pageSidebar}" action="#{cmsBean.setSelectedLocale(null)}" />
                                                 </li>
                                             </ul>
@@ -63,7 +64,7 @@
                                                 <!-- LOCALIZE TABS -->
                                                 <h:panelGroup rendered="#{cmsBean.selectedLocale != null}">
                                                     <ui:param name="locale" value="#{cmsBean.selectedLocale}" />
-                                                    <div role="tabpanel" class="tab-pane #{cmsBean.selectedLocale == locale ? 'active':''}" id="#{locale.language}">
+                                                    <div class="tab-pane #{cmsBean.selectedLocale == locale ? 'active':''}" id="#{locale.language}">
                                                         <!-- PAGE CONTENT -->
                                                         <div class="edit-content-page edit-content-page-content">
                                                             <!-- TITLE -->

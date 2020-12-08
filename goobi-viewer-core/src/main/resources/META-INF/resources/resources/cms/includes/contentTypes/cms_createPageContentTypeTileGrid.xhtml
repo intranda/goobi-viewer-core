@@ -106,7 +106,8 @@
                         <f:selectItem itemValue="19" itemLabel="19" />
                         <f:selectItem itemValue="20" itemLabel="20" />
                         <f:selectItem itemValue="21" itemLabel="21" />
-                    </h:selectOneMenu>
+                        <f:passThroughAttribute name="aria-label" value="#{msg.cms_itemTileGrid_numberOfImportantTiles}" />
+                     </h:selectOneMenu>
                 </div>
             </h:panelGroup>
             
@@ -172,6 +173,7 @@
                         <f:selectItem itemValue="19" itemLabel="19" />
                         <f:selectItem itemValue="20" itemLabel="20" />
                         <f:selectItem itemValue="21" itemLabel="21" />
+						<f:passThroughAttribute name="aria-label" value="#{msg.cms_itemTileGrid_numberOfTiles}" />
                     </h:selectOneMenu>
                 </div>
             </h:panelGroup>
