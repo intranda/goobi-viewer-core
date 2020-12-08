@@ -137,16 +137,14 @@
                       </c:if>
                      </div>
                      
-                 	<div class="tec-archives__object-image">
                       <!-- ASSOCIATED RECORD -->
                       <h:outputLink
-                          rendered="#{tectonicsBean.tectonicsTree.selectedEntry != null and tectonicsBean.tectonicsTree.selectedEntry.associatedRecordPi != ''}" target="_blank"
+                      	styleClass="tec-archives__object-image" rendered="#{tectonicsBean.tectonicsTree.selectedEntry != null and tectonicsBean.tectonicsTree.selectedEntry.associatedRecordPi != ''}" target="_blank"
                           value="#{navigationHelper.objectUrl}/#{tectonicsBean.tectonicsTree.selectedEntry.associatedRecordPi}/1/">
                               <!-- TODO less trivial image display -->
                               <img src="#{imageDelivery.thumbs.getThumbnailUrl(tectonicsBean.tectonicsTree.selectedEntry.associatedRecordPi)}" />
                               <!-- TODO view selection, representative page -->
                       </h:outputLink>
-                 	</div>
                  </h:panelGroup>
 				</div>
 			</div>
