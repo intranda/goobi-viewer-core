@@ -217,7 +217,17 @@
 	}
 	&__object-field-value {
 	}
-	&__object-image {}
+	&__object-image {
+		flex: 0 0 250px;
+		padding-left: 2rem;
+		min-width: 250px !important;
+		display: flex;
+		justify-content: center;
+		align-items: flex-start;
+		img {
+			max-width: 100%;
+		}
+	}
 	&__main {
 		background-color: #f2f3f4;
 		width: 100vw;
@@ -334,6 +344,16 @@
 	}
 	.tec-archives__top-title {
 		display: none;
+	}
+	.tec-archives__object-info {
+		flex-wrap: wrap;
+	}
+	.tec-archives__object-metadata {
+		flex: 0 0 100%;
+	}
+	.tec-archives__object-image {
+		flex: 0 0 100%;
+		padding: 2rem 0 0 0;
 	}
 }
 
