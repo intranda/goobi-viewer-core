@@ -21,6 +21,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 import org.apache.commons.configuration.ConfigurationException;
@@ -520,5 +521,39 @@ public class BasexEADParser {
      */
     public EadEntry getRootElement() {
         return rootElement;
+    }
+
+    /**
+     * 
+     * @return the {@link EadEntry} with the given identifier if it exists in the tree; null otherwise
+     * @param identifier
+     */
+    public EadEntry getEntryById(String identifier) {
+        return findEntry(identifier, getRootElement()).orElse(null);        
+    }
+    
+    /**
+     * Return this node if it has the given identifier or the first of its descendents with the identifier
+     * 
+     * @param identifier
+     * @param topNode
+     * @return
+     */
+    private Optional<EadEntry> findEntry(String identifier, EadEntry node) {
+        if(StringUtils.isNotBlank(identifier)) {
+            if(identifier.equals(node.getId())) {
+                return Optional.of(node);
+            } else {
+                if (node.getSubEntryList() != null) {
+                    for (EadEntry child : node.getSubEntryList()) {
+                        Optional<EadEntry> find = findEntry(identifier, child);
+                        if(find.isPresent()) {
+                            return find;
+                        }
+                    }
+                }
+            }
+        }
+        return Optional.empty();        
     }
 }

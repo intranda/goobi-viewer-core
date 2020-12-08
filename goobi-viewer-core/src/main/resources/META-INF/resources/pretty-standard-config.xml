@@ -114,7 +114,7 @@
     <url-mapping id="archives">
         <pattern value="/archives/" />
         <view-id value="/archivesContent.xhtml" />
-        <query-param name="selected">#{tectonicsBean.selectedEntryId}</query-param>
+        <query-param onPostback="false" name="selected">#{tectonicsBean.selectedEntryId}</query-param>
     </url-mapping>
     <url-mapping id="archives1">
         <pattern value="/archives/#{selectedEntryId:tectonicsBean.selectedEntryId}/" />

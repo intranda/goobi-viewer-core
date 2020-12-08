@@ -18,9 +18,12 @@ package io.goobi.viewer.managedbeans;
 import java.io.Serializable;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.SessionScoped;
+import javax.faces.view.ViewScoped;
 import javax.inject.Named;
 
 import org.apache.commons.configuration.ConfigurationException;
@@ -29,13 +32,15 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.common.collect.Multiset.Entry;
+
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.model.ead.BasexEADParser;
 import io.goobi.viewer.model.ead.EADTree;
 import io.goobi.viewer.model.ead.EadEntry;
 
 @Named
-@SessionScoped
+@ViewScoped
 public class TectonicsBean implements Serializable {
 
     private static final long serialVersionUID = -1755934299534933504L;
@@ -170,7 +175,7 @@ public class TectonicsBean implements Serializable {
      * Returns the entry hierarchy from the root down to the entry with the given identifier.
      * 
      * @param identifier Entry identifier
-     * @param List of entries
+     * @param List of entries   An empty list if the identified node has no anchestors or doesn't exist
      */
     public List<EadEntry> getTectonicsHierarchyForIdentifier(String identifier) {
         if (StringUtils.isEmpty(identifier)) {
@@ -182,17 +187,14 @@ public class TectonicsBean implements Serializable {
             return Collections.emptyList();
         }
 
-        eadParser.search(identifier);
-
-        switch (eadParser.getFlatEntryList().size()) {
-            case 0:
-                return Collections.emptyList();
-            case 1:
-            case 2:
-                return Collections.singletonList(eadParser.getFlatEntryList().get(0));
-            default:
-                // Remove root and the entry with the given identifier
-                return eadParser.getFlatEntryList().subList(1, eadParser.getFlatEntryList().size() - 1);
+        EadEntry entry = eadParser.getEntryById(identifier);
+        if(entry == null) {
+//            return Collections.emptyList();
+            return Collections.singletonList(getTrueRoot());
+        } else if(getTrueRoot().equals(entry) || getTrueRoot().equals(entry.getParentNode())) {
+            return Collections.singletonList(entry);
+        } else {
+            return entry.getAncestors(false).stream().skip(1).collect(Collectors.toList());            
         }
     }
 
@@ -302,7 +304,7 @@ public class TectonicsBean implements Serializable {
             id = "-";
         }
         if ("-".equals(id)) {
-            tectonicsTree.setSelectedEntry(tectonicsTree.getRootElement());
+            tectonicsTree.setSelectedEntry(null);
             return;
         }
         // Requested entry is already selected
@@ -311,24 +313,28 @@ public class TectonicsBean implements Serializable {
         }
 
         // Find entry with given ID in the tree
-        try {
-            eadParser.search(id);
-            List<EadEntry> results = eadParser.getFlatEntryList();
-            if (results == null || results.isEmpty()) {
+            EadEntry result = eadParser.getEntryById(id);
+            if(result != null) {
+                tectonicsTree.setSelectedEntry(result);
+                result.expandUp();
+            } else {
                 logger.debug("Entry not found: {}", id);
                 tectonicsTree.setSelectedEntry(eadParser.getRootElement());
-                return;
             }
 
-            EadEntry entry = results.get(results.size() - 1);
-            eadParser.resetSearch();
-            tectonicsTree.setSelectedEntry(entry);
-            entry.expandUp();
-        } finally {
-            // If there are current search results, restore them
-            if (StringUtils.isNotEmpty(searchString)) {
-                search(false, false);
-            }
-        }
+
+    }
+    
+    public boolean isSearchActive() {
+        return StringUtils.isNotBlank(searchString);
+    }
+    
+    /**
+     * 
+     * @return the {@link EadEntry} to display in the metadata section of the archives view.
+     * Either {@link EADTree#getSelectedEntry()} or {@link EADTree#getRootElement()} if the former is null
+     */
+    public EadEntry getDisplayEntry() {
+        return Optional.ofNullable(tectonicsTree.getSelectedEntry()).orElse(tectonicsTree.getRootElement());
     }
 }

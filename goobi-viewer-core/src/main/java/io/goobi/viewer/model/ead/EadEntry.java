@@ -306,15 +306,15 @@ public class EadEntry {
         }
         return list;
     }
-    
+
     /**
      * 
      * @param offset
      */
     public void shiftHierarchy(int offset) {
         this.hierarchy += offset;
-        if(isHasChildren()) {
-            for(EadEntry sub : subEntryList) {
+        if (isHasChildren()) {
+            for (EadEntry sub : subEntryList) {
                 sub.shiftHierarchy(offset);
             }
         }
@@ -803,6 +803,28 @@ public class EadEntry {
         }
 
         return associatedRecordPi;
+    }
+
+    /**
+     * Get the parent node hierarchy of this node, optionally including the node itself The list is sorted with hightest hierarchy level first, so the
+     * node itself will always be the last element, if included
+     * 
+     * @param includeSelf
+     * @return
+     */
+    public List<EadEntry> getAncestors(boolean includeSelf) {
+        List<EadEntry> ancestors = new ArrayList<>();
+        if (includeSelf) {
+            ancestors.add(this);
+        }
+        EadEntry parent = this.parentNode;
+        while (parent != null) {
+            ancestors.add(parent);
+            parent = parent.parentNode;
+        }
+        Collections.reverse(ancestors);
+        return ancestors;
+
     }
 
     @Override

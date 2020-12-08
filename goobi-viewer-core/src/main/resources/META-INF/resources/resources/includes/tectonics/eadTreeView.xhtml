@@ -14,7 +14,7 @@
 	<!-- A list of  EadEntry object which should be displayed in the tree.
 	Note: all entries in the list are displayed. The list must be filtered for visible elements beforehand-->
 	<c:set var="visibleTree"
-		value="#{tectonicsBean.tectonicsTree.treeView.stream().filter(e -> e.visible).toList()}"
+		value="#{tectonicsBean.tectonicsTree.treeView.stream().filter(e -> e.visible).filter(e -> !tectonicsBean.searchActive or e.displaySearch).toList()}"
 		scope="request" />
 	
 	<!-- The indentation of each hierarchical level in pixel -->
@@ -79,8 +79,7 @@
 									
 									<!-- TITLE -->
 									<div class="tectonics-tree__list-expandable-title">
-										<ui:fragment rendered="#{entry.id == tectonicsBean.tectonicsTree.selectedEntry.id and !entry.searchHit}">
-	
+											<ui:fragment rendered="#{entry.id == tectonicsBean.tectonicsTree.selectedEntry.id}">
 												<!-- <i class="fa fa-file-o -tectonics-selected" aria-hidden="true"></i> -->
 												<span class="fa-stack" aria-hidden="true"><i
 													class="fa fa-file-o -tectonics-selected"></i><i
@@ -89,23 +88,19 @@
 													<h:commandLink styleClass="tectonics-tree__active-title"
 														action="#{tectonicsBean.tectonicsTree.setSelectedEntry(null)}"
 													    value="#{entry.label}" pt:data-select-entry="">
-	<!-- 												    value="#{navigationHelper.applicationUrl}#{view}/#{entry.id}/"> -->
 													    <f:ajax render="@all" />
 													</h:commandLink>
 											</ui:fragment>
-	                                        <ui:fragment rendered="#{entry.searchHit}">
+	                                        <ui:fragment rendered="#{entry.searchHit and entry.id != tectonicsBean.tectonicsTree.selectedEntry.id}">
 	                                            <span class="fa-stack" aria-hidden="true"><i
 	                                                class="fa fa-file-o -tectonics-selected"></i><i
 	                                                class="fa fa-stack-text -tectonics-selected">F</i></span>
-	                                            <a class="tectonics-tree__search_hit" name="search_hit"></a>
-	                                            <h:commandLink styleClass="tectonics-tree__inactive-title" style="color:#5BA2E5"
-	                                            	action="#{tectonicsBean.tectonicsTree.setSelectedEntry(entry)}"
-													    value="#{entry.label}"
+	                                            <h:commandLink styleClass="tectonics-tree__inactive-title"
+												action="#{tectonicsBean.tectonicsTree.setSelectedEntry(entry)}"
+													    value="#{entry.label}" style="color:#5BA2E5"
 													    pt:data-select-entry="#{entry.id}">
-	<!--                                                 value="#{navigationHelper.applicationUrl}#{view}/#{entry.id}/"> -->
-	<!--                                                 #{entry.label} -->
 													    <f:ajax render="@all" />
-	                                            </h:commandLink>
+												</h:commandLink>
 	                                        </ui:fragment>
 											<ui:fragment rendered="#{entry.id != tectonicsBean.tectonicsTree.selectedEntry.id and !entry.searchHit}">
 												<span class="fa-stack" aria-hidden="true"><i
@@ -114,8 +109,6 @@
 												action="#{tectonicsBean.tectonicsTree.setSelectedEntry(entry)}"
 													    value="#{entry.label}"
 													    pt:data-select-entry="#{entry.id}">
-	<!-- 												value="#{navigationHelper.applicationUrl}#{view}/#{entry.id}#selected"> -->
-	<!-- 												#{entry.label} -->
 													    <f:ajax render="@all" />
 												</h:commandLink>
 											</ui:fragment>
