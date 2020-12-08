@@ -76,7 +76,7 @@
                       <c:if test="#{tectonicsBean.tectonicsTree.selectedEntry.identityStatementAreaList.stream().filter(field -> field.filled and field.visible).count() > 0}">
                           <label>#{msg.tectonics__archive_area_identity}</label>
                           <ui:repeat var="field" value="#{tectonicsBean.tectonicsTree.selectedEntry.identityStatementAreaList}">
-                              <h:panelGroup layout="block" styleClass="tec-archives__object-metadata-entrys" rendered="#{field.filled and field.visible}">
+                              <h:panelGroup layout="block" styleClass="tec-archives__object-metadata-entry" rendered="#{field.filled and field.visible}">
                                   <div class="tec-archives__object-field-name">#{field.name}:</div><div class="tec-archives__object-field-value">#{field.value}</div>
                               </h:panelGroup>
                           </ui:repeat>
