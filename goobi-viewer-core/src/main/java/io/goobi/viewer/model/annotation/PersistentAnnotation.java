@@ -21,6 +21,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.LocalDateTime;
 import java.util.HashSet;
+import java.util.Optional;
 import java.util.Set;
 
 import javax.persistence.Column;
@@ -50,6 +51,8 @@ import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.exceptions.RecordNotFoundException;
 import io.goobi.viewer.exceptions.ViewerConfigurationException;
+import io.goobi.viewer.model.crowdsourcing.campaigns.Campaign;
+import io.goobi.viewer.model.crowdsourcing.campaigns.CampaignRecordStatistic.CampaignRecordStatus;
 import io.goobi.viewer.model.crowdsourcing.questions.Question;
 import io.goobi.viewer.model.security.user.User;
 
@@ -635,6 +638,16 @@ public class PersistentAnnotation {
      */
     public void setAccessCondition(String accessCondition) {
         this.accessCondition = accessCondition;
+    }
+    
+    /**
+     * Find the record status of the generator campaign and pi. If the annotation does not belong to a campaign, return {@link CampaignRecordStatus.FINISHED}
+     * 
+     * @return  The review status for this annotation
+     * @throws DAOException
+     */
+    public CampaignRecordStatus getReviewStatus() throws DAOException {
+        return Optional.ofNullable(getGenerator()).map(Question::getOwner).map(c -> c.getRecordStatus(getTargetPI())).orElse(CampaignRecordStatus.FINISHED);
     }
     
     /* (non-Javadoc)

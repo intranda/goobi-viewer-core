@@ -64,6 +64,11 @@
 	                            <div class="col-2 d-flex">                            
 	                                <viewerComponent:sortingArrow filterType="dateCreated" colHeading="#{msg.date}" list="#{annotationBean.lazyModelAnnotations}" />
 	                            </div>
+	                            
+	                            <!-- REVIEW STATE COL -->
+	                            <div class="col-1 d-flex" style="justify-content: center;">
+								        <span class="admin__sorting-table-heading">#{msg.label__crowdsourcing_review}</span>
+								</div>
                             </div>
 
                             <!-- INDIVIDUAL ANNOTATION ROWS -->
@@ -103,6 +108,12 @@
                                             <f:attribute name="pattern" value="#{navigationHelper.dateTimePattern}" />
                                         </h:outputText>
                                     </div>
+                                    
+                                    <div class="col-1 d-flex" style="justify-content: center;">
+								        <ui:fragment rendered="#{annotation.reviewStatus == 'FINISHED'}">
+									        <i class="fa fa-check" aria-hidden="true"></i>
+								        </ui:fragment>
+									</div>
                                 </div>
                             </ui:repeat>
                         </div>
@@ -120,13 +131,13 @@
 		                    viewerJS.groupSelect.init({reseter: ".btn-filter, admin__search-clear, .sort"});
 		                    viewerJS.groupSelect.onChange("exportSelection").subscribe(e => {
 		                        	
-		                        if(e.anyChecked) {
-											$('.admin__overlay-bar').addClass('-showExportOptions');		                            
-		                        } else {
-											$('.admin__overlay-bar').removeClass('-showExportOptions');		                            
+	                        if(e.anyChecked) {
+								$('.admin__overlay-bar').addClass('-showExportOptions');		                            
+	                        } else {
+								$('.admin__overlay-bar').removeClass('-showExportOptions');		                            
 		                        }
 		                    })		
-v 		                } );
+ 		                } );
 		                
 		                function initTable() {
 		                    var displayDateUpdated = true;

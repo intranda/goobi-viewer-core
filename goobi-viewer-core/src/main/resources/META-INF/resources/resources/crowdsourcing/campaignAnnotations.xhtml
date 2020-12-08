@@ -55,7 +55,7 @@
 								<!-- TITLE ROW -->
 								<div class="row no-gutters admin__table-title">
 									<!-- ANNOTATION COL -->
-									<div class="col-12 col-lg-7 d-flex">
+									<div class="col-12 col-lg-6 d-flex">
 										<viewerComponent:sortingArrow filterType="targetPI"
 											colHeading="#{msg.admin__crowdsourcing_annotation}"
 											list="#{annotationBean.lazyModelAnnotations}" />
@@ -74,6 +74,11 @@
 											colHeading="#{msg.date}"
 											list="#{annotationBean.lazyModelAnnotations}" />
 									</div>
+									
+									<!-- REVIEW STATE COL -->
+		                            <div class="col-1 d-none d-lg-flex" style="justify-content: center;">
+									        <span class="admin__sorting-table-heading">#{msg.label__crowdsourcing_review}</span>
+									</div>
 								</div>
 
 								<!-- INDIVIDUAL ANNOTATION ROWS -->
@@ -81,7 +86,7 @@
 									value="#{annotationBean.lazyModelAnnotations.paginatorList}">
 									<div class="row no-gutters admin__table-entry">
 										<!-- ANNOTATION CONTENT -->
-										<div class="col-12 col-lg-7 d-flex" style="flex-direction: column;">
+										<div class="col-12 col-lg-6 d-flex" style="flex-direction: column;">
 											<div class="annotation__label">
 												#{annotation.targetPI}
 												<h:outputText
@@ -115,6 +120,12 @@
 												<f:attribute name="pattern"
 													value="#{navigationHelper.dateTimePattern}" />
 											</h:outputText>
+										</div>
+										<!-- REVIEW STATE -->
+										<div class="col-1 d-none d-lg-flex" style="justify-content: center;">
+									        <ui:fragment rendered="#{annotation.reviewStatus == 'FINISHED'}">
+										        <i class="fa fa-check" aria-hidden="true"></i>
+									        </ui:fragment>
 										</div>
 									</div>
 								</ui:repeat>
