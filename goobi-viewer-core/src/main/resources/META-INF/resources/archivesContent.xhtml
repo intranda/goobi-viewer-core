@@ -74,7 +74,7 @@
                       
                       <!-- Identity statement metadata -->
                       <c:if test="#{not empty tectonicsBean.tectonicsTree.selectedEntry.identityStatementAreaList}">
-                          <label>#{msg.tectonics__archive_area_identity}</label>
+                          <label>#{msg.plugin_administration_archive_area_identity}</label>
                           <ui:repeat var="field" value="#{tectonicsBean.tectonicsTree.selectedEntry.identityStatementAreaList}">
                               <h:panelGroup layout="block" styleClass="tec-archives__object-metadata-entry" rendered="#{field.filled and field.visible}">
                                   <div class="tec-archives__object-field-name">#{field.name}:</div><div class="tec-archives__object-field-value">#{field.value}</div>
@@ -83,54 +83,54 @@
                       </c:if>
                       <!-- Context metadata -->
                       <c:if test="#{not empty tectonicsBean.tectonicsTree.selectedEntry.contextAreaList}">
-                          <label>#{msg.tectonics__archive_area_context}</label>
+                          <label>#{msg.plugin_administration_archive_area_context}</label>
                           <ui:repeat var="field" value="#{tectonicsBean.tectonicsTree.selectedEntry.contextAreaList}">
-                              <h:panelGroup layout="block" styleClass="tec-archives__object-metadata-entrys" rendered="#{field.filled and field.visible}">
+                              <h:panelGroup layout="block" styleClass="tec-archives__object-metadata-entry" rendered="#{field.filled and field.visible}">
                                   <div class="tec-archives__object-field-name">#{field.name}:</div><div class="tec-archives__object-field-value">#{field.value}</div>
                               </h:panelGroup>
                           </ui:repeat>
                       </c:if>
                       <!-- Content and structure metadata -->
                       <c:if test="#{not empty tectonicsBean.tectonicsTree.selectedEntry.contentAndStructureAreaAreaList}">
-                          <label>#{msg.tectonics__archive_area_content}</label>
+                          <label>#{msg.plugin_administration_archive_area_content}</label>
                           <ui:repeat var="field" value="#{tectonicsBean.tectonicsTree.selectedEntry.contentAndStructureAreaAreaList}">
-                              <h:panelGroup layout="block" styleClass="tec-archives__object-metadata-entrys" rendered="#{field.filled and field.visible}">
+                              <h:panelGroup layout="block" styleClass="tec-archives__object-metadata-entry" rendered="#{field.filled and field.visible}">
                                   <div class="tec-archives__object-field-name">#{field.name}:</div><div class="tec-archives__object-field-value">#{field.value}</div>
                               </h:panelGroup>
                           </ui:repeat>
                       </c:if>
                       <!-- Access and terms of usage metadata -->
                       <c:if test="#{not empty tectonicsBean.tectonicsTree.selectedEntry.accessAndUseAreaList}">
-                          <label>#{msg.tectonics__archive_area_access}</label>
+                          <label>#{msg.plugin_administration_archive_area_access}</label>
                           <ui:repeat var="field" value="#{tectonicsBean.tectonicsTree.selectedEntry.accessAndUseAreaList}">
-                              <h:panelGroup layout="block" styleClass="tec-archives__object-metadata-entrys" rendered="#{field.filled and field.visible}">
+                              <h:panelGroup layout="block" styleClass="tec-archives__object-metadata-entry" rendered="#{field.filled and field.visible}">
                                   <div class="tec-archives__object-field-name">#{field.name}:</div><div class="tec-archives__object-field-value">#{field.value}</div>
                               </h:panelGroup>
                           </ui:repeat>
                       </c:if>
                       <!-- Related matarials metadata -->
                       <c:if test="#{not empty tectonicsBean.tectonicsTree.selectedEntry.alliedMaterialsAreaList}">
-                          <label>#{msg.tectonics__archive_area_materials}</label>
+                          <label>#{msg.plugin_administration_archive_area_materials}</label>
                           <ui:repeat var="field" value="#{tectonicsBean.tectonicsTree.selectedEntry.alliedMaterialsAreaList}">
-                              <h:panelGroup layout="block" styleClass="tec-archives__object-metadata-entrys" rendered="#{field.filled and field.visible}">
+                              <h:panelGroup layout="block" styleClass="tec-archives__object-metadata-entry" rendered="#{field.filled and field.visible}">
                                   <div class="tec-archives__object-field-name">#{field.name}:</div><div class="tec-archives__object-field-value">#{field.value}</div>
                               </h:panelGroup>
                           </ui:repeat>
                       </c:if>
                       <!-- Notes metadata -->
                       <c:if test="#{not empty tectonicsBean.tectonicsTree.selectedEntry.notesAreaList}">
-                          <label>#{msg.tectonics__archive_area_notes}</label>
+                          <label>#{msg.plugin_administration_archive_area_notes}</label>
                           <ui:repeat var="field" value="#{tectonicsBean.tectonicsTree.selectedEntry.notesAreaList}">
-                              <h:panelGroup layout="block" styleClass="tec-archives__object-metadata-entrys" rendered="#{field.filled and field.visible}">
+                              <h:panelGroup layout="block" styleClass="tec-archives__object-metadata-entry" rendered="#{field.filled and field.visible}">
                                   <div class="tec-archives__object-field-name">#{field.name}:</div><div class="tec-archives__object-field-value">#{field.value}</div>
                               </h:panelGroup>
                           </ui:repeat>
                       </c:if>
                       <!-- Description control metadata -->
                       <c:if test="#{not empty tectonicsBean.tectonicsTree.selectedEntry.descriptionControlAreaList}}">
-                          <label>#{msg.tectonics__archive_area_descriptionControl}</label>
+                          <label>#{msg.plugin_administration_archive_area_descriptionControl}</label>
                           <ui:repeat var="field" value="#{tectonicsBean.tectonicsTree.selectedEntry.descriptionControlAreaList}">
-                              <h:panelGroup layout="block" styleClass="tec-archives__object-metadata-entrys" rendered="#{field.filled and field.visible}">
+                              <h:panelGroup layout="block" styleClass="tec-archives__object-metadata-entry" rendered="#{field.filled and field.visible}">
                                   <div class="tec-archives__object-field-name">#{field.name}:</div><div class="tec-archives__object-field-value">#{field.value}</div>
                               </h:panelGroup>
                           </ui:repeat>
