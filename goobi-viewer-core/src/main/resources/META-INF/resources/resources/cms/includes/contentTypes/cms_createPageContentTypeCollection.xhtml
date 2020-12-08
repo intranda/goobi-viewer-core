@@ -42,6 +42,7 @@
                             itemValue="#{field}"
                             itemLabel="#{field}" />
                         <f:ajax render="baseCollection ignoreCollectionGroup" />
+                        <f:passThroughAttribute name="aria-label" value="#{msg[contentItem.itemLabel]}" />
                     </h:selectOneMenu>
                 </div>
             </h:panelGroup>
@@ -52,7 +53,7 @@
         
         <!-- TOGGLE INLINE HELP -->
         <div class="cms-module__option-help">
-            <button type="button" class="btn btn--clean" data-toggle="helptext">
+            <button type="button" class="btn btn--clean" data-toggle="helptext" aria-label="#{msg.aria_label__help}">
                 <i class="fa fa-question-circle" aria-hidden="true"></i>
             </button>
         </div>
@@ -94,6 +95,7 @@
                             itemValue="#{field}" 
                             itemLabel="#{msg[field]}" />
                         <f:ajax render="ignoreCollectionGroup" />
+                        <f:passThroughAttribute name="aria-label" value="#{msg.cms_itemBaseCollection}" />
                     </h:selectOneMenu>
                 </div>
             </h:panelGroup>
@@ -104,7 +106,7 @@
         
         <!-- TOGGLE INLINE HELP -->
         <div class="cms-module__option-help">
-            <button type="button" class="btn btn--clean" data-toggle="helptext">
+            <button type="button" class="btn btn--clean" data-toggle="helptext" aria-label="#{msg.aria_label__help}">
                 <i class="fa fa-question-circle" aria-hidden="true"></i>
             </button>
         </div>
@@ -148,6 +150,7 @@
                             itemValue="#{field}" 
                             itemLabel="#{msg[field]}" />
                         <f:ajax render="@none" />
+                        <f:passThroughAttribute name="aria-label" value="#{msg.cms_itemIgnoreCollections}" />
                     </h:selectManyMenu>
                 </div>
             </h:panelGroup>
@@ -158,7 +161,7 @@
         
         <!-- TOGGLE INLINE HELP -->
         <div class="cms-module__option-help">
-            <button type="button" class="btn btn--clean" data-toggle="helptext">
+            <button type="button" class="btn btn--clean" data-toggle="helptext" aria-label="#{msg.aria_label__help}">
                 <i class="fa fa-question-circle" aria-hidden="true"></i>
             </button>
         </div>
@@ -177,12 +180,13 @@
 		                    	var="field"
 		                    	itemValue="#{field}" 
 		                    	itemLabel="#{msg[field]} (#{field})" />
+		                    	<f:passThroughAttribute name="aria-label" value="#{msg.cms_itemGroupByField}" />
 		                </h:selectOneMenu>
 		            </div>
 		            <span class="cms-module__option-control-helptext">#{msg.inline_help__group_by_field}</span>
 		        </div>
 		        <div class="cms-module__option-help">
-		            <button type="button" class="btn btn--clean" data-toggle="helptext">
+		            <button type="button" class="btn btn--clean" data-toggle="helptext" aria-label="#{msg.aria_label__help}">
 		                <i class="fa fa-question-circle" aria-hidden="true"></i>
 		            </button>
 		        </div>
@@ -231,6 +235,7 @@
                             <f:selectItem itemValue="9" itemLabel="9" />
                             <f:selectItem itemValue="10" itemLabel="10" />
                             <f:ajax render="@none" />
+		                    <f:passThroughAttribute name="aria-label" value="#{msg.cms_baseLevels}" />
                         </h:selectOneMenu>
                     </div>
                 </h:panelGroup>
@@ -241,7 +246,7 @@
             
             <!-- TOGGLE INLINE HELP -->
             <div class="cms-module__option-help">
-                <button type="button" class="btn btn--clean" data-toggle="helptext">
+                <button type="button" class="btn btn--clean" data-toggle="helptext" aria-label="#{msg.aria_label__help}">
                     <i class="fa fa-question-circle" aria-hidden="true"></i>
                 </button>
             </div>
@@ -275,6 +280,7 @@
                         id="collectionExpanded" 
                         value="#{contentItem.collectionOpenExpanded}">
                         <f:ajax event="change" render="@this" />
+                        <f:passThroughAttribute name="aria-label" value="#{msg.cms_collectionOpenExpanded}" />
                     </h:selectBooleanCheckbox>
                 </h:panelGroup>
                 
@@ -284,7 +290,7 @@
             
             <!-- TOGGLE INLINE HELP -->
             <div class="cms-module__option-help">
-                <button type="button" class="btn btn--clean" data-toggle="helptext">
+                <button type="button" class="btn btn--clean" data-toggle="helptext" aria-label="#{msg.aria_label__help}">
                     <i class="fa fa-question-circle" aria-hidden="true"></i>
                 </button>
             </div>
@@ -318,6 +324,7 @@
                         id="displayParents" 
                         value="#{contentItem.collectionDisplayParents}">
                         <f:ajax event="change" render="@this" />
+                        <f:passThroughAttribute name="aria-label" value="#{msg.cms_collectionDisplayParents}" />
                     </h:selectBooleanCheckbox>
                 </h:panelGroup>
                 
@@ -327,7 +334,7 @@
             
             <!-- TOGGLE INLINE HELP -->
             <div class="cms-module__option-help">
-                <button type="button" class="btn btn--clean" data-toggle="helptext">
+                <button type="button" class="btn btn--clean" data-toggle="helptext" aria-label="#{msg.aria_label__help}">
                     <i class="fa fa-question-circle" aria-hidden="true"></i>
                 </button>
             </div>

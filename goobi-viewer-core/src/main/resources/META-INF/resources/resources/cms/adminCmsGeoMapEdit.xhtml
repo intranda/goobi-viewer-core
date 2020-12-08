@@ -57,8 +57,7 @@
                                     <li role="presentation" class="#{language == geoMapBean.selectedLanguage ? 'active' : ''}">
 <!--                                     <a href="#nameLanguage-#{status.index}" aria-controls="nameLanguage-#{status.index}" role="tab" data-toggle="tab">#{language}</a> -->
                                     	<h:commandLink action="#{geoMapBean.setSelectedLanguage(language)}" value="#{language}" styleClass="-bluelink">
-                                    		<passThroughAttribute name="aria-controls" value="nameLanguage-#{language}"/>
-                                    		<passThroughAttribute name="role" value="tab"/>
+                                    		<f:passThroughAttribute name="role" value="tab"/>
                                     		<f:ajax render="metadataPanel"></f:ajax>
                                     	</h:commandLink>
                                     </li>
@@ -76,7 +75,7 @@
 			                                <label for="mapTitle">#{msg.name}:</label>
 			                            </div>
 			                            <div class="input_form__option_marker #{geoMapBean.selectedLanguage == navigationHelper.defaultLocale.language ? 'in' : ''}">
-			                            <label>*</label>
+			                            <div>*</div>
 			                            </div>
 			                            <div class="input_form__option_control">
 			                                <h:inputText id="mapTitle" styleClass="form-control"
@@ -96,11 +95,12 @@
 			                                <label for="mapDes">#{msg.description}:</label>
 			                            </div>
 			                            <div class="input_form__option_marker">
-			                            <label>*</label>
+			                            <div>*</div>
 			                            </div>
 			                            <div class="input_form__option_control">
-			                                <h:inputTextarea id="mapDesc" styleClass="form-control"
-								 value="#{geoMapBean.currentMap.getDescription(geoMapBean.selectedLanguage).value}" aria-label="#{msg.description}"/>
+			                                <h:inputTextarea id="mapDesc" styleClass="form-control" value="#{geoMapBean.currentMap.getDescription(geoMapBean.selectedLanguage).value}">
+								 				<f:passThroughAttribute name="aria-label" value="#{msg.description}" />
+								 			</h:inputTextarea>
 			                            </div>
 			                            <div class="input_form__option_help">
 			                                <button type="button" class="btn btn--clean" data-toggle="helptext" for="descHelp" aria-label="inline help icon">
@@ -129,7 +129,7 @@
 		                                <label for="mapType">#{msg.cms__geomaps__type__label}:</label>
 		                            </div>
 		                            <div class="input_form__option_marker in">
-		                            <label>*</label>
+		                            <div>*</div>
 		                            </div>
 		                            <div class="input_form__option_control">
 		                            	<div class="custom-control custom-control--select">
@@ -158,10 +158,10 @@
 		                        <!-- MARKER -->
 		                        <div class="input_form__option_group">
 		                            <div class="input_form__option_label">
-		                                <label for="mapType">#{msg.cms__geomaps__marker__label}:</label>
+		                                <label for="mapMarker">#{msg.cms__geomaps__marker__label}:</label>
 		                            </div>
 		                            <div class="input_form__option_marker">
-		                            <label>*</label>
+		                            <div>*</div>
 		                            </div>
 		                            <div class="input_form__option_control">
 		                            	<div class="custom-control custom-control--select">
@@ -194,7 +194,7 @@
 			                                <label for="solrQueryInput">#{msg.cms__geomaps__solrquery__label}:</label>
 			                            </div>
 			                            <div class="input_form__option_marker in">
-			                            <label>*</label>
+			                            <div>*</div>
 			                            </div>
 			                            <div class="input_form__option_control">
 						                    <div class="input_form__option-message">
@@ -229,7 +229,7 @@
 			                                <label for="popupContent">#{msg.cms__geomaps__popup_content__label}:</label>
 			                            </div>
 			                            <div class="input_form__option_marker">
-			                            <label>*</label>
+			                            <div>*</div>
 			                            </div>
 			                            <div class="input_form__option_control">
 			                            	<div class="custom-control custom-control--select">
