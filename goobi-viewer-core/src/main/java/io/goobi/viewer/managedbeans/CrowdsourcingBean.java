@@ -396,15 +396,13 @@ public class CrowdsourcingBean implements Serializable {
     public static boolean isAllowed(User user, Campaign campaign) throws DAOException {
         if (campaign == null) {
             return false;
-        }
-
-        if (CampaignVisibility.PUBLIC.equals(campaign.getVisibility())) {
-            return true;
-        }
-
+        }    
         // Skip inactive campaigns
         if (!campaign.isHasStarted() || campaign.isHasEnded()) {
             return false;
+        }
+        if (CampaignVisibility.PUBLIC.equals(campaign.getVisibility())) {
+            return true;
         }
 
         // Allow campaigns with a set time frame, but no user group
@@ -415,15 +413,15 @@ public class CrowdsourcingBean implements Serializable {
 
         switch (campaign.getVisibility()) {
             case PRIVATE:
-                // Only logged in members may access campaigns limited to a user group
-                if (!campaign.isLimitToGroup() || campaign.getUserGroup() == null) {
-                    return false;
-                }
                 if (user == null) {
                     return false;
                 }
-                if (user.isSuperuser()) {
+                if ( user.isSuperuser()) {
                     return true;
+                } 
+                // Only logged in members may access campaigns limited to a user group
+                if (!campaign.isLimitToGroup() || campaign.getUserGroup() == null) {
+                    return false;
                 }
                 try {
                     return campaign.getUserGroup().getMembersAndOwner().contains(user);
