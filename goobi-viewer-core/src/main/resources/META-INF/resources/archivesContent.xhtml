@@ -141,7 +141,7 @@
                      
                       <!-- ASSOCIATED RECORD -->
                       <h:outputLink
-                      	styleClass="tec-archives__object-image" rendered="#{tectonicsBean.displayEntry != null and tectonicsBean.displayEntry.associatedRecordPi != ''}" target="_blank"
+                      	styleClass="tec-archives__object-image" rendered="#{tectonicsBean.displayEntry != null and tectonicsBean.displayEntry.associatedRecordPi != ''}" 
                           value="#{navigationHelper.objectUrl}/#{tectonicsBean.displayEntry.associatedRecordPi}/1/">
                               <!-- TODO less trivial image display -->
                               <img src="#{imageDelivery.thumbs.getThumbnailUrl(tectonicsBean.displayEntry.associatedRecordPi)}" />

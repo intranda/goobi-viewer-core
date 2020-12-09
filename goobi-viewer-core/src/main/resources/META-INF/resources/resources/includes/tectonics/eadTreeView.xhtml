@@ -130,11 +130,10 @@
 												</h:outputText>
 											</ui:repeat>
 											<div class="tectonics-tree__metadata-box-links">
-												<h:outputLink target="_blank"
+												<h:outputLink 
 													value="#{navigationHelper.applicationUrl}archives/?selected=#{entry.id}#selected">#{msg.tectonics__archiveView}</h:outputLink>
 												<!-- TODO view selection, representative page -->
 												<h:outputLink rendered="#{entry.associatedRecordPi != ''}"
-													target="_blank"
 													value="#{navigationHelper.objectUrl}/#{entry.associatedRecordPi}/1/">#{msg.tectonics__showRecord}</h:outputLink>
 											</div>
 										</h:panelGroup>
