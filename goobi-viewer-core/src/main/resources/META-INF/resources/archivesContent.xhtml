@@ -38,7 +38,8 @@
 	                            <f:passThroughAttribute name="placeholder" value="#{msg.searchFieldDemoText}" />
 	                        </h:inputText>
 	                        <div class="tec-archives__search-clear">x</div>
-	                        <h:commandButton styleClass="tec-archives__search-submit-button" value="#{msg.search}" action="#{tectonicsBean.searchAction}"></h:commandButton>
+	                        <h:commandButton styleClass="tec-archives__search-submit-button" value="#{msg.search}" action="#{tectonicsBean.searchAction}">
+	                        </h:commandButton>
 	            		</h:form>
                     </div>
 	                    <ui:include src="/resources/includes/tectonics/eadTreeView.xhtml">

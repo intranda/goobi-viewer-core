@@ -1396,8 +1396,13 @@ public class ActiveDocumentBean implements Serializable {
                 }
             }
         }
-
-        return null;
+        
+        if(navigationHelper.getCurrentPageType() != null) {
+            PageType pageType = navigationHelper.getCurrentPageType();
+            return Messages.translate(pageType.getName(), Locale.forLanguageTag(language));
+        } else {
+            return null;
+        }
     }
 
     /**
