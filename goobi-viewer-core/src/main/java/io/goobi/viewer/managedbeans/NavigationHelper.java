@@ -1079,6 +1079,11 @@ public class NavigationHelper implements Serializable {
     public String getImageUrl() {
         return BeanUtils.getServletPathWithHostAsUrlFromJsfContext() + "/" + PageType.viewImage.getName();
     }
+    
+    public String getCurrentPageTypeUrl() {
+        return BeanUtils.getServletPathWithHostAsUrlFromJsfContext() + "/" + getCurrentPageType().getName();
+
+    }
 
     /**
      * <p>

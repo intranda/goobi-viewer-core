@@ -3,6 +3,8 @@
 	xmlns:fn="http://java.sun.com/jsp/jstl/functions"
 	xmlns:h="http://xmlns.jcp.org/jsf/html"
 	xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+	xmlns:c="http://java.sun.com/jsp/jstl/core"
+	xmlns:jsf="http://xmlns.jcp.org/jsf"
 	xmlns:composite="http://xmlns.jcp.org/jsf/composite">
 
 	<ui:define name="metadata">
@@ -19,12 +21,16 @@
 	</composite:interface>
 
 	<composite:implementation>
-	    <ui:fragment rendered="#{activeDocumentBean.recordLoaded and activeDocumentBean.viewManager.tectonicsIdentifier != null}">
+	    <c:if test="#{activeDocumentBean.recordLoaded and activeDocumentBean.viewManager.tectonicsIdentifier != null}">
+	    	<!-- neighbours is a pair of optionals holding the ids of the previous and succeeding tectonics entry. This format is used to avoid querying solr more than once -->
+	    	<c:set scope="view" var="neighbours" value="#{tectonicsBean.findIndexedNeighbours(activeDocumentBean.viewManager.tectonicsIdentifier)}"/>
             <div id="widgetTectonics" class="widget widget-tectonics">
                 <h3 class="widget-tectonics__heading">
 	                <span>#{msg.tectonics}</span>
-	                <button class="widget-tectonics__prev"><i class="fa fa-arrow-circle-left" aria-hidden="true"></i></button>
-	                <button class="widget-tectonics__next"><i class="fa fa-arrow-circle-right" aria-hidden="true"></i></button>
+		                <a class="widget-tectonics__prev #{neighbours.left.present ? '':'-disabled'}" disabled="disabled"
+		                href="#{neighbours.left.present ? (navigationHelper.currentPageTypeUrl.concat('/').concat(neighbours.left.get()).concat('/')) : '#'}"><i class="fa fa-arrow-circle-left" aria-hidden="true"></i></a>
+	                	<a class="widget-tectonics__next #{neighbours.right.present ? '':'-disabled'}"
+	                	href="#{neighbours.right.present ? (navigationHelper.currentPageTypeUrl.concat('/').concat(neighbours.right.get()).concat('/')) : '#'}"><i class="fa fa-arrow-circle-right" aria-hidden="true"></i></a>
                 </h3>
                 <ul>
 	                <ui:repeat var="entry" value="#{tectonicsBean.getTectonicsHierarchyForIdentifier(activeDocumentBean.viewManager.tectonicsIdentifier)}">
@@ -36,6 +42,6 @@
 					</li>
 				</ul>
             </div>
-		</ui:fragment>
+		</c:if>
 	</composite:implementation>
 </ui:composition>

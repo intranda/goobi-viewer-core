@@ -16,8 +16,10 @@
 package io.goobi.viewer.managedbeans;
 
 import java.io.Serializable;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.ListIterator;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -29,15 +31,23 @@ import javax.inject.Named;
 import org.apache.commons.configuration.ConfigurationException;
 import org.apache.commons.configuration.HierarchicalConfiguration;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.tuple.Pair;
+import org.apache.solr.common.SolrDocument;
+import org.apache.solr.common.SolrDocumentList;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.common.collect.Multiset.Entry;
 
 import io.goobi.viewer.controller.DataManager;
+import io.goobi.viewer.controller.SolrConstants;
+import io.goobi.viewer.controller.SolrSearchIndex;
+import io.goobi.viewer.exceptions.IndexUnreachableException;
+import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.model.ead.BasexEADParser;
 import io.goobi.viewer.model.ead.EADTree;
 import io.goobi.viewer.model.ead.EadEntry;
+import io.goobi.viewer.model.viewer.StringPair;
 
 @Named
 @ViewScoped
@@ -337,4 +347,41 @@ public class TectonicsBean implements Serializable {
     public EadEntry getDisplayEntry() {
         return Optional.ofNullable(tectonicsTree.getSelectedEntry()).orElse(tectonicsTree.getRootElement());
     }
+
+    /**
+     * In the list of tectonic document search hits, find the id of the entry just before the given one
+     * 
+     * @param entry
+     * @param sortOrder 'asc' to get the preceding entry, 'desc' to get the succeeding one
+     * @return  the neighouring entry id if it exists
+     * @throws PresentationException
+     * @throws IndexUnreachableException
+     */
+    public Pair<Optional<String>, Optional<String>> findIndexedNeighbours(String tectonicsId) throws PresentationException, IndexUnreachableException {
+        String query = SolrConstants.TECTONICS_ID + ":*";
+        List<StringPair> sortFields = Collections.singletonList(new StringPair(SolrConstants.PI, "asc"));
+        List<String> fieldList = Arrays.asList(SolrConstants.PI, SolrConstants.TECTONICS_ID);
+        
+        SolrDocumentList docs = DataManager.getInstance()
+                .getSearchIndex()
+                .search(query, SolrSearchIndex.MAX_HITS, sortFields, fieldList);
+        Optional<String> prev = Optional.empty();
+        Optional<String> next = Optional.empty();
+        
+        ListIterator<SolrDocument> iter = docs.listIterator();
+        while(iter.hasNext()) {
+            SolrDocument doc = iter.next();
+            String id = SolrSearchIndex.getSingleFieldStringValue(doc, SolrConstants.TECTONICS_ID);
+            if(id.equals(tectonicsId)) {
+                if(iter.hasNext()) {
+                    String nextId = SolrSearchIndex.getSingleFieldStringValue(iter.next(), SolrConstants.TECTONICS_ID);
+                    next = Optional.of(nextId);
+                }
+                break;
+            }
+            prev = Optional.of(id);
+        }
+        return Pair.of(prev, next);
+    }
+
 }
