@@ -56,8 +56,8 @@
 								<!-- This will break indentation if replaced with a c:if -->
 								<li class="tectonics-tree__entry #{entry.hasChild == true ? 'parent' : 'child' }"
 									data-id="id_#{entry.id}"
-									style="padding-left: #{entry.hierarchy * indent}px"><c:if
-										test="#{entry.hasChild}">
+									style="padding-left: #{entry.hierarchy * indent}px">
+									<ui:fragment rendered="#{entry.hasChild}">
 										<!-- EXPAND OPTION -->
 										<div class="tectonics-tree__expandable-icon">
 													<h:commandLink rendered="#{!entry.expanded}"
@@ -75,7 +75,7 @@
 														<f:ajax render="@form" />
 													</h:commandLink>
 										</div>
-									</c:if>
+									</ui:fragment>
 									
 									<!-- TITLE -->
 									<div class="tectonics-tree__list-expandable-title">
