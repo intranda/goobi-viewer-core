@@ -34,15 +34,16 @@ var viewerJS = ( function( viewer ) {
             
             viewerJS.jsfAjax.success.subscribe(e => {
                 this.setLocation(e.source);
+                this.refreshHcSticky();
             })
-            
-//            $("[data-select-entry]").on("click", event => {
-//                console.log("location ", window.location);
-//                this.setLocation(event.target);
-//            })
+
             
 
         },
+        
+        refreshHcSticky: function() {
+            $('.tec-archives__left-side, .tec-archives__right-side').hcSticky('refresh');
+        }
         
         setLocation: function(element) {
             if(_debug)console.log(" clicked data-select-entry", element);
@@ -53,10 +54,6 @@ var viewerJS = ( function( viewer ) {
             }
             console.log("set url ", url);
             window.history.pushState({}, '', url);
-//            viewerJS.setUrlQuery("selected", select);
-//            if(select) {
-//                viewerJS.setUrlHash("selected");
-//            }
         }
     };
 
