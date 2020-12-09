@@ -36,6 +36,15 @@
 			color: inherit;
 			border: none;
 			background: transparent;
+			&.-disabled {
+				opacity: 0.5;
+				cursor: default;
+			}
+			&:hover,
+			&:active,
+			&:focus {
+				color: inherit;
+			}
 		}
 		&__prev {
 			margin-left: auto;
