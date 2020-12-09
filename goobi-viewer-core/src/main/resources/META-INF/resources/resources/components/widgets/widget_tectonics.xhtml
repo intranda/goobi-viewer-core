@@ -32,7 +32,7 @@
 					</ui:repeat>
 					<li class="widget-tectonics__archives-link">
 					    <h:outputLink
-					        value="#{navigationHelper.applicationUrl}archives/#{activeDocumentBean.viewManager.tectonicsIdentifier}">#{msg.openArchiveView}</h:outputLink>
+					        value="#{navigationHelper.applicationUrl}archives/?selected=#{activeDocumentBean.viewManager.tectonicsIdentifier}#selected">#{msg.openArchiveView}</h:outputLink>
 					</li>
 				</ul>
             </div>
