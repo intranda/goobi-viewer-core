@@ -15,6 +15,7 @@
  */
 package io.goobi.viewer.managedbeans;
 
+import java.io.IOException;
 import java.io.Serializable;
 import java.util.Arrays;
 import java.util.Collections;
@@ -26,14 +27,17 @@ import java.util.stream.Collectors;
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.SessionScoped;
 import javax.faces.view.ViewScoped;
+import javax.inject.Inject;
 import javax.inject.Named;
 
 import org.apache.commons.configuration.ConfigurationException;
 import org.apache.commons.configuration.HierarchicalConfiguration;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
+import org.apache.http.client.ClientProtocolException;
 import org.apache.solr.common.SolrDocument;
 import org.apache.solr.common.SolrDocumentList;
+import org.jdom2.Document;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -42,11 +46,13 @@ import com.google.common.collect.Multiset.Entry;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.SolrConstants;
 import io.goobi.viewer.controller.SolrSearchIndex;
+import io.goobi.viewer.exceptions.HTTPException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.model.ead.BasexEADParser;
 import io.goobi.viewer.model.ead.EADTree;
 import io.goobi.viewer.model.ead.EadEntry;
+import io.goobi.viewer.model.ead.EadResource;
 import io.goobi.viewer.model.viewer.StringPair;
 
 @Named
@@ -64,6 +70,9 @@ public class TectonicsBean implements Serializable {
     private EADTree tectonicsTree;
 
     private String searchString;
+    
+    @Inject
+    private PersistentStorageBean storage;
 
     /**
      * Empty constructor.
@@ -78,15 +87,35 @@ public class TectonicsBean implements Serializable {
     @PostConstruct
     public void init() {
         try {
-            String databaseUrl = DataManager.getInstance().getConfiguration().getBaseXUrl();
-            String databaseName = DataManager.getInstance().getConfiguration().getBaseXDatabase();
-            HierarchicalConfiguration baseXMetadataConfig = DataManager.getInstance().getConfiguration().getBaseXMetadataConfig();
-            eadParser = new BasexEADParser(databaseUrl, databaseName, baseXMetadataConfig);
-            eadParser.loadSelectedDatabase();
-            // TODO selection/reloading of different databases
-        } catch (ConfigurationException e) {
-            logger.error(e.getMessage(), e);
+            this.eadParser = new BasexEADParser(DataManager.getInstance().getConfiguration().getBaseXUrl());
+            loadDatabase(DataManager.getInstance().getConfiguration().getBaseXDatabase());
+        } catch (IOException | HTTPException | ConfigurationException e) {
+            logger.error("Error initializing database" , e);
         }
+        
+    }
+
+    /**
+     * @param databaseName
+     * @throws ClientProtocolException
+     * @throws IOException
+     * @throws HTTPException
+     */
+    public void loadDatabase(String databaseName) throws ClientProtocolException, IOException, HTTPException {
+        Document databaseDoc = null;
+        String storageKey = databaseName + "@" + eadParser.getBasexUrl();
+        List<EadResource> dbs = eadParser.getPossibleDatabases();
+        EadResource db = dbs.stream().filter(res -> res.getCombinedName().equals(databaseName)).findAny().orElse(null);
+        if(db == null) {
+            throw new IllegalStateException("Configured default database not found in " + this.eadParser.getBasexUrl());
+        } else if(storage.contains(storageKey) && !storage.olderThan(storageKey, db.lastModified)) {
+            databaseDoc = (Document) storage.get(storageKey);
+        } else {
+            databaseDoc = eadParser.retrieveDatabaseDocument(databaseName);
+            storage.put(storageKey, databaseDoc);
+        }
+        HierarchicalConfiguration baseXMetadataConfig = DataManager.getInstance().getConfiguration().getBaseXMetadataConfig();
+        eadParser.loadDatabase(databaseName, baseXMetadataConfig, databaseDoc);
     }
 
     /**

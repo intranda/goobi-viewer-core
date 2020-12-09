@@ -268,7 +268,7 @@ public class EadEntry {
         }
     }
 
-    public void markAsFound() {
+    public void markAsFound(boolean keepChildrenVisible) {
         displaySearch = true;
         searchHit = true;
 
@@ -279,6 +279,11 @@ public class EadEntry {
                 if (node.parentNode != null) {
                     node = node.parentNode;
                 }
+            }
+        }
+        if(keepChildrenVisible) {
+            for (EadEntry child : this.subEntryList) {
+                child.setDisplaySearch(true);
             }
         }
     }

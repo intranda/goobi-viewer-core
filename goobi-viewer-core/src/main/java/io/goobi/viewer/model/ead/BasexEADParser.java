@@ -55,11 +55,9 @@ public class BasexEADParser {
 
     private static final XPathFactory xFactory = XPathFactory.instance();
 
-    private final HierarchicalConfiguration metadataConfig;
-
     private final String basexUrl;
 
-    private final String selectedDatabase;
+    private String selectedDatabase;
 
     private boolean databaseLoaded = false;
 
@@ -79,14 +77,10 @@ public class BasexEADParser {
      * @param configFilePath
      * @throws ConfigurationException
      */
-    public BasexEADParser(String basexUrl, String databaseName, HierarchicalConfiguration metadataConfig) throws ConfigurationException {
-        
-        metadataConfig.setListDelimiter('&');
-        metadataConfig.setExpressionEngine(new XPathExpressionEngine());
-        this.metadataConfig = metadataConfig;
+    public BasexEADParser(String basexUrl) throws ConfigurationException {
+
         this.basexUrl = basexUrl;
-        this.selectedDatabase = databaseName;
-            
+
     }
 
     /**
@@ -97,7 +91,7 @@ public class BasexEADParser {
      * @throws IOException
      * @throws ClientProtocolException
      */
-    public List<String> getPossibleDatabases() throws ClientProtocolException, IOException, HTTPException {
+    public List<EadResource> getPossibleDatabases() throws ClientProtocolException, IOException, HTTPException {
         String response = NetTools.getWebContentGET(basexUrl + "databases");
         if (StringUtils.isBlank(response)) {
             return Collections.emptyList();
@@ -106,20 +100,23 @@ public class BasexEADParser {
         Document document;
         try {
             document = openDocument(response);
-            
+
             Element root = document.getRootElement();
             List<Element> databaseList = root.getChildren("database");
-            List<String> ret = new ArrayList<>();
+            List<EadResource> ret = new ArrayList<>();
             for (Element db : databaseList) {
                 String dbName = db.getChildText("name");
-                
+
                 Element details = db.getChild("details");
                 for (Element resource : details.getChildren()) {
-                    ret.add(dbName + " - " + resource.getText());
+                    String resourceName = resource.getText();
+                    String lastUpdated = resource.getAttributeValue("modified-date");
+                    EadResource eadResource = new EadResource(dbName, resourceName, lastUpdated);
+                    ret.add(eadResource);
                 }
-                
+
             }
-            
+
             return ret;
         } catch (JDOMException e) {
             logger.error("Failed to parse response from " + (basexUrl + "databases"), e);
@@ -127,48 +124,57 @@ public class BasexEADParser {
         }
     }
 
+    public Document retrieveDatabaseDocument(String database) throws IOException, IllegalStateException {
+        try {
+            if (StringUtils.isNotBlank(database)) {
+                String[] parts = database.split(" - ");
+                String url = basexUrl + "db/" + parts[0] + "/" + parts[1];
+                logger.trace("URL: {}", url);
+                String response;
+                response = NetTools.getWebContentGET(url);
+
+                // get xml root element
+                Document document = openDocument(response);
+                return document;
+            } else {
+                throw new IllegalStateException("Must provide database name before loading database");
+            }
+        } catch (IOException | HTTPException | JDOMException e) {
+            throw new IOException("Error loading ead database ", e);
+        }
+    }
+
     /**
      * open the selected database and load the file
+     * 
+     * @throws IllegalStateException
      * 
      * @throws HTTPException
      * @throws IOException
      * @throws ClientProtocolException
      */
-    public void loadSelectedDatabase() {
-        // open selected database
-        try {
-            if (StringUtils.isNotBlank(selectedDatabase)) {
-                String[] parts = selectedDatabase.split(" - ");
-                String url = basexUrl + "db/" + parts[0] + "/" + parts[1];
-                logger.trace("URL: {}", url);
-                String response;
-                    response = NetTools.getWebContentGET(url);
-    
-                // get xml root element
-                Document document = openDocument(response);
-                if (document != null) {
-                    // get field definitions from config file
-                    readConfiguration();
-    
-                    // parse ead file
-                    parseEadFile(document);
-                    databaseLoaded = true;
-                    logger.info("Loaded EAD database: {}", selectedDatabase);
-                }
-            }
-        } catch (IOException | HTTPException | JDOMException e) {
-            databaseLoaded = false;
-            logger.error("Could not load database: " + this.selectedDatabase, e);
-        }
+    public void loadDatabase(String database, HierarchicalConfiguration metadataConfig, Document document) throws IllegalStateException, IOException {
 
+        if (document == null) {
+            document = retrieveDatabaseDocument(database);
+        }
+        // get field definitions from config file
+        metadataConfig.setListDelimiter('&');
+        metadataConfig.setExpressionEngine(new XPathExpressionEngine());
+        readConfiguration(metadataConfig);
+
+        // parse ead file
+        parseEadFile(document);
+        this.databaseLoaded = true;
+        this.selectedDatabase = database;
+        logger.info("Loaded EAD database: {}", selectedDatabase);
     }
 
     public List<String> getDistinctDatabaseNames() throws ClientProtocolException, IOException, HTTPException {
         List<String> answer = new ArrayList<>();
-        List<String> completeList = getPossibleDatabases();
-        for (String s : completeList) {
-            String[] parts = s.split(" - ");
-            String dbName = parts[0];
+        List<EadResource> completeList = getPossibleDatabases();
+        for (EadResource resource : completeList) {
+            String dbName = resource.databaseName;
             if (!answer.contains(dbName)) {
                 answer.add(dbName);
             }
@@ -184,34 +190,34 @@ public class BasexEADParser {
         eventList = new ArrayList<>();
         editorList = new ArrayList<>();
 
-            Element collection = document.getRootElement();
-            Element eadElement = collection.getChild("ead", NAMESPACE_EAD);
-            rootElement = parseElement(1, 0, eadElement);
-            rootElement.setDisplayChildren(true);
+        Element collection = document.getRootElement();
+        Element eadElement = collection.getChild("ead", NAMESPACE_EAD);
+        rootElement = parseElement(1, 0, eadElement);
+        rootElement.setDisplayChildren(true);
 
-            Element archdesc = eadElement.getChild("archdesc", NAMESPACE_EAD);
-            if (archdesc != null) {
-                Element processinfoElement = archdesc.getChild("processinfo", NAMESPACE_EAD);
-                if (processinfoElement != null) {
-                    Element list = processinfoElement.getChild("list", NAMESPACE_EAD);
-                    List<Element> entries = list.getChildren("item", NAMESPACE_EAD);
-                    for (Element item : entries) {
-                        editorList.add(item.getText());
-                    }
+        Element archdesc = eadElement.getChild("archdesc", NAMESPACE_EAD);
+        if (archdesc != null) {
+            Element processinfoElement = archdesc.getChild("processinfo", NAMESPACE_EAD);
+            if (processinfoElement != null) {
+                Element list = processinfoElement.getChild("list", NAMESPACE_EAD);
+                List<Element> entries = list.getChildren("item", NAMESPACE_EAD);
+                for (Element item : entries) {
+                    editorList.add(item.getText());
                 }
             }
-            Element control = eadElement.getChild("control", NAMESPACE_EAD);
-            if (control != null) {
-                Element maintenancehistory = control.getChild("maintenancehistory", NAMESPACE_EAD);
-                if (maintenancehistory != null) {
-                    List<Element> events = maintenancehistory.getChildren("maintenancehistory", NAMESPACE_EAD);
-                    for (Element event : events) {
-                        String type = event.getChildText("eventtype", NAMESPACE_EAD);
-                        String date = event.getChildText("eventdatetime", NAMESPACE_EAD);
-                        eventList.add(new StringPair(type, date));
-                    }
+        }
+        Element control = eadElement.getChild("control", NAMESPACE_EAD);
+        if (control != null) {
+            Element maintenancehistory = control.getChild("maintenancehistory", NAMESPACE_EAD);
+            if (maintenancehistory != null) {
+                List<Element> events = maintenancehistory.getChildren("maintenancehistory", NAMESPACE_EAD);
+                for (Element event : events) {
+                    String type = event.getChildText("eventtype", NAMESPACE_EAD);
+                    String date = event.getChildText("eventdatetime", NAMESPACE_EAD);
+                    eventList.add(new StringPair(type, date));
                 }
             }
+        }
     }
 
     /**
@@ -402,8 +408,8 @@ public class BasexEADParser {
      * 
      * @param response
      * @return
-     * @throws IOException 
-     * @throws JDOMException 
+     * @throws IOException
+     * @throws JDOMException
      */
     private static Document openDocument(String response) throws JDOMException, IOException {
         // read response
@@ -466,10 +472,10 @@ public class BasexEADParser {
     static void searchInNode(EadEntry node, String searchValue) {
         if (node.getId() != null && node.getId().equals(searchValue)) {
             // ID match
-            node.markAsFound();
+            node.markAsFound(false);
         } else if (node.getLabel() != null && node.getLabel().toLowerCase().contains(searchValue.toLowerCase())) {
             // mark element + all parents as displayable
-            node.markAsFound();
+            node.markAsFound(false);
         }
         if (node.getSubEntryList() != null) {
             for (EadEntry child : node.getSubEntryList()) {
@@ -487,15 +493,11 @@ public class BasexEADParser {
      * read in all parameters from the configuration file
      * 
      */
-    private void readConfiguration() {
-        if (StringUtils.isEmpty(selectedDatabase)) {
-            logger.error("No database selected");
-            return;
-        }
+    private void readConfiguration(HierarchicalConfiguration metadataConfig) {
 
         configuredFields = new ArrayList<>();
 
-        for (HierarchicalConfiguration hc : this.metadataConfig.configurationsAt("/metadata")) {
+        for (HierarchicalConfiguration hc : metadataConfig.configurationsAt("/metadata")) {
             EadMetadataField field = new EadMetadataField(hc.getString("[@name]"), hc.getInt("[@level]"), hc.getString("[@xpath]"),
                     hc.getString("[@xpathType]", "element"), hc.getBoolean("[@repeatable]", false), hc.getBoolean("[@visible]", true));
             configuredFields.add(field);
@@ -529,9 +531,9 @@ public class BasexEADParser {
      * @param identifier
      */
     public EadEntry getEntryById(String identifier) {
-        return findEntry(identifier, getRootElement()).orElse(null);        
+        return findEntry(identifier, getRootElement()).orElse(null);
     }
-    
+
     /**
      * Return this node if it has the given identifier or the first of its descendents with the identifier
      * 
@@ -540,20 +542,27 @@ public class BasexEADParser {
      * @return
      */
     private Optional<EadEntry> findEntry(String identifier, EadEntry node) {
-        if(StringUtils.isNotBlank(identifier)) {
-            if(identifier.equals(node.getId())) {
+        if (StringUtils.isNotBlank(identifier)) {
+            if (identifier.equals(node.getId())) {
                 return Optional.of(node);
             } else {
                 if (node.getSubEntryList() != null) {
                     for (EadEntry child : node.getSubEntryList()) {
                         Optional<EadEntry> find = findEntry(identifier, child);
-                        if(find.isPresent()) {
+                        if (find.isPresent()) {
                             return find;
                         }
                     }
                 }
             }
         }
-        return Optional.empty();        
+        return Optional.empty();
+    }
+
+    /**
+     * @return the basexUrl
+     */
+    public String getBasexUrl() {
+        return basexUrl;
     }
 }
