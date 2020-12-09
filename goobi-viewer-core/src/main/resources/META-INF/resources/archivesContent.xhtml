@@ -36,6 +36,7 @@
 	                        <h:inputText id="tectonicsSearchField" styleClass="form-control filter-input tec-archives__search-input"
 	                            value="#{tectonicsBean.searchString}" immediate="true">
 	                            <f:passThroughAttribute name="placeholder" value="#{msg.searchFieldDemoText}" />
+	                            <f:passThroughAttribute name="aria-label" value="#{msg.aria_label__search_form}" />
 	                        </h:inputText>
 	                        <div class="tec-archives__search-clear">x</div>
 	                        <h:commandButton styleClass="tec-archives__search-submit-button" value="#{msg.search}" action="#{tectonicsBean.searchAction}"></h:commandButton>
