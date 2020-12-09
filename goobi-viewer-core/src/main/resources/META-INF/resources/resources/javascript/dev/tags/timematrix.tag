@@ -2,7 +2,7 @@
 
 	<div class="timematrix__objects">
 	<div each="{manifest in manifests}" class="timematrix__content">
-			<div id="imageMap" class="timematrix__img">
+			<div class="timematrix__img">
 			<a href="{getViewerUrl(manifest)}"> <img src="{getImageUrl(manifest)}"
 				class="timematrix__image" data-viewer-thumbnail="thumbnail"  alt="" aria-hidden="true"
 				onError="this.onerror=null;this.src='/viewer/resources/images/access_denied.png'" />

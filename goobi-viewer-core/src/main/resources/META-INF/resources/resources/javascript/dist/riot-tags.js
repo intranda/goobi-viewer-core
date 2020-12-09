@@ -1875,8 +1875,6 @@ riot.tag2('metadataquestion', '<div if="{this.showInstructions()}" class="crowds
 	    this.initOriginalMetadata(this.question);
 	    this.question.initializeView((anno) => new Crowdsourcing.Annotation.Metadata(anno, this.originalData), this.update, this.update, this.focusAnnotation);
 	    console.log("mounted ", this);
-	    Crowdsourcing.translator.addTranslations(this.question.metadataFields)
-	    .then(() => {
 		    this.opts.item.onImageOpen(function() {
 		        switch(this.question.targetSelector) {
 		            case Crowdsourcing.Question.Selector.WHOLE_PAGE:
@@ -1885,9 +1883,10 @@ riot.tag2('metadataquestion', '<div if="{this.showInstructions()}" class="crowds
 		                    this.question.addAnnotation();
 		                }
 		        }
-		        this.update()
+		        this.update();
 		    }.bind(this));
-	    })
+	    Crowdsourcing.translator.addTranslations(this.question.metadataFields)
+	    .then(() => this.update());
 	});
 
 	this.initOriginalMetadata = function(question) {
@@ -2693,7 +2692,7 @@ this.addCloseHandler = function() {
 });
 
 
-riot.tag2('timematrix', '<div class="timematrix__objects"><div each="{manifest in manifests}" class="timematrix__content"><div id="imageMap" class="timematrix__img"><a href="{getViewerUrl(manifest)}"><img riot-src="{getImageUrl(manifest)}" class="timematrix__image" data-viewer-thumbnail="thumbnail" alt="" aria-hidden="true" onerror="this.onerror=null;this.src=\'/viewer/resources/images/access_denied.png\'"><div class="timematrix__text"><p if="{hasTitle(manifest)}" name="timetext" class="timetext">{getDisplayTitle(manifest)}</p></div></a></div></div></div>', '', '', function(opts) {
+riot.tag2('timematrix', '<div class="timematrix__objects"><div each="{manifest in manifests}" class="timematrix__content"><div class="timematrix__img"><a href="{getViewerUrl(manifest)}"><img riot-src="{getImageUrl(manifest)}" class="timematrix__image" data-viewer-thumbnail="thumbnail" alt="" aria-hidden="true" onerror="this.onerror=null;this.src=\'/viewer/resources/images/access_denied.png\'"><div class="timematrix__text"><p if="{hasTitle(manifest)}" name="timetext" class="timetext">{getDisplayTitle(manifest)}</p></div></a></div></div></div>', '', '', function(opts) {
 	    this.on( 'mount', function() {
 
 	        rxjs.fromEvent($( this.opts.button ), "click").pipe(

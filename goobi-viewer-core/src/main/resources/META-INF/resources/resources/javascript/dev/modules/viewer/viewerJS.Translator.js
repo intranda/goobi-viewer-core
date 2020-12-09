@@ -50,7 +50,6 @@ var viewerJS = ( function( viewer ) {
             keys = [keys];
         }
         keys = keys.filter(key => this.keys && !this.keys.includes(key));
-        this.keys = this.keys ? this.keys.concat(keys) : keys;
         
         if(keys && keys.length > 0) {            
             let keyList = keys.join(",");
@@ -63,6 +62,7 @@ var viewerJS = ( function( viewer ) {
                 } else {                
                     this.translations = json;
                 }
+                this.keys = this.keys ? this.keys.concat(keys) : keys;
             }.bind(this))
             .catch(error => {
                 console.error("Error fetching " + url + ": " + error);
