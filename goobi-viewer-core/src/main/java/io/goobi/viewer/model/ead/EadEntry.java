@@ -6,6 +6,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 import org.apache.solr.common.SolrDocument;
+import org.apache.solr.common.SolrException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -156,11 +157,11 @@ public class EadEntry {
     }
 
     public void findAssociatedRecordPi() throws PresentationException, IndexUnreachableException {
-        if (id == null) {
+         if (id == null) {
             associatedRecordPi = "";
             return;
         }
-
+        try {
         SolrDocument doc = DataManager.getInstance()
                 .getSearchIndex()
                 .getFirstDoc("+" + SolrConstants.TECTONICS_ID + ":" + id, Collections.singletonList(SolrConstants.PI));
@@ -169,6 +170,9 @@ public class EadEntry {
         }
         if (associatedRecordPi == null) {
             associatedRecordPi = "";
+        }
+        } catch(SolrException | IndexUnreachableException e) {
+            logger.error("Error reading solr database:" + e);
         }
     }
 
@@ -547,7 +551,7 @@ public class EadEntry {
 
     public EadMetadataField getIdentityStatementAreaField(String name) {
         for (EadMetadataField field : identityStatementAreaList) {
-            if (field.getName().equals(name)) {
+            if (field.getLabel().equals(name)) {
                 return field;
             }
         }

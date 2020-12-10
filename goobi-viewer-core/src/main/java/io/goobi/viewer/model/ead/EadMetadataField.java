@@ -8,7 +8,7 @@ import org.apache.commons.lang.StringUtils;
 public class EadMetadataField {
 
     /** contains the internal name of the field. The value can be used to translate the field in the messages files */
-    private String name;
+    private String label;
 
     /**
      * metadata level, allowed values are 1-7:
@@ -22,7 +22,7 @@ public class EadMetadataField {
      * <li>7: Description Control Area</li>
      * </ul>
      */
-    private Integer level;
+    private Integer type;
 
     /** contains a relative path to the ead value. The root of the xpath is either the {@code<ead>} element or the {@code<c>} element */
     private String xpath;
@@ -30,14 +30,8 @@ public class EadMetadataField {
     /** type of the xpath return value, can be text, attribute, element (default) */
     private String xpathType;
 
-    /** defines if the field can exist once or multiple times, values can be true/false, default is false */
-    private boolean repeatable;
-
     /** contains the metadata values */
     private List<FieldValue> values;
-
-    /** defines if the field is displayed on the UI, values can be true/false, default is true */
-    private boolean visible;
 
     /** links to the ead node. Required to set the title field for the entry while parsing metadata */
     //    @ToString.Exclude
@@ -46,13 +40,11 @@ public class EadMetadataField {
 
 
 
-    public EadMetadataField(String name, Integer level, String xpath, String xpathType, boolean repeatable, boolean visible) {
-        this.name = name;
-        this.level = level;
+    public EadMetadataField(String label, Integer type, String xpath, String xpathType) {
+        this.label = label;
+        this.type = type;
         this.xpath = xpath;
         this.xpathType = xpathType;
-        this.repeatable = repeatable;
-        this.visible = visible;
     }
 
     public boolean isFilled() {
@@ -71,46 +63,42 @@ public class EadMetadataField {
         if (values == null) {
             values = new ArrayList<>();
         }
-        if (values.isEmpty() || repeatable) {
-            values.add(value);
-        }
+        values.add(value);
     }
 
     public void addValue() {
         if (values == null) {
             values = new ArrayList<>();
         }
-        if (values.isEmpty() || repeatable) {
-            values.add(new FieldValue(this));
-        }
+        values.add(new FieldValue(this));
     }
 
     /**
      * @return the name
      */
-    public String getName() {
-        return name;
+    public String getLabel() {
+        return label;
     }
 
     /**
      * @param name the name to set
      */
-    public void setName(String name) {
-        this.name = name;
+    public void setLabel(String label) {
+        this.label = label;
     }
 
     /**
      * @return the level
      */
-    public Integer getLevel() {
-        return level;
+    public Integer getType() {
+        return type;
     }
 
     /**
      * @param level the level to set
      */
-    public void setLevel(Integer level) {
-        this.level = level;
+    public void setType(Integer type) {
+        this.type = type;
     }
 
     /**
@@ -125,20 +113,6 @@ public class EadMetadataField {
      */
     public void setXpathType(String xpathType) {
         this.xpathType = xpathType;
-    }
-
-    /**
-     * @return the repeatable
-     */
-    public boolean isRepeatable() {
-        return repeatable;
-    }
-
-    /**
-     * @param repeatable the repeatable to set
-     */
-    public void setRepeatable(boolean repeatable) {
-        this.repeatable = repeatable;
     }
 
     public String getValue() {
@@ -161,20 +135,6 @@ public class EadMetadataField {
      */
     public void setValues(List<FieldValue> values) {
         this.values = values;
-    }
-
-    /**
-     * @return the visible
-     */
-    public boolean isVisible() {
-        return visible;
-    }
-
-    /**
-     * @param visible the visible to set
-     */
-    public void setVisible(boolean visible) {
-        this.visible = visible;
     }
 
     /**

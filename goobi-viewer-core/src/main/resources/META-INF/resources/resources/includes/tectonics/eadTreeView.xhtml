@@ -125,9 +125,9 @@
 											id="metadata_#{status.count}">
 											<!-- Replacing this with c:forEach will result in getAllAreaLists() being called for each iteration -->
 											<ui:repeat var="field" value="#{entry.allAreaLists}">
-												<h:outputText rendered="#{field.filled and field.visible}">
+												<h:outputText rendered="#{field.filled}">
 													<div class="tectonics-tree__metadata-box-fields-row">
-														<div class="tectonics-tree__metadata-box-field-name">#{field.name}:</div>
+														<div class="tectonics-tree__metadata-box-field-name">#{field.label}:</div>
 														<div class="tectonics-tree__metadata-box-field-value">#{field.value}</div>
 													</div>
 												</h:outputText>

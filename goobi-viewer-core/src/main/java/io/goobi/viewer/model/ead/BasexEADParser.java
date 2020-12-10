@@ -234,48 +234,24 @@ public class BasexEADParser {
             if ("text".equalsIgnoreCase(emf.getXpathType())) {
                 XPathExpression<Text> engine = xFactory.compile(emf.getXpath(), Filters.text(), null, NAMESPACE_EAD);
                 List<Text> values = engine.evaluate(element);
-                if (emf.isRepeatable()) {
-                    for (Text value : values) {
-                        String stringValue = value.getValue();
-                        stringValues.add(stringValue);
-                    }
-                } else {
-                    if (!values.isEmpty()) {
-                        Text value = values.get(0);
-                        String stringValue = value.getValue();
-                        stringValues.add(stringValue);
-                    }
+                for (Text value : values) {
+                    String stringValue = value.getValue();
+                    stringValues.add(stringValue);
                 }
             } else if ("attribute".equalsIgnoreCase(emf.getXpathType())) {
                 XPathExpression<Attribute> engine = xFactory.compile(emf.getXpath(), Filters.attribute(), null, NAMESPACE_EAD);
                 List<Attribute> values = engine.evaluate(element);
 
-                if (emf.isRepeatable()) {
-                    for (Attribute value : values) {
-                        String stringValue = value.getValue();
-                        stringValues.add(stringValue);
-                    }
-                } else {
-                    if (!values.isEmpty()) {
-                        Attribute value = values.get(0);
-                        String stringValue = value.getValue();
-                        stringValues.add(stringValue);
-                    }
+                for (Attribute value : values) {
+                    String stringValue = value.getValue();
+                    stringValues.add(stringValue);
                 }
             } else {
                 XPathExpression<Element> engine = xFactory.compile(emf.getXpath(), Filters.element(), null, NAMESPACE_EAD);
                 List<Element> values = engine.evaluate(element);
-                if (emf.isRepeatable()) {
-                    for (Element value : values) {
-                        String stringValue = value.getValue();
-                        stringValues.add(stringValue);
-                    }
-                } else {
-                    if (!values.isEmpty()) {
-                        Element value = values.get(0);
-                        String stringValue = value.getValue();
-                        stringValues.add(stringValue);
-                    }
+                for (Element value : values) {
+                    String stringValue = value.getValue();
+                    stringValues.add(stringValue);
                 }
             }
             addFieldToEntry(entry, emf, stringValues);
@@ -361,8 +337,7 @@ public class BasexEADParser {
         if (StringUtils.isBlank(entry.getLabel()) && emf.getXpath().contains("unittitle") && stringValues != null && !stringValues.isEmpty()) {
             entry.setLabel(stringValues.get(0));
         }
-        EadMetadataField toAdd = new EadMetadataField(emf.getName(), emf.getLevel(), emf.getXpath(), emf.getXpathType(), emf.isRepeatable(),
-                emf.isVisible());
+        EadMetadataField toAdd = new EadMetadataField(emf.getLabel(), emf.getType(), emf.getXpath(), emf.getXpathType());
         toAdd.setEadEntry(entry);
 
         if (stringValues != null && !stringValues.isEmpty()) {
@@ -378,7 +353,7 @@ public class BasexEADParser {
             toAdd.addFieldValue(fv);
         }
 
-        switch (toAdd.getLevel()) {
+        switch (toAdd.getType()) {
             case 1:
                 entry.getIdentityStatementAreaList().add(toAdd);
                 break;
@@ -499,8 +474,8 @@ public class BasexEADParser {
         configuredFields = new ArrayList<>();
 
         for (HierarchicalConfiguration hc : metadataConfig.configurationsAt("/metadata")) {
-            EadMetadataField field = new EadMetadataField(hc.getString("[@name]"), hc.getInt("[@level]"), hc.getString("[@xpath]"),
-                    hc.getString("[@xpathType]", "element"), hc.getBoolean("[@repeatable]", false), hc.getBoolean("[@visible]", true));
+            EadMetadataField field = new EadMetadataField(hc.getString("[@label]"), hc.getInt("[@type]"), hc.getString("[@xpath]"),
+                    hc.getString("[@xpathType]", "element"));
             configuredFields.add(field);
         }
     }
