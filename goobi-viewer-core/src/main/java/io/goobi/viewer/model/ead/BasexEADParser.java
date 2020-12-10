@@ -473,10 +473,10 @@ public class BasexEADParser {
     static void searchInNode(EadEntry node, String searchValue) {
         if (node.getId() != null && node.getId().equals(searchValue)) {
             // ID match
-            node.markAsFound(false);
+            node.markAsFound(true);
         } else if (node.getLabel() != null && node.getLabel().toLowerCase().contains(searchValue.toLowerCase())) {
             // mark element + all parents as displayable
-            node.markAsFound(false);
+            node.markAsFound(true);
         }
         if (node.getSubEntryList() != null) {
             for (EadEntry child : node.getSubEntryList()) {

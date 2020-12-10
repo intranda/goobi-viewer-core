@@ -283,7 +283,7 @@ public class EadEntry {
         }
         if(keepChildrenVisible) {
             for (EadEntry child : this.subEntryList) {
-                child.setDisplaySearch(true);
+                child.setDisplaySearch(true, true);
             }
         }
     }
@@ -532,8 +532,18 @@ public class EadEntry {
      * @param displaySearch the displaySearch to set
      */
     public void setDisplaySearch(boolean displaySearch) {
-        this.displaySearch = displaySearch;
+        this.setDisplaySearch(displaySearch, false);
     }
+    
+    public void setDisplaySearch(boolean displaySearch, boolean recursive) {
+        this.displaySearch = displaySearch;
+        if(recursive) {
+            for (EadEntry child : this.subEntryList) {
+                child.setDisplaySearch(displaySearch, recursive);
+            }
+        }
+    }
+
 
     public EadMetadataField getIdentityStatementAreaField(String name) {
         for (EadMetadataField field : identityStatementAreaList) {
