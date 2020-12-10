@@ -10,49 +10,55 @@
     xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components" 
     xmlns:widgetComponent="http://xmlns.jcp.org/jsf/composite/components/widgets">
 
+	<ui:define name="metadata">
+		<f:metadata>
+			<f:event type="preRenderView" listener="#{navigationHelper.setCurrentPage('tecArchives', false, true)}" />
+		</f:metadata>
+	</ui:define>
+
     <!-- MESSAGES -->
     <div class="messages">
         <h:messages id="messages" globalOnly="false" infoClass="alert alert-success" errorClass="alert alert-danger" />
     </div>
-
-    <div class="crowdsourcing-annotations">
-		<header id="pageHeaderTop" class="crowdsourcing-annotations__top-wrapper">
-            <div class="crowdsourcing-annotations__header">
+    
+  
+    <div id="tecArchives" class="tec-archives">
+		<header id="pageHeaderTop" class="tec-archives__top-wrapper">
+            <div class="tec-archives__header">
 	            <!-- OPEN MOBILE NAVIGATION -->
-            	<div class="crowdsourcing-annotations__top-mobile-nav">
+            	<div class="tec-archives__top-mobile-nav">
 					<button type="button" class="btn btn--clean" data-open="menu" aria-label="#{msg.aria_label__open_navigation}">
 						<span></span>
 					</button>
 				</div>
 
                 <!-- PAGE HEADER TOP BRAND -->            
-                <div class="crowdsourcing-annotations__top-brand">
-                    <a href="#{request.contextPath}" target="_self" rel="noopener">#{configurationBean.name}</a> › <a href="#{request.contextPath}/campaigns/" target="_self" rel="noopener">#{msg.campaigns}</a>
+                <div class="tec-archives__top-brand">
+				<a href="#{request.contextPath}" target="_self" rel="noopener">#{configurationBean.name}</a> › <h1>#{msg.tectonics__archiveViewHeading}</h1> 
                 </div>
                 
                 <!-- PAGE HEADER TOP CAMPAIGN TITLE -->            
-                <h1 class="crowdsourcing-annotations__top-title">
-                	<span>#{crowdsourcingBean.targetCampaign.displayTitle}</span>
-                </h1>
-
+                <div class="tec-archives__top-title">
+                	<span>#{tectonicsBean.trueRoot.label}</span>
+                </div>
 
                 <!-- PAGE HEADER TOP ACTIONS -->            
-                <div class="crowdsourcing-annotations__top-actions">
+                <div class="tec-archives__top-actions">
                     <!-- CHANGE LOCAL -->
-                    <div id="changeLocalWrapper" class="crowdsourcing-annotations__top-actions-language">
+                    <div id="changeLocalWrapper" class="tec-archives__top-actions-language">
                     	<button type="button" class="btn btn--clean" data-toggle="local" aria-label="#{msg.aria_label__switch_language}">
                     		#{msg['changeLocal_' += navigationHelper.localeString]}
                     	</button>
                         <viewerComponent:changeLocal toggleLanguage="false" showFlags="false" />
                     </div>
                     <!-- LOGIN NAVIGATION -->
-                    <div class="crowdsourcing-annotations__top-actions-login">
+                    <div class="tec-archives__top-actions-login">
                         <viewerComponent:loginNavigation />
                     </div>
                 </div>
 
 	            <!-- OPEN MOBILE NAVIGATION -->
-            	<div class="crowdsourcing-annotations__top-mobile-sidebar">
+            	<div class="tec-archives__top-mobile-sidebar">
 					<button type="button" class="btn btn--clean" data-open="sidebar" aria-label="#{msg.aria_label__open_sidebar}">
 						<span></span>
 					</button>
@@ -61,10 +67,19 @@
 	    </header>
 
 		<!-- CONTENT -->
-		<main id="CrowdContent" class="crowdsourcing-annotations__main">
+		<main id="ArchivesContent" class="tec-archives__main">
 			<!-- <ui:insert name="breadcrumbs" /> -->
 			<ui:insert name="content" />
 		</main>
+		
+		    <!-- USER LOGIN + TERMS -->
+		<viewerComponent:modalUserLogin id="userLoginModal"/>
+		<viewerComponent:modalUserTerms id="userTermsModal"/>
+		
+		<script type="text/javascript">
+			viewerJS.tectonics.init();
+        	viewerJS.tectonicsArchivesView.init();
+        </script>
 
     </div>
 </ui:composition>
