@@ -208,7 +208,7 @@ public class MyExceptionHandler extends ExceptionHandlerWrapper {
                     i.remove();
                 }
             } else if (t instanceof DAOException || isCausedByExceptionType(t, DAOException.class.getName())
-                    || (t instanceof PrettyException && t.getMessage().contains(IndexUnreachableException.class.getSimpleName()))) {
+                    || (t instanceof PrettyException && t.getMessage().contains(DAOException.class.getSimpleName()))) {
                 logger.trace("Caused by DAOException");
                 try {
                     requestMap.put("errorType", "dao");
@@ -218,7 +218,18 @@ public class MyExceptionHandler extends ExceptionHandlerWrapper {
                 } finally {
                     i.remove();
                 }
-            } else if (t instanceof ViewerConfigurationException || isCausedByExceptionType(t, ViewerConfigurationException.class.getName())
+            }  else if (t instanceof BaseXException || isCausedByExceptionType(t, BaseXException.class.getName())
+                    || (t instanceof PrettyException && t.getMessage().contains(BaseXException.class.getSimpleName()))) {
+                logger.trace("Caused by BaseXException");
+                try {
+                    requestMap.put("errorType", "basex");
+                    flash.put("errorType", "basex");
+                    nav.handleNavigation(fc, null, "pretty:error");
+                    fc.renderResponse();
+                } finally {
+                    i.remove();
+                }
+            }else if (t instanceof ViewerConfigurationException || isCausedByExceptionType(t, ViewerConfigurationException.class.getName())
                     || (t instanceof PrettyException && t.getMessage().contains(ViewerConfigurationException.class.getSimpleName()))) {
                 logger.trace("Caused by ViewerConfigurationException");
                 String msg = getRootCause(t).getMessage();

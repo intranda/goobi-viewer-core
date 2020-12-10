@@ -25,8 +25,6 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 import javax.annotation.PostConstruct;
-import javax.enterprise.context.SessionScoped;
-import javax.faces.context.FacesContext;
 import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -42,12 +40,11 @@ import org.jdom2.Document;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.common.collect.Multiset.Entry;
-
 import de.intranda.monitoring.timer.Time;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.SolrConstants;
 import io.goobi.viewer.controller.SolrSearchIndex;
+import io.goobi.viewer.exceptions.BaseXException;
 import io.goobi.viewer.exceptions.HTTPException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
@@ -76,8 +73,8 @@ public class TectonicsBean implements Serializable {
     @Inject
     private PersistentStorageBean storage;
 
-    @Inject
-    private FacesContext context;
+    //    @Inject
+    //    private FacesContext context;
 
     /**
      * Empty constructor.
@@ -95,24 +92,23 @@ public class TectonicsBean implements Serializable {
             this.eadParser = new BasexEADParser(DataManager.getInstance().getConfiguration().getBaseXUrl());
             loadDatabase(DataManager.getInstance().getConfiguration().getBaseXDatabase());
         } catch (IOException | HTTPException | ConfigurationException e) {
-            logger.error("Error initializing database", e);
+            logger.error("Error initializing database: {}", e.getMessage());
         }
 
     }
 
     public void loadDatabase(String databaseName) throws ClientProtocolException, IOException, HTTPException {
-            
-//        String storageKey = databaseName + "@" + eadParser.getBasexUrl();
-//        if(context.getExternalContext().getSessionMap().containsKey(storageKey)) {
-//            eadParser = new BasexEADParser((BasexEADParser)context.getExternalContext().getSessionMap().containsKey(storageKey));
-//        } else {
-            Document databaseDoc = eadParser.retrieveDatabaseDocument(databaseName);
-            HierarchicalConfiguration baseXMetadataConfig = DataManager.getInstance().getConfiguration().getBaseXMetadataConfig();
-            eadParser.loadDatabase(databaseName, baseXMetadataConfig, databaseDoc);
-//            context.getExternalContext().getSessionMap().put(storageKey, eadParser);
-//        }
-        
-        
+
+        //        String storageKey = databaseName + "@" + eadParser.getBasexUrl();
+        //        if(context.getExternalContext().getSessionMap().containsKey(storageKey)) {
+        //            eadParser = new BasexEADParser((BasexEADParser)context.getExternalContext().getSessionMap().containsKey(storageKey));
+        //        } else {
+        Document databaseDoc = eadParser.retrieveDatabaseDocument(databaseName);
+        HierarchicalConfiguration baseXMetadataConfig = DataManager.getInstance().getConfiguration().getBaseXMetadataConfig();
+        eadParser.loadDatabase(databaseName, baseXMetadataConfig, databaseDoc);
+        //            context.getExternalContext().getSessionMap().put(storageKey, eadParser);
+        //        }
+
     }
 
     /**
@@ -162,11 +158,12 @@ public class TectonicsBean implements Serializable {
     /**
      * 
      * @return
+     * @throws BaseXException
      */
-    public EADTree getTectonicsTree() {
+    public EADTree getTectonicsTree() throws BaseXException {
         // logger.trace("getTectonicsTree");
         if (eadParser == null || !eadParser.isDatabaseLoaded()) {
-            return null;
+            throw new BaseXException("No BaseX connection");
         }
 
         EADTree h = tectonicsTree;
@@ -284,8 +281,9 @@ public class TectonicsBean implements Serializable {
     /**
      * 
      * @return
+     * @throws BaseXException 
      */
-    public String searchAction() {
+    public String searchAction() throws BaseXException {
         logger.trace("searchAction: {}", searchString);
         search(true, true);
 
@@ -297,8 +295,9 @@ public class TectonicsBean implements Serializable {
      * 
      * @param resetSelectedEntry If true, selected entry will be set to null
      * @param collapseAll If true, all elements will be collapsed before expanding path to search hits
+     * @throws BaseXException 
      */
-    void search(boolean resetSelectedEntry, boolean collapseAll) {
+    void search(boolean resetSelectedEntry, boolean collapseAll) throws BaseXException {
         if (eadParser == null || !eadParser.isDatabaseLoaded() || tectonicsTree == null) {
             logger.warn("Tree not loaded, cannot search.");
             return;
@@ -359,8 +358,9 @@ public class TectonicsBean implements Serializable {
      * Setter for the URL parameter. Loads the entry that has the given ID. Loads the tree, if this is a new sessions.
      * 
      * @param id Entry ID
+     * @throws BaseXException 
      */
-    public void setSelectedEntryId(String id) {
+    public void setSelectedEntryId(String id) throws BaseXException {
         logger.trace("setSelectedEntryId: {}", id);
 
         // getTectonicsTree() will also load the tree, if not yet loaded
