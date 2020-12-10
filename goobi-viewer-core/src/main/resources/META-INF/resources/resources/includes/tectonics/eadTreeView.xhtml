@@ -36,21 +36,21 @@
 					<div class="tectonics-tree__expand-minimize-all">
 						<h:commandLink
 							action="#{tectonicsBean.tectonicsTree.collapseAll(true)}"
-							title="#{msg.allClose}">
-							<i class="fa fa-minus-square-o" aria-hidden="true"></i>
+							title="#{msg.allClose}">#{msg.allClose}
+<!-- 							<i class="fa fa-minus-square-o" aria-hidden="true"></i> -->
 							<f:passThroughAttribute name="data-toggle" value="tooltip" />
 							<f:passThroughAttribute name="data-placement" value="top" />
 							<f:passThroughAttribute name="aria-label" value="#{msg.allClose}" />
 							<f:ajax render="#{render}" />
 						</h:commandLink>
-						<h:commandLink action="#{tectonicsBean.tectonicsTree.expandAll}"
-							title="#{msg.allOpen}">
-							<i class="fa fa-plus-square-o" aria-hidden="true"></i>
-							<f:passThroughAttribute name="data-toggle" value="tooltip" />
-							<f:passThroughAttribute name="data-placement" value="top" />
-							<f:passThroughAttribute name="aria-label" value="#{msg.allOpen}" />
-							<f:ajax render="#{render}" />
-						</h:commandLink>
+<!-- 						<h:commandLink action="#{tectonicsBean.tectonicsTree.expandAll}" -->
+<!-- 							title="#{msg.allOpen}"> -->
+<!-- 							<i class="fa fa-plus-square-o" aria-hidden="true"></i> -->
+<!-- 							<f:passThroughAttribute name="data-toggle" value="tooltip" /> -->
+<!-- 							<f:passThroughAttribute name="data-placement" value="top" /> -->
+<!-- 							<f:passThroughAttribute name="aria-label" value="#{msg.allOpen}" /> -->
+<!-- 							<f:ajax render="#{render}" /> -->
+<!-- 						</h:commandLink> -->
 					</div>
 	
 					<nav class="tectonics-tree__list">

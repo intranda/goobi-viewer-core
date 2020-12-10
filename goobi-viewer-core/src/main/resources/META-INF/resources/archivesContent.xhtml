@@ -77,7 +77,7 @@
                       <div class="tec-archives__object-title">#{tectonicsBean.displayEntry.label}</div>
                       <!-- Identity statement metadata -->
                       <c:if test="#{tectonicsBean.displayEntry.identityStatementAreaList.stream().filter(field -> field.filled and field.visible).count() > 0}">
-                          <label>#{msg.tectonics__archive_area_identity}</label>
+                          <div class="tec-archives__object-block-label">#{msg.tectonics__archive_area_identity}</div>
                           <ui:repeat var="field" value="#{tectonicsBean.tectonicsTree.selectedEntry.identityStatementAreaList}">
                               <h:panelGroup layout="block" styleClass="tec-archives__object-metadata-entry" rendered="#{field.filled and field.visible}">
                                   <div class="tec-archives__object-field-name">#{field.name}:</div><div class="tec-archives__object-field-value">#{field.value}</div>
@@ -86,7 +86,7 @@
                       </c:if>
                       <!-- Context metadata -->
                       <c:if test="#{tectonicsBean.displayEntry.contextAreaList.stream().filter(field -> field.filled and field.visible).count() > 0}">
-                          <label>#{msg.tectonics__archive_area_context}</label>
+                          <div class="tec-archives__object-block-label">#{msg.tectonics__archive_area_context}</div>
                           <ui:repeat var="field" value="#{tectonicsBean.tectonicsTree.selectedEntry.contextAreaList}">
                               <h:panelGroup layout="block" styleClass="tec-archives__object-metadata-entry" rendered="#{field.filled and field.visible}">
                                   <div class="tec-archives__object-field-name">#{field.name}:</div><div class="tec-archives__object-field-value">#{field.value}</div>
@@ -95,7 +95,7 @@
                       </c:if>
                       <!-- Content and structure metadata -->
                       <c:if test="#{tectonicsBean.displayEntry.contentAndStructureAreaAreaList.stream().filter(field -> field.filled and field.visible).count() > 0}">
-                          <label>#{msg.tectonics__archive_area_content}</label>
+                          <div class="tec-archives__object-block-label">#{msg.tectonics__archive_area_content}</div>
                           <ui:repeat var="field" value="#{tectonicsBean.tectonicsTree.selectedEntry.contentAndStructureAreaAreaList}">
                               <h:panelGroup layout="block" styleClass="tec-archives__object-metadata-entry" rendered="#{field.filled and field.visible}">
                                   <div class="tec-archives__object-field-name">#{field.name}:</div><div class="tec-archives__object-field-value">#{field.value}</div>
@@ -104,7 +104,7 @@
                       </c:if>
                       <!-- Access and terms of usage metadata -->
                       <c:if test="#{tectonicsBean.displayEntry.accessAndUseAreaList.stream().filter(field -> field.filled and field.visible).count() > 0}">
-                          <label>#{msg.tectonics__archive_area_access}</label>
+                          <div class="tec-archives__object-block-label">#{msg.tectonics__archive_area_access}</div>
                           <ui:repeat var="field" value="#{tectonicsBean.tectonicsTree.selectedEntry.accessAndUseAreaList}">
                               <h:panelGroup layout="block" styleClass="tec-archives__object-metadata-entry" rendered="#{field.filled and field.visible}">
                                   <div class="tec-archives__object-field-name">#{field.name}:</div><div class="tec-archives__object-field-value">#{field.value}</div>
@@ -113,7 +113,7 @@
                       </c:if>
                       <!-- Related matarials metadata -->
                       <c:if test="#{tectonicsBean.displayEntry.alliedMaterialsAreaList.stream().filter(field -> field.filled and field.visible).count() > 0}">
-                          <label>#{msg.tectonics__archive_area_materials}</label>
+                          <div class="tec-archives__object-block-label">#{msg.tectonics__archive_area_materials}</div>
                           <ui:repeat var="field" value="#{tectonicsBean.tectonicsTree.selectedEntry.alliedMaterialsAreaList}">
                               <h:panelGroup layout="block" styleClass="tec-archives__object-metadata-entry" rendered="#{field.filled and field.visible}">
                                   <div class="tec-archives__object-field-name">#{field.name}:</div><div class="tec-archives__object-field-value">#{field.value}</div>
@@ -122,7 +122,7 @@
                       </c:if>
                       <!-- Notes metadata -->
                       <c:if test="#{tectonicsBean.displayEntry.notesAreaList.stream().filter(field -> field.filled and field.visible).count() > 0}">
-                          <label>#{msg.tectonics__archive_area_notes}</label>
+                          <div class="tec-archives__object-block-label">#{msg.tectonics__archive_area_notes}</div>
                           <ui:repeat var="field" value="#{tectonicsBean.tectonicsTree.selectedEntry.notesAreaList}">
                               <h:panelGroup layout="block" styleClass="tec-archives__object-metadata-entry" rendered="#{field.filled and field.visible}">
                                   <div class="tec-archives__object-field-name">#{field.name}:</div><div class="tec-archives__object-field-value">#{field.value}</div>
@@ -131,7 +131,7 @@
                       </c:if>
                       <!-- Description control metadata -->
                       <c:if test="#{tectonicsBean.displayEntry.descriptionControlAreaList.stream().filter(field -> field.filled and field.visible).count() > 0}">
-                          <label>#{msg.tectonics__archive_area_descriptionControl}</label>
+                          <div class="tec-archives__object-block-label">#{msg.tectonics__archive_area_descriptionControl}</div>
                           <ui:repeat var="field" value="#{tectonicsBean.tectonicsTree.selectedEntry.descriptionControlAreaList}">
                               <h:panelGroup layout="block" styleClass="tec-archives__object-metadata-entry" rendered="#{field.filled and field.visible}">
                                   <div class="tec-archives__object-field-name">#{field.name}:</div><div class="tec-archives__object-field-value">#{field.value}</div>
@@ -141,13 +141,20 @@
                      </div>
                      
                       <!-- ASSOCIATED RECORD -->
-                      <h:outputLink
-                      	styleClass="tec-archives__object-image" rendered="#{tectonicsBean.displayEntry != null and tectonicsBean.displayEntry.associatedRecordPi != ''}" 
-                          value="#{navigationHelper.objectUrl}/#{tectonicsBean.displayEntry.associatedRecordPi}/1/">
-                              <!-- TODO less trivial image display -->
-                              <img src="#{imageDelivery.thumbs.getThumbnailUrl(tectonicsBean.displayEntry.associatedRecordPi)}" />
-                              <!-- TODO view selection, representative page -->
-                      </h:outputLink>
+                      <div class="tec-archives__object-image">
+	                      <h:outputLink
+	                      	styleClass="tec-archives__object-image-link" rendered="#{tectonicsBean.displayEntry != null and tectonicsBean.displayEntry.associatedRecordPi != ''}" 
+	                          value="#{navigationHelper.objectUrl}/#{tectonicsBean.displayEntry.associatedRecordPi}/1/">
+	                              <!-- TODO less trivial image display -->
+	                              <div class="tec-archives__object-image-overlay"></div>
+	                              <img src="#{imageDelivery.thumbs.getThumbnailUrl(tectonicsBean.displayEntry.associatedRecordPi)}" />
+	                              <div class="tec-archives__object-image-hover-text">#{msg.tectonics__showRecord}</div>
+	                              <div class="tec-archives__object-image-hover-icon">
+	                              	<i class="fa fa-arrow-circle-o-right" aria-hidden="true"></i>
+	                              </div>
+	                              <!-- TODO view selection, representative page -->
+	                      </h:outputLink>
+                      </div>
                  </h:panelGroup>
 				</div>
 			</div>
