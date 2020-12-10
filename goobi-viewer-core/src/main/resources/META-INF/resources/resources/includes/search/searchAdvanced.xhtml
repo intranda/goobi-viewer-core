@@ -122,6 +122,7 @@
                                                             <c:forEach var="item" items="#{queryItem.selectItems}">
                                                                 <f:selectItem itemValue="#{item.one}" itemLabel="#{item.two}" />
                                                             </c:forEach>
+                                                            <f:passThroughAttribute name="aria-label" value="#{msg.cms_collections_err_noselection}" />
                                                         </h:selectOneMenu>
                                                     </div>
                                                 </h:panelGroup>

@@ -1282,7 +1282,7 @@ public class ConfigurationBean implements Serializable {
      * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
      */
     public String getIiifApiUrl() throws ViewerConfigurationException {
-        return DataManager.getInstance().getConfiguration().getRestApiUrl();
+        return DataManager.getInstance().getConfiguration().getIIIFApiUrl();
     }
 
     /**
