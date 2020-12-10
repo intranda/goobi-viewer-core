@@ -20,7 +20,7 @@
 var viewerJS = ( function( viewer ) {
     'use strict';
 
-    var _debug = true;
+    var _debug = false;
  
     
     viewer.tectonics = {
@@ -34,24 +34,10 @@ var viewerJS = ( function( viewer ) {
             
             viewerJS.jsfAjax.success.subscribe(e => {
                 this.setLocation(e.source);
-                this.refreshHcSticky();
             })
 
             
 
-        },
-        
-        refreshHcSticky: function() {
-            $('.tec-archives__left-side, .tec-archives__right-side').hcSticky('update', {
-        		stickTo: $('.tec-archives__wrapper')[0],
-        		top: 80,
-        		bottom: 20,
-    		    responsive: {
-    		    	993: {
-    			      disable: true
-    			    }
-    			}
-           });
         },
 
         setLocation: function(element) {
@@ -61,7 +47,7 @@ var viewerJS = ( function( viewer ) {
             if(select) {
                 url += ("?selected=" + select + "#selected");
             }
-            console.log("set url ", url);
+            if(_debug)console.log("set url ", url);
             window.history.pushState({}, '', url);
         }
     };

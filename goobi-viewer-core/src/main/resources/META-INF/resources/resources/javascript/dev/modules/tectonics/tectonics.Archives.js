@@ -31,31 +31,13 @@ var viewerJS = ( function( viewer ) {
                 console.log( 'viewer.tectonicsArchivesView.init: config - ', config );
             }
 
-            jQuery(document).ready(function($) {
-            	// Sticky right side of archives view
-            	$('.tec-archives__right-side').hcSticky({
-            		stickTo: $('.tec-archives__wrapper')[0],
-            		top: 80,
-            		bottom: 20,
-        		    responsive: {
-        		    	993: {
-        			      disable: true
-        			    }
-        			}
-            	});
-            	
-            	// Sticky left side of archives view
-            	$('.tec-archives__left-side').hcSticky({
-            		stickTo: $('.tec-archives__wrapper')[0],
-            		top: 80,
-            		bottom: 20,
-        		    responsive: {
-        			    993: {
-        			      disable: true
-        			    }
-        			}
-            	});
+            jQuery(document).ready(($) => {
 
+                this.initHcSticky();
+                viewerJS.jsfAjax.success
+                .subscribe(e => this.refreshStickyWithChromeHack())
+
+                
             	/* check search field for input value and show clear button */
                 if(!$('.tec-archives__search-input').val() == ''){
             		$('.tec-archives__search-clear').show();
@@ -92,6 +74,64 @@ var viewerJS = ( function( viewer ) {
             	
             });            
             
+        },
+        
+        /**
+         * In chome with small window size (1440x900) hcSticky breaks on ajax reload if the page is scrolled
+         * all the way to the button. To prevent this we quickly scroll to the top, refresh hcSticky and then scroll back down.
+         * The scolling appears to be invisible to the user, probably because it is reset before actually being carried out
+         */
+        refreshStickyWithChromeHack: function() {
+            let currentScrollPosition = $('html').scrollTop();
+            $('html').scrollTop(0);
+            this.refreshHcSticky();
+            if(currentScrollPosition) {
+                $('html').scrollTop(currentScrollPosition);
+            }
+        },
+        
+        refreshHcSticky: function() {
+            if(_debug)console.log("update hc sticky");
+
+//            $('.tec-archives__left-side, .tec-archives__right-side').hcSticky('refresh');
+            $('.tec-archives__left-side, .tec-archives__right-side').hcSticky('update', {
+                stickTo: $('.tec-archives__wrapper')[0],
+                top: 80,
+                bottom: 20,
+                responsive: {
+                    993: {
+                      disable: true
+                    }
+                }
+           });
+        },
+        
+        initHcSticky: function() {
+            if(_debug)console.log("init hc sticky");
+                        
+            // Sticky right side of archives view
+            $('.tec-archives__right-side').hcSticky({
+                stickTo: $('.tec-archives__wrapper')[0],
+                top: 80,
+                bottom: 20,
+                responsive: {
+                    993: {
+                      disable: true
+                    }
+                }
+            });
+            
+            // Sticky left side of archives view
+            $('.tec-archives__left-side').hcSticky({
+                stickTo: $('.tec-archives__wrapper')[0],
+                top: 80,
+                bottom: 20,
+                responsive: {
+                    993: {
+                      disable: true
+                    }
+                }
+            });
         }
     };
 

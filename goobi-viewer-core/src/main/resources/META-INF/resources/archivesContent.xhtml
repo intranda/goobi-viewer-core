@@ -29,32 +29,33 @@
 				<div class="tec-archives__left-side">
 				
 				                
-                    <div class="tec-archives__graphic-tree">
+                    <h:panelGroup layout="block" id="treeGroup" styleClass="tec-archives__graphic-tree">
                     
-                    <div class="tec-archives__search-input-wrapper">
-	                    <h:form id="searchForm" prependId="false">
-	                        <h:inputText id="tectonicsSearchField" styleClass="form-control filter-input tec-archives__search-input"
-	                            value="#{tectonicsBean.searchString}" immediate="true">
-	                            <f:passThroughAttribute name="placeholder" value="#{msg.searchFieldDemoText}" />
-	                            <f:passThroughAttribute name="aria-label" value="#{msg.aria_label__search_form}" />
-	                        </h:inputText>
-	                        <div class="tec-archives__search-clear">x</div>
-	                        <h:commandButton styleClass="tec-archives__search-submit-button" value="#{msg.search}" action="#{tectonicsBean.searchAction}">
-	                        </h:commandButton>
-	            		</h:form>
-                    </div>
+	                    <div class="tec-archives__search-input-wrapper">
+		                    <h:form id="searchForm" prependId="false">
+		                        <h:inputText id="tectonicsSearchField" styleClass="form-control filter-input tec-archives__search-input"
+		                            value="#{tectonicsBean.searchString}" immediate="true">
+		                            <f:passThroughAttribute name="placeholder" value="#{msg.searchFieldDemoText}" />
+		                            <f:passThroughAttribute name="aria-label" value="#{msg.aria_label__search_form}" />
+		                        </h:inputText>
+		                        <div class="tec-archives__search-clear">x</div>
+		                        <h:commandButton styleClass="tec-archives__search-submit-button" value="#{msg.search}" action="#{tectonicsBean.searchAction}">
+		                        </h:commandButton>
+		            		</h:form>
+	                    </div>
 	                    <ui:include src="/resources/includes/tectonics/eadTreeView.xhtml">
 	                    	<ui:param name="view" value="archives" />
 	                    	<ui:param name="indent" value="#{configurationBean.tocIndentation * 1.5}"/>
+	                    	<ui:param name="render" value="treeGroup hierarchyGroup metadataGroup" />
 	                    </ui:include>
                    
-					</div>
+					</h:panelGroup>
 				</div>
 				
 				<!-- RIGHT SIDE -->
 				<div class="tec-archives__right-side">
   				<!-- HIERARCHY OF THE CURRENT NODE -->
-                 <h:panelGroup layout="block" id="hiearchyGroup" styleClass="tec-archives__text-tree">
+                 <h:panelGroup layout="block" id="hierarchyGroup" styleClass="tec-archives__text-tree">
                      <ui:repeat var="entry"
                          value="#{tectonicsBean.getTectonicsHierarchyForIdentifier(tectonicsBean.displayEntry.id)}">
                          <!-- TODO proper level tag -->
@@ -68,7 +69,7 @@
                      </ui:repeat>
                  </h:panelGroup>
 					
-                 <h:panelGroup layout="block" styleClass="tec-archives__object-info" id="metadataGroup">
+                 <h:panelGroup layout="block" id="metadataGroup" styleClass="tec-archives__object-info">
                  	<div class="tec-archives__object-metadata">
                       <!-- METADATA -->
                       <!-- Replacing these with c:forEach will result in get*List() being called for each iteration -->
