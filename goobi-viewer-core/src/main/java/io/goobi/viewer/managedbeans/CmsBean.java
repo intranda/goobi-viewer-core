@@ -1595,7 +1595,7 @@ public class CmsBean implements Serializable {
                         if (StringUtils.isNotBlank(searchBean.getExactSearchString().replace("-", ""))) {
                             searchBean.setShowReducedSearchOptions(true);
                             return searchAction(item);
-                        } else if (item.isDisplayEmptySearchResults()) {
+                        } else if (item.isDisplayEmptySearchResults() || StringUtils.isNotBlank(searchBean.getFacets().getCurrentFacetString())) {
                             String searchString = StringUtils.isNotBlank(item.getSolrQuery().replace("-", "")) ? item.getSolrQuery() : "";
                             //                        searchBean.setSearchString(item.getSolrQuery());
                             searchBean.setExactSearchString(searchString);
