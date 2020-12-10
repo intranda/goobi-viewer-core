@@ -73,7 +73,7 @@
                       <!-- METADATA -->
                       <!-- Replacing these with c:forEach will result in get*List() being called for each iteration -->
                       <!-- TODO bold via CSS -->
-                      
+                      <div class="tec-archives__object-title">#{tectonicsBean.displayEntry.label}</div>
                       <!-- Identity statement metadata -->
                       <c:if test="#{tectonicsBean.displayEntry.identityStatementAreaList.stream().filter(field -> field.filled and field.visible).count() > 0}">
                           <label>#{msg.tectonics__archive_area_identity}</label>

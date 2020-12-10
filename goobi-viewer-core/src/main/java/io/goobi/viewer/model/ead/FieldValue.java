@@ -17,9 +17,10 @@ public class FieldValue {
     }
 
     public void setValue(String value) {
-        this.value = value;
         if (field.getXpath().contains("unittitle")) {
             field.getEadEntry().setLabel(value);
+        } else {
+            this.value = value;            
         }
 
     }
