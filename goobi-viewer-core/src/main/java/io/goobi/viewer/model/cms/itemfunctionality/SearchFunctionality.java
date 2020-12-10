@@ -31,12 +31,14 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.exceptions.ViewerConfigurationException;
 import io.goobi.viewer.managedbeans.SearchBean;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
+import io.goobi.viewer.model.cms.CMSPage;
 import io.goobi.viewer.model.search.SearchFacets;
 import io.goobi.viewer.model.search.SearchFilter;
 import io.goobi.viewer.model.search.SearchInterface;
@@ -167,7 +169,7 @@ public class SearchFunctionality implements Functionality, SearchInterface {
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
      */
-    public void search() throws PresentationException, IndexUnreachableException, DAOException, ViewerConfigurationException {
+    public void search(String subtheme) throws PresentationException, IndexUnreachableException, DAOException, ViewerConfigurationException {
         logger.trace("searchAction");
         SearchBean searchBean = getSearchBean();
         if (searchBean == null) {
@@ -175,7 +177,7 @@ public class SearchFunctionality implements Functionality, SearchInterface {
             return;
         }
         String facetString = getSearchBean().getFacets().getCurrentFacetString();
-        searchBean.getFacets().setCurrentFacetString(getCompleteFacetString(facetString));
+        searchBean.getFacets().setCurrentFacetString(getCompleteFacetString(facetString, subtheme));
         searchBean.search();
         searchBean.getFacets().setCurrentFacetString(facetString);
     }
@@ -183,19 +185,28 @@ public class SearchFunctionality implements Functionality, SearchInterface {
     /**
      * @return
      */
-    private String getCompleteFacetString(String baseFacetString) {
+    private String getCompleteFacetString(String baseFacetString, String subtheme) {
         StringBuilder sb = new StringBuilder();
         if (StringUtils.isNotBlank(getPageFacetString())) {
             String pageFacetString = getPageFacetString().replaceAll("(?i)^(AND|OR)\\s", "");
             sb.append(pageFacetString);
-            if (StringUtils.isNotBlank(baseFacetString) && !"-".equals(baseFacetString) && !sb.toString().equals(baseFacetString)) {
-                sb.append(";;").append(baseFacetString);
+        } 
+        if (StringUtils.isNotBlank(subtheme)) {
+            if(sb.length() > 0) {
+                sb.append(";;");
             }
-        } else if (StringUtils.isNotBlank(baseFacetString) && !"-".equals(baseFacetString)) {
+            String subthemeDiscriminatorField = DataManager.getInstance().getConfiguration().getSubthemeDiscriminatorField();
+            sb.append(subthemeDiscriminatorField).append(":").append(subtheme);
+        }
+        if (StringUtils.isNotBlank(baseFacetString) && !"-".equals(baseFacetString)) {
+            if(sb.length() > 0) {
+                sb.append(";;");
+            }
             sb.append(baseFacetString);
         }
         return sb.toString();
     }
+
 
     /**
      * The part of the search url before the page number

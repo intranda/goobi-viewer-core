@@ -1751,4 +1751,5 @@ public class CMSContentItem implements Comparable<CMSContentItem>, CMSMediaHolde
         return ContentItemMode.paginated.equals(getMode());
     }
 
+
 }
