@@ -42,7 +42,7 @@ var viewerJS = ( function( viewer ) {
                 if(!$('.tec-archives__search-input').val() == ''){
             		$('.tec-archives__search-clear').show();
                 }
-            	$('.tec-archives__search-clear').click(function(){
+            	$('body').on("click", '.tec-archives__search-clear', function(){
             		/* clear value on click*/
                 $('.tec-archives__search-input').val("");
             	    /* trigger empty search on click */
@@ -57,7 +57,7 @@ var viewerJS = ( function( viewer ) {
             	 // auto submit search after typing
             	 let timeSearchInputField = 0;
 
-            	 $('.tec-archives__search-input').on('input', function () {
+            	 $('body').on('input', '.tec-archives__search-input', function () {
             	     // Reset the timer while still typing
             	     clearTimeout(timeSearchInputField);
 
@@ -68,7 +68,7 @@ var viewerJS = ( function( viewer ) {
             	 });
             	 
             	 // toggle text-tree view from stairs to one line
-            	 $('.tec-archives__text-tree').click(function() {
+            	 $('body').on("click", '.tec-archives__text-tree', function() {
             		 $('.tec-archives__text-tree').toggleClass('-showAsOneLine');
             	 });
             	
