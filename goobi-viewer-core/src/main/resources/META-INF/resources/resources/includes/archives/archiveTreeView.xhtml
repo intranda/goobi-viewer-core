@@ -59,7 +59,7 @@
 								<!-- This will break indentation if replaced with a c:if -->
 								<li class="archives-tree__entry #{entry.hasChild == true ? 'parent' : 'child' }"
 									data-id="id_#{entry.id}"
-									style="padding-left: #{entry.hierarchy * indent}px">
+									style="padding-left: #{entry.hierarchyLevel * indent}px">
 									<ui:fragment rendered="#{entry.hasChild}">
 										<!-- EXPAND OPTION -->
 										<div class="archives-tree__expandable-icon">

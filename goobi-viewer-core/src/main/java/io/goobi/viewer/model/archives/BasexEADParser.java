@@ -273,25 +273,13 @@ public class BasexEADParser {
             entry.setNodeType(type);
             Element dsc = archdesc.getChild("dsc", NAMESPACE_EAD);
             if (dsc != null) {
-                // read process title
-                List<Element> altformavailList = dsc.getChildren("altformavail", NAMESPACE_EAD);
-                for (Element altformavail : altformavailList) {
-                    if ("goobi_process".equals(altformavail.getAttributeValue("localtype"))) {
-                        entry.setGoobiProcessTitle(altformavail.getText());
-                    }
-                }
                 clist = dsc.getChildren("c", NAMESPACE_EAD);
             }
 
         } else {
             String type = element.getAttributeValue("otherlevel");
             entry.setNodeType(type);
-            List<Element> altformavailList = element.getChildren("altformavail", NAMESPACE_EAD);
-            for (Element altformavail : altformavailList) {
-                if ("goobi_process".equals(altformavail.getAttributeValue("localtype"))) {
-                    entry.setGoobiProcessTitle(altformavail.getText());
-                }
-            }
+
         }
 
         if (StringUtils.isBlank(entry.getNodeType())) {

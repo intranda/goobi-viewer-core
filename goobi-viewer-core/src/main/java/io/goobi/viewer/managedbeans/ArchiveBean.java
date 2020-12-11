@@ -63,8 +63,6 @@ public class ArchiveBean implements Serializable {
 
     private static final Logger logger = LoggerFactory.getLogger(ArchiveBean.class);
 
-    private static final Object lock = new Object();
-
     private ArchiveTree archiveTree;
 
     private String searchString;

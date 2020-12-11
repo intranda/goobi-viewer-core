@@ -26,8 +26,6 @@ import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import io.goobi.viewer.controller.DataManager;
-
 /**
  * Table of contents and associated functionality for a record.
  */
@@ -42,24 +40,19 @@ public class ArchiveTree implements Serializable {
 
     public static int defaultCollapseLevel = 1;
 
-    private boolean databaseLoaded = false;
-
+    /** Actual root of the document (even if it's not part of the displayed tree) */
     private ArchiveEntry trueRootElement = null;
 
+    /** Currently displayed tree. Can be partial after a search, etc. */
     private List<ArchiveEntry> flatEntryList;
 
     /** TOC element map. */
     private Map<String, List<ArchiveEntry>> entryMap = new HashMap<>(1);
 
+    /** Actively selected entry */
     private ArchiveEntry selectedEntry;
 
     private boolean treeBuilt = false;
-
-    private int maxTocDepth = 0;
-
-    private int totalTocSize = 0;
-
-    private int currentPage = 1;
 
     /**
      * <p>
@@ -160,15 +153,8 @@ public class ArchiveTree implements Serializable {
             for (ArchiveEntry entry : entryMap.get(group)) {
                 // Current element index
                 int index = entryMap.get(group).indexOf(entry);
-                entry.setIndex(index);
-                if (entry.getHierarchy() > maxTocDepth) {
-                    maxTocDepth = entry.getHierarchy();
-                }
-
-                if (lastLevel < entry.getHierarchy() && index > 0) {
-                    entry.setParentIndex(lastParent);
-                    //                    entryMap.get(group).get(index - 1).setHasChild(true);
-                    if (entry.getHierarchy() > collapseLevel) {
+                if (lastLevel < entry.getHierarchyLevel() && index > 0) {
+                    if (entry.getHierarchyLevel() > collapseLevel) {
                         entryMap.get(group).get(index - 1).setExpanded(false);
                         entry.setVisible(false);
                     } else {
@@ -177,18 +163,14 @@ public class ArchiveTree implements Serializable {
 
                     for (int i = index + 1; i < entryMap.get(group).size(); i++) {
                         ArchiveEntry tc = entryMap.get(group).get(i);
-                        if (tc.getHierarchy() == entry.getHierarchy()) {
-                            // Elements on the same level as the current element get the same parent ID and are set visible
-                            tc.setParentIndex(entry.getParentIndex());
-                        }
-                        if (tc.getHierarchy() > collapseLevel) {
+                        if (tc.getHierarchyLevel() > collapseLevel) {
                             tc.setVisible(false);
                         }
                     }
 
                 }
                 lastParent = index;
-                lastLevel = entry.getHierarchy();
+                lastLevel = entry.getHierarchyLevel();
             }
             treeBuilt = true;
             resetCollapseLevel(getRootElement(), collapseLevel);
@@ -205,9 +187,9 @@ public class ArchiveTree implements Serializable {
             return;
         }
 
-        if (entry.getHierarchy() <= maxDepth) {
+        if (entry.getHierarchyLevel() <= maxDepth) {
             entry.setVisible(true);
-            entry.setExpanded(entry.getHierarchy() != maxDepth);
+            entry.setExpanded(entry.getHierarchyLevel() != maxDepth);
         } else {
             entry.setVisible(false);
             entry.setExpanded(false);
@@ -313,7 +295,7 @@ public class ArchiveTree implements Serializable {
         }
 
         for (ArchiveEntry tcElem : entryMap.get(DEFAULT_GROUP)) {
-            if (tcElem.getHierarchy() == 0) {
+            if (tcElem.getHierarchyLevel() == 0) {
                 tcElem.setExpanded(false);
             } else {
                 if (collapseAllEntries) {
@@ -322,13 +304,6 @@ public class ArchiveTree implements Serializable {
                 tcElem.setVisible(false);
             }
         }
-    }
-
-    /**
-     * @return the databaseLoaded
-     */
-    public boolean isDatabaseLoaded() {
-        return databaseLoaded;
     }
 
     /**
@@ -351,131 +326,6 @@ public class ArchiveTree implements Serializable {
         }
 
         return null;
-    }
-
-    /**
-     * <p>
-     * Getter for the field <code>maxTocDepth</code>.
-     * </p>
-     *
-     * @return the maxTocDepth
-     */
-    public int getMaxTocDepth() {
-        // If this method is called before getTreeView, the depth will always be 0
-        if (!treeBuilt) {
-            logger.trace("Building tree to determine the TOC depth");
-            getTreeView();
-        }
-        // logger.trace("getMaxTocDepth: {}", maxTocDepth);
-        return maxTocDepth;
-    }
-
-    /**
-     * <p>
-     * Setter for the field <code>maxTocDepth</code>.
-     * </p>
-     *
-     * @param maxTocDepth the maxTocDepth to set
-     */
-    public void setMaxTocDepth(int maxTocDepth) {
-        this.maxTocDepth = maxTocDepth;
-    }
-
-    /**
-     * <p>
-     * Getter for the field <code>totalTocSize</code>.
-     * </p>
-     *
-     * @return the totalTocSize
-     */
-    public int getTotalTocSize() {
-        return totalTocSize;
-    }
-
-    /**
-     * <p>
-     * Setter for the field <code>totalTocSize</code>.
-     * </p>
-     *
-     * @param totalTocSize the totalTocSize to set
-     */
-    public void setTotalTocSize(int totalTocSize) {
-        this.totalTocSize = totalTocSize;
-    }
-
-    /**
-     * <p>
-     * Getter for the field <code>currentPage</code>.
-     * </p>
-     *
-     * @return the currentPage
-     */
-    public int getCurrentPage() {
-        return currentPage;
-    }
-
-    /**
-     * <p>
-     * Setter for the field <code>currentPage</code>.
-     * </p>
-     *
-     * @param currentPage the currentPage to set
-     * @should set value to 1 if given value too low
-     * @should set value to last page number if given value too high
-     */
-    public void setCurrentPage(int currentPage) {
-        if (currentPage < 1) {
-            this.currentPage = 1;
-            return;
-        }
-
-        int numPages = getNumPages();
-        if (currentPage > numPages) {
-            this.currentPage = numPages;
-        } else {
-            this.currentPage = currentPage;
-        }
-    }
-
-    /**
-     * Returns the number of paginator pages for the given TOC size and elements per page.
-     *
-     * @should calculate number correctly
-     * @return a int.
-     */
-    public int getNumPages() {
-        int hitsPerPage = DataManager.getInstance().getConfiguration().getTocAnchorGroupElementsPerPage();
-        if (hitsPerPage > 0) {
-            // logger.trace("numPages: {}/{}={}", totalTocSize, hitsPerPage, totalTocSize / hitsPerPage);
-            int num = totalTocSize / hitsPerPage;
-            if (totalTocSize % hitsPerPage != 0 || num == 0) {
-                num++;
-            }
-            return num;
-        }
-
-        return 1;
-    }
-
-    /**
-     * <p>
-     * hasChildren.
-     * </p>
-     *
-     * @return a boolean.
-     */
-    public boolean isHasChildren() {
-        if (entryMap == null || entryMap.get(DEFAULT_GROUP) == null || entryMap.get(DEFAULT_GROUP).isEmpty()) {
-            return false;
-        } else if (entryMap.get(DEFAULT_GROUP).size() == 1 && !entryMap.get(DEFAULT_GROUP).get(0).isHasChild()) {
-            return false;
-        } else {
-            return true;
-        }
-    }
-
-    public void resetFlatList() {
-        flatEntryList = null;
     }
 
     /**

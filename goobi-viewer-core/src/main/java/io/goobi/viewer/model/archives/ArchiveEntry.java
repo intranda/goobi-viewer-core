@@ -21,33 +21,34 @@ public class ArchiveEntry {
 
     // parent node
     private ArchiveEntry parentNode;
-
     // list contains all child elements
     private List<ArchiveEntry> subEntryList = new ArrayList<>();
-
     // order number of the current element within the current hierarchy
     private Integer orderNumber;
-
     // hierarchy level
-    private Integer hierarchy;
-
-    private String id; // c@id
-
+    private Integer hierarchyLevel;
+    // c@id
+    private String id;
     // display label
     private String label;
     // node is open/closed
     private boolean displayChildren;
-    // node is saerch hit
+    // node is search hit
     private boolean searchHit;
-
-    // node can be selected as destination when moving nodes
-    private boolean selectable;
-
     // node type -  @level
     private String nodeType;
-
     // display node in a search result
     private boolean displaySearch;
+    // true if the validation of all metadata fields was successful
+    private boolean valid = true;
+    
+    private String descriptionLevel;
+    
+    private boolean visible = true;
+    
+    private boolean expanded = false;
+    
+    private String associatedRecordPi;
 
     /* 1. metadata for Identity Statement Area */
     //    Reference code(s)
@@ -97,26 +98,9 @@ public class ArchiveEntry {
     //    Date(s) of descriptions
     private List<ArchiveMetadataField> descriptionControlAreaList = new ArrayList<>();
 
-    // empty if no process was created, otherwise the name of othe process is stored
-    private String goobiProcessTitle;
-
-    // true if the validation of all metadata fields was successful
-    private boolean valid = true;
-
-    private String descriptionLevel;
-
-    private int index;
-    private int parentIndex;
-    private boolean visible = true;
-    private boolean expanded = false;
-    private boolean hasChild = false;
-    @Deprecated
-    private boolean showMetadata = false;
-    private String associatedRecordPi;
-
     public ArchiveEntry(Integer order, Integer hierarchy) {
         this.orderNumber = order;
-        this.hierarchy = hierarchy;
+        this.hierarchyLevel = hierarchy;
     }
 
     public void addSubEntry(ArchiveEntry other) {
@@ -146,7 +130,6 @@ public class ArchiveEntry {
         list.add(this);
         if (displayChildren || ignoreDisplayChildren) {
             if (subEntryList != null && !subEntryList.isEmpty()) {
-                setHasChild(true);
                 for (ArchiveEntry ds : subEntryList) {
                     list.addAll(ds.getAsFlatList(ignoreDisplayChildren));
                     // logger.trace("ID: {}, level {}", ds.getId(), ds.getHierarchy());
@@ -156,50 +139,28 @@ public class ArchiveEntry {
         return list;
     }
 
-    public void findAssociatedRecordPi() throws PresentationException, IndexUnreachableException {
-         if (id == null) {
+    public void findAssociatedRecordPi() throws PresentationException {
+        if (id == null) {
             associatedRecordPi = "";
             return;
         }
         try {
-        SolrDocument doc = DataManager.getInstance()
-                .getSearchIndex()
-                .getFirstDoc("+" + SolrConstants.ARCHIVE_ENTRY_ID + ":" + id, Collections.singletonList(SolrConstants.PI));
-        if (doc != null) {
-            associatedRecordPi = (String) doc.getFieldValue(SolrConstants.PI);
-        }
-        if (associatedRecordPi == null) {
-            associatedRecordPi = "";
-        }
-        } catch(SolrException | IndexUnreachableException e) {
+            SolrDocument doc = DataManager.getInstance()
+                    .getSearchIndex()
+                    .getFirstDoc("+" + SolrConstants.ARCHIVE_ENTRY_ID + ":" + id, Collections.singletonList(SolrConstants.PI));
+            if (doc != null) {
+                associatedRecordPi = (String) doc.getFieldValue(SolrConstants.PI);
+            }
+            if (associatedRecordPi == null) {
+                associatedRecordPi = "";
+            }
+        } catch (SolrException | IndexUnreachableException e) {
             logger.error("Error reading solr database:" + e);
         }
     }
 
-    @Deprecated
-    public String toggleMetadata() {
-        showMetadata = !showMetadata;
-        return "";
-    }
-
     public boolean isHasChildren() {
         return !subEntryList.isEmpty();
-    }
-
-    public List<ArchiveEntry> getMoveToDestinationList(ArchiveEntry entry) {
-        List<ArchiveEntry> list = new LinkedList<>();
-        list.add(this);
-
-        if (entry.equals(this)) {
-            setSelectable(false);
-            parentNode.setSelectable(false);
-        } else if (subEntryList != null) {
-            for (ArchiveEntry ds : subEntryList) {
-                list.addAll(ds.getMoveToDestinationList(entry));
-            }
-        }
-
-        return list;
     }
 
     @Override
@@ -214,11 +175,11 @@ public class ArchiveEntry {
             return false;
         }
         ArchiveEntry other = (ArchiveEntry) obj;
-        if (hierarchy == null) {
-            if (other.hierarchy != null) {
+        if (hierarchyLevel == null) {
+            if (other.hierarchyLevel != null) {
                 return false;
             }
-        } else if (!hierarchy.equals(other.hierarchy)) {
+        } else if (!hierarchyLevel.equals(other.hierarchyLevel)) {
             return false;
         }
         if (orderNumber == null) {
@@ -241,7 +202,7 @@ public class ArchiveEntry {
         if (!parentNode.getOrderNumber().equals(other.parentNode.getOrderNumber())) {
             return false;
         }
-        if (!parentNode.getHierarchy().equals(other.parentNode.getHierarchy())) {
+        if (!parentNode.getHierarchyLevel().equals(other.parentNode.getHierarchyLevel())) {
             return false;
         }
 
@@ -252,9 +213,9 @@ public class ArchiveEntry {
     public int hashCode() {
         final int prime = 31;
         int result = 1;
-        result = prime * result + ((hierarchy == null) ? 0 : hierarchy.hashCode());
+        result = prime * result + ((hierarchyLevel == null) ? 0 : hierarchyLevel.hashCode());
         result = prime * result + ((orderNumber == null) ? 0 : orderNumber.hashCode());
-        result = prime * result + ((parentNode == null) ? 0 : parentNode.getHierarchy().hashCode());
+        result = prime * result + ((parentNode == null) ? 0 : parentNode.getHierarchyLevel().hashCode());
         result = prime * result + ((parentNode == null) ? 0 : parentNode.getOrderNumber().hashCode());
         return result;
     }
@@ -262,9 +223,9 @@ public class ArchiveEntry {
     public void updateHierarchy() {
         // root node
         if (parentNode == null) {
-            hierarchy = 0;
+            hierarchyLevel = 0;
         } else {
-            hierarchy = parentNode.getHierarchy() + 1;
+            hierarchyLevel = parentNode.getHierarchyLevel() + 1;
         }
 
         for (ArchiveEntry child : subEntryList) {
@@ -285,7 +246,7 @@ public class ArchiveEntry {
                 }
             }
         }
-        if(keepChildrenVisible) {
+        if (keepChildrenVisible) {
             for (ArchiveEntry child : this.subEntryList) {
                 child.setDisplaySearch(true, true);
             }
@@ -321,7 +282,7 @@ public class ArchiveEntry {
      * @param offset
      */
     public void shiftHierarchy(int offset) {
-        this.hierarchy += offset;
+        this.hierarchyLevel += offset;
         if (isHasChildren()) {
             for (ArchiveEntry sub : subEntryList) {
                 sub.shiftHierarchy(offset);
@@ -428,17 +389,17 @@ public class ArchiveEntry {
     }
 
     /**
-     * @return the hierarchy
+     * @return the hierarchyLevel
      */
-    public Integer getHierarchy() {
-        return hierarchy;
+    public Integer getHierarchyLevel() {
+        return hierarchyLevel;
     }
 
     /**
-     * @param hierarchy the hierarchy to set
+     * @param hierarchyLevel the hierarchyLevel to set
      */
-    public void setHierarchy(Integer hierarchy) {
-        this.hierarchy = hierarchy;
+    public void setHierarchyLevel(Integer hierarchyLevel) {
+        this.hierarchyLevel = hierarchyLevel;
     }
 
     /**
@@ -498,20 +459,6 @@ public class ArchiveEntry {
     }
 
     /**
-     * @return the selectable
-     */
-    public boolean isSelectable() {
-        return selectable;
-    }
-
-    /**
-     * @param selectable the selectable to set
-     */
-    public void setSelectable(boolean selectable) {
-        this.selectable = selectable;
-    }
-
-    /**
      * @return the nodeType
      */
     public String getNodeType() {
@@ -538,16 +485,15 @@ public class ArchiveEntry {
     public void setDisplaySearch(boolean displaySearch) {
         this.setDisplaySearch(displaySearch, false);
     }
-    
+
     public void setDisplaySearch(boolean displaySearch, boolean recursive) {
         this.displaySearch = displaySearch;
-        if(recursive) {
+        if (recursive) {
             for (ArchiveEntry child : this.subEntryList) {
                 child.setDisplaySearch(displaySearch, recursive);
             }
         }
     }
-
 
     public ArchiveMetadataField getIdentityStatementAreaField(String name) {
         for (ArchiveMetadataField field : identityStatementAreaList) {
@@ -686,20 +632,6 @@ public class ArchiveEntry {
     }
 
     /**
-     * @return the goobiProcessTitle
-     */
-    public String getGoobiProcessTitle() {
-        return goobiProcessTitle;
-    }
-
-    /**
-     * @param goobiProcessTitle the goobiProcessTitle to set
-     */
-    public void setGoobiProcessTitle(String goobiProcessTitle) {
-        this.goobiProcessTitle = goobiProcessTitle;
-    }
-
-    /**
      * @return the valid
      */
     public boolean isValid() {
@@ -727,33 +659,6 @@ public class ArchiveEntry {
         this.descriptionLevel = descriptionLevel;
     }
 
-    /**
-     * @return the index
-     */
-    public int getIndex() {
-        return index;
-    }
-
-    /**
-     * @param index the index to set
-     */
-    public void setIndex(int index) {
-        this.index = index;
-    }
-
-    /**
-     * @return the parentIndex
-     */
-    public int getParentIndex() {
-        return parentIndex;
-    }
-
-    /**
-     * @param parentIndex the parentIndex to set
-     */
-    public void setParentIndex(int parentIndex) {
-        this.parentIndex = parentIndex;
-    }
 
     /**
      * @return the visible
@@ -787,28 +692,7 @@ public class ArchiveEntry {
      * @return the hasChild
      */
     public boolean isHasChild() {
-        return hasChild;
-    }
-
-    /**
-     * @param hasChild the hasChild to set
-     */
-    public void setHasChild(boolean hasChild) {
-        this.hasChild = hasChild;
-    }
-
-    /**
-     * @return the showMetadata
-     */
-    public boolean isShowMetadata() {
-        return showMetadata;
-    }
-
-    /**
-     * @param showMetadata the showMetadata to set
-     */
-    public void setShowMetadata(boolean showMetadata) {
-        this.showMetadata = showMetadata;
+        return !subEntryList.isEmpty();
     }
 
     /**
