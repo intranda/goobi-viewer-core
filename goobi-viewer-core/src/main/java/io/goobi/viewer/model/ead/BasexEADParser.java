@@ -77,7 +77,7 @@ public class BasexEADParser {
      * @param configFilePath
      * @throws ConfigurationException
      */
-    public BasexEADParser(String basexUrl) throws ConfigurationException {
+    public BasexEADParser(String basexUrl) {
 
         this.basexUrl = basexUrl;
 
@@ -125,8 +125,7 @@ public class BasexEADParser {
         }
     }
 
-    public Document retrieveDatabaseDocument(String database) throws IOException, IllegalStateException {
-        try {
+    public Document retrieveDatabaseDocument(String database) throws IOException, IllegalStateException, HTTPException, JDOMException {
             if (StringUtils.isNotBlank(database)) {
                 String[] parts = database.split(" - ");
                 String url = basexUrl + "db/" + parts[0] + "/" + parts[1];
@@ -140,9 +139,6 @@ public class BasexEADParser {
             } else {
                 throw new IllegalStateException("Must provide database name before loading database");
             }
-        } catch (IOException | HTTPException | JDOMException e) {
-            throw new IOException("Error loading ead database ", e);
-        }
     }
 
     /**
@@ -152,9 +148,10 @@ public class BasexEADParser {
      * 
      * @throws HTTPException
      * @throws IOException
+     * @throws JDOMException 
      * @throws ClientProtocolException
      */
-    public void loadDatabase(String database, HierarchicalConfiguration metadataConfig, Document document) throws IllegalStateException, IOException {
+    public void loadDatabase(String database, HierarchicalConfiguration metadataConfig, Document document) throws IllegalStateException, IOException, HTTPException, JDOMException {
 
         if (document == null) {
             document = retrieveDatabaseDocument(database);

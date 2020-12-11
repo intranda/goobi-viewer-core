@@ -37,6 +37,7 @@ import org.apache.http.client.ClientProtocolException;
 import org.apache.solr.common.SolrDocument;
 import org.apache.solr.common.SolrDocumentList;
 import org.jdom2.Document;
+import org.jdom2.JDOMException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -69,12 +70,23 @@ public class TectonicsBean implements Serializable {
     private EADTree tectonicsTree;
 
     private String searchString;
+    
+    private DatabaseState databaseState = DatabaseState.NOT_INITIALIZED;
 
     @Inject
     private PersistentStorageBean storage;
 
     //    @Inject
     //    private FacesContext context;
+
+    
+    private static enum DatabaseState {
+        NOT_INITIALIZED,
+        VALID,
+        ERROR_NOT_CONFIGURED,
+        ERROR_NOT_REACHABLE,
+        ERROR_INVALID_FORMAT
+    }
 
     /**
      * Empty constructor.
@@ -88,36 +100,51 @@ public class TectonicsBean implements Serializable {
      */
     @PostConstruct
     public void init() {
-        try {
-            this.eadParser = new BasexEADParser(DataManager.getInstance().getConfiguration().getBaseXUrl());
-            loadDatabase(DataManager.getInstance().getConfiguration().getBaseXDatabase());
-        } catch (IOException | HTTPException | ConfigurationException e) {
-            logger.error("Error initializing database: {}", e.getMessage());
-        }
-
+            String basexUrl = DataManager.getInstance().getConfiguration().getBaseXUrl();
+            String databaseName = DataManager.getInstance().getConfiguration().getBaseXDatabase();
+            if(StringUtils.isNoneBlank(basexUrl, databaseName)) {
+                this.eadParser = new BasexEADParser(basexUrl);
+                this.databaseState = loadDatabase(databaseName);
+            } else {
+                this.databaseState = DatabaseState.ERROR_NOT_CONFIGURED;
+            }
     }
 
-    public void loadDatabase(String databaseName) throws ClientProtocolException, IOException, HTTPException {
-
-        //        String storageKey = databaseName + "@" + eadParser.getBasexUrl();
-        //        if(context.getExternalContext().getSessionMap().containsKey(storageKey)) {
-        //            eadParser = new BasexEADParser((BasexEADParser)context.getExternalContext().getSessionMap().containsKey(storageKey));
-        //        } else {
-        Document databaseDoc = eadParser.retrieveDatabaseDocument(databaseName);
+    public DatabaseState loadDatabase(String databaseName) {
+            
+//        String storageKey = databaseName + "@" + eadParser.getBasexUrl();
+//        if(context.getExternalContext().getSessionMap().containsKey(storageKey)) {
+//            eadParser = new BasexEADParser((BasexEADParser)context.getExternalContext().getSessionMap().containsKey(storageKey));
+//        } else {
         HierarchicalConfiguration baseXMetadataConfig = DataManager.getInstance().getConfiguration().getBaseXMetadataConfig();
-        eadParser.loadDatabase(databaseName, baseXMetadataConfig, databaseDoc);
-        //            context.getExternalContext().getSessionMap().put(storageKey, eadParser);
-        //        }
+            try {
+                Document databaseDoc = eadParser.retrieveDatabaseDocument(databaseName);
+                eadParser.loadDatabase(databaseName, baseXMetadataConfig, databaseDoc);
+                return DatabaseState.VALID;
+            } catch (IOException | HTTPException e) {
+                logger.error("Error retrieving database {} from {}", databaseName, eadParser.getBasexUrl());
+                return DatabaseState.ERROR_NOT_REACHABLE;
+            } catch (JDOMException e) {
+                logger.error("Error reading database {} from {}", databaseName, eadParser.getBasexUrl());
+                return DatabaseState.ERROR_INVALID_FORMAT;
+            }
+//            context.getExternalContext().getSessionMap().put(storageKey, eadParser);
+//        }
 
     }
 
     /**
+     * 
      * @param databaseName
      * @throws ClientProtocolException
      * @throws IOException
      * @throws HTTPException
+     * @throws IllegalStateException
+     * @throws JDOMException
+     * @deprecated Storing database in application seems ineffective since verifying that database is current takes about as much time as retriving the complete database
      */
-    public void loadDatabaseAndStoreInApplicationScope(String databaseName) throws ClientProtocolException, IOException, HTTPException {
+    @Deprecated
+    public void loadDatabaseAndStoreInApplicationScope(String databaseName) throws ClientProtocolException, IOException, HTTPException, IllegalStateException, JDOMException {
         try (Time t = DataManager.getInstance().getTiming().takeTime("loadDatabase")) {
             Document databaseDoc = null;
             String storageKey = databaseName + "@" + eadParser.getBasexUrl();
@@ -440,6 +467,17 @@ public class TectonicsBean implements Serializable {
             prev = Optional.of(id);
         }
         return Pair.of(prev, next);
+    }
+    
+    /**
+     * @return the databaseState
+     */
+    public DatabaseState getDatabaseState() {
+        return databaseState;
+    }
+    
+    public boolean isDatabaseValid() {
+        return DatabaseState.VALID.equals(this.databaseState);
     }
 
 }
