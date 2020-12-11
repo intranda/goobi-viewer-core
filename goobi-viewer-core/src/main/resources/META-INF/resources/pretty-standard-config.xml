@@ -104,20 +104,20 @@
 		<action onPostback="false">#{searchBean.setActiveSearchType(0)}</action>
 	</url-mapping>
 	
-    <!-- TECTONICS -->
-    <url-mapping id="tectonics">
-        <pattern value="/tectonics/" />
-        <view-id value="/tectonics.xhtml" />
-        <query-param name="selected">#{archivesBean.selectedEntryId}</query-param>
+    <!-- ARCHIVES -->
+    <url-mapping id="archivetree">
+        <pattern value="/archivetree" />
+        <view-id value="/archiveTree.xhtml" />
+        <query-param name="selected">#{archiveBean.selectedEntryId}</query-param>
     </url-mapping>
     <!-- ARCHIVES -->
     <url-mapping id="archives">
         <pattern value="/archives/" />
         <view-id value="/archivesContent.xhtml" />
-        <query-param onPostback="false" name="selected">#{archivesBean.selectedEntryId}</query-param>
+        <query-param onPostback="false" name="selected">#{archiveBean.selectedEntryId}</query-param>
     </url-mapping>
     <url-mapping id="archives1">
-        <pattern value="/archives/#{selectedEntryId:tectonicsBean.selectedEntryId}/" />
+        <pattern value="/archives/#{selectedEntryId:ArchiveBean.selectedEntryId}/" />
         <view-id value="/archivesContent.xhtml" />
     </url-mapping>
 	

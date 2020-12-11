@@ -22,13 +22,13 @@ var viewerJS = ( function( viewer ) {
 
     var _debug = false;
  
-    viewer.tectonicsArchivesView = {
+    viewer.archivesSeparate = {
         init: function( config ) {
             if ( _debug ) {
                 console.log( '##############################' );
-                console.log( 'viewer.tectonicsArchivesView.init' );
+                console.log( 'viewer.archivesSeparate.init' );
                 console.log( '##############################' );
-                console.log( 'viewer.tectonicsArchivesView.init: config - ', config );
+                console.log( 'viewer.archivesSeparate.init: config - ', config );
             }
 
             jQuery(document).ready(($) => {

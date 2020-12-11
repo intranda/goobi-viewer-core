@@ -23,13 +23,13 @@ var viewerJS = ( function( viewer ) {
     var _debug = false;
  
     
-    viewer.tectonics = {
+    viewer.archives = {
         init: function( config ) {
             if ( _debug ) { 
                 console.log( '##############################' );
-                console.log( 'viewer.tectonics.init' );
+                console.log( 'viewer.archives.init' );
                 console.log( '##############################' );
-                console.log( 'viewer.tectonics.init: config - ', config );
+                console.log( 'viewer.archives.init: config - ', config );
             }
             
             viewerJS.jsfAjax.success.subscribe(e => {

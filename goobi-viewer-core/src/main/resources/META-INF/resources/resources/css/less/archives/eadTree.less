@@ -1,10 +1,10 @@
 /* ==============================================================
-   View tectonics
-   style declarations for tectonics.xhtml
+   View archives tree
+   style declarations for archivestree.xhtml
    ==============================================================*/
    
-/* VIEW TECTONICS */
-.tectonics-tree {
+/* EAD TREE */
+.archives-tree {
 		font-size: 1.5rem;
 		margin: 0;
 		border: 1px solid #d5d5d5;
@@ -30,13 +30,13 @@
 		flex-wrap: wrap;
 		margin-bottom: 1rem;
 		&:first-child {
-			.tectonics-tree__list-expandable-title {
+			.archives-tree__list-expandable-title {
 				max-width: calc(100% - 130px);
 			}
 		}
 		&.child {
 			margin-left: 25px;
-			.tectonics-tree__metadata-box {
+			.archives-tree__metadata-box {
 				margin-left: 0;
 			}
 		}
@@ -59,13 +59,13 @@
 			text-align: center;
 			line-height: inherit;
 			padding-top: 4px;
-			&.-tectonics-selected {
+			&.-archives-selected {
 				color: green;
 			}
 		}
 		.fa-file-o {
 			font-size: 2rem;
-			&.-tectonics-selected {
+			&.-archives-selected {
 				color: green;
 			}
 		}
@@ -154,7 +154,7 @@
 }
 
 // ajax loading indicator for ead tree
-#AJAXLoader.tectonics-tree__loader {
+#AJAXLoader.archives-tree__loader {
 		position: fixed;
 		width: 60px;
 		height: 60px;
@@ -181,7 +181,7 @@
 
 /* BREAKPOINT FOR TABLETS */
 @media screen and (max-width: @smallBreakpoint) {
-	.tectonics-tree {
+	.archives-tree {
 		&__entry {
 			&.parent {
 				padding-left: 0 !important;

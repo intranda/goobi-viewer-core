@@ -29,22 +29,22 @@
             <c:choose>
 				<c:when test="#{archiveBean.databaseState == 'ERROR_NOT_CONFIGURED'}">
 					<div class="tec-archives__error">
-						<span>#{msg.error__tectonics_database_configuration_missing}</span>
+						<span>#{msg.error__archives_database_configuration_missing}</span>
 					</div>
 				</c:when>
 				<c:when test="#{archiveBean.databaseState == 'ERROR_NOT_REACHABLE'}">
 					<div class="tec-archives__error">
-						<span>#{msg.error__tectonics_database_not_reachable}</span>
+						<span>#{msg.error__archives_database_not_reachable}</span>
 					</div>
 				</c:when>
 				<c:when test="#{archiveBean.databaseState == 'ERROR_INVALID_FORMAT'}">
 					<div class="tec-archives__error">
-						<span>#{msg.error__tectonics_failed_to_read_database}</span>
+						<span>#{msg.error__archives_failed_to_read_database}</span>
 					</div>
 				</c:when>
 				<c:otherwise>
-					<div id="tectonicsView" class="tectonics-tree">
-						<ui:include src="/resources/includes/archives/archiveTreeView.xhtml">
+					<div id="archivesView" class="archives-tree">
+						<ui:include src="/resources/includes/archives/archiveTreeInclude.xhtml">
 	                    	<ui:param name="view" value="archives" />
 	                    	<ui:param name="indent" value="#{configurationBean.tocIndentation * 1.5}"/>
 	                    </ui:include>
@@ -54,7 +54,7 @@
 		</f:view>
 		
 		<script type="text/javascript">
-        	viewerJS.tectonics.init();
+        	viewerJS.archives.init();
         </script>
 		
 	</ui:define>
