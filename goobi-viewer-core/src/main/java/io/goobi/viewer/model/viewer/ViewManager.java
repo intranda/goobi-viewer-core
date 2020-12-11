@@ -3402,12 +3402,12 @@ public class ViewManager implements Serializable {
      * 
      * @return
      */
-    public String getTectonicsIdentifier() {
+    public String getArchiveEntryIdentifier() {
         if (topDocument == null) {
             return null;
         }
 
-        logger.trace("getTectonicsIdentifier: {}", topDocument.getMetadataValue(SolrConstants.ARCHIVE_ENTRY_ID));
+        logger.trace("getArchiveEntryIdentifier: {}", topDocument.getMetadataValue(SolrConstants.ARCHIVE_ENTRY_ID));
         return topDocument.getMetadataValue(SolrConstants.ARCHIVE_ENTRY_ID);
     }
 
