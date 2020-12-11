@@ -29,7 +29,6 @@ import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
 
-import org.apache.commons.configuration.ConfigurationException;
 import org.apache.commons.configuration.HierarchicalConfiguration;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
@@ -37,6 +36,7 @@ import org.apache.http.client.ClientProtocolException;
 import org.apache.solr.common.SolrDocument;
 import org.apache.solr.common.SolrDocumentList;
 import org.jdom2.Document;
+import org.jdom2.JDOMException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -48,27 +48,29 @@ import io.goobi.viewer.exceptions.BaseXException;
 import io.goobi.viewer.exceptions.HTTPException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
-import io.goobi.viewer.model.ead.BasexEADParser;
-import io.goobi.viewer.model.ead.EADTree;
-import io.goobi.viewer.model.ead.EadEntry;
-import io.goobi.viewer.model.ead.EadResource;
+import io.goobi.viewer.model.archives.ArchiveEntry;
+import io.goobi.viewer.model.archives.ArchiveResource;
+import io.goobi.viewer.model.archives.ArchiveTree;
+import io.goobi.viewer.model.archives.BasexEADParser;
 import io.goobi.viewer.model.viewer.StringPair;
 
 @Named
 @ViewScoped
-public class TectonicsBean implements Serializable {
+public class ArchiveBean implements Serializable {
 
     private static final long serialVersionUID = -1755934299534933504L;
 
-    private static final Logger logger = LoggerFactory.getLogger(TectonicsBean.class);
+    private static final Logger logger = LoggerFactory.getLogger(ArchiveBean.class);
 
     private static final Object lock = new Object();
 
     private BasexEADParser eadParser = null;
 
-    private EADTree tectonicsTree;
+    private ArchiveTree archiveTree;
 
     private String searchString;
+    
+    private DatabaseState databaseState = DatabaseState.NOT_INITIALIZED;
 
     @Inject
     private PersistentStorageBean storage;
@@ -76,10 +78,19 @@ public class TectonicsBean implements Serializable {
     //    @Inject
     //    private FacesContext context;
 
+    
+    private static enum DatabaseState {
+        NOT_INITIALIZED,
+        VALID,
+        ERROR_NOT_CONFIGURED,
+        ERROR_NOT_REACHABLE,
+        ERROR_INVALID_FORMAT
+    }
+
     /**
      * Empty constructor.
      */
-    public TectonicsBean() {
+    public ArchiveBean() {
         // the emptiness inside
     }
 
@@ -88,44 +99,59 @@ public class TectonicsBean implements Serializable {
      */
     @PostConstruct
     public void init() {
-        try {
-            this.eadParser = new BasexEADParser(DataManager.getInstance().getConfiguration().getBaseXUrl());
-            loadDatabase(DataManager.getInstance().getConfiguration().getBaseXDatabase());
-        } catch (IOException | HTTPException | ConfigurationException e) {
-            logger.error("Error initializing database: {}", e.getMessage());
-        }
-
+            String basexUrl = DataManager.getInstance().getConfiguration().getBaseXUrl();
+            String databaseName = DataManager.getInstance().getConfiguration().getBaseXDatabase();
+            if(StringUtils.isNoneBlank(basexUrl, databaseName)) {
+                this.eadParser = new BasexEADParser(basexUrl);
+                this.databaseState = loadDatabase(databaseName);
+            } else {
+                this.databaseState = DatabaseState.ERROR_NOT_CONFIGURED;
+            }
     }
 
-    public void loadDatabase(String databaseName) throws ClientProtocolException, IOException, HTTPException {
-
-        //        String storageKey = databaseName + "@" + eadParser.getBasexUrl();
-        //        if(context.getExternalContext().getSessionMap().containsKey(storageKey)) {
-        //            eadParser = new BasexEADParser((BasexEADParser)context.getExternalContext().getSessionMap().containsKey(storageKey));
-        //        } else {
-        Document databaseDoc = eadParser.retrieveDatabaseDocument(databaseName);
+    public DatabaseState loadDatabase(String databaseName) {
+            
+//        String storageKey = databaseName + "@" + eadParser.getBasexUrl();
+//        if(context.getExternalContext().getSessionMap().containsKey(storageKey)) {
+//            eadParser = new BasexEADParser((BasexEADParser)context.getExternalContext().getSessionMap().containsKey(storageKey));
+//        } else {
         HierarchicalConfiguration baseXMetadataConfig = DataManager.getInstance().getConfiguration().getBaseXMetadataConfig();
-        eadParser.loadDatabase(databaseName, baseXMetadataConfig, databaseDoc);
-        //            context.getExternalContext().getSessionMap().put(storageKey, eadParser);
-        //        }
+            try {
+                Document databaseDoc = eadParser.retrieveDatabaseDocument(databaseName);
+                eadParser.loadDatabase(databaseName, baseXMetadataConfig, databaseDoc);
+                return DatabaseState.VALID;
+            } catch (IOException | HTTPException e) {
+                logger.error("Error retrieving database {} from {}", databaseName, eadParser.getBasexUrl());
+                return DatabaseState.ERROR_NOT_REACHABLE;
+            } catch (JDOMException e) {
+                logger.error("Error reading database {} from {}", databaseName, eadParser.getBasexUrl());
+                return DatabaseState.ERROR_INVALID_FORMAT;
+            }
+//            context.getExternalContext().getSessionMap().put(storageKey, eadParser);
+//        }
 
     }
 
     /**
+     * 
      * @param databaseName
      * @throws ClientProtocolException
      * @throws IOException
      * @throws HTTPException
+     * @throws IllegalStateException
+     * @throws JDOMException
+     * @deprecated Storing database in application seems ineffective since verifying that database is current takes about as much time as retriving the complete database
      */
-    public void loadDatabaseAndStoreInApplicationScope(String databaseName) throws ClientProtocolException, IOException, HTTPException {
+    @Deprecated
+    public void loadDatabaseAndStoreInApplicationScope(String databaseName) throws ClientProtocolException, IOException, HTTPException, IllegalStateException, JDOMException {
         try (Time t = DataManager.getInstance().getTiming().takeTime("loadDatabase")) {
             Document databaseDoc = null;
             String storageKey = databaseName + "@" + eadParser.getBasexUrl();
-            List<EadResource> dbs;
+            List<ArchiveResource> dbs;
             try (Time t1 = DataManager.getInstance().getTiming().takeTime("getPossibleDatabases")) {
                 dbs = eadParser.getPossibleDatabases();
             }
-            EadResource db = dbs.stream().filter(res -> res.getCombinedName().equals(databaseName)).findAny().orElse(null);
+            ArchiveResource db = dbs.stream().filter(res -> res.getCombinedName().equals(databaseName)).findAny().orElse(null);
             if (db == null) {
                 throw new IllegalStateException("Configured default database not found in " + this.eadParser.getBasexUrl());
             } else if (storage.contains(storageKey) && !storage.olderThan(storageKey, db.lastModified)) {
@@ -147,7 +173,7 @@ public class TectonicsBean implements Serializable {
      * 
      * @return actual root element of the document, even if it's not in the displayed tree
      */
-    public EadEntry getTrueRoot() {
+    public ArchiveEntry getTrueRoot() {
         if (eadParser == null || !eadParser.isDatabaseLoaded()) {
             return null;
         }
@@ -160,37 +186,37 @@ public class TectonicsBean implements Serializable {
      * @return
      * @throws BaseXException
      */
-    public EADTree getTectonicsTree() throws BaseXException {
-        // logger.trace("getTectonicsTree");
+    public ArchiveTree getArchiveTree() throws BaseXException {
+        // logger.trace("getArchiveTree");
         if (eadParser == null || !eadParser.isDatabaseLoaded()) {
             throw new BaseXException("No BaseX connection");
         }
 
-        EADTree h = tectonicsTree;
+        ArchiveTree h = archiveTree;
         if (h == null) {
             synchronized (lock) {
                 // Another thread might have initialized hierarchy by now
-                h = tectonicsTree;
+                h = archiveTree;
                 if (h == null) {
                     h = generateHierarchy();
-                    tectonicsTree = h;
+                    archiveTree = h;
                 }
             }
         }
 
-        return tectonicsTree;
+        return archiveTree;
     }
 
     /**
      * 
      * @return
      */
-    EADTree generateHierarchy() {
+    ArchiveTree generateHierarchy() {
         if (eadParser == null || !eadParser.isDatabaseLoaded()) {
             return null;
         }
 
-        EADTree ret = new EADTree();
+        ArchiveTree ret = new ArchiveTree();
         ret.generate(eadParser.getRootElement());
         if (ret.getSelectedEntry() == null) {
             ret.setSelectedEntry(eadParser.getRootElement());
@@ -208,12 +234,12 @@ public class TectonicsBean implements Serializable {
      *
      * @param entry a {@link io.goobi.viewer.model.toc.TOCElement} object.
      */
-    public void expandEntry(EadEntry entry) {
+    public void expandEntry(ArchiveEntry entry) {
         logger.trace("expandEntry: {}", entry);
-        if (tectonicsTree == null) {
+        if (archiveTree == null) {
             return;
         }
-        synchronized (tectonicsTree) {
+        synchronized (archiveTree) {
             entry.expand();
         }
     }
@@ -225,13 +251,13 @@ public class TectonicsBean implements Serializable {
      *
      * @param entry a {@link io.goobi.viewer.model.toc.TOCElement} object.
      */
-    public void collapseEntry(EadEntry entry) {
+    public void collapseEntry(ArchiveEntry entry) {
         logger.trace("collapseEntry: {}", entry);
-        if (tectonicsTree == null) {
+        if (archiveTree == null) {
             return;
         }
 
-        synchronized (tectonicsTree) {
+        synchronized (archiveTree) {
             entry.collapse();
         }
     }
@@ -240,9 +266,9 @@ public class TectonicsBean implements Serializable {
      * Returns the entry hierarchy from the root down to the entry with the given identifier.
      * 
      * @param identifier Entry identifier
-     * @param List of entries An empty list if the identified node has no anchestors or doesn't exist
+     * @param List of entries An empty list if the identified node has no ancestors or doesn't exist
      */
-    public List<EadEntry> getTectonicsHierarchyForIdentifier(String identifier) {
+    public List<ArchiveEntry> getArchiveHierarchyForIdentifier(String identifier) {
         if (StringUtils.isEmpty(identifier)) {
             return Collections.emptyList();
         }
@@ -252,7 +278,7 @@ public class TectonicsBean implements Serializable {
             return Collections.emptyList();
         }
 
-        EadEntry entry = eadParser.getEntryById(identifier);
+        ArchiveEntry entry = eadParser.getEntryById(identifier);
         if (entry == null) {
             //            return Collections.emptyList();
             return Collections.singletonList(getTrueRoot());
@@ -268,12 +294,12 @@ public class TectonicsBean implements Serializable {
      * @param entry
      * @return
      */
-    public String selectEntryAction(EadEntry entry) {
-        if (entry == null || tectonicsTree == null) {
+    public String selectEntryAction(ArchiveEntry entry) {
+        if (entry == null || archiveTree == null) {
             return "";
         }
 
-        tectonicsTree.setSelectedEntry(entry);
+        archiveTree.setSelectedEntry(entry);
 
         return "";
     }
@@ -298,19 +324,19 @@ public class TectonicsBean implements Serializable {
      * @throws BaseXException 
      */
     void search(boolean resetSelectedEntry, boolean collapseAll) throws BaseXException {
-        if (eadParser == null || !eadParser.isDatabaseLoaded() || tectonicsTree == null) {
+        if (eadParser == null || !eadParser.isDatabaseLoaded() || archiveTree == null) {
             logger.warn("Tree not loaded, cannot search.");
             return;
         }
 
         if (StringUtils.isEmpty(searchString)) {
             eadParser.resetSearch();
-            tectonicsTree.resetCollapseLevel(tectonicsTree.getRootElement(), EADTree.defaultCollapseLevel);
+            archiveTree.resetCollapseLevel(archiveTree.getRootElement(), ArchiveTree.defaultCollapseLevel);
             return;
         }
 
         eadParser.search(searchString);
-        List<EadEntry> results = eadParser.getFlatEntryList();
+        List<ArchiveEntry> results = eadParser.getFlatEntryList();
         if (results == null || results.isEmpty()) {
             return;
         }
@@ -319,8 +345,8 @@ public class TectonicsBean implements Serializable {
         if (resetSelectedEntry) {
             setSelectedEntryId(null);
         }
-        tectonicsTree.collapseAll(collapseAll);
-        for (EadEntry entry : results) {
+        archiveTree.collapseAll(collapseAll);
+        for (ArchiveEntry entry : results) {
             if (entry.isSearchHit()) {
                 entry.expandUp();
             }
@@ -347,11 +373,11 @@ public class TectonicsBean implements Serializable {
      * @return
      */
     public String getSelectedEntryId() {
-        if (tectonicsTree == null || tectonicsTree.getSelectedEntry() == null) {
+        if (archiveTree == null || archiveTree.getSelectedEntry() == null) {
             return "-";
         }
 
-        return tectonicsTree.getSelectedEntry().getId();
+        return archiveTree.getSelectedEntry().getId();
     }
 
     /**
@@ -363,8 +389,8 @@ public class TectonicsBean implements Serializable {
     public void setSelectedEntryId(String id) throws BaseXException {
         logger.trace("setSelectedEntryId: {}", id);
 
-        // getTectonicsTree() will also load the tree, if not yet loaded
-        if (getTectonicsTree() == null || eadParser == null) {
+        // getArchiveTree() will also load the tree, if not yet loaded
+        if (getArchiveTree() == null || eadParser == null) {
             return;
         }
         // Select root element if no ID given
@@ -372,22 +398,22 @@ public class TectonicsBean implements Serializable {
             id = "-";
         }
         if ("-".equals(id)) {
-            tectonicsTree.setSelectedEntry(null);
+            archiveTree.setSelectedEntry(null);
             return;
         }
         // Requested entry is already selected
-        if (tectonicsTree.getSelectedEntry() != null && tectonicsTree.getSelectedEntry().getId().equals(id)) {
+        if (archiveTree.getSelectedEntry() != null && archiveTree.getSelectedEntry().getId().equals(id)) {
             return;
         }
 
         // Find entry with given ID in the tree
-        EadEntry result = eadParser.getEntryById(id);
+        ArchiveEntry result = eadParser.getEntryById(id);
         if (result != null) {
-            tectonicsTree.setSelectedEntry(result);
+            archiveTree.setSelectedEntry(result);
             result.expandUp();
         } else {
             logger.debug("Entry not found: {}", id);
-            tectonicsTree.setSelectedEntry(eadParser.getRootElement());
+            archiveTree.setSelectedEntry(eadParser.getRootElement());
         }
 
     }
@@ -398,27 +424,27 @@ public class TectonicsBean implements Serializable {
 
     /**
      * 
-     * @return the {@link EadEntry} to display in the metadata section of the archives view. Either {@link EADTree#getSelectedEntry()} or
-     *         {@link EADTree#getRootElement()} if the former is null
+     * @return the {@link ArchiveEntry} to display in the metadata section of the archives view. Either {@link ArchiveTree#getSelectedEntry()} or
+     *         {@link ArchiveTree#getRootElement()} if the former is null
      */
-    public EadEntry getDisplayEntry() {
-        return Optional.ofNullable(tectonicsTree.getSelectedEntry()).orElse(tectonicsTree.getRootElement());
+    public ArchiveEntry getDisplayEntry() {
+        return Optional.ofNullable(archiveTree.getSelectedEntry()).orElse(archiveTree.getRootElement());
     }
 
     /**
-     * In the list of tectonic document search hits, find the id of the entry just before the given one
+     * In the list of archive document search hits, find the id of the entry just before the given one
      * 
      * @param entry
      * @param sortOrder 'asc' to get the preceding entry, 'desc' to get the succeeding one
-     * @return the neighouring entry id if it exists
+     * @return the neighboring entry id if it exists
      * @throws PresentationException
      * @throws IndexUnreachableException
      */
-    public Pair<Optional<String>, Optional<String>> findIndexedNeighbours(String tectonicsId)
+    public Pair<Optional<String>, Optional<String>> findIndexedNeighbours(String entryId)
             throws PresentationException, IndexUnreachableException {
-        String query = SolrConstants.TECTONICS_ID + ":*";
+        String query = SolrConstants.ARCHIVE_ENTRY_ID + ":*";
         List<StringPair> sortFields = Collections.singletonList(new StringPair(SolrConstants.PI, "asc"));
-        List<String> fieldList = Arrays.asList(SolrConstants.PI, SolrConstants.TECTONICS_ID);
+        List<String> fieldList = Arrays.asList(SolrConstants.PI, SolrConstants.ARCHIVE_ENTRY_ID);
 
         SolrDocumentList docs = DataManager.getInstance()
                 .getSearchIndex()
@@ -429,10 +455,10 @@ public class TectonicsBean implements Serializable {
         ListIterator<SolrDocument> iter = docs.listIterator();
         while (iter.hasNext()) {
             SolrDocument doc = iter.next();
-            String id = SolrSearchIndex.getSingleFieldStringValue(doc, SolrConstants.TECTONICS_ID);
-            if (id.equals(tectonicsId)) {
+            String id = SolrSearchIndex.getSingleFieldStringValue(doc, SolrConstants.ARCHIVE_ENTRY_ID);
+            if (id.equals(entryId)) {
                 if (iter.hasNext()) {
-                    String nextId = SolrSearchIndex.getSingleFieldStringValue(iter.next(), SolrConstants.TECTONICS_ID);
+                    String nextId = SolrSearchIndex.getSingleFieldStringValue(iter.next(), SolrConstants.ARCHIVE_ENTRY_ID);
                     next = Optional.of(nextId);
                 }
                 break;
@@ -440,6 +466,17 @@ public class TectonicsBean implements Serializable {
             prev = Optional.of(id);
         }
         return Pair.of(prev, next);
+    }
+    
+    /**
+     * @return the databaseState
+     */
+    public DatabaseState getDatabaseState() {
+        return databaseState;
+    }
+    
+    public boolean isDatabaseValid() {
+        return DatabaseState.VALID.equals(this.databaseState);
     }
 
 }

@@ -13,7 +13,7 @@
  *
  * You should have received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
-package io.goobi.viewer.model.ead;
+package io.goobi.viewer.model.archives;
 
 import java.io.Serializable;
 import java.util.HashMap;
@@ -28,11 +28,11 @@ import io.goobi.viewer.controller.DataManager;
 /**
  * Table of contents and associated functionality for a record.
  */
-public class EADTree implements Serializable {
+public class ArchiveTree implements Serializable {
 
     private static final long serialVersionUID = 1798213211987072214L;
 
-    private static final Logger logger = LoggerFactory.getLogger(EADTree.class);
+    private static final Logger logger = LoggerFactory.getLogger(ArchiveTree.class);
 
     /** Constant <code>DEFAULT_GROUP="_DEFAULT"</code> */
     public static final String DEFAULT_GROUP = "_DEFAULT";
@@ -40,9 +40,9 @@ public class EADTree implements Serializable {
     public static int defaultCollapseLevel = 1;
 
     /** TOC element map. */
-    private Map<String, List<EadEntry>> entryMap = new HashMap<>(1);
+    private Map<String, List<ArchiveEntry>> entryMap = new HashMap<>(1);
 
-    private EadEntry selectedEntry;
+    private ArchiveEntry selectedEntry;
 
     private boolean treeBuilt = false;
 
@@ -61,11 +61,11 @@ public class EADTree implements Serializable {
      * Constructor for TOC.
      * </p>
      */
-    public EADTree() {
+    public ArchiveTree() {
         logger.trace("new EADTree()");
     }
 
-    public void generate(EadEntry root) {
+    public void generate(ArchiveEntry root) {
         if (root == null) {
             throw new IllegalArgumentException("root may not be null");
         }
@@ -76,7 +76,7 @@ public class EADTree implements Serializable {
             root.shiftHierarchy(-1);
         }
         
-        List<EadEntry> tree = root.getAsFlatList(true);
+        List<ArchiveEntry> tree = root.getAsFlatList(true);
         entryMap.put(DEFAULT_GROUP, tree);
     }
 
@@ -88,7 +88,7 @@ public class EADTree implements Serializable {
      * @param group a {@link java.lang.String} object.
      * @return a {@link java.util.List} object.
      */
-    public List<EadEntry> getViewForGroup(String group) {
+    public List<ArchiveEntry> getViewForGroup(String group) {
         if (entryMap != null) {
             return entryMap.get(group);
         }
@@ -105,7 +105,7 @@ public class EADTree implements Serializable {
      * @should call buildTree and set maxTocDepth correctly
      * @return a {@link java.util.List} object.
      */
-    public List<EadEntry> getTreeViewForGroup(String group) {
+    public List<ArchiveEntry> getTreeViewForGroup(String group) {
         if (!treeBuilt) {
             buildTree(group, defaultCollapseLevel);
         }
@@ -119,7 +119,7 @@ public class EADTree implements Serializable {
      *
      * @return a {@link java.util.List} object.
      */
-    public List<EadEntry> getFlatView() {
+    public List<ArchiveEntry> getFlatView() {
         // logger.trace("getFlatView");
         return getViewForGroup(DEFAULT_GROUP);
     }
@@ -131,7 +131,7 @@ public class EADTree implements Serializable {
      *
      * @return a {@link java.util.List} object.
      */
-    public List<EadEntry> getTreeView() {
+    public List<ArchiveEntry> getTreeView() {
         return getTreeViewForGroup(DEFAULT_GROUP);
     }
 
@@ -152,7 +152,7 @@ public class EADTree implements Serializable {
             }
             int lastLevel = 0;
             int lastParent = 0;
-            for (EadEntry entry : entryMap.get(group)) {
+            for (ArchiveEntry entry : entryMap.get(group)) {
                 // Current element index
                 int index = entryMap.get(group).indexOf(entry);
                 entry.setIndex(index);
@@ -171,7 +171,7 @@ public class EADTree implements Serializable {
                     }
 
                     for (int i = index + 1; i < entryMap.get(group).size(); i++) {
-                        EadEntry tc = entryMap.get(group).get(i);
+                        ArchiveEntry tc = entryMap.get(group).get(i);
                         if (tc.getHierarchy() == entry.getHierarchy()) {
                             // Elements on the same level as the current element get the same parent ID and are set visible
                             tc.setParentIndex(entry.getParentIndex());
@@ -195,7 +195,7 @@ public class EADTree implements Serializable {
      * @param entry
      * @param maxDepth
      */
-    public void resetCollapseLevel(EadEntry entry, int maxDepth) {
+    public void resetCollapseLevel(ArchiveEntry entry, int maxDepth) {
         if (entry == null) {
             return;
         }
@@ -209,7 +209,7 @@ public class EADTree implements Serializable {
         }
 
         if (entry.getSubEntryList() != null && !entry.getSubEntryList().isEmpty()) {
-            for (EadEntry child : entry.getSubEntryList()) {
+            for (ArchiveEntry child : entry.getSubEntryList()) {
                 resetCollapseLevel(child, maxDepth);
             }
         }
@@ -221,8 +221,8 @@ public class EADTree implements Serializable {
      * @return a {@link io.goobi.viewer.model.toc.TOCElement} object.
      */
     @Deprecated
-    public EadEntry updateTree() {
-        EadEntry ret = null;
+    public ArchiveEntry updateTree() {
+        ArchiveEntry ret = null;
         if (entryMap == null) {
             return ret;
         }
@@ -246,14 +246,14 @@ public class EADTree implements Serializable {
     /**
      * @return the selectedEntry
      */
-    public EadEntry getSelectedEntry() {
+    public ArchiveEntry getSelectedEntry() {
         return selectedEntry;
     }
 
     /**
      * @param selectedEntry the selectedEntry to set
      */
-    public void setSelectedEntry(EadEntry selectedEntry) {
+    public void setSelectedEntry(ArchiveEntry selectedEntry) {
         logger.trace("setSelectedEntry: {}", selectedEntry != null ? selectedEntry.getId() : null);
         this.selectedEntry = selectedEntry;
     }
@@ -262,7 +262,7 @@ public class EADTree implements Serializable {
      * 
      * @return
      */
-    public EadEntry getRootElement() {
+    public ArchiveEntry getRootElement() {
         return getRootElement(DEFAULT_GROUP);
     }
 
@@ -271,7 +271,7 @@ public class EADTree implements Serializable {
      * @param group
      * @return
      */
-    public EadEntry getRootElement(String group) {
+    public ArchiveEntry getRootElement(String group) {
         if (group == null || entryMap == null || entryMap.isEmpty()) {
             return null;
         }
@@ -293,7 +293,7 @@ public class EADTree implements Serializable {
 
         int level = entryMap.get(DEFAULT_GROUP).get(parentIndex).getHierarchy();
         for (int i = parentIndex + 1; i < entryMap.get(DEFAULT_GROUP).size(); i++) {
-            EadEntry child = entryMap.get(DEFAULT_GROUP).get(i);
+            ArchiveEntry child = entryMap.get(DEFAULT_GROUP).get(i);
             if (child.getHierarchy() > level) {
                 child.setVisible(false);
                 logger.trace("Collapsed entry: {}", child);
@@ -319,7 +319,7 @@ public class EADTree implements Serializable {
 
         int level = entryMap.get(DEFAULT_GROUP).get(parentIndex).getHierarchy();
         for (int i = parentIndex + 1; i < entryMap.get(DEFAULT_GROUP).size(); i++) {
-            EadEntry child = entryMap.get(DEFAULT_GROUP).get(i);
+            ArchiveEntry child = entryMap.get(DEFAULT_GROUP).get(i);
             if (child.getHierarchy() == level + 1) {
                 // Set immediate children visible
                 child.setVisible(true);
@@ -348,7 +348,7 @@ public class EADTree implements Serializable {
             return;
         }
 
-        for (EadEntry tcElem : entryMap.get(DEFAULT_GROUP)) {
+        for (ArchiveEntry tcElem : entryMap.get(DEFAULT_GROUP)) {
             tcElem.setVisible(true);
             if (tcElem.isHasChild()) {
                 tcElem.setExpanded(true);
@@ -379,7 +379,7 @@ public class EADTree implements Serializable {
             return;
         }
 
-        for (EadEntry tcElem : entryMap.get(DEFAULT_GROUP)) {
+        for (ArchiveEntry tcElem : entryMap.get(DEFAULT_GROUP)) {
             if (tcElem.getHierarchy() == 0) {
                 tcElem.setExpanded(false);
             } else {
@@ -416,7 +416,7 @@ public class EADTree implements Serializable {
     /**
      * @return the entryMap
      */
-    Map<String, List<EadEntry>> getEntryMap() {
+    Map<String, List<ArchiveEntry>> getEntryMap() {
         return entryMap;
     }
 
@@ -427,7 +427,7 @@ public class EADTree implements Serializable {
      *
      * @return a {@link java.util.List} object.
      */
-    public List<EadEntry> getTocElements() {
+    public List<ArchiveEntry> getTocElements() {
         if (entryMap != null) {
             return entryMap.get(DEFAULT_GROUP);
         }

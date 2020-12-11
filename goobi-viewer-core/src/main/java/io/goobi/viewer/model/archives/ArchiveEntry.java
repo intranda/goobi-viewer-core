@@ -1,4 +1,4 @@
-package io.goobi.viewer.model.ead;
+package io.goobi.viewer.model.archives;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -15,15 +15,15 @@ import io.goobi.viewer.controller.SolrConstants;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
 
-public class EadEntry {
+public class ArchiveEntry {
 
-    private static final Logger logger = LoggerFactory.getLogger(EadEntry.class);
+    private static final Logger logger = LoggerFactory.getLogger(ArchiveEntry.class);
 
     // parent node
-    private EadEntry parentNode;
+    private ArchiveEntry parentNode;
 
     // list contains all child elements
-    private List<EadEntry> subEntryList = new ArrayList<>();
+    private List<ArchiveEntry> subEntryList = new ArrayList<>();
 
     // order number of the current element within the current hierarchy
     private Integer orderNumber;
@@ -56,21 +56,21 @@ public class EadEntry {
     //    Date(s)
     //    Level of description
     //    Extent and medium of the unit of description (quantity, bulk, or size)
-    private List<EadMetadataField> identityStatementAreaList = new ArrayList<>();
+    private List<ArchiveMetadataField> identityStatementAreaList = new ArrayList<>();
 
     /* 2. Context Area */
     //    Name of creator(s)
     //    Administrative | Biographical history
     //    Archival history
     //    Immediate source of acquisition or transfer
-    private List<EadMetadataField> contextAreaList = new ArrayList<>();
+    private List<ArchiveMetadataField> contextAreaList = new ArrayList<>();
 
     /* 3. Content and Structure Area */
     //    Scope and content
     //    Appraisal, destruction and scheduling information
     //    Accruals
     //    System of arrangement
-    private List<EadMetadataField> contentAndStructureAreaAreaList = new ArrayList<>();
+    private List<ArchiveMetadataField> contentAndStructureAreaAreaList = new ArrayList<>();
 
     /* 4. Condition of Access and Use Area */
     //    Conditions governing access
@@ -78,24 +78,24 @@ public class EadEntry {
     //    Language | Scripts of material
     //    Physical characteristics and technical requirements
     //    Finding aids
-    private List<EadMetadataField> accessAndUseAreaList = new ArrayList<>();
+    private List<ArchiveMetadataField> accessAndUseAreaList = new ArrayList<>();
 
     /* 5. Allied Materials Area */
     //    Existence and location of originals
     //    Existence and location of copies
     //    Related units of description
     //    Publication note
-    private List<EadMetadataField> alliedMaterialsAreaList = new ArrayList<>();
+    private List<ArchiveMetadataField> alliedMaterialsAreaList = new ArrayList<>();
 
     /* 6. Note Area */
     //    Note
-    private List<EadMetadataField> notesAreaList = new ArrayList<>();
+    private List<ArchiveMetadataField> notesAreaList = new ArrayList<>();
 
     /* 7. Description Control Area */
     //    Archivist's Note
     //    Rules or Conventions
     //    Date(s) of descriptions
-    private List<EadMetadataField> descriptionControlAreaList = new ArrayList<>();
+    private List<ArchiveMetadataField> descriptionControlAreaList = new ArrayList<>();
 
     // empty if no process was created, otherwise the name of othe process is stored
     private String goobiProcessTitle;
@@ -114,24 +114,24 @@ public class EadEntry {
     private boolean showMetadata = false;
     private String associatedRecordPi;
 
-    public EadEntry(Integer order, Integer hierarchy) {
+    public ArchiveEntry(Integer order, Integer hierarchy) {
         this.orderNumber = order;
         this.hierarchy = hierarchy;
     }
 
-    public void addSubEntry(EadEntry other) {
+    public void addSubEntry(ArchiveEntry other) {
         subEntryList.add(other);
         other.setParentNode(this);
     }
 
-    public void removeSubEntry(EadEntry other) {
+    public void removeSubEntry(ArchiveEntry other) {
         subEntryList.remove(other);
         reOrderElements();
     }
 
     public void reOrderElements() {
         int order = 0;
-        for (EadEntry entry : subEntryList) {
+        for (ArchiveEntry entry : subEntryList) {
             entry.setOrderNumber(order++);
         }
     }
@@ -141,13 +141,13 @@ public class EadEntry {
      * @param ignoreDisplayChildren
      * @return
      */
-    public List<EadEntry> getAsFlatList(boolean ignoreDisplayChildren) {
-        List<EadEntry> list = new LinkedList<>();
+    public List<ArchiveEntry> getAsFlatList(boolean ignoreDisplayChildren) {
+        List<ArchiveEntry> list = new LinkedList<>();
         list.add(this);
         if (displayChildren || ignoreDisplayChildren) {
             if (subEntryList != null && !subEntryList.isEmpty()) {
                 setHasChild(true);
-                for (EadEntry ds : subEntryList) {
+                for (ArchiveEntry ds : subEntryList) {
                     list.addAll(ds.getAsFlatList(ignoreDisplayChildren));
                     // logger.trace("ID: {}, level {}", ds.getId(), ds.getHierarchy());
                 }
@@ -164,7 +164,7 @@ public class EadEntry {
         try {
         SolrDocument doc = DataManager.getInstance()
                 .getSearchIndex()
-                .getFirstDoc("+" + SolrConstants.TECTONICS_ID + ":" + id, Collections.singletonList(SolrConstants.PI));
+                .getFirstDoc("+" + SolrConstants.ARCHIVE_ENTRY_ID + ":" + id, Collections.singletonList(SolrConstants.PI));
         if (doc != null) {
             associatedRecordPi = (String) doc.getFieldValue(SolrConstants.PI);
         }
@@ -186,15 +186,15 @@ public class EadEntry {
         return !subEntryList.isEmpty();
     }
 
-    public List<EadEntry> getMoveToDestinationList(EadEntry entry) {
-        List<EadEntry> list = new LinkedList<>();
+    public List<ArchiveEntry> getMoveToDestinationList(ArchiveEntry entry) {
+        List<ArchiveEntry> list = new LinkedList<>();
         list.add(this);
 
         if (entry.equals(this)) {
             setSelectable(false);
             parentNode.setSelectable(false);
         } else if (subEntryList != null) {
-            for (EadEntry ds : subEntryList) {
+            for (ArchiveEntry ds : subEntryList) {
                 list.addAll(ds.getMoveToDestinationList(entry));
             }
         }
@@ -213,7 +213,7 @@ public class EadEntry {
         if (getClass() != obj.getClass()) {
             return false;
         }
-        EadEntry other = (EadEntry) obj;
+        ArchiveEntry other = (ArchiveEntry) obj;
         if (hierarchy == null) {
             if (other.hierarchy != null) {
                 return false;
@@ -267,7 +267,7 @@ public class EadEntry {
             hierarchy = parentNode.getHierarchy() + 1;
         }
 
-        for (EadEntry child : subEntryList) {
+        for (ArchiveEntry child : subEntryList) {
             child.updateHierarchy();
         }
     }
@@ -277,7 +277,7 @@ public class EadEntry {
         searchHit = true;
 
         if (parentNode != null) {
-            EadEntry node = parentNode;
+            ArchiveEntry node = parentNode;
             while (!node.isDisplaySearch()) {
                 node.setDisplaySearch(true);
                 if (node.parentNode != null) {
@@ -286,7 +286,7 @@ public class EadEntry {
             }
         }
         if(keepChildrenVisible) {
-            for (EadEntry child : this.subEntryList) {
+            for (ArchiveEntry child : this.subEntryList) {
                 child.setDisplaySearch(true, true);
             }
         }
@@ -297,18 +297,18 @@ public class EadEntry {
         displaySearch = false;
         searchHit = false;
         if (subEntryList != null) {
-            for (EadEntry ds : subEntryList) {
+            for (ArchiveEntry ds : subEntryList) {
                 ds.resetFoundList();
             }
         }
     }
 
-    public List<EadEntry> getSearchList() {
-        List<EadEntry> list = new LinkedList<>();
+    public List<ArchiveEntry> getSearchList() {
+        List<ArchiveEntry> list = new LinkedList<>();
         if (displaySearch) {
             list.add(this);
             if (subEntryList != null) {
-                for (EadEntry child : subEntryList) {
+                for (ArchiveEntry child : subEntryList) {
                     list.addAll(child.getSearchList());
                 }
             }
@@ -323,7 +323,7 @@ public class EadEntry {
     public void shiftHierarchy(int offset) {
         this.hierarchy += offset;
         if (isHasChildren()) {
-            for (EadEntry sub : subEntryList) {
+            for (ArchiveEntry sub : subEntryList) {
                 sub.shiftHierarchy(offset);
             }
         }
@@ -377,7 +377,7 @@ public class EadEntry {
             return;
         }
 
-        for (EadEntry sub : subEntryList) {
+        for (ArchiveEntry sub : subEntryList) {
             sub.setVisible(visible);
             if (sub.isExpanded() && sub.isHasChildren()) {
                 sub.setChildrenVisibility(visible);
@@ -388,28 +388,28 @@ public class EadEntry {
     /**
      * @return the parentNode
      */
-    public EadEntry getParentNode() {
+    public ArchiveEntry getParentNode() {
         return parentNode;
     }
 
     /**
      * @param parentNode the parentNode to set
      */
-    public void setParentNode(EadEntry parentNode) {
+    public void setParentNode(ArchiveEntry parentNode) {
         this.parentNode = parentNode;
     }
 
     /**
      * @return the subEntryList
      */
-    public List<EadEntry> getSubEntryList() {
+    public List<ArchiveEntry> getSubEntryList() {
         return subEntryList;
     }
 
     /**
      * @param subEntryList the subEntryList to set
      */
-    public void setSubEntryList(List<EadEntry> subEntryList) {
+    public void setSubEntryList(List<ArchiveEntry> subEntryList) {
         this.subEntryList = subEntryList;
     }
 
@@ -542,15 +542,15 @@ public class EadEntry {
     public void setDisplaySearch(boolean displaySearch, boolean recursive) {
         this.displaySearch = displaySearch;
         if(recursive) {
-            for (EadEntry child : this.subEntryList) {
+            for (ArchiveEntry child : this.subEntryList) {
                 child.setDisplaySearch(displaySearch, recursive);
             }
         }
     }
 
 
-    public EadMetadataField getIdentityStatementAreaField(String name) {
-        for (EadMetadataField field : identityStatementAreaList) {
+    public ArchiveMetadataField getIdentityStatementAreaField(String name) {
+        for (ArchiveMetadataField field : identityStatementAreaList) {
             if (field.getLabel().equals(name)) {
                 return field;
             }
@@ -559,9 +559,9 @@ public class EadEntry {
         return null;
     }
 
-    public List<EadMetadataField> getAllAreaLists() {
+    public List<ArchiveMetadataField> getAllAreaLists() {
         logger.trace("getAllAreaLists ({})", id);
-        List<EadMetadataField> ret = new ArrayList<>(getIdentityStatementAreaList().size()
+        List<ArchiveMetadataField> ret = new ArrayList<>(getIdentityStatementAreaList().size()
                 + getContextAreaList().size()
                 + getContentAndStructureAreaAreaList().size()
                 + getAccessAndUseAreaList().size()
@@ -583,7 +583,7 @@ public class EadEntry {
     /**
      * @return the identityStatementAreaList
      */
-    public List<EadMetadataField> getIdentityStatementAreaList() {
+    public List<ArchiveMetadataField> getIdentityStatementAreaList() {
         // logger.trace("getIdentityStatementAreaList ({})", id);
         return identityStatementAreaList;
     }
@@ -591,14 +591,14 @@ public class EadEntry {
     /**
      * @param identityStatementAreaList the identityStatementAreaList to set
      */
-    public void setIdentityStatementAreaList(List<EadMetadataField> identityStatementAreaList) {
+    public void setIdentityStatementAreaList(List<ArchiveMetadataField> identityStatementAreaList) {
         this.identityStatementAreaList = identityStatementAreaList;
     }
 
     /**
      * @return the contextAreaList
      */
-    public List<EadMetadataField> getContextAreaList() {
+    public List<ArchiveMetadataField> getContextAreaList() {
         // logger.trace("getContextAreaList ({})", id);
         return contextAreaList;
     }
@@ -606,14 +606,14 @@ public class EadEntry {
     /**
      * @param contextAreaList the contextAreaList to set
      */
-    public void setContextAreaList(List<EadMetadataField> contextAreaList) {
+    public void setContextAreaList(List<ArchiveMetadataField> contextAreaList) {
         this.contextAreaList = contextAreaList;
     }
 
     /**
      * @return the contentAndStructureAreaAreaList
      */
-    public List<EadMetadataField> getContentAndStructureAreaAreaList() {
+    public List<ArchiveMetadataField> getContentAndStructureAreaAreaList() {
         // logger.trace("getContentAndStructureAreaAreaList ({})", id);
         return contentAndStructureAreaAreaList;
     }
@@ -621,14 +621,14 @@ public class EadEntry {
     /**
      * @param contentAndStructureAreaAreaList the contentAndStructureAreaAreaList to set
      */
-    public void setContentAndStructureAreaAreaList(List<EadMetadataField> contentAndStructureAreaAreaList) {
+    public void setContentAndStructureAreaAreaList(List<ArchiveMetadataField> contentAndStructureAreaAreaList) {
         this.contentAndStructureAreaAreaList = contentAndStructureAreaAreaList;
     }
 
     /**
      * @return the accessAndUseAreaList
      */
-    public List<EadMetadataField> getAccessAndUseAreaList() {
+    public List<ArchiveMetadataField> getAccessAndUseAreaList() {
         // logger.trace("getAccessAndUseAreaList ({})", id);
         return accessAndUseAreaList;
     }
@@ -636,14 +636,14 @@ public class EadEntry {
     /**
      * @param accessAndUseAreaList the accessAndUseAreaList to set
      */
-    public void setAccessAndUseAreaList(List<EadMetadataField> accessAndUseAreaList) {
+    public void setAccessAndUseAreaList(List<ArchiveMetadataField> accessAndUseAreaList) {
         this.accessAndUseAreaList = accessAndUseAreaList;
     }
 
     /**
      * @return the alliedMaterialsAreaList
      */
-    public List<EadMetadataField> getAlliedMaterialsAreaList() {
+    public List<ArchiveMetadataField> getAlliedMaterialsAreaList() {
         // logger.trace("getAlliedMaterialsAreaList ({})", id);
         return alliedMaterialsAreaList;
     }
@@ -651,14 +651,14 @@ public class EadEntry {
     /**
      * @param alliedMaterialsAreaList the alliedMaterialsAreaList to set
      */
-    public void setAlliedMaterialsAreaList(List<EadMetadataField> alliedMaterialsAreaList) {
+    public void setAlliedMaterialsAreaList(List<ArchiveMetadataField> alliedMaterialsAreaList) {
         this.alliedMaterialsAreaList = alliedMaterialsAreaList;
     }
 
     /**
      * @return the notesAreaList
      */
-    public List<EadMetadataField> getNotesAreaList() {
+    public List<ArchiveMetadataField> getNotesAreaList() {
         // logger.trace("getNotesAreaList ({})", id);
         return notesAreaList;
     }
@@ -666,14 +666,14 @@ public class EadEntry {
     /**
      * @param notesAreaList the notesAreaList to set
      */
-    public void setNotesAreaList(List<EadMetadataField> notesAreaList) {
+    public void setNotesAreaList(List<ArchiveMetadataField> notesAreaList) {
         this.notesAreaList = notesAreaList;
     }
 
     /**
      * @return the descriptionControlAreaList
      */
-    public List<EadMetadataField> getDescriptionControlAreaList() {
+    public List<ArchiveMetadataField> getDescriptionControlAreaList() {
         // logger.trace("getDescriptionControlAreaList ({})", id);
         return descriptionControlAreaList;
     }
@@ -681,7 +681,7 @@ public class EadEntry {
     /**
      * @param descriptionControlAreaList the descriptionControlAreaList to set
      */
-    public void setDescriptionControlAreaList(List<EadMetadataField> descriptionControlAreaList) {
+    public void setDescriptionControlAreaList(List<ArchiveMetadataField> descriptionControlAreaList) {
         this.descriptionControlAreaList = descriptionControlAreaList;
     }
 
@@ -831,12 +831,12 @@ public class EadEntry {
      * @param includeSelf
      * @return
      */
-    public List<EadEntry> getAncestors(boolean includeSelf) {
-        List<EadEntry> ancestors = new ArrayList<>();
+    public List<ArchiveEntry> getAncestors(boolean includeSelf) {
+        List<ArchiveEntry> ancestors = new ArrayList<>();
         if (includeSelf) {
             ancestors.add(this);
         }
-        EadEntry parent = this.parentNode;
+        ArchiveEntry parent = this.parentNode;
         while (parent != null) {
             ancestors.add(parent);
             parent = parent.parentNode;

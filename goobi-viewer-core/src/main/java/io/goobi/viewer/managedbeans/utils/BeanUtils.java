@@ -50,7 +50,7 @@ import io.goobi.viewer.managedbeans.ImageDeliveryBean;
 import io.goobi.viewer.managedbeans.MetadataBean;
 import io.goobi.viewer.managedbeans.NavigationHelper;
 import io.goobi.viewer.managedbeans.SearchBean;
-import io.goobi.viewer.managedbeans.TectonicsBean;
+import io.goobi.viewer.managedbeans.ArchiveBean;
 import io.goobi.viewer.managedbeans.UserBean;
 import io.goobi.viewer.model.security.user.User;
 import io.goobi.viewer.servlets.utils.ServletUtils;

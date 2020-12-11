@@ -17,7 +17,7 @@
 	<!-- A list of  EadEntry object which should be displayed in the tree.
 	Note: all entries in the list are displayed. The list must be filtered for visible elements beforehand-->
 	<c:set var="visibleTree"
-		value="#{tectonicsBean.tectonicsTree.treeView.stream().filter(e -> e.visible).filter(e -> !tectonicsBean.searchActive or e.displaySearch).toList()}"
+		value="#{archiveBean.archiveTree.treeView.stream().filter(e -> e.visible).filter(e -> !archiveBean.searchActive or e.displaySearch).toList()}"
 		scope="request" />
 	
 	<!-- The indentation of each hierarchical level in pixel -->
@@ -26,7 +26,7 @@
 	<div class="tectonics-tree__inner">
 		<h:form id="tectonicsForm" prependId="false">
 	
-			<!-- TECTONICS TREEVIEW -->
+			<!-- ARCHIVE TREE VIEW -->
 			<h:panelGroup>
 	
 				<!-- EXPANDABLE TREEVIEW -->
@@ -35,7 +35,7 @@
 					<!-- EXPAND ALL -->
 					<div class="tectonics-tree__expand-minimize-all">
 						<h:commandLink
-							action="#{tectonicsBean.tectonicsTree.collapseAll(true)}"
+							action="#{archiveBean.archiveTree.collapseAll(true)}"
 							title="#{msg.allClose}">#{msg.allClose}
 <!-- 							<i class="fa fa-minus-square-o" aria-hidden="true"></i> -->
 							<f:passThroughAttribute name="data-toggle" value="tooltip" />
@@ -43,7 +43,7 @@
 							<f:passThroughAttribute name="aria-label" value="#{msg.allClose}" />
 							<f:ajax render="#{render}" />
 						</h:commandLink>
-<!-- 						<h:commandLink action="#{tectonicsBean.tectonicsTree.expandAll}" -->
+<!-- 						<h:commandLink action="#{archiveBean.archiveTree.expandAll}" -->
 <!-- 							title="#{msg.allOpen}"> -->
 <!-- 							<i class="fa fa-plus-square-o" aria-hidden="true"></i> -->
 <!-- 							<f:passThroughAttribute name="data-toggle" value="tooltip" /> -->
@@ -64,14 +64,14 @@
 										<!-- EXPAND OPTION -->
 										<div class="tectonics-tree__expandable-icon">
 													<h:commandLink rendered="#{!entry.expanded}"
-														action="#{tectonicsBean.expandEntry(entry)}">
+														action="#{archiveBean.expandEntry(entry)}">
 														<i class="fa fa-plus-square-o" aria-hidden="true"></i>
 														<f:passThroughAttribute name="aria-label"
 															value="#{msg.allOpen}" />
 														<f:ajax render="#{render}" />
 													</h:commandLink>
 													<h:commandLink rendered="#{entry.expanded}"
-														action="#{tectonicsBean.collapseEntry(entry)}">
+														action="#{archiveBean.collapseEntry(entry)}">
 														<i class="fa fa-minus-square-o" aria-hidden="true"></i>
 														<f:passThroughAttribute name="aria-label"
 															value="#{msg.all}" />
@@ -82,34 +82,34 @@
 									
 									<!-- TITLE -->
 									<div class="tectonics-tree__list-expandable-title">
-											<ui:fragment rendered="#{entry.id == tectonicsBean.tectonicsTree.selectedEntry.id}">
+											<ui:fragment rendered="#{entry.id == archiveBean.archiveTree.selectedEntry.id}">
 												<!-- <i class="fa fa-file-o -tectonics-selected" aria-hidden="true"></i> -->
 												<span class="fa-stack" aria-hidden="true"><i
 													class="fa fa-file-o -tectonics-selected"></i><i
 													class="fa fa-stack-text -tectonics-selected">F</i></span>
 													<a class="tectonics-tree__selected" name="selected"></a>
 													<h:commandLink styleClass="tectonics-tree__active-title"
-														action="#{tectonicsBean.tectonicsTree.setSelectedEntry(null)}"
+														action="#{archiveBean.archiveTree.setSelectedEntry(null)}"
 													    value="#{entry.label}" pt:data-select-entry="">
 													    <f:ajax render="#{render}" />
 													</h:commandLink>
 											</ui:fragment>
-	                                        <ui:fragment rendered="#{entry.searchHit and entry.id != tectonicsBean.tectonicsTree.selectedEntry.id}">
+	                                        <ui:fragment rendered="#{entry.searchHit and entry.id != archiveBean.archiveTree.selectedEntry.id}">
 	                                            <span class="fa-stack" aria-hidden="true"><i
 	                                                class="fa fa-file-o -tectonics-selected"></i><i
 	                                                class="fa fa-stack-text -tectonics-selected">F</i></span>
 	                                            <h:commandLink styleClass="tectonics-tree__inactive-title"
-												action="#{tectonicsBean.tectonicsTree.setSelectedEntry(entry)}"
+												action="#{archiveBean.archiveTree.setSelectedEntry(entry)}"
 													    value="#{entry.label}" style="color:#5BA2E5"
 													    pt:data-select-entry="#{entry.id}">
 													    <f:ajax render="#{render}" />
 												</h:commandLink>
 	                                        </ui:fragment>
-											<ui:fragment rendered="#{entry.id != tectonicsBean.tectonicsTree.selectedEntry.id and !entry.searchHit}">
+											<ui:fragment rendered="#{entry.id != archiveBean.archiveTree.selectedEntry.id and !entry.searchHit}">
 												<span class="fa-stack" aria-hidden="true"><i
 													class="fa fa-file-o"></i><i class="fa fa-stack-text">F</i></span>
 												<h:commandLink styleClass="tectonics-tree__inactive-title"
-												action="#{tectonicsBean.tectonicsTree.setSelectedEntry(entry)}"
+												action="#{archiveBean.archiveTree.setSelectedEntry(entry)}"
 													    value="#{entry.label}"
 													    pt:data-select-entry="#{entry.id}">
 													    <f:ajax render="#{render}" />
@@ -118,7 +118,7 @@
 									</div>
 									
 									<!-- METADATA -->
-									<ui:fragment rendered="#{view == 'tectonics' and entry.id == tectonicsBean.tectonicsTree.selectedEntry.id}">
+									<ui:fragment rendered="#{view == 'archive' and entry.id == archiveBean.archiveTree.selectedEntry.id}">
 	
 										<h:panelGroup layout="block"
 											class="tectonics-tree__metadata-box"
@@ -134,10 +134,10 @@
 											</ui:repeat>
 											<div class="tectonics-tree__metadata-box-links">
 												<h:outputLink 
-													value="#{navigationHelper.applicationUrl}archives/?selected=#{entry.id}#selected">#{msg.tectonics__archiveView}</h:outputLink>
+													value="#{navigationHelper.applicationUrl}archives/?selected=#{entry.id}#selected">#{msg.archives__archiveView}</h:outputLink>
 												<!-- TODO view selection, representative page -->
 												<h:outputLink rendered="#{entry.associatedRecordPi != ''}"
-													value="#{navigationHelper.objectUrl}/#{entry.associatedRecordPi}/1/">#{msg.tectonics__showRecord}</h:outputLink>
+													value="#{navigationHelper.objectUrl}/#{entry.associatedRecordPi}/1/">#{msg.archives__showRecord}</h:outputLink>
 											</div>
 										</h:panelGroup>
 									</ui:fragment>

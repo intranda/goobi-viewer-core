@@ -1,11 +1,11 @@
-package io.goobi.viewer.model.ead;
+package io.goobi.viewer.model.archives;
 
 public class FieldValue {
 
     private String value;
-    private EadMetadataField field;
+    private ArchiveMetadataField field;
 
-    public FieldValue(EadMetadataField field) {
+    public FieldValue(ArchiveMetadataField field) {
         this.field = field;
     }
 

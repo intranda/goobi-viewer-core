@@ -21,7 +21,7 @@
 	</composite:interface>
 
 	<composite:implementation>
-	    <c:if test="#{activeDocumentBean.recordLoaded and activeDocumentBean.viewManager.tectonicsIdentifier != null}">
+	    <c:if test="#{activeDocumentBean.recordLoaded and activeDocumentBean.viewManager.tectonicsIdentifier != null and tectonicsBean.databaseValid}">
 	    	<!-- neighbours is a pair of optionals holding the ids of the previous and succeeding tectonics entry. This format is used to avoid querying solr more than once -->
 	    	<c:set scope="view" var="neighbours" value="#{tectonicsBean.findIndexedNeighbours(activeDocumentBean.viewManager.tectonicsIdentifier)}"/>
             <div id="widgetTectonics" class="widget widget-tectonics">

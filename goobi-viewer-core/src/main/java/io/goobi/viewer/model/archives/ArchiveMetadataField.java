@@ -1,11 +1,11 @@
-package io.goobi.viewer.model.ead;
+package io.goobi.viewer.model.archives;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.lang.StringUtils;
 
-public class EadMetadataField {
+public class ArchiveMetadataField {
 
     /** contains the internal name of the field. The value can be used to translate the field in the messages files */
     private String label;
@@ -35,12 +35,12 @@ public class EadMetadataField {
 
     /** links to the ead node. Required to set the title field for the entry while parsing metadata */
     //    @ToString.Exclude
-    private EadEntry eadEntry;
+    private ArchiveEntry eadEntry;
 
 
 
 
-    public EadMetadataField(String label, Integer type, String xpath, String xpathType) {
+    public ArchiveMetadataField(String label, Integer type, String xpath, String xpathType) {
         this.label = label;
         this.type = type;
         this.xpath = xpath;
@@ -154,14 +154,14 @@ public class EadMetadataField {
     /**
      * @return the eadEntry
      */
-    public EadEntry getEadEntry() {
+    public ArchiveEntry getEadEntry() {
         return eadEntry;
     }
 
     /**
      * @param eadEntry the eadEntry to set
      */
-    public void setEadEntry(EadEntry eadEntry) {
+    public void setEadEntry(ArchiveEntry eadEntry) {
         this.eadEntry = eadEntry;
     }
 }

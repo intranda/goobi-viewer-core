@@ -13,7 +13,7 @@
  *
  * You should have received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
-package io.goobi.viewer.model.ead;
+package io.goobi.viewer.model.archives;
 
 import java.time.Instant;
 
@@ -21,7 +21,7 @@ import java.time.Instant;
  * @author florian
  *
  */
-public class EadResource {
+public class ArchiveResource {
 
     public final String databaseName;
     public final String resourceName;
@@ -30,7 +30,7 @@ public class EadResource {
     /**
      * 
      */
-    public EadResource(String database, String resource, String modifiedDate) {
+    public ArchiveResource(String database, String resource, String modifiedDate) {
         this.databaseName = database;
         this.resourceName = resource;
         this.lastModified = Instant.parse(modifiedDate);

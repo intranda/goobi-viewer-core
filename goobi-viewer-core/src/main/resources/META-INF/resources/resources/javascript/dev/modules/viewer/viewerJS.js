@@ -49,9 +49,9 @@ var viewerJS = (function () {
 
     viewer.init = function (config) {
         if (_debug) {
+            console.log('Initializing: viewerJS.init');
+            console.log('--> config = ', config);
         }
-        console.log('Initializing: viewerJS.init');
-        console.log('--> config = ', config);
 
         $.extend(true, _defaults, config);
         if(_debug)console.log("init ", _defaults);

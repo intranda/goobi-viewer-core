@@ -108,13 +108,13 @@
     <url-mapping id="tectonics">
         <pattern value="/tectonics/" />
         <view-id value="/tectonics.xhtml" />
-        <query-param name="selected">#{tectonicsBean.selectedEntryId}</query-param>
+        <query-param name="selected">#{archivesBean.selectedEntryId}</query-param>
     </url-mapping>
     <!-- ARCHIVES -->
     <url-mapping id="archives">
         <pattern value="/archives/" />
         <view-id value="/archivesContent.xhtml" />
-        <query-param onPostback="false" name="selected">#{tectonicsBean.selectedEntryId}</query-param>
+        <query-param onPostback="false" name="selected">#{archivesBean.selectedEntryId}</query-param>
     </url-mapping>
     <url-mapping id="archives1">
         <pattern value="/archives/#{selectedEntryId:tectonicsBean.selectedEntryId}/" />
