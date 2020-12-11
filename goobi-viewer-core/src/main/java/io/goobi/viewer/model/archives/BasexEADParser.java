@@ -19,9 +19,7 @@ import java.io.IOException;
 import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.LinkedList;
 import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
 
 import org.apache.commons.configuration.ConfigurationException;
@@ -47,6 +45,9 @@ import io.goobi.viewer.controller.NetTools;
 import io.goobi.viewer.exceptions.HTTPException;
 import io.goobi.viewer.model.viewer.StringPair;
 
+/**
+ * Loads and parses EAD documents from BaseX databases.
+ */
 public class BasexEADParser {
 
     private static final Logger logger = LoggerFactory.getLogger(BasexEADParser.class);
@@ -59,14 +60,6 @@ public class BasexEADParser {
 
     private String selectedDatabase;
 
-    private boolean databaseLoaded = false;
-
-    private ArchiveEntry rootElement = null;
-
-    private List<ArchiveEntry> flatEntryList;
-
-    //    private XMLConfiguration xmlConfig;
-
     private List<ArchiveMetadataField> configuredFields;
 
     private List<StringPair> eventList;
@@ -78,11 +71,8 @@ public class BasexEADParser {
      * @throws ConfigurationException
      */
     public BasexEADParser(String basexUrl) {
-
         this.basexUrl = basexUrl;
-
     }
-
 
     /**
      * Get the database names and file names from the basex databases
@@ -125,34 +115,45 @@ public class BasexEADParser {
         }
     }
 
+    /**
+     * 
+     * @param database
+     * @return
+     * @throws IOException
+     * @throws IllegalStateException
+     * @throws HTTPException
+     * @throws JDOMException
+     */
     public Document retrieveDatabaseDocument(String database) throws IOException, IllegalStateException, HTTPException, JDOMException {
-            if (StringUtils.isNotBlank(database)) {
-                String[] parts = database.split(" - ");
-                String url = basexUrl + "db/" + parts[0] + "/" + parts[1];
-                logger.trace("URL: {}", url);
-                String response;
-                response = NetTools.getWebContentGET(url);
+        if (StringUtils.isNotBlank(database)) {
+            String[] parts = database.split(" - ");
+            String url = basexUrl + "db/" + parts[0] + "/" + parts[1];
+            logger.trace("URL: {}", url);
+            String response;
+            response = NetTools.getWebContentGET(url);
 
-                // get xml root element
-                Document document = openDocument(response);
-                return document;
-            } else {
-                throw new IllegalStateException("Must provide database name before loading database");
-            }
+            // get xml root element
+            Document document = openDocument(response);
+            return document;
+        }
+        throw new IllegalStateException("Must provide database name before loading database");
     }
 
     /**
-     * open the selected database and load the file
+     * Loads the given database and parses the EAD document.
      * 
+     * @param database
+     * @param metadataConfig
+     * @param document
+     * @return
      * @throws IllegalStateException
-     * 
-     * @throws HTTPException
      * @throws IOException
-     * @throws JDOMException 
-     * @throws ConfigurationException 
-     * @throws ClientProtocolException
+     * @throws HTTPException
+     * @throws JDOMException
+     * @throws ConfigurationException
      */
-    public void loadDatabase(String database, HierarchicalConfiguration metadataConfig, Document document) throws IllegalStateException, IOException, HTTPException, JDOMException, ConfigurationException {
+    public ArchiveEntry loadDatabase(String database, HierarchicalConfiguration metadataConfig, Document document)
+            throws IllegalStateException, IOException, HTTPException, JDOMException, ConfigurationException {
 
         if (document == null) {
             document = retrieveDatabaseDocument(database);
@@ -163,10 +164,7 @@ public class BasexEADParser {
         readConfiguration(metadataConfig);
 
         // parse ead file
-        parseEadFile(document);
-        this.databaseLoaded = true;
-        this.selectedDatabase = database;
-        logger.info("Loaded EAD database: {}", selectedDatabase);
+        return parseEadFile(document);
     }
 
     public List<String> getDistinctDatabaseNames() throws ClientProtocolException, IOException, HTTPException {
@@ -185,13 +183,13 @@ public class BasexEADParser {
     /*
      * get ead root element from document
      */
-    private void parseEadFile(Document document) {
+    private ArchiveEntry parseEadFile(Document document) {
         eventList = new ArrayList<>();
         editorList = new ArrayList<>();
 
         Element collection = document.getRootElement();
         Element eadElement = collection.getChild("ead", NAMESPACE_EAD);
-        rootElement = parseElement(1, 0, eadElement);
+        ArchiveEntry rootElement = parseElement(1, 0, eadElement);
         rootElement.setDisplayChildren(true);
 
         Element archdesc = eadElement.getChild("archdesc", NAMESPACE_EAD);
@@ -217,11 +215,13 @@ public class BasexEADParser {
                 }
             }
         }
+
+        return rootElement;
     }
 
     /**
-     * read the metadata for the current xml node. - create an {@link ArchiveEntry} - execute the configured xpaths on the current node - add the metadata
-     * to one of the 7 levels - check if the node has sub nodes - call the method recursively for all sub nodes
+     * read the metadata for the current xml node. - create an {@link ArchiveEntry} - execute the configured xpaths on the current node - add the
+     * metadata to one of the 7 levels - check if the node has sub nodes - call the method recursively for all sub nodes
      */
     private ArchiveEntry parseElement(int order, int hierarchy, Element element) {
         ArchiveEntry entry = new ArchiveEntry(order, hierarchy);
@@ -397,47 +397,6 @@ public class BasexEADParser {
 
     }
 
-    public void resetFlatList() {
-        flatEntryList = null;
-    }
-
-    /**
-     * Get the hierarchical tree as a flat list
-     * 
-     * @return
-     */
-
-    public List<ArchiveEntry> getFlatEntryList() {
-        if (flatEntryList == null) {
-            if (rootElement != null) {
-                flatEntryList = new LinkedList<>();
-                flatEntryList.addAll(rootElement.getAsFlatList(false));
-            }
-        }
-        return flatEntryList;
-    }
-
-    public void search(String searchValue) {
-        if (rootElement == null) {
-            logger.error("Database not loaded");
-            return;
-        }
-
-        if (StringUtils.isNotBlank(searchValue)) {
-            // hide all elements
-            rootElement.resetFoundList();
-            // search in all/some metadata fields of all elements?
-
-            // for now: search only labels
-            searchInNode(rootElement, searchValue);
-
-            // fill flatList with displayable fields
-            flatEntryList = rootElement.getSearchList();
-        } else {
-            resetSearch();
-        }
-    }
-
     /**
      * 
      * @param node
@@ -458,26 +417,22 @@ public class BasexEADParser {
         }
     }
 
-    public void resetSearch() {
-        rootElement.resetFoundList();
-        flatEntryList = null;
-    }
-
     /**
      * read in all parameters from the configuration file
-     * @throws ConfigurationException 
+     * 
+     * @throws ConfigurationException
      * 
      */
     private void readConfiguration(HierarchicalConfiguration metadataConfig) throws ConfigurationException {
 
         configuredFields = new ArrayList<>();
-        try {            
+        try {
             for (HierarchicalConfiguration hc : metadataConfig.configurationsAt("/metadata")) {
                 ArchiveMetadataField field = new ArchiveMetadataField(hc.getString("[@label]"), hc.getInt("[@type]"), hc.getString("[@xpath]"),
                         hc.getString("[@xpathType]", "element"));
                 configuredFields.add(field);
             }
-        } catch(Exception e) {
+        } catch (Exception e) {
             throw new ConfigurationException("Error reading basexMetadata configuration", e);
         }
     }
@@ -487,54 +442,6 @@ public class BasexEADParser {
      */
     public String getSelectedDatabase() {
         return selectedDatabase;
-    }
-
-    /**
-     * @return the databaseLoaded
-     */
-    public boolean isDatabaseLoaded() {
-        return databaseLoaded;
-    }
-
-    /**
-     * @return the rootElement
-     */
-    public ArchiveEntry getRootElement() {
-        return rootElement;
-    }
-
-    /**
-     * 
-     * @return the {@link ArchiveEntry} with the given identifier if it exists in the tree; null otherwise
-     * @param identifier
-     */
-    public ArchiveEntry getEntryById(String identifier) {
-        return findEntry(identifier, getRootElement()).orElse(null);
-    }
-
-    /**
-     * Return this node if it has the given identifier or the first of its descendents with the identifier
-     * 
-     * @param identifier
-     * @param topNode
-     * @return
-     */
-    private Optional<ArchiveEntry> findEntry(String identifier, ArchiveEntry node) {
-        if (StringUtils.isNotBlank(identifier)) {
-            if (identifier.equals(node.getId())) {
-                return Optional.of(node);
-            } else {
-                if (node.getSubEntryList() != null) {
-                    for (ArchiveEntry child : node.getSubEntryList()) {
-                        Optional<ArchiveEntry> find = findEntry(identifier, child);
-                        if (find.isPresent()) {
-                            return find;
-                        }
-                    }
-                }
-            }
-        }
-        return Optional.empty();
     }
 
     /**
