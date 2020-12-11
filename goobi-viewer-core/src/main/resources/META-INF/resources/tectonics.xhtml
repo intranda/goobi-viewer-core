@@ -26,13 +26,31 @@
 		<f:view contentType="text/html" encoding="utf-8">
             
             <h2>#{msg.tectonics}</h2>
-            
-			<div id="tectonicsView" class="tectonics-tree">
-					<ui:include src="/resources/includes/tectonics/eadTreeView.xhtml">
-                    	<ui:param name="view" value="tectonics" />
-                    	<ui:param name="indent" value="#{configurationBean.tocIndentation * 1.5}"/>
-                    </ui:include>
-			</div>
+            <c:choose>
+				<c:when test="#{tectonicsBean.databaseState == 'ERROR_NOT_CONFIGURED'}">
+					<div class="tec-archives__error">
+						<span>#{msg.error__tectonics_database_configuration_missing}</span>
+					</div>
+				</c:when>
+				<c:when test="#{tectonicsBean.databaseState == 'ERROR_NOT_REACHABLE'}">
+					<div class="tec-archives__error">
+						<span>#{msg.error__tectonics_database_not_reachable}</span>
+					</div>
+				</c:when>
+				<c:when test="#{tectonicsBean.databaseState == 'ERROR_INVALID_FORMAT'}">
+					<div class="tec-archives__error">
+						<span>#{msg.error__tectonics_failed_to_read_database}</span>
+					</div>
+				</c:when>
+				<c:otherwise>
+					<div id="tectonicsView" class="tectonics-tree">
+						<ui:include src="/resources/includes/tectonics/eadTreeView.xhtml">
+	                    	<ui:param name="view" value="tectonics" />
+	                    	<ui:param name="indent" value="#{configurationBean.tocIndentation * 1.5}"/>
+	                    </ui:include>
+					</div>
+				</c:otherwise>
+			</c:choose>
 		</f:view>
 		
 		<script type="text/javascript">

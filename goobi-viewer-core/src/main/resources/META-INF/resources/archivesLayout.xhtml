@@ -69,7 +69,26 @@
 		<!-- CONTENT -->
 		<main id="ArchivesContent" class="tec-archives__main">
 			<!-- <ui:insert name="breadcrumbs" /> -->
-			<ui:insert name="content" />
+			<c:choose>
+				<c:when test="#{tectonicsBean.databaseState == 'ERROR_NOT_CONFIGURED'}">
+					<div class="tec-archives__error">
+						<span>#{msg.error__tectonics_database_configuration_missing}</span>
+					</div>
+				</c:when>
+				<c:when test="#{tectonicsBean.databaseState == 'ERROR_NOT_REACHABLE'}">
+					<div class="tec-archives__error">
+						<span>#{msg.error__tectonics_database_not_reachable}</span>
+					</div>
+				</c:when>
+				<c:when test="#{tectonicsBean.databaseState == 'ERROR_INVALID_FORMAT'}">
+					<div class="tec-archives__error">
+						<span>#{msg.error__tectonics_failed_to_read_database}</span>
+					</div>
+				</c:when>
+				<c:otherwise>
+					<ui:insert name="content" />
+				</c:otherwise>
+			</c:choose>
 		</main>
 		
 		    <!-- USER LOGIN + TERMS -->

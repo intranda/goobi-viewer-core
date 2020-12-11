@@ -100,6 +100,10 @@ public class CMSNavigationManager {
         addAvailableItem(user);
         SelectableNavigationItem campaigns = new SelectableNavigationItem("campaigns", "admin__crowdsourcing_campaigns");
         addAvailableItem(campaigns);
+        SelectableNavigationItem tectonics = new SelectableNavigationItem("tectonics", "tectonics");
+        addAvailableItem(tectonics);
+        SelectableNavigationItem archives = new SelectableNavigationItem("archives", "archives");
+        addAvailableItem(archives);
 
         addModuleItems();
         addCMSPageItems();
