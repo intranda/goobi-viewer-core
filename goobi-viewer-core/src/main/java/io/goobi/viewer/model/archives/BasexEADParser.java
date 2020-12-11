@@ -43,7 +43,6 @@ import org.slf4j.LoggerFactory;
 
 import io.goobi.viewer.controller.NetTools;
 import io.goobi.viewer.exceptions.HTTPException;
-import io.goobi.viewer.model.viewer.StringPair;
 
 /**
  * Loads and parses EAD documents from BaseX databases.
@@ -62,8 +61,8 @@ public class BasexEADParser {
 
     private List<ArchiveMetadataField> configuredFields;
 
-    private List<StringPair> eventList;
-    private List<String> editorList;
+    //    private List<StringPair> eventList;
+    //    private List<String> editorList;
 
     /**
      * 
@@ -143,25 +142,20 @@ public class BasexEADParser {
      * Loads the given database and parses the EAD document.
      * 
      * @param database
-     * @param metadataConfig
      * @param document
-     * @return
+     * @return Root element of the loaded tree
      * @throws IllegalStateException
      * @throws IOException
      * @throws HTTPException
      * @throws JDOMException
      * @throws ConfigurationException
      */
-    public ArchiveEntry loadDatabase(String database, HierarchicalConfiguration metadataConfig, Document document)
+    public ArchiveEntry loadDatabase(String database, Document document)
             throws IllegalStateException, IOException, HTTPException, JDOMException, ConfigurationException {
 
         if (document == null) {
             document = retrieveDatabaseDocument(database);
         }
-        // get field definitions from config file
-        metadataConfig.setListDelimiter('&');
-        metadataConfig.setExpressionEngine(new XPathExpressionEngine());
-        readConfiguration(metadataConfig);
 
         // parse ead file
         return parseEadFile(document);
@@ -180,41 +174,48 @@ public class BasexEADParser {
         return answer;
     }
 
-    /*
-     * get ead root element from document
+    /**
+     * Reads the hierarchy from the given EAD document.
+     * 
+     * @param document
+     * @return Root element of the tree
+     * @should parse document correctly
      */
-    private ArchiveEntry parseEadFile(Document document) {
-        eventList = new ArrayList<>();
-        editorList = new ArrayList<>();
+    ArchiveEntry parseEadFile(Document document) {
+        if (document == null) {
+            throw new IllegalArgumentException("document may not be null");
+        }
 
         Element collection = document.getRootElement();
         Element eadElement = collection.getChild("ead", NAMESPACE_EAD);
-        ArchiveEntry rootElement = parseElement(1, 0, eadElement);
+        ArchiveEntry rootElement = parseElement(1, 0, eadElement, configuredFields);
         rootElement.setDisplayChildren(true);
 
-        Element archdesc = eadElement.getChild("archdesc", NAMESPACE_EAD);
-        if (archdesc != null) {
-            Element processinfoElement = archdesc.getChild("processinfo", NAMESPACE_EAD);
-            if (processinfoElement != null) {
-                Element list = processinfoElement.getChild("list", NAMESPACE_EAD);
-                List<Element> entries = list.getChildren("item", NAMESPACE_EAD);
-                for (Element item : entries) {
-                    editorList.add(item.getText());
-                }
-            }
-        }
-        Element control = eadElement.getChild("control", NAMESPACE_EAD);
-        if (control != null) {
-            Element maintenancehistory = control.getChild("maintenancehistory", NAMESPACE_EAD);
-            if (maintenancehistory != null) {
-                List<Element> events = maintenancehistory.getChildren("maintenancehistory", NAMESPACE_EAD);
-                for (Element event : events) {
-                    String type = event.getChildText("eventtype", NAMESPACE_EAD);
-                    String date = event.getChildText("eventdatetime", NAMESPACE_EAD);
-                    eventList.add(new StringPair(type, date));
-                }
-            }
-        }
+        //        Element archdesc = eadElement.getChild("archdesc", NAMESPACE_EAD);
+        //        if (archdesc != null) {
+        //            Element processinfoElement = archdesc.getChild("processinfo", NAMESPACE_EAD);
+        //            if (processinfoElement != null) {
+        //                Element list = processinfoElement.getChild("list", NAMESPACE_EAD);
+        //                List<Element> entries = list.getChildren("item", NAMESPACE_EAD);
+        //                eventList = new ArrayList<>(entries.size());
+        //                for (Element item : entries) {
+        //                    editorList.add(item.getText());
+        //                }
+        //            }
+        //        }
+        //        Element control = eadElement.getChild("control", NAMESPACE_EAD);
+        //        if (control != null) {
+        //            Element maintenancehistory = control.getChild("maintenancehistory", NAMESPACE_EAD);
+        //            if (maintenancehistory != null) {
+        //                List<Element> events = maintenancehistory.getChildren("maintenancehistory", NAMESPACE_EAD);
+        //                eventList = new ArrayList<>(events.size());
+        //                for (Element event : events) {
+        //                    String type = event.getChildText("eventtype", NAMESPACE_EAD);
+        //                    String date = event.getChildText("eventdatetime", NAMESPACE_EAD);
+        //                    eventList.add(new StringPair(type, date));
+        //                }
+        //            }
+        //        }
 
         return rootElement;
     }
@@ -222,8 +223,21 @@ public class BasexEADParser {
     /**
      * read the metadata for the current xml node. - create an {@link ArchiveEntry} - execute the configured xpaths on the current node - add the
      * metadata to one of the 7 levels - check if the node has sub nodes - call the method recursively for all sub nodes
+     * 
+     * @param order
+     * @param hierarchy
+     * @param element
+     * @param configuredFields
+     * @return
      */
-    private ArchiveEntry parseElement(int order, int hierarchy, Element element) {
+    private static ArchiveEntry parseElement(int order, int hierarchy, Element element, List<ArchiveMetadataField> configuredFields) {
+        if (element == null) {
+            throw new IllegalArgumentException("element may not be null");
+        }
+        if (configuredFields == null) {
+            throw new IllegalArgumentException("configuredFields may not be null");
+        }
+
         ArchiveEntry entry = new ArchiveEntry(order, hierarchy);
 
         for (ArchiveMetadataField emf : configuredFields) {
@@ -296,7 +310,7 @@ public class BasexEADParser {
             int subOrder = 0;
             int subHierarchy = hierarchy + 1;
             for (Element c : clist) {
-                ArchiveEntry child = parseElement(subOrder, subHierarchy, c);
+                ArchiveEntry child = parseElement(subOrder, subHierarchy, c, configuredFields);
                 entry.addSubEntry(child);
                 child.setParentNode(entry);
                 subOrder++;
@@ -406,16 +420,27 @@ public class BasexEADParser {
     }
 
     /**
-     * read in all parameters from the configuration file
+     * Loads fields from the given configuration node.
      * 
+     * @param metadataConfig
+     * @return
      * @throws ConfigurationException
-     * 
      */
-    private void readConfiguration(HierarchicalConfiguration metadataConfig) throws ConfigurationException {
+    public BasexEADParser readConfiguration(HierarchicalConfiguration metadataConfig) throws ConfigurationException {
+        if (metadataConfig == null) {
+            throw new ConfigurationException("No basexMetadata configurations found");
+        }
 
-        configuredFields = new ArrayList<>();
+        metadataConfig.setListDelimiter('&');
+        metadataConfig.setExpressionEngine(new XPathExpressionEngine());
+
         try {
-            for (HierarchicalConfiguration hc : metadataConfig.configurationsAt("/metadata")) {
+            List<HierarchicalConfiguration> configurations = metadataConfig.configurationsAt("/metadata");
+            if (configurations == null) {
+                throw new ConfigurationException("No basexMetadata configurations found");
+            }
+            configuredFields = new ArrayList<>(configurations.size());
+            for (HierarchicalConfiguration hc : configurations) {
                 ArchiveMetadataField field = new ArchiveMetadataField(hc.getString("[@label]"), hc.getInt("[@type]"), hc.getString("[@xpath]"),
                         hc.getString("[@xpathType]", "element"));
                 configuredFields.add(field);
@@ -423,6 +448,8 @@ public class BasexEADParser {
         } catch (Exception e) {
             throw new ConfigurationException("Error reading basexMetadata configuration", e);
         }
+
+        return this;
     }
 
     /**

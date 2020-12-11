@@ -69,6 +69,7 @@ public class ArchiveBean implements Serializable {
 
     private DatabaseState databaseState = DatabaseState.NOT_INITIALIZED;
 
+    @Deprecated
     @Inject
     private PersistentStorageBean storage;
 
@@ -116,11 +117,10 @@ public class ArchiveBean implements Serializable {
         //        } else {
         HierarchicalConfiguration baseXMetadataConfig = DataManager.getInstance().getConfiguration().getBaseXMetadataConfig();
         try {
+            eadParser.readConfiguration(baseXMetadataConfig);
             Document databaseDoc = eadParser.retrieveDatabaseDocument(databaseName);
-
-            ArchiveEntry rootElement = eadParser.loadDatabase(databaseName, baseXMetadataConfig, databaseDoc);
+            ArchiveEntry rootElement = eadParser.loadDatabase(databaseName, databaseDoc);
             this.archiveTree = loadTree(rootElement);
-            this.archiveTree.setTrueRootElement(rootElement);
             logger.info("Loaded EAD database: {}", databaseName);
             return DatabaseState.VALID;
         } catch (IOException | HTTPException e) {
@@ -169,7 +169,7 @@ public class ArchiveBean implements Serializable {
             }
             HierarchicalConfiguration baseXMetadataConfig = DataManager.getInstance().getConfiguration().getBaseXMetadataConfig();
             try (Time t3 = DataManager.getInstance().getTiming().takeTime("eadParser.loadDatabase")) {
-                eadParser.loadDatabase(databaseName, baseXMetadataConfig, databaseDoc);
+                eadParser.readConfiguration(baseXMetadataConfig).loadDatabase(databaseName, databaseDoc);
             } catch (ConfigurationException e) {
                 // TODO Auto-generated catch block
                 e.printStackTrace();
@@ -211,7 +211,7 @@ public class ArchiveBean implements Serializable {
         ArchiveTree ret = new ArchiveTree();
         ret.generate(rootElement);
         if (ret.getSelectedEntry() == null) {
-            ret.setSelectedEntry(rootElement);
+            ret.setSelectedEntry(ret.getRootElement());
         }
         // This should happen before the tree is expanded to the selected entry, otherwise the collapse level will be reset
         ret.getTreeView();

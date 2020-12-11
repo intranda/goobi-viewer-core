@@ -67,6 +67,8 @@ public class ArchiveTree implements Serializable {
         if (root == null) {
             throw new IllegalArgumentException("root may not be null");
         }
+        
+        setTrueRootElement(root);
 
         // If root has just one child, use it as new root
         if (root.getSubEntryList().size() == 1) {
