@@ -17,9 +17,12 @@ package io.goobi.viewer.model.archives;
 
 import java.io.Serializable;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
+import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -39,16 +42,18 @@ public class ArchiveTree implements Serializable {
 
     public static int defaultCollapseLevel = 1;
 
+    private boolean databaseLoaded = false;
+
+    private ArchiveEntry trueRootElement = null;
+
+    private List<ArchiveEntry> flatEntryList;
+
     /** TOC element map. */
     private Map<String, List<ArchiveEntry>> entryMap = new HashMap<>(1);
 
     private ArchiveEntry selectedEntry;
 
     private boolean treeBuilt = false;
-
-    private int toExpandIndex = -1;
-
-    private int toCollapseIndex = -1;
 
     private int maxTocDepth = 0;
 
@@ -75,7 +80,7 @@ public class ArchiveTree implements Serializable {
             root = root.getSubEntryList().get(0);
             root.shiftHierarchy(-1);
         }
-        
+
         List<ArchiveEntry> tree = root.getAsFlatList(true);
         entryMap.put(DEFAULT_GROUP, tree);
     }
@@ -216,34 +221,6 @@ public class ArchiveTree implements Serializable {
     }
 
     /**
-     * Recalculates the visibility of TOC elements after a +/- button has been pressed.
-     *
-     * @return a {@link io.goobi.viewer.model.toc.TOCElement} object.
-     */
-    @Deprecated
-    public ArchiveEntry updateTree() {
-        ArchiveEntry ret = null;
-        if (entryMap == null) {
-            return ret;
-        }
-
-        if (toExpandIndex != -1) {
-            expandSubtree(toExpandIndex);
-            ret = entryMap.get(DEFAULT_GROUP).get(toExpandIndex);
-            ret.setExpanded(true);
-            toExpandIndex = -1;
-        }
-        if (toCollapseIndex != -1) {
-            collapseSubtree(toCollapseIndex);
-            ret = entryMap.get(DEFAULT_GROUP).get(toCollapseIndex);
-            ret.setExpanded(false);
-            toCollapseIndex = -1;
-        }
-
-        return ret;
-    }
-
-    /**
      * @return the selectedEntry
      */
     public ArchiveEntry getSelectedEntry() {
@@ -256,6 +233,20 @@ public class ArchiveTree implements Serializable {
     public void setSelectedEntry(ArchiveEntry selectedEntry) {
         logger.trace("setSelectedEntry: {}", selectedEntry != null ? selectedEntry.getId() : null);
         this.selectedEntry = selectedEntry;
+    }
+
+    /**
+     * @return the trueRootElement
+     */
+    public ArchiveEntry getTrueRootElement() {
+        return trueRootElement;
+    }
+
+    /**
+     * @param trueRootElement the trueRootElement to set
+     */
+    public void setTrueRootElement(ArchiveEntry trueRootElement) {
+        this.trueRootElement = trueRootElement;
     }
 
     /**
@@ -277,64 +268,6 @@ public class ArchiveTree implements Serializable {
         }
 
         return entryMap.get(group).get(0);
-    }
-
-    /**
-     * Collapses all elements below the element with the given ID.
-     *
-     * @param parentIndex
-     */
-    @Deprecated
-    private void collapseSubtree(int parentIndex) {
-        logger.trace("collapseSubtree: {}", parentIndex);
-        if (entryMap == null) {
-            return;
-        }
-
-        int level = entryMap.get(DEFAULT_GROUP).get(parentIndex).getHierarchy();
-        for (int i = parentIndex + 1; i < entryMap.get(DEFAULT_GROUP).size(); i++) {
-            ArchiveEntry child = entryMap.get(DEFAULT_GROUP).get(i);
-            if (child.getHierarchy() > level) {
-                child.setVisible(false);
-                logger.trace("Collapsed entry: {}", child);
-            } else {
-                // Rest of the elements are irrelevant because they belong
-                // to a different subtree on the same level
-                break;
-            }
-        }
-    }
-
-    /**
-     * Recursively expands the child elements of the element with the given ID.
-     *
-     * @param parentIndex
-     */
-    @Deprecated
-    private void expandSubtree(int parentIndex) {
-        logger.trace("expandSubtree: {}", parentIndex);
-        if (entryMap == null) {
-            return;
-        }
-
-        int level = entryMap.get(DEFAULT_GROUP).get(parentIndex).getHierarchy();
-        for (int i = parentIndex + 1; i < entryMap.get(DEFAULT_GROUP).size(); i++) {
-            ArchiveEntry child = entryMap.get(DEFAULT_GROUP).get(i);
-            if (child.getHierarchy() == level + 1) {
-                // Set immediate children visible
-                child.setVisible(true);
-                logger.trace("Expanded entry: {}", child);
-                // Elements further down the tree are handled recursively
-                if (child.isHasChild() && child.isExpanded()) {
-                    expandSubtree(child.getIndex());
-                }
-            } else if (child.getHierarchy() <= level) {
-                // Rest of the elements are irrelevant because they belong
-                // to a different subtree on the same level
-                break;
-            }
-        }
-        // logger.trace("expandTree END");
     }
 
     /**
@@ -392,25 +325,10 @@ public class ArchiveTree implements Serializable {
     }
 
     /**
-     * <p>
-     * setToExpandIndex.
-     * </p>
-     *
-     * @param id a int.
+     * @return the databaseLoaded
      */
-    public void setToExpandIndex(int toExpandIndex) {
-        this.toExpandIndex = toExpandIndex;
-    }
-
-    /**
-     * <p>
-     * setToCollapseIndexs.
-     * </p>
-     *
-     * @param id a int.
-     */
-    public void setToCollapseIndex(int toCollapseIndex) {
-        this.toCollapseIndex = toCollapseIndex;
+    public boolean isDatabaseLoaded() {
+        return databaseLoaded;
     }
 
     /**
@@ -554,5 +472,109 @@ public class ArchiveTree implements Serializable {
         } else {
             return true;
         }
+    }
+
+    public void resetFlatList() {
+        flatEntryList = null;
+    }
+
+    /**
+     * Get the hierarchical tree as a flat list
+     * 
+     * @return
+     */
+
+    public List<ArchiveEntry> getFlatEntryList() {
+        if (flatEntryList == null) {
+            if (trueRootElement != null) {
+                flatEntryList = new LinkedList<>();
+                flatEntryList.addAll(trueRootElement.getAsFlatList(false));
+            }
+        }
+        return flatEntryList;
+    }
+
+    /**
+     * 
+     * @return the {@link ArchiveEntry} with the given identifier if it exists in the tree; null otherwise
+     * @param identifier
+     */
+    public ArchiveEntry getEntryById(String identifier) {
+        return findEntry(identifier, getRootElement()).orElse(null);
+    }
+
+    /**
+     * 
+     * @param searchValue
+     */
+    public void search(String searchValue) {
+        if (getRootElement() == null) {
+            logger.error("Database not loaded");
+            return;
+        }
+
+        if (StringUtils.isNotBlank(searchValue)) {
+            // hide all elements
+            getRootElement().resetFoundList();
+            // search in all/some metadata fields of all elements?
+
+            // for now: search only labels
+            searchInNode(getRootElement(), searchValue);
+
+            // fill flatList with displayable fields
+            flatEntryList = getRootElement().getSearchList();
+        } else {
+            resetSearch();
+        }
+    }
+
+    /**
+     * 
+     * @param node
+     * @param searchValue
+     */
+    static void searchInNode(ArchiveEntry node, String searchValue) {
+        if (node.getId() != null && node.getId().equals(searchValue)) {
+            // ID match
+            node.markAsFound(true);
+        } else if (node.getLabel() != null && node.getLabel().toLowerCase().contains(searchValue.toLowerCase())) {
+            // mark element + all parents as displayable
+            node.markAsFound(true);
+        }
+        if (node.getSubEntryList() != null) {
+            for (ArchiveEntry child : node.getSubEntryList()) {
+                searchInNode(child, searchValue);
+            }
+        }
+    }
+
+    /**
+     * Return this node if it has the given identifier or the first of its descendents with the identifier
+     * 
+     * @param identifier
+     * @param topNode
+     * @return
+     */
+    private Optional<ArchiveEntry> findEntry(String identifier, ArchiveEntry node) {
+        if (StringUtils.isNotBlank(identifier)) {
+            if (identifier.equals(node.getId())) {
+                return Optional.of(node);
+            }
+            if (node.getSubEntryList() != null) {
+                for (ArchiveEntry child : node.getSubEntryList()) {
+                    Optional<ArchiveEntry> find = findEntry(identifier, child);
+                    if (find.isPresent()) {
+                        return find;
+                    }
+                }
+            }
+        }
+
+        return Optional.empty();
+    }
+
+    public void resetSearch() {
+        trueRootElement.resetFoundList();
+        flatEntryList = null;
     }
 }
