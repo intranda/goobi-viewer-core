@@ -3407,8 +3407,8 @@ public class ViewManager implements Serializable {
             return null;
         }
 
-        logger.trace("getTectonicsIdentifier: {}", topDocument.getMetadataValue(SolrConstants.TECTONICS_ID));
-        return topDocument.getMetadataValue(SolrConstants.TECTONICS_ID);
+        logger.trace("getTectonicsIdentifier: {}", topDocument.getMetadataValue(SolrConstants.ARCHIVE_ENTRY_ID));
+        return topDocument.getMetadataValue(SolrConstants.ARCHIVE_ENTRY_ID);
     }
 
     /**

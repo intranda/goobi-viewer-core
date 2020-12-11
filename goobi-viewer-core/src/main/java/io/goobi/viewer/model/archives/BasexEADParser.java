@@ -13,7 +13,7 @@
  *
  * You should have received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
-package io.goobi.viewer.model.ead;
+package io.goobi.viewer.model.archives;
 
 import java.io.IOException;
 import java.io.StringReader;
@@ -61,13 +61,13 @@ public class BasexEADParser {
 
     private boolean databaseLoaded = false;
 
-    private EadEntry rootElement = null;
+    private ArchiveEntry rootElement = null;
 
-    private List<EadEntry> flatEntryList;
+    private List<ArchiveEntry> flatEntryList;
 
     //    private XMLConfiguration xmlConfig;
 
-    private List<EadMetadataField> configuredFields;
+    private List<ArchiveMetadataField> configuredFields;
 
     private List<StringPair> eventList;
     private List<String> editorList;
@@ -92,7 +92,7 @@ public class BasexEADParser {
      * @throws IOException
      * @throws ClientProtocolException
      */
-    public List<EadResource> getPossibleDatabases() throws ClientProtocolException, IOException, HTTPException {
+    public List<ArchiveResource> getPossibleDatabases() throws ClientProtocolException, IOException, HTTPException {
         String response = NetTools.getWebContentGET(basexUrl + "databases");
         if (StringUtils.isBlank(response)) {
             return Collections.emptyList();
@@ -104,7 +104,7 @@ public class BasexEADParser {
 
             Element root = document.getRootElement();
             List<Element> databaseList = root.getChildren("database");
-            List<EadResource> ret = new ArrayList<>();
+            List<ArchiveResource> ret = new ArrayList<>();
             for (Element db : databaseList) {
                 String dbName = db.getChildText("name");
 
@@ -112,7 +112,7 @@ public class BasexEADParser {
                 for (Element resource : details.getChildren()) {
                     String resourceName = resource.getText();
                     String lastUpdated = resource.getAttributeValue("modified-date");
-                    EadResource eadResource = new EadResource(dbName, resourceName, lastUpdated);
+                    ArchiveResource eadResource = new ArchiveResource(dbName, resourceName, lastUpdated);
                     ret.add(eadResource);
                 }
 
@@ -170,8 +170,8 @@ public class BasexEADParser {
 
     public List<String> getDistinctDatabaseNames() throws ClientProtocolException, IOException, HTTPException {
         List<String> answer = new ArrayList<>();
-        List<EadResource> completeList = getPossibleDatabases();
-        for (EadResource resource : completeList) {
+        List<ArchiveResource> completeList = getPossibleDatabases();
+        for (ArchiveResource resource : completeList) {
             String dbName = resource.databaseName;
             if (!answer.contains(dbName)) {
                 answer.add(dbName);
@@ -219,13 +219,13 @@ public class BasexEADParser {
     }
 
     /**
-     * read the metadata for the current xml node. - create an {@link EadEntry} - execute the configured xpaths on the current node - add the metadata
+     * read the metadata for the current xml node. - create an {@link ArchiveEntry} - execute the configured xpaths on the current node - add the metadata
      * to one of the 7 levels - check if the node has sub nodes - call the method recursively for all sub nodes
      */
-    private EadEntry parseElement(int order, int hierarchy, Element element) {
-        EadEntry entry = new EadEntry(order, hierarchy);
+    private ArchiveEntry parseElement(int order, int hierarchy, Element element) {
+        ArchiveEntry entry = new ArchiveEntry(order, hierarchy);
 
-        for (EadMetadataField emf : configuredFields) {
+        for (ArchiveMetadataField emf : configuredFields) {
 
             List<String> stringValues = new ArrayList<>();
             if ("text".equalsIgnoreCase(emf.getXpathType())) {
@@ -307,7 +307,7 @@ public class BasexEADParser {
             int subOrder = 0;
             int subHierarchy = hierarchy + 1;
             for (Element c : clist) {
-                EadEntry child = parseElement(subOrder, subHierarchy, c);
+                ArchiveEntry child = parseElement(subOrder, subHierarchy, c);
                 entry.addSubEntry(child);
                 child.setParentNode(entry);
                 subOrder++;
@@ -330,11 +330,11 @@ public class BasexEADParser {
      * @param stringValue
      */
 
-    private static void addFieldToEntry(EadEntry entry, EadMetadataField emf, List<String> stringValues) {
+    private static void addFieldToEntry(ArchiveEntry entry, ArchiveMetadataField emf, List<String> stringValues) {
         if (StringUtils.isBlank(entry.getLabel()) && emf.getXpath().contains("unittitle") && stringValues != null && !stringValues.isEmpty()) {
             entry.setLabel(stringValues.get(0));
         }
-        EadMetadataField toAdd = new EadMetadataField(emf.getLabel(), emf.getType(), emf.getXpath(), emf.getXpathType());
+        ArchiveMetadataField toAdd = new ArchiveMetadataField(emf.getLabel(), emf.getType(), emf.getXpath(), emf.getXpathType());
         toAdd.setEadEntry(entry);
 
         if (stringValues != null && !stringValues.isEmpty()) {
@@ -406,7 +406,7 @@ public class BasexEADParser {
      * @return
      */
 
-    public List<EadEntry> getFlatEntryList() {
+    public List<ArchiveEntry> getFlatEntryList() {
         if (flatEntryList == null) {
             if (rootElement != null) {
                 flatEntryList = new LinkedList<>();
@@ -442,7 +442,7 @@ public class BasexEADParser {
      * @param node
      * @param searchValue
      */
-    static void searchInNode(EadEntry node, String searchValue) {
+    static void searchInNode(ArchiveEntry node, String searchValue) {
         if (node.getId() != null && node.getId().equals(searchValue)) {
             // ID match
             node.markAsFound(true);
@@ -451,7 +451,7 @@ public class BasexEADParser {
             node.markAsFound(true);
         }
         if (node.getSubEntryList() != null) {
-            for (EadEntry child : node.getSubEntryList()) {
+            for (ArchiveEntry child : node.getSubEntryList()) {
                 searchInNode(child, searchValue);
             }
         }
@@ -471,7 +471,7 @@ public class BasexEADParser {
         configuredFields = new ArrayList<>();
 
         for (HierarchicalConfiguration hc : metadataConfig.configurationsAt("/metadata")) {
-            EadMetadataField field = new EadMetadataField(hc.getString("[@label]"), hc.getInt("[@type]"), hc.getString("[@xpath]"),
+            ArchiveMetadataField field = new ArchiveMetadataField(hc.getString("[@label]"), hc.getInt("[@type]"), hc.getString("[@xpath]"),
                     hc.getString("[@xpathType]", "element"));
             configuredFields.add(field);
         }
@@ -494,16 +494,16 @@ public class BasexEADParser {
     /**
      * @return the rootElement
      */
-    public EadEntry getRootElement() {
+    public ArchiveEntry getRootElement() {
         return rootElement;
     }
 
     /**
      * 
-     * @return the {@link EadEntry} with the given identifier if it exists in the tree; null otherwise
+     * @return the {@link ArchiveEntry} with the given identifier if it exists in the tree; null otherwise
      * @param identifier
      */
-    public EadEntry getEntryById(String identifier) {
+    public ArchiveEntry getEntryById(String identifier) {
         return findEntry(identifier, getRootElement()).orElse(null);
     }
 
@@ -514,14 +514,14 @@ public class BasexEADParser {
      * @param topNode
      * @return
      */
-    private Optional<EadEntry> findEntry(String identifier, EadEntry node) {
+    private Optional<ArchiveEntry> findEntry(String identifier, ArchiveEntry node) {
         if (StringUtils.isNotBlank(identifier)) {
             if (identifier.equals(node.getId())) {
                 return Optional.of(node);
             } else {
                 if (node.getSubEntryList() != null) {
-                    for (EadEntry child : node.getSubEntryList()) {
-                        Optional<EadEntry> find = findEntry(identifier, child);
+                    for (ArchiveEntry child : node.getSubEntryList()) {
+                        Optional<ArchiveEntry> find = findEntry(identifier, child);
                         if (find.isPresent()) {
                             return find;
                         }
