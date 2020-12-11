@@ -37,7 +37,6 @@ var viewerJS = ( function( viewer ) {
                 console.log( 'viewer.archivesSeparate.init: config - ', config );
             }
             this.config = $.extend( true, {}, _defaults, config );
-            console.log("archives config ", this.config);
             
             jQuery(document).ready(($) => {
 

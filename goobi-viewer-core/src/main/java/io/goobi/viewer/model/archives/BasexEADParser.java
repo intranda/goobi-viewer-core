@@ -149,9 +149,10 @@ public class BasexEADParser {
      * @throws HTTPException
      * @throws IOException
      * @throws JDOMException 
+     * @throws ConfigurationException 
      * @throws ClientProtocolException
      */
-    public void loadDatabase(String database, HierarchicalConfiguration metadataConfig, Document document) throws IllegalStateException, IOException, HTTPException, JDOMException {
+    public void loadDatabase(String database, HierarchicalConfiguration metadataConfig, Document document) throws IllegalStateException, IOException, HTTPException, JDOMException, ConfigurationException {
 
         if (document == null) {
             document = retrieveDatabaseDocument(database);
@@ -464,16 +465,20 @@ public class BasexEADParser {
 
     /**
      * read in all parameters from the configuration file
+     * @throws ConfigurationException 
      * 
      */
-    private void readConfiguration(HierarchicalConfiguration metadataConfig) {
+    private void readConfiguration(HierarchicalConfiguration metadataConfig) throws ConfigurationException {
 
         configuredFields = new ArrayList<>();
-
-        for (HierarchicalConfiguration hc : metadataConfig.configurationsAt("/metadata")) {
-            ArchiveMetadataField field = new ArchiveMetadataField(hc.getString("[@label]"), hc.getInt("[@type]"), hc.getString("[@xpath]"),
-                    hc.getString("[@xpathType]", "element"));
-            configuredFields.add(field);
+        try {            
+            for (HierarchicalConfiguration hc : metadataConfig.configurationsAt("/metadata")) {
+                ArchiveMetadataField field = new ArchiveMetadataField(hc.getString("[@label]"), hc.getInt("[@type]"), hc.getString("[@xpath]"),
+                        hc.getString("[@xpathType]", "element"));
+                configuredFields.add(field);
+            }
+        } catch(Exception e) {
+            throw new ConfigurationException("Error reading basexMetadata configuration", e);
         }
     }
 

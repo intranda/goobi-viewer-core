@@ -126,7 +126,7 @@
 
                             <!-- LICENSES -->
                             
-                            <ui:fragment rendered="#{userBean.admin and not empty adminBean.notConfiguredAccessConditions}">
+                            <ui:fragment rendered="#{userBean.admin and searchBean.solrIndexReachable and not empty adminBean.notConfiguredAccessConditions}">
                                 <h:form prependId="false" styleClass="admin__boxed-entry -no-actions -w33 -danger">
                                     <div class="row">
                                         <h3 class="col-9">#{msg.admin__licenses}</h3>
@@ -195,9 +195,11 @@
 
 
                             <!-- RSS FEED -->
-                            <div class="admin__boxed-entry -no-actions -w33">
-                                <ui:include src="/resources/includes/rssFeed.xhtml" />
-                            </div>
+                            <ui:fragment rendered="#{searchBean.solrIndexReachable}">
+	                            <div class="admin__boxed-entry -no-actions -w33">
+	                                <ui:include src="/resources/includes/rssFeed.xhtml" />
+	                            </div>
+                            </ui:fragment>
 
 
                             <!-- MATOMO -->

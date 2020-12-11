@@ -52,8 +52,10 @@ import org.apache.solr.client.solrj.request.LukeRequest;
 import org.apache.solr.client.solrj.response.LukeResponse;
 import org.apache.solr.client.solrj.response.LukeResponse.FieldInfo;
 import org.apache.solr.client.solrj.response.QueryResponse;
+import org.apache.solr.client.solrj.response.SolrPingResponse;
 import org.apache.solr.common.SolrDocument;
 import org.apache.solr.common.SolrDocumentList;
+import org.apache.solr.common.SolrException;
 import org.apache.solr.common.luke.FieldFlag;
 import org.jdom2.Document;
 import org.jdom2.Element;
@@ -1197,6 +1199,20 @@ public final class SolrSearchIndex {
             boolean getFieldStatistics)
             throws PresentationException, IndexUnreachableException {
         return searchFacetsAndStatistics(query, filterQueries, facetFields, facetMinCount, null, getFieldStatistics);
+    }
+    
+    public boolean pingSolrIndex() {
+        if(client != null) {
+            try {
+                SolrPingResponse ping = client.ping();
+                return ping.getStatus() < 400;
+            } catch (SolrException | SolrServerException | IOException e) {
+                logger.trace("Ping to solr failed " + e.toString());
+                return false;
+            }
+        } else {
+            return false;
+        }
     }
 
     /**

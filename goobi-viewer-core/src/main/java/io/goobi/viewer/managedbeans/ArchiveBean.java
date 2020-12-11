@@ -29,6 +29,7 @@ import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
 
+import org.apache.commons.configuration.ConfigurationException;
 import org.apache.commons.configuration.HierarchicalConfiguration;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
@@ -69,7 +70,7 @@ public class ArchiveBean implements Serializable {
     private ArchiveTree archiveTree;
 
     private String searchString;
-    
+
     private DatabaseState databaseState = DatabaseState.NOT_INITIALIZED;
 
     @Inject
@@ -78,7 +79,6 @@ public class ArchiveBean implements Serializable {
     //    @Inject
     //    private FacesContext context;
 
-    
     private static enum DatabaseState {
         NOT_INITIALIZED,
         VALID,
@@ -99,36 +99,36 @@ public class ArchiveBean implements Serializable {
      */
     @PostConstruct
     public void init() {
-            String basexUrl = DataManager.getInstance().getConfiguration().getBaseXUrl();
-            String databaseName = DataManager.getInstance().getConfiguration().getBaseXDatabase();
-            if(StringUtils.isNoneBlank(basexUrl, databaseName)) {
-                this.eadParser = new BasexEADParser(basexUrl);
-                this.databaseState = loadDatabase(databaseName);
-            } else {
-                this.databaseState = DatabaseState.ERROR_NOT_CONFIGURED;
-            }
+        String basexUrl = DataManager.getInstance().getConfiguration().getBaseXUrl();
+        String databaseName = DataManager.getInstance().getConfiguration().getBaseXDatabase();
+        if (StringUtils.isNoneBlank(basexUrl, databaseName)) {
+            this.eadParser = new BasexEADParser(basexUrl);
+            this.databaseState = loadDatabase(databaseName);
+        } else {
+            this.databaseState = DatabaseState.ERROR_NOT_CONFIGURED;
+        }
     }
 
     public DatabaseState loadDatabase(String databaseName) {
-            
-//        String storageKey = databaseName + "@" + eadParser.getBasexUrl();
-//        if(context.getExternalContext().getSessionMap().containsKey(storageKey)) {
-//            eadParser = new BasexEADParser((BasexEADParser)context.getExternalContext().getSessionMap().containsKey(storageKey));
-//        } else {
+
+        //        String storageKey = databaseName + "@" + eadParser.getBasexUrl();
+        //        if(context.getExternalContext().getSessionMap().containsKey(storageKey)) {
+        //            eadParser = new BasexEADParser((BasexEADParser)context.getExternalContext().getSessionMap().containsKey(storageKey));
+        //        } else {
         HierarchicalConfiguration baseXMetadataConfig = DataManager.getInstance().getConfiguration().getBaseXMetadataConfig();
-            try {
-                Document databaseDoc = eadParser.retrieveDatabaseDocument(databaseName);
-                eadParser.loadDatabase(databaseName, baseXMetadataConfig, databaseDoc);
-                return DatabaseState.VALID;
-            } catch (IOException | HTTPException e) {
-                logger.error("Error retrieving database {} from {}", databaseName, eadParser.getBasexUrl());
-                return DatabaseState.ERROR_NOT_REACHABLE;
-            } catch (JDOMException e) {
-                logger.error("Error reading database {} from {}", databaseName, eadParser.getBasexUrl());
-                return DatabaseState.ERROR_INVALID_FORMAT;
-            }
-//            context.getExternalContext().getSessionMap().put(storageKey, eadParser);
-//        }
+        try {
+            Document databaseDoc = eadParser.retrieveDatabaseDocument(databaseName);
+            eadParser.loadDatabase(databaseName, baseXMetadataConfig, databaseDoc);
+            return DatabaseState.VALID;
+        } catch (IOException | HTTPException e) {
+            logger.error("Error retrieving database {} from {}", databaseName, eadParser.getBasexUrl());
+            return DatabaseState.ERROR_NOT_REACHABLE;
+        } catch (JDOMException | ConfigurationException e) {
+            logger.error("Error reading database {} from {}", databaseName, eadParser.getBasexUrl());
+            return DatabaseState.ERROR_INVALID_FORMAT;
+        }
+        //            context.getExternalContext().getSessionMap().put(storageKey, eadParser);
+        //        }
 
     }
 
@@ -140,10 +140,12 @@ public class ArchiveBean implements Serializable {
      * @throws HTTPException
      * @throws IllegalStateException
      * @throws JDOMException
-     * @deprecated Storing database in application seems ineffective since verifying that database is current takes about as much time as retriving the complete database
+     * @deprecated Storing database in application seems ineffective since verifying that database is current takes about as much time as retriving
+     *             the complete database
      */
     @Deprecated
-    public void loadDatabaseAndStoreInApplicationScope(String databaseName) throws ClientProtocolException, IOException, HTTPException, IllegalStateException, JDOMException {
+    public void loadDatabaseAndStoreInApplicationScope(String databaseName)
+            throws ClientProtocolException, IOException, HTTPException, IllegalStateException, JDOMException {
         try (Time t = DataManager.getInstance().getTiming().takeTime("loadDatabase")) {
             Document databaseDoc = null;
             String storageKey = databaseName + "@" + eadParser.getBasexUrl();
@@ -165,6 +167,9 @@ public class ArchiveBean implements Serializable {
             HierarchicalConfiguration baseXMetadataConfig = DataManager.getInstance().getConfiguration().getBaseXMetadataConfig();
             try (Time t3 = DataManager.getInstance().getTiming().takeTime("eadParser.loadDatabase")) {
                 eadParser.loadDatabase(databaseName, baseXMetadataConfig, databaseDoc);
+            } catch (ConfigurationException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
             }
         }
     }
@@ -188,23 +193,23 @@ public class ArchiveBean implements Serializable {
      */
     public ArchiveTree getArchiveTree() throws BaseXException {
         // logger.trace("getArchiveTree");
-        if (eadParser == null || !eadParser.isDatabaseLoaded()) {
-            throw new BaseXException("No BaseX connection");
-        }
-
-        ArchiveTree h = archiveTree;
-        if (h == null) {
-            synchronized (lock) {
-                // Another thread might have initialized hierarchy by now
-                h = archiveTree;
-                if (h == null) {
-                    h = generateHierarchy();
-                    archiveTree = h;
+        if (isDatabaseValid()) {
+            ArchiveTree h = archiveTree;
+            if (h == null) {
+                synchronized (lock) {
+                    // Another thread might have initialized hierarchy by now
+                    h = archiveTree;
+                    if (h == null) {
+                        h = generateHierarchy();
+                        archiveTree = h;
+                    }
                 }
             }
-        }
 
-        return archiveTree;
+            return archiveTree;
+        } else {
+            return null;
+        }
     }
 
     /**
@@ -307,7 +312,7 @@ public class ArchiveBean implements Serializable {
     /**
      * 
      * @return
-     * @throws BaseXException 
+     * @throws BaseXException
      */
     public String searchAction() throws BaseXException {
         logger.trace("searchAction: {}", searchString);
@@ -321,7 +326,7 @@ public class ArchiveBean implements Serializable {
      * 
      * @param resetSelectedEntry If true, selected entry will be set to null
      * @param collapseAll If true, all elements will be collapsed before expanding path to search hits
-     * @throws BaseXException 
+     * @throws BaseXException
      */
     void search(boolean resetSelectedEntry, boolean collapseAll) throws BaseXException {
         if (eadParser == null || !eadParser.isDatabaseLoaded() || archiveTree == null) {
@@ -384,7 +389,7 @@ public class ArchiveBean implements Serializable {
      * Setter for the URL parameter. Loads the entry that has the given ID. Loads the tree, if this is a new sessions.
      * 
      * @param id Entry ID
-     * @throws BaseXException 
+     * @throws BaseXException
      */
     public void setSelectedEntryId(String id) throws BaseXException {
         logger.trace("setSelectedEntryId: {}", id);
@@ -467,14 +472,14 @@ public class ArchiveBean implements Serializable {
         }
         return Pair.of(prev, next);
     }
-    
+
     /**
      * @return the databaseState
      */
     public DatabaseState getDatabaseState() {
         return databaseState;
     }
-    
+
     public boolean isDatabaseValid() {
         return DatabaseState.VALID.equals(this.databaseState);
     }
