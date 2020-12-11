@@ -44,8 +44,8 @@
 				</c:when>
 				<c:otherwise>
 					<div id="archivesView" class="archives-tree">
-						<ui:include src="/resources/includes/archives/archiveTreeInclude.xhtml">
-	                    	<ui:param name="view" value="archives" />
+						<ui:include src="/resources/includes/archives/archiveTreeView.xhtml">
+	                    	<ui:param name="view" value="archivetree" />
 	                    	<ui:param name="indent" value="#{configurationBean.tocIndentation * 1.5}"/>
 	                    </ui:include>
 					</div>
@@ -53,9 +53,7 @@
 			</c:choose>
 		</f:view>
 		
-		<script type="text/javascript">
-        	viewerJS.archives.init();
-        </script>
+
 		
 	</ui:define>
 

@@ -106,7 +106,7 @@
 	
     <!-- ARCHIVES -->
     <url-mapping id="archivetree">
-        <pattern value="/archivetree" />
+        <pattern value="/archivetree/" />
         <view-id value="/archiveTree.xhtml" />
         <query-param name="selected">#{archiveBean.selectedEntryId}</query-param>
     </url-mapping>

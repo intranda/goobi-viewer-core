@@ -21,8 +21,14 @@ var viewerJS = ( function( viewer ) {
     'use strict';
 
     var _debug = false;
+    
+    var _defaults = {
+            initHcSticky: false,
+            initSearch: false,
+            initTextTree: false
+    };
  
-    viewer.archivesSeparate = {
+    viewer.archives = { 
         init: function( config ) {
             if ( _debug ) {
                 console.log( '##############################' );
@@ -30,50 +36,66 @@ var viewerJS = ( function( viewer ) {
                 console.log( '##############################' );
                 console.log( 'viewer.archivesSeparate.init: config - ', config );
             }
-
+            this.config = $.extend( true, {}, _defaults, config );
+            console.log("archives config ", this.config);
+            
             jQuery(document).ready(($) => {
 
-                this.initHcStickyWithChromeHack();
-                viewerJS.jsfAjax.success
-                .subscribe(e => this.refreshStickyWithChromeHack())
-
-                
-            	/* check search field for input value and show clear button */
-                if(!$('.tec-archives__search-input').val() == ''){
-            		$('.tec-archives__search-clear').show();
+                if(this.config.initHcSticky) {                    
+                    this.initHcStickyWithChromeHack();
                 }
-            	$('body').on("click", '.tec-archives__search-clear', function(){
-            		/* clear value on click*/
-                $('.tec-archives__search-input').val("");
-            	    /* trigger empty search on click */
-            	    $('.tec-archives__search-submit-button').click();
-            	});
-            	
-//            	if($('.admin__table-entry').length == 0) {
-//            		$('.admin__table-content').append('<br/><p class="">#{msg.hitsZero}</p>');
-//            	}
-            	
-            	
-            	 // auto submit search after typing
-            	 let timeSearchInputField = 0;
-
-            	 $('body').on('input', '.tec-archives__search-input', function () {
-            	     // Reset the timer while still typing
-            	     clearTimeout(timeSearchInputField);
-
-            	     timeSearchInputField = setTimeout(function() {
-            	         // submit search query
-            	    	 $('.tec-archives__search-submit-button').click();
-            	     }, 1300);
-            	 });
+                viewerJS.jsfAjax.success
+                .subscribe(e => {
+                    if(this.config.initHcSticky) {                        
+                        this.refreshStickyWithChromeHack();
+                    }
+                    this.setLocation(e.source);
+                });
+                
+                if(this.config.initSearch) {
+                    this.initSearch();
+                }
             	 
-            	 // toggle text-tree view from stairs to one line
-            	 $('body').on("click", '.tec-archives__text-tree', function() {
-            		 $('.tec-archives__text-tree').toggleClass('-showAsOneLine');
-            	 });
+            	 if(this.config.initTextTree) {
+            	     this.initTextTree();
+            	 }
+            	 
             	
             });            
             
+        },
+        
+        initTextTree: function() {
+         // toggle text-tree view from stairs to one line
+            $('body').on("click", '.tec-archives__text-tree', function() {
+                $('.tec-archives__text-tree').toggleClass('-showAsOneLine');
+            });
+        },
+        
+        initSearch: function() {
+            /* check search field for input value and show clear button */
+            if(!$('.tec-archives__search-input').val() == ''){
+                $('.tec-archives__search-clear').show();
+            }
+            $('body').on("click", '.tec-archives__search-clear', function(){
+                /* clear value on click*/
+            $('.tec-archives__search-input').val("");
+                /* trigger empty search on click */
+                $('.tec-archives__search-submit-button').click();
+            });
+
+             // auto submit search after typing
+             let timeSearchInputField = 0;
+
+             $('body').on('input', '.tec-archives__search-input', function () {
+                 // Reset the timer while still typing
+                 clearTimeout(timeSearchInputField);
+
+                 timeSearchInputField = setTimeout(function() {
+                     // submit search query
+                     $('.tec-archives__search-submit-button').click();
+                 }, 1300);
+             });
         },
         
         /**
@@ -92,7 +114,6 @@ var viewerJS = ( function( viewer ) {
         
         refreshHcSticky: function() {
             if(_debug)console.log("update hc sticky");
-
 //            $('.tec-archives__left-side, .tec-archives__right-side').hcSticky('refresh');
             $('.tec-archives__left-side, .tec-archives__right-side').hcSticky('update', {
                 stickTo: $('.tec-archives__wrapper')[0],
@@ -147,6 +168,17 @@ var viewerJS = ( function( viewer ) {
                     }
                 }
             });
+        },
+        
+        setLocation: function(element) {
+            if(_debug)console.log(" clicked data-select-entry", element);
+            let select = $(element).attr("data-select-entry");
+            let url = window.location.origin + window.location.pathname;
+            if(select) {
+                url += ("?selected=" + select + "#selected");
+            }
+            if(_debug)console.log("set url ", url);
+            window.history.pushState({}, '', url);
         }
     };
 
