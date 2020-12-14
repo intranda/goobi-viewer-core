@@ -23,23 +23,23 @@
     <ui:define name="content">
     
         <f:view contentType="text/html" encoding="utf-8">
-        	<div class="tec-archives__wrapper">
+        	<div class="archives__wrapper">
 
         		<!-- LEFT SIDE -->
-				<div class="tec-archives__left-side">
+				<div class="archives__left-side">
 				
 				                
-                    <h:panelGroup layout="block" id="treeGroup" styleClass="tec-archives__graphic-tree">
+                    <h:panelGroup layout="block" id="treeGroup" styleClass="archives__graphic-tree">
                     
-	                    <div class="tec-archives__search-input-wrapper">
+	                    <div class="archives__search-input-wrapper">
 		                    <h:form id="searchForm" prependId="false">
-		                        <h:inputText id="archivesSearchField" styleClass="form-control filter-input tec-archives__search-input"
+		                        <h:inputText id="archivesSearchField" styleClass="form-control filter-input archives__search-input"
 		                            value="#{archiveBean.searchString}" immediate="true">
 		                            <f:passThroughAttribute name="placeholder" value="#{msg.searchFieldDemoText}" />
 		                            <f:passThroughAttribute name="aria-label" value="#{msg.aria_label__search_form}" />
 		                        </h:inputText>
-		                        <div class="tec-archives__search-clear">x</div>
-		                        <h:commandButton styleClass="tec-archives__search-submit-button" value="#{msg.search}" action="#{archiveBean.searchAction}">
+		                        <div class="archives__search-clear">x</div>
+		                        <h:commandButton styleClass="archives__search-submit-button" value="#{msg.search}" action="#{archiveBean.searchAction}">
 		                        </h:commandButton>
 		            		</h:form>
 	                    </div>
@@ -53,103 +53,103 @@
 				</div>
 				
 				<!-- RIGHT SIDE -->
-				<div class="tec-archives__right-side">
+				<div class="archives__right-side">
   				<!-- HIERARCHY OF THE CURRENT NODE -->
-                 <h:panelGroup layout="block" id="hierarchyGroup" styleClass="tec-archives__text-tree">
+                 <h:panelGroup layout="block" id="hierarchyGroup" styleClass="archives__text-tree">
                      <ui:repeat var="entry"
                          value="#{archiveBean.getArchiveHierarchyForIdentifier(archiveBean.displayEntry.id)}">
                          <!-- TODO proper level tag -->
                          <!-- TODO bold via CSS -->
-                         <div class="tec-archives__text-tree-entry">
-                          <div class="tec-archives__text-tree-level">
+                         <div class="archives__text-tree-entry">
+                          <div class="archives__text-tree-level">
                           	<h:outputText rendered="#{entry.descriptionLevel != null}" value="#{msg[entry.descriptionLevel]}:" />
                           </div>
-                          	<span class="tec-archives__text-tree-value">#{entry.label}</span>
+                          	<span class="archives__text-tree-value">#{entry.label}</span>
                           </div>
                      </ui:repeat>
                  </h:panelGroup>
 					
-                 <h:panelGroup layout="block" id="metadataGroup" styleClass="tec-archives__object-info">
-                 	<div class="tec-archives__object-metadata">
+                 <h:panelGroup layout="block" id="metadataGroup" styleClass="archives__object-info">
+                 	<div class="archives__object-metadata">
                       <!-- METADATA -->
                       <!-- Replacing these with c:forEach will result in get*List() being called for each iteration -->
                       <!-- TODO bold via CSS -->
-                      <div class="tec-archives__object-title">#{archiveBean.displayEntry.label}</div>
+                      <div class="archives__object-title">#{archiveBean.displayEntry.label}</div>
                       <!-- Identity statement metadata -->
                       <c:if test="#{archiveBean.displayEntry.identityStatementAreaList.stream().filter(field -> field.filled).count() > 0}">
-                          <div class="tec-archives__object-block-label">#{msg.archives__archive_area_identity}</div>
+                          <div class="archives__object-block-label">#{msg.archives__archive_area_identity}</div>
                           <ui:repeat var="field" value="#{archiveBean.archiveTree.selectedEntry.identityStatementAreaList}">
-                              <h:panelGroup layout="block" styleClass="tec-archives__object-metadata-entry" rendered="#{field.filled}">
-                                  <div class="tec-archives__object-field-name">#{field.label}:</div><div class="tec-archives__object-field-value">#{field.value}</div>
+                              <h:panelGroup layout="block" styleClass="archives__object-metadata-entry" rendered="#{field.filled}">
+                                  <div class="archives__object-field-name">#{field.label}:</div><div class="archives__object-field-value">#{field.value}</div>
                               </h:panelGroup>
                           </ui:repeat>
                       </c:if>
                       <!-- Context metadata -->
                       <c:if test="#{archiveBean.displayEntry.contextAreaList.stream().filter(field -> field.filled).count() > 0}">
-                          <div class="tec-archives__object-block-label">#{msg.archives__archive_area_context}</div>
+                          <div class="archives__object-block-label">#{msg.archives__archive_area_context}</div>
                           <ui:repeat var="field" value="#{archiveBean.archiveTree.selectedEntry.contextAreaList}">
-                              <h:panelGroup layout="block" styleClass="tec-archives__object-metadata-entry" rendered="#{field.filled}">
-                                  <div class="tec-archives__object-field-name">#{field.label}:</div><div class="tec-archives__object-field-value">#{field.value}</div>
+                              <h:panelGroup layout="block" styleClass="archives__object-metadata-entry" rendered="#{field.filled}">
+                                  <div class="archives__object-field-name">#{field.label}:</div><div class="archives__object-field-value">#{field.value}</div>
                               </h:panelGroup>
                           </ui:repeat>
                       </c:if>
                       <!-- Content and structure metadata -->
                       <c:if test="#{archiveBean.displayEntry.contentAndStructureAreaAreaList.stream().filter(field -> field.filled).count() > 0}">
-                          <div class="tec-archives__object-block-label">#{msg.archives__archive_area_content}</div>
+                          <div class="archives__object-block-label">#{msg.archives__archive_area_content}</div>
                           <ui:repeat var="field" value="#{archiveBean.archiveTree.selectedEntry.contentAndStructureAreaAreaList}">
-                              <h:panelGroup layout="block" styleClass="tec-archives__object-metadata-entry" rendered="#{field.filled}">
-                                  <div class="tec-archives__object-field-name">#{field.label}:</div><div class="tec-archives__object-field-value">#{field.value}</div>
+                              <h:panelGroup layout="block" styleClass="archives__object-metadata-entry" rendered="#{field.filled}">
+                                  <div class="archives__object-field-name">#{field.label}:</div><div class="archives__object-field-value">#{field.value}</div>
                               </h:panelGroup>
                           </ui:repeat>
                       </c:if>
                       <!-- Access and terms of usage metadata -->
                       <c:if test="#{archiveBean.displayEntry.accessAndUseAreaList.stream().filter(field -> field.filled).count() > 0}">
-                          <div class="tec-archives__object-block-label">#{msg.archives__archive_area_access}</div>
+                          <div class="archives__object-block-label">#{msg.archives__archive_area_access}</div>
                           <ui:repeat var="field" value="#{archiveBean.archiveTree.selectedEntry.accessAndUseAreaList}">
-                              <h:panelGroup layout="block" styleClass="tec-archives__object-metadata-entry" rendered="#{field.filled}">
-                                  <div class="tec-archives__object-field-name">#{field.label}:</div><div class="tec-archives__object-field-value">#{field.value}</div>
+                              <h:panelGroup layout="block" styleClass="archives__object-metadata-entry" rendered="#{field.filled}">
+                                  <div class="archives__object-field-name">#{field.label}:</div><div class="archives__object-field-value">#{field.value}</div>
                               </h:panelGroup>
                           </ui:repeat>
                       </c:if>
                       <!-- Related matarials metadata -->
                       <c:if test="#{archiveBean.displayEntry.alliedMaterialsAreaList.stream().filter(field -> field.filled).count() > 0}">
-                          <div class="tec-archives__object-block-label">#{msg.archives__archive_area_materials}</div>
+                          <div class="archives__object-block-label">#{msg.archives__archive_area_materials}</div>
                           <ui:repeat var="field" value="#{archiveBean.archiveTree.selectedEntry.alliedMaterialsAreaList}">
-                              <h:panelGroup layout="block" styleClass="tec-archives__object-metadata-entry" rendered="#{field.filled}">
-                                  <div class="tec-archives__object-field-name">#{field.label}:</div><div class="tec-archives__object-field-value">#{field.value}</div>
+                              <h:panelGroup layout="block" styleClass="archives__object-metadata-entry" rendered="#{field.filled}">
+                                  <div class="archives__object-field-name">#{field.label}:</div><div class="archives__object-field-value">#{field.value}</div>
                               </h:panelGroup>
                           </ui:repeat>
                       </c:if>
                       <!-- Notes metadata -->
                       <c:if test="#{archiveBean.displayEntry.notesAreaList.stream().filter(field -> field.filled).count() > 0}">
-                          <div class="tec-archives__object-block-label">#{msg.archives__archive_area_notes}</div>
+                          <div class="archives__object-block-label">#{msg.archives__archive_area_notes}</div>
                           <ui:repeat var="field" value="#{archiveBean.archiveTree.selectedEntry.notesAreaList}">
-                              <h:panelGroup layout="block" styleClass="tec-archives__object-metadata-entry" rendered="#{field.filled}">
-                                  <div class="tec-archives__object-field-name">#{field.label}:</div><div class="tec-archives__object-field-value">#{field.value}</div>
+                              <h:panelGroup layout="block" styleClass="archives__object-metadata-entry" rendered="#{field.filled}">
+                                  <div class="archives__object-field-name">#{field.label}:</div><div class="archives__object-field-value">#{field.value}</div>
                               </h:panelGroup>
                           </ui:repeat>
                       </c:if>
                       <!-- Description control metadata -->
                       <c:if test="#{archiveBean.displayEntry.descriptionControlAreaList.stream().filter(field -> field.filled).count() > 0}">
-                          <div class="tec-archives__object-block-label">#{msg.archives__archive_area_descriptionControl}</div>
+                          <div class="archives__object-block-label">#{msg.archives__archive_area_descriptionControl}</div>
                           <ui:repeat var="field" value="#{archiveBean.archiveTree.selectedEntry.descriptionControlAreaList}">
-                              <h:panelGroup layout="block" styleClass="tec-archives__object-metadata-entry" rendered="#{field.filled}">
-                                  <div class="tec-archives__object-field-name">#{field.label}:</div><div class="tec-archives__object-field-value">#{field.value}</div>
+                              <h:panelGroup layout="block" styleClass="archives__object-metadata-entry" rendered="#{field.filled}">
+                                  <div class="archives__object-field-name">#{field.label}:</div><div class="archives__object-field-value">#{field.value}</div>
                               </h:panelGroup>
                           </ui:repeat>
                       </c:if>
                      </div>
                      
                       <!-- ASSOCIATED RECORD -->
-                      <div class="tec-archives__object-image">
+                      <div class="archives__object-image">
 	                      <h:outputLink
-	                      	styleClass="tec-archives__object-image-link" rendered="#{archiveBean.displayEntry != null and archiveBean.displayEntry.associatedRecordPi != ''}" 
+	                      	styleClass="archives__object-image-link" rendered="#{archiveBean.displayEntry != null and archiveBean.displayEntry.associatedRecordPi != ''}" 
 	                          value="#{navigationHelper.objectUrl}/#{archiveBean.displayEntry.associatedRecordPi}/1/">
 	                              <!-- TODO less trivial image display -->
-	                              <div class="tec-archives__object-image-overlay"></div>
+	                              <div class="archives__object-image-overlay"></div>
 	                              <img src="#{imageDelivery.thumbs.getThumbnailUrl(archiveBean.displayEntry.associatedRecordPi)}" />
-	                              <div class="tec-archives__object-image-hover-text">#{msg.archives__showRecord}</div>
-	                              <div class="tec-archives__object-image-hover-icon">
+	                              <div class="archives__object-image-hover-text">#{msg.archives__showRecord}</div>
+	                              <div class="archives__object-image-hover-icon">
 	                              	<i class="fa fa-arrow-circle-o-right" aria-hidden="true"></i>
 	                              </div>
 	                              <!-- TODO view selection, representative page -->
