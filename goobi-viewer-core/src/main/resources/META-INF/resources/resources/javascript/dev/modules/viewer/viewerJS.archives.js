@@ -66,33 +66,33 @@ var viewerJS = ( function( viewer ) {
         
         initTextTree: function() {
          // toggle text-tree view from stairs to one line
-            $('body').on("click", '.tec-archives__text-tree', function() {
-                $('.tec-archives__text-tree').toggleClass('-showAsOneLine');
+            $('body').on("click", '.archives__text-tree', function() {
+                $('.archives__text-tree').toggleClass('-showAsOneLine');
             });
         },
         
         initSearch: function() {
             /* check search field for input value and show clear button */
-            if(!$('.tec-archives__search-input').val() == ''){
-                $('.tec-archives__search-clear').show();
+            if(!$('.archives__search-input').val() == ''){
+                $('.archives__search-clear').show();
             }
-            $('body').on("click", '.tec-archives__search-clear', function(){
+            $('body').on("click", '.archives__search-clear', function(){
                 /* clear value on click*/
-            $('.tec-archives__search-input').val("");
+            $('.archives__search-input').val("");
                 /* trigger empty search on click */
-                $('.tec-archives__search-submit-button').click();
+                $('.archives__search-submit-button').click();
             });
 
              // auto submit search after typing
              let timeSearchInputField = 0;
 
-             $('body').on('input', '.tec-archives__search-input', function () {
+             $('body').on('input', '.archives__search-input', function () {
                  // Reset the timer while still typing
                  clearTimeout(timeSearchInputField);
 
                  timeSearchInputField = setTimeout(function() {
                      // submit search query
-                     $('.tec-archives__search-submit-button').click();
+                     $('.archives__search-submit-button').click();
                  }, 1300);
              });
         },
@@ -113,9 +113,9 @@ var viewerJS = ( function( viewer ) {
         
         refreshHcSticky: function() {
             if(_debug)console.log("update hc sticky");
-//            $('.tec-archives__left-side, .tec-archives__right-side').hcSticky('refresh');
-            $('.tec-archives__left-side, .tec-archives__right-side').hcSticky('update', {
-                stickTo: $('.tec-archives__wrapper')[0],
+//            $('.archives__left-side, .archives__right-side').hcSticky('refresh');
+            $('.archives__left-side, .archives__right-side').hcSticky('update', {
+                stickTo: $('.archives__wrapper')[0],
                 top: 80,
                 bottom: 20,
                 responsive: {
@@ -145,8 +145,8 @@ var viewerJS = ( function( viewer ) {
             if(_debug)console.log("init hc sticky");
                         
             // Sticky right side of archives view
-            $('.tec-archives__right-side').hcSticky({
-                stickTo: $('.tec-archives__wrapper')[0],
+            $('.archives__right-side').hcSticky({
+                stickTo: $('.archives__wrapper')[0],
                 top: 80,
                 bottom: 20,
                 responsive: {
@@ -157,8 +157,8 @@ var viewerJS = ( function( viewer ) {
             });
             
             // Sticky left side of archives view
-            $('.tec-archives__left-side').hcSticky({
-                stickTo: $('.tec-archives__wrapper')[0],
+            $('.archives__left-side').hcSticky({
+                stickTo: $('.archives__wrapper')[0],
                 top: 80,
                 bottom: 20,
                 responsive: {

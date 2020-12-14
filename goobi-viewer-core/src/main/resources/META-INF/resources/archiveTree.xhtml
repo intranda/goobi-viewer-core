@@ -28,17 +28,17 @@
             <h2>#{msg.archives}</h2>
             <c:choose>
 				<c:when test="#{archiveBean.databaseState == 'ERROR_NOT_CONFIGURED'}">
-					<div class="tec-archives__error">
+					<div class="archives__error">
 						<span>#{msg.error__archives_database_configuration_missing}</span>
 					</div>
 				</c:when>
 				<c:when test="#{archiveBean.databaseState == 'ERROR_NOT_REACHABLE'}">
-					<div class="tec-archives__error">
+					<div class="archives__error">
 						<span>#{msg.error__archives_database_not_reachable}</span>
 					</div>
 				</c:when>
 				<c:when test="#{archiveBean.databaseState == 'ERROR_INVALID_FORMAT'}">
-					<div class="tec-archives__error">
+					<div class="archives__error">
 						<span>#{msg.error__archives_failed_to_read_database}</span>
 					</div>
 				</c:when>
