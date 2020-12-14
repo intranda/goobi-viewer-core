@@ -118,7 +118,7 @@ var cmsJS = ( function( cms ) {
             // create item title
             rssItemTitle = $( '<div />' ).addClass( 'tpl-rss__item-title' );
             rssItemTitleHeading = $( '<h3 />' );
-            rssItemTitleHeading.addClass('h4')
+            rssItemTitleHeading.addClass('h4');
             rssItemTitleLink = $( '<a />' ).attr( 'href', item.link ).text( item.title );
             rssItemTitleHeading.append( rssItemTitleLink );
             rssItemTitle.append( rssItemTitleHeading );
