@@ -3,7 +3,7 @@
    global style declarations for crowdsourcing_layout.xhtml
    ==============================================================*/
 /* ADMIN LAYOUT */
-.tec-archives {
+.archives {
 	width: 100vw;
 	&__top-wrapper {
 		height: 60px;
@@ -163,10 +163,10 @@
 		cursor: pointer;
 		&.-showAsOneLine {
 			display: block;
-			.tec-archives__text-tree-entry {
+			.archives__text-tree-entry {
 				display: inline;
 				&:last-child {
-					.tec-archives__text-tree-value {
+					.archives__text-tree-value {
 						&::after {
 							display: none;
 						}
@@ -174,13 +174,13 @@
 				}
 			}
 			// adding zero padding child elements
-			.tec-archives__text-tree-entry:nth-child(n+0){
+			.archives__text-tree-entry:nth-child(n+0){
 					padding-left: 0;
 		 	}
-			.tec-archives__text-tree-level {
+			.archives__text-tree-level {
 				display: none;
 			}
-			.tec-archives__text-tree-value {
+			.archives__text-tree-value {
 				&::after {
 					content: '›';
 					margin-left: 1rem;
@@ -189,13 +189,13 @@
 			}
 		}
 	// adding more padding to every following child element
-	.tec-archives__text-tree-staircase (@indexstart,@index) when (@indexstart < @index ){
-		.tec-archives__text-tree-entry:nth-child(@{indexstart}){
+	.archives__text-tree-staircase (@indexstart,@index) when (@indexstart < @index ){
+		.archives__text-tree-entry:nth-child(@{indexstart}){
 				padding-left: (@indexstart - 1 ) * 20px + 20px;
 	 	}
-		.tec-archives__text-tree-staircase (@indexstart + 1,@index);
+		.archives__text-tree-staircase (@indexstart + 1,@index);
 	}
-	.tec-archives__text-tree-staircase (2,15);
+	.archives__text-tree-staircase (2,15);
 	}
 	&__text-tree-entry {
 		display: flex;
@@ -246,16 +246,16 @@
 	&__object-image-link {
 		position: relative;
 		&:hover {
-			.tec-archives__object-image-overlay {
+			.archives__object-image-overlay {
 				opacity: 1;
 				color: white,
 			}
-			.tec-archives__object-image-hover-icon {
+			.archives__object-image-hover-icon {
 				right: 50%;
 				bottom: calc(~"49% - 20px");
 				transform: translate(50%, 50%);
 			}
-			.tec-archives__object-image-hover-text {
+			.archives__object-image-hover-text {
 				right: 50%;
 				bottom: 55%;
 				transform: translate(50%, 50%);
@@ -405,20 +405,20 @@
 
 /* BREAKPOINT FOR DESKTOPS */
 @media screen and (max-width: @mediumBreakpoint) {
-	.tec-archives__right-side, .tec-archives__left-side {
+	.archives__right-side, .archives__left-side {
 		flex: 0 0 100%;
 		max-width: 100%;
 	}
-	.tec-archives__top-title {
+	.archives__top-title {
 		display: none;
 	}
-	.tec-archives__object-info {
+	.archives__object-info {
 		flex-wrap: wrap;
 	}
-	.tec-archives__object-metadata {
+	.archives__object-metadata {
 		flex: 0 0 100%;
 	}
-	.tec-archives__object-image {
+	.archives__object-image {
 		flex: 0 0 100%;
 		padding: 2rem 0 0 0;
 	}
@@ -430,7 +430,7 @@
 
 /* BREAKPOINT FOR SMARTPHONES */
 @media screen and (max-width: @xSmallBreakpoint) {
-	.tec-archives__text-tree .tec-archives__text-tree-entry:nth-child(n+0) {
+	.archives__text-tree .archives__text-tree-entry:nth-child(n+0) {
 		padding-left: 0;
 	}
 }
