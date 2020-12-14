@@ -104,6 +104,23 @@
 		<action onPostback="false">#{searchBean.setActiveSearchType(0)}</action>
 	</url-mapping>
 	
+    <!-- ARCHIVES -->
+    <url-mapping id="archivetree">
+        <pattern value="/archivetree/" />
+        <view-id value="/archiveTree.xhtml" />
+        <query-param name="selected">#{archiveBean.selectedEntryId}</query-param>
+    </url-mapping>
+    <!-- ARCHIVES -->
+    <url-mapping id="archives">
+        <pattern value="/archives/" />
+        <view-id value="/archivesContent.xhtml" />
+        <query-param onPostback="false" name="selected">#{archiveBean.selectedEntryId}</query-param>
+    </url-mapping>
+    <url-mapping id="archives1">
+        <pattern value="/archives/#{selectedEntryId:ArchiveBean.selectedEntryId}/" />
+        <view-id value="/archivesContent.xhtml" />
+    </url-mapping>
+	
 	<!-- FEEDBACK -->
 	<url-mapping id="feedback">
 		<pattern value="/feedback/" />

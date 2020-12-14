@@ -1,0 +1,106 @@
+<ui:composition 
+    xmlns="http://www.w3.org/1999/xhtml" 
+    xmlns:ui="http://xmlns.jcp.org/jsf/facelets" 
+    xmlns:c="http://java.sun.com/jsp/jstl/core"
+    xmlns:h="http://xmlns.jcp.org/jsf/html" 
+    xmlns:f="http://xmlns.jcp.org/jsf/core" 
+    xmlns:jsf="http://xmlns.jcp.org/jsf"
+    xmlns:pt="http://xmlns.jcp.org/jsf/passthrough" 
+    xmlns:viewer="http://xmlns.jcp.org/jsf/composite/components/partner"
+    xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components" 
+    xmlns:widgetComponent="http://xmlns.jcp.org/jsf/composite/components/widgets">
+
+	<ui:define name="metadata">
+		<f:metadata>
+		</f:metadata>
+	</ui:define>
+
+    <!-- MESSAGES -->
+    <div class="messages">
+        <h:messages id="messages" globalOnly="false" infoClass="alert alert-success" errorClass="alert alert-danger" />
+    </div>
+    
+  
+    <div id="tecArchives" class="tec-archives">
+		<header id="pageHeaderTop" class="tec-archives__top-wrapper">
+            <div class="tec-archives__header">
+	            <!-- OPEN MOBILE NAVIGATION -->
+            	<div class="tec-archives__top-mobile-nav">
+					<button type="button" class="btn btn--clean" data-open="menu" aria-label="#{msg.aria_label__open_navigation}">
+						<span></span>
+					</button>
+				</div>
+
+                <!-- PAGE HEADER TOP BRAND -->            
+                <div class="tec-archives__top-brand">
+				<a href="#{request.contextPath}" target="_self" rel="noopener">#{configurationBean.name}</a> › <h1>#{msg.archives__archiveViewHeading}</h1> 
+                </div>
+                
+                <!-- PAGE HEADER TOP CAMPAIGN TITLE -->            
+                <div class="tec-archives__top-title">
+                	<span>#{archiveBean.trueRoot.label}</span>
+                </div>
+
+                <!-- PAGE HEADER TOP ACTIONS -->            
+                <div class="tec-archives__top-actions">
+                    <!-- CHANGE LOCAL -->
+                    <div id="changeLocalWrapper" class="tec-archives__top-actions-language">
+                    	<button type="button" class="btn btn--clean" data-toggle="local" aria-label="#{msg.aria_label__switch_language}">
+                    		#{msg['changeLocal_' += navigationHelper.localeString]}
+                    	</button>
+                        <viewerComponent:changeLocal toggleLanguage="false" showFlags="false" />
+                    </div>
+                    <!-- LOGIN NAVIGATION -->
+                    <div class="tec-archives__top-actions-login">
+                        <viewerComponent:loginNavigation />
+                    </div>
+                </div>
+
+	            <!-- OPEN MOBILE NAVIGATION -->
+            	<div class="tec-archives__top-mobile-sidebar">
+					<button type="button" class="btn btn--clean" data-open="sidebar" aria-label="#{msg.aria_label__open_sidebar}">
+						<span></span>
+					</button>
+				</div>
+            </div>
+	    </header>
+
+		<!-- CONTENT -->
+		<main id="ArchivesContent" class="tec-archives__main">
+			<!-- <ui:insert name="breadcrumbs" /> -->
+			<c:choose>
+				<c:when test="#{archiveBean.databaseState == 'ERROR_NOT_CONFIGURED'}">
+					<div class="tec-archives__error">
+						<span>#{msg.error__archives_database_configuration_missing}</span>
+					</div>
+				</c:when>
+				<c:when test="#{archiveBean.databaseState == 'ERROR_NOT_REACHABLE'}">
+					<div class="tec-archives__error">
+						<span>#{msg.error__archives_database_not_reachable}</span>
+					</div>
+				</c:when>
+				<c:when test="#{archiveBean.databaseState == 'ERROR_INVALID_FORMAT'}">
+					<div class="tec-archives__error">
+						<span>#{msg.error__archives_failed_to_read_database}</span>
+					</div>
+				</c:when>
+				<c:otherwise>
+					<ui:insert name="content" />
+				</c:otherwise>
+			</c:choose>
+		</main>
+		
+		    <!-- USER LOGIN + TERMS -->
+		<viewerComponent:modalUserLogin id="userLoginModal"/>
+		<viewerComponent:modalUserTerms id="userTermsModal"/>
+		
+		<script type="text/javascript">
+        	viewerJS.archives.init({
+                initHcSticky: true,
+                initSearch: true,
+                initTextTree: true
+        });
+        </script>
+
+    </div>
+</ui:composition>

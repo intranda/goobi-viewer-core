@@ -2524,5 +2524,9 @@ public class SearchBean implements SearchInterface, Serializable {
        
         return this.searchAdvanced();
     }
+    
+    public boolean isSolrIndexReachable() {
+        return DataManager.getInstance().getSearchIndex().pingSolrIndex();
+    }
 
 }

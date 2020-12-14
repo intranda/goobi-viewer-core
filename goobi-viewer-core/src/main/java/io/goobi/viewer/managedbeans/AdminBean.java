@@ -1688,7 +1688,7 @@ public class AdminBean implements Serializable {
         Collections.sort(accessConditions);
         return accessConditions;
     }
-
+    
     /**
      * 
      * @return List of access condition values that have no corresponding license type in the database

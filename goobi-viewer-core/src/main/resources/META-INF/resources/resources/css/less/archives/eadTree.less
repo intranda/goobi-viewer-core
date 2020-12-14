@@ -1,0 +1,203 @@
+/* ==============================================================
+   View archives tree
+   style declarations for archivestree.xhtml
+   ==============================================================*/
+   
+/* EAD TREE */
+.archives-tree {
+		font-size: 1.5rem;
+		margin: 0;
+		border: 1px solid #d5d5d5;
+		background-color: #fff;
+		padding: 2rem;
+	&__inner {
+		position: relative;
+	}
+	&__expand-minimize-all {
+		display: flex;
+		justify-content: flex-end;
+		position: absolute;
+		right: 0;
+		a {
+			color: @black;
+			&:last-child {
+				margin-left: 0.7rem;
+			}
+		}
+	}
+	&__entry {
+		display: flex;
+		flex-wrap: wrap;
+		margin-bottom: 1rem;
+		&:first-child {
+			.archives-tree__list-expandable-title {
+				max-width: calc(100% - 130px);
+			}
+		}
+		&.child {
+			margin-left: 25px;
+			.archives-tree__metadata-box {
+				margin-left: 0;
+			}
+		}
+	}
+	&__list-expandable-title {
+		position: relative;
+		flex: 0 0 calc(~"100% - 25px");
+		display: flex;
+		.fa-stack {
+			width: unset;
+			height: unset;
+			line-height: unset;
+			margin-right: 1rem;
+		}
+		.fa-stack-text {
+			font-size: 10px;
+			position: absolute;
+			left: 0;
+			width: 100%;
+			text-align: center;
+			line-height: inherit;
+			padding-top: 4px;
+			&.-archives-selected {
+				color: green;
+			}
+		}
+		.fa-file-o {
+			font-size: 2rem;
+			&.-archives-selected {
+				color: green;
+			}
+		}
+		.fa-caret-up,
+		.fa-caret-down {
+			font-size: 1.5rem;
+			padding-left: 0.5rem;
+		}
+		a {
+			color: #222;
+		}
+	}
+	&__title {
+		flex-grow: 1;
+	}
+	&__selected {
+		position: absolute;
+		margin-top: -120px;
+	}
+	&__active-title {
+		font-weight: 700;
+		&::after {
+			content: "\f0d8";
+			font-family: "FontAwesome";
+			margin-right: -15px;
+			display: inline-block;
+			padding-left: 0.7rem;
+		}
+	}
+	&__inactive-title {
+		&::after {
+			content: "\f0d7";
+			font-family: "FontAwesome";
+			margin-right: -15px;
+			display: inline-block;
+			padding-left: 0.7rem;
+		}
+	}
+	&__expandable-icon {
+		width: 25px;
+		a {
+			color: #212529;
+			&:hover,
+			&:active,
+			&:focus {
+				color: #212529;
+			}
+		}
+		.fa {
+			font-size: 1.5rem;
+			color: #555;
+			flex: 0 0 50px;
+			max-width: 50px;
+		}
+	}
+	&__metadata-box {
+		padding: 1rem 1.2rem;
+		margin: 1rem 0;
+		background: #eee;
+		border: 1px solid #d5d5d5;
+		flex: 0 0 calc(~"100% - 25px");
+		margin-left: 25px;
+		/* HELPER DIRTY FIX */
+		br:first-child {
+			display: none;
+		}
+	}
+	
+	&__metadata-box-fields-row {
+		display: flex;
+		margin-bottom: 0.7rem;
+	}
+	&__metadata-box-field-name {
+		flex: 0 0 12rem;
+		font-weight: 700;
+	}
+	&__metadata-box-field-value {
+		flex-grow: 1;
+	}
+	&__metadata-box-links {
+		a {
+			margin-right: 1rem;
+		}
+	}
+	&__loader {}
+}
+
+// ajax loading indicator for ead tree
+#AJAXLoader.archives-tree__loader {
+		position: fixed;
+		width: 60px;
+		height: 60px;
+		border-radius: 15px;
+		background-image: url("../../images/infinity_loader.svg");
+		background-repeat: no-repeat;
+		background-position: center center;
+		background-size: 80%;
+		z-index: 500;
+		bottom: 15px;
+		left: 15px;
+		top: unset;
+		right: unset;
+		background-color: rgba(0,0,0,0.75);
+		opacity: 0;
+		animation: fadeIn 0.15s ease-in 0.5s 1 forwards;
+}
+
+/* BREAKPOINT FOR LARGE DESKTOPS */
+@media screen and (max-width: @largeBreakpoint) {}
+
+/* BREAKPOINT FOR DESKTOPS */
+@media screen and (max-width: @mediumBreakpoint) {}
+
+/* BREAKPOINT FOR TABLETS */
+@media screen and (max-width: @smallBreakpoint) {
+	.archives-tree {
+		&__entry {
+			&.parent {
+				padding-left: 0 !important;
+			}
+			&.child {
+				padding-left: 28px !important;
+			}
+		}
+		&__metadata-box-fields-row {
+			flex-direction: column;
+		}
+		&__metadata-box-field-name {
+			flex: 0 0 2rem;
+		}
+	}
+}
+
+/* BREAKPOINT FOR SMARTPHONES */
+@media screen and (max-width: @xSmallBreakpoint) {}

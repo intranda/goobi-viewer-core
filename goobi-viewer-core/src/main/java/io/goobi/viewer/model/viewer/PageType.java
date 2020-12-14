@@ -50,6 +50,8 @@ public enum PageType {
     firstWorkInCollection("rest/redirect/toFirstWork"),
     sitelinks("sitelinks"),
     user("user"),
+    tectonics("tectonics"),
+    archives("archives"),
     //admin
     admin("admin"),
     adminUsers("admin/users"),
