@@ -1079,12 +1079,10 @@ riot.tag2('collectionview', '<div each="{set, index in collectionSets}"><h3 if="
 this.collectionSets = [];
 
 this.on("mount", () => {
-    console.log("mounting collectionView", this.opts);
-
     this.fetchCollections()
     .then( () => {
         let keys = this.collectionSets.map(set => set[0]);
-        this.translator = new viewerJS.Translator(this.opts.restapi, this.opts.language);
+        this.translator = new viewerJS.Translator(this.opts.restapi.replace("/rest", "/api/v1"), this.opts.language);
         return this.translator.init(keys);
     })
     .then( () => {
@@ -2708,7 +2706,6 @@ riot.tag2('timematrix', '<div class="timematrix__objects"><div each="{manifest i
 	                }),
 	                ).subscribe(json => {
 	                    this.manifests = json.orderedItems;
-	                    console.log("got manifests ", this.manifests);
 	                    this.update();
 	                    this.opts.loading.hide();
 	                })

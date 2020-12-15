@@ -30,7 +30,6 @@
 	                }),
 	                ).subscribe(json => { 
 	                    this.manifests = json.orderedItems;
-	                    console.log("got manifests ", this.manifests);
 	                    this.update();
 	                    this.opts.loading.hide();
 	                })
