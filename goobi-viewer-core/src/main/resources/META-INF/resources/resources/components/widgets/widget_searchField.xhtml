@@ -29,7 +29,7 @@
                         	</c:choose>
                             <div class="input-group">
                                 <h:inputText 
-                                    id="searchField" 
+                                	onfocus="this.value=''"
                                     styleClass="form-control -no-outline"
                                     value="#{searchBean.invisibleSearchString}"> 
                                     <f:passThroughAttribute name="placeholder" value="#{cc.attrs.widget.hasWidgetTitle ? msg[cc.attrs.widget.widgetTitle] : msg.search}" />
@@ -38,14 +38,14 @@
                                 <div class="input-group-addon">
                                 	<c:choose>
                                 		<c:when test="#{cc.attrs.widget.hasLinkedPages}">
-	                                        <button id="widgetSearchFieldBtn_cms" class="btn btn-default" aria-label="#{msg.search}" jsf:action="#{cc.attrs.widget.linkedPages.search.searchSimple}">
+	                                        <button class="btn btn-default" aria-label="#{msg.search}" jsf:action="#{cc.attrs.widget.linkedPages.search.searchSimple}">
 	                                            <f:setPropertyActionListener for="actionEvent" target="#{searchBean.activeSearchType}" value="0" />
 	                                            <f:setPropertyActionListener for="actionEvent" target="#{searchBean.facets.currentFacetString}" value="#{cc.attrs.widget.additionalQuery}" />
                                 			<i class="fa fa-search"/>
                                 		</button>
                                 		</c:when>
                                 		<c:otherwise>
-	                                		<button id="widgetSearchFieldBtn" class="btn btn-default" aria-label="#{msg.search}" jsf:action="#{searchBean.searchSimpleSetFacets(cc.attrs.widget.additionalQuery)}">
+	                                		<button class="btn btn-default" aria-label="#{msg.search}" jsf:action="#{searchBean.searchSimpleSetFacets(cc.attrs.widget.additionalQuery)}">
 		                                            <f:setPropertyActionListener for="actionEvent" target="#{searchBean.activeSearchType}" value="0" />
 		                                            <f:setPropertyActionListener for="actionEvent" target="#{searchBean.facets.currentFacetString}" value="#{cc.attrs.widget.additionalQuery}" />
 	                                			<i class="fa fa-search"/>

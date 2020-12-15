@@ -178,11 +178,6 @@ var viewerJS = (function () {
             $(href).collapse('show');
         });
 
-        // reset searchfield on focus
-        $('body').on('focus', 'input[id*="searchField"]', function () {
-            $(this).val('');
-        });
-
         // init search drilldown filter
         if (_defaults.activateDrilldownFilter) {
             this.initDrillDownFilters();
