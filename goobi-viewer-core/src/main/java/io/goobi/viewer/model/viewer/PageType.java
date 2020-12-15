@@ -52,6 +52,7 @@ public enum PageType {
     user("user"),
     archive("archive"),
     archives("archives"),
+    timematrix("timematrix"),
     //admin
     admin("admin"),
     adminUsers("admin/users"),
