@@ -133,7 +133,7 @@
 		<solr.version>8.7.0</solr.version>
 		<saml-client.version>4.0.0</saml-client.version>
 		<stax-api.version>1.0-2</stax-api.version>
-        <swagger.version>2.1.5</swagger.version>
+        <swagger.version>2.1.6</swagger.version>
 		<tomcat.version>9.0.40</tomcat.version>
 		<weld-servlet-shaded.version>3.1.5.SP1</weld-servlet-shaded.version>
 		<xerces.version>2.12.0</xerces.version>
@@ -401,7 +401,6 @@
 	    	<groupId>org.glassfish.jersey.test-framework</groupId>
 		    <artifactId>jersey-test-framework-core</artifactId>
             <version>${jersey.version}</version>
-            <scope>test</scope>
 		</dependency>
 		<dependency>
 	    	<groupId>org.glassfish.jersey.test-framework.providers</groupId>
