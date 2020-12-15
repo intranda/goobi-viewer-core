@@ -76,7 +76,7 @@
 	        apiTarget += "?start=" + $( this.opts.startInput ).val();
 	        apiTarget += "&end=" + $( this.opts.endInput ).val();
 	        apiTarget += "&rows=" + $( this.opts.count ).val();
-	        apiTarget += "&sort=YEAR";
+	        apiTarget += "&sort=RANDOM";
 	        if ( this.opts.subtheme ) {
 	            apiTarget += ( "&subtheme=" + this.opts.subtheme );
 	        }
