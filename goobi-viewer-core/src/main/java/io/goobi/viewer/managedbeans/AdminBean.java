@@ -547,7 +547,7 @@ public class AdminBean implements Serializable {
                 Messages.error("userGroup_memberAddFailure");
             }
         }
-        setCurrentUserRole(null);
+        resetCurrentUserRoleAction();
     }
 
     /**
@@ -564,7 +564,7 @@ public class AdminBean implements Serializable {
         } else {
             Messages.error("deleteFailure");
         }
-        setCurrentUserRole(null);
+        resetCurrentUserRoleAction();
     }
 
     // LicenseType
@@ -1688,7 +1688,7 @@ public class AdminBean implements Serializable {
         Collections.sort(accessConditions);
         return accessConditions;
     }
-
+    
     /**
      * 
      * @return List of access condition values that have no corresponding license type in the database

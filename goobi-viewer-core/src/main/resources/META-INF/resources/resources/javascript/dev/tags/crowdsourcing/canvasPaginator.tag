@@ -1,6 +1,6 @@
 <canvasPaginator>
 
-<nav class="numeric-paginator">
+<nav class="numeric-paginator" aria-label="{Crowdsourcing.translate(aria_label__nav_pagination)}">
 
 	<ul>
 		<li if="{getCurrentIndex() > 0}" class="numeric-paginator__navigate navigate_prev">
@@ -8,15 +8,15 @@
 				<i class="fa fa-angle-left" aria-hidden="true"></i>
 			</span>
 		</li>
-		<li each="{canvas in this.firstCanvases()}" class="group_left {this.getIndex(canvas) == this.getCurrentIndex() ? 'numeric-paginator__active' : ''}" >
+		<li each="{canvas in this.firstCanvases()}" class="group_left {this.getIndex(canvas) == this.getCurrentIndex() ? 'numeric-paginator__active' : ''}">
 			<span  index="{this.getIndex(canvas)}" onclick="{this.loadFromEvent}">{this.getOrder(canvas)}</span>
 		</li>
 		<li class="numeric-paginator__separator" if="{this.useMiddleButtons()}">...</li>
-		<li each="{canvas in this.middleCanvases()}" class="group_middle {this.getIndex(canvas) == this.getCurrentIndex() ? 'numeric-paginator__active' : ''}"  >
+		<li each="{canvas in this.middleCanvases()}" class="group_middle {this.getIndex(canvas) == this.getCurrentIndex() ? 'numeric-paginator__active' : ''}">
 			<span index="{this.getIndex(canvas)}" onclick="{this.loadFromEvent}">{this.getOrder(canvas)}</span>
 		</li>
 		<li class="numeric-paginator__separator" if="{this.useLastButtons()}">...</li>
-		<li each="{canvas in this.lastCanvases()}" class="group_right {this.getIndex(canvas) == this.getCurrentIndex() ? 'numeric-paginator__active' : ''}" >
+		<li each="{canvas in this.lastCanvases()}" class="group_right {this.getIndex(canvas) == this.getCurrentIndex() ? 'numeric-paginator__active' : ''}">
 			<span index="{this.getIndex(canvas)}"  onclick="{this.loadFromEvent}">{this.getOrder(canvas)}</span>
 		</li>
 		<li if="{getCurrentIndex() < getTotalImageCount()-1}" class="numeric-paginator__navigate navigate_next">

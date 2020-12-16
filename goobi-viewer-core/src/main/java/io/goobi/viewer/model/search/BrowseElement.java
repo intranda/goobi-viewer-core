@@ -170,14 +170,13 @@ public class BrowseElement implements Serializable {
      * @param metadataList
      * @param locale
      * @param fulltext
-     * @param useThumbnail
      * @param
      * @throws PresentationException
      * @throws IndexUnreachableException
      * @throws DAOException
      * @throws ViewerConfigurationException
      */
-    BrowseElement(StructElement structElement, List<Metadata> metadataList, Locale locale, String fulltext, boolean useThumbnail,
+    BrowseElement(StructElement structElement, List<Metadata> metadataList, Locale locale, String fulltext,
             Map<String, Set<String>> searchTerms, ThumbnailHandler thumbs)
             throws PresentationException, IndexUnreachableException, DAOException, ViewerConfigurationException {
         this.metadataList = metadataList;

@@ -162,6 +162,7 @@
 												<i class="fa fa-minus-square-o" aria-hidden="true"></i>
 												<f:passThroughAttribute name="data-toggle" value="tooltip" />
 												<f:passThroughAttribute name="data-placement" value="top" />
+												<f:passThroughAttribute name="aria-label" value="#{msg.allClose}" />
 												<f:ajax render="tocForm" />
 											</h:commandLink>
 										</li>
@@ -170,6 +171,7 @@
 												<i class="fa fa-plus-square-o" aria-hidden="true"></i>
 												<f:passThroughAttribute name="data-toggle" value="tooltip" />
 												<f:passThroughAttribute name="data-placement" value="top" />
+												<f:passThroughAttribute name="aria-label" value="#{msg.allOpen}" />
 												<f:ajax render="tocForm" />
 											</h:commandLink>
 										</li>
@@ -188,10 +190,12 @@
 																<div class="toc__list-expandable-expand">
 																	<h:commandLink action="#{activeDocumentBean.setChildrenVisible(tocElement)}" rendered="#{!tocElement.expanded}">
 																		<i class="fa fa-plus-square-o" aria-hidden="true"></i>
+																		<f:passThroughAttribute name="aria-label" value="#{msg.allOpen}" />
 																		<f:ajax render="@form" />
 																	</h:commandLink>
 																	<h:commandLink action="#{activeDocumentBean.setChildrenInvisible(tocElement)}" rendered="#{tocElement.expanded}">
 																		<i class="fa fa-minus-square-o" aria-hidden="true"></i>
+																		<f:passThroughAttribute name="aria-label" value="#{msg.all}" />
 																		<f:ajax render="@form" />
 																	</h:commandLink>
 																</div>
@@ -214,7 +218,7 @@
 																<ul>
 																	<h:panelGroup rendered="#{tocElement.label != null}">
 																		<li>
-																			<a href="#{tocElement.url}" title="#{tocElement.label}">#{tocElement.pageNoLabel}</a>
+																			<a href="#{tocElement.url}" title="#{tocElement.label}" aria-label="#{tocElement.label}">#{tocElement.pageNoLabel}</a>
 																		</li>
 																	</h:panelGroup>
 																	<h:panelGroup rendered="#{tocElement.pageNo == null}">
@@ -387,6 +391,8 @@
         
         <widgetComponent:widget_searchInCurrentItem />
         
+        <widgetComponent:widget_archives />
+        
         <widgetComponent:widget_nerFacetting />
         
         <widgetComponent:widget_searchResultNavigation />
@@ -396,6 +402,8 @@
         <widgetComponent:widget_geoMap widget="#{activeDocumentBean.mapWidget}" title="#{msg.NORM_LOCATION}" allowFullscreen="false" linkToSearch="false" />
         
         <widgetComponent:widget_usage />
+        
+        <widgetComponent:widget_relatedGroups />
 
         <widgetComponent:widget_download />
         

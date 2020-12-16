@@ -1,4 +1,4 @@
-<bookmarksPopup class="bookmark-popup bottom">
+<bookmarksPopup class="bookmark-popup bottom" role="region" aria-label="{msg('bookmarks')}">
 
 	<div class="bookmark-popup__body-loader"></div>
 
@@ -22,10 +22,10 @@
 	<div class="bookmark-popup__footer">
 		<div class="row no-margin">
 			<div class="col-11 no-padding">
-				<input ref="inputValue" type="text" placeholder="{msg('bookmarkList_addNewBookmarkList')}"/>
+				<input ref="inputValue" type="text" placeholder="{msg('bookmarkList_addNewBookmarkList')}" aria-label="{msg('bookmarkList_addNewBookmarkList')}"/>
 			</div>
 			<div class="col-1 no-padding">
-				<button class="btn btn-clean" type="button" onclick="{add}"></button>
+				<button class="btn btn-clean" type="button"  aria-label="{msg('bookmarkList_addNewBookmarkList')}" onclick="{add}"></button>
 			</div>
 		</div>
 	</div>

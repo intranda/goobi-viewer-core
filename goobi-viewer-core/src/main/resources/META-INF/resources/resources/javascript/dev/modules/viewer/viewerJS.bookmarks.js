@@ -30,7 +30,8 @@ var viewerJS = ( function( viewer ) {
         'action__search_in_bookmarks', 'bookmarkList_resetConfirm', 'bookmarkList_noItemsAvailable', 
         'bookmarkList_selectBookmarkList', 'bookmarkList_addNewBookmarkList', 'viewMiradorComparison',
         'bookmarkList_type_label', 'bookmarkList_typeRecord', 'bookmarkList_typePage', 'bookmarkList_overview_all',
-        'admin__crowdsourcing_campaign_statistics_numRecords'];
+        'admin__crowdsourcing_campaign_statistics_numRecords', 'bookmarkList_removeFromBookmarkList', 'bookmarks'];
+
     var _defaults = {
         root: '',
         rest: '',
@@ -61,8 +62,8 @@ var viewerJS = ( function( viewer ) {
                 this.listsUpdated.subscribe( (list) => {
                     this.updateAddedStatus();
                 })
-                this.translator = new viewerJS.Translator(_messageKeys, this.config.rest, this.config.language);
-                this.translator.init()
+                this.translator = new viewerJS.Translator(this.config.rest.replace("/rest", "/api/v1"), this.config.language);
+                this.translator.init(_messageKeys)
                 .then(() => this.updateLists())
                 .then(() => {                    
                     this.prepareBookmarksPopup();
@@ -83,9 +84,11 @@ var viewerJS = ( function( viewer ) {
                     if(added) {
                         $button.addClass("added");
                         $span.tooltip('hide').attr("title", $span.attr("data-bookmark-list-title-added")).tooltip("_fixTitle");
+                        $button.attr('aria-checked', true);
                     } else {
                         $button.removeClass("added");
                         $span.tooltip('hide').attr("title", $span.attr("data-bookmark-list-title-add")).tooltip("_fixTitle");
+                        $button.attr('aria-checked', false);
                     }
                     
                 } );

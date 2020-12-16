@@ -32,10 +32,19 @@ public class LabeledLink implements Serializable {
 
     private static final long serialVersionUID = -2546718627110716169L;
 
+    public static final LabeledLink EMPTY = new LabeledLink();
+        
     protected IMetadataValue name;
     protected String url;
     protected int weight;
 
+    /**
+     * Internal constructor for empty value
+     */
+    private LabeledLink() {
+        
+    }
+    
     /**
      * <p>
      * Constructor for LabeledLink.

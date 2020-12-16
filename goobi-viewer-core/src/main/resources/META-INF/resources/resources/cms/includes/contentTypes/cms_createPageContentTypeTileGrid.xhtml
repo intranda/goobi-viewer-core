@@ -50,7 +50,7 @@
         
         <!-- TOGGLE INLINE HELP -->
         <div class="cms-module__option-help">
-            <button type="button" class="btn btn--clean" data-toggle="helptext">
+            <button type="button" class="btn btn--clean" data-toggle="helptext" aria-label="#{msg.aria_label__help}">
                 <i class="fa fa-question-circle" aria-hidden="true"></i>
             </button>
         </div>
@@ -106,7 +106,8 @@
                         <f:selectItem itemValue="19" itemLabel="19" />
                         <f:selectItem itemValue="20" itemLabel="20" />
                         <f:selectItem itemValue="21" itemLabel="21" />
-                    </h:selectOneMenu>
+                        <f:passThroughAttribute name="aria-label" value="#{msg.cms_itemTileGrid_numberOfImportantTiles}" />
+                     </h:selectOneMenu>
                 </div>
             </h:panelGroup>
             
@@ -116,7 +117,7 @@
         
         <!-- TOGGLE INLINE HELP -->
         <div class="cms-module__option-help">
-            <button type="button" class="btn btn--clean" data-toggle="helptext">
+            <button type="button" class="btn btn--clean" data-toggle="helptext" aria-label="#{msg.aria_label__help}">
                 <i class="fa fa-question-circle" aria-hidden="true"></i>
             </button>
         </div>
@@ -172,6 +173,7 @@
                         <f:selectItem itemValue="19" itemLabel="19" />
                         <f:selectItem itemValue="20" itemLabel="20" />
                         <f:selectItem itemValue="21" itemLabel="21" />
+						<f:passThroughAttribute name="aria-label" value="#{msg.cms_itemTileGrid_numberOfTiles}" />
                     </h:selectOneMenu>
                 </div>
             </h:panelGroup>
@@ -182,7 +184,7 @@
         
         <!-- TOGGLE INLINE HELP -->
         <div class="cms-module__option-help">
-            <button type="button" class="btn btn--clean" data-toggle="helptext">
+            <button type="button" class="btn btn--clean" data-toggle="helptext" aria-label="#{msg.aria_label__help}">
                 <i class="fa fa-question-circle" aria-hidden="true"></i>
             </button>
         </div>

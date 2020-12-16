@@ -4,6 +4,7 @@
                 xmlns:p="http://primefaces.org/ui"
                 xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
                 xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+                xmlns:c="http://java.sun.com/jsp/jstl/core"
                 xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components"
                 xmlns:widgetComponent="http://xmlns.jcp.org/jsf/composite/components/widgets"
                 xmlns:adminWidget="http://xmlns.jcp.org/jsf/composite/admin/widgets"
@@ -32,25 +33,31 @@
                                     <h3 class="col-9">#{msg.admin__dashboard_hello} #{userBean.user.nickName}</h3>
                                     <div class="col-3 d-flex justify-content-end">
                                         <!-- GRAVATAR -->
-                                        <ui:fragment rendered="#{user.useGravatar}">
-                                                <img src="#{user.getGravatarUrl(96)}" class="rounded-circle admin__dashboard-user-icon" alt="User Gravatar" />
-                                        </ui:fragment>
-                                        <!-- ICON -->
-                                        <ui:fragment rendered="#{!user.useGravatar}">
-                                            <img src="#{request.contextPath}/resources/images/backend/thumbnail_goobi_person.png" class="admin__dashboard-user-icon" alt="User avatar"/>
-                                        </ui:fragment>
+                                        <c:choose>
+											<c:when test="#{user.useGravatar}">
+												<img src="#{user.getGravatarUrl(96)}"
+													class="rounded-circle admin__dashboard-user-icon"
+													alt="User Gravatar" />
+											</c:when>
+											<c:otherwise>
+												<img
+													src="#{request.contextPath}/resources/images/backend/thumbnail_goobi_person.png"
+													class="admin__dashboard-user-icon" alt="User avatar" />
+											</c:otherwise>
+										</c:choose>
+
                                     </div>
                                 </div>
                                 <div class="row mb-3">
                                     <div class="col-9">
                                         #{msg.admin__dashboard_documentation}:<br/>
-                                        <a class="-bluelink" href="https://docs.goobi.io" target="_blank">https://docs.goobi.io</a>
+                                        <a class="-bluelink" href="https://docs.goobi.io" target="_blank" rel="noopener">https://docs.goobi.io</a>
                                     </div>
                                 </div>
                                 <div class="row mb-3">
                                     <div class="col-9">
                                         #{msg.admin__dashboard_community_board}:<br/>
-                                        <a class="-bluelink" href="https://community.goobi.io" target="_blank">https://community.goobi.io</a>
+                                        <a class="-bluelink" href="https://community.goobi.io" target="_blank" rel="noopener">https://community.goobi.io</a>
                                     </div>
                                 </div>
                                 <div class="row">
@@ -89,7 +96,7 @@
                                             <!-- ACTIONS -->
                                             <div>
                                                 <!-- SHOW -->
-                                                <a href="#{page.url}" class="admin__table-action-link" target="_blank"
+                                                <a href="#{page.url}" class="admin__table-action-link" target="_blank" rel="noopener"
                                                     aria-label="#{msg.show}: #{page.title}">#{msg.show}</a>
                                                 <!-- EDIT -->
                                                 <a href="#{navigationHelper.applicationUrl}admin/cms/pages/edit/#{page.id}/"
@@ -119,7 +126,7 @@
 
                             <!-- LICENSES -->
                             
-                            <ui:fragment rendered="#{userBean.admin and not empty adminBean.notConfiguredAccessConditions}">
+                            <ui:fragment rendered="#{userBean.admin and searchBean.solrIndexReachable and not empty adminBean.notConfiguredAccessConditions}">
                                 <h:form prependId="false" styleClass="admin__boxed-entry -no-actions -w33 -danger">
                                     <div class="row">
                                         <h3 class="col-9">#{msg.admin__licenses}</h3>
@@ -188,9 +195,11 @@
 
 
                             <!-- RSS FEED -->
-                            <div class="admin__boxed-entry -no-actions -w33">
-                                <ui:include src="/resources/includes/rssFeed.xhtml" />
-                            </div>
+                            <ui:fragment rendered="#{searchBean.solrIndexReachable}">
+	                            <div class="admin__boxed-entry -no-actions -w33">
+	                                <ui:include src="/resources/includes/rssFeed.xhtml" />
+	                            </div>
+                            </ui:fragment>
 
 
                             <!-- MATOMO -->
@@ -204,7 +213,7 @@
                                     </div>
                                     <div class="row">
                                         <div class="col-12">
-                                            <a class="-bluelink" href="//#{configurationBean.piwikBaseURL}" target="_blank">#{msg.admin__dashboard_matomo_link}</a>
+                                            <a class="-bluelink" href="//#{configurationBean.piwikBaseURL}" target="_blank" rel="noopener">#{msg.admin__dashboard_matomo_link}</a>
                                         </div>
                                     </div>
                                 </div>

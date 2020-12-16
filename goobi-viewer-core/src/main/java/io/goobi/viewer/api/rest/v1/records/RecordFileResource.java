@@ -164,8 +164,7 @@ public class RecordFileResource {
             throw new ContentNotFoundException("Source file " + filename + " not found");
         }
 
-        boolean access = !AccessConditionUtils.checkContentFileAccessPermission(pi, servletRequest, Collections.singletonList(path))
-                .containsValue(Boolean.FALSE);
+        boolean access = AccessConditionUtils.checkContentFileAccessPermission(pi, servletRequest);
         if (!access) {
             throw new ServiceNotAllowedException("Access to source file " + filename + " not allowed");
         }

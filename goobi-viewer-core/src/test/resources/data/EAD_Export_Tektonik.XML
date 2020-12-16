@@ -1,0 +1,2979 @@
+<!-- AUGIAS-EAD-DDB-Tektonik-Export Version 1.0 -->
+<collection xmlns="urn:isbn:1-931666-22-9">
+<ead xmlns="urn:isbn:1-931666-22-9" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xlink="http://www.w3.org/1999/xlink" xsi:schemaLocation="urn:isbn:1-931666-22-9 http://www.loc.gov/ead/ead.xsd http://www.w3.org/1999/xlink http://www.loc.gov/standards/xlink/xlink.xsd" audience="external">
+   
+<eadheader countryencoding="iso3166-1" dateencoding="iso8601" langencoding="iso639-2b" repositoryencoding="iso15511" scriptencoding="iso15924">
+<eadid mainagencycode="1" url="www.ub.hu-berlin.de">1_Tektonik</eadid>
+    <filedesc>
+      <titlestmt>
+        <titleproper>HU Berlin (Archivtektonik)</titleproper>
+      </titlestmt>
+    </filedesc>
+    <profiledesc>
+      <creation>
+        <date normal="2020-11-25">2020-11-25+01:00</date>
+      </creation>
+    </profiledesc>
+  </eadheader>
+
+
+<archdesc level="collection" type="Tektonik">
+    <did>
+      <repository label="Berlin"/>
+    </did>
+    <dsc>
+      <c level="series" id="1_Tektonik">
+        <did>
+          <unittitle>HU Berlin (Archivtektonik)</unittitle>
+          <repository>
+            <corpname role="Archive der Hochschulen sowie wissenschaftlicher Institutionen" id="hu">HU Berlin</corpname>
+            <address>
+              <addressline>Unter den Linden 6</addressline>
+              <addressline>10099 Berlin</addressline>
+              <addressline>ute.ristau@ub.hu-berlin.de</addressline>
+            </address>
+            <extref xlink:role="url_archive" xlink:href="www.ub.hu-berlin.de">HU Berlin</extref>
+          </repository>
+        </did>
+        <c level="class" id="A91x47117799520492520190821091441640">
+          <did>
+            <unitid>A</unitid>
+            <unittitle>Preußische Einrichtungen vor ihrer Eingliederung in die Universität</unittitle>
+          </did>
+          <c level="class" id="A91x63544309139251720190821091441640">
+            <did>
+              <unitid>A 01</unitid>
+              <unittitle>Charité 1710-1945</unittitle>
+            </did>
+            <c level="file" id="A91x52426761388778620190821091441635">
+              <did>
+                <unitid>ChVD.01</unitid>
+                <unittitle>Charité-Verwaltungsdirektion</unittitle>
+              </did>
+            </c>
+            <c level="file" id="A91x13685315847396820190821091441623">
+              <did>
+                <unitid>PA.Med.01</unitid>
+                <unittitle>Personalakten Medizin Charité</unittitle>
+              </did>
+              <scopecontent>
+                <head>Verwaltungsgeschichte/biografische Angaben</head>
+                <p>Dieser Bestand umfasst Personalakten bis 1945.</p>
+              </scopecontent>
+            </c>
+          </c>
+          <c level="class" id="A91x87706857919692920190821091441640">
+            <did>
+              <unitid>A 02</unitid>
+              <unittitle>(Königliche) Tierärztliche Hochschule 1790 -1945</unittitle>
+              <abstract>Tierarzneischule (1790-1887), Tierärztliche Hochschule (1887-1934) <lb/>Nachfolger:  landwirtschaftlich-tierärztliche Fakultät (1934-1937), Veterinärmedizinische Fakultät (1937-1968)</abstract>
+            </did>
+            <c level="file" id="A91x40045380592346120190821091441639">
+              <did>
+                <unitid>TiH.01</unitid>
+                <unittitle>Tierärztliche Hochschule</unittitle>
+              </did>
+              <scopecontent>
+                <head>Verwaltungsgeschichte/biografische Angaben</head>
+                <p>01.06.1790 - Eröffnung der Tierarzneischule<lb/>20.06.1887 - Verleihung der Bezeichnung Tierärztliche Hochschule<lb/>05.09.1910 - Verleihung des Promotionsrechts<lb/>01.11.1934 - Eingliederung der Hochschule in die Universität als Landwirtschaftlich-tierärztliche Fakultät, Abteilung für Landwirtschaft und Abteilung für Tierheilkunde<lb/>01.10.1937 - Umwandlung der Abteilung für Tierheilkunde in die Veterinärmedizinische Fakultät<lb/>
+                  <lb/>Die erste überlieferte Akte im Bestand  ist erst aus dem Jahr 1817</p>
+              </scopecontent>
+            </c>
+          </c>
+          <c level="class" id="A91x41777133941650320190821091441640">
+            <did>
+              <unitid>A 03</unitid>
+              <unittitle>(Königliche) Landwirtschaftliche Hochschule 1881-1945</unittitle>
+            </did>
+            <c level="file" id="A91x49203771352767920190821091441670">
+              <did>
+                <unitid>Inst.landw.Zool.01</unitid>
+                <unittitle>Institut für landwirtschaftliche Zoologie 1881-1945</unittitle>
+              </did>
+            </c>
+            <c level="file" id="A91x29282051324844320190821091441667">
+              <did>
+                <unitid>Inst.Tierern.</unitid>
+                <unittitle>Institut für Tierernährungslehre</unittitle>
+              </did>
+            </c>
+            <c level="file" id="A91x63803416490554820190821091441639">
+              <did>
+                <unitid>LWH.01</unitid>
+                <unittitle>Landwirtschaftliche Hochschule 1881-1945 (1934-1945 Landwirtschaftliche Fakultät)</unittitle>
+              </did>
+              <scopecontent>
+                <head>Verwaltungsgeschichte/biografische Angaben</head>
+                <p>1881 - Gründung der Landwirtschaftlichen Hochschule<lb/>01.11.1934 - Eingliederung der Hochschule in die Universität als Landwirtschaftlich-tierärztliche Fakultät, Abteilung für Landwirtschaft und Abteilung für Tierheilkunde<lb/>Oktober 1937 -Teilung in eine landwirtschaftliche und eine veterinärmedizinische Fakultät<lb/> <lb/>einige Akten der LHS sind auch im TU-Archiv vorhanden (lt. Auskunft von Frau Dr. Irina Schwab, Okt. 2015)<lb/>-Institut für Gartenkunst und Lanschaftsgestaltung: Studienpläne, Prüfungsordnungen, Instangelegenh. 1930-1969: Signatur: 208 (29 AE)<lb/>- Institut für Obstbau: Patent- und Pachtangelegenheiten. 1930-1965 (5 AE)</p>
+              </scopecontent>
+            </c>
+          </c>
+          <c level="class" id="A91x79566305875778120190821091441640">
+            <did>
+              <unitid>A 04</unitid>
+              <unittitle>Forsthochschule Eberswalde</unittitle>
+            </did>
+            <c level="file" id="A91x58203643560409520190821091441639">
+              <did>
+                <unitid>FHE.01</unitid>
+                <unittitle>Forsthochschule Eberswalde 1821-1945</unittitle>
+              </did>
+            </c>
+          </c>
+          <c level="class" id="A91x39640867710113520190821091441640">
+            <did>
+              <unitid>A 05</unitid>
+              <unittitle>Handels- (Wirtschaftshochschule) Berlin</unittitle>
+            </did>
+            <c level="file" id="A91x81652277708053520190821091441670">
+              <did>
+                <unitid>WHB.01</unitid>
+                <unittitle>Wirtschaftshochschule Berlin 1906-1945</unittitle>
+              </did>
+            </c>
+          </c>
+        </c>
+        <c level="class" id="A91x85975104570388720190821091441640">
+          <did>
+            <unitid>B</unitid>
+            <unittitle>(Königliche) Friedrich-Wilhelms-Universität zu Berlin (1810-1945)</unittitle>
+          </did>
+          <c level="class" id="A91x20414471626281720190821091441640">
+            <did>
+              <unitid>B 01</unitid>
+              <unittitle>Universitätsleitung und -verwaltung</unittitle>
+            </did>
+            <c level="class" id="A91x63057798147201520190821091441668">
+              <did>
+                <unitid>B 01.01</unitid>
+                <unittitle>Rektor und Senat 1810-1945</unittitle>
+              </did>
+              <c level="file" id="A91x28523319959640520190821091441635">
+                <did>
+                  <unitid>RS.01</unitid>
+                  <unittitle>Rektor und Senat 1810-1945</unittitle>
+                </did>
+              </c>
+            </c>
+            <c level="class" id="A91x83288919925689620190821091441644">
+              <did>
+                <unitid>B 01.02</unitid>
+                <unittitle>Universitätskurator</unittitle>
+              </did>
+              <c level="file" id="A91x72171372175216620190821091441624">
+                <did>
+                  <unitid>UK Personalia</unitid>
+                  <unittitle>UK Personalakten bis 1945</unittitle>
+                </did>
+                <scopecontent>
+                  <head>Verwaltungsgeschichte/biografische Angaben</head>
+                  <p>Stand: Dezember 2016<lb/>Der Bestand ist, bis auf drei zur Zeit nicht auffindbare Akten, vollständig erschlossen (Augias, Findbuchausdruck sowie alte Suchkartei aus den 60er Jahren).<lb/>Umfang: ca. 47 lfm, 4.288 AE in 421 Archivkartons (1834 - 1978)<lb/>Lebensdaten sind nur angegeben, wenn sie aus dem Inhalt der Akte hervorgehen<lb/>Es handelt sich um eine Zusammenführung aus Akten.<lb/>Hauptsächlich wurden sie angelegt durch:<lb/>- den Rektor der FWU<lb/>- den Universitätskurator der FWU<lb/>- den Verwaltungsdirektor der FWU<lb/>- die math.-nat. Fakultät<lb/>- die medizinische Fakultät<lb/>- die Charité<lb/>- die Korporation der Kaufmannschaft von Berlin<lb/>- die Industrie- und Handelskammer zu Berlin<lb/>- die Handelshochschule<lb/>- die Landwirtschaftliche Hochschule<lb/>- u. a. Einrichtungen<lb/>
+                    <lb/>Zitierweise: HU/UA UK Personalia: Signatur (l. Num.).<lb/>
+                    <lb/>In dem im LS befindlichen Findbuch-Ausdruck fehlen noch die Ergänzungen, die sich aus der Bearbeitung der Bestände PAMed1 und PAMed2 ergeben haben. Ein Neuausdruck steht noch aus.</p>
+                </scopecontent>
+              </c>
+              <c level="file" id="A91x40272784233093220190821091441635">
+                <did>
+                  <unitid>UK.01</unitid>
+                  <unittitle>Universitätskurator 1819-1945</unittitle>
+                </did>
+                <scopecontent>
+                  <head>Verwaltungsgeschichte/biografische Angaben</head>
+                  <p>Angaben aus dem Findbuch, erstellt 1961 von Archivdirektor Kossack (korrigierte und redigierte Fassung):<lb/>
+                    <lb/>Der Universitäts-Kurator in Berlin - Behörden- und Bestandsgeschichtlicher Rückblick<lb/>
+                    <lb/>Ein behördengeschichtlicher Rückblick auf das Amt des Kurators bei der Universität Berlin von der Zeit der Gründung der Universität bis zum Jahr 1945 ist von Heinz Kossack 1960 erarbeitet worden.<lb/>Die Ordnung und Verzeichnung dieses Bestandes machte es notwendig, einen derartigen Rückblick zu geben, damit dieser Bestand allen denjenigen, die ihn benutzen, in seiner ganzen Wichtigkeit und Bedeutung für die Geschichte der Universität zum Bewusstsein kommt.<lb/>Das Verhältnis von Universität und Staat, das vor allem in der Zeit des feudal-absolutistischen Staates bei Wissenschaftlern und Gelehrten durchaus umstritten war, tritt uns in diesem Bestand bei der Durchsicht der Archivalien in der einen oder anderen Weise gegenüber. Die Staatsgewalt, sei es in Form der absoluten, oder konstitutionellen Monarchie, der Republik oder der nationalsozialistischen Diktatur setzt ihre Forderungen gegenüber der Universität durch einen Beauftragten "an Ort und Stelle" durch und kontrolliert die Durchführung der gegebenen Anweisungen und Direktiven.<lb/>Dieser Beauftragte ist der Kurator, wobei allerdings zu bemerken ist, dass in Berlin das Ministerium für die geistlichen -, Unterrichts- und Medizinal-Angelegenheiten die wichtigsten Kuratoraufgaben bis 1923 selbst wahrnahm. Deshalb beginnt der Bestand erst mit dem Einsatz des außerordentlichen Regierungs-Bevollmächtigten im Jahre 1819.<lb/>
+                    <lb/>Behörden-Geschichte<lb/>I. Der Curator bis zur Einsetzung des a. o. Regierungsbevollmächtigten 1810-1819<lb/>
+                    <lb/>Durch die Verordnung wegen verbesserter Einrichtung der Provinzial-Behörden vom 30. April 1815 (Pr. GS. 1815, S. 85ff) § 16 wurde verfügt, dass jeder Oberpräsident als "beständiger Commissarius Curator der Universität sein solle, die sich in der ihm anvertrauten Provinz befindet".<lb/>In dieser Verordnung erscheint der Terminus: "Curator", den die Statuten der Universität aus dem Jahre 1816 allerdings nicht kennen. Die Aufgaben dieses Curators wurden in der Verordnung wegen verbesserter Einrichtung der Provinzial-, Polizei- und Finanzbehörden vom 26. Dezember 1808 (Pr. GS. S. 467ff) im § 10 (3) wie folgt präzisiert: <lb/>"die innere Einrichtung der Universitäten<lb/>die ökonomische Kuratel<lb/>die Berufung und Anstellung der Lehrer der Universität".<lb/>Für die Universität Berlin hatte sich jedoch das Ministerium für die geistlichen-, Unterrichts- und Medizinal-Angelegenheiten, das durch die Allerhöchste Kabinetts-Order vom 3. November 1817 aus dem bisherigen Departement für Kultus und öffentlichen Unterricht des Ministeriums des Innern gebildet wurde, die Leistung der sogenannten Kuratorial-Angelegenheiten selbst vorbehalten. Deshalb ist über diese Zeit der Tätigkeit des Kurators an der Universität Berlin nichts bekannt.<lb/>
+                    <lb/>II. Der außerordentliche Regierungsbevollmächtigte 1819-1848<lb/>
+                    <lb/>Die Instruktion für die a. o. Regierungsbevollmächtigten bei den Universitäten vom 18. November 1819 (Pr. GS. 1819, S. 233ff) die in Ausführung der Karlsbader Beschlüsse für Preußen von König Friedrich Wilhelm III. mit Gegenzeichnung des Staatskanzlers von Hardenberg erlassen wurde, leitete zwar einerseits die schwärzeste Periode der Universitäts-Geschichte ein, schuf aber andererseits doch behördengeschichtlich klarere Verhältnisse. Diese Instruktion, die den Regierungsbevollmächtigten Spitzeleien sowohl gegen die Universitätslehrer als auch gegen die Studenten zur Aufgabe machte, übertrug, bestimmte im Abschnitt IV, dass § 16 der Verordnung wegen verbesserter Einrichtung der Provinzialbehörden vom 30. April 1815, wonach jeder Oberpräsident Kurator in der ihm anvertrauten Provinz befindlichen Universität sein solle, aufgehoben sei. Die Befugnisse der Kuratoren sollten an die Regierungsbevollmächtigten übergehen.<lb/>Um die Oberpräsidenten jedoch nicht gänzlich auszuschalten, wurde angeordnet, dass diese die Regierungsbevollmächtigten mit allen Mitteln unterstützen sollten. Abschnitt V wies darauf hin, dass die Regierungsbevollmächtigten in denselben Verhältnissen stehen wie die Kuratoren und präzisierte die Aufgaben des Regierungsbevollmächtigten eindeutig:<lb/>1. Sie sind wie die Kuratoren als Stellvertreter des Ministeriums anzusehen. Es müssen deshalb ihre Anordnungen von den akademischen Behörden ausgeführt werden und alle Berichte, auch diejenigen der Direktoren der Institute und Sammlungen müssen durch ihre Hand gehen.<lb/>2. Sie sind dem Ministerium der geistlichen-, Unterrichts- und Medizinal-Angelegenheiten unmittelbar unterstellt und erstatten nur an dieses ihre Berichte. Ebenso erhalten sie nur von dem Ministerium ihre Aufträge und Resolutionen.<lb/>3. Sie erhalten das nötige Dienstpersonal. Erforderlichenfalls sollen ihnen alle "Subalterne" der Universitäten zur Verfügung gestellt werden.<lb/>
+                    <lb/>Bei der Universität Berlin wurde jedoch ein besonderer Vorbehalt gemacht, in der Weise, dass in der Instruktion vom 18. November 1819 angeordnet wurde, dass es dem Ministerium vorbehalten bleibe, dass von diesem unmittelbar die Kuratorialgeschäfte wahrgenommen werden, diese jedoch auf den Regierungsbevollmächtigten soweit zu übertragen, dass er gehörig zum Wohl der Universität einwirken kann. Durch Erlass des Ministers vom 20. November 1819 wurde der Universität mitgeteilt, dass der Geh. Oberregierungsrat Schultz zum Regierungsbevollmächtigten ernannt worden sei. Es wurde jedoch folgende Einschränkung gemacht:<lb/>"Da in der Instruktion für die Regierungsbevollmächtigten dem Minister vorbehalten ist, einen Teil der Geschäfte der in ihm selbst liegendem Kuratel der Königlichen Universität demselben zu übertragen, so hat es dem Geheimen Oberregierungsrat Schultz vorläufig im Allgemeinen aufgetragen, sich in ein persönliches Verhältnis zur Universität, ihrem Personal und ihren Instituten und Einrichtungen zu setzen, sich in fortgehender, laufender Kenntnis derselben zu erhalten, die Mängel und Bedürfnisse der Universität in allen ihren Zweigen zu erforschen und sie bei dem Ministerio nebst zweckmäßigen Vorschlägen zu ihrer Abstellung zur Sprache zu bringen, selbst darauf zu sehen, dass die von dem Ministerio getroffenen oder genehmigten Anordnungen welchen Teil der Universitätseinrichtungen oder der dazu gehörigen Institute und Sammlungen sie auch betreffen, promt und vollständig vollzogen werden, und über die Vollziehung dem Ministerio Bericht zu erstallten."<lb/>Schultz führte die Geschäfte bis zum Mai 1824. Nachfolger wurde unter denselben Verhältnissen der Oberregierungsrat Beckedorff. <lb/>
+                    <lb/>Die Kabinettsorder vom 21. Mai 1824 regelte besonders die Stellung des Regierungsbevollmächtigten zum Rektor und den Unterbeamten der Universität. Danach war der Regierungsbevollmächtigte Amtsvorgesetzte des Rektors bezüglich der Aufsicht über dessen Amtsführung. Weiterhin waren die Unterbeamten der Universität verpflichtet, den Anordnungen des Regierungsbevollmächtigten Folge zu leisten in den Angelegenheiten, die er unmittelbar bearbeitete. Wegen der den Rektor und Senat betreffenden Angelegenheiten konnte der Regierungsbevollmächtigte seine Anweisungen an die Unterbeamten durch den Rektor erlassen. Im Juni 1827 schied Beckedorff aus. Durch Ministerialerlass vom 14. Juni 1827 wurde angeordnet, dass nunmehr der Rektor und der Universitätsrichter gemeinsam als stellvertretende Regierungsbevollmächtigte fungieren sollten. Diese Regelung bestand bis 1841. <lb/>
+                    <lb/>Dem jeweiligen Rektor wurde nach Bestätigung durch das Ministerium die Wahrnehmung dieser Tätigkeit mit dem Universitätsrichter übertragen. Durch Verordnung vom 13. April 1841 wurde diese Übergangsregelung jedoch wieder aufgehoben und mit den Aufgaben des Regierungsbevollmächtigten wurde der Direktor der Unterrichtsabteilung des Ministeriums, Oberregierungsrat von Ladenberg, mit Wirkung vom 1. Juni 1841 beauftragt. Nach einer Instruktion für v. Ladenberg als zeitweiliger Kurator und außerordentlicher Regierungsbevollmächtigter wurde wegen der Aufgaben des Kurators besonders betont, dass diese von v. Ladenberg nur insoweit wahrgenommen werden sollten, als sie nicht vom Ministerium bearbeitet wurden. Diese Einschränkung finden wir also laufend in den entsprechenden Erlassen. Weiterhin waren nach dieser Instruktion Rektor und Universitätsrichter wiederum stellvertretende Regierungsbevollmächtigte, d. h. der Regierungsbevollmächtigte konnte bei Abwesenheit und Verhinderung seine Aufgaben stellvertretend an den Rektor und Universitätsrichter übertragen. Im April 1848 wurde nach dem Beschluss der Bundesversammlung die 1819 erlassene Ausnahmegesetzgebung des Deutschen Bundes aufgehoben. Unter diesen Beschluss fielen auch die Bundesbeschlüsse wegen des Einsatzes außerordentlicher Regierungsbevollmächtigter bei den Universitäten.<lb/>
+                    <lb/>III. Das Kuratorium der Friedrich-Wilhelms-Universität zu Berlin 1848-1923<lb/>
+                    <lb/>Durch Erlass des Ministers für die geistlichen-, Unterrichts- und Medizinal-Angelegenheiten vom 18. Juli 1848 wurde von Ladenberg als Regierungsbevollmächtigter abberufen und angewiesen, sich auf die reinen Funktionen eines Kurators zu beschränken. Diese Funktionen bestanden nach § 10 (3) der Verordnung wegen verbesserter Einrichtung der Provinzial-, Polizei- und Finanzbehörden vom 28. September 1808 (Pr. GS. 1806-1810, S. 467) in:<lb/>a.) der inneren Einrichtung;<lb/>b.) der ökonomischen Kuratel;<lb/>c.) der Berufung und Anstellung der Lehrer.<lb/>
+                    <lb/>Gleichzeitig wurde in dem Erlass mitgeteilt, dass die endgültigen Bestimmungen über die Kuratorien an den Universitäten erst nach Durchführung einer allgemeinen Reform der Universitäten neu gefasst werden sollten.<lb/>
+                    <lb/>Zu dieser Reform ist es jedoch bis 1918 nicht gekommen. Da von Ladenberg die Leitung des Ministeriums übertragen wurde, beauftragte er durch Erlass vom 16. November 1848 den damaligen Rektor und stellvertretenden Universitätsrichter mit der Verwaltung der Aufgaben des Kuratoriums.<lb/>Die Übernahme erfolgte am 5. Dezember 1848. Seit diesem Zeitpunkt sind die Aufgaben des Kurators bei der Universität Berlin, soweit sie nicht vom Ministerium selbst bearbeitet wurden, bei dem jeweiligen Rektor und Universitätsrichter bis zum Jahr 1923 verblieben.<lb/>Die amtliche Bezeichnung lautete: "Stellvertretende Kuratoren" oder "Königliches Kuratorium der Friedrich-Wilhelms-Universität zu Berlin".<lb/>Die Tätigkeit des Kuratoriums bestand in der Bearbeitung von:<lb/>1. Immatrikulations-Angelegenheiten;<lb/>2. Stipendien-Angelegenheiten;<lb/>3. Verwaltungs-Angelegenheiten.<lb/>
+                    <lb/>Zu 1.): Hier wurde das Kuratorium besonders bei der Zulassung von Studierenden nach den dazu erlassenen ministeriellen Bestimmungen tätig.<lb/>Zu 2.): Bewilligung von Unterstützungen an notleidende und würdige Studenten, weiterhin die Verwaltung von Stipendienstiftungen und deren Revision.<lb/>Zu 3.): Bei den Verwaltungs-Angelegenheiten handelte es sich um die Ermächtigung, Haushaltsmittel bis zur Höhe von 6000,- RM jährlich zu bewilligen. Weiterhin waren Statistiken der Studierenden für das Ministerium zu fertigen und sonstige Sonderaufträge des Ministeriums zu erledigen. Zu einem späteren Zeitpunkt scheint noch die Führung von Personalakten von Professoren und anderen Beschäftigen hinzugekommen zu sein.<lb/>
+                    <lb/>Der Aufgabenkreis dieses Kuratoriums war demnach ziemlich begrenzt. Daher ist auch das aus dieser Zeit vorhandene Aktenmaterial verhältnismäßig gering und wenig ergiebig. Die personelle Besetzung erfolgte in der Weise, dass außer dem Regierungsbevollmächtigtem ein Kanzleisekretär tätig war. Dieser wurde nach Aufhebung der Institution des Regierungsbevollmächtigten Kuratorial-Sekretär genannt. Seine Aufgaben waren:<lb/>a.) Die Führung des Journals, eines Akten-Repertoriums und eines Index;<lb/>b.) Das Fertigen sämtlicher Rein-, und Abschriften;<lb/>c.) Das Heften und Rotulieren der Akten;<lb/>d.) Die Anfertigung verschiedener Listen. <lb/>
+                    <lb/>Aus dem Bericht des Kuratorial-Sekretärs Schleusener vom 26. Februar 1858 geht hervor, dass die Registratur damals 335 Bände Akten umfasste. Weiterhin gingen damals nach dem Bericht Schleuseners jährlich 250-260 neue Sachen ein und 140 Schreiben wurden erlassen und "mundiert".<lb/>
+                    <lb/>Dieses Amt des Kuratorial-Sekretärs ist bis zum Jahre 1923 beibehalten worden. Nach Daudé hatte der Kuratorial-Sekretär im Jahre 1887 folgende Aufgaben:<lb/>a.) Erledigung der Registraturarbeiten und Führung des Journals;<lb/>b.) Entgegennahme von Immatrikulations-Gesuchen (4 Semester, nachträgliche Immatrikulation)<lb/>c.) Anfertigung von Expeditionen und Reinschriften der Korrespondenz des Kuratoriums;<lb/>d.) Anfertigung von Expeditionen und Reinschriften betr. die Verwaltung des Titels "Insgemein" und des Unterstützungs-Fonds;<lb/>e.) Auskunftserteilung an Studierende wegen der Aufnahmebedingungen für das Studium.<lb/>Darüber hinaus musste der Kuratorial-Sekretär im engeren Universitätsdienst einige Aufgaben bearbeiten, da dieser in seinem eigenen Arbeitsbereich offenbar nicht voll beschäftigt werden konnte. Die Geschäftsverteilung ist bis zum Jahre 1923 im Wesentlichen die gleiche geblieben.<lb/>
+                    <lb/>IV. Der Verwaltungs-Direktor bei der Friedrich-Wilhelms-Universität zu Berlin 1923-1936<lb/>
+                    <lb/>Die Satzungen der Universität Berlin aus dem Jahre 1930, die aufgrund des Beschlusses des Preußischen Staatsministeriums vom 20. März 1923 erlassen wurden, sahen im § 5, S. 2 einen Verwaltungsdirektor mit folgendem Aufgabenkreis vor: "Die äußere Verwaltung der Institute, Seminare und Anstalten einschließlich der außerhalb der Charité gelegenen Kliniken im Auftrage des Ministers. Er hat die Aufsicht über das Haushalts-, Kassen- und Rechnungswesen der Universität."<lb/>Nach den §§ 83-84 der Satzungen hatte der Verwaltungsdirektor bestimmte Befugnisse bei der Ernennung von Beamten der Besoldungsgruppen A 7 bis A 11 auszuüben. Erich Wende, "Grundlagen des Preußischen Hochschulrechts", S. 59, spricht von dem Verwaltungsdirektor als Beauftragten des Ministers in den äußeren Angelegenheiten der natur- und geisteswissenschaftlichen Instituten und Anstalten und der außerhalb der Charité gelegenen Kliniken. Der übrige Teil der Aufgaben des früheren Kuratoriums ist auf den Rektor, der vom Universitätsrat darin unterstützt wird, übergegangen. Es handelt sich zweifellos dabei hauptsächlich um die Aufgaben, die mit der Immatrikulation auszuführen waren. Gegenüber dem früheren Kuratorium ist jedoch jetzt eine Erweiterung in personeller Hinsicht auf ca. 10 Beschäftigte festzustellen (Beamte, Angestellte, Schreibkräfte). Die Schaffung des Amtes des Verwaltungsdirektors ist nach Wende (a.a.O., S. 53 ff.) das Ergebnis einer grundsätzlichen Hochschulreform, die bereits lange vor Ausbruch des 1. Weltkrieges erörtert worden war.<lb/>Der erste Verwaltungsdirektor bei der Universität Berlin war der ehemalige Universitätsrichter Geh. Regierungsrat Dr. Wollenberg, der 1925 von Dr. Büchsel abgelöst wurde.<lb/>
+                    <lb/>V. Der Universitäts-Kurator in Berlin 1936-1945<lb/>
+                    <lb/>Die Institution des Verwaltungsdirektors blieb bis 1936 bestehen. Mit Wirkung vom 1. April 1936 wurde durch Erlass des Reichsministers für Wissenschaft, Erziehung und Volksbildung vom 2. April 1936 (W Ib Nr. 861, Z II) die Stellung des Verwaltungsdirektors in die des Kurators umgewandelt. Mit der Wahrnehmung der Geschäfte beauftragt wurde der bisherige Verwaltungsdirektor Dr. Büchsel, der mit geringen Unterbrechungen bis 1944 als Kurator tätig war.<lb/>Die Aufgaben des Universitätskurators in Berlin, wie die amtliche Bezeichnung lautete, scheinen schon am Personalbestand gemessen (34 Beamte, Angestellte und Schreibkräfte) sehr umfangreich gewesen zu sein. Ein Geschäftsverteilungsplan liegt vor, der den gesamten Verwaltungsbereich in 7 Arbeitsgruppen gliedert (siehe Anlage).<lb/>Um eine Kompetenzbereinigung zwischen Rektor und Kurator zu erreichen, gab der Minister für Wissenschaft, Erziehung und Volksbildung mit Erlass vom 9. März 1942 (WA 278/42) einen entsprechenden Referenten-Entwurf heraus, über dessen weiteres Schicksal keine Feststellungen getroffen werden konnten. Der Entwurf geht davon aus, dass der Kurator für den Bereich der äußeren Betriebsmittel und des Sach- und Personalbestandes, der erst in Betrieb von Lehre und Forschung ermöglicht, Beauftragter und Vertreter des Reichsministeriums an Ort und Stelle ist. <lb/>
+                    <lb/>Unter den Bereich der äußeren Hochschulverwaltung fielen nach dem a. o. Entwurf folgende Aufgaben:<lb/>1. Ernennung und Anstellung des gesamten Hochschulpersonals außerhalb des Lehrkörpers und der wissenschaftlichen Beamten, jedoch einschließlich der Assistenten und die Führung der Dienstaufsicht über diese Personenkreise;<lb/>2. Die Erledigung der beamtenrechtlichen und besoldungsrechtlichen Angelegenheiten aller zum Hochschulbereich gehörigen Beamten, in diesem Falle einschließlich der Hochschullehrer und der wissenschaftlichen Beamten und die Führung der Personalakten dieser Beamten.<lb/>3. Die Vereidigung der unter 1. aufgeführten Beamten mit Ausnahme der Assistenten;<lb/>4. Die Führung des Haushalts-, Kassen- und Rechnungswesens;<lb/>5. Die gesamte äußere Verwaltung der Institute, Seminare, Kliniken und sonstigen Anstalten;<lb/>6. Die Leitung der Gebäude- und Vermögensverwaltung;<lb/>7. Die Vertretung der staatlichen Hochschulverwaltung gegenüber anderen Behörden und die Vertretung des Staates und der Hochschule in Rechtsgeschäften und Rechtsstreitigkeiten vor und außer Gericht.<lb/>
+                    <lb/>Auch befand sich beim Kurator die Zentrale Vormerkstelle für Versorgungs-Anwärter für den Bereich der gesamten Wissenschafts-Verwaltung im ehemaligen Deutschen Reich, deren Tätigkeit jedoch 1944 infolge Abgabe an eine andere Dienststelle endete. Ferner war der jeweilige Verwaltungsdirektor bzw. Kurator Verwaltungsdirektor des Universitäts-Klinikums und Vorsitzender einiger Prüfungs-Kommissionen (z. B. Nahrungsmittel-Chemiker-Prüfung, Versicherungs-Sachverständigen-Prüfung). Dieser Aufgabenkomplex ist bis 1945 im Wesentlichen unverändert geblieben.<lb/>Mit dem Zusammenbruch des NS-Staates endete auch die Tätigkeit der Dienststelle des Kurators. Damit ist ein Entwicklungs-Abschnitt der Verwaltungs-Geschichte der Universität abgeschlossen. <lb/>
+                  </p>
+                </scopecontent>
+              </c>
+            </c>
+            <c level="class" id="A91x70212215185165420190821091441640">
+              <did>
+                <unitid>B 01.03</unitid>
+                <unittitle>Universitätsrat</unittitle>
+              </did>
+              <c level="file" id="A91x10087358951568620190821091441670">
+                <did>
+                  <unitid>UR.01</unitid>
+                  <unittitle>Universitätsrichter 1810-1945</unittitle>
+                </did>
+                <scopecontent>
+                  <head>Verwaltungsgeschichte/biografische Angaben</head>
+                  <p>Universitätsrichter 1810 - 1945<lb/>
+                    <lb/>1810-1819 Syndikus<lb/>ab 1819 Universitätsrichter<lb/>ab 1923 Universitätsrat<lb/>ab 1935 Universitätsrechtsrat<lb/>ab 1943 Universitätsrat</p>
+                </scopecontent>
+              </c>
+            </c>
+            <c level="class" id="A91x20818984508514420190821091441640">
+              <did>
+                <unitid>B 01.04</unitid>
+                <unittitle>Beamtenausschuss</unittitle>
+              </did>
+              <c level="file" id="A91x24364489316940320190821091441628">
+                <did>
+                  <unitid>Beamt.A.01</unitid>
+                  <unittitle>Beamtenausschuss der Friedrich-Wilhelms-Universität zu Berlin</unittitle>
+                </did>
+              </c>
+            </c>
+            <c level="class" id="A91x42440754175186120190821091441640">
+              <did>
+                <unitid>B 01.05</unitid>
+                <unittitle>Akademisches Auskunftsamt</unittitle>
+              </did>
+              <c level="file" id="A91x12191921472549420190821091441668">
+                <did>
+                  <unitid>AAA.01</unitid>
+                  <unittitle>Akademisches Auskunftsamt</unittitle>
+                </did>
+              </c>
+            </c>
+            <c level="class" id="A91x11123788356781020190821091441668">
+              <did>
+                <unitid>B 01.06</unitid>
+                <unittitle>Vertretung ausländischer Studierender der FWU</unittitle>
+              </did>
+              <c level="file" id="A91x98065674304962120190821091441629">
+                <did>
+                  <unitid>Vertr.ausl.Stud.01</unitid>
+                  <unittitle>Vertretung ausländischer Studierender</unittitle>
+                </did>
+              </c>
+            </c>
+            <c level="class" id="A91x64467036724090520190821091441644">
+              <did>
+                <unitid>B 01.09</unitid>
+                <unittitle>Allgemeiner Studentenausschuss (AStA) 1919-1928</unittitle>
+              </did>
+              <c level="file" id="A91x05669420957565320190821091441677">
+                <did>
+                  <unitid>AStA.01</unitid>
+                  <unittitle>Allg. Studentenausschuss</unittitle>
+                </did>
+              </c>
+            </c>
+            <c level="class" id="A91x91170364618301320190821091441644">
+              <did>
+                <unitid>B 01.10</unitid>
+                <unittitle>NS-Dozentenbund</unittitle>
+              </did>
+              <c level="file" id="A91x61749148368835420190821091441630">
+                <did>
+                  <unitid>NS-Doz. 1</unitid>
+                  <unittitle>NS-Dozentenschaft der Friedrich-Wilhelms-Universität zu Berlin (Personalia)</unittitle>
+                </did>
+                <scopecontent>
+                  <head>Verwaltungsgeschichte/biografische Angaben</head>
+                  <p>Der Bestand NS-Dozentenschaft der Friedrich-Wilhelms-Universität zu Berlin (Personalia) wurde vermutlich in den 60er Jahren durch das Universitätsarchiv der HU erstmals verzeichnet.<lb/>Es handelt sich überwiegend um Personalakten, die durch die Dozentenschaft angelegt worden sind.<lb/>Zitierweise: HU/UA NS-Doz.1: Signatur (l. Num.).<lb/>Der Bestand umfaßt ca. 1,3 lfm, 248 AE in 9 Archivkartons aus den Jahren 1934-1945 und ist vollständig erschlossen (Augias, Findbuch aus DDR-Zeit).<lb/>Lebensdaten sind ohne Klammern angegeben, wenn sie aus dem Inhalt der verzeichneten Akte hervorgehen.<lb/>Lebensdaten in eckigen Klammern wurden aus anderen Quellen ermittelt.<lb/>Z. Zt. sind 5 Akten auf Grund noch laufender Schutzfristen gesperrt (Stand November 2016).<lb/>In diesem Bestand ist nur ein geringer Teil der überlieferten Akten der NS-Dozentenschaft enthalten.<lb/>Der größere Teil der überlieferten Akten ist im heutigen Bestand "NS-Doz. 2" (eigenes Findbuch) zu finden, der erst nach der Wende über das Bundesarchiv an das Universitätsarchiv der HU zurückgelangte und vorher beim ehemaligen MfS aufbewahrt und dort mit sog. Z-Signaturen versehen worden ist.</p>
+                </scopecontent>
+              </c>
+              <c level="file" id="A91x94551873207092220190821091441660">
+                <did>
+                  <unitid>NS-Doz. 2</unitid>
+                  <unittitle>NS-Dozentenschaft der Friedrich-Wilhelms-Universität zu Berlin (Personalia)</unittitle>
+                </did>
+                <scopecontent>
+                  <head>Verwaltungsgeschichte/biografische Angaben</head>
+                  <p>Die Bestände <lb/>"NS-Dozentenschaft der Friedrich-Wilhelms-Universität zu Berlin (Personalunterlagen)" und<lb/>"Deutsche Studentenschaft der Universität Berlin (Karteikarten)"<lb/>erhielt das Universitätsarchiv der Humboldt-Universität zu Berlin in mehreren Abgaben im Frühjahr und Sommer 1991 sowie im Jahr 2006 durch das Bundesarchiv, Außenstelle Berlin aus dem ehemaligen NS-Archiv des Ministerium für Staatsssicherheit, MfS/AfNS nebst einem Abgabeverzeichnis zurück.<lb/>
+                    <lb/>Auf welchem Wege und wann diese Akten nach 1945 von der Universität Berlin an das MfS gelangten, ist hier nicht bekannt. Die Archivbestände der MfS-Außenstelle Berlin dienten zur Auskunftserteilung an andere MfS-Strukturteile.<lb/>
+                    <lb/>Diese zurückgegebenen Akten werden im Universitätsarchiv der HU gemeinsam unter der Bestandsbezeichnung "NS-Doz. 2" geführt.<lb/>Zitierweise: HU/UA NS-Doz. 2: Signatur (l. Num.).<lb/>
+                    <lb/>Es handelt sich überwiegend um Personalakten, die durch die "Dozentenschaft" bzw. "Deutsche Studentenschaft"angelegt worden sind.<lb/>
+                    <lb/>Der Bestand mit der Laufzeit 1891-1962 umfaßt ca. 17,5 lfd. Meter in 126 Archivkartons und ist vollständig erschlossen.<lb/>
+                    <lb/>Ab Archivkarton 74, ZB II 1279, A. 01 beginnt die Kartei der "Deutschen Studentenschaft", bestehend aus jeweils einer Karteikarte pro Studierendem (grüne Karten für Studenten, rote Karten für Studentinnen).<lb/>
+                    <lb/>Datensätze, bei denen im Titel nur ein Familienname, im Namensfeld nur ein Vorname und außerdem keine Blattzahl, keine Kartonnummer, keine laufende Nummer (l. Num.) zu finden ist und teilweise außerdem im Feld Registratursignatur eine 7stellige Zahl vermerkt ist, stammen aus dem o.g. Abgabeverzeichnis, sind physisch jedoch nicht im Universitätsarchiv vorhanden.<lb/>
+                    <lb/>Geburtsdaten sind meist nur angegeben, wenn sie aus dem Inhalt der Akte hervorgehen.<lb/>Bei Angaben in eckigen Klammern handelt es sich um anderweitig ermittelte Daten.<lb/>
+                    <lb/>Zur Zeit sind 60 Akten auf Grund noch laufender Schutzfristen gesperrt (Stand November 2016).<lb/>
+                    <lb/>Gliederung in groben Zügen:<lb/>ZA NSDAP, Gliederungen und Verbände<lb/>ZB Gestapo, SD, SS, Abwehr- und Spionageorganisationen, Polizei<lb/>ZC Reichsjustizministerium, Volksgerichtshof<lb/>ZD Verschiedene NS-Institutionen und Organisationen<lb/>(Quelle: Sabine Dumschat)<lb/>
+                    <lb/>Der Teilbestand ZB II ist ein Mischbestand, der im MfS 1960 registriert worden ist und bei seiner Abgabe an das Universitätsarchiv im Jahr 1991 nicht foliiert war.<lb/>
+                    <lb/>Der Teilbestand ZD I wurde im MfS 1954 registriert.<lb/> <lb/>
+                    <lb/>Claudia Hilse<lb/>15.11.2016</p>
+                </scopecontent>
+              </c>
+            </c>
+          </c>
+          <c level="class" id="A91x30691289901733320190821091441640">
+            <did>
+              <unitid>B 02</unitid>
+              <unittitle>Fakultäten</unittitle>
+            </did>
+            <c level="class" id="A91x65939682722091620190821091441640">
+              <did>
+                <unitid>B 02.01</unitid>
+                <unittitle>Evangelisch-Theologische Fakultät</unittitle>
+              </did>
+              <c level="file" id="A91x94520169496536220190821091441640">
+                <did>
+                  <unitid>NT.01</unitid>
+                  <unittitle>Neutestamentliches Seminar</unittitle>
+                </did>
+              </c>
+              <c level="file" id="A91x85134375095367420190821091441635">
+                <did>
+                  <unitid>Theol.Fak.01</unitid>
+                  <unittitle>Theologische Fakultät, Dekanat 1810-1945</unittitle>
+                </did>
+              </c>
+            </c>
+            <c level="class" id="A91x33636581897735520190821091441640">
+              <did>
+                <unitid>B 02.02</unitid>
+                <unittitle>Juristische Fakultät</unittitle>
+              </did>
+              <c level="file" id="A91x81298059225082320190821091441639">
+                <did>
+                  <unitid>Jur.Fak.01</unitid>
+                  <unittitle>Juristische Fakultät, Dekanat 1810-1945</unittitle>
+                </did>
+              </c>
+              <c level="file" id="A91x45872557163238520190821091441624">
+                <did>
+                  <unitid>Krim.Inst.01</unitid>
+                  <unittitle>Kriminalistisches Institut</unittitle>
+                </did>
+              </c>
+            </c>
+            <c level="class" id="A91x77430039644241320190821091441640">
+              <did>
+                <unitid>B 02.03</unitid>
+                <unittitle>Medizinische Fakultät</unittitle>
+              </did>
+              <c level="file" id="A91x76039391756057720190821091441627">
+                <did>
+                  <unitid>Anat.Bio.Inst.01</unitid>
+                  <unittitle>Anatomisch-Biologisches Institut</unittitle>
+                </did>
+              </c>
+              <c level="file" id="A91x72980397939682020190821091441625">
+                <did>
+                  <unitid>Hyg.Inst.01</unitid>
+                  <unittitle>Hygienisches Institut der Friedrich-Wilhelms-Universität zu Berlin, 1885-1945</unittitle>
+                </did>
+                <scopecontent>
+                  <head>Verwaltungsgeschichte/biografische Angaben</head>
+                  <p>FB Ausdruck nach alter Archivsignatur ohne Index(Stand: 10.03.2009)</p>
+                </scopecontent>
+              </c>
+              <c level="file" id="A91x94747573137283320190821091441635">
+                <did>
+                  <unitid>Med.Fak.01</unitid>
+                  <unittitle>Medizinische Fakultät, Dekanat 1810-1945</unittitle>
+                </did>
+                <scopecontent>
+                  <head>Verwaltungsgeschichte/biografische Angaben</head>
+                  <p>579-832??</p>
+                </scopecontent>
+              </c>
+              <c level="file" id="A91x76705169677734320190821091441623">
+                <did>
+                  <unitid>Nerv.Kl.01</unitid>
+                  <unittitle>Nervenklinik</unittitle>
+                </did>
+              </c>
+              <c level="file" id="A91x70825541019439620190821091441677">
+                <did>
+                  <unitid>Soz.Hyg.01</unitid>
+                  <unittitle>Sozialhygienisches Seminar</unittitle>
+                </did>
+              </c>
+            </c>
+            <c level="class" id="A91x46049666404724120190821091441640">
+              <did>
+                <unitid>B 02.04</unitid>
+                <unittitle>Philosophische Fakultät</unittitle>
+              </did>
+              <c level="file" id="A91x96574437618255620190821091441667">
+                <did>
+                  <unitid>Bib.Inst.01</unitid>
+                  <unittitle>Bibliothekswissenschaftliches Institut</unittitle>
+                </did>
+              </c>
+              <c level="file" id="A91x26502913236618020190821091441622">
+                <did>
+                  <unitid>Inst.Lautfo.01</unitid>
+                  <unittitle>Institut für Lautforschung 1920-1945</unittitle>
+                </did>
+              </c>
+              <c level="file" id="A91x48154228925704920190821091441635">
+                <did>
+                  <unitid>Phil.Fak.01</unitid>
+                  <unittitle>Philosophische Fakultät, Dekanat 1810-1945</unittitle>
+                </did>
+              </c>
+              <c level="file" id="A91x39061403274536120190821091441623">
+                <did>
+                  <unitid>Phil.Fak.01.Prom.</unitid>
+                  <unittitle>Phil.Fak. Promotionen bis 1945</unittitle>
+                </did>
+              </c>
+              <c level="file" id="A91x85779404640197720190821091441675">
+                <did>
+                  <unitid>WP.01</unitid>
+                  <unittitle>Wehrpolitisches Institut</unittitle>
+                </did>
+              </c>
+            </c>
+            <c level="class" id="A91x66748708486557020190821091441640">
+              <did>
+                <unitid>B 02.05</unitid>
+                <unittitle>Mathematisch-Naturwissenschaftliche Fakultät</unittitle>
+              </did>
+              <c level="file" id="A91x07129549980163520201125130049807">
+                <did>
+                  <unitid>Chem.Inst.01</unitid>
+                  <unittitle>Chemisches Institut bis 1945</unittitle>
+                </did>
+              </c>
+              <c level="file" id="A91x08328223228454520201125130049807">
+                <did>
+                  <unitid>ChemVP</unitid>
+                  <unittitle>Chemische Verbandsprüfung, Vorprüfung und Hauptprüfung</unittitle>
+                </did>
+              </c>
+              <c level="file" id="A91x60662424564361520190821091441668">
+                <did>
+                  <unitid>Geogr.Inst.01</unitid>
+                  <unittitle>Geographisches Institut bis 1945</unittitle>
+                </did>
+              </c>
+              <c level="file" id="A91x52135950326919520190821091441628">
+                <did>
+                  <unitid>IfM.01</unitid>
+                  <unittitle>Institut für Meereskunde</unittitle>
+                </did>
+                <scopecontent>
+                  <head>Verwaltungsgeschichte/biografische Angaben</head>
+                  <p>Institut und Museum werden vom Preussischen Staat finanziert und gehören der Friedrich-Wilhelms-Universität Berlin an. <lb/>Direktoren: 1) Geheimrat Prof. von Richthofen, 2) Geheimrat Prof. Dr. Albrecht Penck, 3) Prof. Dr. Alfred Merz, 4) Prof. Dr. Albert Defant<lb/>1900 an der Philosophischen Fakultät errichtet.<lb/>Sitz: Berlin NW 7 - Georgenstraße 34-36<lb/>
+                    <lb/>Der Bestand - Sigantur 1 bis 256 - ist verfilmt: Rollfilm am Bestandsort; Masterfilm, keine Benutzungskopie.</p>
+                </scopecontent>
+              </c>
+              <c level="file" id="A91x82025086879730220190821091441666">
+                <did>
+                  <unitid>Met.Inst.01</unitid>
+                  <unittitle>Meteorologisches Institut bis 1945</unittitle>
+                </did>
+              </c>
+              <c level="file" id="A91x98451596498489320190821091441664">
+                <did>
+                  <unitid>MfN.01</unitid>
+                  <unittitle>Museum für Naturkunde</unittitle>
+                </did>
+              </c>
+              <c level="file" id="A91x80861842632293720190821091441637">
+                <did>
+                  <unitid>MNF.01</unitid>
+                  <unittitle>MNF, Dekanat 1936-1945</unittitle>
+                </did>
+              </c>
+              <c level="file" id="A91x93047523498535120190821091441640">
+                <did>
+                  <unitid>Zool.Inst.01</unitid>
+                  <unittitle>Zoologisches Institut bis 1945</unittitle>
+                </did>
+              </c>
+            </c>
+            <c level="class" id="A91x27050673961639420190821091441624">
+              <did>
+                <unitid>B 02.06</unitid>
+                <unittitle>Auslandswissenschaftliche Fakultät 1940-1945</unittitle>
+              </did>
+              <c level="file" id="A91x80311924219131420190821091441629">
+                <did>
+                  <unitid>Ausl.Wiss.Fak.01</unitid>
+                  <unittitle>Auslandswissenschaftliche Fakultät</unittitle>
+                </did>
+              </c>
+              <c level="file" id="A91x31177800893783520190821091441629">
+                <did>
+                  <unitid>DHP.01</unitid>
+                  <unittitle>Deutsche Hochschule für Politik</unittitle>
+                </did>
+              </c>
+            </c>
+          </c>
+          <c level="class" id="A91x78093659877777020190821091441640">
+            <did>
+              <unitid>B 03</unitid>
+              <unittitle>Institute</unittitle>
+            </did>
+            <c level="file" id="A91x32827556133270220190821091441640">
+              <did>
+                <unitid>DIA.01</unitid>
+                <unittitle>Deutsches Institut für Ausländer</unittitle>
+              </did>
+            </c>
+          </c>
+          <c level="class" id="A91x40367895364761320190821091441668">
+            <did>
+              <unitid>B 04</unitid>
+              <unittitle>Zentraleinrichtungen</unittitle>
+            </did>
+            <c level="file" id="A91x82220786809921220190821091441644">
+              <did>
+                <unitid>UB.01</unitid>
+                <unittitle>Universitätsbibliothek bis 1945</unittitle>
+              </did>
+              <scopecontent>
+                <head>Verwaltungsgeschichte/biografische Angaben</head>
+                <p>Das vorhandene Findbuch aus den 70er Jahren wurde unter Hinzuziehung der Akten in Augias-Archiv eingegeben.<lb/>Später an das Universitätsarchiv abgegebene Akten der Universitätsbibliothek aus dem Entstehungszeitraum bis 1945 wurden ebenfalls in Augias-Archiv verzeichnet.<lb/>Die Akten mit den Signaturen 0216, 0314, 0317, 0366, 0410, 0432, 0461, 0474, 0475, 0485 und 1144 fehlten zum Zeitpunkt der Aufnahme bzw. waren schon bei einer Revision im Jahre 2000 als fehlend kenntlich gemacht worden und sind daher nicht eingegeben worden.<lb/>Claudia Hilse</p>
+              </scopecontent>
+            </c>
+          </c>
+        </c>
+        <c level="class" id="A91x11060380935668920190821091441644">
+          <did>
+            <unitid>C</unitid>
+            <unittitle>Humboldt-Universität zu Berlin 1945-1969</unittitle>
+          </did>
+          <c level="class" id="A91x07192361354827820190821091441643">
+            <did>
+              <unitid>C 01</unitid>
+              <unittitle>Universitätsleitung und -verwaltung</unittitle>
+            </did>
+            <c level="class" id="A91x56535297632217420190821091441674">
+              <did>
+                <unitid>C 01.01</unitid>
+                <unittitle>Rektor und Rektorat</unittitle>
+              </did>
+            </c>
+            <c level="class" id="A91x44785833358764620190821091441674">
+              <did>
+                <unitid>C 01.02 VD -</unitid>
+                <unittitle>Verwaltungsdirektor</unittitle>
+              </did>
+            </c>
+            <c level="class" id="A91x49462878704071020190821091441675">
+              <did>
+                <unitid>C 01.03</unitid>
+                <unittitle>Gesellschaftliche Organisationen</unittitle>
+              </did>
+            </c>
+          </c>
+          <c level="class" id="A91x62994390726089420190821091441643">
+            <did>
+              <unitid>C 02</unitid>
+              <unittitle>Prorektorate</unittitle>
+            </did>
+            <c level="class" id="A91x80034226179122920190821091441674">
+              <did>
+                <unitid>C 02.01</unitid>
+                <unittitle>Der Prorektor</unittitle>
+              </did>
+            </c>
+            <c level="class" id="A91x23536872863769520190821091441667">
+              <did>
+                <unitid>C 02.02</unitid>
+                <unittitle>Prorektorat für Gesellschaftswissenschaften</unittitle>
+              </did>
+            </c>
+            <c level="class" id="A91x29686564207077020190821091441667">
+              <did>
+                <unitid>C 02.03</unitid>
+                <unittitle>Prorektorat für Forschungsangelegenheiten</unittitle>
+              </did>
+            </c>
+            <c level="class" id="A91x84306758642196620190821091441674">
+              <did>
+                <unitid>C 02.04</unitid>
+                <unittitle>Prorektorat für Naturwissenschaften</unittitle>
+              </did>
+            </c>
+            <c level="class" id="A91x20882391929626420190821091441664">
+              <did>
+                <unitid>C 02.05</unitid>
+                <unittitle>Prorektorat für Studienangelegenheiten</unittitle>
+              </did>
+            </c>
+            <c level="class" id="A91x06737554073333720190821091441675">
+              <did>
+                <unitid>C 02.06</unitid>
+                <unittitle>Prorektorat für wissenschaftlichen Nachwuchs</unittitle>
+              </did>
+            </c>
+          </c>
+          <c level="class" id="A91x22146224975585920190821091441644">
+            <did>
+              <unitid>C 03</unitid>
+              <unittitle>Fakultäten</unittitle>
+            </did>
+            <c level="class" id="A91x18132799863815320190821091441644">
+              <did>
+                <unitid>C 03.01</unitid>
+                <unittitle>Theologische Fakultät</unittitle>
+              </did>
+            </c>
+            <c level="class" id="A91x52717572450637820190821091441644">
+              <did>
+                <unitid>C 03.02</unitid>
+                <unittitle>Juristische Fakultät</unittitle>
+              </did>
+            </c>
+            <c level="class" id="A91x52976679801940920190821091441644">
+              <did>
+                <unitid>C 03.03</unitid>
+                <unittitle>Medizinische Fakultät</unittitle>
+              </did>
+            </c>
+            <c level="class" id="A91x05315202474594120190821091441644">
+              <did>
+                <unitid>C 03.04</unitid>
+                <unittitle>Philosophische Fakultät</unittitle>
+              </did>
+            </c>
+            <c level="class" id="A91x45904260873794520190821091441645">
+              <did>
+                <unitid>C 03.05</unitid>
+                <unittitle>Wirtschaftswissenschaftliche Fakultät</unittitle>
+              </did>
+            </c>
+            <c level="class" id="A91x99974536895751920190821091441645">
+              <did>
+                <unitid>C 03.06</unitid>
+                <unittitle>Pädagogische Fakultät</unittitle>
+              </did>
+            </c>
+            <c level="class" id="A91x37763708829879720190821091441645">
+              <did>
+                <unitid>C 03.07</unitid>
+                <unittitle>Mathematisch-Naturwissenschaftliche Fakultät</unittitle>
+              </did>
+            </c>
+            <c level="class" id="A91x97838270664215020190821091441645">
+              <did>
+                <unitid>C 03.08</unitid>
+                <unittitle>Landwirtschaftlich-Gärtnerische Fakultät</unittitle>
+              </did>
+            </c>
+            <c level="class" id="A91x44172507524490320190821091441645">
+              <did>
+                <unitid>C 03.09</unitid>
+                <unittitle>Forstwirtschaftliche Fakultät</unittitle>
+              </did>
+            </c>
+            <c level="class" id="A91x78611874580383320190821091441645">
+              <did>
+                <unitid>C 03.10</unitid>
+                <unittitle>Veterinärmedizinische Fakultät</unittitle>
+              </did>
+            </c>
+            <c level="class" id="A91x01851695775985720190821091441645">
+              <did>
+                <unitid>C 03.11</unitid>
+                <unittitle>Arbeiter- und Bauern-Fakultät</unittitle>
+              </did>
+            </c>
+          </c>
+          <c level="class" id="A91x74548155069351120190821091441667">
+            <did>
+              <unitid>C 04</unitid>
+              <unittitle>Zentraleinrichtungen</unittitle>
+            </did>
+            <c level="class" id="A91x96056222915649420190821091441675">
+              <did>
+                <unitid>C 04.01</unitid>
+                <unittitle>Universitätsbibliothek</unittitle>
+              </did>
+            </c>
+            <c level="class" id="A91x99665135145187320190821091441675">
+              <did>
+                <unitid>C 04.02</unitid>
+                <unittitle>Audiovisuelles Zentrum</unittitle>
+              </did>
+            </c>
+            <c level="class" id="A91x62280476093292220190821091441675">
+              <did>
+                <unitid>C 04.03</unitid>
+                <unittitle>Rechenzentrum</unittitle>
+              </did>
+            </c>
+            <c level="class" id="A91x74434453248977620190821091441675">
+              <did>
+                <unitid>C 04.04</unitid>
+                <unittitle>Institut für Marxismus-Leninismus</unittitle>
+              </did>
+            </c>
+          </c>
+        </c>
+        <c level="class" id="A91x77948254346847520190821091441644">
+          <did>
+            <unitid>D</unitid>
+            <unittitle>Humboldt-Universität zu Berlin 1969-1990</unittitle>
+          </did>
+          <c level="class" id="A91x79016387462615920190821091441645">
+            <did>
+              <unitid>D 01</unitid>
+              <unittitle>Rektor</unittitle>
+            </did>
+            <c level="class" id="A91x30722993612289420190821091441648">
+              <did>
+                <unitid>D 01.01</unitid>
+                <unittitle>Rektorat</unittitle>
+              </did>
+            </c>
+            <c level="class" id="A91x73707425594329820190821091441648">
+              <did>
+                <unitid>D 01.02</unitid>
+                <unittitle>Konzil</unittitle>
+              </did>
+            </c>
+            <c level="class" id="A91x97869974374771120190821091441648">
+              <did>
+                <unitid>D 01.03</unitid>
+                <unittitle>Gesellschaftlicher Rat</unittitle>
+              </did>
+            </c>
+          </c>
+          <c level="class" id="A91x74080234766006420190821091441645">
+            <did>
+              <unitid>D 02</unitid>
+              <unittitle>Wissenschaftlicher Rat</unittitle>
+            </did>
+            <c level="class" id="A91x25382328033447220190821091441649">
+              <did>
+                <unitid>D 02.01</unitid>
+                <unittitle>Senat</unittitle>
+              </did>
+            </c>
+            <c level="class" id="A91x89729422330856320190821091441649">
+              <did>
+                <unitid>D 02.02</unitid>
+                <unittitle>Gesellschaftswissenschaftliche Fakultät</unittitle>
+              </did>
+            </c>
+            <c level="class" id="A91x23246061801910420190821091441649">
+              <did>
+                <unitid>D 02.03</unitid>
+                <unittitle>Mathematisch-Naturwissenschaftliche Fakultät</unittitle>
+              </did>
+            </c>
+            <c level="class" id="A91x96138221025466920190821091441649">
+              <did>
+                <unitid>D 02.04</unitid>
+                <unittitle>Agrarwissenschaftliche Fakultät</unittitle>
+              </did>
+              <c level="file" id="A91x90475040674209520190821091441637">
+                <did>
+                  <unitid>LGF03Prom.</unitid>
+                  <unittitle>Promotionen bis 1990</unittitle>
+                </did>
+                <accessrestrict>
+                  <head>gesperrt bis</head>
+                  <p>26.03.2013</p>
+                </accessrestrict>
+              </c>
+            </c>
+            <c level="class" id="A91x04019665718078620190821091441649">
+              <did>
+                <unitid>D 02.05</unitid>
+                <unittitle>Medizinische Fakultät</unittitle>
+              </did>
+            </c>
+            <c level="class" id="A91x91638284921646120190821091441665">
+              <did>
+                <unitid>D 02.06</unitid>
+                <unittitle>Biowissenschaftliche Fakultät</unittitle>
+              </did>
+            </c>
+          </c>
+          <c level="class" id="A91x62330770492553720190821091441645">
+            <did>
+              <unitid>D 03</unitid>
+              <unittitle>Prorektoren</unittitle>
+            </did>
+            <c level="class" id="A91x35627442598342820190821091441645">
+              <did>
+                <unitid>D 03.01</unitid>
+                <unittitle>1. Prorektor</unittitle>
+              </did>
+            </c>
+            <c level="class" id="A91x04247069358825620190821091441645">
+              <did>
+                <unitid>D 03.02</unitid>
+                <unittitle>Prorektor für Erziehung und Ausbildung</unittitle>
+              </did>
+            </c>
+            <c level="class" id="A91x24946111440658520190821091441645">
+              <did>
+                <unitid>D 03.03</unitid>
+                <unittitle>Prorektor für Gesellschaftswissenschaften</unittitle>
+              </did>
+            </c>
+            <c level="class" id="A91x36291062831878620190821091441645">
+              <did>
+                <unitid>D 03.04</unitid>
+                <unittitle>Prorektor für Naturwissenschaften und Technik</unittitle>
+              </did>
+            </c>
+            <c level="class" id="A91x28814131021499620190821091441645">
+              <did>
+                <unitid>D 03.05</unitid>
+                <unittitle>Prorektor für Medizin</unittitle>
+              </did>
+            </c>
+          </c>
+          <c level="class" id="A91x97579163312911920190821091441645">
+            <did>
+              <unitid>D 04</unitid>
+              <unittitle>Direktorate</unittitle>
+            </did>
+            <c level="class" id="A91x51244926452636720190821091441645">
+              <did>
+                <unitid>D 04.01</unitid>
+                <unittitle>Direktorat für Studienangelegenheiten</unittitle>
+              </did>
+            </c>
+            <c level="class" id="A91x83952540159225420190821091441645">
+              <did>
+                <unitid>D 04.02</unitid>
+                <unittitle>Direktorat für Forschung</unittitle>
+              </did>
+            </c>
+            <c level="class" id="A91x85829699039459220190821091441646">
+              <did>
+                <unitid>D 04.03</unitid>
+                <unittitle>Direktorat für Kader und Qualifizierung</unittitle>
+              </did>
+              <c level="file" id="A91x11289942264556820190821091441623">
+                <did>
+                  <unitid>PA - nach 1945</unitid>
+                  <unittitle>Personalakten Universität ab 1945</unittitle>
+                </did>
+                <scopecontent>
+                  <head>Verwaltungsgeschichte/biografische Angaben</head>
+                  <p>Lebensdaten sind nur angegeben, wenn sie aus dem Inhalt der Akte hervorgehen.<lb/>In AUGIAS-Archiv sind bisher nur die Personalakten nach 1945 eingegeben, die seit Mai 2004 im Lesesaal des Universitätsarchivs benutzt worden sind.</p>
+                </scopecontent>
+              </c>
+            </c>
+            <c level="class" id="A91x27082377672195420190821091441646">
+              <did>
+                <unitid>D 04.04</unitid>
+                <unittitle>Direktorat für Internationale Beziehungen</unittitle>
+              </did>
+            </c>
+            <c level="class" id="A91x29882264137268020190821091441646">
+              <did>
+                <unitid>D 04.05</unitid>
+                <unittitle>Direktorat für Kultur und Öffentlichkeitsarbeit</unittitle>
+              </did>
+            </c>
+            <c level="class" id="A91x48040527105331420190821091441646">
+              <did>
+                <unitid>D 04.06</unitid>
+                <unittitle>Direktorat für Planung und Ökonomie</unittitle>
+              </did>
+            </c>
+            <c level="class" id="A91x93565738201141320190821091441646">
+              <did>
+                <unitid>D 04.07</unitid>
+                <unittitle>Direktorat für Technik</unittitle>
+              </did>
+            </c>
+            <c level="class" id="A91x56990104913711520190821091441646">
+              <did>
+                <unitid>D 04.08</unitid>
+                <unittitle>Direktorat für Wirtschafts- und Sozialeinrichtungen</unittitle>
+              </did>
+            </c>
+            <c level="class" id="A91x13601160049438420190821091441646">
+              <did>
+                <unitid>D 04.09</unitid>
+                <unittitle>Direktorat für Weiterbildung</unittitle>
+              </did>
+            </c>
+            <c level="class" id="A91x51080930233001720190821091441673">
+              <did>
+                <unitid>D 04.10</unitid>
+                <unittitle>Direktorat für Erziehung und Ausbildung</unittitle>
+              </did>
+            </c>
+          </c>
+          <c level="class" id="A91x91833984851837120190821091441645">
+            <did>
+              <unitid>D 05</unitid>
+              <unittitle>Sektionen</unittitle>
+            </did>
+            <c level="class" id="A91x43767994642257620190821091441646">
+              <did>
+                <unitid>D 05.01</unitid>
+                <unittitle>Sektion Anglistik, Amerikanistik, Romanistik</unittitle>
+              </did>
+            </c>
+            <c level="class" id="A91x06383335590362520190821091441646">
+              <did>
+                <unitid>D 05.02</unitid>
+                <unittitle>Sektion Ästhetik-Kunstwissenschaften</unittitle>
+              </did>
+              <c level="file" id="A91x90590900182723920190821091441622">
+                <did>
+                  <unitid>MuwissPrüf.</unitid>
+                  <unittitle>Prüfungsakten Musikwissenschaftliches Seminar</unittitle>
+                </did>
+                <accessrestrict>
+                  <head>gesperrt bis</head>
+                  <p>11.03.2014</p>
+                </accessrestrict>
+              </c>
+            </c>
+            <c level="class" id="A91x18537312746047920190821091441646">
+              <did>
+                <unitid>D 05.03</unitid>
+                <unittitle>Sektion Asienwissenschaften</unittitle>
+              </did>
+            </c>
+            <c level="class" id="A91x55517458915710420190821091441646">
+              <did>
+                <unitid>D 05.04</unitid>
+                <unittitle>Sektion Biologie</unittitle>
+              </did>
+            </c>
+            <c level="class" id="A91x71134942770004220190821091441646">
+              <did>
+                <unitid>D 05.05</unitid>
+                <unittitle>Sektion Chemie</unittitle>
+              </did>
+            </c>
+            <c level="class" id="A91x50840413570404020190821091441646">
+              <did>
+                <unitid>D 05.06</unitid>
+                <unittitle>Sektion Elektronik</unittitle>
+              </did>
+            </c>
+            <c level="class" id="A91x09992247819900520190821091441646">
+              <did>
+                <unitid>D 05.07</unitid>
+                <unittitle>Sektion Fremdsprachen</unittitle>
+              </did>
+            </c>
+            <c level="class" id="A91x11724001169204720190821091441646">
+              <did>
+                <unitid>D 05.08</unitid>
+                <unittitle>Sektion Gartenbau</unittitle>
+              </did>
+            </c>
+            <c level="class" id="A91x02515316009521420190821091441646">
+              <did>
+                <unitid>D 05.09</unitid>
+                <unittitle>Sektion Geographie</unittitle>
+              </did>
+            </c>
+            <c level="class" id="A91x03583449125289920190821091441646">
+              <did>
+                <unitid>D 05.10</unitid>
+                <unittitle>Sektion Germanistik</unittitle>
+              </did>
+            </c>
+            <c level="class" id="A91x00379049777984620190821091441646">
+              <did>
+                <unitid>D 05.11</unitid>
+                <unittitle>Sektion Geschichte</unittitle>
+              </did>
+            </c>
+            <c level="class" id="A91x01478886604309020190821091441647">
+              <did>
+                <unitid>D 05.12</unitid>
+                <unittitle>Sektion Kriminalistik</unittitle>
+              </did>
+              <c level="file" id="A91x84179943799972520190821091441628">
+                <did>
+                  <unitid>Sek.Krim.</unitid>
+                  <unittitle>Sektion Kriminalistik</unittitle>
+                </did>
+                <accessrestrict>
+                  <head>gesperrt bis</head>
+                  <p>29.04.2015</p>
+                </accessrestrict>
+              </c>
+            </c>
+            <c level="class" id="A91x87997668981552120190821091441647">
+              <did>
+                <unitid>D 05.13</unitid>
+                <unittitle>Sektion Marxismus-Leninismus</unittitle>
+              </did>
+            </c>
+            <c level="class" id="A91x01883399486541720190821091441647">
+              <did>
+                <unitid>D 05.14</unitid>
+                <unittitle>Sektion Marxistisch-Leninistische Philosophie</unittitle>
+              </did>
+            </c>
+            <c level="class" id="A91x41954243183135920190821091441658">
+              <did>
+                <unitid>D 05.15</unitid>
+                <unittitle>Sektion Mathematik</unittitle>
+              </did>
+            </c>
+            <c level="class" id="A91x60226207971572820190821091441647">
+              <did>
+                <unitid>D 05.16</unitid>
+                <unittitle>Sektion Nahrungsgüterwirtschaft-Lebensmitteltechnologie</unittitle>
+              </did>
+            </c>
+            <c level="class" id="A91x11755704879760720190821091441647">
+              <did>
+                <unitid>D 05.17</unitid>
+                <unittitle>Sektion Pädagogik</unittitle>
+              </did>
+            </c>
+            <c level="class" id="A91x83725136518478320190821091441647">
+              <did>
+                <unitid>D 05.18</unitid>
+                <unittitle>Sektion Pflanzenproduktion</unittitle>
+              </did>
+            </c>
+            <c level="class" id="A91x21773415803909320190821091441647">
+              <did>
+                <unitid>D 05.19</unitid>
+                <unittitle>Sektion Physik</unittitle>
+              </did>
+            </c>
+            <c level="class" id="A91x14700996875762920190821091441647">
+              <did>
+                <unitid>D 05.20</unitid>
+                <unittitle>Sektion Psychologie</unittitle>
+              </did>
+            </c>
+            <c level="class" id="A91x27114081382751420190821091441647">
+              <did>
+                <unitid>D 05.21</unitid>
+                <unittitle>Sektion Rechtswissenschaft</unittitle>
+              </did>
+            </c>
+            <c level="class" id="A91x11092084646224920190821091441647">
+              <did>
+                <unitid>D 05.22</unitid>
+                <unittitle>Sektion Rehabilitationspädagogik und Kommunikationswissenschaft</unittitle>
+              </did>
+            </c>
+            <c level="class" id="A91x59158074855804420190821091441647">
+              <did>
+                <unitid>D 05.23</unitid>
+                <unittitle>Sektion Romanistik</unittitle>
+              </did>
+            </c>
+            <c level="class" id="A91x14960104227066020190821091441648">
+              <did>
+                <unitid>D 05.24</unitid>
+                <unittitle>Sektion Slawistik</unittitle>
+              </did>
+            </c>
+            <c level="class" id="A91x74111938476562520190821091441648">
+              <did>
+                <unitid>D 05.25</unitid>
+                <unittitle>Sektion Sportwissenschaft</unittitle>
+              </did>
+            </c>
+            <c level="class" id="A91x43540591001510620190821091441648">
+              <did>
+                <unitid>D 05.26</unitid>
+                <unittitle>Sektion Stomatologie</unittitle>
+              </did>
+            </c>
+            <c level="class" id="A91x35254633426666220190821091441648">
+              <did>
+                <unitid>D 05.27</unitid>
+                <unittitle>Sektion Theologie</unittitle>
+              </did>
+            </c>
+            <c level="class" id="A91x13228350877761820190821091441648">
+              <did>
+                <unitid>D 05.28</unitid>
+                <unittitle>Sektion Tierproduktion/Veterinärmedizin</unittitle>
+              </did>
+            </c>
+            <c level="class" id="A91x52749276161193820190821091441648">
+              <did>
+                <unitid>D 05.29</unitid>
+                <unittitle>Sektion Wirtschaftswissenschaften</unittitle>
+              </did>
+            </c>
+            <c level="class" id="A91x34186500310897820190821091441648">
+              <did>
+                <unitid>D 05.30</unitid>
+                <unittitle>Sektion Wissenschaftstheorie und Wissenschaftsorganisation</unittitle>
+              </did>
+            </c>
+            <c level="class" id="A91x16432750225067120190821091441648">
+              <did>
+                <unitid>D 05.31</unitid>
+                <unittitle>Bereich Medizin</unittitle>
+                <abstract>13 Kliniken, 5 Polikliniken, 7 selbständige Abteilungen, 16 Institute</abstract>
+              </did>
+            </c>
+            <c level="class" id="A91x43136078119277920190821091441648">
+              <did>
+                <unitid>D 05.32</unitid>
+                <unittitle>Bibliothekswissenschaft 1945-1990/92</unittitle>
+              </did>
+            </c>
+            <c level="class" id="A91x63026094436645520190821091441648">
+              <did>
+                <unitid>D 05.33</unitid>
+                <unittitle>Institut für Marxistisch-Leninistische Soziologie</unittitle>
+              </did>
+            </c>
+            <c level="class" id="A91x29913967847824020190821091441648">
+              <did>
+                <unitid>D 05.34</unitid>
+                <unittitle>Medizinische Fachschule "Jenny Marx"</unittitle>
+              </did>
+            </c>
+            <c level="class" id="A91x29250347614288320190821091441648">
+              <did>
+                <unitid>D 05.35</unitid>
+                <unittitle>Museum für Naturkunde</unittitle>
+              </did>
+            </c>
+            <c level="class" id="A91x04683285951614320190821091441648">
+              <did>
+                <unitid>D 05.36</unitid>
+                <unittitle>Organisations- und Rechenzentrum</unittitle>
+              </did>
+            </c>
+            <c level="class" id="A91x78384470939636220190821091441648">
+              <did>
+                <unitid>D 05.37</unitid>
+                <unittitle>Universitätsbibliothek</unittitle>
+              </did>
+            </c>
+            <c level="class" id="A91x64934957027435320190821091441663">
+              <did>
+                <unitid>D 05.38</unitid>
+                <unittitle>Sektion Philosophie</unittitle>
+              </did>
+            </c>
+          </c>
+        </c>
+        <c level="class" id="A91x77284634113311720190821091441644">
+          <did>
+            <unitid>E</unitid>
+            <unittitle>Humboldt-Universität zu Berlin 1990-2013</unittitle>
+          </did>
+          <c level="class" id="A91x53817409276962220190821091441649">
+            <did>
+              <unitid>E 01</unitid>
+              <unittitle>Universitätsleitung</unittitle>
+            </did>
+            <c level="class" id="A91x68884974718093820190821091441642">
+              <did>
+                <unitid>E 01.01.</unitid>
+                <unittitle>Präsident/in</unittitle>
+              </did>
+            </c>
+            <c level="class" id="A91x00006240606307920190821091441650">
+              <did>
+                <unitid>E 01.02</unitid>
+                <unittitle>Präsidialamt</unittitle>
+              </did>
+            </c>
+            <c level="class" id="A91x87447750568389820190821091441652">
+              <did>
+                <unitid>E 01.03</unitid>
+                <unittitle>Frauenbeauftragte</unittitle>
+              </did>
+            </c>
+            <c level="class" id="A91x64757847785949720190821091441654">
+              <did>
+                <unitid>E 01.04</unitid>
+                <unittitle>Referat Presse- und Öfentlichkeitsarbeit</unittitle>
+              </did>
+            </c>
+            <c level="class" id="A91x98160785436630220190821091441655">
+              <did>
+                <unitid>E 01.05</unitid>
+                <unittitle>Referat Akademisches Auslandsamt</unittitle>
+              </did>
+            </c>
+            <c level="class" id="A91x12046515941619820190821091441655">
+              <did>
+                <unitid>E 01.06</unitid>
+                <unittitle>Lessy -VW-Projekt "Verbesserung des Leitungs- und Entscheidungssystems"</unittitle>
+              </did>
+            </c>
+          </c>
+          <c level="class" id="A91x18973529338836620190821091441650">
+            <did>
+              <unitid>E 02</unitid>
+              <unittitle>Vizepräsidenten</unittitle>
+            </did>
+          </c>
+          <c level="class" id="A91x30982100963592520190821091441649">
+            <did>
+              <unitid>E 03</unitid>
+              <unittitle>Kanzler - Universitätsverwaltung</unittitle>
+            </did>
+            <c level="class" id="A91x87593156099319420190821091441649">
+              <did>
+                <unitid>E 03.01</unitid>
+                <unittitle>Kanzler</unittitle>
+              </did>
+            </c>
+            <c level="class" id="A91x29654860496520920190821091441649">
+              <did>
+                <unitid>E 03.02</unitid>
+                <unittitle>Studienabteilung (I)</unittitle>
+              </did>
+            </c>
+            <c level="class" id="A91x76911824941635120190821091441649">
+              <did>
+                <unitid>E 03.03</unitid>
+                <unittitle>Forschungsabteilung/Servicezentrum Forschung (II)</unittitle>
+              </did>
+            </c>
+            <c level="class" id="A91x88256776332855220190821091441649">
+              <did>
+                <unitid>E 03.04</unitid>
+                <unittitle>Personalabteilung-Abteilung für Personal und Personalentwicklung (III)</unittitle>
+              </did>
+            </c>
+            <c level="class" id="A91x80779844522476120190821091441649">
+              <did>
+                <unitid>E 03.05</unitid>
+                <unittitle>Haushaltsabteilung (IV)</unittitle>
+              </did>
+            </c>
+            <c level="class" id="A91x03210639953613220190821091441649">
+              <did>
+                <unitid>E 03.06</unitid>
+                <unittitle>Technische Abteilung (V)</unittitle>
+              </did>
+            </c>
+            <c level="class" id="A91x09360331296920720190821091441650">
+              <did>
+                <unitid>E 03.07</unitid>
+                <unittitle>Allgemeine Abteilung</unittitle>
+              </did>
+            </c>
+            <c level="class" id="A91x15914535522460920190821091441659">
+              <did>
+                <unitid>E 03.08</unitid>
+                <unittitle>Internationales Büro (VI)</unittitle>
+              </did>
+            </c>
+          </c>
+          <c level="class" id="A91x26045948266983020190821091441649">
+            <did>
+              <unitid>E 04</unitid>
+              <unittitle>Zentrale Organe und Gremien</unittitle>
+            </did>
+            <c level="class" id="A91x08955818414688120190821091441650">
+              <did>
+                <unitid>E 04.01</unitid>
+                <unittitle>Konzil</unittitle>
+              </did>
+            </c>
+            <c level="class" id="A91x65566873550415020190821091441650">
+              <did>
+                <unitid>E 04.02</unitid>
+                <unittitle>Zentraler Wahlvorstand</unittitle>
+              </did>
+            </c>
+            <c level="class" id="A91x95733708143234220190821091441650">
+              <did>
+                <unitid>E 04.03</unitid>
+                <unittitle>Akademischer Senat</unittitle>
+              </did>
+              <c level="class" id="A91x31791126728057820190821091441650">
+                <did>
+                  <unitid>E 04.03.01</unitid>
+                  <unittitle>Entwicklungsplanungskommission</unittitle>
+                </did>
+              </c>
+              <c level="class" id="A91x70503026247024520190821091441650">
+                <did>
+                  <unitid>E 04.03.02</unitid>
+                  <unittitle>Kommission Lehre und Studium</unittitle>
+                </did>
+              </c>
+              <c level="class" id="A91x07483172416687020190821091441650">
+                <did>
+                  <unitid>E 04.03.03</unitid>
+                  <unittitle>Kommission Forschung und wissenschaftlicher Nachwuchs (FNK)</unittitle>
+                </did>
+              </c>
+              <c level="class" id="A91x96542733907699520190821091441650">
+                <did>
+                  <unitid>E 04.03.04</unitid>
+                  <unittitle>Raumplanungskommission</unittitle>
+                </did>
+              </c>
+              <c level="class" id="A91x76248204708099320190821091441650">
+                <did>
+                  <unitid>E 04.03.05</unitid>
+                  <unittitle>Bibliothekskommission</unittitle>
+                </did>
+              </c>
+              <c level="class" id="A91x63689714670181220190821091441651">
+                <did>
+                  <unitid>E 04.03.06</unitid>
+                  <unittitle>Kommission Rechentechnik</unittitle>
+                </did>
+              </c>
+              <c level="class" id="A91x81038951873779220190821091441651">
+                <did>
+                  <unitid>E 04.03.07</unitid>
+                  <unittitle>Kommission zur Vergabe von DAC-Stipendien</unittitle>
+                </did>
+              </c>
+              <c level="class" id="A91x82107084989547720190821091441651">
+                <did>
+                  <unitid>E 04.03.08</unitid>
+                  <unittitle>Haushaltskommission</unittitle>
+                </did>
+              </c>
+              <c level="class" id="A91x78902685642242420190821091441651">
+                <did>
+                  <unitid>E 04.03.09</unitid>
+                  <unittitle>Umweltkommission</unittitle>
+                </did>
+              </c>
+              <c level="class" id="A91x88515883684158320190821091441651">
+                <did>
+                  <unitid>E 04.03.10</unitid>
+                  <unittitle>Ehrenausschuss</unittitle>
+                </did>
+              </c>
+              <c level="class" id="A91x59676289558410620190821091441651">
+                <did>
+                  <unitid>E 04.03.11</unitid>
+                  <unittitle>Rehabilitierungskommission</unittitle>
+                </did>
+              </c>
+            </c>
+            <c level="class" id="A91x46195071935653620190821091441651">
+              <did>
+                <unitid>E 04.04</unitid>
+                <unittitle>Kuratorium</unittitle>
+              </did>
+            </c>
+            <c level="class" id="A91x60080802440643320190821091441651">
+              <did>
+                <unitid>E 04.05</unitid>
+                <unittitle>Hauptkommission</unittitle>
+              </did>
+            </c>
+            <c level="class" id="A91x18423610925674420190821091441651">
+              <did>
+                <unitid>E 04.06</unitid>
+                <unittitle>Personalkommission</unittitle>
+              </did>
+            </c>
+          </c>
+          <c level="class" id="A91x49544876813888520190821091441649">
+            <did>
+              <unitid>E 05</unitid>
+              <unittitle>Fakultäten</unittitle>
+            </did>
+            <c level="class" id="A91x14296483993530220190821091441649">
+              <did>
+                <unitid>E 05.01</unitid>
+                <unittitle>Juristische Fakultät</unittitle>
+              </did>
+            </c>
+            <c level="class" id="A91x17355477809906020190821091441652">
+              <did>
+                <unitid>E 05.02</unitid>
+                <unittitle>Landwirtschaftlich-Gärtnerische Fakultät</unittitle>
+              </did>
+              <c level="class" id="A91x45790559053421020190821091441653">
+                <did>
+                  <unitid>E 05.02.00</unitid>
+                  <unittitle>Dekan</unittitle>
+                </did>
+              </c>
+              <c level="class" id="A91x62880688905715920190821091441652">
+                <did>
+                  <unitid>E 05.02.01</unitid>
+                  <unittitle>Institut für Pflanzenbauwissenschaften</unittitle>
+                </did>
+              </c>
+              <c level="class" id="A91x36581873893737720190821091441652">
+                <did>
+                  <unitid>E 05.02.02</unitid>
+                  <unittitle>Institut für Gartenbauwissenschaften</unittitle>
+                </did>
+              </c>
+              <c level="class" id="A91x88920396566390920190821091441652">
+                <did>
+                  <unitid>E 05.02.03</unitid>
+                  <unittitle>Institut für Nutztierwissenschaften</unittitle>
+                </did>
+              </c>
+              <c level="class" id="A91x29509454965591420190821091441652">
+                <did>
+                  <unitid>E 05.02.04</unitid>
+                  <unittitle>Institut für Wirtschafts- und Sozialwissenschaften des Landbaus</unittitle>
+                </did>
+              </c>
+            </c>
+            <c level="class" id="A91x46599584817886320190821091441652">
+              <did>
+                <unitid>E 05.03</unitid>
+                <unittitle>Mathematisch-Naturwissenschaftliche Fakultät 1</unittitle>
+              </did>
+              <c level="class" id="A91x87852263450622520190821091441653">
+                <did>
+                  <unitid>E 05.03.00</unitid>
+                  <unittitle>Dekan</unittitle>
+                </did>
+              </c>
+              <c level="class" id="A91x83579730987548820190821091441652">
+                <did>
+                  <unitid>E 05.03.01</unitid>
+                  <unittitle>Institut für Biologie</unittitle>
+                </did>
+              </c>
+              <c level="class" id="A91x47926825284957820190821091441653">
+                <did>
+                  <unitid>E 05.03.02</unitid>
+                  <unittitle>Institut für Chemie</unittitle>
+                </did>
+              </c>
+              <c level="class" id="A91x81443464756011920190821091441653">
+                <did>
+                  <unitid>E 05.03.03</unitid>
+                  <unittitle>Institut für Pharmazie</unittitle>
+                </did>
+              </c>
+              <c level="class" id="A91x54335623979568420190821091441653">
+                <did>
+                  <unitid>E 05.03.04</unitid>
+                  <unittitle>Institut für Physik</unittitle>
+                </did>
+              </c>
+            </c>
+            <c level="class" id="A91x32309341430664020190821091441652">
+              <did>
+                <unitid>E 05.04</unitid>
+                <unittitle>Mathematisch-Naturwissenschaftliche Fakultät 2</unittitle>
+              </did>
+              <c level="class" id="A91x35109227895736620190821091441653">
+                <did>
+                  <unitid>E 05.04.00</unitid>
+                  <unittitle>Dekan</unittitle>
+                </did>
+                <c level="file" id="A91x77657443284988420190821091441637">
+                  <did>
+                    <unitid>MNF04/I+II Prüf</unitid>
+                    <unittitle>Prüfungsakten 1990-2004</unittitle>
+                  </did>
+                  <accessrestrict>
+                    <head>gesperrt bis</head>
+                    <p>16.12.2013</p>
+                  </accessrestrict>
+                </c>
+              </c>
+              <c level="class" id="A91x62217068672180120190821091441653">
+                <did>
+                  <unitid>E 05.04.01</unitid>
+                  <unittitle>Geographisches Institut</unittitle>
+                </did>
+              </c>
+              <c level="class" id="A91x12014812231063820190821091441653">
+                <did>
+                  <unitid>E 05.04.02</unitid>
+                  <unittitle>Institut für Informatik</unittitle>
+                </did>
+              </c>
+              <c level="class" id="A91x62621581554412820190821091441653">
+                <did>
+                  <unitid>E 05.04.03</unitid>
+                  <unittitle>Institut für Mathematik</unittitle>
+                </did>
+              </c>
+              <c level="class" id="A91x84243351221084520190821091441653">
+                <did>
+                  <unitid>E 05.04.04</unitid>
+                  <unittitle>Institut für Psychologie</unittitle>
+                </did>
+              </c>
+              <c level="class" id="A91x81361466646194420190821091441666">
+                <did>
+                  <unitid>E 05.04.05</unitid>
+                  <unittitle>Institut für Physik</unittitle>
+                </did>
+              </c>
+            </c>
+            <c level="class" id="A91x01737993955612120190821091441652">
+              <did>
+                <unitid>E 05.05</unitid>
+                <unittitle>Medizinische Fakultät-Universitätsklinikum Charité</unittitle>
+              </did>
+              <c level="class" id="A91x12419325113296520190821091441653">
+                <did>
+                  <unitid>E 05.05.00</unitid>
+                  <unittitle>Dekan</unittitle>
+                </did>
+              </c>
+            </c>
+            <c level="class" id="A91x66894114017486520190821091441652">
+              <did>
+                <unitid>E 05.06</unitid>
+                <unittitle>Philosophische Fakultät 1</unittitle>
+              </did>
+              <c level="class" id="A91x07742279767990120190821091441653">
+                <did>
+                  <unitid>E 05.06.00</unitid>
+                  <unittitle>Dekan</unittitle>
+                </did>
+              </c>
+              <c level="class" id="A91x01997101306915220190821091441653">
+                <did>
+                  <unitid>E 05.06.01</unitid>
+                  <unittitle>Institut für Philosophie</unittitle>
+                </did>
+              </c>
+              <c level="class" id="A91x34850120544433520190821091441653">
+                <did>
+                  <unitid>E 05.06.02</unitid>
+                  <unittitle>Institut für Geschichtswissenschaften</unittitle>
+                </did>
+              </c>
+              <c level="class" id="A91x67557734251022320190821091441653">
+                <did>
+                  <unitid>E 05.06.03</unitid>
+                  <unittitle>Institut für Europäische Ethnologie</unittitle>
+                </did>
+              </c>
+              <c level="class" id="A91x95992815494537320190821091441653">
+                <did>
+                  <unitid>E 05.06.04</unitid>
+                  <unittitle>Institut für Bibliothekswissenschaft</unittitle>
+                </did>
+              </c>
+            </c>
+            <c level="class" id="A91x71425753831863420190821091441652">
+              <did>
+                <unitid>E 05.07</unitid>
+                <unittitle>Philosophische Fakultät 2</unittitle>
+              </did>
+              <c level="class" id="A91x19896256923675520190821091441653">
+                <did>
+                  <unitid>E 05.07.00</unitid>
+                  <unittitle>Dekan</unittitle>
+                </did>
+                <c level="file" id="A91x49999684095382620190821091441630">
+                  <did>
+                    <unitid>Phil. Fak. II</unitid>
+                    <unittitle>Philologien Prüfungsakten</unittitle>
+                  </did>
+                  <accessrestrict>
+                    <head>gesperrt bis</head>
+                    <p>28.02.2022</p>
+                  </accessrestrict>
+                </c>
+              </c>
+              <c level="class" id="A91x37245494127273520190821091441653">
+                <did>
+                  <unitid>E 05.07.01</unitid>
+                  <unittitle>Institut für deutsche Literatur</unittitle>
+                </did>
+              </c>
+              <c level="class" id="A91x13487458229064920190821091441654">
+                <did>
+                  <unitid>E 05.07.02</unitid>
+                  <unittitle>Institut für deutsche Sprache und Linguistik</unittitle>
+                </did>
+              </c>
+              <c level="class" id="A91x31645721197128220190821091441654">
+                <did>
+                  <unitid>E 05.07.03</unitid>
+                  <unittitle>Nordeuropa-Institut</unittitle>
+                </did>
+              </c>
+              <c level="class" id="A91x77170932292938220190821091441654">
+                <did>
+                  <unitid>E 05.07.04</unitid>
+                  <unittitle>Institut für Romanistik</unittitle>
+                </did>
+              </c>
+              <c level="class" id="A91x67153221368789620190821091441654">
+                <did>
+                  <unitid>E 05.07.05</unitid>
+                  <unittitle>Institut für Anglistik und Amerikanistik</unittitle>
+                </did>
+              </c>
+              <c level="class" id="A91x23764276504516620190821091441654">
+                <did>
+                  <unitid>E 05.07.06</unitid>
+                  <unittitle>Institut für Slawistik</unittitle>
+                </did>
+              </c>
+              <c level="class" id="A91x27373188734054520190821091441654">
+                <did>
+                  <unitid>E 05.07.07</unitid>
+                  <unittitle>Institut für Klassische Philologie</unittitle>
+                </did>
+              </c>
+            </c>
+            <c level="class" id="A91x10946679115295420190821091441652">
+              <did>
+                <unitid>E 05.08</unitid>
+                <unittitle>Philosophische Fakultät 3</unittitle>
+              </did>
+              <c level="class" id="A91x89988529682159420190821091441654">
+                <did>
+                  <unitid>E 05.08.00</unitid>
+                  <unittitle>Dekan</unittitle>
+                </did>
+              </c>
+              <c level="class" id="A91x28700429201126020190821091441654">
+                <did>
+                  <unitid>E 05.08.01</unitid>
+                  <unittitle>Institut für Sozialwissenschaften</unittitle>
+                </did>
+              </c>
+              <c level="class" id="A91x39122653007507320190821091441654">
+                <did>
+                  <unitid>E 05.08.02</unitid>
+                  <unittitle>Institut für Kultur- und Kunstwissenschaften</unittitle>
+                </did>
+              </c>
+              <c level="class" id="A91x54740136861801120190821091441654">
+                <did>
+                  <unitid>E 05.08.03</unitid>
+                  <unittitle>Institut für Asien- und Afrikawissenschaften</unittitle>
+                </did>
+              </c>
+              <c level="class" id="A91x48540151119232120190821091441671">
+                <did>
+                  <unitid>E 05.08.04</unitid>
+                  <unittitle>Institut für Musik- und Medienwissenschaft</unittitle>
+                </did>
+              </c>
+            </c>
+            <c level="class" id="A91x65825980901718120190821091441652">
+              <did>
+                <unitid>E 05.09</unitid>
+                <unittitle>Philosophische Fakultät 4</unittitle>
+              </did>
+              <c level="class" id="A91x34445607662200920190821091441654">
+                <did>
+                  <unitid>E 05.09.00</unitid>
+                  <unittitle>Dekan</unittitle>
+                </did>
+              </c>
+              <c level="class" id="A91x95329195261001520190821091441654">
+                <did>
+                  <unitid>E 05.09.01</unitid>
+                  <unittitle>Institut für Erziehungswissenschaften</unittitle>
+                </did>
+                <c level="class" id="A91x58235347270965520190821091441660">
+                  <did>
+                    <unitid>E 05.09.01.01</unitid>
+                    <unittitle>Allgemeine Erziehungswissenschaft</unittitle>
+                  </did>
+                </c>
+                <c level="class" id="A91x84938675165176320190821091441660">
+                  <did>
+                    <unitid>E 05.09.01.02</unitid>
+                    <unittitle>Erwachsenenbildung und Weiterbildung</unittitle>
+                  </did>
+                </c>
+                <c level="class" id="A91x04828691482543920190821091441660">
+                  <did>
+                    <unitid>E 05.09.01.03</unitid>
+                    <unittitle>Erziehungswissenschaftliche Methodenlehre</unittitle>
+                  </did>
+                </c>
+                <c level="class" id="A91x71716564893722520190821091441660">
+                  <did>
+                    <unitid>E 05.09.01.04</unitid>
+                    <unittitle>Grundschulpädagogik</unittitle>
+                  </did>
+                </c>
+                <c level="class" id="A91x71052944660186720190821091441660">
+                  <did>
+                    <unitid>E 05.09.01.05</unitid>
+                    <unittitle>Historische Bildungsforschung</unittitle>
+                  </did>
+                </c>
+                <c level="class" id="A91x46485882997512820190821091441660">
+                  <did>
+                    <unitid>E 05.09.01.06</unitid>
+                    <unittitle>Hochschulforschung</unittitle>
+                  </did>
+                </c>
+                <c level="class" id="A91x46744990348815920190821091441660">
+                  <did>
+                    <unitid>E 05.09.01.07</unitid>
+                    <unittitle>Pädagogische Psychologie und Gesundheitspsychologie</unittitle>
+                  </did>
+                </c>
+                <c level="class" id="A91x99083513021469120190821091441660">
+                  <did>
+                    <unitid>E 05.09.01.08</unitid>
+                    <unittitle>Systematische Didaktik und Unterrichtsforschung</unittitle>
+                  </did>
+                </c>
+                <c level="class" id="A91x40886110067367520190821091441656">
+                  <did>
+                    <unitid>E 05.09.01.09</unitid>
+                    <unittitle>Vergleichende Erziehungswissenschaft</unittitle>
+                  </did>
+                </c>
+                <c level="class" id="A91x57312619686126720190821091441656">
+                  <did>
+                    <unitid>E 05.09.01.10</unitid>
+                    <unittitle>Wirtschaftspädagogik</unittitle>
+                  </did>
+                </c>
+              </c>
+              <c level="class" id="A91x10542166233062720190821091441654">
+                <did>
+                  <unitid>E 05.09.02</unitid>
+                  <unittitle>Institut für Rehabilitationswissenschaften</unittitle>
+                </did>
+              </c>
+              <c level="class" id="A91x13746565580368020190821091441654">
+                <did>
+                  <unitid>E 05.09.03</unitid>
+                  <unittitle>Institut für Sportwissenschaften</unittitle>
+                </did>
+              </c>
+            </c>
+            <c level="class" id="A91x74630153179168720190821091441652">
+              <did>
+                <unitid>E 05.10</unitid>
+                <unittitle>Theologische Fakultät</unittitle>
+              </did>
+            </c>
+            <c level="class" id="A91x07142066955566420190821091441674">
+              <did>
+                <unitid>E 05.11</unitid>
+                <unittitle>Wirtschaftswissenschaftliche Fakultät</unittitle>
+              </did>
+              <c level="class" id="A91x87656563520431520190821091441672">
+                <did>
+                  <unitid>E 05.11.01</unitid>
+                  <unittitle>Dekan</unittitle>
+                </did>
+              </c>
+              <c level="class" id="A91x69757407903671220190821091441677">
+                <did>
+                  <unitid>E 05.11.02</unitid>
+                  <unittitle>Institut für Industrielles Marketing-Management</unittitle>
+                </did>
+              </c>
+              <c level="class" id="A91x78706985712051320190821091441677">
+                <did>
+                  <unitid>E 05.11.03</unitid>
+                  <unittitle>Institut für Statistik und Ökonometrie</unittitle>
+                </did>
+              </c>
+              <c level="class" id="A91x59594291448593120190821091441669">
+                <did>
+                  <unitid>E 05.11.06</unitid>
+                  <unittitle>Studium</unittitle>
+                </did>
+              </c>
+            </c>
+            <c level="class" id="A91x21223497390747020190821091441652">
+              <did>
+                <unitid>E 05.12</unitid>
+                <unittitle>Medizinische Fakultät - Virchow-Klinikum</unittitle>
+              </did>
+            </c>
+            <c level="class" id="A91x26595866680145220190821091441656">
+              <did>
+                <unitid>E 05.13</unitid>
+                <unittitle>Veterinärmedizinische Fakultät</unittitle>
+              </did>
+            </c>
+            <c level="class" id="A91x53299194574356020190821091441656">
+              <did>
+                <unitid>E 05.14</unitid>
+                <unittitle>Fakultät für Lebensmitteltechnologie</unittitle>
+              </did>
+            </c>
+          </c>
+          <c level="class" id="A91x43799698352813720190821091441649">
+            <did>
+              <unitid>E 06</unitid>
+              <unittitle>Zentraleinrichtungen</unittitle>
+            </did>
+            <c level="class" id="A91x43395185470581020190821091441651">
+              <did>
+                <unitid>E 06.01</unitid>
+                <unittitle>ZE Museum für Naturkunde</unittitle>
+              </did>
+            </c>
+            <c level="class" id="A91x41922539472579920190821091441651">
+              <did>
+                <unitid>E 06.02</unitid>
+                <unittitle>ZE Universitätsbibliothek</unittitle>
+              </did>
+            </c>
+            <c level="class" id="A91x72898399829864520190821091441651">
+              <did>
+                <unitid>E 06.03</unitid>
+                <unittitle>ZE Rechenzentrum</unittitle>
+              </did>
+            </c>
+            <c level="class" id="A91x79970818758010820190821091441651">
+              <did>
+                <unitid>E 06.04</unitid>
+                <unittitle>ZE Audiovisuelle Lehrmittel</unittitle>
+              </did>
+            </c>
+            <c level="class" id="A91x85311484336853020190821091441651">
+              <did>
+                <unitid>E 06.05</unitid>
+                <unittitle>ZE Hochschulsport</unittitle>
+              </did>
+            </c>
+            <c level="class" id="A91x69289487600326520190821091441651">
+              <did>
+                <unitid>E 06.06</unitid>
+                <unittitle>ZE Sprachenzentrum</unittitle>
+              </did>
+            </c>
+          </c>
+          <c level="class" id="A91x81475168466567920190821091441656">
+            <did>
+              <unitid>E 07</unitid>
+              <unittitle>Zentralinstitute</unittitle>
+            </did>
+            <c level="class" id="A91x72493886947631820190821091441653">
+              <did>
+                <unitid>E 07.01</unitid>
+                <unittitle>Zentralinstitut Großbritannien Zentrum</unittitle>
+              </did>
+            </c>
+            <c level="class" id="A91x35545444488525320190821091441656">
+              <did>
+                <unitid>E 07.02</unitid>
+                <unittitle>Hermann von Helmholtz-Zentrum für Kulturtechnik</unittitle>
+              </did>
+            </c>
+            <c level="class" id="A91x73334616422653120190821091441656">
+              <did>
+                <unitid>E 07.03</unitid>
+                <unittitle>Professional School of Education (PSE)</unittitle>
+              </did>
+            </c>
+          </c>
+          <c level="class" id="A91x33409178256988520190821091441656">
+            <did>
+              <unitid>E 08</unitid>
+              <unittitle>Integrative Forschungsinstitute</unittitle>
+            </did>
+            <c level="class" id="A91x79743415117263720190821091441656">
+              <did>
+                <unitid>E 08.01</unitid>
+                <unittitle>IRIS Adlershof- Integratives Forschungsinstitut für die Naturwissenschaften</unittitle>
+              </did>
+            </c>
+            <c level="class" id="A91x14182782173156720190821091441657">
+              <did>
+                <unitid>E 08.02</unitid>
+                <unittitle>THESys - Die großen Transformationen von Mensch-Umwelt-Systemen</unittitle>
+              </did>
+            </c>
+            <c level="class" id="A91x63980525732040420190821091441657">
+              <did>
+                <unitid>E 08.03</unitid>
+                <unittitle>IRI - Integratives Forschungsinstitut für Lebenswissenschaften</unittitle>
+              </did>
+            </c>
+          </c>
+          <c level="file" id="A91x93711143732070920190821091441639">
+            <did>
+              <unitid>FSBibl</unitid>
+              <unittitle>Fachschule für wiss. Information und wiss. Bibliothekswesen</unittitle>
+            </did>
+            <accessrestrict>
+              <head>gesperrt bis</head>
+              <p>03.04.2013</p>
+            </accessrestrict>
+          </c>
+        </c>
+        <c level="class" id="A91x93742847442626920190821091441660">
+          <did>
+            <unitid>F</unitid>
+            <unittitle>Humboldt-Universität zu Berlin 2014-</unittitle>
+          </did>
+          <c level="class" id="A91x31532019376754720190821091441660">
+            <did>
+              <unitid>F 01</unitid>
+              <unittitle>Universitätsleitung</unittitle>
+            </did>
+            <c level="class" id="A91x14473593235015820190821091441663">
+              <did>
+                <unitid>F 01.01</unitid>
+                <unittitle>Präsident/in</unittitle>
+                <abstract>Sabine Kunst, Mai 2016 zur Präsidentin der HU gewählt</abstract>
+              </did>
+            </c>
+            <c level="class" id="A91x19814258813858020190821091441665">
+              <did>
+                <unitid>F 01.02</unitid>
+                <unittitle>Präsidialbereich</unittitle>
+              </did>
+            </c>
+          </c>
+          <c level="class" id="A91x89906531572341920190821091441665">
+            <did>
+              <unitid>F 02</unitid>
+              <unittitle>Vizepräsidenten</unittitle>
+            </did>
+            <c level="class" id="A91x95101791620254520190821091441669">
+              <did>
+                <unitid>F 02.01.</unitid>
+                <unittitle>Vizepräsident/in für Lehre und Studium</unittitle>
+              </did>
+            </c>
+            <c level="class" id="A91x14991807937622020190821091441669">
+              <did>
+                <unitid>F 02.02</unitid>
+                <unittitle>Vizepräsident für Forschung</unittitle>
+              </did>
+            </c>
+            <c level="class" id="A91x55321758985519420190821091441669">
+              <did>
+                <unitid>F 02.03</unitid>
+                <unittitle>Vizepräsident für Haushalt, Personal und Technik</unittitle>
+              </did>
+            </c>
+          </c>
+          <c level="class" id="A91x08228790760040220190821091441637">
+            <did>
+              <unitid>F 04</unitid>
+              <unittitle>Wissenschaftliche Einrichtungen</unittitle>
+            </did>
+            <c level="class" id="A91x75875395536422720190821091441668">
+              <did>
+                <unitid>GS</unitid>
+                <unittitle>Graduiertenschulen</unittitle>
+              </did>
+            </c>
+          </c>
+          <c level="class" id="A91x67848545312881420190821091441661">
+            <did>
+              <unitid>F 05</unitid>
+              <unittitle>Fakultäten</unittitle>
+            </did>
+            <c level="class" id="A91x72380185127258320190821091441661">
+              <did>
+                <unitid>F 05.01.</unitid>
+                <unittitle>Juristische Fakultät</unittitle>
+              </did>
+            </c>
+            <c level="class" id="A91x95620006322860720190821091441661">
+              <did>
+                <unitid>F 05.02.</unitid>
+                <unittitle>Kultur-, Sozial- und Bildungswissenschaftliche Fakultät</unittitle>
+                <abstract>Organisationsverfügung zum Aufbau der Fakultätsverwaltung in der Kultur-, Sozial- und Bildungswissenschaftlichen <lb/>Fakultät derHumboldt-Universität zu Berlin  Berlin, den 16. Juli 2014<lb/>Die Kultur-,Sozial-und BildungswissenschaftlicheFakultät wurde mit Wirkung zum 1. April 2014 gegründet.<lb/>Sie ist aus den bisherigen Philosophischen Fakultäten III und IV hervorgegangen. Die Verwaltung der Kultur- Sozial- und<lb/>Bildungswissenschaftlichen Fakultät wird dazu ab dem 1. September 2014 wie folgt strukturiert sein:<lb/>1. Das Dekanat der Kultur- Sozial- und Bildungswissenschaftlichen Fakultät besteht aus<lb/>der Dekanin/dem Dekan, mindestens einer/einem Prodekanin/Prodekan für Studium und Lehre und mindestens einer weiteren Prodekanin/einem weiteren Prodekan sowie der Verwaltungsleiterin/dem Verwaltungsleiter (mit beratender Stimme). <lb/>2. Die Fakultätsverwaltung wird von der Verwaltungsleiterin oder dem Verwaltungsleiter geleitet, der oder die dienstlich wie fachlich der Dekanin bzw. dem Dekan unterstellt ist. Stellvertreterin bzw. Stellvertreter ist die Leiterin bzw. der Leiter des Bereichs Akademische Angelegenheiten. <lb/>3. Unbeschadet der Gesamtverantwortung der Dekanin bzw. des Dekans obliegt der Verwaltungsleiterin bzw. dem Verwaltungsleiter die Erledigung der laufenden Angelegenheiten der Fakultät und die Koordination übergeordneter Angelegenheiten der Fakultät, soweit diese nicht in den Aufgabenbereich anderer Funktionsträger fallen. Sie oder er unterstützt das Dekanat insbesondere bei den strategischen Planungen, die über die Amtszeit der Funktionsträger hinausgehen.<lb/>4. Die Verwaltungsleiterin oder der Verwaltungsleiter hat die Dienst- und Fachaufsicht über die Mitarbeiterinnen und Mitarbeiter der Fakultätsverwaltung. Die Referentinnen und Referenten für Studium und Lehre, die Sachbearbeiterinnen und Sachbearbeiter für Studium und Lehre sowie die für die Studienfachberatung eingesetzten studentischen Hilfskräfte unterstehen fachlich der Studiendekanin bzw. dem Studiendekan.<lb/>gez. Prof. Dr. Jan-Hendrik Olbertz Präsident   gez. Prof. Dr. Julia v. Blumenthal Dekanin<lb/>
+                </abstract>
+              </did>
+            </c>
+            <c level="class" id="A91x72784698009490920190821091441661">
+              <did>
+                <unitid>F 05.03.</unitid>
+                <unittitle>Lebenswissenschaftliche Fakultät</unittitle>
+              </did>
+            </c>
+            <c level="class" id="A91x18632423877716020190821091441672">
+              <did>
+                <unitid>F 05.04.</unitid>
+                <unittitle>Mathematisch-Naturwissenschaftliche Fakultät</unittitle>
+              </did>
+            </c>
+            <c level="class" id="A91x56099081039428720190821091441661">
+              <did>
+                <unitid>F 05.05.</unitid>
+                <unittitle>Philosophische Fakultät</unittitle>
+              </did>
+            </c>
+            <c level="class" id="A91x91347473859786920190821091441661">
+              <did>
+                <unitid>F 05.06.</unitid>
+                <unittitle>Theologische Fakultät</unittitle>
+              </did>
+            </c>
+            <c level="class" id="A91x85602295398712120190821091441661">
+              <did>
+                <unitid>F 05.07.</unitid>
+                <unittitle>Wirtschaftswissenschaftliche Fakultät</unittitle>
+              </did>
+            </c>
+            <c level="class" id="A91x16091644763946520190821091441670">
+              <did>
+                <unitid>F 05.08</unitid>
+                <unittitle>Sprach- und literaturwissenschaftliche Fakultät</unittitle>
+              </did>
+            </c>
+          </c>
+        </c>
+        <c level="class" id="A91x59126371145248420190821091441643">
+          <did>
+            <unitid>H</unitid>
+            <unittitle>Handbibliothek</unittitle>
+          </did>
+        </c>
+        <c level="class" id="A91x62589877843856820190821091441643">
+          <did>
+            <unitid>N</unitid>
+            <unittitle>Nachlässe-Deposita-Sammlungen</unittitle>
+          </did>
+          <c level="class" id="A91x68739569187164320190821091441643">
+            <did>
+              <unitid>N 01</unitid>
+              <unittitle>Nachlässe - natürliche Personen</unittitle>
+            </did>
+            <c level="class" id="A91x78352767229080220190821091441643">
+              <did>
+                <unitid>N 01.01</unitid>
+                <unittitle>A - L</unittitle>
+              </did>
+              <c level="file" id="A91x98565298318862920190821091441655">
+                <did>
+                  <unitid>NL Auth</unitid>
+                  <unittitle>Auth, Joachim</unittitle>
+                </did>
+                <scopecontent>
+                  <head>Verwaltungsgeschichte/biografische Angaben</head>
+                  <p>Joachim Auth wurde am 22. Mai 1930 in Berlin Spandau geboren. Nach dem Abitur folgte 1949 das Physikstudium an der Humboldt-Universität, welches 1955 abgeschlossen wurde. Seine Diplomarbeit trägt den Titel "Untersuchungen über den Dembereffekt und die Diffusion der Leitfähigkeitselektronen an CdS-Einkristallen", die Prüfungen hielten Heinrich Grell und Robert Rompe ab. Es folgt 1960 die Dissertation mit dem Titel "Untersuchungen über den Photo-Magneto-Elektrischen Effekt und die Eigenschaften der Defektelektronen in CdS" und 1966 die Habilitation. Schon 1965 wurde er in den Forschungsrat der DDR berufen, dem er bis 1990 angehörte. Auth ist von 1967 bis 1990 als Professor für Experimentalphysik an der Humboldt-Universität tätig, von 1974 bis 1990 hat er das Amt des Prorektors inne. 1969 bis 1992 ist er ordentliches Mitglied der Akademie der Wissenschaften, ab 1993 bis zu seinem Tod am 14. März 2011 Mitglied der Leibniz-Sozietät.</p>
+                </scopecontent>
+              </c>
+              <c level="file" id="A91x20364177227020220190821091441673">
+                <did>
+                  <unitid>NL Bartel</unitid>
+                  <unittitle>Bartel, Walter</unittitle>
+                </did>
+                <scopecontent>
+                  <head>Verwaltungsgeschichte/biografische Angaben</head>
+                  <p>Historiker</p>
+                </scopecontent>
+              </c>
+              <c level="file" id="A91x09682846069335920190821091441677">
+                <did>
+                  <unitid>NL Baudissin</unitid>
+                  <unittitle>Baudissin, Wolf Wilhelm Graf von</unittitle>
+                </did>
+              </c>
+              <c level="file" id="A91x08469307422637920190821091441663">
+                <did>
+                  <unitid>NL Bergmann, von</unitid>
+                  <unittitle>Familie Ernst von Bergmann</unittitle>
+                </did>
+                <scopecontent>
+                  <head>Verwaltungsgeschichte/biografische Angaben</head>
+                  <p>Mediziner, Chirurg</p>
+                </scopecontent>
+              </c>
+              <c level="file" id="A91x21887117624282820190821091441639">
+                <did>
+                  <unitid>NL Bergner</unitid>
+                  <unittitle>Bergner, Hans</unittitle>
+                </did>
+                <scopecontent>
+                  <head>Verwaltungsgeschichte/biografische Angaben</head>
+                  <p> Prof. Hans Bergner wurde 1930 in Ehrenfelde, Ostpreußen, geboren. Nach dem Besuch der landwirtschaft­lichen Fachschulen in Schwerin und Rostock legte er 1951 das Examen zum staatlich geprüften Landwirt ab. Im Jahr 1954 erlangte er den Hochschul­abschluss der Humboldt-Universität zu Berlin und 1956 promovierte er am Institut für Tierernährungslehre unter der Leitung von Prof. Ernst Mangold zum Dr. agr. Um seinen eigenen Ansprüchen besser gerecht zu werden, absolvierte er ein Fernstudium und schloss 1962 als Diplom­Chemiker ab. Er habilitierte sich 1963 für die Fächer Tierernährung und Biochemie. Schon 1964 wurde Hans Bergner zum Direktor des Instituts für Tierernährung ernannt und wenig später zum Professor mit Lehrauftrag für das Fach Tierernährung berufen. Im Wirken von Hans Bergner sind besonders die große thematische Vielfalt der Forschungsarbeiten und die inno­va­tiven Leistungen auf metho­di­schem Gebiet hervorzu­heben. Hierzu zählen die Untersuchungen zum Jodstoffwechsel bei verschie­denen Nutztierarten und die sich daraus ergebenden Konsequenzen für die praktische Fütterung. Über die gesamte Schaffensperiode ziehen sich Arbeiten zum Stoffwechsel von Nicht-Protein-Stick­stoff­verbindungen bei Wiederkäuern. Arbeiten zur Ammonisie­rung von Trocken­schnit­zeln und zum Strohaufschluss führten unmittelbar zu praktisch anwendbaren Verfahren, was mit dem National­preis für Wissenschaft und Technik II (im Kollektiv) und mit anderen Auszeichnungen honoriert wurde. Das Hauptarbeitsgebiet von Hans Bergner war jedoch der Protein- und Amino­säuren­umsatz im weitesten Sinne. Seine Arbeiten dazu waren wesentlicher Anlass zu hohen wissenschaftlichen Auszeichnungen, wie dem Arthur-Scheunert-Preis der Gesellschaft für Ernährung der DDR 1979, dem Henneberg-Lehmann-Preis der Universität Göttingen 1987 und dem International Roche Research Prize for Animal Nutrition 1992. Neben der Unter­suchung biochemi­scher Parameter, wie verschiede­ner Enzymaktivitäten und Stoffwechsel­produkte in ihrer Reaktion auf Eiweißqualität und –quantität, waren es dabei vor allem die Unter­suchungen zum Aminosäuren­bedarf sowie zu quantitativen Aspekten des Proteinumsatzes.<lb/>
+                    <lb/>Diese intensive Forschungstätigkeit schlug sich in mehr als 430 Originalarbeiten nieder, die von ihm und seinen Mitarbeiter seit 1964 veröffentlicht wurden. Während seines Wirkens hat er 30 junge Wissen­schaftler zur Promotion geführt und 8 Habilitanden betreut. Hans Bergner hatte eine inten­sive wissenschaftliche Zusammenarbeit mit Partnerinstituten in Osteuropa, aber es gelang ihm auch, einen Austausch mit Wissenschaftlern aus der Bundesrepublik, Westeuropa und den USA zu pflegen. Hans Bergner war Herausgeber von zahlreichen Büchern und hat etwa 27 Buchbeiträge geschrieben. Seit 1961 war Hans Bergner Mitherausgeber und seit 1979 bis 1994 Herausgeber der Fachzeitschrift „Archiv für Tierernährung“ (heute „Archives of Animal Nutrition“). Auch innerhalb der Universität bekleidete Hans Bergner wichtige Funktionen und war in verschiedenen Gremien aktiv. Im Jahr 1990 wurde Hans Bergner in die Gesellschaft für Ernährungs­physio­logie aufgenommen und zum zweiten Vorsitzenden gewählt.<lb/>
+                    <lb/>In seinem Leben gab es für Hans  Bergner neben vielen Höhepunkten auch zahlreiche Rückschlage, die er mit unglaublicher Willenskraft zu überwinden verstand. Im Ruhestand zog sich Hans Bergner weitgehend aus dem wissenschaftlichen Leben zurück. Mit Vorliebe widmete er sich der Malerei und als Naturliebhaber seinem Garten in Hohen Neuendorf.<lb/>
+                    <lb/>Mit dem Ableben von Hans Bergner haben wir einen renommierten Wissenschaftler und engagierten Hochschullehrer verloren. Wir werden sein Andenken in Ehren bewahren.<lb/>
+                    <lb/> Im Namen der ehemaligen Mitarbeiter und Kollegen<lb/>
+                    <lb/>Ortwin und Annette Simon<lb/>
+                    <lb/> https://www.agrar.hu-berlin.de/de/pressmit/pressarchiv/archiv15/20150920<lb/>
+                    <lb/>Im Namen der ehemaligen Mitarbeiter und Kollegen<lb/>
+                    <lb/>Ortwin und Annette Simon</p>
+                </scopecontent>
+              </c>
+              <c level="file" id="A91x53703707456588720190821091441655">
+                <did>
+                  <unitid>NL Bieberbach</unitid>
+                  <unittitle>Bieberbach, Ludwig</unittitle>
+                </did>
+                <scopecontent>
+                  <head>Verwaltungsgeschichte/biografische Angaben</head>
+                  <p>
+                    <lb/>
+                  </p>
+                </scopecontent>
+              </c>
+              <c level="file" id="A91x39236354827880820190821091441639">
+                <did>
+                  <unitid>NL Blüthgen</unitid>
+                  <unittitle>Blüthgen, Fritz</unittitle>
+                </did>
+                <scopecontent>
+                  <head>Verwaltungsgeschichte/biografische Angaben</head>
+                  <p>Fritz Blüthgen, geb. 1881.</p>
+                </scopecontent>
+              </c>
+              <c level="file" id="A91x40304487943649220190821091441639">
+                <did>
+                  <unitid>NL Boas</unitid>
+                  <unittitle>Boas, Ismar</unittitle>
+                </did>
+              </c>
+              <c level="file" id="A91x37100088596343920190821091441639">
+                <did>
+                  <unitid>NL Boehme</unitid>
+                  <unittitle>Boehme, Erich</unittitle>
+                </did>
+              </c>
+              <c level="file" id="A91x85248076915740920190821091441629">
+                <did>
+                  <unitid>NL Bonhoeffer</unitid>
+                  <unittitle>Bonhoeffer, Karl Ludwig</unittitle>
+                </did>
+              </c>
+              <c level="file" id="A91x23650574684143020190821091441662">
+                <did>
+                  <unitid>NL Bornhak</unitid>
+                  <unittitle>Bornhak, Conrad</unittitle>
+                </did>
+                <scopecontent>
+                  <head>Verwaltungsgeschichte/biografische Angaben</head>
+                  <p>Conrad Bornhak (* 21. März 1861 in Nordhausen; † 9. Februar 1944 in Berlin) war ein deutscher Rechts- und Verfassungsgeschichtler.<lb/>Nach einer Promotion im Fach Rechtswissenschaft in Göttingen im Jahre 1885 habilitierte sich Bornhak 1887 an der Friedrich-Wilhelms-Universität Berlin. Von 1893 bis 1900 hatte er das Richteramt inne, zuerst in Prenzlau. Eine Hochschullehrertätigkeit ab 1897 an der Berliner Universität als außerordentlicher Professor übte er zugleich im Fach Staats- und Völkerrecht an der Preußischen Kriegsakademie in Berlin aus. Trotz 1924 erfolgter Emeritierung beendete erst eine Suspendierung wegen republikfeindlicher Äußerungen im Jahre 1926 seine Lehrtätigkeit. Bornhak setzte sie daraufhin von 1928 bis 1931 an der Universität Kairo fort. Nach seiner Rückkehr nach Deutschland lehrte er erneut bis zum Wintersemester 1939/40, als der Dekan auf ministerielle Weisung hin das Ende seiner Lehrtätigkeit veranlasste.</p>
+                </scopecontent>
+              </c>
+              <c level="file" id="A91x36113953590393020190821091441630">
+                <did>
+                  <unitid>NL Brink</unitid>
+                  <unittitle>Brink, Charles Oscar</unittitle>
+                </did>
+                <scopecontent>
+                  <head>Verwaltungsgeschichte/biografische Angaben</head>
+                  <p>Altphilologe</p>
+                </scopecontent>
+              </c>
+              <c level="file" id="A91x67494326829910220190821091441628">
+                <did>
+                  <unitid>NL Brockmann</unitid>
+                  <unittitle>Brockmann, Wilhelm</unittitle>
+                </did>
+                <scopecontent>
+                  <head>Verwaltungsgeschichte/biografische Angaben</head>
+                  <p>* 23.10.1862; Student der Mathematik vom 24.04.1882 (Matr.Nr. 2040/72.) und nach Ablauf der Matr. ab 01.05.1886 erneut unter Matr,.Nr. 2315/76.  bis zum 30.07.1886;  Promotion zum Dr.phil am 04.12.1886 bei Helmholtz und Kirchhoff;<lb/>Vorlesungsmitschriften und Bücher.<lb/>Am 12.01.2009 mit Paket von Fam. Streb, Schwester-Sophie-Str. 17, 67593 Westhofen erhalten.</p>
+                </scopecontent>
+              </c>
+              <c level="file" id="A91x37940818071365320190821091441661">
+                <did>
+                  <unitid>NL Buttersack</unitid>
+                  <unittitle>Buttersack, Felix</unittitle>
+                </did>
+              </c>
+              <c level="file" id="A91x98874700069427420190821091441626">
+                <did>
+                  <unitid>NL Casper</unitid>
+                  <unittitle>Casper, Johann Ludwig</unittitle>
+                </did>
+              </c>
+              <c level="file" id="A91x19169229269027720190821091441626">
+                <did>
+                  <unitid>NL Cohn</unitid>
+                  <unittitle>Cohn, Ruth</unittitle>
+                </did>
+              </c>
+              <c level="file" id="A91x46713286638259820190821091441639">
+                <did>
+                  <unitid>NL Crinis</unitid>
+                  <unittitle>Crinis, Maximilian de</unittitle>
+                </did>
+              </c>
+              <c level="file" id="A91x59530884027481020190821091441640">
+                <did>
+                  <unitid>NL Czermak</unitid>
+                  <unittitle>Czermak, Johann Nepomuk</unittitle>
+                </did>
+              </c>
+              <c level="file" id="A91x27809405326843220190821091441667">
+                <did>
+                  <unitid>NL David</unitid>
+                  <unittitle>David, Walter</unittitle>
+                </did>
+                <scopecontent>
+                  <head>Verwaltungsgeschichte/biografische Angaben</head>
+                  <p>Übernommen durch H. Kossack als "Nachlaß David". Alte Signatur unter dem Titel "Preußische Dozentenschaft 1933" unter Rep. 2, Reg. Potsd. Ab. 1, Nr. 37368. Provenienz: GStA PK bzw. Zentralarchiv Merseburg?<lb/>Ordnerrücken: "Dozentenschaft".</p>
+                </scopecontent>
+              </c>
+              <c level="file" id="A91x76829826831817620190821091441677">
+                <did>
+                  <unitid>NL Dernburg</unitid>
+                  <unittitle>Dernburg, Heinrich</unittitle>
+                </did>
+              </c>
+              <c level="file" id="A91x91315770149230920190821091441639">
+                <did>
+                  <unitid>NL Diepgen</unitid>
+                  <unittitle>Diepgen, Paul</unittitle>
+                </did>
+              </c>
+              <c level="file" id="A91x52117359638214120190821091441667">
+                <did>
+                  <unitid>NL Dobberstein</unitid>
+                  <unittitle>Dobberstein, Johannes</unittitle>
+                </did>
+              </c>
+              <c level="file" id="A91x03551745414733820190821091441626">
+                <did>
+                  <unitid>NL Döhler</unitid>
+                  <unittitle>Döhler, Alfred</unittitle>
+                </did>
+                <scopecontent>
+                  <head>Verwaltungsgeschichte/biografische Angaben</head>
+                  <p>Student der Phil.Fak. 1880/81 Vorlesungsmitschriften</p>
+                </scopecontent>
+              </c>
+              <c level="file" id="A91x04392474889755220190821091441639">
+                <did>
+                  <unitid>NL Dove</unitid>
+                  <unittitle>Dove, Heinrich Wilhelm</unittitle>
+                </did>
+                <scopecontent>
+                  <head>Verwaltungsgeschichte/biografische Angaben</head>
+                  <p>(*06.10.1803 Liegnitz - 04.04.1879 Berlin); <lb/>a.o.Prof.: 22.09.1829 ; Prof:  30.12.1844 für Physik;<lb/>1848 erster Direktor des Preußischen Meteorologischen Instituts<lb/>Rektor: 1858/59; 1871/72<lb/>erhalten: 07.11.2011von Elisabeth Kropp, Witwe von Ulrich Kropp, des Ururenkels von Heinrich Wilhelm Dove</p>
+                </scopecontent>
+              </c>
+              <c level="file" id="A91x66571599245071420190821091441626">
+                <did>
+                  <unitid>NL Dutz</unitid>
+                  <unittitle>Dutz, Harald</unittitle>
+                </did>
+              </c>
+              <c level="file" id="A91x90995413064956620190821091441623">
+                <did>
+                  <unitid>NL Fascher</unitid>
+                  <unittitle>Fascher, Erich</unittitle>
+                </did>
+                <accessrestrict>
+                  <head>gesperrt bis</head>
+                  <p>23.07.2028</p>
+                </accessrestrict>
+              </c>
+              <c level="file" id="A91x54417622089385920190821091441626">
+                <did>
+                  <unitid>NL Feyl</unitid>
+                  <unittitle>Feyl, Othmar</unittitle>
+                </did>
+              </c>
+              <c level="file" id="A91x07287472486495920190821091441673">
+                <did>
+                  <unitid>NL Ficker</unitid>
+                  <unittitle>Ficker, Heinrich von</unittitle>
+                </did>
+              </c>
+              <c level="file" id="A91x59707993268966620190821091441657">
+                <did>
+                  <unitid>NL Fischer, G</unitid>
+                  <unittitle>Fischer, Gustav</unittitle>
+                </did>
+              </c>
+              <c level="file" id="A91x91265475749969420190821091441671">
+                <did>
+                  <unitid>NL Fischer, M</unitid>
+                  <unittitle>Fischer, Max</unittitle>
+                </did>
+                <scopecontent>
+                  <head>Verwaltungsgeschichte/biografische Angaben</head>
+                  <p>Max Fischer (25.06.1862 - 8.07.1940), <lb/>Arzt der Psychiatrie, Direktor der Heilanstalt Wiesloch in Baden.<lb/>
+                    <lb/>Studium in Heidelberg und München, dann Assistenzarzt am Städtischen Krankenhaus Karlsruhe. 1889 Eintritt in die Anstalt Illenau, die damals von Heinrich Schüle geleitet wurde. 1894 Anstellung in der Heil- und Pflegeanstalt Emmendingen unter Karl Hardt. 1894 Rückkehr nach Illenau, zunächst als Assistenzarzt, ab 1900 Anstaltsarzt, ab 1902 Oberarzt. Juli 1904 Ernennung zum Direktor der Anstalt Wiesloch, die am 20.10.1905 unter Fischers Leitung eröffnet wurde. 1905 Medizinalrat, 1917 Geheimer Medizinalrat, 1927 Ruhestand, Übersiedlung nach Berlin. 1928 Ernennung zum korrespondierenden Mitglied des Vereins für Psychiatrie und Neurologie in Wien. 1934 Wahl zum beratenden Psychiater der Reichsfachgemeinschaft zur Bekämpfung des Alkoholismus. In Berlin nahm Fischer eine Tätigkeit an dem von seinem Vetter Eugen Fischer geleiteten Kaiser-Wilhelm-Institut für Anthropologie in Berlin-Dahlem auf.</p>
+                </scopecontent>
+              </c>
+              <c level="file" id="A91x91802281141281120190821091441625">
+                <did>
+                  <unitid>NL Flügge, C.</unitid>
+                  <unittitle>Flügge, Carl</unittitle>
+                </did>
+                <scopecontent>
+                  <head>Verwaltungsgeschichte/biografische Angaben</head>
+                  <p>Carl Flügge, * 9. Dezember 1847 in Hannover; † 12. Oktober 1923 in Berlin; Hygieniker.</p>
+                </scopecontent>
+              </c>
+              <c level="file" id="A91x88193368911743120190821091441625">
+                <did>
+                  <unitid>NL Flügge, L.</unitid>
+                  <unittitle>Flügge, Ludwig</unittitle>
+                </did>
+              </c>
+              <c level="file" id="A91x59758287668228120190821091441626">
+                <did>
+                  <unitid>NL Froehner</unitid>
+                  <unittitle>Froehner, Reinhard</unittitle>
+                </did>
+              </c>
+              <c level="file" id="A91x18278205394744820190821091441639">
+                <did>
+                  <unitid>NL Gandert</unitid>
+                  <unittitle>NL Gandert, Klaus-Dietrich</unittitle>
+                </did>
+              </c>
+              <c level="file" id="A91x74807262420654220190821091441668">
+                <did>
+                  <unitid>NL Gärtner</unitid>
+                  <unittitle>Gärtner, Margarete</unittitle>
+                </did>
+              </c>
+              <c level="file" id="A91x31582313776016220190821091441625">
+                <did>
+                  <unitid>NL Gerber</unitid>
+                  <unittitle>Gerber, Hans</unittitle>
+                </did>
+              </c>
+              <c level="file" id="A91x76621013879776020190821091441639">
+                <did>
+                  <unitid>NL Gerke</unitid>
+                  <unittitle>Gerke, Friedrich</unittitle>
+                </did>
+              </c>
+              <c level="file" id="A91x71198350191116320190821091441657">
+                <did>
+                  <unitid>NL Goldschmidt, A.</unitid>
+                  <unittitle>Goldschmidt, Alfons</unittitle>
+                </did>
+              </c>
+              <c level="file" id="A91x75116664171218820190821091441625">
+                <did>
+                  <unitid>NL Gottschaldt</unitid>
+                  <unittitle>Gottschaldt, Kurt</unittitle>
+                </did>
+              </c>
+              <c level="file" id="A91x01592588424682620190821091441639">
+                <did>
+                  <unitid>NL Grotjahn</unitid>
+                  <unittitle>Grotjahn, Alfred</unittitle>
+                </did>
+              </c>
+              <c level="file" id="A91x00119942426681520190821091441639">
+                <did>
+                  <unitid>NL Haendler</unitid>
+                  <unittitle>Haendler, Otto</unittitle>
+                </did>
+              </c>
+              <c level="file" id="A91x31095802783966020190821091441639">
+                <did>
+                  <unitid>NL Harnack-Fish</unitid>
+                  <unittitle>Harnack-Fish, Mildred</unittitle>
+                </did>
+              </c>
+              <c level="file" id="A91x45645153522491420190821091441640">
+                <did>
+                  <unitid>NL Hefter</unitid>
+                  <unittitle>Hefter, John</unittitle>
+                </did>
+              </c>
+              <c level="file" id="A91x13424050807952820190821091441627">
+                <did>
+                  <unitid>NL Heims-Heymann</unitid>
+                  <unittitle>Heims-Heymann, Paul</unittitle>
+                </did>
+              </c>
+              <c level="file" id="A91x81380057334899920190821091441627">
+                <did>
+                  <unitid>NL Heubner</unitid>
+                  <unittitle>Heubner, Johann Otto</unittitle>
+                </did>
+              </c>
+              <c level="file" id="A91x12615025043487520190821091441630">
+                <did>
+                  <unitid>NL Heymann</unitid>
+                  <unittitle>Heymann, Bruno</unittitle>
+                </did>
+              </c>
+              <c level="file" id="A91x95524895191192620190821091441627">
+                <did>
+                  <unitid>NL His</unitid>
+                  <unittitle>His, Wilhelm</unittitle>
+                </did>
+              </c>
+              <c level="file" id="A91x78852391242980920190821091441672">
+                <did>
+                  <unitid>NL Hoetzsch</unitid>
+                  <unittitle>Hoetzsch, Otto</unittitle>
+                </did>
+              </c>
+              <c level="file" id="A91x10478758811950620190821091441629">
+                <did>
+                  <unitid>NL Hoffory</unitid>
+                  <unittitle>Hoffory, Julius</unittitle>
+                </did>
+              </c>
+              <c level="file" id="A91x91619902849197320201125130049807">
+                <did>
+                  <unitid>NL Jacobeit</unitid>
+                  <unittitle>Jacobeit, Wolfgang</unittitle>
+                </did>
+              </c>
+              <c level="file" id="A91x57458025217056220190821091441667">
+                <did>
+                  <unitid>NL Klein, H.</unitid>
+                  <unittitle>Klein, Helmut</unittitle>
+                </did>
+              </c>
+              <c level="file" id="A91x27475148439407320181205135958280">
+                <did>
+                  <unitid>NL Koch</unitid>
+                  <unittitle>Koch, Robert</unittitle>
+                </did>
+                <c level="file" id="A91x59286248683929420181205140345809">
+                  <did>
+                    <unitid>Koch-Foto</unitid>
+                    <unittitle>NL Koch - Fotosammlung</unittitle>
+                  </did>
+                </c>
+              </c>
+              <c level="file" id="A91x07015252113342220190821091441628">
+                <did>
+                  <unitid>NL Korwin-Piotrowski</unitid>
+                  <unittitle>Korwin-Piotrowski, Wladimir</unittitle>
+                </did>
+                <scopecontent>
+                  <head>Verwaltungsgeschichte/biografische Angaben</head>
+                  <p>
+                    <lb/>Korwin-Piotrowski Wladimir L., ur. 1891, Biala Cerkiew, zm. 2 II 1966, Los Angeles,<lb/>pisarz rosyjski;<lb/>od 1920 na emigracji w Berlinie, Paryzu i Stanach Zjedn.; kontynuator tradycji romantyzmu ros.; wiersze o charakterze refleksyjno-metafiz., w których dominuja odwolania do hist. przeszlosci, opisy zdarzen wojennych, czesto tez oparte na motywach sredniow.; zbiory poet.: Wozdusznyj zmiej (Paryz 1950), obejmujacy poezje z lat 1937–49, Porazenije (tamze 1960), Pozdnij gost’ (Waszyngton 1968–69); sztuka teatr. Beatricze (Berlin 1929).<lb/>
+                  </p>
+                </scopecontent>
+              </c>
+              <c level="file" id="A91x82315897941589320190821091441673">
+                <did>
+                  <unitid>NL Kossinna</unitid>
+                  <unittitle>Kossinna, Gustaf</unittitle>
+                </did>
+              </c>
+              <c level="file" id="A91x66021680831909120190821091441627">
+                <did>
+                  <unitid>NL Kreuz</unitid>
+                  <unittitle>Kreuz, Bernhard</unittitle>
+                </did>
+              </c>
+              <c level="file" id="A91x52862977981567320190821091441640">
+                <did>
+                  <unitid>NL Kries</unitid>
+                  <unittitle>Kries, Johannes Adolf von</unittitle>
+                </did>
+              </c>
+              <c level="file" id="A91x87934261560440020190821091441626">
+                <did>
+                  <unitid>NL Kubitscheck</unitid>
+                  <unittitle>Kubitscheck, Hans-Dieter</unittitle>
+                </did>
+                <scopecontent>
+                  <head>Verwaltungsgeschichte/biografische Angaben</head>
+                  <p>H.-D. Kubitscheck (* 16.09.1934) ,seit 1990 aoProf.,1993 Prof. für Geschichte Südostasiens.  - Dokumentensammlung -</p>
+                </scopecontent>
+              </c>
+              <c level="file" id="A91x43508887290954520190821091441639">
+                <did>
+                  <unitid>NL Kühn</unitid>
+                  <unittitle>Kühn, Arthur</unittitle>
+                </did>
+              </c>
+              <c level="file" id="A91x98356485366821220190821091441635">
+                <did>
+                  <unitid>NL Kunth</unitid>
+                  <unittitle>Kunth, Karl Sigismund</unittitle>
+                </did>
+              </c>
+              <c level="file" id="A91x27486890554428120190821091441639">
+                <did>
+                  <unitid>NL Kurth</unitid>
+                  <unittitle>Kurth, Willy</unittitle>
+                </did>
+              </c>
+              <c level="file" id="A91x11560004949569720190821091441673">
+                <did>
+                  <unitid>NL Lewy</unitid>
+                  <unittitle>Lewy, Ernst und Bechert, Johannes</unittitle>
+                </did>
+                <scopecontent>
+                  <head>Verwaltungsgeschichte/biografische Angaben</head>
+                  <p>Ernst Lewy, geb. 19.9.1881 in Breslau, gest. 25.9.1966 in Dublin.</p>
+                </scopecontent>
+              </c>
+              <c level="file" id="A91x56149375438690120190821091441626">
+                <did>
+                  <unitid>NL Loeffler</unitid>
+                  <unittitle>Loeffler, Friedrich</unittitle>
+                </did>
+              </c>
+              <c level="file" id="A91x42263644933700520190821091441626">
+                <did>
+                  <unitid>NL Luther</unitid>
+                  <unittitle>Luther, Horst</unittitle>
+                </did>
+                <scopecontent>
+                  <head>Verwaltungsgeschichte/biografische Angaben</head>
+                  <p>* 08.03.1929  + 11.09.1997</p>
+                </scopecontent>
+              </c>
+            </c>
+            <c level="class" id="A91x49513173103332520190821091441643">
+              <did>
+                <unitid>N 01.02</unitid>
+                <unittitle>M - Z</unittitle>
+              </did>
+              <c level="file" id="A91x98015379905700620190821091441661">
+                <did>
+                  <unitid>NL Mann</unitid>
+                  <unittitle>Mann, Francis A.</unittitle>
+                </did>
+              </c>
+              <c level="file" id="A91x55258351564407320190821091441639">
+                <did>
+                  <unitid>NL Meier</unitid>
+                  <unittitle>Meier, Georg</unittitle>
+                </did>
+              </c>
+              <c level="file" id="A91x53526598215103120190821091441642">
+                <did>
+                  <unitid>NL Mende</unitid>
+                  <unittitle>Mende, Gerhard von</unittitle>
+                </did>
+              </c>
+              <c level="file" id="A91x29186940193176220190821091441626">
+                <did>
+                  <unitid>NL Mering</unitid>
+                  <unittitle>Mering, Otto von</unittitle>
+                </did>
+              </c>
+              <c level="file" id="A91x58026534318923920190821091441626">
+                <did>
+                  <unitid>NL Morgenroth</unitid>
+                  <unittitle>Morgenroth, Julius</unittitle>
+                </did>
+                <scopecontent>
+                  <head>Verwaltungsgeschichte/biografische Angaben</head>
+                  <p>
+                    <lb/>
+                    <lb/>
+                  </p>
+                </scopecontent>
+              </c>
+              <c level="file" id="A91x48413336277008020190821091441626">
+                <did>
+                  <unitid>NL Müllenhoff</unitid>
+                  <unittitle>Müllenhoff, Karl</unittitle>
+                </did>
+              </c>
+              <c level="file" id="A91x75552880764007520190821091441639">
+                <did>
+                  <unitid>NL Müller</unitid>
+                  <unittitle>Müller, Johannes Peter</unittitle>
+                </did>
+                <scopecontent>
+                  <head>Verwaltungsgeschichte/biografische Angaben</head>
+                  <p>Titelaufnahmen: 6 (Tagebücher); 7 (Bücher über Müller); 8 (Korrespondenz Retzius); 9 (Bücher über Müller); 12 (Fotos); 17 (Bücher v. Müller); 20(Sachzeugen, Bücher über Müller); 21 (Korrespondenz); 22 (Urkunden); 23 (Landkarten-Scans); 24 (Zeichnungen-Scans); 26 (Bücher v. Müller)<lb/>
+                    <lb/>Bearbeitung  durch Heber (Praktikantin)</p>
+                </scopecontent>
+              </c>
+              <c level="file" id="A91x51617735624313320190821091441626">
+                <did>
+                  <unitid>NL Naetebus</unitid>
+                  <unittitle>Naetebus, Gotthold</unittitle>
+                </did>
+                <scopecontent>
+                  <head>Verwaltungsgeschichte/biografische Angaben</head>
+                  <p>Direktor der Universitätsbibliothek (6.7.1918 - 31.03.1930)<lb/>*26.12.1864 Berlin, + 23.11.1934 Berlin<lb/>Studium WS 1883/84; 1884/85 - 1889; <lb/>Promotion Dr.phil 02.02.1891</p>
+                </scopecontent>
+              </c>
+              <c level="file" id="A91x04796987771987920190821091441639">
+                <did>
+                  <unitid>NL Nathan</unitid>
+                  <unittitle>Nathan, Hans</unittitle>
+                </did>
+                <scopecontent>
+                  <head>Verwaltungsgeschichte/biografische Angaben</head>
+                  <p>Nach dem Abitur (1918) in Görlitz und einer anschließenden halbjährigen Militärdienstzeit studierte N. 1919-21 Rechtswissenschaft in Berlin, Marburg, München und Breslau. 1922 promovierte er in Breslau über „Die arglistige Erschleichung eines Urteils“ zum Dr. iur. Er absolvierte seinen juristischen Vorbereitungsdienst in Görlitz und Breslau und trat in dieser Zeit dem Friedrich-Naumann-Bund bei. Nach der Ablegung des Assessor-Examens führte er 1925-33 die väterliche Anwaltspraxis in Görlitz. In verschiedenen Fällen übernahm er für die Rote Hilfe die Strafverteidigung von angeklagten Kommunisten. 1930-32 war er Mitglied der Deutschen Staatspartei. Aufgrund seiner jüdischen Abstammung mußte er im März 1933 nach Prag fliehen. Er gründete dort unter Einsatz seines gesamten Vermögens einen Verlag zur Herausgabe antifaschistischer Literatur (u. a. der „Weltbühne“) und organisierte deren illegalen Vertrieb nach Deutschland. 1934-36 publizierte er in Prag die satirische Zeitschrift „Der Simpl“, die von ihm auch kaufmännisch geleitet wurde. 1937 trat er einer mit den Kommunisten sympathisierenden Gruppe bei, 1938 erfolgte sein Beitritt zur KPD. 1939 emigrierte der inzwischen verarmte N. mit seiner Familie über Polen und Schweden nach England. Er arbeitete in Manchester in einer Fabrik und als Busfahrer, betätigte sich in einer Gewerkschaft und war Mitgründer des Freien Deutschen Kulturbundes und einer Gruppe des Nationalkomitees Freies Deutschland.<lb/>
+                    <lb/>Im September 1946 kehrte N. nach (Ost-)Berlin zurück, bewarb sich bei der Deutschen Zentralverwaltung für Justiz und wurde Mitglied der Hauptabteilung Gesetzgebung, deren Leitung ihm im August 1948 übertragen wurde. Ende 1949 übernahm er die entsprechende Stellung im Justizministerium der DDR. Seit 1948 war er auch an der Humboldt -Univ., als Referent an der Parteihochschule Karl Marx sowie an der Deutschen Verwaltungsakademie in Potsdam-Babelsberg tätig. Als Präsident des Berliner Justizprüfungsamtes wurde er Ende 1952 auf den Lehrstuhl für Zivil-, Familien- und Zivilprozeßrecht an der Humboldt-Univ. berufen. Zugleich war er bis 1953 Justitiar der Universität. Ende desselben Jahres erfolgte seine Umberufung zum Professor mit Lehrstuhl für Gerichtsverfassungsund Prozeßrecht. Später wurde er stellvertretender Direktor des Instituts für Zivilrecht. 1952-66 war er – mit einer kurzen Unterbrechung - Dekan der Juristischen Fakultät. Seit 1955 war er Vorsitzender des wissenschaftlichen Beirats für Staats- und Rechtswissenschaft beim Staatssekretariat bzw. beim Ministerium für Hoch- und Fachschulwesen der DDR. 1963 wurde er Direktor des neuerrichteten Instituts für Erfinder- und Urheberrecht an der Humboldt-Univ. (1966 emeritiert).<lb/>
+                    <lb/>N., der für die Schaffung einer eigenständigen sozialistischen Gesetzlichkeit eintrat, war maßgeblich an der Justizgesetzgebung der DDR beteiligt. Vor allem arbeitete er auf den Gebieten Zivil-, Familien- und Zivilprozeßrecht, wo er zeitweilig vier Gesetzgebungskommissionen angehörte. Er war Mitglied des Kollegiums des Ministeriums der Justiz, der Wirtschaftspolitischen Beratungsstelle der Regierung, der Sektion Recht bei der Kammer für Außenhandel sowie des Büros für Urheberrechte beim Ministerium für Kultur der DDR. 1952/53 war er Chefredakteur der Zeitschrift „Neue Justiz“.|</p>
+                </scopecontent>
+              </c>
+              <c level="file" id="A91x90506744384765620190821091441639">
+                <did>
+                  <unitid>NL Otto</unitid>
+                  <unittitle>Otto, Karl-Heinz</unittitle>
+                </did>
+              </c>
+              <c level="file" id="A91x09442329406738220190821091441633">
+                <did>
+                  <unitid>NL Pachale</unitid>
+                  <unittitle>Pachale, Helmut</unittitle>
+                </did>
+                <scopecontent>
+                  <head>Verwaltungsgeschichte/biografische Angaben</head>
+                  <p>Helmut Pachale (1921-1979)<lb/>Vorlesungsmitschriften<lb/>übergeben durch Prof.Dr.Heinrich Begehr am 28.09., 06.10.2011 und 24.11.2011</p>
+                </scopecontent>
+              </c>
+              <c level="file" id="A91x87011533975601120190821091441633">
+                <did>
+                  <unitid>NL Paterna</unitid>
+                  <unittitle>Paterna, Erich</unittitle>
+                </did>
+                <scopecontent>
+                  <head>Verwaltungsgeschichte/biografische Angaben</head>
+                  <p>ZfG von 1/1953 bis 6/1982 aus dem Nachlass Paterna 2016 makuliert.</p>
+                </scopecontent>
+              </c>
+              <c level="file" id="A91x40399599075317320190821091441673">
+                <did>
+                  <unitid>NL Paulsen</unitid>
+                  <unittitle>Paulsen, Friedrich</unittitle>
+                </did>
+                <scopecontent>
+                  <head>Verwaltungsgeschichte/biografische Angaben</head>
+                  <p>Ein Findbuch in ausgedruckter Form befindet sich bei AP. EIne dazugehörende elektronische Datei ließ sich bisher nicht ausfindig machen. AP Aug. 2015</p>
+                </scopecontent>
+              </c>
+              <c level="file" id="A91x14637589454650820190821091441635">
+                <did>
+                  <unitid>NL Pfeiler</unitid>
+                  <unittitle>Pfeiler, Jürgen</unittitle>
+                </did>
+                <scopecontent>
+                  <head>Verwaltungsgeschichte/biografische Angaben</head>
+                  <p>Seminarreferate und Staatsexamensarbeiten bei Prof.K.Obermann zur Universitätsgeschichte</p>
+                </scopecontent>
+              </c>
+              <c level="file" id="A91x50031387805938720190821091441633">
+                <did>
+                  <unitid>NL Pniower</unitid>
+                  <unittitle>Pniower, Georg Bela</unittitle>
+                </did>
+              </c>
+              <c level="file" id="A91x20528173446655220190821091441633">
+                <did>
+                  <unitid>NL Ramdohr</unitid>
+                  <unittitle>Ramdohr, Paul</unittitle>
+                </did>
+              </c>
+              <c level="file" id="A91x55776566267013520190821091441633">
+                <did>
+                  <unitid>NL Richter, L.</unitid>
+                  <unittitle>Richter, Liselotte</unittitle>
+                </did>
+              </c>
+              <c level="file" id="A91x51340037584304820190821091441670">
+                <did>
+                  <unitid>NL Richter, P.</unitid>
+                  <unittitle>Richter, Paul</unittitle>
+                </did>
+              </c>
+              <c level="file" id="A91x01946806907653820190821091441670">
+                <did>
+                  <unitid>NL Rössle</unitid>
+                  <unittitle>Rössle, Robert</unittitle>
+                </did>
+              </c>
+              <c level="file" id="A91x00151646137237520190821091441662">
+                <did>
+                  <unitid>NL Schade</unitid>
+                  <unittitle>Schade, Oskar</unittitle>
+                </did>
+                <scopecontent>
+                  <head>Verwaltungsgeschichte/biografische Angaben</head>
+                  <p>Enthält auch den NL Beyer.</p>
+                </scopecontent>
+              </c>
+              <c level="file" id="A91x31614017486572220190821091441632">
+                <did>
+                  <unitid>NL Scherer</unitid>
+                  <unittitle>Scherer, Wilhelm</unittitle>
+                </did>
+              </c>
+              <c level="file" id="A91x27582001686096120190821091441670">
+                <did>
+                  <unitid>NL Schüle</unitid>
+                  <unittitle>Schüle, Heinrich</unittitle>
+                </did>
+              </c>
+              <c level="file" id="A91x59935396909713720190821091441639">
+                <did>
+                  <unitid>NL Seckel</unitid>
+                  <unittitle>Seckel, Emil</unittitle>
+                </did>
+              </c>
+              <c level="file" id="A91x00960671901702820190821091441659">
+                <did>
+                  <unitid>NL Sellnow</unitid>
+                  <unittitle>Sellnow, Werner</unittitle>
+                </did>
+              </c>
+              <c level="file" id="A91x37213790416717520190821091441633">
+                <did>
+                  <unitid>NL Steiniger</unitid>
+                  <unittitle>Steiniger, Peter Alfons</unittitle>
+                </did>
+                <scopecontent>
+                  <head>Verwaltungsgeschichte/biografische Angaben</head>
+                  <p>ab 490 vor-korrigiert</p>
+                </scopecontent>
+              </c>
+              <c level="file" id="A91x83143514394760120190821091441633">
+                <did>
+                  <unitid>NL Steininger</unitid>
+                  <unittitle>Steininger, Herbert</unittitle>
+                </did>
+              </c>
+              <c level="file" id="A91x79939115047454820190821091441632">
+                <did>
+                  <unitid>NL Streisand</unitid>
+                  <unittitle>Streisand, Joachim</unittitle>
+                </did>
+              </c>
+              <c level="file" id="A91x25091516971588120190821091441639">
+                <did>
+                  <unitid>NL Thaer</unitid>
+                  <unittitle>Thaer, Albrecht Daniel</unittitle>
+                </did>
+              </c>
+              <c level="file" id="A91x36954683065414420190821091441632">
+                <did>
+                  <unitid>NL Titius</unitid>
+                  <unittitle>Titius, Arthur Benedikt</unittitle>
+                </did>
+              </c>
+              <c level="file" id="A91x45740264654159520190821091441671">
+                <did>
+                  <unitid>NL Tönnies</unitid>
+                  <unittitle>Tönnies, Ferdinand</unittitle>
+                </did>
+              </c>
+              <c level="file" id="A91x93824845552444420190821091441633">
+                <did>
+                  <unitid>NL Trendelenburg</unitid>
+                  <unittitle>Trendelenburg, Wilhelm</unittitle>
+                </did>
+              </c>
+              <c level="file" id="A91x35886549949645920190821091441633">
+                <did>
+                  <unitid>NL Trischatni</unitid>
+                  <unittitle>Trischatni, Josif</unittitle>
+                </did>
+              </c>
+              <c level="file" id="A91x29623156785964920190821091441639">
+                <did>
+                  <unitid>NL Virchow</unitid>
+                  <unittitle>Virchow, Rudolf</unittitle>
+                </did>
+              </c>
+              <c level="file" id="A91x44027101993560720190821091441633">
+                <did>
+                  <unitid>NL Waldeyer</unitid>
+                  <unittitle>Waldeyer, Wilhelm</unittitle>
+                </did>
+              </c>
+              <c level="file" id="A91x50126498937606820190821091441676">
+                <did>
+                  <unitid>NL Weddigen</unitid>
+                  <unittitle>Weddigen, Walter</unittitle>
+                </did>
+              </c>
+              <c level="file" id="A91x85279780626296920190821091441633">
+                <did>
+                  <unitid>NL Wellmann</unitid>
+                  <unittitle>Wellmann, Max</unittitle>
+                </did>
+              </c>
+              <c level="file" id="A91x10251355171203620190821091441633">
+                <did>
+                  <unitid>NL Werner</unitid>
+                  <unittitle>Werner, Reiner</unittitle>
+                </did>
+              </c>
+              <c level="file" id="A91x63221794366836520190821091441630">
+                <did>
+                  <unitid>NL Wilcken</unitid>
+                  <unittitle>Wilcken, Ulrich</unittitle>
+                </did>
+                <scopecontent>
+                  <head>Verwaltungsgeschichte/biografische Angaben</head>
+                  <p>Lexikalische Notizen und Aegyptische Chrestomatie</p>
+                </scopecontent>
+              </c>
+              <c level="file" id="A91x17987394332885720190821091441631">
+                <did>
+                  <unitid>NL Wirz</unitid>
+                  <unittitle>Wirz, Albert</unittitle>
+                </did>
+              </c>
+              <c level="file" id="A91x66457897424697820190821091441631">
+                <did>
+                  <unitid>NL Wirzberger</unitid>
+                  <unittitle>Wirzberger, Karl-Heinz</unittitle>
+                </did>
+              </c>
+              <c level="file" id="A91x08115088939666720190821091441631">
+                <did>
+                  <unitid>NL Zeiss</unitid>
+                  <unittitle>Zeiss, Heinrich (Heinz)</unittitle>
+                </did>
+                <scopecontent>
+                  <head>Verwaltungsgeschichte/biografische Angaben</head>
+                  <p>Nur teilweise verzeichnet.</p>
+                </scopecontent>
+              </c>
+            </c>
+          </c>
+          <c level="class" id="A91x76475608348846420190821091441643">
+            <did>
+              <unitid>N 02</unitid>
+              <unittitle>Nachlässe - juristische Personen</unittitle>
+            </did>
+          </c>
+          <c level="class" id="A91x08260494470596320190821091441643">
+            <did>
+              <unitid>N 03</unitid>
+              <unittitle>persönliche Bestände</unittitle>
+            </did>
+          </c>
+          <c level="class" id="A91x59789991378784120190821091441643">
+            <did>
+              <unitid>N 04</unitid>
+              <unittitle>Deposita</unittitle>
+            </did>
+          </c>
+          <c level="class" id="A91x75148367881774920190821091441643">
+            <did>
+              <unitid>S</unitid>
+              <unittitle>Sammlungen</unittitle>
+            </did>
+            <c level="file" id="A91x59885102510452220190821091441670">
+              <did>
+                <unitid>BeStud</unitid>
+                <unittitle>Berühmte Studenten und interessante Persönlichkeiten</unittitle>
+              </did>
+            </c>
+          </c>
+        </c>
+        <c level="class" id="A91x14587295055389420190821091441657">
+          <did>
+            <unitid>P</unitid>
+            <unittitle>Pädiatriearchiv</unittitle>
+          </did>
+          <c level="class" id="A91x70389324426651020190821091441655">
+            <did>
+              <unitid>P 01</unitid>
+              <unittitle>Kaiserin Auguste Viktoria Haus</unittitle>
+            </did>
+            <c level="file" id="A91x81247764825820920190821091441671">
+              <did>
+                <unitid>KAVH</unitid>
+                <unittitle>Kaiserin Auguste-Viktoria Haus - Verwaltung</unittitle>
+              </did>
+              <accessrestrict>
+                <head>gesperrt bis</head>
+                <p>14.03.2014</p>
+              </accessrestrict>
+            </c>
+          </c>
+          <c level="class" id="A91x95360898971557620190821091441655">
+            <did>
+              <unitid>P 02</unitid>
+              <unittitle>Pädiatrische Gesellschaften</unittitle>
+            </did>
+            <c level="class" id="A91x93888252973556520190821091441655">
+              <did>
+                <unitid>P 02.01</unitid>
+                <unittitle>DGKJ - Deutsche Gesellschaft für Kinder- und Jugendmedizin</unittitle>
+              </did>
+              <c level="file" id="A91x75989097356796220190821091441660">
+                <did>
+                  <unitid>DGfK</unitid>
+                  <unittitle>Deutsche Gesellschaft für Kinderheilkunde bis 2005</unittitle>
+                </did>
+                <accessrestrict>
+                  <head>gesperrt bis</head>
+                  <p>23.10.2013</p>
+                </accessrestrict>
+              </c>
+            </c>
+            <c level="class" id="A91x24864113330841020190821091441655">
+              <did>
+                <unitid>P 02.02</unitid>
+                <unittitle>DAKJ - Deutsche Akademie für Kinder- und Jugendmedizin</unittitle>
+              </did>
+            </c>
+            <c level="class" id="A91x31936532258987420190821091441655">
+              <did>
+                <unitid>P 02.03</unitid>
+                <unittitle>DGSPJ - Deutsche Gesellschaft für Sozialpädiatrie und Jugendmedizin</unittitle>
+              </did>
+            </c>
+          </c>
+          <c level="class" id="A91x37277197837829520190821091441655">
+            <did>
+              <unitid>P 03</unitid>
+              <unittitle>Sammlung Rott</unittitle>
+            </did>
+            <c level="file" id="A91x58317345380783020190821091441643">
+              <did>
+                <unitid>Slg Rott</unitid>
+                <unittitle>Sammlung Fritz Rott</unittitle>
+              </did>
+            </c>
+          </c>
+          <c level="class" id="A91x21255201101303120190821091441655">
+            <did>
+              <unitid>P 04</unitid>
+              <unittitle>Kaiser und Kaiserin Friedrich Kinderkrankenhaus</unittitle>
+            </did>
+          </c>
+          <c level="class" id="A91x69321191310882520190821091441655">
+            <did>
+              <unitid>P 05</unitid>
+              <unittitle>Kinderklinik Charité</unittitle>
+            </did>
+          </c>
+          <c level="class" id="A91x15510022640228220190821091441660">
+            <did>
+              <unitid>P 06</unitid>
+              <unittitle>Sammlung Roesle</unittitle>
+            </did>
+          </c>
+        </c>
+        <c level="class" id="A91x71684861183166520190821091441642">
+          <did>
+            <unitid>Ü</unitid>
+            <unittitle>Übungsbestand</unittitle>
+          </did>
+          <c level="class" id="A91x81961679458618120190821091441642">
+            <did>
+              <unitid>T6</unitid>
+              <unittitle>TestHilse</unittitle>
+            </did>
+            <c level="class" id="A91x85570591688156120190821091441642">
+              <did>
+                <unitid>T6 FWU</unitid>
+                <unittitle>Friedrich-Wilhelms Universität</unittitle>
+              </did>
+              <c level="class" id="A91x48185932636260920190821091441642">
+                <did>
+                  <unitid>T6 FWU Fak</unitid>
+                  <unittitle>Fakultäten</unittitle>
+                </did>
+                <c level="class" id="A91x12937539815902720190821091441642">
+                  <did>
+                    <unitid>T6 FWU Phil. Fak.</unitid>
+                    <unittitle>Philosophische Fakultät</unittitle>
+                  </did>
+                </c>
+              </c>
+            </c>
+          </c>
+        </c>
+      </c>
+    </dsc>
+  </archdesc>
+</ead>
+</collection>

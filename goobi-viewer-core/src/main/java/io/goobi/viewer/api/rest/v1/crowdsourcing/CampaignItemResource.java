@@ -24,6 +24,7 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -40,6 +41,7 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.solr.common.SolrDocument;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -57,6 +59,8 @@ import io.goobi.viewer.controller.HtmlParser;
 import io.goobi.viewer.controller.IndexerTools;
 import io.goobi.viewer.dao.IDAO;
 import io.goobi.viewer.exceptions.DAOException;
+import io.goobi.viewer.exceptions.IndexUnreachableException;
+import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.model.annotation.PersistentAnnotation;
 import io.goobi.viewer.model.crowdsourcing.campaigns.Campaign;
 import io.goobi.viewer.model.crowdsourcing.campaigns.CampaignItem;
@@ -140,9 +144,23 @@ public class CampaignItemResource {
                         .map(clm -> new LogMessage(clm, servletRequest))
                         .collect(Collectors.toList()));
             }
+            try {
+                List<String> allMetadataFields = campaign.getQuestions().stream().flatMap(q -> q.getMetadataFields().stream()).distinct().collect(Collectors.toList());
+                SolrDocument doc = DataManager.getInstance().getSearchIndex().getFirstDoc("PI:" + pi, allMetadataFields);
+                Map<String, List<String>> fieldValueMap = doc.getFieldNames().stream().collect(Collectors.toMap(field -> field, field -> getFieldValues(doc, field)));
+                item.setMetadata(fieldValueMap);
+            } catch (PresentationException | IndexUnreachableException e) {
+                logger.error("Error getting metadata valued for campaign item ", e);
+            }
+            
+            
             return item;
         }
         throw new ContentNotFoundException("No campaign found with id " + campaignId);
+    }
+    
+    private List<String> getFieldValues(SolrDocument doc, String field) {
+        return doc.getFieldValues(field).stream().map(Object::toString).collect(Collectors.toList());
     }
 
     /**

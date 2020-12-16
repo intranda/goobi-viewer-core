@@ -21,7 +21,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Random;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -39,10 +38,13 @@ import org.slf4j.LoggerFactory;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.JsonTools;
 import io.goobi.viewer.controller.SolrConstants;
+import io.goobi.viewer.controller.SolrSearchIndex;
+import io.goobi.viewer.controller.imaging.ThumbnailHandler;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.exceptions.ViewerConfigurationException;
+import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.model.metadata.CompareYearSolrDocWrapper;
 import io.goobi.viewer.model.search.SearchHelper;
 import io.goobi.viewer.model.viewer.StringPair;
@@ -76,7 +78,6 @@ public class WebApiServlet extends HttpServlet implements Serializable {
 
     /** {@inheritDoc} */
     @Override
-    @SuppressWarnings("unchecked")
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         String action = null;
         String encoding = "utf-8";
@@ -160,9 +161,7 @@ public class WebApiServlet extends HttpServlet implements Serializable {
 
                     JSONArray jsonArray = new JSONArray();
                     try {
-                        // Solr supports dynamic random_* sorting fields. Each value represents one particular order, so a random number is required.
-                        Random random = new Random();
-                        String sortfield = new StringBuilder().append("random_").append(random.nextInt(Integer.MAX_VALUE)).toString();
+                        String sortfield = SolrSearchIndex.generateRandomSortField();
                         SolrDocumentList result = DataManager.getInstance()
                                 .getSearchIndex()
                                 .search(query, 0, count, Collections.singletonList(new StringPair(sortfield, "asc")), null, null)
@@ -176,9 +175,11 @@ public class WebApiServlet extends HttpServlet implements Serializable {
                         }
 
                         Collections.sort(sortDocResult);
+                        ThumbnailHandler thumbs = BeanUtils.getImageDeliveryBean().getThumbs();
                         for (CompareYearSolrDocWrapper solrWrapper : sortDocResult) {
                             SolrDocument doc = solrWrapper.getSolrDocument();
-                            JSONObject jsonObj = JsonTools.getRecordJsonObject(doc, ServletUtils.getServletPathWithHostAsUrlFromRequest(request));
+                            JSONObject jsonObj =
+                                    JsonTools.getRecordJsonObject(doc, ServletUtils.getServletPathWithHostAsUrlFromRequest(request), thumbs);
                             jsonArray.put(jsonObj);
                         }
                     } catch (PresentationException e) {
@@ -260,9 +261,7 @@ public class WebApiServlet extends HttpServlet implements Serializable {
 
                     if (randomize) {
                         sortFields.clear();
-                        // Solr supports dynamic random_* sorting fields. Each value represents one particular order, so a random number is required.
-                        Random random = new Random();
-                        sortFields.add(new StringPair("random_" + random.nextInt(Integer.MAX_VALUE), sortOrderString));
+                        sortFields.add(new StringPair(SolrSearchIndex.generateRandomSortField(), sortOrderString));
                         logger.trace("sortFields: {}", sortFields);
                     }
 

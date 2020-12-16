@@ -74,6 +74,7 @@ public class RichOEmbedResponse extends OEmbedResponse {
             sb.append(" src='");
             sb.append(record.getUri());
             sb.append("'");
+            sb.append(" title='Map'");
             sb.append(" width='");
             sb.append(width);
             sb.append("'");

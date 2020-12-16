@@ -4,23 +4,29 @@
 
 	
 	<li each="{bookmark in bookmarkList.items}">
-		<a class="bookmark-navigation__dropdown-title" href="{opts.bookmarks.config.root}{bookmark.url}">
-			<div class="row no-margin">
-				<div class="col-8 no-padding">
-					<h4>{bookmark.name}</h4>
-				</div>
-				<div class="col-4 no-padding">
-					<div class="{mainClass}-image"
-						style="background-image: url({bookmark.representativeImageUrl});">
-					</div>
+		<div class="row no-margin">
+			<div class="col-4 no-padding">
+				<div class="{mainClass}-image"
+					style="background-image: url({bookmark.representativeImageUrl});">
 				</div>
 			</div>
-		</a>
+			<div class="col-7 no-padding">
+				<h4>
+					<a href="{opts.bookmarks.config.root}{bookmark.url}">{bookmark.name}</a>
+				</h4>
+			</div>
+			<div class="col-1 no-padding {mainClass}-remove">
+				<button class="btn btn--clean" type="button"
+					data-bookshelf-type="delete" onclick="{remove}"
+					aria-label="{msg('bookmarkList_removeFromBookmarkList')}">
+					<i class="fa fa-ban" aria-hidden="true"></i>
+				</button>
+			</div>
+		</div>
 	</li>
 </ul>
 
 <div each="{bookmarkList in getBookmarkLists()}" class="{mainClass}-actions">
-
 
 	<div if="{mayEmptyList(bookmarkList)}" class="{mainClass}-reset">
 		<button class="btn btn--clean" type="button"
@@ -42,7 +48,7 @@
 	<div if="{maySearchList(bookmarkList)}" class="{mainClass}-search">
 		<a href="{searchListUrl(bookmarkList)}"
 			data-toggle="tooltip" data-placement="top" data-original-title=""
-			title="">
+			title=""> 
 			<span>{msg('action__search_in_bookmarks')}</span> 
 			<i class="fa fa-search" aria-hidden="true"></i>
 		</a>
@@ -55,8 +61,6 @@
 		</a>
 	</div>
 </div>
-
-
 
 <script> 
 
@@ -97,6 +101,18 @@ showLoader() {
  
 mayEmptyList(list) { 
     return list.items.length > 0;
+}
+
+remove(event) {
+    if(this.opts.bookmarks.config.userLoggedIn) {        
+	    let list = event.item.bookmarkList
+	    this.opts.bookmarks.removeFromBookmarkList(list.id, this.pi, this.page, this.logid, this.opts.bookmarks.isTypePage())
+	    .then( () => this.updateLists())
+    } else {
+        let bookmark = event.item.bookmark;
+        this.opts.bookmarks.removeFromBookmarkList(undefined, bookmark.pi, undefined, undefined, false)
+	    .then( () => this.updateLists())
+    }
 }
 
 deleteList(event) {

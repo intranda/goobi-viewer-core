@@ -45,8 +45,13 @@
 		left: 5px;
 		background-color: @blue;
 		z-index: 10;
-		input, button {
+		input, button, button:hover {
 			position: absolute;
+			color: @white;
+			
+			i.fa {
+				font-size: 1.6rem;
+			}
 		}
 		input {
 			right: 32px;
@@ -79,14 +84,20 @@
 				opacity: 1;				
 			}
 		}
-		[data-toggle="filter-input"] {
+		[data-toggle="filter-input"],
+		[data-toggle="filter-input"]:hover {
 			right: 0;
-			width: 32px;
-			height: 32px;
-			background-image: url("@{images}/icons/icon-search.svg");
-			background-repeat: no-repeat;
-			background-position: center;
-			background-size: 16px;
+			width: 34px;
+			height: 34px;
+			font-size: 1.8rem;
+			// background-image: url("@{images}/icons/icon-search.svg");
+			// background-repeat: no-repeat;
+			// background-position: center;
+			// background-size: 16px;
+			
+			i.fa {
+				font-size: 1.8rem;
+			}
 		}
 	}
 	&__filter-input {

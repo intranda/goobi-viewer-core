@@ -9,14 +9,12 @@
 this.collectionSets = [];
 
 
-this.on("mount", () => {
-    console.log("mounting collectionView", this.opts);
-    
+this.on("mount", () => {    
     this.fetchCollections()
     .then( () => {
         let keys = this.collectionSets.map(set => set[0]);
-        this.translator = new viewerJS.Translator(keys, this.opts.restapi, this.opts.language);
-    	return this.translator.init();
+        this.translator = new viewerJS.Translator(this.opts.restapi.replace("/rest", "/api/v1"), this.opts.language);
+        return this.translator.init(keys);
     })
     .then( () => {
         this.update();

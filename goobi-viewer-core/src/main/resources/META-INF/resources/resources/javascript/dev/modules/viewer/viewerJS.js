@@ -42,8 +42,10 @@ var viewerJS = (function () {
         notFoundImage: '',
         activateDrilldownFilter: true
     };
+    
 
     var viewer = {};
+    viewer.initialized = new rxjs.Subject();
 
     viewer.init = function (config) {
         if (_debug) {
@@ -130,7 +132,7 @@ var viewerJS = (function () {
         }
         
         // toggle work title body
-        $('body').on( 'click', '.title__header h3', function () {
+        $('body').on( 'click', '.title__header h2', function () {
         	$( this ).find( '.fa' ).toggleClass( 'in' );
         	$( '.title__body' ).slideToggle( 'fast' );        	
         } );
@@ -174,11 +176,6 @@ var viewerJS = (function () {
         $('body').on('click', '[data-collapse-show]', function () {
             var href = $(this).data('collapse-show');
             $(href).collapse('show');
-        });
-
-        // reset searchfield on focus
-        $('body').on('focus', 'input[id*="searchField"]', function () {
-            $(this).val('');
         });
 
         // init search drilldown filter
@@ -299,7 +296,14 @@ var viewerJS = (function () {
 		}).blur(function(){
 			$('.widget-chronology-slider__item-input[data-toggle="tooltip"]').tooltip('enable');
 		});
+		
+		//init empty translator instance
+	    var restApiURL = restURL.replace("/rest", "/api/v1");
+	    viewer.translator = new viewerJS.Translator(restApiURL, currentLang);
      
+		viewer.initialized.next();
+		viewer.initialized.complete();
+		
 	// EOL viewerJS function
     };
 

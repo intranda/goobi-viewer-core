@@ -22,7 +22,6 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.Collections;
 import java.util.LinkedList;
-import java.util.Random;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -58,11 +57,13 @@ import io.goobi.viewer.controller.JsonTools;
 import io.goobi.viewer.controller.SolrConstants;
 import io.goobi.viewer.controller.SolrSearchIndex;
 import io.goobi.viewer.controller.StringTools;
+import io.goobi.viewer.controller.imaging.ThumbnailHandler;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.exceptions.RecordNotFoundException;
 import io.goobi.viewer.exceptions.ViewerConfigurationException;
+import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.model.metadata.CompareYearSolrDocWrapper;
 import io.goobi.viewer.model.metadata.MetadataTools;
 import io.goobi.viewer.model.search.SearchHelper;
@@ -150,9 +151,7 @@ public class RecordsResource {
         logger.trace("count: {}", count);
 
         JSONArray jsonArray = new JSONArray();
-        // Solr supports dynamic random_* sorting fields. Each value represents one particular order, so a random number is required.
-        Random random = new Random();
-        String sortfield = new StringBuilder().append("random_").append(random.nextInt(Integer.MAX_VALUE)).toString();
+        String sortfield = SolrSearchIndex.generateRandomSortField();
         SolrDocumentList result = DataManager.getInstance()
                 .getSearchIndex()
                 .search(query, 0, count, Collections.singletonList(new StringPair(sortfield, "asc")), null, null)
@@ -166,9 +165,11 @@ public class RecordsResource {
         }
 
         Collections.sort(sortDocResult);
+        ThumbnailHandler thumbs = BeanUtils.getImageDeliveryBean().getThumbs();
         for (CompareYearSolrDocWrapper solrWrapper : sortDocResult) {
             SolrDocument doc = solrWrapper.getSolrDocument();
-            JSONObject jsonObj = JsonTools.getRecordJsonObject(doc, ServletUtils.getServletPathWithHostAsUrlFromRequest(servletRequest));
+            JSONObject jsonObj =
+                    JsonTools.getRecordJsonObject(doc, ServletUtils.getServletPathWithHostAsUrlFromRequest(servletRequest), thumbs);
             jsonArray.put(jsonObj);
         }
 

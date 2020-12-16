@@ -30,7 +30,7 @@
     	<div id="title" class="title">
     		<!-- TITLE HEADER -->
 			<div class="title__header">
-				<h3>
+				<h2 class="h3">
 					<!-- PAGE TYPE -->
 					<span class="title__header-page-type">
 						<h:outputText value="#{msg[navigationHelper.currentView]}" escape="false" />:
@@ -41,7 +41,7 @@
 				
 					<!-- ICON -->
 					<i class="fa fa-angle-down" aria-hidden="true"></i>
-				</h3>
+				</h2>
 			</div>
 
 			<!-- TITLE BODY -->
@@ -58,6 +58,7 @@
 									<i class="fa fa-list" aria-hidden="true"></i>
 									<f:passThroughAttribute name="data-toggle" value="tooltip" />
 									<f:passThroughAttribute name="data-placement" value="top" />
+									<f:passThroughAttribute name="aria-label" value="#{msg.tocDownload}" />
 								</h:commandLink>
 							</ui:fragment>
 						</div>

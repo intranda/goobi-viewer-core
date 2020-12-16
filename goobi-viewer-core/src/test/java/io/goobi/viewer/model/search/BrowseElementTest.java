@@ -55,8 +55,7 @@ public class BrowseElementTest extends AbstractSolrEnabledTest {
         StructElement se = new StructElement();
         se.setPi("PPN123");
         se.getMetadataFields().put("SORT_FOO", Collections.singletonList("bar"));
-        BrowseElement be = new BrowseElement(se, new ArrayList<>(), Locale.ENGLISH, null, false,
-                null, null);
+        BrowseElement be = new BrowseElement(se, new ArrayList<>(), Locale.ENGLISH, null, null, null);
         be.addSortFieldsToMetadata(se, Collections.singletonList(new StringPair("SORT_FOO", "bar")), null);
         Assert.assertEquals(1, be.getMetadataList().size());
         Assert.assertEquals("SORT_FOO", be.getMetadataList().get(0).getLabel());
@@ -75,8 +74,7 @@ public class BrowseElementTest extends AbstractSolrEnabledTest {
         StructElement se = new StructElement();
         se.setPi("PPN123");
         se.getMetadataFields().put("SORT_FOO", Collections.singletonList("bar"));
-        BrowseElement be = new BrowseElement(se, new ArrayList<>(), Locale.ENGLISH, null, false,
-                null, null);
+        BrowseElement be = new BrowseElement(se, new ArrayList<>(), Locale.ENGLISH, null, null, null);
         be.addSortFieldsToMetadata(se, Collections.singletonList(new StringPair("SORT_FOO", "bar")), Collections.singleton("SORT_FOO"));
         Assert.assertEquals(0, be.getMetadataList().size());
     }
@@ -91,8 +89,7 @@ public class BrowseElementTest extends AbstractSolrEnabledTest {
         se.setPi("PPN123");
         se.getMetadataFields().put("SORT_FOO", Collections.singletonList("bar"));
 
-        BrowseElement be = new BrowseElement(se, new ArrayList<>(), Locale.ENGLISH, null, false,
-                null, null);
+        BrowseElement be = new BrowseElement(se, new ArrayList<>(), Locale.ENGLISH, null, null, null);
         be.getMetadataList().add(new Metadata("MD_FOO", "", "old value"));
 
         be.addSortFieldsToMetadata(se, Collections.singletonList(new StringPair("SORT_FOO", "bar")), null);

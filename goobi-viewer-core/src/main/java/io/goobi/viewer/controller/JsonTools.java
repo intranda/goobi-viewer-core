@@ -36,6 +36,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import io.goobi.viewer.controller.SolrConstants.DocType;
+import io.goobi.viewer.controller.imaging.ThumbnailHandler;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
@@ -77,6 +78,7 @@ public class JsonTools {
             throws IndexUnreachableException, PresentationException, DAOException, ViewerConfigurationException {
         JSONArray jsonArray = new JSONArray();
         Locale locale = StringUtils.isBlank(languageToTranslate) ? null : Locale.forLanguageTag(languageToTranslate);
+        ThumbnailHandler thumbs = BeanUtils.getImageDeliveryBean().getThumbs();
 
         for (SolrDocument doc : result) {
             String pi = (String) doc.getFieldValue(SolrConstants.PI_TOPSTRUCT);
@@ -111,7 +113,7 @@ public class JsonTools {
                 jsonArray.put(object);
             } catch (JsonProcessingException e) {
                 logger.error("Error writing document to json", e);
-                JSONObject jsonObj = getRecordJsonObject(doc, ServletUtils.getServletPathWithHostAsUrlFromRequest(request));
+                JSONObject jsonObj = getRecordJsonObject(doc, ServletUtils.getServletPathWithHostAsUrlFromRequest(request), thumbs);
                 jsonArray.put(jsonObj);
             }
 
@@ -175,6 +177,7 @@ public class JsonTools {
         JSONArray jsonArray = new JSONArray();
 
         JSONArray jsonArrayUngrouped = new JSONArray();
+        ThumbnailHandler thumbs = BeanUtils.getImageDeliveryBean().getThumbs();
         for (SolrDocument doc : result) {
             String pi = (String) doc.getFieldValue(SolrConstants.PI_TOPSTRUCT);
 
@@ -193,7 +196,7 @@ public class JsonTools {
                 }
             }
 
-            JSONObject jsonObj = getRecordJsonObject(doc, ServletUtils.getServletPathWithHostAsUrlFromRequest(request));
+            JSONObject jsonObj = getRecordJsonObject(doc, ServletUtils.getServletPathWithHostAsUrlFromRequest(request), thumbs);
             jsonArrayUngrouped.put(jsonObj);
         }
 
@@ -228,12 +231,13 @@ public class JsonTools {
      *
      * @param doc a {@link org.apache.solr.common.SolrDocument} object.
      * @param rootUrl a {@link java.lang.String} object.
-     * @should add all metadata
+     * @param thumbs
      * @return a {@link org.json.simple.JSONObject} object.
      * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
+     * @should add all metadata
      */
-    public static JSONObject getRecordJsonObject(SolrDocument doc, String rootUrl) throws ViewerConfigurationException {
-        return getRecordJsonObject(doc, rootUrl, null);
+    public static JSONObject getRecordJsonObject(SolrDocument doc, String rootUrl, ThumbnailHandler thumbs) throws ViewerConfigurationException {
+        return getRecordJsonObject(doc, rootUrl, null, thumbs);
     }
 
     /**
@@ -242,11 +246,13 @@ public class JsonTools {
      * @param doc a {@link org.apache.solr.common.SolrDocument} object.
      * @param rootUrl a {@link java.lang.String} object.
      * @param language a {@link java.lang.String} object.
-     * @should add all metadata
+     * @param thumbs
      * @return a {@link org.json.simple.JSONObject} object.
      * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
+     * @should add all metadata
      */
-    public static JSONObject getRecordJsonObject(SolrDocument doc, String rootUrl, String language) throws ViewerConfigurationException {
+    public static JSONObject getRecordJsonObject(SolrDocument doc, String rootUrl, String language, ThumbnailHandler thumbs)
+            throws ViewerConfigurationException {
         JSONObject jsonObj = new JSONObject();
 
         String pi = (String) doc.getFieldValue(SolrConstants.PI_TOPSTRUCT);
@@ -256,8 +262,10 @@ public class JsonTools {
         StringBuilder sbMediumImage = new StringBuilder(250);
         try {
             StructElement ele = new StructElement(0, doc);
-            sbThumbnailUrl.append(BeanUtils.getImageDeliveryBean().getThumbs().getThumbnailUrl(ele, 100, 120));
-            sbMediumImage.append(BeanUtils.getImageDeliveryBean().getThumbs().getThumbnailUrl(ele, 600, 500));
+            if (thumbs != null) {
+                sbThumbnailUrl.append(thumbs.getThumbnailUrl(ele, 100, 120));
+                sbMediumImage.append(thumbs.getThumbnailUrl(ele, 600, 500));
+            }
         } catch (IndexUnreachableException e) {
             logger.error("Unable to reach index for thumbnail creation");
         }

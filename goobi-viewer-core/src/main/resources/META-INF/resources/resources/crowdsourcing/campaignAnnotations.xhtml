@@ -37,14 +37,14 @@
 								<!-- PAGINATOR -->
 								<div class="admin__table-paginator">
 									<viewerComponent:dataTablePaginator
-										tableValues="#{crowdsourcingBean.lazyModelAnnotations}" />
+										tableValues="#{annotationBean.lazyModelAnnotations}" />
 								</div>
 								<!-- FILTER -->
 								<div class="admin__table-filter mb-3 mb-sm-0">
 									<!-- TODO: ADD FILTER FOR targetPI, TOO -->
 									<viewerComponent:dataTableColumnFilter
 										key="admin__crowsourcing_annotations_search"
-										filter="#{crowdsourcingBean.lazyModelAnnotations.getFilter('targetPI_body')}" />
+										filter="#{annotationBean.lazyModelAnnotations.getFilter('targetPI_body')}" />
 								</div>
 							</div>
 
@@ -55,33 +55,38 @@
 								<!-- TITLE ROW -->
 								<div class="row no-gutters admin__table-title">
 									<!-- ANNOTATION COL -->
-									<div class="col-12 col-lg-7 d-flex">
+									<div class="col-12 col-lg-6 d-flex">
 										<viewerComponent:sortingArrow filterType="targetPI"
 											colHeading="#{msg.admin__crowdsourcing_annotation}"
-											list="#{crowdsourcingBean.lazyModelAnnotations}" />
+											list="#{annotationBean.lazyModelAnnotations}" />
 									</div>
 
 									<!-- CONTRIBUTOR COL -->
 									<div class="col-3 d-none d-lg-flex">
 										<viewerComponent:sortingArrow filterType="creatorId"
 											colHeading="#{msg.user}"
-											list="#{crowdsourcingBean.lazyModelAnnotations}" />
+											list="#{annotationBean.lazyModelAnnotations}" />
 									</div>
 
 									<!-- DATE COL -->
 									<div class="col-2 d-none d-lg-flex">
 										<viewerComponent:sortingArrow filterType="dateCreated"
 											colHeading="#{msg.date}"
-											list="#{crowdsourcingBean.lazyModelAnnotations}" />
+											list="#{annotationBean.lazyModelAnnotations}" />
+									</div>
+									
+									<!-- REVIEW STATE COL -->
+		                            <div class="col-1 d-none d-lg-flex" style="justify-content: center;">
+									        <span class="admin__sorting-table-heading">#{msg.label__crowdsourcing_review}</span>
 									</div>
 								</div>
 
 								<!-- INDIVIDUAL ANNOTATION ROWS -->
 								<ui:repeat var="annotation"
-									value="#{crowdsourcingBean.lazyModelAnnotations.paginatorList}">
+									value="#{annotationBean.lazyModelAnnotations.paginatorList}">
 									<div class="row no-gutters admin__table-entry">
 										<!-- ANNOTATION CONTENT -->
-										<div class="col-12 col-lg-7 d-flex" style="flex-direction: column;">
+										<div class="col-12 col-lg-6 d-flex" style="flex-direction: column;">
 											<div class="annotation__label">
 												#{annotation.targetPI}
 												<h:outputText
@@ -116,6 +121,12 @@
 													value="#{navigationHelper.dateTimePattern}" />
 											</h:outputText>
 										</div>
+										<!-- REVIEW STATE -->
+										<div class="col-1 d-none d-lg-flex" style="justify-content: center;">
+									        <ui:fragment rendered="#{annotation.reviewStatus == 'FINISHED'}">
+										        <i class="fa fa-check" aria-hidden="true"></i>
+									        </ui:fragment>
+										</div>
 									</div>
 								</ui:repeat>
 							</div>
@@ -140,11 +151,11 @@
 		<h:panelGroup rendered="#{browseBean.browsingMenuEnabled}">
 			<widgetComponent:widget_browsing />
 		</h:panelGroup>
-
-		<h:panelGroup
-			rendered="#{userBean.loggedIn and transcriptionBean.crowdsourcingEnabled}">
-			<widgetComponent:widget_crowdsourcing />
-		</h:panelGroup>
+        <c:forEach var="module" items="#{configurationBean.modules}">
+            <c:forEach var="contribution" items="#{module.sidebarContributions}">
+                <ui:include src="/#{contribution}" />
+            </c:forEach>
+        </c:forEach>
 	</ui:define>
 
 </ui:composition>

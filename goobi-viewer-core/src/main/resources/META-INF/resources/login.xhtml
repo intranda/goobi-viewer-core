@@ -13,7 +13,8 @@
     xmlns:viewer="http://xmlns.jcp.org/jsf/composite/components/partner"
     xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components" 
     xmlns:widgetComponent="http://xmlns.jcp.org/jsf/composite/components/widgets"
-    xmlns:templateComponent="http://xmlns.jcp.org/jsf/composite/themes/reference/components">
+    xmlns:templateComponent="http://xmlns.jcp.org/jsf/composite/themes/reference/components"
+    lang="#{navigationHelper.localeString}">
 
           <!-- METADATA -->
 	    <ui:define name="metadata">
@@ -69,11 +70,11 @@
 		<div class="messages">
 			<h:messages infoClass="alert alert-success" errorClass="alert alert-danger" />
 		</div>
-
-		<viewerComponent:modalUserLogin id="loginComponent" >
-			<ui:param value="true" name="alwaysVisible" />
-		</viewerComponent:modalUserLogin>
-		
+		<main>
+			<viewerComponent:modalUserLogin id="loginComponent" ariaHidden="false" >
+				<ui:param value="true" name="alwaysVisible" />
+			</viewerComponent:modalUserLogin>
+		</main>
     	<script>
     		viewerJS.userLogin.init();
 		</script>

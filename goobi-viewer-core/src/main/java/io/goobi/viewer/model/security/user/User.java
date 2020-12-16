@@ -123,8 +123,7 @@ public class User implements ILicensee, HttpSessionBindingListener, Serializable
     @Column(name = "activation_key")
     private String activationKey;
 
-    //    @Temporal(TemporalType.TIMESTAMP)
-    @Column(name = "last_login")
+    @Column(name = "last_login", columnDefinition = "TIMESTAMP")
     private LocalDateTime lastLogin;
 
     @Column(name = "active", nullable = false)

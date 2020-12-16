@@ -125,10 +125,10 @@ var viewerJS = ( function( viewer ) {
             modal += '<div class="modal-dialog" role="document">';
             modal += '<div class="modal-content">';
             modal += '<div class="modal-header">';
-            modal += '<button type="button" class="close" data-dismiss="modal" aria-label="' + _defaults.string.closeBtn + '">';
-            modal += '<span aria-hidden="true">&times;</span>';
-            modal += '</button>';
             modal += '<h4 class="modal-title" id="' + _defaults.label + '">' + _defaults.string.title + '</h4>';
+            modal += '<button type="button" class="fancy-close" data-dismiss="modal" aria-label="' + _defaults.string.closeBtn + '">';
+            modal += '<span aria-hidden="true">x</span>';
+            modal += '</button>';
             modal += '</div>';
             modal += '<div class="modal-body">' + _defaults.string.body + '</div>';
             modal += '<div class="modal-footer">';
@@ -138,6 +138,7 @@ var viewerJS = ( function( viewer ) {
             
             return modal;
         },
+
         /**
          * @description Method to return a BS Alert with dynamic content.
          * @method renderAlert
@@ -318,14 +319,16 @@ var viewerJS = ( function( viewer ) {
         	    console.log( 'EXECUTE: viewerJS.helper.initBsFeatures' );
             }
         	
-        	// enable BS tooltips
+        	// (re)-enable BS tooltips
+        	$( '.tooltip' ).remove();
+	    	$( '[data-toggle="tooltip"]' ).tooltip('dispose');
             $( '[data-toggle="tooltip"]' ).tooltip( {
                 trigger : 'hover'
             } );
             if ( window.matchMedia( '(max-width: 768px)' ).matches ) {
             	$( '[data-toggle="tooltip"]' ).tooltip( 'dispose' );
             }
-            
+
             // enable BS popovers
             $( '[data-toggle="popover"]' ).popover( {
             	placement: 'auto bottom',
@@ -418,11 +421,44 @@ var viewerJS = ( function( viewer ) {
                context = context[namespaces[i]];
              }
              return context[func];
+          },
+          getUrlSearchParamMap: function() {
+              let searchParams = document.location.search.substr(1).split('&').filter(p => p != undefined && p.length > 0);
+              let paramMap = new Map();
+              searchParams.forEach(param => {
+                  let parts = param.split("=");
+                  paramMap.set(parts[0], parts[1]);
+              })
+              return paramMap;
+          },
+          setUrlSearchParams: function(map) {
+              let paramList = [];
+              map.forEach((value, key) => {
+                  paramList.push(key + "=" + value);
+              })
+              document.location.search = paramList.join("&");
           }
+         
 
     };
     
     viewer.localStoragePossible = viewer.helper.checkLocalStorage();
+    
+    viewer.setUrlQuery = function(param, value) {
+        let paramMap = viewer.helper.getUrlSearchParamMap();
+        if(!value || value.length == 0) {
+            paramMap.delete(param);
+        } else {
+            paramMap.set(param, value);
+        }
+        viewer.helper.setUrlSearchParams(paramMap);
+        return true;
+    }
+    
+    viewer.setUrlHash = function(hash) {
+        document.location.hash = "#" + hash;
+        return true;
+    }
     
     viewer.getMapBoxToken = function() {
         if(typeof mapBoxToken != "undefined") {

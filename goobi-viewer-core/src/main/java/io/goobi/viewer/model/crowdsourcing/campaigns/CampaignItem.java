@@ -17,7 +17,10 @@ package io.goobi.viewer.model.crowdsourcing.campaigns;
 
 import java.net.URI;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -42,6 +45,7 @@ public class CampaignItem {
     private Campaign campaign;
     private CampaignRecordStatus recordStatus = null;
     private List<LogMessage> log = null;
+    private Map<String, List<String>> metadata = new LinkedHashMap<>();
     @JsonProperty("creator")
     private URI creatorURI = null;
 
@@ -174,6 +178,20 @@ public class CampaignItem {
      */
     public List<LogMessage> getLog() {
         return log;
+    }
+    
+    /**
+     * @return the metadata
+     */
+    public Map<String, List<String>> getMetadata() {
+        return Collections.unmodifiableMap(this.metadata);
+    }
+    
+    /**
+     * @param metadata the metadata to set
+     */
+    public void setMetadata(Map<String, List<String>> metadata) {
+        this.metadata = metadata;
     }
 
 }

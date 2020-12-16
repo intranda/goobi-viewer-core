@@ -32,14 +32,16 @@
                                 <h:commandLink styleClass="btn btn--clean" action="#{activeDocumentBean.toc.collapseAll}" title="#{msg.allClose}">
                                     <i class="fa fa-minus-square-o" aria-hidden="true"></i>
                                     <f:passThroughAttribute name="data-toggle" value="tooltip" />
-                                    <f:passThroughAttribute name="data-placement" value="top" />
+									<f:passThroughAttribute name="data-placement" value="top" />
+									<f:passThroughAttribute name="aria-label" value="#{msg.allClose}"/>
                                     <f:ajax render="widgetTocForm" />
                                 </h:commandLink>
                                 <!-- OPEN -->
                                 <h:commandLink styleClass="btn btn--clean" action="#{activeDocumentBean.toc.expandAll}" title="#{msg.allOpen}">
                                     <i class="fa fa-plus-square-o" aria-hidden="true"></i>
                                     <f:passThroughAttribute name="data-toggle" value="tooltip" />
-                                    <f:passThroughAttribute name="data-placement" value="top" />
+									<f:passThroughAttribute name="data-placement" value="top" />
+									<f:passThroughAttribute name="aria-label" value="#{msg.allOpen}"/>
                                     <f:ajax render="widgetTocForm" />
                                 </h:commandLink>
                             </div>
@@ -61,10 +63,12 @@
     													<div class="widget-toc__element-expand">
     														<h:commandLink styleClass="btn btn--clean" action="#{activeDocumentBean.setChildrenVisible(tocElement)}" rendered="#{tocElement.visible and !tocElement.expanded}">
 																<i class="fa fa-plus-square-o" aria-hidden="true"></i>
+																<f:passThroughAttribute name="aria-label" value="#{msg.allOpen}"/>
 																<f:ajax render="@form" />
     														</h:commandLink>
     														<h:commandLink styleClass="btn btn--clean" action="#{activeDocumentBean.setChildrenInvisible(tocElement)}" rendered="#{tocElement.visible and tocElement.expanded}">
-    															<i class="fa fa-minus-square-o" aria-hidden="true"></i>
+																<i class="fa fa-minus-square-o" aria-hidden="true"></i>
+																<f:passThroughAttribute name="aria-label" value="#{msg.allClose}"/>
     															<f:ajax render="@form" />
     														</h:commandLink>
     													</div>
@@ -77,7 +81,8 @@
         														rendered="#{tocElement.label != null and tocElement.visible}" 
         														title="#{tocElement.label}"
         														value="#{tocElement.getUrl('fullscreen')}"
-        														styleClass="#{tocElement.iddoc == activeDocumentBean.viewManager.currentDocumentIddoc ? 'active' : ''}">
+																styleClass="#{tocElement.iddoc == activeDocumentBean.viewManager.currentDocumentIddoc ? 'active' : ''}">
+																<f:passThroughAttribute name="aria-label" value="#{msg.sidebarTocAnchor}: #{tocElement.label}, #{tocElement.logId}"/>
         														#{tocElement.label}
         													</h:outputLink>
         												</div>
@@ -89,7 +94,8 @@
                                                             <h:outputLink 
                                                                 rendered="#{tocElement.label != null and tocElement.visible}" 
                                                                 title="#{tocElement.label}"
-                                                                value="#{tocElement.url}">
+																value="#{tocElement.url}">
+																<f:passThroughAttribute name="aria-label" value="#{msg.sidebarTocAnchor}: #{tocElement.label}, #{tocElement.logId}"/>
                                                                 #{tocElement.label}
                                                             </h:outputLink>
                                                         </div>
@@ -119,6 +125,7 @@
 													title="#{tocElement.label}" value="#{tocElement.url}"
 													styleClass="#{tocElement.iddoc == activeDocumentBean.viewManager.currentDocumentIddoc ? 'active' : ''}">
 													<h:outputText value="#{tocElement.label}" />
+													<f:passThroughAttribute name="aria-label" value="#{msg.sidebarTocAnchor}: #{tocElement.label}, #{tocElement.logId}" />
 												</h:outputLink>
 											</div> 
                                             <!-- PAGE NUMBER --> 

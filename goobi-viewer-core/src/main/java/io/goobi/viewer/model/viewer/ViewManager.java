@@ -16,7 +16,6 @@
 package io.goobi.viewer.model.viewer;
 
 import java.awt.Dimension;
-import java.io.File;
 import java.io.IOException;
 import java.io.Serializable;
 import java.io.UnsupportedEncodingException;
@@ -26,12 +25,11 @@ import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import javax.faces.context.FacesContext;
 import javax.faces.event.ValueChangeEvent;
@@ -50,13 +48,13 @@ import de.unigoettingen.sub.commons.contentlib.imagelib.transform.Scale;
 import io.goobi.viewer.api.rest.AbstractApiUrlManager;
 import io.goobi.viewer.api.rest.v1.ApiUrls;
 import io.goobi.viewer.controller.AlphanumCollatorComparator;
+import io.goobi.viewer.controller.Configuration;
 import io.goobi.viewer.controller.DataFileTools;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.FileTools;
 import io.goobi.viewer.controller.SolrConstants;
 import io.goobi.viewer.controller.SolrSearchIndex;
 import io.goobi.viewer.controller.StringTools;
-import io.goobi.viewer.controller.TranskribusUtils;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.HTTPException;
 import io.goobi.viewer.exceptions.IDDOCNotFoundException;
@@ -80,6 +78,7 @@ import io.goobi.viewer.model.security.user.User;
 import io.goobi.viewer.model.toc.TOC;
 import io.goobi.viewer.model.transkribus.TranskribusJob;
 import io.goobi.viewer.model.transkribus.TranskribusSession;
+import io.goobi.viewer.model.transkribus.TranskribusUtils;
 import io.goobi.viewer.model.viewer.pageloader.IPageLoader;
 import io.goobi.viewer.model.viewer.pageloader.LeanPageLoader;
 
@@ -95,7 +94,7 @@ public class ViewManager implements Serializable {
     private ImageDeliveryBean imageDeliveryBean;
 
     /** IDDOC of the top level document. */
-    private long topDocumentIddoc;
+    private final long topDocumentIddoc;
     /** IDDOC of the current level document. The initial top level document values eventually gets overridden with the image owner element's IDDOC. */
     private long currentDocumentIddoc;
     /** LOGID of the current level document. */
@@ -142,6 +141,7 @@ public class ViewManager implements Serializable {
     private Long pagesWithAlto = null;
     private Boolean workHasTEIFiles = null;
     private Boolean metadataViewOnly = null;
+    private List<String> downloadFilenames = null;
 
     /**
      * <p>
@@ -181,7 +181,7 @@ public class ViewManager implements Serializable {
         currentThumbnailPage = 1;
         //        annotationManager = new AnnotationManager(topDocument);
         pi = topDocument.getPi();
-        
+
         if (!topDocument.isAnchor()) {
             // Generate drop-down page selector elements
             dropdownPages.clear();
@@ -1440,7 +1440,7 @@ public class ViewManager implements Serializable {
             Double im = (double) pageLoader.getNumPages();
 
             Double thumb = (double) DataManager.getInstance().getConfiguration().getViewerThumbnailsPerPage();
-            int answer = new Double(Math.floor(im / thumb)).intValue();
+            int answer = Double.valueOf(Math.floor(im / thumb)).intValue();
             if (im % thumb != 0 || answer == 0) {
                 answer++;
             }
@@ -2503,35 +2503,48 @@ public class ViewManager implements Serializable {
     }
 
     /**
+     * List all files in {@link Configuration#getOrigContentFolder()} for which accecss is granted and which are not hidden per config
+     * 
+     * @return the list of downloadable filenames. If no downloadable resources exists, an empty list is returned
+     * @throws PresentationException
+     * @throws IndexUnreachableException
+     * @throws DAOException
+     * @throws IOException
+     */
+    private List<String> listDownloadableContent() throws PresentationException, IndexUnreachableException, DAOException, IOException {
+        //        if (this.downloadFilenames == null) {
+        Path sourceFileDir = DataFileTools.getDataFolder(pi, DataManager.getInstance().getConfiguration().getOrigContentFolder());
+        if (Files.exists(sourceFileDir) && AccessConditionUtils.checkContentFileAccessPermission(pi,
+                (HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest())) {
+            String hideDownloadFilesRegex = DataManager.getInstance().getConfiguration().getHideDownloadFileRegex();
+            try (Stream<Path> files = Files.list(sourceFileDir)) {
+                Stream<String> filenames = files.map(path -> path.getFileName().toString());
+                if (StringUtils.isNotEmpty(hideDownloadFilesRegex)) {
+                    filenames = filenames.filter(filename -> !filename.matches(hideDownloadFilesRegex));
+                }
+                this.downloadFilenames = filenames.collect(Collectors.toList());
+            }
+        } else {
+            this.downloadFilenames = Collections.emptyList();
+        }
+        //        }
+        return this.downloadFilenames;
+    }
+
+    /**
      * Returns true if original content download has been enabled in the configuration and there are files in the original content folder for this
      * record.
      *
      * @return a boolean.
      */
     public boolean isDisplayContentDownloadMenu() {
-        if (!DataManager.getInstance().getConfiguration().isOriginalContentDownload()) {
+        if (!DataManager.getInstance().getConfiguration().isDisplaySidebarWidgetDownload()) {
             return false;
         }
-
         try {
-            Path sourceFileDir = DataFileTools.getDataFolder(pi, DataManager.getInstance().getConfiguration().getOrigContentFolder());
-            if (!Files.isDirectory(sourceFileDir)) {
-                return false;
-            }
-
-            List<Path> files = Arrays.asList(sourceFileDir.toFile().listFiles()).stream().map(File::toPath).collect(Collectors.toList());
-            if (!files.isEmpty()) {
-                return AccessConditionUtils
-                        .checkContentFileAccessPermission(pi,
-                                (HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest(), files)
-                        .containsValue(Boolean.TRUE);
-            }
-        } catch (IndexUnreachableException e) {
-            logger.debug("IndexUnreachableException thrown here: {}", e.getMessage());
-        } catch (DAOException e) {
-            logger.debug("DAOException thrown here: {}", e.getMessage());
-        } catch (PresentationException e) {
-            logger.debug("PresentationException thrown here: {}", e.getMessage());
+            return !listDownloadableContent().isEmpty();
+        } catch (PresentationException | IndexUnreachableException | DAOException | IOException e) {
+            logger.warn("Error listing downloadable content: " + e.toString());
         }
 
         return false;
@@ -2544,52 +2557,31 @@ public class ViewManager implements Serializable {
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
+     * @throws IOException
      */
-    public List<LabeledLink> getContentDownloadLinksForWork() throws IndexUnreachableException, DAOException, PresentationException {
-        Path sourceFileDir = DataFileTools.getDataFolder(pi, DataManager.getInstance().getConfiguration().getOrigContentFolder());
-        if (!Files.isDirectory(sourceFileDir)) {
-            return Collections.emptyList();
-        }
+    public List<LabeledLink> getContentDownloadLinksForWork() throws IOException, PresentationException, IndexUnreachableException, DAOException {
+        AlphanumCollatorComparator comparator = new AlphanumCollatorComparator(null);
+        List<LabeledLink> links = listDownloadableContent().stream()
+                .sorted(comparator)
+                .map(this::getLinkToDownloadFile)
+                .filter(link -> link != LabeledLink.EMPTY)
+                .collect(Collectors.toList());
+        return links;
 
-        List<LabeledLink> ret = new ArrayList<>();
-        try {
-            File[] sourcesArray = sourceFileDir.toFile().listFiles();
-            if (sourcesArray != null && sourcesArray.length > 0) {
-                List<File> sourcesList = Arrays.asList(sourcesArray);
-                Collections.sort(sourcesList, filenameComparator);
-                Map<String, Boolean> fileAccess = AccessConditionUtils.checkContentFileAccessPermission(getPi(), BeanUtils.getRequest(),
-                        sourcesList.stream().map(file -> file.toPath()).collect(Collectors.toList()));
-                AbstractApiUrlManager apiUrls = DataManager.getInstance().getRestApiManager().getContentApiManager();
-                for (File file : sourcesList) {
-                    if (file.isFile()) {
-                        Boolean access = fileAccess.get(file.toPath().toString());
-                        if (Boolean.TRUE.equals(access)) {
-                            String pi = getPi();
-                            String filename = URLEncoder.encode(file.getName(), StringTools.DEFAULT_ENCODING);
-                            String url = apiUrls.path(ApiUrls.RECORDS_FILES, ApiUrls.RECORDS_FILES_SOURCE).params(pi, filename).build();
-                            ret.add(new LabeledLink(file.getName(), url, 0));
-                        }
-                        ;
-                    }
-                }
-            }
-        } catch (UnsupportedEncodingException e) {
-            logger.error(e.getMessage(), e);
-        }
-
-        return ret;
     }
 
-    Comparator<File> filenameComparator = new Comparator<File>() {
-        AlphanumCollatorComparator comparator = new AlphanumCollatorComparator(null);
-
-        @Override
-        public int compare(File f1, File f2) {
-            return comparator.compare(f1.getName(), f2.getName());
-            //            return f1.getName().compareTo(f2.getName());
+    private LabeledLink getLinkToDownloadFile(String filename) {
+        try {
+            String pi = getPi();
+            AbstractApiUrlManager apiUrls = DataManager.getInstance().getRestApiManager().getContentApiManager();
+            String filenameEncoded = URLEncoder.encode(filename, StringTools.DEFAULT_ENCODING);
+            String url = apiUrls.path(ApiUrls.RECORDS_FILES, ApiUrls.RECORDS_FILES_SOURCE).params(pi, filenameEncoded).build();
+            return new LabeledLink(filename, url, 0);
+        } catch (UnsupportedEncodingException | IndexUnreachableException e) {
+            logger.error("Failed to create download link to " + filename, e);
+            return LabeledLink.EMPTY;
         }
-
-    };
+    }
 
     /**
      * <p>
@@ -2602,23 +2594,12 @@ public class ViewManager implements Serializable {
         return topDocumentIddoc;
     }
 
-    /**
-     * <p>
-     * Setter for the field <code>topDocumentIddoc</code>.
-     * </p>
-     *
-     * @param topDocumentIddoc the topDocumentIddoc to set
-     */
-    public void setTopDocumentIddoc(long topDocumentIddoc) {
-        this.topDocumentIddoc = topDocumentIddoc;
-    }
-
     public Long getAnchorDocumentIddoc() {
         if (this.anchorDocument != null) {
             return anchorDocument.getLuceneId();
-        } else {
-            return null;
         }
+
+        return null;
     }
 
     /**
@@ -3415,6 +3396,19 @@ public class ViewManager implements Serializable {
      */
     public boolean isDisplayCiteLinkPage() throws IndexUnreachableException, DAOException {
         return getCurrentPage() != null;
+    }
+
+    /**
+     * 
+     * @return
+     */
+    public String getArchiveEntryIdentifier() {
+        if (topDocument == null) {
+            return null;
+        }
+
+        logger.trace("getArchiveEntryIdentifier: {}", topDocument.getMetadataValue(SolrConstants.ARCHIVE_ENTRY_ID));
+        return topDocument.getMetadataValue(SolrConstants.ARCHIVE_ENTRY_ID);
     }
 
     /**

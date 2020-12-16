@@ -24,6 +24,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import de.intranda.monitoring.timer.TimeAnalysis;
 import io.goobi.viewer.controller.language.LanguageHelper;
 import io.goobi.viewer.dao.IDAO;
 import io.goobi.viewer.dao.impl.JPADAO;
@@ -77,6 +78,8 @@ public final class DataManager {
     private String indexerVersion = "";
 
     private RestApiManager restApiManager;
+    
+    private TimeAnalysis timing = new TimeAnalysis();
 
     /**
      * <p>
@@ -444,5 +447,20 @@ public final class DataManager {
      */
     public RecordLockManager getRecordLockManager() {
         return recordLockManager;
+    }
+    
+    /**
+     * @return the timing
+     */
+    public TimeAnalysis getTiming() {
+        return timing;
+    }
+
+    /**
+     * 
+     */
+    public void resetTiming() {
+        this.timing = new TimeAnalysis();
+        
     }
 }

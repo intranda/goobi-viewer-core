@@ -3,8 +3,8 @@
 	<div class="imagefilters__filter-list">
 		<div class="imagefilters__filter" each="{filter in filters}">
 				<span class="imagefilters__label {filter.config.slider ? '' : 'imagefilters__label-long'}">{filter.config.label}</span>
-				<input disabled="{filter.disabled ? 'disabled=' : ''}"  class="imagefilters__checkbox"  if="{filter.config.checkbox}" type="checkbox" onChange="{apply}" checked="{filter.isActive() ? 'checked' : '' }"/>
-				<input disabled="{filter.disabled ? 'disabled=' : ''}" class="imagefilters__slider" title="{filter.getValue()}" if="{filter.config.slider}" type="range" onInput="{apply}" value="{filter.getValue()}" min="{filter.config.min}" max="{filter.config.max}" step="{filter.config.step}" orient="horizontal"/>
+				<input disabled="{filter.disabled ? 'disabled=' : ''}" class="imagefilters__checkbox"  if="{filter.config.checkbox}" type="checkbox" onChange="{apply}" checked="{filter.isActive() ? 'checked' : '' }" aria-label="{filter.config.label}"/>
+				<input disabled="{filter.disabled ? 'disabled=' : ''}" class="imagefilters__slider" title="{filter.getValue()}" if="{filter.config.slider}" type="range" onInput="{apply}" value="{filter.getValue()}" min="{filter.config.min}" max="{filter.config.max}" step="{filter.config.step}" orient="horizontal" aria-label="{filter.config.label}: {filter.getValue()}"/>
 		</div>
 	</div>
 	<div class="imagefilters__options">

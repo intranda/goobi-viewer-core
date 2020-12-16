@@ -115,7 +115,7 @@ public class NavigationHelper implements Serializable {
     /** Map for setting any navigation status variables. Replaces currentView, etc. */
     protected Map<String, String> statusMap = new HashMap<>();
 
-    private String theme = "";
+    private final String theme;
 
     /** Currently selected page from the main navigation bar. */
     private String currentPage = "index";
@@ -126,7 +126,7 @@ public class NavigationHelper implements Serializable {
      * Empty constructor.
      */
     public NavigationHelper() {
-        // the emptiness inside
+        theme = DataManager.getInstance().getConfiguration().getTheme();
     }
 
     /**
@@ -142,7 +142,6 @@ public class NavigationHelper implements Serializable {
             locale = Locale.GERMAN;
             logger.warn("Could not access FacesContext, locale set to DE.");
         }
-        theme = DataManager.getInstance().getConfiguration().getTheme();
         statusMap.put(KEY_CURRENT_PARTNER_PAGE, "");
         statusMap.put(KEY_SELECTED_NEWS_ARTICLE, "");
         statusMap.put(KEY_MENU_PAGE, "user");
@@ -248,7 +247,7 @@ public class NavigationHelper implements Serializable {
      * @param resetCurrentDocument a boolean.
      */
     public void setCurrentPage(String currentPage, boolean resetBreadcrubs, boolean resetCurrentDocument) {
-        logger.trace("setCurrentPage: {}", currentPage);
+        // logger.trace("setCurrentPage: {}", currentPage);
         setCurrentPage(currentPage, resetBreadcrubs, resetCurrentDocument, false);
     }
 
@@ -1033,21 +1032,10 @@ public class NavigationHelper implements Serializable {
         logger.trace("resetTheme");
         // Resetting the current page here would result in the current record being flushed, which is bad for CMS overview pages
         //        resetCurrentPage();
-        theme = DataManager.getInstance().getConfiguration().getTheme();
         setCmsPage(false);
         setSubThemeDiscriminatorValue("");
     }
 
-    /**
-     * <p>
-     * Setter for the field <code>theme</code>.
-     * </p>
-     *
-     * @param theme a {@link java.lang.String} object.
-     */
-    public void setTheme(String theme) {
-        this.theme = theme;
-    }
 
     /**
      * <p>
@@ -1090,6 +1078,11 @@ public class NavigationHelper implements Serializable {
      */
     public String getImageUrl() {
         return BeanUtils.getServletPathWithHostAsUrlFromJsfContext() + "/" + PageType.viewImage.getName();
+    }
+    
+    public String getCurrentPageTypeUrl() {
+        return BeanUtils.getServletPathWithHostAsUrlFromJsfContext() + "/" + getCurrentPageType().getName();
+
     }
 
     /**

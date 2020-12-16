@@ -11,7 +11,9 @@
 	xmlns:widgetComponent="http://xmlns.jcp.org/jsf/composite/components/widgets"
 	xmlns:composite="http://xmlns.jcp.org/jsf/composite">
 
-	<composite:interface />
+	<composite:interface>
+		<composite:attribute name="ariaHidden" required="false" default="true"/>
+	</composite:interface>
 
 	<composite:implementation>
 
@@ -21,8 +23,8 @@
 		<!-- Modal User Login -->
 		<div id="#{cc.attrs.id}"
 			class="modal user-login-modal #{alwaysVisible ? 'show':'fade'}"
-			tabindex="-1" role="dialog" aria-labelledby="Login Area"
-			aria-hidden="true">
+			tabindex="-1" role="dialog"
+			aria-hidden="#{cc.attrs.ariaHidden == true ? true : false}">
 			<div class="modal-dialog modal-dialog-centered" role="document">
 				<div class="modal-content">
 					<div class="modal-header">
@@ -49,12 +51,15 @@
 									<div id="userLoginSelectLoginWrapper"
 										class="user-login-modal__body-login-select">
 										<div class="form-row form-group no-gutters">
-											<label for="userLoginSelectLogin"
+											<label id="labelUserLoginSelectLogin" for="userLoginSelectLogin"
 												class="control-label col-12 col-lg-3">#{msg.login__select_login_title}:</label>
 											<div class="col-12 col-lg-9">
 												<div class="custom-control custom-control--select">
 													<h:selectOneMenu id="userLoginSelectLogin"
 														value="#{userBean.authenticationProviderName}">
+														<f:passThroughAttribute 
+															name="aria-labelledby"
+															value="labelUserLoginSelectLogin" />
 														<f:selectItem
 															itemValue="#{userBean.localAuthenticationProvider.name}"
 															itemLabel="#{msg.login__local_account}" />
@@ -83,7 +88,7 @@
 												<ui:fragment
 													rendered="#{userBean.authenticationProvider.type == 'local'}">
 													<div class="form-row form-group no-gutters">
-														<label for="userEMail"
+														<label id="labelUserEMail" for="userEMail"
 															class="control-label col-12 col-lg-3">#{msg.email}:</label>
 														<div class="col-12 col-lg-9">
 															<h:inputText id="userEMail" styleClass="form-control"
@@ -92,6 +97,8 @@
 																<f:validator validatorId="emailValidator" />
 																<f:passThroughAttribute name="placeholder"
 																	value="name@institution.org" />
+																<f:passThroughAttribute name="aria-labelledby"
+																	value="labelUserEMail" />
 															</h:inputText>
 														</div>
 													</div>
@@ -101,7 +108,7 @@
 												<ui:fragment
 													rendered="#{userBean.authenticationProvider.type == 'userPassword'}">
 													<div class="form-row form-group no-gutters">
-														<label for="externalUserName"
+														<label id="labelExternalUserName" for="externalUserName"
 															class="control-label col-12 col-lg-3">#{msg.username}:</label>
 														<div class="col-12 col-lg-9">
 															<h:inputText id="externalUserName"
@@ -110,6 +117,8 @@
 																requiredMessage="#{msg.loginEnterUserName}">
 																<f:passThroughAttribute name="placeholder"
 																	value="#{msg.username}" />
+																<f:passThroughAttribute name="aria-labelledby"
+																	value="labelExternalUserName" />
 															</h:inputText>
 														</div>
 													</div>
@@ -118,7 +127,7 @@
 												<!-- ENTER PASSWORD -->
 												<div
 													class="form-row form-group no-gutters mb-0 user-login-modal__password">
-													<label for="userPassword"
+													<label id="labelUserPassword" for="userPassword"
 														class="control-label col-12 col-lg-3">#{msg.password}:</label>
 													<div class="col-12 col-lg-9">
 														<h:inputSecret id="userPassword" styleClass="form-control"
@@ -127,6 +136,8 @@
 															requiredMessage="#{msg.login__enter_password}">
 															<f:passThroughAttribute name="placeholder"
 																value="#{msg.login__enter_password}" />
+															<f:passThroughAttribute name="aria-labelledby"
+																value="labelUserPassword" />
 														</h:inputSecret>
 													</div>
 												</div>

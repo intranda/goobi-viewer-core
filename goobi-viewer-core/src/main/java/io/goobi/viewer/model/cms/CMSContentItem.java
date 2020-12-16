@@ -300,6 +300,9 @@ public class CMSContentItem implements Comparable<CMSContentItem>, CMSMediaHolde
 
     @Transient
     private int nestedPagesCount = 0;
+    
+    @Transient
+    private Map<String, CollectionResult> dcStrings = null;
 
     /**
      * Noop constructor for javax.persistence
@@ -936,6 +939,7 @@ public class CMSContentItem implements Comparable<CMSContentItem>, CMSMediaHolde
     public void setCollectionField(String collectionField) {
         this.collectionField = collectionField;
         this.collection = null;
+        this.dcStrings = null;
     }
 
     /**
@@ -1036,16 +1040,27 @@ public class CMSContentItem implements Comparable<CMSContentItem>, CMSMediaHolde
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      */
     public List<String> getPossibleBaseCollectionList() throws IndexUnreachableException {
-        if (StringUtils.isBlank(collectionField)) {
-            return Collections.singletonList("");
+            if (StringUtils.isBlank(collectionField)) {
+                return Collections.singletonList("");
+            } 
+            Map<String, CollectionResult> dcStrings = getColletionMap();
+            List<String> list = new ArrayList<>(dcStrings.keySet());
+            list.add(0, "");
+            Collections.sort(list);
+            return list;
+    }
+
+    /**
+     * @return
+     * @throws IndexUnreachableException
+     */
+    public Map<String, CollectionResult> getColletionMap() throws IndexUnreachableException {
+        if(dcStrings == null) {            
+            dcStrings =
+                    SearchHelper.findAllCollectionsFromField(collectionField, collectionField, getSearchPrefix(), true, true,
+                            DataManager.getInstance().getConfiguration().getCollectionSplittingChar(collectionField));
         }
-        Map<String, CollectionResult> dcStrings =
-                SearchHelper.findAllCollectionsFromField(collectionField, collectionField, getSearchPrefix(), true, true,
-                        DataManager.getInstance().getConfiguration().getCollectionSplittingChar(collectionField));
-        List<String> list = new ArrayList<>(dcStrings.keySet());
-        list.add(0, "");
-        Collections.sort(list);
-        return list;
+        return dcStrings;
     }
 
     /**
@@ -1058,9 +1073,7 @@ public class CMSContentItem implements Comparable<CMSContentItem>, CMSMediaHolde
         if (StringUtils.isBlank(collectionField)) {
             return Collections.singletonList("");
         }
-        Map<String, CollectionResult> dcStrings =
-                SearchHelper.findAllCollectionsFromField(collectionField, collectionField, getSearchPrefix(), true, true,
-                        DataManager.getInstance().getConfiguration().getCollectionSplittingChar(collectionField));
+        Map<String, CollectionResult> dcStrings = getColletionMap();
         List<String> list = new ArrayList<>(dcStrings.keySet());
         list = list.stream()
                 .filter(c -> StringUtils.isBlank(getBaseCollection()) || c.startsWith(getBaseCollection() + "."))
@@ -1737,5 +1750,6 @@ public class CMSContentItem implements Comparable<CMSContentItem>, CMSMediaHolde
     public boolean isPaginated() {
         return ContentItemMode.paginated.equals(getMode());
     }
+
 
 }

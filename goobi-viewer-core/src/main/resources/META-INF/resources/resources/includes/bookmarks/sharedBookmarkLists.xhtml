@@ -20,7 +20,7 @@
 				<div class="col-12 user-bookmark__panel">
 					<div class="user-bookmark__panel-header d-flex">
 						<div class="col-8 col-sm-9">
-							<h4>
+							<h3>
 								<ui:fragment rendered="#{userList}">
 									<a href="#{request.contextPath}/user/bookmarks/show/#{bookmarkList.id}/">
 										#{bookmarkList.name}
@@ -39,7 +39,7 @@
 								<ui:fragment rendered="#{owned}">
 									<small>(#{bookmarkList.items.size()} #{bookmarkList.items.size() == 1 ? msg.bookmarkList_object : msg.bookmarkList_objects})</small>
 								</ui:fragment>
-							</h4>
+							</h3>
 						</div>
 						<div class="col-4 col-sm-3 user-bookmark__panel-action text-right">
 							
@@ -85,7 +85,7 @@
 											<!--  IMAGE -->
 											<a href="#{request.contextPath}#{item.url}"
 												title="#{item.name}" data-toggle="tooltip"
-												data-placement="bottom"> </a>
+												data-placement="bottom" aria-label="#{item.name}"> </a>
 										</div>
 									</div>
 								</ui:fragment>
@@ -130,7 +130,7 @@
 		                              <a 
 		                                data-toggle="tooltip"
 		                                title="#{msg.bookmarkList_openMirador}"
-		                              	href="#{request.contextPath}/mirador/id/#{bookmarkList.id}" class="view-mirador__link" target="_blank">
+		                              	href="#{request.contextPath}/mirador/id/#{bookmarkList.id}" class="view-mirador__link" target="_blank" rel="noopener" aria-label="#{bookmarkList.name}: #{msg.viewMiradorComparison}">
 		                                  <i class="fa fa-th" aria-hidden="true"></i>
 		                                  <span>#{msg.viewMiradorComparison}</span>
 		                              </a>
@@ -139,7 +139,7 @@
 			                        <a
 			                            data-toggle="tooltip"
 		                                title="#{msg.action__search_in_bookmarks__description}"
-										href="#{request.contextPath}/user/bookmarks/search/#{bookmarkList.escapedName}/">
+										href="#{request.contextPath}/user/bookmarks/search/#{bookmarkList.escapedName}/" aria-label="#{bookmarkList.name}: #{msg.search}">
 										<i class="fa fa-search" aria-hidden="true"></i>
 										<span>#{msg.search}</span>
 									</a>
@@ -218,7 +218,8 @@
 		                              <a 
 		                                data-toggle="tooltip"
 		                                title="#{msg.bookmarkList_openMirador}"
-		                              	href="#{request.contextPath}/mirador/key/#{bookmarkList.shareKey}" class="view-mirador__link" target="_blank">
+		                              	href="#{request.contextPath}/mirador/key/#{bookmarkList.shareKey}" class="view-mirador__link" target="_blank" rel="noopener"
+		                              	aria-label="#{bookmarkList.name}: #{msg.viewMiradorComparison}">
 		                                  <i class="fa fa-th" aria-hidden="true"></i>
 		                                  <span>#{msg.viewMiradorComparison}</span>
 		                              </a>
@@ -226,7 +227,8 @@
 									<a
 									    data-toggle="tooltip"
 		                                title="#{msg.action__search_in_bookmarks__description}"
-										href="#{request.contextPath}/bookmarks/search/key/#{bookmarkList.shareKey}">
+										href="#{request.contextPath}/bookmarks/search/key/#{bookmarkList.shareKey}"
+										aria-label="#{bookmarkList.name}: #{msg.search}">
 										<i class="fa fa-search" aria-hidden="true"></i>
 										<span>#{msg.search}</span>
 									</a>
@@ -235,14 +237,16 @@
 										title="#{msg.copyUrl}"
 										data-copy="bookmarklist-share-collection"
 										data-clipboard-text="#{bookmarkList.getIIIFCollectionURI()}"
-										data-copy-done="#{msg.copyUrlDone}">
+										data-copy-done="#{msg.copyUrlDone}"
+										aria-label="#{bookmarkList.name}: #{msg.bookmarkList_shareCollection}">
 										<i class="fa fa-share" aria-hidden="true"></i>
 										<span>#{msg.bookmarkList_shareCollection}</span>
 									</a> 
 									<a title="#{msg.copyUrl}"
 										data-copy="bookmarklist-share-link"
 										data-clipboard-text="#{bookmarkBean.getShareLink(bookmarkList)}"
-										data-copy-done="#{msg.copyUrlDone}">
+										data-copy-done="#{msg.copyUrlDone}"
+										aria-label="#{bookmarkList.name}: #{msg.action__copy_bookmarklist_sharelink}">
 										<i class="fa fa-share-alt" aria-hidden="true"></i>
 										<span>#{msg.action__copy_bookmarklist_sharelink}</span>
 									</a>

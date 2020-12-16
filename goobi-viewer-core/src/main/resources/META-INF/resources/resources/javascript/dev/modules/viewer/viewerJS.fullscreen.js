@@ -242,7 +242,6 @@ var viewerJS = ( function( viewer ) {
             		$( this ).removeClass( 'in' );
                     $( this ).next().slideUp( 'fast' );
             	} );
-            	
             	for ( var status in panelSessionStatus ) {
             	    if(status.startsWith("panel-")) {            	        
             	        panelSessionStatus[ status ] = false;
@@ -444,7 +443,7 @@ var viewerJS = ( function( viewer ) {
     			// show active panels
     			if ( panelStatus[ currId ] ) {
     				$( this ).find( '.fullscreen__view-sidebar-accordeon-panel-title' ).addClass( 'in' );
-    				$( this ).find( '.fullscreen__view-sidebar-accordeon-panel-body' ).show();
+					$( this ).find( '.fullscreen__view-sidebar-accordeon-panel-body' ).show();
     			}    			        	
     		} );    		
     	}

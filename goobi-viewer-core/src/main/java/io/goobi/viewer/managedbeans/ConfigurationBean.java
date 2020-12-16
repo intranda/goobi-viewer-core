@@ -894,6 +894,7 @@ public class ConfigurationBean implements Serializable {
     public boolean isDisplayCrowdsourcingModuleLinks() {
         return DataManager.getInstance().getConfiguration().isDisplayCrowdsourcingModuleLinks();
     }
+    
 
     /**
      * <p>
@@ -921,6 +922,7 @@ public class ConfigurationBean implements Serializable {
         }
     }
 
+    
     /**
      * <p>
      * getTimeMatrixEndYear.
@@ -1280,7 +1282,7 @@ public class ConfigurationBean implements Serializable {
      * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
      */
     public String getIiifApiUrl() throws ViewerConfigurationException {
-        return DataManager.getInstance().getConfiguration().getRestApiUrl();
+        return DataManager.getInstance().getConfiguration().getIIIFApiUrl();
     }
 
     /**
@@ -1491,5 +1493,13 @@ public class ConfigurationBean implements Serializable {
      */
     public boolean isAnonymousUserEmailAddressValid() {
         return EmailValidator.validateEmailAddress(DataManager.getInstance().getConfiguration().getAnonymousUserEmailAddress());
+    }
+    
+    /**
+     * 
+     * @return true if default sorting field is 'RANDOM'; false otherwise
+     */
+    public boolean isDefaultSortFieldRandom() {
+        return "RANDOM".equals(DataManager.getInstance().getConfiguration().getDefaultSortField());
     }
 }

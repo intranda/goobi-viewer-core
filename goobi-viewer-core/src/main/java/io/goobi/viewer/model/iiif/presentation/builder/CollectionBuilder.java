@@ -46,6 +46,7 @@ import io.goobi.viewer.api.rest.AbstractApiUrlManager;
 import io.goobi.viewer.api.rest.v1.ApiUrls;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.SolrConstants;
+import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.exceptions.ViewerConfigurationException;
@@ -416,7 +417,7 @@ public class CollectionBuilder extends AbstractBuilder {
                 if (!DataManager.getInstance().getSearchIndex().getAllFieldNames().contains(facetField)) {
                     facetField = collectionField;
                 }
-            } catch (SolrServerException | IOException e) {
+            } catch (DAOException e) {
                 logger.warn("Unable to query for facet field", e);
                 facetField = collectionField;
             }

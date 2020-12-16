@@ -6,7 +6,7 @@
     xmlns:p="http://primefaces.org/ui"
 	xmlns:composite="http://xmlns.jcp.org/jsf/composite"
 	xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components">
-
+	
     <div class="admin-cms-media__select-content">
         <!-- NAV TABS -->
         <ul class="nav nav-tabs" role="tablist">
@@ -68,6 +68,7 @@
                                         <h:commandLink 
                                             styleClass="admin-cms-media__item-select" 
                                             action="#{cmsMediaBean.toggleSelectedMediaItem(selectableItem)}">
+											<f:passThroughAttribute name="aria-label" value="#{selectableItem.value.fileName}"/>
                                             <f:ajax execute="@this" render="selectedMediaItemPanel" onevent="reload" />
                                         </h:commandLink>
                                     </div>

@@ -27,6 +27,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import de.intranda.api.iiif.IIIFUrlResolver;
+import de.intranda.monitoring.timer.Time;
 import de.unigoettingen.sub.commons.contentlib.imagelib.ImageFileFormat;
 import de.unigoettingen.sub.commons.contentlib.imagelib.ImageType.Colortype;
 import de.unigoettingen.sub.commons.contentlib.imagelib.transform.Region;
@@ -142,8 +143,8 @@ public class ThumbnailHandler {
      * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
      */
     public String getThumbnailUrl(String pi) throws IndexUnreachableException, PresentationException, ViewerConfigurationException {
-        return getThumbnailUrl(pi, DataManager.getInstance().getConfiguration().getThumbnailsWidth(),
-                DataManager.getInstance().getConfiguration().getThumbnailsHeight());
+            return getThumbnailUrl(pi, DataManager.getInstance().getConfiguration().getThumbnailsWidth(),
+                    DataManager.getInstance().getConfiguration().getThumbnailsHeight());
     }
 
     /**

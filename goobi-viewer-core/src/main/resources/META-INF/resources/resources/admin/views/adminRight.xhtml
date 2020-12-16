@@ -19,7 +19,7 @@
         <f:view contentType="text/html" encoding="utf-8">
             <div id="adminRight">
                 <h:panelGroup rendered="#{userBean.admin and adminBean.currentLicense != null}">
-                    <h:form id="editLicenseForm" styleClass="form-horizontal" role="form" prependId="false">
+                    <h:form id="editLicenseForm" styleClass="form-horizontal" prependId="false">
                         <div class="admin__title-bar">
                             <h2 class="admin__title">
                                 <h:outputText value="#{msg.admin__right_new}" rendered="#{adminBean.currentLicense.id == null}" />

@@ -120,12 +120,14 @@ public class RecordPageResource {
     @Operation(tags = { "records", "iiif" }, summary = "Get IIIF base sequence")
     @IIIFPresentationBinding
     public IPresentationModelElement getSequence(@Parameter(
-            description = "Build mode for manifes to select type of resources to include. Default is 'iiif' which returns the full IIIF manifest with all resources. 'thumbs' Does not read width and height of canvas resources and 'iiif_simple' ignores all resources from files") @QueryParam("mode") String mode)
-            throws ContentNotFoundException, PresentationException, IndexUnreachableException, URISyntaxException,
+            description = "Build mode for manifes to select type of resources to include. Default is 'iiif' which returns the full IIIF manifest with all resources. 'thumbs' Does not read width and height of canvas resources and 'iiif_simple' ignores all resources from files") @QueryParam("mode") String mode,
+            @Parameter(description = "Set prefered goobi-viewer view for rendering attribute of canvases. Only valid values is 'fullscreen', any other value results in default object/image view being referenced.") @QueryParam("preferedView") String preferedView)
+
+                    throws ContentNotFoundException, PresentationException, IndexUnreachableException, URISyntaxException,
             ViewerConfigurationException, DAOException, IllegalRequestException {
         IIIFPresentationResourceBuilder builder = new IIIFPresentationResourceBuilder(urls, servletRequest);
         BuildMode buildMode = RecordResource.getBuildeMode(mode);
-        Sequence sequence = builder.getBaseSequence(pi, buildMode);
+        Sequence sequence = builder.getBaseSequence(pi, buildMode, preferedView);
         return sequence;
     }
 

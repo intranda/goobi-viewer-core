@@ -95,6 +95,9 @@ public class TermsOfUseBean implements Serializable, IPolyglott {
     }
 
     public boolean isActivated() {
+        if (termsOfUse == null) {
+            return false;
+        }
         return this.termsOfUse.isActive();
     }
 

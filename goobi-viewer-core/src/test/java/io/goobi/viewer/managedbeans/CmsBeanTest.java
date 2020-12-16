@@ -83,7 +83,7 @@ public class CmsBeanTest extends AbstractDatabaseAndSolrEnabledTest {
 
     @Test
     public void testGetLuceneFields() {
-        List<String> fields = CmsBean.getLuceneFields();
+        List<String> fields = new CmsBean().getLuceneFields();
         Assert.assertTrue("Lucene field 'DC' is missing", fields.contains("DC"));
         Assert.assertTrue("Lucene field 'LABEL' is missing", fields.contains("LABEL"));
         Assert.assertTrue("Lucene field 'FILENAME' is missing", fields.contains("FILENAME"));
@@ -175,7 +175,8 @@ public class CmsBeanTest extends AbstractDatabaseAndSolrEnabledTest {
         doc.addField(SolrConstants.PI_TOPSTRUCT, UUID.randomUUID());
         doc.addField("LABEL", doc.getFieldValue(SolrConstants.PI_TOPSTRUCT));
         SearchHit hit =
-                SearchHit.createSearchHit(doc, null, null, Locale.GERMAN, "", null, null, null, false, null, null, SearchHit.HitType.DOCSTRCT);
+                SearchHit.createSearchHit(doc, null, null, Locale.GERMAN, "", null, null, null, null, null, SearchHit.HitType.DOCSTRCT,
+                        null);
         hit.getBrowseElement().setLabelShort(new SimpleMetadataValue(iddoc));
         hit.setSolrDoc(doc);
         return hit;
