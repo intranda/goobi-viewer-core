@@ -35,6 +35,8 @@ io.goobi.viewer.managedbeans.tabledata
 io.goobi.viewer.managedbeans.utils
 io.goobi.viewer.messages
 io.goobi.viewer.model.annotation
+io.goobi.viewer.model.annotation.export
+io.goobi.viewer.model.archives
 io.goobi.viewer.model.bookmark
 io.goobi.viewer.model.calendar
 io.goobi.viewer.model.cms
