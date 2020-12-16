@@ -30,10 +30,10 @@
                                     <ui:fragment rendered="#{activeDocumentBean.imageToShow gt 1}">
                                         <h:outputLink value="#{activeDocumentBean.firstPageUrl}" title="#{msg.firstImage}">
                                             <ui:fragment rendered="#{!activeDocumentBean.viewManager.topDocument.rtl}">
-                                                <i class="image-start"></i>
+                                                <ui:include src="/resources/images/icons/icon_ic-first-page.svg" />
                                             </ui:fragment>
                                             <ui:fragment rendered="#{activeDocumentBean.viewManager.topDocument.rtl}">
-                                                <i class="image-end"></i>
+                                                <ui:include src="/resources/images/icons/icon_ic-last-page.svg" />
                                             </ui:fragment>
                                             <span id="firstImageLabel" class="labeltext">#{msg.firstImage}</span>
                                             <f:passThroughAttribute name="data-toggle" value="tooltip" />
@@ -44,10 +44,10 @@
                                     <ui:fragment rendered="#{activeDocumentBean.imageToShow == 1}">
                                         <span>
                                             <ui:fragment rendered="#{!activeDocumentBean.viewManager.topDocument.rtl}">
-                                                <i class="image-start"></i>
+                                                <ui:include src="/resources/images/icons/icon_ic-first-page.svg" />
                                             </ui:fragment>
                                             <ui:fragment rendered="#{activeDocumentBean.viewManager.topDocument.rtl}">
-                                                <i class="image-end"></i>
+                                                <ui:include src="/resources/images/icons/icon_ic-last-page.svg" />
                                             </ui:fragment>
                                         </span>
                                     </ui:fragment>
@@ -106,10 +106,10 @@
                                     <ui:fragment rendered="#{activeDocumentBean.imageToShow gt 1}">
                                         <h:outputLink value="#{activeDocumentBean.getPreviousPageUrl(1 )}" title="#{msg.prevImage}">
                                             <ui:fragment rendered="#{!activeDocumentBean.viewManager.topDocument.rtl}">
-                                                <i class="image-back"></i>
+                                                <ui:include src="/resources/images/icons/icon_ic-prev-page.svg" />
                                             </ui:fragment>
                                             <ui:fragment rendered="#{activeDocumentBean.viewManager.topDocument.rtl}">
-                                                <i class="image-forward"></i>
+                                                <ui:include src="/resources/images/icons/icon_ic-next-page.svg" />
                                             </ui:fragment>
                                             <span id="prevImageLabel" class="labeltext">#{msg.prevImage}</span>
                                             <f:passThroughAttribute name="data-toggle" value="tooltip" />
@@ -118,13 +118,15 @@
                                         </h:outputLink>
                                     </ui:fragment>
                                     <ui:fragment rendered="#{activeDocumentBean.imageToShow == 1}">
-                                        <ui:fragment rendered="#{!activeDocumentBean.viewManager.topDocument.rtl}">
-                                            <i class="image-back"></i>
-                                        </ui:fragment>
-                                        <ui:fragment rendered="#{activeDocumentBean.viewManager.topDocument.rtl}">
-                                            <i class="image-forward"></i>
-                                        </ui:fragment>
-                                    </ui:fragment>                                    
+	                                    <span>
+	                                        <ui:fragment rendered="#{!activeDocumentBean.viewManager.topDocument.rtl}">
+	                                            <ui:include src="/resources/images/icons/icon_ic-prev-page.svg" />
+	                                        </ui:fragment>
+	                                        <ui:fragment rendered="#{activeDocumentBean.viewManager.topDocument.rtl}">
+	                                            <ui:include src="/resources/images/icons/icon_ic-next-page.svg" />
+	                                        </ui:fragment>
+										</span>
+                                    </ui:fragment>                           
                                 </li>
                             </ui:fragment>
                             
@@ -162,10 +164,10 @@
                                     <ui:fragment rendered="#{activeDocumentBean.imageToShow != activeDocumentBean.viewManager.imagesCount}">
                                         <h:outputLink value="#{activeDocumentBean.getNextPageUrl(1)}" title="#{msg.nextImage}">
                                             <ui:fragment rendered="#{!activeDocumentBean.viewManager.topDocument.rtl}">
-                                                <i class="image-forward"></i>
+                                            	<ui:include src="/resources/images/icons/icon_ic-next-page.svg" />
                                             </ui:fragment>
                                             <ui:fragment rendered="#{activeDocumentBean.viewManager.topDocument.rtl}">
-                                                <i class="image-back"></i>
+                                                <ui:include src="/resources/images/icons/icon_ic-prev-page.svg" />
                                             </ui:fragment>
                                             <span id="nextImgLabel" class="labeltext">#{msg.nextImage}</span>
                                             <f:passThroughAttribute name="data-toggle" value="tooltip" />
@@ -175,10 +177,10 @@
                                     </ui:fragment>
                                     <ui:fragment rendered="#{activeDocumentBean.imageToShow == activeDocumentBean.viewManager.imagesCount}">
                                         <ui:fragment rendered="#{!activeDocumentBean.viewManager.topDocument.rtl}">
-                                            <i class="image-forward"></i>
+                                            <ui:include src="/resources/images/icons/icon_ic-next-page.svg" />
                                         </ui:fragment>
                                         <ui:fragment rendered="#{activeDocumentBean.viewManager.topDocument.rtl}">
-                                            <i class="image-back"></i>
+                                            <ui:include src="/resources/images/icons/icon_ic-prev-page.svg" />
                                         </ui:fragment>
                                     </ui:fragment>                                    
                                 </li>
@@ -236,10 +238,10 @@
 	                                <ui:fragment rendered="#{activeDocumentBean.imageToShow != activeDocumentBean.viewManager.imagesCount}">
 	                                    <h:outputLink value="#{activeDocumentBean.getLastPageUrl()}" title="#{msg.lastImage}">
                                             <ui:fragment rendered="#{!activeDocumentBean.viewManager.topDocument.rtl}">
-                                                <i class="image-end"></i>
+                                                <ui:include src="/resources/images/icons/icon_ic-last-page.svg" />
                                             </ui:fragment>
                                             <ui:fragment rendered="#{activeDocumentBean.viewManager.topDocument.rtl}">
-                                                <i class="image-start"></i>
+                                                <ui:include src="/resources/images/icons/icon_ic-first-page.svg" />
                                             </ui:fragment>
 	                                        <span id="lastImgLabel" class="labeltext">#{msg.lastImage}</span>
 	                                        <f:passThroughAttribute name="data-toggle" value="tooltip" />
@@ -250,10 +252,10 @@
 	                                <ui:fragment rendered="#{activeDocumentBean.imageToShow == activeDocumentBean.viewManager.imagesCount}">
 	                                    <span>
                                             <ui:fragment rendered="#{!activeDocumentBean.viewManager.topDocument.rtl}">
-                                                <i class="image-end"></i>
+                                                <ui:include src="/resources/images/icons/icon_ic-last-page.svg" />
                                             </ui:fragment>
                                             <ui:fragment rendered="#{activeDocumentBean.viewManager.topDocument.rtl}">
-                                                <i class="image-start"></i>
+                                                <ui:include src="/resources/images/icons/icon_ic-first-page.svg" />
                                             </ui:fragment>
 	                                    </span>
 	                                </ui:fragment>                                    
@@ -266,7 +268,7 @@
                             <ui:fragment rendered="#{activeDocumentBean.numberOfImages gt 1 and activeDocumentBean.viewManager.currentPage.mimeType == 'image' and !activeDocumentBean.viewManager.doublePageMode and navigationHelper.currentPage != 'fulltext' and configurationBean.doublePageModeEnabled}">
                                 <li class="image-controls__action double-page-view">
                                     <h:commandLink action="#{activeDocumentBean.viewManager.setDoublePageMode(true)}" title="#{msg.doublePageView}">
-                                        <i class="image-doublePageView"></i>
+                                        <ui:include src="/resources/images/icons/icon_ic-double-page.svg" />
                                         <span class="labeltext">#{msg.doublePageView}</span>
                                         <f:passThroughAttribute name="data-toggle" value="tooltip" />
                                         <f:passThroughAttribute name="data-placement" value="#{cc.attrs.tooltipPlacement}" />
@@ -277,7 +279,7 @@
                             <ui:fragment rendered="#{activeDocumentBean.viewManager.doublePageMode and navigationHelper.currentPage != 'fulltext'}">
                                 <li class="image-controls__action single-page-view">
                                     <h:commandLink action="#{activeDocumentBean.viewManager.setDoublePageMode(false)}" title="#{msg.singlePageView}">
-                                        <i class="image-singlePageView"></i>
+                                        <ui:include src="/resources/images/icons/icon_ic-single-page.svg" />
                                         <span class="labeltext">#{msg.singlePageView}</span>
                                         <f:passThroughAttribute name="data-toggle" value="tooltip" />
                                         <f:passThroughAttribute name="data-placement" value="#{cc.attrs.tooltipPlacement}" />
@@ -286,7 +288,7 @@
                                 </li>
                                 <li class="image-controls__action switch-pages">
                                     <h:commandLink action="#{activeDocumentBean.viewManager.togglePageOrientation()}" title="#{msg.switchPages}">
-                                        <svg id="icon_switch_pages" data-name="icon switch pages" viewBox="0 0 885.86 887.46"><title>switchPages</title><line x1="408.97" y1="79.89" x2="408.97" y2="89.89"/><line x1="408.97" y1="168.6" x2="408.97" y2="178.6"/><line x1="408.97" y1="257.31" x2="408.97" y2="267.31"/><line x1="408.97" y1="346.02" x2="408.97" y2="356.02"/><line x1="408.97" y1="434.73" x2="408.97" y2="444.73"/><path d="M62.07,62.29V949.75H505V62.29ZM488.12,904.4H114.95V106.62H488.12Z" transform="translate(-62.07 -62.29)"/><line x1="45.83" y1="89.89" x2="45.83" y2="79.89"/><line x1="45.83" y1="178.6" x2="45.83" y2="168.6"/><line x1="45.83" y1="267.31" x2="45.83" y2="257.31"/><line x1="45.83" y1="356.02" x2="45.83" y2="346.02"/><line x1="45.83" y1="444.73" x2="45.83" y2="434.73"/><rect x="89.48" y="207.61" width="297.26" height="40.7"/><rect x="89.48" y="644.15" width="297.26" height="40.7"/><path d="M505,62.29V949.75H947.93V62.29Zm16.88,44.33H895.05V904.4H521.88Z" transform="translate(-62.07 -62.29)"/><line x1="840.03" y1="89.89" x2="840.03" y2="79.89"/><line x1="840.03" y1="178.6" x2="840.03" y2="168.6"/><line x1="840.03" y1="267.31" x2="840.03" y2="257.31"/><line x1="840.03" y1="356.02" x2="840.03" y2="346.02"/><line x1="840.03" y1="444.73" x2="840.03" y2="434.73"/><rect x="561.19" y="269.9" width="297.26" height="40.7" transform="translate(1357.57 518.21) rotate(-180)"/><rect x="561.19" y="706.44" width="297.26" height="40.7" transform="translate(1357.57 1391.29) rotate(-180)"/><path class="cls-1" d="M691.4,676.46H595.7L719,542.19H189.1V472.34H717.52L596.71,340.57h92.4L843.44,507.22Z" transform="translate(-62.07 -62.29)"/><polygon class="cls-2" points="666.82 415.05 546.01 283.28 624.86 283.28 774.61 444.98 627.1 609.16 545.01 609.16 668.32 474.9 132.03 474.9 132.03 444.98 132.03 415.05 666.82 415.05"/></svg>
+                                        <ui:include src="/resources/images/icons/icon_ic-switch-pages.svg" />
                                         <span class="labeltext">#{msg.switchPages}</span>
                                         <f:passThroughAttribute name="data-toggle" value="tooltip" />
                                         <f:passThroughAttribute name="data-placement" value="#{cc.attrs.tooltipPlacement}" />
@@ -297,20 +299,20 @@
                             <!-- ROTATE -->
                             <li class="image-controls__action rotate-left">
                                 <a data-toggle="tooltip" data-placement="#{cc.attrs.tooltipPlacement}" title="#{msg.rotateLeft}">
-                                    <i class="image-rotate_left"></i>
+                                    <ui:include src="/resources/images/icons/icon_ic-rotate-left.svg" />
                                     <span class="labeltext">#{msg.rotateLeft}</span>
                                 </a>
                             </li>
                             <li class="image-controls__action rotate-right">
                                 <a data-toggle="tooltip" data-placement="#{cc.attrs.tooltipPlacement}" title="#{msg.rotateRight}">
-                                    <i class="image-rotate_right"></i>
+                                    <ui:include src="/resources/images/icons/icon_ic-rotate-right.svg" />
                                     <span class="labeltext">#{msg.rotateRight}</span>
                                 </a>
                             </li>
                             <!-- RESET -->
                             <li class="image-controls__action reset">
                                 <a data-toggle="tooltip" data-placement="#{cc.attrs.tooltipPlacement}" title="#{msg.resetImage}">
-                                    <i class="image-reset"></i>
+                                    <ui:include src="/resources/images/icons/icon_ic-reset.svg" />
                                     <span class="labeltext">#{msg.resetImage}</span>
                                 </a>
                             </li>
@@ -318,7 +320,7 @@
                             <ui:fragment rendered="#{navigationHelper.currentPage != 'fullscreen'}">
                                 <li class="image-controls__action enter-fullscreen">
                                     <h:outputLink value="#{activeDocumentBean.fullscreenImageUrl}" title="#{msg.fullscreen_enter}">
-                                        <i class="image-fullscreen"></i>
+                                        <ui:include src="/resources/images/icons/icon_ic-fullscreen.svg" />
                                         <span id="fullScreenLabel" class="labeltext">#{msg.enterFullscreen}</span>
                                         <f:passThroughAttribute name="data-toggle" value="tooltip" />
                                         <f:passThroughAttribute name="data-placement" value="#{cc.attrs.tooltipPlacement}" />
