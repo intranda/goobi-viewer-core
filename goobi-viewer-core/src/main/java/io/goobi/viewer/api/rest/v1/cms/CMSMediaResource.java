@@ -120,7 +120,7 @@ public class CMSMediaResource {
     }
     
     @GET
-    @javax.ws.rs.Path(CMS_MEDIA_ITEM)
+    @javax.ws.rs.Path(CMS_MEDIA_ITEM_BY_ID)
     @Produces({ MediaType.APPLICATION_JSON })
     public MediaItem getMediaItem(@PathParam("id")Long id) throws DAOException {
         CMSMediaItem item = DataManager.getInstance().getDao().getCMSMediaItem(id);
@@ -139,15 +139,16 @@ public class CMSMediaResource {
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
     @GET
-    @javax.ws.rs.Path("/get/{id}.pdf")
+    @javax.ws.rs.Path(CMS_MEDIA_FILES_FILE_PDF)
     @Produces("application/pdf")
     @CORSBinding
-    public static StreamingOutput getPDFMediaItemContent(@PathParam("id") Long id, @Context HttpServletResponse response)
+    public static StreamingOutput getPDFMediaItemContent(@PathParam("filename") String filename, @Context HttpServletResponse response)
             throws ContentNotFoundException, DAOException {
 
-        CMSMediaItem item = DataManager.getInstance().getDao().getCMSMediaItem(id);
-        if (item != null && item.getContentType().equals(CMSMediaItem.CONTENT_TYPE_PDF)) {
-            Path path = item.getFilePath();
+        Path path = Paths.get(
+                DataManager.getInstance().getConfiguration().getViewerHome(), 
+                DataManager.getInstance().getConfiguration().getCmsMediaFolder(),
+                filename);
             if (Files.exists(path)) {
                 return new StreamingOutput() {
 
@@ -160,9 +161,6 @@ public class CMSMediaResource {
                 };
             }
             throw new ContentNotFoundException("File " + path + " not found in file system");
-        }
-        throw new ContentNotFoundException("No pdf item with id " + id + " found");
-
     }
 
     /**
@@ -176,35 +174,25 @@ public class CMSMediaResource {
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
     @GET
-    @javax.ws.rs.Path("/get/item/{id}")
+    @javax.ws.rs.Path(CMS_MEDIA_FILES_FILE_HTML)
     @Produces({ MediaType.TEXT_HTML })
-    public static String getMediaItemContent(@PathParam("id") Long id) throws ContentNotFoundException, DAOException {
-        CMSMediaItem item = DataManager.getInstance().getDao().getCMSMediaItem(id);
-        if (item == null) {
-            throw new ContentNotFoundException("Resource not found");
-        }
-        String extension = FilenameUtils.getExtension(item.getFileName()).toLowerCase();
-        StringBuilder sbUri = new StringBuilder();
-        sbUri.append(DataManager.getInstance().getConfiguration().getViewerHome())
-                .append(DataManager.getInstance().getConfiguration().getCmsMediaFolder())
-                .append('/')
-                .append(item.getFileName());
-        java.nio.file.Path filePath = Paths.get(sbUri.toString());
-        if (Files.isRegularFile(filePath)) {
-            switch (item.getContentType()) {
-                case CMSMediaItem.CONTENT_TYPE_XML:
-                    try {
-                        String encoding = "windows-1252";
-                        String ret = FileTools.getStringFromFile(filePath.toFile(), encoding, StringTools.DEFAULT_ENCODING);
-                        return StringTools.renameIncompatibleCSSClasses(ret);
-                    } catch (FileNotFoundException e) {
-                        logger.debug(e.getMessage());
-                    } catch (IOException e) {
-                        logger.error(e.getMessage(), e);
-                    }
-                    break;
+    public static String getMediaItemContent(@PathParam("filename") String filename) throws ContentNotFoundException, DAOException {
+
+        Path path = Paths.get(
+                DataManager.getInstance().getConfiguration().getViewerHome(), 
+                DataManager.getInstance().getConfiguration().getCmsMediaFolder(),
+                filename);
+        if (Files.isRegularFile(path)) {
+                try {
+                    String encoding = "windows-1252";
+                    String ret = FileTools.getStringFromFile(path.toFile(), encoding, StringTools.DEFAULT_ENCODING);
+                    return StringTools.renameIncompatibleCSSClasses(ret);
+                } catch (FileNotFoundException e) {
+                    logger.debug(e.getMessage());
+                } catch (IOException e) {
+                    logger.error(e.getMessage(), e);
+                }                
             }
-        }
         throw new ContentNotFoundException("Resource not found");
     }
 
@@ -218,7 +206,7 @@ public class CMSMediaResource {
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
     @GET
-    @javax.ws.rs.Path("/upload/{filename}")
+    @javax.ws.rs.Path(CMS_MEDIA_ITEM_BY_FILE)
     @Produces(MediaType.APPLICATION_JSON)
     public Response validateUploadMediaFiles(@PathParam("filename") String filename) throws DAOException {
 
@@ -242,7 +230,7 @@ public class CMSMediaResource {
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
     @POST
-    @javax.ws.rs.Path("/upload")
+    @javax.ws.rs.Path(CMS_MEDIA_FILES)
     @Consumes(MediaType.MULTIPART_FORM_DATA)
     @Produces(MediaType.APPLICATION_JSON)
     public Response uploadMediaFiles(@DefaultValue("true") @FormDataParam("enabled") boolean enabled, @FormDataParam("filename") String filename,

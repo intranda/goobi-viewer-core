@@ -38,7 +38,7 @@
         if(this.opts.fileTypes) {
             this.fileTypes = this.opts.fileTypes;
         } else {            
-        	this.fileTypes = 'jpg, png, docx, doc, pdf, rtf, html, xhtml, xml';
+        	this.fileTypes = 'jpg, png, tif, jp2, gif, pdf';
         }
         this.isDragover = false;
     
@@ -253,10 +253,10 @@
             };
             
             return fetch(this.opts.postUrl + this.files[i].name, {
-                method: "GET",
+                method: "HEAD",
+                redirect: 'follow'
             })
-            .then(r => r.json())
-            .then( json => { 
+            .then( response => { 
                 return json.image != undefined
             })
             .then(exists => {

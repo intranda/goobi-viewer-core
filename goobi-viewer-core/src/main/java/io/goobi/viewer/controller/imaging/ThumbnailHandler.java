@@ -916,11 +916,11 @@ public class ThumbnailHandler {
     /**
      * @return
      */
-    private String getCMSMediaImageApiUrl(String filename) {
+    public static String getCMSMediaImageApiUrl(String filename) {
         if(DataManager.getInstance().getConfiguration().isUseIIIFApiUrlForCmsMediaUrls()) {
-           return DataManager.getInstance().getRestApiManager().getContentApiManager().path(CMS_MEDIA_FILES, CMS_MEDIA_FILES_FILE).params(filename).build();
+           return DataManager.getInstance().getRestApiManager().getContentApiManager().path(CMS_MEDIA, CMS_MEDIA_FILES_FILE).params(filename).build();
         } else {
-            return DataManager.getInstance().getRestApiManager().getDataApiManager().path(CMS_MEDIA_FILES, CMS_MEDIA_FILES_FILE).params(filename).build();
+            return DataManager.getInstance().getRestApiManager().getDataApiManager().path(CMS_MEDIA, CMS_MEDIA_FILES_FILE).params(filename).build();
 
         }
     }

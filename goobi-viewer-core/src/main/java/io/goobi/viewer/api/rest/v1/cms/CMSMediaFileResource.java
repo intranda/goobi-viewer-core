@@ -65,7 +65,7 @@ public class CMSMediaFileResource extends ImageResource {
         super(context, request, response, "", getMediaFileUrl(filename).toString());
         request.setAttribute("filename", this.imageURI.toString());
         String requestUrl = request.getRequestURI();
-        String baseImageUrl = urls.path(ApiUrls.CMS_MEDIA_FILES, ApiUrls.CMS_MEDIA_FILES_FILE).params(filename).build();
+        String baseImageUrl = urls.path(ApiUrls.CMS_MEDIA, ApiUrls.CMS_MEDIA_FILES_FILE).params(filename).build();
         String imageRequestPath = requestUrl.replace(baseImageUrl, "");
         this.resourceURI = URI.create(baseImageUrl);
         
