@@ -4706,6 +4706,14 @@ public final class Configuration extends AbstractConfiguration {
     public String getMapBoxToken() {
         return getLocalString("maps.mapbox.token", "");
     }
+    
+    public String getMapBoxUser() {
+        return getLocalString("maps.mapbox.user", "");
+    }
+    
+    public String getMapBoxStyleId() {
+        return getLocalString("maps.mapbox.styleId", "");
+    }
 
     /**
      * @param marker

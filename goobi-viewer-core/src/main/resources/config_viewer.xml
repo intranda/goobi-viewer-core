@@ -1553,7 +1553,9 @@
     
     <maps>
     	<mapbox>
-    		<token></token>
+	   		<token></token>
+	   		<user></user>
+	   		<styleId></styleId>
     	</mapbox>
     </maps>
 
