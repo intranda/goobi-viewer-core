@@ -26,8 +26,6 @@ public class Version {
     public static final String APPLICATION_NAME;
     /** Constant <code>VERSION</code> */
     public static final String VERSION;
-    /** Constant <code>PUBLIC_VERSION</code> */
-    public static final String PUBLIC_VERSION;
     /** Constant <code>BUILDVERSION</code> */
     public static final String BUILDVERSION;
     /** Constant <code>BUILDDATE</code> */
@@ -43,13 +41,11 @@ public class Version {
             VERSION = getInfo("version", manifest);
             BUILDDATE = getInfo("Implementation-Build-Date", manifest);
             BUILDVERSION = getInfo("Implementation-Version", manifest);
-            PUBLIC_VERSION = getInfo("Public-Version", manifest);
         } else {
             APPLICATION_NAME = "goobi-viewer-core";
             VERSION = "unknown";
             BUILDDATE = new Date().toString();
             BUILDVERSION = "unknown";
-            PUBLIC_VERSION = "unknown";
         }
     }
 

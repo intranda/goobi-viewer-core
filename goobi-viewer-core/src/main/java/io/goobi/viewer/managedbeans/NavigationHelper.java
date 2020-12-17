@@ -1036,7 +1036,6 @@ public class NavigationHelper implements Serializable {
         setSubThemeDiscriminatorValue("");
     }
 
-
     /**
      * <p>
      * isHtmlHeadDCMetadata.
@@ -1079,7 +1078,7 @@ public class NavigationHelper implements Serializable {
     public String getImageUrl() {
         return BeanUtils.getServletPathWithHostAsUrlFromJsfContext() + "/" + PageType.viewImage.getName();
     }
-    
+
     public String getCurrentPageTypeUrl() {
         return BeanUtils.getServletPathWithHostAsUrlFromJsfContext() + "/" + getCurrentPageType().getName();
 
@@ -1816,17 +1815,6 @@ public class NavigationHelper implements Serializable {
      */
     public String getVersion() {
         return Version.VERSION;
-    }
-
-    /**
-     * <p>
-     * getPublicVersion.
-     * </p>
-     *
-     * @return a {@link java.lang.String} object.
-     */
-    public String getPublicVersion() {
-        return Version.PUBLIC_VERSION;
     }
 
     /**
