@@ -96,9 +96,9 @@ var viewerJS = ( function( viewer ) {
         }
         
         if(_debug) {
-            console.log("init GeoMap with config ", this.config);
         }
-        
+        console.log("init GeoMap with config ", this.config);
+         
         this.map = new L.Map(this.config.mapId, {
             zoomControl: !this.config.fixed,
             doubleClickZoom: !this.config.fixed,
