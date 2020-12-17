@@ -40,7 +40,6 @@ var viewerJS = ( function( viewer ) {
             },
             allowMovingFeatures: false,
             mapBoxToken : undefined,
-            mapBoxWorldId: "mapbox.world-bright",
             language: "de",
             popover: undefined,
             emptyMarkerMessage: undefined,
@@ -78,9 +77,24 @@ var viewerJS = ( function( viewer ) {
             this.map.remove();
         }
         
-        if(!this.config.mapBoxToken) {
-            this.config.mapBoxToken = viewerJS.getMapBoxToken();
+        //init mapBox config. If no config object is set in viewerJS, only get token from viewerJS
+        //if that doesn't exists, don't create mapBox config
+        if(!this.config.mapBox && viewerJS.getMapBoxToken()) {
+            if(viewerJS.mapBoxConfig) {
+                this.config.mapBox = viewerJS.mapBoxConfig;
+            } else {
+                this.config.mapBox = {
+                        token : viewerJS.getMapBoxToken()
+                }
+            }
         }
+        if(this.config.mapBox && !this.config.mapBox.user) {
+            this.config.mapBox.user = "mapbox";
+        }
+        if(this.config.mapBox && !this.config.mapBox.styleId) {
+            this.config.mapBox.styleId = "streets-v11";
+        }
+        
         if(_debug) {
             console.log("init GeoMap with config ", this.config);
         }
@@ -93,9 +107,12 @@ var viewerJS = ( function( viewer ) {
             keyboard: !this.config.fixed
         });
         
-        if(this.config.mapBoxToken) {
-            var mapbox = new L.TileLayer(
-                    'https://api.mapbox.com/styles/v1/mapbox/streets-v11/tiles/{z}/{x}/{y}?access_token=' + this.config.mapBoxToken, {
+        if(this.config.mapBox) {
+            let url = 'https://api.mapbox.com/styles/v1/{1}/{2}/tiles/{z}/{x}/{y}?access_token={3}'
+                .replace("{1}", this.config.mapBox.user)
+                .replace("{2}", this.config.mapBox.styleId)
+                .replace("{3}", this.config.mapBox.token);
+            var mapbox = new L.TileLayer(url, {
                         tileSize: 512,
                         zoomOffset: -1,
                         attribution: '© <a href="https://apps.mapbox.com/feedback/">Mapbox</a> © <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
