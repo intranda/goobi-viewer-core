@@ -268,6 +268,9 @@ public class CmsMediaBean implements Serializable {
                 if (this.selectedMediaItem != null && this.selectedMediaItem.getValue() == item) {
                     this.selectedMediaItem = null;
                 }
+                if(!deleted) {
+                    Messages.error(null, "admin__media_delete_error_inuse", item.getFileName());
+                }
                 reloadMediaList(false);
             } catch (RollbackException e) {
                 if (e.getMessage() != null && e.getMessage().toLowerCase().contains("cannot delete or update a parent row")) {

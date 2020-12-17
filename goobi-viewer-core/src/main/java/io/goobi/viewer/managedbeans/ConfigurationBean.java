@@ -1478,6 +1478,14 @@ public class ConfigurationBean implements Serializable {
     public String getMapBoxToken() {
         return DataManager.getInstance().getConfiguration().getMapBoxToken();
     }
+    
+    public String getMapBoxUser() {
+        return DataManager.getInstance().getConfiguration().getMapBoxUser();
+    }
+    
+    public String getMapBoxStyleId() {
+        return DataManager.getInstance().getConfiguration().getMapBoxStyleId();
+    }
 
     /**
      * 

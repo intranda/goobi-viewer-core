@@ -92,6 +92,7 @@ public enum PageType {
     adminCrowdsourcingAnnotations("admin/crowdsourcing/annotations"),
     adminCrowdsourcingCampaigns("admin/crowdsourcing/campaigns"),
     adminUserActivity("admin/user/activity/"),
+    annotations("annotations"),
     // TODO remove
     editContent("crowd/editContent"),
     editOcr("crowd/editOcr"),
