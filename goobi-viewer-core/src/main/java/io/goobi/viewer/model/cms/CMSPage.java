@@ -1190,10 +1190,8 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable {
             String contentString = "";
             switch (item.getType()) {
                 case TEXT:
-                    contentString = item.getHtmlFragment();
-                    break;
                 case HTML:
-                    contentString = CMSContentResource.getContentUrl(item);
+                    contentString = item.getHtmlFragment();
                     break;
                 case MEDIA:
                     String type = item.getMediaItem() != null ? item.getMediaItem().getContentType() : "";

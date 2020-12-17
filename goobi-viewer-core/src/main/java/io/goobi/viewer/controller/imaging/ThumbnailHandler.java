@@ -28,12 +28,14 @@ import org.slf4j.LoggerFactory;
 
 import de.intranda.api.iiif.IIIFUrlResolver;
 import de.intranda.monitoring.timer.Time;
+import de.unigoettingen.sub.commons.contentlib.exceptions.IllegalRequestException;
 import de.unigoettingen.sub.commons.contentlib.imagelib.ImageFileFormat;
 import de.unigoettingen.sub.commons.contentlib.imagelib.ImageType.Colortype;
 import de.unigoettingen.sub.commons.contentlib.imagelib.transform.Region;
 import de.unigoettingen.sub.commons.contentlib.imagelib.transform.RegionRequest;
 import de.unigoettingen.sub.commons.contentlib.imagelib.transform.Rotation;
 import de.unigoettingen.sub.commons.contentlib.imagelib.transform.Scale;
+import io.goobi.viewer.api.rest.AbstractApiUrlManager.ApiPath;
 import io.goobi.viewer.api.rest.v1.ApiUrls;
 import io.goobi.viewer.controller.Configuration;
 import io.goobi.viewer.controller.DataManager;
@@ -48,6 +50,7 @@ import io.goobi.viewer.model.cms.CMSMediaItem;
 import io.goobi.viewer.model.viewer.PhysicalElement;
 import io.goobi.viewer.model.viewer.StructElement;
 import io.goobi.viewer.model.viewer.pageloader.LeanPageLoader;
+import static io.goobi.viewer.api.rest.v1.ApiUrls.*;
 
 /**
  * Delivers Thumbnail urls for pages and StructElements
@@ -829,17 +832,22 @@ public class ThumbnailHandler {
      */
     public String getThumbnailUrl(Optional<CMSMediaItem> optional, int width, int height) {
         return optional.map(item -> {
-            String imagePath = item.getImageURI();
+            try {
+            String filename = item.getFileName();
             String size = getSize(width, height);
-            String format = "jpg";
-            ImageFileFormat formatType = ImageFileFormat.getImageFileFormatFromFileExtension(imagePath);
+            ImageFileFormat format = ImageFileFormat.JPG;
+            ImageFileFormat formatType = ImageFileFormat.getImageFileFormatFromFileExtension(filename);
             if (formatType != null && !formatType.getMimeType().matches("(?i)(image\\/(?!png|jpg|gif).*)")) { //match any image-mimetype except jpg and png
-                format = formatType.getFileExtension();
+                format = formatType;
             }
-            String imageApiUrl = getCMSMediaImageApiUrl();
-            String url = this.iiifUrlHandler.getIIIFImageUrl(imageApiUrl, imagePath, "-", Region.FULL_IMAGE, size, "0", "default", format);
-            url += "?updated=" + item.getLastModifiedTime();
-            return url;
+            String imageApiUrl = getCMSMediaImageApiUrl(filename);
+            String url = this.iiifUrlHandler.getIIIFImageUrl(imageApiUrl, RegionRequest.FULL, Scale.getScaleMethod(size), Rotation.NONE, Colortype.DEFAULT, format);
+                url += "?updated=" + item.getLastModifiedTime();
+                return url;
+            } catch (IllegalRequestException e) {
+                logger.error(e.toString(), e);
+                return "";
+            }
         }).orElse("");
     }
     
@@ -908,14 +916,15 @@ public class ThumbnailHandler {
     /**
      * @return
      */
-    private String getCMSMediaImageApiUrl() {
+    private String getCMSMediaImageApiUrl(String filename) {
         if(DataManager.getInstance().getConfiguration().isUseIIIFApiUrlForCmsMediaUrls()) {
-            return DataManager.getInstance().getConfiguration().getIIIFApiUrl();
+           return DataManager.getInstance().getRestApiManager().getContentApiManager().path(CMS_MEDIA, CMS_MEDIA_FILES_FILE).params(filename).build();
         } else {
-            return DataManager.getInstance().getConfiguration().getRestApiUrl();
+            return DataManager.getInstance().getRestApiManager().getDataApiManager().path(CMS_MEDIA, CMS_MEDIA_FILES_FILE).params(filename).build();
 
         }
     }
+
 
     /**
      * Return the url to the image of the given {@link io.goobi.viewer.model.cms.CMSMediaItem}, fit into a box of the given width and height

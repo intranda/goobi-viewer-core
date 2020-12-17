@@ -154,6 +154,14 @@ public class ApiUrls extends AbstractApiUrlManager {
     public static final String LOCALIZATION_VOCABS = "/vocabularies";
     public static final String LOCALIZATION_VOCABS_FILE = "/vocabularies/{filename}";
     public static final String LOCALIZATION_TRANSLATIONS = "/translations";
+    
+    public static final String CMS = "/cms";
+    public static final String CMS_MEDIA = "/cms/media";
+    public static final String CMS_MEDIA_ITEM = "/{id}";
+    public static final String CMS_MEDIA_FILES = "/files";
+    public static final String CMS_MEDIA_FILES_FILE = "/files/{filename}";
+
+
 
 
     private final String apiUrl;

@@ -23,6 +23,8 @@ import java.util.stream.Collectors;
 
 import javax.servlet.http.HttpServletRequest;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
 import de.intranda.api.iiif.IIIFUrlResolver;
@@ -39,15 +41,16 @@ import io.goobi.viewer.model.cms.CMSMediaItem;
  * @author florian
  *
  */
-
+@JsonInclude(Include.NON_NULL)
 public class MediaItem {
 
+    private final Long id;
     @JsonSerialize(using = MetadataSerializer.class)
     private final IMetadataValue label;
     @JsonSerialize(using = MetadataSerializer.class)
     private final IMetadataValue description;
-    private final String link;
     private final ImageContent image;
+    private final String link;
     private final List<String> tags;
 
     public MediaItem(URI imageURI) {
@@ -56,6 +59,7 @@ public class MediaItem {
         this.link = "";
         this.label = new SimpleMetadataValue(PathConverter.getPath(imageURI).getFileName().toString());
         this.description = null;
+        this.id = null;
     }
     
     public MediaItem(CMSMediaItem source, HttpServletRequest servletRequest) {
@@ -68,8 +72,17 @@ public class MediaItem {
         }
         this.link = Optional.ofNullable(source.getLinkURI(servletRequest)).map(URI::toString).orElse("#");
         this.tags = source.getCategories().stream().map(CMSCategory::getName).collect(Collectors.toList());
+        this.id = source.getId();
     }
 
+    
+    /**
+     * @return the id
+     */
+    public Long getId() {
+        return id;
+    }
+    
     /**
      * @return the label
      */
@@ -85,24 +98,27 @@ public class MediaItem {
     }
 
     /**
-     * @return the link
-     */
-    public String getLink() {
-        return link;
-    }
-
-    /**
      * @return the image
      */
     public ImageContent getImage() {
         return image;
     }
 
+
+    /**
+     * @return the link
+     */
+    public String getLink() {
+        return link;
+    }
+
+    
     /**
      * @return the tags
      */
     public List<String> getTags() {
         return tags;
     }
+
 
 }

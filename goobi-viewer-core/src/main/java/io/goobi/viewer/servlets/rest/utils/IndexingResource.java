@@ -92,7 +92,7 @@ public class IndexingResource {
     @Produces({ MediaType.APPLICATION_JSON })
     @Consumes({ MediaType.APPLICATION_JSON })
     @CORSBinding
-    public String deleteRecord(IndexingRequestParameters params) {
+    public String deleteRecord(Object params) {
 
         JSONObject ret = new JSONObject();
 

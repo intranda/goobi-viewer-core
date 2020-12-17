@@ -15,6 +15,7 @@
  */
 package io.goobi.viewer.api.rest.v1.cms;
 
+import static io.goobi.viewer.api.rest.v1.ApiUrls.*;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
@@ -80,7 +81,7 @@ import io.goobi.viewer.model.security.user.User;
  *
  * @author Florian Alpers
  */
-//@javax.ws.rs.Path(CMS_MEDIA)
+@javax.ws.rs.Path(CMS_MEDIA)
 @ViewerRestServiceBinding
 public class CMSMediaResource {
 
@@ -119,7 +120,7 @@ public class CMSMediaResource {
     }
     
     @GET
-//    @javax.ws.rs.Path(CMS_MEDIA_ITEM)
+    @javax.ws.rs.Path(CMS_MEDIA_ITEM)
     @Produces({ MediaType.APPLICATION_JSON })
     public MediaItem getMediaItem(@PathParam("id")Long id) throws DAOException {
         CMSMediaItem item = DataManager.getInstance().getDao().getCMSMediaItem(id);
