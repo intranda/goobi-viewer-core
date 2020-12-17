@@ -19,6 +19,8 @@ import java.io.IOException;
 import java.io.Serializable;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
@@ -54,6 +56,7 @@ import io.goobi.viewer.Version;
 import io.goobi.viewer.controller.Configuration;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.DateTools;
+import io.goobi.viewer.controller.FileResourceManager;
 import io.goobi.viewer.controller.StringTools;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
@@ -1873,6 +1876,34 @@ public class NavigationHelper implements Serializable {
     @Deprecated
     public String getBuildDate(String pattern) {
         return Version.getBuildDate(pattern);
+    }
+    
+    /**
+     * Get the path to a viewer resource relative to the root path ("/viewer")
+     * If it exists, the resource from the theme, otherwise from the core
+     * If the resource exists neither in theme nor core. An Exception will be thrown
+     * 
+     * @param path  The resource path relative to the first "resources" directory
+     * @return
+     */
+    public String getResource(String path) {
+        FileResourceManager manager = DataManager.getInstance().getFileResourceManager();
+        if(manager != null) {
+            Path themePath = manager.getThemeResourcePath(path);
+//            Path corePath = manager.getCoreResourcePath(path);
+            if(Files.exists(themePath)) {
+                String ret =  manager.getThemeResourceURI(path).toString();
+                return ret;
+            } else {
+//            } else if(Files.exists(corePath)) {
+                String ret = manager.getCoreResourceURI(path).toString();
+                return ret;
+//            } else {
+//                return "";
+            }
+        } else {
+            return "";
+        }
     }
 
 }
