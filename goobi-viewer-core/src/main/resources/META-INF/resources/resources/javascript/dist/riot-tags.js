@@ -464,7 +464,7 @@ this.remove = function(event) {
 	    .then( () => this.updateLists())
     } else {
         let bookmark = event.item.bookmark;
-        this.opts.bookmarks.removeFromBookmarkList(undefined, bookmark.pi, undefined, undefined, false)
+        this.opts.bookmarks.removeFromBookmarkList(0, bookmark.pi, undefined, undefined, false)
 	    .then( () => this.updateLists())
     }
 }.bind(this)
@@ -557,15 +557,9 @@ this.add = function(event) {
 }.bind(this)
 
 this.remove = function(event) {
-    if(this.opts.bookmarks.config.userLoggedIn) {
 	    let list = event.item.bookmarkList
 	    this.opts.bookmarks.removeFromBookmarkList(list.id, this.pi, this.page, this.logid, this.opts.bookmarks.isTypePage())
 	    .then( () => this.updateLists())
-    } else {
-        let bookmark = event.item.bookmark;
-        this.opts.bookmarks.removeFromBookmarkList(undefined, bookmark.pi, undefined, undefined, false)
-	    .then( () => this.updateLists())
-    }
 }.bind(this)
 
 this.inList = function(list, pi, page, logid) {
@@ -668,20 +662,13 @@ this.mayEmptyList = function(list) {
 }.bind(this)
 
 this.remove = function(event) {
-    if(this.opts.bookmarks.config.userLoggedIn) {
-	    let list = event.item.bookmarkList
-	    this.opts.bookmarks.removeFromBookmarkList(list.id, this.pi, this.page, this.logid, this.opts.bookmarks.isTypePage())
-	    .then( () => this.updateLists())
-    } else {
         let bookmark = event.item.bookmark;
-        this.opts.bookmarks.removeFromBookmarkList(undefined, bookmark.pi, undefined, undefined, false)
+        this.opts.bookmarks.removeFromBookmarkList(0, bookmark.pi, undefined, undefined, false)
 	    .then( () => this.updateLists())
-    }
 }.bind(this)
 
 this.deleteList = function(event) {
-    let list = event.item.bookmarkList
-    this.opts.bookmarks.removeBookmarkList(list.id)
+    this.opts.bookmarks.removeBookmarkList(0)
     .then( () => this.updateLists());
 }.bind(this)
 
@@ -712,11 +699,7 @@ this.mayCompareList = function(list) {
 }.bind(this)
 
 this.miradorUrl = function(list) {
-    if(list.id != null) {
-    	return this.opts.bookmarks.config.root + "/mirador/id/" + list.id + "/";
-    } else {
-    	return this.opts.bookmarks.config.root + "/mirador/";
-    }
+    	return this.opts.bookmarks.config.root + "/mirador/id/0/";
 }.bind(this)
 
 this.msg = function(key) {

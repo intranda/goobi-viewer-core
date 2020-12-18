@@ -95,7 +95,7 @@ var viewerJS = (function () {
         if ( bookmarksEnabled ) {
             viewerJS.bookmarks.init( {
                 root: rootURL,
-                rest: restURL,
+                rest: this.getRestApiUrl(),
                 userLoggedIn: userLoggedIn,
                 language: currentLang
                 

@@ -317,8 +317,9 @@ public class SessionBookmarkResourceBuilder extends AbstractBookmarkResourceBuil
      */
     @Override
     public SuccessMessage deleteBookmarkList(Long id) throws DAOException, IOException, RestApiException, IllegalRequestException {
-        throw new IllegalRequestException("Cannot delete session bookmark list");
-
+        DataManager.getInstance().getBookmarkManager().deleteBookmarkList(session);
+        DataManager.getInstance().getBookmarkManager().createBookmarkList(session);
+        return new SuccessMessage(true);
     }
 
     /* (non-Javadoc)

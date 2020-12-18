@@ -104,20 +104,13 @@ mayEmptyList(list) {
 }
 
 remove(event) {
-    if(this.opts.bookmarks.config.userLoggedIn) {        
-	    let list = event.item.bookmarkList
-	    this.opts.bookmarks.removeFromBookmarkList(list.id, this.pi, this.page, this.logid, this.opts.bookmarks.isTypePage())
-	    .then( () => this.updateLists())
-    } else {
         let bookmark = event.item.bookmark;
-        this.opts.bookmarks.removeFromBookmarkList(undefined, bookmark.pi, undefined, undefined, false)
+        this.opts.bookmarks.removeFromBookmarkList(0, bookmark.pi, undefined, undefined, false)
 	    .then( () => this.updateLists())
-    }
 }
 
 deleteList(event) {
-    let list = event.item.bookmarkList
-    this.opts.bookmarks.removeBookmarkList(list.id)
+    this.opts.bookmarks.removeBookmarkList(0)
     .then( () => this.updateLists());
 }
 
@@ -148,11 +141,7 @@ mayCompareList(list) {
 }
 
 miradorUrl(list) {
-    if(list.id != null) {
-    	return this.opts.bookmarks.config.root + "/mirador/id/" + list.id + "/";
-    } else {        
-    	return this.opts.bookmarks.config.root + "/mirador/";
-    }
+    	return this.opts.bookmarks.config.root + "/mirador/id/0/";
 }
 
 msg(key) {

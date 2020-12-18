@@ -236,7 +236,7 @@ public class BookmarkResource {
         BookmarkList list = getBookmarkList(listId);
         Bookmark item = list.getItems().stream().filter(i -> i.getId().equals(bookmarkId)).findAny().orElse(null);
         if(item  != null) {
-            return builder.deleteBookmarkFromBookmarkList(list.getId(), item.getPi(), item.getLogId(), item.getOrder().toString());
+            return builder.deleteBookmarkFromBookmarkList(list.getId(), item.getPi(), item.getLogId(), Optional.ofNullable(item.getOrder()).map(o -> o.toString()).orElse(null));
         } else {
             throw new RestApiException("No item found in list " +  listId + "with id" + bookmarkId, HttpServletResponse.SC_NOT_FOUND);
         }
