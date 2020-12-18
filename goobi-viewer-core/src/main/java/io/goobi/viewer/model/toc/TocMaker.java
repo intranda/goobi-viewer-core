@@ -342,26 +342,10 @@ public class TocMaker {
         }
 
         // Create a manually sorted map of docs, since the order can be contained in different GROUPORDER_* fields
-        Map<Integer, SolrDocument> docOrderMap = new TreeMap<>();
-        for (SolrDocument doc : groupMemberDocs) {
-            String groupIdField = null;
-            for (String field : groupIdFields) {
-                if (groupIdValue.equals(doc.getFieldValue(field))) {
-                    groupIdField = field;
-                    break;
-                }
-            }
-            if (groupIdField == null) {
-                logger.warn("Group ID field not found on IDDOC {}", doc.getFieldValue(SolrConstants.IDDOC));
-                continue;
-            }
-            String groupSortField = groupIdField.replace(SolrConstants.GROUPID_, SolrConstants.GROUPORDER_);
-            Integer order = (Integer) doc.getFieldValue(groupSortField);
-            docOrderMap.put(order, doc);
-        }
-
+        Map<Integer, SolrDocument> docOrderMap = createOrderedGroupDocMap(groupMemberDocs, groupIdFields, groupIdValue);
+        
         HttpServletRequest request = BeanUtils.getRequest();
-        for (int order: docOrderMap.keySet()) {
+        for (int order : docOrderMap.keySet()) {
             SolrDocument doc = docOrderMap.get(order);
             // IMetadataValue label = new MultiLanguageMetadataValue(SolrSearchIndex.getMetadataValuesForLanguage(doc, SolrConstants.TITLE));
             IMetadataValue label = buildLabel(doc, template);
@@ -399,6 +383,48 @@ public class TocMaker {
             ret.add(new TOCElement(label, "1", null, volumeIddoc, logId, 1, topStructPi, thumbnailUrl, accessPermissionPdf, false,
                     thumbnailUrl != null, mimeType, docStructType, footerId));
         }
+    }
+
+    /**
+     * Create a manually sorted map of docs, since the order can be contained in different GROUPORDER_* fields.
+     * 
+     * @param groupMemberDocs
+     * @param groupIdFields
+     * @param groupIdValue
+     * @return
+     * @should create correctly sorted map
+     */
+    static Map<Integer, SolrDocument> createOrderedGroupDocMap(List<SolrDocument> groupMemberDocs, List<String> groupIdFields,
+            String groupIdValue) {
+        if (groupMemberDocs == null || groupMemberDocs.isEmpty()) {
+            return Collections.emptyMap();
+        }
+        if (groupIdFields == null || groupIdFields.isEmpty()) {
+            return Collections.emptyMap();
+        }
+        if (StringUtils.isEmpty(groupIdValue)) {
+            return Collections.emptyMap();
+        }
+
+        Map<Integer, SolrDocument> ret = new TreeMap<>();
+        for (SolrDocument doc : groupMemberDocs) {
+            String groupIdField = null;
+            for (String field : groupIdFields) {
+                if (groupIdValue.equals(doc.getFieldValue(field))) {
+                    groupIdField = field;
+                    break;
+                }
+            }
+            if (groupIdField == null) {
+                logger.warn("Group ID field not found on IDDOC {}", doc.getFieldValue(SolrConstants.IDDOC));
+                continue;
+            }
+            String groupSortField = groupIdField.replace(SolrConstants.GROUPID_, SolrConstants.GROUPORDER_);
+            Integer order = (Integer) doc.getFieldValue(groupSortField);
+            ret.put(order, doc);
+        }
+
+        return ret;
     }
 
     /**
