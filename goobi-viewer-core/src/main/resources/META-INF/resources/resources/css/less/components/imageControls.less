@@ -113,8 +113,9 @@
 			display: flex;
 			justify-content: center;
 			align-items: center;
-			height: 75%;
-			width: 75%;
+			height: 100%;
+			width: 100%;
+			padding: 0.4rem;
 			font-size: 1.2rem;
 			font-weight: 700;
 			color: @gray;
@@ -190,12 +191,12 @@
 			}	    	
 	    }
 	    &.double-page-view,
-	    &.single-page-view {
+	    &.single-page-view,
+	    &.switch-pages {
 	    	a,
 	    	span,
 	    	button {
-	    		width: 65%;
-	    		height: 65%;
+	    		padding: 0.7rem;
 	    	}
 	    }
 	    &.double-page-view {}
@@ -223,7 +224,7 @@
 	        	background-color: transparent;
 	        }
 	        .zoom-slider {
-	            height: 16px;
+	            height: 10px;
 	            border: 1px solid @gray;
 	            max-width: 100%;
 	            //Firefox

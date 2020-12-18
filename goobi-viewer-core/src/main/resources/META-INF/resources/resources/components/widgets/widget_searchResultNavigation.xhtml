@@ -17,7 +17,7 @@
 						<h:outputLink rendered="#{activeDocumentBean.prevHit != null}" disabled="#{searchBean.currentHitIndex == 0}"
 							value="#{activeDocumentBean.prevHit.sidebarPrevUrl}">
 							<img 
-								src="#{request.contextPath}/resources/themes/#{navigationHelper.theme}/images/navigate/resultback.png" 
+								src="#{request.contextPath}/resources/themes/#{navigationHelper.theme}/images/icons/icon_resultback.svg"
 								class="searchResultNavigationBackImg"
 								style="#{searchBean.currentHitIndex == 0 ? 'opacity: 0.4;' : ''}" 
 								title="#{activeDocumentBean.prevHit.label}" 
@@ -38,7 +38,7 @@
 						<h:outputLink rendered="#{activeDocumentBean.nextHit != null}" disabled="#{searchBean.currentHitIndex == (searchBean.hitsCount - 1)}"
 							value="#{activeDocumentBean.nextHit.sidebarNextUrl}">
 							<img 
-								src="#{request.contextPath}/resources/themes/#{navigationHelper.theme}/images/navigate/resultforward.png" 
+								src="#{request.contextPath}/resources/themes/#{navigationHelper.theme}/images/icons/icon_resultforward.svg" 
 								class="searchResultNavigationForwardImg"
 								style="#{searchBean.currentHitIndex == (searchBean.hitsCount - 1) ? 'opacity: 0.4;' : ''}" 
 								title="#{activeDocumentBean.nextHit.label}" 
@@ -51,7 +51,7 @@
 					<h:outputLink rendered="#{searchBean.activeSearchType != 1 and activeDocumentBean.nextHit != null}"
 					    value="#{navigationHelper.applicationUrl}search#{searchBean.currentSearchUrlPart}">
 						<img 
-							src="#{request.contextPath}/resources/themes/#{navigationHelper.theme}/images/navigate/backToHitlist.png"
+							src="#{request.contextPath}/resources/themes/#{navigationHelper.theme}/images/icons/icon_backtohitlist.svg" 
 							title="#{msg.returnToHitlist}"
 							alt="#{msg.returnToHitlist}"
 							aria-hidden="true"/>#{msg.returnToHitlist}
@@ -59,7 +59,7 @@
                     <h:outputLink rendered="#{searchBean.activeSearchType == 1 and activeDocumentBean.nextHit != null}"
                         value="#{navigationHelper.applicationUrl}searchadvanced#{searchBean.currentSearchUrlPart}">
                         <img 
-                            src="#{request.contextPath}/resources/themes/#{navigationHelper.theme}/images/navigate/backToHitlist.png"
+                            src="#{request.contextPath}/resources/themes/#{navigationHelper.theme}/images/icons/icon_backtohitlist.svg" 
                             title="#{msg.returnToHitlist}"
 							alt="#{msg.returnToHitlist}" 
 							aria-hidden="true"/>#{msg.returnToHitlist}

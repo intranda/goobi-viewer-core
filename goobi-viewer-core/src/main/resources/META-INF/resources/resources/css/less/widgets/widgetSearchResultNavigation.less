@@ -5,30 +5,41 @@
 #widgetSearchResultNavigation {
     h3 {}
     .search-result-navigation-wrapp {
+    	display: flex;
         .search-result-navigation-left,
         .search-result-navigation-center,
         .search-result-navigation-right {
-            float: left;
             overflow: hidden;
         }
         .search-result-navigation-left {
-            width: 20%;
+            max-width: 20%;
+            flex: 0 0 20%;
             text-align: left;
             a {}
             span {}
-            img {}
+            img {
+            	width: 28px;
+            	height: 28px;
+            }
         }
         .search-result-navigation-center {
-            width: 60%;
+            max-width: 60%;
+            flex: 0 0 60%;
             text-align: center;
+            margin-left: auto;
+            margin-right: auto;
             span {}
         }
         .search-result-navigation-right {
-            width: 20%;
+            max-width: 20%;
+            flex: 0 0 20%;
             text-align: right;
             a {}
             span {}
-            img {}
+            img {
+            	width: 28px;
+            	height: 28px;
+            }
         }
     }
     .search-result-navigation-back-to-collection {
