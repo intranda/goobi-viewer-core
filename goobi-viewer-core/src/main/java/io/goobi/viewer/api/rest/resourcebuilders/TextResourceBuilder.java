@@ -239,45 +239,52 @@ public class TextResourceBuilder {
         java.nio.file.Path filePath = getDocumentLanguageVersion(teiPath, language);
 
         if (filePath != null && Files.isRegularFile(filePath)) {
+            
             String filename = pi + "_tei.zip";
             return writeZipFile(Collections.singletonList(filePath), filename);
-        }
-        // All full-text pages as TEI
-        SolrDocument solrDoc = DataManager.getInstance().getSearchIndex().getDocumentByPI(pi);
-        if (solrDoc == null) {
-            throw new ContentNotFoundException("No document found with pi " + pi);
-        }
-
-        Map<java.nio.file.Path, String> fulltexts = getFulltextMap(pi);
-        if (fulltexts.isEmpty()) {
-            throw new ContentNotFoundException("Resource not found");
-        }
-
-        TEIBuilder builder = new TEIBuilder();
-        TEIHeaderBuilder header = createTEIHeader(solrDoc);
-        HtmlToTEIConvert textConverter = new HtmlToTEIConvert();
-        Map<java.nio.file.Path, String> teis = new LinkedHashMap<>();
-
-        try {
-            for (Entry<Path, String> entry : fulltexts.entrySet()) {
-                String filename = entry.getKey().getFileName().toString();
-                filename = FilenameUtils.removeExtension(filename) + ".xml";
-                String content = entry.getValue();
-                content = convert(textConverter, content, filename);
-                Document xmlDoc;
-                xmlDoc = builder.build(header, content);
-                String tei = DocumentReader.getAsString(xmlDoc, Format.getPrettyFormat());
-                teis.put(Paths.get(filename), tei);
+        
+        } else {
+            
+            // All full-text pages as TEI
+            SolrDocument solrDoc = DataManager.getInstance().getSearchIndex().getDocumentByPI(pi);
+            if (solrDoc == null) {
+                throw new ContentNotFoundException("No document found with pi " + pi);
             }
-            String filename = pi + "_tei.zip";
-            return writeZipFile(teis, filename);
-        } catch (JDOMException e) {
-            throw new ContentLibException("Unable to parse xml from tei content in " + pi, e);
-        } catch (UncheckedPresentationException e) {
-            throw new ContentLibException(e);
+            
+            Map<java.nio.file.Path, String> fulltexts = getFulltextMap(pi);
+            if (fulltexts.isEmpty()) {
+                throw new ContentNotFoundException("Resource not found");
+            }
+            
+            TEIBuilder builder = new TEIBuilder();
+            TEIHeaderBuilder header = createTEIHeader(solrDoc);
+            HtmlToTEIConvert textConverter = new HtmlToTEIConvert();
+            Map<java.nio.file.Path, String> teis = new LinkedHashMap<>();
+            
+            try {
+                for (Entry<Path, String> entry : fulltexts.entrySet()) {
+                    String filename = entry.getKey().getFileName().toString();
+                    filename = FilenameUtils.removeExtension(filename) + ".xml";
+                    String content = entry.getValue();
+                    content = convert(textConverter, content, filename);
+                    Document xmlDoc;
+                    xmlDoc = builder.build(header, content);
+                    String tei = DocumentReader.getAsString(xmlDoc, Format.getPrettyFormat());
+                    teis.put(Paths.get(filename), tei);
+                }
+                String filename = pi + "_tei.zip";
+                return writeZipFile(teis, filename);
+            } catch (JDOMException e) {
+                throw new ContentLibException("Unable to parse xml from tei content in " + pi, e);
+            } catch (UncheckedPresentationException e) {
+                throw new ContentLibException(e);
+            }
+            
         }
 
     }
+    
+    
 
     /**
      * 

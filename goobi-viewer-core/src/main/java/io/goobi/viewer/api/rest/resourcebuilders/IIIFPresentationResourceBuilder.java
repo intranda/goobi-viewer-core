@@ -49,6 +49,7 @@ import de.intranda.api.iiif.presentation.enums.AnnotationType;
 import de.unigoettingen.sub.commons.contentlib.exceptions.ContentNotFoundException;
 import de.unigoettingen.sub.commons.contentlib.exceptions.IllegalRequestException;
 import io.goobi.viewer.api.rest.AbstractApiUrlManager;
+import io.goobi.viewer.api.rest.v1.records.RecordFileResource;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.SolrConstants;
 import io.goobi.viewer.controller.SolrSearchIndex;
@@ -178,10 +179,10 @@ public class IIIFPresentationResourceBuilder {
         if (doc == null) {
             throw new ContentNotFoundException("Not document with PI = " + pi + " found");
         } else if (AnnotationType.TEI.equals(type)) {
-            return getLayerBuilder().createAnnotationLayer(pi, type, Motivation.PAINTING, (id, repo) -> ContentResource.getTEIFiles(id),
+            return getLayerBuilder().createAnnotationLayer(pi, type, Motivation.PAINTING, (id, repo) -> new TextResourceBuilder().getTEIFiles(id),
                     (id, lang) -> ContentResource.getTEIURI(id, lang));
         } else if (AnnotationType.CMDI.equals(type)) {
-            return getLayerBuilder().createAnnotationLayer(pi, type, Motivation.DESCRIBING, (id, repo) -> ContentResource.getCMDIFiles(id),
+            return getLayerBuilder().createAnnotationLayer(pi, type, Motivation.DESCRIBING, (id, repo) -> new TextResourceBuilder().getCMDIFiles(id),
                     (id, lang) -> ContentResource.getCMDIURI(id, lang));
 
         } else {

@@ -40,6 +40,7 @@ import de.intranda.api.iiif.presentation.enums.AnnotationType;
 import de.intranda.api.iiif.presentation.enums.DcType;
 import de.intranda.api.iiif.presentation.enums.Format;
 import io.goobi.viewer.api.rest.AbstractApiUrlManager;
+import io.goobi.viewer.api.rest.resourcebuilders.TextResourceBuilder;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.messages.ViewerResourceBundle;
@@ -85,7 +86,7 @@ public class LayerBuilder extends AbstractBuilder {
      */
     public Layer createAnnotationLayer(String pi, AnnotationType type, String motivation, BiFunction<String, String, List<Path>> fileGetter,
             BiFunction<String, String, URI> linkGetter) throws PresentationException, IndexUnreachableException, IOException, URISyntaxException {
-        List<Path> files = ContentResource.getTEIFiles(pi);
+        List<Path> files = new TextResourceBuilder().getTEIFiles(pi);
         //        List<Path> files = fileGetter.apply(pi, ContentResource.getDataRepository(pi));
         List<IAnnotation> annotations = new ArrayList<>();
         for (Path path : files) {

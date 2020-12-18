@@ -15,6 +15,7 @@
  */
 package io.goobi.viewer.model.viewer;
 
+import static io.goobi.viewer.api.rest.v1.ApiUrls.*;
 import java.awt.Dimension;
 import java.io.IOException;
 import java.io.Serializable;
@@ -1568,7 +1569,7 @@ public class ViewManager implements Serializable {
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      */
     public String getAltoUrlForAllPages() throws ViewerConfigurationException, PresentationException, IndexUnreachableException {
-        return DataManager.getInstance().getConfiguration().getRestApiUrl() + "content/alto/" + getPi();
+        return DataManager.getInstance().getRestApiManager().getContentApiManager().path(RECORDS_RECORD, RECORDS_ALTO).params(getPi()).build();
     }
 
     /**
@@ -1580,7 +1581,7 @@ public class ViewManager implements Serializable {
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      */
     public String getFulltextUrlForAllPages() throws ViewerConfigurationException, PresentationException, IndexUnreachableException {
-        return DataManager.getInstance().getConfiguration().getRestApiUrl() + "content/fulltext/" + getPi();
+        return DataManager.getInstance().getRestApiManager().getContentApiManager().path(RECORDS_RECORD, RECORDS_PLAINTEXT_ZIP).params(getPi()).build();
     }
 
     /**
@@ -1591,7 +1592,10 @@ public class ViewManager implements Serializable {
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      */
     public String getTeiUrlForAllPages() throws ViewerConfigurationException, IndexUnreachableException {
-        return DataManager.getInstance().getConfiguration().getRestApiUrl() + "content/tei/" + getPi() + "/" + BeanUtils.getLocale().getLanguage();
+        return DataManager.getInstance().getRestApiManager().getContentApiManager()
+                .path(RECORDS_RECORD, RECORDS_TEI_LANG)
+                .params(getPi(), BeanUtils.getLocale().getLanguage())
+                .build();
     }
 
     /**
@@ -1607,9 +1611,10 @@ public class ViewManager implements Serializable {
         if (StringUtils.isBlank(filename)) {
             filename = FileTools.getFilenameFromPathString(getCurrentPage().getAltoFileName());
         }
-        return DataManager.getInstance().getConfiguration().getRestApiUrl() + "content/tei/" + getPi() + "/" + filename + "/"
-                + BeanUtils.getLocale().getLanguage();
-
+        return DataManager.getInstance().getRestApiManager().getContentApiManager()
+                .path(RECORDS_FILES, RECORDS_FILES_TEI)
+                .params(getPi(), filename)
+                .build();
     }
 
     /**
@@ -1623,7 +1628,10 @@ public class ViewManager implements Serializable {
      */
     public String getAltoUrl() throws ViewerConfigurationException, PresentationException, IndexUnreachableException, DAOException {
         String filename = FileTools.getFilenameFromPathString(getCurrentPage().getAltoFileName());
-        return DataManager.getInstance().getConfiguration().getRestApiUrl() + "content/alto/" + getPi() + "/" + filename;
+        return DataManager.getInstance().getRestApiManager().getContentApiManager()
+                .path(RECORDS_FILES, RECORDS_FILES_ALTO)
+                .params(getPi(), filename)
+                .build();
     }
 
     /**
@@ -1640,8 +1648,10 @@ public class ViewManager implements Serializable {
         if (StringUtils.isBlank(filename)) {
             filename = FileTools.getFilenameFromPathString(getCurrentPage().getAltoFileName());
         }
-        return DataManager.getInstance().getConfiguration().getRestApiUrl() + "content/fulltext/" + getPi() + "/" + filename;
-    }
+        return DataManager.getInstance().getRestApiManager().getContentApiManager()
+                .path(RECORDS_FILES, RECORDS_FILES_PLAINTEXT)
+                .params(getPi(), filename)
+                .build();    }
 
     /**
      * Returns the pdf download link for the current document

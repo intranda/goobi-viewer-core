@@ -893,65 +893,6 @@ public class ContentResource {
         return uri;
     }
 
-    //    public static java.nio.file.Path getAltoFile(String pi, String fileName, String dataRepository) {
-    //        String filePath = DataManager.getInstance().getConfiguration().getAltoFolder() + '/' + pi + '/' + fileName;
-    //        java.nio.file.Path file = Paths.get(DataFileTools.getRepositoryPath(dataRepository), filePath);
-    //        return file;
-    //    }
-    //
-    //    public static java.nio.file.Path getFulltextFile(String pi, String fileName, String dataRepository) {
-    //        String filePath = DataManager.getInstance().getConfiguration().getFulltextFolder() + '/' + pi + '/' + fileName;
-    //        java.nio.file.Path file = Paths.get(DataFileTools.getRepositoryPath(dataRepository), filePath);
-    //        return file;
-    //    }
-    //
-    //    public static java.nio.file.Path getTEIFile(String pi, String langCode, String dataRepository) throws IOException {
-    //        final Language language = DataManager.getInstance().getLanguageHelper().getLanguage(langCode);
-    //        java.nio.file.Path teiPath =
-    //                Paths.get(DataFileTools.getRepositoryPath(dataRepository), DataManager.getInstance().getConfiguration().getTeiFolder(), pi);
-    //        java.nio.file.Path filePath = null;
-    //        if (Files.exists(teiPath)) {
-    //            // This will return the file with the requested language or alternatively the first file in the TEI folder
-    //            try (Stream<java.nio.file.Path> teiFiles = Files.list(teiPath)) {
-    //                filePath = teiFiles.filter(path -> path.getFileName().toString().endsWith("_" + language.getIsoCode() + ".xml"))
-    //                        .findFirst()
-    //                        .orElse(null);
-    //            }
-    //        }
-    //        return filePath;
-    //    }
-
-    /**
-     * <p>
-     * getTEIFiles.
-     * </p>
-     *
-     * @param pi a {@link java.lang.String} object.
-     * @return a {@link java.util.List} object.
-     */
-    public static List<java.nio.file.Path> getTEIFiles(String pi) {
-        try {
-            java.nio.file.Path teiPath = DataFileTools.getDataFolder(pi, DataManager.getInstance().getConfiguration().getTeiFolder());
-            List<java.nio.file.Path> filePaths = new ArrayList<>();
-            if (Files.exists(teiPath)) {
-                // This will return the file with the requested language or alternatively the first file in the TEI folder
-                try (Stream<java.nio.file.Path> teiFiles = Files.list(teiPath)) {
-                    filePaths = teiFiles.filter(path -> path.getFileName().toString().matches(".*_[a-z]{1,3}\\.xml")).collect(Collectors.toList());
-                } catch (IOException e) {
-                    logger.error(e.toString(), e);
-                }
-            }
-
-            return filePaths;
-        } catch (PresentationException e) {
-            logger.error(e.getMessage());
-        } catch (IndexUnreachableException e) {
-            logger.error(e.getMessage(), e);
-        }
-
-        return Collections.emptyList();
-    }
-
     /**
      * <p>
      * getCMDIFile.
@@ -979,36 +920,6 @@ public class ContentResource {
         return filePath;
     }
 
-    /**
-     * <p>
-     * getCMDIFiles.
-     * </p>
-     *
-     * @param pi a {@link java.lang.String} object.
-     * @return a {@link java.util.List} object.
-     */
-    public static List<java.nio.file.Path> getCMDIFiles(String pi) {
-
-        try {
-            java.nio.file.Path cdmiPath = DataFileTools.getDataFolder(pi, DataManager.getInstance().getConfiguration().getCmdiFolder());
-            List<java.nio.file.Path> filePaths = new ArrayList<>();
-            if (Files.exists(cdmiPath)) {
-                // This will return the file with the requested language or alternatively the first file in the CMDI folder
-                try (Stream<java.nio.file.Path> teiFiles = Files.list(cdmiPath)) {
-                    filePaths = teiFiles.filter(path -> path.getFileName().toString().matches(".*_[a-z]{1,3}\\.xml")).collect(Collectors.toList());
-                } catch (IOException e) {
-                    logger.error(e.toString(), e);
-                }
-            }
-            return filePaths;
-        } catch (PresentationException e) {
-            logger.error(e.getMessage());
-        } catch (IndexUnreachableException e) {
-            logger.error(e.getMessage(), e);
-        }
-
-        return Collections.emptyList();
-    }
 
     /**
      * <p>
