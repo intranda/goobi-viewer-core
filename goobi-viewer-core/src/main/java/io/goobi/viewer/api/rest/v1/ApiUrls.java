@@ -167,6 +167,13 @@ public class ApiUrls extends AbstractApiUrlManager {
     public static final String CMS_MEDIA_FILES_FILE_IMAGE = "/cms/media/files/{filename: [^\\/]*\\.(jpe?g|tiff?|png|gif|jp2)}";
     public static final String CMS_MEDIA_FILES_FILE_IMAGE_IIIF = "/{region}/{size}/{rotation}/{quality}.{format}";
 
+    public static final String TEMP_MEDIA_FILES = "/temp/files";
+    public static final String TEMP_MEDIA_FILES_FOLDER = "/{folder}";
+    public static final String TEMP_MEDIA_FILES_FILE = "/{folder}/{filename}";
+    
+    public static final String TEMP_MEDIA_FILES_FILE_IMAGE = "/temp/files/{folder}/{filename: [^\\/]*\\.(jpe?g|tiff?|png|gif|jp2)}";
+    public static final String TEMP_MEDIA_FILES_FILE_IIIF = "/{region}/{size}/{rotation}/{quality}.{format}";
+
 
 
 

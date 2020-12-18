@@ -25,7 +25,7 @@ import javax.ws.rs.ext.Provider;
 import de.intranda.api.iiif.presentation.AbstractPresentationModelElement;
 import de.intranda.api.iiif.search.AutoSuggestResult;
 import de.intranda.api.iiif.search.SearchResult;
-import io.goobi.viewer.api.rest.IIIFPresentationBinding;
+import io.goobi.viewer.api.rest.bindings.IIIFPresentationBinding;
 
 /**
  * <p>

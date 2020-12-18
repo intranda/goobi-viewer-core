@@ -225,6 +225,7 @@
         }
         
         deleteUploadedFile(file) {
+            console.log("delete file ", file, this.getFilename(file));
             return fetch(this.opts.postUrl + this.getFilename(file), {
                 method: "DELETE",
        		})
@@ -298,12 +299,20 @@
         }
         
         getFilename(url) {
-            let result = url.match(/_tifU002F(.*)\/(?:full|square)/);
-            if(result && result.length > 1) {
-                return result[1];
-            } else {
-             	return url;   
+            console.log("url" + url);
+            console.log("base url " + this.opts.postUrl);
+            let filename = url.replace(this.opts.postUrl, "");
+            console.log("filename " + filename);
+            if(filename.startsWith("/")) {
+                filename = filename.slice(1);
             }
+            console.log("filename " + filename);
+            let filenameEnd = filename.indexOf("/");
+            if(filenameEnd > 0) {
+                filename = filename.slice(0,filenameEnd);
+            }
+            console.log("filename " + filename);
+            return filename;
         }
     </script> 
 </adminMediaUpload>

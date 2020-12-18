@@ -13,7 +13,7 @@
  *
  * You should have received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
-package io.goobi.viewer.api.rest;
+package io.goobi.viewer.api.rest.bindings;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -22,15 +22,10 @@ import javax.ws.rs.NameBinding;
 
 /**
  * <p>
- * IIIFPresentationBinding class.
+ * AuthenticationBinding class.
  * </p>
- *
- * @author Florian Alpers
- *
- *         Binding interface to collect all services for the IIIF presentation API Used to add a filter to all IIIF Presentation resource answers
- *         which adds the @context property to the topmost element
  */
 @NameBinding
 @Retention(RetentionPolicy.RUNTIME)
-public @interface IIIFPresentationBinding {
+public @interface UserLoggedInBinding {
 }

@@ -22,7 +22,7 @@ import javax.ws.rs.core.MediaType;
 
 import de.intranda.api.services.CollectionExtentDefinition;
 import de.intranda.api.services.TagListDefinition;
-import io.goobi.viewer.api.rest.ViewerRestServiceBinding;
+import io.goobi.viewer.api.rest.bindings.ViewerRestServiceBinding;
 import io.goobi.viewer.controller.DataManager;
 
 /**

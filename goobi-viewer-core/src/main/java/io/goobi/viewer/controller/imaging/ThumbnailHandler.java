@@ -850,70 +850,76 @@ public class ThumbnailHandler {
             }
         }).orElse("");
     }
-    
-    /**
-     * Get the thumbnailUrl for an image file in the file system
-     * 
-     * @param imagePath
-     * @return
-     */
-    public String getThumbnailUrl(Path imagePath) {
-        return getThumbnailUrl(imagePath, thumbWidth, thumbHeight);
-    }
-    
-    /**
-     * Get the square thumbnailUrl for an image file in the file system
-     * 
-     * @param imagePath
-     * @return
-     */
-    public String getSquareThumbnailUrl(Path imagePath) {
-        return getSquareThumbnailUrl(imagePath, thumbWidth);
-    }
-    
-    /**
-     * Get the thumbnailUrl for an image file in the file system
-     * 
-     * @param imagePath
-     * @param width
-     * @param height
-     * @return
-     */
-    public String getThumbnailUrl(Path imagePath, int width, int height) {
-            String size = getSize(width, height);
-            String format = "jpg";
-            ImageFileFormat formatType = ImageFileFormat.getImageFileFormatFromFileExtension(imagePath.toString());
-            if (formatType != null && !formatType.getMimeType().matches("(?i)(image\\/(?!png|jpg).*)")) { //match any image-mimetype except jpg and png
-                format = formatType.getFileExtension();
-            }
-            //TODO: Get correct api url
-            String imageApiUrl = getCMSMediaImageApiUrl(imagePath.toString());
-            String url = this.iiifUrlHandler.getIIIFImageUrl(imageApiUrl, imagePath.toString(), "-", Region.FULL_IMAGE, size, "0", "default", format);
-            return url;
 
+    /**
+     * Get the thumbnailUrl for a IIIF image identifier with default size
+     * 
+     * @param baseUri   IIIF image identifier
+     * @return
+     */
+    public String getThumbnailUrl(URI baseUri) {
+        return getThumbnailUrl(baseUri, thumbWidth, thumbHeight, false);
     }
     
     /**
-     * Get the square thumbnailUrl for an image file in the file system
+     * Get the thumbnailUrl for a IIIF image identifier
      * 
-     * @param imagePath
-     * @param width
-     * @param height
+     * @param baseUri   IIIF image identifier
+     * @param width     thumbnail width
+     * @param height    thumbnail height
      * @return
      */
-    public String getSquareThumbnailUrl(Path imagePath, int width) {
-            String size = getSize(width, width);
-            String format = "jpg";
-            ImageFileFormat formatType = ImageFileFormat.getImageFileFormatFromFileExtension(imagePath.toString());
-            if (formatType != null && !formatType.getMimeType().matches("(?i)(image\\/(?!png|jpg).*)")) { //match any image-mimetype except jpg and png
-                format = formatType.getFileExtension();
-            }
-            //TODO: Get correct api url
-            String imageApiUrl = getCMSMediaImageApiUrl(imagePath.toString());
-            String url = this.iiifUrlHandler.getIIIFImageUrl(imageApiUrl, imagePath.toString(), "-", Region.SQUARE_IMAGE, size, "0", "default", format);
-            return url;
-
+    public String getThumbnailUrl(URI baseUri, int width, int height) {
+        return getThumbnailUrl(baseUri, width, height, false);
     }
+    
+    /**
+     * Get the square thumbnailUrl for a IIIF image identifier with default size
+     * 
+     * @param baseUri   IIIF image identifier
+     * @return
+     */
+    public String getSquareThumbnailUrl(URI baseUri) {
+        return getThumbnailUrl(baseUri, thumbWidth, thumbWidth, true);
+    }
+    
+    /**
+     * Get the square thumbnailUrl for a IIIF image identifier
+     * 
+     * @param baseUri   IIIF image identifier
+     * @param size     thumbnail size
+     * @return
+     */
+    public String getSquareThumbnailUrl(URI baseUri, int size) {
+        return getThumbnailUrl(baseUri, size, size, true);
+    }
+    
+    /**
+     * Get the thumbnailUrl for a IIIF image identifier
+     * 
+     * @param baseUri   IIIF image identifier
+     * @param width     thumbnail width
+     * @param height    thumbnail height
+     * @param square    true to deliver a square image
+     * @return
+     */
+    public String getThumbnailUrl(URI baseUri, int width, int height, boolean square) {
+        String size = getSize(width, height);
+        ImageFileFormat format = ImageFileFormat.JPG;
+        ImageFileFormat formatType = ImageFileFormat.getImageFileFormatFromFileExtension(baseUri.getPath());
+        if (formatType != null && !formatType.getMimeType().matches("(?i)(image\\/(?!png|jpg).*)")) { //match any image-mimetype except jpg and png
+            format = formatType;
+        }
+        RegionRequest region = square ? RegionRequest.SQUARE : RegionRequest.FULL;
+        try {
+            String url = this.iiifUrlHandler.getIIIFImageUrl(baseUri.toString(), region, Scale.getScaleMethod(size), Rotation.NONE, Colortype.DEFAULT, format);
+            return url;
+        } catch (IllegalRequestException e) {
+            logger.error("Error creating thumbnail url", e);
+            return "";
+        }
+}
+
 
     /**
      * @return

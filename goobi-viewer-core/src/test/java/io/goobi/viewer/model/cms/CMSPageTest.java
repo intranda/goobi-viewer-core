@@ -19,10 +19,7 @@ import static org.junit.Assert.fail;
 
 import java.io.File;
 import java.io.IOException;
-import java.net.URI;
 import java.net.URISyntaxException;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -43,7 +40,6 @@ import io.goobi.viewer.managedbeans.CmsBean;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.model.cms.CMSContentItem.CMSContentItemType;
 import io.goobi.viewer.model.cms.CMSPageLanguageVersion.CMSPageStatus;
-import io.goobi.viewer.servlets.rest.cms.CMSContentResource;
 
 //@RunWith(PowerMockRunner.class)
 //@PrepareForTest(BeanUtils.class)
@@ -194,12 +190,6 @@ public class CMSPageTest extends AbstractDatabaseEnabledTest {
         Assert.assertEquals("cms/" + pageId + "/", page.getRelativeUrlPath(false));
 
         Assert.assertEquals(textContent, page.getContent(textId));
-
-        String htmlUrl = page.getContent(htmlId);
-        Path htmlUrlPath = Paths.get(new URI(htmlUrl).getPath());
-        String htmlResponse = new CMSContentResource().getContentHtml(Long.parseLong(htmlUrlPath.subpath(3, 4).toString()),
-                htmlUrlPath.subpath(4, 5).toString(), htmlUrlPath.subpath(5, 6).toString());
-        Assert.assertEquals("<span>" + htmlContent + "</span>", htmlResponse);
 
         String contentServerUrl = DataManager.getInstance().getConfiguration().getIIIFApiUrl();
 
