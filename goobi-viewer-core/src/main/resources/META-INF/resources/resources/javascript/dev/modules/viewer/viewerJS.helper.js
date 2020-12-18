@@ -461,14 +461,15 @@ var viewerJS = ( function( viewer ) {
     }
     
     viewer.getMapBoxToken = function() {
-        if(typeof mapBoxToken != "undefined") {
+        if(typeof this.mapBoxConfig != "undefined" && typeof this.mapBoxConfig.token != "undefined") {
+            return this.mapBoxConfig.token;
+        } else if(typeof mapBoxToken != "undefined") {
             return mapBoxToken;
         } else {
             return undefined; 
         }
+    }
         
-    }   
-    
     viewer.getMetadataValue = function(object, language) {
         if(typeof object === "string") {
             return object;

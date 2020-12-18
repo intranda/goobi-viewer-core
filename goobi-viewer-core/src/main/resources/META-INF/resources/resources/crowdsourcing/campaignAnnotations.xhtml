@@ -132,11 +132,12 @@
 							</div>
 						</div>
 						<script>
+						$(document).ready(() => {						    
                             riot.mount( "annotationBody", {
                                 currentlang: "#{navigationHelper.localeString}",
                                 resturl: "#{configurationBean.restApiUrl}",
-                                mapboxtoken: "#{configurationBean.mapBoxToken}"
                             } );
+						})
                         </script>
 
 					</h:form>
