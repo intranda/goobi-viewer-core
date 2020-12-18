@@ -25,6 +25,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
+import java.util.TreeMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -315,6 +316,8 @@ public class TocMaker {
         }
 
         String template = "_GROUPS";
+        List<String> returnFields = getSolrFieldsToFetch(template);
+        returnFields.addAll(groupIdFields); // add all groupid fields to return list
         List<StringPair> sortFields = new ArrayList<>(groupIdFields.size());
         StringBuilder sbQuery = new StringBuilder(SearchHelper.ALL_RECORDS_QUERY).append(" +(");
         for (String groupIdField : groupIdFields) {
@@ -325,20 +328,41 @@ public class TocMaker {
 
             String groupSortField = groupIdField.replace(SolrConstants.GROUPID_, SolrConstants.GROUPORDER_);
             sortFields.add(new StringPair(groupSortField, "asc"));
+            returnFields.add(groupSortField); // add each sorting field to return list
         }
         sbQuery.append(')');
-
         logger.trace("Group TOC query: {}", sbQuery.toString());
+
         SolrDocumentList groupMemberDocs = DataManager.getInstance()
                 .getSearchIndex()
-                .search(sbQuery.toString(), SolrSearchIndex.MAX_HITS, sortFields, getSolrFieldsToFetch(template));
-
+                .search(sbQuery.toString(), SolrSearchIndex.MAX_HITS, sortFields, returnFields);
         if (groupMemberDocs == null || groupMemberDocs.isEmpty()) {
+            logger.trace("No group records found for {}", groupIdValue);
             return;
         }
 
-        HttpServletRequest request = BeanUtils.getRequest();
+        // Create a manually sorted map of docs, since the order can be contained in different GROUPORDER_* fields
+        Map<Integer, SolrDocument> docOrderMap = new TreeMap<>();
         for (SolrDocument doc : groupMemberDocs) {
+            String groupIdField = null;
+            for (String field : groupIdFields) {
+                if (groupIdValue.equals(doc.getFieldValue(field))) {
+                    groupIdField = field;
+                    break;
+                }
+            }
+            if (groupIdField == null) {
+                logger.warn("Group ID field not found on IDDOC {}", doc.getFieldValue(SolrConstants.IDDOC));
+                continue;
+            }
+            String groupSortField = groupIdField.replace(SolrConstants.GROUPID_, SolrConstants.GROUPORDER_);
+            Integer order = (Integer) doc.getFieldValue(groupSortField);
+            docOrderMap.put(order, doc);
+        }
+
+        HttpServletRequest request = BeanUtils.getRequest();
+        for (int order: docOrderMap.keySet()) {
+            SolrDocument doc = docOrderMap.get(order);
             // IMetadataValue label = new MultiLanguageMetadataValue(SolrSearchIndex.getMetadataValuesForLanguage(doc, SolrConstants.TITLE));
             IMetadataValue label = buildLabel(doc, template);
             String numberSort = doc.getFieldValue(SolrConstants.CURRENTNOSORT) != null
@@ -351,8 +375,6 @@ public class TocMaker {
             String thumbnailFile = (String) doc.getFieldValue(SolrConstants.THUMBNAIL);
             String dataRepository = (String) doc.getFieldValue(SolrConstants.DATAREPOSITORY);
             String docStructType = (String) doc.getFieldValue(SolrConstants.DOCSTRCT);
-
-            //                String sourceDocFormat = (String) doc.getFieldValue(LuceneConstants.SOURCEDOCFORMAT);
 
             if (label.isEmpty()) {
                 if (StringUtils.isNotEmpty(numberText)) {
