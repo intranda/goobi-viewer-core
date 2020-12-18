@@ -268,7 +268,7 @@
                             <ui:fragment rendered="#{activeDocumentBean.numberOfImages gt 1 and activeDocumentBean.viewManager.currentPage.mimeType == 'image' and !activeDocumentBean.viewManager.doublePageMode and navigationHelper.currentPage != 'fulltext' and configurationBean.doublePageModeEnabled}">
                                 <li class="image-controls__action double-page-view">
                                     <h:commandLink action="#{activeDocumentBean.viewManager.setDoublePageMode(true)}" title="#{msg.doublePageView}">
-                                        <ui:include src="/resources/images/icons/icon_ic-double-page.svg" />
+                                        <ui:include src="/resources/themes/#{navigationHelper.theme}/images/icons/icon_ic-first-page.svg" />
                                         <span class="labeltext">#{msg.doublePageView}</span>
                                         <f:passThroughAttribute name="data-toggle" value="tooltip" />
                                         <f:passThroughAttribute name="data-placement" value="#{cc.attrs.tooltipPlacement}" />

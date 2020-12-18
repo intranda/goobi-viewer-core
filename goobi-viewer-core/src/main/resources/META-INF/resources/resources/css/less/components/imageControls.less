@@ -100,6 +100,7 @@
 		display: flex;
 		justify-content: center;
 		align-items: center;
+		cursor: pointer;
 		    &:hover,
 		    &:active,
 		    &:focus {
@@ -139,6 +140,7 @@
 		}
 		&.inactive {
 			opacity: 0.4;
+			cursor: default;
 	    	&:hover,
 			&:active,
 			&:focus {
@@ -174,11 +176,8 @@
 	            background: none;
 	            select {
 	                background: none;
-	        		color: @gray;
 	            }
-	        	&:after {
-	        		border-top-color: @gray;
-	        	}
+	        	&:after {}
 	        }
 	    }
 	    &.forward {}
@@ -202,13 +201,8 @@
 	    &.double-page-view {}
 	    &.single-page-view {}
 	    &.switch-pages {
-	    	a {
-	    		padding: 4px;
-	    	}
-	    	svg {
-	    		fill: @gray;
-	    		vertical-align: unset;
-	    	}
+	    	a {}
+	    	svg {}
 	    }
 	    &.rotate-left,
 	    &.rotate-right {
