@@ -886,7 +886,8 @@ public class ThumbnailHandler {
             if (formatType != null && !formatType.getMimeType().matches("(?i)(image\\/(?!png|jpg).*)")) { //match any image-mimetype except jpg and png
                 format = formatType.getFileExtension();
             }
-            String imageApiUrl = getCMSMediaImageApiUrl();
+            //TODO: Get correct api url
+            String imageApiUrl = getCMSMediaImageApiUrl(imagePath.toString());
             String url = this.iiifUrlHandler.getIIIFImageUrl(imageApiUrl, imagePath.toString(), "-", Region.FULL_IMAGE, size, "0", "default", format);
             return url;
 
@@ -907,7 +908,8 @@ public class ThumbnailHandler {
             if (formatType != null && !formatType.getMimeType().matches("(?i)(image\\/(?!png|jpg).*)")) { //match any image-mimetype except jpg and png
                 format = formatType.getFileExtension();
             }
-            String imageApiUrl = getCMSMediaImageApiUrl();
+            //TODO: Get correct api url
+            String imageApiUrl = getCMSMediaImageApiUrl(imagePath.toString());
             String url = this.iiifUrlHandler.getIIIFImageUrl(imageApiUrl, imagePath.toString(), "-", Region.SQUARE_IMAGE, size, "0", "default", format);
             return url;
 

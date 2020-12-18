@@ -31,10 +31,12 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.Consumes;
+import javax.ws.rs.DELETE;
 import javax.ws.rs.DefaultValue;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
@@ -57,6 +59,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import de.unigoettingen.sub.commons.contentlib.exceptions.ContentNotFoundException;
+import de.unigoettingen.sub.commons.contentlib.exceptions.IllegalRequestException;
 import de.unigoettingen.sub.commons.contentlib.servlet.rest.CORSBinding;
 import io.goobi.viewer.api.rest.ViewerRestServiceBinding;
 import io.goobi.viewer.api.rest.model.MediaItem;
@@ -65,6 +68,7 @@ import io.goobi.viewer.controller.FileTools;
 import io.goobi.viewer.controller.StringTools;
 import io.goobi.viewer.exceptions.AccessDeniedException;
 import io.goobi.viewer.exceptions.DAOException;
+import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.managedbeans.CmsBean;
 import io.goobi.viewer.managedbeans.UserBean;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
@@ -85,6 +89,7 @@ import io.goobi.viewer.model.security.user.User;
 @ViewerRestServiceBinding
 public class CMSMediaResource {
 
+    
     private static final Logger logger = LoggerFactory.getLogger(CMSMediaResource.class);
     @Context
     protected HttpServletRequest servletRequest;
@@ -216,6 +221,38 @@ public class CMSMediaResource {
             return Response.status(Status.OK).entity(jsonItem).build();
         }
         return Response.status(Status.OK).entity("{}").build();
+    }
+    
+    /**
+     * List all uplodaed media files
+     * @throws PresentationException 
+     * 
+     */
+    @GET
+    @javax.ws.rs.Path(CMS_MEDIA_FILES)
+    @Produces(MediaType.APPLICATION_JSON) 
+    public List<String> getAllFiles() throws PresentationException {
+        Path cmsMediaFolder = Paths.get(DataManager.getInstance().getConfiguration().getViewerHome(),
+                DataManager.getInstance().getConfiguration().getCmsMediaFolder());
+        try(Stream<Path> files = Files.list(cmsMediaFolder)) {
+            return files.filter(Files::isRegularFile).map(Path::getFileName).map(Path::toString).collect(Collectors.toList());
+        } catch (IOException e) {
+            throw new PresentationException("Failed to read uploaded files: " + e.toString());
+        }
+    }
+    
+    @DELETE
+    @javax.ws.rs.Path(CMS_MEDIA_FILES)
+    @Produces(MediaType.APPLICATION_JSON) 
+    public void deleteAllFiles() throws IllegalRequestException {
+        throw new IllegalRequestException("Deleting cms media files is not supported via REST");
+    }
+    
+    @DELETE
+    @javax.ws.rs.Path(CMS_MEDIA_FILES_FILE)
+    @Produces(MediaType.APPLICATION_JSON) 
+    public void deleteFile() throws IllegalRequestException {
+        throw new IllegalRequestException("Deleting cms media files is not supported via REST");
     }
 
     /**

@@ -43,7 +43,7 @@
 				
 				<ui:fragment rendered="#{cmsPage.hasContent('text01')}">
                     <div class="tpl-simple__text">
-    					<ui:include src="#{cmsPage.getContent('text01')}" />
+    					<h:outputText escape="false" value="#{cmsPage.getContent('text01')}"></h:outputText>
     				</div>
                 </ui:fragment>
 				
@@ -58,7 +58,7 @@
 				
 				<ui:fragment rendered="#{cmsPage.hasContent('text02')}">
 				    <div class="tpl-simple__text">
-    					<ui:include src="#{cmsPage.getContent('text02')}" />
+    					<h:outputText escape="false" value="#{cmsPage.getContent('text02')}"></h:outputText>
     				</div>
                 </ui:fragment>
 			</div>

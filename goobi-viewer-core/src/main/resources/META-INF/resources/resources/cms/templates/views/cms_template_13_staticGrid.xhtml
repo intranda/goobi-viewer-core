@@ -45,7 +45,7 @@
                 <h2>#{cmsPage.title}</h2>                
                 
                 <div class="tpl-static-grid__text">
-                    <ui:include src="#{cmsPage.getContent('text')}" />
+                    <h:outputText escape="false" value="#{cmsPage.getContent('text')}"></h:outputText>
                 </div>
                 
                 <!-- STATIC GRID -->

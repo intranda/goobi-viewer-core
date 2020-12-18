@@ -45,7 +45,7 @@
 				<h2>#{cmsPage.title}</h2>                
 				
 				<div class="tpl-collection__text">
-					<ui:include src="#{cmsPage.getContent('description')}" />
+					<h:outputText escape="false" value="#{cmsPage.getContent('description')}"></h:outputText>
 				</div>
 				
 				<div class="tpl-collection__wrapper">

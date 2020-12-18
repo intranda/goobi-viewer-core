@@ -45,7 +45,8 @@
                 <!-- FAQ DESCRIPTION -->
                 <ui:fragment rendered="#{cmsPage.hasContent('description')}">
                     <div class="tpl-faq__description">
-                        <ui:include src="#{cmsPage.getContent('description')}" />
+                        <h:outputText escape="false" value="#{cmsPage.getContent('description')}"></h:outputText>
+                        <h:outputText escape="false" value="#{cmsPage.getContent('description')}"></h:outputText>
                     </div>
                 </ui:fragment>
                 
@@ -89,7 +90,7 @@
 												
 												<ui:fragment rendered="#{faqItem.hasContent('text')}">
 													<div class="tpl-faq-single__text">
-									                    <ui:include src="#{faqItem.getContent('text')}" />
+									                    <h:outputText escape="false" value="#{faqItem.getContent('text')}"></h:outputText>
 									                </div>
 								                </ui:fragment>
 							                    <!-- IMAGE -->
@@ -105,7 +106,7 @@
 												</ui:fragment>
 												<ui:fragment rendered="#{faqItem.hasContent('text2')}">
 													<div class="tpl-faq-single__text">
-									                    <ui:include src="#{faqItem.getContent('text2')}" />
+									                    <h:outputText escape="false" value="#{faqItem.getContent('text2')}"></h:outputText>
 													</div>
 												</ui:fragment>
 							                </div>
@@ -156,7 +157,7 @@
 														
 														<ui:fragment rendered="#{faqItem.hasContent('text')}">
 															<div class="tpl-faq-single__text">
-											                    <ui:include src="#{faqItem.getContent('text')}" />
+											                    <h:outputText escape="false" value="#{faqItem.getContent('text')}"></h:outputText>
 											                </div>
 										                </ui:fragment>
 									                    <!-- IMAGE -->
@@ -172,7 +173,7 @@
 														</ui:fragment>
 														<ui:fragment rendered="#{faqItem.hasContent('text2')}">
 															<div class="tpl-faq-single__text">
-											                    <ui:include src="#{faqItem.getContent('text2')}" />
+											                    <h:outputText escape="false" value="#{faqItem.getContent('text2')}"></h:outputText>
 															</div>
 														</ui:fragment>
 									                </div>

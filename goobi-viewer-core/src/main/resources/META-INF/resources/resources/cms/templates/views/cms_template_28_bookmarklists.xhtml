@@ -43,7 +43,7 @@
 				
 				<ui:fragment rendered="#{cmsPage.hasContent('text')}">
                     <div class="tpl-bookmarklists__text">
-    					<ui:include src="#{cmsPage.getContent('text')}" />
+    					<h:outputText escape="false" value="#{cmsPage.getContent('text')}"></h:outputText>
     				</div>
                 </ui:fragment>
 			    <h:form class="tpl-bookmarklists__lists">    	

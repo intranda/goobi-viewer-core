@@ -46,7 +46,7 @@
 					<!-- TEXT -->
                     <ui:fragment rendered="#{cmsPage.hasContent('text')}">
                         <div class="tpl-tags__text">
-    	                    <ui:include src="#{cmsPage.getContent('text')}" />
+    	                    <h:outputText escape="false" value="#{cmsPage.getContent('text')}"></h:outputText>
     					</div>
                     </ui:fragment>
                     

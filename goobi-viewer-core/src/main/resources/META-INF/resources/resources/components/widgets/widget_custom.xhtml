@@ -20,7 +20,7 @@
 					<ui:fragment rendered="#{!cc.attrs.widget.hasWidgetTitle}">						
 						<h3>#{msg[cc.attrs.widget.type]}</h3>
 					</ui:fragment>
-					<ui:include src="#{cc.attrs.widget.content}" />
+							<h:outputText escape="false" value="#{cc.attrs.widget.html}"></h:outputText>
 				</h:panelGroup>
 				
 				<h:panelGroup rendered="#{cc.attrs.widget.widgetMode == 'FOLDOUT'}">
@@ -31,7 +31,7 @@
                         </a>
                     </h3>
 					<div id="customCollapse-#{cc.attrs.widget.order}" class="collapse">
-						<ui:include src="#{cc.attrs.widget.content}" />
+							<h:outputText escape="false" value="#{cc.attrs.widget.html}"></h:outputText>
 					</div>
 				</h:panelGroup>
 				

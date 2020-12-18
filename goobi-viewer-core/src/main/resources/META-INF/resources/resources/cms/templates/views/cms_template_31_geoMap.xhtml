@@ -43,7 +43,7 @@
 				
 				<ui:fragment rendered="#{cmsPage.hasContent('text01')}">
                     <div class="tpl-geomap__text">
-    					<ui:include src="#{cmsPage.getContent('text01')}" />
+    					<h:outputText escape="false" value="#{cmsPage.getContent('text01')}"></h:outputText>
     				</div>
                 </ui:fragment>
 				

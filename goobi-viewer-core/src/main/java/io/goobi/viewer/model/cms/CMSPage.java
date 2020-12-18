@@ -81,7 +81,6 @@ import io.goobi.viewer.model.cms.itemfunctionality.SearchFunctionality;
 import io.goobi.viewer.model.glossary.GlossaryManager;
 import io.goobi.viewer.model.misc.Harvestable;
 import io.goobi.viewer.model.viewer.CollectionView;
-import io.goobi.viewer.servlets.rest.cms.CMSContentResource;
 import io.goobi.viewer.servlets.rest.dao.TileGridResource;
 
 /**

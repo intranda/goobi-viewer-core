@@ -208,7 +208,8 @@ riot.tag2('adminmediaupload', '<div class="admin-cms-media__upload-wrapper"><div
                 redirect: 'follow'
             })
             .then( response => {
-                return json.image != undefined
+                console.log("HEAD respnse ", response);
+                return response.status == 200;
             })
             .then(exists => {
                 if(exists) {
