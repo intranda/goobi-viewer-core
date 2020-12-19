@@ -32,6 +32,7 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
+import javax.persistence.Transient;
 
 import org.apache.commons.lang3.StringUtils;
 import org.eclipse.persistence.annotations.PrivateOwned;
@@ -82,6 +83,10 @@ public class UserGroup implements ILicensee, Serializable {
     @OneToMany(mappedBy = "userGroup", fetch = FetchType.LAZY, cascade = { CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REMOVE })
     @PrivateOwned
     private List<License> licenses = new ArrayList<>();
+
+    /** List for reflecting dirty changes to memberships. */
+    @Transient
+    private List<UserRole> memberships = null;
 
     /*
      * (non-Javadoc)
@@ -437,7 +442,18 @@ public class UserGroup implements ILicensee, Serializable {
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
     public List<UserRole> getMemberships() throws DAOException {
-        return DataManager.getInstance().getDao().getUserRoles(this, null, null);
+        if (memberships == null) {
+            memberships = DataManager.getInstance().getDao().getUserRoles(this, null, null);
+        }
+
+        return memberships;
+    }
+
+    /**
+     * @param memberships the memberships to set
+     */
+    public void setMemberships(List<UserRole> memberships) {
+        this.memberships = memberships;
     }
 
     /**
