@@ -1105,7 +1105,7 @@ public class SearchBean implements SearchInterface, Serializable {
         }
         // Then unescape custom sequences
         searchString = BeanUtils.unescapeCriticalUrlChracters(searchString);
-        
+
         // Parse search terms from the query (unescape spaces first)
         String discriminatorValue = null;
         if (navigationHelper != null) {
@@ -1235,7 +1235,7 @@ public class SearchBean implements SearchInterface, Serializable {
             }
         }
     }
-    
+
     public String removeChronologyFacetAction() {
         String facet = SolrConstants.YEAR + ":" + facets.getTempValue();
         facets.setTempValue("");
@@ -1656,7 +1656,8 @@ public class SearchBean implements SearchInterface, Serializable {
                 Optional<BookmarkList> bookmarkList =
                         DataManager.getInstance().getBookmarkManager().getBookmarkList(BeanUtils.getRequest().getSession());
                 if (bookmarkList.isPresent() && !bookmarkList.get().getItems().isEmpty()) {
-                    ret.add(new StringPair(bookmarkList.get().getName(), bookmarkList.get().getName()));
+                    ret.add(new StringPair(bookmarkList.get().getName(),
+                            ViewerResourceBundle.getTranslation("bookmarkList_session", null)));
                 }
             }
             // public bookmark lists
@@ -2510,21 +2511,21 @@ public class SearchBean implements SearchInterface, Serializable {
                 .orElse("");
         return value.replace("KEY::", "");
     }
-    
+
     public String searchInRecord(String queryField, String queryValue) {
-        
+
         this.getAdvancedQueryGroups().get(0).getQueryItems().get(0).setField(queryField);
-        if(StringUtils.isNotBlank(queryValue))  {            
+        if (StringUtils.isNotBlank(queryValue)) {
             this.getAdvancedQueryGroups().get(0).getQueryItems().get(0).setValue(queryValue);
         }
         this.getAdvancedQueryGroups().get(0).getQueryItems().get(0).setOperator(SearchItemOperator.IS);
         this.getAdvancedQueryGroups().get(0).getQueryItems().get(1).setField("searchAdvanced_allFields");
         this.getAdvancedQueryGroups().get(0).getQueryItems().get(1).setOperator(SearchItemOperator.AUTO);
         this.setActiveSearchType(1);
-       
+
         return this.searchAdvanced();
     }
-    
+
     public boolean isSolrIndexReachable() {
         return DataManager.getInstance().getSearchIndex().pingSolrIndex();
     }
