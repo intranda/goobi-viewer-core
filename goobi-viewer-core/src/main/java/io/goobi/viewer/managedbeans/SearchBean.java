@@ -1455,12 +1455,12 @@ public class SearchBean implements SearchInterface, Serializable {
 
         if (currentHitIndex < currentSearch.getHitsCount() - 1) {
             //            return currentSearch.getHits().get(currentHitIndex + 1).getBrowseElement();
-            return SearchHelper.getBrowseElement(searchString, currentHitIndex + 1, currentSearch.getSortFields(),
+            return SearchHelper.getBrowseElement(searchString, currentHitIndex + 1, currentSearch.getAllSortFields(),
                     facets.generateFacetFilterQueries(advancedSearchGroupOperator, true), SearchHelper.generateQueryParams(), searchTerms,
                     BeanUtils.getLocale(), DataManager.getInstance().getConfiguration().isAggregateHits(), BeanUtils.getRequest());
         }
         //        return currentSearch.getHits().get(currentHitIndex).getBrowseElement();
-        return SearchHelper.getBrowseElement(searchString, currentHitIndex, currentSearch.getSortFields(),
+        return SearchHelper.getBrowseElement(searchString, currentHitIndex, currentSearch.getAllSortFields(),
                 facets.generateFacetFilterQueries(advancedSearchGroupOperator, true), SearchHelper.generateQueryParams(), searchTerms,
                 BeanUtils.getLocale(), DataManager.getInstance().getConfiguration().isAggregateHits(), BeanUtils.getRequest());
     }
@@ -1482,12 +1482,12 @@ public class SearchBean implements SearchInterface, Serializable {
 
         if (currentHitIndex > 0) {
             //            return currentSearch.getHits().get(currentHitIndex - 1).getBrowseElement();
-            return SearchHelper.getBrowseElement(searchString, currentHitIndex - 1, currentSearch.getSortFields(),
+            return SearchHelper.getBrowseElement(searchString, currentHitIndex - 1, currentSearch.getAllSortFields(),
                     facets.generateFacetFilterQueries(advancedSearchGroupOperator, true), SearchHelper.generateQueryParams(), searchTerms,
                     BeanUtils.getLocale(), DataManager.getInstance().getConfiguration().isAggregateHits(), BeanUtils.getRequest());
         } else if (currentSearch.getHitsCount() > 0) {
             //            return currentSearch.getHits().get(currentHitIndex).getBrowseElement();
-            return SearchHelper.getBrowseElement(searchString, currentHitIndex, currentSearch.getSortFields(),
+            return SearchHelper.getBrowseElement(searchString, currentHitIndex, currentSearch.getAllSortFields(),
                     facets.generateFacetFilterQueries(advancedSearchGroupOperator, true), SearchHelper.generateQueryParams(), searchTerms,
                     BeanUtils.getLocale(), DataManager.getInstance().getConfiguration().isAggregateHits(), BeanUtils.getRequest());
         }
