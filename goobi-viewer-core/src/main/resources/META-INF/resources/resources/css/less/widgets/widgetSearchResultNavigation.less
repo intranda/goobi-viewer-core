@@ -11,6 +11,14 @@
         .search-result-navigation-right {
             overflow: hidden;
         }
+        .search-result-navigation-left,
+        .search-result-navigation-right {
+            &:hover {
+            	svg {
+            		background-color: @lightgray;
+            	}
+            }
+        }
         .search-result-navigation-left {
             max-width: 20%;
             flex: 0 0 20%;
@@ -47,8 +55,13 @@
         a {
             svg {
                 margin: -0.1875rem 0.1875rem 0 0;
-                padding-right: 2px;
+               	margin-right: 0.3rem;
             }
+        }
+        &:hover {
+        	svg {
+        		background-color: @lightgray;
+        	}
         }
     }
 }
