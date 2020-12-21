@@ -738,6 +738,7 @@ public class Search implements Serializable {
      * Returns a list of currently selected sort fields with any configured static sort fields.
      * 
      * @return A list of both static and selected fields
+     * @should return all fields
      */
     public List<StringPair> getAllSortFields() {
         List<String> staticSortFields = DataManager.getInstance().getConfiguration().getStaticSortFields();

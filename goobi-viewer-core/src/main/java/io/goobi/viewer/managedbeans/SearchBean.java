@@ -2099,7 +2099,7 @@ public class SearchBean implements SearchInterface, Serializable {
             throws InterruptedException, ViewerConfigurationException {
         try {
             Map<String, String> params = SearchHelper.generateQueryParams();
-            final SXSSFWorkbook wb = SearchHelper.exportSearchAsExcel(finalQuery, exportQuery, currentSearch.getSortFields(),
+            final SXSSFWorkbook wb = SearchHelper.exportSearchAsExcel(finalQuery, exportQuery, currentSearch.getAllSortFields(),
                     facets.generateFacetFilterQueries(advancedSearchGroupOperator, true), params, searchTerms, locale,
                     DataManager.getInstance().getConfiguration().isAggregateHits(), BeanUtils.getRequest());
             if (Thread.interrupted()) {

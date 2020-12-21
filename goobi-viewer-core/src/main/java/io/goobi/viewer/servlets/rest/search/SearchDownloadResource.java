@@ -127,7 +127,7 @@ public class SearchDownloadResource {
             throw new WebApplicationException("SearchBean unavailable");
         }
         String currentQuery = SearchHelper.prepareQuery(searchBean.getSearchString());
-        List<StringPair> sortFields = searchBean.getCurrentSearch().getSortFields();
+        List<StringPair> sortFields = searchBean.getCurrentSearch().getAllSortFields();
         Map<String, Set<String>> searchTerms = searchBean.getSearchTerms();
 
         final String query = SearchHelper.buildFinalQuery(currentQuery, DataManager.getInstance().getConfiguration().isAggregateHits(), request);
