@@ -16,7 +16,7 @@
 package io.goobi.viewer.exceptions;
 
 import java.net.SocketException;
-import java.util.Date;
+import java.time.LocalDateTime;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Optional;
@@ -145,7 +145,8 @@ public class MyExceptionHandler extends ExceptionHandlerWrapper {
                     // All other exceptions
                     logger.error(t.getMessage(), t);
                     // Put the exception in the flash scope to be displayed in the error page if necessary ...
-                    String msg = DateTools.format(new Date(), DateTools.formatterISO8601DateTime, false) + ": " + t.getMessage();
+
+                    String msg = LocalDateTime.now().format(DateTools.formatterISO8601DateTime) + ": " + t.getMessage();
                     handleError(msg, "general");
                 }
             } finally {
@@ -159,7 +160,6 @@ public class MyExceptionHandler extends ExceptionHandlerWrapper {
         getWrapped().handle();
 
     }
-    
 
     /**
      * @param i
@@ -179,18 +179,18 @@ public class MyExceptionHandler extends ExceptionHandlerWrapper {
 
         putNavigationState(requestMap, flash);
         PhaseId phase = fc.getCurrentPhaseId();
-        if(PhaseId.RENDER_RESPONSE == phase) {
+        if (PhaseId.RENDER_RESPONSE == phase) {
             flash.putNow("ErrorPhase", phase.toString());
             flash.putNow("errorDetails", errorDetails);
             flash.putNow("errorTime", Instant.now().toDateTime().toString());
             flash.putNow("errorType", errorType);
-        } else {            
+        } else {
             flash.put("ErrorPhase", phase.toString());
             flash.put("errorDetails", errorDetails);
             flash.put("errorTime", Instant.now().toDateTime().toString());
             flash.put("errorType", errorType);
         }
-        
+
         requestMap.put("errMsg", errorDetails);
         requestMap.put("errorType", errorType);
         nav.handleNavigation(fc, null, "pretty:error");
@@ -233,7 +233,6 @@ public class MyExceptionHandler extends ExceptionHandlerWrapper {
         }
     }
 
-
     /**
      * @param fc
      * @return
@@ -241,13 +240,15 @@ public class MyExceptionHandler extends ExceptionHandlerWrapper {
     public String getSessionDetails(FacesContext fc) {
         HttpSession session = (HttpSession) fc.getExternalContext().getSession(false);
         if (session != null) {
-            StringBuilder details = new StringBuilder();
-
-            details.append("Session ID: ").append(session.getId());
-            details.append("</br>");
-            details.append("Session created: ").append(new Date(session.getCreationTime()));
-            details.append("</br>");
-            details.append("Session last accessed: ").append(new Date(session.getLastAccessedTime()));
+            StringBuilder details = new StringBuilder()
+                    .append("Session ID: ")
+                    .append(session.getId())
+                    .append("</br>")
+                    .append("Session created: ")
+                    .append(DateTools.getLocalDateTimeFromMillis(session.getCreationTime(), false))
+                    .append("</br>")
+                    .append("Session last accessed: ")
+                    .append(DateTools.getLocalDateTimeFromMillis(session.getLastAccessedTime(), false));
 
             Optional<Map<Object, Map>> logicalViews =
                     Optional.ofNullable((Map) session.getAttribute("com.sun.faces.renderkit.ServerSideStateHelper.LogicalViewMap"));

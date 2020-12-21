@@ -358,38 +358,22 @@ public class DateTools {
     /**
      * Returns the string representation of the given <code>Date</code> based on the given ISO 639-1 language code.
      *
-     * @param date Date to format.
+     * @param date LocalDateTime to format.
      * @param language ISO 639-1 (two-character) language code.
      * @should format date correctly for the given language
      * @should use English format for unknown languages
      * @return a {@link java.lang.String} object.
      */
-    public static String getLocalDate(Date date, String language) {
+    public static String getLocalDate(LocalDateTime date, String language) {
         if (language == null) {
-            return format(convertDateToLocalDateTimeViaInstant(date), formatterENDateTimeNoSeconds, false);
+            return format(date, formatterENDateTimeNoSeconds, false);
         }
         switch (language) {
             case "de":
-                return format(convertDateToLocalDateTimeViaInstant(date), formatterDEDateTimeNoSeconds, false);
+                return format(date, formatterDEDateTimeNoSeconds, false);
             default:
-                return format(convertDateToLocalDateTimeViaInstant(date), formatterENDateTimeNoSeconds, false);
+                return format(date, formatterENDateTimeNoSeconds, false);
         }
-    }
-
-    /**
-     * Used by old crowdsourcing module versions.
-     * 
-     * @param date
-     * @param locale
-     * @return
-     */
-    @Deprecated
-    public static String formatDate(Date date, Locale locale) {
-        if (date == null) {
-            return null;
-        }
-
-        return formatDate(convertDateToLocalDateTimeViaInstant(date), locale);
     }
 
     /**

@@ -21,9 +21,9 @@ import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -1436,10 +1436,10 @@ public class NavigationHelper implements Serializable {
     /**
      * Returns the string representation of the given <code>Date</code> based on the current <code>locale</code>.
      *
-     * @param date a {@link java.util.Date} object.
+     * @param date a {@link java.time.LocalDateTime} object.
      * @return a {@link java.lang.String} object.
      */
-    public String getLocalDate(Date date) {
+    public String getLocalDate(LocalDateTime date) {
         return DateTools.getLocalDate(date, locale.getLanguage());
     }
 
@@ -1868,16 +1868,14 @@ public class NavigationHelper implements Serializable {
             if (Files.exists(themePath)) {
                 String ret = manager.getThemeResourceURI(path).toString();
                 return ret;
-            } else {
-                //            } else if(Files.exists(corePath)) {
-                String ret = manager.getCoreResourceURI(path).toString();
-                return ret;
-                //            } else {
-                //                return "";
             }
-        } else {
-            return "";
+            //            } else if(Files.exists(corePath)) {
+            String ret = manager.getCoreResourceURI(path).toString();
+            return ret;
+            //            } else {
+            //                return "";
         }
+        return "";
     }
 
 }

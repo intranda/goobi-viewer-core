@@ -25,8 +25,8 @@ public class DateToolsTest extends AbstractTest {
                 .withHour(13)
                 .withMinute(15)
                 .withSecond(30);
-        Assert.assertEquals("10.07.1980 13:15", DateTools.getLocalDate(DateTools.convertLocalDateTimeToDateViaInstant(date, false), "de"));
-        Assert.assertEquals("07/10/1980 1:15 PM", DateTools.getLocalDate(DateTools.convertLocalDateTimeToDateViaInstant(date, false), "en"));
+        Assert.assertEquals("10.07.1980 13:15", DateTools.getLocalDate(date, "de"));
+        Assert.assertEquals("07/10/1980 1:15 PM", DateTools.getLocalDate(date, "en"));
     }
 
     /**
@@ -42,7 +42,7 @@ public class DateToolsTest extends AbstractTest {
                 .withHour(13)
                 .withMinute(15)
                 .withSecond(30);
-        Assert.assertEquals("07/10/1980 1:15 PM", DateTools.getLocalDate(DateTools.convertLocalDateTimeToDateViaInstant(date, false), "eu"));
+        Assert.assertEquals("07/10/1980 1:15 PM", DateTools.getLocalDate(date, "eu"));
     }
 
     /**

@@ -16,12 +16,10 @@
 package io.goobi.viewer.model.metadata;
 
 import java.io.Serializable;
-import java.text.DateFormat;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -30,8 +28,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
-import javax.faces.context.FacesContext;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.text.StringEscapeUtils;
@@ -697,17 +693,6 @@ public class Metadata implements Serializable {
                         // Apply replace rules
                         if (!param.getReplaceRules().isEmpty()) {
                             mdValue = MetadataTools.applyReplaceRules(mdValue, param.getReplaceRules(), se.getPi());
-                        }
-                        // Format dates
-                        // TODO use same formatter as for additional metadata
-                        if (param.getKey().equals(SolrConstants.DATECREATED)) {
-                            DateFormat dateFormatMetadata = DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.SHORT,
-                                    FacesContext.getCurrentInstance().getViewRoot().getLocale());
-                            mdValue = dateFormatMetadata.format(new Date(Long.valueOf(mdValue)));
-                        } else if (param.getKey().equals(SolrConstants.DATEUPDATED)) {
-                            DateFormat dateFormatMetadata = DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.SHORT,
-                                    FacesContext.getCurrentInstance().getViewRoot().getLocale());
-                            mdValue = dateFormatMetadata.format(new Date(Long.valueOf(mdValue)));
                         }
                         setParamValue(count, indexOfParam, Collections.singletonList(mdValue), param.getKey(), null, null, null, locale);
                         count++;
