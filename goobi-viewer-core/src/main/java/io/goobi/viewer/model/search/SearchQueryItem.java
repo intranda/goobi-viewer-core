@@ -115,7 +115,7 @@ public class SearchQueryItem implements Serializable {
             return getSelectItems(locale.getLanguage());
         }
 
-        return getSelectItems(null);
+        return getSelectItems("en");
     }
 
     /**
