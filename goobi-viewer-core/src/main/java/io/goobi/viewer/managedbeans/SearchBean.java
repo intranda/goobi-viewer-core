@@ -1105,7 +1105,7 @@ public class SearchBean implements SearchInterface, Serializable {
         }
         // Then unescape custom sequences
         searchString = BeanUtils.unescapeCriticalUrlChracters(searchString);
-        
+
         // Parse search terms from the query (unescape spaces first)
         String discriminatorValue = null;
         if (navigationHelper != null) {
@@ -1455,12 +1455,12 @@ public class SearchBean implements SearchInterface, Serializable {
 
         if (currentHitIndex < currentSearch.getHitsCount() - 1) {
             //            return currentSearch.getHits().get(currentHitIndex + 1).getBrowseElement();
-            return SearchHelper.getBrowseElement(searchString, currentHitIndex + 1, currentSearch.getSortFields(),
+            return SearchHelper.getBrowseElement(searchString, currentHitIndex + 1, currentSearch.getAllSortFields(),
                     facets.generateFacetFilterQueries(advancedSearchGroupOperator, true), SearchHelper.generateQueryParams(), searchTerms,
                     BeanUtils.getLocale(), DataManager.getInstance().getConfiguration().isAggregateHits(), BeanUtils.getRequest());
         }
         //        return currentSearch.getHits().get(currentHitIndex).getBrowseElement();
-        return SearchHelper.getBrowseElement(searchString, currentHitIndex, currentSearch.getSortFields(),
+        return SearchHelper.getBrowseElement(searchString, currentHitIndex, currentSearch.getAllSortFields(),
                 facets.generateFacetFilterQueries(advancedSearchGroupOperator, true), SearchHelper.generateQueryParams(), searchTerms,
                 BeanUtils.getLocale(), DataManager.getInstance().getConfiguration().isAggregateHits(), BeanUtils.getRequest());
     }
@@ -1482,12 +1482,12 @@ public class SearchBean implements SearchInterface, Serializable {
 
         if (currentHitIndex > 0) {
             //            return currentSearch.getHits().get(currentHitIndex - 1).getBrowseElement();
-            return SearchHelper.getBrowseElement(searchString, currentHitIndex - 1, currentSearch.getSortFields(),
+            return SearchHelper.getBrowseElement(searchString, currentHitIndex - 1, currentSearch.getAllSortFields(),
                     facets.generateFacetFilterQueries(advancedSearchGroupOperator, true), SearchHelper.generateQueryParams(), searchTerms,
                     BeanUtils.getLocale(), DataManager.getInstance().getConfiguration().isAggregateHits(), BeanUtils.getRequest());
         } else if (currentSearch.getHitsCount() > 0) {
             //            return currentSearch.getHits().get(currentHitIndex).getBrowseElement();
-            return SearchHelper.getBrowseElement(searchString, currentHitIndex, currentSearch.getSortFields(),
+            return SearchHelper.getBrowseElement(searchString, currentHitIndex, currentSearch.getAllSortFields(),
                     facets.generateFacetFilterQueries(advancedSearchGroupOperator, true), SearchHelper.generateQueryParams(), searchTerms,
                     BeanUtils.getLocale(), DataManager.getInstance().getConfiguration().isAggregateHits(), BeanUtils.getRequest());
         }
@@ -1656,7 +1656,8 @@ public class SearchBean implements SearchInterface, Serializable {
                 Optional<BookmarkList> bookmarkList =
                         DataManager.getInstance().getBookmarkManager().getBookmarkList(BeanUtils.getRequest().getSession());
                 if (bookmarkList.isPresent() && !bookmarkList.get().getItems().isEmpty()) {
-                    ret.add(new StringPair(bookmarkList.get().getName(), bookmarkList.get().getName()));
+                    ret.add(new StringPair(bookmarkList.get().getName(),
+                            ViewerResourceBundle.getTranslation("bookmarkList_session", null)));
                 }
             }
             // public bookmark lists
@@ -2078,7 +2079,7 @@ public class SearchBean implements SearchInterface, Serializable {
             throws InterruptedException, ViewerConfigurationException {
         try {
             Map<String, String> params = SearchHelper.generateQueryParams();
-            final SXSSFWorkbook wb = SearchHelper.exportSearchAsExcel(finalQuery, exportQuery, currentSearch.getSortFields(),
+            final SXSSFWorkbook wb = SearchHelper.exportSearchAsExcel(finalQuery, exportQuery, currentSearch.getAllSortFields(),
                     facets.generateFacetFilterQueries(advancedSearchGroupOperator, true), params, searchTerms, locale,
                     DataManager.getInstance().getConfiguration().isAggregateHits(), BeanUtils.getRequest());
             if (Thread.interrupted()) {
@@ -2489,6 +2490,24 @@ public class SearchBean implements SearchInterface, Serializable {
                 .map(SearchQueryItem::getValue)
                 .orElse("");
         return value.replace("KEY::", "");
+    }
+
+    public String searchInRecord(String queryField, String queryValue) {
+
+        this.getAdvancedQueryGroups().get(0).getQueryItems().get(0).setField(queryField);
+        if (StringUtils.isNotBlank(queryValue)) {
+            this.getAdvancedQueryGroups().get(0).getQueryItems().get(0).setValue(queryValue);
+        }
+        this.getAdvancedQueryGroups().get(0).getQueryItems().get(0).setOperator(SearchItemOperator.IS);
+        this.getAdvancedQueryGroups().get(0).getQueryItems().get(1).setField("searchAdvanced_allFields");
+        this.getAdvancedQueryGroups().get(0).getQueryItems().get(1).setOperator(SearchItemOperator.AUTO);
+        this.setActiveSearchType(1);
+
+        return this.searchAdvanced();
+    }
+
+    public boolean isSolrIndexReachable() {
+        return DataManager.getInstance().getSearchIndex().pingSolrIndex();
     }
 
 }

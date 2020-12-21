@@ -6,7 +6,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>io.goobi.viewer</groupId>
 	<artifactId>viewer-core</artifactId>
-	<version>4.13.0-SNAPSHOT</version>
+	<version>4.14.0-SNAPSHOT</version>
 	<packaging>jar</packaging>
 
 	<name>Goobi viewer - Core</name>
@@ -57,7 +57,6 @@
 
 
 	<properties>
-		<public.version>20.11</public.version>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<jdk.version>1.8</jdk.version>
 		<skipTests>true</skipTests>
@@ -75,7 +74,7 @@
 		<alto.version>1.5.5</alto.version>
 		<contentserver.version>2.5.0</contentserver.version>
 		<tei-conversion.version>1.2.0</tei-conversion.version>
-		<iiif-api-model.version>1.9.2</iiif-api-model.version>
+		<iiif-api-model.version>1.10.0-SNAPSHOT</iiif-api-model.version>
 		<normdataimporter.version>1.5.2</normdataimporter.version>
 
 		<!-- other libraries -->
@@ -94,9 +93,9 @@
         <eclipselink.version>2.7.7</eclipselink.version>
 		<h2.version>1.4.200</h2.version>
 		<httpclient.version>4.5.13</httpclient.version>
-		<httpcore.version>4.4.13</httpcore.version>
+		<httpcore.version>4.4.14</httpcore.version>
 		<httpunit.version>1.7.3</httpunit.version>
-		<icu.version>68.1</icu.version>
+		<icu.version>68.2</icu.version>
 		<inject.version>1</inject.version>
 		<jackson.version>2.12.0</jackson.version>
 		<jakarta.annotation-api.version>1.3.5</jakarta.annotation-api.version>
@@ -133,7 +132,7 @@
 		<solr.version>8.7.0</solr.version>
 		<saml-client.version>4.0.0</saml-client.version>
 		<stax-api.version>1.0-2</stax-api.version>
-        <swagger.version>2.1.5</swagger.version>
+        <swagger.version>2.1.6</swagger.version>
 		<tomcat.version>9.0.40</tomcat.version>
 		<weld-servlet-shaded.version>3.1.5.SP1</weld-servlet-shaded.version>
 		<xerces.version>2.12.0</xerces.version>
@@ -401,7 +400,6 @@
 	    	<groupId>org.glassfish.jersey.test-framework</groupId>
 		    <artifactId>jersey-test-framework-core</artifactId>
             <version>${jersey.version}</version>
-            <scope>test</scope>
 		</dependency>
 		<dependency>
 	    	<groupId>org.glassfish.jersey.test-framework.providers</groupId>
@@ -725,7 +723,6 @@
 							<version>${project.version}</version>
 							<Implementation-Version>${buildNumber}</Implementation-Version>
 							<Implementation-Build-Date>${buildDate}</Implementation-Build-Date>
-							<Public-Version>${public.version}</Public-Version>
 						</manifestEntries>
 					</archive>
 					<excludes>

@@ -52,8 +52,10 @@ import org.apache.solr.client.solrj.request.LukeRequest;
 import org.apache.solr.client.solrj.response.LukeResponse;
 import org.apache.solr.client.solrj.response.LukeResponse.FieldInfo;
 import org.apache.solr.client.solrj.response.QueryResponse;
+import org.apache.solr.client.solrj.response.SolrPingResponse;
 import org.apache.solr.common.SolrDocument;
 import org.apache.solr.common.SolrDocumentList;
+import org.apache.solr.common.SolrException;
 import org.apache.solr.common.luke.FieldFlag;
 import org.jdom2.Document;
 import org.jdom2.Element;
@@ -65,6 +67,7 @@ import org.slf4j.LoggerFactory;
 import de.intranda.metadata.multilanguage.IMetadataValue;
 import de.intranda.metadata.multilanguage.MultiLanguageMetadataValue;
 import io.goobi.viewer.controller.SolrConstants.DocType;
+import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.HTTPException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
@@ -100,6 +103,8 @@ public final class SolrSearchIndex {
     Map<String, String> dataRepositoryNames = new HashMap<>();
 
     private SolrClient client;
+    
+    private List<String> solrFields = null;
 
     /**
      * <p>
@@ -1195,6 +1200,20 @@ public final class SolrSearchIndex {
             throws PresentationException, IndexUnreachableException {
         return searchFacetsAndStatistics(query, filterQueries, facetFields, facetMinCount, null, getFieldStatistics);
     }
+    
+    public boolean pingSolrIndex() {
+        if(client != null) {
+            try {
+                SolrPingResponse ping = client.ping();
+                return ping.getStatus() < 400;
+            } catch (SolrException | SolrServerException | IOException e) {
+                logger.trace("Ping to solr failed " + e.toString());
+                return false;
+            }
+        } else {
+            return false;
+        }
+    }
 
     /**
      * Returns facets for the given facet field list. No actual docs are returned since they aren't necessary.
@@ -1383,25 +1402,33 @@ public final class SolrSearchIndex {
      * </p>
      *
      * @return a {@link java.util.List} object.
+     * @throws DAOException 
      * @throws org.apache.solr.client.solrj.SolrServerException if any.
      * @throws java.io.IOException if any.
      */
-    public List<String> getAllFieldNames() throws SolrServerException, IOException {
-        LukeRequest lukeRequest = new LukeRequest();
-        lukeRequest.setNumTerms(0);
-        LukeResponse lukeResponse = lukeRequest.process(client);
-        Map<String, FieldInfo> fieldInfoMap = lukeResponse.getFieldInfo();
-
-        List<String> list = new ArrayList<>();
-        for (String name : fieldInfoMap.keySet()) {
-            FieldInfo info = fieldInfoMap.get(name);
-            if (info != null && info.getType() != null && (info.getType().toLowerCase().contains("string")
-                    || info.getType().toLowerCase().contains("text") || info.getType().toLowerCase().contains("tlong"))) {
-                list.add(name);
+    public List<String> getAllFieldNames() throws DAOException {
+        try {            
+            if(this.solrFields == null) {            
+                LukeRequest lukeRequest = new LukeRequest();
+                lukeRequest.setNumTerms(0);
+                LukeResponse lukeResponse = lukeRequest.process(client);
+                Map<String, FieldInfo> fieldInfoMap = lukeResponse.getFieldInfo();
+                
+                List<String> list = new ArrayList<>();
+                for (String name : fieldInfoMap.keySet()) {
+                    FieldInfo info = fieldInfoMap.get(name);
+                    if (info != null && info.getType() != null && (info.getType().toLowerCase().contains("string")
+                            || info.getType().toLowerCase().contains("text") || info.getType().toLowerCase().contains("tlong"))) {
+                        list.add(name);
+                    }
+                }
+                this.solrFields = list;
             }
+        } catch(IllegalStateException | SolrServerException | IOException  e) {
+            throw new DAOException("Failed to load SOLR field names: " + e.toString());
         }
 
-        return list;
+        return this.solrFields;
     }
 
     /**

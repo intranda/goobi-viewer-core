@@ -30,8 +30,9 @@
 	</composite:interface>
 
     <h:panelGroup rendered="#{cc.attrs.itemCount > 1}"
-        styleClass="#{cc.attrs.rtl ? 'numeric-paginator -rtl' : 'numeric-paginator -ltr'}">
-        <nav id="numericPaginator" aria-label="#{cc.attrs.positionBottom ? msg.aria_label__pagination_bottom : msg.aria_label__pagination_pages}">
+        styleClass="#{cc.attrs.rtl ? 'numeric-paginator -rtl' : 'numeric-paginator -ltr'}"
+        layout="block">
+        <nav aria-label="#{cc.attrs.positionBottom ? msg.aria_label__pagination_bottom : msg.aria_label__pagination_pages}">
             <ul>
                 <!-- PREV / NEXT (RTL) -->
                 <h:panelGroup rendered="#{cc.attrs.itemActive != 1}">

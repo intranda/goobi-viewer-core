@@ -15,7 +15,8 @@
  */
 package io.goobi.viewer.api.rest.resourcebuilders;
 
-import static io.goobi.viewer.api.rest.v1.ApiUrls.*;
+import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_IMAGE_IIIF;
+import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_RECORD;
 
 import java.io.IOException;
 import java.net.URI;
@@ -34,7 +35,6 @@ import org.apache.solr.common.SolrDocument;
 import org.apache.solr.common.SolrDocumentList;
 
 import de.intranda.api.annotation.oa.Motivation;
-import de.intranda.api.iiif.discovery.OrderedCollectionPage;
 import de.intranda.api.iiif.presentation.AbstractPresentationModelElement;
 import de.intranda.api.iiif.presentation.AnnotationList;
 import de.intranda.api.iiif.presentation.Canvas;
@@ -63,6 +63,7 @@ import io.goobi.viewer.model.iiif.presentation.builder.ManifestBuilder;
 import io.goobi.viewer.model.iiif.presentation.builder.OpenAnnotationBuilder;
 import io.goobi.viewer.model.iiif.presentation.builder.SequenceBuilder;
 import io.goobi.viewer.model.iiif.presentation.builder.StructureBuilder;
+import io.goobi.viewer.model.search.SearchHelper;
 import io.goobi.viewer.model.viewer.BrowseDcElement;
 import io.goobi.viewer.model.viewer.PageType;
 import io.goobi.viewer.model.viewer.PhysicalElement;
@@ -86,7 +87,7 @@ public class IIIFPresentationResourceBuilder {
 
     public IIIFPresentationResourceBuilder(AbstractApiUrlManager urls, HttpServletRequest request) {
         this.urls = urls;
-        this.request  = request;
+        this.request = request;
     }
 
     public IPresentationModelElement getManifest(String pi, BuildMode mode) throws PresentationException, IndexUnreachableException,
@@ -131,18 +132,21 @@ public class IIIFPresentationResourceBuilder {
         return range.orElseThrow(() -> new ContentNotFoundException("Not document with PI = " + pi + " and logId = " + logId + " found"));
     }
 
-    public Sequence getBaseSequence(String pi, BuildMode buildMode, String preferedViewName) throws PresentationException, IndexUnreachableException, URISyntaxException,
+    public Sequence getBaseSequence(String pi, BuildMode buildMode, String preferedViewName)
+            throws PresentationException, IndexUnreachableException, URISyntaxException,
             ViewerConfigurationException, DAOException, IllegalRequestException, ContentNotFoundException {
 
         StructElement doc = getManifestBuilder().getDocument(pi);
         PageType preferedView = getPreferedPageTypeForCanvas(preferedViewName);
-        
+
         IPresentationModelElement manifest = new ManifestBuilder(urls).setBuildMode(buildMode).generateManifest(doc);
 
         if (manifest instanceof Collection) {
             throw new IllegalRequestException("Identifier refers to a collection which does not have a sequence");
         } else if (manifest instanceof Manifest) {
-            new SequenceBuilder(urls).setBuildMode(buildMode).setPreferedView(preferedView).addBaseSequence((Manifest) manifest, doc, manifest.getId().toString(), request);
+            new SequenceBuilder(urls).setBuildMode(buildMode)
+                    .setPreferedView(preferedView)
+                    .addBaseSequence((Manifest) manifest, doc, manifest.getId().toString(), request);
             return ((Manifest) manifest).getSequences().get(0);
         }
         throw new ContentNotFoundException("Not manifest with identifier " + pi + " found");
@@ -155,9 +159,9 @@ public class IIIFPresentationResourceBuilder {
      */
     public PageType getPreferedPageTypeForCanvas(String preferedViewName) {
         PageType preferedView = PageType.viewObject;
-        if(StringUtils.isNotBlank(preferedViewName)) {
+        if (StringUtils.isNotBlank(preferedViewName)) {
             preferedView = PageType.getByName(preferedViewName);
-            if(preferedView == PageType.other) {
+            if (preferedView == PageType.other) {
                 preferedView = PageType.viewObject;
             }
         }
@@ -186,19 +190,20 @@ public class IIIFPresentationResourceBuilder {
             return layer;
         }
     }
-    
+
     /**
      * @param pi
      * @param pageNo
      * @return
-     * @throws ViewerConfigurationException 
-     * @throws URISyntaxException 
-     * @throws ContentNotFoundException 
-     * @throws IndexUnreachableException 
-     * @throws PresentationException 
-     * @throws DAOException 
+     * @throws ViewerConfigurationException
+     * @throws URISyntaxException
+     * @throws ContentNotFoundException
+     * @throws IndexUnreachableException
+     * @throws PresentationException
+     * @throws DAOException
      */
-    public IPresentationModelElement getCanvas(String pi, Integer pageNo) throws URISyntaxException, ViewerConfigurationException, ContentNotFoundException, PresentationException, IndexUnreachableException, DAOException {
+    public IPresentationModelElement getCanvas(String pi, Integer pageNo) throws URISyntaxException, ViewerConfigurationException,
+            ContentNotFoundException, PresentationException, IndexUnreachableException, DAOException {
         StructElement doc = getManifestBuilder().getDocument(pi);
         if (doc != null) {
             PhysicalElement page = getSequenceBuilder().getPage(doc, pageNo);
@@ -262,7 +267,7 @@ public class IIIFPresentationResourceBuilder {
         }
         return layerBuilder;
     }
-    
+
     /**
      * Returns a iiif collection of all collections from the given solr-field The response includes the metadata and subcollections of the topmost
      * collections. Child collections may be accessed following the links in the @id properties in the member-collections Requires passing a language
@@ -284,7 +289,7 @@ public class IIIFPresentationResourceBuilder {
         return collection;
 
     }
-    
+
     /**
      * Returns a iiif collection of all collections from the given solr-field The response includes the metadata and subcollections of the topmost
      * collections. Child collections may be accessed following the links in the @id properties in the member-collections Requires passing a language
@@ -302,9 +307,9 @@ public class IIIFPresentationResourceBuilder {
 
         Collection collection = getCollectionBuilder().generateCollection(collectionField, null, groupingField,
                 DataManager.getInstance().getConfiguration().getCollectionSplittingChar(collectionField));
-        
+
         getCollectionBuilder().addTagListService(collection, collectionField, groupingField, "grouping");
-        
+
         return collection;
 
     }
@@ -332,38 +337,43 @@ public class IIIFPresentationResourceBuilder {
         return collection;
 
     }
-    
-    
-    public List<IPresentationModelElement> getManifestsForQuery(String query, String sortFields, int first, int rows) throws DAOException, PresentationException, IndexUnreachableException, URISyntaxException, ViewerConfigurationException {
 
-        String finalQuery = query + " +(ISWORK:* OR ISANCHOR:*)";
-        
+    public List<IPresentationModelElement> getManifestsForQuery(String query, String sortFields, int first, int rows)
+            throws DAOException, PresentationException, IndexUnreachableException, URISyntaxException, ViewerConfigurationException {
+
+        String finalQuery = query + " " + SearchHelper.ALL_RECORDS_QUERY;
+
         List<StringPair> sortFieldList = SolrSearchIndex.getSolrSortFieldsAsList(sortFields == null ? "" : sortFields, ",", " ");
-        SolrDocumentList queryResults = DataManager.getInstance().getSearchIndex().search(finalQuery, first, rows, sortFieldList, null, Arrays.asList(CollectionBuilder.CONTAINED_WORKS_QUERY_FIELDS)).getResults();
-                
+        SolrDocumentList queryResults = DataManager.getInstance()
+                .getSearchIndex()
+                .search(finalQuery, first, rows, sortFieldList, null, Arrays.asList(CollectionBuilder.CONTAINED_WORKS_QUERY_FIELDS))
+                .getResults();
+
         List<IPresentationModelElement> manifests = new ArrayList<>(queryResults.size());
         ManifestBuilder builder = new ManifestBuilder(urls);
         for (SolrDocument doc : queryResults) {
             long luceneId = Long.parseLong(doc.getFirstValue(SolrConstants.IDDOC).toString());
             StructElement ele = new StructElement(luceneId, doc);
             AbstractPresentationModelElement manifest = builder.generateManifest(ele);
-            
+
             AbstractApiUrlManager imageUrls = DataManager.getInstance().getRestApiManager().getContentApiManager();
-            
-            if(imageUrls != null && manifest.getThumbnails().isEmpty()) {            
+
+            if (imageUrls != null && manifest.getThumbnails().isEmpty()) {
                 int thumbsWidth = DataManager.getInstance().getConfiguration().getThumbnailsWidth();
                 int thumbsHeight = DataManager.getInstance().getConfiguration().getThumbnailsHeight();
-                String thumbnailUrl = imageUrls.path(RECORDS_RECORD, RECORDS_IMAGE_IIIF).params(ele.getPi(), "full", "!" + thumbsWidth + "," + thumbsHeight, 0, "default", "jpg").build();
+                String thumbnailUrl = imageUrls.path(RECORDS_RECORD, RECORDS_IMAGE_IIIF)
+                        .params(ele.getPi(), "full", "!" + thumbsWidth + "," + thumbsHeight, 0, "default", "jpg")
+                        .build();
                 manifest.addThumbnail(new ImageContent(URI.create(thumbnailUrl)));
             }
-            
+
             manifests.add(manifest);
         }
-        
+
         return manifests;
 
     }
-    
+
     /**
      * Returns a iiif collection of the given topCollection for the give collection field The response includes the metadata and subcollections of the
      * direct child collections. Collections further down the hierarchy may be accessed following the links in the @id properties in the
@@ -371,7 +381,8 @@ public class IIIFPresentationResourceBuilder {
      *
      * @param collectionField a {@link java.lang.String} object.
      * @param topElement a {@link java.lang.String} object.
-     * @param groupingField a solr field by which the collections may be grouped. Included in the response for each {@link BrowseDcElement} to enable grouping by client
+     * @param groupingField a solr field by which the collections may be grouped. Included in the response for each {@link BrowseDcElement} to enable
+     *            grouping by client
      * @return a {@link de.intranda.api.iiif.presentation.Collection} object.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws java.net.URISyntaxException if any.
@@ -386,7 +397,7 @@ public class IIIFPresentationResourceBuilder {
                 DataManager.getInstance().getConfiguration().getCollectionSplittingChar(collectionField));
 
         getCollectionBuilder().addTagListService(collection, collectionField, facetField, "grouping");
-        
+
         return collection;
 
     }
@@ -408,6 +419,5 @@ public class IIIFPresentationResourceBuilder {
         }
         return collectionBuilder;
     }
-
 
 }

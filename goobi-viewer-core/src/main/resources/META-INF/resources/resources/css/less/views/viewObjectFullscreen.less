@@ -34,14 +34,21 @@
     &__header-exit {
     	padding-right: 15px;
     	padding-left: 15px;
-    	a, button {
+    	a, 
+    	button, 
+    	span,
+    	select {
     		color: @fsDarkgray;
+			fill: @fsDarkgray;
     		&:hover,
     		&:active,
     		&:focus {
     			color: @fsDarkgray;
     			text-decoration: none;
     		}
+    	}
+    	.custom-control--select::after {
+    		border-top-color: @fsDarkgray;
     	}
     }
     &__header-brand {

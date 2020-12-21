@@ -145,7 +145,6 @@ var viewerJS = ( function( viewer ) {
             if(closable === true) {      
                 $dismissButtons.show();
                 $( 'body' ).one( 'click.close-modal', "[data-overlay-action='dismiss']", event => {
-                    console.log("close modal", event, $node);
                     ($node).detach();
                     $overlay.removeClass("active");
                     $overlay.removeClass("fullscreen");
@@ -155,7 +154,6 @@ var viewerJS = ( function( viewer ) {
                 });
                 //close on click outside content
                 $( 'body' ).one( 'click.close-modal', ".overlay", event => {
-                    console.log("close modal", event, $node);
                     if($(event.target).hasClass("overlay")) {
                         //click directly on modal
                         ($node).detach();

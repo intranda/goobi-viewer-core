@@ -50,6 +50,9 @@ public enum PageType {
     firstWorkInCollection("rest/redirect/toFirstWork"),
     sitelinks("sitelinks"),
     user("user"),
+    archive("archive"),
+    archives("archives"),
+    timematrix("timematrix"),
     //admin
     admin("admin"),
     adminUsers("admin/users"),
@@ -89,6 +92,7 @@ public enum PageType {
     adminCrowdsourcingAnnotations("admin/crowdsourcing/annotations"),
     adminCrowdsourcingCampaigns("admin/crowdsourcing/campaigns"),
     adminUserActivity("admin/user/activity/"),
+    annotations("annotations"),
     // TODO remove
     editContent("crowd/editContent"),
     editOcr("crowd/editOcr"),

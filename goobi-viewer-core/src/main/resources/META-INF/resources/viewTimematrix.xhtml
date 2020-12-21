@@ -11,14 +11,14 @@
         <f:metadata>
             <f:event type="preRenderView" listener="#{navigationHelper.setCurrentPageTimeMatrix}" />
             <f:event type="preRenderView" listener="#{searchBean.resetSearchFilter}" />
-            <f:event type="preRenderView" listener="#{breadcrumbBean.addStaticLinkToBreadcrumb(msg.timematrix__title,1)}" />
+            <f:event type="preRenderView" listener="#{breadcrumbBean.addStaticLinkToBreadcrumb(msg.timematrix,1)}" />
         </f:metadata>
     </ui:define>
 
     <ui:define name="content">
         <f:view contentType="text/html" encoding="utf-8">
             <div id="timeMatrix" class="timematrix">
-                <h2>#{msg.timematrix__title}</h2>
+                <h2>#{msg.timematrix}</h2>
                 <p>#{msg.timematrix__description}</p>
 
                 <ui:include src="/resources/includes/search/timematrix.xhtml" />

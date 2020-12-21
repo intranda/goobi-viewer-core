@@ -87,7 +87,7 @@ public class RecordsListResource {
 
         firstRow = firstRow == null ? 0 : firstRow;
         rows = rows == null ? DEFAULT_MAX_ROWS : rows;
-        logger.trace("rows: {}", rows);
+        // logger.trace("rows: {}", rows);
 
         String finalQuery = createQuery(query, start, end, subtheme);
         logger.trace("final query: {}", finalQuery);

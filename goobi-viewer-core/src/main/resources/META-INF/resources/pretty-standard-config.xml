@@ -104,6 +104,23 @@
 		<action onPostback="false">#{searchBean.setActiveSearchType(0)}</action>
 	</url-mapping>
 	
+    <!-- ARCHIVES -->
+    <url-mapping id="archivetree">
+        <pattern value="/archivetree/" />
+        <view-id value="/archiveTree.xhtml" />
+        <query-param name="selected">#{archiveBean.selectedEntryId}</query-param>
+    </url-mapping>
+    <!-- ARCHIVES -->
+    <url-mapping id="archives">
+        <pattern value="/archives/" />
+        <view-id value="/archivesContent.xhtml" />
+        <query-param onPostback="false" name="selected">#{archiveBean.selectedEntryId}</query-param>
+    </url-mapping>
+    <url-mapping id="archives1">
+        <pattern value="/archives/#{selectedEntryId:ArchiveBean.selectedEntryId}/" />
+        <view-id value="/archivesContent.xhtml" />
+    </url-mapping>
+	
 	<!-- FEEDBACK -->
 	<url-mapping id="feedback">
 		<pattern value="/feedback/" />
@@ -706,17 +723,20 @@
 		<pattern value="/admin/groups/" />
 		<view-id value="/resources/admin/views/adminUserGroups.xhtml" />
 		<action onPostback="false">#{adminBean.setCurrentUserGroup(null)}</action>
+		 <action onPostback="false">#{adminBean.resetDirtyUserRolesAction}</action>
 	</url-mapping>
     <url-mapping id="adminGroupEdit">
         <pattern value="/admin/groups/edit/#{userGroupId:adminBean.currentUserGroupId}/" />
         <view-id value="/resources/admin/views/adminUserGroup.xhtml" />
         <action onPostback="false">#{adminBean.resetCurrentUserRoleAction}</action>
+        <action onPostback="false">#{adminBean.resetDirtyUserRolesAction}</action>
     </url-mapping>
     <url-mapping id="adminGroupNew">
         <pattern value="/admin/groups/new/" />
         <view-id value="/resources/admin/views/adminUserGroup.xhtml" />
         <action onPostback="false">#{adminBean.resetCurrentUserGroupAction}</action>
         <action onPostback="false">#{adminBean.resetCurrentUserRoleAction}</action>
+        <action onPostback="false">#{adminBean.resetDirtyUserRolesAction}</action>
     </url-mapping>
 	<url-mapping id="adminIpRanges">
 		<pattern value="/admin/ipranges/" />
@@ -985,7 +1005,7 @@
 		<action onPostback="false">#{crowdsourcingBean.resetTarget}</action>
 	</url-mapping>
     <url-mapping id="crowdCampaignAnnotations">
-        <pattern value="/campaigns/#{campaign:crowdsourcingBean.targetCampaignId}/annotations/"/>
+        <pattern value="/campaigns/#{campaign:annotationBean.ownerCampaignId}/annotations/"/>
         <view-id value="/resources/crowdsourcing/campaignAnnotations.xhtml" />
         <action onPostback="false">#{navigationHelper.resetTheme}</action>
     </url-mapping>

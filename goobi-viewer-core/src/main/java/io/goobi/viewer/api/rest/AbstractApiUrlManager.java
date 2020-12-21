@@ -270,7 +270,7 @@ public abstract class AbstractApiUrlManager {
             client.property(ClientProperties.CONNECT_TIMEOUT, 5000);
             client.property(ClientProperties.READ_TIMEOUT, 5000);
             return client
-                    .target(getApiUrl())
+                    .target(getApiUrl() + "/")
                     .request(MediaType.APPLICATION_JSON)
                     .get(ApiInfo.class);
         } catch (Throwable e) {

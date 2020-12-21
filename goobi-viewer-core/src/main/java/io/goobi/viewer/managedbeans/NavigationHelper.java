@@ -19,6 +19,8 @@ import java.io.IOException;
 import java.io.Serializable;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
@@ -54,6 +56,7 @@ import io.goobi.viewer.Version;
 import io.goobi.viewer.controller.Configuration;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.DateTools;
+import io.goobi.viewer.controller.FileResourceManager;
 import io.goobi.viewer.controller.StringTools;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
@@ -247,7 +250,7 @@ public class NavigationHelper implements Serializable {
      * @param resetCurrentDocument a boolean.
      */
     public void setCurrentPage(String currentPage, boolean resetBreadcrubs, boolean resetCurrentDocument) {
-        logger.trace("setCurrentPage: {}", currentPage);
+        // logger.trace("setCurrentPage: {}", currentPage);
         setCurrentPage(currentPage, resetBreadcrubs, resetCurrentDocument, false);
     }
 
@@ -1036,7 +1039,6 @@ public class NavigationHelper implements Serializable {
         setSubThemeDiscriminatorValue("");
     }
 
-
     /**
      * <p>
      * isHtmlHeadDCMetadata.
@@ -1078,6 +1080,11 @@ public class NavigationHelper implements Serializable {
      */
     public String getImageUrl() {
         return BeanUtils.getServletPathWithHostAsUrlFromJsfContext() + "/" + PageType.viewImage.getName();
+    }
+
+    public String getCurrentPageTypeUrl() {
+        return BeanUtils.getServletPathWithHostAsUrlFromJsfContext() + "/" + getCurrentPageType().getName();
+
     }
 
     /**
@@ -1815,17 +1822,6 @@ public class NavigationHelper implements Serializable {
 
     /**
      * <p>
-     * getPublicVersion.
-     * </p>
-     *
-     * @return a {@link java.lang.String} object.
-     */
-    public String getPublicVersion() {
-        return Version.PUBLIC_VERSION;
-    }
-
-    /**
-     * <p>
      * getBuildDate.
      * </p>
      *
@@ -1856,4 +1852,32 @@ public class NavigationHelper implements Serializable {
     public String getApplicationName() {
         return Version.APPLICATION_NAME;
     }
+
+    /**
+     * Get the path to a viewer resource relative to the root path ("/viewer") If it exists, the resource from the theme, otherwise from the core If
+     * the resource exists neither in theme nor core. An Exception will be thrown
+     * 
+     * @param path The resource path relative to the first "resources" directory
+     * @return
+     */
+    public String getResource(String path) {
+        FileResourceManager manager = DataManager.getInstance().getFileResourceManager();
+        if (manager != null) {
+            Path themePath = manager.getThemeResourcePath(path);
+            //            Path corePath = manager.getCoreResourcePath(path);
+            if (Files.exists(themePath)) {
+                String ret = manager.getThemeResourceURI(path).toString();
+                return ret;
+            } else {
+                //            } else if(Files.exists(corePath)) {
+                String ret = manager.getCoreResourceURI(path).toString();
+                return ret;
+                //            } else {
+                //                return "";
+            }
+        } else {
+            return "";
+        }
+    }
+
 }

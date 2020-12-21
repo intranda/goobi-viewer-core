@@ -1,0 +1,67 @@
+/* ==============================================================
+   Widget Archives
+   style declarations for widget_archives.xhtml
+   ==============================================================*/
+.widget-archives {
+	.widget-archives {
+		&__entry {
+			text-align: center;
+			&:after {
+				font: normal normal normal 14px/1 FontAwesome;
+				content: "\f107";
+				font-size: 1.4rem;
+				display: inline-block;
+				width: 100%;
+				text-align: center;
+			}
+			&:nth-last-child(2) {
+				&::after {
+					display: none;
+				}
+			}
+		}
+		&__archives-link {
+			width: 100%;
+			margin-top: .6rem;
+			text-align: center;
+		}
+		&__heading {
+			display: flex;
+			align-items: flex-start;
+		}
+		&__prev,
+		&__next {
+			padding: 0;
+			line-height: inherit;
+			color: inherit;
+			border: none;
+			background: transparent;
+			&.-disabled {
+				opacity: 0.5;
+				cursor: default;
+			}
+			&:hover,
+			&:active,
+			&:focus {
+				color: inherit;
+			}
+		}
+		&__prev {
+			margin-left: auto;
+			margin-right: 1.8rem;
+		}
+		&__next {}
+	}
+}
+
+/* BREAKPOINT FOR LARGE DESKTOPS */
+@media screen and (max-width: @largeBreakpoint) {} 
+
+/* BREAKPOINT FOR DESKTOPS */
+@media screen and (max-width: @mediumBreakpoint) {}
+
+/* BREAKPOINT FOR TABLETS */
+@media screen and (max-width: @smallBreakpoint) {}
+
+/* BREAKPOINT FOR SMARTPHONES */
+@media screen and (max-width: @xSmallBreakpoint) {}

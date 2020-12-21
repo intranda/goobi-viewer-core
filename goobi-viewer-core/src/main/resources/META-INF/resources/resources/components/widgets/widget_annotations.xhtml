@@ -23,8 +23,8 @@
 
 				<!-- TODO: IF MORE THAN 3 annotations > ELEMENT COLLAPSED -->
 				<h3
-					class="widget__title #{(!cc.attrs.collapsible or activeDocumentBean.viewManager.metadataViewOnly) ? '' : 'collapseable'}">
-					<span>#{msgcs.crowdsourcing_userGeneratedContent}</span> <i
+					class="widget__title #{(cc.attrs.collapsible and contentBean.getUserGeneratedContentsForDisplay(activeDocumentBean.viewManager.pi).size() gt 3) ? 'collapseable' : ''}">
+					<span>#{msg.admin__crowdsourcing_annotations}</span> <i
 						class="fa fa-angle-down" aria-hidden="true"></i>
 				</h3>
 
@@ -92,14 +92,14 @@
 
 							<script type="text/javascript">
 								//<![CDATA[ 
+		                            var highlightCurrentSelection = function( $Obj ) {
+		                            	// reset styles for all li elements
+		                            	$( '#user_generated_content_nav li' ).removeClass( 'ugc-highlight' );
+		                            	
+		                            	// highlight clicked li element
+		                            	$Obj.addClass( 'ugc-highlight' );
+		                            };
 								    function initView() {
-			                            var highlightCurrentSelection = function( $Obj ) {
-			                            	// reset styles for all li elements
-			                            	$( '#user_generated_content_nav li' ).removeClass( 'ugc-highlight' );
-			                            	
-			                            	// highlight clicked li element
-			                            	$Obj.addClass( 'ugc-highlight' );
-			                            };
 			                            
 			                            var coordinates = {
 			                            	name: 'ugc',

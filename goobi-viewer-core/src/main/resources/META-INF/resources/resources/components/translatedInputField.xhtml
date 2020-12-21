@@ -10,6 +10,7 @@
 		<composite:attribute name="render" required="false" default=""></composite:attribute>
 		<composite:attribute name="execute" required="false" default=""></composite:attribute>
 		<composite:attribute name="required" required="false" default="false" type="java.lang.Boolean"></composite:attribute>
+		<composite:attribute name="ariaLabel" required="false"></composite:attribute>
 	</composite:interface>
 
 	<composite:implementation>
@@ -47,6 +48,7 @@
 					value="#{cc.attrs.value.text}"
 					required="#{cc.attrs.required and cc.attrs.value.isDefaultLocaleSelected()}"
 					requiredMessage="#{msg.info__input_required}">
+					<f:passThroughAttribute name="aria-label" value="#{cc.attrs.ariaLabel}"/>
 					<f:ajax event="change" render="@none" execute="@this"></f:ajax>
 					</h:inputTextarea>
 					

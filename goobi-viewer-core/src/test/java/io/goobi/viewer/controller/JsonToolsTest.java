@@ -8,6 +8,7 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 import io.goobi.viewer.AbstractSolrEnabledTest;
+import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.model.viewer.PageType;
 
 public class JsonToolsTest extends AbstractSolrEnabledTest {
@@ -29,7 +30,7 @@ public class JsonToolsTest extends AbstractSolrEnabledTest {
         QueryResponse response = DataManager.getInstance().getSearchIndex().search(SolrConstants.PI + ":" + PI, 0, 1, null, null, null);
         Assert.assertFalse("Required Solr document not found in index: " + PI, response.getResults().isEmpty());
         SolrDocument doc = response.getResults().get(0);
-        JSONObject json = JsonTools.getRecordJsonObject(doc, rootUrl);
+        JSONObject json = JsonTools.getRecordJsonObject(doc, rootUrl, BeanUtils.getImageDeliveryBean().getThumbs());
         Assert.assertNotNull(json);
         Assert.assertTrue(json.has("id"));
         Assert.assertEquals(PI, json.get("id"));
@@ -37,8 +38,8 @@ public class JsonToolsTest extends AbstractSolrEnabledTest {
         Assert.assertEquals(doc.getFieldValue(SolrConstants.DATECREATED), json.get("dateCreated"));
         //        Assert.assertEquals(doc.getFieldValues("MD_PERSON_UNTOKENIZED"), json.get("personList"));
         Assert.assertEquals(doc.getFieldValue(SolrConstants.DC), json.get("collection"));
-        // URL root depends on the current config state and may variate, so only compare the args
-        Assert.assertTrue("Thumbnail url was " + ((String) json.get("thumbnailUrl")), ((String) json.get("thumbnailUrl"))
+        // URL root depends on the current config state and may vary, so only compare the args
+        Assert.assertTrue("Thumbnail url was: " + ((String) json.get("thumbnailUrl")), ((String) json.get("thumbnailUrl"))
                 .contains("records/" + PI + "/files/images/" + doc.getFieldValue(SolrConstants.THUMBNAIL) + "/full/!100,120/0/default.jpg"));
         // URL root depends on the current config state and may variate, so only compare the args
         Assert.assertTrue("Image url was " + ((String) json.get("thumbnailUrl")), ((String) json.get("mediumimage"))

@@ -28,13 +28,13 @@
                         <div class="admin__table-tools">
                             <!-- PAGINATOR -->
                             <div class="admin__table-paginator">
-                                <viewerComponent:dataTablePaginator tableValues="#{crowdsourcingBean.lazyModelAnnotations}" />
+                                <viewerComponent:dataTablePaginator tableValues="#{annotationBean.lazyModelAnnotations}" />
                             </div>
                             <!-- FILTER -->
                             <div class="admin__table-filter">
                                 <!-- TODO: ADD FILTER FOR targetPI, TOO -->
                                 <viewerComponent:dataTableColumnFilter key="admin__crowsourcing_annotations_search"
-                                    filter="#{crowdsourcingBean.lazyModelAnnotations.getFilter('targetPI_body')}" />
+                                    filter="#{annotationBean.lazyModelAnnotations.getFilter('targetPI_body')}" />
                             </div>
                         </div>
 
@@ -43,24 +43,47 @@
 
                             <!-- TITLE ROW -->
                             <div class="row no-gutters admin__table-title">
+                                <!-- One Square to check them all! -->
+                                <div class="d-flex admin__checkbox-column-all-entrys">
+                                	<h:selectBooleanCheckbox id="selectAllCheckbox" value="#{annotationBean.selectAll}" immediate="true" styleClass="admin__fancy-checkbox">
+                                		<f:passThroughAttribute name="data-group-select" value="select-all"></f:passThroughAttribute>
+                                		<f:passThroughAttribute name="data-group" value="exportSelection"></f:passThroughAttribute>
+                                		<f:ajax event="change"></f:ajax>
+                                	</h:selectBooleanCheckbox>
+	                                <h:outputLabel value="" for="selectAllCheckbox" />
+                                </div>
                                 <!-- ANNOTATION COL -->
-                                <div class="col-8 d-flex">#{msg.admin__crowdsourcing_annotation}</div>
+                                <div class="col d-flex">#{msg.admin__crowdsourcing_annotation}</div>
 
                                 <!-- TARGET COL -->
 	                            <div class="col-2 d-flex">                            
-	                                <viewerComponent:sortingArrow filterType="targetPI" colHeading="#{msg.admin__crowdsourcing_annotation_target}" list="#{crowdsourcingBean.lazyModelAnnotations}" />
+	                                <viewerComponent:sortingArrow filterType="targetPI" colHeading="#{msg.admin__crowdsourcing_annotation_target}" list="#{annotationBean.lazyModelAnnotations}" />
 	                            </div>
 
                                 <!-- DATE COL -->
 	                            <div class="col-2 d-flex">                            
-	                                <viewerComponent:sortingArrow filterType="dateCreated" colHeading="#{msg.date}" list="#{crowdsourcingBean.lazyModelAnnotations}" />
+	                                <viewerComponent:sortingArrow filterType="dateCreated" colHeading="#{msg.date}" list="#{annotationBean.lazyModelAnnotations}" />
 	                            </div>
+	                            
+	                            <!-- REVIEW STATE COL -->
+	                            <div class="col-1 d-flex" style="justify-content: center;">
+								        <span class="admin__sorting-table-heading">#{msg.label__crowdsourcing_review}</span>
+								</div>
                             </div>
 
                             <!-- INDIVIDUAL ANNOTATION ROWS -->
-                            <ui:repeat var="annotation" value="#{crowdsourcingBean.lazyModelAnnotations.paginatorList}">
+                            <ui:repeat var="annotation" value="#{annotationBean.lazyModelAnnotations.paginatorList}">
                                 <div class="row no-gutters admin__table-entry">
-                                    <div class="col-8 d-flex" style="flex-direction:column;">
+	                                <!-- Check single entrys/rows -->
+	                                <div class="d-flex admin__checkbox-column-single-entry">
+	                                	<h:selectBooleanCheckbox id="selectOne" data-group="exportSelection" value="#{annotationBean.exportSelection[annotation.id]}" styleClass="admin__fancy-checkbox">
+	                                		<f:passThroughAttribute name="data-group-select" value="select-one"></f:passThroughAttribute>
+	                                		<f:passThroughAttribute name="data-group" value="exportSelection"></f:passThroughAttribute>
+	                                		<f:ajax event="change"></f:ajax>
+	                                	</h:selectBooleanCheckbox>
+		                                <h:outputLabel value="" for="selectOne" />
+	                                </div>
+                                    <div class="col d-flex" style="flex-direction:column;">
                                         <div id="annotation_body_#{annotation.id}" class="annotation__body__content_wrapper">#{contentBean.cleanUpValue(annotation.body.toString())}</div>
 										<annotationBody annotationid="#{annotation.id}" contentid="annotation_body_#{annotation.id}"/>
                                         <!-- ACTIONS -->
@@ -72,7 +95,7 @@
                                             <!-- DELETE -->
                                             <h:commandLink styleClass="admin__table-action-link -redlink"
                                                 onclick="if ( !confirm( &quot;#{msg.admin__crowdsourcing_annotation_deleteConfirmationText}&quot; ) ) { return false };"
-                                                action="#{crowdsourcingBean.deleteAnnotationAction(annotation)}">#{msg.delete}
+                                                action="#{annotationBean.deleteAnnotationAction(annotation)}">#{msg.delete}
                                             </h:commandLink>
                                         </div>
                                     </div>
@@ -85,12 +108,38 @@
                                             <f:attribute name="pattern" value="#{navigationHelper.dateTimePattern}" />
                                         </h:outputText>
                                     </div>
+                                    
+                                    <div class="col-1 d-flex" style="justify-content: center;">
+								        <ui:fragment rendered="#{annotation.reviewStatus == 'FINISHED'}">
+									        <i class="fa fa-check" aria-hidden="true"></i>
+								        </ui:fragment>
+									</div>
                                 </div>
                             </ui:repeat>
                         </div>
                     </div>
+                    <div class="admin__overlay-bar">
+                    	<div class="admin__overlay-bar-message">#{msg.admin__crowdsourcing_annotations_export_excel_file}:</div>
+                    	<h:commandButton value="#{msg.save}" styleClass="btn btn--success admin__overlay-bar-action" action="#{annotationBean.downloadSelectedAnnotations()}" />
+                    </div>
 		            <script type="text/javascript">
 		                $( document ).ready( function() {
+		                    console.log("document ready");
+			                
+			                initTable();
+		                    mountRiotTags();
+		                    viewerJS.groupSelect.init({reseter: ".btn-filter, admin__search-clear, .sort"});
+		                    viewerJS.groupSelect.onChange("exportSelection").subscribe(e => {
+		                        	
+	                        if(e.anyChecked) {
+								$('.admin__overlay-bar').addClass('-showExportOptions');		                            
+	                        } else {
+								$('.admin__overlay-bar').removeClass('-showExportOptions');		                            
+		                        }
+		                    })		
+ 		                } );
+		                
+		                function initTable() {
 		                    var displayDateUpdated = true;
 		                    if ( !displayDateUpdated ) {
 		                        $( ".column_date_updated" ).hide();
@@ -105,14 +154,20 @@
 		                    };
 		                    
 		                    viewerJS.dataTable.init( dataTableConfig );
-		                } );
-		                        riot.mount("progressBar");
-		                        riot.mount("annotationBody", {
-		                            currentlang: "#{navigationHelper.localeString}",
-		                            resturl: "#{configurationBean.restApiUrl}",
-		                            mapboxtoken: "#{configurationBean.mapBoxToken}"
-		                        });
+		                }
+		                
+		                function mountRiotTags() {		                    
+		                console.log("mount riot tags")
+	                        riot.mount("annotationBody", {
+	                            currentlang: "#{navigationHelper.localeString}",
+	                            resturl: "#{configurationBean.restApiUrl}",
+	                        });
+		                }
+		               
+		                
 		            </script>
+        
+                    
                 </h:form>
             </div>
 

@@ -7,7 +7,8 @@
 	<composite:interface />
 
     <composite:implementation>
-        <h:panelGroup rendered="#{userBean.loggedIn and activeDocumentBean.recordLoaded}">
+        <h:panelGroup
+            rendered="#{userBean.loggedIn and activeDocumentBean.recordLoaded and (userBean.user.superuser or (configurationBean.transkribusEnabled and activeDocumentBean.viewManager.topDocument.sourceDocFormat == 'METS') or userBean.user.hasPrivilegesForTemplate('templateOverviewPage'))}">
             <div id="widgetUserInteractions" class="widget widget-user-interactions">
                 <h:form id="widgetUserInteractionsStandardForm" prependId="false">
                     <h3>#{msg.menuUser_workInteractions}</h3>

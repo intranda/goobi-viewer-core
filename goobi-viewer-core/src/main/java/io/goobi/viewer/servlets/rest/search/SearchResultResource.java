@@ -88,7 +88,8 @@ public class SearchResultResource {
             for (SearchHit searchHit : searchHits) {
                 if (hitId.equals(Long.toString(searchHit.getBrowseElement().getIddoc()))) {
                     if (searchHit.getHitsPopulated() < numChildren) {
-                        searchHit.populateChildren(numChildren - searchHit.getHitsPopulated(), searchHit.getHitsPopulated(), locale, servletRequest);
+                        searchHit.populateChildren(numChildren - searchHit.getHitsPopulated(), searchHit.getHitsPopulated(), locale,
+                                servletRequest, BeanUtils.getImageDeliveryBean().getThumbs());
                     }
                     Collections.sort(searchHit.getChildren());
                     SearchHitChildList searchHitChildren =

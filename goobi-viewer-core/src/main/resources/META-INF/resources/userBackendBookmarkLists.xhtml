@@ -54,7 +54,9 @@
 										</h:inputText>
 									</div>
 									<div class="col-1 no-padding">
-										<h:commandLink id="addBookmarkListBtn" styleClass="btn btn--clean" action="#{bookmarkBean.addBookmarkList}"></h:commandLink>
+										<h:commandLink id="addBookmarkListBtn" styleClass="btn btn--clean" action="#{bookmarkBean.addBookmarkList}">
+											<f:passThroughAttribute name="aria-label" value="#{msg.bookmarkList_addNewBookmarkList}"></f:passThroughAttribute>
+										</h:commandLink>
 									</div>
 								</div>						
 							</h:form>

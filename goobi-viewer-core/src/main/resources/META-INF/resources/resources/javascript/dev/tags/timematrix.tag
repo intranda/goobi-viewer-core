@@ -2,7 +2,7 @@
 
 	<div class="timematrix__objects">
 	<div each="{manifest in manifests}" class="timematrix__content">
-			<div id="imageMap" class="timematrix__img">
+			<div class="timematrix__img">
 			<a href="{getViewerUrl(manifest)}"> <img src="{getImageUrl(manifest)}"
 				class="timematrix__image" data-viewer-thumbnail="thumbnail"  alt="" aria-hidden="true"
 				onError="this.onerror=null;this.src='/viewer/resources/images/access_denied.png'" />
@@ -30,7 +30,6 @@
 	                }),
 	                ).subscribe(json => { 
 	                    this.manifests = json.orderedItems;
-	                    console.log("got manifests ", this.manifests);
 	                    this.update();
 	                    this.opts.loading.hide();
 	                })
@@ -75,8 +74,8 @@
 	        apiTarget += "api/v1/records/list";
 	        apiTarget += "?start=" + $( this.opts.startInput ).val();
 	        apiTarget += "&end=" + $( this.opts.endInput ).val();
-	        apiTarget += "&count=" + $( this.opts.count ).val();
-	        apiTarget += "&sort=YEAR";
+	        apiTarget += "&rows=" + $( this.opts.count ).val();
+	        apiTarget += "&sort=RANDOM";
 	        if ( this.opts.subtheme ) {
 	            apiTarget += ( "&subtheme=" + this.opts.subtheme );
 	        }

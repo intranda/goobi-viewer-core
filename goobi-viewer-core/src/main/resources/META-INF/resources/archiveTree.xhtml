@@ -1,0 +1,81 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:h="http://xmlns.jcp.org/jsf/html"
+    xmlns:f="http://xmlns.jcp.org/jsf/core"
+    xmlns:c="http://java.sun.com/jsp/jstl/core"
+    xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+    xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+    template="/resources/themes/#{navigationHelper.theme}/template.html"
+    xmlns:viewer="http://xmlns.jcp.org/jsf/composite/components/partner"
+    xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components" 
+    xmlns:widgetComponent="http://xmlns.jcp.org/jsf/composite/components/widgets">
+
+    <ui:define name="metadata">
+        <f:metadata>
+            <f:event type="preRenderView" listener="#{navigationHelper.setCurrentView('archive')}" />
+            <f:event type="preRenderView" listener="#{breadcrumbBean.addStaticLinkToBreadcrumb(msg.archives,1)}" />
+        </f:metadata>
+    </ui:define> 
+	
+	<ui:define name="head">		
+		<f:view contentType="text/html" encoding="utf-8">
+	
+		</f:view>
+	</ui:define>
+
+    <ui:define name="content">
+		<f:view contentType="text/html" encoding="utf-8">
+            
+            <h2>#{msg.archives}</h2>
+            <c:choose>
+				<c:when test="#{archiveBean.databaseState == 'ERROR_NOT_CONFIGURED'}">
+					<div class="archives__error">
+						<span>#{msg.error__archives_database_configuration_missing}</span>
+					</div>
+				</c:when>
+				<c:when test="#{archiveBean.databaseState == 'ERROR_NOT_REACHABLE'}">
+					<div class="archives__error">
+						<span>#{msg.error__archives_database_not_reachable}</span>
+					</div>
+				</c:when>
+				<c:when test="#{archiveBean.databaseState == 'ERROR_INVALID_FORMAT'}">
+					<div class="archives__error">
+						<span>#{msg.error__archives_failed_to_read_database}</span>
+					</div>
+				</c:when>
+				<c:otherwise>
+					<div id="archivesView" class="archives-tree">
+						<ui:include src="/resources/includes/archives/archiveTreeView.xhtml">
+	                    	<ui:param name="view" value="archivetree" />
+	                    	<ui:param name="indent" value="#{configurationBean.tocIndentation * 1.5}"/>
+	                    </ui:include>
+					</div>
+				</c:otherwise>
+			</c:choose>
+		</f:view>
+		
+
+		
+	</ui:define>
+
+    <ui:define name="sidebar">
+        <h:panelGroup rendered="#{browseBean.browsingMenuEnabled}">
+            <widgetComponent:widget_browsing />
+        </h:panelGroup> 
+
+        <c:forEach var="module" items="#{configurationBean.modules}">
+            <c:forEach var="contribution" items="#{module.sidebarContributions}">
+                <ui:include src="/#{contribution}" />
+            </c:forEach>
+        </c:forEach>
+        
+        <widgetComponent:widget_userInteractions />
+    </ui:define>
+
+    <ui:define name="rssFeed">
+        <ui:include src="resources/includes/rssFeed.xhtml" />
+    </ui:define>
+
+    <ui:define name="breadcrumbs">
+        <ui:include src="/resources/includes/breadcrumbs.xhtml" />
+    </ui:define>
+</ui:composition>

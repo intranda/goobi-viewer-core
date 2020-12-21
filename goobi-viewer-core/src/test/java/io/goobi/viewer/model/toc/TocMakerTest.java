@@ -15,6 +15,8 @@
  */
 package io.goobi.viewer.model.toc;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
@@ -27,11 +29,7 @@ import io.goobi.viewer.AbstractDatabaseAndSolrEnabledTest;
 import io.goobi.viewer.controller.Configuration;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.SolrConstants;
-import io.goobi.viewer.model.toc.TOC;
-import io.goobi.viewer.model.toc.TOCElement;
-import io.goobi.viewer.model.toc.TocMaker;
 import io.goobi.viewer.model.viewer.MimeType;
-import io.goobi.viewer.model.viewer.PhysicalElement;
 import io.goobi.viewer.model.viewer.StructElement;
 
 public class TocMakerTest extends AbstractDatabaseAndSolrEnabledTest {
@@ -225,5 +223,59 @@ public class TocMakerTest extends AbstractDatabaseAndSolrEnabledTest {
         doc.setField(SolrConstants.DOCSTRCT, "PeriodicalVolume");
         String label = TocMaker.buildLabel(doc, "PeriodicalVolume").getValue().orElse("");
         Assert.assertEquals("Number 1: Periodical volume", label);
+    }
+
+    /**
+     * @see TocMaker#createOrderedGroupDocMap(List,List,String)
+     * @verifies create correctly sorted map
+     */
+    @Test
+    public void createOrderedGroupDocMap_shouldCreateCorrectlySortedMap() throws Exception {
+        String pi = "PPN123";
+        List<SolrDocument> groupMemberDocs = new ArrayList<>(5);
+        {
+            SolrDocument doc = new SolrDocument();
+            doc.setField(SolrConstants.IDDOC, String.valueOf(1));
+            doc.setField("GROUPID_SERIES", pi);
+            doc.setField("GROUPORDER_SERIES", 5);
+            groupMemberDocs.add(doc);
+        }
+        {
+            SolrDocument doc = new SolrDocument();
+            doc.setField(SolrConstants.IDDOC, String.valueOf(2));
+            doc.setField("GROUPID_SERIES_2", pi);
+            doc.setField("GROUPORDER_SERIES_2", 4);
+            groupMemberDocs.add(doc);
+        }
+        {
+            SolrDocument doc = new SolrDocument();
+            doc.setField(SolrConstants.IDDOC, String.valueOf(3));
+            doc.setField("GROUPID_SERIES_3", pi);
+            doc.setField("GROUPORDER_SERIES_3", 3);
+            groupMemberDocs.add(doc);
+        }
+        {
+            SolrDocument doc = new SolrDocument();
+            doc.setField(SolrConstants.IDDOC, String.valueOf(4));
+            doc.setField("GROUPID_SERIES_2", pi);
+            doc.setField("GROUPORDER_SERIES_2", 2);
+            groupMemberDocs.add(doc);
+        }
+        {
+            SolrDocument doc = new SolrDocument();
+            doc.setField(SolrConstants.IDDOC, String.valueOf(5));
+            doc.setField("GROUPID_SERIES", pi);
+            doc.setField("GROUPORDER_SERIES", 1);
+            groupMemberDocs.add(doc);
+        }
+        Map<Integer, SolrDocument> result = TocMaker.createOrderedGroupDocMap(groupMemberDocs,
+                Arrays.asList(new String[] { "GROUPID_SERIES", "GROUPID_SERIES_2", "GROUPID_SERIES_3" }), pi);
+        Assert.assertNotNull(result);
+        Assert.assertEquals(5, result.size());
+        Assert.assertEquals("5", result.get(1).getFieldValue(SolrConstants.IDDOC));
+        Assert.assertEquals("4", result.get(2).getFieldValue(SolrConstants.IDDOC));
+        Assert.assertEquals("3", result.get(3).getFieldValue(SolrConstants.IDDOC));
+        Assert.assertEquals("2", result.get(4).getFieldValue(SolrConstants.IDDOC));
+        Assert.assertEquals("1", result.get(5).getFieldValue(SolrConstants.IDDOC));
     }
 }

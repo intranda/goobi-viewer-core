@@ -21,12 +21,15 @@
 		    li {}
 	    }
 	    &__action {
-	    	height: auto;
-	    	margin: 0 7px 0 0;
-	    	font-size: 0.9375rem;
+	    	margin: 0 0.7rem 0 0;
 			border: 0;
 		    /* ELEMENT */
-		    a, 
+	    	&:hover,
+			&:active,
+			&:focus {
+				background-color: transparent;
+			}
+		    a,
 			span, 
 			button {
 				display: flex;
@@ -39,11 +42,6 @@
 				background-position: center center;
 				background-size: 28px;
 				font-size: 1.4rem; 
-				&:hover,
-				&:active,
-				&:focus {
-					background-color: transparent;
-				}
 			}
 			span {}
 			[class*="image-"] {
@@ -58,10 +56,7 @@
 		    &.start {
 		    	a, 
 				span, 
-				button {
-					background-image: url("@{images}/icons/icon_fs-start.svg");
-					background-size: 18px;
-				}
+				button {}
 		    }
 		    &.page-browse,
 		    &.select {}
@@ -71,10 +66,7 @@
 		    &.back {
 		    	a, 
 				span, 
-				button {
-					background-image: url("@{images}/icons/icon_fs-back.svg");
-					background-size: 12px;
-				}
+				button {}
 		    }
 		    &.select-text {
 		    	span {}
@@ -87,57 +79,47 @@
 		            }
 		        }
 		        .custom-control--select {
-		        	select {
-		        		color: @fsDarkgray;
-		        	}
-		        	&:after {
-		        		border-top-color: @fsDarkgray;
-		        	}
+		        	select {}
+		        	&:after {}
 		        }
 		    }
 		    &.forward {
 		    	a, 
 				span, 
-				button {
-					background-image: url("@{images}/icons/icon_fs-forward.svg");
-					background-size: 12px;
-				}
+				button {}
 		    }
 		    &.end {
 		    	a, 
 				span, 
-				button {
-					background-image: url("@{images}/icons/icon_fs-end.svg");
-					background-size: 18px;
-				}
+				button {}
 		    }
 		    &.double-page-view,
 		    &.single-page-view,
 		    &.switch-pages {
 			    [class*="image-"] {}	    	
 		    }
+	    &.double-page-view,
+	    &.single-page-view,
+	    &.switch-pages {
+	    	a,
+	    	span,
+	    	button {
+	    	}
+	    }
 		    &.double-page-view {
 		    	a, 
 				span, 
-				button {
-					background-image: url("@{images}/icons/icon_fs-double-page.svg");
-				}
+				button {}
 		    }
 		    &.single-page-view {
 		    	a, 
 				span, 
-				button {
-					background-image: url("@{images}/icons/icon_fs-single-page.svg");
-					background-size: 26px;
-				}
+				button {}
 		    }
 		    &.switch-pages {
 		    	a, 
 				span, 
-				button {
-					background-image: url("@{images}/icons/icon_fs-recto-verso.svg");
-					background-size: 32px;
-				}
+				button {}
 		    	svg {}
 		    }
 		    &.rotate-left,
@@ -147,23 +129,17 @@
 		    &.rotate-left {
 		    	a, 
 				span, 
-				button {
-					background-image: url("@{images}/icons/icon_fs-rotate-left.svg");
-				}
+				button {}
 		    }
 		    &.rotate-right {
 		    	a, 
 				span, 
-				button {
-					background-image: url("@{images}/icons/icon_fs-rotate-right.svg");
-				}
+				button {}
 		    }
 		    &.reset {
 		    	a, 
 				span, 
-				button {
-					background-image: url("@{images}/icons/icon_fs-reset.svg");
-				}
+				button {}
 		    }
 		    &.fullscreen {
 		    	.mx-hidden;
@@ -172,9 +148,9 @@
 		    	width: 125px;
 		    	margin-left: 10px;
 		        .zoom-slider {
-		        	height: 2px;
+		        	height: 10px;
 		        	margin-top: 0;
-		        	background-color: @fsDarkgray;
+		        	background-color: transparent;
 		        }
 		        .zoom-slider-handle {
 		        	top: -12px;

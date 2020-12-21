@@ -99,15 +99,15 @@ public class ImageDeliveryBean implements Serializable {
 
     @PostConstruct
     private void init() {
+        logger.trace("init");
         try {
             Configuration config = DataManager.getInstance().getConfiguration();
-            this.servletPath = getServletPathFromContext();
             init(config);
         } catch (NullPointerException e) {
             logger.error("Failed to initialize ImageDeliveryBean: Resources misssing");
         }
     }
-    
+
     private String getServletPathFromContext() {
         String path;
         if (servletRequest != null) {
@@ -128,9 +128,10 @@ public class ImageDeliveryBean implements Serializable {
      * @param apiUrls a {@link java.lang.String} object.
      */
     public void init(Configuration config) {
+        this.servletPath = getServletPathFromContext();
         AbstractApiUrlManager dataUrlManager = DataManager.getInstance().getRestApiManager().getDataApiManager();
         AbstractApiUrlManager contentUrlManager = DataManager.getInstance().getRestApiManager().getContentApiManager();
-        
+
         this.staticImagesURI = getStaticImagesPath(this.servletPath, config.getTheme());
         this.cmsMediaPath =
                 config.getViewerHome() + config.getCmsMediaFolder();

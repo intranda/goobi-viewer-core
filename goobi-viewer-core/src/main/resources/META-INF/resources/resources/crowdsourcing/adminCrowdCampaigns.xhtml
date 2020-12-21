@@ -81,7 +81,7 @@
                                             <div>
                                                 <!-- EDIT -->
                                                 <a href="#{navigationHelper.applicationUrl}admin/crowdsourcing/campaigns/edit/#{campaign.id}/"
-                                                    class="admin__table-action-link" aria-label="#{msg.edit}">#{msg.edit}</a>
+                                                    class="admin__table-action-link" aria-label="#{msg.edit}: #{campaign.getTitle(navigationHelper.locale, true)}">#{msg.edit}</a>
                                                 <!-- Delete link -->
                                                 <h:commandLink styleClass="admin__table-action-link -redlink"
                                                     onclick="if ( !confirm( &quot;#{msg.admin__crowdsourcing_campaign_deleteConfirmationText}&quot; ) ) { return false };" 

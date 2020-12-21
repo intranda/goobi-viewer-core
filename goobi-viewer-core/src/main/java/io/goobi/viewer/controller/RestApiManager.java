@@ -86,7 +86,9 @@ public class RestApiManager {
      *         null is returned
      */
     public AbstractApiUrlManager getDataApiManager() {
-        this.updateDataUrlManager();
+        if(this.dataApiManager == null) {            
+            this.updateDataUrlManager();
+        }
         return dataApiManager;
     }
 
@@ -121,7 +123,9 @@ public class RestApiManager {
      *         Otherwise null is returned
      */
     public AbstractApiUrlManager getContentApiManager() {
-        this.updateContentUrlManager();
+        if(this.contentApiManager == null) {            
+            this.updateContentUrlManager();
+        }
         return contentApiManager;
     }
 

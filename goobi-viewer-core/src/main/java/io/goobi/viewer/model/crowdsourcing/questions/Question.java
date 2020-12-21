@@ -15,15 +15,20 @@
  */
 package io.goobi.viewer.model.crowdsourcing.questions;
 
+import java.io.IOException;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
+import java.util.Map.Entry;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
+import javax.faces.event.ValueChangeEvent;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Convert;
@@ -38,8 +43,13 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
+import javax.persistence.Transient;
 
+import org.apache.commons.lang3.StringUtils;
+import org.apache.solr.client.solrj.SolrServerException;
 import org.eclipse.persistence.annotations.PrivateOwned;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -47,7 +57,11 @@ import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import io.goobi.viewer.controller.DataManager;
+import io.goobi.viewer.dao.converter.StringListConverter;
 import io.goobi.viewer.dao.converter.TranslatedTextConverter;
+import io.goobi.viewer.exceptions.DAOException;
+import io.goobi.viewer.managedbeans.utils.BeanUtils;
+import io.goobi.viewer.messages.Messages;
 import io.goobi.viewer.model.crowdsourcing.campaigns.Campaign;
 import io.goobi.viewer.model.misc.IPolyglott;
 import io.goobi.viewer.model.misc.TranslatedText;
@@ -64,6 +78,8 @@ import io.goobi.viewer.model.normdata.NormdataAuthority;
 @JsonInclude(Include.NON_EMPTY)
 public class Question {
 
+    private static final Logger logger = LoggerFactory.getLogger(Question.class);
+    
     private static final String URI_ID_TEMPLATE =
             DataManager.getInstance().getConfiguration().getRestApiUrl() + "crowdsourcing/campaigns/{campaignId}/questions/{questionId}";
     private static final String URI_ID_REGEX = ".*/crowdsourcing/campaigns/(\\d+)/questions/(\\d+)/?$";
@@ -103,6 +119,13 @@ public class Question {
     @Column(name = "target_frequency", nullable = false)
     private int targetFrequency;
 
+    @Column(name = "metadata_fields", nullable = true, columnDefinition = "LONGTEXT")
+    @Convert(converter = StringListConverter.class)
+    private List<String> metadataFields  = new ArrayList<>();
+ 
+    @Transient
+    private Map<String, Boolean> metadataFieldSelection = null;
+    
     /**
      * Empty constructor.
      */
@@ -143,6 +166,7 @@ public class Question {
         this.targetFrequency = orig.targetFrequency;
         this.targetSelector = orig.targetSelector;
         this.text = new TranslatedText(orig.text, IPolyglott.getLocalesStatic(), IPolyglott.getCurrentLocale());
+        this.metadataFields = new ArrayList<>(orig.metadataFields);
     }
 
     /**
@@ -181,17 +205,15 @@ public class Question {
 
         this.translationsLegacy = Collections.emptyList();
 
-        //        Map<Locale, String> locationsMap = this.text.map();
-        //        for (Entry<Locale, String> entry : locationsMap.entrySet()) {
-        //            Locale locale = entry.getKey();
-        //            String value = entry.getValue();
-        //            QuestionTranslation translation = translations.stream().filter(t -> t.getLanguage().equals(locale.getLanguage())).findAny()
-        //                    .orElseGet(() -> this.addTranslation(locale));
-        //            translation.setValue(value);
-        //        }
-        //        
-        //        
-        //        this.translations = this.text.stream().map(t -> new QuestionTranslation(t, this)).collect(Collectors.toList());
+    }
+    
+    /**
+     * Call when metadata list changes
+     */
+    public void serializeMetadataFields() {
+        if(QuestionType.METADATA.equals(getQuestionType())) {            
+            this.metadataFields = getMetadataFieldSelection().entrySet().stream().filter(e -> e.getValue()).map(e -> e.getKey()).collect(Collectors.toList());
+        }
     }
 
     private void deserializeTranslations() {
@@ -336,7 +358,63 @@ public class Question {
     public int getTargetFrequency() {
         return targetFrequency;
     }
+    
+    /**
+     * @return the metadataFields
+     */
+    public List<String> getMetadataFields() {
+        return metadataFields;
+    }
+    
+    /**
+     * @param metadataFields the metadataFields to set
+     */
+    public void setMetadataFields(List<String> metadataFields) {
+        this.metadataFields = new ArrayList<>(metadataFields);
+    }
+    
+    public void addMetadataField(String field) {
+        this.metadataFields.add(field);
+    }
+    
+    public void removeMetadataField(String field) {
+        this.metadataFields.remove(field);
+    }
+    
+    /**
+     * @param metadataToAdd the metadataToAdd to set
+     */
+    public void setMetadataToAdd(String metadataToAdd) {
+        if(StringUtils.isNotBlank(metadataToAdd)) {            
+            addMetadataField(metadataToAdd);
+        }
+    }
+    
+    /**
+     * @return the metadataToAdd
+     */
+    public String getMetadataToAdd() {
+        return "";
+    }
 
+    /**
+     * 
+     * @return a list of all "MD_" fields from solr
+     * @throws IOException 
+     * @throws SolrServerException 
+     */
+    @JsonIgnore
+    public List<String> getAvailableMetadataFields() throws DAOException {
+        Locale locale = BeanUtils.getLocale();
+        return DataManager.getInstance().getSearchIndex().getAllFieldNames().stream()
+        .filter(field -> field.startsWith("MD_"))
+        .filter(field -> !field.endsWith("_UNTOKENIZED"))
+        .map(field -> field.replaceAll("_LANG_.*", ""))
+//        .filter(field -> !this.metadataFields.contains(field))
+        .distinct()
+        .sorted((f1,f2) -> Messages.translate(f1, locale).compareToIgnoreCase(Messages.translate(f2, locale)))
+        .collect(Collectors.toList());
+    }
     /**
      * <p>
      * Setter for the field <code>targetFrequency</code>.
@@ -405,6 +483,28 @@ public class Question {
         }
 
         return null;
+    }
+    
+    /**
+     * @return the metadataFieldSelection
+     * @throws IOException 
+     * @throws SolrServerException 
+     */
+    public Map<String, Boolean> getMetadataFieldSelection() {
+        if(this.metadataFieldSelection == null) {
+            try {                
+                this.metadataFieldSelection = getAvailableMetadataFields().stream().collect(Collectors.toMap(field -> field, field -> this.metadataFields.contains(field)));
+            } catch(DAOException e) {
+                //If the possible fields cannot be retrieved from solr, just show the already selected ones
+                logger.error("Failed to load all possible metadata fields " + e.toString());
+                this.metadataFieldSelection = this.metadataFields.stream().collect(Collectors.toMap(field -> field, field -> Boolean.TRUE));
+            }
+        }
+        return metadataFieldSelection;
+    }
+    
+    public List<String> getSelectedMetadataFields() throws SolrServerException, IOException {
+        return this.getMetadataFieldSelection().entrySet().stream().filter(Entry::getValue).map(Entry::getKey).collect(Collectors.toList());
     }
 
 }

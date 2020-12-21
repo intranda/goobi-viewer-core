@@ -1595,7 +1595,7 @@ public class CmsBean implements Serializable {
                         if (StringUtils.isNotBlank(searchBean.getExactSearchString().replace("-", ""))) {
                             searchBean.setShowReducedSearchOptions(true);
                             return searchAction(item);
-                        } else if (item.isDisplayEmptySearchResults()) {
+                        } else if (item.isDisplayEmptySearchResults() || StringUtils.isNotBlank(searchBean.getFacets().getCurrentFacetString())) {
                             String searchString = StringUtils.isNotBlank(item.getSolrQuery().replace("-", "")) ? item.getSolrQuery() : "";
                             //                        searchBean.setSearchString(item.getSolrQuery());
                             searchBean.setExactSearchString(searchString);
@@ -1774,7 +1774,7 @@ public class CmsBean implements Serializable {
         }
         boolean aggregateHits = DataManager.getInstance().getConfiguration().isAggregateHits();
         if (item != null && CMSContentItemType.SEARCH.equals(item.getType())) {
-            ((SearchFunctionality) item.getFunctionality()).search();
+            ((SearchFunctionality) item.getFunctionality()).search(item.getOwnerPageLanguageVersion().getOwnerPage().getSubThemeDiscriminatorValue());
         } else if (item != null && StringUtils.isNotBlank(item.getSolrQuery())) {
             Search search = new Search(SearchHelper.SEARCH_TYPE_REGULAR, SearchHelper.SEARCH_FILTER_ALL);
             search.setQuery(item.getSolrQuery());
@@ -2111,7 +2111,7 @@ public class CmsBean implements Serializable {
             filteredLuceneFields = filteredLuceneFields.sorted();
             return filteredLuceneFields.collect(Collectors.toList());
 
-        } catch (SolrServerException | IOException e) {
+        } catch (DAOException e) {
             logger.error("Error retrieving solr fields", e);
             return Collections.singletonList("");
         }

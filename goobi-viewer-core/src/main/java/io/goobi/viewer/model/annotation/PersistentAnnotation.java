@@ -21,6 +21,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.LocalDateTime;
 import java.util.HashSet;
+import java.util.Optional;
 import java.util.Set;
 
 import javax.persistence.Column;
@@ -50,6 +51,8 @@ import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.exceptions.RecordNotFoundException;
 import io.goobi.viewer.exceptions.ViewerConfigurationException;
+import io.goobi.viewer.model.crowdsourcing.campaigns.Campaign;
+import io.goobi.viewer.model.crowdsourcing.campaigns.CampaignRecordStatistic.CampaignRecordStatus;
 import io.goobi.viewer.model.crowdsourcing.questions.Question;
 import io.goobi.viewer.model.security.user.User;
 
@@ -69,10 +72,10 @@ public class PersistentAnnotation {
     @Column(name = "annotation_id")
     private Long id;
 
-    @Column(name = "date_created")
+    @Column(name = "date_created", columnDefinition = "TIMESTAMP")
     private LocalDateTime dateCreated;
 
-    @Column(name = "date_modified")
+    @Column(name = "date_modified", columnDefinition = "TIMESTAMP")
     private LocalDateTime dateModified;
 
     @Column(name = "motivation")
@@ -635,5 +638,31 @@ public class PersistentAnnotation {
      */
     public void setAccessCondition(String accessCondition) {
         this.accessCondition = accessCondition;
+    }
+    
+    /**
+     * Find the record status of the generator campaign and pi. If the annotation does not belong to a campaign, return {@link CampaignRecordStatus.FINISHED}
+     * 
+     * @return  The review status for this annotation
+     * @throws DAOException
+     */
+    public CampaignRecordStatus getReviewStatus() throws DAOException {
+        return Optional.ofNullable(getGenerator()).map(Question::getOwner).map(c -> c.getRecordStatus(getTargetPI())).orElse(CampaignRecordStatus.FINISHED);
+    }
+    
+    /* (non-Javadoc)
+     * @see java.lang.Object#toString()
+     */
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder("Crowdsourcing Annotation");
+        sb.append("\n\t").append("Body:").append(getBody());
+        sb.append("\n\t").append("Target:").append(getTarget());
+        sb.append("\n\t").append("GeneratorId:").append(getGeneratorId());
+        sb.append("\n\t").append("CreatorId:").append(getCreatorId());
+        sb.append("\n\t").append("ReviewerId:").append(getReviewerId());
+        
+        return sb.toString();
+
     }
 }

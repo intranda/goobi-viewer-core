@@ -91,11 +91,13 @@
                             </div>
                             <div class="cms-module__option-control">
                                 <h:inputText id="editMediaTitle" value="#{media.getMetadataForLocale(item.locale).name}"
-                                    styleClass="form-control" />
+                                    styleClass="form-control">
+                                    <f:passThroughAttribute name="aria-label" value="#{msg.admin__media_title}"/>
+                   				</h:inputText>
                                 <span class="cms-module__option-control-helptext">#{msg.inline_help__edit_media_title}</span>
                             </div>
                             <div class="cms-module__option-help">
-                                <button type="button" class="btn btn--clean" data-toggle="helptext">
+                                <button type="button" class="btn btn--clean" data-toggle="helptext" aria-label="#{msg.aria_label__help}">
                                     <i class="fa fa-question-circle" aria-hidden="true"></i>
                                 </button>
                             </div>
@@ -108,11 +110,13 @@
                             </div>
                             <div class="cms-module__option-control">
                                 <h:inputTextarea id="editMediaDescription" value="#{media.getMetadataForLocale(item.locale).description}"
-                                    styleClass="form-control" />
+                                    styleClass="form-control">
+                                     <f:passThroughAttribute name="aria-label" value="#{msg.admin__media_description}"/>
+                                </h:inputTextarea>
                                 <span class="cms-module__option-control-helptext">#{msg.inline_help__edit_media_description}</span>
                             </div>
                             <div class="cms-module__option-help">
-                                <button type="button" class="btn btn--clean" data-toggle="helptext">
+                                <button type="button" class="btn btn--clean" data-toggle="helptext" aria-label="#{msg.aria_label__help}">
                                     <i class="fa fa-question-circle" aria-hidden="true"></i>
                                 </button>
                             </div>
@@ -124,11 +128,13 @@
                                 <label for="editMediaAltText">#{msg.admin__media_alt_text}:</label>
                             </div>
                             <div class="cms-module__option-control">
-                                <h:inputText id="editMediaAltText" value="#{media.alternativeText}" styleClass="form-control" />
+                                <h:inputText id="editMediaAltText" value="#{media.alternativeText}" styleClass="form-control">
+                                	<f:passThroughAttribute name="aria-label" value="#{msg.admin__media_description}"/>
+                                </h:inputText>
                                 <span class="cms-module__option-control-helptext">#{msg.inline_help__edit_media_alt_text}</span>
                             </div>
                             <div class="cms-module__option-help">
-                                <button type="button" class="btn btn--clean" data-toggle="helptext">
+                                <button type="button" class="btn btn--clean" data-toggle="helptext" aria-label="#{msg.aria_label__help}">
                                     <i class="fa fa-question-circle" aria-hidden="true"></i>
                                 </button>
                             </div>
@@ -145,11 +151,12 @@
                                 <h:inputText  id="editMediaDisplayOrder" value="#{media.displayOrder}" styleClass="form-control">
                                 	<f:passThroughAttribute name="type" value="number"></f:passThroughAttribute>
                                 	<f:passThroughAttribute name="min" value="0"></f:passThroughAttribute>
+									<f:passThroughAttribute name="aria-label" value="#{msg.admin__media_display_order}"/>
                                 </h:inputText>
                                 <span class="cms-module__option-control-helptext">#{msg.inline_help__edit_media_display_order}</span>
                             </div>
                             <div class="cms-module__option-help">
-                                <button type="button" class="btn btn--clean" data-toggle="helptext">
+                                <button type="button" class="btn btn--clean" data-toggle="helptext" aria-label="#{msg.aria_label__help}">
                                     <i class="fa fa-question-circle" aria-hidden="true"></i>
                                 </button>
                             </div>
@@ -161,11 +168,13 @@
                                 <label for="editMediaPriority">#{msg.admin__media_important}:</label>
                             </div>
                             <div class="cms-module__option-control">
-                                <h:selectBooleanCheckbox type="checkbox" value="#{media.important}" />
+                                <h:selectBooleanCheckbox type="checkbox" value="#{media.important}">
+                                	<f:passThroughAttribute name="aria-label" value="#{msg.admin__media_important}"/>
+                                </h:selectBooleanCheckbox> 
                                 <span class="cms-module__option-control-helptext">#{msg.inline_help__edit_media_important}</span>
                             </div>
                             <div class="cms-module__option-help">
-                                <button type="button" class="btn btn--clean" data-toggle="helptext">
+                                <button type="button" class="btn btn--clean" data-toggle="helptext" aria-label="#{msg.aria_label__help}">
                                     <i class="fa fa-question-circle" aria-hidden="true"></i>
                                 </button>
                             </div>
@@ -178,11 +187,13 @@
                                 <label for="editMediaLinksTo">#{msg.admin__media_links_to}:</label>
                             </div>
                             <div class="cms-module__option-control">
-                                <h:inputText id="editMediaLinksTo" value="#{media.link}" validator="URISyntaxValidator" styleClass="form-control" />
+                                <h:inputText id="editMediaLinksTo" value="#{media.link}" validator="URISyntaxValidator" styleClass="form-control">
+                                	<f:passThroughAttribute name="aria-label" value="#{msg.admin__media_links_to}"/>
+                                </h:inputText>
                                 <span class="cms-module__option-control-helptext">#{msg.inline_help__edit_media_links_to}</span>
                             </div>
                             <div class="cms-module__option-help">
-                                <button type="button" class="btn btn--clean" data-toggle="helptext">
+                                <button type="button" class="btn btn--clean" data-toggle="helptext" aria-label="#{msg.aria_label__help}">
                                     <i class="fa fa-question-circle" aria-hidden="true"></i>
                                 </button>
                             </div>
@@ -200,7 +211,9 @@
                                         <ui:repeat var="selectableCategory" value="#{item.categories}">
                                             <li>
                                                 <label>
-                                                    <h:selectBooleanCheckbox type="checkbox" value="#{selectableCategory.selected}" />
+                                                    <h:selectBooleanCheckbox type="checkbox" value="#{selectableCategory.selected}">
+                                                    	<f:passThroughAttribute name="aria-label" value="#{msg.admin__categories}"/>
+                                                    </h:selectBooleanCheckbox>
                                                     #{selectableCategory.value.name}
                                                 </label>
                                             </li>
@@ -215,7 +228,7 @@
                                 <span class="cms-module__option-control-helptext">#{msg.inline_help__edit_media_categories}</span>
                             </div>
                             <div class="cms-module__option-help">
-                                <button type="button" class="btn btn--clean" data-toggle="helptext">
+                                <button type="button" class="btn btn--clean" data-toggle="helptext" aria-label="#{msg.aria_label__help}">
                                     <i class="fa fa-question-circle" aria-hidden="true"></i>
                                 </button>
                             </div>

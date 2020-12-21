@@ -87,7 +87,7 @@ public class CMSNavigationManager {
         addAvailableItem(searchcalendar);
         SelectableNavigationItem browse = new SelectableNavigationItem("browse", "browse");
         addAvailableItem(browse);
-        SelectableNavigationItem timematrix = new SelectableNavigationItem("timematrix", "timematrix__title");
+        SelectableNavigationItem timematrix = new SelectableNavigationItem("timematrix", "timematrix");
         addAvailableItem(timematrix);
         SelectableNavigationItem statistics = new SelectableNavigationItem("statistics", "statistics");
         addAvailableItem(statistics);
@@ -100,6 +100,10 @@ public class CMSNavigationManager {
         addAvailableItem(user);
         SelectableNavigationItem campaigns = new SelectableNavigationItem("campaigns", "admin__crowdsourcing_campaigns");
         addAvailableItem(campaigns);
+        SelectableNavigationItem tectonics = new SelectableNavigationItem("archivetree", "archive");
+        addAvailableItem(tectonics);
+        SelectableNavigationItem archives = new SelectableNavigationItem("archives", "archives");
+        addAvailableItem(archives);
 
         addModuleItems();
         addCMSPageItems();

@@ -19,21 +19,22 @@ import java.io.IOException;
 import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
+import java.util.EnumSet;
 import java.util.HashMap;
-import java.util.Iterator;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.SessionScoped;
-import javax.faces.context.FacesContext;
 import javax.inject.Inject;
 import javax.inject.Named;
+import javax.persistence.PersistenceException;
 
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -52,7 +53,6 @@ import io.goobi.viewer.controller.SolrConstants;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
-import io.goobi.viewer.exceptions.ViewerConfigurationException;
 import io.goobi.viewer.faces.validators.SolrQueryValidator;
 import io.goobi.viewer.managedbeans.tabledata.TableDataFilter;
 import io.goobi.viewer.managedbeans.tabledata.TableDataProvider;
@@ -61,12 +61,13 @@ import io.goobi.viewer.managedbeans.tabledata.TableDataSource;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.messages.Messages;
 import io.goobi.viewer.messages.ViewerResourceBundle;
-import io.goobi.viewer.model.annotation.PersistentAnnotation;
 import io.goobi.viewer.model.crowdsourcing.CrowdsourcingTools;
 import io.goobi.viewer.model.crowdsourcing.campaigns.Campaign;
 import io.goobi.viewer.model.crowdsourcing.campaigns.Campaign.CampaignVisibility;
+import io.goobi.viewer.model.crowdsourcing.campaigns.Campaign.ReviewMode;
 import io.goobi.viewer.model.crowdsourcing.campaigns.CampaignRecordStatistic.CampaignRecordStatus;
 import io.goobi.viewer.model.crowdsourcing.questions.Question;
+import io.goobi.viewer.model.misc.IPolyglott;
 import io.goobi.viewer.model.security.License;
 import io.goobi.viewer.model.security.LicenseType;
 import io.goobi.viewer.model.security.user.User;
@@ -93,7 +94,6 @@ public class CrowdsourcingBean implements Serializable {
     protected UserBean userBean;
 
     private TableDataProvider<Campaign> lazyModelCampaigns;
-    private TableDataProvider<PersistentAnnotation> lazyModelAnnotations;
 
     /**
      * The campaign selected in backend
@@ -162,57 +162,6 @@ public class CrowdsourcingBean implements Serializable {
             lazyModelCampaigns.setFilters("name");
         }
 
-        if (lazyModelAnnotations == null) {
-            lazyModelAnnotations = new TableDataProvider<>(new TableDataSource<PersistentAnnotation>() {
-
-                private Optional<Long> numCreatedPages = Optional.empty();
-
-                @Override
-                public List<PersistentAnnotation> getEntries(int first, int pageSize, String sortField, SortOrder sortOrder,
-                        Map<String, String> filters) {
-                    try {
-                        if (StringUtils.isBlank(sortField)) {
-                            sortField = "id";
-                            sortOrder = SortOrder.DESCENDING;
-                        }
-                        // Permanent filtering for annotations for a specific campaign
-                        if (StringUtils.isNotEmpty(getTargetCampaignId())) {
-                            filters.put("generatorId", getTargetCampaignId());
-                        }
-                        List<PersistentAnnotation> ret =
-                                DataManager.getInstance().getDao().getAnnotations(first, pageSize, sortField, sortOrder.asBoolean(), filters);
-                        return ret;
-                    } catch (DAOException e) {
-                        logger.error("Could not initialize lazy model: {}", e.getMessage());
-                    }
-
-                    return Collections.emptyList();
-                }
-
-                @Override
-                public long getTotalNumberOfRecords(Map<String, String> filters) {
-                    if (!numCreatedPages.isPresent()) {
-                        try {
-                            // Permanent filtering for annotations for a specific campaign
-                            if (StringUtils.isNotEmpty(getTargetCampaignId())) {
-                                filters.put("generatorId", getTargetCampaignId());
-                            }
-                            numCreatedPages = Optional.ofNullable(DataManager.getInstance().getDao().getAnnotationCount(filters));
-                        } catch (DAOException e) {
-                            logger.error("Unable to retrieve total number of campaigns", e);
-                        }
-                    }
-                    return numCreatedPages.orElse(0l);
-                }
-
-                @Override
-                public void resetTotalNumberOfRecords() {
-                    numCreatedPages = Optional.empty();
-                }
-            });
-            lazyModelAnnotations.setEntriesPerPage(DEFAULT_ROWS_PER_PAGE);
-            lazyModelAnnotations.setFilters("targetPI_body");
-        }
     }
 
     /**
@@ -257,19 +206,8 @@ public class CrowdsourcingBean implements Serializable {
      *
      * @return A list of all locales supported by this viewer application
      */
-    public static List<Locale> getAllLocales() {
-        List<Locale> list = new LinkedList<>();
-        list.add(ViewerResourceBundle.getDefaultLocale());
-        if (FacesContext.getCurrentInstance() != null && FacesContext.getCurrentInstance().getApplication() != null) {
-            Iterator<Locale> iter = FacesContext.getCurrentInstance().getApplication().getSupportedLocales();
-            while (iter.hasNext()) {
-                Locale locale = iter.next();
-                if (!list.contains(locale)) {
-                    list.add(locale);
-                }
-            }
-        }
-        return list;
+    public static Collection<Locale> getAllLocales() {
+        return IPolyglott.getLocalesStatic();
     }
 
     /**
@@ -388,7 +326,7 @@ public class CrowdsourcingBean implements Serializable {
 
     /**
      * Returns the list of campaigns that are visible to the given user.
-     *
+     * 
      * @param user
      * @return
      * @throws DAOException
@@ -457,14 +395,12 @@ public class CrowdsourcingBean implements Serializable {
         if (campaign == null) {
             return false;
         }
-
-        if (CampaignVisibility.PUBLIC.equals(campaign.getVisibility())) {
-            return true;
-        }
-
         // Skip inactive campaigns
         if (!campaign.isHasStarted() || campaign.isHasEnded()) {
             return false;
+        }
+        if (CampaignVisibility.PUBLIC.equals(campaign.getVisibility())) {
+            return true;
         }
 
         // Allow campaigns with a set time frame, but no user group
@@ -475,22 +411,22 @@ public class CrowdsourcingBean implements Serializable {
 
         switch (campaign.getVisibility()) {
             case PRIVATE:
-                // Only logged in members may access campaigns limited to a user group
-                if (!campaign.isLimitToGroup() || campaign.getUserGroup() == null) {
-                    return false;
-                }
                 if (user == null) {
                     return false;
                 }
                 if (user.isSuperuser()) {
                     return true;
                 }
+                // Only logged in members may access campaigns limited to a user group
+                if (!campaign.isLimitToGroup() || campaign.getUserGroup() == null) {
+                    return false;
+                }
                 try {
                     return campaign.getUserGroup().getMembersAndOwner().contains(user);
                 } catch (DAOException e) {
                     logger.error(e.getMessage());
-            return false;
-        }
+                    return false;
+                }
             case RESTRICTED:
                 // Check user licenses
                 if (user != null) {
@@ -540,35 +476,40 @@ public class CrowdsourcingBean implements Serializable {
             return "";
         }
         if (userBean == null || !selectedCampaign.isUserMayEdit(userBean.getUser())) {
-                // Only authorized admins may save
+            // Only authorized admins may save
             Messages.error("admin__crowdsourcing_campaign_save_failure");
             return "";
-            }
+        }
 
-            // Save
-            boolean success = false;
-            LocalDateTime now = LocalDateTime.now();
-            if (selectedCampaign.getDateCreated() == null) {
-                selectedCampaign.setDateCreated(now);
-            }
-            selectedCampaign.setDateUpdated(now);
-            if (selectedCampaign.getId() != null) {
+        // Save
+        boolean success = false;
+        LocalDateTime now = LocalDateTime.now();
+        if (selectedCampaign.getDateCreated() == null) {
+            selectedCampaign.setDateCreated(now);
+        }
+        selectedCampaign.setDateUpdated(now);
+        if (selectedCampaign.getId() != null) {
+            try {
                 success = DataManager.getInstance().getDao().updateCampaign(selectedCampaign);
-            } else {
-                success = DataManager.getInstance().getDao().addCampaign(selectedCampaign);
+            } catch (PersistenceException e) {
+                logger.error("Updating campaign " + selectedCampaign + " in database failed ", e);
+                success = false;
             }
-            if (success) {
-                Messages.info("admin__crowdsourcing_campaign_save_success");
-                setSelectedCampaign(selectedCampaign);
-                lazyModelCampaigns.update();
-                // Update the map of active campaigns for record identifiers (in case a new Solr query changes the set)
-                updateActiveCampaigns();
+        } else {
+            success = DataManager.getInstance().getDao().addCampaign(selectedCampaign);
+        }
+        if (success) {
+            Messages.info("admin__crowdsourcing_campaign_save_success");
+            setSelectedCampaign(selectedCampaign);
+            lazyModelCampaigns.update();
+            // Update the map of active campaigns for record identifiers (in case a new Solr query changes the set)
+            updateActiveCampaigns();
             return "pretty:adminCrowdCampaigns";
         }
 
-                Messages.error("admin__crowdsourcing_campaign_save_failure");
+        Messages.error("admin__crowdsourcing_campaign_save_failure");
         return "";
-            }
+    }
 
     /**
      * <p>
@@ -594,42 +535,6 @@ public class CrowdsourcingBean implements Serializable {
 
     /**
      * <p>
-     * Getter for the field <code>lazyModelAnnotations</code>.
-     * </p>
-     *
-     * @return the lazyModelAnnotations
-     */
-    public TableDataProvider<PersistentAnnotation> getLazyModelAnnotations() {
-        return lazyModelAnnotations;
-    }
-
-    /**
-     * Deletes given annotation.
-     *
-     * @param annotation a {@link io.goobi.viewer.model.annotation.PersistentAnnotation} object.
-     * @return empty string
-     * @throws io.goobi.viewer.exceptions.DAOException if any.
-     */
-    public String deleteAnnotationAction(PersistentAnnotation annotation) throws DAOException {
-        if (annotation == null) {
-            return "";
-        }
-
-                try {
-            if (annotation.delete()) {
-                Messages.info("admin__crowdsoucing_annotation_deleteSuccess");
-                lazyModelCampaigns.update();
-                        }
-                } catch (ViewerConfigurationException e) {
-                    logger.error(e.getMessage());
-                    Messages.error(e.getMessage());
-                }
-
-        return "";
-    }
-
-    /**
-     * <p>
      * Getter for the field <code>selectedCampaign</code>.
      * </p>
      *
@@ -650,7 +555,7 @@ public class CrowdsourcingBean implements Serializable {
             this.selectedCampaign = null;
         } else if (selectedCampaign == null || ObjectUtils.notEqual(selectedCampaign.getId(), campaign.getId())) {
             this.selectedCampaign = new Campaign(campaign);
-    }
+        }
     }
 
     /**
@@ -1060,4 +965,9 @@ public class CrowdsourcingBean implements Serializable {
         }
         logger.trace("Added {} identifiers to the map.", DataManager.getInstance().getRecordCampaignMap().size());
     }
+
+    public Set<ReviewMode> getPossibleReviewModes() {
+        return EnumSet.allOf(ReviewMode.class);
+    }
+
 }

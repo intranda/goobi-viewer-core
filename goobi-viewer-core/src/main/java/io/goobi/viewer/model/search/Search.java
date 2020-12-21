@@ -436,15 +436,7 @@ public class Search implements Serializable {
             }
         }
 
-        List<String> staticSortFields = DataManager.getInstance().getConfiguration().getStaticSortFields();
-        List<StringPair> useSortFields = new ArrayList<>(staticSortFields.size() + sortFields.size());
-        if (!staticSortFields.isEmpty()) {
-            for (String s : staticSortFields) {
-                useSortFields.add(new StringPair(s, "asc"));
-                logger.trace("Added static sort field: {}", s);
-            }
-        }
-        useSortFields.addAll(sortFields);
+        List<StringPair> useSortFields = getAllSortFields();
         List<SearchHit> hits = aggregateHits
                 ? SearchHelper.searchWithAggregation(finalQuery, from, hitsPerPage, useSortFields, null, activeFacetFilterQueries, params,
                         searchTerms, null, BeanUtils.getLocale(), keepSolrDoc)
@@ -737,6 +729,26 @@ public class Search implements Serializable {
     public void setSortString(String sortString) {
         this.sortString = sortString;
         sortFields = SearchHelper.parseSortString(this.sortString, null);
+    }
+
+    /**
+     * Returns a list of currently selected sort fields with any configured static sort fields.
+     * 
+     * @return A list of both static and selected fields
+     * @should return all fields
+     */
+    public List<StringPair> getAllSortFields() {
+        List<String> staticSortFields = DataManager.getInstance().getConfiguration().getStaticSortFields();
+        List<StringPair> ret = new ArrayList<>(staticSortFields.size() + sortFields.size());
+        if (!staticSortFields.isEmpty()) {
+            for (String s : staticSortFields) {
+                ret.add(new StringPair(s, "asc"));
+                logger.trace("Added static sort field: {}", s);
+            }
+        }
+        ret.addAll(sortFields);
+
+        return ret;
     }
 
     /**
