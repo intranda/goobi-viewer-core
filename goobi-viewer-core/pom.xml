@@ -89,7 +89,7 @@
         <commons-net.version>3.7.2</commons-net.version>
         <commons-text.version>1.9</commons-text.version>
         <dbunit.version>2.7.0</dbunit.version>
-        <eclipselink.version>2.7.7</eclipselink.version>
+        <eclipselink.version>2.7.8</eclipselink.version>
         <h2.version>1.4.200</h2.version>
         <httpclient.version>4.5.13</httpclient.version>
         <httpcore.version>4.4.14</httpcore.version>
