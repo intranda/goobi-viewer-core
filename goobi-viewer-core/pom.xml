@@ -105,6 +105,10 @@
 		<javax.mail.version>1.6.2</javax.mail.version>
 		<javax.persistence.version>2.2.1</javax.persistence.version>
 		<javax.websocket.version>1.1</javax.websocket.version>
+		<javax.ws.rs-api.version>2.1.1</javax.ws.rs-api.version>
+        <!-- This dependency is declared as ignoredUnusedDeclaredDependency, too -->
+		<javax.jstl.version>1.2</javax.jstl.version>
+		<javax.servlet-api.version>4.0.1</javax.servlet-api.version>
 		<jaxb-api.version>2.4.0-b180830.0359</jaxb-api.version>
 		<jaxb-impl.version>2.4.0-b180830.0438</jaxb-impl.version>
         <jaxb-core.version>2.3.0.1</jaxb-core.version>
@@ -114,8 +118,7 @@
         <jgravatar.version>1.2</jgravatar.version>
         <!-- https://github.com/stleary/JSON-java -->
 		<json.version>20201115</json.version>
-		<jsoup.version>1.13.1</jsoup.version>
-		<jstl.version>1.2</jstl.version>
+        <jsoup.version>1.13.1</jsoup.version>
 		<junit.version>4.13.1</junit.version>
 		<mariadb-java-client.version>2.3.0</mariadb-java-client.version>
 		<mockito.version>3.6.28</mockito.version>
@@ -126,8 +129,6 @@
 		<prettyfaces.version>3.3.4-20120314</prettyfaces.version>
 		<primefaces.version>8.0</primefaces.version>
 		<rome.version>1.15.0</rome.version>
-		<rs-api.version>2.1.1</rs-api.version>
-		<servlet-api.version>4.0.1</servlet-api.version>
 		<slf4j.version>1.7.30</slf4j.version>
 		<solr.version>8.7.0</solr.version>
 		<saml-client.version>4.0.0</saml-client.version>
@@ -435,7 +436,7 @@
 		<dependency>
 			<groupId>javax.servlet</groupId>
 			<artifactId>jstl</artifactId>
-			<version>${jstl.version}</version>
+			<version>${javax.jstl.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>junit</groupId>
@@ -525,12 +526,12 @@
 		<dependency>
 			<groupId>javax.ws.rs</groupId>
 			<artifactId>javax.ws.rs-api</artifactId>
-			<version>${rs-api.version}</version>
+			<version>${javax.ws.rs-api.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>javax.servlet</groupId>
 			<artifactId>javax.servlet-api</artifactId>
-			<version>${servlet-api.version}</version>
+			<version>${javax.servlet-api.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.slf4j</groupId>
