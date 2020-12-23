@@ -111,7 +111,7 @@
         <jaxb-impl.version>2.4.0-b180830.0438</jaxb-impl.version>
         <jaxb-core.version>2.3.0.1</jaxb-core.version>
         <jdom2.version>2.0.6</jdom2.version>
-        <jersey.version>2.32</jersey.version>
+        <jersey.version>2.33</jersey.version>
         <jersey-guava.version>2.26-b03</jersey-guava.version>
         <jgravatar.version>1.2</jgravatar.version>
         <!-- https://github.com/stleary/JSON-java -->
