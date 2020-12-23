@@ -135,6 +135,7 @@
         <swagger.version>2.1.6</swagger.version>
         <tomcat.version>9.0.41</tomcat.version>
         <weld-servlet-shaded.version>3.1.5.SP1</weld-servlet-shaded.version>
+        <xmlParserAPIs.version>2.6.2</xmlParserAPIs.version>
     </properties>
 
 
@@ -281,10 +282,6 @@
                 <exclusion>
                     <groupId>javax.servlet</groupId>
                     <artifactId>servlet-api</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>xerces</groupId>
-                    <artifactId>xmlParserAPIs</artifactId>
                 </exclusion>
             </exclusions>
         </dependency>
@@ -567,6 +564,11 @@
             <version>${weld-servlet-shaded.version}</version>
         </dependency>
         <dependency>
+            <groupId>xerces</groupId>
+            <artifactId>xmlParserAPIs</artifactId>
+            <version>${xmlParserAPIs.version}</version>
+        </dependency>
+        <dependency>
             <groupId>com.coveo</groupId>
             <artifactId>saml-client</artifactId>
             <version>${saml-client.version}</version>
@@ -644,6 +646,9 @@
 
                                 <!-- Primefaces is used for autocomplete -->
                                 <ignoredUnusedDeclaredDependency>org.primefaces:primefaces</ignoredUnusedDeclaredDependency>
+
+                                <!-- xerces is a dependency from the old Solr version. It can be removed when updating to Solr 8 -->
+                                <ignoredUnusedDeclaredDependency>xerces:xmlParserAPIs</ignoredUnusedDeclaredDependency>
 
                                 <!-- The jersey-container-servlet dependency is used for startup during runtime 
                                      Unit tests run without it though -->
