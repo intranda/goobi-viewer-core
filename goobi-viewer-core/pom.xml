@@ -107,7 +107,6 @@
         <javax.ws.rs-api.version>2.1.1</javax.ws.rs-api.version>
         <!-- This dependency is declared as ignoredUnusedDeclaredDependency, too -->
         <javax.jstl.version>1.2</javax.jstl.version>
-        <javax.servlet-api.version>4.0.1</javax.servlet-api.version>
         <jaxb-api.version>2.4.0-b180830.0359</jaxb-api.version>
         <jaxb-impl.version>2.4.0-b180830.0438</jaxb-impl.version>
         <jaxb-core.version>2.3.0.1</jaxb-core.version>
@@ -456,6 +455,12 @@
             <artifactId>mockserver-core</artifactId>
             <version>${mockserver.version}</version>
             <scope>test</scope>
+            <exclusions>
+                <exclusion>
+                    <groupId>javax.servlet</groupId>
+                    <artifactId>javax.servlet-api</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
         <dependency>
             <groupId>org.mock-server</groupId>
@@ -525,9 +530,9 @@
             <version>${javax.ws.rs-api.version}</version>
         </dependency>
         <dependency>
-            <groupId>javax.servlet</groupId>
-            <artifactId>javax.servlet-api</artifactId>
-            <version>${javax.servlet-api.version}</version>
+            <groupId>jakarta.servlet</groupId>
+            <artifactId>jakarta.servlet-api</artifactId>
+            <version>4.0.3</version>
         </dependency>
         <dependency>
             <groupId>org.slf4j</groupId>
