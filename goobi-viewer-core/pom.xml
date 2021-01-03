@@ -485,21 +485,6 @@
             <version>${oauth.version}</version>
         </dependency>
         <dependency>
-            <groupId>org.apache.oltu.oauth2</groupId>
-            <artifactId>org.apache.oltu.oauth2.common</artifactId>
-            <version>${oauth.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.oltu.oauth2</groupId>
-            <artifactId>org.apache.oltu.oauth2.httpclient4</artifactId>
-            <version>${oauth.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.oltu.oauth2</groupId>
-            <artifactId>org.apache.oltu.oauth2.jwt</artifactId>
-            <version>${oauth.version}</version>
-        </dependency>
-        <dependency>
             <groupId>com.github.librepdf</groupId>
             <artifactId>openpdf</artifactId>
             <version>${openpdf.version}</version>
