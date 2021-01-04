@@ -17,7 +17,6 @@ package io.goobi.viewer.model.security;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -46,8 +45,8 @@ import org.slf4j.LoggerFactory;
 
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.SolrConstants;
-import io.goobi.viewer.controller.SolrSearchIndex;
 import io.goobi.viewer.controller.SolrConstants.DocType;
+import io.goobi.viewer.controller.SolrSearchIndex;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
@@ -73,10 +72,6 @@ public class LicenseType implements IPrivilegeHolder, ILicenseType {
     /** Constant <code>LICENSE_TYPE_CMS="licenseType_cms"</code> */
     public static final String LICENSE_TYPE_CMS = "licenseType_cms";
     private static final String LICENSE_TYPE_DESC_CMS = "licenseType_cms_desc";
-    /** Constant <code>LICENSE_TYPE_CROWDSOURCING_CAMPAIGNS="licenseType_crowdsourcing_campaigns"</code> */
-    public static final String LICENSE_TYPE_CROWDSOURCING_CAMPAIGNS = "licenseType_crowdsourcing_campaigns";
-    private static final String LICENSE_TYPE_DESC_CROWDSOURCING_CAMPAIGNS = "licenseType_crowdsourcing_campaigns_desc";
-
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -275,7 +270,7 @@ public class LicenseType implements IPrivilegeHolder, ILicenseType {
      * @param conditions
      * @return
      */
-    private String getQueryConditions(String conditions) {
+    private static String getQueryConditions(String conditions) {
         String queryConditions = conditions == null ? "" : conditions;
         return queryConditions;
     }
@@ -314,26 +309,6 @@ public class LicenseType implements IPrivilegeHolder, ILicenseType {
 
         switch (name) {
             case LICENSE_TYPE_CMS:
-                return true;
-            default:
-                return false;
-        }
-    }
-
-    /**
-     * <p>
-     * isCrowdsourcingType.
-     * </p>
-     *
-     * @return true if this license type has one of the static crowdsourcing type names; false otherwise
-     */
-    public boolean isCrowdsourcingType() {
-        if (name == null) {
-            return false;
-        }
-
-        switch (name) {
-            case LICENSE_TYPE_CROWDSOURCING_CAMPAIGNS:
                 return true;
             default:
                 return false;
@@ -933,8 +908,6 @@ public class LicenseType implements IPrivilegeHolder, ILicenseType {
         addCoreLicenseType(LICENSE_TYPE_DELETE_OCR_PAGE, LICENSE_TYPE_DELETE_OCR_PAGE_DESCRIPTION, IPrivilegeHolder.PRIV_DELETE_OCR_PAGE);
         // Add CMS license types, if not yet in the database
         addCoreLicenseType(LICENSE_TYPE_CMS, LICENSE_TYPE_DESC_CMS, IPrivilegeHolder.PRIV_CMS_PAGES);
-        // Add crowdsourcing license types, if not yet in the database
-        addCoreLicenseType(LICENSE_TYPE_CROWDSOURCING_CAMPAIGNS, LICENSE_TYPE_DESC_CROWDSOURCING_CAMPAIGNS, new String[0]);
     }
 
     /**

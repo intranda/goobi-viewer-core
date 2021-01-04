@@ -612,7 +612,7 @@ public class Campaign implements CMSMediaHolder, ILicenseType, IPolyglott {
                 } else if (CampaignVisibility.PRIVATE.equals(visibility) && isGroupLimitActive()) {
                     return userGroup.getMembersAndOwner().contains(user);
                 } else {                    
-                    return user.isHasCrowdsourcingPrivilege(IPrivilegeHolder.PRIV_CROWDSOURCING_ANNOTATE_CAMPAIGN);
+                    return true;
                 }
             case REVIEW:
                 if (isReviewGroupLimitActive()) {
@@ -622,7 +622,7 @@ public class Campaign implements CMSMediaHolder, ILicenseType, IPolyglott {
                 } else if(user == null) {
                     return false;
                 } else {                      
-                    return user.isHasCrowdsourcingPrivilege(IPrivilegeHolder.PRIV_CROWDSOURCING_REVIEW_CAMPAIGN);
+                    return true;
                 }
             default:
                 return false;

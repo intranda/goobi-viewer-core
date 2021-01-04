@@ -53,7 +53,6 @@ import io.goobi.viewer.controller.SolrConstants;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
-import io.goobi.viewer.exceptions.ViewerConfigurationException;
 import io.goobi.viewer.faces.validators.SolrQueryValidator;
 import io.goobi.viewer.managedbeans.tabledata.TableDataFilter;
 import io.goobi.viewer.managedbeans.tabledata.TableDataProvider;
@@ -62,7 +61,6 @@ import io.goobi.viewer.managedbeans.tabledata.TableDataSource;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.messages.Messages;
 import io.goobi.viewer.messages.ViewerResourceBundle;
-import io.goobi.viewer.model.annotation.PersistentAnnotation;
 import io.goobi.viewer.model.crowdsourcing.CrowdsourcingTools;
 import io.goobi.viewer.model.crowdsourcing.campaigns.Campaign;
 import io.goobi.viewer.model.crowdsourcing.campaigns.Campaign.CampaignVisibility;
@@ -70,10 +68,7 @@ import io.goobi.viewer.model.crowdsourcing.campaigns.Campaign.ReviewMode;
 import io.goobi.viewer.model.crowdsourcing.campaigns.CampaignRecordStatistic.CampaignRecordStatus;
 import io.goobi.viewer.model.crowdsourcing.questions.Question;
 import io.goobi.viewer.model.misc.IPolyglott;
-import io.goobi.viewer.model.security.License;
-import io.goobi.viewer.model.security.LicenseType;
 import io.goobi.viewer.model.security.user.User;
-import io.goobi.viewer.model.security.user.UserGroup;
 
 /**
  * <p>
@@ -396,7 +391,7 @@ public class CrowdsourcingBean implements Serializable {
     public static boolean isAllowed(User user, Campaign campaign) throws DAOException {
         if (campaign == null) {
             return false;
-        }    
+        }
         // Skip inactive campaigns
         if (!campaign.isHasStarted() || campaign.isHasEnded()) {
             return false;
@@ -416,9 +411,9 @@ public class CrowdsourcingBean implements Serializable {
                 if (user == null) {
                     return false;
                 }
-                if ( user.isSuperuser()) {
+                if (user.isSuperuser()) {
                     return true;
-                } 
+                }
                 // Only logged in members may access campaigns limited to a user group
                 if (!campaign.isLimitToGroup() || campaign.getUserGroup() == null) {
                     return false;
@@ -429,34 +424,6 @@ public class CrowdsourcingBean implements Serializable {
                     logger.error(e.getMessage());
                     return false;
                 }
-            case RESTRICTED:
-                // Check user licenses
-                if (user != null) {
-                    for (License license : user.getLicenses()) {
-                        if (!LicenseType.LICENSE_TYPE_CROWDSOURCING_CAMPAIGNS.equals(license.getLicenseType().getName())) {
-                            continue;
-                        }
-                        if (license.getAllowedCrowdsourcingCampaigns().contains(campaign)) {
-                            return true;
-                        }
-                    }
-                    // Check user group licenses
-                    try {
-                        for (UserGroup userGroup : user.getUserGroupsWithMembership()) {
-                            for (License license : userGroup.getLicenses()) {
-                                if (!LicenseType.LICENSE_TYPE_CROWDSOURCING_CAMPAIGNS.equals(license.getLicenseType().getName())) {
-                                    continue;
-                                }
-                                if (license.getAllowedCrowdsourcingCampaigns().contains(campaign)) {
-                                    return true;
-                                }
-                            }
-                        }
-                    } catch (DAOException e) {
-                        logger.error(e.getMessage(), e);
-                    }
-                }
-                break;
             default:
                 break;
         }
@@ -491,9 +458,9 @@ public class CrowdsourcingBean implements Serializable {
         }
         selectedCampaign.setDateUpdated(now);
         if (selectedCampaign.getId() != null) {
-            try {                
+            try {
                 success = DataManager.getInstance().getDao().updateCampaign(selectedCampaign);
-            } catch(PersistenceException e) {
+            } catch (PersistenceException e) {
                 logger.error("Updating campaign " + selectedCampaign + " in database failed ", e);
                 success = false;
             }
@@ -967,10 +934,9 @@ public class CrowdsourcingBean implements Serializable {
         }
         logger.trace("Added {} identifiers to the map.", DataManager.getInstance().getRecordCampaignMap().size());
     }
-    
+
     public Set<ReviewMode> getPossibleReviewModes() {
         return EnumSet.allOf(ReviewMode.class);
     }
-    
 
 }
