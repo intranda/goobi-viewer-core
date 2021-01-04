@@ -80,8 +80,8 @@ import io.goobi.viewer.model.viewer.StructElement;
 import io.goobi.viewer.model.viewer.pageloader.EagerPageLoader;
 import io.goobi.viewer.model.viewer.pageloader.IPageLoader;
 import io.goobi.viewer.model.viewer.pageloader.LeanPageLoader;
-import io.goobi.viewer.servlets.rest.content.ContentResource;
 
+import static io.goobi.viewer.api.rest.v1.ApiUrls.*;
 /**
  * <p>
  * SequenceBuilder class.
@@ -183,7 +183,7 @@ public class SequenceBuilder extends AbstractBuilder {
 
         if (StringUtils.isNotBlank(page.getFulltextFileName()) || StringUtils.isNotBlank(page.getAltoFileName())) {
 
-            LinkingContent fulltextLink = new LinkingContent(ContentResource.getFulltextURI(page.getPi(), page.getFileName("txt")));
+            LinkingContent fulltextLink = new LinkingContent(urls.path(RECORDS_FILES, RECORDS_FILES_PLAINTEXT).params(page.getPi(), page.getFileName("txt")).buildURI());
             fulltextLink.setFormat(Format.TEXT_PLAIN);
             fulltextLink.setType(DcType.TEXT);
             fulltextLink.setLabel(ViewerResourceBundle.getTranslations("FULLTEXT"));
@@ -191,7 +191,7 @@ public class SequenceBuilder extends AbstractBuilder {
         }
 
         if (StringUtils.isNotBlank(page.getAltoFileName())) {
-            LinkingContent altoLink = new LinkingContent(ContentResource.getAltoURI(page.getPi(), page.getFileName("xml")));
+            LinkingContent altoLink = new LinkingContent(urls.path(RECORDS_FILES, RECORDS_FILES_ALTO).params(page.getPi(), page.getFileName("xml")).buildURI());
             altoLink.setFormat(Format.TEXT_XML);
             altoLink.setType(DcType.TEXT);
             altoLink.setLabel(ViewerResourceBundle.getTranslations("ALTO"));

@@ -1,0 +1,42 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:f="http://xmlns.jcp.org/jsf/core"
+	xmlns:h="http://xmlns.jcp.org/jsf/html"
+	xmlns:p="http://xmlns.jcp.org/jsf/passthrough"
+	xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+	xmlns:c="http://java.sun.com/jsp/jstl/core"
+	xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+	xmlns:composite="http://xmlns.jcp.org/jsf/composite">
+
+	<composite:interface
+		componentType="io.goobi.viewer.faces.components.MultiSelectDropdown">
+		<composite:attribute name="value" required="true"
+			type="java.util.List" />
+		<composite:attribute name="items" required="true"
+			type="java.util.List" />
+		<composite:attribute name="selectMessage" default="select" />
+		<composite:attribute name="render" default="@none" />
+	</composite:interface>
+
+
+	<composite:implementation>
+		<div class="multiselect-dropdown" id="#{cc.clientId}">
+			<div class="multiselect-dropdown-trigger"
+				data-toggle="option-dropdown">#{msg[cc.attrs.selectMessage]}</div>
+			<ul>
+				<ui:repeat var="option" value="#{cc.selection.keySet()}">
+                     <li>
+                         <label>
+                             <h:selectBooleanCheckbox id="option" type="checkbox" 
+	                             value="#{cc.selection[option]}"
+	                             valueChangeListener="#{cc.onSelectItem}">
+                                 <f:ajax event="change" execute="@this" render="#{cc.attrs.render}" />
+                             </h:selectBooleanCheckbox>
+                             #{msg[option]}
+                         </label>
+                     </li>
+                 </ui:repeat>
+			</ul>
+		</div>
+	</composite:implementation>
+
+</ui:composition>

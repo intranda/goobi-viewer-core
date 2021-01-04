@@ -134,7 +134,9 @@ public class ApiUrls extends AbstractApiUrlManager {
     public static final String USERS_BOOKMARKS_LIST_SHARED_RSS = "/shared/{key}/rss.xml";
     public static final String USERS_BOOKMARKS_LIST_SHARED_RSS_JSON = "/shared/{key}/rss.json";
 
-    public static final String AUTHORITY = "/authorities/{authority}/{id}";
+    public static final String AUTHORITY = "/authorities";
+    public static final String AUTHORITY_IDENTITY = "/identity/{id}";
+
 
     public static final String CROWDSOURCING_CAMPAIGN = "/crowdsourcing/campaings/{campaignId}";
     public static final String CROWDSOURCING_CAMPAIGN_ANNOTATIONS = "/annotations";

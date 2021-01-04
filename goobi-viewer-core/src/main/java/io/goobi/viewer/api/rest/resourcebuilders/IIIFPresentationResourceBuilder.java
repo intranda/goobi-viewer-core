@@ -15,8 +15,7 @@
  */
 package io.goobi.viewer.api.rest.resourcebuilders;
 
-import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_IMAGE_IIIF;
-import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_RECORD;
+import static io.goobi.viewer.api.rest.v1.ApiUrls.*;
 
 import java.io.IOException;
 import java.net.URI;
@@ -70,7 +69,6 @@ import io.goobi.viewer.model.viewer.PageType;
 import io.goobi.viewer.model.viewer.PhysicalElement;
 import io.goobi.viewer.model.viewer.StringPair;
 import io.goobi.viewer.model.viewer.StructElement;
-import io.goobi.viewer.servlets.rest.content.ContentResource;
 
 /**
  * @author florian
@@ -180,10 +178,10 @@ public class IIIFPresentationResourceBuilder {
             throw new ContentNotFoundException("Not document with PI = " + pi + " found");
         } else if (AnnotationType.TEI.equals(type)) {
             return getLayerBuilder().createAnnotationLayer(pi, type, Motivation.PAINTING, (id, repo) -> new TextResourceBuilder().getTEIFiles(id),
-                    (id, lang) -> ContentResource.getTEIURI(id, lang));
+                    (id, lang) -> urls.path(RECORDS_RECORD, RECORDS_TEI_LANG).params(id, lang).buildURI());
         } else if (AnnotationType.CMDI.equals(type)) {
             return getLayerBuilder().createAnnotationLayer(pi, type, Motivation.DESCRIBING, (id, repo) -> new TextResourceBuilder().getCMDIFiles(id),
-                    (id, lang) -> ContentResource.getCMDIURI(id, lang));
+                    (id, lang) -> urls.path(RECORDS_RECORD, RECORDS_CMDI_LANG).params(id, lang).buildURI());
 
         } else {
             Map<AnnotationType, List<AnnotationList>> annoLists = getSequenceBuilder().addBaseSequence(null, doc, "", request);

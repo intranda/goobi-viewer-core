@@ -36,8 +36,6 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.core.StreamingOutput;
 
 import org.apache.commons.io.FileUtils;
@@ -74,8 +72,6 @@ import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.exceptions.UncheckedPresentationException;
-import io.goobi.viewer.model.security.AccessConditionUtils;
-import io.goobi.viewer.model.security.IPrivilegeHolder;
 
 /**
  * @author florian
@@ -777,6 +773,16 @@ public class TextResourceBuilder {
             return Optional.of(matcher.group(1));
         }
         return Optional.empty();
+    }
+
+    /**
+     * @param id
+     * @param lang
+     * @return
+     */
+    public Object getCMDIURI(String id, String lang) {
+        // TODO Auto-generated method stub
+        return null;
     }
 
 }
