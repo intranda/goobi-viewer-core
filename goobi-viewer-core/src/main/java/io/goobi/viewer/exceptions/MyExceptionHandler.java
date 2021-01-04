@@ -181,12 +181,12 @@ public class MyExceptionHandler extends ExceptionHandlerWrapper {
         if (PhaseId.RENDER_RESPONSE == phase) {
             flash.putNow("ErrorPhase", phase.toString());
             flash.putNow("errorDetails", errorDetails);
-            flash.putNow("errorTime", LocalDateTime.now().format(DateTools.formatterISO8601DateTimeInstant));
+            flash.putNow("errorTime", LocalDateTime.now().format(DateTools.formatterISO8601Full));
             flash.putNow("errorType", errorType);
         } else {
             flash.put("ErrorPhase", phase.toString());
             flash.put("errorDetails", errorDetails);
-            flash.put("errorTime", LocalDateTime.now().format(DateTools.formatterISO8601DateTimeInstant));
+            flash.put("errorTime", LocalDateTime.now().format(DateTools.formatterISO8601Full));
             flash.put("errorType", errorType);
         }
 
