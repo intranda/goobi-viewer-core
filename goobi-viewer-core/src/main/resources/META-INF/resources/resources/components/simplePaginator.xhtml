@@ -21,8 +21,10 @@
 	</ui:define>
 
 	<composite:interface>
-		<composite:attribute name="itemCount" required="true" />
-		<composite:attribute name="itemActive" required="true" />
+		<composite:attribute name="itemCount" required="true" type="java.lang.Integer" />
+		<composite:attribute name="itemActive" required="true" type="java.lang.Integer" />
+		<composite:attribute name="firstItem" required="false" type="java.lang.Integer" default="1"/>
+		<composite:attribute name="lastItem" required="false" type="java.lang.Integer" default="#{cc.attrs.itemCount}"/>
 		<composite:attribute name="urlPrefix" required="true" />
 		<composite:attribute name="urlSuffix" required="false" />
 		<composite:attribute name="rtl" required="false" default="false" />
@@ -35,7 +37,7 @@
         <nav aria-label="#{cc.attrs.positionBottom ? msg.aria_label__pagination_bottom : msg.aria_label__pagination_pages}">
             <ul>
                 <!-- PREV / NEXT (RTL) -->
-                <h:panelGroup rendered="#{cc.attrs.itemActive != 1}">
+                <h:panelGroup rendered="#{cc.attrs.itemActive gt cc.attrs.firstItem}">
                     <li class="numeric-paginator__navigate navigate_prev">
                         <a href="#{cc.attrs.urlPrefix}#{cc.attrs.itemActive - 1}/#{cc.attrs.urlSuffix}" aria-label="#{msg.aria_label__pagination_previous}">
                             <ui:fragment rendered="#{!activeDocumentBean.viewManager.topDocument.rtl}">
@@ -48,28 +50,27 @@
                     </li>
                 </h:panelGroup>
 
-                <h:panelGroup rendered="#{cc.attrs.itemActive gt 1}">
+                <h:panelGroup rendered="#{cc.attrs.itemActive gt cc.attrs.firstItem}">
                     <li class="navigate_first">
-                        <a href="#{cc.attrs.urlPrefix}1/#{cc.attrs.urlSuffix}">1</a>
+                        <a href="#{cc.attrs.urlPrefix}#{cc.attrs.firstItem}/#{cc.attrs.urlSuffix}">#{cc.attrs.firstItem}</a>
                     </li>
 
-                    <h:panelGroup rendered="#{cc.attrs.itemActive gt 4}">
+                    <h:panelGroup rendered="#{cc.attrs.itemActive gt (cc.attrs.firstItem + 3)}">
                         <li>
-                            <a href="#{cc.attrs.urlPrefix}2/#{cc.attrs.urlSuffix}">2</a>
+                            <a href="#{cc.attrs.urlPrefix}#{cc.attrs.firstItem + 1}/#{cc.attrs.urlSuffix}">#{cc.attrs.firstItem + 1}</a>
                         </li>
                     </h:panelGroup>
                 </h:panelGroup>
 
-                <h:panelGroup rendered="#{cc.attrs.itemActive != '1'}">
-                    <h:panelGroup rendered="#{cc.attrs.itemActive gt 2}">
+                    <h:panelGroup rendered="#{cc.attrs.itemActive gt (cc.attrs.firstItem + 1)}">
                         <!-- DOTS -->
-                        <h:panelGroup rendered="#{cc.attrs.itemActive gt 5}">
+                        <h:panelGroup rendered="#{cc.attrs.itemActive gt (cc.attrs.firstItem + 4)}">
                             <li class="numeric-paginator__dots">
                                 <span>...</span>
                             </li>
                         </h:panelGroup>
 
-                        <h:panelGroup rendered="#{cc.attrs.itemActive gt 3}">
+                        <h:panelGroup rendered="#{cc.attrs.itemActive gt (cc.attrs.firstItem + 2)}">
                             <li>
                                 <a href="#{cc.attrs.urlPrefix}#{cc.attrs.itemActive -  2}/#{cc.attrs.urlSuffix}" aria-label="#{msg.aria__label_pagination_goto} #{cc.attrs.itemActive - 2}">#{cc.attrs.itemActive - 2}</a>
                             </li>
@@ -80,49 +81,46 @@
                             
                         </li>
                     </h:panelGroup>
-                </h:panelGroup>
 
                 <!-- ACTIVE ITEM -->
                 <li class="numeric-paginator__active" aria-current="page">
                 	<span>#{cc.attrs.itemActive}</span>
                 </li>
 
-                <h:panelGroup rendered="#{cc.attrs.itemActive != cc.attrs.itemCount}">
-                    <h:panelGroup rendered="#{cc.attrs.itemActive lt (cc.attrs.itemCount)}">
+                   <h:panelGroup rendered="#{cc.attrs.itemActive lt (cc.attrs.lastItem)}">
+                       <li>
+                           <a href="#{cc.attrs.urlPrefix}#{cc.attrs.itemActive + 1}/#{cc.attrs.urlSuffix}" aria-label="#{msg.aria__label_pagination_goto} #{cc.attrs.itemActive + 1}">#{cc.attrs.itemActive + 1}</a>
+                       </li>
+
+                       <h:panelGroup rendered="#{cc.attrs.itemActive lt (cc.attrs.lastItem - 1)}">
+                           <li>
+                               <a href="#{cc.attrs.urlPrefix}#{cc.attrs.itemActive + 2}/#{cc.attrs.urlSuffix}" aria-label="#{msg.aria__label_pagination_goto} #{cc.attrs.itemActive + 2}">#{cc.attrs.itemActive + 2}</a>
+                           </li>
+                       </h:panelGroup>
+
+                       <h:panelGroup rendered="#{cc.attrs.itemActive + 2 lt (cc.attrs.lastItem - 2)}">
+                           <li class="numeric-paginator__dots">
+                               <span>...</span>
+                           </li>
+                       </h:panelGroup>
+                   </h:panelGroup>
+
+                <h:panelGroup rendered="#{cc.attrs.itemActive lt (cc.attrs.lastItem - 2)}">
+                    <h:panelGroup rendered="#{cc.attrs.itemActive lt (cc.attrs.lastItem - 2) and cc.attrs.itemActive != (cc.attrs.lastItem - 3)}">
                         <li>
-                            <a href="#{cc.attrs.urlPrefix}#{cc.attrs.itemActive + 1}/#{cc.attrs.urlSuffix}" aria-label="#{msg.aria__label_pagination_goto} #{cc.attrs.itemActive + 1}">#{cc.attrs.itemActive + 1}</a>
-                        </li>
-
-                        <h:panelGroup rendered="#{cc.attrs.itemActive lt (cc.attrs.itemCount - 1)}">
-                            <li>
-                                <a href="#{cc.attrs.urlPrefix}#{cc.attrs.itemActive + 2}/#{cc.attrs.urlSuffix}" aria-label="#{msg.aria__label_pagination_goto} #{cc.attrs.itemActive + 2}">#{cc.attrs.itemActive + 2}</a>
-                            </li>
-                        </h:panelGroup>
-
-                        <h:panelGroup rendered="#{cc.attrs.itemActive + 2 lt cc.attrs.itemCount - 2}">
-                            <li class="numeric-paginator__dots">
-                                <span>...</span>
-                            </li>
-                        </h:panelGroup>
-                    </h:panelGroup>
-                </h:panelGroup>
-
-                <h:panelGroup rendered="#{cc.attrs.itemActive lt cc.attrs.itemCount - 2}">
-                    <h:panelGroup rendered="#{cc.attrs.itemActive lt cc.attrs.itemCount - 2 and cc.attrs.itemActive != cc.attrs.itemCount - 3}">
-                        <li>
-                            <a href="#{cc.attrs.urlPrefix}#{cc.attrs.itemCount - 1}/#{cc.attrs.urlSuffix}">#{cc.attrs.itemCount - 1}</a>
+                            <a href="#{cc.attrs.urlPrefix}#{(cc.attrs.lastItem - 1)}/#{cc.attrs.urlSuffix}">#{cc.attrs.lastItem - 1}</a>
                         </li>
                     </h:panelGroup>
 
-                    <h:panelGroup rendered="#{cc.attrs.itemActive lt cc.attrs.itemCount - 1}">
+                    <h:panelGroup rendered="#{cc.attrs.itemActive lt (cc.attrs.lastItem - 1)}">
                         <li class="navigate_last">
-                            <a href="#{cc.attrs.urlPrefix}#{cc.attrs.itemCount}/#{cc.attrs.urlSuffix}">#{cc.attrs.itemCount}</a>
+                            <a href="#{cc.attrs.urlPrefix}#{cc.attrs.lastItem}/#{cc.attrs.urlSuffix}">#{cc.attrs.lastItem}</a>
                         </li>
                     </h:panelGroup>
                 </h:panelGroup>
                 
                 <!-- NEXT / PREV (RTL) -->
-                <h:panelGroup rendered="#{cc.attrs.itemActive != cc.attrs.itemCount}">
+                <h:panelGroup rendered="#{cc.attrs.itemActive lt cc.attrs.lastItem }">
                     <li class="numeric-paginator__navigate navigate_next">
                         <a href="#{cc.attrs.urlPrefix}#{cc.attrs.itemActive + 1}/#{cc.attrs.urlSuffix}" aria-label="#{msg.aria_label__pagination_next}">
                             <ui:fragment rendered="#{!activeDocumentBean.viewManager.topDocument.rtl}">
