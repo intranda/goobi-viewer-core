@@ -29,6 +29,7 @@ import java.util.Random;
 import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.ExecutionException;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import javax.enterprise.context.SessionScoped;
@@ -55,6 +56,7 @@ import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.HTTPException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
+import io.goobi.viewer.faces.validators.EmailValidator;
 import io.goobi.viewer.faces.validators.PasswordValidator;
 import io.goobi.viewer.filters.LoginFilter;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
@@ -801,12 +803,25 @@ public class UserBean implements Serializable {
         if (securityQuestion != null && !securityQuestion.isAnswerCorrect(securityAnswer)) {
             Messages.error("user__security_question_wrong");
             logger.debug("Wrong security question answer.");
-            return "";
+            return "currentPage";
         }
         // Check whether the invisible field lastName has been filled (real users cannot do that)
         if (StringUtils.isNotEmpty(lastName)) {
             logger.debug("Honeypot field entry: {}", lastName);
-            return "";
+            return "currentPage";
+        }
+        if(!EmailValidator.validateEmailAddress(this.feedback.getEmail())) {
+            Messages.error("email_errlnvalid");
+            logger.debug("Invalid email: " + this.feedback.getEmail());
+            return "currentPage";
+        }
+        if(StringUtils.isBlank(feedback.getName())) {
+            Messages.error("errFeedbackNameRequired");
+            return "currentPage";
+        }
+        if(StringUtils.isBlank(feedback.getMessage())) {
+            Messages.error("errFeedbackMessageRequired");
+            return "currentPage";
         }
         try {
             if (NetTools.postMail(Collections.singletonList(DataManager.getInstance().getConfiguration().getFeedbackEmailAddress()),
@@ -826,7 +841,7 @@ public class UserBean implements Serializable {
             Messages.error(ViewerResourceBundle.getTranslation("errFeedbackSubmit", null)
                     .replace("{0}", DataManager.getInstance().getConfiguration().getFeedbackEmailAddress()));
         }
-        return "";
+        return "currentPage";
     }
 
     /**

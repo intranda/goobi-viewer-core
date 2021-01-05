@@ -644,7 +644,7 @@ public class NavigationHelper implements Serializable {
      *
      * @param inLocale a {@link java.lang.String} object.
      */
-    public void setLocaleString(String inLocale) {
+    public String setLocaleString(String inLocale) {
         logger.trace("setLocaleString: {}", inLocale);
         locale = new Locale(inLocale);
         FacesContext.getCurrentInstance().getViewRoot().setLocale(locale);
@@ -673,6 +673,7 @@ public class NavigationHelper implements Serializable {
                 adb.setSelectedRecordLanguage(inLocale);
             }
         }
+        return "currentPage";
     }
 
     /**
@@ -1697,6 +1698,17 @@ public class NavigationHelper implements Serializable {
         String previousUrl = ViewHistory.getCurrentView(request).map(path -> (path.getCombinedUrl())).orElse("");
         if (StringUtils.isBlank(previousUrl)) {
             previousUrl = "/";//getApplicationUrl();
+        }
+        return previousUrl;
+    }
+    
+    public String getCurrentViewPrettyUrl() {
+        HttpServletRequest request = (HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest();
+        String previousUrl = ViewHistory.getCurrentView(request).map(ViewerPath::getCombinedPrettyfiedUrl).orElse("");
+        if (StringUtils.isBlank(previousUrl)) {
+            previousUrl = "/";//getApplicationUrl();
+        } else if(previousUrl.endsWith("/")) {
+            previousUrl = previousUrl.substring(0, previousUrl.length()-1);
         }
         return previousUrl;
     }
