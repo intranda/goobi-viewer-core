@@ -111,6 +111,7 @@ public class ManifestBuilder extends AbstractBuilder {
             manifest = new Collection(getManifestURI(ele.getPi()), ele.getPi());
             manifest.addViewingHint(ViewingHint.multipart);
         } else {
+            ele.setImageNumber(1);
             manifest = new Manifest(getManifestURI(ele.getPi()));
             SearchService search = new SearchService(getSearchServiceURI(manifest.getId()));
             search.setLabel(ViewerResourceBundle.getTranslations("label__iiif_api_search"));
