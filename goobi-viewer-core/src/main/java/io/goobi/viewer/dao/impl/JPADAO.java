@@ -2900,7 +2900,7 @@ public class JPADAO implements IDAO {
     @Override
     public CMSPage getCMSPage(long id) throws DAOException {
         synchronized (cmsRequestLock) {
-            // logger.trace("getCMSPage: {}", id);
+            logger.trace("getCMSPage: {}", id);
             preQuery();
             try {
                 CMSPage o = em.getReference(CMSPage.class, id);
@@ -2911,7 +2911,7 @@ public class JPADAO implements IDAO {
             } catch (EntityNotFoundException e) {
                 return null;
             } finally {
-                // logger.trace("getCMSPage END");
+                logger.trace("getCMSPage END");
             }
         }
     }

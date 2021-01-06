@@ -54,7 +54,7 @@ public class IIIFPresentationResourceBuilderTest extends AbstractSolrEnabledTest
     }
 
     /**
-     * @throws java.lang.ExceptionXt
+     * @throws java.lang.Exception
      */
     @After
     public void tearDown() throws Exception {
