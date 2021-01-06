@@ -1,0 +1,31 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+	xmlns:f="http://xmlns.jcp.org/jsf/core"
+	xmlns:h="http://xmlns.jcp.org/jsf/html"
+	xmlns:c="http://java.sun.com/jsp/jstl/core"
+    xmlns:p="http://primefaces.org/ui"
+    xmlns:fn="http://java.sun.com/jsp/jstl/functions"   
+	xmlns:composite="http://xmlns.jcp.org/jsf/composite"
+	xmlns:widgetComponent="http://xmlns.jcp.org/jsf/composite/components/widgets"
+	xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components">
+
+	<ui:define name="metadata">
+		<f:metadata />
+	</ui:define>
+	
+	<composite:interface />
+
+	<composite:implementation>
+
+		<!-- ADDITIONAL CMS LOGIC IN HEADER -->
+		<script>
+		
+			let prettyUrl = "#{request.contextPath}#{navigationHelper.currentViewPrettyUrl}";
+			console.log("Pretty url of page: " + prettyUrl);
+			window.history.pushState({}, '', prettyUrl);
+		
+		</script>
+
+
+	</composite:implementation>
+</ui:composition>

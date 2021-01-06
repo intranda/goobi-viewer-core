@@ -644,7 +644,7 @@ public class NavigationHelper implements Serializable {
      *
      * @param inLocale a {@link java.lang.String} object.
      */
-    public String setLocaleString(String inLocale) {
+    public void setLocaleString(String inLocale) {
         logger.trace("setLocaleString: {}", inLocale);
         locale = new Locale(inLocale);
         FacesContext.getCurrentInstance().getViewRoot().setLocale(locale);
@@ -673,7 +673,6 @@ public class NavigationHelper implements Serializable {
                 adb.setSelectedRecordLanguage(inLocale);
             }
         }
-        return "currentPage";
     }
 
     /**

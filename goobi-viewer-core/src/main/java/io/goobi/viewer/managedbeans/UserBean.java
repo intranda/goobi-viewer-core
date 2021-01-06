@@ -803,25 +803,25 @@ public class UserBean implements Serializable {
         if (securityQuestion != null && !securityQuestion.isAnswerCorrect(securityAnswer)) {
             Messages.error("user__security_question_wrong");
             logger.debug("Wrong security question answer.");
-            return "currentPage";
+            return "";
         }
         // Check whether the invisible field lastName has been filled (real users cannot do that)
         if (StringUtils.isNotEmpty(lastName)) {
             logger.debug("Honeypot field entry: {}", lastName);
-            return "currentPage";
+            return "";
         }
         if(!EmailValidator.validateEmailAddress(this.feedback.getEmail())) {
             Messages.error("email_errlnvalid");
             logger.debug("Invalid email: " + this.feedback.getEmail());
-            return "currentPage";
+            return "";
         }
         if(StringUtils.isBlank(feedback.getName())) {
             Messages.error("errFeedbackNameRequired");
-            return "currentPage";
+            return "";
         }
         if(StringUtils.isBlank(feedback.getMessage())) {
             Messages.error("errFeedbackMessageRequired");
-            return "currentPage";
+            return "";
         }
         try {
             if (NetTools.postMail(Collections.singletonList(DataManager.getInstance().getConfiguration().getFeedbackEmailAddress()),
@@ -841,7 +841,7 @@ public class UserBean implements Serializable {
             Messages.error(ViewerResourceBundle.getTranslation("errFeedbackSubmit", null)
                     .replace("{0}", DataManager.getInstance().getConfiguration().getFeedbackEmailAddress()));
         }
-        return "currentPage";
+        return "";
     }
 
     /**
