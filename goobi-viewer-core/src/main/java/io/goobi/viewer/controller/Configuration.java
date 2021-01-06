@@ -28,6 +28,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.Set;
@@ -48,6 +49,7 @@ import de.unigoettingen.sub.commons.contentlib.imagelib.ImageType;
 import de.unigoettingen.sub.commons.contentlib.imagelib.transform.Scale;
 import io.goobi.viewer.exceptions.ViewerConfigurationException;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
+import io.goobi.viewer.messages.ViewerResourceBundle;
 import io.goobi.viewer.model.maps.GeoMapMarker;
 import io.goobi.viewer.model.metadata.Metadata;
 import io.goobi.viewer.model.metadata.MetadataParameter;
@@ -4513,6 +4515,51 @@ public final class Configuration extends AbstractConfiguration {
     public List<String> getIIIFDescriptionFields() {
         return getLocalList("webapi.iiif.descriptionFields.field", new ArrayList<>());
 
+    }
+
+    public List<Locale> getIIIFTranslationLocales() {
+        List<Locale> list = getLocalList("webapi.iiif.translations.locale", new ArrayList<>())
+        .stream()
+        .map(Locale::forLanguageTag)
+        .filter(l -> StringUtils.isNotBlank(l.getLanguage()))
+        .collect(Collectors.toList());
+        
+        if(list.isEmpty()) {
+            return ViewerResourceBundle.getAllLocales();
+        } else {
+            return list;
+        }
+    }
+    
+    public boolean isVisibleIIIFRenderingPDF() {
+        return getLocalBoolean("webapi.iiif.rendering.pdf[@visible]", true);
+    }
+    
+    public boolean isVisibleIIIFRenderingViewer() {
+        return getLocalBoolean("webapi.iiif.rendering.viewer[@visible]", true);
+    }
+    
+    public String getLabelIIIFRenderingPDF() {
+        return getLocalString("webapi.iiif.rendering.pdf.label", "PDF");
+    }
+    
+    public String getLabelIIIFRenderingViewer() {
+        return getLocalString("webapi.iiif.rendering.viewer.label", "Goobi Viewer");
+    }
+    public boolean isVisibleIIIFRenderingPlaintext() {
+        return getLocalBoolean("webapi.iiif.rendering.plaintext[@visible]", true);
+    }
+    
+    public boolean isVisibleIIIFRenderingAlto() {
+        return getLocalBoolean("webapi.iiif.rendering.alto[@visible]", true);
+    }
+    
+    public String getLabelIIIFRenderingPlaintext() {
+        return getLocalString("webapi.iiif.rendering.plaintext.label", "Fulltext");
+    }
+    
+    public String getLabelIIIFRenderingAlto() {
+        return getLocalString("webapi.iiif.rendering.alto.label", "ALTO");
     }
 
     /**

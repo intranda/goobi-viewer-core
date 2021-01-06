@@ -595,11 +595,14 @@ public class ViewerResourceBundle extends ResourceBundle {
         return getTranslations(key, true);
     }
     
-    
     public static IMetadataValue getTranslations(String key, boolean allowKeyAsTranslation) {
+        return getTranslations(key, getAllLocales(), allowKeyAsTranslation);
+    }
+    
+    public static IMetadataValue getTranslations(String key, List<Locale> locales, boolean allowKeyAsTranslation) {
         Map<String, String> translations = new HashMap<>();
-        if (ViewerResourceBundle.getAllLocales() != null) {
-            for (Locale locale : getAllLocales()) {
+        if (locales != null) {
+            for (Locale locale : locales) {
                 String translation = ViewerResourceBundle.getTranslation(key, locale, false);
                 if (key != null && StringUtils.isNotBlank(translation)) {
                     if(allowKeyAsTranslation || !key.equals(translation)) {                        
