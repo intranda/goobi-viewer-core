@@ -528,23 +528,28 @@ public class ViewerResourceBundle extends ResourceBundle {
      */
     public static List<Locale> getAllLocales() {
         if (allLocales == null) {
-            synchronized (allLocales) {
-            checkAndLoadResourceBundles();
-            List<Locale> locales = new ArrayList<>();
-            locales.addAll(defaultBundles.keySet());
-            locales.addAll(localBundles.keySet());
-                //deprecated?
-                locales.addAll(getLanguagesFromLocalMessagesFiles());
-                //Only keep unique locales
-                locales = locales.stream().distinct().collect(Collectors.toList());
-                // Add English if nothing found
-                if (locales.isEmpty()) {
-                    locales.add(Locale.ENGLISH);
-                }
-                allLocales = Collections.unmodifiableList(locales);
-            }
+            loadAllLocales();
         }
         return allLocales;
+    }
+
+    /**
+     * 
+     */
+    public static synchronized void loadAllLocales() {
+        checkAndLoadResourceBundles();
+        List<Locale> locales = new ArrayList<>();
+        locales.addAll(defaultBundles.keySet());
+        locales.addAll(localBundles.keySet());
+            //deprecated?
+            locales.addAll(getLanguagesFromLocalMessagesFiles());
+            //Only keep unique locales
+            locales = locales.stream().distinct().collect(Collectors.toList());
+            // Add English if nothing found
+            if (locales.isEmpty()) {
+                locales.add(Locale.ENGLISH);
+            }
+            allLocales = Collections.unmodifiableList(locales);
     }
 
     /**
