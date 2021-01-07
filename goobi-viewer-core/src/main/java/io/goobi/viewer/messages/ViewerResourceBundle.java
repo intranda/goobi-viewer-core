@@ -175,14 +175,7 @@ public class ViewerResourceBundle extends ResourceBundle {
      * @return The selected locale
      */
     private static Locale checkAndLoadResourceBundles(Locale inLocale) {
-        Locale locale;
-        if (inLocale != null) {
-            locale = inLocale;
-        } else if (FacesContext.getCurrentInstance() != null && FacesContext.getCurrentInstance().getViewRoot() != null) {
-            locale = FacesContext.getCurrentInstance().getViewRoot().getLocale();
-        } else {
-            locale = Locale.ENGLISH;
-        }
+        Locale locale = getThisOrFallback(inLocale);
         // Reload default bundle if the locale is different
         if (!defaultBundles.containsKey(locale)) {
             synchronized (lock) {
@@ -214,6 +207,22 @@ public class ViewerResourceBundle extends ResourceBundle {
             }
         }
 
+        return locale;
+    }
+
+    /**
+     * @param inLocale
+     * @return the passed inLocale if it is not null. Otherwise the current locale from the faces context, or ENGLISH if no faces context exists
+     */
+    public static Locale getThisOrFallback(Locale inLocale) {
+        Locale locale;
+        if (inLocale != null) {
+            locale = inLocale;
+        } else if (FacesContext.getCurrentInstance() != null && FacesContext.getCurrentInstance().getViewRoot() != null) {
+            locale = FacesContext.getCurrentInstance().getViewRoot().getLocale();
+        } else {
+            locale = Locale.ENGLISH;
+        }
         return locale;
     }
 
@@ -327,7 +336,8 @@ public class ViewerResourceBundle extends ResourceBundle {
     public static String getTranslation(final String key, Locale locale, boolean useFallback) {
         //        logger.trace("Translation for: {}", key);
         checkAndLoadDefaultResourceBundles();
-        locale = checkAndLoadResourceBundles(locale); // If locale is null, the return value will be the current locale
+        // If locale is null, the return value will be the current locale
+        locale = getThisOrFallback(locale);
         String value = getTranslation(key, defaultBundles.get(locale), localBundles.get(locale));
         if (useFallback && StringUtils.isEmpty(value) && defaultLocale != null && defaultBundles.containsKey(defaultLocale)
                 && !defaultLocale.equals(locale)) {
