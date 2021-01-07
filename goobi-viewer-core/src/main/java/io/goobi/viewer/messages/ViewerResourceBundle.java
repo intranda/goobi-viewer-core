@@ -528,32 +528,42 @@ public class ViewerResourceBundle extends ResourceBundle {
      */
     public static List<Locale> getAllLocales() {
         if (allLocales == null) {
+            synchronized (allLocales) {
             checkAndLoadResourceBundles();
-            Set<Locale> locales = new HashSet<>();
+            List<Locale> locales = new ArrayList<>();
             locales.addAll(defaultBundles.keySet());
             locales.addAll(localBundles.keySet());
-            allLocales = new ArrayList<>(locales);
-            synchronized (allLocales) {
                 //deprecated?
-//                Path configPath = Paths.get(DataManager.getInstance().getConfiguration().getConfigLocalPath());
-//                try (Stream<Path> messageFiles = Files.list(configPath).filter(path -> matchesMessagesFileName(path))) {
-//                    allLocales.addAll(messageFiles
-//                            .map(path -> getLanguageFromMessageFileName(path))
-//                            .filter(lang -> lang != null)
-//                            .sorted((l1, l2) -> sortLanguageEnDeFirst(l1, l2))
-//                            .map(language -> Locale.forLanguageTag(language))
-//                            .collect(Collectors.toList()));
-//                    allLocales = allLocales.stream().distinct().collect(Collectors.toList());
-//                } catch (IOException e) {
-//                    logger.warn("Error reading config directory; {}", configPath);
-//                }
+                locales.addAll(getLanguagesFromLocalMessagesFiles());
+                //Only keep unique locales
+                locales = locales.stream().distinct().collect(Collectors.toList());
                 // Add English if nothing found
-                if (allLocales.isEmpty()) {
-                    allLocales.add(Locale.ENGLISH);
+                if (locales.isEmpty()) {
+                    locales.add(Locale.ENGLISH);
                 }
+                allLocales = Collections.unmodifiableList(locales);
             }
         }
         return allLocales;
+    }
+
+    /**
+     * 
+     */
+    public static List<Locale> getLanguagesFromLocalMessagesFiles() {
+        Path configPath = Paths.get(DataManager.getInstance().getConfiguration().getConfigLocalPath());
+        try (Stream<Path> messageFiles = Files.list(configPath).filter(path -> matchesMessagesFileName(path))) {
+            List<Locale> locales = messageFiles
+                    .map(path -> getLanguageFromMessageFileName(path))
+                    .filter(lang -> lang != null)
+                    .sorted((l1, l2) -> sortLanguageEnDeFirst(l1, l2))
+                    .map(language -> Locale.forLanguageTag(language))
+                    .collect(Collectors.toList());
+                    return locales;
+        } catch (IOException e) {
+            logger.warn("Error reading config directory; {}", configPath);
+            return Collections.emptyList();
+        }
     }
 
     /**
