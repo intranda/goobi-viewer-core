@@ -5,19 +5,21 @@
 	
 	<li each="{bookmark in bookmarkList.items}">
 		<div class="row no-margin">
-			<div class="col-4 no-padding">
-				<div class="{mainClass}-image"
-					style="background-image: url({bookmark.representativeImageUrl});">
-				</div>
-			</div>
-			<div class="col-7 no-padding">
-				<h4>
-					<a href="{opts.bookmarks.config.root}{bookmark.url}">{bookmark.name}</a>
-				</h4>
+			<div class="col-11 no-padding">
+				<a class="row no-gutters" href="{opts.bookmarks.config.root}{bookmark.url}">
+					<div class="col-4 no-padding">
+						<div class="{mainClass}-image"
+							style="background-image: url({bookmark.representativeImageUrl});">
+						</div>
+					</div>
+					<div class="col-7 no-padding">
+						<h4>{bookmark.name}</h4>
+					</div>
+				</a>
 			</div>
 			<div class="col-1 no-padding {mainClass}-remove">
 				<button class="btn btn--clean" type="button"
-					data-bookshelf-type="delete" onclick="{remove}"
+					data-bookmark-list-type="delete" onclick="{remove}"
 					aria-label="{msg('bookmarkList_removeFromBookmarkList')}">
 					<i class="fa fa-ban" aria-hidden="true"></i>
 				</button>
