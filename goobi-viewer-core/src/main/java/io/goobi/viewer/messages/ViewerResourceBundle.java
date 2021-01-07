@@ -535,37 +535,18 @@ public class ViewerResourceBundle extends ResourceBundle {
             allLocales = new ArrayList<>(locales);
             synchronized (allLocales) {
                 //deprecated?
-                Path configPath = Paths.get(DataManager.getInstance().getConfiguration().getConfigLocalPath());
-                try (Stream<Path> messageFiles =
-                        Files.list(configPath).filter(path -> path.getFileName().toString().matches("messages_[a-z]{1,3}.properties"))) {
-                    allLocales.addAll(messageFiles
-                            .map(path -> StringTools.findFirstMatch(path.getFileName().toString(), "(?:messages_)([a-z]{1,3})(?:.properties)", 1)
-                                    .orElse(null))
-                            .filter(lang -> lang != null)
-                            .sorted((l1, l2) -> {
-                                if (l1.equals(l2)) {
-                                    return 0;
-                                }
-                                switch (l1) {
-                                    case "en":
-                                        return -1;
-                                    case "de":
-                                        return l2.equals("en") ? 1 : -1;
-                                    default:
-                                        switch (l2) {
-                                            case "en":
-                                            case "de":
-                                                return 1;
-                                        }
-                                }
-                                return l1.compareTo(l2);
-                            })
-                            .map(language -> Locale.forLanguageTag(language))
-                            .collect(Collectors.toList()));
-                    allLocales = allLocales.stream().distinct().collect(Collectors.toList());
-                } catch (IOException e) {
-                    logger.warn("Error reading config directory; {}", configPath);
-                }
+//                Path configPath = Paths.get(DataManager.getInstance().getConfiguration().getConfigLocalPath());
+//                try (Stream<Path> messageFiles = Files.list(configPath).filter(path -> matchesMessagesFileName(path))) {
+//                    allLocales.addAll(messageFiles
+//                            .map(path -> getLanguageFromMessageFileName(path))
+//                            .filter(lang -> lang != null)
+//                            .sorted((l1, l2) -> sortLanguageEnDeFirst(l1, l2))
+//                            .map(language -> Locale.forLanguageTag(language))
+//                            .collect(Collectors.toList()));
+//                    allLocales = allLocales.stream().distinct().collect(Collectors.toList());
+//                } catch (IOException e) {
+//                    logger.warn("Error reading config directory; {}", configPath);
+//                }
                 // Add English if nothing found
                 if (allLocales.isEmpty()) {
                     allLocales.add(Locale.ENGLISH);
@@ -575,6 +556,42 @@ public class ViewerResourceBundle extends ResourceBundle {
         return allLocales;
     }
 
+    /**
+     * @param path
+     * @return
+     */
+    public static boolean matchesMessagesFileName(Path path) {
+        return path.getFileName().toString().matches("messages_[a-z]{1,3}.properties");
+    }
+
+    /**
+     * @param path
+     * @return
+     */
+    public static String getLanguageFromMessageFileName(Path path) {
+        return StringTools.findFirstMatch(path.getFileName().toString(), "(?:messages_)([a-z]{1,3})(?:.properties)", 1)
+                .orElse(null);
+    }
+
+    private static int sortLanguageEnDeFirst(String l1, String l2) {
+        if (l1.equals(l2)) {
+            return 0;
+        }
+        switch (l1) {
+            case "en":
+                return -1;
+            case "de":
+                return l2.equals("en") ? 1 : -1;
+            default:
+                switch (l2) {
+                    case "en":
+                    case "de":
+                        return 1;
+                }
+        }
+        return l1.compareTo(l2);
+    }
+    
     public static List<Locale> getFacesLocales() {
         List<Locale> locales = new ArrayList<>();
         try {            
