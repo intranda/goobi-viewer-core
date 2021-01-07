@@ -335,8 +335,8 @@ public class ViewerResourceBundle extends ResourceBundle {
      */
     public static String getTranslation(final String key, Locale locale, boolean useFallback) {
         //        logger.trace("Translation for: {}", key);
-        locale = checkAndLoadResourceBundles(locale);
-        // If locale is null, the return value will be the current locale
+        checkAndLoadDefaultResourceBundles();
+        locale = checkAndLoadResourceBundles(locale); // If locale is null, the return value will be the current locale
         String value = getTranslation(key, defaultBundles.get(locale), localBundles.get(locale));
         if (useFallback && StringUtils.isEmpty(value) && defaultLocale != null && defaultBundles.containsKey(defaultLocale)
                 && !defaultLocale.equals(locale)) {
