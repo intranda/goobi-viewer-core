@@ -21,6 +21,9 @@
 		<script>
 		
 			let prettyUrl = "#{request.contextPath}#{navigationHelper.currentViewPrettyUrl}";
+			if(!prettyUrl.endsWith("/")) {
+			    prettyUrl += "/";
+			}
 			console.log("Pretty url of page: " + prettyUrl);
 			window.history.pushState({}, '', prettyUrl);
 		
