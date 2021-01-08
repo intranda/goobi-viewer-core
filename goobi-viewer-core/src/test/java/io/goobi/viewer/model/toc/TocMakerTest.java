@@ -51,7 +51,7 @@ public class TocMakerTest extends AbstractDatabaseAndSolrEnabledTest {
     @Before
     public void setUp() throws Exception {
         super.setUp();
-        ContextMocker.mockFacesContext(Locale.ENGLISH, Locale.GERMAN);
+        ContextMocker.mockFacesContext();
     }
 
     /**
