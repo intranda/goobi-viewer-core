@@ -599,8 +599,7 @@ public class NavigationHelper implements Serializable {
      */
     public Iterator<Locale> getSupportedLocales() {
         if (FacesContext.getCurrentInstance() != null && FacesContext.getCurrentInstance().getApplication() != null) {
-            return ViewerResourceBundle.getLocalesFromFacesConfig().iterator();
-            //            return FacesContext.getCurrentInstance().getApplication().getSupportedLocales();
+            return FacesContext.getCurrentInstance().getApplication().getSupportedLocales();
         }
 
         return null;
