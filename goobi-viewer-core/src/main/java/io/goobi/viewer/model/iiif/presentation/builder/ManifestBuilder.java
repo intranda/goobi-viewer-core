@@ -16,6 +16,9 @@
 package io.goobi.viewer.model.iiif.presentation.builder;
 
 import java.net.URI;
+
+import static io.goobi.viewer.api.rest.v1.ApiUrls.*;
+
 import java.net.URISyntaxException;
 import java.time.Instant;
 import java.time.LocalDate;
