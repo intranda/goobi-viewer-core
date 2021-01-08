@@ -45,6 +45,9 @@ public class PhysicalElementTest extends AbstractDatabaseAndSolrEnabledTest {
         DataManager.getInstance().injectConfiguration(new Configuration("src/test/resources/config_viewer.test.xml"));
 
         FacesContext facesContext = ContextMocker.mockFacesContext();
+        ExternalContext externalContext = Mockito.mock(ExternalContext.class);
+        UIViewRoot viewRoot = Mockito.mock(UIViewRoot.class);
+        Mockito.when(facesContext.getExternalContext()).thenReturn(externalContext);
     }
 
     /**
