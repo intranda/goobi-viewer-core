@@ -23,13 +23,13 @@
                     <ul>
                         <ui:repeat var="lang" value="#{navigationHelper.supportedLanguages}">
                             <li>
-                                <h:commandLink styleClass="#{navigationHelper.localeString == lang ?'activeLang':''}">
+                                <h:commandLink styleClass="#{navigationHelper.localeString == lang ?'activeLang':''}"
+                                	action="#{navigationHelper.setLocaleString(lang)}">
                                     <h:panelGroup rendered="#{cc.attrs.showFlags == true}">
                                         <img src="#{request.contextPath}/resources/themes/#{navigationHelper.theme}/images/lang/flag_#{lang}.gif" alt="Flag Icon" />
                                     </h:panelGroup>
                                     <h:outputText value="#{msg['changeLocal_' += lang]}"
                                         rendered="#{cc.attrs.showLabels == true}" />
-                                    <f:setPropertyActionListener target="#{navigationHelper.localeString}" value="#{lang}" />
                                 </h:commandLink>
                             </li>
                         </ui:repeat>
@@ -43,21 +43,21 @@
 					<ul>
 						<h:panelGroup rendered="#{navigationHelper.localeString == 'en'}">
 							<li>
-								<h:commandLink rendered="#{cc.attrs.showGerman == true}" styleClass="flag #{navigationHelper.localeString == 'de'?'activeLang_de':''} leftFlag ">
+								<h:commandLink rendered="#{cc.attrs.showGerman == true}" styleClass="flag #{navigationHelper.localeString == 'de'?'activeLang_de':''} leftFlag "
+								action="#{navigationHelper.setLocaleString('de')}">
 									<h:outputText value="#{msg.changeLocal_de}" rendered="#{cc.attrs.showLabels == true}" />
 									<h:panelGroup rendered="#{cc.attrs.showFlags == true}"><img src="#{request.contextPath}/resources/themes/#{navigationHelper.theme}/images/lang/flag_de.gif" alt="Flag Icon" />
                                 	</h:panelGroup>
-									<f:setPropertyActionListener target="#{navigationHelper.localeString}" value="de" />
 								</h:commandLink>
 							</li>
 						</h:panelGroup>
 						<h:panelGroup rendered="#{navigationHelper.localeString == 'de'}">
 							<li>	
-								<h:commandLink rendered="#{cc.attrs.showEnglish == true}" styleClass="flag middleFlag #{navigationHelper.localeString == 'en'?'activeLang_en':''}">
+								<h:commandLink rendered="#{cc.attrs.showEnglish == true}" styleClass="flag middleFlag #{navigationHelper.localeString == 'en'?'activeLang_en':''}"
+									action="#{navigationHelper.setLocaleString('en')}">
 									<h:outputText value="#{msg.changeLocal_en}" rendered="#{cc.attrs.showLabels == true}" />
 									<h:panelGroup rendered="#{cc.attrs.showFlags == true}"><img src="#{request.contextPath}/resources/themes/#{navigationHelper.theme}/images/lang/flag_en.gif" alt="Flag Icon" />
                                 	</h:panelGroup>
-									<f:setPropertyActionListener target="#{navigationHelper.localeString}" value="en" />
 								</h:commandLink>
 							</li>
 						</h:panelGroup>
@@ -70,12 +70,11 @@
                 <h:form id="changeLocalForm3" prependId="false">
                     <ul>
                         <li>
-                            <h:commandLink>
+                            <h:commandLink action="#{navigationHelper.setLocaleString(cc.attrs.singleLanguage)}">
 								<h:panelGroup rendered="#{cc.attrs.showFlags == true}">
 									<img src="#{request.contextPath}/resources/themes/#{navigationHelper.theme}/images/lang/flag_#{cc.attrs.singleLanguage}.gif" alt="Flag Icon" />
 								</h:panelGroup>
                                 <h:outputText value="#{msg[cc.attrs.singleLanguage]}" rendered="#{cc.attrs.showLabels == true}" />
-                                <f:setPropertyActionListener target="#{navigationHelper.localeString}" value="#{cc.attrs.singleLanguage}" />
                             </h:commandLink>
                         </li>
                     </ul>

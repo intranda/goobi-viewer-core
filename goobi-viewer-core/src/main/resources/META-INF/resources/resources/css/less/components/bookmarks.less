@@ -82,11 +82,14 @@
 		[data-bookmark-list-type="delete"] {
 			width: 16px;
 			height: 16px;
-			color: @blue;
+			color: @white;
 		}
 	}
 	/* DROPDOWN ACTIONS */
 	&__dropdown-list-actions {
+		a {
+			text-decoration: none;
+		}
 		border-top: 1px solid @middlegray;		
 	}
 	&__dropdown-list-reset,
@@ -280,8 +283,7 @@
 [data-bookmark-list-type="counter"] {
 }
 [data-bookmark-list-type="dropdown"] {
-	visibility: hidden;
-	display: flex;
+	display: none;
     align-items: center;
 }
 [data-bookmark-list-type="get"] {}

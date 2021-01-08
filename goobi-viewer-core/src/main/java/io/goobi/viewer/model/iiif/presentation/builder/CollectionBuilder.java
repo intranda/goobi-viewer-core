@@ -15,6 +15,10 @@
  */
 package io.goobi.viewer.model.iiif.presentation.builder;
 
+import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_ALTO;
+import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_PLAINTEXT;
+import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_RECORD;
+
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -50,8 +54,10 @@ import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.exceptions.ViewerConfigurationException;
+import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.messages.ViewerResourceBundle;
 import io.goobi.viewer.model.cms.CMSCollection;
+import io.goobi.viewer.model.iiif.presentation.builder.LinkingProperty.LinkingTarget;
 import io.goobi.viewer.model.search.SearchHelper;
 import io.goobi.viewer.model.viewer.BrowseElementInfo;
 import io.goobi.viewer.model.viewer.CollectionView;
@@ -265,7 +271,7 @@ public class CollectionBuilder extends AbstractBuilder {
                         collection.setDescription(info.getTranslationsForDescription());
                     }
                 } else {
-                    collection.setLabel(ViewerResourceBundle.getTranslations(baseElement.getName()));
+                    collection.setLabel(getLabel(baseElement.getName()));
                 }
 
                 URI thumbURI = absolutize(baseElement.getInfo().getIconURI());
@@ -289,19 +295,10 @@ public class CollectionBuilder extends AbstractBuilder {
                         new LinkingContent(URI.create(rssUrl), new SimpleMetadataValue(RSS_FEED_LABEL));
                 collection.addRelated(rss);
 
-                //              if(info != null && info.getLinkURI(getRequest().orElse(null)) != null) {
-                LinkingContent viewerPage = new LinkingContent(absolutize(collectionView.getCollectionUrl(baseElement)));
-                viewerPage.setLabel(new SimpleMetadataValue("goobi viewer"));
-                collection.addRendering(viewerPage);
-                //          }
-
-                //                LinkingContent viewer =
-                //                        new LinkingContent(absolutize(collectionView.getCollectionUrl(baseElement)), new SimpleMetadataValue(baseElement.getName()));
-                //                collection.addRendering(viewer);
+                addRenderings(baseElement, collectionView, collection);
 
             } else {
                 collection.addViewingHint(ViewingHint.top);
-                //                collection.addService(new CollectionExtent(collectionView.getVisibleDcElements().size(), 0));
             }
             return collection;
 
@@ -310,6 +307,39 @@ public class CollectionBuilder extends AbstractBuilder {
         }
         return null;
     }
+
+    /**
+     * @param baseElement
+     * @param collection
+     */
+    private void addRenderings(HierarchicalBrowseDcElement baseElement, CollectionView collectionView, Collection collection) {
+        
+        this.getRenderings().forEach(link -> {
+            URI id = getLinkingPropertyUri(baseElement, collectionView, link.target);
+            if(id != null) {                
+                collection.addRendering(link.getLinkingContent(id));
+            }
+        });
+
+    }
+
+
+    /**
+     * @param baseElement
+     * @param target
+     * @return
+     */
+    private URI getLinkingPropertyUri(HierarchicalBrowseDcElement baseElement, CollectionView collectionView, LinkingTarget target) {
+        
+        URI uri = null;
+        switch(target) {
+            case VIEWER:
+                uri = absolutize(collectionView.getCollectionUrl(baseElement));
+                break;
+        }
+        return uri;
+    }
+
 
     /**
      * Add a taglist service to the collection and all subcollections. 

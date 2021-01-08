@@ -36,7 +36,7 @@ import javax.inject.Inject;
 import javax.inject.Named;
 import javax.persistence.PersistenceException;
 
-import org.apache.commons.lang.ObjectUtils;
+import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.solr.client.solrj.SolrServerException;
 import org.apache.solr.client.solrj.impl.BaseHttpSolrClient.RemoteSolrException;
@@ -68,10 +68,7 @@ import io.goobi.viewer.model.crowdsourcing.campaigns.Campaign.ReviewMode;
 import io.goobi.viewer.model.crowdsourcing.campaigns.CampaignRecordStatistic.CampaignRecordStatus;
 import io.goobi.viewer.model.crowdsourcing.questions.Question;
 import io.goobi.viewer.model.misc.IPolyglott;
-import io.goobi.viewer.model.security.License;
-import io.goobi.viewer.model.security.LicenseType;
 import io.goobi.viewer.model.security.user.User;
-import io.goobi.viewer.model.security.user.UserGroup;
 
 /**
  * <p>
@@ -427,34 +424,6 @@ public class CrowdsourcingBean implements Serializable {
                     logger.error(e.getMessage());
                     return false;
                 }
-            case RESTRICTED:
-                // Check user licenses
-                if (user != null) {
-                    for (License license : user.getLicenses()) {
-                        if (!LicenseType.LICENSE_TYPE_CROWDSOURCING_CAMPAIGNS.equals(license.getLicenseType().getName())) {
-                            continue;
-                        }
-                        if (license.getAllowedCrowdsourcingCampaigns().contains(campaign)) {
-                            return true;
-                        }
-                    }
-                    // Check user group licenses
-                    try {
-                        for (UserGroup userGroup : user.getUserGroupsWithMembership()) {
-                            for (License license : userGroup.getLicenses()) {
-                                if (!LicenseType.LICENSE_TYPE_CROWDSOURCING_CAMPAIGNS.equals(license.getLicenseType().getName())) {
-                                    continue;
-                                }
-                                if (license.getAllowedCrowdsourcingCampaigns().contains(campaign)) {
-                                    return true;
-                                }
-                            }
-                        }
-                    } catch (DAOException e) {
-                        logger.error(e.getMessage(), e);
-                    }
-                }
-                break;
             default:
                 break;
         }

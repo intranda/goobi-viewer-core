@@ -138,6 +138,10 @@ public abstract class AbstractApiUrlManager {
             }
             return path;
         }
+        
+        public URI buildURI() {
+            return URI.create(this.build());
+        }
     }
 
     public static class ApiPathParams extends ApiPath {

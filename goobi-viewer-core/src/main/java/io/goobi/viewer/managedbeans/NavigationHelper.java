@@ -599,8 +599,7 @@ public class NavigationHelper implements Serializable {
      */
     public Iterator<Locale> getSupportedLocales() {
         if (FacesContext.getCurrentInstance() != null && FacesContext.getCurrentInstance().getApplication() != null) {
-            return ViewerResourceBundle.getLocalesFromFacesConfig().iterator();
-            //            return FacesContext.getCurrentInstance().getApplication().getSupportedLocales();
+            return FacesContext.getCurrentInstance().getApplication().getSupportedLocales();
         }
 
         return null;
@@ -1697,6 +1696,17 @@ public class NavigationHelper implements Serializable {
         String previousUrl = ViewHistory.getCurrentView(request).map(path -> (path.getCombinedUrl())).orElse("");
         if (StringUtils.isBlank(previousUrl)) {
             previousUrl = "/";//getApplicationUrl();
+        }
+        return previousUrl;
+    }
+    
+    public String getCurrentViewPrettyUrl() {
+        HttpServletRequest request = (HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest();
+        String previousUrl = ViewHistory.getCurrentView(request).map(ViewerPath::getCombinedPrettyfiedUrl).orElse("");
+        if (StringUtils.isBlank(previousUrl)) {
+            previousUrl = "/";//getApplicationUrl();
+        } else if(previousUrl.endsWith("/")) {
+            previousUrl = previousUrl.substring(0, previousUrl.length()-1);
         }
         return previousUrl;
     }

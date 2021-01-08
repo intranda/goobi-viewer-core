@@ -1233,6 +1233,36 @@
 				in the resources/themes/<theme>/images/ folder and linked appropriately If 
 				no logo is configured, the image footer will be used -->
 			<logo>dfgviewer_intranda.jpg</logo>
+			
+			<!-- Configure 'rendering' links für IIIF Presentation resources. These 
+				are links to the Goobi Viewer page, the PDF, plaintext and ALTO documents. 
+				For each link the visibiliy attribute determines if the link is rendered 
+				at all and the label subnode can be used to configure an individual label 
+				for the link. These labels are translated if translations exist. -->
+			<rendering>
+				<viewer visible="true">
+					<label>Goobi Viewer</label>
+				</viewer>
+				<pdf visible="true">
+					<label>PDF</label>
+				</pdf>
+				<plaintext visible="true">
+					<label>Fulltext</label>
+				</plaintext>
+				<alto visible="true">
+					<label>ALTO</label>
+				</alto>
+			</rendering>
+			
+			<!-- A list of locale of language codes for which translations of labels 
+				and metadata fields should be provided. If no locales are configured, all 
+				available locales are used. If only one locale is used, the labels will always 
+				be rendered as a single string -->
+			<translations>
+				<locale>de</locale>
+				<locale>en</locale>
+			</translations>
+			
 		</iiif>
         <authorization>
             <token>test</token>

@@ -35,6 +35,7 @@ import org.jdom2.JDOMException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import static io.goobi.viewer.api.rest.v1.ApiUrls.*;
 import de.intranda.api.annotation.IAnnotation;
 import de.intranda.api.annotation.SimpleResource;
 import de.intranda.api.annotation.oa.FragmentSelector;
@@ -73,6 +74,8 @@ import io.goobi.viewer.model.annotation.Comment;
 import io.goobi.viewer.model.annotation.PersistentAnnotation;
 import io.goobi.viewer.model.crowdsourcing.campaigns.CampaignRecordStatistic.CampaignRecordStatus;
 import io.goobi.viewer.model.crowdsourcing.questions.Question;
+import io.goobi.viewer.model.iiif.presentation.builder.LinkingProperty.LinkingTarget;
+import io.goobi.viewer.model.iiif.presentation.builder.LinkingProperty.LinkingType;
 import io.goobi.viewer.model.viewer.MimeType;
 import io.goobi.viewer.model.viewer.PageType;
 import io.goobi.viewer.model.viewer.PhysicalElement;
@@ -180,37 +183,36 @@ public class SequenceBuilder extends AbstractBuilder {
      * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
      */
     public void addSeeAlsos(Canvas canvas, StructElement doc, PhysicalElement page) throws URISyntaxException, ViewerConfigurationException {
-
-        if (StringUtils.isNotBlank(page.getFulltextFileName()) || StringUtils.isNotBlank(page.getAltoFileName())) {
-
-            LinkingContent fulltextLink = new LinkingContent(ContentResource.getFulltextURI(page.getPi(), page.getFileName("txt")));
-            fulltextLink.setFormat(Format.TEXT_PLAIN);
-            fulltextLink.setType(DcType.TEXT);
-            fulltextLink.setLabel(ViewerResourceBundle.getTranslations("FULLTEXT"));
-            canvas.addSeeAlso(fulltextLink);
-        }
-
-        if (StringUtils.isNotBlank(page.getAltoFileName())) {
-            LinkingContent altoLink = new LinkingContent(ContentResource.getAltoURI(page.getPi(), page.getFileName("xml")));
-            altoLink.setFormat(Format.TEXT_XML);
-            altoLink.setType(DcType.TEXT);
-            altoLink.setLabel(ViewerResourceBundle.getTranslations("ALTO"));
-            canvas.addSeeAlso(altoLink);
-        }
-
-        if (MimeType.IMAGE.getName().equals(page.getMimeType())) {
-            String url = imageDelivery.getPdf().getPdfUrl(doc, page);
+        
+        this.getSeeAlsos().forEach(link -> {
             try {
-                url = URLEncoder.encode(url, StringTools.DEFAULT_ENCODING);
-            } catch (UnsupportedEncodingException e) {
-                logger.error(e.getMessage());
+                URI id = getCanvasLinkingPropertyUri(page, doc, link.target);
+                if(id != null) {                    
+                    canvas.addSeeAlso(link.getLinkingContent(id));
+                }
+            } catch (URISyntaxException e) {
+                logger.error("Error building linking property url", e);
             }
-            LinkingContent link = new LinkingContent(new URI(url));
-            link.setFormat(Format.APPLICATION_PDF);
-            link.setType(DcType.SOFTWARE);
-            link.setLabel(ViewerResourceBundle.getTranslations("PDF"));
-            canvas.addSeeAlso(link);
-        }
+        });
+    }
+    
+    /**
+     * @param page
+     * @param canvas
+     * @throws URISyntaxException
+     */
+    public void addRenderings(PhysicalElement page, StructElement doc, Canvas canvas) throws URISyntaxException {
+        
+        this.getRenderings().forEach(link -> {
+            try {
+                URI id = getCanvasLinkingPropertyUri(page, doc, link.target);
+                if(id != null) {                    
+                    canvas.addRendering(link.getLinkingContent(id));
+                }
+            } catch (URISyntaxException e) {
+                logger.error("Error building linking property url", e);
+            }
+        });
     }
 
     /**
@@ -232,7 +234,7 @@ public class SequenceBuilder extends AbstractBuilder {
             Canvas canvas = canvases.get(order);
             if (canvas != null) {
                 AnnotationList annoList = new AnnotationList(getAnnotationListURI(pi, order, AnnotationType.COMMENT, true));
-                annoList.setLabel(ViewerResourceBundle.getTranslations(AnnotationType.COMMENT.name()));
+                annoList.setLabel(getLabel(AnnotationType.COMMENT.name()));
                 if (populate) {
                     List<Comment> comments = DataManager.getInstance().getDao().getCommentsForPage(pi, order);
                     for (Comment comment : comments) {
@@ -325,9 +327,7 @@ public class SequenceBuilder extends AbstractBuilder {
         Sequence parent = new Sequence(getSequenceURI(doc.getPi(), null));
         canvas.addWithin(parent);
 
-        LinkingContent viewerPage = new LinkingContent(new URI(getViewUrl(page, getPreferedView())));
-        viewerPage.setLabel(new SimpleMetadataValue("goobi viewer"));
-        canvas.addRendering(viewerPage);
+        addRenderings(page, doc, canvas);
 
         if (!getBuildMode().equals(BuildMode.THUMBS)) {
             Dimension size = getSize(page);
@@ -371,6 +371,42 @@ public class SequenceBuilder extends AbstractBuilder {
         return canvas;
     }
 
+
+
+    /**
+     * @param page
+     * @param doc
+     * @param link
+     * @throws URISyntaxException
+     */
+    private URI getCanvasLinkingPropertyUri(PhysicalElement page, StructElement doc, LinkingProperty.LinkingTarget target) throws URISyntaxException {
+        if(target.equals(LinkingTarget.PLAINTEXT) && StringUtils.isAllBlank(page.getFulltextFileName(), page.getAltoFileName())) {
+            return null;
+        } 
+        if(target.equals(LinkingTarget.ALTO) && StringUtils.isBlank(page.getAltoFileName())) {
+            return null;
+        }
+        if(target.equals(LinkingTarget.PDF) && !(MimeType.IMAGE.getName().equals(page.getMimeType()))) {
+            return null;
+        }
+        
+        URI uri = null;
+        switch(target) {
+            case VIEWER:
+                uri = URI.create(getViewUrl(page, getPreferedView()));
+                break;
+            case ALTO:
+                uri = this.urls.path(RECORDS_FILES, RECORDS_FILES_ALTO).params(page.getPi(), page.getFileName("xml")).buildURI();
+                break;
+            case PLAINTEXT:
+                uri = this.urls.path(RECORDS_FILES, RECORDS_FILES_PLAINTEXT).params(page.getPi(), page.getFileName("txt")).buildURI();
+                break;
+            case PDF:
+                uri = URI.create(imageDelivery.getPdf().getPdfUrl(doc, page));
+        }
+        return uri;
+    }
+
     /**
      * <p>
      * addOtherContent.
@@ -393,7 +429,7 @@ public class SequenceBuilder extends AbstractBuilder {
 
         if (StringUtils.isNotBlank(page.getFulltextFileName()) || StringUtils.isNotBlank(page.getAltoFileName())) {
             AnnotationList annoList = new AnnotationList(getAnnotationListURI(page.getPi(), page.getOrder(), AnnotationType.FULLTEXT, true));
-            annoList.setLabel(ViewerResourceBundle.getTranslations(AnnotationType.FULLTEXT.name()));
+            annoList.setLabel(getLabel(AnnotationType.FULLTEXT.name()));
             annotationMap.put(AnnotationType.FULLTEXT, annoList);
             if (populate) {
                 if (StringUtils.isNotBlank(page.getAltoFileName())) {

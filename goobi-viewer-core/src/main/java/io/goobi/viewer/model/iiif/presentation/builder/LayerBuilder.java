@@ -125,7 +125,7 @@ public class LayerBuilder extends AbstractBuilder {
             link.setType(dcType);
         }
         if (annoType != null) {
-            link.setLabel(ViewerResourceBundle.getTranslations(annoType.name()));
+            link.setLabel(getLabel(annoType.name()));
         }
         OpenAnnotation annotation = new OpenAnnotation(annotationId);
         if (motivation != null) {
@@ -149,7 +149,7 @@ public class LayerBuilder extends AbstractBuilder {
      */
     public AnnotationList createAnnotationList(List<IAnnotation> annotations, URI id, AnnotationType type) {
         AnnotationList annoList = new AnnotationList(id);
-        annoList.setLabel(ViewerResourceBundle.getTranslations(type.name()));
+        annoList.setLabel(getLabel(type.name()));
         for (IAnnotation annotation : annotations) {
             annoList.addResource(annotation);
         }
@@ -191,7 +191,7 @@ public class LayerBuilder extends AbstractBuilder {
         Map<AnnotationType, AnnotationList> map = new HashMap<>();
         for (AnnotationType annoType : annoLists.keySet()) {
             AnnotationList content = new AnnotationList(getAnnotationListURI(pi, annoType));
-            content.setLabel(ViewerResourceBundle.getTranslations(annoType.name()));
+            content.setLabel(getLabel(annoType.name()));
             annoLists.get(annoType)
                     .stream()
                     .filter(al -> al.getResources() != null)

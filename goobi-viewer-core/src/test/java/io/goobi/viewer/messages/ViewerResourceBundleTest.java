@@ -24,17 +24,38 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Arrays;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 
+import javax.faces.application.Application;
+import javax.faces.context.ExternalContext;
+import javax.faces.context.FacesContext;
+
 import org.jdom2.JDOMException;
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Test;
+import org.mockito.Mockito;
 
-
+import de.intranda.metadata.multilanguage.IMetadataValue;
+import de.intranda.metadata.multilanguage.MultiLanguageMetadataValue;
 import io.goobi.viewer.AbstractTest;
+import io.goobi.viewer.managedbeans.ContextMocker;
 
 public class ViewerResourceBundleTest extends AbstractTest {
+
+    @Test
+    public void testGetDefaultLocale() {
+        Assert.assertEquals(Locale.ENGLISH, ViewerResourceBundle.getDefaultLocale());
+    }
+    
+    @Test 
+    public void testGetAllLocales() {
+        List<Locale> locales = ViewerResourceBundle.getAllLocales();
+        Assert.assertEquals(2, locales.size());
+    }
 
     /**
      * @see ViewerResourceBundle#replaceParameters(String,String[])
@@ -59,10 +80,14 @@ public class ViewerResourceBundleTest extends AbstractTest {
      * @verifies return English if no other locales found
      */
     @Test
-    public void getAllLocales_shouldReturnEnglishIfNoOtherLocalesFound() throws Exception {
-        List<Locale> locales = ViewerResourceBundle.getAllLocales();
-        Assert.assertEquals(1, locales.size());
-        Assert.assertEquals(Locale.ENGLISH, locales.get(0));
+    public void getAllLocales_shouldReturnEnglishForUnknownLanguages() throws Exception {
+        
+        
+        String germanTranslation = ViewerResourceBundle.getTranslation("MD_AUTHOR", Locale.GERMAN);
+        String englishTranslation = ViewerResourceBundle.getTranslation("MD_AUTHOR", Locale.ENGLISH);
+        String frenchtranslation = ViewerResourceBundle.getTranslation("MD_AUTHOR", Locale.FRENCH);
+        Assert.assertEquals(englishTranslation, frenchtranslation);
+        Assert.assertNotEquals(englishTranslation, germanTranslation);
     }
     
     @Test
@@ -73,5 +98,19 @@ public class ViewerResourceBundleTest extends AbstractTest {
         assertEquals(6, locales.size());
         assertEquals(Locale.ENGLISH, locales.get(1));
         assertEquals(Locale.FRENCH, locales.get(3));
+    }
+    
+    @Test
+    public void testGetTranslation() throws IOException, InterruptedException {
+        String autor = ViewerResourceBundle.getTranslation("MD_AUTHOR", Locale.GERMAN);
+        Assert.assertEquals("Autor", autor);
+    }
+    
+    @Test
+    public void testGetTranslations() {
+        IMetadataValue translations = ViewerResourceBundle.getTranslations("MD_AUTHOR");
+        Assert.assertTrue(translations instanceof MultiLanguageMetadataValue);
+        Assert.assertEquals("Author", translations.getValue("en").orElse(""));
+        Assert.assertEquals("Autor", translations.getValue("de").orElse(""));
     }
 }

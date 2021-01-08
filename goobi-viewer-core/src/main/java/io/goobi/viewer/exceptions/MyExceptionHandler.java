@@ -34,7 +34,6 @@ import javax.faces.event.PhaseId;
 import javax.servlet.http.HttpSession;
 
 import org.apache.commons.lang3.StringUtils;
-import org.joda.time.Instant;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -182,12 +181,12 @@ public class MyExceptionHandler extends ExceptionHandlerWrapper {
         if (PhaseId.RENDER_RESPONSE == phase) {
             flash.putNow("ErrorPhase", phase.toString());
             flash.putNow("errorDetails", errorDetails);
-            flash.putNow("errorTime", Instant.now().toDateTime().toString());
+            flash.putNow("errorTime", LocalDateTime.now().format(DateTools.formatterISO8601Full));
             flash.putNow("errorType", errorType);
         } else {
             flash.put("ErrorPhase", phase.toString());
             flash.put("errorDetails", errorDetails);
-            flash.put("errorTime", Instant.now().toDateTime().toString());
+            flash.put("errorTime", LocalDateTime.now().format(DateTools.formatterISO8601Full));
             flash.put("errorType", errorType);
         }
 
@@ -239,31 +238,31 @@ public class MyExceptionHandler extends ExceptionHandlerWrapper {
      */
     public String getSessionDetails(FacesContext fc) {
         HttpSession session = (HttpSession) fc.getExternalContext().getSession(false);
-        if (session != null) {
-            StringBuilder details = new StringBuilder()
-                    .append("Session ID: ")
-                    .append(session.getId())
-                    .append("</br>")
-                    .append("Session created: ")
-                    .append(DateTools.getLocalDateTimeFromMillis(session.getCreationTime(), false))
-                    .append("</br>")
-                    .append("Session last accessed: ")
-                    .append(DateTools.getLocalDateTimeFromMillis(session.getLastAccessedTime(), false));
-
-            Optional<Map<Object, Map>> logicalViews =
-                    Optional.ofNullable((Map) session.getAttribute("com.sun.faces.renderkit.ServerSideStateHelper.LogicalViewMap"));
-            Integer numberOfLogicalViews = logicalViews.map(map -> map.keySet().size()).orElse(0);
-            Integer numberOfTotalViews =
-                    logicalViews.map(map -> map.values().stream().mapToInt(value -> value.keySet().size()).sum()).orElse(0);
-            details.append("</br>");
-            details.append("Logical Views stored in session: ").append(numberOfLogicalViews.toString());
-            details.append("</br>");
-            details.append("Total views stored in session: ").append(numberOfTotalViews.toString());
-
-            return details.toString();
-        } else {
+        if (session == null) {
             return "No session details available";
         }
+
+        StringBuilder details = new StringBuilder()
+                .append("Session ID: ")
+                .append(session.getId())
+                .append("</br>")
+                .append("Session created: ")
+                .append(DateTools.getLocalDateTimeFromMillis(session.getCreationTime(), false))
+                .append("</br>")
+                .append("Session last accessed: ")
+                .append(DateTools.getLocalDateTimeFromMillis(session.getLastAccessedTime(), false));
+
+        Optional<Map<Object, Map>> logicalViews =
+                Optional.ofNullable((Map) session.getAttribute("com.sun.faces.renderkit.ServerSideStateHelper.LogicalViewMap"));
+        Integer numberOfLogicalViews = logicalViews.map(map -> map.keySet().size()).orElse(0);
+        Integer numberOfTotalViews =
+                logicalViews.map(map -> map.values().stream().mapToInt(value -> value.keySet().size()).sum()).orElse(0);
+        details.append("</br>");
+        details.append("Logical Views stored in session: ").append(numberOfLogicalViews.toString());
+        details.append("</br>");
+        details.append("Total views stored in session: ").append(numberOfTotalViews.toString());
+
+        return details.toString();
     }
 
     /**

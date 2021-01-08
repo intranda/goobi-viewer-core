@@ -571,7 +571,6 @@ public class SearchBean implements SearchInterface, Serializable {
                         } catch (DAOException e) {
                             logger.error(e.toString(), e);
                         }
-
                     } else if (userBean.isLoggedIn()) {
                         // User bookmark list
                         try {
@@ -594,7 +593,6 @@ public class SearchBean implements SearchInterface, Serializable {
                         // Skip empty bookmark list
                         continue;
                     }
-
                 } else {
                     // Generate item query
                     itemQuery = queryItem.generateQuery(searchTerms.get(SolrConstants.FULLTEXT), aggregateHits);
@@ -608,7 +606,12 @@ public class SearchBean implements SearchInterface, Serializable {
                         if (!queryItem.getValue().startsWith("\"")) {
                             sbInfo.append('"');
                         }
-                        sbInfo.append(ViewerResourceBundle.getTranslation(queryItem.getValue(), BeanUtils.getLocale()));
+                        if (SolrConstants.BOOKMARKS.equals(queryItem.getField()) && !userBean.isLoggedIn()) {
+                            // Session bookmark list value
+                            sbInfo.append(ViewerResourceBundle.getTranslation("bookmarkList_session", BeanUtils.getLocale()));
+                        } else {
+                            sbInfo.append(ViewerResourceBundle.getTranslation(queryItem.getValue(), BeanUtils.getLocale()));
+                        }
                         if (!queryItem.getValue().endsWith("\"")) {
                             sbInfo.append('"');
                         }

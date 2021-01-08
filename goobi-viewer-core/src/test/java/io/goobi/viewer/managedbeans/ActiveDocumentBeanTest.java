@@ -57,8 +57,8 @@ public class ActiveDocumentBeanTest extends AbstractDatabaseAndSolrEnabledTest {
 
         Mockito.when(facesContext.getExternalContext()).thenReturn(externalContext);
         //        Mockito.when(externalContext.getContext()).thenReturn(servletContext);
-        Mockito.when(facesContext.getViewRoot()).thenReturn(viewRoot);
-        Mockito.when(viewRoot.getLocale()).thenReturn(Locale.GERMAN);
+//        Mockito.when(facesContext.getViewRoot()).thenReturn(viewRoot);
+//        Mockito.when(viewRoot.getLocale()).thenReturn(Locale.GERMAN);
 
         this.navigationHelper = Mockito.mock(NavigationHelper.class);
         Mockito.when(navigationHelper.getCurrentPage()).thenReturn("viewImage_value");

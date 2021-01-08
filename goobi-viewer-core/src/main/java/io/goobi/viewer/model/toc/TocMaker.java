@@ -851,11 +851,15 @@ public class TocMaker {
             Set<String> languages = new HashSet<>(value.getLanguages());
             languages.addAll(label.getLanguages());
             // Replace master value placeholders in the label object 
+            Map<String, String> languageLabelMap = new HashMap<>();
             for (String language : languages) {
                 String langValue = label.getValue(language)
                         .orElse(label.getValue().orElse(labelConfig.getMasterValue()))
                         .replace(placeholder, value.getValue(language).orElse(value.getValue().orElse("")));
-                label.setValue(langValue, language);
+                languageLabelMap.put(language, langValue);
+            }
+            for (String language : languageLabelMap.keySet()) {                
+                label.setValue(languageLabelMap.get(language), language);
             }
         }
 
