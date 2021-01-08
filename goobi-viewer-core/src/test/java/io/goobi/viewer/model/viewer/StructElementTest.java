@@ -50,14 +50,6 @@ public class StructElementTest extends AbstractSolrEnabledTest {
         DataManager.getInstance().injectConfiguration(new Configuration("src/test/resources/config_viewer.test.xml"));
 
         FacesContext facesContext = ContextMocker.mockFacesContext();
-        ExternalContext externalContext = Mockito.mock(ExternalContext.class);
-        //        ServletContext servletContext = Mockito.mock(ServletContext.class);
-        UIViewRoot viewRoot = Mockito.mock(UIViewRoot.class);
-
-        Mockito.when(facesContext.getExternalContext()).thenReturn(externalContext);
-        //        Mockito.when(externalContext.getContext()).thenReturn(servletContext);
-        Mockito.when(facesContext.getViewRoot()).thenReturn(viewRoot);
-        Mockito.when(viewRoot.getLocale()).thenReturn(Locale.GERMAN);
     }
 
     /**

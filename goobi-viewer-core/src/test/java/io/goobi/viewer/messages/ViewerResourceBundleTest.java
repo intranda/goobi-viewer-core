@@ -30,6 +30,7 @@ import java.util.List;
 import java.util.Locale;
 
 import javax.faces.application.Application;
+import javax.faces.component.UIViewRoot;
 import javax.faces.context.ExternalContext;
 import javax.faces.context.FacesContext;
 
@@ -48,7 +49,7 @@ public class ViewerResourceBundleTest extends AbstractTest {
 
     @Before
     public void setUp() throws Exception {
-        ContextMocker.mockFacesContext(Locale.ENGLISH, Locale.GERMAN);
+        ContextMocker.mockFacesContext();
     }
 
     

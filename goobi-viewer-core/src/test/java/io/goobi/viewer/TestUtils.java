@@ -52,14 +52,11 @@ public class TestUtils {
     public static FacesContext mockFacesContext() {
         FacesContext facesContext = ContextMocker.mockFacesContext();
 
-        ExternalContext externalContext = Mockito.mock(ExternalContext.class);
-        Mockito.when(facesContext.getExternalContext()).thenReturn(externalContext);
-
         ServletContext servletContext = Mockito.mock(ServletContext.class);
-        Mockito.when(externalContext.getContext()).thenReturn(servletContext);
+        Mockito.when(facesContext.getExternalContext().getContext()).thenReturn(servletContext);
 
         Map<String, Object> sessionMap = new HashMap<>();
-        Mockito.when(externalContext.getSessionMap()).thenReturn(sessionMap);
+        Mockito.when(facesContext.getExternalContext().getSessionMap()).thenReturn(sessionMap);
 
         return facesContext;
     }
