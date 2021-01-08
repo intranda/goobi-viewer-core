@@ -59,10 +59,14 @@ public class ViewerResourceBundleTest extends AbstractTest {
      * @verifies return English if no other locales found
      */
     @Test
-    public void getAllLocales_shouldReturnEnglishIfNoOtherLocalesFound() throws Exception {
-        List<Locale> locales = ViewerResourceBundle.getAllLocales();
-        Assert.assertEquals(1, locales.size());
-        Assert.assertEquals(Locale.ENGLISH, locales.get(0));
+    public void getAllLocales_shouldReturnEnglishForUnknownLanguages() throws Exception {
+        
+        
+        String germanTranslation = ViewerResourceBundle.getTranslation("MD_AUTHOR", Locale.GERMAN);
+        String englishTranslation = ViewerResourceBundle.getTranslation("MD_AUTHOR", Locale.ENGLISH);
+        String frenchtranslation = ViewerResourceBundle.getTranslation("MD_AUTHOR", Locale.FRENCH);
+        Assert.assertEquals(englishTranslation, frenchtranslation);
+        Assert.assertNotEquals(englishTranslation, germanTranslation);
     }
     
     @Test
