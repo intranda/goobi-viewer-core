@@ -1,6 +1,10 @@
+/* ==============================================================
+   User Annotations
+   style declarations for userBackendAnnotations.xhtml
+   ==============================================================*/
+
 #myActivity {
 	.annotation {
-	
 		&__label {
 			font-weight: bold;
 			text-decoration: underline; 
@@ -28,7 +32,13 @@
 @media screen and (max-width: @mediumBreakpoint) {}
 
 /* BREAKPOINT FOR TABLETS */
-@media screen and (max-width: @smallBreakpoint) {}
+@media screen and (max-width: @smallBreakpoint) {
+		#userAnnotations {
+			.admin__table-action-link {
+				opacity: 1;
+			}
+		}
+}
 
 /* BREAKPOINT FOR SMARTPHONES */
 @media screen and (max-width: @xSmallBreakpoint) {
