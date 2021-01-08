@@ -16,6 +16,8 @@
 package io.goobi.viewer.filters;
 
 import java.io.IOException;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -32,6 +34,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import io.goobi.viewer.controller.DataManager;
+import io.goobi.viewer.controller.DateTools;
 
 /**
  * Encodes responses into UTF-8 and prevents proxy caching.
@@ -66,7 +69,8 @@ public class HttpResponseFilter implements Filter {
                 //                logger.debug(httpRequest.getRequestURI());
                 HttpServletResponse httpResponse = (HttpServletResponse) response;
                 httpResponse.setHeader("Expires", "Tue, 03 Jul 2001 06:00:00 GMT");
-                httpResponse.setHeader("Last-Modified", new java.util.Date().toString());
+                httpResponse.setHeader("Last-Modified",
+                        LocalDateTime.now().atZone(ZoneId.systemDefault()).format(DateTools.formatterJavaUtilDateToString));
                 httpResponse.setHeader("Cache-Control", "no-store, no-cache, must-revalidate, max-age=0, post-check=0, pre-check=0");
                 httpResponse.setHeader("Pragma", "no-cache");
             }

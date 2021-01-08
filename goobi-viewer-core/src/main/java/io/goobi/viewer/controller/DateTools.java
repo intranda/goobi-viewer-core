@@ -92,6 +92,8 @@ public class DateTools {
     public static DateTimeFormatter formatterISO8601BasicDate = DateTimeFormatter.ofPattern("yyyyMMdd");
     /** Constant <code>formatterBasicDateTime</code> */
     public static DateTimeFormatter formatterISO8601BasicDateTime = DateTimeFormatter.ofPattern("yyyyMMddHHmmss");
+    /** Constant <code>formatterJavaUtilDateToString</code> */
+    public static DateTimeFormatter formatterJavaUtilDateToString = DateTimeFormatter.ofPattern("EEE MMM dd hh:mm:ss zzz yyyy");
 
     /**
      * Converts the given string to a list of Date objects created from the contents of this string (years or whole dates).
