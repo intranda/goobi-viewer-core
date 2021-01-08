@@ -525,7 +525,7 @@ public class ViewerResourceBundle extends ResourceBundle {
      */
     public static List<Locale> getAllLocales() {
         if (allLocales == null) {
-            allLocales = getFacesLocales();
+            allLocales = getLocalesFromFacesConfig();
         }
         return allLocales;
     }
@@ -537,6 +537,7 @@ public class ViewerResourceBundle extends ResourceBundle {
             FacesContext.getCurrentInstance().getApplication().getSupportedLocales().forEachRemaining(locales::add);
         } catch(NullPointerException e) {
             logger.warn("No faces context instance available");
+            return Arrays.asList(Locale.GERMAN, Locale.ENGLISH);
         }
         return locales;
     }
@@ -590,7 +591,7 @@ public class ViewerResourceBundle extends ResourceBundle {
             }
         } catch(Throwable e) {
             logger.error("Error getting locales from faces-config" , e);
-            return getAllLocales();
+            return getFacesLocales();
         }
     }
 

@@ -47,13 +47,6 @@ public class TocMakerTest extends AbstractDatabaseAndSolrEnabledTest {
         DataManager.getInstance().injectConfiguration(new Configuration("src/test/resources/config_viewer.test.xml"));
     }
     
-
-    @Before
-    public void setUp() throws Exception {
-        super.setUp();
-        ContextMocker.mockFacesContext(Locale.ENGLISH, Locale.GERMAN);
-    }
-
     /**
      * @see TocMaker#getSolrFieldsToFetch()
      * @verifies return both static and configured fields

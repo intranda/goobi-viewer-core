@@ -50,12 +50,7 @@ public abstract class ContextMocker extends FacesContext {
 
     public static FacesContext mockFacesContext() {
         FacesContext context = Mockito.mock(FacesContext.class);
-        
-//        ServletContext servletContext = Mockito.mock(ServletContext.class);
-//        ServletRequest request = Mockito.mock(ServletRequest.class);
-//        ServletResponse response = Mockito.mock(ServletResponse.class); 
-//        ExternalContext externalContext = new ExternalContextFactoryImpl().getExternalContext(servletContext, request, response);
-        
+
         ExternalContext externalContext = Mockito.mock(ExternalContext.class);
         Mockito.when(context.getExternalContext()).thenReturn(externalContext);
         
@@ -63,15 +58,5 @@ public abstract class ContextMocker extends FacesContext {
         Mockito.doAnswer(RELEASE).when(context).release();
         return context;
     }
-    
-    public static FacesContext mockFacesContext(Locale ...locales) {
-        FacesContext facesContext = ContextMocker.mockFacesContext();
-        Application application = Mockito.mock(Application.class);
-        Mockito.when(facesContext.getApplication()).thenReturn(application);
-        Mockito.when(application.getDefaultLocale()).thenReturn(Locale.ENGLISH);
-        Iterator<Locale> supportedLanguages = Arrays.asList(locales).iterator();
-        Mockito.when(application.getSupportedLocales()).thenReturn(supportedLanguages);
-        
-        return facesContext;
-    }
+
 }

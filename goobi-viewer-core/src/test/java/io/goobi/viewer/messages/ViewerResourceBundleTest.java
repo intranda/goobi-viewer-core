@@ -46,12 +46,6 @@ import io.goobi.viewer.managedbeans.ContextMocker;
 
 public class ViewerResourceBundleTest extends AbstractTest {
 
-    @Before
-    public void setUp() throws Exception {
-        ContextMocker.mockFacesContext(Locale.ENGLISH, Locale.GERMAN);
-    }
-
-    
     @Test
     public void testGetDefaultLocale() {
         Assert.assertEquals(Locale.ENGLISH, ViewerResourceBundle.getDefaultLocale());
