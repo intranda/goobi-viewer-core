@@ -83,9 +83,6 @@ public class ViewerResourceBundle extends ResourceBundle {
     protected static volatile Locale defaultLocale;
     private static List<Locale> allLocales = null;
 
-    /** Constant <code>backgroundThread</code> */
-    public static Thread backgroundThread;
-
     /**
      * <p>
      * Constructor for ViewerResourceBundle.
@@ -93,6 +90,10 @@ public class ViewerResourceBundle extends ResourceBundle {
      */
     public ViewerResourceBundle() {
         registerFileChangedService(Paths.get(DataManager.getInstance().getConfiguration().getConfigLocalPath()));
+    }
+    
+    public ViewerResourceBundle(Path localConfigPath) {
+        registerFileChangedService(localConfigPath);
     }
 
     /**
@@ -104,7 +105,7 @@ public class ViewerResourceBundle extends ResourceBundle {
      */
     private static void registerFileChangedService(Path path) {
         logger.trace("registerFileChangedService: {}", path);
-        backgroundThread = new Thread(new Runnable() {
+        Thread fileChangedObserver = new Thread(new Runnable() {
 
             @Override
             public void run() {
@@ -134,7 +135,7 @@ public class ViewerResourceBundle extends ResourceBundle {
             }
         });
 
-        backgroundThread.start();
+        fileChangedObserver.start();
     }
 
     /**
@@ -165,7 +166,10 @@ public class ViewerResourceBundle extends ResourceBundle {
      * @return a {@link java.util.Locale} object.
      */
     public static Locale getDefaultLocale() {
-        return defaultLocale != null ? defaultLocale : Locale.ENGLISH;
+        if(defaultLocale == null) {
+            checkAndLoadDefaultResourceBundles();
+        }
+        return defaultLocale;
     }
 
     /**
@@ -214,9 +218,9 @@ public class ViewerResourceBundle extends ResourceBundle {
      * @param inLocale
      * @return the passed inLocale if it is not null. Otherwise the current locale from the faces context, or ENGLISH if no faces context exists
      */
-    public static Locale getThisOrFallback(Locale inLocale) {
+    private static Locale getThisOrFallback(Locale inLocale) {
         Locale locale;
-        if (inLocale != null) {
+        if (inLocale != null && getAllLocales().contains(inLocale)) {
             locale = inLocale;
         } else if (FacesContext.getCurrentInstance() != null && FacesContext.getCurrentInstance().getViewRoot() != null) {
             locale = FacesContext.getCurrentInstance().getViewRoot().getLocale();
@@ -224,21 +228,6 @@ public class ViewerResourceBundle extends ResourceBundle {
             locale = Locale.ENGLISH;
         }
         return locale;
-    }
-
-    /**
-     * Loads resource bundles for all supported locales and reloads them if the locales has since changed.
-     * 
-     * @param inLocale
-     * @return The selected locale
-     */
-    private static void checkAndLoadResourceBundles() {
-        if (FacesContext.getCurrentInstance() != null && FacesContext.getCurrentInstance().getApplication() != null) {
-            FacesContext.getCurrentInstance()
-                    .getApplication()
-                    .getSupportedLocales()
-                    .forEachRemaining(ViewerResourceBundle::checkAndLoadResourceBundles);
-        }
     }
 
     /**
@@ -335,7 +324,6 @@ public class ViewerResourceBundle extends ResourceBundle {
      */
     public static String getTranslation(final String key, Locale locale, boolean useFallback) {
         //        logger.trace("Translation for: {}", key);
-        checkAndLoadDefaultResourceBundles();
         locale = checkAndLoadResourceBundles(locale); // If locale is null, the return value will be the current locale
         String value = getTranslation(key, defaultBundles.get(locale), localBundles.get(locale));
         if (useFallback && StringUtils.isEmpty(value) && defaultLocale != null && defaultBundles.containsKey(defaultLocale)
@@ -537,84 +525,11 @@ public class ViewerResourceBundle extends ResourceBundle {
      */
     public static List<Locale> getAllLocales() {
         if (allLocales == null) {
-            loadAllLocales();
+            allLocales = getFacesLocales();
         }
         return allLocales;
     }
 
-    /**
-     * 
-     */
-    public static synchronized void loadAllLocales() {
-        checkAndLoadResourceBundles();
-        List<Locale> locales = new ArrayList<>();
-        locales.addAll(defaultBundles.keySet());
-        locales.addAll(localBundles.keySet());
-            //deprecated?
-            locales.addAll(getLanguagesFromLocalMessagesFiles());
-            //Only keep unique locales
-            locales = locales.stream().distinct().collect(Collectors.toList());
-            // Add English if nothing found
-            if (locales.isEmpty()) {
-                locales.add(Locale.ENGLISH);
-            }
-            allLocales = Collections.unmodifiableList(locales);
-    }
-
-    /**
-     * 
-     */
-    public static List<Locale> getLanguagesFromLocalMessagesFiles() {
-        Path configPath = Paths.get(DataManager.getInstance().getConfiguration().getConfigLocalPath());
-        try (Stream<Path> messageFiles = Files.list(configPath).filter(path -> matchesMessagesFileName(path))) {
-            List<Locale> locales = messageFiles
-                    .map(path -> getLanguageFromMessageFileName(path))
-                    .filter(lang -> lang != null)
-                    .sorted((l1, l2) -> sortLanguageEnDeFirst(l1, l2))
-                    .map(language -> Locale.forLanguageTag(language))
-                    .collect(Collectors.toList());
-                    return locales;
-        } catch (IOException e) {
-            logger.warn("Error reading config directory; {}", configPath);
-            return Collections.emptyList();
-        }
-    }
-
-    /**
-     * @param path
-     * @return
-     */
-    public static boolean matchesMessagesFileName(Path path) {
-        return path.getFileName().toString().matches("messages_[a-z]{1,3}.properties");
-    }
-
-    /**
-     * @param path
-     * @return
-     */
-    public static String getLanguageFromMessageFileName(Path path) {
-        return StringTools.findFirstMatch(path.getFileName().toString(), "(?:messages_)([a-z]{1,3})(?:.properties)", 1)
-                .orElse(null);
-    }
-
-    private static int sortLanguageEnDeFirst(String l1, String l2) {
-        if (l1.equals(l2)) {
-            return 0;
-        }
-        switch (l1) {
-            case "en":
-                return -1;
-            case "de":
-                return l2.equals("en") ? 1 : -1;
-            default:
-                switch (l2) {
-                    case "en":
-                    case "de":
-                        return 1;
-                }
-        }
-        return l1.compareTo(l2);
-    }
     
     public static List<Locale> getFacesLocales() {
         List<Locale> locales = new ArrayList<>();
