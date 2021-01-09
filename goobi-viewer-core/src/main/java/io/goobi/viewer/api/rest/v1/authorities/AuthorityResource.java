@@ -75,12 +75,12 @@ public class AuthorityResource {
     }
     
     @GET
-    @javax.ws.rs.Path(AUTHORITY_IDENTITY)
+    @javax.ws.rs.Path(AUTHORITY_RESOLVER)
     @Produces({ MediaType.APPLICATION_JSON })
     @CORSBinding
     @Operation(tags = { "authority" }, summary = "Get a normdata authority resource identified by its escaped url")
     public String getIdentity(
-            @Parameter(description = "Identifier url of the resource") @PathParam("id") String url,
+            @Parameter(description = "Identifier url of the resource") @QueryParam("id") String url,
             @Parameter(description = "Metadata template to use") @QueryParam("template") String template,
             @Parameter(description = "Language to use for metadata fields") @QueryParam("lang") String lang) throws ContentNotFoundException, PresentationException {
         logger.trace("getNormData: {}", url);

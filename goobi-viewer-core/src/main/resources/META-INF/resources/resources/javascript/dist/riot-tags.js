@@ -316,7 +316,7 @@ riot.tag2('authorityresource', '<div class="annotation__body__authority"><div if
 
 	this.on("mount", () => {
 		this.authorityId = this.opts.resource.id;
-	    this.url = this.opts.resturl + "normdata/get/" + this.unicodeEscapeUri(this.authorityId) + "/ANNOTATION/" + this.opts.currentlang + "/"
+	    this.url = this.opts.resturl + "authority/resolver?id=" + this.unicodeEscapeUri(this.authorityId) + "&template=ANNOTATION&lang=" + this.opts.currentlang
 		this.update();
 	    fetch(this.url)
 	    .then(response => {

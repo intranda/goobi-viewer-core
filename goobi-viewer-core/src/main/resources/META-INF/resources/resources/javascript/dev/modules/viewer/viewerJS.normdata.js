@@ -209,13 +209,13 @@ var viewerJS = ( function( viewer ) {
                     if ( v.url ) {
                         html += '<button type="button" class="normdataDetailLink" data-remotecontent="';
                         html += _defaults.path;
-                        html += '/api/v1/authorities/identity/';
+                        html += '/api/v1/authority/resolver?id=';
                         html += _unicodeEscapeUri(v.url);
-                        html += '?template=_DEFAULT&lang='+currentLang+'">'; // TODO use navigationHelper.localeString
+                        html += '?template=_DEFAULT&lang='+currentLang+'"'; // TODO use navigationHelper.localeString
                         html += '" title="' + _defaults.lang.showNormdata + '">';
                         html += '<i class="fa fa-list-ul" aria-hidden="true"></i>';
                         html += '<div class="normdata-preloader"></div>';
-                        html += '</button>'; 
+                        html += '</button>';
                     }
                     html += '<br />';
                 } );

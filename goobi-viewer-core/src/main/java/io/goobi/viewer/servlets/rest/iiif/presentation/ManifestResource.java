@@ -15,17 +15,18 @@
  */
 package io.goobi.viewer.servlets.rest.iiif.presentation;
 
-import static io.goobi.viewer.api.rest.v1.ApiUrls.*;
+import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_LAYER;
+import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_MANIFEST;
+import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_PAGES;
+import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_PAGES_CANVAS;
+import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_PAGES_SEQUENCE;
+import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_RECORD;
+import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_SECTIONS;
+import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_SECTIONS_RANGE;
 
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -33,62 +34,27 @@ import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
-import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 
 import org.apache.commons.configuration.ConfigurationException;
-import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.sun.faces.config.rules.ApplicationRule;
-
-import de.intranda.api.annotation.oa.Motivation;
-import de.intranda.api.annotation.oa.OpenAnnotation;
-import de.intranda.api.iiif.presentation.AnnotationList;
-import de.intranda.api.iiif.presentation.Canvas;
-import de.intranda.api.iiif.presentation.Collection;
-import de.intranda.api.iiif.presentation.IPresentationModelElement;
-import de.intranda.api.iiif.presentation.Layer;
-import de.intranda.api.iiif.presentation.Manifest;
-import de.intranda.api.iiif.presentation.Range;
-import de.intranda.api.iiif.presentation.Sequence;
 import de.intranda.api.iiif.presentation.enums.AnnotationType;
-import de.intranda.api.iiif.search.AutoSuggestResult;
-import de.intranda.api.iiif.search.SearchResult;
 import de.unigoettingen.sub.commons.contentlib.exceptions.ContentNotFoundException;
 import de.unigoettingen.sub.commons.contentlib.exceptions.IllegalRequestException;
 import de.unigoettingen.sub.commons.contentlib.servlet.rest.CORSBinding;
 import io.goobi.viewer.api.rest.bindings.ViewerRestServiceBinding;
-import io.goobi.viewer.api.rest.v1.ApiUrls;
 import io.goobi.viewer.api.rest.v1.records.RecordPageResource;
 import io.goobi.viewer.api.rest.v1.records.RecordResource;
 import io.goobi.viewer.api.rest.v1.records.RecordSectionResource;
-import io.goobi.viewer.controller.DataManager;
-import io.goobi.viewer.controller.SolrConstants;
-import io.goobi.viewer.controller.SolrSearchIndex;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.exceptions.ViewerConfigurationException;
-import io.goobi.viewer.managedbeans.utils.BeanUtils;
-import io.goobi.viewer.messages.ViewerResourceBundle;
-import io.goobi.viewer.model.iiif.presentation.builder.BuildMode;
-import io.goobi.viewer.model.iiif.presentation.builder.LayerBuilder;
-import io.goobi.viewer.model.iiif.presentation.builder.ManifestBuilder;
-import io.goobi.viewer.model.iiif.presentation.builder.OpenAnnotationBuilder;
-import io.goobi.viewer.model.iiif.presentation.builder.SequenceBuilder;
-import io.goobi.viewer.model.iiif.presentation.builder.StructureBuilder;
-import io.goobi.viewer.model.iiif.search.IIIFSearchBuilder;
-import io.goobi.viewer.model.security.AccessConditionUtils;
-import io.goobi.viewer.model.security.IPrivilegeHolder;
-import io.goobi.viewer.model.viewer.PageType;
-import io.goobi.viewer.model.viewer.PhysicalElement;
-import io.goobi.viewer.model.viewer.StructElement;
-import io.goobi.viewer.servlets.rest.content.ContentResource;
 
 /**
  * <p>
