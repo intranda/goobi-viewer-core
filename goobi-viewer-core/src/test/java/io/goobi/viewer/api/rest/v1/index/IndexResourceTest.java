@@ -15,7 +15,9 @@
  */
 package io.goobi.viewer.api.rest.v1.index;
 
-import static io.goobi.viewer.api.rest.v1.ApiUrls.*;
+import static io.goobi.viewer.api.rest.v1.ApiUrls.INDEX;
+import static io.goobi.viewer.api.rest.v1.ApiUrls.INDEX_QUERY;
+import static io.goobi.viewer.api.rest.v1.ApiUrls.INDEX_STATISTICS;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
@@ -38,8 +40,8 @@ import com.fasterxml.jackson.databind.JsonMappingException;
 
 import io.goobi.viewer.api.rest.AbstractRestApiTest;
 import io.goobi.viewer.api.rest.model.ErrorMessage;
+import io.goobi.viewer.api.rest.model.RecordsRequestParameters;
 import io.goobi.viewer.controller.SolrConstants;
-import io.goobi.viewer.servlets.rest.content.RecordsRequestParameters;
 /**
  * @author florian
  *
