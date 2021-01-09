@@ -797,7 +797,9 @@ public class ThumbnailHandler {
             mimeType = Optional.ofNullable(structElement.getMetadataValue(SolrConstants.MIMETYPE));
         }
         if (!mimeType.isPresent()) {
-            mimeType = getFilename(structElement).map(filename -> ImageFileFormat.getImageFileFormatFromFileExtension(filename).getMimeType());
+            mimeType = getFilename(structElement)
+                    .map(filename -> ImageFileFormat.getImageFileFormatFromFileExtension(filename))
+                    .map(ImageFileFormat::getMimeType);
         }
         return mimeType;
     }
