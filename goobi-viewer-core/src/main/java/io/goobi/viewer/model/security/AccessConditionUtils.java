@@ -286,9 +286,10 @@ public class AccessConditionUtils {
      * @return a boolean.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
+     * @throws RecordNotFoundException
      */
     public static boolean checkAccessPermissionByIdentifierAndLogId(String identifier, String logId, String privilegeName, HttpServletRequest request)
-            throws IndexUnreachableException, DAOException {
+            throws IndexUnreachableException, DAOException, RecordNotFoundException {
         // logger.trace("checkAccessPermissionByIdentifierAndLogId({}, {}, {})", identifier, logId, privilegeName);
         if (StringUtils.isEmpty(identifier)) {
             return false;
@@ -316,12 +317,11 @@ public class AccessConditionUtils {
 
         try {
             Set<String> requiredAccessConditions = new HashSet<>();
-            // logger.trace(sbQuery.toString());
             SolrDocumentList results = DataManager.getInstance()
                     .getSearchIndex()
-                    .search(query, 1, null, Arrays.asList(new String[] { SolrConstants.ACCESSCONDITION }));
+                    .search(query, 1, null, Collections.singletonList(SolrConstants.ACCESSCONDITION));
             if (results == null || results.isEmpty()) {
-                return false;
+                throw new RecordNotFoundException(identifier);
             }
 
             return checkAccessPermissionBySolrDoc(results.get(0), query, privilegeName, request);

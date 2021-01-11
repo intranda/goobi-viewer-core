@@ -41,6 +41,7 @@ import io.goobi.viewer.controller.StringTools;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
+import io.goobi.viewer.exceptions.RecordNotFoundException;
 import io.goobi.viewer.exceptions.ViewerConfigurationException;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.model.security.AccessConditionUtils;
@@ -168,6 +169,8 @@ public class ImageInformationRequestFilter implements ContainerRequestFilter {
             throw new ServiceNotAllowedException("Serving this image is currently impossible due to " + e.getMessage());
         } catch (DAOException e) {
             throw new ServiceNotAllowedException("Serving this image is currently impossible due to " + e.getMessage());
+        } catch (RecordNotFoundException e) {
+            throw new ServiceNotAllowedException("Record not found in index: " + pi);
         }
 
         if (!access) {

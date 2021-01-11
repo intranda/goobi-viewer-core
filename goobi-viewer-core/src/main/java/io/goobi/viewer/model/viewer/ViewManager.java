@@ -1772,6 +1772,9 @@ public class ViewManager implements Serializable {
             } catch (DAOException e) {
                 logger.debug("DAOException thrown here: {}", e.getMessage());
                 return false;
+            } catch (RecordNotFoundException e) {
+                logger.error("Record not found in index: {}", pi);
+                return false;
             }
         }
 
@@ -1784,8 +1787,9 @@ public class ViewManager implements Serializable {
      * @return true if current user has the privilege for this record; false otherwise
      * @throws IndexUnreachableException
      * @throws DAOException
+     * @throws RecordNotFoundException
      */
-    public boolean isAccessPermission(String privilege) throws IndexUnreachableException, DAOException {
+    public boolean isAccessPermission(String privilege) throws IndexUnreachableException, DAOException, RecordNotFoundException {
         HttpServletRequest request = (HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest();
         return AccessConditionUtils.checkAccessPermissionByIdentifierAndLogId(getPi(), null, privilege, request);
     }
@@ -2260,8 +2264,9 @@ public class ViewManager implements Serializable {
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
+     * @throws RecordNotFoundException 
      */
-    public boolean isFulltextAvailableForWork() throws IndexUnreachableException, DAOException, PresentationException {
+    public boolean isFulltextAvailableForWork() throws IndexUnreachableException, DAOException, PresentationException, RecordNotFoundException {
         if (isBornDigital()) {
             return false;
         }
@@ -2276,8 +2281,9 @@ public class ViewManager implements Serializable {
      * @return true if any of this record's pages has an image and user has access rights; false otherwise
      * @throws IndexUnreachableException
      * @throws DAOException
+     * @throws RecordNotFoundException
      */
-    public boolean isRecordHasImages() throws IndexUnreachableException, DAOException {
+    public boolean isRecordHasImages() throws IndexUnreachableException, DAOException, RecordNotFoundException {
         if (topDocument == null || !topDocument.isHasImages()) {
             return false;
         }
@@ -2295,8 +2301,9 @@ public class ViewManager implements Serializable {
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
+     * @throws RecordNotFoundException 
      */
-    public boolean isTeiAvailableForWork() throws IndexUnreachableException, DAOException, PresentationException {
+    public boolean isTeiAvailableForWork() throws IndexUnreachableException, DAOException, PresentationException, RecordNotFoundException {
         if (isBornDigital()) {
             return false;
         }
@@ -2361,8 +2368,9 @@ public class ViewManager implements Serializable {
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
+     * @throws RecordNotFoundException 
      */
-    public boolean isAltoAvailableForWork() throws IndexUnreachableException, PresentationException, DAOException {
+    public boolean isAltoAvailableForWork() throws IndexUnreachableException, PresentationException, DAOException, RecordNotFoundException {
         boolean access = AccessConditionUtils.checkAccessPermissionByIdentifierAndLogId(getPi(), null, IPrivilegeHolder.PRIV_VIEW_FULLTEXT,
                 BeanUtils.getRequest());
         if (!access) {

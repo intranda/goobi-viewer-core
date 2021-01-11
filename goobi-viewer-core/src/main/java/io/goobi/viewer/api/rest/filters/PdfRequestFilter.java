@@ -280,13 +280,13 @@ public class PdfRequestFilter implements ContainerRequestFilter {
         contentFileName = StringTools.decodeUrl(contentFileName);
         boolean access = false;
         try {
-
             access = AccessConditionUtils.checkAccessPermissionByIdentifierAndLogId(pi, divId, privName, servletRequest);
-
         } catch (IndexUnreachableException e) {
             throw new ServiceNotAllowedException("Serving this image is currently impossibe due to ");
         } catch (DAOException e) {
             throw new ServiceNotAllowedException("Serving this image is currently impossibe due to ");
+        } catch (RecordNotFoundException e) {
+            throw new ServiceNotAllowedException("Record not found in index: " + pi);
         }
 
         if (!access) {

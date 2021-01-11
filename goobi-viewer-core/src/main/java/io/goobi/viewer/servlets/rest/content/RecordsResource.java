@@ -284,7 +284,12 @@ public class RecordsResource {
         String fileName = se.getPi() + "_" + se.getLogid() + ".ris";
         setResponseHeader(fileName);
 
-        if (!AccessConditionUtils.checkAccessPermissionByIdentifierAndLogId(se.getPi(), se.getLogid(), IPrivilegeHolder.PRIV_LIST, servletRequest)) {
+        try {
+            if (!AccessConditionUtils.checkAccessPermissionByIdentifierAndLogId(se.getPi(), se.getLogid(), IPrivilegeHolder.PRIV_LIST,
+                    servletRequest)) {
+                throw new ContentNotFoundException("Resource not found");
+            }
+        } catch (RecordNotFoundException e) {
             throw new ContentNotFoundException("Resource not found");
         }
 
@@ -338,7 +343,12 @@ public class RecordsResource {
         setResponseHeader("");
         StructElement se = new StructElement(iddoc);
 
-        if (!AccessConditionUtils.checkAccessPermissionByIdentifierAndLogId(se.getPi(), se.getLogid(), IPrivilegeHolder.PRIV_LIST, servletRequest)) {
+        try {
+            if (!AccessConditionUtils.checkAccessPermissionByIdentifierAndLogId(se.getPi(), se.getLogid(), IPrivilegeHolder.PRIV_LIST,
+                    servletRequest)) {
+                throw new ContentNotFoundException("Resource not found");
+            }
+        } catch (RecordNotFoundException e) {
             throw new ContentNotFoundException("Resource not found");
         }
 
@@ -363,7 +373,11 @@ public class RecordsResource {
             throws PresentationException, IndexUnreachableException, ContentNotFoundException, DAOException, ViewerConfigurationException {
         setResponseHeader("");
 
-        if (!AccessConditionUtils.checkAccessPermissionByIdentifierAndLogId(pi, null, IPrivilegeHolder.PRIV_DOWNLOAD_METADATA, servletRequest)) {
+        try {
+            if (!AccessConditionUtils.checkAccessPermissionByIdentifierAndLogId(pi, null, IPrivilegeHolder.PRIV_DOWNLOAD_METADATA, servletRequest)) {
+                throw new ContentNotFoundException("Resource not found");
+            }
+        } catch (RecordNotFoundException e) {
             throw new ContentNotFoundException("Resource not found");
         }
 

@@ -52,6 +52,7 @@ import io.goobi.viewer.controller.imaging.ThumbnailHandler;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
+import io.goobi.viewer.exceptions.RecordNotFoundException;
 import io.goobi.viewer.exceptions.ViewerConfigurationException;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.messages.ViewerResourceBundle;
@@ -343,7 +344,7 @@ public class TocMaker {
 
         // Create a manually sorted map of docs, since the order can be contained in different GROUPORDER_* fields
         Map<Integer, SolrDocument> docOrderMap = createOrderedGroupDocMap(groupMemberDocs, groupIdFields, groupIdValue);
-        
+
         HttpServletRequest request = BeanUtils.getRequest();
         for (int order : docOrderMap.keySet()) {
             SolrDocument doc = docOrderMap.get(order);
@@ -378,8 +379,14 @@ public class TocMaker {
                 thumbnailUrl = thumbs.getThumbnailUrl(struct, thumbWidth, thumbHeight);
             }
             label.mapEach(value -> StringEscapeUtils.unescapeHtml4(value));
-            boolean accessPermissionPdf = sourceFormatPdfAllowed && AccessConditionUtils.checkAccessPermissionByIdentifierAndLogId(topStructPi,
-                    logId, IPrivilegeHolder.PRIV_DOWNLOAD_PDF, request);
+            boolean accessPermissionPdf;
+            try {
+                accessPermissionPdf = sourceFormatPdfAllowed && AccessConditionUtils.checkAccessPermissionByIdentifierAndLogId(topStructPi,
+                        logId, IPrivilegeHolder.PRIV_DOWNLOAD_PDF, request);
+            } catch (RecordNotFoundException e) {
+                logger.error("Record not found in index: {}", topStructPi);
+                continue;
+            }
             ret.add(new TOCElement(label, "1", null, volumeIddoc, logId, 1, topStructPi, thumbnailUrl, accessPermissionPdf, false,
                     thumbnailUrl != null, mimeType, docStructType, footerId));
         }
@@ -484,8 +491,14 @@ public class TocMaker {
             for (SolrDocument volumeDoc : queryResponse.getResults()) {
                 String topStructPi = (String) volumeDoc.getFieldValue(SolrConstants.PI_TOPSTRUCT);
                 // Skip volumes that may not be listed
-                if (FacesContext.getCurrentInstance() != null
-                        && !AccessConditionUtils.checkAccessPermissionByIdentifierAndLogId(topStructPi, null, IPrivilegeHolder.PRIV_LIST, request)) {
+                try {
+                    if (FacesContext.getCurrentInstance() != null
+                            && !AccessConditionUtils.checkAccessPermissionByIdentifierAndLogId(topStructPi, null, IPrivilegeHolder.PRIV_LIST,
+                                    request)) {
+                        continue;
+                    }
+                } catch (RecordNotFoundException e) {
+                    logger.error("Record not found in index: {}", topStructPi);
                     continue;
                 }
                 // Determine the TOC group for this volume based on the grouping field, if configured
@@ -526,8 +539,14 @@ public class TocMaker {
 
                 IMetadataValue volumeLabel = buildLabel(volumeDoc, docStructType);
                 volumeLabel.mapEach(l -> StringEscapeUtils.unescapeHtml4(l));
-                boolean accessPermissionPdf = sourceFormatPdfAllowed && AccessConditionUtils.checkAccessPermissionByIdentifierAndLogId(topStructPi,
-                        volumeLogId, IPrivilegeHolder.PRIV_DOWNLOAD_PDF, request);
+                boolean accessPermissionPdf;
+                try {
+                    accessPermissionPdf = sourceFormatPdfAllowed && AccessConditionUtils.checkAccessPermissionByIdentifierAndLogId(topStructPi,
+                            volumeLogId, IPrivilegeHolder.PRIV_DOWNLOAD_PDF, request);
+                } catch (RecordNotFoundException e) {
+                    logger.error("Record not found in index: {}", topStructPi);
+                    continue;
+                }
                 TOCElement tocElement = new TOCElement(volumeLabel, "1", null, volumeIddoc, volumeLogId, 1, topStructPi, thumbnailUrl,
                         accessPermissionPdf, false, thumbnailUrl != null, volumeMimeType, docStructType, footerId);
                 tocElement.getMetadata().put(SolrConstants.DOCSTRCT, docStructType);
@@ -858,7 +877,7 @@ public class TocMaker {
                         .replace(placeholder, value.getValue(language).orElse(value.getValue().orElse("")));
                 languageLabelMap.put(language, langValue);
             }
-            for (String language : languageLabelMap.keySet()) {                
+            for (String language : languageLabelMap.keySet()) {
                 label.setValue(languageLabelMap.get(language), language);
             }
         }

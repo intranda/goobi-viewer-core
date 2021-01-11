@@ -40,6 +40,7 @@ import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
+import io.goobi.viewer.exceptions.RecordNotFoundException;
 import io.goobi.viewer.model.security.AccessConditionUtils;
 import io.goobi.viewer.model.security.IPrivilegeHolder;
 
@@ -132,6 +133,8 @@ public class ManifestRequestFilter implements ContainerRequestFilter {
             throw new ServiceNotAllowedException("Serving this image is currently impossibe due to ");
         } catch (DAOException e) {
             throw new ServiceNotAllowedException("Serving this image is currently impossibe due to ");
+        } catch (RecordNotFoundException e) {
+            throw new ServiceNotAllowedException("Record not found in index: " + pi);
         }
 
         if (!access) {

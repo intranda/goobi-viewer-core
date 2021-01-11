@@ -79,6 +79,7 @@ import io.goobi.viewer.controller.language.Language;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
+import io.goobi.viewer.exceptions.RecordNotFoundException;
 import io.goobi.viewer.exceptions.UncheckedPresentationException;
 import io.goobi.viewer.model.security.AccessConditionUtils;
 import io.goobi.viewer.model.security.IPrivilegeHolder;
@@ -200,9 +201,12 @@ public class ContentResource {
     @Produces({ "application/zip" })
     public StreamingOutput getAltoDocument(@PathParam("pi") String pi)
             throws PresentationException, ContentLibException, IndexUnreachableException, DAOException, MalformedURLException {
-
         setResponseHeader(pi + ".zip");
-        checkAccess(pi, IPrivilegeHolder.PRIV_VIEW_FULLTEXT);
+        try {
+            checkAccess(pi, IPrivilegeHolder.PRIV_VIEW_FULLTEXT);
+        } catch (RecordNotFoundException e1) {
+            throw new ContentNotFoundException(pi);
+        }
 
         java.nio.file.Path altoPath = DataFileTools.getDataFilePath(pi, DataManager.getInstance().getConfiguration().getAltoFolder(), null, null);
         java.nio.file.Path altoPathCrowd =
@@ -309,9 +313,12 @@ public class ContentResource {
     @Produces({ "application/zip" })
     public StreamingOutput getFulltextDocument(@PathParam("pi") String pi)
             throws PresentationException, ContentLibException, IndexUnreachableException, DAOException, IOException {
-
         setResponseHeader(pi + ".zip");
-        checkAccess(pi, IPrivilegeHolder.PRIV_VIEW_FULLTEXT);
+        try {
+            checkAccess(pi, IPrivilegeHolder.PRIV_VIEW_FULLTEXT);
+        } catch (RecordNotFoundException e1) {
+            throw new ContentNotFoundException(pi);
+        }
 
         Map<java.nio.file.Path, String> fileMap = getFulltext(pi);
         if (fileMap.isEmpty()) {
@@ -430,8 +437,6 @@ public class ContentResource {
      * </p>
      *
      * @param pi a {@link java.lang.String} object.
-     * @should return document correctly
-     * @should throw ContentNotFoundException if file not found
      * @param langCode a {@link java.lang.String} object.
      * @return a {@link java.lang.String} object.
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
@@ -439,15 +444,20 @@ public class ContentResource {
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      * @throws java.io.IOException if any.
      * @throws de.unigoettingen.sub.commons.contentlib.exceptions.ContentLibException if any.
+     * @should return document correctly
+     * @should throw ContentNotFoundException if file not found
      */
     @GET
     @Path("/tei/{pi}/{lang}")
     @Produces({ MediaType.APPLICATION_XML })
     public String getTeiDocument(@PathParam("pi") String pi, @PathParam("lang") String langCode)
             throws PresentationException, IndexUnreachableException, DAOException, IOException, ContentLibException {
-
         setResponseHeader("");
-        checkAccess(pi, IPrivilegeHolder.PRIV_VIEW_FULLTEXT);
+        try {
+            checkAccess(pi, IPrivilegeHolder.PRIV_VIEW_FULLTEXT);
+        } catch (RecordNotFoundException e1) {
+            throw new ContentNotFoundException(pi);
+        }
 
         final Language language = DataManager.getInstance().getLanguageHelper().getLanguage(langCode);
         java.nio.file.Path teiPath = DataFileTools.getDataFilePath(pi, DataManager.getInstance().getConfiguration().getTeiFolder(), null, null);
@@ -531,7 +541,11 @@ public class ContentResource {
     public String getCmdiDocument(@PathParam("pi") String pi, @PathParam("lang") String langCode)
             throws PresentationException, IndexUnreachableException, DAOException, ContentNotFoundException, IOException, ServiceNotAllowedException {
         setResponseHeader("");
-        checkAccess(pi, IPrivilegeHolder.PRIV_VIEW_FULLTEXT);
+        try {
+            checkAccess(pi, IPrivilegeHolder.PRIV_VIEW_FULLTEXT);
+        } catch (RecordNotFoundException e1) {
+            throw new ContentNotFoundException(pi);
+        }
 
         final Language language = DataManager.getInstance().getLanguageHelper().getLanguage(langCode);
         java.nio.file.Path cmdiPath = DataFileTools.getDataFolder(pi, DataManager.getInstance().getConfiguration().getCmdiFolder());
@@ -584,8 +598,10 @@ public class ContentResource {
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      * @throws de.unigoettingen.sub.commons.contentlib.exceptions.ServiceNotAllowedException if any.
+     * @throws RecordNotFoundException
      */
-    public void checkAccess(String pi, String privilegeType) throws IndexUnreachableException, DAOException, ServiceNotAllowedException {
+    public void checkAccess(String pi, String privilegeType)
+            throws IndexUnreachableException, DAOException, ServiceNotAllowedException, RecordNotFoundException {
         boolean access = AccessConditionUtils.checkAccessPermissionByIdentifierAndLogId(pi, null, privilegeType, servletRequest);
         if (!access) {
             throw new ServiceNotAllowedException("No permission found");
@@ -678,7 +694,7 @@ public class ContentResource {
             fileMap = altoFiles.stream().collect(Collectors.toMap(p -> Paths.get(p.toString().replaceAll("(i?)\\.(alto|xml)", ".txt")), p -> {
                 try {
                     return ALTOTools.getFulltext(p, "utf-8");
-                } catch (IOException  e) {
+                } catch (IOException e) {
                     logger.error("Error reading file " + p, e);
                     return "";
                 }

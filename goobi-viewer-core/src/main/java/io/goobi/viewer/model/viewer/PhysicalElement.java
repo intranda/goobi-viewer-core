@@ -70,6 +70,7 @@ import io.goobi.viewer.exceptions.AccessDeniedException;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
+import io.goobi.viewer.exceptions.RecordNotFoundException;
 import io.goobi.viewer.exceptions.ViewerConfigurationException;
 import io.goobi.viewer.managedbeans.ConfigurationBean;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
@@ -735,6 +736,8 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
                         BeanUtils.getRequest());
             } catch (IndexUnreachableException | DAOException e) {
                 logger.error(String.format("Cannot check fulltext access for pi %s and pageNo %d: %s", pi, order, e.toString()));
+            } catch (RecordNotFoundException e) {
+                logger.error("Record not found in index: {}", pi);
             }
             return access;
         }
