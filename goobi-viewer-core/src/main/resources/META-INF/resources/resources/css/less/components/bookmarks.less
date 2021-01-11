@@ -82,7 +82,7 @@
 		[data-bookmark-list-type="delete"] {
 			width: 16px;
 			height: 16px;
-			color: @white;
+			
 		}
 	}
 	/* DROPDOWN ACTIONS */
@@ -92,6 +92,9 @@
 		}
 		border-top: 1px solid @middlegray;		
 	}
+	&__dropdown-list-single-entry {}
+	&__dropdown-list-title {}
+	&__dropdown-list-remove {}
 	&__dropdown-list-reset,
 	&__dropdown-list-send,	
 	&__dropdown-list-search,
@@ -104,7 +107,24 @@
 		    justify-content: space-between;
 		    width: 100%;
 			padding: 10px;
+		}
+	}
+	/* COLOR OF ALL LINKS/BUTTONS IN LOGGED OUT BOOKMARK LIST */
+	&__dropdown-list-single-entry,
+	&__dropdown-list-title,
+	&__dropdown-list-remove,
+	&__dropdown-list-reset,
+	&__dropdown-list-send,	
+	&__dropdown-list-search,
+	&__dropdown-list-mirador {
+		button, a, span, h4
+		{
 			color: @blue;
+			&:hover,
+			&:focus,
+			&:active {
+				color: @blue;
+			}
 		}
 	}
 	&__dropdown-list-reset {

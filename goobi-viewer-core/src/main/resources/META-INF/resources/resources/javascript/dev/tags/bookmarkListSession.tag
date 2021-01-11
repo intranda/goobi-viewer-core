@@ -4,8 +4,8 @@
 
 	
 	<li each="{bookmark in bookmarkList.items}">
-		<div class="row no-margin">
-			<div class="col-11 no-padding">
+		<div class="row no-margin {mainClass}-single-entry">
+			<div class="col-11 no-padding {mainClass}-title">
 				<a class="row no-gutters" href="{opts.bookmarks.config.root}{bookmark.url}">
 					<div class="col-4 no-padding">
 						<div class="{mainClass}-image"
@@ -32,7 +32,7 @@
 
 	<div if="{mayEmptyList(bookmarkList)}" class="{mainClass}-reset">
 		<button class="btn btn--clean" type="button"
-			data-bookshelf-type="reset" onclick="{deleteList}">
+			data-bookmark-list-type="reset" onclick="{deleteList}">
 			<span>{msg('bookmarkList_reset')}</span>
 			<i class="fa fa-trash-o" aria-hidden="true"></i>
 		</button>
