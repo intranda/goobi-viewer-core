@@ -177,14 +177,12 @@ public abstract class AbstractApiUrlManager {
                 if (i.hasNext()) {
                     String replacement = i.next().toString();
                     // Escape URLs and colons
-                    if (replacement.contains(":")) {
                         try {
                             // logger.trace("Encoding param: {}", replacement);
                             replacement = URLEncoder.encode(replacement, StringTools.DEFAULT_ENCODING);
                         } catch (UnsupportedEncodingException e) {
                             logger.error(e.getMessage());
                         }
-                    }
                     urlString = urlString.replace(group, replacement);
                 } else {
                     //no further params. Cannot keep replacing
