@@ -59,7 +59,8 @@
 	            (
 	            <h:outputText value="#{msg.date}: " escape="false" />
 	            <h:outputText value="#{calendarBean.currentDate}">
-	                <f:convertDateTime type="date" dateStyle="medium" timeStyle="short" />
+                    <f:converter converterId="localDateTimeConverter" />
+                    <f:attribute name="pattern" value="#{navigationHelper.datePattern}" />
 	            </h:outputText>
 	            )
 	
