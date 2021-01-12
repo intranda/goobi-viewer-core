@@ -67,19 +67,9 @@ public class ManifestRequestFilter implements ContainerRequestFilter {
         try {
             String requestPI = (String) servletRequest.getAttribute("pi");
             String requestLogId = (String) servletRequest.getAttribute("divId");
-            if(StringUtils.isBlank(requestPI)) {                
-                String requestPath = servletRequest.getRequestURI();
-                requestPath = requestPath.substring(requestPath.indexOf("iiif/manifests/") + "iiif/manifests/".length());
-                logger.trace("Filtering request " + requestPath);
-                StringTokenizer tokenizer = new StringTokenizer(requestPath, "/");
-                List<String> pathSegments = tokenizer.getTokenList();
-                requestPI = pathSegments.get(0);
-                if (pathSegments.size() > 2 && pathSegments.get(1).equalsIgnoreCase("range")) {
-                    requestLogId = pathSegments.get(2);
-                }
+            if(StringUtils.isNotBlank(requestPI)) {                
+                filterForAccessConditions(request, requestPI, requestLogId);
             }
-
-            filterForAccessConditions(request, requestPI, requestLogId);
         } catch (ServiceNotAllowedException e) {
             String mediaType = MediaType.APPLICATION_JSON;
             //            if (request.getUriInfo() != null && request.getUriInfo().getPath().endsWith("json")) {
