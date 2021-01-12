@@ -123,9 +123,10 @@ public class RecordResource {
     private final String pi;
     private final TextResourceBuilder builder = new TextResourceBuilder();
 
-    public RecordResource(
+    public RecordResource(@Context HttpServletRequest request,
             @Parameter(description = "Persistent identifier of the record") @PathParam("pi") String pi) {
         this.pi = pi;
+        request.setAttribute("pi", pi);
     }
 
     @GET

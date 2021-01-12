@@ -74,11 +74,14 @@ public class RecordSectionResource {
     private final String pi;
     private final String divId;
 
-    public RecordSectionResource(
+    public RecordSectionResource(@Context HttpServletRequest request,
             @Parameter(description = "Persistent identifier of the record") @PathParam("pi") String pi,
             @Parameter(description = "Logical div ID of METS section") @PathParam("divId") String divId) {
         this.pi = pi;
         this.divId = divId;
+        request.setAttribute("pi", pi);
+        request.setAttribute("divId", divId);
+        
     }
     
     @GET

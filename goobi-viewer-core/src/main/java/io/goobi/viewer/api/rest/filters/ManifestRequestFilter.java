@@ -29,6 +29,7 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.ext.Provider;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.text.StringTokenizer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -64,18 +65,21 @@ public class ManifestRequestFilter implements ContainerRequestFilter {
     @Override
     public void filter(ContainerRequestContext request) throws IOException {
         try {
-            String requestPath = servletRequest.getRequestURI();
-            requestPath = requestPath.substring(requestPath.indexOf("iiif/manifests/") + "iiif/manifests/".length());
-            logger.trace("Filtering request " + requestPath);
-            StringTokenizer tokenizer = new StringTokenizer(requestPath, "/");
-            List<String> pathSegments = tokenizer.getTokenList();
-            String pi = pathSegments.get(0);
-            String logId = null;
-            if (pathSegments.size() > 2 && pathSegments.get(1).equalsIgnoreCase("range")) {
-                logId = pathSegments.get(2);
+            String requestPI = (String) servletRequest.getAttribute("pi");
+            String requestLogId = (String) servletRequest.getAttribute("divId");
+            if(StringUtils.isBlank(requestPI)) {                
+                String requestPath = servletRequest.getRequestURI();
+                requestPath = requestPath.substring(requestPath.indexOf("iiif/manifests/") + "iiif/manifests/".length());
+                logger.trace("Filtering request " + requestPath);
+                StringTokenizer tokenizer = new StringTokenizer(requestPath, "/");
+                List<String> pathSegments = tokenizer.getTokenList();
+                requestPI = pathSegments.get(0);
+                if (pathSegments.size() > 2 && pathSegments.get(1).equalsIgnoreCase("range")) {
+                    requestLogId = pathSegments.get(2);
+                }
             }
 
-            filterForAccessConditions(request, pi, logId);
+            filterForAccessConditions(request, requestPI, requestLogId);
         } catch (ServiceNotAllowedException e) {
             String mediaType = MediaType.APPLICATION_JSON;
             //            if (request.getUriInfo() != null && request.getUriInfo().getPath().endsWith("json")) {

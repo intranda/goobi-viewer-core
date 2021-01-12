@@ -100,9 +100,10 @@ public class RecordPageResource {
 
     private final String pi;
 
-    public RecordPageResource(
+    public RecordPageResource(@Context HttpServletRequest request,
             @Parameter(description = "Persistent identifier of the record") @PathParam("pi") String pi) {
         this.pi = pi;
+        request.setAttribute("pi", pi);
     }
 
     @GET
