@@ -555,21 +555,6 @@ public class User implements ILicensee, HttpSessionBindingListener, Serializable
 
     /**
      * <p>
-     * isHasCrowdsourcingPrivilege.
-     * </p>
-     *
-     * @param privilege a {@link java.lang.String} object.
-     * @return a boolean.
-     * @throws io.goobi.viewer.exceptions.PresentationException if any.
-     * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
-     * @throws io.goobi.viewer.exceptions.DAOException if any.
-     */
-    public boolean isHasCrowdsourcingPrivilege(String privilege) throws PresentationException, IndexUnreachableException, DAOException {
-        return isHasPrivilege(LicenseType.LICENSE_TYPE_CROWDSOURCING_CAMPAIGNS, privilege);
-    }
-
-    /**
-     * <p>
      * isHasPrivilege.
      * </p>
      *
@@ -686,7 +671,7 @@ public class User implements ILicensee, HttpSessionBindingListener, Serializable
             String contextPath = request.getContextPath();
             return contextPath + "/resources/images/backend/thumbnail_goobi_person.png";
         }
-        
+
         return Optional.ofNullable(BeanUtils.getNavigationHelper())
                 .map(NavigationHelper::getApplicationUrl)
                 .orElse("/") + "resources/images/backend/thumbnail_goobi_person.png";
@@ -699,7 +684,7 @@ public class User implements ILicensee, HttpSessionBindingListener, Serializable
      */
     public String getAvatarUrl() {
         return getAvatarUrl(AVATAR_DEFAULT_SIZE, null);
-    }
+        }
 
     /**
      * 
@@ -718,7 +703,7 @@ public class User implements ILicensee, HttpSessionBindingListener, Serializable
      */
     public String getAvatarUrl(int size) {
         return getAvatarUrl(size, null);
-    }
+        }
 
     /**
      * <p>

@@ -9,17 +9,13 @@
         <listener-class>net.sf.ehcache.constructs.web.ShutdownListener</listener-class>
     </listener>
     <context-param>
-        <param-name>facelets.DEVELOPMENT</param-name>
-        <param-value>true</param-value>
+        <param-name>javax.faces.PROJECT_STAGE</param-name>
+        <param-value>Production</param-value>
     </context-param>
     <context-param>
         <param-name>javax.faces.FACELETS_SKIP_COMMENTS</param-name>
         <param-value>true</param-value>
     </context-param>
-<!--    <context-param> -->
-<!--        <param-name>com.sun.faces.expressionFactory</param-name> -->
-<!--        <param-value>com.sun.el.ExpressionFactoryImpl</param-value> -->
-<!--    </context-param> -->
     <context-param>
         <param-name>com.sun.faces.allowTextChildren</param-name>
         <param-value>true</param-value>
@@ -27,10 +23,6 @@
     <context-param>
         <param-name>com.sun.faces.enableMissingResourceLibraryDetection</param-name>
         <param-value>true</param-value>
-    </context-param>
-    <context-param>
-        <param-name>primefaces.THEME</param-name>
-        <param-value>none</param-value>
     </context-param>
     <context-param>
         <param-name>javax.faces.CONFIG_FILES</param-name>
@@ -131,18 +123,9 @@
     <servlet-mapping>
         <servlet-name>MetsResolver</servlet-name>
         <url-pattern>/metsresolver</url-pattern>
-    </servlet-mapping>
-    <servlet-mapping>
-        <servlet-name>MetsResolver</servlet-name>
         <url-pattern>/lidoresolver</url-pattern>
-    </servlet-mapping>
-    <servlet-mapping>
-        <servlet-name>MetsResolver</servlet-name>
         <url-pattern>/denkxwebresolver</url-pattern>
-    </servlet-mapping>
-    <servlet-mapping>
-        <servlet-name>MetsResolver</servlet-name>
-	<url-pattern>/dublincoreresolver</url-pattern>
+        <url-pattern>/dublincoreresolver</url-pattern>
     </servlet-mapping>
 
     <servlet>
@@ -241,4 +224,5 @@
     <welcome-file-list>
         <welcome-file>index.xhtml</welcome-file>
     </welcome-file-list>
+    
 </web-fragment>

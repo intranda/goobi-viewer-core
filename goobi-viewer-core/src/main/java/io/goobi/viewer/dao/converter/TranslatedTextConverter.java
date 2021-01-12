@@ -25,7 +25,7 @@ import java.util.stream.Collectors;
 import javax.persistence.AttributeConverter;
 import javax.persistence.Converter;
 
-import org.apache.commons.lang.StringEscapeUtils;
+import org.apache.commons.text.StringEscapeUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.jboss.weld.exceptions.IllegalArgumentException;
 
@@ -67,7 +67,7 @@ public class TranslatedTextConverter implements AttributeConverter<TranslatedTex
     public String convertToDatabaseColumn(TranslatedText attribute) {
         try {
         Map<String, String> map = attribute.toMap().entrySet().stream()
-                .collect(Collectors.toMap(e -> e.getKey().getLanguage(), e -> StringEscapeUtils.escapeHtml(e.getValue())));
+                .collect(Collectors.toMap(e -> e.getKey().getLanguage(), e -> StringEscapeUtils.escapeHtml4(e.getValue())));
         MultiLanguageMetadataValue v = new MultiLanguageMetadataValue(map);
         String s = mapper.writeValueAsString(attribute);
         return s;
@@ -89,7 +89,7 @@ public class TranslatedTextConverter implements AttributeConverter<TranslatedTex
             IMetadataValue v = mapper.readValue(dbData, IMetadataValue.class);
             for (Locale locale : getConfiguredLocales()) {
                 String s = v.getValue(locale).orElse("");
-                s = StringEscapeUtils.unescapeHtml(s);
+                s = StringEscapeUtils.unescapeHtml4(s);
                 if(StringUtils.isNotBlank(s)) {
                     attribute.setText(s, locale);
                 }

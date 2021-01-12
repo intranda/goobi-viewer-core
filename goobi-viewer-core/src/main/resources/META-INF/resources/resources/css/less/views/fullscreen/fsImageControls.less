@@ -21,12 +21,15 @@
 		    li {}
 	    }
 	    &__action {
-	    	height: auto;
-	    	margin: 0 7px 0 0;
-	    	font-size: 0.9375rem;
+	    	margin: 0 0.7rem 0 0;
 			border: 0;
 		    /* ELEMENT */
-		    a, 
+	    	&:hover,
+			&:active,
+			&:focus {
+				background-color: transparent;
+			}
+		    a,
 			span, 
 			button {
 				display: flex;
@@ -39,11 +42,6 @@
 				background-position: center center;
 				background-size: 28px;
 				font-size: 1.4rem; 
-				&:hover,
-				&:active,
-				&:focus {
-					background-color: transparent;
-				}
 			}
 			span {}
 			[class*="image-"] {
@@ -81,12 +79,8 @@
 		            }
 		        }
 		        .custom-control--select {
-		        	select {
-		        		color: @fsDarkgray;
-		        	}
-		        	&:after {
-		        		border-top-color: @fsDarkgray;
-		        	}
+		        	select {}
+		        	&:after {}
 		        }
 		    }
 		    &.forward {
@@ -104,6 +98,14 @@
 		    &.switch-pages {
 			    [class*="image-"] {}	    	
 		    }
+	    &.double-page-view,
+	    &.single-page-view,
+	    &.switch-pages {
+	    	a,
+	    	span,
+	    	button {
+	    	}
+	    }
 		    &.double-page-view {
 		    	a, 
 				span, 
@@ -146,9 +148,9 @@
 		    	width: 125px;
 		    	margin-left: 10px;
 		        .zoom-slider {
-		        	height: 2px;
+		        	height: 10px;
 		        	margin-top: 0;
-		        	background-color: @fsDarkgray;
+		        	background-color: transparent;
 		        }
 		        .zoom-slider-handle {
 		        	top: -12px;

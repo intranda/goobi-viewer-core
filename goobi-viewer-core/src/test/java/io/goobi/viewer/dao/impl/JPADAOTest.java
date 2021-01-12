@@ -685,7 +685,7 @@ public class JPADAOTest extends AbstractDatabaseEnabledTest {
         Assert.assertNotNull(comment);
 
         comment.setText("new comment 1 text");
-        Date now = new Date();
+        LocalDateTime now = LocalDateTime.now();
         comment.setDateUpdated(now);
 
         Assert.assertTrue(DataManager.getInstance().getDao().updateComment(comment));
@@ -823,7 +823,7 @@ public class JPADAOTest extends AbstractDatabaseEnabledTest {
         o.setSortString("SORT_FIELD");
         o.setFacetString("DOCSTRCT:Other;;DC:newcol");
         o.setNewHitsNotification(true);
-        Date now = new Date();
+        LocalDateTime now = LocalDateTime.now();
         o.setDateUpdated(now);
         Assert.assertTrue(DataManager.getInstance().getDao().addSearch(o));
         Assert.assertNotNull(o.getId());
@@ -848,7 +848,7 @@ public class JPADAOTest extends AbstractDatabaseEnabledTest {
         Assert.assertNotNull(o);
 
         o.setName("new name");
-        Date now = new Date();
+        LocalDateTime now = LocalDateTime.now();
         o.setDateUpdated(now);
 
         Assert.assertTrue(DataManager.getInstance().getDao().updateSearch(o));
@@ -2073,7 +2073,7 @@ public class JPADAOTest extends AbstractDatabaseEnabledTest {
      */
     @Test
     public void addDownloadJob_shouldAddObjectCorrectly() throws Exception {
-        Date now = new Date();
+        LocalDateTime now = LocalDateTime.now();
         PDFDownloadJob job = new PDFDownloadJob("PI_2", "LOG_0002", now, 3600);
         job.generateDownloadIdentifier();
         job.setStatus(JobStatus.WAITING);
@@ -2106,7 +2106,7 @@ public class JPADAOTest extends AbstractDatabaseEnabledTest {
 
         DownloadJob job = DataManager.getInstance().getDao().getDownloadJob(1);
         Assert.assertNotNull(job);
-        Date now = new Date();
+        LocalDateTime now = LocalDateTime.now();
         job.setLastRequested(now);
         job.setStatus(JobStatus.READY);
         job.getObservers().add("newobserver@example.com");
@@ -2272,20 +2272,20 @@ public class JPADAOTest extends AbstractDatabaseEnabledTest {
         Assert.assertNotNull(campaign.getStatistics().get("PI_3"));
         Assert.assertNotNull(campaign.getStatistics().get("PI_4"));
     }
-    
+
     @Test
     public void testLoadCampaignWithLogMessage() throws Exception {
         Campaign campaign = DataManager.getInstance().getDao().getCampaign(1L);
         Assert.assertNotNull(campaign);
         Assert.assertEquals(1, campaign.getLogMessages().size());
-        
+
         CampaignLogMessage message = campaign.getLogMessages().get(0);
         Assert.assertEquals("Eine Nachricht im Log", message.getMessage());
         Assert.assertEquals(new Long(1), message.getCreatorId());
         Assert.assertEquals("PI_1", message.getPi());
         Assert.assertEquals(campaign, message.getCampaign());
     }
-    
+
     @Test
     public void testCampaignUpdate() throws DAOException {
         Campaign campaign = new Campaign();
@@ -2293,29 +2293,27 @@ public class JPADAOTest extends AbstractDatabaseEnabledTest {
         campaign.setId(2L);
         campaign.setSolrQuery("*:*");
         campaign.setDateCreated(LocalDateTime.now());
-        
+
         Campaign campaign2 = DataManager.getInstance().getDao().getCampaign(2L);
 
-        
         Assert.assertTrue(DataManager.getInstance().getDao().updateCampaign(campaign));
         campaign = DataManager.getInstance().getDao().getCampaign(2L);
         Assert.assertEquals("Test titel", campaign.getTitle());
     }
-    
+
     @Test
     public void testUpdateCampaignWithLogMessage() throws Exception {
         Campaign campaign = DataManager.getInstance().getDao().getCampaign(2L);
         Assert.assertNotNull(campaign);
-        
-        LogMessage message = new LogMessage("Test", 1l, new Date(), null);
+
+        LogMessage message = new LogMessage("Test", 1l, LocalDateTime.now(), null);
         campaign.addLogMessage(message, "PI_10");
         Assert.assertEquals("Test", campaign.getLogMessages().get(0).getMessage());
-                
+
         DataManager.getInstance().getDao().updateCampaign(campaign);
         campaign = DataManager.getInstance().getDao().getCampaign(2L);
         Assert.assertEquals("Test", campaign.getLogMessages().get(0).getMessage());
 
-        
     }
 
     /**
@@ -2762,7 +2760,6 @@ public class JPADAOTest extends AbstractDatabaseEnabledTest {
         users = DataManager.getInstance().getDao().getAllUsers(true);
         Assert.assertTrue(users.stream().allMatch(u -> !u.isAgreedToTermsOfUse()));
     }
-    
 
     /**
      * @see JPADAO#createCampaignsFilterQuery(String,Map,Map)

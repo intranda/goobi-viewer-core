@@ -16,7 +16,7 @@
 package io.goobi.viewer.model.annotation;
 
 import java.io.UnsupportedEncodingException;
-import java.util.Date;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Locale;
 
@@ -28,8 +28,6 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.Table;
-import javax.persistence.Temporal;
-import javax.persistence.TemporalType;
 import javax.persistence.Transient;
 
 import org.apache.commons.lang3.StringUtils;
@@ -77,13 +75,11 @@ public class Comment implements Comparable<Comment> {
     @Transient
     private String oldText = null;
 
-    @Temporal(TemporalType.TIMESTAMP)
-    @Column(name = "date_created", nullable = false)
-    private Date dateCreated = new Date();
+    @Column(name = "date_created", nullable = false, columnDefinition = "TIMESTAMP")
+    private LocalDateTime dateCreated = LocalDateTime.now();
 
-    @Temporal(TemporalType.TIMESTAMP)
-    @Column(name = "date_updated")
-    private Date dateUpdated;
+    @Column(name = "date_updated", columnDefinition = "TIMESTAMP")
+    private LocalDateTime dateUpdated;
 
     //    @ManyToOne
     //    @JoinColumn(name = "parent_id")
@@ -193,10 +189,10 @@ public class Comment implements Comparable<Comment> {
      * getDisplayDate.
      * </p>
      *
-     * @param date a {@link java.util.Date} object.
+     * @param date a {@link java.time.LocalDateTime} object.
      * @return a {@link java.lang.String} object.
      */
-    public String getDisplayDate(Date date) {
+    public String getDisplayDate(LocalDateTime date) {
         return DateTools.format(date, DateTools.formatterDEDateTime, false);
     }
 
@@ -357,7 +353,7 @@ public class Comment implements Comparable<Comment> {
      *
      * @return the dateCreated
      */
-    public Date getDateCreated() {
+    public LocalDateTime getDateCreated() {
         return dateCreated;
     }
 
@@ -368,7 +364,7 @@ public class Comment implements Comparable<Comment> {
      *
      * @param dateCreated the dateCreated to set
      */
-    public void setDateCreated(Date dateCreated) {
+    public void setDateCreated(LocalDateTime dateCreated) {
         this.dateCreated = dateCreated;
     }
 
@@ -379,7 +375,7 @@ public class Comment implements Comparable<Comment> {
      *
      * @return the dateUpdated
      */
-    public Date getDateUpdated() {
+    public LocalDateTime getDateUpdated() {
         return dateUpdated;
     }
 
@@ -390,7 +386,7 @@ public class Comment implements Comparable<Comment> {
      *
      * @param dateUpdated the dateUpdated to set
      */
-    public void setDateUpdated(Date dateUpdated) {
+    public void setDateUpdated(LocalDateTime dateUpdated) {
         this.dateUpdated = dateUpdated;
     }
 

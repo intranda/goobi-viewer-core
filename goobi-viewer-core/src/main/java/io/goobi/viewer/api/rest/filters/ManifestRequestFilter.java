@@ -29,6 +29,7 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.ext.Provider;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.text.StringTokenizer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -40,6 +41,7 @@ import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
+import io.goobi.viewer.exceptions.RecordNotFoundException;
 import io.goobi.viewer.model.security.AccessConditionUtils;
 import io.goobi.viewer.model.security.IPrivilegeHolder;
 
@@ -63,18 +65,11 @@ public class ManifestRequestFilter implements ContainerRequestFilter {
     @Override
     public void filter(ContainerRequestContext request) throws IOException {
         try {
-            String requestPath = servletRequest.getRequestURI();
-            requestPath = requestPath.substring(requestPath.indexOf("iiif/manifests/") + "iiif/manifests/".length());
-            logger.trace("Filtering request " + requestPath);
-            StringTokenizer tokenizer = new StringTokenizer(requestPath, "/");
-            List<String> pathSegments = tokenizer.getTokenList();
-            String pi = pathSegments.get(0);
-            String logId = null;
-            if (pathSegments.size() > 2 && pathSegments.get(1).equalsIgnoreCase("range")) {
-                logId = pathSegments.get(2);
+            String requestPI = (String) servletRequest.getAttribute("pi");
+            String requestLogId = (String) servletRequest.getAttribute("divId");
+            if(StringUtils.isNotBlank(requestPI)) {                
+                filterForAccessConditions(request, requestPI, requestLogId);
             }
-
-            filterForAccessConditions(request, pi, logId);
         } catch (ServiceNotAllowedException e) {
             String mediaType = MediaType.APPLICATION_JSON;
             //            if (request.getUriInfo() != null && request.getUriInfo().getPath().endsWith("json")) {
@@ -132,6 +127,8 @@ public class ManifestRequestFilter implements ContainerRequestFilter {
             throw new ServiceNotAllowedException("Serving this image is currently impossibe due to ");
         } catch (DAOException e) {
             throw new ServiceNotAllowedException("Serving this image is currently impossibe due to ");
+        } catch (RecordNotFoundException e) {
+            throw new ServiceNotAllowedException("Record not found in index: " + pi);
         }
 
         if (!access) {

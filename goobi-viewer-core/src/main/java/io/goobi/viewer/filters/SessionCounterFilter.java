@@ -16,7 +16,9 @@
 package io.goobi.viewer.filters;
 
 import java.io.IOException;
-import java.util.Date;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Optional;
@@ -34,6 +36,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import io.goobi.viewer.controller.DataManager;
+import io.goobi.viewer.controller.DateTools;
 
 /**
  * <p>
@@ -68,17 +71,20 @@ public class SessionCounterFilter implements Filter {
         HttpServletRequest req = (HttpServletRequest) request;
         String id = req.getSession().getId();
         Map<String, String> metadataMap = DataManager.getInstance().getSessionMap().get(id);
+        ZonedDateTime now = LocalDateTime.now().atZone(ZoneId.systemDefault());
         if (metadataMap == null) {
             metadataMap = new LinkedHashMap<>();
             DataManager.getInstance().getSessionMap().put(id, metadataMap);
             metadataMap.put("id", id);
-            metadataMap.put("created", new Date().toString());
+            metadataMap.put("created", now.format(DateTools.formatterJavaUtilDateToString));
         }
         metadataMap.put("address", req.getRemoteAddr());
         metadataMap.put("x-forwarded-for", req.getHeader("x-forwarded-for"));
-        Date now = new Date();
-        metadataMap.put("last request", now.toString());
-        metadataMap.put("previous request", new Date(req.getSession().getLastAccessedTime()).toString());
+        metadataMap.put("last request", now.format(DateTools.formatterJavaUtilDateToString));
+        metadataMap.put("previous request",
+                DateTools.getLocalDateTimeFromMillis(req.getSession().getLastAccessedTime(), false)
+                        .atZone(ZoneId.systemDefault())
+                        .format(DateTools.formatterJavaUtilDateToString));
         metadataMap.put("timeout", String.valueOf(req.getSession().getMaxInactiveInterval()) + " s");
 
         //       Enumeration<String> sessionAttributes = req.getSession().getAttributeNames();

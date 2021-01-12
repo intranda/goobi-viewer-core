@@ -25,7 +25,6 @@ import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 import javax.mail.AuthenticationFailedException;
@@ -45,8 +44,6 @@ import javax.persistence.Inheritance;
 import javax.persistence.InheritanceType;
 import javax.persistence.JoinColumn;
 import javax.persistence.Table;
-import javax.persistence.Temporal;
-import javax.persistence.TemporalType;
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.core.MediaType;
@@ -157,9 +154,8 @@ public abstract class DownloadJob implements Serializable {
      * Timestamp of the last request for this download. This can be the time of the initial request, the time of generation completion or any
      * subsequent requests. This + TTL is the time of expiration.
      */
-    @Temporal(TemporalType.TIMESTAMP)
-    @Column(name = "last_requested", nullable = false)
-    protected Date lastRequested;
+    @Column(name = "last_requested", nullable = false, columnDefinition = "TIMESTAMP")
+    protected LocalDateTime lastRequested;
 
     @Column(name = "ttl", nullable = false)
     protected long ttl;
@@ -221,7 +217,8 @@ public abstract class DownloadJob implements Serializable {
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      */
-    public static synchronized DownloadJob checkDownload(String type, final String email, String pi, String logId, String downloadIdentifier, long ttl)
+    public static synchronized DownloadJob checkDownload(String type, final String email, String pi, String logId, String downloadIdentifier,
+            long ttl)
             throws DAOException, PresentationException, IndexUnreachableException {
         if (type == null) {
             throw new IllegalArgumentException("type may not be null");
@@ -248,10 +245,10 @@ public abstract class DownloadJob implements Serializable {
                 newJob = true;
                 switch (type) {
                     case PDFDownloadJob.TYPE:
-                        downloadJob = new PDFDownloadJob(pi, logId, new Date(), ttl);
+                        downloadJob = new PDFDownloadJob(pi, logId, LocalDateTime.now(), ttl);
                         break;
                     case EPUBDownloadJob.TYPE:
-                        downloadJob = new EPUBDownloadJob(pi, logId, new Date(), ttl);
+                        downloadJob = new EPUBDownloadJob(pi, logId, LocalDateTime.now(), ttl);
                         break;
                     default:
                         throw new IllegalArgumentException("Uknown type: " + type);
@@ -259,8 +256,8 @@ public abstract class DownloadJob implements Serializable {
             } else {
                 // Update latest request timestamp of an existing job
                 logger.debug("Retrieve existing job");
-                downloadJob.setLastRequested(new Date());
-                downloadJob.updateStatus();        
+                downloadJob.setLastRequested(LocalDateTime.now());
+                downloadJob.updateStatus();
             }
             logger.debug("Requested download job " + downloadJob);
 
@@ -380,7 +377,7 @@ public abstract class DownloadJob implements Serializable {
             return false;
         }
 
-        return System.currentTimeMillis() > lastRequested.getTime() + ttl;
+        return System.currentTimeMillis() > DateTools.getMillisFromLocalDateTime(lastRequested, false) + ttl;
     }
 
     /**
@@ -476,7 +473,7 @@ public abstract class DownloadJob implements Serializable {
                     body = body.replace("{0}", pi);
                     body = body.replace("{1}", DataManager.getInstance().getConfiguration().getDownloadUrl() + identifier + "/"); // TODO
                     body = body.replace("{4}", getType().toUpperCase());
-                    LocalDateTime exirationDate = DateTools.convertDateToLocalDateTimeViaInstant(lastRequested);
+                    LocalDateTime exirationDate = lastRequested;
                     exirationDate = exirationDate.plus(ttl, ChronoUnit.MILLIS);
                     body = body.replace("{2}", DateTools.format(exirationDate, DateTools.formatterISO8601Date, false));
                     body = body.replace("{3}", DateTools.format(exirationDate, DateTools.formatterISO8601Date, false));
@@ -653,7 +650,7 @@ public abstract class DownloadJob implements Serializable {
      * @return the lastRequested
      */
     @JsonFormat(pattern = DATETIME_FORMAT)
-    public Date getLastRequested() {
+    public LocalDateTime getLastRequested() {
         return lastRequested;
     }
 
@@ -664,7 +661,7 @@ public abstract class DownloadJob implements Serializable {
      *
      * @param lastRequested the lastRequested to set
      */
-    public void setLastRequested(Date lastRequested) {
+    public void setLastRequested(LocalDateTime lastRequested) {
         this.lastRequested = lastRequested;
     }
 

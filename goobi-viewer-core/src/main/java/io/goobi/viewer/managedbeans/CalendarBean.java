@@ -20,9 +20,7 @@ import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Collections;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -41,7 +39,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import io.goobi.viewer.controller.DataManager;
-import io.goobi.viewer.controller.DateTools;
 import io.goobi.viewer.controller.SolrConstants;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
@@ -64,7 +61,7 @@ public class CalendarBean implements Serializable {
 
     private static final long serialVersionUID = 1095535586988646463L;
 
-    private final static int MAX_ALLOWED_YEAR = Calendar.getInstance().get(Calendar.YEAR) + 1000;
+    private final static int MAX_ALLOWED_YEAR = LocalDateTime.now().getYear() + 1000;
     private final static int MIN_ALLOWED_YEAR = -10_000;
 
     private static final Logger logger = LoggerFactory.getLogger(CalendarBean.class);
@@ -560,9 +557,9 @@ public class CalendarBean implements Serializable {
      * getCurrentDate.
      * </p>
      *
-     * @return a {@link java.util.Date} object.
+     * @return a {@link java.time.LocalDateTime} object.
      */
-    public Date getCurrentDate() {
+    public LocalDateTime getCurrentDate() {
         LocalDateTime ldt = LocalDateTime.now();
         if (currentYear != null) {
             ldt = ldt.withYear(currentYear.getValue());
@@ -574,7 +571,7 @@ public class CalendarBean implements Serializable {
             ldt = ldt.withDayOfMonth(currentDay.getValue());
         }
 
-        return DateTools.convertLocalDateTimeToDateViaInstant(ldt, false);
+        return ldt;
     }
 
     /**

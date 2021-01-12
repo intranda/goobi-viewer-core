@@ -15,13 +15,15 @@
  */
 package io.goobi.viewer.model.iiif.presentation.builder;
 
+import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_FILES;
+import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_FILES_ALTO;
+import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_FILES_PLAINTEXT;
+
 import java.awt.Dimension;
 import java.awt.Rectangle;
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.net.URLEncoder;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -60,7 +62,6 @@ import de.unigoettingen.sub.commons.contentlib.exceptions.ContentNotFoundExcepti
 import io.goobi.viewer.api.rest.AbstractApiUrlManager;
 import io.goobi.viewer.api.rest.resourcebuilders.TextResourceBuilder;
 import io.goobi.viewer.controller.DataManager;
-import io.goobi.viewer.controller.StringTools;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
@@ -70,9 +71,7 @@ import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.messages.ViewerResourceBundle;
 import io.goobi.viewer.model.annotation.AltoAnnotationBuilder;
 import io.goobi.viewer.model.annotation.Comment;
-import io.goobi.viewer.model.annotation.PersistentAnnotation;
-import io.goobi.viewer.model.crowdsourcing.campaigns.CampaignRecordStatistic.CampaignRecordStatus;
-import io.goobi.viewer.model.crowdsourcing.questions.Question;
+import io.goobi.viewer.model.iiif.presentation.builder.LinkingProperty.LinkingTarget;
 import io.goobi.viewer.model.viewer.MimeType;
 import io.goobi.viewer.model.viewer.PageType;
 import io.goobi.viewer.model.viewer.PhysicalElement;
@@ -80,8 +79,6 @@ import io.goobi.viewer.model.viewer.StructElement;
 import io.goobi.viewer.model.viewer.pageloader.EagerPageLoader;
 import io.goobi.viewer.model.viewer.pageloader.IPageLoader;
 import io.goobi.viewer.model.viewer.pageloader.LeanPageLoader;
-
-import static io.goobi.viewer.api.rest.v1.ApiUrls.*;
 /**
  * <p>
  * SequenceBuilder class.
@@ -180,37 +177,36 @@ public class SequenceBuilder extends AbstractBuilder {
      * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
      */
     public void addSeeAlsos(Canvas canvas, StructElement doc, PhysicalElement page) throws URISyntaxException, ViewerConfigurationException {
-
-        if (StringUtils.isNotBlank(page.getFulltextFileName()) || StringUtils.isNotBlank(page.getAltoFileName())) {
-
-            LinkingContent fulltextLink = new LinkingContent(urls.path(RECORDS_FILES, RECORDS_FILES_PLAINTEXT).params(page.getPi(), page.getFileName("txt")).buildURI());
-            fulltextLink.setFormat(Format.TEXT_PLAIN);
-            fulltextLink.setType(DcType.TEXT);
-            fulltextLink.setLabel(ViewerResourceBundle.getTranslations("FULLTEXT"));
-            canvas.addSeeAlso(fulltextLink);
-        }
-
-        if (StringUtils.isNotBlank(page.getAltoFileName())) {
-            LinkingContent altoLink = new LinkingContent(urls.path(RECORDS_FILES, RECORDS_FILES_ALTO).params(page.getPi(), page.getFileName("xml")).buildURI());
-            altoLink.setFormat(Format.TEXT_XML);
-            altoLink.setType(DcType.TEXT);
-            altoLink.setLabel(ViewerResourceBundle.getTranslations("ALTO"));
-            canvas.addSeeAlso(altoLink);
-        }
-
-        if (MimeType.IMAGE.getName().equals(page.getMimeType())) {
-            String url = imageDelivery.getPdf().getPdfUrl(doc, page);
+        
+        this.getSeeAlsos().forEach(link -> {
             try {
-                url = URLEncoder.encode(url, StringTools.DEFAULT_ENCODING);
-            } catch (UnsupportedEncodingException e) {
-                logger.error(e.getMessage());
+                URI id = getCanvasLinkingPropertyUri(page, doc, link.target);
+                if(id != null) {                    
+                    canvas.addSeeAlso(link.getLinkingContent(id));
+                }
+            } catch (URISyntaxException e) {
+                logger.error("Error building linking property url", e);
             }
-            LinkingContent link = new LinkingContent(new URI(url));
-            link.setFormat(Format.APPLICATION_PDF);
-            link.setType(DcType.SOFTWARE);
-            link.setLabel(ViewerResourceBundle.getTranslations("PDF"));
-            canvas.addSeeAlso(link);
-        }
+        });
+    }
+    
+    /**
+     * @param page
+     * @param canvas
+     * @throws URISyntaxException
+     */
+    public void addRenderings(PhysicalElement page, StructElement doc, Canvas canvas) throws URISyntaxException {
+        
+        this.getRenderings().forEach(link -> {
+            try {
+                URI id = getCanvasLinkingPropertyUri(page, doc, link.target);
+                if(id != null) {                    
+                    canvas.addRendering(link.getLinkingContent(id));
+                }
+            } catch (URISyntaxException e) {
+                logger.error("Error building linking property url", e);
+            }
+        });
     }
 
     /**
@@ -325,9 +321,7 @@ public class SequenceBuilder extends AbstractBuilder {
         Sequence parent = new Sequence(getSequenceURI(doc.getPi(), null));
         canvas.addWithin(parent);
 
-        LinkingContent viewerPage = new LinkingContent(new URI(getViewUrl(page, getPreferedView())));
-        viewerPage.setLabel(new SimpleMetadataValue("goobi viewer"));
-        canvas.addRendering(viewerPage);
+        addRenderings(page, doc, canvas);
 
         if (!getBuildMode().equals(BuildMode.THUMBS)) {
             Dimension size = getSize(page);
@@ -369,6 +363,40 @@ public class SequenceBuilder extends AbstractBuilder {
 
         }
         return canvas;
+    }
+
+    /**
+     * @param page
+     * @param doc
+     * @param link
+     * @throws URISyntaxException
+     */
+    private URI getCanvasLinkingPropertyUri(PhysicalElement page, StructElement doc, LinkingProperty.LinkingTarget target) throws URISyntaxException {
+        if(target.equals(LinkingTarget.PLAINTEXT) && StringUtils.isAllBlank(page.getFulltextFileName(), page.getAltoFileName())) {
+            return null;
+        } 
+        if(target.equals(LinkingTarget.ALTO) && StringUtils.isBlank(page.getAltoFileName())) {
+            return null;
+        }
+        if(target.equals(LinkingTarget.PDF) && !(MimeType.IMAGE.getName().equals(page.getMimeType()))) {
+            return null;
+        }
+        
+        URI uri = null;
+        switch(target) {
+            case VIEWER:
+                uri = URI.create(getViewUrl(page, getPreferedView()));
+                break;
+            case ALTO:
+                uri = this.urls.path(RECORDS_FILES, RECORDS_FILES_ALTO).params(page.getPi(), page.getFileName("xml")).buildURI();
+                break;
+            case PLAINTEXT:
+                uri = this.urls.path(RECORDS_FILES, RECORDS_FILES_PLAINTEXT).params(page.getPi(), page.getFileName("txt")).buildURI();
+                break;
+            case PDF:
+                uri = URI.create(imageDelivery.getPdf().getPdfUrl(doc, page));
+        }
+        return uri;
     }
 
     /**

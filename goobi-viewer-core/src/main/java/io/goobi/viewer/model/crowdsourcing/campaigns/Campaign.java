@@ -24,8 +24,6 @@ import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.Date;
-import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -138,16 +136,18 @@ public class Campaign implements CMSMediaHolder, ILicenseType, IPolyglott {
             return null;
         }
     }
-    
+
     public enum ReviewMode {
         REQUIRE_REVIEW("label__require_review"),
         NO_REVIEW("label__no_review"),
         LIMIT_REVIEW_TO_USERGROUP("label__limit_review_to_usergroup");
-        
+
         private final String label;
+
         private ReviewMode(String label) {
             this.label = label;
         }
+
         public String getLabel() {
             return this.label;
         }
@@ -208,7 +208,7 @@ public class Campaign implements CMSMediaHolder, ILicenseType, IPolyglott {
     @JoinColumn(name = "user_group_id")
     @JsonIgnore
     private UserGroup userGroup;
-    
+
     @Column(name = "review_mode")
     private ReviewMode reviewMode = ReviewMode.REQUIRE_REVIEW;
 
@@ -460,18 +460,18 @@ public class Campaign implements CMSMediaHolder, ILicenseType, IPolyglott {
 
         return userIds.size();
     }
-    
+
     /**
      * 
      * @return
      */
     public boolean isHasAnnotations() {
         for (String pi : statistics.keySet()) {
-            if(!statistics.get(pi).getAnnotators().isEmpty()) {
+            if (!statistics.get(pi).getAnnotators().isEmpty()) {
                 return true;
             }
         }
-        
+
         return false;
     }
 
@@ -607,22 +607,22 @@ public class Campaign implements CMSMediaHolder, ILicenseType, IPolyglott {
             case ANNOTATE:
                 if (CampaignVisibility.PUBLIC.equals(visibility)) {
                     return true;
-                } else if(user == null) {
+                } else if (user == null) {
                     return false;
                 } else if (CampaignVisibility.PRIVATE.equals(visibility) && isGroupLimitActive()) {
                     return userGroup.getMembersAndOwner().contains(user);
-                } else {                    
-                    return user.isHasCrowdsourcingPrivilege(IPrivilegeHolder.PRIV_CROWDSOURCING_ANNOTATE_CAMPAIGN);
+                } else {
+                    return true;
                 }
             case REVIEW:
                 if (isReviewGroupLimitActive()) {
                     return user != null && reviewerUserGroup.getMembersAndOwner().contains(user);
                 } else if (CampaignVisibility.PUBLIC.equals(visibility)) {
                     return true;
-                } else if(user == null) {
+                } else if (user == null) {
                     return false;
-                } else {                      
-                    return user.isHasCrowdsourcingPrivilege(IPrivilegeHolder.PRIV_CROWDSOURCING_REVIEW_CAMPAIGN);
+                } else {
+                    return true;
                 }
             default:
                 return false;
@@ -836,11 +836,11 @@ public class Campaign implements CMSMediaHolder, ILicenseType, IPolyglott {
     public String getMenuTitle(String lang, boolean useFallback) {
         return Translation.getTranslation(translations, lang, "menu_title", useFallback);
     }
-    
+
     public String getDisplayTitle() {
         return getTitle(BeanUtils.getLocale().getLanguage(), true);
     }
-    
+
     public String getDisplayDescription() {
         return getDescription(BeanUtils.getLocale().getLanguage(), true);
 
@@ -1293,20 +1293,19 @@ public class Campaign implements CMSMediaHolder, ILicenseType, IPolyglott {
 
     @Override
     public boolean isComplete(Locale locale) {
-        if(isValid(locale)) {
+        if (isValid(locale)) {
             String defaultLanguage = IPolyglott.getDefaultLocale().getLanguage();
-            if(locale.getLanguage().equals(defaultLanguage)) {
+            if (locale.getLanguage().equals(defaultLanguage)) {
                 return true;
-            } else if(StringUtils.isBlank(getDescription(defaultLanguage))) {
+            } else if (StringUtils.isBlank(getDescription(defaultLanguage))) {
                 return true;
             } else {
                 return StringUtils.isNotBlank(getDescription(locale.getLanguage()));
             }
-        } else {
-            return false;
         }
+
+        return false;
     }
-    
 
     /**
      * @return true if the title is not empty for the given locale
@@ -1494,11 +1493,11 @@ public class Campaign implements CMSMediaHolder, ILicenseType, IPolyglott {
     public boolean isGroupLimitActive() {
         return limitToGroup && userGroup != null;
     }
-    
+
     public boolean isReviewGroupLimitActive() {
         return ReviewMode.LIMIT_REVIEW_TO_USERGROUP.equals(this.reviewMode) && reviewerUserGroup != null;
     }
-    
+
     public boolean isReviewModeActive() {
         return !ReviewMode.NO_REVIEW.equals(this.reviewMode);
     }
@@ -1515,7 +1514,7 @@ public class Campaign implements CMSMediaHolder, ILicenseType, IPolyglott {
         if (statistic == null) {
             statistic = new CampaignRecordStatistic();
             statistic.setOwner(this);
-            statistic.setDateCreated(new Date());
+            statistic.setDateCreated(LocalDateTime.now());
             statistic.setStatus(CampaignRecordStatus.ANNOTATE);
         }
         if (CampaignRecordStatus.ANNOTATE.equals(statistic.getStatus())) {
@@ -1525,7 +1524,7 @@ public class Campaign implements CMSMediaHolder, ILicenseType, IPolyglott {
         }
         statistic.setPi(pi);
         statistic.setStatus(status);
-        statistic.setDateUpdated(new Date());
+        statistic.setDateUpdated(LocalDateTime.now());
         statistics.put(pi, statistic);
     }
 
@@ -1593,21 +1592,21 @@ public class Campaign implements CMSMediaHolder, ILicenseType, IPolyglott {
     public void setLimitToGroup(boolean limitToGroup) {
         this.limitToGroup = limitToGroup;
     }
-    
+
     /**
      * @return the reviewMode
      */
     public ReviewMode getReviewMode() {
         return reviewMode;
     }
-    
+
     /**
      * @param reviewMode the reviewMode to set
      */
     public void setReviewMode(ReviewMode reviewMode) {
         this.reviewMode = reviewMode;
     }
-    
+
     /**
      * @return the userGroup
      */
@@ -1621,14 +1620,14 @@ public class Campaign implements CMSMediaHolder, ILicenseType, IPolyglott {
     public void setUserGroup(UserGroup userGroup) {
         this.userGroup = userGroup;
     }
-    
+
     /**
      * @return the reviewerUserGroup
      */
     public UserGroup getReviewerUserGroup() {
         return reviewerUserGroup;
     }
-    
+
     /**
      * @param reviewerUserGroup the reviewerUserGroup to set
      */
@@ -1707,7 +1706,7 @@ public class Campaign implements CMSMediaHolder, ILicenseType, IPolyglott {
 
         return null;
     }
-    
+
     /* (non-Javadoc)
      * @see java.lang.Object#toString()
      */

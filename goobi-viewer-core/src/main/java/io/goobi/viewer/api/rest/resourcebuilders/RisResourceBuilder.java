@@ -34,6 +34,7 @@ import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.FileTools;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
+import io.goobi.viewer.exceptions.RecordNotFoundException;
 import io.goobi.viewer.model.metadata.MetadataTools;
 import io.goobi.viewer.model.security.AccessConditionUtils;
 import io.goobi.viewer.model.security.IPrivilegeHolder;
@@ -44,18 +45,17 @@ import io.goobi.viewer.model.viewer.StructElement;
  *
  */
 public class RisResourceBuilder {
-    
+
     private static final Logger logger = LoggerFactory.getLogger(RisResourceBuilder.class);
-    
+
     HttpServletRequest request;
     HttpServletResponse response;
-    
-    
+
     public RisResourceBuilder(HttpServletRequest request, HttpServletResponse response) {
         this.request = request;
         this.response = response;
     }
-    
+
     /**
      * @param se
      * @param request
@@ -70,7 +70,11 @@ public class RisResourceBuilder {
         String fileName = se.getPi() + "_" + se.getLogid() + ".ris";
         response.addHeader("Content-Disposition", "attachment; filename=\"" + fileName + "\"");
 
-        if (!AccessConditionUtils.checkAccessPermissionByIdentifierAndLogId(se.getPi(), se.getLogid(), IPrivilegeHolder.PRIV_LIST, request)) {
+        try {
+            if (!AccessConditionUtils.checkAccessPermissionByIdentifierAndLogId(se.getPi(), se.getLogid(), IPrivilegeHolder.PRIV_LIST, request)) {
+                throw new ContentNotFoundException("Resource not found");
+            }
+        } catch (RecordNotFoundException e1) {
             throw new ContentNotFoundException("Resource not found");
         }
 
@@ -107,15 +111,19 @@ public class RisResourceBuilder {
     /**
      * @param se
      * @return
-     * @throws ContentNotFoundException 
-     * @throws DAOException 
-     * @throws IndexUnreachableException 
+     * @throws ContentNotFoundException
+     * @throws DAOException
+     * @throws IndexUnreachableException
      */
     public String getRIS(StructElement se) throws ContentNotFoundException, IndexUnreachableException, DAOException {
-        if (!AccessConditionUtils.checkAccessPermissionByIdentifierAndLogId(se.getPi(), se.getLogid(), IPrivilegeHolder.PRIV_LIST, request)) {
+        try {
+            if (!AccessConditionUtils.checkAccessPermissionByIdentifierAndLogId(se.getPi(), se.getLogid(), IPrivilegeHolder.PRIV_LIST, request)) {
+                throw new ContentNotFoundException("Resource not found");
+            }
+        } catch (RecordNotFoundException e) {
             throw new ContentNotFoundException("Resource not found");
         }
 
         return MetadataTools.generateRIS(se);
-    } 
+    }
 }

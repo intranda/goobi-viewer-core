@@ -191,7 +191,7 @@ public class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
         Assert.assertEquals(
                 " +(ACCESSCONDITION:\"OPENACCESS\""
                         + " ACCESSCONDITION:\"license type 2 name\""
-                        + " (+ACCESSCONDITION:\"restriction on access\" -(-MDNUM_PUBLICRELEASEYEAR:[* TO 2020])))",
+                        + " (+ACCESSCONDITION:\"restriction on access\" -(-MDNUM_PUBLICRELEASEYEAR:[* TO 2021])))",
                 suffix);
     }
 
@@ -232,7 +232,7 @@ public class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
         {
             // Regular IP address (has listing privilege for 'license type 3 name')
             String suffix = SearchHelper.getPersonalFilterQuerySuffix(null, "1.2.3.4");
-            Assert.assertTrue(suffix.contains("+ACCESSCONDITION:\"restriction on access\" +(-MDNUM_PUBLICRELEASEYEAR:[* TO 2020]))"));
+            Assert.assertTrue(suffix.contains("+ACCESSCONDITION:\"restriction on access\" +(-MDNUM_PUBLICRELEASEYEAR:[* TO 2021]))"));
         }
     }
 
@@ -245,7 +245,7 @@ public class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
         String suffix = SearchHelper.getPersonalFilterQuerySuffix(null, null);
         // Moving wall license with negated filter query
         Assert.assertTrue(suffix.contains(
-                "(+ACCESSCONDITION:\"restriction on access\" -(-MDNUM_PUBLICRELEASEYEAR:[* TO 2020]))"));
+                "(+ACCESSCONDITION:\"restriction on access\" -(-MDNUM_PUBLICRELEASEYEAR:[* TO 2021]))"));
     }
 
     /**

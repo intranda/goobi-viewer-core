@@ -27,6 +27,7 @@
     
 
     <ui:define name="content">
+		<ui:include src="/resources/cms/includes/cms_script.xhtml" />
 		<f:param name="currentPage" value="#{cmsBean.random}" />
 		<f:view contentType="text/html" encoding="utf-8">
 			<div id="templateStaticGrid" class="tpl-static-grid #{cmsPage.wrapperElementClass}">

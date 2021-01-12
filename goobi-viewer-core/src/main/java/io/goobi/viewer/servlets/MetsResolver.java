@@ -20,6 +20,7 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.URI;
+import java.util.Arrays;
 
 import javax.servlet.ServletException;
 import javax.servlet.ServletOutputStream;
@@ -54,6 +55,8 @@ public class MetsResolver extends HttpServlet {
     private static final String ERRTXT_DOC_NOT_FOUND = "No matching document could be found. ";
     private static final String ERRTXT_ILLEGAL_IDENTIFIER = "Illegal identifier";
     private static final String ERRTXT_MULTIMATCH = "Multiple documents matched the search query. No unambiguous mapping possible.";
+    private static final String[] FIELDS =
+            { SolrConstants.ACCESSCONDITION, SolrConstants.DATAREPOSITORY, SolrConstants.PI_TOPSTRUCT, SolrConstants.SOURCEDOCFORMAT };
 
     /**
      * <p>
@@ -89,7 +92,7 @@ public class MetsResolver extends HttpServlet {
             } else if (urn != null) {
                 query = SolrConstants.URN + ":\"" + urn + '"';
             }
-            SolrDocumentList hits = DataManager.getInstance().getSearchIndex().search(query);
+            SolrDocumentList hits = DataManager.getInstance().getSearchIndex().search(query, Arrays.asList(FIELDS));
             if (hits == null || hits.isEmpty()) {
                 response.sendError(HttpServletResponse.SC_NOT_FOUND, ERRTXT_DOC_NOT_FOUND);
                 return;
@@ -102,10 +105,10 @@ public class MetsResolver extends HttpServlet {
 
             SolrDocument doc = hits.get(0);
             id = (String) doc.getFieldValue(SolrConstants.PI_TOPSTRUCT);
-            boolean access =
-                    AccessConditionUtils.checkAccessPermissionByIdentifierAndLogId(id, null, IPrivilegeHolder.PRIV_DOWNLOAD_METADATA, request);
 
             // If the user has no listing privilege for this record, act as if it does not exist
+            boolean access =
+                    AccessConditionUtils.checkAccessPermissionBySolrDoc(doc, query, IPrivilegeHolder.PRIV_DOWNLOAD_METADATA, request);
             if (!access) {
                 logger.debug("User may not download metadata for {}", id);
                 response.sendError(HttpServletResponse.SC_NOT_FOUND, ERRTXT_DOC_NOT_FOUND);

@@ -21,18 +21,27 @@ import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_FILES_PDF;
 import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_FILES_PLAINTEXT;
 import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_FILES_SOURCE;
 import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_FILES_TEI;
+import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_PAGES;
+import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_PAGES_CANVAS;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
 
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 import org.apache.commons.lang3.StringUtils;
 import org.jdom2.JDOMException;
+import org.json.JSONArray;
+import org.json.JSONObject;
 import org.junit.After;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -45,6 +54,7 @@ import io.goobi.viewer.api.rest.AbstractRestApiTest;
 public class RecordFileResourceTest extends AbstractRestApiTest {
 
     private static final String PI = "PPN743674162";
+    private static final String PI_SPACE_IN_FILENAME = "ARVIErdm5";
     private static final String FILENAME = "00000010";
 
     /**
@@ -182,6 +192,28 @@ public class RecordFileResourceTest extends AbstractRestApiTest {
                 .request()
                 .get()) {
             assertEquals("Should return status 404", 404, response.getStatus());
+        }
+    }
+    
+    @Test
+    public void testEscapeFilenamesInUrls() {
+        String url = urls.path(RECORDS_PAGES, RECORDS_PAGES_CANVAS).params(PI_SPACE_IN_FILENAME, "1").build();
+        try (Response response = target(url)
+                .request()
+                .get()) {
+            assertEquals("Should return status 200", 200, response.getStatus());
+            String entity = response.readEntity(String.class);
+            assertNotNull(entity);
+            JSONObject canvas = new JSONObject(entity);
+            JSONArray renderings = canvas.getJSONArray("rendering");
+            assertFalse(renderings.isEmpty());
+            List linkList = renderings.toList();
+            Map pdfLink = renderings.toList().stream().map(object -> (Map)object)
+                    .filter(map -> "dcTypes:Image".equals(map.get("@type")))
+                    .findAny().orElse(null);
+            assertNotNull("No PDF link in canvas", pdfLink);
+            String id = (String) pdfLink.get("@id");
+            Assert.assertTrue("Wrong filename in " + id, id.contains("erdmagnetisches+observatorium+vi_blatt_5.tif"));
         }
     }
 

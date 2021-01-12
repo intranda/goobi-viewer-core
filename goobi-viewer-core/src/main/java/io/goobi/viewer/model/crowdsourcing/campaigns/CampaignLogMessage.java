@@ -15,7 +15,8 @@
  */
 package io.goobi.viewer.model.crowdsourcing.campaigns;
 
-import java.util.Date;
+
+import java.time.LocalDateTime;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -33,7 +34,7 @@ import io.goobi.viewer.model.log.LogMessage;
  */
  @Entity
  @Table(name = "cs_campaign_log")
-public class CampaignLogMessage extends LogMessage {
+ public class CampaignLogMessage extends LogMessage {
 
     private static final long serialVersionUID = 2810349140888620668L;
 
@@ -54,7 +55,7 @@ public class CampaignLogMessage extends LogMessage {
      * @param creatorId
      * @param dateCreated
      */
-    public CampaignLogMessage(String message, Long creatorId, Date dateCreated, Campaign campaign, String pi) {
+    public CampaignLogMessage(String message, Long creatorId, LocalDateTime dateCreated, Campaign campaign, String pi) {
         super(message, creatorId, dateCreated, null);
         this.campaign = campaign;
         this.pi = pi;

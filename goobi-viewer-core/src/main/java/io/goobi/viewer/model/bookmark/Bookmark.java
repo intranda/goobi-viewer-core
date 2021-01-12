@@ -16,8 +16,8 @@
 package io.goobi.viewer.model.bookmark;
 
 import java.io.Serializable;
+import java.time.LocalDateTime;
 import java.util.Arrays;
-import java.util.Date;
 import java.util.Locale;
 
 import javax.persistence.Column;
@@ -28,8 +28,6 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
-import javax.persistence.Temporal;
-import javax.persistence.TemporalType;
 import javax.persistence.Transient;
 
 import org.apache.commons.lang3.StringUtils;
@@ -71,10 +69,6 @@ public class Bookmark implements Serializable {
 
     private static final Logger logger = LoggerFactory.getLogger(Bookmark.class);
 
-    private static final String[] FIELDS =
-            { SolrConstants.THUMBNAIL, SolrConstants.DATAREPOSITORY, SolrConstants.MIMETYPE, SolrConstants.IDDOC, SolrConstants.PI,
-                    SolrConstants.ISWORK, SolrConstants.ISANCHOR };
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "bookshelf_item_id")
@@ -107,9 +101,8 @@ public class Bookmark implements Serializable {
     @Column(name = "main_title")
     private String mainTitle = null;
 
-    @Temporal(TemporalType.TIMESTAMP)
-    @Column(name = "date_added")
-    private Date dateAdded;
+    @Column(name = "date_added", columnDefinition = "TIMESTAMP")
+    private LocalDateTime dateAdded;
 
     @Transient
     private String url;
@@ -139,7 +132,7 @@ public class Bookmark implements Serializable {
     public Bookmark(String pi, String mainTitle, String name) {
         this.pi = pi;
         this.name = name;
-        this.dateAdded = new Date();
+        this.dateAdded = LocalDateTime.now();
     }
 
     /**
@@ -159,7 +152,7 @@ public class Bookmark implements Serializable {
         this.logId = logId;
         this.order = order;
         this.name = getDocumentTitle();
-        this.dateAdded = new Date();
+        this.dateAdded = LocalDateTime.now();
     }
 
     /**
@@ -188,7 +181,7 @@ public class Bookmark implements Serializable {
                 throw e;
             }
         }
-        this.dateAdded = new Date();
+        this.dateAdded = LocalDateTime.now();
     }
 
     /* (non-Javadoc)
@@ -528,7 +521,7 @@ public class Bookmark implements Serializable {
      *
      * @return the dateAdded
      */
-    public Date getDateAdded() {
+    public LocalDateTime getDateAdded() {
         return dateAdded;
     }
 
@@ -539,7 +532,7 @@ public class Bookmark implements Serializable {
      *
      * @param dateAdded the dateAdded to set
      */
-    public void setDateAdded(Date dateAdded) {
+    public void setDateAdded(LocalDateTime dateAdded) {
         this.dateAdded = dateAdded;
     }
 

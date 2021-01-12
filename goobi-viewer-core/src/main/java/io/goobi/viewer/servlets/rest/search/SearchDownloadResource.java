@@ -17,7 +17,7 @@ package io.goobi.viewer.servlets.rest.search;
 
 import java.io.IOException;
 import java.io.OutputStream;
-import java.util.Date;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -127,14 +127,14 @@ public class SearchDownloadResource {
             throw new WebApplicationException("SearchBean unavailable");
         }
         String currentQuery = SearchHelper.prepareQuery(searchBean.getSearchString());
-        List<StringPair> sortFields = searchBean.getCurrentSearch().getSortFields();
+        List<StringPair> sortFields = searchBean.getCurrentSearch().getAllSortFields();
         Map<String, Set<String>> searchTerms = searchBean.getSearchTerms();
 
         final String query = SearchHelper.buildFinalQuery(currentQuery, DataManager.getInstance().getConfiguration().isAggregateHits(), request);
 
         response.setContentType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
         response.setHeader("Content-Disposition",
-                "attachment;filename=\"viewer_search_" + DateTools.format(new Date(), DateTools.formatterISO8601DateTime, false) + ".xlsx\"");
+                "attachment;filename=\"viewer_search_" + LocalDateTime.now().format(DateTools.formatterISO8601DateTime) + ".xlsx\"");
 
         Map<String, String> params = SearchHelper.generateQueryParams();
         final SXSSFWorkbook wb = SearchHelper.exportSearchAsExcel(query, currentQuery, sortFields,

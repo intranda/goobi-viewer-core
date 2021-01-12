@@ -21,9 +21,10 @@ import java.io.IOException;
 import java.io.Serializable;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Date;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -95,6 +96,8 @@ public class AdminBean implements Serializable {
     private User currentUser = null;
     private UserGroup currentUserGroup = null;
     private Role currentRole = null;
+    /** List of UserRoles to persist or delete */
+    private Map<UserRole, String> dirtyUserRoles = new HashMap<>();
     private UserRole currentUserRole = null;
     private LicenseType currentLicenseType = null;
     private License currentLicense = null;
@@ -387,6 +390,10 @@ public class AdminBean implements Serializable {
             return "pretty:adminGroups";
         }
 
+        // Apply persistence changes to memberships
+        updateUserRoles();
+        currentUserGroup.setMemberships(null);
+
         if (getCurrentUserGroup().getId() != null) {
             if (DataManager.getInstance().getDao().updateUserGroup(getCurrentUserGroup())) {
                 Messages.info("updatedSuccessfully");
@@ -506,13 +513,23 @@ public class AdminBean implements Serializable {
     }
 
     /**
-     * <p>
-     * saveUserRoleAction.
-     * </p>
      *
-     * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
-    public void saveUserRoleAction() throws DAOException {
+    public void resetDirtyUserRolesAction() {
+        dirtyUserRoles.clear();
+        // Reset working list in the user group object
+        if (currentUserGroup != null) {
+            currentUserGroup.setMemberships(null);
+        }
+    }
+
+    /**
+     * Adds currentUserRole to the map of UserRoles to be processed, marked as to save.
+     * 
+     * @throws DAOException
+     */
+    public void addUserRoleAction() throws DAOException {
+        logger.trace("addUserRoleAction: {}", currentUserRole);
         if (currentUserRole == null) {
             logger.trace("currentUserRole not set");
             Messages.info("errSave");
@@ -524,47 +541,86 @@ public class AdminBean implements Serializable {
             return;
         }
 
-        logger.trace("saveUserRoleAction: {}, {}, {}", currentUserRole.getUserGroup(), currentUserRole.getUser(), currentUserRole);
-        // If this the user group is not yet persisted, add it to DB first
-        if (currentUserRole.getUserGroup() != null && currentUserRole.getUserGroup().getId() == null) {
-            if (!DataManager.getInstance().getDao().addUserGroup(currentUserRole.getUserGroup())) {
-                Messages.info("errSave");
-                return;
-            }
-        }
-        if (getCurrentUserRole().getId() != null) {
-            // existing
-            if (DataManager.getInstance().getDao().updateUserRole(getCurrentUserRole())) {
-                Messages.info("userGroup_membershipUpdateSuccess");
-            } else {
-                Messages.error("userGroup_membershipUpdateFailure");
-            }
-        } else {
-            // new
-            if (DataManager.getInstance().getDao().addUserRole(currentUserRole)) {
-                Messages.info("userGroup_memberAddSuccess");
-            } else {
-                Messages.error("userGroup_memberAddFailure");
-            }
+        if (currentUserGroup != null || currentUserGroup.getMemberships().contains(currentUserRole)) {
+            currentUserGroup.getMemberships().add(currentUserRole);
+            dirtyUserRoles.put(currentUserRole, "save");
         }
         resetCurrentUserRoleAction();
     }
 
     /**
      * <p>
-     * deleteUserRoleAction.
+     * Adds currentUserRole to the map of UserRoles to be processed, marked as to delete.
      * </p>
      *
      * @param userRole a {@link io.goobi.viewer.model.security.user.UserRole} object.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
     public void deleteUserRoleAction(UserRole userRole) throws DAOException {
-        if (DataManager.getInstance().getDao().deleteUserRole(userRole)) {
-            Messages.info("deletedSuccessfully");
-        } else {
-            Messages.error("deleteFailure");
+        logger.trace("deleteUserRoleAction: {}", userRole);
+        if (currentUserGroup != null || currentUserGroup.getMemberships().contains(userRole)) {
+            currentUserGroup.getMemberships().remove(userRole);
+            dirtyUserRoles.put(userRole, "delete");
         }
-        resetCurrentUserRoleAction();
+    }
+
+    /**
+     * <p>
+     * saveUserRoleAction.
+     * </p>
+     *
+     * @throws io.goobi.viewer.exceptions.DAOException if any.
+     */
+    public void updateUserRoles() throws DAOException {
+        if (dirtyUserRoles.isEmpty()) {
+            return;
+        }
+
+        try {
+            for (UserRole userRole : dirtyUserRoles.keySet()) {
+                switch (dirtyUserRoles.get(userRole)) {
+                    case "save":
+                        logger.trace("Saving UserRole: {}", userRole);
+                        // If this the user group is not yet persisted, add it to DB first
+                        if (userRole.getUserGroup() != null && userRole.getUserGroup().getId() == null) {
+                            if (!DataManager.getInstance().getDao().addUserGroup(userRole.getUserGroup())) {
+                                logger.error("Could not save UserRole: {}", userRole);
+                                Messages.info("errSave");
+                                continue;
+                            }
+                        }
+                        if (userRole.getId() != null) {
+                            // existing
+                            if (DataManager.getInstance().getDao().updateUserRole(userRole)) {
+                                Messages.info("userGroup_membershipUpdateSuccess");
+                            } else {
+                                Messages.error("userGroup_membershipUpdateFailure");
+                            }
+                        } else {
+                            // new
+                            if (DataManager.getInstance().getDao().addUserRole(currentUserRole)) {
+                                Messages.info("userGroup_memberAddSuccess");
+                            } else {
+                                Messages.error("userGroup_memberAddFailure");
+                            }
+                        }
+                        break;
+                    case "delete":
+                        logger.trace("Deleting UserRole: {}", userRole);
+                        if (DataManager.getInstance().getDao().deleteUserRole(userRole)) {
+                            Messages.info("deletedSuccessfully");
+                        } else {
+                            Messages.error("deleteFailure");
+                        }
+                        break;
+                    default:
+                        logger.warn("Unknown action: {}", dirtyUserRoles.get(userRole));
+                }
+
+            }
+        } finally {
+            resetDirtyUserRolesAction();
+        }
     }
 
     // LicenseType
@@ -1064,7 +1120,7 @@ public class AdminBean implements Serializable {
         logger.trace("saveCommentAction");
         if (comment.getId() != null) {
             // Set updated timestamp
-            comment.setDateUpdated(new Date());
+            comment.setDateUpdated(LocalDateTime.now());
             logger.trace(comment.getText());
             if (DataManager.getInstance().getDao().updateComment(comment)) {
                 Messages.info("updatedSuccessfully");
@@ -1688,7 +1744,7 @@ public class AdminBean implements Serializable {
         Collections.sort(accessConditions);
         return accessConditions;
     }
-    
+
     /**
      * 
      * @return List of access condition values that have no corresponding license type in the database

@@ -26,15 +26,13 @@ import org.junit.Test;
 
 import io.goobi.viewer.AbstractDatabaseAndSolrEnabledTest;
 import io.goobi.viewer.controller.SolrConstants;
-import io.goobi.viewer.managedbeans.NavigationHelper;
-import io.goobi.viewer.managedbeans.SearchBean;
 import io.goobi.viewer.model.search.AdvancedSearchFieldConfiguration;
 import io.goobi.viewer.model.search.Search;
 import io.goobi.viewer.model.search.SearchFacets;
 import io.goobi.viewer.model.search.SearchHelper;
 import io.goobi.viewer.model.search.SearchQueryGroup;
-import io.goobi.viewer.model.search.SearchQueryItem;
 import io.goobi.viewer.model.search.SearchQueryGroup.SearchQueryGroupOperator;
+import io.goobi.viewer.model.search.SearchQueryItem;
 import io.goobi.viewer.model.search.SearchQueryItem.SearchItemOperator;
 
 public class SearchBeanTest extends AbstractDatabaseAndSolrEnabledTest {
@@ -337,8 +335,8 @@ public class SearchBeanTest extends AbstractDatabaseAndSolrEnabledTest {
     @Test
     public void increaseCurrentHitIndex_shouldIncreaseIndexCorrectly() throws Exception {
         SearchBean sb = new SearchBean();
-        sb.currentSearch = new Search();
-        sb.currentSearch.setHitsCount(10);
+        sb.setCurrentSearch(new Search());
+        sb.getCurrentSearch().setHitsCount(10);
 
         // Regular case
         sb.setHitIndexOperand(1);
@@ -366,8 +364,8 @@ public class SearchBeanTest extends AbstractDatabaseAndSolrEnabledTest {
     @Test
     public void increaseCurrentHitIndex_shouldDecreaseIndexCorrectly() throws Exception {
         SearchBean sb = new SearchBean();
-        sb.currentSearch = new Search();
-        sb.currentSearch.setHitsCount(10);
+        sb.setCurrentSearch(new Search());
+        sb.getCurrentSearch().setHitsCount(10);
 
         // Regular case
         sb.setHitIndexOperand(-1);
@@ -395,8 +393,8 @@ public class SearchBeanTest extends AbstractDatabaseAndSolrEnabledTest {
     @Test
     public void increaseCurrentHitIndex_shouldResetOperandAfterwards() throws Exception {
         SearchBean sb = new SearchBean();
-        sb.currentSearch = new Search();
-        sb.currentSearch.setHitsCount(10);
+        sb.setCurrentSearch(new Search());
+        sb.getCurrentSearch().setHitsCount(10);
 
         sb.setHitIndexOperand(1);
         sb.currentHitIndex = 6;
@@ -412,8 +410,8 @@ public class SearchBeanTest extends AbstractDatabaseAndSolrEnabledTest {
     @Test
     public void increaseCurrentHitIndex_shouldDoNothingIfHitIndexAtTheLastHit() throws Exception {
         SearchBean sb = new SearchBean();
-        sb.currentSearch = new Search();
-        sb.currentSearch.setHitsCount(10);
+        sb.setCurrentSearch(new Search());
+        sb.getCurrentSearch().setHitsCount(10);
         sb.setHitIndexOperand(1);
         sb.currentHitIndex = 9;
 
@@ -428,8 +426,8 @@ public class SearchBeanTest extends AbstractDatabaseAndSolrEnabledTest {
     @Test
     public void increaseCurrentHitIndex_shouldDoNothingIfHitIndexAt0() throws Exception {
         SearchBean sb = new SearchBean();
-        sb.currentSearch = new Search();
-        sb.currentSearch.setHitsCount(10);
+        sb.setCurrentSearch(new Search());
+        sb.getCurrentSearch().setHitsCount(10);
         sb.setHitIndexOperand(-1);
         sb.currentHitIndex = 0;
 

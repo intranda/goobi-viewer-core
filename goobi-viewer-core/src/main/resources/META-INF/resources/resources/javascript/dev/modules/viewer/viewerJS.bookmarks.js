@@ -208,7 +208,7 @@ var viewerJS = ( function( viewer ) {
                 if($button.length == 0) {
                     return;
                 }
-                $button.css("visibility", "visible");
+                $button.css("display", "flex");
                 var buttonPosition = $button.offset();
                 var buttonSize = {
                         width: $button.width(),
@@ -240,7 +240,7 @@ var viewerJS = ( function( viewer ) {
                     return;
                 }
                 $button.off("click");
-                $button.css("visibility", "hidden");
+                $button.css("display", "none");
                 if(this.sessionBookmarkDropdown) {
                     this.sessionBookmarkDropdown.forEach(component => {
                         component.unmount();

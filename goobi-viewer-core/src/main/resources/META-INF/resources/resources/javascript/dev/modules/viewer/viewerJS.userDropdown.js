@@ -49,7 +49,6 @@ var viewerJS = ( function( viewer ) {
                 // hide bookmarkdropdow if exist and hide language dropdown panel
                 if ( _bookshelfDropdown ) {
                     $( '.bookmark-navigation__dropdown' ).hide();
-                    $( '.change-local' ).hide();
                     $( '.bookmark-popup' ).remove();
                 }
                 // hide collection panel if exist

@@ -56,7 +56,6 @@ var viewerJS = ( function ( viewer ) {
                 $( '.btn-toggle.search' ).removeClass( 'in' );
                 $( '.header-actions__search' ).hide();
                 $( '.btn-toggle.language' ).removeClass( 'in' );
-                $( '#changeLocal' ).hide();
                 $( '#mobileNav' ).slideToggle( 'fast' );
             } );
             $( '[data-toggle="mobile-image-controls"]' ).on( 'click', function() {

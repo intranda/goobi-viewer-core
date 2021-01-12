@@ -16,8 +16,8 @@
 package io.goobi.viewer.model.crowdsourcing.campaigns;
 
 import java.io.Serializable;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 import javax.persistence.Column;
@@ -33,8 +33,6 @@ import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
-import javax.persistence.Temporal;
-import javax.persistence.TemporalType;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -92,15 +90,13 @@ public class CampaignRecordStatistic implements Serializable {
     @Column(name = "campaign_record_statistic_id")
     private Long id;
 
-    @Temporal(TemporalType.TIMESTAMP)
-    @Column(name = "date_created", nullable = false)
+    @Column(name = "date_created", columnDefinition = "TIMESTAMP", nullable = false)
     @JsonIgnore
-    private Date dateCreated;
+    private LocalDateTime dateCreated;
 
-    @Temporal(TemporalType.TIMESTAMP)
-    @Column(name = "date_updated")
+    @Column(name = "date_updated", columnDefinition = "TIMESTAMP")
     @JsonIgnore
-    private Date dateUpdated;
+    private LocalDateTime dateUpdated;
 
     @ManyToOne
     @JoinColumn(name = "owner_id", nullable = false)
@@ -193,7 +189,7 @@ public class CampaignRecordStatistic implements Serializable {
      *
      * @return the dateCreated
      */
-    public Date getDateCreated() {
+    public LocalDateTime getDateCreated() {
         return dateCreated;
     }
 
@@ -204,7 +200,7 @@ public class CampaignRecordStatistic implements Serializable {
      *
      * @param dateCreated the dateCreated to set
      */
-    public void setDateCreated(Date dateCreated) {
+    public void setDateCreated(LocalDateTime dateCreated) {
         this.dateCreated = dateCreated;
     }
 
@@ -215,7 +211,7 @@ public class CampaignRecordStatistic implements Serializable {
      *
      * @return the dateUpdated
      */
-    public Date getDateUpdated() {
+    public LocalDateTime getDateUpdated() {
         return dateUpdated;
     }
 
@@ -226,7 +222,7 @@ public class CampaignRecordStatistic implements Serializable {
      *
      * @param dateUpdated the dateUpdated to set
      */
-    public void setDateUpdated(Date dateUpdated) {
+    public void setDateUpdated(LocalDateTime dateUpdated) {
         this.dateUpdated = dateUpdated;
     }
 

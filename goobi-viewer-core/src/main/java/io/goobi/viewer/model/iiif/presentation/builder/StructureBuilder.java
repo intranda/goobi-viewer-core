@@ -15,6 +15,10 @@
  */
 package io.goobi.viewer.model.iiif.presentation.builder;
 
+import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_ALTO;
+import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_PLAINTEXT;
+import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_RECORD;
+
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
@@ -28,6 +32,7 @@ import org.slf4j.LoggerFactory;
 
 import de.intranda.api.iiif.IIIFUrlResolver;
 import de.intranda.api.iiif.image.ImageInformation;
+import de.intranda.api.iiif.presentation.AbstractPresentationModelElement;
 import de.intranda.api.iiif.presentation.Canvas;
 import de.intranda.api.iiif.presentation.Range;
 import de.intranda.api.iiif.presentation.content.ImageContent;
@@ -46,6 +51,7 @@ import io.goobi.viewer.exceptions.ViewerConfigurationException;
 import io.goobi.viewer.managedbeans.ImageDeliveryBean;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.messages.ViewerResourceBundle;
+import io.goobi.viewer.model.iiif.presentation.builder.LinkingProperty.LinkingTarget;
 import io.goobi.viewer.model.viewer.PageType;
 import io.goobi.viewer.model.viewer.StructElement;
 
@@ -101,7 +107,7 @@ public class StructureBuilder extends AbstractBuilder {
                 range.setUseMembers(useMembers);
                 idMap.put(Long.toString(structElement.getLuceneId()), structElement.getLogid());
                 if (structElement.isWork()) {
-                    IMetadataValue label = ViewerResourceBundle.getTranslations(BASE_RANGE_LABEL);
+                    IMetadataValue label = getLabel(BASE_RANGE_LABEL);
                     range.setLabel(label);
                     range.addViewingHint(ViewingHint.top);
                 } else {
@@ -169,27 +175,49 @@ public class StructureBuilder extends AbstractBuilder {
             logger.warn("Unable to retrieve thumbnail url", e);
         }
 
-        /*VIEWER*/
-        try {
-            String url = DataManager.getInstance().getUrlBuilder().buildPageUrl(pi, ele.getImageNumber(), ele.getLogid(), PageType.viewObject);
-            LinkingContent viewerPage = new LinkingContent(new URI(url));
-            viewerPage.setLabel(new SimpleMetadataValue("goobi viewer"));
-            range.addRendering(viewerPage);
-        } catch (URISyntaxException e) {
-            logger.error("Unable to retrieve viewer url for {}", ele);
-        }
+        
+        
+        addRenderings(range, ele);
 
-        /*PDF*/
-        try {
-            String pdfDownloadUrl = imageDelivery.getPdf().getPdfUrl(ele, pi, range.getLabel().getValue().orElse(null));
-            LinkingContent pdfDownload = new LinkingContent(new URI(pdfDownloadUrl));
-            pdfDownload.setFormat(Format.APPLICATION_PDF);
-            pdfDownload.setLabel(new SimpleMetadataValue("PDF"));
-            range.addRendering(pdfDownload);
-        } catch (URISyntaxException e) {
-            logger.error("Unable to retrieve pdf download url for {}", ele);
-        }
+    }
+    
+    /**
+     * @param page
+     * @param canvas
+     * @throws URISyntaxException
+     */
+    public void addRenderings(AbstractPresentationModelElement range, StructElement ele) {
+        
+        this.getRenderings().forEach(link -> {
+            try {
+                URI id = getLinkingPropertyUri(ele, link.target);
+                if(id != null) {                    
+                    range.addRendering(link.getLinkingContent(id));
+                }
+            } catch (URISyntaxException | PresentationException | IndexUnreachableException e) {
+                logger.error("Error building linking property url", e);
+            }
+        });
+    }
+    
+    private URI getLinkingPropertyUri(StructElement ele, LinkingTarget target) throws URISyntaxException, PresentationException, IndexUnreachableException {
 
+        if(target.equals(LinkingTarget.PDF) && !ele.getTopStruct().isHasImages()) {
+            return null;
+        }
+        
+        URI uri = null;
+        switch(target) {
+            case VIEWER:
+                String applicationUrl = this.urls.getApplicationUrl();
+                String pageUrl = ele.getUrl();
+                uri = URI.create(applicationUrl + pageUrl);
+                break;
+            case PDF:
+                String pdfDownloadUrl = imageDelivery.getPdf().getPdfUrl(ele, ele.getPi(), ele.getLabel());
+                uri = URI.create(pdfDownloadUrl);
+        }
+        return uri;
     }
 
     /**

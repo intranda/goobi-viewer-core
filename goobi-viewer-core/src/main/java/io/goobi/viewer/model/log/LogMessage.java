@@ -16,16 +16,13 @@
 package io.goobi.viewer.model.log;
 
 import java.io.Serializable;
-import java.util.Date;
+import java.time.LocalDateTime;
 
 import javax.persistence.Column;
-import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.MappedSuperclass;
-import javax.persistence.Temporal;
-import javax.persistence.TemporalType;
 import javax.persistence.Transient;
 import javax.servlet.http.HttpServletRequest;
 
@@ -50,63 +47,60 @@ public class LogMessage implements Serializable, Comparable<LogMessage> {
     private static final Logger logger = LoggerFactory.getLogger(LogMessage.class);
     private static final long serialVersionUID = -7884550362212875027L;
     /**
-     * Constant for creator meaning that no creator was set 
+     * Constant for creator meaning that no creator was set
      */
     private static final UserJsonFacade UNASSIGNED = new UserJsonFacade("unknown");
     /**
      * Constant for creator meaning the creator could not be found in the database
      */
     private static final UserJsonFacade ANONYMOUS = new UserJsonFacade("anonymous");
-    
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "message_id")
     private Long id;
-    
+
     @Column(name = "creator_id", nullable = true)
     private Long creatorId;
-    
-    @Temporal(TemporalType.TIMESTAMP)
-    @Column(name = "date_created")
-    private Date dateCreated;
-    
+
+    @Column(name = "date_created", columnDefinition = "TIMESTAMP")
+    private LocalDateTime dateCreated;
+
     @Column(name = "message", nullable = true, columnDefinition = "LONGTEXT")
     private String message;
-    
+
     @Transient
     private UserJsonFacade creator = UNASSIGNED;
-    
-    
+
     public LogMessage(String message, Long creatorId, HttpServletRequest request) {
         this.message = message;
         this.creatorId = creatorId;
-        this.dateCreated = new Date();
+        this.dateCreated = LocalDateTime.now();
         this.loadCreator(request);
     }
-    
-    public LogMessage(String message, Long creatorId, Date dateCreated, HttpServletRequest request) {
+
+    public LogMessage(String message, Long creatorId, LocalDateTime dateCreated, HttpServletRequest request) {
         this(message, creatorId, request);
         this.dateCreated = dateCreated;
     }
-    
+
     public LogMessage(LogMessage source, HttpServletRequest request) {
         this.message = source.message;
         this.creatorId = source.creatorId;
         this.dateCreated = source.dateCreated;
         this.creator = source.creator;
-        if(creator == UNASSIGNED) {
+        if (creator == UNASSIGNED) {
             this.loadCreator(request);
         }
-        if(this.creatorId == null && this.creator.userId != null) {
+        if (this.creatorId == null && this.creator.userId != null) {
             this.creatorId = this.creator.userId;
         }
         this.id = source.id;
     }
-    
+
     public LogMessage(LogMessage source) {
         this(source, null);
     }
-
 
     public LogMessage() {
     }
@@ -118,8 +112,6 @@ public class LogMessage implements Serializable, Comparable<LogMessage> {
         return id;
     }
 
-
-
     /**
      * @return the creatorId
      */
@@ -128,17 +120,13 @@ public class LogMessage implements Serializable, Comparable<LogMessage> {
         return creatorId;
     }
 
-
-
     /**
      * @return the dateCreated
      */
-    @JsonFormat(shape = JsonFormat.Shape.STRING)    
-    public Date getDateCreated() {
+    @JsonFormat(shape = JsonFormat.Shape.STRING)
+    public LocalDateTime getDateCreated() {
         return dateCreated;
     }
-
-
 
     /**
      * @return the message
@@ -147,8 +135,6 @@ public class LogMessage implements Serializable, Comparable<LogMessage> {
         return message;
     }
 
-
-
     /**
      * @return the creator
      */
@@ -156,22 +142,19 @@ public class LogMessage implements Serializable, Comparable<LogMessage> {
         return creator;
     }
 
-
-
     /**
-     * Set the value of {@link #creator} from the value of {@link #creatorId}. If creatorId is null or an exception occurs while retrieving
-     * the user data, the creator is set to {@link #UNASSIGNED}. If no creator could be found by the given id, the creator is set 
-     * to {@link #ANONYMOUS}
-     * A {@link HttpServletRequest request} may be passed to create an absolute URL for the creator avatar
+     * Set the value of {@link #creator} from the value of {@link #creatorId}. If creatorId is null or an exception occurs while retrieving the user
+     * data, the creator is set to {@link #UNASSIGNED}. If no creator could be found by the given id, the creator is set to {@link #ANONYMOUS} A
+     * {@link HttpServletRequest request} may be passed to create an absolute URL for the creator avatar
      */
     private void loadCreator(HttpServletRequest request) {
-        if(this.creatorId == null) {
+        if (this.creatorId == null) {
             this.creator = UNASSIGNED;
-        } else {            
+        } else {
             try {
                 User user = DataManager.getInstance().getDao().getUser(this.creatorId);
                 this.creator = new UserJsonFacade(user, request);
-                if(this.creator == null) {
+                if (this.creator == null) {
                     this.creator = ANONYMOUS;
                 }
             } catch (DAOException e) {
@@ -188,14 +171,13 @@ public class LogMessage implements Serializable, Comparable<LogMessage> {
     public int compareTo(LogMessage o) {
         return this.dateCreated.compareTo(o.dateCreated);
     }
-    
+
     /* (non-Javadoc)
      * @see java.lang.Object#toString()
      */
     @Override
     public String toString() {
-        return this.message + " (" + (this.creator == null ? ("ID:" + this.creatorId) : this.creator.name)  + " - " + this.dateCreated;
+        return this.message + " (" + (this.creator == null ? ("ID:" + this.creatorId) : this.creator.name) + " - " + this.dateCreated;
     }
-    
-    
+
 }

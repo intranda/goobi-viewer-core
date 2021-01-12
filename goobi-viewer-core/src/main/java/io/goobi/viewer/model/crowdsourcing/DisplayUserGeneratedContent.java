@@ -18,8 +18,8 @@ package io.goobi.viewer.model.crowdsourcing;
 import java.nio.file.Paths;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
+import java.time.LocalDateTime;
 import java.util.Comparator;
-import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -100,7 +100,7 @@ public class DisplayUserGeneratedContent {
 
     private User updatedBy;
 
-    private Date dateUpdated;
+    private LocalDateTime dateUpdated;
 
     private String accessCondition;
 
@@ -275,7 +275,7 @@ public class DisplayUserGeneratedContent {
      *
      * @return the dateUpdated
      */
-    public Date getDateUpdated() {
+    public LocalDateTime getDateUpdated() {
         return dateUpdated;
     }
 
@@ -314,7 +314,7 @@ public class DisplayUserGeneratedContent {
      *
      * @param dateUpdated the dateUpdated to set
      */
-    public void setDateUpdated(Date dateUpdated) {
+    public void setDateUpdated(LocalDateTime dateUpdated) {
         this.dateUpdated = dateUpdated;
     }
 

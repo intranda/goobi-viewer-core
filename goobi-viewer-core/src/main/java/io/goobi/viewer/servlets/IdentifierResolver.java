@@ -38,6 +38,7 @@ import io.goobi.viewer.controller.SolrSearchIndex;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
+import io.goobi.viewer.exceptions.RecordNotFoundException;
 import io.goobi.viewer.faces.validators.PIValidator;
 import io.goobi.viewer.managedbeans.NavigationHelper;
 import io.goobi.viewer.managedbeans.SearchBean;
@@ -236,7 +237,13 @@ public class IdentifierResolver extends HttpServlet {
             }
 
             // If the user has no listing privilege for this record, act as if it does not exist
-            boolean access = AccessConditionUtils.checkAccessPermissionByIdentifierAndLogId(pi, null, IPrivilegeHolder.PRIV_LIST, request);
+            boolean access;
+            try {
+                access = AccessConditionUtils.checkAccessPermissionByIdentifierAndLogId(pi, null, IPrivilegeHolder.PRIV_LIST, request);
+            } catch (RecordNotFoundException e) {
+                redirectToError(HttpServletResponse.SC_NOT_FOUND, fieldValue, request, response);
+                return;
+            }
             if (!access) {
                 logger.debug("User may not list record '{}'.", pi);
                 redirectToError(HttpServletResponse.SC_NOT_FOUND, fieldValue, request, response);
@@ -349,6 +356,9 @@ public class IdentifierResolver extends HttpServlet {
         } catch (DAOException e) {
             logger.debug("DAOException thrown here: {}", e.getMessage());
             response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, e.getMessage());
+            return;
+        } catch (RecordNotFoundException e) {
+            redirectToError(HttpServletResponse.SC_NOT_FOUND, fieldValue, request, response);
             return;
         }
         if (!access) {

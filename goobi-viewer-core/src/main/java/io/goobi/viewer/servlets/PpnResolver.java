@@ -34,6 +34,7 @@ import io.goobi.viewer.controller.SolrConstants;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
+import io.goobi.viewer.exceptions.RecordNotFoundException;
 import io.goobi.viewer.faces.validators.PIValidator;
 import io.goobi.viewer.model.search.SearchHelper;
 import io.goobi.viewer.model.security.AccessConditionUtils;
@@ -49,9 +50,8 @@ public class PpnResolver extends HttpServlet implements Serializable {
     private static final Logger logger = LoggerFactory.getLogger(PpnResolver.class);
 
     private static final String REQUEST_PARAM_NAME = "id";
-    
-    private static final String REQUEST_PAGE_PARAM_NAME = "page";
 
+    private static final String REQUEST_PAGE_PARAM_NAME = "page";
 
     // error messages
 
@@ -88,14 +88,14 @@ public class PpnResolver extends HttpServlet implements Serializable {
         }
         Integer page = null;
         String pageString = request.getParameter(REQUEST_PAGE_PARAM_NAME);
-        if(StringUtils.isNotBlank(pageString)) {
+        if (StringUtils.isNotBlank(pageString)) {
             try {
                 page = Integer.parseInt(pageString);
-            } catch(NumberFormatException e) {
+            } catch (NumberFormatException e) {
                 response.sendError(HttpServletResponse.SC_BAD_REQUEST, ERRTXT_ILLEGAL_PAGE_NUMBER + ": " + identifier);
             }
         }
-        
+
         // // 5. redirect or forward using the target field value
         // if (DO_REDIRECT) {
         // response.sendRedirect(result);
@@ -132,7 +132,7 @@ public class PpnResolver extends HttpServlet implements Serializable {
             SolrDocument targetDoc = hits.get(0);
 
             String result;
-            if(page == null)  {
+            if (page == null) {
                 result = IdentifierResolver.constructUrl(targetDoc, false);
             } else {
                 result = IdentifierResolver.constructUrl(targetDoc, false, page);
@@ -153,6 +153,9 @@ public class PpnResolver extends HttpServlet implements Serializable {
         } catch (DAOException e) {
             logger.debug("DAOException thrown here: {}", e.getMessage());
             response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, e.getMessage());
+            return;
+        } catch (RecordNotFoundException e) {
+            response.sendError(HttpServletResponse.SC_NOT_FOUND, ERRTXT_DOC_NOT_FOUND);
             return;
         }
     }
