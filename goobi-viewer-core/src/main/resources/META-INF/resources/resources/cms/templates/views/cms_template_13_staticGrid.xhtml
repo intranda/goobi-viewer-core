@@ -53,6 +53,7 @@
 
                 <script type="text/javascript">
                     $.ajax( {
+                        url: "#{configurationBean.restApiUrlV1}"
                         url: "#{cmsPage.getTileGridUrl('grid')}",
                         type: "GET",
                         datatype: "JSON"
