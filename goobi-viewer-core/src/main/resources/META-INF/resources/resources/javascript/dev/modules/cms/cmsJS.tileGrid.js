@@ -26,7 +26,7 @@ var cmsJS = ( function( cms ) {
     'use strict';
     
     // variables
-    var _debug = false;
+    var _debug = true;
     var _data = null;
     var _tiles = [];
     var _defaults = {

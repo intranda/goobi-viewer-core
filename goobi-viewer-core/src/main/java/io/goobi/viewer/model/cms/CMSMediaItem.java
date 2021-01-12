@@ -775,7 +775,7 @@ public class CMSMediaItem implements BrowseElementInfo, ImageGalleryTile, Compar
         } else if (oTime != null) {
             return 1;
         } else {
-            return 0;
+            return this.getId().compareTo(o.getId());
         }
     }
 

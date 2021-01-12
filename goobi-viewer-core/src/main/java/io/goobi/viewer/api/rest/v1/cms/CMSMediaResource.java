@@ -27,9 +27,12 @@ import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
+import java.util.Random;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -78,6 +81,8 @@ import io.goobi.viewer.model.cms.CMSCategory;
 import io.goobi.viewer.model.cms.CMSMediaItem;
 import io.goobi.viewer.model.cms.CMSMediaItemMetadata;
 import io.goobi.viewer.model.security.user.User;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 
 /**
  * <p>
@@ -97,6 +102,7 @@ public class CMSMediaResource {
     @Context
     protected HttpServletResponse servletResponse;
 
+
     /**
      * <p>
      * getMediaByTag.
@@ -108,8 +114,15 @@ public class CMSMediaResource {
      */
     @GET
     @Produces({ MediaType.APPLICATION_JSON })
+    @Operation(
+            tags= {"media"}, 
+            summary = "Get a list of CMS-Media Items")
+
     public MediaList getAllMedia(
-            @QueryParam("tags") String tags) throws DAOException {
+            @Parameter(description="Comma separated list of tags. Only media items with any of these tags will be included")@QueryParam("tags") String tags,
+            @Parameter(description="Maximum number of items to return")@QueryParam("max") Integer maxItems,
+            @Parameter(description="Number of media items marks as 'high priority' that must be included in the result")@QueryParam("highPriority") Integer highPriorityCount,
+            @Parameter(description="Set to 'true' to return random items for each call. Otherwise the items will be ordererd by their upload date")@QueryParam("random") Boolean random) throws DAOException {
         List<String> tagList = new ArrayList<>();
         if(StringUtils.isNotBlank(tags)) {
             tagList.addAll(Arrays.stream(StringUtils.split(tags, ",")).map(String::toLowerCase).collect(Collectors.toList()));
@@ -121,6 +134,8 @@ public class CMSMediaResource {
                 .filter(
                         item -> tagList.isEmpty() || 
                         item.getCategories().stream().map(CMSCategory::getName).map(String::toLowerCase).anyMatch(c -> tagList.contains(c)))
+                .sorted(new PriorityComparator(highPriorityCount, Boolean.TRUE.equals(random)))
+                .limit(maxItems != null ? maxItems : Integer.MAX_VALUE)
                 .collect(Collectors.toList());
         return new MediaList(items);
     }
@@ -418,4 +433,55 @@ public class CMSMediaResource {
 
     }
 
+    /**
+     * Comparator that sorts as many items marked as high priority to the beginning of the list as are given in the constructor
+     * The remaining items will be sorted randomly if the random parameter is true or else by the {@link CMSMediaItem#compareTo(CMSMediaItem)} 
+     * 
+     * @author florian
+     *
+     */
+    public static class PriorityComparator implements Comparator<CMSMediaItem> {
+
+        private final int prioritySlots;
+        private final boolean random;
+        private final Random randomizer = new Random(System.nanoTime());
+        private final AtomicInteger slotsUsed = new AtomicInteger(0);
+        
+        
+        public PriorityComparator(Integer prioritySlots, boolean random) {
+            this.prioritySlots = prioritySlots == null ? 0 : prioritySlots;
+            this.random = random;
+        }
+        
+        /* (non-Javadoc)
+         * @see java.util.Comparator#compare(java.lang.Object, java.lang.Object)
+         */
+        @Override
+        public int compare(CMSMediaItem a, CMSMediaItem b) {
+            if(slotsUsed.intValue() < prioritySlots) {
+                if(a.isImportant() && !b.isImportant()) {
+                    return -1;
+                } else if(b.isImportant() && !a.isImportant()) {
+                    return 1;
+                } else if(random) {
+                    return getRandomOrder();
+                } else {
+                    return a.compareTo(b);
+                }
+            } else if(random) {
+                return getRandomOrder();
+            } else {
+                return a.compareTo(b);
+            }
+        }
+
+        /**
+         * @return
+         */
+        private int getRandomOrder() {
+            return randomizer.nextBoolean() ? 1 : -1;
+        }
+        
+    }
+    
 }
