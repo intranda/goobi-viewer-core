@@ -26,6 +26,10 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+
 import io.goobi.viewer.AbstractDatabaseAndSolrEnabledTest;
 import io.goobi.viewer.controller.Configuration;
 import io.goobi.viewer.controller.DataManager;
@@ -123,11 +127,12 @@ public class DownloadJobTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     @Test 
-    public void testPutDownloadJobAnswer() {
+    public void testPutDownloadJobAnswer() throws JsonProcessingException {
         String pi = "18979459_1830";
         String logid = "LOG_0004";
-        DownloadJob job = new PDFDownloadJob(pi, logid, LocalDateTime.from(Instant.now()), 1000);
+        DownloadJob job = new PDFDownloadJob(pi, logid, LocalDateTime.now(), 1000);
         job.setMessage("Some message");
         job.getObservers().add("me@he.re");
+        String jobString = new ObjectMapper().registerModule(new JavaTimeModule()).writeValueAsString(job);
     }
 }

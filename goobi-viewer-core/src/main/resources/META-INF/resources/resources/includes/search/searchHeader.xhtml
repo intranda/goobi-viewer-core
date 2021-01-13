@@ -58,8 +58,7 @@
 	        <div class="search-list__adv-search-info">
 	            (
 	            <h:outputText value="#{msg.date}: " escape="false" />
-	            <h:outputText value="#{calendarBean.currentDate}">
-	                <f:convertDateTime type="date" dateStyle="medium" timeStyle="short" />
+	            <h:outputText value="#{calendarBean.currentDateAsString}">
 	            </h:outputText>
 	            )
 	

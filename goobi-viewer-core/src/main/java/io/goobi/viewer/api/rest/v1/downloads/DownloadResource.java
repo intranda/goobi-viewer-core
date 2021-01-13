@@ -44,6 +44,7 @@ import org.slf4j.LoggerFactory;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 
 import de.unigoettingen.sub.commons.contentlib.exceptions.ContentLibException;
 import de.unigoettingen.sub.commons.contentlib.exceptions.ContentNotFoundException;
@@ -593,7 +594,7 @@ public class DownloadResource {
      * @throws JsonProcessingException 
      */
     private String getForwardToDownloadPageResponse(URI downloadPageUrl, DownloadJob job) throws JsonProcessingException {
-        String jobString = new ObjectMapper().writeValueAsString(job);
+        String jobString = new ObjectMapper().registerModule(new JavaTimeModule()).writeValueAsString(job);
         JSONObject jobJson = new JSONObject(jobString);
         JSONObject object = new JSONObject();
         object.put("url", downloadPageUrl);

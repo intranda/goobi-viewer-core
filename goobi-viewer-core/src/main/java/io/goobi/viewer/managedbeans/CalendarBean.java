@@ -19,6 +19,8 @@ import java.io.Serializable;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.time.format.FormatStyle;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -44,6 +46,7 @@ import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.exceptions.ViewerConfigurationException;
+import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.messages.ViewerResourceBundle;
 import io.goobi.viewer.model.calendar.CalendarItemDay;
 import io.goobi.viewer.model.calendar.CalendarItemMonth;
@@ -572,6 +575,13 @@ public class CalendarBean implements Serializable {
         }
 
         return ldt;
+    }
+    
+    public String getCurrentDateAsString() {
+        LocalDateTime ldt = getCurrentDate();
+        DateTimeFormatter formatter = DateTimeFormatter.ofLocalizedDate(FormatStyle.LONG).withLocale(BeanUtils.getLocale());
+        return ldt.format(formatter);
+        
     }
 
     /**
