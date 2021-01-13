@@ -81,7 +81,8 @@ import io.goobi.viewer.model.cms.itemfunctionality.SearchFunctionality;
 import io.goobi.viewer.model.glossary.GlossaryManager;
 import io.goobi.viewer.model.misc.Harvestable;
 import io.goobi.viewer.model.viewer.CollectionView;
-import io.goobi.viewer.servlets.rest.dao.TileGridResource;
+
+import static io.goobi.viewer.api.rest.v1.ApiUrls.*;
 
 /**
  * <p>
@@ -1431,17 +1432,28 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable {
             item = null;
         }
         if (item != null && item.getType().equals(CMSContentItemType.TILEGRID)) {
-            StringBuilder sb = new StringBuilder(BeanUtils.getServletPathWithHostAsUrlFromJsfContext());
-            sb.append("/rest/tilegrid/")
-                    .append(CmsBean.getCurrentLocale().getLanguage())
-                    .append("/")
-                    .append(item.getNumberOfTiles())
-                    .append("/")
-                    .append(item.getNumberOfImportantTiles())
-                    .append("/")
-                    .append(item.getCategories().stream().map(CMSCategory::getName).collect(Collectors.joining(TileGridResource.TAG_SEPARATOR)))
-                    .append("/");
-            return sb.toString();
+            
+            String tags = item.getCategories().stream().map(CMSCategory::getName).collect(Collectors.joining(","));
+            
+            String url = DataManager.getInstance().getRestApiManager().getDataApiManager().path(CMS_MEDIA)
+            .query("tags", tags)
+            .query("max", item.getNumberOfTiles())
+            .query("prioritySlots", item.getNumberOfImportantTiles())
+            .query("random", "true").build();
+                
+            return url;
+            
+//            StringBuilder sb = new StringBuilder(BeanUtils.getServletPathWithHostAsUrlFromJsfContext());
+//            sb.append("/rest/tilegrid/")
+//                    .append(CmsBean.getCurrentLocale().getLanguage())
+//                    .append("/")
+//                    .append(item.getNumberOfTiles())
+//                    .append("/")
+//                    .append(item.getNumberOfImportantTiles())
+//                    .append("/")
+//                    .append(item.getCategories().stream().map(CMSCategory::getName).collect(Collectors.joining(TileGridResource.TAG_SEPARATOR)))
+//                    .append("/");
+//            return sb.toString();
         }
         throw new IllegalRequestException("No tile grid item with id '" + itemId + "' found");
     }

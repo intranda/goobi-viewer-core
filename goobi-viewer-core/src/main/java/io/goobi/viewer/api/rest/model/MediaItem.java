@@ -29,7 +29,11 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
 import de.intranda.api.iiif.IIIFUrlResolver;
 import de.intranda.api.iiif.image.ImageInformation;
+import de.intranda.api.iiif.presentation.content.IContent;
 import de.intranda.api.iiif.presentation.content.ImageContent;
+import de.intranda.api.iiif.presentation.content.LinkingContent;
+import de.intranda.api.iiif.presentation.enums.DcType;
+import de.intranda.api.iiif.presentation.enums.Format;
 import de.intranda.api.serializer.MetadataSerializer;
 import de.intranda.metadata.multilanguage.IMetadataValue;
 import de.intranda.metadata.multilanguage.SimpleMetadataValue;
@@ -49,9 +53,10 @@ public class MediaItem {
     private final IMetadataValue label;
     @JsonSerialize(using = MetadataSerializer.class)
     private final IMetadataValue description;
-    private final ImageContent image;
+    private final IContent image;
     private final String link;
     private final List<String> tags;
+    private final boolean important;
 
     public MediaItem(URI imageURI) {
         this.image = new ImageContent(imageURI);
@@ -60,19 +65,33 @@ public class MediaItem {
         this.label = new SimpleMetadataValue(PathConverter.getPath(imageURI).getFileName().toString());
         this.description = null;
         this.id = null;
+        this.important = false;
     }
     
     public MediaItem(CMSMediaItem source, HttpServletRequest servletRequest) {
         this.label = source.getTranslationsForName();
         this.description = source.getTranslationsForDescription();
-        this.image = new ImageContent(source.getIconURI());
-        if (IIIFUrlResolver.isIIIFImageUrl(source.getIconURI().toString())) {
-            URI imageInfoURI = URI.create(IIIFUrlResolver.getIIIFImageBaseUrl(source.getIconURI().toString()));
-            this.image.setService(new ImageInformation(imageInfoURI.toString()));
-        }
+        this.image = getMediaResource(source);
         this.link = Optional.ofNullable(source.getLinkURI(servletRequest)).map(URI::toString).orElse("#");
         this.tags = source.getCategories().stream().map(CMSCategory::getName).collect(Collectors.toList());
         this.id = source.getId();
+        this.important = source.isImportant();
+    }
+
+    /**
+     * @param source
+     * @return 
+     */
+    public IContent getMediaResource(CMSMediaItem source) {
+        
+        ImageContent image = new ImageContent(source.getIconURI());
+        image.setFormat(Format.fromFilename(source.getFileName()));
+        if (IIIFUrlResolver.isIIIFImageUrl(source.getIconURI().toString())) {
+            URI imageInfoURI = URI.create(IIIFUrlResolver.getIIIFImageBaseUrl(source.getIconURI().toString()));
+            image.setService(new ImageInformation(imageInfoURI.toString()));
+        }
+        return image;
+        
     }
 
     
@@ -100,7 +119,7 @@ public class MediaItem {
     /**
      * @return the image
      */
-    public ImageContent getImage() {
+    public IContent getImage() {
         return image;
     }
 
@@ -120,5 +139,11 @@ public class MediaItem {
         return tags;
     }
 
+    /**
+     * @return the important
+     */
+    public boolean isImportant() {
+        return important;
+    }
 
 }

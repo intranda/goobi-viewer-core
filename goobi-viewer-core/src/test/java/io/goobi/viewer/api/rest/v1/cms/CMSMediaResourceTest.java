@@ -129,13 +129,32 @@ public class CMSMediaResourceTest extends AbstractDatabaseEnabledTest {
     }
     
     @Test
-    public void testGetPriorityItems() throws DAOException {
+    public void testGet2PriorityItems() throws DAOException {
         MediaList list = resource.getAllMedia("unitTest", 2, 2, false);
-        String index1 = "" + numItems / 2;
-        String index2 = "" + numItems;
-        assertTrue(list.getMediaItems().stream().anyMatch(item -> getLabel(item).equals(index1)));
-        assertTrue(list.getMediaItems().stream().anyMatch(item -> getLabel(item).equals(index2)));
+        assertEquals(2, list.getMediaItems().stream().filter(MediaItem::isImportant).count());
 
+    }
+    
+    @Test
+    public void testGet1PriorityItem() throws DAOException {
+        MediaList list = resource.getAllMedia("unitTest", 2, 1, false);
+        assertEquals(1, list.getMediaItems().stream().filter(MediaItem::isImportant).count());
+    }
+    
+    @Test
+    public void testDisplayOrder() throws DAOException {
+        CMSMediaItem item1 = DataManager.getInstance().getDao().getCMSMediaItemByFilename("3.jpg");
+        CMSMediaItem item2 = DataManager.getInstance().getDao().getCMSMediaItemByFilename("7.jpg");
+        item1.setDisplayOrder(2);
+        item2.setDisplayOrder(1);
+        DataManager.getInstance().getDao().updateCMSMediaItem(item1);
+        DataManager.getInstance().getDao().updateCMSMediaItem(item2);
+        
+        MediaList list = resource.getAllMedia("unitTest", 4, 0, true);
+        
+        assertEquals(item1.getId(), list.getMediaItems().get(1).getId());
+        assertEquals(item2.getId(), list.getMediaItems().get(0).getId());
+        
     }
     
     /**
@@ -146,10 +165,6 @@ public class CMSMediaResourceTest extends AbstractDatabaseEnabledTest {
     private String getLabel(MediaList list, int index) {
         return list.getMediaItems().get(index).getLabel().getValue("en").orElse("");
     }
-    
-    private String getLabel(MediaItem item) {
-        return item.getLabel().getValue("en").orElse("");
-    }
-    
+
 
 }

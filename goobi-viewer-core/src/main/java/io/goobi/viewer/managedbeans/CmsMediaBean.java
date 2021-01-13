@@ -643,17 +643,6 @@ public class CmsMediaBean implements Serializable {
         return DataManager.getInstance().getDao().getAllCategories();
     }
 
-    /**
-     * <p>
-     * getMediaItemDisplaySizes.
-     * </p>
-     *
-     * @return a {@link java.util.Collection} object.
-     */
-    public Collection<CMSMediaItem.DisplaySize> getMediaItemDisplaySizes() {
-        Set<CMSMediaItem.DisplaySize> sizes = EnumSet.allOf(CMSMediaItem.DisplaySize.class);
-        return sizes;
-    }
 
     /**
      * <p>

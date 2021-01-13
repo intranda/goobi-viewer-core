@@ -121,7 +121,7 @@ public class CMSMediaResource {
     public MediaList getAllMedia(
             @Parameter(description="Comma separated list of tags. Only media items with any of these tags will be included")@QueryParam("tags") String tags,
             @Parameter(description="Maximum number of items to return")@QueryParam("max") Integer maxItems,
-            @Parameter(description="Number of media items marks as 'high priority' that must be included in the result")@QueryParam("highPriority") Integer highPriorityCount,
+            @Parameter(description="Number of media items marks as 'important' that must be included in the result")@QueryParam("prioritySlots") Integer prioritySlots,
             @Parameter(description="Set to 'true' to return random items for each call. Otherwise the items will be ordererd by their upload date")@QueryParam("random") Boolean random) throws DAOException {
         List<String> tagList = new ArrayList<>();
         if(StringUtils.isNotBlank(tags)) {
@@ -134,8 +134,9 @@ public class CMSMediaResource {
                 .filter(
                         item -> tagList.isEmpty() || 
                         item.getCategories().stream().map(CMSCategory::getName).map(String::toLowerCase).anyMatch(c -> tagList.contains(c)))
-                .sorted(new PriorityComparator(highPriorityCount, Boolean.TRUE.equals(random)))
+                .sorted(new PriorityComparator(prioritySlots, Boolean.TRUE.equals(random)))
                 .limit(maxItems != null ? maxItems : Integer.MAX_VALUE)
+                .sorted(new PriorityComparator(0, Boolean.TRUE.equals(random)))
                 .collect(Collectors.toList());
         return new MediaList(items);
     }
@@ -445,7 +446,7 @@ public class CMSMediaResource {
         private final int prioritySlots;
         private final boolean random;
         private final Random randomizer = new Random(System.nanoTime());
-        private final AtomicInteger slotsUsed = new AtomicInteger(0);
+        private final List<CMSMediaItem> priorityList = new ArrayList<>();
         
         
         public PriorityComparator(Integer prioritySlots, boolean random) {
@@ -458,20 +459,31 @@ public class CMSMediaResource {
          */
         @Override
         public int compare(CMSMediaItem a, CMSMediaItem b) {
-            if(slotsUsed.intValue() < prioritySlots) {
-                if(a.isImportant() && !b.isImportant()) {
+            maybeAddToPriorityList(a);
+            maybeAddToPriorityList(b);
+                if(priorityList.contains(a) && !priorityList.contains(b)) {
                     return -1;
-                } else if(b.isImportant() && !a.isImportant()) {
+                } else if(priorityList.contains(b) && !priorityList.contains(a)) {
+                    return 1;
+                } else if(a.getDisplayOrder() != 0 && b.getDisplayOrder() != 0) {
+                    return Integer.compare(a.getDisplayOrder(), b.getDisplayOrder());
+                } else if(a.getDisplayOrder() != 0) {
+                    return -1;
+                } else if(b.getDisplayOrder() != 0) {
                     return 1;
                 } else if(random) {
                     return getRandomOrder();
                 } else {
                     return a.compareTo(b);
                 }
-            } else if(random) {
-                return getRandomOrder();
-            } else {
-                return a.compareTo(b);
+        }
+
+        /**
+         * @param b
+         */
+        private void maybeAddToPriorityList(CMSMediaItem item) {
+            if(item.isImportant() && priorityList.size() < prioritySlots && !priorityList.contains(item)) {
+                priorityList.add(item);
             }
         }
 

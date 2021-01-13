@@ -66,7 +66,8 @@
 						datatype : "JSON"
 					}).then( function( data ) {
 						var masonryConfig = {
-								$grid : $(".grid")
+								$grid : $(".grid"),
+								language: currentLang
 						};
 
 						cmsJS.masonry.init( masonryConfig, data);
