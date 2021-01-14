@@ -49,7 +49,7 @@
 				
 				<script type="text/javascript">
                     $.ajax( {
-                        url: "#{request.contextPath}/rest/rss/#{navigationHelper.localeString}/-/#{cmsPage.getContentItem('rss').elementsPerPage}/",
+                        url: "#{navigationHelper.applicationUrl}api/v1/records/rss/channel.json?max=#{cmsPage.getContentItem('rss').elementsPerPage}&amp;lang=#{navigationHelper.localeString}",
                         type: "GET",
                         datatype: "JSON"
                     } ).then( function( data ) {
