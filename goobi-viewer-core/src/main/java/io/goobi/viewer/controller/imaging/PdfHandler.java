@@ -26,11 +26,14 @@ import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
 
+import com.google.common.net.UrlEscapers;
+
 import io.goobi.viewer.api.rest.AbstractApiUrlManager;
 import io.goobi.viewer.api.rest.v1.ApiUrls;
 import io.goobi.viewer.controller.Configuration;
 import io.goobi.viewer.controller.DataFileTools;
 import io.goobi.viewer.controller.SolrConstants;
+import io.goobi.viewer.controller.StringTools;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.model.viewer.PhysicalElement;
@@ -100,7 +103,10 @@ public class PdfHandler {
     public String getPdfUrl(StructElement se, PhysicalElement[] pages) {
         final UrlParameterSeparator paramSep = new UrlParameterSeparator();
         StringBuilder sb = new StringBuilder();
-        String filenames = Arrays.stream(pages).map(page -> page.getFileName()).collect(Collectors.joining("$"));
+        String filenames = Arrays.stream(pages)
+                .map(page -> page.getFileName())
+                .map(this::escapeURI)
+                .collect(Collectors.joining("$"));
         if (this.urls != null) {
             sb.append(urls.path(ApiUrls.RECORDS_FILES, ApiUrls.RECORDS_FILES_PDF).params(pages[0].getPi(), filenames).build());
         } else {
@@ -141,6 +147,15 @@ public class PdfHandler {
         }
 
         return sb.toString();
+    }
+    
+    private String escapeURI(String uri) {
+        try {
+            // logger.trace("Encoding param: {}", replacement);
+            return URLEncoder.encode(uri, StringTools.DEFAULT_ENCODING);
+        } catch (UnsupportedEncodingException e) {
+            return uri;
+        }
     }
 
     /**
