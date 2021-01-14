@@ -104,6 +104,14 @@ public class ApiUrls extends AbstractApiUrlManager {
     public static final String RECORDS_FILES_IMAGE_INFO = "/info.json";
     public static final String RECORDS_FILES_IMAGE_IIIF = "/{region}/{size}/{rotation}/{quality}.{format}";
 
+    public static final String RECORDS_FILES_3D = "/records/{pi}/files/3d/{filename}";
+    public static final String RECORDS_FILES_3D_INFO = "/info.json";
+    public static final String RECORDS_FILES_3D_AUXILIARY_FILE_1 = "/{subfolder}/{auxfilename}";
+    public static final String RECORDS_FILES_3D_AUXILIARY_FILE_1_ALT = "/{subfolder}//{auxfilename}";
+    public static final String RECORDS_FILES_3D_AUXILIARY_FILE_2 = "/{subfolder}/{subsubfolder}/{auxfilename}";
+    public static final String RECORDS_FILES_3D_AUXILIARY_FILE_2_ALT = "//{subfolder}/{subsubfolder}/{auxfilename}";
+
+    
     public static final String COLLECTIONS = "/collections/{field}";
     public static final String COLLECTIONS_COLLECTION = "/{collection}";
     public static final String COLLECTIONS_CONTENTASSIST = "/contentassist";

@@ -89,8 +89,8 @@ public class PdfRequestFilter implements ContainerRequestFilter {
             String imageName = null;
             String privName = IPrivilegeHolder.PRIV_DOWNLOAD_PDF;
             if (servletRequest.getAttribute("pi") != null) {
-                pi = (String) servletRequest.getAttribute("pi");
-                divId = (String) servletRequest.getAttribute("divId");
+                pi = (String) servletRequest.getAttribute(FilterTools.ATTRIBUTE_PI);
+                divId = (String) servletRequest.getAttribute(FilterTools.ATTRIBUTE_LOGID);
                 if (servletRequest.getAttribute("filename") != null) {
                     privName = IPrivilegeHolder.PRIV_DOWNLOAD_PAGE_PDF;
                     imageName = (String) servletRequest.getAttribute("filename");

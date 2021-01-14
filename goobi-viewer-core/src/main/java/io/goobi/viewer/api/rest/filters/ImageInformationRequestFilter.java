@@ -19,8 +19,11 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
 
+import javax.annotation.Priority;
+import javax.servlet.ServletRequest;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.ws.rs.Priorities;
 import javax.ws.rs.container.ContainerRequestContext;
 import javax.ws.rs.container.ContainerRequestFilter;
 import javax.ws.rs.core.Context;
@@ -47,6 +50,8 @@ import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.model.security.AccessConditionUtils;
 import io.goobi.viewer.model.security.IPrivilegeHolder;
 
+import static io.goobi.viewer.api.rest.v1.ApiUrls.*;
+
 /**
  * <p>
  * ImageInformationRequestFilter class.
@@ -54,6 +59,7 @@ import io.goobi.viewer.model.security.IPrivilegeHolder;
  */
 @Provider
 @ContentServerImageInfoBinding
+@Priority(FilterTools.PRIORITY_REDIRECT)
 public class ImageInformationRequestFilter implements ContainerRequestFilter {
 
     private static final Logger logger = LoggerFactory.getLogger(ImageInformationRequestFilter.class);
@@ -67,58 +73,16 @@ public class ImageInformationRequestFilter implements ContainerRequestFilter {
     @Override
     public void filter(ContainerRequestContext request) throws IOException {
         logger.trace("filter");
-        try {
-            String pi;
-            String imageName = null;
-            if (servletRequest.getAttribute("filename") != null) {
-                //read parameters 
-                pi = (String) servletRequest.getAttribute("pi");
-                imageName = (String) servletRequest.getAttribute("filename");
-            } else if (servletRequest.getRequestURI().contains("rest/pdf/")) {
-                // Old API PDF quickfix
-                // TODO Why is this filter even applied to /rest/pdf/mets/foo.xml/-/info.json ?
-                String requestPath = servletRequest.getRequestURI();
-                requestPath = requestPath.substring(requestPath.indexOf("rest/pdf/") + 9);
-                logger.trace("Filtering request: {}", requestPath);
-                StringTokenizer tokenizer = new StringTokenizer(requestPath, "/");
-                List<String> pathSegments = tokenizer.getTokenList();
-                pi = pathSegments.get(1);
-                logger.trace("pi: " + pi);
-                //                imageName = pathSegments.size() > 3 ? pathSegments.get(3) : "";
-            } else {
-                String requestPath = servletRequest.getRequestURI();
-                requestPath = requestPath.substring(requestPath.indexOf("records/") + 8);
-                logger.trace("Filtering request: {}", requestPath);
-                StringTokenizer tokenizer = new StringTokenizer(requestPath, "/");
-                List<String> pathSegments = tokenizer.getTokenList();
-                pi = pathSegments.get(0);
-                imageName = pathSegments.size() > 3 ? pathSegments.get(3) : "";
-            }
+        
+            String pi = (String) servletRequest.getAttribute(FilterTools.ATTRIBUTE_PI);
+            String imageName = (String) servletRequest.getAttribute(FilterTools.ATTRIBUTE_FILENAME);
+
             imageName = StringTools.decodeUrl(imageName);
             // logger.trace("image: {}", imageName);
             if (forwardToCanonicalUrl(pi, imageName, servletRequest, servletResponse)) {
                 //if page order is given for image filename, forward to url with correct filename
                 return;
             }
-            //only for actual image requests, no info requests
-            if (imageName != null && !BeanUtils.getImageDeliveryBean().isExternalUrl(imageName)
-                    && !BeanUtils.getImageDeliveryBean().isPublicUrl(imageName)
-                    && !BeanUtils.getImageDeliveryBean().isStaticImageUrl(imageName)) {
-                filterForAccessConditions(request, pi, imageName);
-                FilterTools.filterForConcurrentViewLimit(pi, servletRequest);
-            }
-        } catch (ServiceNotAllowedException e) {
-            String mediaType = MediaType.APPLICATION_JSON;
-            //            if (request.getUriInfo() != null && request.getUriInfo().getPath().endsWith("json")) {
-            //                mediaType = MediaType.APPLICATION_JSON;
-            //            }
-            Response response = Response.status(Status.FORBIDDEN).type(mediaType).entity(new ErrorMessage(Status.FORBIDDEN, e, false)).build();
-            request.abortWith(response);
-        } catch (ViewerConfigurationException e) {
-            Response response =
-                    Response.status(Status.INTERNAL_SERVER_ERROR).entity(new ErrorMessage(Status.INTERNAL_SERVER_ERROR, e, false)).build();
-            request.abortWith(response);
-        }
     }
 
     /**
@@ -133,7 +97,7 @@ public class ImageInformationRequestFilter implements ContainerRequestFilter {
      * @return a boolean.
      * @throws java.io.IOException if any.
      */
-    public static boolean forwardToCanonicalUrl(String pi, String imageName, HttpServletRequest request, HttpServletResponse response)
+    public boolean forwardToCanonicalUrl(String pi, String imageName, HttpServletRequest request, HttpServletResponse response)
             throws IOException {
         if (imageName == null || imageName.contains(".") || !imageName.matches("\\d+")) {
             return false;
@@ -142,7 +106,12 @@ public class ImageInformationRequestFilter implements ContainerRequestFilter {
         try {
             Optional<String> filename = DataManager.getInstance().getSearchIndex().getFilename(pi, Integer.parseInt(imageName));
             if (filename.isPresent()) {
-                String redirectURI = request.getRequestURI().replace("/" + imageName, "/" + filename.get());
+                request.setAttribute(FilterTools.ATTRIBUTE_FILENAME, filename.get());
+                String redirectURI = DataManager.getInstance().getRestApiManager().getContentApiManager()
+                        .path(RECORDS_FILES_IMAGE, RECORDS_FILES_IMAGE_INFO)
+                        .params(pi, filename.get())
+                        .build();
+//                String redirectURI = request.getRequestURI().replace("/" + imageName, "/" + filename.get());
                 response.sendRedirect(redirectURI);
                 return true;
             }

@@ -15,7 +15,10 @@
  */
 package io.goobi.viewer.controller.imaging;
 
+import io.goobi.viewer.api.rest.AbstractApiUrlManager;
 import io.goobi.viewer.controller.Configuration;
+
+import static io.goobi.viewer.api.rest.v1.ApiUrls.*;
 
 /**
  * Resolves urls audio or video files
@@ -27,6 +30,7 @@ public class Object3DHandler {
     private static final String URL_TEMPLATE = "view/object/{identifier}/{filename}/info.json";
 
     private final String restApiUrl;
+    private final AbstractApiUrlManager urls;
 
     /**
      * <p>
@@ -37,6 +41,12 @@ public class Object3DHandler {
      */
     public Object3DHandler(Configuration config) {
         this.restApiUrl = config.getIIIFApiUrl();
+        this.urls = null;
+    }
+    
+    public Object3DHandler(AbstractApiUrlManager urls) {
+        this.urls = urls;
+        this.restApiUrl = null;
     }
 
     /**
@@ -47,6 +57,10 @@ public class Object3DHandler {
      * @return the url to the media file of the given pi and filename
      */
     public String getObjectUrl(String pi, String filename) {
-        return this.restApiUrl + URL_TEMPLATE.replace("{identifier}", pi).replace("{filename}", filename);
+        if(this.urls != null) {
+            return this.urls.path(RECORDS_FILES_3D, RECORDS_FILES_3D_INFO).params(pi, filename).build();
+        } else {            
+            return this.restApiUrl + URL_TEMPLATE.replace("{identifier}", pi).replace("{filename}", filename);
+        }
     }
 }
