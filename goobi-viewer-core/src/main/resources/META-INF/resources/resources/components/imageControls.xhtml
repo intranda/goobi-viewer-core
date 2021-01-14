@@ -119,14 +119,12 @@
                                         </h:outputLink>
                                     </ui:fragment>
                                     <ui:fragment rendered="#{activeDocumentBean.imageToShow == 1}">
-	                                    <span>
 	                                        <ui:fragment rendered="#{!activeDocumentBean.viewManager.topDocument.rtl}">
 	                                            <ui:include src="#{navigationHelper.getResource('images/icons/icon_ic-prev-page.svg')}" />
 	                                        </ui:fragment>
 	                                        <ui:fragment rendered="#{activeDocumentBean.viewManager.topDocument.rtl}">
 	                                            <ui:include src="#{navigationHelper.getResource('images/icons/icon_ic-next-page.svg')}" />
 	                                        </ui:fragment>
-										</span>
                                     </ui:fragment>                           
                                 </li>
                             </ui:fragment>

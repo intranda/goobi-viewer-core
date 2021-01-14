@@ -24,6 +24,11 @@
         <param-name>com.sun.faces.enableMissingResourceLibraryDetection</param-name>
         <param-value>true</param-value>
     </context-param>
+    <!-- Prime faces theme set to none - no extra styling in front-/backend -->
+    <context-param>
+        <param-name>primefaces.THEME</param-name>
+        <param-value>none</param-value>
+    </context-param>
     <context-param>
         <param-name>javax.faces.CONFIG_FILES</param-name>
         <param-value>/resources/themes/faces-config.xml, /WEB-INF/faces-config.xml</param-value>
