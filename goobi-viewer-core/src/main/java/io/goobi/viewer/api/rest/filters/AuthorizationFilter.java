@@ -28,17 +28,17 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import io.goobi.viewer.api.rest.bindings.AuthenticationBinding;
+import io.goobi.viewer.api.rest.bindings.AuthorizationBinding;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.NetTools;
 
 /**
  * <p>
- * AuthorizationFilter class.
+ * Allows requests authorized by an authrization token
  * </p>
  */
 @Provider
-@AuthenticationBinding
+@AuthorizationBinding
 public class AuthorizationFilter implements ContainerRequestFilter {
 
     private static final Logger logger = LoggerFactory.getLogger(AuthorizationFilter.class);

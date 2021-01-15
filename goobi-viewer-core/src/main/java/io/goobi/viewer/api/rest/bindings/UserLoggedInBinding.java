@@ -22,7 +22,7 @@ import javax.ws.rs.NameBinding;
 
 /**
  * <p>
- * AuthenticationBinding class.
+ * Allows request by sessions with a logged in user
  * </p>
  */
 @NameBinding

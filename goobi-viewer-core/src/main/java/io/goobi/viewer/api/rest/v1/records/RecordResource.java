@@ -77,6 +77,7 @@ import de.unigoettingen.sub.commons.contentlib.exceptions.ServiceNotAllowedExcep
 import de.unigoettingen.sub.commons.contentlib.servlet.rest.CORSBinding;
 import io.goobi.viewer.api.rest.AbstractApiUrlManager;
 import io.goobi.viewer.api.rest.AbstractApiUrlManager.ApiPath;
+import io.goobi.viewer.api.rest.bindings.AuthorizationBinding;
 import io.goobi.viewer.api.rest.bindings.IIIFPresentationBinding;
 import io.goobi.viewer.api.rest.bindings.ViewerRestServiceBinding;
 import io.goobi.viewer.api.rest.model.ner.DocumentReference;
@@ -105,7 +106,6 @@ import io.goobi.viewer.model.iiif.search.IIIFSearchBuilder;
 import io.goobi.viewer.model.security.AccessConditionUtils;
 import io.goobi.viewer.model.security.IPrivilegeHolder;
 import io.goobi.viewer.model.viewer.StructElement;
-import io.goobi.viewer.servlets.rest.security.AuthenticationBinding;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -544,7 +544,7 @@ public class RecordResource {
     @Produces({ MediaType.APPLICATION_JSON })
     @Consumes({ MediaType.APPLICATION_JSON })
     @CORSBinding
-    @AuthenticationBinding
+    @AuthorizationBinding
     @Operation(tags = { "records" }, summary = "Delete the record from the SOLR database",
     description = "Requires an authentication token. This operation may take a while, depending on the indexer queue. If the request aborts before deletion is complete, further deletion requests will be disallowed until the operation completes")
     public String deleteRecord(

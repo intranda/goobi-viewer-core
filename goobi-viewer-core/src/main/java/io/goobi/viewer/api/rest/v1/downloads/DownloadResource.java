@@ -49,6 +49,7 @@ import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import de.unigoettingen.sub.commons.contentlib.exceptions.ContentLibException;
 import de.unigoettingen.sub.commons.contentlib.exceptions.ContentNotFoundException;
 import io.goobi.viewer.api.rest.AbstractApiUrlManager;
+import io.goobi.viewer.api.rest.bindings.AuthorizationBinding;
 import io.goobi.viewer.api.rest.bindings.DownloadBinding;
 import io.goobi.viewer.api.rest.bindings.ViewerRestServiceBinding;
 import io.goobi.viewer.api.rest.v1.ApiUrls;
@@ -61,7 +62,6 @@ import io.goobi.viewer.managedbeans.DownloadBean;
 import io.goobi.viewer.model.download.DownloadJob;
 import io.goobi.viewer.model.download.EPUBDownloadJob;
 import io.goobi.viewer.model.download.PDFDownloadJob;
-import io.goobi.viewer.servlets.rest.security.AuthenticationBinding;
 import io.goobi.viewer.servlets.utils.ServletUtils;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -99,7 +99,7 @@ public class DownloadResource {
     @GET
     @Path(ApiUrls.DOWNLOADS_PDF_SECTION)
     @Produces({ MediaType.APPLICATION_JSON })
-    @AuthenticationBinding
+    @AuthorizationBinding
     @Operation(tags= {"downloads"}, summary="Return information about the PDF download job for the given PI and divId")
     public DownloadJob getPDFDownloadInfo(
             @Parameter(description = "Persistent identifier of the record") @PathParam("pi") String pi,
@@ -130,7 +130,7 @@ public class DownloadResource {
     @Path(ApiUrls.DOWNLOADS_PDF_SECTION)
     @Produces({ MediaType.APPLICATION_JSON })
     @Operation(tags= {"downloads"}, summary="Delete a PDF download job from the database")
-    @AuthenticationBinding
+    @AuthorizationBinding
     public String deletePDFDownloadJob(
             @Parameter(description = "Persistent identifier of the record") @PathParam("pi") String pi,
             @Parameter(description="Identifier of the METS div for a logical section")@PathParam("divId") String logId)
@@ -176,7 +176,7 @@ public class DownloadResource {
     @GET
     @Path(ApiUrls.DOWNLOADS_PDF_RECORD)
     @Produces({ MediaType.APPLICATION_JSON })
-    @AuthenticationBinding
+    @AuthorizationBinding
     @Operation(tags= {"downloads"}, summary="Return information about the PDF download job for the given PI")
     public DownloadJob getPDFDownloadInfo(
             @Parameter(description = "Persistent identifier of the record") @PathParam("pi") String pi)
@@ -202,7 +202,7 @@ public class DownloadResource {
     @Path(ApiUrls.DOWNLOADS_PDF_RECORD)
     @Produces({ MediaType.APPLICATION_JSON })
     @Operation(tags= {"downloads"}, summary="Delete a PDF download job from the database")
-    @AuthenticationBinding
+    @AuthorizationBinding
     public String deletePDFDownloadJob(
             @Parameter(description = "Persistent identifier of the record") @PathParam("pi") String pi)
             throws DAOException, ContentLibException {
@@ -245,7 +245,7 @@ public class DownloadResource {
     @GET
     @Path(ApiUrls.DOWNLOADS_EPUB_SECTION)
     @Produces({ MediaType.APPLICATION_JSON })
-    @AuthenticationBinding
+    @AuthorizationBinding
     @Operation(tags= {"downloads"}, summary="Return information about the EPUB download job for the given PI and divId")
     public DownloadJob getEPUBDownloadInfo(
             @Parameter(description = "Persistent identifier of the record") @PathParam("pi") String pi,
@@ -276,7 +276,7 @@ public class DownloadResource {
     @Path(ApiUrls.DOWNLOADS_EPUB_SECTION)
     @Produces({ MediaType.APPLICATION_JSON })
     @Operation(tags= {"downloads"}, summary="Delete an EPUB download job from the database")
-    @AuthenticationBinding
+    @AuthorizationBinding
     public String deleteEPUBDownloadJob(
             @Parameter(description = "Persistent identifier of the record") @PathParam("pi") String pi,
             @Parameter(description="Identifier of the METS div for a logical section")@PathParam("divId") String logId)
@@ -322,7 +322,7 @@ public class DownloadResource {
     @GET
     @Path(ApiUrls.DOWNLOADS_EPUB_RECORD)
     @Produces({ MediaType.APPLICATION_JSON })
-    @AuthenticationBinding
+    @AuthorizationBinding
     @Operation(tags= {"downloads"}, summary="Return information about the EPUB download job for the given PI")
     public DownloadJob getEPUBDownloadInfo(
             @Parameter(description = "Persistent identifier of the record") @PathParam("pi") String pi)
@@ -348,7 +348,7 @@ public class DownloadResource {
     @Path(ApiUrls.DOWNLOADS_EPUB_RECORD)
     @Produces({ MediaType.APPLICATION_JSON })
     @Operation(tags= {"downloads"}, summary="Delete an EPUB download job from the database")
-    @AuthenticationBinding
+    @AuthorizationBinding
     public String deleteEPUBDownloadJob(
             @Parameter(description = "Persistent identifier of the record") @PathParam("pi") String pi)
             throws DAOException, ContentLibException {
@@ -387,7 +387,7 @@ public class DownloadResource {
      */
     @GET
     @Produces({ MediaType.APPLICATION_JSON })
-    @AuthenticationBinding
+    @AuthorizationBinding
     @Operation(tags= {"downloads"}, summary="Return information all download jobs")
     public List<DownloadJob> getAllDownloadJobs() throws DAOException, ContentLibException {
         List<DownloadJob> downloadJobs = DataManager.getInstance()
@@ -409,7 +409,7 @@ public class DownloadResource {
     @DELETE
     @Produces({ MediaType.APPLICATION_JSON })
     @Operation(tags= {"downloads"}, summary="Delete all download jobs")
-    @AuthenticationBinding
+    @AuthorizationBinding
     public List<String> deleteAllDownloadJobs() throws DAOException, ContentLibException {
         List<DownloadJob> downloadJobs = DataManager.getInstance()
                 .getDao()
@@ -442,7 +442,7 @@ public class DownloadResource {
     @GET
     @Path(ApiUrls.DOWNLOADS_PDF)
     @Produces({ MediaType.APPLICATION_JSON })
-    @AuthenticationBinding
+    @AuthorizationBinding
     @Operation(tags= {"downloads"}, summary="Return information all PDF download jobs")
     public List<DownloadJob> getṔDFDownloadJobs() throws DAOException, ContentLibException {
         List<DownloadJob> downloadJobs = DataManager.getInstance()
@@ -467,7 +467,7 @@ public class DownloadResource {
     @Produces({ MediaType.APPLICATION_JSON })
     @Operation(tags= {"downloads"}, summary="Delete all PDF download jobs")
 
-    @AuthenticationBinding
+    @AuthorizationBinding
     public List<String> deletePDFDownloadJobs() throws DAOException, ContentLibException {
         List<DownloadJob> downloadJobs = DataManager.getInstance()
                 .getDao()
@@ -501,7 +501,7 @@ public class DownloadResource {
     @GET
     @Path(ApiUrls.DOWNLOADS_EPUB)
     @Produces({ MediaType.APPLICATION_JSON })
-    @AuthenticationBinding
+    @AuthorizationBinding
     @Operation(tags= {"downloads"}, summary="Return information all EPUB download jobs")
     public List<DownloadJob> getDownloadJobs() throws DAOException, ContentLibException {
         List<DownloadJob> downloadJobs = DataManager.getInstance()
@@ -525,7 +525,7 @@ public class DownloadResource {
     @Path(ApiUrls.DOWNLOADS_EPUB)
     @Produces({ MediaType.APPLICATION_JSON })
     @Operation(tags= {"downloads"}, summary="Delete all EPUB download jobs")
-    @AuthenticationBinding
+    @AuthorizationBinding
     public List<String> deleteEPUBDownloadJobs() throws DAOException, ContentLibException {
         List<DownloadJob> downloadJobs = DataManager.getInstance()
                 .getDao()

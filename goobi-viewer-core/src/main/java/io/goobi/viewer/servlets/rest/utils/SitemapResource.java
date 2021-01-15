@@ -34,12 +34,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import de.unigoettingen.sub.commons.contentlib.servlet.rest.CORSBinding;
+import io.goobi.viewer.api.rest.bindings.AuthorizationBinding;
 import io.goobi.viewer.api.rest.bindings.ViewerRestServiceBinding;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.model.sitemap.Sitemap;
-import io.goobi.viewer.servlets.rest.security.AuthenticationBinding;
 import io.goobi.viewer.servlets.utils.ServletUtils;
 
 /**
@@ -47,7 +47,7 @@ import io.goobi.viewer.servlets.utils.ServletUtils;
  */
 @Path(SitemapResource.RESOURCE_PATH)
 @ViewerRestServiceBinding
-@AuthenticationBinding
+@AuthorizationBinding
 public class SitemapResource {
 
     private static final Logger logger = LoggerFactory.getLogger(SitemapResource.class);

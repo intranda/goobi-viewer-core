@@ -20,12 +20,14 @@ import java.lang.annotation.RetentionPolicy;
 
 import javax.ws.rs.NameBinding;
 
+import io.goobi.viewer.api.rest.filters.AuthorizationFilter;
+
 /**
  * <p>
- * AuthenticationBinding class.
+ * Binding for resources which use an {@link AuthorizationFilter}
  * </p>
  */
 @NameBinding
 @Retention(RetentionPolicy.RUNTIME)
-public @interface AuthenticationBinding {
+public @interface AuthorizationBinding {
 }
