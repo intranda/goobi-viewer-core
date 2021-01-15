@@ -23,10 +23,9 @@ import java.util.function.BiConsumer;
 import javax.servlet.http.HttpServletRequest;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateTimeSerializer;
 
 /**
  * A process triggered by a REST call with PUT 
@@ -34,13 +33,14 @@ import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateTimeSerializer;
  * @author florian
  *
  */
-@JsonInclude(Include.NON_NULL)
+@JsonInclude(Include.NON_EMPTY)
 public class Job {
     
     private static final AtomicLong idCounter = new AtomicLong(0);
 
     public static enum ACCESSIBILITY {
         PUBLIC,
+        SESSION,
         ADMIN,
         TOKEN;
     }
@@ -49,7 +49,11 @@ public class Job {
         /**
          * Send emails to all search owners if their searches have changed results
          */
-        NOTIFY_SEARCH_UPDATE;
+        NOTIFY_SEARCH_UPDATE,
+        /**
+         * Handle asynchonous generation of excel sheets with search results
+         */
+        SEARCH_EXCEL_EXPORT;
     }
     
     public static enum JobStatus {
@@ -64,9 +68,12 @@ public class Job {
 //    @JsonSerialize(using = LocalDateTimeSerializer.class)
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm")
     public final LocalDateTime timeCreated;
+    @JsonIgnore
     public final BiConsumer<HttpServletRequest, Job> task;
     public volatile JobStatus status;
     public Optional<String> exception = Optional.empty();
+    @JsonIgnore
+    public Optional<String> sessionId = Optional.empty();
     
     public Job(JobType type, BiConsumer<HttpServletRequest, Job> task) {
         this.type = type;
@@ -77,6 +84,7 @@ public class Job {
     }
     
     public void doTask(HttpServletRequest request) {
+        this.sessionId = Optional.ofNullable(request.getSession().getId());
         this.status = JobStatus.STARTED;
         this.task.accept(request, this);
         if(JobStatus.ERROR != this.status) {
@@ -93,8 +101,11 @@ public class Job {
         switch(type) {
             case NOTIFY_SEARCH_UPDATE: 
                 return ACCESSIBILITY.TOKEN;
+            case SEARCH_EXCEL_EXPORT:
+                return ACCESSIBILITY.SESSION;
             default:
                 return ACCESSIBILITY.ADMIN;
         }
     }
+    
 }

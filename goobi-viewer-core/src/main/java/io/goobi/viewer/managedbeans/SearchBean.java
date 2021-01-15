@@ -40,6 +40,7 @@ import java.util.concurrent.Future;
 import java.util.concurrent.FutureTask;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
+import java.util.function.BiConsumer;
 import java.util.stream.Collectors;
 
 import javax.annotation.PostConstruct;
@@ -47,6 +48,7 @@ import javax.enterprise.context.SessionScoped;
 import javax.faces.context.FacesContext;
 import javax.inject.Inject;
 import javax.inject.Named;
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang3.StringUtils;
@@ -59,6 +61,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import de.unigoettingen.sub.commons.contentlib.exceptions.IllegalRequestException;
+import io.goobi.viewer.api.rest.model.jobs.Job;
+import io.goobi.viewer.api.rest.model.jobs.Job.JobType;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.DateTools;
 import io.goobi.viewer.controller.SolrConstants;
@@ -1983,48 +1987,52 @@ public class SearchBean implements SearchInterface, Serializable {
         String currentQuery = SearchHelper.prepareQuery(searchString);
         String finalQuery = SearchHelper.buildFinalQuery(currentQuery, DataManager.getInstance().getConfiguration().isAggregateHits());
         Locale locale = navigationHelper.getLocale();
-        
-        downloadReady = new FutureTask<>(new Callable<Boolean>() {
+        int timeout = DataManager.getInstance().getConfiguration().getExcelDownloadTimeout(); //[s]
 
-            @Override
-            public Boolean call() throws InterruptedException, ViewerConfigurationException {
-                if (!facesContext.getResponseComplete()) {
-                    final SXSSFWorkbook wb = buildExcelSheet(facesContext, finalQuery, currentQuery, locale);
+        BiConsumer<HttpServletRequest, Job> task = (request, job) -> {
+            if (!facesContext.getResponseComplete()) {
+                try {
+                    SXSSFWorkbook wb = buildExcelSheet(facesContext, finalQuery, currentQuery, locale);
                     if (wb == null) {
-                        return Boolean.FALSE;
+                        job.setError("Failed to create excel sheet");
                     } else if (Thread.interrupted()) {
-                        return Boolean.FALSE;
-                    }
-                    Callable<Boolean> download = new Callable<Boolean>() {
-
-                        @Override
-                        public Boolean call() {
-                            try {
-                                logger.debug("Writing excel");
-                                return writeExcelSheet(facesContext, wb);
-                            } finally {
-                                facesContext.responseComplete();
+                        job.setError("Execution cancelled");
+                    } else {                    
+                        Callable<Boolean> download = new Callable<Boolean>() {
+                            
+                            @Override
+                            public Boolean call() {
+                                try {
+                                    logger.debug("Writing excel");
+                                    return writeExcelSheet(facesContext, wb);
+                                } finally {
+                                    facesContext.responseComplete();
+                                }
                             }
-                        }
-                    };
-
-                    downloadComplete = new FutureTask<>(download);
-                    executor.submit(downloadComplete);
-                    return Boolean.TRUE;
-                }
-                return Boolean.FALSE;
+                        };
+                        
+                        downloadComplete = new FutureTask<>(download);
+                        executor.submit(downloadComplete);
+                        downloadComplete.get(timeout, TimeUnit.SECONDS);
+                    }
+                    } catch(TimeoutException | InterruptedException e) {
+                        job.setError("Timeout for excel download");
+                    } catch (ExecutionException | ViewerConfigurationException e) {
+                        logger.error(e.toString(), e);
+                        job.setError("Failed to create excel sheet");
+                    }
+            } else {
+                job.setError("Response is already committed");
             }
-        });
-        executor.submit(downloadReady);
+        };
 
+        
         try {
-            int timeout = DataManager.getInstance().getConfiguration().getExcelDownloadTimeout(); //[s]
-            if (downloadReady.get(timeout, TimeUnit.SECONDS)) {
-                logger.trace("Download ready");
-                //            	Messages.info("download_ready");
-                downloadComplete.get(timeout, TimeUnit.SECONDS);
-                logger.trace("Download complete");
-            }
+            Job excelCreationJob = new Job(JobType.SEARCH_EXCEL_EXPORT, task);
+            Long jobId = DataManager.getInstance().getRestApiJobManager().addJob(excelCreationJob);
+            Future ready = DataManager.getInstance().getRestApiJobManager()
+            .triggerJobInThread(jobId, (HttpServletRequest)facesContext.getExternalContext().getRequest());
+            ready.get(timeout, TimeUnit.SECONDS);
         } catch (InterruptedException e) {
             logger.debug("Download interrupted");
         } catch (ExecutionException e) {

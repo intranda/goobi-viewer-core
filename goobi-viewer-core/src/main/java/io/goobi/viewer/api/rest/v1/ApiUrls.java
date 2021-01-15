@@ -149,7 +149,6 @@ public class ApiUrls extends AbstractApiUrlManager {
 
     public static final String JOBS = "/jobs";
     public static final String JOBS_JOB = "/{id}";
-    public static final String JOBS_TYPE = "/{type}";
     
     public static final String CROWDSOURCING_CAMPAIGN = "/crowdsourcing/campaings/{campaignId}";
     public static final String CROWDSOURCING_CAMPAIGN_ANNOTATIONS = "/annotations";

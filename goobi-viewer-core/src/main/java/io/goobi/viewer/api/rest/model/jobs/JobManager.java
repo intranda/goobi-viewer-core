@@ -18,9 +18,11 @@ package io.goobi.viewer.api.rest.model.jobs;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 import java.util.function.BiConsumer;
 import java.util.stream.Collectors;
 
@@ -77,16 +79,20 @@ public class JobManager {
         return jobs.remove(jobId);
     }
     
-    public Job triggerJobInThread(long jobId, HttpServletRequest request) {
+    public Future triggerJobInThread(long jobId, HttpServletRequest request) {
         Job job = jobs.get(jobId);
         if(job != null) {
-            executorService.execute(() -> job.doTask(request));
+            return executorService.submit(() -> job.doTask(request));
         }
-        return job;
+        return CompletableFuture.completedFuture(null);
     }
     
     public List<Job> getJobs(JobType type) {
         return this.jobs.values().stream().filter(job -> job.type == type).collect(Collectors.toList());
+    }
+    
+    public List<Job> getJobs() {
+        return this.jobs.values().stream().collect(Collectors.toList());
     }
 
     /**

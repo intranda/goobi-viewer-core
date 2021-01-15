@@ -17,6 +17,10 @@ package io.goobi.viewer.api.rest.v1.jobs;
 
 import static io.goobi.viewer.api.rest.v1.ApiUrls.*;
 
+import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.Consumes;
@@ -59,7 +63,7 @@ public class JobResource {
         if(desc.type == null) {
             throw new IllegalRequestException("Must provide job type");
         }
-        if(isAuthorized(desc.type, request)) {
+        if(isAuthorized(desc.type, Optional.empty(), request)) {
             Job job = new Job(desc.type, JobManager.createTask(desc.type));
             job.doTask(request);
             return job;
@@ -73,14 +77,26 @@ public class JobResource {
     @Produces({ MediaType.APPLICATION_JSON })
     public Job getJob(@PathParam("id")Long id) throws ContentNotFoundException {
         Job job = DataManager.getInstance().getRestApiJobManager().getJob(id);
-        if(job == null || !isAuthorized(job.type, request)) {
+        if(job == null || !isAuthorized(job.type, job.sessionId, request)) {
             throw new ContentNotFoundException("No Job found with id " + id);
         } else {
             return job;
         }
     }
+    
+    @GET
+    @Produces({ MediaType.APPLICATION_JSON })
+    public List<Job> getJobs() throws ContentNotFoundException {
+        return DataManager.getInstance().getRestApiJobManager().getJobs().stream()
+        .filter(job -> this.isAuthorized(job.type, job.sessionId, request))
+        .collect(Collectors.toList());
+    }
 
-    public boolean isAuthorized(JobType type, HttpServletRequest request) {
+    
+
+    
+
+    public boolean isAuthorized(JobType type, Optional<String> jobSessionId, HttpServletRequest request) {
         Job.ACCESSIBILITY access = Job.getAccessibility(type);
         switch (access) {
             case PUBLIC:
@@ -89,6 +105,13 @@ public class JobResource {
                 return AuthorizationFilter.isAuthorized(request);
             case ADMIN:
                 return AdminLoggedInFilter.isAdminLoggedIn(request);
+            case SESSION:
+                String sessionId = request.getSession().getId();
+                if(sessionId != null) {
+                    return jobSessionId.map(id -> id.equals(sessionId)).orElse(false);
+                } else {
+                    return false;
+                }
             default:
                 return false;
         }
