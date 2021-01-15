@@ -33,6 +33,7 @@ import org.junit.Test;
 
 import de.unigoettingen.sub.commons.contentlib.exceptions.IllegalRequestException;
 import io.goobi.viewer.AbstractDatabaseEnabledTest;
+import io.goobi.viewer.api.rest.v1.ApiUrls;
 import io.goobi.viewer.controller.Configuration;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.exceptions.DAOException;
@@ -78,9 +79,9 @@ public class CMSPageTest extends AbstractDatabaseEnabledTest {
     @Test
     public void testGetTileGridUrl() {
 
-        String allowedTags = "a$b$cde";
+        String allowedTags = "a,b,cde";
         List<CMSCategory> categories = new ArrayList<>();
-        for (String catName : allowedTags.split("\\$")) {
+        for (String catName : allowedTags.split(",")) {
             categories.add(new CMSCategory(catName));
         }
         boolean preferImportant = true;
@@ -109,9 +110,16 @@ public class CMSPageTest extends AbstractDatabaseEnabledTest {
 
         try {
             String url = page.getTileGridUrl("grid01");
-            String viewerUrl = BeanUtils.getServletPathWithHostAsUrlFromJsfContext();
-            String language = CmsBean.getCurrentLocale().getLanguage();
-            String expecedUrl = viewerUrl + "/rest/tilegrid/" + language + "/" + numTiles + "/" + numTiles + "/" + allowedTags + "/";
+            String expecedUrl = DataManager.getInstance().getRestApiManager().getDataApiManager()
+            .path(ApiUrls.CMS_MEDIA)
+            .query("tags", allowedTags)
+            .query("max", numTiles)
+            .query("prioritySlots", numTiles)
+            .query("random", "true")
+            .build();
+//            String viewerUrl = BeanUtils.getServletPathWithHostAsUrlFromJsfContext();
+//            String language = CmsBean.getCurrentLocale().getLanguage();
+//            String expecedUrl = viewerUrl + "/rest/tilegrid/" + language + "/" + numTiles + "/" + numTiles + "/" + allowedTags + "/";
             //            expecedUrl = expecedUrl.replace("//", "/");
             Assert.assertEquals(expecedUrl, url);
         } catch (IllegalRequestException e) {
@@ -193,10 +201,10 @@ public class CMSPageTest extends AbstractDatabaseEnabledTest {
 
         String contentServerUrl = DataManager.getInstance().getConfiguration().getIIIFApiUrl();
 
-        String filePath = media.getImageURI();
-        filePath = BeanUtils.escapeCriticalUrlChracters(filePath, false);
+        String filename = media.getFileName();
 
-        String imageUrl = contentServerUrl + "image/-/" + filePath + "/full/max/0/default.jpg";
+        String imageUrl = DataManager.getInstance().getRestApiManager().getContentApiManager()
+                .path(ApiUrls.CMS_MEDIA, ApiUrls.CMS_MEDIA_FILES_FILE).params(filename).build()  + "/full/max/0/default.jpg/";
         Assert.assertEquals(imageUrl, page.getContent(imageId).replaceAll("\\?.*", ""));
         Assert.assertEquals(componentName, page.getContent(componentId));
 

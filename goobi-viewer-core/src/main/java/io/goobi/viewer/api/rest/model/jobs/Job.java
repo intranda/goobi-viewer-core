@@ -98,7 +98,7 @@ public class Job {
 
     
     public void doTask(HttpServletRequest request) {
-        this.sessionId = Optional.ofNullable(request.getSession().getId());
+        this.sessionId = Optional.ofNullable(request).map(r -> r.getSession().getId());
         this.status = JobStatus.STARTED;
         this.task.accept(request, this);
         if(JobStatus.ERROR != this.status) {

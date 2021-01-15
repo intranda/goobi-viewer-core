@@ -19,6 +19,10 @@ import static org.junit.Assert.*;
 
 import java.time.Duration;
 import java.time.temporal.ChronoUnit;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
 import org.junit.After;
 import org.junit.Before;
@@ -55,12 +59,17 @@ public class JobManagerTest {
         Job job = new Job(new SimpleJobParameter(JobType.NOTIFY_SEARCH_UPDATE), (request, me) -> {});
         manager.addJob(job);
         assertEquals(JobStatus.CREATED, manager.getJob(job.id).status);
-        manager.triggerJobInThread(job.id, null);
-        Thread.sleep(10);
+        Future future = manager.triggerJobInThread(job.id, null);
+        try {
+            future.get(1, TimeUnit.SECONDS);
+        } catch (ExecutionException | TimeoutException e) {
+            fail(e.toString());
+        }
         assertEquals(JobStatus.COMPLETE, manager.getJob(job.id).status);
     }
     
-    @Test void testListJobs() {
+    @Test 
+    public void testListJobs() {
         Job job1 = new Job(new SimpleJobParameter(JobType.NOTIFY_SEARCH_UPDATE), (request, me) -> {});
         Job job2 = new Job(new SimpleJobParameter(JobType.NOTIFY_SEARCH_UPDATE), (request, me) -> {});
         manager.addJob(job1);
