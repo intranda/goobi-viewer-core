@@ -38,7 +38,7 @@ import io.goobi.viewer.api.rest.model.ToolsRequestParameters;
         defaultImpl = SimpleJobParameter.class)
 @JsonSubTypes({
     @JsonSubTypes.Type(value=SitemapRequestParameters.class, name = "UPDATE_SITEMAP"),
-    @JsonSubTypes.Type(value=ToolsRequestParameters.class, name = "UPDATE_DATA_REPOSITORIES")
+    @JsonSubTypes.Type(value=ToolsRequestParameters.class, name = "UPDATE_DATA_REPOSITORY_NAMES")
 }) 
 public class SimpleJobParameter {
 

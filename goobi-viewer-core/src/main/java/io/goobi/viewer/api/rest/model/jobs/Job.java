@@ -63,7 +63,7 @@ public class Job {
         /**
          * Update data repositories
          */
-        UPDATE_DATA_REPOSITORIES;
+        UPDATE_DATA_REPOSITORY_NAMES;
     }
     
     public static enum JobStatus {
@@ -115,6 +115,7 @@ public class Job {
         switch(type) {
             case NOTIFY_SEARCH_UPDATE: 
             case UPDATE_SITEMAP:
+            case UPDATE_DATA_REPOSITORY_NAMES:
                 return Accessibility.TOKEN;
             case SEARCH_EXCEL_EXPORT:
                 return Accessibility.SESSION;

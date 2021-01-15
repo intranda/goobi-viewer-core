@@ -30,7 +30,9 @@ import java.util.stream.Collectors;
 import javax.servlet.http.HttpServletRequest;
 
 import io.goobi.viewer.api.rest.model.SitemapRequestParameters;
+import io.goobi.viewer.api.rest.model.ToolsRequestParameters;
 import io.goobi.viewer.api.rest.model.jobs.Job.JobType;
+import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
@@ -119,6 +121,14 @@ public class JobManager {
                                 .map(p -> (SitemapRequestParameters)p)
                                 .orElse(null);
                         new SitemapBuilder(request).updateSitemap(params);
+                };
+            case UPDATE_DATA_REPOSITORY_NAMES: 
+                return (request, job) -> {
+                    ToolsRequestParameters params = Optional.ofNullable(job.params)
+                            .filter(p -> p instanceof ToolsRequestParameters)
+                            .map(p -> (ToolsRequestParameters)p)
+                            .orElse(null);
+                    DataManager.getInstance().getSearchIndex().updateDataRepositoryNames(params.getPi(), params.getDataRepositoryName());
                 };
             default:
                 return (request, job) -> {};

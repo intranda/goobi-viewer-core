@@ -52,7 +52,7 @@ public class JobManagerTest {
     
     @Test
     public void testAddJob() throws InterruptedException {
-        Job job = new Job(JobType.NOTIFY_SEARCH_UPDATE, (request, me) -> {});
+        Job job = new Job(new SimpleJobParameter(JobType.NOTIFY_SEARCH_UPDATE), (request, me) -> {});
         manager.addJob(job);
         assertEquals(JobStatus.CREATED, manager.getJob(job.id).status);
         manager.triggerJobInThread(job.id, null);
@@ -61,8 +61,8 @@ public class JobManagerTest {
     }
     
     @Test void testListJobs() {
-        Job job1 = new Job(JobType.NOTIFY_SEARCH_UPDATE, (request, me) -> {});
-        Job job2 = new Job(JobType.NOTIFY_SEARCH_UPDATE, (request, me) -> {});
+        Job job1 = new Job(new SimpleJobParameter(JobType.NOTIFY_SEARCH_UPDATE), (request, me) -> {});
+        Job job2 = new Job(new SimpleJobParameter(JobType.NOTIFY_SEARCH_UPDATE), (request, me) -> {});
         manager.addJob(job1);
         manager.addJob(job2);
         
