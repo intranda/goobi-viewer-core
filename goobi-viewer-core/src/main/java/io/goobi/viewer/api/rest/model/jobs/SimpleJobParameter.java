@@ -15,13 +15,41 @@
  */
 package io.goobi.viewer.api.rest.model.jobs;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonSubTypes;
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
+import com.fasterxml.jackson.annotation.JsonTypeInfo.As;
+import com.fasterxml.jackson.annotation.JsonTypeInfo.Id;
+
+import io.goobi.viewer.api.rest.model.SitemapRequestParameters;
+import io.goobi.viewer.api.rest.model.ToolsRequestParameters;
+
 /**
  * Object to create job. Used as rest parameter
  * 
  * @author florian
  *
  */
-public class JobDescription {
+@JsonTypeInfo(
+        use = Id.NAME, 
+        include = As.PROPERTY,
+        property = "type",
+        visible = true,
+        defaultImpl = SimpleJobParameter.class)
+@JsonSubTypes({
+    @JsonSubTypes.Type(value=SitemapRequestParameters.class, name = "UPDATE_SITEMAP"),
+    @JsonSubTypes.Type(value=ToolsRequestParameters.class, name = "UPDATE_DATA_REPOSITORIES")
+}) 
+public class SimpleJobParameter {
 
     public Job.JobType type;
+
+    public SimpleJobParameter() {
+    }
+    
+    public SimpleJobParameter(Job.JobType type) {
+        this.type = type;
+    }
+
+    
 }

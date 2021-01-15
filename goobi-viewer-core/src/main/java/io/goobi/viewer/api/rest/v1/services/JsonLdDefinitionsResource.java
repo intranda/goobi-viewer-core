@@ -13,7 +13,7 @@
  *
  * You should have received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
-package io.goobi.viewer.servlets.rest.services;
+package io.goobi.viewer.api.rest.v1.services;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
@@ -23,6 +23,7 @@ import javax.ws.rs.core.MediaType;
 import de.intranda.api.services.CollectionExtentDefinition;
 import de.intranda.api.services.TagListDefinition;
 import io.goobi.viewer.api.rest.bindings.ViewerRestServiceBinding;
+import io.goobi.viewer.api.rest.v1.ApiUrls;
 import io.goobi.viewer.controller.DataManager;
 
 /**
@@ -30,11 +31,10 @@ import io.goobi.viewer.controller.DataManager;
  *
  * @author Florian Alpers
  */
-@Path(JsonLdDefinitionsResource.URI_PATH)
+@Path(ApiUrls.CONTEXT)
 @ViewerRestServiceBinding
 public class JsonLdDefinitionsResource {
 
-    public static final String URI_PATH = "api/context";
     
     /**
      * Returns a service context for the size information service for viewer collections: Number of direct child-collections and of total contained
@@ -64,7 +64,7 @@ public class JsonLdDefinitionsResource {
      * @return
      */
     public static String getUrl() {
-        return DataManager.getInstance().getConfiguration().getRestApiUrl() + URI_PATH;
+        return DataManager.getInstance().getRestApiManager().getDataApiManager().path(ApiUrls.CONTEXT).build();
     }
 
 }

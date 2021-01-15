@@ -13,7 +13,7 @@
  *
  * You should have received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
-package io.goobi.viewer.servlets.rest.utils;
+package io.goobi.viewer.model.sitemap;
 
 import java.io.File;
 import java.io.IOException;
@@ -36,6 +36,7 @@ import org.slf4j.LoggerFactory;
 import de.unigoettingen.sub.commons.contentlib.servlet.rest.CORSBinding;
 import io.goobi.viewer.api.rest.bindings.AuthorizationBinding;
 import io.goobi.viewer.api.rest.bindings.ViewerRestServiceBinding;
+import io.goobi.viewer.api.rest.model.SitemapRequestParameters;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
@@ -45,53 +46,19 @@ import io.goobi.viewer.servlets.utils.ServletUtils;
 /**
  * Resource for sitemap generation.
  */
-@Path(SitemapResource.RESOURCE_PATH)
-@ViewerRestServiceBinding
-@AuthorizationBinding
-public class SitemapResource {
+public class SitemapBuilder {
 
-    private static final Logger logger = LoggerFactory.getLogger(SitemapResource.class);
+    private static final Logger logger = LoggerFactory.getLogger(SitemapBuilder.class);
 
-    /** Constant <code>RESOURCE_PATH="/sitemap"</code> */
-    public static final String RESOURCE_PATH = "/sitemap";
 
     private static Thread workerThread = null;
 
-    @Context
-    private HttpServletRequest servletRequest;
-    @Context
-    private HttpServletResponse servletResponse;
+    private final HttpServletRequest servletRequest;
 
-    /**
-     * <p>
-     * Constructor for SitemapResource.
-     * </p>
-     */
-    public SitemapResource() {
-    }
-
-    /**
-     * For testing
-     *
-     * @param request a {@link javax.servlet.http.HttpServletRequest} object.
-     */
-    protected SitemapResource(HttpServletRequest request) {
+    public SitemapBuilder(HttpServletRequest request) {
         this.servletRequest = request;
     }
 
-    /**
-     * <p>
-     * updateSitemap.
-     * </p>
-     *
-     * @param params a {@link io.goobi.viewer.servlets.rest.utils.SitemapRequestParameters} object.
-     * @return Short summary of files created
-     */
-    @POST
-    @Path("/update")
-    @Produces({ MediaType.APPLICATION_JSON })
-    @Consumes({ MediaType.APPLICATION_JSON })
-    @CORSBinding
     public String updateSitemap(SitemapRequestParameters params) {
 
         JSONObject ret = new JSONObject();

@@ -35,6 +35,7 @@ import de.unigoettingen.sub.commons.contentlib.exceptions.ServiceNotAllowedExcep
 import de.unigoettingen.sub.commons.contentlib.servlet.rest.CORSBinding;
 import io.goobi.viewer.api.rest.bindings.AuthorizationBinding;
 import io.goobi.viewer.api.rest.bindings.ViewerRestServiceBinding;
+import io.goobi.viewer.api.rest.model.ToolsRequestParameters;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;

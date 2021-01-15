@@ -13,15 +13,18 @@
  *
  * You should have received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
-package io.goobi.viewer.servlets.rest.utils;
+package io.goobi.viewer.api.rest.model;
+
+import io.goobi.viewer.api.rest.model.jobs.SimpleJobParameter;
 
 /**
  * POST request parameters for SitemapResource.
  */
-public class SitemapRequestParameters {
+public class SitemapRequestParameters extends SimpleJobParameter{
 
     private String outputPath;
     private Boolean firstPageOnly;
+
 
     /**
      * <p>
@@ -66,4 +69,5 @@ public class SitemapRequestParameters {
     public void setFirstPageOnly(boolean firstPageOnly) {
         this.firstPageOnly = firstPageOnly;
     }
+
 }

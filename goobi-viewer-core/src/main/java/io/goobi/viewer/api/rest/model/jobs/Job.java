@@ -26,6 +26,8 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateTimeSerializer;
 
 /**
  * A process triggered by a REST call with PUT 
@@ -38,7 +40,7 @@ public class Job {
     
     private static final AtomicLong idCounter = new AtomicLong(0);
 
-    public static enum ACCESSIBILITY {
+    public static enum Accessibility {
         PUBLIC,
         SESSION,
         ADMIN,
@@ -53,7 +55,15 @@ public class Job {
         /**
          * Handle asynchonous generation of excel sheets with search results
          */
-        SEARCH_EXCEL_EXPORT;
+        SEARCH_EXCEL_EXPORT,
+        /**
+         * Update the sitemap 
+         */
+        UPDATE_SITEMAP,
+        /**
+         * Update data repositories
+         */
+        UPDATE_DATA_REPOSITORIES;
     }
     
     public static enum JobStatus {
@@ -65,7 +75,7 @@ public class Job {
     
     public final long id;
     public final JobType type;
-//    @JsonSerialize(using = LocalDateTimeSerializer.class)
+    @JsonSerialize(using = LocalDateTimeSerializer.class)
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm")
     public final LocalDateTime timeCreated;
     @JsonIgnore
@@ -74,14 +84,18 @@ public class Job {
     public Optional<String> exception = Optional.empty();
     @JsonIgnore
     public Optional<String> sessionId = Optional.empty();
+    @JsonIgnore
+    public final SimpleJobParameter params;
     
-    public Job(JobType type, BiConsumer<HttpServletRequest, Job> task) {
-        this.type = type;
+    public Job(SimpleJobParameter params, BiConsumer<HttpServletRequest, Job> task) {
+        this.type = params.type;
         this.task = task;
         this.id = idCounter.incrementAndGet();
         this.timeCreated = LocalDateTime.now();
         this.status = JobStatus.CREATED;
+        this.params = params;
     }
+
     
     public void doTask(HttpServletRequest request) {
         this.sessionId = Optional.ofNullable(request.getSession().getId());
@@ -97,14 +111,15 @@ public class Job {
         this.exception = Optional.ofNullable(error);
     }
     
-    public static ACCESSIBILITY getAccessibility(JobType type) {
+    public static Accessibility getAccessibility(JobType type) {
         switch(type) {
             case NOTIFY_SEARCH_UPDATE: 
-                return ACCESSIBILITY.TOKEN;
+            case UPDATE_SITEMAP:
+                return Accessibility.TOKEN;
             case SEARCH_EXCEL_EXPORT:
-                return ACCESSIBILITY.SESSION;
+                return Accessibility.SESSION;
             default:
-                return ACCESSIBILITY.ADMIN;
+                return Accessibility.ADMIN;
         }
     }
     

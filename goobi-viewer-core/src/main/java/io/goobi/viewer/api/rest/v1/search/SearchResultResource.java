@@ -13,7 +13,7 @@
  *
  * You should have received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
-package io.goobi.viewer.servlets.rest.search;
+package io.goobi.viewer.api.rest.v1.search;
 
 import java.io.IOException;
 import java.util.Collections;
@@ -30,6 +30,8 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 
 import io.goobi.viewer.api.rest.bindings.ViewerRestServiceBinding;
+import io.goobi.viewer.api.rest.model.search.SearchHitChildList;
+import io.goobi.viewer.api.rest.v1.ApiUrls;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
@@ -44,7 +46,7 @@ import io.goobi.viewer.model.search.SearchHit;
  * SearchResultResource class.
  * </p>
  */
-@Path("/search")
+@Path(ApiUrls.SEARCH)
 @ViewerRestServiceBinding
 public class SearchResultResource {
 
@@ -68,7 +70,7 @@ public class SearchResultResource {
      * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
      */
     @GET
-    @Path("/hit/{id}/{numChildren}")
+    @Path(ApiUrls.SEARCH_HIT_CHILDREN)
     @Produces({ MediaType.APPLICATION_JSON })
     public SearchHitChildList getTagsForPageJson(@PathParam("id") String hitId, @PathParam("numChildren") int numChildren)
             throws DAOException, PresentationException, IndexUnreachableException, IOException, ViewerConfigurationException {

@@ -15,7 +15,8 @@
  */
 package io.goobi.viewer.api.rest.v1.jobs;
 
-import static io.goobi.viewer.api.rest.v1.ApiUrls.*;
+import static io.goobi.viewer.api.rest.v1.ApiUrls.JOBS;
+import static io.goobi.viewer.api.rest.v1.ApiUrls.JOBS_JOB;
 
 import java.util.List;
 import java.util.Optional;
@@ -29,6 +30,7 @@ import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
+import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 
@@ -38,10 +40,11 @@ import io.goobi.viewer.api.rest.filters.AdminLoggedInFilter;
 import io.goobi.viewer.api.rest.filters.AuthorizationFilter;
 import io.goobi.viewer.api.rest.model.jobs.Job;
 import io.goobi.viewer.api.rest.model.jobs.Job.JobType;
-import io.goobi.viewer.controller.DataManager;
-import io.goobi.viewer.exceptions.AuthenticationException;
-import io.goobi.viewer.api.rest.model.jobs.JobDescription;
 import io.goobi.viewer.api.rest.model.jobs.JobManager;
+import io.goobi.viewer.api.rest.model.jobs.SimpleJobParameter;
+import io.goobi.viewer.controller.DataManager;
+import io.goobi.viewer.exceptions.AccessDeniedException;
+import io.goobi.viewer.exceptions.AuthenticationException;
 
 /**
  * @author florian
@@ -59,16 +62,17 @@ public class JobResource {
     @POST
     @Consumes({ MediaType.APPLICATION_JSON })
     @Produces({ MediaType.APPLICATION_JSON })
-    public Job addJob(JobDescription desc) throws IllegalRequestException, AuthenticationException {
+    public Job addJob(SimpleJobParameter desc) throws WebApplicationException {
         if(desc.type == null) {
-            throw new IllegalRequestException("Must provide job type");
+            throw new WebApplicationException(new IllegalRequestException("Must provide job type"));
         }
         if(isAuthorized(desc.type, Optional.empty(), request)) {
-            Job job = new Job(desc.type, JobManager.createTask(desc.type));
-            job.doTask(request);
+            Job job = new Job(desc, JobManager.createTask(desc.type));
+            DataManager.getInstance().getRestApiJobManager().addJob(job);
+            DataManager.getInstance().getRestApiJobManager().triggerJobInThread(job.id, request);
             return job;
         } else {
-            throw new AuthenticationException("Not authorized to create this type of job");
+            throw  new WebApplicationException(new AccessDeniedException("Not authorized to create this type of job"));
         }
     }
     
@@ -97,7 +101,7 @@ public class JobResource {
     
 
     public boolean isAuthorized(JobType type, Optional<String> jobSessionId, HttpServletRequest request) {
-        Job.ACCESSIBILITY access = Job.getAccessibility(type);
+        Job.Accessibility access = Job.getAccessibility(type);
         switch (access) {
             case PUBLIC:
                 return true;

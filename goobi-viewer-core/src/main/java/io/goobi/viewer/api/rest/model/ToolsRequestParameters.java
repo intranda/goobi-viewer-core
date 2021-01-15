@@ -13,12 +13,14 @@
  *
  * You should have received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
-package io.goobi.viewer.servlets.rest.utils;
+package io.goobi.viewer.api.rest.model;
+
+import io.goobi.viewer.api.rest.model.jobs.SimpleJobParameter;
 
 /**
  * POST request parameters for RecordsResource.
  */
-public class ToolsRequestParameters {
+public class ToolsRequestParameters extends SimpleJobParameter {
 
     private String pi;
     private String dataRepositoryName;

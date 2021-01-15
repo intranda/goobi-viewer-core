@@ -32,7 +32,7 @@ var viewerJS = ( function( viewer ) {
     var _searchListShowThumbs = false;
     var _defaults = {
         contextPath: '',
-        restApiPath: '/rest/search/hit/',
+        restApiPath: '/api/v1/search/hit/',
         hitsPerCall: 20,
         resetSearchSelector: '#resetCurrentSearch',
         searchInputSelector: '#currentSearchInput',

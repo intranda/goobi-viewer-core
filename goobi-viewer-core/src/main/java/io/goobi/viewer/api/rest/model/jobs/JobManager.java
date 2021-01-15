@@ -18,6 +18,7 @@ package io.goobi.viewer.api.rest.model.jobs;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
@@ -28,12 +29,14 @@ import java.util.stream.Collectors;
 
 import javax.servlet.http.HttpServletRequest;
 
+import io.goobi.viewer.api.rest.model.SitemapRequestParameters;
 import io.goobi.viewer.api.rest.model.jobs.Job.JobType;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.exceptions.ViewerConfigurationException;
 import io.goobi.viewer.model.search.SearchHitsNotifier;
+import io.goobi.viewer.model.sitemap.SitemapBuilder;
 
 /**
  * @author florian
@@ -108,6 +111,14 @@ public class JobManager {
                     } catch (DAOException | PresentationException | IndexUnreachableException | ViewerConfigurationException e) {
                         job.setError(e.toString());
                     }
+                };
+            case UPDATE_SITEMAP: 
+                return (request, job) -> {
+                        SitemapRequestParameters params = Optional.ofNullable(job.params)
+                                .filter(p -> p instanceof SitemapRequestParameters)
+                                .map(p -> (SitemapRequestParameters)p)
+                                .orElse(null);
+                        new SitemapBuilder(request).updateSitemap(params);
                 };
             default:
                 return (request, job) -> {};

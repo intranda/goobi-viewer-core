@@ -38,7 +38,9 @@ import io.swagger.v3.oas.annotations.Operation;
 
 /**
  * <p>
- * OpenSearchResource class.
+ * Endpoint for opensearch (https://opensearchfoundation.org/) within the viewer instance. 
+ * The url is referenced in the header of the template.html in the viewer-theme.
+ * This resource returns the xml-document in /resources/opensearch/opensearch.xml
  * </p>
  */
 @Path(ApiUrls.OPENSEARCH)

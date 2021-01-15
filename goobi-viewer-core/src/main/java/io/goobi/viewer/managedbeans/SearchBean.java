@@ -63,6 +63,7 @@ import org.slf4j.LoggerFactory;
 import de.unigoettingen.sub.commons.contentlib.exceptions.IllegalRequestException;
 import io.goobi.viewer.api.rest.model.jobs.Job;
 import io.goobi.viewer.api.rest.model.jobs.Job.JobType;
+import io.goobi.viewer.api.rest.model.jobs.SimpleJobParameter;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.DateTools;
 import io.goobi.viewer.controller.SolrConstants;
@@ -2028,7 +2029,7 @@ public class SearchBean implements SearchInterface, Serializable {
 
         
         try {
-            Job excelCreationJob = new Job(JobType.SEARCH_EXCEL_EXPORT, task);
+            Job excelCreationJob = new Job(new SimpleJobParameter(JobType.SEARCH_EXCEL_EXPORT), task);
             Long jobId = DataManager.getInstance().getRestApiJobManager().addJob(excelCreationJob);
             Future ready = DataManager.getInstance().getRestApiJobManager()
             .triggerJobInThread(jobId, (HttpServletRequest)facesContext.getExternalContext().getRequest());

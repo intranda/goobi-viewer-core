@@ -146,9 +146,15 @@ public class ApiUrls extends AbstractApiUrlManager {
     public static final String AUTHORITY_RESOLVER = "/resolver";
 
     public static final String OPENSEARCH = "/opensearch";
+    
+    public static final String SEARCH = "/search";
+    public static final String SEARCH_HIT_CHILDREN = "/hit/{id}/{numChildren}";
 
     public static final String JOBS = "/jobs";
     public static final String JOBS_JOB = "/{id}";
+    
+    public static final String CONTEXT = "/context";
+    
     
     public static final String CROWDSOURCING_CAMPAIGN = "/crowdsourcing/campaings/{campaignId}";
     public static final String CROWDSOURCING_CAMPAIGN_ANNOTATIONS = "/annotations";
