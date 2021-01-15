@@ -15,6 +15,8 @@
  */
 package io.goobi.viewer.controller;
 
+import java.time.Duration;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -28,6 +30,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import de.intranda.monitoring.timer.TimeAnalysis;
+import io.goobi.viewer.api.rest.model.jobs.JobManager;
 import io.goobi.viewer.controller.language.LanguageHelper;
 import io.goobi.viewer.dao.IDAO;
 import io.goobi.viewer.dao.impl.JPADAO;
@@ -85,6 +88,8 @@ public final class DataManager {
     private TimeAnalysis timing = new TimeAnalysis();
     
     private FileResourceManager fileResourceManager = null;
+    
+    private final JobManager restApiJobManager = new JobManager(Duration.of(7, ChronoUnit.DAYS));
 
     /**
      * <p>
@@ -484,5 +489,12 @@ public final class DataManager {
         } else {
             throw new IllegalStateException("Must be called from within faces context");
         }
+    }
+    
+    /**
+     * @return the restApiJobManager
+     */
+    public JobManager getRestApiJobManager() {
+        return restApiJobManager;
     }
 }

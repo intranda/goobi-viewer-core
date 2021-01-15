@@ -23,6 +23,7 @@ import javax.ws.rs.container.ContainerRequestFilter;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
 
+import io.goobi.viewer.api.rest.bindings.AdminLoggedInBinding;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.model.security.user.User;
 
@@ -30,6 +31,7 @@ import io.goobi.viewer.model.security.user.User;
  * @author florian
  *
  */
+@AdminLoggedInBinding
 public class AdminLoggedInFilter implements ContainerRequestFilter {
 
     @Context
@@ -40,13 +42,17 @@ public class AdminLoggedInFilter implements ContainerRequestFilter {
      */
     @Override
     public void filter(ContainerRequestContext requestContext) throws IOException {
-       User user = BeanUtils.getUserFromRequest(servletRequest);
-       if(user == null || !user.isSuperuser()) {
-           Response response = Response.status(Response.Status.UNAUTHORIZED)
-                   .entity("You must be logged in as administrator to access this resource")
-                   .build();
-           requestContext.abortWith(response);
-       }
+        if(!isAdminLoggedIn(servletRequest)) {
+            Response response = Response.status(Response.Status.UNAUTHORIZED)
+                    .entity("You must be logged in as administrator to access this resource")
+                    .build();
+            requestContext.abortWith(response);
+        }
+    }
+    
+    public static boolean isAdminLoggedIn(HttpServletRequest request) {
+        User user = BeanUtils.getUserFromRequest(request);
+        return user == null && user.isSuperuser();
     }
 
 }

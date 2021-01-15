@@ -13,7 +13,7 @@
  *
  * You should have received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
-package io.goobi.viewer.servlets.rest.search;
+package io.goobi.viewer.model.search;
 
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
@@ -36,6 +36,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import io.goobi.viewer.api.rest.bindings.ViewerRestServiceBinding;
+import io.goobi.viewer.api.rest.v1.ApiUrls;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.NetTools;
 import io.goobi.viewer.controller.SolrConstants;
@@ -55,35 +56,10 @@ import io.goobi.viewer.servlets.rest.security.AuthenticationBinding;
  * SearchHitsNotificationResource class.
  * </p>
  */
-@Path(SearchHitsNotificationResource.RESOURCE_PATH)
-@ViewerRestServiceBinding
-public class SearchHitsNotificationResource {
+public class SearchHitsNotifier {
 
-    private static final Logger logger = LoggerFactory.getLogger(SearchHitsNotificationResource.class);
+    private static final Logger logger = LoggerFactory.getLogger(SearchHitsNotifier.class);
 
-    /** Constant <code>RESOURCE_PATH="/search"</code> */
-    public static final String RESOURCE_PATH = "/search";
-
-    @Context
-    private HttpServletRequest servletRequest;
-    @Context
-    private HttpServletResponse servletResponse;
-
-    /**
-     * <p>
-     * sendNewHitsNotifications.
-     * </p>
-     *
-     * @return a {@link java.lang.String} object.
-     * @throws io.goobi.viewer.exceptions.DAOException if any.
-     * @throws io.goobi.viewer.exceptions.PresentationException if any.
-     * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
-     * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
-     */
-    @GET
-    @Path("/sendnotifications/")
-    @Produces({ MediaType.TEXT_HTML })
-    @AuthenticationBinding
     public String sendNewHitsNotifications() throws DAOException, PresentationException, IndexUnreachableException, ViewerConfigurationException {
         logger.trace("sendNewHitsNotifications");
         Map<String, String> filters = new HashMap<>();

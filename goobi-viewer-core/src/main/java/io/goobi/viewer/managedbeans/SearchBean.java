@@ -1979,10 +1979,11 @@ public class SearchBean implements SearchInterface, Serializable {
     public String exportSearchAsExcelAction() throws IndexUnreachableException {
         logger.trace("exportSearchAsExcelAction");
         final FacesContext facesContext = FacesContext.getCurrentInstance();
+        
         String currentQuery = SearchHelper.prepareQuery(searchString);
         String finalQuery = SearchHelper.buildFinalQuery(currentQuery, DataManager.getInstance().getConfiguration().isAggregateHits());
         Locale locale = navigationHelper.getLocale();
-
+        
         downloadReady = new FutureTask<>(new Callable<Boolean>() {
 
             @Override

@@ -13,7 +13,7 @@
  *
  * You should have received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
-package io.goobi.viewer.servlets.rest.search;
+package io.goobi.viewer.api.rest.v1.search;
 
 import java.io.IOException;
 
@@ -29,17 +29,19 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import io.goobi.viewer.api.rest.bindings.ViewerRestServiceBinding;
+import io.goobi.viewer.api.rest.v1.ApiUrls;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.NetTools;
 import io.goobi.viewer.exceptions.HTTPException;
 import io.goobi.viewer.servlets.utils.ServletUtils;
+import io.swagger.v3.oas.annotations.Operation;
 
 /**
  * <p>
  * OpenSearchResource class.
  * </p>
  */
-@Path("/opensearch")
+@Path(ApiUrls.OPENSEARCH)
 @ViewerRestServiceBinding
 public class OpenSearchResource {
 
@@ -56,8 +58,8 @@ public class OpenSearchResource {
      * @return a {@link java.lang.String} object.
      */
     @GET
-    @Path("/getxml")
     @Produces({ MediaType.TEXT_XML })
+    @Operation(tags= {"search"}, summary="Endpoint for opensearch api")
     public String getXml() {
         String xml = null;
         try {

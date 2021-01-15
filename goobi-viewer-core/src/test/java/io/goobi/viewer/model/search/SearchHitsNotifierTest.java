@@ -13,7 +13,7 @@
  *
  * You should have received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
-package io.goobi.viewer.servlets.rest.search;
+package io.goobi.viewer.model.search;
 
 import static org.junit.Assert.*;
 
@@ -30,12 +30,13 @@ import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.exceptions.ViewerConfigurationException;
 import io.goobi.viewer.model.search.Search;
 import io.goobi.viewer.model.search.SearchHit;
+import io.goobi.viewer.model.search.SearchHitsNotifier;
 
 /**
  * @author florian
  *
  */
-public class SearchHitsNotificationResourceTest extends AbstractDatabaseAndSolrEnabledTest {
+public class SearchHitsNotifierTest extends AbstractDatabaseAndSolrEnabledTest {
 
     /**
      * @throws java.lang.Exception
@@ -62,7 +63,7 @@ public class SearchHitsNotificationResourceTest extends AbstractDatabaseAndSolrE
      */
     @Test
     public void testcheckSearchUpdate() throws PresentationException, IndexUnreachableException, DAOException, ViewerConfigurationException {
-        SearchHitsNotificationResource resource = new SearchHitsNotificationResource();
+        SearchHitsNotifier resource = new SearchHitsNotifier();
         Search search = new Search();
         search.setQuery("ISWORK:*");
         search.setLastHitsCount(200);

@@ -99,7 +99,7 @@ var viewerJS = ( function( viewer ) {
                 trigger.hide();
                 excelLoader.show();
                 
-                var url = _defaults.contextPath + '/rest/download/search/waitFor/';
+                var url = _defaults.contextPath + '/api/v1/downloads/search/status/';
                 var promise = Q( $.ajax( {
                     url: decodeURI( url ),
                     type: "GET",

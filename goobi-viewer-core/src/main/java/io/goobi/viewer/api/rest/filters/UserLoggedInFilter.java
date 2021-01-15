@@ -23,6 +23,7 @@ import javax.ws.rs.container.ContainerRequestFilter;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
 
+import io.goobi.viewer.api.rest.bindings.UserLoggedInBinding;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.model.security.user.User;
 
@@ -30,6 +31,7 @@ import io.goobi.viewer.model.security.user.User;
  * @author florian
  *
  */
+@UserLoggedInBinding
 public class UserLoggedInFilter implements ContainerRequestFilter {
 
     @Context
@@ -40,13 +42,17 @@ public class UserLoggedInFilter implements ContainerRequestFilter {
      */
     @Override
     public void filter(ContainerRequestContext requestContext) throws IOException {
-       User user = BeanUtils.getUserFromRequest(servletRequest);
-       if(user == null) {
+       if(!isUserLoggedIn(servletRequest)) {
            Response response = Response.status(Response.Status.UNAUTHORIZED)
                    .entity("You must be logged in to access this resource")
                    .build();
            requestContext.abortWith(response);
        }
+    }
+    
+    public static boolean isUserLoggedIn(HttpServletRequest request) {
+        User user = BeanUtils.getUserFromRequest(request);
+        return user != null;
     }
 
 }
