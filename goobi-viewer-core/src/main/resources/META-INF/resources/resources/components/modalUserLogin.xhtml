@@ -130,7 +130,7 @@
 													<label id="labelUserPassword" for="userPassword"
 														class="control-label col-12 col-lg-3">#{msg.password}:</label>
 													<div class="col-12 col-lg-9">
-														<h:inputSecret id="userPassword" styleClass="form-control abc"
+														<h:inputSecret id="userPassword" styleClass="form-control"
 															type="password" value="#{userBean.password}"
 															required="true"
 															requiredMessage="#{msg.login__enter_password}">
@@ -138,8 +138,8 @@
 																value="#{msg.login__enter_password}" />
 															<f:passThroughAttribute name="aria-labelledby"
 																value="labelUserPassword" />
-															<f:passThroughAttribute name="autocomplete"
-																value="current-password" />
+															<f:passThroughAttribute name="current-password"
+																value="on" />
 														</h:inputSecret>
 													</div>
 												</div>
