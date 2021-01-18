@@ -130,7 +130,7 @@
 													<label id="labelUserPassword" for="userPassword"
 														class="control-label col-12 col-lg-3">#{msg.password}:</label>
 													<div class="col-12 col-lg-9">
-														<h:inputSecret id="userPassword" styleClass="form-control"
+														<h:inputSecret id="userPassword" styleClass="form-control abc"
 															type="password" value="#{userBean.password}"
 															required="true"
 															requiredMessage="#{msg.login__enter_password}">
@@ -138,6 +138,8 @@
 																value="#{msg.login__enter_password}" />
 															<f:passThroughAttribute name="aria-labelledby"
 																value="labelUserPassword" />
+															<f:passThroughAttribute name="autocomplete"
+																value="current-password" />
 														</h:inputSecret>
 													</div>
 												</div>
@@ -253,7 +255,10 @@
 													<h:inputSecret id="userCreateAccountPW2"
 														styleClass="col-12 col-lg-9 form-control" type="password"
 														value="#{userBean.passwordTwo}" required="true"
-														requiredMessage="#{msg.newUserPasswordTwoRequired}" />
+														requiredMessage="#{msg.newUserPasswordTwoRequired}">
+														<f:passThroughAttribute name="autocomplete" value="new-password" />
+													</h:inputSecret>
+														
 												</div>
 
 												<ui:fragment rendered="#{userBean.securityQuestion != null}">
@@ -264,7 +269,10 @@
 															styleClass="form-control col-12 col-lg-9"
 															autocomplete="off" value="#{userBean.securityAnswer}"
 															required="true"
-															requiredMessage="#{msg.user__security_question_required_msg}" />
+															requiredMessage="#{msg.user__security_question_required_msg}">
+														<f:passThroughAttribute name="autocomplete" value="new-password" />
+													</h:inputSecret>
+															
 													</div>
 												</ui:fragment>
 
