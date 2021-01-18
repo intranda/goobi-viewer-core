@@ -19,7 +19,7 @@
                 <h:panelGroup
                     rendered="#{cc.attrs.widget.widgetMode == 'STANDARD' or cc.attrs.widget.widgetMode == 'FOLDOUT' or cc.attrs.widget.type == null}">
                     <h3>
-                        #{cc.attrs.widget.widgetTitle == '' ? msg.lastImports : cc.attrs.widget.widgetTitle}
+                        #{cc.attrs.widget.widgetTitle ? cc.attrs.widget.widgetTitle : msg.lastImports}
                         <a
                             href="#{navigationHelper.applicationUrl}api/v1/records/rss?query=#{cc.attrs.filterQuery}"
                             title="#{msg.rssSubscribe}"

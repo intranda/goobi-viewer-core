@@ -117,7 +117,7 @@
 			width: 100%;
 			padding: 0.4rem;
 			font-size: 1.2rem;
-			font-weight: 700;
+			font-weight: 400;
 			color: @gray;
 			fill: @gray;
 			cursor: pointer;
@@ -153,7 +153,12 @@
 	    	a,
 	    	span,
 	    	button {}
-		}    
+	    	> svg {
+	    		width: 32px;
+	    		height: 32px;
+	    		padding: 0.4rem;
+	    	}
+		}
 	    /* ELEMENT */
 	    &.start {}
 	    &.page-browse,
@@ -231,8 +236,8 @@
 	            max-width: 100%;
 	            //Firefox
 		        &::-moz-range-thumb {
-		            width: 12px;
-		            height: 32px;
+		            width: 8px;
+		            height: 26px;
 		            border: none;
 		            background-color: @gray;
 		            border-radius: 0;
@@ -245,8 +250,8 @@
 				}
 		        &::-webkit-slider-thumb {
 				  -webkit-appearance: none;
-	              width: 12px;
-	              height: 32px;
+	              width: 8px;
+	              height: 26px;
 	              border: none;
 	              background-color: @gray;
 	              border-radius: 0;

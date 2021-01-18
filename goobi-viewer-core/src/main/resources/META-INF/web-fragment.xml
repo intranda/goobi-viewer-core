@@ -24,12 +24,18 @@
         <param-name>com.sun.faces.enableMissingResourceLibraryDetection</param-name>
         <param-value>true</param-value>
     </context-param>
+    <!-- The Primefaces theme needs to be set to none, otherwise the default theme
+         like aristo or nova-light is set and this implies additonal styling in front-/backend -->
+    <context-param>
+        <param-name>primefaces.THEME</param-name>
+        <param-value>none</param-value>
+    </context-param>
     <context-param>
         <param-name>javax.faces.CONFIG_FILES</param-name>
         <param-value>/resources/themes/faces-config.xml, /WEB-INF/faces-config.xml</param-value>
     </context-param>
     <!-- All f:convertDateTime widgets will use the server's time zone for output. 
-        Remove once the widgets are able to use the client's time zone. -->
+         Remove once the widgets are able to use the client's time zone. -->
     <context-param>
         <param-name>javax.faces.DATETIMECONVERTER_DEFAULT_TIMEZONE_IS_SYSTEM_TIMEZONE</param-name>
         <param-value>true</param-value>
