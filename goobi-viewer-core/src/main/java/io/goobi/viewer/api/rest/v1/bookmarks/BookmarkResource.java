@@ -292,7 +292,7 @@ public class BookmarkResource {
             throws DAOException, IOException, RestApiException, ViewerConfigurationException, IndexUnreachableException, PresentationException, ContentLibException {
        BookmarkList list = getBookmarkList(id);
        String query = list.generateSolrQueryForItems();
-       return RSSFeed.createRssFeed(language, maxHits, null, query, null, servletRequest);
+       return RSSFeed.createRssFeed(language, maxHits, null, query, null, 0, servletRequest);
     }
     
     @GET
@@ -310,7 +310,7 @@ public class BookmarkResource {
             throws DAOException, IOException, RestApiException, ViewerConfigurationException, IndexUnreachableException, PresentationException, ContentLibException {
        BookmarkList list = getBookmarkList(id);
        String query = list.generateSolrQueryForItems();
-       return RSSFeed.createRssResponse(language, maxHits, null, query, null, servletRequest);
+       return RSSFeed.createRssResponse(language, maxHits, null, query, null, 0, servletRequest);
     }
     
     @GET
@@ -391,7 +391,7 @@ public class BookmarkResource {
             throws DAOException, IOException, RestApiException, ViewerConfigurationException, IndexUnreachableException, PresentationException, ContentLibException {
         BookmarkList list = getSharedBookmarkListByKey(key);
         String query = list.generateSolrQueryForItems();
-        return RSSFeed.createRssResponse(language, maxHits, null, query, null, servletRequest);
+        return RSSFeed.createRssResponse(language, maxHits, null, query, null, 0,servletRequest);
     }
     
     @GET
@@ -409,6 +409,6 @@ public class BookmarkResource {
             throws DAOException, IOException, RestApiException, ViewerConfigurationException, IndexUnreachableException, PresentationException, ContentLibException {
         BookmarkList list = getSharedBookmarkListByKey(key);
         String query = list.generateSolrQueryForItems();
-        return RSSFeed.createRssFeed(language, maxHits, null, query, null, servletRequest);
+        return RSSFeed.createRssFeed(language, maxHits, null, query, null, 0,servletRequest);
     }
 }

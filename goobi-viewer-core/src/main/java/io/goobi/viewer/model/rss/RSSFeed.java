@@ -732,7 +732,7 @@ public class RSSFeed {
      * @return
      * @throws ContentLibException
      */
-    public static Channel createRssResponse(String language, Integer maxHits, String subtheme, String query, String facets, HttpServletRequest servletRequest)
+    public static Channel createRssResponse(String language, Integer maxHits, String subtheme, String query, String facets, Integer facetQueryOperator, HttpServletRequest servletRequest)
             throws ContentLibException {
         try {
             if(maxHits == null) {
@@ -751,7 +751,7 @@ public class RSSFeed {
             if (StringUtils.isNotBlank(facets)) {
                 SearchFacets searchFacets = new SearchFacets();
                 searchFacets.setCurrentFacetString(facets);
-                filterQueries = searchFacets.generateFacetFilterQueries(0, true);
+                filterQueries = searchFacets.generateFacetFilterQueries(facetQueryOperator != null ? facetQueryOperator : 0, true);
             }
             
             Channel rss = RSSFeed.createRssFeed(ServletUtils.getServletPathWithHostAsUrlFromRequest(servletRequest),
@@ -762,7 +762,7 @@ public class RSSFeed {
         }
     }
     
-    public static String createRssFeed(String language, Integer maxHits, String subtheme, String query, String facets, HttpServletRequest servletRequest)
+    public static String createRssFeed(String language, Integer maxHits, String subtheme, String query, String facets, Integer facetQueryOperator, HttpServletRequest servletRequest)
             throws ContentLibException {
         try {
             if(maxHits == null) {
@@ -781,7 +781,7 @@ public class RSSFeed {
             if (StringUtils.isNotBlank(facets)) {
                 SearchFacets searchFacets = new SearchFacets();
                 searchFacets.setCurrentFacetString(facets);
-                filterQueries = searchFacets.generateFacetFilterQueries(0, true);
+                filterQueries = searchFacets.generateFacetFilterQueries(facetQueryOperator != null ? facetQueryOperator : 0, true);
             }
             
             SyndFeedOutput output = new SyndFeedOutput();

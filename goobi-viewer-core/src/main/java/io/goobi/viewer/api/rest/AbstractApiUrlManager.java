@@ -232,7 +232,9 @@ public abstract class AbstractApiUrlManager {
 
         @Override
         public ApiPathQueries query(String key, Object value) {
-            this.queries.put(key, value);
+            if(value != null) {                
+                this.queries.put(key, value);
+            }
             return this;
         }
 

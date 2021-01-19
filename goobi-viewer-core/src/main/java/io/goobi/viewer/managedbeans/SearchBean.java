@@ -61,9 +61,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import de.unigoettingen.sub.commons.contentlib.exceptions.IllegalRequestException;
+import io.goobi.viewer.api.rest.AbstractApiUrlManager;
 import io.goobi.viewer.api.rest.model.jobs.Job;
 import io.goobi.viewer.api.rest.model.jobs.Job.JobType;
 import io.goobi.viewer.api.rest.model.jobs.SimpleJobParameter;
+import io.goobi.viewer.api.rest.v1.ApiUrls;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.DateTools;
 import io.goobi.viewer.controller.SolrConstants;
@@ -1910,30 +1912,44 @@ public class SearchBean implements SearchInterface, Serializable {
         if (searchString == null) {
             return null;
         }
-
+        
         String currentQuery = SearchHelper.prepareQuery(searchString);
-        try {
-            return new StringBuilder().append(DataManager.getInstance().getConfiguration().getRestApiUrl())
-                    .append("rss/search/")
-                    .append(URLEncoder.encode(currentQuery, URL_ENCODING))
-                    .append('/')
-                    .append(URLEncoder.encode(facets.getCurrentFacetString(), URL_ENCODING))
-                    .append('/')
-                    .append(advancedSearchGroupOperator)
-                    .append("/-/")
-                    .toString();
-        } catch (UnsupportedEncodingException e) {
-            logger.warn("Could not encode query '{}' for URL", currentQuery);
-            return new StringBuilder().append(DataManager.getInstance().getConfiguration().getRestApiUrl())
-                    .append("rss/search/")
-                    .append(currentQuery)
-                    .append('/')
-                    .append(facets.getCurrentFacetString())
-                    .append('/')
-                    .append(advancedSearchGroupOperator)
-                    .append("/-/")
-                    .toString();
+        AbstractApiUrlManager urls = DataManager.getInstance().getRestApiManager().getDataApiManager().orElse(null);
+        if(urls == null) {
+            
+            try {
+                return new StringBuilder().append(DataManager.getInstance().getConfiguration().getRestApiUrl())
+                        .append("rss/search/")
+                        .append(URLEncoder.encode(currentQuery, URL_ENCODING))
+                        .append('/')
+                        .append(URLEncoder.encode(facets.getCurrentFacetString(), URL_ENCODING))
+                        .append('/')
+                        .append(advancedSearchGroupOperator)
+                        .append("/-/")
+                        .toString();
+            } catch (UnsupportedEncodingException e) {
+                logger.warn("Could not encode query '{}' for URL", currentQuery);
+                return new StringBuilder().append(DataManager.getInstance().getConfiguration().getRestApiUrl())
+                        .append("rss/search/")
+                        .append(currentQuery)
+                        .append('/')
+                        .append(facets.getCurrentFacetString())
+                        .append('/')
+                        .append(advancedSearchGroupOperator)
+                        .append("/-/")
+                        .toString();
+            }
+            
+        } else {
+            
+            String facetQuery = StringUtils.isBlank(facets.getCurrentFacetString().replace("-", "")) ? null : facets.getCurrentFacetString();
+            return urls.path(ApiUrls.RECORDS_RSS)
+                    .query("query", currentQuery)
+                    .query("facets", facetQuery)
+                    .query("facetQueryOperator", advancedSearchGroupOperator)
+                    .build();
         }
+
     }
 
     /**

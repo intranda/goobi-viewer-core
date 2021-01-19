@@ -59,9 +59,11 @@ public class RSSResource {
             @Parameter(description = "Language of the returned metadata labels and values (optional)") @QueryParam("lang") String language,
             @Parameter(description = "Limit for results to return (optional)") @QueryParam("max") Integer maxHits,
             @Parameter(description = "Search query to filter results (optional)") @QueryParam("query") String query,
-            @Parameter(description = "Facet query. Several queries may be entered as ';;' separated list (optional)" )@QueryParam("facets") String facets) throws ContentLibException {
- 
-        return RSSFeed.createRssFeed(language, maxHits, subtheme, query, facets, servletRequest);
+            @Parameter(description = "Facet query. Several queries may be entered as ';;' separated list (optional)" )@QueryParam("facets") String facets,
+            @Parameter(description = "Facet query operator. '0' (default) means that facet queries are chained using logical 'AND', '1' means that they are chained using logical 'OR' (optional)" )
+            @QueryParam("facetQueryOperator") Integer facetQueryOperator) throws ContentLibException {
+
+        return RSSFeed.createRssFeed(language, maxHits, subtheme, query, facets, facetQueryOperator, servletRequest);
     }
 
     
@@ -76,15 +78,11 @@ public class RSSResource {
             @Parameter(description = "Language of the returned metadata labels and values (optional)") @QueryParam("lang") String language,
             @Parameter(description = "Limit for results to return (optional)") @QueryParam("max") Integer maxHits,
             @Parameter(description = "Search query to filter results (optional)") @QueryParam("query") String query,
-            @Parameter(description = "Facet query. Several queries may be entered as ';;' separated list (optional)" )@QueryParam("facets") String facets) throws ContentLibException {
+            @Parameter(description = "Facet query. Several queries may be entered as ';;' separated list (optional)" )@QueryParam("facets") String facets,
+            @Parameter(description = "Facet query operator. '0' (default) means that facet queries are chained using logical 'AND', '1' means that they are chained using logical 'OR' (optional)" )
+            @QueryParam("facetQueryOperator") Integer facetQueryOperator) throws ContentLibException {
         
-        return RSSFeed.createRssResponse(language, maxHits, subtheme, query, facets, servletRequest);
+        return RSSFeed.createRssResponse(language, maxHits, subtheme, query, facets, facetQueryOperator, servletRequest);
     }
 
-    
-    
-    
-
-
-    
 }

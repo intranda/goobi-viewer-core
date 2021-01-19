@@ -28,6 +28,8 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.lang3.StringUtils;
 
+import io.goobi.viewer.api.rest.AbstractApiUrlManager;
+import io.goobi.viewer.api.rest.v1.ApiUrls;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.exceptions.ViewerConfigurationException;
 import io.goobi.viewer.managedbeans.SearchBean;
@@ -394,19 +396,30 @@ public class BrowseDcElement implements Comparable<BrowseDcElement>, Serializabl
                 .append(".*) AND (ISWORK:true OR ISANCHOR:true)")
                 .toString();
 
-        try {
-            return new StringBuilder().append(DataManager.getInstance().getConfiguration().getRestApiUrl())
-                    .append("rss/search/")
-                    .append(URLEncoder.encode(query, SearchBean.URL_ENCODING))
-                    .append("/-/-/-/")
-                    .toString();
-        } catch (UnsupportedEncodingException e) {
-            return new StringBuilder().append(DataManager.getInstance().getConfiguration().getRestApiUrl())
-                    .append("rss/search/")
-                    .append(query)
-                    .append("/-/-/-/")
-                    .toString();
+        AbstractApiUrlManager urls = DataManager.getInstance().getRestApiManager().getDataApiManager().orElse(null);
+        
+        if(urls == null) {
+
+            try {
+                return new StringBuilder().append(DataManager.getInstance().getConfiguration().getRestApiUrl())
+                        .append("rss/search/")
+                        .append(URLEncoder.encode(query, SearchBean.URL_ENCODING))
+                        .append("/-/-/-/")
+                        .toString();
+            } catch (UnsupportedEncodingException e) {
+                return new StringBuilder().append(DataManager.getInstance().getConfiguration().getRestApiUrl())
+                        .append("rss/search/")
+                        .append(query)
+                        .append("/-/-/-/")
+                        .toString();
+            }
+        } else {
+
+            return urls.path(ApiUrls.RECORDS_RSS)
+                    .query("query", query)
+                    .build();
         }
+        
     }
 
     /** {@inheritDoc} */
