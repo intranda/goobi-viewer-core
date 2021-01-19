@@ -1857,6 +1857,10 @@ public final class SearchHelper {
 
         List<String> ret = new ArrayList<>(sourceList.size());
         for (String s : sourceList) {
+            if (s.startsWith("BOOL_")) {
+                ret.add(s);
+                continue;
+            }
             String fieldName = facetifyField(s);
             if (fieldName != null) {
                 ret.add(fieldName);
