@@ -216,7 +216,7 @@ public class PDFDownloadJob extends DownloadJob {
             logger.trace("TaskManager response: {}", ret);
             return Integer.parseInt(ret);
         } catch (Throwable e) {
-            logger.error("Error getting response from TaskManager: " + e.toString());
+            logger.warn("Error getting response from TaskManager: " + e.toString());
             return -1;
         }
     }
@@ -242,7 +242,7 @@ public class PDFDownloadJob extends DownloadJob {
             logger.trace("TaskManager response: {}", ret);
             return Long.parseLong(ret);
         } catch (Throwable e) {
-            logger.error("Error getting response from TaskManager", e);
+            logger.warn("Error getting response from TaskManager");
             return -1;
         }
     }
