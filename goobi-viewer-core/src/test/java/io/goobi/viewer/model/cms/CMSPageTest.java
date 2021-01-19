@@ -38,6 +38,7 @@ import io.goobi.viewer.api.rest.v1.ApiUrls;
 import io.goobi.viewer.controller.Configuration;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.exceptions.DAOException;
+import io.goobi.viewer.exceptions.ViewerConfigurationException;
 import io.goobi.viewer.managedbeans.CmsBean;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.model.cms.CMSContentItem.CMSContentItemType;
@@ -47,8 +48,8 @@ import io.goobi.viewer.model.cms.CMSPageLanguageVersion.CMSPageStatus;
 //@PrepareForTest(BeanUtils.class)
 public class CMSPageTest extends AbstractDatabaseEnabledTest {
 
-    AbstractApiUrlManager urls = new ApiUrls("https://viewer.goobi.io/api/v1/");
-
+    AbstractApiUrlManager contentUrls;
+    AbstractApiUrlManager dataUrls;
     
     /**
      * @throws java.lang.Exception
@@ -57,6 +58,12 @@ public class CMSPageTest extends AbstractDatabaseEnabledTest {
     @Before
     public void setUp() throws Exception {
         super.setUp();
+        
+        contentUrls = DataManager.getInstance().getRestApiManager().getContentApiManager()
+                .orElseThrow(() -> new ViewerConfigurationException("urls.iiif must be configured to current rest api"));
+        dataUrls = DataManager.getInstance().getRestApiManager().getDataApiManager()
+                .orElseThrow(() -> new ViewerConfigurationException("urls.iiif must be configured to current rest api"));
+        
         //        FacesContext facesContext = TestUtils.mockFacesContext();
         //        ServletContext servletContext = (ServletContext) facesContext.getExternalContext().getContext();
         //        Mockito.when(servletContext.getRealPath("/")).thenReturn("src/META-INF/resources/");
@@ -114,7 +121,7 @@ public class CMSPageTest extends AbstractDatabaseEnabledTest {
 
         try {
             String url = page.getTileGridUrl("grid01");
-            String expecedUrl = urls
+            String expecedUrl = dataUrls
             .path(ApiUrls.CMS_MEDIA)
             .query("tags", allowedTags)
             .query("max", numTiles)
@@ -207,7 +214,7 @@ public class CMSPageTest extends AbstractDatabaseEnabledTest {
 
         String filename = media.getFileName();
 
-        String imageUrl = urls.path(ApiUrls.CMS_MEDIA, ApiUrls.CMS_MEDIA_FILES_FILE).params(filename).build()  + "/full/max/0/default.jpg/";
+        String imageUrl = contentUrls.path(ApiUrls.CMS_MEDIA, ApiUrls.CMS_MEDIA_FILES_FILE).params(filename).build()  + "/full/max/0/default.jpg/";
         Assert.assertEquals(imageUrl, page.getContent(imageId).replaceAll("\\?.*", ""));
         Assert.assertEquals(componentName, page.getContent(componentId));
 

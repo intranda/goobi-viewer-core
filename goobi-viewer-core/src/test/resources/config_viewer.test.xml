@@ -89,7 +89,7 @@
 		<urnResolver>urnResolver_value</urnResolver>
 		
  		<iiif useForCmsMedia="true">https://viewer.goobi.io/api/v1/</iiif>
-		<rest>https://viewer.goobi.io/rest/</rest>
+		<rest>http://localhost:8080/viewer/api/v1/</rest>
 
 		<download>https://viewer.goobi.io/download/</download>
 		
