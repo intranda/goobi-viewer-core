@@ -962,7 +962,7 @@ public class ThumbnailHandler {
                 .resolve(cmsMediaFolder)
                 .resolve(filename);
         try {
-            String url = contentApiUrl + "/image/-/" + URLEncoder.encode(PathConverter.toURI(filePath).toString(), "utf-8");
+            String url = contentApiUrl + "image/-/" + URLEncoder.encode(PathConverter.toURI(filePath).toString(), "utf-8");
             return url;
         } catch (UnsupportedEncodingException e) {
             throw new IllegalStateException(e.toString());

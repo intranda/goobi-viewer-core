@@ -15,10 +15,6 @@
  */
 package io.goobi.viewer.api.rest.v1;
 
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
-
-import javax.inject.Named;
 import javax.servlet.ServletConfig;
 import javax.servlet.http.HttpServlet;
 import javax.ws.rs.ApplicationPath;
@@ -27,19 +23,10 @@ import javax.ws.rs.core.Context;
 import org.glassfish.jersey.internal.inject.AbstractBinder;
 import org.glassfish.jersey.media.multipart.MultiPartFeature;
 import org.glassfish.jersey.server.ResourceConfig;
-import org.glassfish.jersey.server.ServerProperties;
 
 import io.goobi.viewer.api.rest.AbstractApiUrlManager;
 import io.goobi.viewer.api.rest.bindings.ViewerRestServiceBinding;
 import io.goobi.viewer.controller.DataManager;
-import io.swagger.v3.jaxrs2.integration.JaxrsOpenApiContextBuilder;
-import io.swagger.v3.oas.integration.OpenApiConfigurationException;
-import io.swagger.v3.oas.integration.SwaggerConfiguration;
-import io.swagger.v3.oas.integration.api.OpenApiContext;
-import io.swagger.v3.oas.models.OpenAPI;
-import io.swagger.v3.oas.models.info.Contact;
-import io.swagger.v3.oas.models.info.Info;
-import io.swagger.v3.oas.models.info.License;
 
 /**
  * <p>
@@ -89,7 +76,7 @@ public class Application extends ResourceConfig {
         packages(true, "io.goobi.viewer.api.rest.v1");
         packages(true, "io.goobi.viewer.api.rest.filters");
         packages(true, "io.goobi.viewer.api.rest.exceptions");
-        packages(true, "de.unigoettingen.sub.commons.contentlib.servlet.rest");
+//        packages(true, "de.unigoettingen.sub.commons.contentlib.servlet.rest");
         packages(true, "io.swagger");
         
 //        property(ServerProperties.OUTBOUND_CONTENT_LENGTH_BUFFER, 0);
