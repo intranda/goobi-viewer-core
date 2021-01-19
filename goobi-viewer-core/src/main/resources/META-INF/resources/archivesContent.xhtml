@@ -80,7 +80,7 @@
                           <div class="archives__object-block-label">#{msg.archives__archive_area_identity}</div>
                           <ui:repeat var="field" value="#{archiveBean.archiveTree.selectedEntry.identityStatementAreaList}">
                               <h:panelGroup layout="block" styleClass="archives__object-metadata-entry" rendered="#{field.filled}">
-                                  <div class="archives__object-field-name">#{field.label}:</div><div class="archives__object-field-value">#{field.value}</div>
+                              <div class="archives__object-field-name">#{msg[field.label]}:</div><div class="archives__object-field-value">#{field.value}</div>
                               </h:panelGroup>
                           </ui:repeat>
                       </c:if>
@@ -89,7 +89,7 @@
                           <div class="archives__object-block-label">#{msg.archives__archive_area_context}</div>
                           <ui:repeat var="field" value="#{archiveBean.archiveTree.selectedEntry.contextAreaList}">
                               <h:panelGroup layout="block" styleClass="archives__object-metadata-entry" rendered="#{field.filled}">
-                                  <div class="archives__object-field-name">#{field.label}:</div><div class="archives__object-field-value">#{field.value}</div>
+                                  <div class="archives__object-field-name">#{msg[field.label]}:</div><div class="archives__object-field-value">#{field.value}</div>
                               </h:panelGroup>
                           </ui:repeat>
                       </c:if>
@@ -98,7 +98,7 @@
                           <div class="archives__object-block-label">#{msg.archives__archive_area_content}</div>
                           <ui:repeat var="field" value="#{archiveBean.archiveTree.selectedEntry.contentAndStructureAreaAreaList}">
                               <h:panelGroup layout="block" styleClass="archives__object-metadata-entry" rendered="#{field.filled}">
-                                  <div class="archives__object-field-name">#{field.label}:</div><div class="archives__object-field-value">#{field.value}</div>
+                                  <div class="archives__object-field-name">#{msg[field.label]}:</div><div class="archives__object-field-value">#{field.value}</div>
                               </h:panelGroup>
                           </ui:repeat>
                       </c:if>
@@ -107,7 +107,7 @@
                           <div class="archives__object-block-label">#{msg.archives__archive_area_access}</div>
                           <ui:repeat var="field" value="#{archiveBean.archiveTree.selectedEntry.accessAndUseAreaList}">
                               <h:panelGroup layout="block" styleClass="archives__object-metadata-entry" rendered="#{field.filled}">
-                                  <div class="archives__object-field-name">#{field.label}:</div><div class="archives__object-field-value">#{field.value}</div>
+                                  <div class="archives__object-field-name">#{msg[field.label]}:</div><div class="archives__object-field-value">#{field.value}</div>
                               </h:panelGroup>
                           </ui:repeat>
                       </c:if>
@@ -116,7 +116,7 @@
                           <div class="archives__object-block-label">#{msg.archives__archive_area_materials}</div>
                           <ui:repeat var="field" value="#{archiveBean.archiveTree.selectedEntry.alliedMaterialsAreaList}">
                               <h:panelGroup layout="block" styleClass="archives__object-metadata-entry" rendered="#{field.filled}">
-                                  <div class="archives__object-field-name">#{field.label}:</div><div class="archives__object-field-value">#{field.value}</div>
+                                  <div class="archives__object-field-name">#{msg[field.label]}:</div><div class="archives__object-field-value">#{field.value}</div>
                               </h:panelGroup>
                           </ui:repeat>
                       </c:if>
@@ -125,7 +125,7 @@
                           <div class="archives__object-block-label">#{msg.archives__archive_area_notes}</div>
                           <ui:repeat var="field" value="#{archiveBean.archiveTree.selectedEntry.notesAreaList}">
                               <h:panelGroup layout="block" styleClass="archives__object-metadata-entry" rendered="#{field.filled}">
-                                  <div class="archives__object-field-name">#{field.label}:</div><div class="archives__object-field-value">#{field.value}</div>
+                                  <div class="archives__object-field-name">#{msg[field.label]}:</div><div class="archives__object-field-value">#{field.value}</div>
                               </h:panelGroup>
                           </ui:repeat>
                       </c:if>
@@ -134,7 +134,7 @@
                           <div class="archives__object-block-label">#{msg.archives__archive_area_descriptionControl}</div>
                           <ui:repeat var="field" value="#{archiveBean.archiveTree.selectedEntry.descriptionControlAreaList}">
                               <h:panelGroup layout="block" styleClass="archives__object-metadata-entry" rendered="#{field.filled}">
-                                  <div class="archives__object-field-name">#{field.label}:</div><div class="archives__object-field-value">#{field.value}</div>
+                                  <div class="archives__object-field-name">#{msg[field.label]}:</div><div class="archives__object-field-value">#{field.value}</div>
                               </h:panelGroup>
                           </ui:repeat>
                       </c:if>
