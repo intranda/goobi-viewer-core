@@ -72,6 +72,7 @@ public class Metadata implements Serializable {
     private final List<MetadataValue> values = new ArrayList<>();
     private final List<MetadataParameter> params = new ArrayList<>();
     private final boolean group;
+    private String citationTemplate;
 
     /**
      * <p>
@@ -126,8 +127,8 @@ public class Metadata implements Serializable {
         values.add(new MetadataValue(masterValue));
         if (paramValue != null) {
             setParamValue(0, 0, Collections.singletonList(paramValue), label, null, null, null, locale);
-//            values.get(0).getParamValues().add(new ArrayList<>());
-//            values.get(0).getParamValues().get(0).add(paramValue);
+            //            values.get(0).getParamValues().add(new ArrayList<>());
+            //            values.get(0).getParamValues().get(0).add(paramValue);
         }
         this.type = 0;
         this.number = -1;
@@ -466,7 +467,7 @@ public class Metadata implements Serializable {
                 mdValue.getParamUrls().add(paramIndex, url);
             }
         }
-        
+
         return this;
     }
 
@@ -790,6 +791,22 @@ public class Metadata implements Serializable {
      */
     public boolean isGroup() {
         return group;
+    }
+
+    /**
+     * @return the citationTemplate
+     */
+    public String getCitationTemplate() {
+        return citationTemplate;
+    }
+
+    /**
+     * @param citationTemplate the citationTemplate to set
+     * @return this
+     */
+    public Metadata setCitationTemplate(String citationTemplate) {
+        this.citationTemplate = citationTemplate;
+        return this;
     }
 
     /**

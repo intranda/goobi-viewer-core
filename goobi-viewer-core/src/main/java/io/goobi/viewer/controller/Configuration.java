@@ -527,6 +527,7 @@ public final class Configuration extends AbstractConfiguration {
         boolean group = sub.getBoolean("[@group]", false);
         int number = sub.getInt("[@number]", -1);
         int type = sub.getInt("[@type]", 0);
+        String citationTemplate = sub.getString("[@citationTemplate]");
         List<HierarchicalConfiguration> params = sub.configurationsAt("param");
         List<MetadataParameter> paramList = null;
         if (params != null) {
@@ -598,7 +599,7 @@ public final class Configuration extends AbstractConfiguration {
             }
         }
 
-        return new Metadata(label, masterValue, type, paramList, group, number);
+        return new Metadata(label, masterValue, type, paramList, group, number).setCitationTemplate(citationTemplate);
     }
 
     /**
@@ -4526,9 +4527,9 @@ public final class Configuration extends AbstractConfiguration {
         
         if(list.isEmpty()) {
             return ViewerResourceBundle.getAllLocales();
-        } else {
-            return list;
         }
+        
+        return list;
     }
     
     public boolean isVisibleIIIFRenderingPDF() {

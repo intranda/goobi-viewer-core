@@ -43,7 +43,8 @@ public class MetadataParameter implements Serializable {
         HIERARCHICALFIELD("hierarchicalfield"),
         MILLISFIELD("millisfield"),
         NORMDATAURI("normdatauri"),
-        NORMDATASEARCH("normdatasearch");
+        NORMDATASEARCH("normdatasearch"),
+        CITEPROC("citeproc");
 
         private static final Logger logger = LoggerFactory.getLogger(MetadataParameterType.class);
 
@@ -67,16 +68,16 @@ public class MetadataParameter implements Serializable {
         }
 
         public static MetadataParameterType getByString(String value) {
-            if (value != null) {
-                MetadataParameterType type = getByKey(value);
-                if (type == null) {
-                    logger.error("Metadata parameter type not found, please check configuration: {}", value);
-                    return FIELD;
-                }
-                return type;
+            if (value == null) {
+                return FIELD;
             }
 
-            return FIELD;
+            MetadataParameterType type = getByKey(value);
+            if (type == null) {
+                logger.error("Metadata parameter type not found, please check configuration: {}", value);
+                return FIELD;
+            }
+            return type;
         }
     }
 
