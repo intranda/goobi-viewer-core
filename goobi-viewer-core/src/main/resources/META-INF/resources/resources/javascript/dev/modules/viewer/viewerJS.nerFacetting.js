@@ -954,8 +954,8 @@ var viewerJS = ( function( viewer ) {
      */
     // get all tags from all pages: /rest/ner/tags/{pi}/
     function _getAllTags() {
+        if(_debug)console.log("get all tags from ", url);
         let url = _defaults.baseUrl + _defaults.apiUrl + _defaults.workId + "/ner/tags/";
-        console.log("get all tags from ", url);
         return url;
     }
     

@@ -26,6 +26,7 @@ import java.util.Optional;
 import org.opensaml.saml.saml2.common.IsTimeboundSAMLObjectValidPredicate;
 
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
+import io.goobi.viewer.messages.ViewerResourceBundle;
 
 /**
  * Interface for objects containing translations for a set of languages. Used to construct tab panels to switch beween languages
@@ -78,26 +79,11 @@ public interface IPolyglott {
     }
 
     public static Collection<Locale> getLocalesStatic() {
-
-        try {
-            Iterator<Locale> i = BeanUtils.getNavigationHelper().getSupportedLocales();
-            ArrayList<Locale> list = new ArrayList<>();
-            i.forEachRemaining(list::add);
-            final Locale defaultLocale = getDefaultLocale();
-            list.remove(defaultLocale);
-            list.add(0, defaultLocale);
-            return list;
-        } catch(NullPointerException e) {
-            return Arrays.asList(Locale.ENGLISH, Locale.GERMAN);
-        }
+        return ViewerResourceBundle.getAllLocales();
     }
 
     public static Locale getDefaultLocale() {
-        try {            
-            return Optional.ofNullable(BeanUtils.getDefaultLocale()).orElse(Locale.ENGLISH);
-        } catch(NullPointerException e) {
-            return Locale.ENGLISH;
-        }
+        return ViewerResourceBundle.getDefaultLocale();
     }
     
     public static Locale getCurrentLocale() {
