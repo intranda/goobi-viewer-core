@@ -1857,10 +1857,6 @@ public final class SearchHelper {
 
         List<String> ret = new ArrayList<>(sourceList.size());
         for (String s : sourceList) {
-            if (s.startsWith("BOOL_")) {
-                ret.add(s);
-                continue;
-            }
             String fieldName = facetifyField(s);
             if (fieldName != null) {
                 ret.add(fieldName);
@@ -1875,10 +1871,14 @@ public final class SearchHelper {
      * </p>
      *
      * @param fieldName a {@link java.lang.String} object.
-     * @should facetify correctly
      * @return a {@link java.lang.String} object.
+     * @should facetify correctly
+     * @should leave bool fields unaltered
      */
     public static String facetifyField(String fieldName) {
+        if (fieldName != null && fieldName.startsWith("BOOL_")) {
+            return fieldName;
+        }
         return adaptField(fieldName, "FACET_");
     }
 
