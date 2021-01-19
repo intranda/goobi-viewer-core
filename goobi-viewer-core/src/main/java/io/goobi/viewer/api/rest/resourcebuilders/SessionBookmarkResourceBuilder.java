@@ -79,7 +79,7 @@ public class SessionBookmarkResourceBuilder extends AbstractBookmarkResourceBuil
             throws DAOException, IOException, RestApiException, ViewerConfigurationException, IndexUnreachableException, PresentationException {
             BookmarkList bookmarkList = DataManager.getInstance().getBookmarkManager().getOrCreateBookmarkList(session);
             if (bookmarkList != null) {
-                return bookmarkList.getMiradorJsonObject(urls.getApplicationUrl());
+                return bookmarkList.getMiradorJsonObject(urls.getApplicationUrl(), urls.getApiUrl());
             }
             return "";
     }

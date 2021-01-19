@@ -101,7 +101,7 @@ var viewerJS = ( function( viewer ) {
                         document.title = translator.translate('viewMiradorComparison');
                     }
                 }).catch(function(error) {
-                    console.error('ERROR - _getMiradorObjects: ', error.responseText);
+                    console.error('ERROR - _getMiradorObjects: ', error);
                 });
             } else {
                 console.error("ERROR - no manifests to load");

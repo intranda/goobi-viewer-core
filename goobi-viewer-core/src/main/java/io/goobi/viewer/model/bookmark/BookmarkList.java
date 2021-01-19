@@ -44,7 +44,9 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 
+import io.goobi.viewer.api.rest.v1.ApiUrls;
 import io.goobi.viewer.controller.DataManager;
+import io.goobi.viewer.controller.RestApiManager;
 import io.goobi.viewer.controller.SolrConstants;
 import io.goobi.viewer.controller.SolrConstants.DocType;
 import io.goobi.viewer.controller.StringTools;
@@ -65,6 +67,11 @@ import io.goobi.viewer.model.security.user.UserGroup;
 @Table(name = "bookshelves")
 @JsonInclude(Include.NON_NULL)
 public class BookmarkList implements Serializable {
+
+    /**
+     * 
+     */
+    public static final String MIRADOR_LIB_PATH = "/resources/javascript/libs/mirador/";
 
     private static final long serialVersionUID = -3040539541804852903L;
 
@@ -591,7 +598,7 @@ public class BookmarkList implements Serializable {
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      */
-    public String getMiradorJsonObject(String applicationRoot) throws ViewerConfigurationException, IndexUnreachableException, PresentationException {
+    public String getMiradorJsonObject(String applicationRoot, String restApiUrl) throws ViewerConfigurationException, IndexUnreachableException, PresentationException {
         // int cols = (int) Math.sqrt(items.size());
         int cols = (int) Math.ceil(Math.sqrt(items.size()));
         int rows = (int) Math.ceil(items.size() / (float) cols);
@@ -599,7 +606,7 @@ public class BookmarkList implements Serializable {
         JSONObject root = new JSONObject();
         root.put("id", "miradorViewer");
         root.put("layout", rows + "x" + cols);
-        root.put("buildPath", applicationRoot + "/resources/javascript/libs/mirador/");
+        root.put("buildPath", applicationRoot + MIRADOR_LIB_PATH);
 
         JSONArray dataArray = new JSONArray();
         JSONArray windowObjectsArray = new JSONArray();
@@ -607,10 +614,16 @@ public class BookmarkList implements Serializable {
         //        int row = 1;
         //        int col = 1;
         for (Bookmark bi : items) {
-            String manifestUrl = new StringBuilder(DataManager.getInstance().getConfiguration().getIIIFApiUrl()).append("iiif/manifests/")
-                    .append(bi.getPi())
-                    .append("/manifest")
-                    .toString();
+            String pi = bi.getPi();
+            String manifestUrl;
+            if(RestApiManager.isLegacyUrl(restApiUrl)) {                
+                manifestUrl = getLegacyManifestUrl(pi);
+            } else {
+                manifestUrl = new ApiUrls(restApiUrl)
+                        .path(ApiUrls.RECORDS_RECORD, ApiUrls.RECORDS_MANIFEST)
+                        .params(pi)
+                        .build();
+            }
             boolean sidePanel = DataManager.getInstance().getSearchIndex().getHitCount(queryRoot + bi.getPi()) > 1;
 
             JSONObject dataItem = new JSONObject();
@@ -637,6 +650,18 @@ public class BookmarkList implements Serializable {
         root.put("windowObjects", windowObjectsArray);
 
         return root.toString();
+    }
+
+    /**
+     * @param pi
+     * @return
+     */
+    public String getLegacyManifestUrl(String pi) {
+        String manifestUrl = new StringBuilder(DataManager.getInstance().getConfiguration().getIIIFApiUrl()).append("iiif/manifests/")
+                .append(pi)
+                .append("/manifest")
+                .toString();
+        return manifestUrl;
     }
 
     /**

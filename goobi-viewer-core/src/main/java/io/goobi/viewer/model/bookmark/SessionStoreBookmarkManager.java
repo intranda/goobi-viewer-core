@@ -181,7 +181,6 @@ public class SessionStoreBookmarkManager {
                 DataManager.getInstance().getDao().addBookmarkList(oBookmarkList.get());
             } catch (PersistenceException | DAOException e) {
                 logger.error("Error saving session bookmark list", e);
-                DataManager.getInstance().getDao().deleteBookmarkList(oBookmarkList.get());
             }
 
         }

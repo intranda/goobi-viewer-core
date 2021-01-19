@@ -115,6 +115,13 @@ public class BookmarkResource {
             summary = "Get all bookmark lists owned by the current user. If not logged in, a single temporary bookmark list is stored in the http session which is returned")
     @ApiResponse(responseCode = "500", description = "Error querying database")
     public List<BookmarkList> getOwnedBookmarkLists() throws DAOException, IOException, RestApiException {
+        UserBean bean = BeanUtils.getUserBeanFromRequest(servletRequest);
+        if(bean != null) {            
+            User currentUser = bean.getUser();
+            if(currentUser != null) {
+                builder = new UserBookmarkResourceBuilder(currentUser);             
+            }
+        }
         return builder.getAllBookmarkLists();
     }
 

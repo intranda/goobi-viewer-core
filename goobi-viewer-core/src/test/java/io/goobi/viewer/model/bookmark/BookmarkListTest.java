@@ -15,19 +15,37 @@
  */
 package io.goobi.viewer.model.bookmark;
 
+import static org.junit.Assert.assertEquals;
+
 import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
+import org.json.JSONArray;
+import org.json.JSONObject;
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Test;
 
 import io.goobi.viewer.AbstractSolrEnabledTest;
+import io.goobi.viewer.api.rest.AbstractApiUrlManager;
+import io.goobi.viewer.api.rest.v1.ApiUrls;
+import io.goobi.viewer.controller.DataManager;
+import io.goobi.viewer.exceptions.ViewerConfigurationException;
 import io.goobi.viewer.model.bookmark.Bookmark;
 import io.goobi.viewer.model.bookmark.BookmarkList;
 
 public class BookmarkListTest extends AbstractSolrEnabledTest {
 
+    AbstractApiUrlManager urls;
+    
+    @Before
+    public void setUp() throws Exception {
+        super.setUp();
+        urls = DataManager.getInstance().getRestApiManager().getDataApiManager()
+        .orElseThrow(() -> new ViewerConfigurationException("Must configure current rest api url ('/api/v1'in urls.rest"));
+    }
+    
     /**
      * @see BookmarkList#generateSolrQueryForItems()
      * @verifies return correct query
@@ -68,9 +86,26 @@ public class BookmarkListTest extends AbstractSolrEnabledTest {
             bookmarkList.getItems().add(item);
         }
 
-        String json = bookmarkList.getMiradorJsonObject("/viewer");
+        String json = bookmarkList.getMiradorJsonObject(urls.getApplicationUrl(), urls.getApiUrl());
         Assert.assertFalse(StringUtils.isBlank(json));
-        // TODO check json contents
+        
+        
+        JSONObject miradorConfig = new JSONObject(json);
+        JSONArray dataList = miradorConfig.getJSONArray("data");
+        assertEquals(16, dataList.length());
+        JSONArray windowObjects = miradorConfig.getJSONArray("windowObjects");
+        
+        assertEquals(16, windowObjects.length());
+        assertEquals(urls.getApplicationUrl() + BookmarkList.MIRADOR_LIB_PATH, miradorConfig.getString("buildPath"));
+        
+               for (int i = 1; i <= 16; ++i) {
+            JSONObject link = dataList.getJSONObject(i-1);
+            JSONObject object = windowObjects.getJSONObject(i-1);
+            String pi = "PI" + i;
+            String url = urls.path(ApiUrls.RECORDS_RECORD, ApiUrls.RECORDS_MANIFEST).params(pi).build();
+            assertEquals(url, link.getString("manifestUri"));
+            assertEquals(url, object.getString("loadedManifest"));
+        }
     }
 
     /**

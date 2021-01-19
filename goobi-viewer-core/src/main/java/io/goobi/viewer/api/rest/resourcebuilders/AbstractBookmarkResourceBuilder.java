@@ -109,7 +109,7 @@ public abstract class AbstractBookmarkResourceBuilder {
             throws DAOException, PresentationException, ContentNotFoundException, ViewerConfigurationException, IndexUnreachableException {
         try {
             BookmarkList bookmarkList = getSharedBookmarkList(key);
-            return bookmarkList.getMiradorJsonObject(urls.getApplicationUrl());
+            return bookmarkList.getMiradorJsonObject(urls.getApplicationUrl(), urls.getApiUrl());
         } catch (ContentNotFoundException | RestApiException | NullPointerException e) {
             throw new ContentNotFoundException("No matching bookmark list found");
         }
