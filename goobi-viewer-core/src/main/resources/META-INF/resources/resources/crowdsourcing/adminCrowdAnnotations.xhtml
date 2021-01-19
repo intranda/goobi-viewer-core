@@ -124,7 +124,6 @@
                     </div>
 		            <script type="text/javascript">
 		                $( document ).ready( function() {
-		                    console.log("document ready");
 			                
 			                initTable();
 		                    mountRiotTags();
@@ -157,7 +156,6 @@
 		                }
 		                
 		                function mountRiotTags() {		                    
-		                console.log("mount riot tags")
 	                        riot.mount("annotationBody", {
 	                            currentlang: "#{navigationHelper.localeString}",
 	                            resturl: "#{configurationBean.restApiUrlV1}",
