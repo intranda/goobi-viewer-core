@@ -1425,37 +1425,44 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable {
      * @throws de.unigoettingen.sub.commons.contentlib.exceptions.IllegalRequestException if any.
      */
     public String getTileGridUrl(String itemId) throws IllegalRequestException {
-        CMSContentItem item;
         try {
-            item = getContentItem(itemId);
-        } catch (CmsElementNotFoundException e) {
-            item = null;
-        }
-        if (item != null && item.getType().equals(CMSContentItemType.TILEGRID)) {
-            
-            String tags = item.getCategories().stream().map(CMSCategory::getName).collect(Collectors.joining(","));
-            
-            String url = DataManager.getInstance().getRestApiManager().getDataApiManager().path(CMS_MEDIA)
-            .query("tags", tags)
-            .query("max", item.getNumberOfTiles())
-            .query("prioritySlots", item.getNumberOfImportantTiles())
-            .query("random", "true").build();
+            CMSContentItem item = getContentItem(itemId);
+            if (item != null && item.getType().equals(CMSContentItemType.TILEGRID)) {
                 
-            return url;
-            
-//            StringBuilder sb = new StringBuilder(BeanUtils.getServletPathWithHostAsUrlFromJsfContext());
-//            sb.append("/rest/tilegrid/")
-//                    .append(CmsBean.getCurrentLocale().getLanguage())
-//                    .append("/")
-//                    .append(item.getNumberOfTiles())
-//                    .append("/")
-//                    .append(item.getNumberOfImportantTiles())
-//                    .append("/")
-//                    .append(item.getCategories().stream().map(CMSCategory::getName).collect(Collectors.joining(TileGridResource.TAG_SEPARATOR)))
-//                    .append("/");
-//            return sb.toString();
+                String tags = item.getCategories().stream().map(CMSCategory::getName).collect(Collectors.joining(","));
+                
+                String url = DataManager.getInstance().getRestApiManager().getDataApiManager().map(urls -> urls.path(CMS_MEDIA)
+                        .query("tags", tags)
+                        .query("max", item.getNumberOfTiles())
+                        .query("prioritySlots", item.getNumberOfImportantTiles())
+                        .query("random", "true").build()
+                        ).orElse(getLegacyTileGridUrl(item));
+                
+                return url;
+  
+            } else {
+                throw new IllegalRequestException("Content item with id '" + itemId + "' is no tile grid item");
+            }
+        } catch (CmsElementNotFoundException e) {
+            throw new IllegalRequestException("No tile grid item with id '" + itemId + "' found");
         }
-        throw new IllegalRequestException("No tile grid item with id '" + itemId + "' found");
+    }
+
+    /**
+     * @return
+     */
+    private String getLegacyTileGridUrl(CMSContentItem item) {
+      StringBuilder sb = new StringBuilder(BeanUtils.getServletPathWithHostAsUrlFromJsfContext());
+      sb.append("/rest/tilegrid/")
+              .append(CmsBean.getCurrentLocale().getLanguage())
+              .append("/")
+              .append(item.getNumberOfTiles())
+              .append("/")
+              .append(item.getNumberOfImportantTiles())
+              .append("/")
+              .append(item.getCategories().stream().map(CMSCategory::getName).collect(Collectors.joining("$")))
+              .append("/");
+      return sb.toString();
     }
 
     /**

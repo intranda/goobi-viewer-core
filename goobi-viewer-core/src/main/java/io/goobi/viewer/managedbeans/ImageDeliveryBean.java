@@ -130,8 +130,8 @@ public class ImageDeliveryBean implements Serializable {
      */
     public void init(Configuration config) {
         this.servletPath = getServletPathFromContext();
-        AbstractApiUrlManager dataUrlManager = DataManager.getInstance().getRestApiManager().getDataApiManager();
-        AbstractApiUrlManager contentUrlManager = DataManager.getInstance().getRestApiManager().getContentApiManager();
+        AbstractApiUrlManager dataUrlManager = DataManager.getInstance().getRestApiManager().getDataApiManager().orElse(null);
+        AbstractApiUrlManager contentUrlManager = DataManager.getInstance().getRestApiManager().getContentApiManager().orElse(null);
 
         this.staticImagesURI = getStaticImagesPath(this.servletPath, config.getTheme());
         this.cmsMediaPath =

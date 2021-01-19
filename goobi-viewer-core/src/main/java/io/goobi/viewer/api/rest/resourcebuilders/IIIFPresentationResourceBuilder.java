@@ -355,12 +355,10 @@ public class IIIFPresentationResourceBuilder {
             StructElement ele = new StructElement(luceneId, doc);
             AbstractPresentationModelElement manifest = builder.generateManifest(ele);
 
-            AbstractApiUrlManager imageUrls = DataManager.getInstance().getRestApiManager().getContentApiManager();
-
-            if (imageUrls != null && manifest.getThumbnails().isEmpty()) {
+            if (this.urls != null && manifest.getThumbnails().isEmpty()) {
                 int thumbsWidth = DataManager.getInstance().getConfiguration().getThumbnailsWidth();
                 int thumbsHeight = DataManager.getInstance().getConfiguration().getThumbnailsHeight();
-                String thumbnailUrl = imageUrls.path(RECORDS_RECORD, RECORDS_IMAGE_IIIF)
+                String thumbnailUrl = this.urls.path(RECORDS_RECORD, RECORDS_IMAGE_IIIF)
                         .params(ele.getPi(), "full", "!" + thumbsWidth + "," + thumbsHeight, 0, "default", "jpg")
                         .build();
                 manifest.addThumbnail(new ImageContent(URI.create(thumbnailUrl)));

@@ -15,42 +15,35 @@
  */
 package io.goobi.viewer.api.rest.filters;
 
+import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_FILES_IMAGE;
+import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_FILES_IMAGE_INFO;
+
 import java.io.IOException;
-import java.util.List;
 import java.util.Optional;
 
 import javax.annotation.Priority;
-import javax.servlet.ServletRequest;
+import javax.inject.Inject;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.ws.rs.Priorities;
 import javax.ws.rs.container.ContainerRequestContext;
 import javax.ws.rs.container.ContainerRequestFilter;
 import javax.ws.rs.core.Context;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
-import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.ext.Provider;
 
-import org.apache.commons.text.StringTokenizer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import de.unigoettingen.sub.commons.contentlib.exceptions.ServiceNotAllowedException;
-import de.unigoettingen.sub.commons.contentlib.servlet.rest.ContentExceptionMapper.ErrorMessage;
 import de.unigoettingen.sub.commons.contentlib.servlet.rest.ContentServerImageInfoBinding;
+import io.goobi.viewer.api.rest.AbstractApiUrlManager;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.StringTools;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.exceptions.RecordNotFoundException;
-import io.goobi.viewer.exceptions.ViewerConfigurationException;
-import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.model.security.AccessConditionUtils;
 import io.goobi.viewer.model.security.IPrivilegeHolder;
-
-import static io.goobi.viewer.api.rest.v1.ApiUrls.*;
 
 /**
  * <p>
@@ -68,6 +61,8 @@ public class ImageInformationRequestFilter implements ContainerRequestFilter {
     private HttpServletRequest servletRequest;
     @Context
     private HttpServletResponse servletResponse;
+    @Inject
+    AbstractApiUrlManager urls;
 
     /** {@inheritDoc} */
     @Override
@@ -107,7 +102,7 @@ public class ImageInformationRequestFilter implements ContainerRequestFilter {
             Optional<String> filename = DataManager.getInstance().getSearchIndex().getFilename(pi, Integer.parseInt(imageName));
             if (filename.isPresent()) {
                 request.setAttribute(FilterTools.ATTRIBUTE_FILENAME, filename.get());
-                String redirectURI = DataManager.getInstance().getRestApiManager().getContentApiManager()
+                String redirectURI = urls
                         .path(RECORDS_FILES_IMAGE, RECORDS_FILES_IMAGE_INFO)
                         .params(pi, filename.get())
                         .build();

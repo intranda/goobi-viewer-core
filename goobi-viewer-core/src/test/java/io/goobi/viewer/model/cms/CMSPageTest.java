@@ -33,6 +33,7 @@ import org.junit.Test;
 
 import de.unigoettingen.sub.commons.contentlib.exceptions.IllegalRequestException;
 import io.goobi.viewer.AbstractDatabaseEnabledTest;
+import io.goobi.viewer.api.rest.AbstractApiUrlManager;
 import io.goobi.viewer.api.rest.v1.ApiUrls;
 import io.goobi.viewer.controller.Configuration;
 import io.goobi.viewer.controller.DataManager;
@@ -46,6 +47,9 @@ import io.goobi.viewer.model.cms.CMSPageLanguageVersion.CMSPageStatus;
 //@PrepareForTest(BeanUtils.class)
 public class CMSPageTest extends AbstractDatabaseEnabledTest {
 
+    AbstractApiUrlManager urls = new ApiUrls("https://viewer.goobi.io/api/v1/");
+
+    
     /**
      * @throws java.lang.Exception
      */
@@ -110,7 +114,7 @@ public class CMSPageTest extends AbstractDatabaseEnabledTest {
 
         try {
             String url = page.getTileGridUrl("grid01");
-            String expecedUrl = DataManager.getInstance().getRestApiManager().getDataApiManager()
+            String expecedUrl = urls
             .path(ApiUrls.CMS_MEDIA)
             .query("tags", allowedTags)
             .query("max", numTiles)
@@ -203,8 +207,7 @@ public class CMSPageTest extends AbstractDatabaseEnabledTest {
 
         String filename = media.getFileName();
 
-        String imageUrl = DataManager.getInstance().getRestApiManager().getContentApiManager()
-                .path(ApiUrls.CMS_MEDIA, ApiUrls.CMS_MEDIA_FILES_FILE).params(filename).build()  + "/full/max/0/default.jpg/";
+        String imageUrl = urls.path(ApiUrls.CMS_MEDIA, ApiUrls.CMS_MEDIA_FILES_FILE).params(filename).build()  + "/full/max/0/default.jpg/";
         Assert.assertEquals(imageUrl, page.getContent(imageId).replaceAll("\\?.*", ""));
         Assert.assertEquals(componentName, page.getContent(componentId));
 

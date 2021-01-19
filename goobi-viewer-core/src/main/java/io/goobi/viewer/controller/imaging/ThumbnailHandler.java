@@ -15,9 +15,12 @@
  */
 package io.goobi.viewer.controller.imaging;
 
+import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.net.URLEncoder;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.Optional;
 
@@ -35,10 +38,13 @@ import de.unigoettingen.sub.commons.contentlib.imagelib.transform.Region;
 import de.unigoettingen.sub.commons.contentlib.imagelib.transform.RegionRequest;
 import de.unigoettingen.sub.commons.contentlib.imagelib.transform.Rotation;
 import de.unigoettingen.sub.commons.contentlib.imagelib.transform.Scale;
+import de.unigoettingen.sub.commons.util.PathConverter;
+import io.goobi.viewer.api.rest.AbstractApiUrlManager;
 import io.goobi.viewer.api.rest.AbstractApiUrlManager.ApiPath;
 import io.goobi.viewer.api.rest.v1.ApiUrls;
 import io.goobi.viewer.controller.Configuration;
 import io.goobi.viewer.controller.DataManager;
+import io.goobi.viewer.controller.RestApiManager;
 import io.goobi.viewer.controller.SolrConstants;
 import io.goobi.viewer.controller.SolrConstants.DocType;
 import io.goobi.viewer.controller.SolrConstants.MetadataGroupType;
@@ -928,13 +934,40 @@ public class ThumbnailHandler {
      */
     public static String getCMSMediaImageApiUrl(String filename) {
         if(DataManager.getInstance().getConfiguration().isUseIIIFApiUrlForCmsMediaUrls()) {
-           return DataManager.getInstance().getRestApiManager().getContentApiManager().path(CMS_MEDIA, CMS_MEDIA_FILES_FILE).params(filename).build();
+           return getCMSMediaImageApiUrl(filename, DataManager.getInstance().getRestApiManager().getContentApiUrl());
         } else {
-            return DataManager.getInstance().getRestApiManager().getDataApiManager().path(CMS_MEDIA, CMS_MEDIA_FILES_FILE).params(filename).build();
-
+            return getCMSMediaImageApiUrl(filename, DataManager.getInstance().getRestApiManager().getDataApiUrl());
+        }
+    }
+    
+    public static String getCMSMediaImageApiUrl(String filename, String restApiUrl) {
+        if(RestApiManager.isLegacyUrl(restApiUrl)) {
+            return buildLegacyCMSMediaUrl(restApiUrl, filename);
+        } else {
+            AbstractApiUrlManager urls = new ApiUrls(restApiUrl);
+            return urls.path(CMS_MEDIA, CMS_MEDIA_FILES_FILE).params(filename).build();
         }
     }
 
+
+    /**
+     * @param contentApiUrl
+     * @param filename
+     * @return
+     */
+    private static String buildLegacyCMSMediaUrl(String contentApiUrl, String filename) {
+        String viewerHomePath = DataManager.getInstance().getConfiguration().getViewerHome();
+        String cmsMediaFolder = DataManager.getInstance().getConfiguration().getCmsMediaFolder();
+        Path filePath = Paths.get(viewerHomePath)
+                .resolve(cmsMediaFolder)
+                .resolve(filename);
+        try {
+            String url = contentApiUrl + "/image/-/" + URLEncoder.encode(PathConverter.toURI(filePath).toString(), "utf-8");
+            return url;
+        } catch (UnsupportedEncodingException e) {
+            throw new IllegalStateException(e.toString());
+        }
+    }
 
     /**
      * Return the url to the image of the given {@link io.goobi.viewer.model.cms.CMSMediaItem}, fit into a box of the given width and height

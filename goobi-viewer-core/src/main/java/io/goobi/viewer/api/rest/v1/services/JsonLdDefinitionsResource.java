@@ -15,6 +15,7 @@
  */
 package io.goobi.viewer.api.rest.v1.services;
 
+import javax.inject.Inject;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
@@ -22,6 +23,7 @@ import javax.ws.rs.core.MediaType;
 
 import de.intranda.api.services.CollectionExtentDefinition;
 import de.intranda.api.services.TagListDefinition;
+import io.goobi.viewer.api.rest.AbstractApiUrlManager;
 import io.goobi.viewer.api.rest.bindings.ViewerRestServiceBinding;
 import io.goobi.viewer.api.rest.v1.ApiUrls;
 import io.goobi.viewer.controller.DataManager;
@@ -35,6 +37,8 @@ import io.goobi.viewer.controller.DataManager;
 @ViewerRestServiceBinding
 public class JsonLdDefinitionsResource {
 
+    @Inject
+    AbstractApiUrlManager urls;
     
     /**
      * Returns a service context for the size information service for viewer collections: Number of direct child-collections and of total contained
@@ -60,11 +64,5 @@ public class JsonLdDefinitionsResource {
 
     }
 
-    /**
-     * @return
-     */
-    public static String getUrl() {
-        return DataManager.getInstance().getRestApiManager().getDataApiManager().path(ApiUrls.CONTEXT).build();
-    }
 
 }

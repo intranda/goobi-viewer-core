@@ -278,7 +278,7 @@ public class CollectionBuilder extends AbstractBuilder {
                 long volumes = baseElement.getNumberOfVolumes();
                 int subCollections = baseElement.getChildren().size();
                 CollectionExtent extentService = new CollectionExtent(subCollections, (int) volumes);
-                extentService.setBaseURI(JsonLdDefinitionsResource.getUrl());
+                extentService.setBaseURI(urls.path(ApiUrls.CONTEXT).build());
                 collection.addService(extentService);
 
                 String rssUrl = urls.path(ApiUrls.RECORDS_RSS).query("query", baseElement.getSolrFilterQuery()).build();
@@ -353,10 +353,10 @@ public class CollectionBuilder extends AbstractBuilder {
      * @param ele
      * @return
      */
-    private static void addTagListService(Collection collection, CollectionView view, String label) {
+    private void addTagListService(Collection collection, CollectionView view, String label) {
             if(collection.getInternalName() != null) {
                 view.getCompleteList().stream().filter(e -> collection.getInternalName().equals(e.getName())).findAny().ifPresent( ele -> {
-                    TagListService tagsService = new TagListService(label, JsonLdDefinitionsResource.getUrl());
+                    TagListService tagsService = new TagListService(label, urls.path(ApiUrls.CONTEXT).build());
                     tagsService.setTags(ele.getFacetValues());
                     collection.addService(tagsService);
                     
