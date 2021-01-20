@@ -99,7 +99,7 @@ var viewerJS = ( function( viewer ) {
                 trigger.hide();
                 excelLoader.show();
                 
-                var url = _defaults.contextPath + '/api/v1/jobs/';
+                var url = _defaults.contextPath + '/api/v1/tasks/';
                 let downloadFinished = false;
                 rxjs.interval(1000)
                 .pipe(rxjs.operators.flatMap(() => fetch(url)),
