@@ -599,6 +599,16 @@ public class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
         //        Assert.assertEquals("FACET_SUPERDOCSTRCT", SearchHelper.facetifyField(SolrConstants.SUPERDOCSTRCT));
         Assert.assertEquals("FACET_TITLE", SearchHelper.facetifyField("MD_TITLE_UNTOKENIZED"));
     }
+    
+
+    /**
+     * @see SearchHelper#facetifyField(String)
+     * @verifies leave bool fields unaltered
+     */
+    @Test
+    public void facetifyField_shouldLeaveBoolFieldsUnaltered() throws Exception {
+        Assert.assertEquals("BOOL_FOO", SearchHelper.facetifyField("BOOL_FOO"));
+    }
 
     /**
      * @see SearchHelper#facetifyList(List)
@@ -1286,5 +1296,4 @@ public class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
         String finalQuery = SearchHelper.buildFinalQuery(SearchHelper.AGGREGATION_QUERY_PREFIX + "DEFAULT:*", true, null);
         Assert.assertEquals(SearchHelper.AGGREGATION_QUERY_PREFIX + "+(DEFAULT:*) -BOOL_HIDE:true -DC:collection1 -DC:collection2", finalQuery);
     }
-
 }
