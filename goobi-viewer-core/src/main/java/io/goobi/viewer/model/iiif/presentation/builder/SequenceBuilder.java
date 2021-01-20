@@ -349,7 +349,10 @@ public class SequenceBuilder extends AbstractBuilder {
                         logger.error("Error reading image information from {}: {}", thumbnailUrl, e.toString());
                         resource.setWidth(size.width);
                         resource.setHeight(size.height);
-
+                        if (IIIFUrlResolver.isIIIFImageUrl(thumbnailUrl)) {
+                            URI imageInfoURI = new URI(IIIFUrlResolver.getIIIFImageBaseUrl(thumbnailUrl));
+                            resource.setService(new ImageInformation(imageInfoURI.toString()));
+                        }
                     }
                 }
                 resource.setFormat(Format.fromMimeType(page.getDisplayMimeType()));
@@ -437,7 +440,9 @@ public class SequenceBuilder extends AbstractBuilder {
                                 annoList.addResource(annotation);
                             }
                         }
-                    } catch (ContentNotFoundException | PresentationException | DAOException | IOException | JDOMException e) {
+                    } catch(ContentNotFoundException e) {
+                        logger.trace("No alto file found: " + page.getAltoFileName());
+                    } catch (PresentationException | DAOException | IOException | JDOMException e) {
                         logger.error("Error loading alto text from " + page.getAltoFileName(), e);
                     }
 
