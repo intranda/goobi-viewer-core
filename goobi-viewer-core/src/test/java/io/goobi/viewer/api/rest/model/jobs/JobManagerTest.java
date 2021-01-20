@@ -28,8 +28,11 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
-import io.goobi.viewer.api.rest.model.jobs.Job.JobStatus;
-import io.goobi.viewer.api.rest.model.jobs.Job.JobType;
+import io.goobi.viewer.api.rest.model.tasks.Task;
+import io.goobi.viewer.api.rest.model.tasks.TaskManager;
+import io.goobi.viewer.api.rest.model.tasks.TaskParameter;
+import io.goobi.viewer.api.rest.model.tasks.Task.TaskStatus;
+import io.goobi.viewer.api.rest.model.tasks.Task.TaskType;
 
 /**
  * @author florian
@@ -37,14 +40,14 @@ import io.goobi.viewer.api.rest.model.jobs.Job.JobType;
  */
 public class JobManagerTest {
 
-    JobManager manager;
+    TaskManager manager;
     
     /**
      * @throws java.lang.Exception
      */
     @Before
     public void setUp() throws Exception {
-        manager = new JobManager(Duration.of(7, ChronoUnit.DAYS));
+        manager = new TaskManager(Duration.of(7, ChronoUnit.DAYS));
     }
 
     /**
@@ -56,26 +59,26 @@ public class JobManagerTest {
     
     @Test
     public void testAddJob() throws InterruptedException {
-        Job job = new Job(new SimpleJobParameter(JobType.NOTIFY_SEARCH_UPDATE), (request, me) -> {});
-        manager.addJob(job);
-        assertEquals(JobStatus.CREATED, manager.getJob(job.id).status);
-        Future future = manager.triggerJobInThread(job.id, null);
+        Task job = new Task(new TaskParameter(TaskType.NOTIFY_SEARCH_UPDATE), (request, me) -> {});
+        manager.addTask(job);
+        assertEquals(TaskStatus.CREATED, manager.getTask(job.id).status);
+        Future future = manager.triggerTaskInThread(job.id, null);
         try {
             future.get(1, TimeUnit.SECONDS);
         } catch (ExecutionException | TimeoutException e) {
             fail(e.toString());
         }
-        assertEquals(JobStatus.COMPLETE, manager.getJob(job.id).status);
+        assertEquals(TaskStatus.COMPLETE, manager.getTask(job.id).status);
     }
     
     @Test 
     public void testListJobs() {
-        Job job1 = new Job(new SimpleJobParameter(JobType.NOTIFY_SEARCH_UPDATE), (request, me) -> {});
-        Job job2 = new Job(new SimpleJobParameter(JobType.NOTIFY_SEARCH_UPDATE), (request, me) -> {});
-        manager.addJob(job1);
-        manager.addJob(job2);
+        Task job1 = new Task(new TaskParameter(TaskType.NOTIFY_SEARCH_UPDATE), (request, me) -> {});
+        Task job2 = new Task(new TaskParameter(TaskType.NOTIFY_SEARCH_UPDATE), (request, me) -> {});
+        manager.addTask(job1);
+        manager.addTask(job2);
         
-        assertEquals(2, manager.getJobs(JobType.NOTIFY_SEARCH_UPDATE).size());
+        assertEquals(2, manager.getTasks(TaskType.NOTIFY_SEARCH_UPDATE).size());
     }
 
 }

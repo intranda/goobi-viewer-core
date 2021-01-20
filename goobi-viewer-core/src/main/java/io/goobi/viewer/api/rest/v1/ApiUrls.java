@@ -150,8 +150,8 @@ public class ApiUrls extends AbstractApiUrlManager {
     public static final String SEARCH = "/search";
     public static final String SEARCH_HIT_CHILDREN = "/hit/{id}/{numChildren}";
 
-    public static final String JOBS = "/jobs";
-    public static final String JOBS_JOB = "/{id}";
+    public static final String TASKS = "/tasks";
+    public static final String TASKS_TASK = "/{id}";
     
     public static final String CONTEXT = "/context";
     

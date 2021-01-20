@@ -13,10 +13,10 @@
  *
  * You should have received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
-package io.goobi.viewer.api.rest.v1.jobs;
+package io.goobi.viewer.api.rest.v1.tasks;
 
-import static io.goobi.viewer.api.rest.v1.ApiUrls.JOBS;
-import static io.goobi.viewer.api.rest.v1.ApiUrls.JOBS_JOB;
+import static io.goobi.viewer.api.rest.v1.ApiUrls.TASKS;
+import static io.goobi.viewer.api.rest.v1.ApiUrls.TASKS_TASK;
 
 import java.util.List;
 import java.util.Optional;
@@ -38,38 +38,44 @@ import de.unigoettingen.sub.commons.contentlib.exceptions.ContentNotFoundExcepti
 import de.unigoettingen.sub.commons.contentlib.exceptions.IllegalRequestException;
 import io.goobi.viewer.api.rest.filters.AdminLoggedInFilter;
 import io.goobi.viewer.api.rest.filters.AuthorizationFilter;
-import io.goobi.viewer.api.rest.model.jobs.Job;
-import io.goobi.viewer.api.rest.model.jobs.Job.JobType;
-import io.goobi.viewer.api.rest.model.jobs.JobManager;
-import io.goobi.viewer.api.rest.model.jobs.SimpleJobParameter;
+import io.goobi.viewer.api.rest.model.tasks.Task;
+import io.goobi.viewer.api.rest.model.tasks.TaskManager;
+import io.goobi.viewer.api.rest.model.tasks.TaskParameter;
+import io.goobi.viewer.api.rest.model.tasks.Task.TaskType;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.exceptions.AccessDeniedException;
 import io.goobi.viewer.exceptions.AuthenticationException;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 
 /**
+ * Create and monitor (possibly time consuming) {@link Task tasks} within the viewer. These tasks are 
+ * managed by the {@link TaskManager}
+ * 
  * @author florian
  *
  */
-@Path(JOBS)
-public class JobResource {
+@Path(TASKS)
+public class TasksResource {
 
     private final HttpServletRequest request;
 
-    public JobResource(@Context HttpServletRequest request, @Context HttpServletResponse response) {
+    public TasksResource(@Context HttpServletRequest request, @Context HttpServletResponse response) {
         this.request = request;
     }
 
     @POST
     @Consumes({ MediaType.APPLICATION_JSON })
     @Produces({ MediaType.APPLICATION_JSON })
-    public Job addJob(SimpleJobParameter desc) throws WebApplicationException {
+    @Operation(tags = { "tasks" }, summary = "Create a (possibly time consuming) task to execute in a limited thread pool. See javadoc for details")
+    public Task addTask(TaskParameter desc) throws WebApplicationException {
         if(desc.type == null) {
             throw new WebApplicationException(new IllegalRequestException("Must provide job type"));
         }
         if(isAuthorized(desc.type, Optional.empty(), request)) {
-            Job job = new Job(desc, JobManager.createTask(desc.type));
-            DataManager.getInstance().getRestApiJobManager().addJob(job);
-            DataManager.getInstance().getRestApiJobManager().triggerJobInThread(job.id, request);
+            Task job = new Task(desc, TaskManager.createTask(desc.type));
+            DataManager.getInstance().getRestApiJobManager().addTask(job);
+            DataManager.getInstance().getRestApiJobManager().triggerTaskInThread(job.id, request);
             return job;
         } else {
             throw  new WebApplicationException(new AccessDeniedException("Not authorized to create this type of job"));
@@ -77,10 +83,12 @@ public class JobResource {
     }
     
     @GET
-    @Path(JOBS_JOB)
+    @Path(TASKS_TASK)
     @Produces({ MediaType.APPLICATION_JSON })
-    public Job getJob(@PathParam("id")Long id) throws ContentNotFoundException {
-        Job job = DataManager.getInstance().getRestApiJobManager().getJob(id);
+    @Operation(tags = { "tasks" }, summary = "Return the task with the given id, provided it is accessibly by the request (determined by session or access token)")
+    public Task getTask(
+            @Parameter(description="The id of the task")@PathParam("id")Long id) throws ContentNotFoundException {
+        Task job = DataManager.getInstance().getRestApiJobManager().getTask(id);
         if(job == null || !isAuthorized(job.type, job.sessionId, request)) {
             throw new ContentNotFoundException("No Job found with id " + id);
         } else {
@@ -90,8 +98,9 @@ public class JobResource {
     
     @GET
     @Produces({ MediaType.APPLICATION_JSON })
-    public List<Job> getJobs() throws ContentNotFoundException {
-        return DataManager.getInstance().getRestApiJobManager().getJobs().stream()
+    @Operation(tags = { "tasks" }, summary = "Return a list of all tasks accessible to the request (determined by session or access token)")
+    public List<Task> getTasks() throws ContentNotFoundException {
+        return DataManager.getInstance().getRestApiJobManager().getTasks().stream()
         .filter(job -> this.isAuthorized(job.type, job.sessionId, request))
         .collect(Collectors.toList());
     }
@@ -100,8 +109,8 @@ public class JobResource {
 
     
 
-    public boolean isAuthorized(JobType type, Optional<String> jobSessionId, HttpServletRequest request) {
-        Job.Accessibility access = Job.getAccessibility(type);
+    public boolean isAuthorized(TaskType type, Optional<String> jobSessionId, HttpServletRequest request) {
+        Task.Accessibility access = Task.getAccessibility(type);
         switch (access) {
             case PUBLIC:
                 return true;

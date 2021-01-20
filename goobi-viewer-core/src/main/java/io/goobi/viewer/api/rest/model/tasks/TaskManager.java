@@ -13,7 +13,7 @@
  *
  * You should have received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
-package io.goobi.viewer.api.rest.model.jobs;
+package io.goobi.viewer.api.rest.model.tasks;
 
 import java.time.Duration;
 import java.time.LocalDateTime;
@@ -31,7 +31,8 @@ import javax.servlet.http.HttpServletRequest;
 
 import io.goobi.viewer.api.rest.model.SitemapRequestParameters;
 import io.goobi.viewer.api.rest.model.ToolsRequestParameters;
-import io.goobi.viewer.api.rest.model.jobs.Job.JobType;
+import io.goobi.viewer.api.rest.model.tasks.Task.TaskType;
+import io.goobi.viewer.api.rest.v1.tasks.TasksResource;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
@@ -41,13 +42,17 @@ import io.goobi.viewer.model.search.SearchHitsNotifier;
 import io.goobi.viewer.model.sitemap.SitemapBuilder;
 
 /**
+ * Manages (possibly timeconsuming) {@link Task tasks} within the viewer which can be triggered and monitored
+ * via the {@link TasksResource}. The tasks are not executed sequentially or queued in any way, except
+ * through the limit of the internal thread pool (5 parallel tasks)
+ * 
  * @author florian
  *
  */
-public class JobManager {
+public class TaskManager {
     
     
-    private final ConcurrentHashMap<Long, Job> jobs = new ConcurrentHashMap<>();
+    private final ConcurrentHashMap<Long, Task> tasks = new ConcurrentHashMap<>();
     private final ExecutorService executorService = Executors.newFixedThreadPool(5);
     private final  Duration timeToLive;
     
@@ -56,55 +61,55 @@ public class JobManager {
      * 
      * @param jobLiveTime   The guaranteed live time of jobs in the jobManager
      */
-    public JobManager(Duration jobLiveTime) {
+    public TaskManager(Duration jobLiveTime) {
         this.timeToLive = jobLiveTime;
     }
     
-    public Long addJob(Job job) {
-        cleanOldJobs();
-        jobs.put(job.id, job);
+    public Long addTask(Task job) {
+        cleanOldTasks();
+        tasks.put(job.id, job);
         return job.id;
     }
 
     /**
      * Clean out all jobs that are older than {@link #timeToLive}
      */
-    private void cleanOldJobs() {
-        this.jobs.values().stream().filter(
+    private void cleanOldTasks() {
+        this.tasks.values().stream().filter(
                 job -> job.timeCreated.isBefore((LocalDateTime.now().minus(timeToLive))))
         .map(job -> job.id)
-        .forEach(this::removeJob);
+        .forEach(this::removeTask);
     }
 
-    public Job getJob(long jobId) {
-        return jobs.get(jobId);
+    public Task getTask(long jobId) {
+        return tasks.get(jobId);
     }
     
-    public Job removeJob(long jobId) {
-        return jobs.remove(jobId);
+    public Task removeTask(long jobId) {
+        return tasks.remove(jobId);
     }
     
-    public Future triggerJobInThread(long jobId, HttpServletRequest request) {
-        Job job = jobs.get(jobId);
+    public Future triggerTaskInThread(long jobId, HttpServletRequest request) {
+        Task job = tasks.get(jobId);
         if(job != null) {
             return executorService.submit(() -> job.doTask(request));
         }
         return CompletableFuture.completedFuture(null);
     }
     
-    public List<Job> getJobs(JobType type) {
-        return this.jobs.values().stream().filter(job -> job.type == type).collect(Collectors.toList());
+    public List<Task> getTasks(TaskType type) {
+        return this.tasks.values().stream().filter(job -> job.type == type).collect(Collectors.toList());
     }
     
-    public List<Job> getJobs() {
-        return this.jobs.values().stream().collect(Collectors.toList());
+    public List<Task> getTasks() {
+        return this.tasks.values().stream().collect(Collectors.toList());
     }
 
     /**
      * @param type
      * @return
      */
-    public static BiConsumer<HttpServletRequest, Job> createTask(JobType type) {
+    public static BiConsumer<HttpServletRequest, Task> createTask(TaskType type) {
         switch(type) {
             case NOTIFY_SEARCH_UPDATE:
                 return (request, job) -> {

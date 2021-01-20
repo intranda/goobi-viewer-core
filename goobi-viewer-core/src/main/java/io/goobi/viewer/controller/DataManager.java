@@ -30,7 +30,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import de.intranda.monitoring.timer.TimeAnalysis;
-import io.goobi.viewer.api.rest.model.jobs.JobManager;
+import io.goobi.viewer.api.rest.model.tasks.TaskManager;
 import io.goobi.viewer.controller.language.LanguageHelper;
 import io.goobi.viewer.dao.IDAO;
 import io.goobi.viewer.dao.impl.JPADAO;
@@ -89,7 +89,7 @@ public final class DataManager {
     
     private FileResourceManager fileResourceManager = null;
     
-    private final JobManager restApiJobManager = new JobManager(Duration.of(7, ChronoUnit.DAYS));
+    private final TaskManager restApiJobManager = new TaskManager(Duration.of(7, ChronoUnit.DAYS));
 
     /**
      * <p>
@@ -494,7 +494,7 @@ public final class DataManager {
     /**
      * @return the restApiJobManager
      */
-    public JobManager getRestApiJobManager() {
+    public TaskManager getRestApiJobManager() {
         return restApiJobManager;
     }
 }

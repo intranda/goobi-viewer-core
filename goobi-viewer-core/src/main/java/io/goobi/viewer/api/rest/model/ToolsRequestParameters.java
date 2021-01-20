@@ -15,14 +15,18 @@
  */
 package io.goobi.viewer.api.rest.model;
 
-import io.goobi.viewer.api.rest.model.jobs.SimpleJobParameter;
+import io.goobi.viewer.api.rest.model.tasks.TaskParameter;
+import io.swagger.v3.oas.annotations.media.Schema;
 
 /**
  * POST request parameters for RecordsResource.
  */
-public class ToolsRequestParameters extends SimpleJobParameter {
+@Schema(name="UpdateRepositoryParameter", description="Parameters for updating the cached respository name of a record")
+public class ToolsRequestParameters extends TaskParameter {
 
+    @Schema(description = "Persistent identifier of the record to update", example="PPN123456")
     private String pi;
+    @Schema(description = "Value of the SOLR field 'DATAREPOSITORY' of the given record", example="/opt/digiverso/viewer/data/1")
     private String dataRepositoryName;
 
     /**

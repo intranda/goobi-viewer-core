@@ -13,7 +13,7 @@
  *
  * You should have received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
-package io.goobi.viewer.api.rest.model.jobs;
+package io.goobi.viewer.api.rest.model.tasks;
 
 import java.time.LocalDateTime;
 import java.util.Optional;
@@ -29,25 +29,48 @@ import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateTimeSerializer;
 
+import io.goobi.viewer.api.rest.v1.tasks.TasksResource;
+
 /**
- * A process triggered by a REST call with PUT 
+ * A process triggered by a REST call using POST and may be monitored via the {@link TasksResource}.
+ * Each task has a unique id of type long given during object construcion.
+ * A Task has an {@link Accessibility} property defining which calls are allowed to access the task,
+ * and a {@link TaskType} defining the actual process to use. Parameters of the execution as well as the type itself
+ * are determined by a {@link TaskParameter} object given at task creation.
+ * Also each task has a status property signaling he current state of the task. A task starts out
+ * as {@link TaskStatus#CREATED}. Once processing starts (which may be delayed by the limited thread pool
+ * if other tasks are running) the status changes to {@link TaskStatus#STARTED}. After processing ends
+ * the task is set to either {@link TaskStatus#COMPLETE} or {@link TaskStatus#ERROR} depedning on whether
+ * an error occured which may be recorded in the {@link #exception} property.
  * 
  * @author florian
  *
  */
 @JsonInclude(Include.NON_EMPTY)
-public class Job {
+public class Task {
     
     private static final AtomicLong idCounter = new AtomicLong(0);
-
+    
     public static enum Accessibility {
+        /**
+         * Anyome may access this task
+         */
         PUBLIC,
+        /**
+         * Anyone may access this tasks, but they are only visible within the session in which they were created
+         */
         SESSION,
+        /**
+         * Only users with admin rights may access this task
+         */
         ADMIN,
+        /**
+         * This task is only accessibly by requests containing a valid access token
+         */
         TOKEN;
     }
     
-    public static enum JobType {
+    public static enum TaskType {
         /**
          * Send emails to all search owners if their searches have changed results
          */
@@ -57,16 +80,16 @@ public class Job {
          */
         SEARCH_EXCEL_EXPORT,
         /**
-         * Update the sitemap 
+         * Update the application sitemap 
          */
         UPDATE_SITEMAP,
         /**
-         * Update data repositories
+         * Update data repository names of a record
          */
         UPDATE_DATA_REPOSITORY_NAMES;
     }
     
-    public static enum JobStatus {
+    public static enum TaskStatus {
         CREATED,
         STARTED,
         COMPLETE,
@@ -74,44 +97,44 @@ public class Job {
     }
     
     public final long id;
-    public final JobType type;
+    public final TaskType type;
     @JsonSerialize(using = LocalDateTimeSerializer.class)
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm")
     public final LocalDateTime timeCreated;
     @JsonIgnore
-    public final BiConsumer<HttpServletRequest, Job> task;
-    public volatile JobStatus status;
+    public final BiConsumer<HttpServletRequest, Task> work;
+    public volatile TaskStatus status;
     public Optional<String> exception = Optional.empty();
     @JsonIgnore
     public Optional<String> sessionId = Optional.empty();
     @JsonIgnore
-    public final SimpleJobParameter params;
+    public final TaskParameter params;
     
-    public Job(SimpleJobParameter params, BiConsumer<HttpServletRequest, Job> task) {
+    public Task(TaskParameter params, BiConsumer<HttpServletRequest, Task> work) {
         this.type = params.type;
-        this.task = task;
+        this.work = work;
         this.id = idCounter.incrementAndGet();
         this.timeCreated = LocalDateTime.now();
-        this.status = JobStatus.CREATED;
+        this.status = TaskStatus.CREATED;
         this.params = params;
     }
 
     
     public void doTask(HttpServletRequest request) {
         this.sessionId = Optional.ofNullable(request).map(r -> r.getSession().getId());
-        this.status = JobStatus.STARTED;
-        this.task.accept(request, this);
-        if(JobStatus.ERROR != this.status) {
-            this.status = JobStatus.COMPLETE;
+        this.status = TaskStatus.STARTED;
+        this.work.accept(request, this);
+        if(TaskStatus.ERROR != this.status) {
+            this.status = TaskStatus.COMPLETE;
         }
     }
     
     public void setError(String error) {
-        this.status = JobStatus.ERROR;
+        this.status = TaskStatus.ERROR;
         this.exception = Optional.ofNullable(error);
     }
     
-    public static Accessibility getAccessibility(JobType type) {
+    public static Accessibility getAccessibility(TaskType type) {
         switch(type) {
             case NOTIFY_SEARCH_UPDATE: 
             case UPDATE_SITEMAP:

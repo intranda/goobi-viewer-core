@@ -62,9 +62,9 @@ import org.slf4j.LoggerFactory;
 
 import de.unigoettingen.sub.commons.contentlib.exceptions.IllegalRequestException;
 import io.goobi.viewer.api.rest.AbstractApiUrlManager;
-import io.goobi.viewer.api.rest.model.jobs.Job;
-import io.goobi.viewer.api.rest.model.jobs.Job.JobType;
-import io.goobi.viewer.api.rest.model.jobs.SimpleJobParameter;
+import io.goobi.viewer.api.rest.model.tasks.Task;
+import io.goobi.viewer.api.rest.model.tasks.TaskParameter;
+import io.goobi.viewer.api.rest.model.tasks.Task.TaskType;
 import io.goobi.viewer.api.rest.v1.ApiUrls;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.DateTools;
@@ -2006,7 +2006,7 @@ public class SearchBean implements SearchInterface, Serializable {
         Locale locale = navigationHelper.getLocale();
         int timeout = DataManager.getInstance().getConfiguration().getExcelDownloadTimeout(); //[s]
 
-        BiConsumer<HttpServletRequest, Job> task = (request, job) -> {
+        BiConsumer<HttpServletRequest, Task> task = (request, job) -> {
             if (!facesContext.getResponseComplete()) {
                 try {
                     SXSSFWorkbook wb = buildExcelSheet(facesContext, finalQuery, currentQuery, locale);
@@ -2045,10 +2045,10 @@ public class SearchBean implements SearchInterface, Serializable {
 
         
         try {
-            Job excelCreationJob = new Job(new SimpleJobParameter(JobType.SEARCH_EXCEL_EXPORT), task);
-            Long jobId = DataManager.getInstance().getRestApiJobManager().addJob(excelCreationJob);
+            Task excelCreationJob = new Task(new TaskParameter(TaskType.SEARCH_EXCEL_EXPORT), task);
+            Long jobId = DataManager.getInstance().getRestApiJobManager().addTask(excelCreationJob);
             Future ready = DataManager.getInstance().getRestApiJobManager()
-            .triggerJobInThread(jobId, (HttpServletRequest)facesContext.getExternalContext().getRequest());
+            .triggerTaskInThread(jobId, (HttpServletRequest)facesContext.getExternalContext().getRequest());
             ready.get(timeout, TimeUnit.SECONDS);
         } catch (InterruptedException e) {
             logger.debug("Download interrupted");
