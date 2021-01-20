@@ -22,11 +22,15 @@ import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.solr.common.SolrDocument;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import de.unigoettingen.sub.commons.contentlib.exceptions.IllegalRequestException;
 import de.unigoettingen.sub.commons.contentlib.exceptions.ServiceNotAllowedException;
+import de.unigoettingen.sub.commons.contentlib.imagelib.transform.Scale;
+import io.goobi.viewer.controller.Configuration;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.SolrConstants;
 import io.goobi.viewer.controller.SolrSearchIndex;
@@ -41,6 +45,12 @@ public class FilterTools {
 
     private static final Logger logger = LoggerFactory.getLogger(FilterTools.class);
 
+    public static final String ATTRIBUTE_PI = "pi";
+    public static final String ATTRIBUTE_FILENAME = "filename";
+    public static final String ATTRIBUTE_LOGID = "logid";
+    
+    public static final int PRIORITY_REDIRECT = 100;
+    
     /**
      * 
      * 
@@ -81,5 +91,36 @@ public class FilterTools {
         } catch (RecordLimitExceededException e) {
             throw new ServiceNotAllowedException("Concurrent views limit has been exceeded for record: " + pi);
         }
+    }
+    
+    /**
+     * <p>
+     * Check if the request contains a size and region parameter (and is this a IIIF image request) and if so wether
+     * they describe a request for a full image not larger than {@link Configuration#getUnconditionalImageAccessMaxWidth()}.
+     * </p>
+     *
+     * @param request The servlet request for the resource
+     * @return true if the request is for a IIIF image resource which is considered a thumbnail
+     */
+    public static boolean isThumbnail(HttpServletRequest servletRequest) {
+        
+        String size = (String) servletRequest.getAttribute("size");
+        String region = (String) servletRequest.getAttribute("region");
+        
+        if(StringUtils.isAnyBlank(size, region)) {
+            return false;
+        }
+        
+        int imageWidth = Integer.MAX_VALUE;
+        try {
+            Scale scale = Scale.getScaleMethod(size);
+            imageWidth = Integer.parseInt(scale.getWidth());
+        } catch (NumberFormatException | IllegalRequestException | NullPointerException e) {
+            //no image width, assume large image
+        }
+
+        boolean isThumb =
+                "full".equalsIgnoreCase(region) && imageWidth <= DataManager.getInstance().getConfiguration().getUnconditionalImageAccessMaxWidth();
+        return isThumb;
     }
 }

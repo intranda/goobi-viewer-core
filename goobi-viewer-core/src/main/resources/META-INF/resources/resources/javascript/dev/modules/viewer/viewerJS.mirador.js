@@ -67,14 +67,9 @@ var viewerJS = ( function( viewer ) {
             
             $.extend( true, _defaults, config );
             
-            if(!_defaults.restEndpoint) {
-                _defaults.restEndpoint = _defaults.root + "/rest/"
-            }
-            
             var manifests = _getManifestsFromUrlQuery(_defaults);
             
-            var translator = new viewerJS.Translator(_defaults.restEndpoint.replace("/rest", "/api/v1"), 
-                    "#{navigationHelper.localeString}");
+            var translator = new viewerJS.Translator(_defaults.restEndpoint, "#{navigationHelper.localeString}");
             
             let miradorConfigPromise = null;
             
@@ -83,31 +78,30 @@ var viewerJS = ( function( viewer ) {
                 miradorConfigPromise = _getMiradorConfigForManifestUrls(manifests, _defaults);
             } else if ( _getBookmarkListId() != null ) {
             	// User bookmarks
-                miradorConfigPromise = _getUserMiradorObjects( _defaults.root, _getBookmarkListId() )
+                miradorConfigPromise = _getUserMiradorObjects( _defaults.restEndpoint, _getBookmarkListId() )
             } else if ( _getBookmarkListKey() != null ) {
                 //public/shared bookmarks
-                miradorConfigPromise = _getSharedMiradorObjects( _defaults.root, _getBookmarkListKey() )
+                miradorConfigPromise = _getSharedMiradorObjects( _defaults.restEndpoint, _getBookmarkListKey() )
             } else {
             	// Session mark list
-                miradorConfigPromise = _getMiradorSessionObjects( _defaults.root );
+                miradorConfigPromise = _getMiradorSessionObjects( _defaults.restEndpoint );
             }
             
             if(miradorConfigPromise) {  
-                miradorConfigPromise             
-                .then( function( elements ) {                    
-                    $( function() {
+                miradorConfigPromise       
+                .then( response => response.json())
+                .then( elements => {                    
                         console.log("elements ", elements)
                         Mirador( elements );
-                        // Override window title if more than one record
-                        translator.init(messageKeys)
-                        .then(function() {
-                            if (elements.data.length > 1) {
-                                document.title = translator.translate('viewMiradorComparison');
-                            }
-                        });
-                    });
-                }).fail(function(error) {
-                    console.error('ERROR - _getMiradorObjects: ', error.responseText);
+                })
+                .then(() => translator.init(messageKeys))
+                .then( () => {
+                    // Override window title if more than one record
+                    if (elements.data.length > 1) {
+                        document.title = translator.translate('viewMiradorComparison');
+                    }
+                }).catch(function(error) {
+                    console.error('ERROR - _getMiradorObjects: ', error);
                 });
             } else {
                 console.error("ERROR - no manifests to load");
@@ -142,37 +136,26 @@ var viewerJS = ( function( viewer ) {
 	 * @param {String} root The application root path.
 	 * @returns {Object} An JSON-Object which contains all session elements.
 	 */
-	function _getUserMiradorObjects( root, id ) {
+	function _getUserMiradorObjects( restUrl, id ) {
 		if ( _debug ) { 
 			console.log( '---------- _getSessionElementCount() ----------' );
-			console.log( '_getSessionElementCount: root - ', root );
+			console.log( '_getSessionElementCount: restUrl - ', restUrl );
 			console.log( '_getSessionElementCount: id - ', id );
 		}
 
-		var promise = Q($.ajax({
-			url : root + '/rest/bookmarks/mirador/user/' + id + '/',
-			type : "GET",
-			dataType : "JSON",
-			async : true
-		}));
-
-		return promise
+		let url = restUrl + "bookmarks/" + id + "/mirador.json";
+		return fetch(url);
 	}
-	   function _getSharedMiradorObjects( root, key ) {
+	
+	   function _getSharedMiradorObjects( restUrl, key ) {
 	        if ( _debug ) { 
 	            console.log( '---------- _getSessionElementCount() ----------' );
-	            console.log( '_getSessionElementCount: root - ', root );
+	            console.log( '_getSessionElementCount: restUrl - ', restUrl );
 	            console.log( '_getSessionElementCount: id - ', key );
 	        }
 
-	        var promise = Q($.ajax({
-	            url : root + '/rest/bookmarks/mirador/shared/' + key + '/',
-	            type : "GET",
-	            dataType : "JSON",
-	            async : true
-	        }));
-
-	        return promise
+	        let url = restUrl + "bookmarks/shared/" + id + "/mirador.json";
+	        return fetch(url);
 	    }
 	/**
 	 * Method to get the mirador session objects.
@@ -186,22 +169,16 @@ var viewerJS = ( function( viewer ) {
 			console.log( '---------- _getMiradorSessionObjects() ----------' );
 			console.log( '_getMiradorSessionObjects: root - ', root );
 		}
-
-		var promise = Q($.ajax({
-			url : root + '/rest/bookmarks/mirador/session/',
-			type : "GET",
-			dataType : "JSON",
-			async : true
-		}));
-
-		return promise
+		
+		let url = restUrl + "bookmarks/0/mirador.json";
+        return fetch(url);
 	}
 
 	
 	function _getManifestsFromUrlQuery(_defaults) {
         var manifests = _getQueryVariable("manifest").split("$").filter(man => man.length > 0);
         var pis = _getQueryVariable("pi").split("$").filter(man => man.length > 0);
-        var piManifests = pis.map(pi => _defaults.restEndpoint + "iiif/manifests/" + pi + "/manifest");
+        var piManifests = pis.map(pi => _defaults.restEndpoint + "records/" + pi + "/manifest");
         manifests = manifests.concat(piManifests);
         return manifests;
 	}

@@ -46,7 +46,7 @@
 					
 					<ui:fragment rendered="#{cmsPage.hasContent('text')}">
 						<div class="tpl-faq-single__text">
-		                    <ui:include src="#{cmsPage.getContent('text')}" />
+						<h:outputText escape="false" value="#{cmsPage.getContent('text')}"></h:outputText>
 		                </div>
 	                </ui:fragment>
                     <!-- IMAGE -->
@@ -62,7 +62,7 @@
 					</ui:fragment>
 					<ui:fragment rendered="#{cmsPage.hasContent('text2')}">
 						<div class="tpl-faq-single__text">
-		                    <ui:include src="#{cmsPage.getContent('text2')}" />
+						<h:outputText escape="false" value="#{cmsPage.getContent('text2')}"></h:outputText>
 						</div>
 					</ui:fragment>
                 </div>

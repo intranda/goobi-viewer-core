@@ -155,6 +155,7 @@ public abstract class DownloadJob implements Serializable {
      * subsequent requests. This + TTL is the time of expiration.
      */
     @Column(name = "last_requested", nullable = false, columnDefinition = "TIMESTAMP")
+    @JsonIgnore
     protected LocalDateTime lastRequested;
 
     @Column(name = "ttl", nullable = false)
@@ -172,6 +173,7 @@ public abstract class DownloadJob implements Serializable {
     @ElementCollection(fetch = FetchType.EAGER)
     @CollectionTable(name = "download_job_observers", joinColumns = @JoinColumn(name = "download_job_id"))
     @Column(name = "observer")
+    @JsonIgnore
     protected List<String> observers = new ArrayList<>();
 
     /**

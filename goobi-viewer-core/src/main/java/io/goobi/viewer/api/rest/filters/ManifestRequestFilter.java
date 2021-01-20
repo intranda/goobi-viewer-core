@@ -36,7 +36,7 @@ import org.slf4j.LoggerFactory;
 
 import de.unigoettingen.sub.commons.contentlib.exceptions.ServiceNotAllowedException;
 import de.unigoettingen.sub.commons.contentlib.servlet.rest.ContentExceptionMapper.ErrorMessage;
-import io.goobi.viewer.api.rest.IIIFPresentationBinding;
+import io.goobi.viewer.api.rest.bindings.IIIFPresentationBinding;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
@@ -65,8 +65,8 @@ public class ManifestRequestFilter implements ContainerRequestFilter {
     @Override
     public void filter(ContainerRequestContext request) throws IOException {
         try {
-            String requestPI = (String) servletRequest.getAttribute("pi");
-            String requestLogId = (String) servletRequest.getAttribute("divId");
+            String requestPI = (String) servletRequest.getAttribute(FilterTools.ATTRIBUTE_PI);
+            String requestLogId = (String) servletRequest.getAttribute(FilterTools.ATTRIBUTE_LOGID);
             if(StringUtils.isNotBlank(requestPI)) {                
                 filterForAccessConditions(request, requestPI, requestLogId);
             }

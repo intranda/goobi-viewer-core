@@ -334,7 +334,7 @@ public class SearchFacets implements Serializable {
      * @return a {@link java.util.List} object.
      */
     public List<FacetItem> getLimitedFacetListForField(String field) {
-        logger.trace("getLimitedFacetListForField: {}", field);
+        // logger.trace("getLimitedFacetListForField: {}", field);
         List<FacetItem> facetItems = availableFacets.get(field);
         if (facetItems == null) {
             return null;
@@ -346,7 +346,7 @@ public class SearchFacets implements Serializable {
             return facetItems.subList(0, initial);
         }
 
-        logger.trace("facet items {}: {}", field, facetItems.size());
+        // logger.trace("facet items {}: {}", field, facetItems.size());
         return facetItems;
     }
 

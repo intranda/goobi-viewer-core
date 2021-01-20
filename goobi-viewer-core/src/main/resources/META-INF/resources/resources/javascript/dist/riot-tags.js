@@ -5,7 +5,7 @@ riot.tag2('adminmediaupload', '<div class="admin-cms-media__upload-wrapper"><div
         if(this.opts.fileTypes) {
             this.fileTypes = this.opts.fileTypes;
         } else {
-        	this.fileTypes = 'jpg, png, docx, doc, pdf, rtf, html, xhtml, xml';
+        	this.fileTypes = 'jpg, png, tif, jp2, gif, pdf';
         }
         this.isDragover = false;
 
@@ -176,6 +176,7 @@ riot.tag2('adminmediaupload', '<div class="admin-cms-media__upload-wrapper"><div
         }.bind(this)
 
         this.deleteUploadedFile = function(file) {
+            console.log("delete file ", file, this.getFilename(file));
             return fetch(this.opts.postUrl + this.getFilename(file), {
                 method: "DELETE",
        		})
@@ -204,11 +205,12 @@ riot.tag2('adminmediaupload', '<div class="admin-cms-media__upload-wrapper"><div
             };
 
             return fetch(this.opts.postUrl + this.files[i].name, {
-                method: "GET",
+                method: "HEAD",
+                redirect: 'follow'
             })
-            .then(r => r.json())
-            .then( json => {
-                return json.image != undefined
+            .then( response => {
+                console.log("HEAD respnse ", response);
+                return response.status == 200;
             })
             .then(exists => {
                 if(exists) {
@@ -248,12 +250,20 @@ riot.tag2('adminmediaupload', '<div class="admin-cms-media__upload-wrapper"><div
         }.bind(this)
 
         this.getFilename = function(url) {
-            let result = url.match(/_tifU002F(.*)\/(?:full|square)/);
-            if(result && result.length > 1) {
-                return result[1];
-            } else {
-             	return url;
+            console.log("url" + url);
+            console.log("base url " + this.opts.postUrl);
+            let filename = url.replace(this.opts.postUrl, "");
+            console.log("filename " + filename);
+            if(filename.startsWith("/")) {
+                filename = filename.slice(1);
             }
+            console.log("filename " + filename);
+            let filenameEnd = filename.indexOf("/");
+            if(filenameEnd > 0) {
+                filename = filename.slice(0,filenameEnd);
+            }
+            console.log("filename " + filename);
+            return filename;
         }.bind(this)
 });
 
@@ -306,7 +316,7 @@ riot.tag2('authorityresource', '<div class="annotation__body__authority"><div if
 
 	this.on("mount", () => {
 		this.authorityId = this.opts.resource.id;
-	    this.url = this.opts.resturl + "normdata/get/" + this.unicodeEscapeUri(this.authorityId) + "/ANNOTATION/" + this.opts.currentlang + "/"
+	    this.url = this.opts.resturl + "authority/resolver?id=" + this.unicodeEscapeUri(this.authorityId) + "&template=ANNOTATION&lang=" + this.opts.currentlang
 		this.update();
 	    fetch(this.url)
 	    .then(response => {
@@ -454,7 +464,7 @@ this.remove = function(event) {
 	    .then( () => this.updateLists())
     } else {
         let bookmark = event.item.bookmark;
-        this.opts.bookmarks.removeFromBookmarkList(undefined, bookmark.pi, undefined, undefined, false)
+        this.opts.bookmarks.removeFromBookmarkList(0, bookmark.pi, undefined, undefined, false)
 	    .then( () => this.updateLists())
     }
 }.bind(this)
@@ -547,15 +557,9 @@ this.add = function(event) {
 }.bind(this)
 
 this.remove = function(event) {
-    if(this.opts.bookmarks.config.userLoggedIn) {
 	    let list = event.item.bookmarkList
 	    this.opts.bookmarks.removeFromBookmarkList(list.id, this.pi, this.page, this.logid, this.opts.bookmarks.isTypePage())
 	    .then( () => this.updateLists())
-    } else {
-        let bookmark = event.item.bookmark;
-        this.opts.bookmarks.removeFromBookmarkList(undefined, bookmark.pi, undefined, undefined, false)
-	    .then( () => this.updateLists())
-    }
 }.bind(this)
 
 this.inList = function(list, pi, page, logid) {
@@ -658,20 +662,13 @@ this.mayEmptyList = function(list) {
 }.bind(this)
 
 this.remove = function(event) {
-    if(this.opts.bookmarks.config.userLoggedIn) {
-	    let list = event.item.bookmarkList
-	    this.opts.bookmarks.removeFromBookmarkList(list.id, this.pi, this.page, this.logid, this.opts.bookmarks.isTypePage())
-	    .then( () => this.updateLists())
-    } else {
         let bookmark = event.item.bookmark;
-        this.opts.bookmarks.removeFromBookmarkList(undefined, bookmark.pi, undefined, undefined, false)
+        this.opts.bookmarks.removeFromBookmarkList(0, bookmark.pi, undefined, undefined, false)
 	    .then( () => this.updateLists())
-    }
 }.bind(this)
 
 this.deleteList = function(event) {
-    let list = event.item.bookmarkList
-    this.opts.bookmarks.removeBookmarkList(list.id)
+    this.opts.bookmarks.removeBookmarkList(0)
     .then( () => this.updateLists());
 }.bind(this)
 
@@ -702,11 +699,7 @@ this.mayCompareList = function(list) {
 }.bind(this)
 
 this.miradorUrl = function(list) {
-    if(list.id != null) {
-    	return this.opts.bookmarks.config.root + "/mirador/id/" + list.id + "/";
-    } else {
-    	return this.opts.bookmarks.config.root + "/mirador/";
-    }
+    	return this.opts.bookmarks.config.root + "/mirador/id/0/";
 }.bind(this)
 
 this.msg = function(key) {

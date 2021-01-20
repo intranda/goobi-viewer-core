@@ -47,7 +47,10 @@ import java.nio.file.Paths;
 import javax.inject.Inject;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.ws.rs.Consumes;
+import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
+import javax.ws.rs.POST;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
@@ -58,6 +61,7 @@ import javax.ws.rs.core.StreamingOutput;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.solr.common.SolrDocument;
 import org.jdom2.JDOMException;
+import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -73,8 +77,9 @@ import de.unigoettingen.sub.commons.contentlib.exceptions.ServiceNotAllowedExcep
 import de.unigoettingen.sub.commons.contentlib.servlet.rest.CORSBinding;
 import io.goobi.viewer.api.rest.AbstractApiUrlManager;
 import io.goobi.viewer.api.rest.AbstractApiUrlManager.ApiPath;
-import io.goobi.viewer.api.rest.IIIFPresentationBinding;
-import io.goobi.viewer.api.rest.ViewerRestServiceBinding;
+import io.goobi.viewer.api.rest.bindings.AuthorizationBinding;
+import io.goobi.viewer.api.rest.bindings.IIIFPresentationBinding;
+import io.goobi.viewer.api.rest.bindings.ViewerRestServiceBinding;
 import io.goobi.viewer.api.rest.model.ner.DocumentReference;
 import io.goobi.viewer.api.rest.resourcebuilders.AnnotationsResourceBuilder;
 import io.goobi.viewer.api.rest.resourcebuilders.IIIFPresentationResourceBuilder;
@@ -85,6 +90,7 @@ import io.goobi.viewer.api.rest.resourcebuilders.TocResourceBuilder;
 import io.goobi.viewer.controller.DataFileTools;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.FileTools;
+import io.goobi.viewer.controller.IndexerTools;
 import io.goobi.viewer.controller.SolrConstants;
 import io.goobi.viewer.controller.StringTools;
 import io.goobi.viewer.exceptions.DAOException;
@@ -92,6 +98,7 @@ import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.exceptions.RecordNotFoundException;
 import io.goobi.viewer.exceptions.ViewerConfigurationException;
+import io.goobi.viewer.messages.ViewerResourceBundle;
 import io.goobi.viewer.model.iiif.presentation.builder.BuildMode;
 import io.goobi.viewer.model.iiif.presentation.builder.OpenAnnotationBuilder;
 import io.goobi.viewer.model.iiif.presentation.builder.WebAnnotationBuilder;
@@ -122,6 +129,9 @@ public class RecordResource {
 
     private final String pi;
     private final TextResourceBuilder builder = new TextResourceBuilder();
+    
+    private static Thread deleteRecordThread = null;
+
 
     public RecordResource(@Context HttpServletRequest request,
             @Parameter(description = "Persistent identifier of the record") @PathParam("pi") String pi) {
@@ -520,6 +530,74 @@ public class RecordResource {
             }
         }
         return BuildMode.IIIF;
+    }
+    
+    /**
+     * <p>
+     * deleteRecord.
+     * </p>
+     *
+     * @param params a {@link io.goobi.viewer.servlets.rest.utils.IndexingRequestParameters} object.
+     * @return Short summary of files created
+     */
+    @DELETE
+    @Produces({ MediaType.APPLICATION_JSON })
+    @Consumes({ MediaType.APPLICATION_JSON })
+    @CORSBinding
+    @AuthorizationBinding
+    @Operation(tags = { "records" }, summary = "Delete the record from the SOLR database",
+    description = "Requires an authentication token. This operation may take a while, depending on the indexer queue. If the request aborts before deletion is complete, further deletion requests will be disallowed until the operation completes")
+    public String deleteRecord(
+            @Parameter(description = "set true to create a trace document of the delete action")@QueryParam("trace") Boolean createTraceDocument) {
+
+        JSONObject ret = new JSONObject();
+
+        if (deleteRecordThread == null || !deleteRecordThread.isAlive()) {
+            deleteRecordThread = new Thread(new Runnable() {
+
+                @Override
+                public void run() {
+                    try {
+                        if (DataManager.getInstance().getSearchIndex().getHitCount(SolrConstants.PI_PARENT + ":" + pi) > 0) {
+                            ret.put("status", HttpServletResponse.SC_FORBIDDEN);
+                            ret.put("message", ViewerResourceBundle.getTranslation("deleteRecord_failure_volumes_present", null));
+                        }
+                        if (IndexerTools.deleteRecord(pi, createTraceDocument == null ? false : createTraceDocument,
+                                Paths.get(DataManager.getInstance().getConfiguration().getHotfolder()))) {
+                            ret.put("status", HttpServletResponse.SC_OK);
+                            ret.put("message", ViewerResourceBundle.getTranslation("deleteRecord_success", null));
+                        } else {
+                            ret.put("status", HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+                            ret.put("message", ViewerResourceBundle.getTranslation("deleteRecord_failure", null));
+                        }
+                    } catch (IOException e) {
+                        logger.error(e.getMessage(), e);
+                        ret.put("status", HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+                        ret.put("message", e.getMessage());
+                    } catch (IndexUnreachableException e) {
+                        logger.debug("IndexUnreachableException thrown here: {}", e.getMessage());
+                        ret.put("status", HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+                        ret.put("message", e.getMessage());
+                    } catch (PresentationException e) {
+                        logger.debug("PresentationException thrown here: {}", e.getMessage());
+                        ret.put("status", HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+                        ret.put("message", e.getMessage());
+                    }
+                }
+            });
+
+            deleteRecordThread.start();
+            try {
+                deleteRecordThread.join();
+            } catch (InterruptedException e) {
+                logger.error(e.getMessage(), e);
+            }
+        } else {
+            ret.put("status", HttpServletResponse.SC_FORBIDDEN);
+            ret.put("message", "Record deletion currently in progress");
+        }
+
+        return ret.toString();
     }
 
     /**

@@ -15,10 +15,11 @@
  */
 package io.goobi.viewer.model.iiif.presentation.builder;
 
+import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_ALTO;
+import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_PLAINTEXT;
+import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_RECORD;
+
 import java.net.URI;
-
-import static io.goobi.viewer.api.rest.v1.ApiUrls.*;
-
 import java.net.URISyntaxException;
 import java.time.Instant;
 import java.time.LocalDate;
@@ -36,7 +37,6 @@ import org.slf4j.LoggerFactory;
 import de.intranda.api.iiif.IIIFUrlResolver;
 import de.intranda.api.iiif.image.ImageInformation;
 import de.intranda.api.iiif.presentation.AbstractPresentationModelElement;
-import de.intranda.api.iiif.presentation.Canvas;
 import de.intranda.api.iiif.presentation.Collection;
 import de.intranda.api.iiif.presentation.IPresentationModelElement;
 import de.intranda.api.iiif.presentation.Manifest;
@@ -60,12 +60,8 @@ import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.exceptions.ViewerConfigurationException;
 import io.goobi.viewer.managedbeans.ImageDeliveryBean;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
-import io.goobi.viewer.messages.ViewerResourceBundle;
 import io.goobi.viewer.model.iiif.presentation.builder.LinkingProperty.LinkingTarget;
-import io.goobi.viewer.model.viewer.MimeType;
-import io.goobi.viewer.model.viewer.PhysicalElement;
 import io.goobi.viewer.model.viewer.StructElement;
-import io.goobi.viewer.servlets.rest.content.ContentResource;
 
 /**
  * <p>

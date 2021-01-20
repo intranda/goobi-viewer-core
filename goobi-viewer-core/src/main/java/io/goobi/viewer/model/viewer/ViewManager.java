@@ -15,6 +15,7 @@
  */
 package io.goobi.viewer.model.viewer;
 
+import static io.goobi.viewer.api.rest.v1.ApiUrls.*;
 import java.awt.Dimension;
 import java.io.IOException;
 import java.io.Serializable;
@@ -1568,7 +1569,10 @@ public class ViewManager implements Serializable {
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      */
     public String getAltoUrlForAllPages() throws ViewerConfigurationException, PresentationException, IndexUnreachableException {
-        return DataManager.getInstance().getConfiguration().getRestApiUrl() + "content/alto/" + getPi();
+        String pi = getPi();
+        return DataManager.getInstance().getRestApiManager().getContentApiManager().map(urls -> 
+                urls.path(RECORDS_RECORD, RECORDS_ALTO).params(pi).build()
+                ).orElse("");
     }
 
     /**
@@ -1580,7 +1584,10 @@ public class ViewManager implements Serializable {
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      */
     public String getFulltextUrlForAllPages() throws ViewerConfigurationException, PresentationException, IndexUnreachableException {
-        return DataManager.getInstance().getConfiguration().getRestApiUrl() + "content/fulltext/" + getPi();
+        String pi = getPi();
+        return DataManager.getInstance().getRestApiManager().getContentApiManager().map(urls ->
+                urls.path(RECORDS_RECORD, RECORDS_PLAINTEXT_ZIP).params(pi).build()
+                ).orElse("");
     }
 
     /**
@@ -1591,7 +1598,12 @@ public class ViewManager implements Serializable {
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      */
     public String getTeiUrlForAllPages() throws ViewerConfigurationException, IndexUnreachableException {
-        return DataManager.getInstance().getConfiguration().getRestApiUrl() + "content/tei/" + getPi() + "/" + BeanUtils.getLocale().getLanguage();
+        String pi = getPi();
+        return DataManager.getInstance().getRestApiManager().getContentApiManager().map(urls ->
+                urls.path(RECORDS_RECORD, RECORDS_TEI_LANG)
+                .params(pi, BeanUtils.getLocale().getLanguage())
+                .build()
+                ).orElse("");
     }
 
     /**
@@ -1603,13 +1615,16 @@ public class ViewManager implements Serializable {
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
     public String getTeiUrl() throws ViewerConfigurationException, IndexUnreachableException, DAOException {
-        String filename = FileTools.getFilenameFromPathString(getCurrentPage().getFulltextFileName());
-        if (StringUtils.isBlank(filename)) {
-            filename = FileTools.getFilenameFromPathString(getCurrentPage().getAltoFileName());
-        }
-        return DataManager.getInstance().getConfiguration().getRestApiUrl() + "content/tei/" + getPi() + "/" + filename + "/"
-                + BeanUtils.getLocale().getLanguage();
-
+        String plaintextFilename = FileTools.getFilenameFromPathString(getCurrentPage().getFulltextFileName());
+        String altoFilename = FileTools.getFilenameFromPathString(getCurrentPage().getAltoFileName());
+        String filenameToUse = StringUtils.isNotBlank(plaintextFilename) ? plaintextFilename : altoFilename;
+        
+        String pi = getPi();
+        return DataManager.getInstance().getRestApiManager().getContentApiManager().map(urls ->
+                urls.path(RECORDS_FILES, RECORDS_FILES_TEI)
+                .params(pi, filenameToUse)
+                .build()
+                ).orElse("");
     }
 
     /**
@@ -1623,7 +1638,12 @@ public class ViewManager implements Serializable {
      */
     public String getAltoUrl() throws ViewerConfigurationException, PresentationException, IndexUnreachableException, DAOException {
         String filename = FileTools.getFilenameFromPathString(getCurrentPage().getAltoFileName());
-        return DataManager.getInstance().getConfiguration().getRestApiUrl() + "content/alto/" + getPi() + "/" + filename;
+        String pi = getPi();
+        return DataManager.getInstance().getRestApiManager().getContentApiManager().map(urls ->
+                urls.path(RECORDS_FILES, RECORDS_FILES_ALTO)
+                .params(pi, filename)
+                .build()
+                ).orElse("");
     }
 
     /**
@@ -1636,11 +1656,16 @@ public class ViewManager implements Serializable {
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
     public String getFulltextUrl() throws ViewerConfigurationException, PresentationException, IndexUnreachableException, DAOException {
-        String filename = FileTools.getFilenameFromPathString(getCurrentPage().getFulltextFileName());
-        if (StringUtils.isBlank(filename)) {
-            filename = FileTools.getFilenameFromPathString(getCurrentPage().getAltoFileName());
-        }
-        return DataManager.getInstance().getConfiguration().getRestApiUrl() + "content/fulltext/" + getPi() + "/" + filename;
+        String plaintextFilename = FileTools.getFilenameFromPathString(getCurrentPage().getFulltextFileName());
+        String altoFilename = FileTools.getFilenameFromPathString(getCurrentPage().getAltoFileName());
+        String filenameToUse = StringUtils.isNotBlank(plaintextFilename) ? plaintextFilename : altoFilename;
+        
+        String pi = getPi();
+        return DataManager.getInstance().getRestApiManager().getContentApiManager().map(urls ->
+                urls.path(RECORDS_FILES, RECORDS_FILES_PLAINTEXT)
+                .params(pi, filenameToUse)
+                .build()
+                ).orElse("");
     }
 
     /**
@@ -2581,10 +2606,11 @@ public class ViewManager implements Serializable {
     private LabeledLink getLinkToDownloadFile(String filename) {
         try {
             String pi = getPi();
-            AbstractApiUrlManager apiUrls = DataManager.getInstance().getRestApiManager().getContentApiManager();
             String filenameEncoded = URLEncoder.encode(filename, StringTools.DEFAULT_ENCODING);
-            String url = apiUrls.path(ApiUrls.RECORDS_FILES, ApiUrls.RECORDS_FILES_SOURCE).params(pi, filenameEncoded).build();
-            return new LabeledLink(filename, url, 0);
+            return DataManager.getInstance().getRestApiManager().getContentApiManager()
+                    .map(urls -> urls.path(ApiUrls.RECORDS_FILES, ApiUrls.RECORDS_FILES_SOURCE).params(pi, filenameEncoded).build())
+                    .map(url -> new LabeledLink(filename, url, 0))
+                    .orElse(LabeledLink.EMPTY);
         } catch (UnsupportedEncodingException | IndexUnreachableException e) {
             logger.error("Failed to create download link to " + filename, e);
             return LabeledLink.EMPTY;

@@ -81,8 +81,8 @@ import io.goobi.viewer.model.cms.itemfunctionality.SearchFunctionality;
 import io.goobi.viewer.model.glossary.GlossaryManager;
 import io.goobi.viewer.model.misc.Harvestable;
 import io.goobi.viewer.model.viewer.CollectionView;
-import io.goobi.viewer.servlets.rest.cms.CMSContentResource;
-import io.goobi.viewer.servlets.rest.dao.TileGridResource;
+
+import static io.goobi.viewer.api.rest.v1.ApiUrls.*;
 
 /**
  * <p>
@@ -109,10 +109,10 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable {
     @Column(name = "template_id", nullable = false)
     private String templateId;
 
-    @Column(name = "date_created", nullable = false, columnDefinition = "TIMESTAMP")
+    @Column(name = "date_created", nullable = false)
     private LocalDateTime dateCreated;
 
-    @Column(name = "date_updated", columnDefinition = "TIMESTAMP")
+    @Column(name = "date_updated")
     private LocalDateTime dateUpdated;
 
     @Column(name = "published", nullable = false)
@@ -1190,10 +1190,8 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable {
             String contentString = "";
             switch (item.getType()) {
                 case TEXT:
-                    contentString = item.getHtmlFragment();
-                    break;
                 case HTML:
-                    contentString = CMSContentResource.getContentUrl(item);
+                    contentString = item.getHtmlFragment();
                     break;
                 case MEDIA:
                     String type = item.getMediaItem() != null ? item.getMediaItem().getContentType() : "";
@@ -1427,26 +1425,44 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable {
      * @throws de.unigoettingen.sub.commons.contentlib.exceptions.IllegalRequestException if any.
      */
     public String getTileGridUrl(String itemId) throws IllegalRequestException {
-        CMSContentItem item;
         try {
-            item = getContentItem(itemId);
+            CMSContentItem item = getContentItem(itemId);
+            if (item != null && item.getType().equals(CMSContentItemType.TILEGRID)) {
+                
+                String tags = item.getCategories().stream().map(CMSCategory::getName).collect(Collectors.joining(","));
+                
+                String url = DataManager.getInstance().getRestApiManager().getDataApiManager().map(urls -> urls.path(CMS_MEDIA)
+                        .query("tags", tags)
+                        .query("max", item.getNumberOfTiles())
+                        .query("prioritySlots", item.getNumberOfImportantTiles())
+                        .query("random", "true").build()
+                        ).orElse(getLegacyTileGridUrl(item));
+                
+                return url;
+  
+            } else {
+                throw new IllegalRequestException("Content item with id '" + itemId + "' is no tile grid item");
+            }
         } catch (CmsElementNotFoundException e) {
-            item = null;
+            throw new IllegalRequestException("No tile grid item with id '" + itemId + "' found");
         }
-        if (item != null && item.getType().equals(CMSContentItemType.TILEGRID)) {
-            StringBuilder sb = new StringBuilder(BeanUtils.getServletPathWithHostAsUrlFromJsfContext());
-            sb.append("/rest/tilegrid/")
-                    .append(CmsBean.getCurrentLocale().getLanguage())
-                    .append("/")
-                    .append(item.getNumberOfTiles())
-                    .append("/")
-                    .append(item.getNumberOfImportantTiles())
-                    .append("/")
-                    .append(item.getCategories().stream().map(CMSCategory::getName).collect(Collectors.joining(TileGridResource.TAG_SEPARATOR)))
-                    .append("/");
-            return sb.toString();
-        }
-        throw new IllegalRequestException("No tile grid item with id '" + itemId + "' found");
+    }
+
+    /**
+     * @return
+     */
+    private String getLegacyTileGridUrl(CMSContentItem item) {
+      StringBuilder sb = new StringBuilder(BeanUtils.getServletPathWithHostAsUrlFromJsfContext());
+      sb.append("/rest/tilegrid/")
+              .append(CmsBean.getCurrentLocale().getLanguage())
+              .append("/")
+              .append(item.getNumberOfTiles())
+              .append("/")
+              .append(item.getNumberOfImportantTiles())
+              .append("/")
+              .append(item.getCategories().stream().map(CMSCategory::getName).collect(Collectors.joining("$")))
+              .append("/");
+      return sb.toString();
     }
 
     /**

@@ -47,7 +47,7 @@
 					<h:panelGroup id="cmsTextContent">
                         <ui:fragment rendered="#{cmsPage.hasContent('text') and searchBean.activeSearchType != 0}">
                         	<div class="tpl-search__text">
-	    	                    <ui:include src="#{cmsPage.getContent('text')}" />
+	    	                    <h:outputText escape="false" value="#{cmsPage.getContent('text')}"></h:outputText>
                         	</div>
     					</ui:fragment>
 					</h:panelGroup>

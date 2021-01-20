@@ -15,20 +15,13 @@
  */
 package io.goobi.viewer.model.iiif.presentation.builder;
 
-import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_ALTO;
-import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_PLAINTEXT;
-import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_RECORD;
-
-import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.net.URLEncoder;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.solr.client.solrj.SolrServerException;
 import org.apache.solr.common.SolrDocument;
 import org.apache.solr.common.SolrDocumentList;
 import org.slf4j.Logger;
@@ -48,14 +41,13 @@ import de.intranda.metadata.multilanguage.SimpleMetadataValue;
 import de.unigoettingen.sub.commons.contentlib.exceptions.IllegalRequestException;
 import io.goobi.viewer.api.rest.AbstractApiUrlManager;
 import io.goobi.viewer.api.rest.v1.ApiUrls;
+import io.goobi.viewer.api.rest.v1.services.JsonLdDefinitionsResource;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.SolrConstants;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.exceptions.ViewerConfigurationException;
-import io.goobi.viewer.managedbeans.utils.BeanUtils;
-import io.goobi.viewer.messages.ViewerResourceBundle;
 import io.goobi.viewer.model.cms.CMSCollection;
 import io.goobi.viewer.model.iiif.presentation.builder.LinkingProperty.LinkingTarget;
 import io.goobi.viewer.model.search.SearchHelper;
@@ -63,7 +55,6 @@ import io.goobi.viewer.model.viewer.BrowseElementInfo;
 import io.goobi.viewer.model.viewer.CollectionView;
 import io.goobi.viewer.model.viewer.HierarchicalBrowseDcElement;
 import io.goobi.viewer.model.viewer.SimpleBrowseElementInfo;
-import io.goobi.viewer.servlets.rest.services.JsonLdDefinitionsResource;
 
 /**
  * <p>
@@ -287,7 +278,7 @@ public class CollectionBuilder extends AbstractBuilder {
                 long volumes = baseElement.getNumberOfVolumes();
                 int subCollections = baseElement.getChildren().size();
                 CollectionExtent extentService = new CollectionExtent(subCollections, (int) volumes);
-                extentService.setBaseURI(JsonLdDefinitionsResource.getUrl());
+                extentService.setBaseURI(urls.path(ApiUrls.CONTEXT).build());
                 collection.addService(extentService);
 
                 String rssUrl = urls.path(ApiUrls.RECORDS_RSS).query("query", baseElement.getSolrFilterQuery()).build();
@@ -362,10 +353,10 @@ public class CollectionBuilder extends AbstractBuilder {
      * @param ele
      * @return
      */
-    private static void addTagListService(Collection collection, CollectionView view, String label) {
+    private void addTagListService(Collection collection, CollectionView view, String label) {
             if(collection.getInternalName() != null) {
                 view.getCompleteList().stream().filter(e -> collection.getInternalName().equals(e.getName())).findAny().ifPresent( ele -> {
-                    TagListService tagsService = new TagListService(label, JsonLdDefinitionsResource.getUrl());
+                    TagListService tagsService = new TagListService(label, urls.path(ApiUrls.CONTEXT).build());
                     tagsService.setTags(ele.getFacetValues());
                     collection.addService(tagsService);
                     

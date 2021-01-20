@@ -51,6 +51,7 @@ public class ALTOToolsTest extends AbstractTest {
      */
     @BeforeClass
     public static void setUpBeforeClass() throws Exception {
+        AbstractTest.setUpClass();
     }
 
     /**
@@ -65,6 +66,7 @@ public class ALTOToolsTest extends AbstractTest {
      */
     @Before
     public void setUp() throws Exception {
+        super.setUp();
     }
 
     /**

@@ -87,7 +87,7 @@ remove(event) {
 	    .then( () => this.updateLists())
     } else {
         let bookmark = event.item.bookmark;
-        this.opts.bookmarks.removeFromBookmarkList(undefined, bookmark.pi, undefined, undefined, false)
+        this.opts.bookmarks.removeFromBookmarkList(0, bookmark.pi, undefined, undefined, false)
 	    .then( () => this.updateLists())
     }
 }

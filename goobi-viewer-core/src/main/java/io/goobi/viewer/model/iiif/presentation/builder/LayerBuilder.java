@@ -26,6 +26,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.function.BiFunction;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -40,10 +42,10 @@ import de.intranda.api.iiif.presentation.enums.AnnotationType;
 import de.intranda.api.iiif.presentation.enums.DcType;
 import de.intranda.api.iiif.presentation.enums.Format;
 import io.goobi.viewer.api.rest.AbstractApiUrlManager;
+import io.goobi.viewer.api.rest.resourcebuilders.TextResourceBuilder;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.messages.ViewerResourceBundle;
-import io.goobi.viewer.servlets.rest.content.ContentResource;
 
 /**
  * <p>
@@ -85,11 +87,11 @@ public class LayerBuilder extends AbstractBuilder {
      */
     public Layer createAnnotationLayer(String pi, AnnotationType type, String motivation, BiFunction<String, String, List<Path>> fileGetter,
             BiFunction<String, String, URI> linkGetter) throws PresentationException, IndexUnreachableException, IOException, URISyntaxException {
-        List<Path> files = ContentResource.getTEIFiles(pi);
+        List<Path> files = new TextResourceBuilder().getTEIFiles(pi);
         //        List<Path> files = fileGetter.apply(pi, ContentResource.getDataRepository(pi));
         List<IAnnotation> annotations = new ArrayList<>();
         for (Path path : files) {
-            Optional<String> language = ContentResource.getLanguage(path.getFileName().toString());
+            Optional<String> language = getLanguage(path.getFileName().toString());
             language.ifPresent(lang -> {
                 URI link = linkGetter.apply(pi, lang);
                 URI annotationURI = getAnnotationListURI(pi, type);
@@ -200,5 +202,22 @@ public class LayerBuilder extends AbstractBuilder {
             map.put(annoType, content);
         }
         return map;
+    }
+    
+    /**
+     * <p>
+     * getLanguage.
+     * </p>
+     *
+     * @param filename a {@link java.lang.String} object.
+     * @return a {@link java.util.Optional} object.
+     */
+    private Optional<String> getLanguage(String filename) {
+        String regex = "([a-z]{1,3})\\.[a-z]+";
+        Matcher matcher = Pattern.compile(regex).matcher(filename);
+        if (matcher.find()) {
+            return Optional.of(matcher.group(1));
+        }
+        return Optional.empty();
     }
 }

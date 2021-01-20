@@ -40,8 +40,9 @@ import de.unigoettingen.sub.commons.contentlib.exceptions.ContentLibException;
 import de.unigoettingen.sub.commons.contentlib.exceptions.ContentNotFoundException;
 import de.unigoettingen.sub.commons.contentlib.servlet.rest.CORSBinding;
 import io.goobi.viewer.api.rest.AbstractApiUrlManager;
-import io.goobi.viewer.api.rest.IIIFPresentationBinding;
-import io.goobi.viewer.api.rest.ViewerRestServiceBinding;
+import io.goobi.viewer.api.rest.bindings.IIIFPresentationBinding;
+import io.goobi.viewer.api.rest.bindings.ViewerRestServiceBinding;
+import io.goobi.viewer.api.rest.filters.FilterTools;
 import io.goobi.viewer.api.rest.resourcebuilders.IIIFPresentationResourceBuilder;
 import io.goobi.viewer.api.rest.resourcebuilders.RisResourceBuilder;
 import io.goobi.viewer.controller.DataManager;
@@ -79,8 +80,8 @@ public class RecordSectionResource {
             @Parameter(description = "Logical div ID of METS section") @PathParam("divId") String divId) {
         this.pi = pi;
         this.divId = divId;
-        request.setAttribute("pi", pi);
-        request.setAttribute("divId", divId);
+        request.setAttribute(FilterTools.ATTRIBUTE_PI, pi);
+        request.setAttribute(FilterTools.ATTRIBUTE_LOGID, divId);
         
     }
     

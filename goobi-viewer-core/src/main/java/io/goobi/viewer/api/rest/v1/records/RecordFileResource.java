@@ -15,21 +15,16 @@
  */
 package io.goobi.viewer.api.rest.v1.records;
 
-import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_FILES;
-import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_FILES_ALTO;
-import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_FILES_IMAGE;
-import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_FILES_IMAGE_PDF;
-import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_FILES_PDF;
-import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_FILES_PLAINTEXT;
-import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_FILES_SOURCE;
-import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_FILES_TEI;
+import static io.goobi.viewer.api.rest.v1.ApiUrls.*;
 
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URISyntaxException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Collections;
+import java.util.stream.Stream;
 
 import javax.inject.Inject;
 import javax.servlet.http.HttpServletRequest;
@@ -37,6 +32,7 @@ import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.GET;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
@@ -44,6 +40,9 @@ import javax.ws.rs.core.StreamingOutput;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.jdom2.Document;
+import org.jdom2.JDOMException;
+import org.jdom2.output.XMLOutputter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -53,11 +52,13 @@ import de.unigoettingen.sub.commons.contentlib.exceptions.ServiceNotAllowedExcep
 import de.unigoettingen.sub.commons.contentlib.servlet.rest.CORSBinding;
 import de.unigoettingen.sub.commons.util.PathConverter;
 import io.goobi.viewer.api.rest.AbstractApiUrlManager;
-import io.goobi.viewer.api.rest.ViewerRestServiceBinding;
+import io.goobi.viewer.api.rest.bindings.ViewerRestServiceBinding;
 import io.goobi.viewer.api.rest.resourcebuilders.TextResourceBuilder;
 import io.goobi.viewer.controller.DataFileTools;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.StringTools;
+import io.goobi.viewer.controller.XmlTools;
+import io.goobi.viewer.controller.language.Language;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
@@ -187,6 +188,41 @@ public class RecordFileResource {
             }
         };
     }
+    
+    @GET
+    @javax.ws.rs.Path(RECORDS_FILES_CMDI)
+    @Operation(tags = { "records" }, summary = "Get cmdi for record file")
+    @Produces(MediaType.APPLICATION_OCTET_STREAM)
+    public String getCMDI(
+            @Parameter(description = "Image file name for cmdi") @PathParam("filename") String filename,
+            @Parameter(description = "Language for CMDI") @QueryParam("lang") String lang)
+            throws ContentLibException, PresentationException, IndexUnreachableException, DAOException, IOException {
+        checkFulltextAccessConditions(pi, filename);
+
+        if(lang == null) {
+            lang = BeanUtils.getLocale().getLanguage();
+        }
+        
+        final Language language = DataManager.getInstance().getLanguageHelper().getLanguage(lang);
+        Path cmdiPath = DataFileTools.getDataFolder(pi, DataManager.getInstance().getConfiguration().getCmdiFolder());
+        Path filePath = getDocumentLanguageVersion(cmdiPath, language);
+        if (filePath != null) {
+            if (Files.isRegularFile(filePath)) {
+                try {
+                    Document doc = XmlTools.readXmlFile(filePath);
+                    return new XMLOutputter().outputString(doc);
+                } catch (FileNotFoundException e) {
+                    logger.debug(e.getMessage());
+                } catch (IOException e) {
+                    logger.error(e.getMessage(), e);
+                } catch (JDOMException e) {
+                    logger.error(e.getMessage(), e);
+                }
+            }
+        }
+
+        throw new ContentNotFoundException("Resource not found");
+    }
 
     /**
      * Throw an AccessDenied error if the request doesn't satisfy the access conditions
@@ -203,6 +239,40 @@ public class RecordFileResource {
         if (!access) {
             throw new ServiceNotAllowedException("Access to fulltext file " + pi + "/" + filename + " not allowed");
         }
+    }
+    
+    /**
+     * Returns the first file on the given folder path that contains the requested language code in its name. ISO-3 files are preferred, with a
+     * fallback to ISO-2.
+     * 
+     * @param folder
+     * @param language
+     * @return Path of the requested file; null if not found
+     * @throws IOException
+     */
+    static Path getDocumentLanguageVersion(Path folder, Language language) throws IOException {
+        if (language == null) {
+            throw new IllegalArgumentException("language may not be null");
+        }
+        if (folder == null || !Files.isDirectory(folder)) {
+            return null;
+        }
+
+        java.nio.file.Path ret;
+        // This will return the file with the requested language or alternatively the first file in the TEI folder
+        try (Stream<java.nio.file.Path> teiFiles = Files.list(folder)) {
+            ret = teiFiles.filter(path -> path.getFileName().toString().endsWith("_" + language.getIsoCode() + ".xml")).findFirst().orElse(null);
+        }
+        // Fallback to ISO-2
+        if (ret == null) {
+            try (Stream<java.nio.file.Path> teiFiles = Files.list(folder)) {
+                ret = teiFiles.filter(path -> path.getFileName().toString().endsWith("_" + language.getIsoCodeOld() + ".xml"))
+                        .findFirst()
+                        .orElse(null);
+            }
+        }
+
+        return ret;
     }
 
 }

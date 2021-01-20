@@ -63,12 +63,14 @@
                                     <script type="text/javascript">
                                         $( '#SolrFieldInput' ).autocomplete( {
                                                 source: function( request, response ) {
+                                                    let field = $( '#SolrFieldSelect' ).val();
+                                                    let term = request.term;
                                                 Q( $.ajax( {
-                                                        url: '#{navigationHelper.applicationUrl}rest/contentAssist/collections/'
-                                                        + $( '#SolrFieldSelect' ).val()
-                                                        + '/'
-                                                        + request.term
-                                                        + '/',
+                                                        url: '#{navigationHelper.applicationUrl}api/v1/collections/'
+                                                        + field
+                                                        + '/contentassist'
+                                                        + '?query='
+                                                        + request.term,
                                                         type: 'GET',
                                                         datatype: 'json',
                                                 } ) ).then( function( data ) {

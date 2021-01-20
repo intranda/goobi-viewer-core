@@ -33,6 +33,7 @@ import de.unigoettingen.sub.commons.contentlib.servlet.rest.ContentServerPdfBind
 import de.unigoettingen.sub.commons.contentlib.servlet.rest.ContentServerPdfInfoBinding;
 import de.unigoettingen.sub.commons.contentlib.servlet.rest.MetsPdfResource;
 import io.goobi.viewer.api.rest.AbstractApiUrlManager;
+import io.goobi.viewer.api.rest.filters.FilterTools;
 import io.goobi.viewer.api.rest.v1.ApiUrls;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -62,8 +63,8 @@ public class ViewerSectionPDFResource extends MetsPdfResource {
         super(context, request, response, "pdf", pi + ".xml");
         this.divId = divId;
         this.filename = pi + "_" + divId + ".pdf";
-        request.setAttribute("pi", pi);
-        request.setAttribute("divId", divId);
+        request.setAttribute(FilterTools.ATTRIBUTE_PI, pi);
+        request.setAttribute(FilterTools.ATTRIBUTE_LOGID, divId);
     }
     
     @GET

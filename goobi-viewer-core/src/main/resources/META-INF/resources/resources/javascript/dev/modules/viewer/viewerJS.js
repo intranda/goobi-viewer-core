@@ -95,7 +95,7 @@ var viewerJS = (function () {
         if ( bookmarksEnabled ) {
             viewerJS.bookmarks.init( {
                 root: rootURL,
-                rest: restURL,
+                rest: this.getRestApiUrl(),
                 userLoggedIn: userLoggedIn,
                 language: currentLang
                 
@@ -388,6 +388,11 @@ var viewerJS = (function () {
             var filter = new viewerJS.listFilter(filterConfig);
         });
     }
+    
+    viewer.getRestApiUrl = function () {
+        return restURL.replace("/rest", "/api/v1");
+    }
+
 
     // init bootstrap 4 popovers
 	$(document).ready(function(){

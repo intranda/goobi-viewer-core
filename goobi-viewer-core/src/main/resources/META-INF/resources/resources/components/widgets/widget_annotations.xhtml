@@ -63,7 +63,7 @@
 											</ui:fragment>
 											<ui:fragment rendered="#{content.type == 'NORMDATA'}">
 												<button type="button"
-													data-remotecontent="#{request.contextPath}/rest/normdata/get/#{contentBean.getEscapedBodyUrl(content)}/ANNOTATION/#{navigationHelper.localeString}/"
+													data-remotecontent="#{request.contextPath}/api/v1/authority/resolver?id=#{contentBean.getEscapedBodyUrl(content)}&amp;template=ANNOTATION&amp;lang=#{navigationHelper.localeString}/"
 													data-toggle="tooltip" data-placement="top"
 													data-trigger="hover" class="widget-annotations__button">
 													<i class="fa fa-list-ul" aria-hidden="true"></i>

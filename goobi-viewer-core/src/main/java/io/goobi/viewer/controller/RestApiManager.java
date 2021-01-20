@@ -15,6 +15,8 @@
  */
 package io.goobi.viewer.controller;
 
+import java.util.Optional;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -46,17 +48,6 @@ public class RestApiManager {
 
     private static final Logger logger = LoggerFactory.getLogger(RestApiManager.class);
 
-    /**
-     * Handles URLs to data resources (index, dao)
-     */
-    private AbstractApiUrlManager dataApiManager = null;
-    /**
-     * Handles URLs to content resources (images, ocr and other media)
-     */
-    private AbstractApiUrlManager contentApiManager = null;
-
-    private String configuredDataApiUrl = null;
-    private String configuredContentApiUrl = null;
     private Configuration config = null;
 
     /**
@@ -65,9 +56,8 @@ public class RestApiManager {
      * @param dataApiManager
      * @param contentApiManager
      */
-    public RestApiManager(AbstractApiUrlManager dataApiManager, AbstractApiUrlManager contentApiManager) {
-        this.dataApiManager = dataApiManager;
-        this.contentApiManager = contentApiManager;
+    public RestApiManager() {
+        this(DataManager.getInstance().getConfiguration());
     }
 
     /**
@@ -77,19 +67,19 @@ public class RestApiManager {
      */
     public RestApiManager(Configuration config) {
         this.config = config;
-        updateDataUrlManager();
-        updateContentUrlManager();
     }
 
     /**
      * @return the dataApiManager if it is either set directly or if the configured rest endpoint points to a goobi viewer v1 rest endpoint. Otherwise
      *         null is returned
      */
-    public AbstractApiUrlManager getDataApiManager() {
-        if(this.dataApiManager == null) {            
-            this.updateDataUrlManager();
+    public Optional<AbstractApiUrlManager> getDataApiManager() {
+        String apiUrl = this.config.getRestApiUrl();
+        if(isLegacyUrl(apiUrl)) {
+            return Optional.empty();
+        } else {
+            return Optional.of(new ApiUrls(apiUrl));
         }
-        return dataApiManager;
     }
 
     /**
@@ -97,12 +87,7 @@ public class RestApiManager {
      *         configured {@link Configuration#getRestApiUrl()}
      */
     public String getDataApiUrl() {
-        AbstractApiUrlManager manager = getDataApiManager();
-        if (manager != null) {
-            return manager.getApiUrl();
-        }
-
-        return this.configuredDataApiUrl;
+        return config.getRestApiUrl();
     }
 
     /**
@@ -110,63 +95,28 @@ public class RestApiManager {
      *         else the configured {@link Configuration#getIIIApiUrl()}
      */
     public String getContentApiUrl() {
-        AbstractApiUrlManager manager = getContentApiManager();
-        if (manager != null) {
-            return manager.getApiPath();
-        }
-
-        return this.configuredContentApiUrl;
+        return config.getIIIFApiUrl();
     }
 
     /**
      * @return the contentApiManager if it is either set directly or if the configured rest endpoint points to a goobi viewer v1 rest endpoint.
      *         Otherwise null is returned
      */
-    public AbstractApiUrlManager getContentApiManager() {
-        if(this.contentApiManager == null) {            
-            this.updateContentUrlManager();
-        }
-        return contentApiManager;
-    }
-
-    private void updateContentUrlManager() {
-        if (this.config != null) {
-            String url = this.config.getIIIFApiUrl();
-            if (this.configuredContentApiUrl == null || !this.configuredContentApiUrl.equals(url)) {
-                //url not initialized or changed
-                url = url.replace("/rest", "/api/v1");
-                ApiUrls urls = new ApiUrls(url);
-                ApiInfo info = urls.getInfo();
-                if (info != null && info.version.equals("v1")) {
-                    contentApiManager = urls;
-                } else {
-                    logger.error("API info not found; URL: {}", url);
-                    contentApiManager = null;
-                }
-                this.configuredContentApiUrl = url;
-            }
+    public Optional<AbstractApiUrlManager> getContentApiManager() {
+        String apiUrl = this.config.getIIIFApiUrl();
+        if(isLegacyUrl(apiUrl)) {
+            return Optional.empty();
+        } else {
+            return Optional.of(new ApiUrls(apiUrl));
         }
     }
 
-    private void updateDataUrlManager() {
-        if (this.config == null) {
-            return;
-        }
-        String url = this.config.getRestApiUrl();
-        if (this.configuredDataApiUrl == null || !this.configuredContentApiUrl.equals(url)) {
-            //url not initialized or changed
-            url = url.replace("/rest", "/api/v1");
-            // logger.debug("REST API URL: {}", url);
-            ApiUrls urls = new ApiUrls(url);
-            ApiInfo info = urls.getInfo();
-            if (info != null && info.version.equals("v1")) {
-                dataApiManager = urls;
-            } else {
-                logger.error("API info not found; URL: {}", url);
-                dataApiManager = null;
-            }
-            this.configuredDataApiUrl = url;
-        }
+    /**
+     * @param restApiUrl
+     * @return
+     */
+    public static boolean isLegacyUrl(String restApiUrl) {
+        return !restApiUrl.matches(".*/api/v1/?");
     }
 
 }

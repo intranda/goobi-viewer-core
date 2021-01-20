@@ -68,15 +68,9 @@ add(event) {
 }
 
 remove(event) {
-    if(this.opts.bookmarks.config.userLoggedIn) {        
 	    let list = event.item.bookmarkList
 	    this.opts.bookmarks.removeFromBookmarkList(list.id, this.pi, this.page, this.logid, this.opts.bookmarks.isTypePage())
 	    .then( () => this.updateLists())
-    } else {
-        let bookmark = event.item.bookmark;
-        this.opts.bookmarks.removeFromBookmarkList(undefined, bookmark.pi, undefined, undefined, false)
-	    .then( () => this.updateLists())
-    }
 }
 
 inList(list, pi, page, logid) {

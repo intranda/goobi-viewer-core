@@ -56,7 +56,7 @@ import de.intranda.api.iiif.presentation.Collection;
 import de.unigoettingen.sub.commons.contentlib.exceptions.ContentLibException;
 import de.unigoettingen.sub.commons.contentlib.exceptions.IllegalRequestException;
 import io.goobi.viewer.api.rest.AbstractApiUrlManager;
-import io.goobi.viewer.api.rest.ViewerRestServiceBinding;
+import io.goobi.viewer.api.rest.bindings.ViewerRestServiceBinding;
 import io.goobi.viewer.api.rest.model.SuccessMessage;
 import io.goobi.viewer.api.rest.resourcebuilders.AbstractBookmarkResourceBuilder;
 import io.goobi.viewer.api.rest.resourcebuilders.SessionBookmarkResourceBuilder;
@@ -115,6 +115,13 @@ public class BookmarkResource {
             summary = "Get all bookmark lists owned by the current user. If not logged in, a single temporary bookmark list is stored in the http session which is returned")
     @ApiResponse(responseCode = "500", description = "Error querying database")
     public List<BookmarkList> getOwnedBookmarkLists() throws DAOException, IOException, RestApiException {
+        UserBean bean = BeanUtils.getUserBeanFromRequest(servletRequest);
+        if(bean != null) {            
+            User currentUser = bean.getUser();
+            if(currentUser != null) {
+                builder = new UserBookmarkResourceBuilder(currentUser);             
+            }
+        }
         return builder.getAllBookmarkLists();
     }
 
@@ -236,7 +243,7 @@ public class BookmarkResource {
         BookmarkList list = getBookmarkList(listId);
         Bookmark item = list.getItems().stream().filter(i -> i.getId().equals(bookmarkId)).findAny().orElse(null);
         if(item  != null) {
-            return builder.deleteBookmarkFromBookmarkList(list.getId(), item.getPi(), item.getLogId(), item.getOrder().toString());
+            return builder.deleteBookmarkFromBookmarkList(list.getId(), item.getPi(), item.getLogId(), Optional.ofNullable(item.getOrder()).map(o -> o.toString()).orElse(null));
         } else {
             throw new RestApiException("No item found in list " +  listId + "with id" + bookmarkId, HttpServletResponse.SC_NOT_FOUND);
         }
@@ -285,7 +292,7 @@ public class BookmarkResource {
             throws DAOException, IOException, RestApiException, ViewerConfigurationException, IndexUnreachableException, PresentationException, ContentLibException {
        BookmarkList list = getBookmarkList(id);
        String query = list.generateSolrQueryForItems();
-       return RSSFeed.createRssFeed(language, maxHits, null, query, null, servletRequest);
+       return RSSFeed.createRssFeed(language, maxHits, null, query, null, 0, servletRequest);
     }
     
     @GET
@@ -303,7 +310,7 @@ public class BookmarkResource {
             throws DAOException, IOException, RestApiException, ViewerConfigurationException, IndexUnreachableException, PresentationException, ContentLibException {
        BookmarkList list = getBookmarkList(id);
        String query = list.generateSolrQueryForItems();
-       return RSSFeed.createRssResponse(language, maxHits, null, query, null, servletRequest);
+       return RSSFeed.createRssResponse(language, maxHits, null, query, null, 0, servletRequest);
     }
     
     @GET
@@ -384,7 +391,7 @@ public class BookmarkResource {
             throws DAOException, IOException, RestApiException, ViewerConfigurationException, IndexUnreachableException, PresentationException, ContentLibException {
         BookmarkList list = getSharedBookmarkListByKey(key);
         String query = list.generateSolrQueryForItems();
-        return RSSFeed.createRssResponse(language, maxHits, null, query, null, servletRequest);
+        return RSSFeed.createRssResponse(language, maxHits, null, query, null, 0,servletRequest);
     }
     
     @GET
@@ -402,6 +409,6 @@ public class BookmarkResource {
             throws DAOException, IOException, RestApiException, ViewerConfigurationException, IndexUnreachableException, PresentationException, ContentLibException {
         BookmarkList list = getSharedBookmarkListByKey(key);
         String query = list.generateSolrQueryForItems();
-        return RSSFeed.createRssFeed(language, maxHits, null, query, null, servletRequest);
+        return RSSFeed.createRssFeed(language, maxHits, null, query, null, 0,servletRequest);
     }
 }

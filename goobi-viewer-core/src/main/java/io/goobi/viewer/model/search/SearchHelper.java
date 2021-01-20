@@ -1871,10 +1871,14 @@ public final class SearchHelper {
      * </p>
      *
      * @param fieldName a {@link java.lang.String} object.
-     * @should facetify correctly
      * @return a {@link java.lang.String} object.
+     * @should facetify correctly
+     * @should leave bool fields unaltered
      */
     public static String facetifyField(String fieldName) {
+        if (fieldName != null && fieldName.startsWith("BOOL_")) {
+            return fieldName;
+        }
         return adaptField(fieldName, "FACET_");
     }
 

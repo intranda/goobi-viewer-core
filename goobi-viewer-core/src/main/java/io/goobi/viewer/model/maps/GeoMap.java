@@ -101,11 +101,11 @@ public class GeoMap {
     @JsonSerialize(using = TranslationListSerializer.class)
     private Set<MapTranslation> translations = new HashSet<>();
 
-    @Column(name = "date_created", columnDefinition = "TIMESTAMP", nullable = false)
+    @Column(name = "date_created", nullable = false)
     @JsonIgnore
     private LocalDateTime dateCreated;
 
-    @Column(name = "date_updated", columnDefinition = "TIMESTAMP")
+    @Column(name = "date_updated")
     @JsonIgnore
     private LocalDateTime dateUpdated;
 

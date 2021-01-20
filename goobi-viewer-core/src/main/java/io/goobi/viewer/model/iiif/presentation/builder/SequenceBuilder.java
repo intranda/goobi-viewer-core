@@ -15,13 +15,15 @@
  */
 package io.goobi.viewer.model.iiif.presentation.builder;
 
+import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_FILES;
+import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_FILES_ALTO;
+import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_FILES_PLAINTEXT;
+
 import java.awt.Dimension;
 import java.awt.Rectangle;
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.net.URLEncoder;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -35,7 +37,6 @@ import org.jdom2.JDOMException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import static io.goobi.viewer.api.rest.v1.ApiUrls.*;
 import de.intranda.api.annotation.IAnnotation;
 import de.intranda.api.annotation.SimpleResource;
 import de.intranda.api.annotation.oa.FragmentSelector;
@@ -61,7 +62,6 @@ import de.unigoettingen.sub.commons.contentlib.exceptions.ContentNotFoundExcepti
 import io.goobi.viewer.api.rest.AbstractApiUrlManager;
 import io.goobi.viewer.api.rest.resourcebuilders.TextResourceBuilder;
 import io.goobi.viewer.controller.DataManager;
-import io.goobi.viewer.controller.StringTools;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
@@ -71,11 +71,7 @@ import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.messages.ViewerResourceBundle;
 import io.goobi.viewer.model.annotation.AltoAnnotationBuilder;
 import io.goobi.viewer.model.annotation.Comment;
-import io.goobi.viewer.model.annotation.PersistentAnnotation;
-import io.goobi.viewer.model.crowdsourcing.campaigns.CampaignRecordStatistic.CampaignRecordStatus;
-import io.goobi.viewer.model.crowdsourcing.questions.Question;
 import io.goobi.viewer.model.iiif.presentation.builder.LinkingProperty.LinkingTarget;
-import io.goobi.viewer.model.iiif.presentation.builder.LinkingProperty.LinkingType;
 import io.goobi.viewer.model.viewer.MimeType;
 import io.goobi.viewer.model.viewer.PageType;
 import io.goobi.viewer.model.viewer.PhysicalElement;
@@ -83,8 +79,6 @@ import io.goobi.viewer.model.viewer.StructElement;
 import io.goobi.viewer.model.viewer.pageloader.EagerPageLoader;
 import io.goobi.viewer.model.viewer.pageloader.IPageLoader;
 import io.goobi.viewer.model.viewer.pageloader.LeanPageLoader;
-import io.goobi.viewer.servlets.rest.content.ContentResource;
-
 /**
  * <p>
  * SequenceBuilder class.
@@ -234,7 +228,7 @@ public class SequenceBuilder extends AbstractBuilder {
             Canvas canvas = canvases.get(order);
             if (canvas != null) {
                 AnnotationList annoList = new AnnotationList(getAnnotationListURI(pi, order, AnnotationType.COMMENT, true));
-                annoList.setLabel(getLabel(AnnotationType.COMMENT.name()));
+                annoList.setLabel(ViewerResourceBundle.getTranslations(AnnotationType.COMMENT.name()));
                 if (populate) {
                     List<Comment> comments = DataManager.getInstance().getDao().getCommentsForPage(pi, order);
                     for (Comment comment : comments) {
@@ -371,8 +365,6 @@ public class SequenceBuilder extends AbstractBuilder {
         return canvas;
     }
 
-
-
     /**
      * @param page
      * @param doc
@@ -429,7 +421,7 @@ public class SequenceBuilder extends AbstractBuilder {
 
         if (StringUtils.isNotBlank(page.getFulltextFileName()) || StringUtils.isNotBlank(page.getAltoFileName())) {
             AnnotationList annoList = new AnnotationList(getAnnotationListURI(page.getPi(), page.getOrder(), AnnotationType.FULLTEXT, true));
-            annoList.setLabel(getLabel(AnnotationType.FULLTEXT.name()));
+            annoList.setLabel(ViewerResourceBundle.getTranslations(AnnotationType.FULLTEXT.name()));
             annotationMap.put(AnnotationType.FULLTEXT, annoList);
             if (populate) {
                 if (StringUtils.isNotBlank(page.getAltoFileName())) {

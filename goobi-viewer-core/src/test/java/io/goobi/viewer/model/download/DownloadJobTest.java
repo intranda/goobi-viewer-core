@@ -17,6 +17,7 @@ package io.goobi.viewer.model.download;
 
 import static org.junit.Assert.assertEquals;
 
+import java.time.Instant;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -24,6 +25,10 @@ import java.util.List;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 
 import io.goobi.viewer.AbstractDatabaseAndSolrEnabledTest;
 import io.goobi.viewer.controller.Configuration;
@@ -121,20 +126,13 @@ public class DownloadJobTest extends AbstractDatabaseAndSolrEnabledTest {
         }
     }
 
-    //    @Test
-    //    public void testCreateEpub() throws PresentationException, IndexUnreachableException {
-    //        String tempPath = "src/test/resources/data/viewer/download_epub";
-    //        try {
-    //            String msg = EPUBDownloadJob.triggerCreation("PPN648829383", "testIdentifier", "src/test/resources/data/viewer/download_epub");
-    //            Assert.assertNull("EPUB not created", msg);
-    //        } finally {
-    //            File tempFolder = new File(tempPath);
-    //            if (tempFolder.isDirectory()) {
-    //                //                try {
-    //                //                    FileUtils.deleteDirectory(tempFolder);
-    //                //                } catch (IOException e) {
-    //                //                }
-    //            }
-    //        }
-    //    }
+    @Test 
+    public void testPutDownloadJobAnswer() throws JsonProcessingException {
+        String pi = "18979459_1830";
+        String logid = "LOG_0004";
+        DownloadJob job = new PDFDownloadJob(pi, logid, LocalDateTime.now(), 1000);
+        job.setMessage("Some message");
+        job.getObservers().add("me@he.re");
+        String jobString = new ObjectMapper().registerModule(new JavaTimeModule()).writeValueAsString(job);
+    }
 }

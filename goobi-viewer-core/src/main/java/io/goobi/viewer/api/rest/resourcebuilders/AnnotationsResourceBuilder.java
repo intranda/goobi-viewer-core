@@ -33,6 +33,7 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.solr.common.SolrDocument;
+import org.jboss.weld.exceptions.IllegalArgumentException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -99,6 +100,9 @@ public class AnnotationsResourceBuilder {
      * May be null, which prevents delivering any annotations with accessconditions other than OPENACCESS
      */
     public AnnotationsResourceBuilder(AbstractApiUrlManager urls, HttpServletRequest request) {
+        if(urls == null) {
+            throw new IllegalArgumentException("ApiUrlManager must not be null. Configure a rest api with a current ('/api/v1') endpoint");
+        }
         this.urls = urls;
         this.request = request;
         this.waBuilder = new WebAnnotationBuilder(urls);

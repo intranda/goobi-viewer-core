@@ -205,7 +205,10 @@ var viewerJS = ( function( viewer ) {
                                     _defaults.apiUrl = viewer.downloadModal
                                             .buildAPICall( _defaults.path, _defaults.dataType, _defaults.dataPi, _defaults.dataId, _defaults.userEmail );
                                     
-                                    window.location.href = _defaults.apiUrl;
+                                    fetch(_defaults.apiUrl, {method: 'PUT'})
+                                    .then(response => response.json())
+                                    .then(response => window.location.href = response.url);
+                                    
                                 } );
                             }
                             else {
@@ -224,7 +227,9 @@ var viewerJS = ( function( viewer ) {
                         
                         _defaults.apiUrl = viewer.downloadModal.buildAPICall( _defaults.path, _defaults.dataType, _defaults.dataPi, _defaults.dataId, _defaults.userEmail );
                         
-                        window.location.href = _defaults.apiUrl;
+                        fetch(_defaults.apiUrl, {method: 'PUT'})
+                        .then(response => response.json())
+                        .then(response => window.location.href = response.url);
                     } );
                 }
             } );
@@ -342,34 +347,21 @@ var viewerJS = ( function( viewer ) {
                 console.log( 'viewer.downloadModal.buildAPICall: pi = ', pi );
                 console.log( 'viewer.downloadModal.buildAPICall: logid = ', logid );
                 console.log( 'viewer.downloadModal.buildAPICall: email = ', email );
-            }
+            } 
             var url = '';
             
-            url += path + 'rest/download';
-            
-            if ( type == '' ) {
-                url += '/-';
+            url += path + 'api/v1/downloads/';
+            url += type;
+            url += "/records/";
+            url += pi;
+            if(logid) {
+                url += "/sections/";
+                url += logid;
             }
-            else {
-                url += '/' + type;
-            }
-            if ( pi == '' ) {
-                url += '/-';
-            }
-            else {
-                url += '/' + pi;
-            }
-            if ( logid == '' ) {
-                url += '/-';
-            }
-            else {
-                url += '/' + logid;
-            }
-            if ( email == '' || email == undefined ) {
-                url += '/-/';
-            }
-            else {
-                url += '/' + email + '/';
+            url += "/";
+            if(email) {
+                url += "?email=";
+                url += email;
             }
             
             return encodeURI( url );

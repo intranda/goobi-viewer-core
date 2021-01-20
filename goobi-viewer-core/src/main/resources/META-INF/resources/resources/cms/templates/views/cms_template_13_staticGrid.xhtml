@@ -46,7 +46,7 @@
                 <h2>#{cmsPage.title}</h2>                
                 
                 <div class="tpl-static-grid__text">
-                    <ui:include src="#{cmsPage.getContent('text')}" />
+                    <h:outputText escape="false" value="#{cmsPage.getContent('text')}"></h:outputText>
                 </div>
                 
                 <!-- STATIC GRID -->
@@ -59,7 +59,8 @@
                         datatype: "JSON"
                     } ).then( function( data ) {
                         var staticGridConfig = {
-                            gridSelector: ".tpl-static-grid__grid"
+                            gridSelector: ".tpl-static-grid__grid",
+                            language: currentLang
                         };
                         
                         cmsJS.staticGrid.init( staticGridConfig, data );

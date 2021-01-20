@@ -45,14 +45,14 @@
 				<h2>#{cmsPage.title}</h2>                
 				
 				<div class="tpl-privacy__text">
-					<ui:include src="#{cmsPage.getContent('text01')}" />
+					<h:outputText escape="false" value="#{cmsPage.getContent('text01')}"></h:outputText>
 
 	                <!-- PIWIK IFRAME -->
 	                <iframe title="web analytics" src="//#{configurationBean.piwikBaseURL}/index.php?module=CoreAdminHome&amp;action=optOut&amp;language=de"></iframe>	
 				
 					<ui:fragment rendered="#{cmsPage.hasContent('text02')}">
 						<div class="tpl-privacy__text-bottom">
-								<ui:include src="#{cmsPage.getContent('text02')}" />
+								<h:outputText escape="false" value="#{cmsPage.getContent('text02')}"></h:outputText>
 						</div>
 					</ui:fragment>
 				</div>

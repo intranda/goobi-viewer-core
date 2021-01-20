@@ -321,7 +321,7 @@ public class UserBookmarkResourceBuilder extends AbstractBookmarkResourceBuilder
 
         Optional<BookmarkList> bookmarkList = getBookmarkList(user, id);
         if (bookmarkList.isPresent()) {
-            return bookmarkList.get().getMiradorJsonObject(urls.getApplicationUrl());
+            return bookmarkList.get().getMiradorJsonObject(urls.getApplicationUrl(), urls.getApiUrl());
         }
 
         throw new RestApiException("No bookmark list with id '" + id + "' found for user " + user, HttpServletResponse.SC_NOT_FOUND);

@@ -29,6 +29,7 @@ import javax.inject.Named;
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.xerces.impl.dtd.models.ContentModelValidator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -129,8 +130,8 @@ public class ImageDeliveryBean implements Serializable {
      */
     public void init(Configuration config) {
         this.servletPath = getServletPathFromContext();
-        AbstractApiUrlManager dataUrlManager = DataManager.getInstance().getRestApiManager().getDataApiManager();
-        AbstractApiUrlManager contentUrlManager = DataManager.getInstance().getRestApiManager().getContentApiManager();
+        AbstractApiUrlManager dataUrlManager = DataManager.getInstance().getRestApiManager().getDataApiManager().orElse(null);
+        AbstractApiUrlManager contentUrlManager = DataManager.getInstance().getRestApiManager().getContentApiManager().orElse(null);
 
         this.staticImagesURI = getStaticImagesPath(this.servletPath, config.getTheme());
         this.cmsMediaPath =
@@ -140,7 +141,11 @@ public class ImageDeliveryBean implements Serializable {
 
         iiif = new IIIFUrlHandler(contentUrlManager);
         images = new ImageHandler(contentUrlManager);
-        objects3d = new Object3DHandler(config);
+        if(contentUrlManager != null) {
+            objects3d = new Object3DHandler(contentUrlManager);
+        } else {            
+            objects3d = new Object3DHandler(config);
+        }
         footer = new WatermarkHandler(config, config.getIIIFApiUrl());
         thumbs = new ThumbnailHandler(iiif, config, this.staticImagesURI);
         if (contentUrlManager != null) {
