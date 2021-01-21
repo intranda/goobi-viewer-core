@@ -142,6 +142,18 @@ public abstract class AbstractApiUrlManager {
         public URI buildURI() {
             return URI.create(this.build());
         }
+        
+        /**
+         * Check whether the given path matches a path given by this ApiPath, regardless of path parameters and ignoring query parameters
+         * @param path
+         * @return
+         */
+        public boolean matches(String path) {
+            String regex = this.build() + "/?";
+            regex = regex.replaceAll("{.*?}", "([^/]+)");
+            regex = regex.replaceAll("\\?.*", "");
+            return path.replaceAll("\\?.*", "").matches(regex);
+        }
     }
 
     public static class ApiPathParams extends ApiPath {

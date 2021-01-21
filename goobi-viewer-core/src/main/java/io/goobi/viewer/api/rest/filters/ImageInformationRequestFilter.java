@@ -47,7 +47,8 @@ import io.goobi.viewer.model.security.IPrivilegeHolder;
 
 /**
  * <p>
- * ImageInformationRequestFilter class.
+ * Forwards requests to IIIF image resources referencing a image number (Solr-field "ORDER") to 
+ * a requests with the appropriate filename
  * </p>
  */
 @Provider
@@ -115,31 +116,6 @@ public class ImageInformationRequestFilter implements ContainerRequestFilter {
         }
         //        }
         return false;
-    }
-
-    /**
-     * @param requestPath
-     * @param pathSegments
-     * @throws ServiceNotAllowedException
-     * @throws IndexUnreachableException
-     */
-    private void filterForAccessConditions(ContainerRequestContext request, String pi, String contentFileName) throws ServiceNotAllowedException {
-        logger.trace("filterForAccessConditions: {}", servletRequest.getSession().getId());
-        contentFileName = StringTools.decodeUrl(contentFileName);
-        boolean access = false;
-        try {
-            access = AccessConditionUtils.checkAccessPermissionByIdentifierAndLogId(pi, null, IPrivilegeHolder.PRIV_LIST, servletRequest);
-        } catch (IndexUnreachableException e) {
-            throw new ServiceNotAllowedException("Serving this image is currently impossible due to " + e.getMessage());
-        } catch (DAOException e) {
-            throw new ServiceNotAllowedException("Serving this image is currently impossible due to " + e.getMessage());
-        } catch (RecordNotFoundException e) {
-            throw new ServiceNotAllowedException("Record not found in index: " + pi);
-        }
-
-        if (!access) {
-            throw new ServiceNotAllowedException("Serving this image is restricted due to access conditions");
-        }
     }
 
 }

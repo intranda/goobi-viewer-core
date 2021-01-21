@@ -29,12 +29,11 @@ import io.goobi.viewer.api.rest.bindings.IIIFPresentationBinding;
 
 /**
  * <p>
- * IIIFPresentationResponseFilter class.
+ * Adds the @context property to all IIIF Presentation responses in the topmost json element
  * </p>
  *
  * @author Florian Alpers
  *
- *         Adds the @context property to all IIIF Presentation responses in the topmost json element
  */
 @Provider
 @IIIFPresentationBinding

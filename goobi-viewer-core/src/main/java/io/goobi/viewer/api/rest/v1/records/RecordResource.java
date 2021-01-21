@@ -60,6 +60,7 @@ import javax.ws.rs.core.StreamingOutput;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.solr.common.SolrDocument;
+import org.apache.solr.common.util.ContentStreamBase.URLStream;
 import org.jdom2.JDOMException;
 import org.json.JSONObject;
 import org.slf4j.Logger;
@@ -77,9 +78,12 @@ import de.unigoettingen.sub.commons.contentlib.exceptions.ServiceNotAllowedExcep
 import de.unigoettingen.sub.commons.contentlib.servlet.rest.CORSBinding;
 import io.goobi.viewer.api.rest.AbstractApiUrlManager;
 import io.goobi.viewer.api.rest.AbstractApiUrlManager.ApiPath;
+import io.goobi.viewer.api.rest.bindings.AccessConditionBinding;
 import io.goobi.viewer.api.rest.bindings.AuthorizationBinding;
 import io.goobi.viewer.api.rest.bindings.IIIFPresentationBinding;
 import io.goobi.viewer.api.rest.bindings.ViewerRestServiceBinding;
+import io.goobi.viewer.api.rest.filters.AccessConditionRequestFilter;
+import io.goobi.viewer.api.rest.filters.FilterTools;
 import io.goobi.viewer.api.rest.model.ner.DocumentReference;
 import io.goobi.viewer.api.rest.resourcebuilders.AnnotationsResourceBuilder;
 import io.goobi.viewer.api.rest.resourcebuilders.IIIFPresentationResourceBuilder;
@@ -136,13 +140,38 @@ public class RecordResource {
     public RecordResource(@Context HttpServletRequest request,
             @Parameter(description = "Persistent identifier of the record") @PathParam("pi") String pi) {
         this.pi = pi;
-        request.setAttribute("pi", pi);
+        request.setAttribute(FilterTools.ATTRIBUTE_PI, pi);
+        request.setAttribute(AccessConditionRequestFilter.REQUIRED_PRIVILEGE, getRequiredPrivilege(request, urls));
+    }
+
+    /**
+     * Checks the request url for the accessed resource and returns the required access privilege, at least {@link IPrivilegeHolder#PRIV_LIST}
+     * 
+     * @param request
+     * @return
+     * @deprecated not used. 
+     */
+    @Deprecated
+    public static String getRequiredPrivilege(HttpServletRequest request, AbstractApiUrlManager urls) {
+        String requestUri =  request.getRequestURI();
+        String requestUrl = request.getRequestURL().toString();
+        
+        if(urls.path(RECORDS_RECORD, RECORDS_TOC).matches(requestUrl)) {
+            return IPrivilegeHolder.PRIV_DOWNLOAD_METADATA;
+        } else if(urls.path(RECORDS_RECORD, RECORDS_METADATA_SOURCE).matches(requestUrl)) {
+            return IPrivilegeHolder.PRIV_DOWNLOAD_METADATA;
+        } else if(urls.path(RECORDS_RECORD, RECORDS_MANIFEST).matches(requestUrl)) {
+            return IPrivilegeHolder.PRIV_GENERATE_IIIF_MANIFEST;
+        } else {
+            return IPrivilegeHolder.PRIV_LIST;
+        }
     }
 
     @GET
     @javax.ws.rs.Path(RECORDS_RIS_FILE)
     @Produces({ MediaType.TEXT_PLAIN })
     @Operation(tags = { "records" }, summary = "Download ris as file")
+    @AccessConditionBinding
     public String getRISAsFile()
             throws PresentationException, IndexUnreachableException, DAOException, ContentLibException {
 

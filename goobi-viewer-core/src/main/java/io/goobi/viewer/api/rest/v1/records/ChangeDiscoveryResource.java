@@ -76,7 +76,6 @@ public class ChangeDiscoveryResource {
             summary = "Get a IIIF change discovery activity stream of all record changes")
     @ApiResponse(responseCode = "200", description = "Return activity stream according to IIIF change discovery specification")
     @ApiResponse(responseCode = "500", description = "An internal error occured, possibly due to an unreachable SOLR index")
-    @IIIFPresentationBinding
     public OrderedCollection<Activity> getAllChanges() throws PresentationException, IndexUnreachableException {
         ActivityCollectionBuilder builder = new ActivityCollectionBuilder(apiUrlManager);
         OrderedCollection<Activity> collection = builder.buildCollection();
@@ -97,7 +96,6 @@ public class ChangeDiscoveryResource {
     @GET
     @Path(RECORDS_CHANGES_PAGE)
     @Produces({ MediaType.APPLICATION_JSON })
-    @IIIFPresentationBinding
     public OrderedCollectionPage<Activity> getPage(@PathParam("pageNo") int pageNo) throws PresentationException, IndexUnreachableException {
         ActivityCollectionBuilder builder = new ActivityCollectionBuilder(apiUrlManager);
         OrderedCollectionPage<Activity> page = builder.buildPage(pageNo);

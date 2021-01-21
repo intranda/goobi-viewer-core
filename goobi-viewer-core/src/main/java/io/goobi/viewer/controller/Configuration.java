@@ -4687,7 +4687,7 @@ public final class Configuration extends AbstractConfiguration {
 
     /**
      * <p>
-     * getCORSHeaderValue.
+     * Gets the value configured in webapi.cors. Default is "*"
      * </p>
      *
      * @should return correct value

@@ -353,7 +353,7 @@ public class SearchBean implements SearchInterface, Serializable {
             case SearchHelper.SEARCH_TYPE_ADVANCED:
                 return "pretty:" + PageType.advancedSearch.name();
             case SearchHelper.SEARCH_TYPE_CALENDAR:
-                return "pretty:" + PageType.calendarsearch.name();
+                return "pretty:" + PageType.searchCalendar.name();
             default:
                 return "pretty:" + PageType.search.name();
         }

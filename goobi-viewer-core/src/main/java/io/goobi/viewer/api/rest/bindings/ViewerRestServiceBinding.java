@@ -20,9 +20,11 @@ import java.lang.annotation.RetentionPolicy;
 
 import javax.ws.rs.NameBinding;
 
+import io.goobi.viewer.api.rest.exceptions.WebApplicationExceptionMapper;
+
 /**
  * <p>
- * ViewerRestServiceBinding class.
+ * Binding to handle exception in requests by the {@link WebApplicationExceptionMapper}
  * </p>
  */
 @NameBinding
