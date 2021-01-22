@@ -1,0 +1,157 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:c="http://java.sun.com/jsp/jstl/core"
+	xmlns:h="http://xmlns.jcp.org/jsf/html"
+	xmlns:f="http://xmlns.jcp.org/jsf/core"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+	xmlns:jsf="http://xmlns.jcp.org/jsf"
+	xmlns:pt="http://xmlns.jcp.org/jsf/passthrough"
+	xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components"
+	xmlns:widgetComponent="http://xmlns.jcp.org/jsf/composite/components/widgets"
+	xmlns:adminWidget="http://xmlns.jcp.org/jsf/composite/admin/widgets"
+	template="/resources/themes/#{navigationHelper.theme}/templateAdmin.html">
+
+    <ui:define name="metadata">
+        <f:metadata>
+            <f:event type="preRenderView" listener="#{navigationHelper.setCurrentPageAdmin('adminCmsRecordNotes')}" />
+        </f:metadata>
+    </ui:define>
+
+	<ui:define name="content">
+		<f:view contentType="text/html" encoding="utf-8">
+
+			<h:panelGroup layout="block" rendered="#{userBean.user.cmsAdmin}">
+				<!-- TITLE -->
+				<div class="admin__title-bar">
+					<h2 class="admin__title">#{msg.cms__record_notes_edit__title}</h2>
+				</div>
+
+				<div class="admin__content-inner-content">
+					
+					<h:form id="selectRecord" styleClass="form-horizontal form-group" prependId="false"
+						rendered="#{!cmsRecordNoteEditBean.recordSelected}">
+					
+						<h3>#{msg.cms__record_notes_select_record__title}</h3>
+						
+						<div class="admin__default-block">
+							<div class="form-group form-row">
+								<div class="col-2 control-label admin__form-label">
+									<label for="inputRecordIdentifier">#{msg.identifier}:
+											<span class="admin__label-required-field">(#{msg.form__required_field})</span>
+									</label>
+								</div>
+
+								<div class="col-10 admin__form-input cms-module__option-control">
+									
+				                    <h:message for="inputRecordIdentifier" errorClass="-validation-message -danger"></h:message>
+                                              <div class="-validation-mark">
+                                                  <i class="fa fa-check" aria-hidden="true"></i>
+                                                  <i class="fa fa-exclamation" aria-hidden="true"></i>
+                                              </div>
+									<h:inputText id="inputRecordIdentifier" styleClass="form-control -validation-input"
+									required="true"
+									requiredMessage="#{msg.info__input_required}"
+										value="#{cmsRecordNoteEditBean.recordIdentifier}" >
+										<f:validator validatorId="piInSolrValidator" for="inputRecordIdentifier" />
+						                <f:ajax event="blur" render="@all"/>
+									</h:inputText>
+                                    <span class="admin__form-help-text">#{msg.cms__record_notes_select_record__help}</span>
+								</div>
+								<div class="col-1 admin__form-help-icon">
+                                    <button type="button" class="btn btn--clean" data-toggle="helptext"  aria-label="inline help icon">
+                                        <i class="fa fa-question-circle" aria-hidden="true"></i>
+                                    </button>
+                                </div>
+							</div>
+						</div>
+						
+					</h:form>
+					
+					<h:form id="editRecordNote" styleClass="form-horizontal form-group" prependId="false"
+						rendered="#{cmsRecordNoteEditBean.recordSelected}">
+						
+						<div class="admin__user-terms-box-editable">
+						<!-- TODO: include record thumbnail and metadata -->
+						</div>
+						
+						
+						<div class="admin__user-terms-box-editable">
+							<h3>#{msg.cms__record_notes_edit_text__title}</h3>
+							<div class="admin__language-tabs">
+								<viewerComponent:localeSelector object="#{cmsRecordNoteEditBean}"/>
+							</div>
+						
+							<div class="admin__default-block">
+								<div class="tab-content">
+									<!-- LOCALIZE TABS -->
+									<h:panelGroup rendered="#{cmsRecordNoteEditBean.selectedLocale != null}">
+										<div class="form-group form-row">
+											<div class="col-2 control-label admin__form-label">
+												<label for="recordNoteTitle">#{msg.title}:
+													<ui:fragment rendered="#{cmsRecordNoteEditBean.isDefaultLocaleSelected()}">
+														<span class="admin__label-required-field">(#{msg.form__required_field})</span>
+													</ui:fragment>
+												</label>
+											</div>
+
+											<div class="col-10 admin__form-input cms-module__option-control">
+												
+							                    <h:message for="recordNoteTitle" errorClass="-validation-message -danger"></h:message>
+                                                 <div class="-validation-mark">
+                                                     <i class="fa fa-check" aria-hidden="true"></i>
+                                                     <i class="fa fa-exclamation" aria-hidden="true"></i>
+                                                 </div>
+												<h:inputText id="recordNoteTitle" styleClass="form-control -validation-input"
+												required="#{cmsRecordNoteEditBean.isDefaultLocaleSelected()}"
+												requiredMessage="#{msg.info__input_required}"
+													value="#{cmsRecordNoteEditBean.note.noteTitle.text}" >
+												</h:inputText>
+											</div>
+										</div>
+
+										<!-- EDIT TERMS OF USE TEXT -->
+										<div class="form-group form-row">
+											
+											<div class="col-2 control-label admin__form-label">
+												<label for="recordNoteText">#{msg.text}:
+													<ui:fragment rendered="#{cmsRecordNoteEditBean.isDefaultLocaleSelected()}">
+														<span class="admin__label-required-field">(#{msg.form__required_field})</span>
+													</ui:fragment>
+												</label>
+											</div>
+											
+											<div class="col-10 admin__form-input input_form__option_control">
+								                 <h:message for="recordNoteText" errorClass="-validation-message -danger"/>
+                                                 <div class="-validation-mark">
+								                        <i class="fa fa-check" aria-hidden="true"></i>
+								                        <i class="fa fa-exclamation" aria-hidden="true"></i>
+								                    </div>
+												<h:inputTextarea id="recordNoteText"
+													styleClass="form-control tinyMCE -validation-input"
+													required="#{cmsRecordNoteEditBean.isDefaultLocaleSelected()}"
+												    requiredMessage="#{msg.info__input_required}"
+													value="#{cmsRecordNoteEditBean.note.noteText.text}" />
+											</div>
+										</div>
+									</h:panelGroup>
+								</div>
+							</div>
+
+							<!-- SAVE RECORD NOTE -->
+							<div
+								class="row no-gutters justify-content-end admin__final-actions">
+								<h:commandButton class="btn btn--success" value="#{msg.save}"
+									action="#{cmsRecordNoteEditBean.save()}">
+									<f:ajax render="@form :messages" execute="@form"></f:ajax>
+								</h:commandButton>
+							</div>
+						
+						</div>
+						
+					</h:form>
+				</div>
+			</h:panelGroup>
+		</f:view>
+	</ui:define>
+</ui:composition>
+

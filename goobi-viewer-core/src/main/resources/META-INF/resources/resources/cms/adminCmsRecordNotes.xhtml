@@ -1,0 +1,114 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://xmlns.jcp.org/jsf/html"
+                xmlns:f="http://xmlns.jcp.org/jsf/core"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+                xmlns:c="http://java.sun.com/jsp/jstl/core"
+                xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components"
+                xmlns:adminWidget="http://xmlns.jcp.org/jsf/composite/admin/widgets"
+                template="/resources/themes/#{navigationHelper.theme}/templateAdmin.html">
+
+    <ui:define name="metadata">
+        <f:metadata>
+            <f:event type="preRenderView" listener="#{navigationHelper.setCurrentPageAdmin('adminCmsRecordNotes')}" />
+<!--             <f:event type="preRenderView" listener="#{cmsRecordNotesBean.init()}" /> -->
+        </f:metadata>
+    </ui:define>
+
+    <ui:define name="content">
+        <div>
+            <h:panelGroup rendered="#{userBean.user.cmsAdmin}">
+                <h:form prependId="false">
+
+                    <div class="admin__title-bar">
+                        <!-- TITLE -->
+                        <h2 class="admin__title">#{msg.cms__record_notes__title}</h2>
+                        <!-- CREATE NEW NOTE -->
+                        <ui:fragment rendered="#{userBean.user.cmsAdmin}">
+                            <a href="#{navigationHelper.applicationUrl}admin/cms/recordNotes/new/" class="btn btn--default admin__title-bar-action">
+                                <span>#{msg.add}</span>
+                            </a>
+                        </ui:fragment>
+                    </div>
+
+
+                    <div class="admin__content-inner-content">
+                        <div class="admin__table-tools">
+                            <!-- PAGINATOR -->
+                            <div class="admin__table-paginator">
+                                <viewerComponent:dataTablePaginator tableValues="#{cmsRecordNotesBean.dataProvider}" />
+                            </div>
+                            <!-- FILTER -->
+                            <div class="admin__table-filter">
+                                <viewerComponent:dataTableColumnFilter key="admin__cms_page_search" 
+                                filter="#{cmsRecordNotesBean.dataProvider.getFilter('PI_OR_TITLE')}"/>
+                            </div>
+                        </div>
+
+
+                        <!-- ALL PAGES TABLE -->
+                        <div class="admin__table-content">
+                            <!-- TITLE ROW -->
+                            <div class="row no-gutters admin__table-title">
+                                <!-- PAGE COL -->
+                                <div class="col-12 d-flex ">
+                                	<viewerComponent:sortingArrow filterType="recordPi" colHeading="#{msg.text}" list="#{cmsRecordNotesBean.dataProvider}" />
+                                </div>
+                            </div>
+
+
+                            <!-- INDIVIDUAL ROWS -->
+                            <ui:repeat var="note" value="#{cmsRecordNotesBean.dataProvider.paginatorList}">
+                                <div class="row no-gutters admin__table-entry">
+                                    <div class="col-12 d-flex">
+                                        	<div class="admin__table-img align-self-center">
+                                            	<img alt="#{note.recordTitle.getValue(navigationHelper.currentLocale)}" title="#{note.recordTitle.getValue(navigationHelper.currentLocale)}" 
+                                            		src="#{cmsRecordNotesBean.getThumbnailUrl(note)}" />
+                                            </div>
+
+                                        <div class="admin__table-data">
+                                            <div class="admin__table-name">#{note.recordPi}</div>
+                                            <div class="font-italic">#{note.noteText.getValue(navigationHelper.currentLocale)}</div>
+                                            <div>
+                                                <!-- EDIT -->
+                                                <a href="#{navigationHelper.applicationUrl}admin/cms/recordNotes/edit/#{note.id}/" 
+                                                class="admin__table-action-link" 
+                                                aria-label="#{msg.edit}: #{note.noteTitle.getValue(navigationHelper.currentLocale)}">#{msg.edit}</a>
+                                                <!-- DELETE -->
+                                                <h:commandLink 
+                                                	styleClass="admin__table-action-link -redlink" 
+                                                	onclick="if ( !confirm( &quot;#{msg.cms__delete_record_note__confirmation}&quot; ) ) { return false };"
+                                                	action="#{cmsRecordNotesBean.deleteNote(note)}" 
+                                                	aria-label="#{msg.delete}: #{note.noteTitle.getValue(navigationHelper.currentLocale)}"
+                                                	title="#{msg.cms__delete_record_note}">
+                                                	#{msg.delete}
+                                                </h:commandLink>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </ui:repeat>
+                        </div>
+                    </div>
+                </h:form>
+            </h:panelGroup>
+        </div>
+
+        <script type="text/javascript">
+            $( document ).ready( function() {
+                
+                var dataTableConfig = {
+                    dataTablePaginator: "#dataTablePaginator",
+                    txtField1: "#txtMoveTo1",
+                    txtField2: "#txtMoveTo2",
+                    totalCount: "#totalCount",
+                    reloadBtn: 'input[id*="cmdMoveTo"]',
+                };
+
+                viewerJS.dataTable.init( dataTableConfig );
+            } );
+        </script>
+    </ui:define>
+
+</ui:composition>
+

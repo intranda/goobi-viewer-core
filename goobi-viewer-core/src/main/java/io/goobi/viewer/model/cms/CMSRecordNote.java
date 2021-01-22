@@ -53,10 +53,22 @@ public class CMSRecordNote {
     private Long id;
 
     /**
-     * PI of the record this note relates to
+     * PI of the record this note relates to.
+     * Should be effectively final, but can't be for DAO campatibility 
      */
     @Column(name = "record_pi", nullable = false)
     private String recordPi;
+    
+    public CMSRecordNote() {
+    }
+    
+    /**
+     * @param pi
+     */
+    public CMSRecordNote(String pi) {
+        this();
+        this.recordPi = pi;
+    }
     
     /**
      * Title of the record this note relates to; used for searching in notes. This is mulitlangual since record titles may be multilangual too
@@ -78,6 +90,8 @@ public class CMSRecordNote {
     @Column(name = "note_text", nullable = true, columnDefinition = "MEDIUMTEXT")
     @Convert(converter = TranslatedTextConverter.class)
     private TranslatedText noteText = new TranslatedText();
+
+
 
     /**
      * @return the id
