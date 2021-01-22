@@ -20,6 +20,9 @@ import static io.goobi.viewer.api.rest.v1.ApiUrls.TASKS_TASK;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 import java.util.stream.Collectors;
 
 import javax.servlet.http.HttpServletRequest;
@@ -45,6 +48,7 @@ import io.goobi.viewer.api.rest.model.tasks.Task.TaskType;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.exceptions.AccessDeniedException;
 import io.goobi.viewer.exceptions.AuthenticationException;
+import io.goobi.viewer.exceptions.PresentationException;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 
@@ -75,7 +79,7 @@ public class TasksResource {
         if(isAuthorized(desc.type, Optional.empty(), request)) {
             Task job = new Task(desc, TaskManager.createTask(desc.type));
             DataManager.getInstance().getRestApiJobManager().addTask(job);
-            DataManager.getInstance().getRestApiJobManager().triggerTaskInThread(job.id, request);
+                DataManager.getInstance().getRestApiJobManager().triggerTaskInThread(job.id, request);
             return job;
         } else {
             throw  new WebApplicationException(new AccessDeniedException("Not authorized to create this type of job"));

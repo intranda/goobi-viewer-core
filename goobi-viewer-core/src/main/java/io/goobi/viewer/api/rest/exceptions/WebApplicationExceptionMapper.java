@@ -17,6 +17,7 @@ package io.goobi.viewer.api.rest.exceptions;
 
 import java.io.FileNotFoundException;
 import java.util.Collections;
+import java.util.concurrent.TimeoutException;
 import java.util.stream.Collectors;
 
 import javax.servlet.http.HttpServletRequest;
@@ -78,6 +79,8 @@ public class WebApplicationExceptionMapper implements ExceptionMapper<WebApplica
             status = Status.UNAUTHORIZED;
         } else if (e instanceof ContentLibException) {
             return new ContentExceptionMapper(request, response).toResponse((ContentLibException) e);
+        } else if (e instanceof TimeoutException) {
+            status = Status.INTERNAL_SERVER_ERROR;
         } else if (e instanceof RuntimeException) {
             status = Status.INTERNAL_SERVER_ERROR;
             logger.error("Error on request {};\t ERROR MESSAGE: {} (method: {})", request.getRequestURL(), e.getMessage(), request.getMethod());
