@@ -15,6 +15,12 @@
  */
 package io.goobi.viewer.dao.impl;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+
 import java.io.File;
 import java.time.LocalDateTime;
 import java.util.Arrays;
@@ -48,20 +54,21 @@ import io.goobi.viewer.model.cms.CMSPage;
 import io.goobi.viewer.model.cms.CMSPageLanguageVersion;
 import io.goobi.viewer.model.cms.CMSPageLanguageVersion.CMSPageStatus;
 import io.goobi.viewer.model.cms.CMSPageTemplateEnabled;
+import io.goobi.viewer.model.cms.CMSRecordNote;
 import io.goobi.viewer.model.cms.CMSStaticPage;
 import io.goobi.viewer.model.cms.CMSTemplateManager;
 import io.goobi.viewer.model.crowdsourcing.campaigns.Campaign;
-import io.goobi.viewer.model.crowdsourcing.campaigns.CampaignLogMessage;
 import io.goobi.viewer.model.crowdsourcing.campaigns.Campaign.CampaignVisibility;
+import io.goobi.viewer.model.crowdsourcing.campaigns.CampaignLogMessage;
 import io.goobi.viewer.model.crowdsourcing.campaigns.CampaignRecordStatistic.CampaignRecordStatus;
 import io.goobi.viewer.model.crowdsourcing.questions.Question;
 import io.goobi.viewer.model.crowdsourcing.questions.QuestionType;
 import io.goobi.viewer.model.crowdsourcing.questions.TargetSelector;
 import io.goobi.viewer.model.download.DownloadJob;
 import io.goobi.viewer.model.download.DownloadJob.JobStatus;
-import io.goobi.viewer.model.log.LogMessage;
 import io.goobi.viewer.model.download.EPUBDownloadJob;
 import io.goobi.viewer.model.download.PDFDownloadJob;
+import io.goobi.viewer.model.log.LogMessage;
 import io.goobi.viewer.model.maps.GeoMap;
 import io.goobi.viewer.model.search.Search;
 import io.goobi.viewer.model.search.SearchHelper;
@@ -82,6 +89,12 @@ public class JPADAOTest extends AbstractDatabaseEnabledTest {
 
     public static final int NUM_LICENSE_TYPES = 6;
 
+    String pi = "PI_TEST";
+    String title = "TITLE_TEST";
+    String germanNote = "Bemerkung";
+    String englishNote = "Note";
+    String changed = "CHANGED";
+    
     @Override
     @Before
     public void setUp() throws Exception {
@@ -2838,4 +2851,77 @@ public class JPADAOTest extends AbstractDatabaseEnabledTest {
             Assert.assertEquals("%PPN123%", params.get("targetPIbody"));
         }
     }
+    
+    @Test
+    public void testGetAllRecordNotes() throws DAOException {
+        List<CMSRecordNote> notes = DataManager.getInstance().getDao().getAllRecordNotes();
+        assertEquals(3, notes.size());
+
+    }
+    
+    @Test
+    public void testGetCMSRecordNotesPaginated() throws DAOException {
+        List<CMSRecordNote> notesP1 = DataManager.getInstance().getDao().getRecordNotes(0, 2, null, false, null);
+        assertEquals(2, notesP1.size());
+        List<CMSRecordNote> notesP2 = DataManager.getInstance().getDao().getRecordNotes(2, 2, null, false, null);
+        assertEquals(1, notesP2.size());
+    }
+    
+    @Test
+    public void testGetCMSRecordNote() throws DAOException {
+        CMSRecordNote note = DataManager.getInstance().getDao().getRecordNote(1l);
+        assertNotNull(note);
+        assertEquals("PI1", note.getRecordPi());
+        assertEquals("Titel 1", note.getRecordTitle().getText());
+        assertEquals("Notes 1", note.getNoteTitle().getText(Locale.ENGLISH));
+        assertEquals("Bemerkungen 1", note.getNoteTitle().getText(Locale.GERMAN));
+        assertEquals("<p>First paragraph</p>", note.getNoteText().getText(Locale.ENGLISH));
+        assertEquals("<p>Erster Paragraph</p>", note.getNoteText().getText(Locale.GERMAN));
+    }
+    
+    @Test
+    public void testAddCMSRecordNote() throws DAOException {
+
+        
+        CMSRecordNote note = new CMSRecordNote();
+        note.setRecordPi(pi);
+        note.getRecordTitle().setText(title);
+        
+        assertTrue(DataManager.getInstance().getDao().addRecordNote(note));
+        assertNotNull(note.getId());
+        CMSRecordNote pNote = DataManager.getInstance().getDao().getRecordNote(note.getId());
+        assertNotNull(pNote);
+        assertEquals(title, pNote.getRecordTitle().getText());
+        assertEquals(title, pNote.getRecordTitle().getText(Locale.GERMAN));
+    }
+    
+    @Test
+    public void testUpdateRecordNote() throws DAOException {
+
+        
+        CMSRecordNote note = DataManager.getInstance().getDao().getRecordNote(2l);
+        note.getNoteTitle().setText(changed, Locale.GERMAN);
+        note.getNoteText().setText(changed, Locale.GERMAN);
+        
+        DataManager.getInstance().getDao().updateRecordNote(note);
+        
+        CMSRecordNote pNote = DataManager.getInstance().getDao().getRecordNote(2l);
+        assertEquals(changed, note.getNoteTitle().getText(Locale.GERMAN));
+        assertEquals("Notes 2", note.getNoteTitle().getText(Locale.ENGLISH));
+        assertEquals(changed, note.getNoteText().getText(Locale.GERMAN));
+        assertFalse(note.getNoteText().getValue(Locale.ENGLISH).isPresent());
+    }
+    
+    @Test
+    public void testDeleteRecordNote() throws DAOException {
+        assertEquals(3, DataManager.getInstance().getDao().getAllRecordNotes().size());
+        CMSRecordNote note = DataManager.getInstance().getDao().getRecordNote(2l);
+        DataManager.getInstance().getDao().deleteRecordNote(note);
+        assertEquals(2, DataManager.getInstance().getDao().getAllRecordNotes().size());
+        List<CMSRecordNote> remainingNotes = DataManager.getInstance().getDao().getAllRecordNotes();
+        assertNull(DataManager.getInstance().getDao().getRecordNote(2l));
+
+    }
+    
+    
 }

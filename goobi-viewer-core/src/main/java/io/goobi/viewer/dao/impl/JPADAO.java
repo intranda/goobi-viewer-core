@@ -4909,44 +4909,91 @@ public class JPADAO implements IDAO {
      * @see io.goobi.viewer.dao.IDAO#getAllRecordNotes()
      */
     @Override
-    public List<CMSRecordNote> getAllRecordNotes() {
-        // TODO Auto-generated method stub
-        return null;
+    public List<CMSRecordNote> getAllRecordNotes() throws DAOException {
+        preQuery();
+        StringBuilder sbQuery = new StringBuilder("SELECT DISTINCT a FROM CMSRecordNote a");
+        try {
+            logger.trace(sbQuery.toString());
+            Query q = em.createQuery(sbQuery.toString());
+            q.setFlushMode(FlushModeType.COMMIT);
+            // q.setHint("javax.persistence.cache.storeMode", "REFRESH");
+            return q.getResultList();
+        } catch (PersistenceException e) {
+            logger.error("Exception \"" + e.toString() + "\" when trying to get CMSRecordNotes. Returning empty list");
+            return Collections.emptyList();
+        }
     }
 
     /* (non-Javadoc)
      * @see io.goobi.viewer.dao.IDAO#getRecordNote(java.lang.Long)
      */
     @Override
-    public CMSRecordNote getRecordNote(Long id) {
-        // TODO Auto-generated method stub
-        return null;
+    public CMSRecordNote getRecordNote(Long id) throws DAOException {
+        preQuery();
+        try {
+            CMSRecordNote o = em.getReference(CMSRecordNote.class, id);
+            if (o != null) {
+                em.refresh(o);
+            }
+            return o;
+        } catch (EntityNotFoundException e) {
+            return null;
+        }
     }
 
     /* (non-Javadoc)
      * @see io.goobi.viewer.dao.IDAO#addRecordNote(io.goobi.viewer.model.cms.CMSRecordNote)
      */
     @Override
-    public boolean addRecordNote(CMSRecordNote note) {
-        // TODO Auto-generated method stub
-        return false;
+    public boolean addRecordNote(CMSRecordNote note) throws DAOException {
+        preQuery();
+        EntityManager em = factory.createEntityManager();
+        try {
+            em.getTransaction().begin();
+            em.persist(note);
+            em.getTransaction().commit();
+            return true;
+        } finally {
+            em.close();
+        }
     }
 
     /* (non-Javadoc)
      * @see io.goobi.viewer.dao.IDAO#updateRecordNote(io.goobi.viewer.model.cms.CMSRecordNote)
      */
     @Override
-    public boolean updateRecordNote(CMSRecordNote note) {
-        // TODO Auto-generated method stub
-        return false;
+    public boolean updateRecordNote(CMSRecordNote note) throws DAOException {
+        preQuery();
+        EntityManager em = factory.createEntityManager();
+        try {
+            em.getTransaction().begin();
+            em.merge(note);
+            em.getTransaction().commit();
+            return true;
+        } catch (IllegalArgumentException e) {
+            return false;
+        } finally {
+            em.close();
+        }
     }
 
     /* (non-Javadoc)
      * @see io.goobi.viewer.dao.IDAO#deleteRecordNote(io.goobi.viewer.model.cms.CMSRecordNote)
      */
     @Override
-    public boolean deleteRecordNote(CMSRecordNote note) {
-        // TODO Auto-generated method stub
-        return false;
+    public boolean deleteRecordNote(CMSRecordNote note) throws DAOException {
+        preQuery();
+        EntityManager em = factory.createEntityManager();
+        try {
+            em.getTransaction().begin();
+            CMSRecordNote o = em.getReference(CMSRecordNote.class, note.getId());
+            em.remove(o);
+            em.getTransaction().commit();
+            return true;
+        } catch (IllegalArgumentException e) {
+            return false;
+        } finally {
+            em.close();
+        }
     }
 }

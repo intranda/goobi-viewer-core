@@ -16,6 +16,7 @@
 package io.goobi.viewer.model.misc;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Locale;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -37,7 +38,7 @@ public class TranslatedText extends MultiLanguageMetadataValue implements IPolyg
     private Locale selectedLocale;
     
     public TranslatedText() {
-        this(IPolyglott.getLocalesStatic(), IPolyglott.getDefaultLocale());
+        this(IPolyglott.getLocalesStatic(), null);
     }
     
     public TranslatedText(Collection<Locale> locales) {
@@ -60,6 +61,15 @@ public class TranslatedText extends MultiLanguageMetadataValue implements IPolyg
         });
     }
     
+    /**
+     * @param dbData
+     */
+    public TranslatedText(String text) {
+        super();
+        setText(text);
+        
+    }
+
     public Locale getSelectedLocale() {
         return this.selectedLocale;
     }
@@ -69,11 +79,15 @@ public class TranslatedText extends MultiLanguageMetadataValue implements IPolyg
     }
     
     public String getText(Locale locale) {
-        return super.getValue(locale).orElse("");
+        return super.getValue(locale).orElse(getValue().orElse(""));
     }
     
     public void setText(String text, Locale locale) {
-        super.setValue(text, locale);
+        if(locale != null) {            
+            super.setValue(text, locale);
+        } else {
+            super.setValue(text);
+        }
     }
     
     public String getText() {

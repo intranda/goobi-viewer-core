@@ -50,6 +50,7 @@
 		<class>io.goobi.viewer.model.log.LogMessage</class>
 		<class>io.goobi.viewer.model.crowdsourcing.campaigns.CampaignLogMessage</class>
 		<class>io.goobi.viewer.dao.converter.StringListConverter</class>
+		<class>io.goobi.viewer.model.cms.CMSRecordNote</class>
 	
 
 		<properties>
@@ -124,6 +125,7 @@
 		<class>io.goobi.viewer.model.log.LogMessage</class>
 		<class>io.goobi.viewer.model.crowdsourcing.campaigns.CampaignLogMessage</class>
 		<class>io.goobi.viewer.dao.converter.StringListConverter</class>
+		<class>io.goobi.viewer.model.cms.CMSRecordNote</class>
 		
 		<properties>
 			<property name="javax.persistence.jdbc.driver"

@@ -65,14 +65,18 @@ public class TranslatedTextConverter implements AttributeConverter<TranslatedTex
      */
     @Override
     public String convertToDatabaseColumn(TranslatedText attribute) {
-        try {
-        Map<String, String> map = attribute.toMap().entrySet().stream()
-                .collect(Collectors.toMap(e -> e.getKey().getLanguage(), e -> StringEscapeUtils.escapeHtml4(e.getValue())));
-        MultiLanguageMetadataValue v = new MultiLanguageMetadataValue(map);
-        String s = mapper.writeValueAsString(attribute);
-        return s;
-        } catch (JsonProcessingException e1) {
-            throw new IllegalArgumentException("Cannot convert " + attribute + " to String");
+        if(attribute.hasTranslations()) {            
+            try {
+                Map<String, String> map = attribute.toMap().entrySet().stream()
+                        .collect(Collectors.toMap(e -> e.getKey().getLanguage(), e -> StringEscapeUtils.escapeHtml4(e.getValue())));
+                MultiLanguageMetadataValue v = new MultiLanguageMetadataValue(map);
+                String s = mapper.writeValueAsString(attribute);
+                return s;
+            } catch (JsonProcessingException e1) {
+                throw new IllegalArgumentException("Cannot convert " + attribute + " to String");
+            }
+        } else {
+            return attribute.getValue().orElse(null);
         }
     }
 
@@ -84,7 +88,7 @@ public class TranslatedTextConverter implements AttributeConverter<TranslatedTex
         TranslatedText attribute = new TranslatedText(getConfiguredLocales());
         if(StringUtils.isBlank(dbData)) {
             return attribute;
-        }
+        } else 
         try {
             IMetadataValue v = mapper.readValue(dbData, IMetadataValue.class);
             for (Locale locale : getConfiguredLocales()) {
@@ -96,8 +100,12 @@ public class TranslatedTextConverter implements AttributeConverter<TranslatedTex
             }
             return attribute;
         } catch (JsonProcessingException e) {
-            throw new IllegalArgumentException("Cannot convert " + dbData + " to value", e);
+            //assume a single language text
+            attribute = new TranslatedText(dbData);
+            return attribute;
         }
+//            throw new IllegalArgumentException("Cannot convert " + dbData + " to value", e);
+//        }
     }
     
     private Collection<Locale> getConfiguredLocales() {

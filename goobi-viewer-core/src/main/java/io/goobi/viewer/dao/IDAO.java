@@ -2167,8 +2167,9 @@ public interface IDAO {
      * Get all persisted {@link CMSRecordNote}s
      * 
      * @return
+     * @throws DAOException 
      */
-    public List<CMSRecordNote> getAllRecordNotes();
+    public List<CMSRecordNote> getAllRecordNotes() throws DAOException;
     
     /**
      * Get a {@link CMSRecordNote} by its id property
@@ -2176,7 +2177,7 @@ public interface IDAO {
      * @param id
      * @return
      */
-    public CMSRecordNote getRecordNote(Long id);
+    public CMSRecordNote getRecordNote(Long id) throws DAOException;
     
     /**
      * Persist a new {@link CMSRecordNote}.
@@ -2184,7 +2185,7 @@ public interface IDAO {
      * @param note
      * @return
      */
-    public boolean addRecordNote(CMSRecordNote note);
+    public boolean addRecordNote(CMSRecordNote note) throws DAOException;
     
     /**
      * Updates an existing {@link CMSRecordNote}
@@ -2192,7 +2193,7 @@ public interface IDAO {
      * @param note
      * @return
      */
-    public boolean updateRecordNote(CMSRecordNote note);
+    public boolean updateRecordNote(CMSRecordNote note) throws DAOException;
     
     /**
      * Deletes an existing {@link CMSRecordNote}
@@ -2200,7 +2201,7 @@ public interface IDAO {
      * @param note
      * @return
      */
-    public boolean deleteRecordNote(CMSRecordNote note);
+    public boolean deleteRecordNote(CMSRecordNote note) throws DAOException;
 
     public boolean saveTermsOfUse(TermsOfUse tou) throws DAOException;
 

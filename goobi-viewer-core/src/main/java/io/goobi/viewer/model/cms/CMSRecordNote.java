@@ -15,6 +15,8 @@
  */
 package io.goobi.viewer.model.cms;
 
+import java.util.Locale;
+
 import javax.persistence.Column;
 import javax.persistence.Convert;
 import javax.persistence.Entity;
@@ -61,21 +63,70 @@ public class CMSRecordNote {
      */
     @Column(name = "record_title", nullable = true, columnDefinition = "TEXT")
     @Convert(converter = TranslatedTextConverter.class)
-    private TranslatedText recordTitle;
+    private TranslatedText recordTitle = new TranslatedText();
     
     /**
      * Title of the note, plaintext
      */
     @Column(name = "note_title", nullable = true, columnDefinition = "TINYTEXT")
     @Convert(converter = TranslatedTextConverter.class)
-    private TranslatedText noteTitle;
+    private TranslatedText noteTitle = new TranslatedText();
     
     /**
      * The actual note. May contain html text
      */
     @Column(name = "note_text", nullable = true, columnDefinition = "MEDIUMTEXT")
     @Convert(converter = TranslatedTextConverter.class)
-    private TranslatedText noteText;
+    private TranslatedText noteText = new TranslatedText();
+
+    /**
+     * @return the id
+     */
+    public Long getId() {
+        return id;
+    }
+
+    /**
+     * @param id the id to set
+     */
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    /**
+     * @return the recordPi
+     */
+    public String getRecordPi() {
+        return recordPi;
+    }
+
+    /**
+     * @param recordPi the recordPi to set
+     */
+    public void setRecordPi(String recordPi) {
+        this.recordPi = recordPi;
+    }
+
+    /**
+     * @return the recordTitle
+     */
+    public TranslatedText getRecordTitle() {
+        return recordTitle;
+    }
+
+    /**
+     * @return the noteTitle
+     */
+    public TranslatedText getNoteTitle() {
+        return noteTitle;
+    }
+
+    /**
+     * @return the noteText
+     */
+    public TranslatedText getNoteText() {
+        return noteText;
+    }
     
     
 }
