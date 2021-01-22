@@ -15,6 +15,23 @@ body {
     font-size: @fontNormal;
 }
 
+@{RTL} body {
+	text-align: right;
+}
+
+// DELETE AFTER DEV //
+.dir-switch {
+	position: fixed;
+	top: 50px;
+	right: 50px;
+	background: @blue;
+	color: @white;
+	padding: 10px;
+	border-radius: 40px;
+	cursor: pointer;
+	z-index: 100000;
+}
+
 h1, h2, h3, h4, h5, h6,
 .h1, .h2, .h3, .h4, .h5, .h6 {}
 
