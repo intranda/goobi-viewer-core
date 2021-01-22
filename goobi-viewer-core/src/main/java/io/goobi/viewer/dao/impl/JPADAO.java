@@ -66,6 +66,7 @@ import io.goobi.viewer.model.cms.CMSPage;
 import io.goobi.viewer.model.cms.CMSPageLanguageVersion;
 import io.goobi.viewer.model.cms.CMSPageTemplate;
 import io.goobi.viewer.model.cms.CMSPageTemplateEnabled;
+import io.goobi.viewer.model.cms.CMSRecordNote;
 import io.goobi.viewer.model.cms.CMSSidebarElement;
 import io.goobi.viewer.model.cms.CMSStaticPage;
 import io.goobi.viewer.model.crowdsourcing.campaigns.Campaign;
@@ -4859,5 +4860,93 @@ public class JPADAO implements IDAO {
             }
         });
         return true;
+    }
+
+    /* (non-Javadoc)
+     * @see io.goobi.viewer.dao.IDAO#getRecordNotes(int, int, java.lang.String, boolean, java.util.Map)
+     */
+    @Override
+    public List<CMSRecordNote> getRecordNotes(int first, int pageSize, String sortField, boolean descending, Map<String, String> filters)
+            throws DAOException {
+            preQuery();
+            StringBuilder sbQuery = new StringBuilder("SELECT DISTINCT a FROM CMSRecordNote a");
+            StringBuilder order = new StringBuilder();
+            try {
+                Map<String, Object> params = new HashMap<>();
+                if(filters != null) {
+                   String filterValue = filters.values().stream().findAny().orElse(null);
+                   if(StringUtils.isNotBlank(filterValue)) {
+                       String filterString = " WHERE (UPPER(a.recordPi) LIKE :filter OR UPPER(a.recordTitle) LIKE :filter OR UPPER(a.noteTitle) LIKE :filter)";
+                       params.put("filter", sanitizeQueryParam(filterValue, true));
+                       sbQuery.append(filterString);
+                   }
+                }
+                if (StringUtils.isNotEmpty(sortField)) {
+                    order.append(" ORDER BY a.").append(sortField);
+                    if (descending) {
+                        order.append(" DESC");
+                    }
+                }
+                sbQuery.append(order);
+
+                logger.trace(sbQuery.toString());
+                Query q = em.createQuery(sbQuery.toString());
+                params.entrySet().forEach(entry -> q.setParameter(entry.getKey(), entry.getValue()));
+                //            q.setParameter("lang", BeanUtils.getLocale().getLanguage());
+                q.setFirstResult(first);
+                q.setMaxResults(pageSize);
+                q.setFlushMode(FlushModeType.COMMIT);
+                // q.setHint("javax.persistence.cache.storeMode", "REFRESH");
+                return q.getResultList();
+            } catch (PersistenceException e) {
+                logger.error("Exception \"" + e.toString() + "\" when trying to get CMSRecordNotes. Returning empty list");
+                return Collections.emptyList();
+            }
+    }
+
+
+    /* (non-Javadoc)
+     * @see io.goobi.viewer.dao.IDAO#getAllRecordNotes()
+     */
+    @Override
+    public List<CMSRecordNote> getAllRecordNotes() {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    /* (non-Javadoc)
+     * @see io.goobi.viewer.dao.IDAO#getRecordNote(java.lang.Long)
+     */
+    @Override
+    public CMSRecordNote getRecordNote(Long id) {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    /* (non-Javadoc)
+     * @see io.goobi.viewer.dao.IDAO#addRecordNote(io.goobi.viewer.model.cms.CMSRecordNote)
+     */
+    @Override
+    public boolean addRecordNote(CMSRecordNote note) {
+        // TODO Auto-generated method stub
+        return false;
+    }
+
+    /* (non-Javadoc)
+     * @see io.goobi.viewer.dao.IDAO#updateRecordNote(io.goobi.viewer.model.cms.CMSRecordNote)
+     */
+    @Override
+    public boolean updateRecordNote(CMSRecordNote note) {
+        // TODO Auto-generated method stub
+        return false;
+    }
+
+    /* (non-Javadoc)
+     * @see io.goobi.viewer.dao.IDAO#deleteRecordNote(io.goobi.viewer.model.cms.CMSRecordNote)
+     */
+    @Override
+    public boolean deleteRecordNote(CMSRecordNote note) {
+        // TODO Auto-generated method stub
+        return false;
     }
 }
