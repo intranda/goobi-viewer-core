@@ -322,7 +322,12 @@
             padding-bottom: 0.5rem; 
         }
     }
-    &__hit-text {}
+    &__hit-text,
+    &__hit-info {
+    	display: flex;
+    	flex-wrap: wrap;
+		justify-content: flex-end;
+    }
     &__hit-text-label,
     &__hit-text-value {
         display: block; 
@@ -331,13 +336,15 @@
     &__hit-text-label {
         clear: left;
         float: left;
-        width: 30%;
+        max-width: 30%;
+        flex: 0 0 30%;
         text-overflow: ellipsis;
         white-space: nowrap;
         overflow: hidden;
     }
     &__hit-text-value {
-        margin-left: 30%;
+        flex: 0 0 70%;
+        max-width: 70%;
     }
     &__hit-info {
         margin-top: 10px;
@@ -551,6 +558,14 @@ position: relative;
     display: block;
 }
 
+@{RTL} .search-list {
+	&__hit-thumbnail {
+        [data-bookmark-list-type="add"] {
+        	right: unset;
+        	left: 5px;
+        }
+	}
+}
 
 
 /* BREAKPOINT FOR LARGE DESKTOPS */
