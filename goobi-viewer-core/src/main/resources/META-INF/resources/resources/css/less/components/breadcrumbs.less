@@ -38,6 +38,18 @@
     }
 }
 
+@{RTL} .breadcrumbs {
+	&__crumb + li:before {
+		display: none;
+	}
+	&__crumb + li:after {
+		content:"\203A";
+        display: block;
+        float: right;
+        clear: left;
+        padding: 5px 0;
+	}
+}
 /* BREAKPOINT FOR LARGE DESKTOPS */
 @media screen and (max-width: @largeBreakpoint) {} 
 
