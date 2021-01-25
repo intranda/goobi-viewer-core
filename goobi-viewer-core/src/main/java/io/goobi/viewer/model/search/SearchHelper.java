@@ -1407,7 +1407,7 @@ public final class SearchHelper {
         List<StringPair> sortFields =
                 StringUtils.isEmpty(bmfc.getSortField()) ? null : Collections.singletonList(new StringPair(bmfc.getSortField(), "asc"));
         QueryResponse resp = getFilteredTermsFromIndex(bmfc, startsWith, filterQuery, sortFields, 0, 0);
-        // logger.trace("getFilteredTermsCount hits: {}", resp.getResults().getNumFound());
+        logger.trace("getFilteredTermsCount hits: {}", resp.getResults().getNumFound());
 
         if (bmfc.getField() == null) {
             return 0;
@@ -1416,6 +1416,7 @@ public final class SearchHelper {
         int ret = 0;
         String facetField = SearchHelper.facetifyField(bmfc.getField());
         for (Count count : resp.getFacetField(facetField).getValues()) {
+            logger.trace(count.getFacetField().getName() + ": " + count.getCount());
             if (count.getCount() == 0) {
                 continue;
             }
@@ -1425,7 +1426,7 @@ public final class SearchHelper {
             ret++;
 
         }
-        logger.debug("getFilteredTermsCount result: {}", resp.getResults().getNumFound());
+        logger.debug("getFilteredTermsCount result: {}", ret);
         return ret;
     }
 
@@ -1568,7 +1569,9 @@ public final class SearchHelper {
             sbQuery.append(bmfc.getField());
         }
         sbQuery.append(":[* TO *] ");
-        sbQuery.append(ALL_RECORDS_QUERY);
+        if (bmfc.isRecordsAndAnchorsOnly()) {
+            sbQuery.append(ALL_RECORDS_QUERY);
+        }
 
         List<String> filterQueries = new ArrayList<>();
         if (StringUtils.isNotEmpty(filterQuery)) {
@@ -1933,6 +1936,10 @@ public final class SearchHelper {
                         fieldName = fieldName.replace("MD_", prefix);
                     } else if (fieldName.startsWith("MD2_")) {
                         fieldName = fieldName.replace("MD2_", prefix);
+                    } else if (fieldName.startsWith("MDNUM_")) {
+                        fieldName = fieldName.replace("MDNUM_", prefix);
+                    } else if (fieldName.startsWith("NE_")) {
+                        fieldName = fieldName.replace("NE_", prefix);
                     } else if (fieldName.startsWith("BOOL_")) {
                         fieldName = fieldName.replace("BOOL_", prefix);
                     } else if (fieldName.startsWith("SORT_")) {
