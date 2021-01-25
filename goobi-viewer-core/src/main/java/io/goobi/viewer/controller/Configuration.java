@@ -1677,7 +1677,7 @@ public final class Configuration extends AbstractConfiguration {
     public String getAltoFolder() {
         return getLocalString("altoFolder");
     }
-    
+
     /**
      * <p>
      * getAltoCrowdsourcingFolder.
@@ -1713,7 +1713,7 @@ public final class Configuration extends AbstractConfiguration {
     public String getFulltextFolder() {
         return getLocalString("fulltextFolder");
     }
-    
+
     /**
      * <p>
      * getFulltextCrowdsourcingFolder.
@@ -1748,18 +1748,6 @@ public final class Configuration extends AbstractConfiguration {
      */
     public String getCmdiFolder() {
         return getLocalString("cmdiFolder");
-    }
-
-    /**
-     * <p>
-     * getWcFolder.
-     * </p>
-     *
-     * @should return correct value
-     * @return a {@link java.lang.String} object.
-     */
-    public String getWcFolder() {
-        return getLocalString("wcFolder");
     }
 
     /**
@@ -2023,7 +2011,7 @@ public final class Configuration extends AbstractConfiguration {
     public String getSmtpSecurity() {
         return getLocalString("user.smtpSecurity", "none");
     }
-    
+
     /**
      * 
      * @return Configured SMTP port number; -1 if not configured
@@ -4543,45 +4531,46 @@ public final class Configuration extends AbstractConfiguration {
 
     public List<Locale> getIIIFTranslationLocales() {
         List<Locale> list = getLocalList("webapi.iiif.translations.locale", new ArrayList<>())
-        .stream()
-        .map(Locale::forLanguageTag)
-        .filter(l -> StringUtils.isNotBlank(l.getLanguage()))
-        .collect(Collectors.toList());
-        
-        if(list.isEmpty()) {
+                .stream()
+                .map(Locale::forLanguageTag)
+                .filter(l -> StringUtils.isNotBlank(l.getLanguage()))
+                .collect(Collectors.toList());
+
+        if (list.isEmpty()) {
             return ViewerResourceBundle.getAllLocales();
         }
-        
+
         return list;
     }
-    
+
     public boolean isVisibleIIIFRenderingPDF() {
         return getLocalBoolean("webapi.iiif.rendering.pdf[@visible]", true);
     }
-    
+
     public boolean isVisibleIIIFRenderingViewer() {
         return getLocalBoolean("webapi.iiif.rendering.viewer[@visible]", true);
     }
-    
+
     public String getLabelIIIFRenderingPDF() {
         return getLocalString("webapi.iiif.rendering.pdf.label", "PDF");
     }
-    
+
     public String getLabelIIIFRenderingViewer() {
         return getLocalString("webapi.iiif.rendering.viewer.label", "Goobi Viewer");
     }
+
     public boolean isVisibleIIIFRenderingPlaintext() {
         return getLocalBoolean("webapi.iiif.rendering.plaintext[@visible]", true);
     }
-    
+
     public boolean isVisibleIIIFRenderingAlto() {
         return getLocalBoolean("webapi.iiif.rendering.alto[@visible]", true);
     }
-    
+
     public String getLabelIIIFRenderingPlaintext() {
         return getLocalString("webapi.iiif.rendering.plaintext.label", "Fulltext");
     }
-    
+
     public String getLabelIIIFRenderingAlto() {
         return getLocalString("webapi.iiif.rendering.alto.label", "ALTO");
     }
@@ -4777,11 +4766,11 @@ public final class Configuration extends AbstractConfiguration {
     public String getMapBoxToken() {
         return getLocalString("maps.mapbox.token", "");
     }
-    
+
     public String getMapBoxUser() {
         return getLocalString("maps.mapbox.user", "");
     }
-    
+
     public String getMapBoxStyleId() {
         return getLocalString("maps.mapbox.styleId", "");
     }
