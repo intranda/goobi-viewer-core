@@ -1677,6 +1677,18 @@ public final class Configuration extends AbstractConfiguration {
     public String getAltoFolder() {
         return getLocalString("altoFolder");
     }
+    
+    /**
+     * <p>
+     * getAltoCrowdsourcingFolder.
+     * </p>
+     *
+     * @should return correct value
+     * @return a {@link java.lang.String} object.
+     */
+    public String getAltoCrowdsourcingFolder() {
+        return getLocalString("altoCrowdsourcingFolder");
+    }
 
     /**
      * <p>
@@ -1700,6 +1712,18 @@ public final class Configuration extends AbstractConfiguration {
      */
     public String getFulltextFolder() {
         return getLocalString("fulltextFolder");
+    }
+    
+    /**
+     * <p>
+     * getFulltextCrowdsourcingFolder.
+     * </p>
+     *
+     * @should return correct value
+     * @return a {@link java.lang.String} object.
+     */
+    public String getFulltextCrowdsourcingFolder() {
+        return getLocalString("fulltextCrowdsourcingFolder");
     }
 
     /**
@@ -4526,9 +4550,9 @@ public final class Configuration extends AbstractConfiguration {
         
         if(list.isEmpty()) {
             return ViewerResourceBundle.getAllLocales();
-        } else {
-            return list;
         }
+        
+        return list;
     }
     
     public boolean isVisibleIIIFRenderingPDF() {
