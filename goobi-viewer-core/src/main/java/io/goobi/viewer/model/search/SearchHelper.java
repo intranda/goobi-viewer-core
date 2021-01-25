@@ -1416,7 +1416,6 @@ public final class SearchHelper {
         int ret = 0;
         String facetField = SearchHelper.facetifyField(bmfc.getField());
         for (Count count : resp.getFacetField(facetField).getValues()) {
-            logger.trace(count.getFacetField().getName() + ": " + count.getCount());
             if (count.getCount() == 0) {
                 continue;
             }
