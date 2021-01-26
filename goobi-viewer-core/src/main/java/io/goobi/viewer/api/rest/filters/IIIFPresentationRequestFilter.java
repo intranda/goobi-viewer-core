@@ -47,14 +47,15 @@ import io.goobi.viewer.model.security.IPrivilegeHolder;
 
 /**
  * <p>
- * ManifestRequestFilter class.
+ * Filter for all IIIF Presentation resources. Checks the {@link IPrivilegeHolder#IPrivilegeHolder.PRIV_GENERATE_IIIF_MANIFEST}
+ * privilege for the request
  * </p>
  */
 @Provider
 @IIIFPresentationBinding
-public class ManifestRequestFilter implements ContainerRequestFilter {
+public class IIIFPresentationRequestFilter implements ContainerRequestFilter {
 
-    private static final Logger logger = LoggerFactory.getLogger(ManifestRequestFilter.class);
+    private static final Logger logger = LoggerFactory.getLogger(IIIFPresentationRequestFilter.class);
 
     @Context
     private HttpServletRequest servletRequest;

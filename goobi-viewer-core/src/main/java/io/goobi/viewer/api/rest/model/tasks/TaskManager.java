@@ -29,11 +29,15 @@ import java.util.stream.Collectors;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.json.JSONException;
+
+import de.unigoettingen.sub.commons.contentlib.exceptions.IllegalRequestException;
 import io.goobi.viewer.api.rest.model.SitemapRequestParameters;
 import io.goobi.viewer.api.rest.model.ToolsRequestParameters;
 import io.goobi.viewer.api.rest.model.tasks.Task.TaskType;
 import io.goobi.viewer.api.rest.v1.tasks.TasksResource;
 import io.goobi.viewer.controller.DataManager;
+import io.goobi.viewer.exceptions.AccessDeniedException;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
@@ -92,6 +96,7 @@ public class TaskManager {
     public Future triggerTaskInThread(long jobId, HttpServletRequest request) {
         Task job = tasks.get(jobId);
         if(job != null) {
+//            System.out.println("executorService " + executorService.toString());
             return executorService.submit(() -> job.doTask(request));
         }
         return CompletableFuture.completedFuture(null);
@@ -125,7 +130,11 @@ public class TaskManager {
                                 .filter(p -> p instanceof SitemapRequestParameters)
                                 .map(p -> (SitemapRequestParameters)p)
                                 .orElse(null);
-                        new SitemapBuilder(request).updateSitemap(params);
+                        try {
+                            new SitemapBuilder(request).updateSitemap(params);
+                        } catch (IllegalRequestException | AccessDeniedException | JSONException | InterruptedException | PresentationException e) {
+                            job.setError(e.getMessage());
+                        }
                 };
             case UPDATE_DATA_REPOSITORY_NAMES: 
                 return (request, job) -> {

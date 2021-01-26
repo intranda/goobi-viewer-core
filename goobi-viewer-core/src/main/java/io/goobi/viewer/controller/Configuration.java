@@ -1681,6 +1681,18 @@ public final class Configuration extends AbstractConfiguration {
 
     /**
      * <p>
+     * getAltoCrowdsourcingFolder.
+     * </p>
+     *
+     * @should return correct value
+     * @return a {@link java.lang.String} object.
+     */
+    public String getAltoCrowdsourcingFolder() {
+        return getLocalString("altoCrowdsourcingFolder");
+    }
+
+    /**
+     * <p>
      * getAbbyyFolder.
      * </p>
      *
@@ -1705,6 +1717,18 @@ public final class Configuration extends AbstractConfiguration {
 
     /**
      * <p>
+     * getFulltextCrowdsourcingFolder.
+     * </p>
+     *
+     * @should return correct value
+     * @return a {@link java.lang.String} object.
+     */
+    public String getFulltextCrowdsourcingFolder() {
+        return getLocalString("fulltextCrowdsourcingFolder");
+    }
+
+    /**
+     * <p>
      * getTeiFolder.
      * </p>
      *
@@ -1725,18 +1749,6 @@ public final class Configuration extends AbstractConfiguration {
      */
     public String getCmdiFolder() {
         return getLocalString("cmdiFolder");
-    }
-
-    /**
-     * <p>
-     * getWcFolder.
-     * </p>
-     *
-     * @should return correct value
-     * @return a {@link java.lang.String} object.
-     */
-    public String getWcFolder() {
-        return getLocalString("wcFolder");
     }
 
     /**
@@ -4688,7 +4700,7 @@ public final class Configuration extends AbstractConfiguration {
 
     /**
      * <p>
-     * getCORSHeaderValue.
+     * Gets the value configured in webapi.cors. Default is "*"
      * </p>
      *
      * @should return correct value

@@ -1871,6 +1871,15 @@ public class ConfigurationTest extends AbstractTest {
     }
 
     /**
+     * @see Configuration#getAltoCrowdsourcingFolder()
+     * @verifies return correct value
+     */
+    @Test
+    public void getAltoCrowdsourcingFolder_shouldReturnCorrectValue() throws Exception {
+        Assert.assertEquals("alto_crowd", DataManager.getInstance().getConfiguration().getAltoCrowdsourcingFolder());
+    }
+
+    /**
      * @see Configuration#getFulltextFolder()
      * @verifies return correct value
      */
@@ -1880,12 +1889,12 @@ public class ConfigurationTest extends AbstractTest {
     }
 
     /**
-     * @see Configuration#getWcFolder()
+     * @see Configuration#getFulltextCrowdsourcingFolder()
      * @verifies return correct value
      */
     @Test
-    public void getWcFolder_shouldReturnCorrectValue() throws Exception {
-        Assert.assertEquals("wc", DataManager.getInstance().getConfiguration().getWcFolder());
+    public void getFulltextCrowdsourcingFolder_shouldReturnCorrectValue() throws Exception {
+        Assert.assertEquals("fulltext_crowd", DataManager.getInstance().getConfiguration().getFulltextCrowdsourcingFolder());
     }
 
     /**

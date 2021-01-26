@@ -28,6 +28,8 @@ import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.model.security.user.User;
 
 /**
+ * Only allow requests from a session with a logged in goobi-viewer user
+ * 
  * @author florian
  *
  */

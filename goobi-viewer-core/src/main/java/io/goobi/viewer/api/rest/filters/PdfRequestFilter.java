@@ -57,7 +57,8 @@ import io.goobi.viewer.model.viewer.StringPair;
 
 /**
  * <p>
- * PdfRequestFilter class.
+ * Request filter for PDF download requests. Checks whether the request has privileges to access the pdf and whether the 
+ * download quote for the pdf is reached
  * </p>
  */
 @Provider
@@ -83,7 +84,6 @@ public class PdfRequestFilter implements ContainerRequestFilter {
             Path requestPath = Paths.get(request.getUriInfo().getPath());
             //            String requestPath = request.getUriInfo().getPath();
 
-            String type = requestPath.getName(0).toString();
             String pi = null;
             String divId = null;
             String imageName = null;
@@ -94,19 +94,6 @@ public class PdfRequestFilter implements ContainerRequestFilter {
                 if (servletRequest.getAttribute("filename") != null) {
                     privName = IPrivilegeHolder.PRIV_DOWNLOAD_PAGE_PDF;
                     imageName = (String) servletRequest.getAttribute("filename");
-                }
-            } else {
-                if ("pdf".equalsIgnoreCase(type)) {
-                    //multipage mets pdf
-                    pi = requestPath.getName(2).toString().replace(".xml", "").replaceAll(".XML", "");
-                    if (requestPath.getNameCount() == 5) {
-                        divId = requestPath.getName(3).toString();
-                    }
-                } else if ("image".equalsIgnoreCase(type)) {
-                    //single page pdf
-                    pi = requestPath.getName(1).toString();
-                    imageName = requestPath.getName(2).toString();
-                    privName = IPrivilegeHolder.PRIV_DOWNLOAD_PAGE_PDF;
                 }
             }
             filterForAccessConditions(pi, divId, imageName, privName);

@@ -79,6 +79,7 @@ import io.goobi.viewer.model.viewer.StructElement;
 import io.goobi.viewer.model.viewer.pageloader.EagerPageLoader;
 import io.goobi.viewer.model.viewer.pageloader.IPageLoader;
 import io.goobi.viewer.model.viewer.pageloader.LeanPageLoader;
+
 /**
  * <p>
  * SequenceBuilder class.
@@ -118,7 +119,8 @@ public class SequenceBuilder extends AbstractBuilder {
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
      */
-    public Map<AnnotationType, List<AnnotationList>> addBaseSequence(Manifest manifest, StructElement doc, String manifestId, HttpServletRequest request)
+    public Map<AnnotationType, List<AnnotationList>> addBaseSequence(Manifest manifest, StructElement doc, String manifestId,
+            HttpServletRequest request)
             throws URISyntaxException, PresentationException, IndexUnreachableException, DAOException, ViewerConfigurationException {
 
         Map<AnnotationType, List<AnnotationList>> annotationMap = new HashMap<>();
@@ -153,10 +155,10 @@ public class SequenceBuilder extends AbstractBuilder {
             }
             if (sequence.getCanvases() != null) {
                 OpenAnnotationBuilder annoBuilder = new OpenAnnotationBuilder(urls);
-                addCrowdourcingAnnotations(sequence.getCanvases(), annoBuilder.getCrowdsourcingAnnotations(doc.getPi(), false, request), annotationMap);
+                addCrowdourcingAnnotations(sequence.getCanvases(), annoBuilder.getCrowdsourcingAnnotations(doc.getPi(), false, request),
+                        annotationMap);
             }
         }
-
 
         if (manifest != null && sequence.getCanvases() != null) {
             manifest.setSequence(sequence);
@@ -177,11 +179,11 @@ public class SequenceBuilder extends AbstractBuilder {
      * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
      */
     public void addSeeAlsos(Canvas canvas, StructElement doc, PhysicalElement page) throws URISyntaxException, ViewerConfigurationException {
-        
+
         this.getSeeAlsos().forEach(link -> {
             try {
                 URI id = getCanvasLinkingPropertyUri(page, doc, link.target);
-                if(id != null) {                    
+                if (id != null) {
                     canvas.addSeeAlso(link.getLinkingContent(id));
                 }
             } catch (URISyntaxException e) {
@@ -189,18 +191,18 @@ public class SequenceBuilder extends AbstractBuilder {
             }
         });
     }
-    
+
     /**
      * @param page
      * @param canvas
      * @throws URISyntaxException
      */
     public void addRenderings(PhysicalElement page, StructElement doc, Canvas canvas) throws URISyntaxException {
-        
+
         this.getRenderings().forEach(link -> {
             try {
                 URI id = getCanvasLinkingPropertyUri(page, doc, link.target);
-                if(id != null) {                    
+                if (id != null) {
                     canvas.addRendering(link.getLinkingContent(id));
                 }
             } catch (URISyntaxException e) {
@@ -349,7 +351,10 @@ public class SequenceBuilder extends AbstractBuilder {
                         logger.error("Error reading image information from {}: {}", thumbnailUrl, e.toString());
                         resource.setWidth(size.width);
                         resource.setHeight(size.height);
-
+                        if (IIIFUrlResolver.isIIIFImageUrl(thumbnailUrl)) {
+                            URI imageInfoURI = new URI(IIIFUrlResolver.getIIIFImageBaseUrl(thumbnailUrl));
+                            resource.setService(new ImageInformation(imageInfoURI.toString()));
+                        }
                     }
                 }
                 resource.setFormat(Format.fromMimeType(page.getDisplayMimeType()));
@@ -372,18 +377,18 @@ public class SequenceBuilder extends AbstractBuilder {
      * @throws URISyntaxException
      */
     private URI getCanvasLinkingPropertyUri(PhysicalElement page, StructElement doc, LinkingProperty.LinkingTarget target) throws URISyntaxException {
-        if(target.equals(LinkingTarget.PLAINTEXT) && StringUtils.isAllBlank(page.getFulltextFileName(), page.getAltoFileName())) {
-            return null;
-        } 
-        if(target.equals(LinkingTarget.ALTO) && StringUtils.isBlank(page.getAltoFileName())) {
+        if (target.equals(LinkingTarget.PLAINTEXT) && StringUtils.isAllBlank(page.getFulltextFileName(), page.getAltoFileName())) {
             return null;
         }
-        if(target.equals(LinkingTarget.PDF) && !(MimeType.IMAGE.getName().equals(page.getMimeType()))) {
+        if (target.equals(LinkingTarget.ALTO) && StringUtils.isBlank(page.getAltoFileName())) {
             return null;
         }
-        
+        if (target.equals(LinkingTarget.PDF) && !(MimeType.IMAGE.getName().equals(page.getMimeType()))) {
+            return null;
+        }
+
         URI uri = null;
-        switch(target) {
+        switch (target) {
             case VIEWER:
                 uri = URI.create(getViewUrl(page, getPreferedView()));
                 break;
@@ -437,7 +442,9 @@ public class SequenceBuilder extends AbstractBuilder {
                                 annoList.addResource(annotation);
                             }
                         }
-                    } catch (ContentNotFoundException | PresentationException | DAOException | IOException | JDOMException e) {
+                    } catch (ContentNotFoundException e) {
+                        logger.trace("No alto file found: " + page.getAltoFileName());
+                    } catch (PresentationException | IOException | JDOMException e) {
                         logger.error("Error loading alto text from " + page.getAltoFileName(), e);
                     }
 
@@ -608,6 +615,5 @@ public class SequenceBuilder extends AbstractBuilder {
         this.preferedView = preferredView;
         return this;
     }
-
 
 }

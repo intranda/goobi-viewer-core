@@ -20,9 +20,11 @@ import java.lang.annotation.RetentionPolicy;
 
 import javax.ws.rs.NameBinding;
 
+import io.goobi.viewer.api.rest.filters.AdminLoggedInFilter;
+
 /**
  * <p>
- * AuthenticationBinding class.
+ * Binding for resources which should be authorized by {@link AdminLoggedInFilter}
  * </p>
  */
 @NameBinding

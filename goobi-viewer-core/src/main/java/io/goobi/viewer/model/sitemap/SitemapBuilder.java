@@ -28,15 +28,19 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 
+import org.apache.commons.lang3.StringUtils;
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import de.unigoettingen.sub.commons.contentlib.exceptions.IllegalRequestException;
 import de.unigoettingen.sub.commons.contentlib.servlet.rest.CORSBinding;
 import io.goobi.viewer.api.rest.bindings.AuthorizationBinding;
 import io.goobi.viewer.api.rest.bindings.ViewerRestServiceBinding;
 import io.goobi.viewer.api.rest.model.SitemapRequestParameters;
+import io.goobi.viewer.exceptions.AccessDeniedException;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
@@ -59,14 +63,15 @@ public class SitemapBuilder {
         this.servletRequest = request;
     }
 
-    public String updateSitemap(SitemapRequestParameters params) {
+    public void updateSitemap(SitemapRequestParameters params) throws AccessDeniedException, IllegalRequestException, InterruptedException, JSONException, PresentationException {
 
         JSONObject ret = new JSONObject();
 
         if (params == null) {
-            ret.put("status", HttpServletResponse.SC_BAD_REQUEST);
-            ret.put("message", "Invalid JSON request object");
-            return ret.toString();
+            throw new IllegalRequestException("Invalid JSON request object");
+//            ret.put("status", HttpServletResponse.SC_BAD_REQUEST);
+//            ret.put("message", "Invalid JSON request object");
+//            return ret.toString();
         }
 
         Sitemap sitemap = new Sitemap();
@@ -119,16 +124,13 @@ public class SitemapBuilder {
             });
 
             workerThread.start();
-            try {
-                workerThread.join();
-            } catch (InterruptedException e) {
-                logger.error(e.getMessage(), e);
+            workerThread.join();
+            if(!Integer.valueOf(HttpServletResponse.SC_OK).equals(ret.getInt("status"))) {
+                throw new PresentationException(ret.getString("message"));
             }
         } else {
-            ret.put("status", HttpServletResponse.SC_FORBIDDEN);
-            ret.put("message", "Sitemap generation currently in progress");
+            throw new AccessDeniedException("Sitemap generation currently in progress");
         }
 
-        return ret.toString();
     }
 }

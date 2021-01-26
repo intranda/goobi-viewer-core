@@ -35,10 +35,14 @@
     <cmsTextFolder>cms</cmsTextFolder>
 	<!-- altoFolder: contains ALTO files -->
 	<altoFolder>alto</altoFolder>
+	<!-- altoCrowdsourcingFolder: contains ALTO files from crowdsourcing -->
+    <altoCrowdsourcingFolder>alto_crowd</altoCrowdsourcingFolder>
 	<!-- abbyyFolder: contains ABBYY XML files -->
 	<abbyyFolder>abbyy</abbyyFolder>
 	<!-- fulltextFolder: contains plain full-text files -->
 	<fulltextFolder>fulltext</fulltextFolder>
+    <!-- fulltextCrowdsourcingFolder: contains plain full-text files from crowdsourcing -->
+    <fulltextCrowdsourcingFolder>fulltext_crowd</fulltextCrowdsourcingFolder>
 	<!-- wcFolder: contains TEI word coordinate files -->
 	<wcFolder>wc</wcFolder>
 	<!-- teiFolder: contains TEI metadata/fulltext files -->

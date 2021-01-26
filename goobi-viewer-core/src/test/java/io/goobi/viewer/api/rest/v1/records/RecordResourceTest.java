@@ -31,6 +31,8 @@ import static org.junit.Assert.assertTrue;
 
 import java.net.URI;
 
+import javax.servlet.ServletRequest;
+import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
@@ -38,6 +40,7 @@ import org.json.JSONObject;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.Mockito;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
@@ -46,7 +49,10 @@ import de.intranda.api.annotation.wa.collection.AnnotationCollection;
 import de.intranda.api.annotation.wa.collection.AnnotationPage;
 import de.intranda.api.iiif.presentation.Layer;
 import de.intranda.api.iiif.presentation.Manifest;
+import io.goobi.viewer.api.rest.AbstractApiUrlManager;
 import io.goobi.viewer.api.rest.AbstractRestApiTest;
+import io.goobi.viewer.api.rest.model.RecordsRequestParameters;
+import io.goobi.viewer.api.rest.v1.ApiUrls;
 
 /**
  * @author florian
@@ -257,6 +263,18 @@ public class RecordResourceTest extends AbstractRestApiTest{
             assertNotNull(doc.getJSONArray("pages"));
             assertEquals(322, doc.getJSONArray("pages").length());
         }
+    }
+    
+//    @Test
+    public void testGetRequiredPrivilege() {
+        HttpServletRequest request = Mockito.mock(HttpServletRequest.class);
+        Mockito.when(request.getRequestURI()).thenReturn("/viewer/api/v1/records/PPN615391702/manifest/");
+        Mockito.when(request.getRequestURL()).thenReturn(new StringBuffer("http://localhost:8082/viewer/api/v1/records/PPN615391702/manifest/"));;
+    
+        ApiUrls urls = new ApiUrls("http://localhost:8082/viewer/api/v1");
+        
+        new RecordResource(request, "");
+    
     }
 
 }

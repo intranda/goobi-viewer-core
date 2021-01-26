@@ -58,7 +58,7 @@ import io.goobi.viewer.model.security.IPrivilegeHolder;
 
 /**
  * <p>
- * Checks requests for access conditions. Requets must have set the request attribute {@link FilterTools#ATTRIBUTE_PI}
+ * Checks requests for access conditions. Requests must have set the request attribute {@link FilterTools#ATTRIBUTE_PI}
  * and {@link #REQUIRED_PRIVILEGE} to appropriate values for the filter to work properly.
  * Additionally {@link FilterTools#ATTRIBUTE_LOGID} and {@link FilterTools#ATTRIBUTE_FILENAME} may be set in the request 
  * to check access to specific files or child documents
@@ -95,8 +95,11 @@ public class AccessConditionRequestFilter implements ContainerRequestFilter {
                 String logid = (String) servletRequest.getAttribute(FilterTools.ATTRIBUTE_LOGID);
                 String filename = (String) servletRequest.getAttribute(FilterTools.ATTRIBUTE_FILENAME);
 
-            if (!BeanUtils.getImageDeliveryBean().isExternalUrl(filename) && !BeanUtils.getImageDeliveryBean().isPublicUrl(filename)
-                    && !BeanUtils.getImageDeliveryBean().isStaticImageUrl(filename)) {
+            if ( StringUtils.isBlank(filename) || 
+                      (!BeanUtils.getImageDeliveryBean().isExternalUrl(filename) 
+                    && !BeanUtils.getImageDeliveryBean().isPublicUrl(filename)
+                    && !BeanUtils.getImageDeliveryBean().isStaticImageUrl(filename))
+                ) {
                 filterForAccessConditions(servletRequest, pi, logid, filename);
                 FilterTools.filterForConcurrentViewLimit(pi, servletRequest);
             }
