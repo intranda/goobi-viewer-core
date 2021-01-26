@@ -1,0 +1,29 @@
+<ui:composition 
+    xmlns="http://www.w3.org/1999/xhtml" 
+    xmlns:f="http://xmlns.jcp.org/jsf/core" 
+    xmlns:h="http://xmlns.jcp.org/jsf/html" 
+    xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+    xmlns:jsf="http://xmlns.jcp.org/jsf"
+    xmlns:composite="http://xmlns.jcp.org/jsf/composite"
+    xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components" >
+
+    <!-- INTERFACE OPTIONS -->
+    <composite:interface>
+        <composite:attribute name="notes" type="java.util.List" required="true" />
+    </composite:interface>
+
+    <composite:implementation>
+    
+        <!-- WIDGET RECORD NOTES -->
+		<ui:repeat var="note" value="#{cc.attrs.notes}">
+                <div class="widget">
+                    <h3>
+                        #{note.noteTitle.getText(navigationHelper.locale)}
+                    </h3>
+                    <div class="widget__body">
+                    	<label jsf:escape="false" value="#{note.noteText.getText(navigationHelper.locale)}"/>
+                    </div>
+				</div>
+		</ui:repeat>
+    </composite:implementation>
+</ui:composition>

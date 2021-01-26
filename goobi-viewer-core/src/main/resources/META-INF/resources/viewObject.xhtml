@@ -184,6 +184,8 @@
         <widgetComponent:widget_toc visible="#{configurationBean.sidebarTocWidgetVisible}" />
 
         <widgetComponent:widget_download />
+        
+        <widgetComponent:widget_recordNotes notes="#{cmsRecordNotesBean.getNotesForRecord(activeDocumentBean.viewManager.pi)}" />
 
         <widgetComponent:widget_versionHistory />
         
