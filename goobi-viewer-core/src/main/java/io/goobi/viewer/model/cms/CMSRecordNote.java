@@ -59,17 +59,7 @@ public class CMSRecordNote {
     @Column(name = "record_pi", nullable = false)
     private String recordPi;
     
-    public CMSRecordNote() {
-    }
-    
-    /**
-     * @param pi
-     */
-    public CMSRecordNote(String pi) {
-        this();
-        this.recordPi = pi;
-    }
-    
+
     /**
      * Title of the record this note relates to; used for searching in notes. This is mulitlangual since record titles may be multilangual too
      */
@@ -90,7 +80,28 @@ public class CMSRecordNote {
     @Column(name = "note_text", nullable = true, columnDefinition = "MEDIUMTEXT")
     @Convert(converter = TranslatedTextConverter.class)
     private TranslatedText noteText = new TranslatedText();
-
+    
+    public CMSRecordNote() {
+    }
+    
+    /**
+     * @param pi
+     */
+    public CMSRecordNote(String pi) {
+        this();
+        this.recordPi = pi;
+    }
+    
+    /**
+     * @param o
+     */
+    public CMSRecordNote(CMSRecordNote source) {
+        this.id = source.id;
+        this.recordPi = source.recordPi;
+        this.recordTitle = new TranslatedText(source.recordTitle);
+        this.noteTitle = new TranslatedText(source.noteTitle);
+        this.noteText = new TranslatedText(source.noteText);
+    }
 
 
     /**

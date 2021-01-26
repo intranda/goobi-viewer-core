@@ -30,9 +30,16 @@
 					
 					<h:form id="selectRecord" styleClass="form-horizontal form-group" prependId="false"
 						rendered="#{!cmsRecordNoteEditBean.recordSelected}">
-					
-						<h3>#{msg.cms__record_notes_select_record__title}</h3>
-						
+
+						<h3 class="admin__content-inner-content__form_title">
+							#{msg.cms__record_notes_select_record__title} 
+							<span class="ajax_loader"> 
+								<img
+									src="#{request.contextPath}/resources/images/infinity_loader.gif"
+									class="img-responsive" alt="Waiting..." />
+							</span>
+						</h3>
+
 						<div class="admin__default-block">
 							<div class="form-group form-row">
 								<div class="col-2 control-label admin__form-label">
@@ -40,7 +47,6 @@
 											<span class="admin__label-required-field">(#{msg.form__required_field})</span>
 									</label>
 								</div>
-
 								<div class="col-10 admin__form-input cms-module__option-control">
 									
 				                    <h:message for="inputRecordIdentifier" errorClass="-validation-message -danger"></h:message>
@@ -51,9 +57,10 @@
 									<h:inputText id="inputRecordIdentifier" styleClass="form-control -validation-input"
 									required="true"
 									requiredMessage="#{msg.info__input_required}"
-										value="#{cmsRecordNoteEditBean.recordIdentifier}" >
+										value="#{cmsRecordNoteEditBean.recordIdentifier}" 
+										onblur="viewerJS.showLoader()">
 										<f:validator validatorId="piInSolrValidator" for="inputRecordIdentifier" />
-						                <f:ajax event="blur" render="@all"/>
+						                <f:ajax event="blur" render="@all" onevent="viewerJS.initTinyMCE"/>
 									</h:inputText>
                                     <span class="admin__form-help-text">#{msg.cms__record_notes_select_record__help}</span>
 								</div>
@@ -140,7 +147,7 @@
 							<!-- SAVE RECORD NOTE -->
 							<div
 								class="row no-gutters justify-content-end admin__final-actions">
-								<h:commandButton class="btn btn--success" value="#{msg.save}"
+								<h:commandButton class="btn btn--success" value="#{msg.button__save}"
 									action="#{cmsRecordNoteEditBean.save()}">
 									<f:ajax render="@form :messages" execute="@form"></f:ajax>
 								</h:commandButton>

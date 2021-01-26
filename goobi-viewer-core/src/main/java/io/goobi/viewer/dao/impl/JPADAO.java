@@ -4932,10 +4932,10 @@ public class JPADAO implements IDAO {
         preQuery();
         try {
             CMSRecordNote o = em.getReference(CMSRecordNote.class, id);
-            if (o != null) {
+            if(o != null) {
                 em.refresh(o);
             }
-            return o;
+            return new CMSRecordNote(o);
         } catch (EntityNotFoundException e) {
             return null;
         }
@@ -4947,14 +4947,13 @@ public class JPADAO implements IDAO {
     @Override
     public boolean addRecordNote(CMSRecordNote note) throws DAOException {
         preQuery();
-        EntityManager em = factory.createEntityManager();
         try {
             em.getTransaction().begin();
             em.persist(note);
             em.getTransaction().commit();
             return true;
-        } finally {
-            em.close();
+        } catch (IllegalArgumentException e) {
+            return false;
         }
     }
 
@@ -4964,7 +4963,6 @@ public class JPADAO implements IDAO {
     @Override
     public boolean updateRecordNote(CMSRecordNote note) throws DAOException {
         preQuery();
-        EntityManager em = factory.createEntityManager();
         try {
             em.getTransaction().begin();
             em.merge(note);
@@ -4972,8 +4970,6 @@ public class JPADAO implements IDAO {
             return true;
         } catch (IllegalArgumentException e) {
             return false;
-        } finally {
-            em.close();
         }
     }
 

@@ -30,6 +30,7 @@ import org.slf4j.LoggerFactory;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
+import io.goobi.viewer.messages.Messages;
 import io.goobi.viewer.model.cms.CMSRecordNote;
 import io.goobi.viewer.model.misc.IPolyglott;
 
@@ -72,6 +73,14 @@ public class CmsRecordNoteEditBean implements Serializable, IPolyglott {
         }
     }
     
+    public Long getNoteId() {
+        if(this.note != null) {
+            return this.note.getId();
+        } else {
+            return null;
+        }
+    }
+    
     public void setRecordIdentifier(String pi) {
         setNote(new CMSRecordNote(pi));
     }
@@ -87,6 +96,40 @@ public class CmsRecordNoteEditBean implements Serializable, IPolyglott {
     public boolean isRecordSelected() {
         return this.note != null;
     }
+    
+    /**
+     * Save the selected note to the database
+     * 
+     * @return false if saving was not successful
+     */
+    public boolean save() {
+        try {            
+            if(this.note != null && this.note.getId() != null) {
+                boolean success = DataManager.getInstance().getDao().updateRecordNote(note);
+                if(success) {
+                    Messages.info(null, "button__save__success", this.note.getNoteTitle().getText());
+                } else {
+                    Messages.error("button__save__error");
+                }
+                return success;
+            } else if(this.note != null) {
+                boolean success = DataManager.getInstance().getDao().addRecordNote(note);
+                if(success) {
+                    Messages.info(null, "button__save__success", this.note.getNoteTitle().getText());
+                } else {
+                    Messages.error("button__save__error");
+                }
+                return success;
+            } else {
+                logger.warn("Attempting to save note, but no note is selected");
+                return false;
+            }
+        } catch(DAOException e) {
+            logger.error("Error saving RecordNote", e);
+            Messages.error(null, "button__save__success", e.toString());
+            return false;
+        }
+    }
 
     /* (non-Javadoc)
      * @see io.goobi.viewer.model.misc.IPolyglott#isComplete(java.util.Locale)
@@ -94,8 +137,8 @@ public class CmsRecordNoteEditBean implements Serializable, IPolyglott {
     @Override
     public boolean isComplete(Locale locale) {
         return this.note != null &&
-                this.note.getNoteTitle().isComplete(this.selectedLocale) &&
-                this.note.getNoteText().isComplete(this.selectedLocale);
+                this.note.getNoteTitle().isComplete(locale) &&
+                this.note.getNoteText().isComplete(locale);
     }
 
     /* (non-Javadoc)
@@ -131,7 +174,8 @@ public class CmsRecordNoteEditBean implements Serializable, IPolyglott {
             note.getNoteText().setSelectedLocale(locale);
             note.getNoteTitle().setSelectedLocale(locale);
         }
-        
     }
 
+    
+    
 }

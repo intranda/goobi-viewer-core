@@ -61,6 +61,10 @@ public class TranslatedText extends MultiLanguageMetadataValue implements IPolyg
         });
     }
     
+    public TranslatedText(TranslatedText orig)  {
+        this(orig, IPolyglott.getLocalesStatic(), null);
+    }
+    
     /**
      * @param dbData
      */
