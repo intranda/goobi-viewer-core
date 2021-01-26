@@ -23,7 +23,19 @@
 			<h:panelGroup layout="block" rendered="#{userBean.user.cmsAdmin}">
 				<!-- TITLE -->
 				<div class="admin__title-bar">
-					<h2 class="admin__title">#{msg.cms__record_notes_edit__title}</h2>
+					<h2 class="admin__title">#{msg.cms__record_notes_edit__title}
+					
+					
+					</h2>
+					<!-- EXIT -->
+                        <a 
+                            href="#{request.contextPath}#{navigationHelper.previousViewUrl}"
+                            class="admin__content-inner-title-exit"
+                            data-toggle="tooltip"
+                            data-placement="bottom"
+                            title="#{msg.admin__cms_back_to_page}"
+                            aria-label="#{msg.admin__cms_back_to_page}">
+                        </a>
 				</div>
 
 				<div class="admin__content-inner-content">

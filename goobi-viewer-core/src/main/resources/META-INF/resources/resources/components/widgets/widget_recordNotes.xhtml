@@ -19,6 +19,13 @@
                 <div class="widget">
                     <h3>
                         #{note.noteTitle.getText(navigationHelper.locale)}
+                        <ui:fragment rendered="#{userBean.admin}">
+                        	<a href="#{request.contextPath}/admin/cms/recordNotes/edit/#{note.id}">
+                        	<i class="fa fa-pencil mr-1" 
+	                        	aria-label="#{msg.edit} : #{note.noteTitle.getText(navigationHelper.locale)}"
+	                        	title="#{msg.edit} : #{note.noteTitle.getText(navigationHelper.locale)}"></i>
+                        	</a>
+                        </ui:fragment>
                     </h3>
                     <div class="widget__body">
                     	<label jsf:escape="false" value="#{note.noteText.getText(navigationHelper.locale)}"/>
