@@ -88,6 +88,7 @@ public enum PageType {
     adminCmsGeoMaps("admin/cms/maps"),
     adminCmsGeoMapEdit("admin/cms/maps/edit"),
     adminCmsGeoMapNew("admin/cms/maps/new"),
+    adminCmsRecordNotes("admin/cms/recordNotes"),
     cmsPageOfWork("page"),
     cmsPage("cms"),
     //admin/crowdsourcing

@@ -16,6 +16,7 @@
 package io.goobi.viewer.model.cms;
 
 import java.util.Locale;
+import java.util.Objects;
 
 import javax.persistence.Column;
 import javax.persistence.Convert;
@@ -152,6 +153,17 @@ public class CMSRecordNote {
     public TranslatedText getNoteText() {
         return noteText;
     }
-    
+
+    /**
+     * Compares two objects by their ids
+     */
+    @Override
+    public boolean equals(Object o) {
+        if(o != null && o.getClass().equals(this.getClass())) {
+            return Objects.equals(this.getId(), ((CMSRecordNote)o).getId());
+        } else {
+            return false;
+        }
+    }
     
 }

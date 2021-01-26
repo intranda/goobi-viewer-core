@@ -69,8 +69,10 @@ public class CmsRecordNoteEditBean implements Serializable, IPolyglott {
      * @param note the note to set
      */
     public void setNote(CMSRecordNote note) {
-        this.note = note;
-        setSelectedLocale(this.note, this.selectedLocale);
+        if(this.note == null || !this.note.equals(note)) {            
+            this.note = note;
+            setSelectedLocale(this.note, this.selectedLocale);
+        }
     }
     
     public void setNoteId(Long id) throws DAOException {
