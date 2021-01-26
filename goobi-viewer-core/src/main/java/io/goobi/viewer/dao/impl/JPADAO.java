@@ -4923,6 +4923,21 @@ public class JPADAO implements IDAO {
             return Collections.emptyList();
         }
     }
+    
+
+    /* (non-Javadoc)
+     * @see io.goobi.viewer.dao.IDAO#getRecordNotesForPi(java.lang.String)
+     */
+    @Override
+    public List<CMSRecordNote> getRecordNotesForPi(String pi) throws DAOException {
+        preQuery();
+        String query = "SELECT a FROM CMSRecordNote a WHERE a.recordPi = :pi";
+        logger.trace(query);
+        Query q = em.createQuery(query.toString());
+        q.setParameter("pi", pi);
+        q.setFlushMode(FlushModeType.COMMIT);
+        return q.getResultList();
+    }
 
     /* (non-Javadoc)
      * @see io.goobi.viewer.dao.IDAO#getRecordNote(java.lang.Long)
@@ -4992,4 +5007,5 @@ public class JPADAO implements IDAO {
             em.close();
         }
     }
+
 }

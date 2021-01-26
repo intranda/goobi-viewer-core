@@ -105,6 +105,23 @@ public class CmsRecordNotesBean implements Serializable{
             return images.getThumbs().getThumbnailUrl(note.getRecordPi());
         } else {
             return "";
+        }    
+    }
+    
+    /**
+     * get the thumbnail url for the record related to the note for given width and height
+     * 
+     * @param note
+     * @return
+     * @throws ViewerConfigurationException 
+     * @throws PresentationException 
+     * @throws IndexUnreachableException 
+     */
+    public String getThumbnailUrl(CMSRecordNote note, int width, int height) throws IndexUnreachableException, PresentationException, ViewerConfigurationException {
+        if(StringUtils.isNotBlank(note.getRecordPi())) {
+            return images.getThumbs().getThumbnailUrl(note.getRecordPi(), width, height);
+        } else {
+            return "";
         }
     }
     
@@ -165,5 +182,7 @@ public class CmsRecordNotesBean implements Serializable{
             //            lazyModelPages.addFilter("CMSCategory", "name");
     }
     
-
+    public List<CMSRecordNote> getNotesForRecord(String pi) throws DAOException {
+        return DataManager.getInstance().getDao().getRecordNotesForPi(pi);
+    }
 }

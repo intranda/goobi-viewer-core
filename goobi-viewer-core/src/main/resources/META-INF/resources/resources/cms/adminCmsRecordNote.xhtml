@@ -28,17 +28,18 @@
 
 				<div class="admin__content-inner-content">
 					
+					<h3 class="admin__content-inner-content__form_title">
+						#{msg.cms__record_notes_select_record__title} 
+						<span class="ajax_loader"> 
+							<img
+								src="#{request.contextPath}/resources/images/infinity_loader.gif"
+								class="img-responsive" alt="Waiting..." />
+						</span>
+					</h3>
+						
 					<h:form id="selectRecord" styleClass="form-horizontal form-group" prependId="false"
 						rendered="#{!cmsRecordNoteEditBean.recordSelected}">
 
-						<h3 class="admin__content-inner-content__form_title">
-							#{msg.cms__record_notes_select_record__title} 
-							<span class="ajax_loader"> 
-								<img
-									src="#{request.contextPath}/resources/images/infinity_loader.gif"
-									class="img-responsive" alt="Waiting..." />
-							</span>
-						</h3>
 
 						<div class="admin__default-block">
 							<div class="form-group form-row">
@@ -77,8 +78,14 @@
 					<h:form id="editRecordNote" styleClass="form-horizontal form-group" prependId="false"
 						rendered="#{cmsRecordNoteEditBean.recordSelected}">
 						
-						<div class="admin__user-terms-box-editable">
-						<!-- TODO: include record thumbnail and metadata -->
+						<div class="admin__default-block">
+							<div>
+								<img alt="#{note.recordTitle.getValue(navigationHelper.locale)}" title="#{note.recordTitle.getValue(navigationHelper.locale)}" 
+                                	src="#{cmsRecordNotesBean.getThumbnailUrl(cmsRecordNoteEditBean.note, 200, 300)}" />
+							</div>
+							<ui:include src="/resources/includes/metadata/metadataElement.xhtml">
+				            	<ui:param name="metadataElement" value="#{cmsRecordNoteEditBean.metadataElement}"/>
+				            </ui:include>
 						</div>
 						
 						

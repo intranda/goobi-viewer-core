@@ -23,16 +23,21 @@ import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
 
+import org.apache.commons.lang3.StringUtils;
+import org.apache.solr.common.SolrDocument;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.exceptions.DAOException;
+import io.goobi.viewer.exceptions.IndexUnreachableException;
+import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.messages.Messages;
 import io.goobi.viewer.model.cms.CMSRecordNote;
+import io.goobi.viewer.model.metadata.MetadataElement;
 import io.goobi.viewer.model.misc.IPolyglott;
+import io.goobi.viewer.model.viewer.StructElement;
 
 /**
  * @author florian
@@ -51,7 +56,8 @@ public class CmsRecordNoteEditBean implements Serializable, IPolyglott {
     
     private CMSRecordNote note = null;
     private Locale selectedLocale = BeanUtils.getLocale();
-
+    private MetadataElement metadataElement = null;
+    
     /**
      * @return the note
      */
@@ -129,6 +135,32 @@ public class CmsRecordNoteEditBean implements Serializable, IPolyglott {
             Messages.error(null, "button__save__success", e.toString());
             return false;
         }
+    }
+    
+    public MetadataElement getMetadataElement() throws PresentationException, IndexUnreachableException, DAOException {
+        if(this.metadataElement == null && this.note != null) {
+            this.metadataElement = loadMetadataElement(this.note.getRecordPi());
+        }
+        return this.metadataElement;
+    }
+
+    /**
+     * @param recordPi
+     * @return
+     * @throws DAOException 
+     * @throws IndexUnreachableException 
+     * @throws PresentationException 
+     */
+    private MetadataElement loadMetadataElement(String recordPi) throws PresentationException, IndexUnreachableException, DAOException {
+        if(StringUtils.isNotBlank(recordPi)) {
+            SolrDocument solrDoc = DataManager.getInstance().getSearchIndex().getDocumentByPI(recordPi);
+            if(solrDoc != null) {
+                StructElement structElement = new StructElement(solrDoc);
+                MetadataElement metadataElement = new MetadataElement(structElement, BeanUtils.getLocale(), getSelectedLocale().getLanguage());
+                return metadataElement;
+            }
+        }
+        return null;
     }
 
     /* (non-Javadoc)

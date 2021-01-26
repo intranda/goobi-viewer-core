@@ -2923,5 +2923,11 @@ public class JPADAOTest extends AbstractDatabaseEnabledTest {
 
     }
     
+    @Test
+    public void testGetRecordNotesForPi() throws DAOException {
+        assertEquals(2, DataManager.getInstance().getDao().getRecordNotesForPi("PI1").size());
+        assertEquals(0, DataManager.getInstance().getDao().getRecordNotesForPi("PI5").size());
+    }
+    
     
 }

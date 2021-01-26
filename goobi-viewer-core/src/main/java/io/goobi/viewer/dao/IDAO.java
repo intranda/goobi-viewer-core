@@ -2164,6 +2164,16 @@ public interface IDAO {
             throws DAOException;
    
     /**
+     * Get all {@link CMSRecordNote}s for the given pi
+     * 
+     * @param pi
+     * @return
+     * @throws DAOException
+     */
+    public List<CMSRecordNote> getRecordNotesForPi(String pi) throws DAOException;
+
+    
+    /**
      * Get all persisted {@link CMSRecordNote}s
      * 
      * @return
