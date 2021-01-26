@@ -71,7 +71,7 @@ public class CmsRecordNoteEditBean implements Serializable, IPolyglott {
     public void setNote(CMSRecordNote note) {
         if(this.note == null || !this.note.equals(note)) {            
             this.note = note;
-            setSelectedLocale(this.note, this.selectedLocale);
+            this.selectedLocale = setSelectedLocale(this.note, this.selectedLocale, BeanUtils.getDefaultLocale());
         }
     }
     
@@ -197,16 +197,29 @@ public class CmsRecordNoteEditBean implements Serializable, IPolyglott {
     @Override
     public void setSelectedLocale(Locale locale) {
         this.selectedLocale = locale;
-        setSelectedLocale(this.note, this.selectedLocale);
+        setSelectedLocale(this.note, this.selectedLocale, BeanUtils.getDefaultLocale());
     }
 
     /**
+     * Set all note texts to the given locale unless the note texts are not filled ("valid") 
+     * for the defaultLocale. In this case set them to the defaultLocale 
+     * 
      * @param note2
+     * @return the given locale if texts are valid for the default locale, otherwise the default locale
      */
-    private void setSelectedLocale(CMSRecordNote note, Locale locale) {
-        if(note != null && locale != null) {
-            note.getNoteText().setSelectedLocale(locale);
-            note.getNoteTitle().setSelectedLocale(locale);
+    private Locale setSelectedLocale(CMSRecordNote note, Locale locale, Locale defaultLocale) {
+        if(note != null && locale != null && defaultLocale != null) {
+            if(note.getNoteText().isValid(defaultLocale) && note.getNoteTitle().isValid(defaultLocale))  {
+                note.getNoteText().setSelectedLocale(locale);
+                note.getNoteTitle().setSelectedLocale(locale);
+                return locale;
+            } else {
+                note.getNoteText().setSelectedLocale(defaultLocale);
+                note.getNoteTitle().setSelectedLocale(defaultLocale);
+                return defaultLocale;
+            }
+        } else {
+            return locale;
         }
     }
 

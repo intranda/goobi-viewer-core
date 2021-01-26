@@ -83,7 +83,14 @@ public class TranslatedText extends MultiLanguageMetadataValue implements IPolyg
     }
     
     public String getText(Locale locale) {
-        return super.getValue(locale).orElse(getValue().orElse(""));
+        return super.getValue(locale).orElse(getValue(DEFAULT_LANGUAGE).orElse(""));
+    }
+    
+    public String getTextOrDefault(Locale locale, Locale defaultLocale) {
+        return super.getValue(locale)
+                .orElse(getValue(defaultLocale)
+                .orElse(getValue(DEFAULT_LANGUAGE)
+                .orElse("")));
     }
     
     public void setText(String text, Locale locale) {

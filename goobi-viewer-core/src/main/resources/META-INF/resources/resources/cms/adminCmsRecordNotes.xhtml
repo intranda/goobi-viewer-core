@@ -63,14 +63,14 @@
                                 <div class="row no-gutters admin__table-entry">
                                     <div class="col-12 d-flex">
                                         	<div class="admin__table-img align-self-center">
-                                            	<img alt="#{note.recordTitle.getValue(navigationHelper.locale)}" title="#{note.recordTitle.getValue(navigationHelper.locale)}" 
+                                            	<img alt="#{note.recordPi}" title="#{note.recordPi}" 
                                             		src="#{cmsRecordNotesBean.getThumbnailUrl(note)}" />
                                             </div>
 
                                         <div class="admin__table-data">
                                             <div class="admin__table-name">#{note.recordPi}</div>
                                             <div class="font-italic">
-                                            	<label jsf:escape="false" value="#{note.noteText.getValue(navigationHelper.locale).orElse('')}"></label>
+                                            	<label jsf:escape="false" value="#{note.noteText.getTextOrDefault(navigationHelper.locale, navigationHelper.defaultLocale)}"></label>
                                             </div>
                                             <div>
                                                 <!-- EDIT -->
@@ -82,7 +82,7 @@
                                                 	styleClass="admin__table-action-link -redlink" 
                                                 	onclick="if ( !confirm( &quot;#{msg.cms__delete_record_note__confirmation}&quot; ) ) { return false };"
                                                 	action="#{cmsRecordNotesBean.deleteNote(note)}" 
-                                                	aria-label="#{msg.delete}: #{note.noteTitle.getValue(navigationHelper.locale)}"
+                                                	aria-label="#{msg.delete}: #{note.noteTitle.getTextOrDefault(navigationHelper.locale, navigationHelper.defaultLocale)}"
                                                 	title="#{msg.cms__delete_record_note}">
                                                 	#{msg.delete}
                                                 </h:commandLink>
