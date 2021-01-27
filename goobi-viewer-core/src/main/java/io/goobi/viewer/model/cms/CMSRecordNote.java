@@ -82,7 +82,7 @@ public class CMSRecordNote {
     @Convert(converter = TranslatedTextConverter.class)
     private TranslatedText noteText = new TranslatedText();
     
-    @Column(name = "display_note", nullable = false)
+    @Column(name = "display_note", nullable = false, columnDefinition = "boolean default true")
     private boolean displayNote = true;
     
     public CMSRecordNote() {
@@ -105,6 +105,7 @@ public class CMSRecordNote {
         this.recordTitle = new TranslatedText(source.recordTitle);
         this.noteTitle = new TranslatedText(source.noteTitle);
         this.noteText = new TranslatedText(source.noteText);
+        this.displayNote = source.displayNote;
     }
 
 
