@@ -41,7 +41,7 @@
                             </div>
                             <!-- FILTER -->
                             <div class="admin__table-filter">
-                                <viewerComponent:dataTableColumnFilter key="admin__cms_page_search" 
+                                <viewerComponent:dataTableColumnFilter key="cms__record_notes__search" 
                                 filter="#{cmsRecordNotesBean.dataProvider.getFilter('PI_OR_TITLE')}"/>
                             </div>
                         </div>
@@ -63,14 +63,14 @@
                                 <div class="row no-gutters admin__table-entry">
                                     <div class="col-12 d-flex">
                                         	<div class="admin__table-img align-self-center">
-                                            	<img alt="#{note.recordPi}" title="#{note.recordPi}" 
+                                            	<img alt="#{note.recordPi}" title="#{note.recordPi}"
                                             		src="#{cmsRecordNotesBean.getThumbnailUrl(note)}" />
                                             </div>
 
                                         <div class="admin__table-data">
                                             <div class="admin__table-name">#{note.recordPi}</div>
-                                            <div class="font-italic">
-                                            	<label jsf:escape="false" value="#{note.noteText.getTextOrDefault(navigationHelper.locale, navigationHelper.defaultLocale)}"></label>
+                                            <div>
+                                            	<label jsf:escape="false" value="#{note.noteText.getText(navigationHelper.locale)}"></label>
                                             </div>
                                             <div>
                                                 <!-- EDIT -->
@@ -83,8 +83,7 @@
                                                 	onclick="if ( !confirm( &quot;#{msg.cms__delete_record_note__confirmation}&quot; ) ) { return false };"
                                                 	action="#{cmsRecordNotesBean.deleteNote(note)}" 
                                                 	aria-label="#{msg.delete}: #{note.noteTitle.getTextOrDefault(navigationHelper.locale, navigationHelper.defaultLocale)}"
-                                                	title="#{msg.cms__delete_record_note}">
-                                                	#{msg.delete}
+                                                	title="#{msg.cms__delete_record_note}">#{msg.delete}
                                                 </h:commandLink>
                                             </div>
                                         </div>

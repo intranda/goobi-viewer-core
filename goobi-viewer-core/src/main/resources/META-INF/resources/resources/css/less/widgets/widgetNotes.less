@@ -1,0 +1,42 @@
+/* ==============================================================
+   Widget Notes (sidenotes and information for objects)
+   ==============================================================*/
+   
+.widget-notes {
+	.widget__title {
+		.fa {
+			display: block;
+		}
+		a {
+			margin-left: auto;
+			color: @white;
+			overflow: visible;
+			&:hover,
+			&:focus,
+			&:active {
+				color: @white;
+				text-decoration: none;
+			}
+		}
+	}
+	.widget__body {
+		a {
+			display: inline;
+			&:hover,
+			&:focus,
+			&:active {}
+		}
+	}
+}
+
+/* BREAKPOINT FOR LARGE DESKTOPS */
+@media screen and (max-width: @largeBreakpoint) {} 
+
+/* BREAKPOINT FOR DESKTOPS */
+@media screen and (max-width: @mediumBreakpoint) {}
+
+/* BREAKPOINT FOR TABLETS */
+@media screen and (max-width: @smallBreakpoint) {}
+
+/* BREAKPOINT FOR SMARTPHONES */
+@media screen and (max-width: @xSmallBreakpoint) {}

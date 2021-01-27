@@ -16,12 +16,12 @@
     
         <!-- WIDGET RECORD NOTES -->
 		<ui:repeat var="note" value="#{cc.attrs.notes}">
-                <div class="widget">
-                    <h3>
-                        #{note.noteTitle.getTextOrDefault(navigationHelper.locale, navigationHelper.defaultLocale)}
+                <div id ="widgetNotes" class="widget widget-notes">
+                    <h3 class="widget__title">
+                        <span>#{note.noteTitle.getTextOrDefault(navigationHelper.locale, navigationHelper.defaultLocale)}</span>
                         <ui:fragment rendered="#{userBean.admin}">
                         	<a href="#{request.contextPath}/admin/cms/recordNotes/edit/#{note.id}">
-                        	<i class="fa fa-pencil mr-1" 
+                        	<i class="fa fa-pencil" 
 	                        	aria-label="#{msg.edit} : #{note.noteTitle.getTextOrDefault(navigationHelper.locale, navigationHelper.defaultLocale)}"
 	                        	title="#{msg.edit} : #{note.noteTitle.getTextOrDefault(navigationHelper.locale, navigationHelper.defaultLocale)}"></i>
                         	</a>
