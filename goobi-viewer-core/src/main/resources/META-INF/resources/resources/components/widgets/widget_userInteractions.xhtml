@@ -91,9 +91,9 @@
                          <!-- FORMATTED TEXT/NOTES -->
                          <h:panelGroup>
                             <li>
-                                <h:commandLink>
-									#{msg.cms__record_notes__widget_usage_action}
-                                </h:commandLink>
+                            	<a href="#{request.contextPath}/admin/cms/recordNotes/new/?pi=#{activeDocumentBean.viewManager.pi}">
+                            		#{msg.cms__record_notes__widget_usage_action}
+                            	</a>
                             </li>
                         </h:panelGroup>
                         
