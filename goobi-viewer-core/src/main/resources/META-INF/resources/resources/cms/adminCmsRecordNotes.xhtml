@@ -35,9 +35,9 @@
 
                     <div class="admin__content-inner-content">
                     
-                    	<div class="admin__info-text">
-                    		<h:outputText value="#{msg.admin__record_notes__description}" escape="false" />
-                    	</div>
+<!--                     	<div class="admin__info-text"> -->
+<!--                     		<h:outputText value="#{msg.admin__record_notes__description}" escape="false" /> -->
+<!--                     	</div> -->
                     	
                     
                         <div class="admin__table-tools">
@@ -82,18 +82,15 @@
                                                 <!-- EDIT -->
                                                 <a href="#{navigationHelper.applicationUrl}admin/cms/recordNotes/edit/#{note.id}/" 
                                                 class="admin__table-action-link" 
-                                                aria-label="#{msg.edit}: #{note.noteTitle.getTextOrDefault(navigationHelper.locale, navigationHelper.defaultLocale)}">#{msg.edit}</a>
-                                                <!-- PREVIEW -->
-                                                <a class="admin__table-action-link" target="_blank" href="#{cmsRecordNotesBean.getRecordUrl(note)}">#{msg.cms_pagePreview}
-												</a>
+                                                aria-label="#{msg.edit}: #{note.noteTitle.getTextOrDefault(navigationHelper.locale, navigationHelper.defaultLocale)}">#{msg.edit}</a><!-- 
+                                                PREVIEW --><a class="admin__table-action-link" target="_blank" href="#{cmsRecordNotesBean.getRecordUrl(note)}">#{msg.show}</a>
                                                 <!-- DELETE -->
                                                 <h:commandLink 
                                                 	styleClass="admin__table-action-link -redlink" 
                                                 	onclick="if ( !confirm( &quot;#{msg.cms__delete_record_note__confirmation}&quot; ) ) { return false };"
                                                 	action="#{cmsRecordNotesBean.deleteNote(note)}" 
                                                 	aria-label="#{msg.delete}: #{note.noteTitle.getTextOrDefault(navigationHelper.locale, navigationHelper.defaultLocale)}"
-                                                	title="#{msg.cms__delete_record_note}">#{msg.delete}
-                                                </h:commandLink>
+                                                	title="#{msg.cms__delete_record_note}">#{msg.delete}</h:commandLink>
                                             </div>
                                         </div>
                                     </div>
