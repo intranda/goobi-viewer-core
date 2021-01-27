@@ -18,6 +18,9 @@
     </ui:define>
 
 	<ui:define name="content">
+	
+		<ui:param name="note" value="#{cmsRecordNoteEditBean.note}"></ui:param>
+	
 		<f:view contentType="text/html" encoding="utf-8">
 
 			<h:panelGroup layout="block" rendered="#{userBean.user.cmsAdmin}">
@@ -92,7 +95,7 @@
 							<div class="admin__formatted-text-info-box">
 								<div class="admin__formatted-text-image-wrapper">
 									<img class="admin__formatted-text-image" alt="#{note.recordTitle.getValue(navigationHelper.locale)}" title="#{note.recordTitle.getValue(navigationHelper.locale)}" 
-	                                	src="#{cmsRecordNotesBean.getThumbnailUrl(cmsRecordNoteEditBean.note, 300, 400)}" />
+	                                	src="#{cmsRecordNotesBean.getThumbnailUrl(note, 300, 400)}" />
 								</div>
 								<div class="admin__formatted-text-metadata">
 									<ui:include src="/resources/includes/metadata/metadataElement.xhtml">
@@ -132,7 +135,7 @@
 												<h:inputText id="recordNoteTitle" styleClass="form-control -validation-input"
 												required="#{cmsRecordNoteEditBean.isDefaultLocaleSelected()}"
 												requiredMessage="#{msg.info__input_required}"
-													value="#{cmsRecordNoteEditBean.note.noteTitle.text}" >
+													value="#{note.noteTitle.text}" >
 												</h:inputText>
 											</div>
 										</div>
@@ -158,7 +161,7 @@
 													styleClass="form-control tinyMCE -validation-input"
 													required="#{cmsRecordNoteEditBean.isDefaultLocaleSelected()}"
 												    requiredMessage="#{msg.info__input_required}"
-													value="#{cmsRecordNoteEditBean.note.noteText.text}" />
+													value="#{note.noteText.text}" />
 											</div>
 										</div>
 									</h:panelGroup>
@@ -174,7 +177,7 @@
 							</div>
 							<div class="col-9 admin__form-input">
 							<!-- throws nullpointer without value/method when switching language tab -->
-							<!-- <viewerComponent:toggleSwitch name="showThisNote" /> -->
+							<viewerComponent:toggleSwitch name="showThisNote" value="#{note.displayNote}"/>
 							</div>
 						</div>
 
@@ -182,7 +185,7 @@
 						<div class="row no-gutters justify-content-end admin__final-actions">
 							<a class="btn btn--cancel" href="#{request.contextPath}/admin/cms/recordNotes/">#{msg.button__abort}
 							</a>
-							<a class="btn btn--default" target="_blank" href="#{cmsRecordNotesBean.getRecordUrl(cmsRecordNoteEditBean.note)}">#{msg.cms_pagePreview}
+							<a class="btn btn--default" target="_blank" href="#{cmsRecordNotesBean.getRecordUrl(note)}">#{msg.cms_pagePreview}
 							</a>
 							<button class="btn btn--success" jsf:action="#{cmsRecordNoteEditBean.save()}">#{msg.button__save}
 								<f:ajax render="@form :messages" execute="@form"></f:ajax>

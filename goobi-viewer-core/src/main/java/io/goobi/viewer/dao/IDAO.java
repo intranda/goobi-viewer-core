@@ -2166,11 +2166,12 @@ public interface IDAO {
     /**
      * Get all {@link CMSRecordNote}s for the given pi
      * 
-     * @param pi
+     * @param pi    The pi of the record.
+     * @param displayedNotesOnly set to true to only return notes with {@link CMSRecordNote#isDisplayŃote()} set to true
      * @return
      * @throws DAOException
      */
-    public List<CMSRecordNote> getRecordNotesForPi(String pi) throws DAOException;
+    public List<CMSRecordNote> getRecordNotesForPi(String pi, boolean displayedNotesOnly) throws DAOException;
 
     
     /**

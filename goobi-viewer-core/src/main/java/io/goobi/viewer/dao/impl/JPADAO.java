@@ -4929,12 +4929,18 @@ public class JPADAO implements IDAO {
      * @see io.goobi.viewer.dao.IDAO#getRecordNotesForPi(java.lang.String)
      */
     @Override
-    public List<CMSRecordNote> getRecordNotesForPi(String pi) throws DAOException {
+    public List<CMSRecordNote> getRecordNotesForPi(String pi, boolean displayedNotesOnly) throws DAOException {
         preQuery();
         String query = "SELECT a FROM CMSRecordNote a WHERE a.recordPi = :pi";
+        if(displayedNotesOnly) {
+            query += " AND a.displayNote = :display";
+        }
         logger.trace(query);
         Query q = em.createQuery(query.toString());
         q.setParameter("pi", pi);
+        if(displayedNotesOnly) {            
+            q.setParameter("display", true);
+        }
         q.setFlushMode(FlushModeType.COMMIT);
         return q.getResultList();
     }

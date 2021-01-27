@@ -211,9 +211,9 @@
     
     <cms_page_template_enabled cms_page_template_enabled_id="1" template_id="template_disabled" enabled="false" />
     
-    <cms_record_notes cms_record_note_id="1" record_pi="PI1" record_title="Titel 1" note_title="{&quot;en&quot;: &quot;Notes 1&quot;, &quot;de&quot;: &quot;Bemerkungen 1&quot;}" note_text="{&quot;en&quot;: &quot;&lt;p&gt;First paragraph&lt;/p&gt;&quot;, &quot;de&quot; : &quot;&lt;p&gt;Erster Paragraph&lt;/p&gt;&quot;}" ></cms_record_notes>
-    <cms_record_notes cms_record_note_id="2" record_pi="PI1" record_title="Titel 1" note_title="{&quot;en&quot;: &quot;Notes 2&quot;, &quot;de&quot;: &quot;Bemerkungen 2&quot;}" note_text="lorem ipsum" ></cms_record_notes>
-    <cms_record_notes cms_record_note_id="3" record_pi="PI2" record_title="Titel 2" note_title="{&quot;en&quot;: &quot;Notes 3&quot;, &quot;de&quot;: &quot;Bemerkungen 3&quot;}" note_text="loram ipsum" ></cms_record_notes>
+    <cms_record_notes cms_record_note_id="1" record_pi="PI1" record_title="Titel 1" note_title="{&quot;en&quot;: &quot;Notes 1&quot;, &quot;de&quot;: &quot;Bemerkungen 1&quot;}" note_text="{&quot;en&quot;: &quot;&lt;p&gt;First paragraph&lt;/p&gt;&quot;, &quot;de&quot; : &quot;&lt;p&gt;Erster Paragraph&lt;/p&gt;&quot;}" display_note="true" ></cms_record_notes>
+    <cms_record_notes cms_record_note_id="2" record_pi="PI1" record_title="Titel 1" note_title="{&quot;en&quot;: &quot;Notes 2&quot;, &quot;de&quot;: &quot;Bemerkungen 2&quot;}" note_text="lorem ipsum" display_note="false"></cms_record_notes>
+    <cms_record_notes cms_record_note_id="3" record_pi="PI2" record_title="Titel 2" note_title="{&quot;en&quot;: &quot;Notes 3&quot;, &quot;de&quot;: &quot;Bemerkungen 3&quot;}" note_text="loram ipsum" display_note="true"></cms_record_notes>
     
     <download_jobs download_job_id="1" type="pdf" identifier="0afb73c418262beb2c88dc40c95831b7" pi="PI_1"
         status="WAITING" last_requested="2016-06-01 00:00:00" ttl="3600" />

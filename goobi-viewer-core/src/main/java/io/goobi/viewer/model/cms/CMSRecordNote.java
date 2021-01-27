@@ -82,8 +82,8 @@ public class CMSRecordNote {
     @Convert(converter = TranslatedTextConverter.class)
     private TranslatedText noteText = new TranslatedText();
     
-    @Column(name = "display_note")
-    private boolean displayŃote = true;
+    @Column(name = "display_note", nullable = false)
+    private boolean displayNote = true;
     
     public CMSRecordNote() {
     }
@@ -160,15 +160,15 @@ public class CMSRecordNote {
     /**
      * @return the displayŃote
      */
-    public boolean isDisplayŃote() {
-        return displayŃote;
+    public boolean isDisplayNote() {
+        return displayNote;
     }
     
     /**
      * @param displayŃote the displayŃote to set
      */
-    public void setDisplayŃote(boolean displayŃote) {
-        this.displayŃote = displayŃote;
+    public void setDisplayNote(boolean displayNote) {
+        this.displayNote = displayNote;
     }
 
     /**

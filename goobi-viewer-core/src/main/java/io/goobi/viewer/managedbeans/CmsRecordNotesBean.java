@@ -206,6 +206,6 @@ public class CmsRecordNotesBean implements Serializable{
     }
     
     public List<CMSRecordNote> getNotesForRecord(String pi) throws DAOException {
-        return DataManager.getInstance().getDao().getRecordNotesForPi(pi);
+        return DataManager.getInstance().getDao().getRecordNotesForPi(pi, true);
     }
 }
