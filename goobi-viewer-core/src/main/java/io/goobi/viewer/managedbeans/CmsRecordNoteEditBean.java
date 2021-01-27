@@ -20,7 +20,6 @@ import java.util.Locale;
 import java.util.Optional;
 
 import javax.faces.view.ViewScoped;
-import javax.inject.Inject;
 import javax.inject.Named;
 
 import org.apache.commons.lang3.StringUtils;
@@ -85,6 +84,7 @@ public class CmsRecordNoteEditBean implements Serializable, IPolyglott {
             return null;
         }
     }
+
     
     public void setRecordIdentifier(String pi) {
         setNote(new CMSRecordNote(pi));

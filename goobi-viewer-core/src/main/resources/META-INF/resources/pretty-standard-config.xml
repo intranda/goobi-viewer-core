@@ -876,7 +876,7 @@
     <url-mapping id="adminCmsRecordNoteNew">
         <pattern value="/admin/cms/recordNotes/new/" />
         <view-id value="/resources/cms/adminCmsRecordNote.xhtml" />
-        <query-param name="pi">#{cmsRecordNoteEditBean.recordIdentifier}</query-param>
+        <query-param name="pi" onPostback="false" validatorIds="piInSolrValidator">#{cmsRecordNoteEditBean.recordIdentifier}</query-param>
         <action onPostback="false">#{navigationHelper.resetTheme}</action>
     </url-mapping>
     <url-mapping id="adminCmsRecordNoteEdit">
