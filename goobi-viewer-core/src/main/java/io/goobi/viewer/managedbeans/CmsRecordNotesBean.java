@@ -75,8 +75,23 @@ public class CmsRecordNotesBean implements Serializable{
     @Inject
     private ImageDeliveryBean images;
     
+    @Inject
+    private NavigationHelper navigationHelper;
+    
     private TableDataProvider<CMSRecordNote> dataProvider;
     
+    public CmsRecordNotesBean() {
+        
+    }
+
+    
+    /**
+     * @param images2
+     */
+    public CmsRecordNotesBean(ImageDeliveryBean images) {
+        this.images = images;
+    }
+
     @PostConstruct
     public void init() {
         if (dataProvider == null) {
@@ -131,6 +146,14 @@ public class CmsRecordNotesBean implements Serializable{
         } else {
             return false;
         }
+    }
+    
+    public String getRecordUrl(CMSRecordNote note)  {
+       if(note != null) {           
+           return navigationHelper.getImageUrl() + "/" + note.getRecordPi() + "/";
+       } else {
+           return "";
+       }
     }
     
     private void initDataProvider() {

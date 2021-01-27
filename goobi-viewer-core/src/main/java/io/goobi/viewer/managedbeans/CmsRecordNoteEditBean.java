@@ -50,9 +50,6 @@ public class CmsRecordNoteEditBean implements Serializable, IPolyglott {
     private static final long serialVersionUID = -8850189223154382470L;
 
     private static final Logger logger = LoggerFactory.getLogger(CmsRecordNotesBean.class);
-
-    @Inject
-    private CmsRecordNotesBean recordNotesBean;
     
     private CMSRecordNote note = null;
     private Locale selectedLocale = BeanUtils.getLocale();

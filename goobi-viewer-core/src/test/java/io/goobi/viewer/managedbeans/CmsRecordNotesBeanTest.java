@@ -15,14 +15,20 @@
  */
 package io.goobi.viewer.managedbeans;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
 import io.goobi.viewer.AbstractDatabaseEnabledTest;
-import io.goobi.viewer.AbstractSolrEnabledTest;
+import io.goobi.viewer.api.rest.AbstractApiUrlManager;
+import io.goobi.viewer.api.rest.v1.ApiUrls;
+import io.goobi.viewer.controller.DataManager;
+import io.goobi.viewer.exceptions.IndexUnreachableException;
+import io.goobi.viewer.exceptions.PresentationException;
+import io.goobi.viewer.exceptions.ViewerConfigurationException;
+import io.goobi.viewer.model.cms.CMSRecordNote;
 
 /**
  * @author florian
@@ -31,7 +37,7 @@ import io.goobi.viewer.AbstractSolrEnabledTest;
 public class CmsRecordNotesBeanTest extends AbstractDatabaseEnabledTest {
 
     CmsRecordNotesBean bean;
-
+    AbstractApiUrlManager urls;
     
     /**
      * @throws java.lang.Exception
@@ -39,7 +45,10 @@ public class CmsRecordNotesBeanTest extends AbstractDatabaseEnabledTest {
     @Before
     public void setUp() throws Exception {
         super.setUp();
-        bean = new CmsRecordNotesBean();
+        urls = DataManager.getInstance().getRestApiManager().getContentApiManager().orElse(null);
+        ImageDeliveryBean images = new ImageDeliveryBean();
+        images.init(DataManager.getInstance().getConfiguration(), urls, urls);
+        bean = new CmsRecordNotesBean(images);
         bean.init();
     }
 
@@ -75,6 +84,13 @@ public class CmsRecordNotesBeanTest extends AbstractDatabaseEnabledTest {
         assertEquals(1, bean.getDataProvider().getPaginatorList().size());
     }
     
+    @Test
+    public void testGetThumbnailUrl() throws IndexUnreachableException, PresentationException, ViewerConfigurationException {
+        CMSRecordNote note = new CMSRecordNote("PI1");
+        String url = bean.getThumbnailUrl(note, 333, 444);
+        String reference = urls.path(ApiUrls.RECORDS_RECORD, ApiUrls.RECORDS_IMAGE_IIIF).params("PI1", "full", "!333,444", "0", "default", "jpg").build();
+        assertEquals(reference, url);
+    }
     
 
 }

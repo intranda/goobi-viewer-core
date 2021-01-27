@@ -179,12 +179,14 @@
 						</div>
 
 						<!-- SAVE RECORD NOTE -->
-						<div
-							class="row no-gutters justify-content-end admin__final-actions">
-							<h:commandButton class="btn btn--success" value="#{msg.button__save}"
-								action="#{cmsRecordNoteEditBean.save()}">
+						<div class="row no-gutters justify-content-end admin__final-actions">
+							<a class="btn btn--cancel" href="#{request.contextPath}/admin/cms/recordNotes/">#{msg.button__abort}
+							</a>
+							<a class="btn btn--default" target="_blank" href="#{cmsRecordNotesBean.getRecordUrl(cmsRecordNoteEditBean.note)}">#{msg.cms_pagePreview}
+							</a>
+							<button class="btn btn--success" jsf:action="#{cmsRecordNoteEditBean.save()}">#{msg.button__save}
 								<f:ajax render="@form :messages" execute="@form"></f:ajax>
-							</h:commandButton>
+							</button>
 						</div>
 						
 
