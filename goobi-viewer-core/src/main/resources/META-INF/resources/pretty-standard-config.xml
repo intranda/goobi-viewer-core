@@ -880,9 +880,10 @@
         <action onPostback="false">#{navigationHelper.resetTheme}</action>
     </url-mapping>
     <url-mapping id="adminCmsRecordNoteEdit">
-        <pattern value="/admin/cms/recordNotes/edit/#{selectedCategoryId:cmsRecordNoteEditBean.noteId}/" />
+        <pattern value="/admin/cms/recordNotes/edit/#{selectedNoteId}/" />
         <view-id value="/resources/cms/adminCmsRecordNote.xhtml" />
         <action onPostback="false">#{navigationHelper.resetTheme}</action>
+        <action onPostback="false">#{cmsRecordNoteEditBean.setNoteId(selectedNoteId)}</action>
     </url-mapping>
     <!-- CMS GeoMaps -->
     <url-mapping id="adminCmsGeoMaps">
