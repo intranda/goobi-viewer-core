@@ -188,7 +188,8 @@
 
 						<!-- SAVE RECORD NOTE -->
 						<div class="row no-gutters justify-content-end admin__final-actions">
-							<a class="btn btn--cancel" href="#{request.contextPath}/admin/cms/recordNotes/">#{msg.button__abort}
+							
+							<a class="btn btn--cancel" href="#{request.contextPath}#{navigationHelper.previousViewUrl}">#{msg.button__abort}
 							</a>
 							<a class="btn btn--default" target="_blank" href="#{cmsRecordNotesBean.getRecordUrl(note)}">#{msg.cms_pagePreview}
 							</a>
