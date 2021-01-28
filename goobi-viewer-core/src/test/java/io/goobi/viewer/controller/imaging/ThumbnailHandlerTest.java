@@ -41,6 +41,7 @@ import io.goobi.viewer.controller.SolrConstants;
 import io.goobi.viewer.controller.SolrConstants.DocType;
 import io.goobi.viewer.controller.SolrConstants.MetadataGroupType;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
+import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.model.viewer.PhysicalElement;
 import io.goobi.viewer.model.viewer.StructElement;
 
@@ -217,7 +218,7 @@ public class ThumbnailHandlerTest extends AbstractTest {
     @Test
     public void testGetCMSMediaImageApiUrl_legacy() throws UnsupportedEncodingException {
         
-        String legacyApiUrl = "https://viewer.goobi.io/rest";
+        String legacyApiUrl = "https://viewer.goobi.io/rest/";
         
         String filename = "image.jpg";
         String viewerHomePath = DataManager.getInstance().getConfiguration().getViewerHome();
@@ -225,10 +226,11 @@ public class ThumbnailHandlerTest extends AbstractTest {
         
         Path filepath = Paths.get(viewerHomePath).toAbsolutePath().resolve(cmsMediaFolder).resolve(filename);
         String fileUrl = PathConverter.toURI(filepath).toString();
-        String encFilepath = URLEncoder.encode(fileUrl, "utf-8");
+//        String encFilepath = URLEncoder.encode(fileUrl, "utf-8");
+        String encFilepath = BeanUtils.escapeCriticalUrlChracters(fileUrl);
         
         String thumbUrlLegacy = ThumbnailHandler.getCMSMediaImageApiUrl(filename, legacyApiUrl);
-        assertEquals(legacyApiUrl + "/image/-/" + encFilepath, thumbUrlLegacy);
+        assertEquals(legacyApiUrl + "image/-/" + encFilepath, thumbUrlLegacy);
     }
     
     @Test
