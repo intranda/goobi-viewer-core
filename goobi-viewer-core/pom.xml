@@ -79,7 +79,7 @@
 
         <!-- other libraries -->
         <cdi.version>2.0.SP1</cdi.version>
-        <citationstyles.version>21.2</citationstyles.version>
+        <citationstyles.version>20.11</citationstyles.version>
         <citeproc-java.version>2.0.0</citeproc-java.version>
         <commons-codec.version>1.15</commons-codec.version>
         <commons-collections4.version>4.4</commons-collections4.version>
@@ -213,16 +213,16 @@
             <artifactId>citeproc-java</artifactId>
             <version>${citeproc-java.version}</version>
         </dependency>
-<!--         <dependency> -->
-<!--             <groupId>org.citationstyles</groupId> -->
-<!--             <artifactId>styles</artifactId> -->
-<!--             <version>${citationstyles.version}</version> -->
-<!--         </dependency> -->
-<!--         <dependency> -->
-<!--             <groupId>org.citationstyles</groupId> -->
-<!--             <artifactId>locales</artifactId> -->
-<!--             <version>${citationstyles.version}</version> -->
-<!--         </dependency> -->
+        <dependency>
+            <groupId>org.citationstyles</groupId>
+            <artifactId>styles</artifactId>
+            <version>${citationstyles.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.citationstyles</groupId>
+            <artifactId>locales</artifactId>
+            <version>${citationstyles.version}</version>
+        </dependency>
 		<dependency>
 			<groupId>commons-codec</groupId>
 			<artifactId>commons-codec</artifactId>

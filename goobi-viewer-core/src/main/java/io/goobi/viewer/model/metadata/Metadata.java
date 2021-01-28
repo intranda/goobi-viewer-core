@@ -302,7 +302,7 @@ public class Metadata implements Serializable {
      * @should add multivalued param values correctly
      * @should set group type correctly
      */
-    public Metadata setParamValue(int valueIndex, int paramIndex, List<String> inValues, String label, String url, Map<String, String> options,
+    public void setParamValue(int valueIndex, int paramIndex, List<String> inValues, String label, String url, Map<String, String> options,
             String groupType, Locale locale) {
         // logger.trace("setParamValue: {}", label);
         if (inValues == null) {
@@ -315,6 +315,7 @@ public class Metadata implements Serializable {
         }
         MetadataValue mdValue = values.get(valueIndex);
         mdValue.setGroupType(groupType);
+        mdValue.setCitationStyle(citationTemplate);
         int origParamIndex = paramIndex;
         while (mdValue.getParamValues().size() < paramIndex) {
             paramIndex--;
@@ -322,11 +323,11 @@ public class Metadata implements Serializable {
 
         if (paramIndex >= params.size()) {
             logger.warn("No params defined");
-            return this;
+            return;
         }
 
         if (inValues.isEmpty()) {
-            return this;
+            return;
         }
 
         for (String value : inValues) {
@@ -445,6 +446,13 @@ public class Metadata implements Serializable {
                         value = html;
                     }
                     break;
+                case CITEPROC:
+                    String citationKey = param.getDestination();
+                    if (StringUtils.isNotEmpty(citationKey)) {
+                        mdValue.getCitationValues().put(citationKey, value);
+                    }
+                    value = MetadataParameterType.CITEPROC.getKey();
+                    break;
                 default:
                     // Values containing random HTML-like elements (e.g. 'V<a>e') will break the table, therefore escape the string
                     value = StringEscapeUtils.escapeHtml4(value);
@@ -467,8 +475,6 @@ public class Metadata implements Serializable {
                 mdValue.getParamUrls().add(paramIndex, url);
             }
         }
-
-        return this;
     }
 
     /**
@@ -548,17 +554,20 @@ public class Metadata implements Serializable {
      * @should return false if at least one paramValue is not empty
      */
     public boolean isBlank() {
-        if (values != null) {
-            for (MetadataValue value : values) {
-                if (value.getParamValues().isEmpty()) {
-                    return true;
-                }
-                for (List<String> paramValues : value.getParamValues())
-                    for (String paramValue : paramValues) {
-                        if (StringUtils.isNotBlank(paramValue)) {
-                            return false;
-                        }
+        if (values == null || values.isEmpty()) {
+            return true;
+        }
+
+        for (MetadataValue value : values) {
+            if (value.getParamValues().isEmpty()) {
+                return true;
+            }
+            for (List<String> paramValues : value.getParamValues()) {
+                for (String paramValue : paramValues) {
+                    if (StringUtils.isNotBlank(paramValue)) {
+                        return false;
                     }
+                }
             }
         }
 
@@ -630,18 +639,14 @@ public class Metadata implements Serializable {
                             Map<String, String> options = new HashMap<>();
                             StringBuilder sbValue = new StringBuilder();
                             List<String> values = new ArrayList<>(groupFieldMap.get(param.getKey()).size());
-                            for (String mdValue : groupFieldMap.get(param.getKey())) {
+                            for (String value : groupFieldMap.get(param.getKey())) {
                                 if (sbValue.length() == 0) {
-                                    sbValue.append(mdValue);
+                                    sbValue.append(value);
                                 }
-                                values.add(mdValue);
+                                values.add(value);
                             }
                             String paramValue = sbValue.toString();
                             if (param.getKey().startsWith(NormDataImporter.FIELD_URI)) {
-                                //                                    Map<String, String> normDataUrl = new HashMap<>();
-                                //                                    normDataUrl.put(param.getKey(), paramValue);
-                                // logger.trace("found normdata uri: {}", normDataUrl.toString());
-                                //                                    setParamValue(count, i, values, null, null, normDataUrl, groupType, locale);
                                 if (doc.getFieldValue("NORM_TYPE") != null) {
                                     options.put("NORM_TYPE", SolrSearchIndex.getSingleFieldStringValue(doc, "NORM_TYPE"));
                                 }
@@ -672,20 +677,20 @@ public class Metadata implements Serializable {
                 int count = 0;
                 int indexOfParam = params.indexOf(param);
                 // logger.trace("{} ({})", param.toString(), indexOfParam);
-                List<String> mdValues = null;
+                List<String> values = null;
                 if (MetadataParameterType.TOPSTRUCTFIELD.equals(param.getType()) && se.getTopStruct() != null) {
                     // Topstruct values as the first choice
-                    mdValues = getMetadata(se.getTopStruct().getMetadataFields(), param.getKey(), locale);
+                    values = getMetadata(se.getTopStruct().getMetadataFields(), param.getKey(), locale);
                 } else {
                     // Own values
-                    mdValues = getMetadata(se.getMetadataFields(), param.getKey(), locale);
+                    values = getMetadata(se.getMetadataFields(), param.getKey(), locale);
                 }
-                if (mdValues == null && se.getTopStruct() != null && param.isTopstructValueFallback()) {
+                if (values == null && se.getTopStruct() != null && param.isTopstructValueFallback()) {
                     // Topstruct values as a fallback
-                    mdValues = getMetadata(se.getTopStruct().getMetadataFields(), param.getKey(), locale);
+                    values = getMetadata(se.getTopStruct().getMetadataFields(), param.getKey(), locale);
                 }
-                if (mdValues != null) {
-                    for (String mdValue : mdValues) {
+                if (values != null) {
+                    for (String value : values) {
                         // logger.trace("{}: {}", param.getKey(), mdValue);
                         if (count >= number && number != -1) {
                             break;
@@ -693,13 +698,13 @@ public class Metadata implements Serializable {
                         found = true;
                         // Apply replace rules
                         if (!param.getReplaceRules().isEmpty()) {
-                            mdValue = MetadataTools.applyReplaceRules(mdValue, param.getReplaceRules(), se.getPi());
+                            value = MetadataTools.applyReplaceRules(value, param.getReplaceRules(), se.getPi());
                         }
-                        setParamValue(count, indexOfParam, Collections.singletonList(mdValue), param.getKey(), null, null, null, locale);
+                        setParamValue(count, indexOfParam, Collections.singletonList(value), param.getKey(), null, null, null, locale);
                         count++;
                     }
                 }
-                if (mdValues == null && param.getDefaultValue() != null) {
+                if (values == null && param.getDefaultValue() != null) {
                     // logger.trace("No value found for {} (index {}), using default value '{}'", param.getKey(), indexOfParam, param.getDefaultValue());
                     setParamValue(0, indexOfParam, Collections.singletonList(param.getDefaultValue()), param.getKey(), null, null, null, locale);
                     found = true;

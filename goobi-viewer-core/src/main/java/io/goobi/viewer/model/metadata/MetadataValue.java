@@ -15,6 +15,7 @@
  */
 package io.goobi.viewer.model.metadata;
 
+import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -25,8 +26,11 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import de.undercouch.citeproc.csl.CSLType;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.messages.ViewerResourceBundle;
+import io.goobi.viewer.model.citeproc.Citation;
+import io.goobi.viewer.model.metadata.MetadataParameter.MetadataParameterType;
 
 /**
  * Wrapper class for metadata parameter value groups, so that JSF can iterate through them properly.
@@ -48,8 +52,11 @@ public class MetadataValue implements Serializable {
     private final List<String> paramSuffixes = new ArrayList<>();
     private final List<String> paramUrls = new ArrayList<>();
     private final Map<String, String> normDataUrls = new HashMap<>();
+    private final Map<String, String> citationValues = new HashMap<>();
     private String masterValue;
     private String groupType;
+    private String citationStyle = null;
+    private String citationString = null;
 
     /**
      * Package-private constructor.
@@ -86,6 +93,24 @@ public class MetadataValue implements Serializable {
         for (String paramValue : paramValues.get(index)) {
             if (StringUtils.isEmpty(paramValue)) {
                 continue;
+            }
+
+            // logger.trace("param value: {}", paramValue);
+
+            if (MetadataParameterType.CITEPROC.getKey().equals(paramValue)) {
+                logger.trace("CitePROC value: {}", index);
+                if (StringUtils.isEmpty(citationStyle)) {
+                    return "No citation style configured";
+                }
+                try {
+                    if (citationString == null) {
+                        citationString = new Citation(citationStyle, CSLType.WEBPAGE, citationValues).build().getCitationString();
+                    }
+                    return citationString;
+                } catch (IOException e) {
+                    logger.error(e.getMessage());
+                    return e.getMessage();
+                }
             }
 
             boolean addPrefix = true;
@@ -264,6 +289,13 @@ public class MetadataValue implements Serializable {
     }
 
     /**
+     * @return the citationValues
+     */
+    public Map<String, String> getCitationValues() {
+        return citationValues;
+    }
+
+    /**
      * <p>
      * hasParamValue.
      * </p>
@@ -344,6 +376,22 @@ public class MetadataValue implements Serializable {
      */
     public void setGroupType(String groupType) {
         this.groupType = groupType;
+    }
+
+    /**
+     * @return the citationStyle
+     */
+    public String getCitationStyle() {
+        return citationStyle;
+    }
+
+    /**
+     * @param citationStyle the citationStyle to set
+     * @return this
+     */
+    public MetadataValue setCitationStyle(String citationStyle) {
+        this.citationStyle = citationStyle;
+        return this;
     }
 
     /** {@inheritDoc} */

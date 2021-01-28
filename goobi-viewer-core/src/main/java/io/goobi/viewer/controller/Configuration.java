@@ -536,6 +536,7 @@ public final class Configuration extends AbstractConfiguration {
                 HierarchicalConfiguration sub2 = it2.next();
                 String fieldType = sub2.getString("[@type]");
                 String source = sub2.getString("[@source]", null);
+                String dest = sub2.getString("[@dest]", null);
                 String key = sub2.getString("[@key]");
                 String altKey = sub2.getString("[@altKey]");
                 String masterValueFragment = sub2.getString("[@value]");
@@ -586,6 +587,7 @@ public final class Configuration extends AbstractConfiguration {
 
                 paramList.add(new MetadataParameter().setType(MetadataParameterType.getByString(fieldType))
                         .setSource(source)
+                        .setDestination(dest)
                         .setKey(key)
                         .setAltKey(altKey)
                         .setMasterValueFragment(masterValueFragment)
@@ -2012,7 +2014,7 @@ public final class Configuration extends AbstractConfiguration {
     public String getSmtpSecurity() {
         return getLocalString("user.smtpSecurity", "none");
     }
-    
+
     /**
      * 
      * @return Configured SMTP port number; -1 if not configured
@@ -4532,45 +4534,46 @@ public final class Configuration extends AbstractConfiguration {
 
     public List<Locale> getIIIFTranslationLocales() {
         List<Locale> list = getLocalList("webapi.iiif.translations.locale", new ArrayList<>())
-        .stream()
-        .map(Locale::forLanguageTag)
-        .filter(l -> StringUtils.isNotBlank(l.getLanguage()))
-        .collect(Collectors.toList());
-        
-        if(list.isEmpty()) {
+                .stream()
+                .map(Locale::forLanguageTag)
+                .filter(l -> StringUtils.isNotBlank(l.getLanguage()))
+                .collect(Collectors.toList());
+
+        if (list.isEmpty()) {
             return ViewerResourceBundle.getAllLocales();
         }
-        
+
         return list;
     }
-    
+
     public boolean isVisibleIIIFRenderingPDF() {
         return getLocalBoolean("webapi.iiif.rendering.pdf[@visible]", true);
     }
-    
+
     public boolean isVisibleIIIFRenderingViewer() {
         return getLocalBoolean("webapi.iiif.rendering.viewer[@visible]", true);
     }
-    
+
     public String getLabelIIIFRenderingPDF() {
         return getLocalString("webapi.iiif.rendering.pdf.label", "PDF");
     }
-    
+
     public String getLabelIIIFRenderingViewer() {
         return getLocalString("webapi.iiif.rendering.viewer.label", "Goobi Viewer");
     }
+
     public boolean isVisibleIIIFRenderingPlaintext() {
         return getLocalBoolean("webapi.iiif.rendering.plaintext[@visible]", true);
     }
-    
+
     public boolean isVisibleIIIFRenderingAlto() {
         return getLocalBoolean("webapi.iiif.rendering.alto[@visible]", true);
     }
-    
+
     public String getLabelIIIFRenderingPlaintext() {
         return getLocalString("webapi.iiif.rendering.plaintext.label", "Fulltext");
     }
-    
+
     public String getLabelIIIFRenderingAlto() {
         return getLocalString("webapi.iiif.rendering.alto.label", "ALTO");
     }
@@ -4766,11 +4769,11 @@ public final class Configuration extends AbstractConfiguration {
     public String getMapBoxToken() {
         return getLocalString("maps.mapbox.token", "");
     }
-    
+
     public String getMapBoxUser() {
         return getLocalString("maps.mapbox.user", "");
     }
-    
+
     public String getMapBoxStyleId() {
         return getLocalString("maps.mapbox.styleId", "");
     }

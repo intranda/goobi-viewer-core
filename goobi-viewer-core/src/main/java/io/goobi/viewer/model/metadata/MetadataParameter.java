@@ -85,6 +85,7 @@ public class MetadataParameter implements Serializable {
 
     private MetadataParameterType type;
     private String source;
+    private String destination;
     private String key;
     private String altKey;
     private String masterValueFragment;
@@ -159,6 +160,22 @@ public class MetadataParameter implements Serializable {
      */
     public MetadataParameter setSource(String source) {
         this.source = source;
+        return this;
+    }
+
+    /**
+     * @return the destination
+     */
+    public String getDestination() {
+        return destination;
+    }
+
+    /**
+     * @param destination the destination to set
+     * @return this
+     */
+    public MetadataParameter setDestination(String destination) {
+        this.destination = destination;
         return this;
     }
 

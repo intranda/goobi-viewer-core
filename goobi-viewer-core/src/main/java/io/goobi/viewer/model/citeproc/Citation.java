@@ -16,16 +16,21 @@
 package io.goobi.viewer.model.citeproc;
 
 import java.io.IOException;
-import java.util.HashMap;
 import java.util.Map;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import de.undercouch.citeproc.CSL;
 import de.undercouch.citeproc.csl.CSLDateBuilder;
 import de.undercouch.citeproc.csl.CSLItemData;
 import de.undercouch.citeproc.csl.CSLItemDataBuilder;
 import de.undercouch.citeproc.csl.CSLType;
+import io.goobi.viewer.controller.Configuration;
 
 public class Citation {
+    
+    private static final Logger logger = LoggerFactory.getLogger(Citation.class);
 
     public static final String AUTHOR = "author";
     public static final String DOI = "DOI";
@@ -38,24 +43,30 @@ public class Citation {
     public static final String TITLE = "title";
 
     private final String style;
+    private final CSLType type;
+    private final Map<String, String> fields;
     private CSLItemData item;
-    private Map<String, String> fields = new HashMap<>();
 
     /**
      * Constructor.
      * 
      * @param style
+     * @param type
      * @param fields Map containing metadata fields
      */
-    public Citation(String style, Map<String, String> fields) {
+    public Citation(String style, CSLType type, Map<String, String> fields) {
         if (style == null) {
             throw new IllegalArgumentException("style may not be null");
+        }
+        if (type == null) {
+            throw new IllegalArgumentException("type may not be null");
         }
         if (fields == null) {
             throw new IllegalArgumentException("fields may not be null");
         }
 
         this.style = style;
+        this.type = type;
         this.fields = fields;
     }
 
@@ -65,7 +76,7 @@ public class Citation {
      * @return this object
      */
     public Citation build() {
-        CSLItemDataBuilder builder = new CSLItemDataBuilder().type(CSLType.WEBPAGE);
+        CSLItemDataBuilder builder = new CSLItemDataBuilder().type(type);
 
         for (String key : fields.keySet()) {
             switch (key) {
@@ -114,11 +125,20 @@ public class Citation {
         return this;
     }
 
+    /**
+     * 
+     * @return Full citation string
+     * @throws IOException
+     * @should throw IllegalStateException if not yet built
+     * @should return apa citation correctly
+     */
     public String getCitationString() throws IOException {
         if (item == null) {
             throw new IllegalStateException("Item data not yet built");
         }
-
-        return CSL.makeAdhocBibliography(style, item).makeString();
+        logger.trace("Citation string generation START");
+        String ret = CSL.makeAdhocBibliography(style, item).makeString();
+        logger.trace("Citation string generation END");
+        return ret;
     }
 }
