@@ -52,6 +52,7 @@ import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.exceptions.ViewerConfigurationException;
+import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.model.cms.CMSMediaItem;
 import io.goobi.viewer.model.viewer.PhysicalElement;
 import io.goobi.viewer.model.viewer.StructElement;
@@ -962,7 +963,10 @@ public class ThumbnailHandler {
                 .resolve(cmsMediaFolder)
                 .resolve(filename);
         try {
-            String url = contentApiUrl + "/image/-/" + URLEncoder.encode(PathConverter.toURI(filePath).toString(), "utf-8");
+            String fileUrl = PathConverter.toURI(filePath).toString();
+            String encFilePath = URLEncoder.encode(fileUrl, "utf-8");
+            encFilePath = BeanUtils.escapeCriticalUrlChracters(fileUrl);
+            String url = contentApiUrl + "image/-/" + encFilePath;
             return url;
         } catch (UnsupportedEncodingException e) {
             throw new IllegalStateException(e.toString());
