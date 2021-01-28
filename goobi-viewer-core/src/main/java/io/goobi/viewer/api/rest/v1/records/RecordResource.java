@@ -141,7 +141,6 @@ public class RecordResource {
             @Parameter(description = "Persistent identifier of the record") @PathParam("pi") String pi) {
         this.pi = pi;
         request.setAttribute(FilterTools.ATTRIBUTE_PI, pi);
-        request.setAttribute(AccessConditionRequestFilter.REQUIRED_PRIVILEGE, getRequiredPrivilege(request, urls));
     }
 
     /**

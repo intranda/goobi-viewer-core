@@ -95,8 +95,11 @@ public class AccessConditionRequestFilter implements ContainerRequestFilter {
                 String logid = (String) servletRequest.getAttribute(FilterTools.ATTRIBUTE_LOGID);
                 String filename = (String) servletRequest.getAttribute(FilterTools.ATTRIBUTE_FILENAME);
 
-            if (!BeanUtils.getImageDeliveryBean().isExternalUrl(filename) && !BeanUtils.getImageDeliveryBean().isPublicUrl(filename)
-                    && !BeanUtils.getImageDeliveryBean().isStaticImageUrl(filename)) {
+            if ( StringUtils.isBlank(filename) || 
+                      (!BeanUtils.getImageDeliveryBean().isExternalUrl(filename) 
+                    && !BeanUtils.getImageDeliveryBean().isPublicUrl(filename)
+                    && !BeanUtils.getImageDeliveryBean().isStaticImageUrl(filename))
+                ) {
                 filterForAccessConditions(servletRequest, pi, logid, filename);
                 FilterTools.filterForConcurrentViewLimit(pi, servletRequest);
             }

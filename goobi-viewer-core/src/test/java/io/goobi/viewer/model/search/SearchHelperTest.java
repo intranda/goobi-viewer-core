@@ -650,6 +650,10 @@ public class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
     public void adaptField_shouldApplyPrefixCorrectly() throws Exception {
         Assert.assertEquals("SORT_DC", SearchHelper.adaptField(SolrConstants.DC, "SORT_"));
         Assert.assertEquals("SORT_FOO", SearchHelper.adaptField("MD_FOO", "SORT_"));
+        Assert.assertEquals("SORT_FOO", SearchHelper.adaptField("MD2_FOO", "SORT_"));
+        Assert.assertEquals("SORT_FOO", SearchHelper.adaptField("MDNUM_FOO", "SORT_"));
+        Assert.assertEquals("SORT_FOO", SearchHelper.adaptField("NE_FOO", "SORT_"));
+        Assert.assertEquals("SORT_FOO", SearchHelper.adaptField("BOOL_FOO", "SORT_"));
     }
 
     /**
