@@ -26,10 +26,10 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import de.undercouch.citeproc.csl.CSLType;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.messages.ViewerResourceBundle;
-import io.goobi.viewer.model.citeproc.Citation;
+import io.goobi.viewer.model.citation.Citation;
+import io.goobi.viewer.model.citation.CitationTools;
 import io.goobi.viewer.model.metadata.MetadataParameter.MetadataParameterType;
 
 /**
@@ -55,6 +55,7 @@ public class MetadataValue implements Serializable {
     private final Map<String, String> citationValues = new HashMap<>();
     private String masterValue;
     private String groupType;
+    private String docstrct = null;
     private String citationStyle = null;
     private String citationString = null;
 
@@ -104,7 +105,8 @@ public class MetadataValue implements Serializable {
                 }
                 try {
                     if (citationString == null) {
-                        citationString = new Citation(citationStyle, CSLType.WEBPAGE, citationValues).build().getCitationString();
+                        citationString = new Citation(citationStyle, CitationTools.getCSLTypeForDocstrct(docstrct), citationValues).build()
+                                .getCitationString();
                     }
                     return citationString;
                 } catch (IOException e) {
@@ -159,9 +161,9 @@ public class MetadataValue implements Serializable {
      * @param index a int.
      */
     public String getParamLabelWithColon(int index) {
-        logger.trace("getParamLabelWithColon: {}", index);
+        // logger.trace("getParamLabelWithColon: {}", index);
         if (paramLabels.size() > index && paramLabels.get(index) != null) {
-            logger.trace(ViewerResourceBundle.getTranslation(paramLabels.get(index), null) + ": ");
+            // logger.trace(ViewerResourceBundle.getTranslation(paramLabels.get(index), null) + ": ");
             return ViewerResourceBundle.getTranslation(paramLabels.get(index), null) + ": ";
         }
         return "";
@@ -373,9 +375,27 @@ public class MetadataValue implements Serializable {
      * </p>
      *
      * @param groupType the groupType to set
+     * @return this
      */
-    public void setGroupType(String groupType) {
+    public MetadataValue setGroupType(String groupType) {
         this.groupType = groupType;
+        return this;
+    }
+
+    /**
+     * @return the docstrct
+     */
+    public String getDocstrct() {
+        return docstrct;
+    }
+
+    /**
+     * @param docstrct the docstrct to set
+     * @return this
+     */
+    public MetadataValue setDocstrct(String docstrct) {
+        this.docstrct = docstrct;
+        return this;
     }
 
     /**

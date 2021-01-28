@@ -13,7 +13,7 @@
  *
  * You should have received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
-package io.goobi.viewer.model.citeproc;
+package io.goobi.viewer.model.citation;
 
 import java.io.IOException;
 import java.util.Map;
@@ -22,14 +22,16 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import de.undercouch.citeproc.CSL;
+import de.undercouch.citeproc.ItemDataProvider;
+import de.undercouch.citeproc.ListItemDataProvider;
 import de.undercouch.citeproc.csl.CSLDateBuilder;
 import de.undercouch.citeproc.csl.CSLItemData;
 import de.undercouch.citeproc.csl.CSLItemDataBuilder;
 import de.undercouch.citeproc.csl.CSLType;
-import io.goobi.viewer.controller.Configuration;
+import de.undercouch.citeproc.output.Bibliography;
 
 public class Citation {
-    
+
     private static final Logger logger = LoggerFactory.getLogger(Citation.class);
 
     public static final String AUTHOR = "author";
@@ -46,6 +48,7 @@ public class Citation {
     private final CSLType type;
     private final Map<String, String> fields;
     private CSLItemData item;
+    private ItemDataProvider provider;
 
     /**
      * Constructor.
@@ -121,8 +124,36 @@ public class Citation {
         }
 
         this.item = builder.build();
+        provider = new ListItemDataProvider(item);
 
         return this;
+    }
+
+    /**
+     * 
+     * @param style
+     * @param outputFormat
+     * @param items
+     * @return
+     * @throws IOException
+     */
+    Bibliography makeAdhocBibliography(String style, String outputFormat,
+            CSLItemData... items) throws IOException {
+        logger.trace("makeAdhocBibliography");
+        // TODO CSL is expensive to create, and must be closed at some point
+        try (CSL csl = new CSL(provider, style)) {
+            logger.trace("CLS created");
+            csl.setOutputFormat(outputFormat);
+
+            String[] ids = new String[items.length];
+            for (int i = 0; i < items.length; ++i) {
+                ids[i] = items[i].getId();
+            }
+            csl.registerCitationItems(ids);
+            logger.trace("Items registered");
+
+            return csl.makeBibliography();
+        }
     }
 
     /**
@@ -137,7 +168,7 @@ public class Citation {
             throw new IllegalStateException("Item data not yet built");
         }
         logger.trace("Citation string generation START");
-        String ret = CSL.makeAdhocBibliography(style, item).makeString();
+        String ret = makeAdhocBibliography(style, "html", item).makeString();
         logger.trace("Citation string generation END");
         return ret;
     }
