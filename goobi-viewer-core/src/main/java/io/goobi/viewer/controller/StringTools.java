@@ -516,7 +516,7 @@ public class StringTools {
         } else if(path.endsWith("/") || path.endsWith("\\")) {
             return path;
         } else {
-            return path + File.separator;
+            return path + "/";
         }
     }
 }
