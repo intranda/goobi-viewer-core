@@ -129,7 +129,7 @@ public class ContextListener implements ServletContextListener {
         // Set Pretty config files parameter
         sce.getServletContext().setInitParameter(PRETTY_FACES_CONFIG_PARAM_NAME, prettyConfigFiles);
         logger.debug("Pretty config files: {}", prettyConfigFiles);
-        
+
         //set contentServerConfig
         ContentServerConfiguration.getInstance("contentServerConfig.xml");
     }
@@ -143,7 +143,6 @@ public class ContextListener implements ServletContextListener {
             logger.error(e.getMessage());
         }
 
-        // Shut all loggers down to prevent memory leaks when re-deploying the context
-        // LogManager.shutdown();
+        DataManager.getInstance().closeCitationProcessors();
     }
 }

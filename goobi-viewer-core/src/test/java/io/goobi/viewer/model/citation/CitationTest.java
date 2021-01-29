@@ -22,18 +22,9 @@ import org.junit.Assert;
 import org.junit.Test;
 
 import de.undercouch.citeproc.csl.CSLType;
-import io.goobi.viewer.AbstractTest;
 
-public class CitationTest extends AbstractTest {
+public class CitationTest {
 
-    /**
-     * @see Citation#getCitationString()
-     * @verifies throw IllegalStateException if not yet built
-     */
-    @Test(expected = IllegalStateException.class)
-    public void getCitationString_shouldThrowIllegalStateExceptionIfNotYetBuilt() throws Exception {
-        new Citation("apa", CSLType.WEBPAGE, new HashMap<>()).getCitationString();
-    }
 
     /**
      * @see Citation#getCitationString()
@@ -46,8 +37,9 @@ public class CitationTest extends AbstractTest {
         fields.put(Citation.TITLE, "Thrawn");
         fields.put(Citation.ISSUED, "2017-04-11");
         fields.put(Citation.ISBN, "9780606412148");
-        Citation cit = new Citation("apa", CSLType.BOOK, fields);
-        String s = cit.build().getCitationString();
+        
+        Citation cit = new Citation("id", "apa", CSLType.BOOK, fields);
+        String s = cit.getCitationString();
         Assert.assertNotNull(s);
         Assert.assertTrue(s.contains("Zahn, T. (2017). <i>Thrawn</i>."));
     }

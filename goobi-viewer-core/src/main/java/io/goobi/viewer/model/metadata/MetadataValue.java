@@ -105,7 +105,7 @@ public class MetadataValue implements Serializable {
                 }
                 try {
                     if (citationString == null) {
-                        citationString = new Citation(citationStyle, CitationTools.getCSLTypeForDocstrct(docstrct), citationValues).build()
+                        citationString = new Citation("id", citationStyle, CitationTools.getCSLTypeForDocstrct(docstrct), citationValues)
                                 .getCitationString();
                     }
                     return citationString;

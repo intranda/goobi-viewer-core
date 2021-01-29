@@ -29,6 +29,7 @@ import de.undercouch.citeproc.csl.CSLItemData;
 import de.undercouch.citeproc.csl.CSLItemDataBuilder;
 import de.undercouch.citeproc.csl.CSLType;
 import de.undercouch.citeproc.output.Bibliography;
+import io.goobi.viewer.controller.DataManager;
 
 public class Citation {
 
@@ -44,6 +45,7 @@ public class Citation {
     public static final String PUBLISHER = "publisher";
     public static final String TITLE = "title";
 
+    private String id;
     private final String style;
     private final CSLType type;
     private final Map<String, String> fields;
@@ -53,11 +55,15 @@ public class Citation {
     /**
      * Constructor.
      * 
+     * @param id
      * @param style
      * @param type
      * @param fields Map containing metadata fields
      */
-    public Citation(String style, CSLType type, Map<String, String> fields) {
+    public Citation(String id, String style, CSLType type, Map<String, String> fields) {
+        if (id == null) {
+            throw new IllegalArgumentException("id may not be null");
+        }
         if (style == null) {
             throw new IllegalArgumentException("style may not be null");
         }
@@ -68,13 +74,13 @@ public class Citation {
             throw new IllegalArgumentException("fields may not be null");
         }
 
+        this.id = id;
         this.style = style;
         this.type = type;
         this.fields = fields;
     }
 
     /**
-     * Builds item data from the metadata fields.
      * 
      * @return this object
      */
@@ -150,25 +156,39 @@ public class Citation {
                 ids[i] = items[i].getId();
             }
             csl.registerCitationItems(ids);
-            logger.trace("Items registered");
 
             return csl.makeBibliography();
         }
+
+        //        CSL csl = DataManager.getInstance().getCitationProcessor(style);
+        //        if (csl == null) {
+        //            throw new IllegalStateException("CSL not created for: " + style);
+        //        }
+        //        csl.reset();
+        //        csl.setOutputFormat(outputFormat);
+        //        String[] ids = new String[items.length];
+        //        for (int i = 0; i < items.length; ++i) {
+        //            ids[i] = items[i].getId();
+        //        }
+        //        csl.registerCitationItems(ids);
+        //        logger.trace("x");
+        //
+        //        return csl.makeBibliography();
     }
 
     /**
      * 
      * @return Full citation string
      * @throws IOException
-     * @should throw IllegalStateException if not yet built
      * @should return apa citation correctly
      */
     public String getCitationString() throws IOException {
-        if (item == null) {
-            throw new IllegalStateException("Item data not yet built");
-        }
         logger.trace("Citation string generation START");
-        String ret = makeAdhocBibliography(style, "html", item).makeString();
+        CSLItemData itemData = DataManager.getInstance().getCitationItemDataProvider().retrieveItem(id);
+        if (itemData == null) {
+            itemData = DataManager.getInstance().getCitationItemDataProvider().addItemData(id, fields, type);
+        }
+        String ret = makeAdhocBibliography(style, "html", itemData).makeString();
         logger.trace("Citation string generation END");
         return ret;
     }
