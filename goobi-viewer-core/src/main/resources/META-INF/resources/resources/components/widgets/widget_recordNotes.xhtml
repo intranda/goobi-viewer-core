@@ -20,7 +20,7 @@
                     <h3 class="widget__title">
                         <span>#{note.noteTitle.getTextOrDefault(navigationHelper.locale, navigationHelper.defaultLocale)}</span>
                         <ui:fragment rendered="#{userBean.admin}">
-                        	<a href="#{request.contextPath}/admin/cms/recordNotes/edit/#{note.id}">
+                        	<a href="#{request.contextPath}/admin/cms/recordNotes/edit/#{note.id}?from=#{navigationHelper.currentUrl}">
                         	<i class="fa fa-pencil" 
 	                        	aria-label="#{msg.edit} : #{note.noteTitle.getTextOrDefault(navigationHelper.locale, navigationHelper.defaultLocale)}"
 	                        	title="#{msg.edit} : #{note.noteTitle.getTextOrDefault(navigationHelper.locale, navigationHelper.defaultLocale)}"></i>

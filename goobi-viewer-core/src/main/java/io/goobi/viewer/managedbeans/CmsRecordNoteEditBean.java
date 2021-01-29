@@ -27,6 +27,9 @@ import org.apache.solr.common.SolrDocument;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import de.intranda.metadata.multilanguage.IMetadataValue;
+import de.intranda.metadata.multilanguage.MultiLanguageMetadataValue;
+import de.intranda.metadata.multilanguage.SimpleMetadataValue;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
@@ -36,6 +39,9 @@ import io.goobi.viewer.messages.Messages;
 import io.goobi.viewer.model.cms.CMSRecordNote;
 import io.goobi.viewer.model.metadata.MetadataElement;
 import io.goobi.viewer.model.misc.IPolyglott;
+import io.goobi.viewer.model.misc.TranslatedText;
+import io.goobi.viewer.model.toc.TocMaker;
+import io.goobi.viewer.model.viewer.PageType;
 import io.goobi.viewer.model.viewer.StructElement;
 
 /**
@@ -53,6 +59,7 @@ public class CmsRecordNoteEditBean implements Serializable, IPolyglott {
     private CMSRecordNote note = null;
     private Locale selectedLocale = BeanUtils.getLocale();
     private MetadataElement metadataElement = null;
+    private String returnUrl = BeanUtils.getServletPathWithHostAsUrlFromJsfContext() + "/" + PageType.adminCmsRecordNotes.getName();
     
     /**
      * @return the note
@@ -92,6 +99,20 @@ public class CmsRecordNoteEditBean implements Serializable, IPolyglott {
     
     public String getRecordIdentifier() {
         return Optional.ofNullable(this.note).map(CMSRecordNote::getRecordPi).orElse("");
+    }
+    
+    /**
+     * @return the returnUrl
+     */
+    public String getReturnUrl() {
+        return returnUrl;
+    }
+    
+    /**
+     * @param returnUrl the returnUrl to set
+     */
+    public void setReturnUrl(String returnUrl) {
+        this.returnUrl = returnUrl;
     }
     
     /**
@@ -135,7 +156,8 @@ public class CmsRecordNoteEditBean implements Serializable, IPolyglott {
             return false;
         }
     }
-    
+
+
     /**
      * 
      * @return true if either no note has been created yet (record identifier not yet entered)
@@ -151,6 +173,7 @@ public class CmsRecordNoteEditBean implements Serializable, IPolyglott {
         }
         return this.metadataElement;
     }
+    
 
     /**
      * @param recordPi
@@ -163,12 +186,40 @@ public class CmsRecordNoteEditBean implements Serializable, IPolyglott {
         if(StringUtils.isNotBlank(recordPi)) {
             SolrDocument solrDoc = DataManager.getInstance().getSearchIndex().getDocumentByPI(recordPi);
             if(solrDoc != null) {
+                if(this.note != null) {
+                    this.note.setRecordTitle(createRecordTitle(solrDoc));
+                }
                 StructElement structElement = new StructElement(solrDoc);
                 MetadataElement metadataElement = new MetadataElement(structElement, BeanUtils.getLocale(), getSelectedLocale().getLanguage());
                 return metadataElement;
             }
         }
         return null;
+    }
+    
+    
+    /**
+     * @param note2
+     * @param metadataElement2
+     */
+    private TranslatedText createRecordTitle( SolrDocument solrDoc) {
+        IMetadataValue label = TocMaker.buildTocElementLabel(solrDoc);
+        return createRecordTitle(label);
+    }
+
+    /**
+     * @param label
+     * @return
+     */
+    public TranslatedText createRecordTitle(IMetadataValue label) {
+        if(label instanceof MultiLanguageMetadataValue) {
+            MultiLanguageMetadataValue mLabel = (MultiLanguageMetadataValue)label;
+            TranslatedText labelAsText = new TranslatedText(mLabel);
+            return labelAsText;
+        } else {
+            TranslatedText labelAsText = new TranslatedText(((SimpleMetadataValue)label).getValue().orElse(""));
+            return labelAsText;
+        }
     }
 
     /* (non-Javadoc)

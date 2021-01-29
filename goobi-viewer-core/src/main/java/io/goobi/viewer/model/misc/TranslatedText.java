@@ -25,6 +25,7 @@ import org.apache.commons.lang3.StringUtils;
 
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
+import de.intranda.metadata.multilanguage.IMetadataValue;
 import de.intranda.metadata.multilanguage.MultiLanguageMetadataValue;
 import io.goobi.viewer.api.rest.serialization.TranslatedTextSerializer;
 
@@ -72,6 +73,16 @@ public class TranslatedText extends MultiLanguageMetadataValue implements IPolyg
         super();
         setText(text);
         
+    }
+
+    /**
+     * @param label
+     */
+    public TranslatedText(MultiLanguageMetadataValue label) {        
+        super(label.getLanguages().stream()
+                .filter(lang -> label.getValue(lang).isPresent())
+                .collect(Collectors.toMap(lang -> lang, lang -> label.getValue(lang).get()))
+               );
     }
 
     public Locale getSelectedLocale() {

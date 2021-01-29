@@ -14,7 +14,7 @@
 	<ui:define name="metadata">
 		<f:metadata>
 			<f:event type="preRenderView"
-				listener="#{navigationHelper.setCurrentPageAdmin('adminCmsRecordNoteEdit')}" />
+				listener="#{navigationHelper.setCurrentPageAdmin('adminCmsRecordNotes')}" />
 		</f:metadata>
 	</ui:define>
 
@@ -78,7 +78,7 @@
 									class="row no-gutters justify-content-end admin__final-actions">
 
 									<a class="btn btn--cancel" tabindex="3"
-										href="#{request.contextPath}#{navigationHelper.previousViewUrl}">#{msg.button__abort}
+										href="#{cmsRecordNoteEditBean.returnUrl}">#{msg.button__abort}
 									</a> 
 									<h:commandButton class="btn btn--default" tabindex="2"
 									onclick="viewerJS.showLoader()" value="#{msg.button__continue}">
@@ -96,7 +96,6 @@
 								<h:form id="editRecordNote" prependId="false">
 									<div class="admin__formatted-text-box-editable">
 									<h3>#{msg.cms__record_notes_edit_text__title}</h3>
-										
 										<div class="admin__language-tabs">
 											<viewerComponent:localeSelector
 												object="#{cmsRecordNoteEditBean}" />
@@ -107,6 +106,7 @@
 												<!-- LOCALIZE TABS -->
 												<h:panelGroup
 													rendered="#{cmsRecordNoteEditBean.selectedLocale != null}">
+																										
 													<div class="form-group form-row">
 														<div class="col-2 control-label admin__form-label">
 															<label for="recordNoteTitle">#{msg.title}: <ui:fragment
@@ -196,7 +196,7 @@
 										class="row no-gutters justify-content-end admin__final-actions">
 				
 										<a class="btn btn--cancel"
-											href="#{request.contextPath}#{navigationHelper.previousViewUrl}">#{msg.button__abort}
+											href="#{cmsRecordNoteEditBean.returnUrl}">#{msg.button__abort}
 										</a> <a class="btn btn--default mr-2" target="_blank"
 											href="#{cmsRecordNotesBean.getRecordUrl(note)}">#{msg.show}
 										</a>
@@ -216,8 +216,8 @@
 									<div class="admin__formatted-text-info-box">
 										<div class="admin__formatted-text-image-wrapper">
 											<img class="admin__formatted-text-image"
-												alt="#{note.recordTitle.getValue(navigationHelper.locale)}"
-												title="#{note.recordTitle.getValue(navigationHelper.locale)}"
+												alt="#{note.recordTitle.getValue(navigationHelper.locale).orElse('')}"
+												title="#{note.recordTitle.getValue(navigationHelper.locale).orElse('')}"
 												src="#{cmsRecordNotesBean.getThumbnailUrl(note, 350, 420)}" />
 										</div>
 										<div class="admin__formatted-text-metadata">

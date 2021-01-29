@@ -75,7 +75,7 @@
                                             </div>
 
                                         <div class="admin__table-data">
-                                            <div class="admin__table-name">#{note.recordPi}</div>
+                                            <div class="admin__table-name">#{note.recordTitle.getText(navigationHelper.locale)}</div>
                                             <div>
                                             	<label jsf:escape="false" value="#{note.noteText.getTextOrDefault(navigationHelper.locale, navigationHelper.defaultLocale)}"></label>
                                             </div>

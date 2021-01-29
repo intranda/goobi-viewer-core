@@ -143,6 +143,13 @@ public class CMSRecordNote {
     public TranslatedText getRecordTitle() {
         return recordTitle;
     }
+    
+    /**
+     * @param recordTitle the recordTitle to set
+     */
+    public void setRecordTitle(TranslatedText recordTitle) {
+        this.recordTitle = recordTitle;
+    }
 
     /**
      * @return the noteTitle

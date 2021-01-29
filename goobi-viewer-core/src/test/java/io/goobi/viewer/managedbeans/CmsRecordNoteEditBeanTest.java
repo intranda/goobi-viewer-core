@@ -19,13 +19,19 @@ import static org.junit.Assert.*;
 
 import java.util.Locale;
 
+import org.apache.commons.lang3.StringUtils;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
+import de.intranda.metadata.multilanguage.IMetadataValue;
+import de.intranda.metadata.multilanguage.MultiLanguageMetadataValue;
+import de.intranda.metadata.multilanguage.SimpleMetadataValue;
 import io.goobi.viewer.AbstractDatabaseEnabledTest;
+import io.goobi.viewer.dao.converter.TranslatedTextConverter;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.model.cms.CMSRecordNote;
+import io.goobi.viewer.model.misc.TranslatedText;
 
 /**
  * @author florian
@@ -106,6 +112,33 @@ public class CmsRecordNoteEditBeanTest extends AbstractDatabaseEnabledTest {
         assertEquals(Locale.GERMAN, bean.getSelectedLocale());
         assertEquals(germanText, bean.getNote().getNoteText().getText());
         
+    }
+    
+    @Test
+    public void testCreateTitleLabelMultiLanguage() {
+        IMetadataValue md = new MultiLanguageMetadataValue();
+        md.setValue("deutsch", "de");
+        md.setValue("english", "en");
+        md.setValue("francais", "fr");
+        md.setValue("deutsch", "_default");
+        
+        TranslatedText text = bean.createRecordTitle(md);
+        
+        String data = new TranslatedTextConverter().convertToDatabaseColumn(text);
+        String[] expected = {"\"en\":[\"english\"]", "\"de\":[\"deutsch\"]", "\"fr\":[\"francais\"]"};
+        assertTrue("data String is " + data, data.contains(expected[0]));
+        assertTrue("data String is " + data, data.contains(expected[1]));
+        assertTrue("data String is " + data, data.contains(expected[2]));
+    }
+    
+    @Test
+    public void testCreateTitleLabelSingleValue() {
+        IMetadataValue md = new SimpleMetadataValue("default");
+        
+        TranslatedText text = bean.createRecordTitle(md);
+        
+        String data = new TranslatedTextConverter().convertToDatabaseColumn(text);
+        assertEquals("default", data);
     }
 
 }

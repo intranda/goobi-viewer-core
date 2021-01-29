@@ -1505,7 +1505,9 @@ public final class SolrSearchIndex {
         }
 
         List<String> fieldNames =
-                doc.getFieldNames().stream().filter(field -> field.equals(key) || field.startsWith(key + "_LANG_")).collect(Collectors.toList());
+                doc.getFieldNames().stream()
+                .filter(field -> field.equals(key) || field.matches(key + "_LANG_\\w{2,3}"))
+                .collect(Collectors.toList());
         Map<String, List<String>> map = new HashMap<>(fieldNames.size());
         for (String languageField : fieldNames) {
             String locale = null;
