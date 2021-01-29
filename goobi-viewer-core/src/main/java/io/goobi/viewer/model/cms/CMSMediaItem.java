@@ -823,8 +823,8 @@ public class CMSMediaItem implements BrowseElementInfo, Comparable<CMSMediaItem>
     }
     
     public static enum Priority {
-        DEFAULT,
-        IMPORTANT;
+        IMPORTANT,
+        DEFAULT;
     }
 
 }

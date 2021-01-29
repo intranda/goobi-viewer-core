@@ -54,8 +54,11 @@
                             <!-- TITLE ROW -->
                             <div class="row no-gutters admin__table-title">
                                 <!-- PAGE COL -->
-                                <div class="col-12 d-flex ">
+                                <div class="col-11 d-flex">
                                 	<viewerComponent:sortingArrow filterType="recordPi" colHeading="#{msg.cms__record_notes_table__text_heading}" list="#{cmsRecordNotesBean.dataProvider}" />
+                                </div>
+                                <div class="col-1 d-flex">
+                                	#{msg.admin__cms_template_visible}
                                 </div>
                             </div>
 
@@ -63,7 +66,7 @@
                             <!-- INDIVIDUAL ROWS -->
                             <ui:repeat var="note" value="#{cmsRecordNotesBean.dataProvider.paginatorList}">
                                 <div class="row no-gutters admin__table-entry">
-                                    <div class="col-12 d-flex">
+                                    <div class="col-11 d-flex">
                                         	<div class="admin__record-notes-table-img align-self-center">
                                             	<img alt="#{note.recordPi}" title="#{note.recordPi}"
                                             		src="#{cmsRecordNotesBean.getThumbnailUrl(note, 160, 160)}" />
@@ -90,6 +93,11 @@
                                             </div>
                                         </div>
                                     </div>
+                                    <div class="col-1 d-flex" style="justify-content: center;">
+								        <ui:fragment rendered="#{note.displayNote}">
+									        <i class="fa fa-check" aria-hidden="true"></i>
+								        </ui:fragment>
+									</div>
                                 </div>
                             </ui:repeat>
                         </div>
