@@ -17,10 +17,12 @@
 				listener="#{navigationHelper.setCurrentPageAdmin('adminCmsRecordNotes')}" />
 		</f:metadata>
 	</ui:define>
+	
+	<ui:param name="note" value="#{cmsRecordNoteEditBean.note}"></ui:param>
 
 	<ui:define name="content">
 
-		<ui:param name="note" value="#{cmsRecordNoteEditBean.note}"></ui:param>
+		<div id="recordNote" class="record-notes">
 
 		<f:view contentType="text/html" encoding="utf-8">
 
@@ -38,7 +40,7 @@
 						rendered="#{!cmsRecordNoteEditBean.recordSelected}">
 					
 						<div class="form-horizontal form-group admin__content-wrapper">
-							<div class="admin__content-main">
+							<div class="w-100">
 								<h3 class="admin__content-inner-content__form_title">
 								#{msg.general}
 									<span class="ajax_loader"> <img
@@ -94,7 +96,7 @@
 						<div class="form-horizontal form-group admin__content-wrapper">
 							<div class="admin__content-main -sticky">
 								<h:form id="editRecordNote" prependId="false">
-									<div class="admin__formatted-text-box-editable">
+									<div class="admin__record-notes-box-editable">
 									<h3>#{msg.cms__record_notes_edit_text__title}</h3>
 										
 										<div class="admin__language-tabs">
@@ -213,14 +215,14 @@
 							<div class="admin__content-side">
 								<div class="admin__default-block">
 									<h2>#{msg.cms__record_notes_select_record__title}</h2>
-									<div class="admin__formatted-text-info-box">
-										<div class="admin__formatted-text-image-wrapper">
-											<img class="admin__formatted-text-image"
+									<div class="admin__record-notes-info-box">
+										<div class="admin__record-notes-image-wrapper">
+											<img class="admin__record-notes-image"
 												alt="#{note.recordTitle.getValue(navigationHelper.locale)}"
 												title="#{note.recordTitle.getValue(navigationHelper.locale)}"
 												src="#{cmsRecordNotesBean.getThumbnailUrl(note, 350, 420)}" />
 										</div>
-										<div class="admin__formatted-text-metadata">
+										<div class="admin__record-notes-metadata">
 											<ui:include
 												src="/resources/includes/metadata/metadataElement.xhtml">
 												<ui:param name="metadataElement"
@@ -236,6 +238,7 @@
 				</div>
 			</h:panelGroup>
 		</f:view>
+		</div>
 	</ui:define>
 </ui:composition>
 

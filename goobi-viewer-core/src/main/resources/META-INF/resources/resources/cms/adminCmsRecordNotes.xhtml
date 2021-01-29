@@ -17,7 +17,7 @@
     </ui:define>
 
     <ui:define name="content">
-        <div>
+        <div id="recordNotes" class="record-notes">
             <h:panelGroup rendered="#{userBean.user.cmsAdmin}">
                 <h:form prependId="false">
 
@@ -34,7 +34,7 @@
 
 
                     <div class="admin__content-inner-content">
-                    <div class="admin__formatted-text-info-text">#{msg.cms__record_notes_edit__description}</div>
+                    <div class="admin__info-text">#{msg.cms__record_notes_edit__description}</div>
                     
 <!--                     	<div class="admin__info-text"> -->
 <!--                     		<h:outputText value="#{msg.admin__record_notes__description}" escape="false" /> -->
