@@ -48,6 +48,7 @@ import io.goobi.viewer.controller.RestApiManager;
 import io.goobi.viewer.controller.SolrConstants;
 import io.goobi.viewer.controller.SolrConstants.DocType;
 import io.goobi.viewer.controller.SolrConstants.MetadataGroupType;
+import io.goobi.viewer.controller.StringTools;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
@@ -959,16 +960,15 @@ public class ThumbnailHandler {
     private static String buildLegacyCMSMediaUrl(String contentApiUrl, String filename) {
         String viewerHomePath = DataManager.getInstance().getConfiguration().getViewerHome();
         String cmsMediaFolder = DataManager.getInstance().getConfiguration().getCmsMediaFolder();
-        Path filePath = Paths.get(viewerHomePath)
-                .resolve(cmsMediaFolder)
-                .resolve(filename);
+        viewerHomePath = StringTools.appendTrailingSlash(viewerHomePath);
+        cmsMediaFolder = StringTools.appendTrailingSlash(cmsMediaFolder);
         try {
-            String fileUrl = PathConverter.toURI(filePath).toString();
-            String encFilePath = URLEncoder.encode(fileUrl, "utf-8");
-            encFilePath = BeanUtils.escapeCriticalUrlChracters(fileUrl);
+            String fileUrl = "file://" + viewerHomePath + cmsMediaFolder + filename;
+            String encFilePath = BeanUtils.escapeCriticalUrlChracters(fileUrl);
+            encFilePath = URLEncoder.encode(encFilePath, "utf-8");
             String url = contentApiUrl + "image/-/" + encFilePath;
             return url;
-        } catch (UnsupportedEncodingException e) {
+        } catch (UnsupportedEncodingException  e) {
             throw new IllegalStateException(e.toString());
         }
     }

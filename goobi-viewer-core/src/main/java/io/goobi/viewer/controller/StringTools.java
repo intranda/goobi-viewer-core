@@ -15,6 +15,7 @@
  */
 package io.goobi.viewer.controller;
 
+import java.io.File;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
@@ -503,5 +504,19 @@ public class StringTools {
         }
 
         return answer;
+    }
+
+    /**
+     * @param viewerHomePath
+     * @return
+     */
+    public static String appendTrailingSlash(String path) {
+        if(StringUtils.isBlank(path)) {
+            return path;
+        } else if(path.endsWith("/") || path.endsWith("\\")) {
+            return path;
+        } else {
+            return path + File.separator;
+        }
     }
 }
