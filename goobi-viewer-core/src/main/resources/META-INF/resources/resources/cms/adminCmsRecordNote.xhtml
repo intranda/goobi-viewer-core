@@ -30,7 +30,6 @@
 					<h2 class="admin__title">#{cmsRecordNoteEditBean.newNote ? msg.cms__record_notes__add_note : msg.cms__record_notes_edit__title}</h2>
 				</div>
 
-<!-- 					<div class="admin__formatted-text-info-text">#{msg.cms__record_notes_edit__description}</div> -->
 				<div class="admin__content-inner-content">
 
 
@@ -74,7 +73,7 @@
 										</div>
 									</div>
 								</div>
-								<!-- ABORT/CONTINUE -->
+								
 								<div
 									class="row no-gutters justify-content-end admin__final-actions">
 
@@ -93,10 +92,10 @@
 
 					<ui:fragment rendered="#{cmsRecordNoteEditBean.recordSelected}">
 						<div class="form-horizontal form-group admin__content-wrapper">
-							<div class="admin__content-main">
+							<div class="admin__content-main -sticky">
 								<h:form id="editRecordNote" prependId="false">
-									<h3>#{msg.cms__record_notes_edit_text__title}</h3>
 									<div class="admin__formatted-text-box-editable">
+									<h3>#{msg.cms__record_notes_edit_text__title}</h3>
 										
 										<div class="admin__language-tabs">
 											<viewerComponent:localeSelector
