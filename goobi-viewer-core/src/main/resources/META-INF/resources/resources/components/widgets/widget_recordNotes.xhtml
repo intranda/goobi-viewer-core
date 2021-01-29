@@ -21,13 +21,14 @@
                         <span>#{note.noteTitle.getTextOrDefault(navigationHelper.locale, navigationHelper.defaultLocale)}</span>
                     </h3>
                     <div class="widget__body">
-                    	<label jsf:escape="false" value="#{note.noteText.getTextOrDefault(navigationHelper.locale, navigationHelper.defaultLocale)}"/>
+                    	<h:outputText escape="false" value="#{note.noteText.getTextOrDefault(navigationHelper.locale, navigationHelper.defaultLocale)}" />
+                    	<ui:fragment rendered="#{userBean.admin}">
+	                    <div class="widget-record-notes__action-link">
+	                        	<a href="#{request.contextPath}/admin/cms/recordNotes/edit/#{note.id}">#{msg.edit}</a>
+	                    </div>
+                    </ui:fragment>
                     </div>
-                    <div class="widget-record-notes__action-link">
-                        <ui:fragment rendered="#{userBean.admin}">
-                        	<a href="#{request.contextPath}/admin/cms/recordNotes/edit/#{note.id}">#{msg.edit}</a>
-                        </ui:fragment>
-                    </div>
+
 				</div>
 		</ui:repeat>
     </composite:implementation>
