@@ -2884,6 +2884,7 @@ public class JPADAOTest extends AbstractDatabaseEnabledTest {
 
         
         CMSRecordNote note = new CMSRecordNote();
+        note.getRecordTitle().setSelectedLocale(Locale.GERMAN);
         note.setRecordPi(pi);
         note.getRecordTitle().setText(title);
         
