@@ -166,6 +166,8 @@
         
         <widgetComponent:widget_searchResultNavigation />
         
+        <widgetComponent:widget_recordNotes notes="#{cmsRecordNotesBean.getNotesForRecord(activeDocumentBean.viewManager.pi)}" />
+        
         <widgetComponent:widget_metadata />
         
         <widgetComponent:widget_geoMap 
@@ -184,8 +186,6 @@
         <widgetComponent:widget_toc visible="#{configurationBean.sidebarTocWidgetVisible}" />
 
         <widgetComponent:widget_download />
-        
-        <widgetComponent:widget_recordNotes notes="#{cmsRecordNotesBean.getNotesForRecord(activeDocumentBean.viewManager.pi)}" />
 
         <widgetComponent:widget_versionHistory />
         

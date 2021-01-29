@@ -1022,7 +1022,7 @@
 			height: auto;
 	}
 	// FORMATTED TEXT
-	&__formatted-text-info-box {
+	&__record-notes-info-box {
 		display: flex;
 		flex-wrap: wrap;
 		.metadata__element-dl dd, .metadata__event-dl dd {
@@ -1036,21 +1036,29 @@
 			float: none;
 		}
 	}
-	&__formatted-text-info-text {
+	&__record-notes-info-text {
 		margin-bottom: 1rem;
 		flex: 0 0 65%;
 	}
-	&__formatted-text-image-wrapper {
+	&__record-notes-table-img {
+        margin-right: 2rem;
+		flex: 0 0 160px;
+		img {
+			max-width: 100%;
+			max-height: 160px;
+		}
+	}
+	&__record-notes-image-wrapper {
 		flex: 0 0 100%;
 		margin: 2rem 0;
 	}
-	&__formatted-text-image {
+	&__record-notes-image {
 		max-width: 100%;
 	}
-	&__formatted-text-metadata {
+	&__record-notes-metadata {
 		flex: 0 0 100%;
 	}
-	&__formatted-text-box-editable {}
+	&__record-notes-box-editable {}
 	// BASIC STRUCTURES
 	&__content-wrapper {
 		display: flex;

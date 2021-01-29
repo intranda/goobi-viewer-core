@@ -17,7 +17,7 @@
     </ui:define>
 
     <ui:define name="content">
-        <div>
+        <div id="recordNotes" class="record-notes">
             <h:panelGroup rendered="#{userBean.user.cmsAdmin}">
                 <h:form prependId="false">
 
@@ -34,13 +34,8 @@
 
 
                     <div class="admin__content-inner-content">
-                    <div class="admin__formatted-text-info-text">#{msg.cms__record_notes_edit__description}</div>
-                    
-<!--                     	<div class="admin__info-text"> -->
-<!--                     		<h:outputText value="#{msg.admin__record_notes__description}" escape="false" /> -->
-<!--                     	</div> -->
-                    	
-                    
+                    <div class="admin__info-text">#{msg.cms__record_notes_overview__description}</div>
+
                         <div class="admin__table-tools">
                             <!-- PAGINATOR -->
                             <div class="admin__table-paginator">
@@ -60,7 +55,7 @@
                             <div class="row no-gutters admin__table-title">
                                 <!-- PAGE COL -->
                                 <div class="col-12 d-flex ">
-                                	<viewerComponent:sortingArrow filterType="recordPi" colHeading="#{msg.text}" list="#{cmsRecordNotesBean.dataProvider}" />
+                                	<viewerComponent:sortingArrow filterType="recordPi" colHeading="#{msg.cms__record_notes_table__text_heading}" list="#{cmsRecordNotesBean.dataProvider}" />
                                 </div>
                             </div>
 
@@ -69,9 +64,9 @@
                             <ui:repeat var="note" value="#{cmsRecordNotesBean.dataProvider.paginatorList}">
                                 <div class="row no-gutters admin__table-entry">
                                     <div class="col-12 d-flex">
-                                        	<div class="admin__table-img align-self-center">
+                                        	<div class="admin__record-notes-table-img align-self-center">
                                             	<img alt="#{note.recordPi}" title="#{note.recordPi}"
-                                            		src="#{cmsRecordNotesBean.getThumbnailUrl(note, 80, 80)}" />
+                                            		src="#{cmsRecordNotesBean.getThumbnailUrl(note, 160, 160)}" />
                                             </div>
 
                                         <div class="admin__table-data">

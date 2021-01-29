@@ -1,23 +1,15 @@
 /* ==============================================================
-   Widget Notes (sidenotes and information for objects)
+   Widget Record Notes (sidenotes and information for objects)
    ==============================================================*/
    
-.widget-notes {
+.widget-record-notes {
+	// show edit link only on hover
+	&:hover {
+		.widget-record-notes__action-link {
+			opacity: 1;
+		}
+	}
 	.widget__title {
-		.fa {
-			display: block;
-		}
-		a {
-			margin-left: auto;
-			color: @white;
-			overflow: visible;
-			&:hover,
-			&:focus,
-			&:active {
-				color: @white;
-				text-decoration: none;
-			}
-		}
 	}
 	.widget__body {
 		a {
@@ -27,7 +19,20 @@
 			&:active {}
 		}
 	}
+	&__action-link {
+		transition: opacity 0.2s ease;
+		opacity: 0;
+		text-align: right;
+		a {
+			overflow: visible;
+			&:hover,
+			&:focus,
+			&:active {
+			}
+		}
+	}
 }
+
 
 /* BREAKPOINT FOR LARGE DESKTOPS */
 @media screen and (max-width: @largeBreakpoint) {} 
