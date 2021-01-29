@@ -57,7 +57,7 @@
                                 <div class="col-11 d-flex">
                                 	<viewerComponent:sortingArrow filterType="recordPi" colHeading="#{msg.cms__record_notes_table__text_heading}" list="#{cmsRecordNotesBean.dataProvider}" />
                                 </div>
-                                <div class="col-1 d-flex">
+                                <div class="col-1 d-flex justify-content-center">
                                 	#{msg.admin__cms_template_visible}
                                 </div>
                             </div>
@@ -93,7 +93,7 @@
                                             </div>
                                         </div>
                                     </div>
-                                    <div class="col-1 d-flex" style="justify-content: center;">
+                                    <div class="col-1 d-flex justify-content-center">
 								        <ui:fragment rendered="#{note.displayNote}">
 									        <i class="fa fa-check" aria-hidden="true"></i>
 								        </ui:fragment>
