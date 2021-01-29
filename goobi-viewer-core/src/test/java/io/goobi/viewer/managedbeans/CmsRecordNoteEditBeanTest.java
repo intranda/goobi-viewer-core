@@ -69,6 +69,10 @@ public class CmsRecordNoteEditBeanTest extends AbstractDatabaseEnabledTest {
         bean.setNote(note);
  
         note.getNoteText().setText(englishText);
+        //set note title as well so the note has valid english translations.
+        //Otherwise bean.setSelectedLocale(Locale.GERMAN) won't change locale
+        note.getNoteTitle().setText(englishText);
+
         assertEquals(englishText, note.getNoteText().getText(Locale.ENGLISH));
         assertEquals("", note.getNoteText().getText(Locale.GERMAN));
         
