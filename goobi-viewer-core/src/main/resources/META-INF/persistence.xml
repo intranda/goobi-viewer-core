@@ -5,7 +5,7 @@
 	version="2.1" xmlns="http://xmlns.jcp.org/xml/ns/persistence">
 	<persistence-unit name="intranda_viewer_tomcat"
 		transaction-type="JTA">
-		<jta-data-source>java:comp/env/viewer</jta-data-source>
+		<jta-data-source>java:comp/env/mnha</jta-data-source>
 		<class>io.goobi.viewer.model.annotation.Comment</class>
         <class>io.goobi.viewer.model.annotation.PersistentAnnotation</class>
 		<class>io.goobi.viewer.model.bookmark.BookmarkList</class>

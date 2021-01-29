@@ -90,11 +90,11 @@ public class CampaignRecordStatistic implements Serializable {
     @Column(name = "campaign_record_statistic_id")
     private Long id;
 
-    @Column(name = "date_created", columnDefinition = "TIMESTAMP", nullable = false)
+    @Column(name = "date_created", nullable = false)
     @JsonIgnore
     private LocalDateTime dateCreated;
 
-    @Column(name = "date_updated", columnDefinition = "TIMESTAMP")
+    @Column(name = "date_updated")
     @JsonIgnore
     private LocalDateTime dateUpdated;
 

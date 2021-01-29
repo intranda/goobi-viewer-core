@@ -136,6 +136,15 @@ public class CmsRecordNoteEditBean implements Serializable, IPolyglott {
         }
     }
     
+    /**
+     * 
+     * @return true if either no note has been created yet (record identifier not yet entered)
+     * or if the note has not been persisted yet.
+     */
+    public boolean isNewNote() {
+        return this.note == null || this.note.getId() == null;
+    }
+    
     public MetadataElement getMetadataElement() throws PresentationException, IndexUnreachableException, DAOException {
         if(this.metadataElement == null && this.note != null) {
             this.metadataElement = loadMetadataElement(this.note.getRecordPi());
