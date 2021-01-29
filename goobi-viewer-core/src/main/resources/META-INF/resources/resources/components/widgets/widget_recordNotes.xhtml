@@ -16,19 +16,17 @@
     
         <!-- WIDGET RECORD NOTES -->
 		<ui:repeat var="note" value="#{cc.attrs.notes}">
-                <div id ="widgetNotes" class="widget widget-notes">
+                <div id="widgetRecordNotes" class="widget widget-record-notes">
                     <h3 class="widget__title">
                         <span>#{note.noteTitle.getTextOrDefault(navigationHelper.locale, navigationHelper.defaultLocale)}</span>
-                        <ui:fragment rendered="#{userBean.admin}">
-                        	<a href="#{request.contextPath}/admin/cms/recordNotes/edit/#{note.id}">
-                        	<i class="fa fa-pencil" 
-	                        	aria-label="#{msg.edit} : #{note.noteTitle.getTextOrDefault(navigationHelper.locale, navigationHelper.defaultLocale)}"
-	                        	title="#{msg.edit} : #{note.noteTitle.getTextOrDefault(navigationHelper.locale, navigationHelper.defaultLocale)}"></i>
-                        	</a>
-                        </ui:fragment>
                     </h3>
                     <div class="widget__body">
                     	<label jsf:escape="false" value="#{note.noteText.getTextOrDefault(navigationHelper.locale, navigationHelper.defaultLocale)}"/>
+                    </div>
+                    <div class="widget-record-notes__action-link">
+                        <ui:fragment rendered="#{userBean.admin}">
+                        	<a href="#{request.contextPath}/admin/cms/recordNotes/edit/#{note.id}">#{msg.edit}</a>
+                        </ui:fragment>
                     </div>
 				</div>
 		</ui:repeat>
