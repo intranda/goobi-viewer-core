@@ -85,7 +85,7 @@
     	}
     }
     &__header-exit {
-    	margin-left: auto;
+    	margin-inline-start: auto;
     	a {
     		display: inline-block;
     		width: 32px;
@@ -412,9 +412,11 @@
 	}
 }
 
-@{RTL} .fullscreen {
-	&__view-sidebar-work-title {
-		word-break: normal;
+@{RTL} {
+	.fullscreen {
+		&__view-sidebar-work-title {
+			word-break: normal;
+		}
 	}
 }
 /* BREAKPOINT FOR LARGE DESKTOPS */

@@ -44,10 +44,11 @@
     &__month-days span,
     &__month-day,
     &__month-day-empty {
-        float: left;
-        width: calc(100% / 7);
+        flex: 0 0 calc(100% / 7);
+        max-width: calc(100% / 7);
     }
     &__month-days {
+    	display: flex;
         span {
             display: block;
             padding: 5px;
@@ -55,7 +56,9 @@
             text-align: center;
         }
     }
-    &__month-week {}
+    &__month-week {
+    	display: flex;
+    }
     &__month-day {
         text-align: center;
         color: @gray;

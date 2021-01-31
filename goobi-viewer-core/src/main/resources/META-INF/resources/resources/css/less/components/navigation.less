@@ -168,7 +168,6 @@
         &.level-4,
         &.level-5 {
         	.caret {
-				transform: rotate(90deg);
 			}
 		}
 		&-trigger {}
@@ -182,7 +181,23 @@
 @media screen and (max-width: @mediumBreakpoint) {}
 
 /* BREAKPOINT FOR TABLETS */
-@media screen and (max-width: @smallBreakpoint) {}
+@media screen and (max-width: @smallBreakpoint) {
+	@{RTL} .navigation {
+		.caret {
+			margin-left: unset;
+			margin-right: 0.5rem;
+		}
+		 &__submenu {
+	        &.level-2, 
+	        &.level-3, 
+	        &.level-4,
+	        &.level-5 {
+				right: unset;
+			}
+			&-trigger {}
+		 }
+	}
+}
 
 /* BREAKPOINT FOR SMARTPHONES */
 @media screen and (max-width: @xSmallBreakpoint) {}

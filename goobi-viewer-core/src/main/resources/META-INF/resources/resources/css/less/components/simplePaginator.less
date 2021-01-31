@@ -6,12 +6,6 @@
 /* BLOCK */
 .numeric-paginator {
     margin: 15px 0;
-    &.-ltr {
-           direction: ltr;     
-    }
-    &.-rtl {
-           direction: rtl;     
-    }
 	/* ELEMENT */
 	ul {
 		display: flex;
@@ -54,6 +48,14 @@
 	li.numeric-paginator__dots {
 		min-width: 0;
 		border: none;
+	}
+}
+
+@{RTL} .numeric-paginator {
+	&__navigate {
+		.fa-angle-right {
+			transform: rotate(180deg);
+		}
 	}
 }
 
