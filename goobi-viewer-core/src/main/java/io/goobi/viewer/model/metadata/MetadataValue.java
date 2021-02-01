@@ -99,7 +99,7 @@ public class MetadataValue implements Serializable {
             // logger.trace("param value: {}", paramValue);
 
             if (MetadataParameterType.CITEPROC.getKey().equals(paramValue)) {
-                logger.trace("CitePROC value: {}", index);
+                // logger.trace("CitePROC value: {}", index);
                 if (StringUtils.isEmpty(citationStyle)) {
                     return "No citation style configured";
                 }

@@ -142,7 +142,5 @@ public class ContextListener implements ServletContextListener {
         } catch (Throwable e) {
             logger.error(e.getMessage());
         }
-
-        DataManager.getInstance().closeCitationProcessors();
     }
 }

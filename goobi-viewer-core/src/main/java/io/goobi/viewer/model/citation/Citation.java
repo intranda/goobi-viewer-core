@@ -147,33 +147,18 @@ public class Citation {
             CSLItemData... items) throws IOException {
         logger.trace("makeAdhocBibliography");
         // TODO CSL is expensive to create, and must be closed at some point
-        try (CSL csl = new CSL(provider, style)) {
-            logger.trace("CLS created");
-            csl.setOutputFormat(outputFormat);
+        logger.trace("Creating CLS");
+        CSL csl = new CSL(provider, style);
+        logger.trace("CLS created");
+        csl.setOutputFormat(outputFormat);
 
-            String[] ids = new String[items.length];
-            for (int i = 0; i < items.length; ++i) {
-                ids[i] = items[i].getId();
-            }
-            csl.registerCitationItems(ids);
-
-            return csl.makeBibliography();
+        String[] ids = new String[items.length];
+        for (int i = 0; i < items.length; ++i) {
+            ids[i] = items[i].getId();
         }
+        csl.registerCitationItems(ids);
 
-        //        CSL csl = DataManager.getInstance().getCitationProcessor(style);
-        //        if (csl == null) {
-        //            throw new IllegalStateException("CSL not created for: " + style);
-        //        }
-        //        csl.reset();
-        //        csl.setOutputFormat(outputFormat);
-        //        String[] ids = new String[items.length];
-        //        for (int i = 0; i < items.length; ++i) {
-        //            ids[i] = items[i].getId();
-        //        }
-        //        csl.registerCitationItems(ids);
-        //        logger.trace("x");
-        //
-        //        return csl.makeBibliography();
+        return csl.makeBibliography();
     }
 
     /**
@@ -184,11 +169,10 @@ public class Citation {
      */
     public String getCitationString() throws IOException {
         logger.trace("Citation string generation START");
-        CSLItemData itemData = DataManager.getInstance().getCitationItemDataProvider().retrieveItem(id);
-        if (itemData == null) {
-            itemData = DataManager.getInstance().getCitationItemDataProvider().addItemData(id, fields, type);
+        if (item == null || provider == null) {
+            build();
         }
-        String ret = makeAdhocBibliography(style, "html", itemData).makeString();
+        String ret = CSL.makeAdhocBibliography(style, item).makeString();
         logger.trace("Citation string generation END");
         return ret;
     }

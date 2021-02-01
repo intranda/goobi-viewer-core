@@ -23,7 +23,6 @@ import org.apache.solr.common.SolrDocument;
 import org.junit.Assert;
 import org.junit.Test;
 
-import de.undercouch.citeproc.CSL;
 import io.goobi.viewer.model.security.user.User;
 import io.goobi.viewer.modules.IModule;
 import io.goobi.viewer.modules.interfaces.IURLBuilder;
@@ -168,15 +167,5 @@ public class DataManagerTest {
         }
         Assert.assertTrue(DataManager.getInstance().registerModule(new TestModule()));
         Assert.assertFalse(DataManager.getInstance().registerModule(new TestModule()));
-    }
-
-    /**
-     * @see DataManager#getCitationProcessor(String)
-     * @verifies create citation processor correctly
-     */
-    @Test
-    public void getCitationProcessor_shouldCreateCitationProcessorCorrectly() throws Exception {
-        CSL csl = DataManager.getInstance().getCitationProcessor("apa");
-        Assert.assertNotNull(csl);
     }
 }
