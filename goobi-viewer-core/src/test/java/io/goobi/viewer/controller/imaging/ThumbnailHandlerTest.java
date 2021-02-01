@@ -16,8 +16,11 @@
 package io.goobi.viewer.controller.imaging;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
 
 import java.io.UnsupportedEncodingException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.URLEncoder;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -214,32 +217,33 @@ public class ThumbnailHandlerTest extends AbstractTest {
         String url = handler.getThumbnailUrl(doc, 200, 300);
         Assert.assertEquals("http://external/iiif/image/00000001.tif/full/!200,300/0/default.jpg", url);
     }
-    
+
     @Test
     public void testGetCMSMediaImageApiUrl_legacy() throws UnsupportedEncodingException {
-        
+
         String legacyApiUrl = "https://viewer.goobi.io/rest/";
-        
+
         String filename = "image.jpg";
         String viewerHomePath = DataManager.getInstance().getConfiguration().getViewerHome();
         String cmsMediaFolder = DataManager.getInstance().getConfiguration().getCmsMediaFolder();
-        
-        Path filepath = Paths.get(viewerHomePath).toAbsolutePath().resolve(cmsMediaFolder).resolve(filename);
-        String fileUrl = PathConverter.toURI(filepath).toString();
-//        String encFilepath = URLEncoder.encode(fileUrl, "utf-8");
+
+        Path filepath = Paths.get(viewerHomePath).resolve(cmsMediaFolder).resolve(filename);
+        //        String fileUrl = PathConverter.toURI(filepath).toString();
+        String fileUrl = "file://" + viewerHomePath + cmsMediaFolder + "/" +  filename;
         String encFilepath = BeanUtils.escapeCriticalUrlChracters(fileUrl);
-        
+        encFilepath = URLEncoder.encode(encFilepath, "utf-8");
+
         String thumbUrlLegacy = ThumbnailHandler.getCMSMediaImageApiUrl(filename, legacyApiUrl);
         assertEquals(legacyApiUrl + "image/-/" + encFilepath, thumbUrlLegacy);
     }
-    
+
     @Test
     public void testGetCMSMediaImageApiUrl() throws UnsupportedEncodingException {
-        
+
         String currentApiUrl = "https://viewer.goobi.io/api/v1";
-        
+
         String filename = "image.jpg";
-        
+
         String thumbUrlV1 = ThumbnailHandler.getCMSMediaImageApiUrl(filename, currentApiUrl);
         assertEquals(currentApiUrl + ApiUrls.CMS_MEDIA + ApiUrls.CMS_MEDIA_FILES_FILE.replace("{filename}", filename), thumbUrlV1);
     }
