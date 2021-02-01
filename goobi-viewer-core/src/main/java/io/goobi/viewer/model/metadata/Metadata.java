@@ -63,6 +63,8 @@ public class Metadata implements Serializable {
 
     private static final Logger logger = LoggerFactory.getLogger(Metadata.class);
 
+    /** ID of the owning StructElement. Used for constructing unique value IDs, where required. */
+    private String ownerId;
     /** Label from messages.properties. */
     private final String label;
     /** Value from messages.properties (with placeholders) */
@@ -81,6 +83,7 @@ public class Metadata implements Serializable {
      * </p>
      */
     public Metadata() {
+        this.ownerId = "";
         this.label = "";
         this.masterValue = "";
         this.type = 0;
@@ -93,14 +96,16 @@ public class Metadata implements Serializable {
      * Constructor for Metadata.
      * </p>
      *
+     * @param ownerId
      * @param label a {@link java.lang.String} object.
      * @param masterValue a {@link java.lang.String} object.
      * @param paramValue a {@link java.lang.String} object.
      */
-    public Metadata(String label, String masterValue, String paramValue) {
+    public Metadata(String ownerId, String label, String masterValue, String paramValue) {
+        this.ownerId = ownerId;
         this.label = label;
         this.masterValue = masterValue;
-        values.add(new MetadataValue(masterValue));
+        values.add(new MetadataValue(ownerId + "_" + 0, masterValue));
         if (paramValue != null) {
             values.get(0).getParamValues().add(new ArrayList<>());
             values.get(0).getParamValues().get(0).add(paramValue);
@@ -121,11 +126,12 @@ public class Metadata implements Serializable {
      * @param paramValue a {@link java.lang.String} object.
      * @param locale
      */
-    public Metadata(String label, String masterValue, MetadataParameter param, String paramValue, Locale locale) {
+    public Metadata(String ownerId, String label, String masterValue, MetadataParameter param, String paramValue, Locale locale) {
+        this.ownerId = ownerId;
         this.label = label;
         this.masterValue = masterValue;
         params.add(param);
-        values.add(new MetadataValue(masterValue));
+        values.add(new MetadataValue(ownerId + "_" + 0, masterValue));
         if (paramValue != null) {
             setParamValue(0, 0, Collections.singletonList(paramValue), label, null, null, null, locale);
             //            values.get(0).getParamValues().add(new ArrayList<>());
@@ -312,7 +318,7 @@ public class Metadata implements Serializable {
 
         // Adopt indexes to list sizes, if necessary
         while (values.size() - 1 < valueIndex) {
-            values.add(new MetadataValue(masterValue));
+            values.add(new MetadataValue(ownerId + "_" + valueIndex, masterValue));
         }
         MetadataValue mdValue = values.get(valueIndex);
         mdValue.setGroupType(groupType);
@@ -590,6 +596,7 @@ public class Metadata implements Serializable {
         if (se == null) {
             return false;
         }
+        ownerId = String.valueOf(se.getLuceneId());
         ownerDocstrctType = se.getDocStructType();
 
         // Grouped metadata

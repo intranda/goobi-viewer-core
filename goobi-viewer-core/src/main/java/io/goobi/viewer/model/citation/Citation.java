@@ -49,8 +49,8 @@ public class Citation {
     private final String style;
     private final CSLType type;
     private final Map<String, String> fields;
-    private CSLItemData item;
-    private ItemDataProvider provider;
+    //    private CSLItemData item;
+    //    private ItemDataProvider provider;
 
     /**
      * Constructor.
@@ -84,6 +84,7 @@ public class Citation {
      * 
      * @return this object
      */
+    @Deprecated
     public Citation build() {
         CSLItemDataBuilder builder = new CSLItemDataBuilder().type(type);
 
@@ -129,8 +130,8 @@ public class Citation {
             }
         }
 
-        this.item = builder.build();
-        provider = new ListItemDataProvider(item);
+        // this.item = builder.build();
+        // provider = new ListItemDataProvider(item);
 
         return this;
     }
@@ -145,16 +146,30 @@ public class Citation {
      */
     Bibliography makeAdhocBibliography(String style, String outputFormat,
             CSLItemData... items) throws IOException {
-        logger.trace("makeAdhocBibliography");
-        // TODO CSL is expensive to create, and must be closed at some point
-        logger.trace("Creating CLS");
-        CSL csl = new CSL(provider, style);
-        logger.trace("CLS created");
-        csl.setOutputFormat(outputFormat);
+        // logger.trace("makeAdhocBibliography");
 
+        //        CSL csl = new CSL(provider, style);
+        //        logger.trace("CLS created");
+        //        csl.setOutputFormat(outputFormat);
+        //
+        //        String[] ids = new String[items.length];
+        //        for (int i = 0; i < items.length; ++i) {
+        //            ids[i] = items[i].getId();
+        //        }
+        //        csl.registerCitationItems(ids);
+        //
+        //        return csl.makeBibliography();
+
+        CSL csl = DataManager.getInstance().getCitationProcessor(style);
+        if (csl == null) {
+            throw new IllegalStateException("CSL not created for: " + style);
+        }
+        csl.reset();
+        csl.setOutputFormat(outputFormat);
         String[] ids = new String[items.length];
         for (int i = 0; i < items.length; ++i) {
             ids[i] = items[i].getId();
+            logger.trace("Item data id: {}", items[i].getId());
         }
         csl.registerCitationItems(ids);
 
@@ -169,10 +184,14 @@ public class Citation {
      */
     public String getCitationString() throws IOException {
         logger.trace("Citation string generation START");
-        if (item == null || provider == null) {
-            build();
-        }
-        String ret = CSL.makeAdhocBibliography(style, item).makeString();
+        //        if (item == null || provider == null) {
+        //            build();
+        //        }
+        //        String ret = CSL.makeAdhocBibliography(style, item).makeString();
+
+        CSLItemData itemData = DataManager.getInstance().getCitationItemDataProvider().addItemData(id, fields, type);
+        String ret = makeAdhocBibliography(style, "html", itemData).makeString();
+
         logger.trace("Citation string generation END");
         return ret;
     }

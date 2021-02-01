@@ -226,8 +226,8 @@ public class BrowseElement implements Serializable {
                         if (StringUtils.isNotEmpty(anchorLabel)) {
                             this.metadataList
                                     .add(position,
-                                            new Metadata(anchorStructElement.getDocStructType(), null,
-                                                    new MetadataParameter().setType(MetadataParameterType.FIELD)
+                                            new Metadata(String.valueOf(anchorStructElement.getLuceneId()), anchorStructElement.getDocStructType(),
+                                                    null, new MetadataParameter().setType(MetadataParameterType.FIELD)
                                                             .setKey(anchorStructElement.getDocStructType()),
                                                     StringTools.intern(anchorLabel), locale));
                             position++;
@@ -244,8 +244,9 @@ public class BrowseElement implements Serializable {
                         topstructLabel = new StringBuilder(topstructLabel).append(" (").append(topStructElement.getVolumeNo()).append(')').toString();
                     }
                     this.metadataList.add(position,
-                            new Metadata(topStructElement.getDocStructType(), null, new MetadataParameter().setType(MetadataParameterType.FIELD)
-                                    .setKey(topStructElement.getDocStructType()),
+                            new Metadata(String.valueOf(topStructElement.getLuceneId()), topStructElement.getDocStructType(), null,
+                                    new MetadataParameter().setType(MetadataParameterType.FIELD)
+                                            .setKey(topStructElement.getDocStructType()),
                                     StringTools.intern(topstructLabel), locale));
                 }
             }
@@ -527,7 +528,8 @@ public class BrowseElement implements Serializable {
                             break;
                     }
 
-                    Metadata md = new Metadata(sortField.getOne(), "", new MetadataParameter().setType(type), fieldValue, locale);
+                    Metadata md = new Metadata(String.valueOf(structElement.getLuceneId()), sortField.getOne(), "",
+                            new MetadataParameter().setType(type), fieldValue, locale);
 
                     metadataList.add(md);
                     additionalMetadataList.add(md);
@@ -610,8 +612,9 @@ public class BrowseElement implements Serializable {
                                             "$1" + translatedValue + "$3");
                                 }
                                 highlightedValue = SearchHelper.replaceHighlightingPlaceholders(highlightedValue);
-                                metadataList.add(new Metadata(docFieldName, "", highlightedValue));
-                                additionalMetadataList.add(new Metadata(docFieldName, "", highlightedValue));
+                                metadataList.add(new Metadata(String.valueOf(structElement.getLuceneId()), docFieldName, "", highlightedValue));
+                                additionalMetadataList
+                                        .add(new Metadata(String.valueOf(structElement.getLuceneId()), docFieldName, "", highlightedValue));
                                 existingMetadataFields.add(docFieldName);
                                 logger.trace("added existing field: {}", docFieldName);
                             }
@@ -640,8 +643,9 @@ public class BrowseElement implements Serializable {
                                             "$1" + translatedValue + "$3");
                                 }
                                 highlightedValue = SearchHelper.replaceHighlightingPlaceholders(highlightedValue);
-                                metadataList.add(new Metadata(termsFieldName, "", highlightedValue));
-                                additionalMetadataList.add(new Metadata(termsFieldName, "", highlightedValue));
+                                metadataList.add(new Metadata(String.valueOf(structElement.getLuceneId()), termsFieldName, "", highlightedValue));
+                                additionalMetadataList
+                                        .add(new Metadata(String.valueOf(structElement.getLuceneId()), termsFieldName, "", highlightedValue));
                                 existingMetadataFields.add(termsFieldName);
                             }
                         }

@@ -39,7 +39,7 @@ public class CitationTest extends AbstractTest {
         fields.put(Citation.ISSUED, "2017-04-11");
         fields.put(Citation.ISBN, "9780606412148");
         
-        Citation cit = new Citation("id", "apa", CSLType.BOOK, fields).build();
+        Citation cit = new Citation("id", "apa", CSLType.BOOK, fields);
         String s = cit.getCitationString();
         Assert.assertNotNull(s);
         Assert.assertTrue(s.contains("Zahn, T. (2017-04-11). <span style=\"font-style: italic\">Thrawn</span>."));

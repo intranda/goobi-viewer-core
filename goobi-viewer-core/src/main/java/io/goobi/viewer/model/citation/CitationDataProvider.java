@@ -47,7 +47,7 @@ public class CitationDataProvider implements ItemDataProvider {
      * @should add item data correctly
      */
     public CSLItemData addItemData(String id, Map<String, String> fields, CSLType type) {
-        CSLItemDataBuilder builder = new CSLItemDataBuilder().type(type);
+        CSLItemDataBuilder builder = new CSLItemDataBuilder().type(type).id(id);
 
         for (String key : fields.keySet()) {
             switch (key) {

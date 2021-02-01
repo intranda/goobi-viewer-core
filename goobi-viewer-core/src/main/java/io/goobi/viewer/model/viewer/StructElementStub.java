@@ -49,7 +49,7 @@ public class StructElementStub implements Comparable<StructElementStub>, Seriali
     private static final Logger logger = LoggerFactory.getLogger(StructElementStub.class);
 
     /** IDDOC of the Solr document representing this structure element. */
-    protected long luceneId;
+    protected final long luceneId;
     /** Identifier of top level structure element of the tree to which this structure element belongs. */
     protected String pi;
     /** Logical structure element ID from METS. */
@@ -87,7 +87,7 @@ public class StructElementStub implements Comparable<StructElementStub>, Seriali
      * </p>
      */
     public StructElementStub() {
-        // the emptiness inside
+        this.luceneId = 1L;
     }
 
     /**

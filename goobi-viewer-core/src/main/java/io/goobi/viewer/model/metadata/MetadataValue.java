@@ -53,6 +53,7 @@ public class MetadataValue implements Serializable {
     private final List<String> paramUrls = new ArrayList<>();
     private final Map<String, String> normDataUrls = new HashMap<>();
     private final Map<String, String> citationValues = new HashMap<>();
+    private String id;
     private String masterValue;
     private String groupType;
     private String docstrct = null;
@@ -64,7 +65,8 @@ public class MetadataValue implements Serializable {
      * 
      * @param masterValue
      */
-    MetadataValue(String masterValue) {
+    MetadataValue(String id, String masterValue) {
+        this.id = id;
         this.masterValue = masterValue;
     }
 
@@ -105,7 +107,7 @@ public class MetadataValue implements Serializable {
                 }
                 try {
                     if (citationString == null) {
-                        citationString = new Citation("id", citationStyle, CitationTools.getCSLTypeForDocstrct(docstrct), citationValues)
+                        citationString = new Citation(id, citationStyle, CitationTools.getCSLTypeForDocstrct(docstrct), citationValues)
                                 .getCitationString();
                     }
                     return citationString;
