@@ -75,7 +75,7 @@ public class Comment implements Comparable<Comment> {
     @Transient
     private String oldText = null;
 
-    @Column(name = "date_created", nullable = false, columnDefinition = "TIMESTAMP")
+    @Column(name = "date_created", nullable = false)
     private LocalDateTime dateCreated = LocalDateTime.now();
 
     @Column(name = "date_updated", columnDefinition = "TIMESTAMP")
