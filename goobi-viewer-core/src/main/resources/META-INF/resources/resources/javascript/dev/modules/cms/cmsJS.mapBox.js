@@ -26,7 +26,7 @@ var cmsJS = ( function( cms ) {
     'use strict';
     
     // variables
-    var _debug = true;
+    var _debug = false;
     var _map = {};
     var _mapEnlarged = {};
     var _features = [];

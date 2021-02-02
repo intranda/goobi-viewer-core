@@ -1,7 +1,7 @@
 
  var viewerJS = ( function( viewer ) {
     
-    var _debug = true;
+    var _debug = false;
     
     if(!rxjs) {
         throw "Missing dependencies for WebSocket";

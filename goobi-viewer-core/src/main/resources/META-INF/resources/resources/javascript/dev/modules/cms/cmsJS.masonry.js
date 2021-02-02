@@ -121,11 +121,9 @@ var cmsJS = ( function( cms ) {
             let description = viewerJS.getMetadataValue(item.description, _defaults.language );
             
             let image = item.image["@id"];
-            console.log("image ", item.image);
             if(item.image.service) { 
                 image = item.image.service["@id"] + "/full/max/0/default.jpg";
             }
-            console.log("final image ",image)
             
 
             // grid item title
