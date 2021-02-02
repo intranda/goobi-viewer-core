@@ -58,12 +58,13 @@
 	&__event-dl {
 		margin: 0;
 		dt {
-			width: 30%;
-			text-align: left;			
+			text-align: left;
+			max-width: 30%;
+			flex: 0 0 30%;		
 		}
 		dd {
-			margin-left: 30%;
-			margin-bottom: 0;	
+			margin-bottom: 0;
+			margin-right: 0;
 		}
 	}
 	&__element-value,
@@ -94,6 +95,7 @@
 	&__element-wrapper {}
 	&__element {}
 	&__element-dl {
+		display: flex;
 		dt {}
 		dd {}
 	}
@@ -137,11 +139,13 @@
 
 @{RTL} {
 	.metadata {
+		&__element-dl,
 		&__event-dl {
 			dt {
-				text-align: right;			
+				text-align: right;
+				max-width: 30%;
+				flex: 0 0 30%;		
 			}
-			dd {}
 		}
 	}
 }
