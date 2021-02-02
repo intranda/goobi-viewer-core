@@ -144,5 +144,74 @@ public class CmsRecordNoteEditBeanTest extends AbstractDatabaseEnabledTest {
         String data = new TranslatedTextConverter().convertToDatabaseColumn(text);
         assertEquals("default", data);
     }
+    
+    @Test
+    public void testTranslationEmpyIfNoFieldsFilled() {
+        CMSRecordNote note = new CMSRecordNote("PI1");
+        TranslatedText title = note.getNoteTitle();
+        TranslatedText text = note.getNoteText();
+        bean.setNote(note);
+        
+      //default language is en
+        assertEquals(Locale.ENGLISH, BeanUtils.getDefaultLocale());
+        
+        assertFalse(bean.isValid(Locale.ENGLISH));
+        assertFalse(bean.isComplete(Locale.ENGLISH));
+        assertTrue(bean.isEmpty(Locale.ENGLISH));
+    }
+    
+    @Test
+    public void testTranslationNotCompleteIfNotAllFieldsFilled() {
+        CMSRecordNote note = new CMSRecordNote("PI1");
+        TranslatedText title = note.getNoteTitle();
+        TranslatedText text = note.getNoteText();
+        bean.setNote(note);
+        
+      //default language is en
+        assertEquals(Locale.ENGLISH, BeanUtils.getDefaultLocale());
+        
+        title.setText(englishText, Locale.ENGLISH);
+        text.setText(englishText, Locale.ENGLISH);
+        text.setText(germanText, Locale.GERMAN);
+        
+        assertFalse(bean.isComplete(Locale.GERMAN));
+        assertFalse(bean.isEmpty(Locale.GERMAN));
+    }
+    
+    @Test
+    public void testTranslationCompleteIfSameFieldsFillesAsInDefaultLanguage() {
+        CMSRecordNote note = new CMSRecordNote("PI1");
+        TranslatedText title = note.getNoteTitle();
+        TranslatedText text = note.getNoteText();
+        bean.setNote(note);
+        
+      //default language is en
+        assertEquals(Locale.ENGLISH, BeanUtils.getDefaultLocale());
+        
+        text.setText(englishText, Locale.ENGLISH);
+        text.setText(germanText, Locale.GERMAN);
+        
+        assertTrue(bean.isComplete(Locale.GERMAN));
+        assertFalse(bean.isEmpty(Locale.GERMAN));
+    }
+    
+    @Test
+    public void testTranslationCompleteIfAllFieldsFilled() {
+        CMSRecordNote note = new CMSRecordNote("PI1");
+        TranslatedText title = note.getNoteTitle();
+        TranslatedText text = note.getNoteText();
+        bean.setNote(note);
+        
+      //default language is en
+        assertEquals(Locale.ENGLISH, BeanUtils.getDefaultLocale());
+        
+        title.setText(englishText, Locale.ENGLISH);
+        text.setText(englishText, Locale.ENGLISH);
+        text.setText(germanText, Locale.GERMAN);
+        title.setText(germanText, Locale.GERMAN);
+        
+        assertTrue(bean.isComplete(Locale.GERMAN));
+        assertFalse(bean.isEmpty(Locale.GERMAN));
+    }
 
 }

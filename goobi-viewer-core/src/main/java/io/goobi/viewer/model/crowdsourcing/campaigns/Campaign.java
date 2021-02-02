@@ -1315,6 +1315,16 @@ public class Campaign implements CMSMediaHolder, ILicenseType, IPolyglott {
         return StringUtils.isNotBlank(getTitle(locale.getLanguage(), false));
 
     }
+    
+
+    /* (non-Javadoc)
+     * @see io.goobi.viewer.model.misc.IPolyglott#isEmpty(java.util.Locale)
+     */
+    @Override
+    public boolean isEmpty(Locale locale) {
+        return StringUtils.isBlank(getDescription(locale.getLanguage())) &&
+                StringUtils.isBlank(getTitle(locale.getLanguage()));
+    }
 
     /**
      * Get the targetIdentifier to a random PI from the Solr query result list.
@@ -1714,5 +1724,6 @@ public class Campaign implements CMSMediaHolder, ILicenseType, IPolyglott {
     public String toString() {
         return getTitle();
     }
+
 
 }

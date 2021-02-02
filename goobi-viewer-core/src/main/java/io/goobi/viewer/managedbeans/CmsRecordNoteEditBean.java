@@ -239,6 +239,15 @@ public class CmsRecordNoteEditBean implements Serializable, IPolyglott {
     public boolean isValid(Locale locale) {
         return isComplete(locale);
     }
+    
+
+    /* (non-Javadoc)
+     * @see io.goobi.viewer.model.misc.IPolyglott#isEmpty(java.util.Locale)
+     */
+    @Override
+    public boolean isEmpty(Locale locale) {
+        return this.note.getNoteTitle().isEmpty(locale) && this.note.getNoteText().isEmpty(locale);
+    }
 
     /* (non-Javadoc)
      * @see io.goobi.viewer.model.misc.IPolyglott#getSelectedLocale()
@@ -279,6 +288,7 @@ public class CmsRecordNoteEditBean implements Serializable, IPolyglott {
             return locale;
         }
     }
+
 
     
     
