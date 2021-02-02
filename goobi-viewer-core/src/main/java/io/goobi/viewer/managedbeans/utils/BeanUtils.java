@@ -399,7 +399,10 @@ public class BeanUtils {
                 bean.getThumbs();
             } catch (ContextNotActiveException e) {
                 bean = new ImageDeliveryBean();
-                bean.init(DataManager.getInstance().getConfiguration());
+                bean.init(
+                        DataManager.getInstance().getConfiguration(), 
+                        DataManager.getInstance().getRestApiManager().getDataApiManager().orElse(null),
+                        DataManager.getInstance().getRestApiManager().getContentApiManager().orElse(null));
             }
         }
         return bean;

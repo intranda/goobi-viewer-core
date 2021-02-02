@@ -34,14 +34,14 @@
 		font-size: 3.2rem;
 	}
 	&__content-inner-title-exit {
-		display: inline-block;
-		float: right;
+		display: block;
     	width: 32px;
     	height: 32px;
     	background-image: url("@{images}/icons/icon_fs-exit.svg");
     	background-repeat: no-repeat;
     	background-position: center center;
     	background-size: 24px;
+    	margin-left: auto;
 	}
 	&__content-inner-content {
 		padding: 15px;
@@ -506,7 +506,7 @@
 	&__sidebar {
 		position: absolute;
 		padding: 1.5rem;
-		padding-top: 5rem;
+		padding-top: 3rem;
 		font-size: @fontNormal;
 		z-index: 1010;
 		&.fixed-top,
@@ -1021,22 +1021,65 @@
 			min-height: 120px;
 			height: auto;
 	}
+	// FORMATTED TEXT
+	&__record-notes-info-box {
+		display: flex;
+		flex-wrap: wrap;
+		.metadata__element-dl dd, .metadata__event-dl dd {
+			margin-left: unset;
+			width: 100%;
+		}
+		.metadata__element-dl dt, .metadata__event-dl dt {
+			width: 100%;
+		}
+		.dl-horizontal dt {
+			float: none;
+		}
+	}
+	&__record-notes-info-text {
+		margin-bottom: 1rem;
+		flex: 0 0 65%;
+	}
+	&__record-notes-table-img {
+        margin-right: 2rem;
+		flex: 0 0 160px;
+		img {
+			max-width: 100%;
+			max-height: 160px;
+		}
+	}
+	&__record-notes-image-wrapper {
+		flex: 0 0 100%;
+		margin: 2rem 0;
+	}
+	&__record-notes-image {
+		max-width: 100%;
+	}
+	&__record-notes-metadata {
+		flex: 0 0 100%;
+	}
+	&__record-notes-box-editable {}
 	// BASIC STRUCTURES
 	&__content-wrapper {
 		display: flex;
 	}
 	&__content-main {
-		flex: 0 0 calc(~"100% - 350px");
-		max-width: calc(~"100% - 350px");
+		flex: 0 0 calc(~"100% - 420px");
+		max-width: calc(~"100% - 420px");
 		position: relative;
 		align-self: flex-start;
 	}
 	&__content-side {
-		max-width: 350px;
-		flex: 0 0 350px;
+		max-width: 420px;
+		flex: 0 0 420px;
 		position: relative;
 		align-self: flex-start;
 		padding-left: 3rem;
+		div, span {
+			&:last-child {
+				margin-bottom: 0;
+			}
+		}
 	}
 	.-deactivated {
 		opacity: .7;

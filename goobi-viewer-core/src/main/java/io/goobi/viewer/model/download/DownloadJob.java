@@ -154,7 +154,7 @@ public abstract class DownloadJob implements Serializable {
      * Timestamp of the last request for this download. This can be the time of the initial request, the time of generation completion or any
      * subsequent requests. This + TTL is the time of expiration.
      */
-    @Column(name = "last_requested", nullable = false, columnDefinition = "TIMESTAMP")
+    @Column(name = "last_requested", nullable = false)
     @JsonIgnore
     protected LocalDateTime lastRequested;
 

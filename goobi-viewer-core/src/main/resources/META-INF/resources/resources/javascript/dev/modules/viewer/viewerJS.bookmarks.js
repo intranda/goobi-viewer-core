@@ -322,14 +322,14 @@ var viewerJS = ( function( viewer ) {
             },
 
 
-            addToBookmarkList: function(listId, pi, page, logid, bookmarkPage) {
+            addToBookmarkList: function(listId, pi, page, logid) {
                 
                 let url = this.getUrl(listId) 
                 
                 let item = {
                     pi: pi,
                     logId: logid,
-                    oder: page
+                    order: page
                 }
                 
                 return fetch(url, {
@@ -349,13 +349,21 @@ var viewerJS = ( function( viewer ) {
                 
             },
 
-            removeFromBookmarkList: function(listId, pi, page, logid, bookmarkPage) {
+            removeFromBookmarkList: function(listId, pi, page, logid) {
+                
+                if(_debug) {
+                    console.log("removeFromBookmarkList, listId", listId);
+                    console.log("removeFromBookmarkList, pi", pi);
+                    console.log("removeFromBookmarkList, page", page);
+                    console.log("removeFromBookmarkList, logid", logid);
+                }
                 
                 let list = this.getList(listId);
                 let item = this.getItem(list, pi, page, logid);
+                console.log("got from list ", list, item);
                 if(item) {
                     let url = this.getUrl(listId) + "items/" + item.id + "/";
-          
+                    console.log("fetch ", url);
                     return fetch(url, {method:"DELETE"})
                     .then( res => res.json())
                     .then(data => {

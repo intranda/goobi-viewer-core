@@ -16,6 +16,7 @@
 package io.goobi.viewer.model.misc;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Locale;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -24,6 +25,7 @@ import org.apache.commons.lang3.StringUtils;
 
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
+import de.intranda.metadata.multilanguage.IMetadataValue;
 import de.intranda.metadata.multilanguage.MultiLanguageMetadataValue;
 import io.goobi.viewer.api.rest.serialization.TranslatedTextSerializer;
 
@@ -37,7 +39,7 @@ public class TranslatedText extends MultiLanguageMetadataValue implements IPolyg
     private Locale selectedLocale;
     
     public TranslatedText() {
-        this(IPolyglott.getLocalesStatic(), IPolyglott.getDefaultLocale());
+        this(IPolyglott.getLocalesStatic(), null);
     }
     
     public TranslatedText(Collection<Locale> locales) {
@@ -60,6 +62,29 @@ public class TranslatedText extends MultiLanguageMetadataValue implements IPolyg
         });
     }
     
+    public TranslatedText(TranslatedText orig)  {
+        this(orig, IPolyglott.getLocalesStatic(), null);
+    }
+    
+    /**
+     * @param dbData
+     */
+    public TranslatedText(String text) {
+        super();
+        setText(text);
+        
+    }
+
+    /**
+     * @param label
+     */
+    public TranslatedText(MultiLanguageMetadataValue label) {        
+        super(label.getLanguages().stream()
+                .filter(lang -> label.getValue(lang).isPresent())
+                .collect(Collectors.toMap(lang -> lang, lang -> label.getValue(lang).get()))
+               );
+    }
+
     public Locale getSelectedLocale() {
         return this.selectedLocale;
     }
@@ -69,11 +94,22 @@ public class TranslatedText extends MultiLanguageMetadataValue implements IPolyg
     }
     
     public String getText(Locale locale) {
-        return super.getValue(locale).orElse("");
+        return super.getValue(locale).orElse(getValue(DEFAULT_LANGUAGE).orElse(""));
+    }
+    
+    public String getTextOrDefault(Locale locale, Locale defaultLocale) {
+        return super.getValue(locale)
+                .orElse(getValue(defaultLocale)
+                .orElse(getValue(DEFAULT_LANGUAGE)
+                .orElse("")));
     }
     
     public void setText(String text, Locale locale) {
-        super.setValue(text, locale);
+        if(locale != null) {            
+            super.setValue(text, locale);
+        } else {
+            super.setValue(text);
+        }
     }
     
     public String getText() {
@@ -92,7 +128,7 @@ public class TranslatedText extends MultiLanguageMetadataValue implements IPolyg
 
     @Override
     public boolean isComplete(Locale locale) {
-        return isValid(locale);
+        return isValid(locale) || (!IPolyglott.getDefaultLocale().equals(locale) && isEmpty(IPolyglott.getDefaultLocale()));
     }
 
     @Override

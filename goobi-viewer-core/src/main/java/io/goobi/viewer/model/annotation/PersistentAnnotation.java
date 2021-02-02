@@ -72,10 +72,10 @@ public class PersistentAnnotation {
     @Column(name = "annotation_id")
     private Long id;
 
-    @Column(name = "date_created", columnDefinition = "TIMESTAMP")
+    @Column(name = "date_created")
     private LocalDateTime dateCreated;
 
-    @Column(name = "date_modified", columnDefinition = "TIMESTAMP")
+    @Column(name = "date_modified")
     private LocalDateTime dateModified;
 
     @Column(name = "motivation")

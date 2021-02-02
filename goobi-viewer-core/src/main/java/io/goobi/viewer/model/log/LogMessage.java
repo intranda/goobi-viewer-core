@@ -63,7 +63,7 @@ public class LogMessage implements Serializable, Comparable<LogMessage> {
     @Column(name = "creator_id", nullable = true)
     private Long creatorId;
 
-    @Column(name = "date_created", columnDefinition = "TIMESTAMP")
+    @Column(name = "date_created")
     private LocalDateTime dateCreated;
 
     @Column(name = "message", nullable = true, columnDefinition = "LONGTEXT")
