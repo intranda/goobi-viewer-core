@@ -452,19 +452,25 @@ this.showLoader = function() {
 }.bind(this)
 
 this.add = function(event) {
-    let list = event.item.bookmarkList
-    this.opts.bookmarks.addToBookmarkList(list.id, this.pi, this.page, this.logid, this.opts.bookmarks.isTypePage())
+    let list = event.item.bookmarkList;
+    let pi = this.pi;
+    let logid = undefined;
+    let page = this.opts.bookmarks.isTypePage() ? this.page : undefined;
+    this.opts.bookmarks.addToBookmarkList(list.id, pi, page, logid)
     .then( () => this.updateLists());
 }.bind(this)
 
 this.remove = function(event) {
     if(this.opts.bookmarks.config.userLoggedIn) {
-	    let list = event.item.bookmarkList
-	    this.opts.bookmarks.removeFromBookmarkList(list.id, this.pi, this.page, this.logid, this.opts.bookmarks.isTypePage())
+	    let list = event.item.bookmarkList;
+	    let pi = this.pi;
+	    let logid = undefined;
+	    let page = this.opts.bookmarks.isTypePage() ? this.page : undefined;
+	    this.opts.bookmarks.removeFromBookmarkList(list.id, pi, page, logid)
 	    .then( () => this.updateLists())
     } else {
         let bookmark = event.item.bookmark;
-        this.opts.bookmarks.removeFromBookmarkList(0, bookmark.pi, undefined, undefined, false)
+        this.opts.bookmarks.removeFromBookmarkList(0, bookmark.pi, undefined, undefined)
 	    .then( () => this.updateLists())
     }
 }.bind(this)
