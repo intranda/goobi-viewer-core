@@ -119,7 +119,12 @@ var cmsJS = ( function( cms ) {
             
             let label = viewerJS.getMetadataValue(item.label, _defaults.language );
             let description = viewerJS.getMetadataValue(item.description, _defaults.language );
+            
             let image = item.image["@id"];
+            if(item.image.service) { 
+                image = item.image.service["@id"] + "/full/max/0/default.jpg";
+            }
+            
 
             // grid item title
             if(label) {                
@@ -131,7 +136,7 @@ var cmsJS = ( function( cms ) {
                 }
                 $gridItemTitle.addClass( 'grid-item-title' );
                 $gridItemTitle.text( label );
-                if ( item.url  ) {
+                if ( item.link  ) {
                     $gridItemTitleLink.append( $gridItemTitle );
                     $gridItem.append( $gridItemTitleLink );
                 }
@@ -141,7 +146,7 @@ var cmsJS = ( function( cms ) {
             }
             
             // grid item caption
-            if ( description || label ) {
+            if ( description ) {
                 $gridItemCaption = $( '<div />' );
                 $gridItemCaption.addClass( 'grid-item-caption' );
                 $gridItemCaption.html( description );
@@ -151,7 +156,7 @@ var cmsJS = ( function( cms ) {
                 $gridItemCaptionHeading.text( label );
                 $gridItemCaption.prepend( $gridItemCaptionHeading );
                 
-                if ( item.url !== '' ) {
+                if ( item.link !== '' ) {
                     // grid item caption link
                     $gridItemCaptionLink = $( '<a />' );
                     $gridItemCaptionLink.attr( 'href', item.link );
@@ -171,8 +176,8 @@ var cmsJS = ( function( cms ) {
             $gridItemImage.attr( 'src', image );
 			$gridItemImage.attr( 'alt', label );
             $gridItemImage.addClass( 'img-fluid' );
-            
-            if ( item.url !== '' ) {
+             
+            if ( item.link !== '' ) {
                 // grid item image link
                 $gridItemImageLink = $( '<a />' );
                 $gridItemImageLink.attr( 'href', item.link );

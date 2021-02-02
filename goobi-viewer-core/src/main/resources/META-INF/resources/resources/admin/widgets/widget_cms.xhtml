@@ -71,6 +71,14 @@
                                 </h:outputLink>
                             </li>
                         </ui:fragment>
+                         <ui:fragment rendered="#{userBean.user.isHasCmsPrivilege('CMS_RECORD_NOTES')}">
+                            <li class="#{navigationHelper.currentPage == 'adminCmsRecordNotes' ? 'active' : ''}">
+                                <h:outputLink value="#{navigationHelper.getPageUrl('adminCmsRecordNotes')}/">
+                                    <i class="fa fa-text-width" aria-hidden="true"></i>
+                                    <span>#{msg.cms__record_notes__title_plural}</span>
+                                </h:outputLink>
+                            </li>
+                        </ui:fragment>
                     </ul>
                 </h:form>
             </div>

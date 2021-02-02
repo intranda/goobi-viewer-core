@@ -25,7 +25,7 @@
 var viewerJS = ( function( viewer ) {
     'use strict';
     
-    var _debug = true;
+    var _debug = false;
     var _defaults = {
         currLang: 'de',
         selector: 'textarea.tinyMCE',

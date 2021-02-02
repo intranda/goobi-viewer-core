@@ -867,6 +867,26 @@
         <view-id value="/resources/cms/adminCmsCategory.xhtml" />
         <action onPostback="false">#{navigationHelper.resetTheme}</action>
     </url-mapping>
+    <!-- CMS Record Notes -->
+    <url-mapping id="adminCmsRecordNotes">
+        <pattern value="/admin/cms/recordNotes/" />
+        <view-id value="/resources/cms/adminCmsRecordNotes.xhtml" />
+        <action onPostback="false">#{navigationHelper.resetTheme}</action>
+    </url-mapping>
+    <url-mapping id="adminCmsRecordNoteNew">
+        <pattern value="/admin/cms/recordNotes/new/" />
+        <view-id value="/resources/cms/adminCmsRecordNote.xhtml" />
+        <query-param name="pi" onPostback="false" validatorIds="piInSolrValidator">#{cmsRecordNoteEditBean.recordIdentifier}</query-param>
+        <query-param name="from" onPostback="false" >#{cmsRecordNoteEditBean.returnUrl}</query-param>
+        <action onPostback="false">#{navigationHelper.resetTheme}</action>
+    </url-mapping>
+    <url-mapping id="adminCmsRecordNoteEdit">
+        <pattern value="/admin/cms/recordNotes/edit/#{selectedNoteId}/" />
+        <view-id value="/resources/cms/adminCmsRecordNote.xhtml" />
+        <query-param name="from" onPostback="false" >#{cmsRecordNoteEditBean.returnUrl}</query-param>
+        <action onPostback="false">#{navigationHelper.resetTheme}</action>
+        <action onPostback="false">#{cmsRecordNoteEditBean.setNoteId(selectedNoteId)}</action>
+    </url-mapping>
     <!-- CMS GeoMaps -->
     <url-mapping id="adminCmsGeoMaps">
         <pattern value="/admin/cms/maps/" />

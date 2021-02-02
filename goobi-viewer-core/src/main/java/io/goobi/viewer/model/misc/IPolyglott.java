@@ -37,6 +37,9 @@ import io.goobi.viewer.messages.ViewerResourceBundle;
 public interface IPolyglott {
 
     /**
+     * If this returns true, an associated language tab should have the 
+     * 'already-translated' class, otherwise the '-partly-translated' class unless {@link #isEmpty(Locale)}
+     * also returns true
      * 
      * @param locale
      * @return true if {@link #isValid(Locale)} returns true for the given locale 
@@ -47,11 +50,21 @@ public interface IPolyglott {
     public boolean isComplete(Locale locale);
 
     /**
+     * Only meaningfull for the default language for which all required fields must be filled
      * 
      * @param locale
      * @return true if all required fields contain a value in the given locale
      */
     public boolean isValid(Locale locale);
+    
+    /**
+     * If this returns true, an associated language tab should have neither the 
+     * 'already-translated' nor the '-partly-translated' class
+     * 
+     * @param locale
+     * @return true if no fields are filled for the given locale
+     */
+    public boolean isEmpty(Locale locale);
     
     public Locale getSelectedLocale();
 

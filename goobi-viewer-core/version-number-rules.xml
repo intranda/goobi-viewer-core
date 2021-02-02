@@ -15,6 +15,7 @@
         <rule groupId="org.glassfish.jersey">
             <ignoreVersions>
                 <ignoreVersion>3.0.0</ignoreVersion>
+                <ignoreVersion>3.0.1</ignoreVersion>
             </ignoreVersions>
         </rule>
         <rule groupId="com.sun.xml.bind" artifactId="jaxb-*">

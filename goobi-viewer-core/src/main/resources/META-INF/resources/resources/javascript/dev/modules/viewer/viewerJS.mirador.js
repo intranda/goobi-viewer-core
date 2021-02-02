@@ -154,12 +154,12 @@ var viewerJS = ( function( viewer ) {
 	
 	   function _getSharedMiradorObjects( restUrl, key ) {
 	        if ( _debug ) { 
-	            console.log( '---------- _getSessionElementCount() ----------' );
+	            console.log( '---------- _getSharedMiradorObjects() ----------' );
 	            console.log( '_getSessionElementCount: restUrl - ', restUrl );
 	            console.log( '_getSessionElementCount: id - ', key );
 	        }
 
-	        let url = restUrl + "bookmarks/shared/" + id + "/mirador.json";
+	        let url = restUrl + "bookmarks/shared/" + key + "/mirador.json";
 	        return fetch(url);
 	    }
 	/**

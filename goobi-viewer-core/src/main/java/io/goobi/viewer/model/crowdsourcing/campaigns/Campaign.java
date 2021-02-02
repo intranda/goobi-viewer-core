@@ -164,11 +164,11 @@ public class Campaign implements CMSMediaHolder, ILicenseType, IPolyglott {
     @Column(name = "campaign_id")
     private Long id;
 
-    @Column(name = "date_created", nullable = false, columnDefinition = "TIMESTAMP")
+    @Column(name = "date_created", nullable = false)
     @JsonIgnore
     private LocalDateTime dateCreated;
 
-    @Column(name = "date_updated", columnDefinition = "TIMESTAMP")
+    @Column(name = "date_updated")
     @JsonIgnore
     private LocalDateTime dateUpdated;
 
@@ -177,11 +177,11 @@ public class Campaign implements CMSMediaHolder, ILicenseType, IPolyglott {
     @JsonIgnore
     private CampaignVisibility visibility = CampaignVisibility.PRIVATE;
 
-    @Column(name = "date_start", columnDefinition = "TIMESTAMP")
+    @Column(name = "date_start")
     @JsonIgnore
     private LocalDateTime dateStart;
 
-    @Column(name = "date_end", columnDefinition = "TIMESTAMP")
+    @Column(name = "date_end")
     @JsonIgnore
     private LocalDateTime dateEnd;
 
@@ -1315,6 +1315,16 @@ public class Campaign implements CMSMediaHolder, ILicenseType, IPolyglott {
         return StringUtils.isNotBlank(getTitle(locale.getLanguage(), false));
 
     }
+    
+
+    /* (non-Javadoc)
+     * @see io.goobi.viewer.model.misc.IPolyglott#isEmpty(java.util.Locale)
+     */
+    @Override
+    public boolean isEmpty(Locale locale) {
+        return StringUtils.isBlank(getDescription(locale.getLanguage())) &&
+                StringUtils.isBlank(getTitle(locale.getLanguage()));
+    }
 
     /**
      * Get the targetIdentifier to a random PI from the Solr query result list.
@@ -1714,5 +1724,6 @@ public class Campaign implements CMSMediaHolder, ILicenseType, IPolyglott {
     public String toString() {
         return getTitle();
     }
+
 
 }

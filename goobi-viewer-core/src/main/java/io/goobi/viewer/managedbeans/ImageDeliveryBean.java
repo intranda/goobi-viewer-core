@@ -98,12 +98,17 @@ public class ImageDeliveryBean implements Serializable {
     private Object3DHandler objects3d;
     private IIIFPresentationAPIHandler presentation;
 
+    public ImageDeliveryBean() {
+    }
+
     @PostConstruct
     private void init() {
         logger.trace("init");
         try {
             Configuration config = DataManager.getInstance().getConfiguration();
-            init(config);
+            AbstractApiUrlManager dataUrlManager = DataManager.getInstance().getRestApiManager().getDataApiManager().orElse(null);
+            AbstractApiUrlManager contentUrlManager = DataManager.getInstance().getRestApiManager().getContentApiManager().orElse(null);
+            init(config, dataUrlManager, contentUrlManager);
         } catch (NullPointerException e) {
             logger.error("Failed to initialize ImageDeliveryBean: Resources misssing");
         }
@@ -128,10 +133,8 @@ public class ImageDeliveryBean implements Serializable {
      * @param config a {@link io.goobi.viewer.controller.Configuration} object.
      * @param apiUrls a {@link java.lang.String} object.
      */
-    public void init(Configuration config) {
+    public void init(Configuration config, AbstractApiUrlManager dataUrlManager, AbstractApiUrlManager contentUrlManager) {
         this.servletPath = getServletPathFromContext();
-        AbstractApiUrlManager dataUrlManager = DataManager.getInstance().getRestApiManager().getDataApiManager().orElse(null);
-        AbstractApiUrlManager contentUrlManager = DataManager.getInstance().getRestApiManager().getContentApiManager().orElse(null);
 
         this.staticImagesURI = getStaticImagesPath(this.servletPath, config.getTheme());
         this.cmsMediaPath =

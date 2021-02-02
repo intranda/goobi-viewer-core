@@ -882,7 +882,13 @@ public class TocMaker {
             }
         }
 
-        return label;
+        //convert to SImpleMetadataValue if only one value exists
+        if(label.getValues().size() == 1) {
+            return new SimpleMetadataValue(label.getValue().orElse(""));
+        } else {            
+            return label;
+        }
+        
     }
 
     /**

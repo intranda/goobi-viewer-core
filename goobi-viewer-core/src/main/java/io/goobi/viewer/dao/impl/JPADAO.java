@@ -66,6 +66,7 @@ import io.goobi.viewer.model.cms.CMSPage;
 import io.goobi.viewer.model.cms.CMSPageLanguageVersion;
 import io.goobi.viewer.model.cms.CMSPageTemplate;
 import io.goobi.viewer.model.cms.CMSPageTemplateEnabled;
+import io.goobi.viewer.model.cms.CMSRecordNote;
 import io.goobi.viewer.model.cms.CMSSidebarElement;
 import io.goobi.viewer.model.cms.CMSStaticPage;
 import io.goobi.viewer.model.crowdsourcing.campaigns.Campaign;
@@ -4860,4 +4861,157 @@ public class JPADAO implements IDAO {
         });
         return true;
     }
+
+    /* (non-Javadoc)
+     * @see io.goobi.viewer.dao.IDAO#getRecordNotes(int, int, java.lang.String, boolean, java.util.Map)
+     */
+    @Override
+    public List<CMSRecordNote> getRecordNotes(int first, int pageSize, String sortField, boolean descending, Map<String, String> filters)
+            throws DAOException {
+            preQuery();
+            StringBuilder sbQuery = new StringBuilder("SELECT DISTINCT a FROM CMSRecordNote a");
+            StringBuilder order = new StringBuilder();
+            try {
+                Map<String, Object> params = new HashMap<>();
+                if(filters != null) {
+                   String filterValue = filters.values().stream().findAny().orElse(null);
+                   if(StringUtils.isNotBlank(filterValue)) {
+                       String filterString = " WHERE (UPPER(a.recordPi) LIKE :filter OR UPPER(a.recordTitle) LIKE :filter OR UPPER(a.noteTitle) LIKE :filter)";
+                       params.put("filter", sanitizeQueryParam(filterValue, true));
+                       sbQuery.append(filterString);
+                   }
+                }
+                if (StringUtils.isNotEmpty(sortField)) {
+                    order.append(" ORDER BY a.").append(sortField);
+                    if (descending) {
+                        order.append(" DESC");
+                    }
+                }
+                sbQuery.append(order);
+
+                logger.trace(sbQuery.toString());
+                Query q = em.createQuery(sbQuery.toString());
+                params.entrySet().forEach(entry -> q.setParameter(entry.getKey(), entry.getValue()));
+                //            q.setParameter("lang", BeanUtils.getLocale().getLanguage());
+                q.setFirstResult(first);
+                q.setMaxResults(pageSize);
+                q.setFlushMode(FlushModeType.COMMIT);
+                // q.setHint("javax.persistence.cache.storeMode", "REFRESH");
+                return q.getResultList();
+            } catch (PersistenceException e) {
+                logger.error("Exception \"" + e.toString() + "\" when trying to get CMSRecordNotes. Returning empty list");
+                return Collections.emptyList();
+            }
+    }
+
+
+    /* (non-Javadoc)
+     * @see io.goobi.viewer.dao.IDAO#getAllRecordNotes()
+     */
+    @Override
+    public List<CMSRecordNote> getAllRecordNotes() throws DAOException {
+        preQuery();
+        StringBuilder sbQuery = new StringBuilder("SELECT DISTINCT a FROM CMSRecordNote a");
+        try {
+            logger.trace(sbQuery.toString());
+            Query q = em.createQuery(sbQuery.toString());
+            q.setFlushMode(FlushModeType.COMMIT);
+            // q.setHint("javax.persistence.cache.storeMode", "REFRESH");
+            return q.getResultList();
+        } catch (PersistenceException e) {
+            logger.error("Exception \"" + e.toString() + "\" when trying to get CMSRecordNotes. Returning empty list");
+            return Collections.emptyList();
+        }
+    }
+    
+
+    /* (non-Javadoc)
+     * @see io.goobi.viewer.dao.IDAO#getRecordNotesForPi(java.lang.String)
+     */
+    @Override
+    public List<CMSRecordNote> getRecordNotesForPi(String pi, boolean displayedNotesOnly) throws DAOException {
+        preQuery();
+        String query = "SELECT a FROM CMSRecordNote a WHERE a.recordPi = :pi";
+        if(displayedNotesOnly) {
+            query += " AND a.displayNote = :display";
+        }
+        logger.trace(query);
+        Query q = em.createQuery(query.toString());
+        q.setParameter("pi", pi);
+        if(displayedNotesOnly) {            
+            q.setParameter("display", true);
+        }
+        q.setFlushMode(FlushModeType.COMMIT);
+        return q.getResultList();
+    }
+
+    /* (non-Javadoc)
+     * @see io.goobi.viewer.dao.IDAO#getRecordNote(java.lang.Long)
+     */
+    @Override
+    public CMSRecordNote getRecordNote(Long id) throws DAOException {
+        preQuery();
+        try {
+            CMSRecordNote o = em.getReference(CMSRecordNote.class, id);
+            if(o != null) {
+                em.refresh(o);
+            }
+            return new CMSRecordNote(o);
+        } catch (EntityNotFoundException e) {
+            return null;
+        }
+    }
+
+    /* (non-Javadoc)
+     * @see io.goobi.viewer.dao.IDAO#addRecordNote(io.goobi.viewer.model.cms.CMSRecordNote)
+     */
+    @Override
+    public boolean addRecordNote(CMSRecordNote note) throws DAOException {
+        preQuery();
+        try {
+            em.getTransaction().begin();
+            em.persist(note);
+            em.getTransaction().commit();
+            return true;
+        } catch (IllegalArgumentException e) {
+            return false;
+        }
+    }
+
+    /* (non-Javadoc)
+     * @see io.goobi.viewer.dao.IDAO#updateRecordNote(io.goobi.viewer.model.cms.CMSRecordNote)
+     */
+    @Override
+    public boolean updateRecordNote(CMSRecordNote note) throws DAOException {
+        preQuery();
+        try {
+            em.getTransaction().begin();
+            em.merge(note);
+            em.getTransaction().commit();
+            return true;
+        } catch (IllegalArgumentException e) {
+            return false;
+        }
+    }
+
+    /* (non-Javadoc)
+     * @see io.goobi.viewer.dao.IDAO#deleteRecordNote(io.goobi.viewer.model.cms.CMSRecordNote)
+     */
+    @Override
+    public boolean deleteRecordNote(CMSRecordNote note) throws DAOException {
+        preQuery();
+        EntityManager em = factory.createEntityManager();
+        try {
+            em.getTransaction().begin();
+            CMSRecordNote o = em.getReference(CMSRecordNote.class, note.getId());
+            em.remove(o);
+            em.getTransaction().commit();
+            return true;
+        } catch (IllegalArgumentException e) {
+            return false;
+        } finally {
+            em.close();
+        }
+    }
+
 }

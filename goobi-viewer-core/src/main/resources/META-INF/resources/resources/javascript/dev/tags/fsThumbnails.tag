@@ -4,7 +4,7 @@
         <div each={thumbnail in thumbnails} class="fullscreen__view-image-thumb">
             <!-- THUMBNAIL IMAGE -->
             <figure class="fullscreen__view-image-thumb-image">
-                <a href="{thumbnail.rendering['@id']}">
+                <a href="{getViewerPageUrl(thumbnail)['@id']}">
                     <fsThumbnailImage thumbnail={thumbnail} observable={observable} root=".fullscreen__view-image-thumbs-wrapper" imgsrc={thumbnail.thumbnail['@id']}></fsThumbnailImage>
                 </a>
     
@@ -88,5 +88,15 @@
     		thumbnail.loaded = true;
     		this.update();
     	}.bind( this ) );
+    	
+    	getViewerPageUrl(thumbnail) {
+    	    if(thumbnail.rendering) {
+    	        if(Array.isArray(thumbnail.rendering)) {
+    	            return thumbnail.rendering.find(render => "text/html" == render.format)
+    	        } else {
+    	            return thumbnail.rendering;
+    	        }
+    	    }
+    	}
     </script>
 </fsThumbnails>
