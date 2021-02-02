@@ -329,7 +329,7 @@ var viewerJS = ( function( viewer ) {
                 let item = {
                     pi: pi,
                     logId: logid,
-                    oder: page
+                    order: page
                 }
                 
                 return fetch(url, {
