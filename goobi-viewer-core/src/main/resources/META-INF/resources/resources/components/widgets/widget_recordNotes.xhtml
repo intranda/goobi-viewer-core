@@ -24,7 +24,7 @@
                     	<h:outputText escape="false" value="#{note.noteText.getTextOrDefault(navigationHelper.locale, navigationHelper.defaultLocale)}" />
                     	<ui:fragment rendered="#{userBean.admin}">
 	                    <div class="widget-record-notes__action-link">
-	                        	<a href="#{request.contextPath}/admin/cms/recordNotes/edit/#{note.id}">#{msg.edit}</a>
+	                        	<a href="#{request.contextPath}/admin/cms/recordnotes/edit/#{note.id}">#{msg.edit}</a>
 	                    </div>
                     </ui:fragment>
                     </div>
