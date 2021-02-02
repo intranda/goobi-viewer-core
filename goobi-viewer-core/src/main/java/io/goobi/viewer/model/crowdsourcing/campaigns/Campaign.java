@@ -168,7 +168,7 @@ public class Campaign implements CMSMediaHolder, ILicenseType, IPolyglott {
     @JsonIgnore
     private LocalDateTime dateCreated;
 
-    @Column(name = "date_updated", columnDefinition = "TIMESTAMP")
+    @Column(name = "date_updated")
     @JsonIgnore
     private LocalDateTime dateUpdated;
 

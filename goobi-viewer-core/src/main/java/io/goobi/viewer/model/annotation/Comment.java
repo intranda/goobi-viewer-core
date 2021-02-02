@@ -78,7 +78,7 @@ public class Comment implements Comparable<Comment> {
     @Column(name = "date_created", nullable = false)
     private LocalDateTime dateCreated = LocalDateTime.now();
 
-    @Column(name = "date_updated", columnDefinition = "TIMESTAMP")
+    @Column(name = "date_updated")
     private LocalDateTime dateUpdated;
 
     //    @ManyToOne
