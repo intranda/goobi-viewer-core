@@ -128,7 +128,7 @@ public class TranslatedText extends MultiLanguageMetadataValue implements IPolyg
 
     @Override
     public boolean isComplete(Locale locale) {
-        return isValid(locale) || isEmpty(IPolyglott.getDefaultLocale());
+        return isValid(locale) || (!IPolyglott.getDefaultLocale().equals(locale) && isEmpty(IPolyglott.getDefaultLocale()));
     }
 
     @Override

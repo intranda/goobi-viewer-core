@@ -154,10 +154,12 @@ public class CmsRecordNoteEditBeanTest extends AbstractDatabaseEnabledTest {
         
       //default language is en
         assertEquals(Locale.ENGLISH, BeanUtils.getDefaultLocale());
+        title.setText(englishText, Locale.ENGLISH);
+        text.setText(englishText, Locale.ENGLISH);
         
-        assertFalse(bean.isValid(Locale.ENGLISH));
-        assertFalse(bean.isComplete(Locale.ENGLISH));
-        assertTrue(bean.isEmpty(Locale.ENGLISH));
+        assertFalse(bean.isValid(Locale.GERMAN));
+        assertFalse(bean.isComplete(Locale.GERMAN));
+        assertTrue(bean.isEmpty(Locale.GERMAN));
     }
     
     @Test
