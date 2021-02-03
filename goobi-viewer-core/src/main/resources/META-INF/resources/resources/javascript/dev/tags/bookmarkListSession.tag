@@ -6,14 +6,16 @@
 	<li each="{bookmark in bookmarkList.items}">
 		<div class="row no-margin {mainClass}-single-entry">
 			<div class="col-11 no-padding {mainClass}-title">
-				<a class="row no-gutters" href="{opts.bookmarks.config.root}{bookmark.url}">
-					<div class="col-4 no-padding">
-						<div class="{mainClass}-image"
-							style="background-image: url({bookmark.representativeImageUrl});">
+				<a href="{opts.bookmarks.config.root}{bookmark.url}">
+					<div class="row no-gutters">
+						<div class="col-4 no-padding">
+							<div class="{mainClass}-image"
+								style="background-image: url({bookmark.representativeImageUrl});">
+							</div>
 						</div>
-					</div>
-					<div class="col-7 no-padding">
-						<h4>{bookmark.name}</h4>
+						<div class="col-7 no-padding">
+							<h4>{bookmark.name}</h4>
+						</div>
 					</div>
 				</a>
 			</div>
