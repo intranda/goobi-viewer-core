@@ -75,7 +75,7 @@ public class CitationDataProvider implements ItemDataProvider {
                         }
                     }
                     if (!names.isEmpty()) {
-                        builder.author((CSLName[]) names.toArray());
+                        builder.author(names.toArray(new CSLName[0]));
                     }
                     break;
                 case DOI:

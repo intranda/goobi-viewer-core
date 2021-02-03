@@ -21,7 +21,7 @@ public class CitationDataProviderTest extends AbstractTest {
     @Test
     public void addItemData_shouldAddItemDataCorrectly() throws Exception {
         Map<String, List<String>> fields = new HashMap<>();
-        fields.put(Citation.AUTHOR, Arrays.asList(new String[] { "Zahn, Timothy", "Bob, Billy" }));
+        fields.put(Citation.AUTHOR, Arrays.asList(new String[] { "Zahn, Timothy" }));
         fields.put(Citation.TITLE, Collections.singletonList("Thrawn"));
         fields.put(Citation.ISSUED, Collections.singletonList("2017-04-11"));
         fields.put(Citation.ISBN, Collections.singletonList("9780606412148"));
