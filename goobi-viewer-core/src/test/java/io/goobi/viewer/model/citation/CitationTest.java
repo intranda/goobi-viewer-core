@@ -15,7 +15,9 @@
  */
 package io.goobi.viewer.model.citation;
 
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.junit.Assert;
@@ -26,19 +28,18 @@ import io.goobi.viewer.AbstractTest;
 
 public class CitationTest extends AbstractTest {
 
-
     /**
      * @see Citation#getCitationString()
      * @verifies return apa citation correctly
      */
     @Test
     public void getCitationString_shouldReturnApaCitationCorrectly() throws Exception {
-        Map<String, String> fields = new HashMap<>();
-        fields.put(Citation.AUTHOR, "Zahn, Timothy");
-        fields.put(Citation.TITLE, "Thrawn");
-        fields.put(Citation.ISSUED, "2017-04-11");
-        fields.put(Citation.ISBN, "9780606412148");
-        
+        Map<String, List<String>> fields = new HashMap<>();
+        fields.put(Citation.AUTHOR, Collections.singletonList("Zahn, Timothy"));
+        fields.put(Citation.TITLE, Collections.singletonList("Thrawn"));
+        fields.put(Citation.ISSUED, Collections.singletonList("2017-04-11"));
+        fields.put(Citation.ISBN, Collections.singletonList("9780606412148"));
+
         Citation cit = new Citation("id", "apa", CSLType.BOOK, fields);
         String s = cit.getCitationString();
         Assert.assertNotNull(s);

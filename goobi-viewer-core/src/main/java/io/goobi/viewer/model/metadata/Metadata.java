@@ -457,7 +457,12 @@ public class Metadata implements Serializable {
                 case CITEPROC:
                     String citationKey = param.getDestination();
                     if (StringUtils.isNotEmpty(citationKey)) {
-                        mdValue.getCitationValues().put(citationKey, value);
+                        List<String> values = mdValue.getCitationValues().get(citationKey);
+                        if (values == null) {
+                            values = new ArrayList<>();
+                            mdValue.getCitationValues().put(citationKey, values);
+                        }
+                        values.add(value);
                     }
                     value = MetadataParameterType.CITEPROC.getKey();
                     break;

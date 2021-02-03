@@ -15,6 +15,8 @@
  */
 package io.goobi.viewer.model.citation;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
@@ -22,6 +24,8 @@ import de.undercouch.citeproc.ItemDataProvider;
 import de.undercouch.citeproc.csl.CSLDateBuilder;
 import de.undercouch.citeproc.csl.CSLItemData;
 import de.undercouch.citeproc.csl.CSLItemDataBuilder;
+import de.undercouch.citeproc.csl.CSLName;
+import de.undercouch.citeproc.csl.CSLNameBuilder;
 import de.undercouch.citeproc.csl.CSLType;
 
 public class CitationDataProvider implements ItemDataProvider {
@@ -46,47 +50,58 @@ public class CitationDataProvider implements ItemDataProvider {
      * @return Created CSLItemData
      * @should add item data correctly
      */
-    public CSLItemData addItemData(String id, Map<String, String> fields, CSLType type) {
+    public CSLItemData addItemData(String id, Map<String, List<String>> fields, CSLType type) {
         CSLItemDataBuilder builder = new CSLItemDataBuilder().type(type).id(id);
 
         for (String key : fields.keySet()) {
+            if (fields.get(key) == null || fields.get(key).isEmpty()) {
+                continue;
+            }
+
             switch (key) {
                 case AUTHOR:
-                    String name = fields.get(key);
-                    if (name.contains(",")) {
-                        String[] nameSplit = name.split(",");
-                        if (nameSplit.length > 1) {
-                            builder.author(nameSplit[1].trim(), nameSplit[0].trim());
+                    List<CSLName> names = new ArrayList<>(fields.get(key).size());
+                    for (String name : fields.get(key)) {
+                        if (name.contains(",")) {
+                            String[] nameSplit = name.split(",");
+                            if (nameSplit.length > 1) {
+                                names.add(new CSLNameBuilder().given(nameSplit[1].trim()).family(nameSplit[0].trim()).build());
+                            } else {
+                                builder.author("", nameSplit[0].trim());
+                            }
                         } else {
-                            builder.author("", nameSplit[0].trim());
+                            names.add(new CSLNameBuilder().given(id).family(id).build());
+                            builder.author("", name);
                         }
-                    } else {
-                        builder.author("", name);
+                    }
+                    if (!names.isEmpty()) {
+                        builder.author((CSLName[]) names.toArray());
                     }
                     break;
                 case DOI:
-                    builder.DOI(fields.get(key));
+
+                    builder.DOI(fields.get(key).get(0));
                     break;
                 case ISBN:
-                    builder.ISBN(fields.get(key));
+                    builder.ISBN(fields.get(key).get(0));
                     break;
                 case ISSN:
-                    builder.ISSN(fields.get(key));
+                    builder.ISSN(fields.get(key).get(0));
                     break;
                 case ISSUED:
-                    builder.issued(new CSLDateBuilder().raw(fields.get(key)).build());
+                    builder.issued(new CSLDateBuilder().raw(fields.get(key).get(0)).build());
                     break;
                 case LANGUAGE:
-                    builder.language(fields.get(key));
+                    builder.language(fields.get(key).get(0));
                     break;
                 case PUBLISHER:
-                    builder.publisher(fields.get(key));
+                    builder.publisher(fields.get(key).get(0));
                     break;
                 case PUBLISHER_PLACE:
-                    builder.publisherPlace(fields.get(key));
+                    builder.publisherPlace(fields.get(key).get(0));
                     break;
                 case TITLE:
-                    builder.title(fields.get(key));
+                    builder.title(fields.get(key).get(0));
                     break;
             }
         }

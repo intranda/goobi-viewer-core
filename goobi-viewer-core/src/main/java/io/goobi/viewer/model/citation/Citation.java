@@ -16,17 +16,14 @@
 package io.goobi.viewer.model.citation;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.Map;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import de.undercouch.citeproc.CSL;
-import de.undercouch.citeproc.ItemDataProvider;
-import de.undercouch.citeproc.ListItemDataProvider;
-import de.undercouch.citeproc.csl.CSLDateBuilder;
 import de.undercouch.citeproc.csl.CSLItemData;
-import de.undercouch.citeproc.csl.CSLItemDataBuilder;
 import de.undercouch.citeproc.csl.CSLType;
 import de.undercouch.citeproc.output.Bibliography;
 import io.goobi.viewer.controller.DataManager;
@@ -48,9 +45,7 @@ public class Citation {
     private String id;
     private final String style;
     private final CSLType type;
-    private final Map<String, String> fields;
-    //    private CSLItemData item;
-    //    private ItemDataProvider provider;
+    private final Map<String, List<String>> fields;
 
     /**
      * Constructor.
@@ -60,7 +55,7 @@ public class Citation {
      * @param type
      * @param fields Map containing metadata fields
      */
-    public Citation(String id, String style, CSLType type, Map<String, String> fields) {
+    public Citation(String id, String style, CSLType type, Map<String, List<String>> fields) {
         if (id == null) {
             throw new IllegalArgumentException("id may not be null");
         }
@@ -78,62 +73,6 @@ public class Citation {
         this.style = style;
         this.type = type;
         this.fields = fields;
-    }
-
-    /**
-     * 
-     * @return this object
-     */
-    @Deprecated
-    public Citation build() {
-        CSLItemDataBuilder builder = new CSLItemDataBuilder().type(type);
-
-        for (String key : fields.keySet()) {
-            switch (key) {
-                case AUTHOR:
-                    String name = fields.get(key);
-                    if (name.contains(",")) {
-                        String[] nameSplit = name.split(",");
-                        if (nameSplit.length > 1) {
-                            builder.author(nameSplit[1].trim(), nameSplit[0].trim());
-                        } else {
-                            builder.author("", nameSplit[0].trim());
-                        }
-                    } else {
-                        builder.author("", name);
-                    }
-                    break;
-                case DOI:
-                    builder.DOI(fields.get(key));
-                    break;
-                case ISBN:
-                    builder.ISBN(fields.get(key));
-                    break;
-                case ISSN:
-                    builder.ISSN(fields.get(key));
-                    break;
-                case ISSUED:
-                    builder.issued(new CSLDateBuilder().raw(fields.get(key)).build());
-                    break;
-                case LANGUAGE:
-                    builder.language(fields.get(key));
-                    break;
-                case PUBLISHER:
-                    builder.publisher(fields.get(key));
-                    break;
-                case PUBLISHER_PLACE:
-                    builder.publisherPlace(fields.get(key));
-                    break;
-                case TITLE:
-                    builder.title(fields.get(key));
-                    break;
-            }
-        }
-
-        // this.item = builder.build();
-        // provider = new ListItemDataProvider(item);
-
-        return this;
     }
 
     /**

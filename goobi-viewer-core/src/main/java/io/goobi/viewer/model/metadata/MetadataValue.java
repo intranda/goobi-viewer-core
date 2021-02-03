@@ -52,7 +52,7 @@ public class MetadataValue implements Serializable {
     private final List<String> paramSuffixes = new ArrayList<>();
     private final List<String> paramUrls = new ArrayList<>();
     private final Map<String, String> normDataUrls = new HashMap<>();
-    private final Map<String, String> citationValues = new HashMap<>();
+    private final Map<String, List<String>> citationValues = new HashMap<>();
     private String id;
     private String masterValue;
     private String groupType;
@@ -295,7 +295,7 @@ public class MetadataValue implements Serializable {
     /**
      * @return the citationValues
      */
-    public Map<String, String> getCitationValues() {
+    public Map<String, List<String>> getCitationValues() {
         return citationValues;
     }
 
