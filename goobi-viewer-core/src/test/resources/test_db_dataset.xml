@@ -136,7 +136,7 @@
 	<cms_media_items cms_media_item_id="1" file_name="image1.jpg" />
     <cms_media_items cms_media_item_id="2" file_name="image2.jpg" />
     <cms_media_items cms_media_item_id="3" file_name="image3.jpg" />
-    <cms_media_items cms_media_item_id="4" file_name="image4.jpg" />
+    <cms_media_items cms_media_item_id="4" file_name="image4.JPG" />
     
     <cms_media_item_cms_categories media_item_id="1" category_id="1" /> 
     <cms_media_item_cms_categories media_item_id="1" category_id="2" /> 
