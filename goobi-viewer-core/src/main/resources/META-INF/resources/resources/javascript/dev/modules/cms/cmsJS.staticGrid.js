@@ -85,7 +85,7 @@ var cmsJS = ( function( cms ) {
         
         _gridRow = $( '<div class="row" />' );
         
-        data.items.forEach( function( item ) {
+        data.mediaItems.forEach( function( item ) {
             _gridCol = $( '<div class="col-6 col-sm-3" />' );
             // tile
             _gridTile = $( '<div class="grid-tile" />' );
@@ -94,20 +94,24 @@ var cmsJS = ( function( cms ) {
             _gridTileTitleH4 = $( '<h4 />' );
             _gridTileTitleLink = $( '<a />' );
             if ( item.url !== '' ) {
-                _gridTileTitleLink.attr( 'href', item.url );
+                _gridTileTitleLink.attr( 'href', item.link );
             }
             else {
                 _gridTileTitleLink.attr( 'href', '#' );
             }
-            _gridTileTitleLink.attr( 'title', item.title );
-            _gridTileTitleLink.append( item.title );
+            
+            let label = viewerJS.getMetadataValue(item.label, _defaults.language );
+            _gridTileTitleLink.attr( 'title', label);
+            _gridTileTitleLink.append( label );
             _gridTileTitleH4.append( _gridTileTitleLink );
+            
             // image
+            let image = item.image["@id"];
             _gridTileImage = $( '<div class="grid-tile__image" />' );
-            _gridTileImage.css( 'background-image', 'url(' + item.name + ')' );
+            _gridTileImage.css( 'background-image', 'url(' + image + ')' );
             _gridTileImageLink = $( '<a />' );
             if ( item.url !== '' ) {
-                _gridTileImageLink.attr( 'href', item.url );
+                _gridTileImageLink.attr( 'href', item.link );
             }
             else {
                 _gridTileImageLink.attr( 'href', '#' );

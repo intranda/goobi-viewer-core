@@ -29,7 +29,8 @@ public enum ObjectFormat {
     PLY,
     OBJ,
     STL,
-    TDS;
+    TDS,
+    GLTF;
 
     /**
      * <p>
@@ -49,6 +50,9 @@ public enum ObjectFormat {
                 return STL;
             case "3ds":
                 return TDS;
+            case "gltf":
+            case "glb":
+                return GLTF;
             default:
                 return null;
         }

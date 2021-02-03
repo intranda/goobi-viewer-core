@@ -25,6 +25,7 @@
 
     <!-- CONTENT -->
     <ui:define name="content">
+		<ui:include src="/resources/cms/includes/cms_script.xhtml" />
         <f:view contentType="text/html" encoding="utf-8">
 			<div id="templateSearch" class="tpl-search #{cmsPage.wrapperElementClass}">
                 <!-- EDIT PAGE -->
@@ -46,7 +47,7 @@
 					<h:panelGroup id="cmsTextContent">
                         <ui:fragment rendered="#{cmsPage.hasContent('text') and searchBean.activeSearchType != 0}">
                         	<div class="tpl-search__text">
-	    	                    <ui:include src="#{cmsPage.getContent('text')}" />
+	    	                    <h:outputText escape="false" value="#{cmsPage.getContent('text')}"></h:outputText>
                         	</div>
     					</ui:fragment>
 					</h:panelGroup>

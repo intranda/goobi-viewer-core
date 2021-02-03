@@ -46,6 +46,7 @@ import org.slf4j.LoggerFactory;
 
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.NetTools;
+import io.goobi.viewer.controller.imaging.ThumbnailHandler;
 import io.goobi.viewer.dao.IDAO;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.HTTPException;
@@ -268,6 +269,9 @@ public class CmsMediaBean implements Serializable {
                 if (this.selectedMediaItem != null && this.selectedMediaItem.getValue() == item) {
                     this.selectedMediaItem = null;
                 }
+                if(!deleted) {
+                    Messages.error(null, "admin__media_delete_error_inuse", item.getFileName());
+                }
                 reloadMediaList(false);
             } catch (RollbackException e) {
                 if (e.getMessage() != null && e.getMessage().toLowerCase().contains("cannot delete or update a parent row")) {
@@ -423,13 +427,19 @@ public class CmsMediaBean implements Serializable {
             sbUri.append(DataManager.getInstance().getConfiguration().getRestApiUrl()).append("cms/media/get/item/").append(item.getId());
             return sbUri.toString();
         }
-
-        String url = BeanUtils.getImageDeliveryBean()
+        
+        switch(item.getContentType()) {
+            case CMSMediaItem.CONTENT_TYPE_PDF:
+            case CMSMediaItem.CONTENT_TYPE_XML:
+                return ThumbnailHandler.getCMSMediaImageApiUrl(item.getFileName());
+            case CMSMediaItem.CONTENT_TYPE_SVG:
+            default:
+                return BeanUtils.getImageDeliveryBean()
                 .getThumbs()
                 .getThumbnailUrl(Optional.ofNullable(item), StringUtils.isNotBlank(width) ? Integer.parseInt(width) : 0,
                         StringUtils.isNotBlank(height) ? Integer.parseInt(height) : 0);
-
-        return url;
+                
+        }
     }
 
     /**
@@ -633,17 +643,6 @@ public class CmsMediaBean implements Serializable {
         return DataManager.getInstance().getDao().getAllCategories();
     }
 
-    /**
-     * <p>
-     * getMediaItemDisplaySizes.
-     * </p>
-     *
-     * @return a {@link java.util.Collection} object.
-     */
-    public Collection<CMSMediaItem.DisplaySize> getMediaItemDisplaySizes() {
-        Set<CMSMediaItem.DisplaySize> sizes = EnumSet.allOf(CMSMediaItem.DisplaySize.class);
-        return sizes;
-    }
 
     /**
      * <p>

@@ -22,10 +22,10 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
+import java.util.TreeMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -52,6 +52,7 @@ import io.goobi.viewer.controller.imaging.ThumbnailHandler;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
+import io.goobi.viewer.exceptions.RecordNotFoundException;
 import io.goobi.viewer.exceptions.ViewerConfigurationException;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.messages.ViewerResourceBundle;
@@ -181,14 +182,15 @@ public class TocMaker {
                     .add(new TOCElement(label, null, null, String.valueOf(structElement.getLuceneId()), null, level, structElement.getPi(), null,
                             false, true, false, mimeType, docstruct, footerId));
             ++level;
-            buildGroupToc(ret.get(TOC.DEFAULT_GROUP), structElement.getGroupIdField(), structElement.getPi(), sourceFormatPdfAllowed, mimeType);
+            buildGroupToc(ret.get(TOC.DEFAULT_GROUP), DataManager.getInstance().getConfiguration().getRecordGroupIdentifierFields(),
+                    structElement.getPi(), sourceFormatPdfAllowed, mimeType);
         } else if (structElement.isAnchor()) {
             // MultiVolume
             int numVolumes = buildAnchorToc(ret, doc, sourceFormatPdfAllowed, mimeType, tocCurrentPage, hitsPerPage);
             toc.setTotalTocSize(numVolumes);
             toc.setCurrentPage(tocCurrentPage);
         } else {
-            // Standalone or volume
+            // Stand-alone or volume
             ret.put(TOC.DEFAULT_GROUP, buildToc(doc, structElement, addAllSiblings, mimeType, sourceFormatPdfAllowed));
         }
 
@@ -299,62 +301,137 @@ public class TocMaker {
      * @throws ViewerConfigurationException
      * @throws DAOException
      */
-    private static void buildGroupToc(List<TOCElement> ret, String groupIdField, String groupIdValue, boolean sourceFormatPdfAllowed, String mimeType)
+    private static void buildGroupToc(List<TOCElement> ret, List<String> groupIdFields, String groupIdValue, boolean sourceFormatPdfAllowed,
+            String mimeType)
             throws PresentationException, IndexUnreachableException, ViewerConfigurationException, DAOException {
         logger.trace("addMembersToGroup: {}", groupIdValue);
+        if (ret == null) {
+            throw new IllegalArgumentException("ret may not be null");
+        }
+        if (groupIdFields == null) {
+            throw new IllegalArgumentException("ret may not be null");
+        }
+        if (groupIdFields.isEmpty()) {
+            logger.warn("No recordGroupIdentifierFields configured, cannot build group TOC.");
+            return;
+        }
+
         String template = "_GROUPS";
-        String groupSortField = groupIdField.replace(SolrConstants.GROUPID_, SolrConstants.GROUPORDER_);
+        List<String> returnFields = getSolrFieldsToFetch(template);
+        returnFields.addAll(groupIdFields); // add all groupid fields to return list
+        List<StringPair> sortFields = new ArrayList<>(groupIdFields.size());
+        StringBuilder sbQuery = new StringBuilder(SearchHelper.ALL_RECORDS_QUERY).append(" +(");
+        for (String groupIdField : groupIdFields) {
+            sbQuery.append(' ')
+                    .append(groupIdField)
+                    .append(':')
+                    .append(groupIdValue);
+
+            String groupSortField = groupIdField.replace(SolrConstants.GROUPID_, SolrConstants.GROUPORDER_);
+            sortFields.add(new StringPair(groupSortField, "asc"));
+            returnFields.add(groupSortField); // add each sorting field to return list
+        }
+        sbQuery.append(')');
+        logger.trace("Group TOC query: {}", sbQuery.toString());
+
         SolrDocumentList groupMemberDocs = DataManager.getInstance()
                 .getSearchIndex()
-                .search(new StringBuilder().append(SearchHelper.ALL_RECORDS_QUERY)
-                        .append(" AND ")
-                        .append(groupIdField)
-                        .append(':')
-                        .append(groupIdValue)
-                        .toString(), SolrSearchIndex.MAX_HITS, Collections.singletonList(new StringPair(groupSortField, "asc")),
-                        getSolrFieldsToFetch(template));
-        if (groupMemberDocs != null) {
-            HttpServletRequest request = BeanUtils.getRequest();
-            for (SolrDocument doc : groupMemberDocs) {
-                // IMetadataValue label = new MultiLanguageMetadataValue(SolrSearchIndex.getMetadataValuesForLanguage(doc, SolrConstants.TITLE));
-                IMetadataValue label = buildLabel(doc, template);
-                String numberSort = doc.getFieldValue(SolrConstants.CURRENTNOSORT) != null
-                        ? String.valueOf(doc.getFieldValue(SolrConstants.CURRENTNOSORT)) : null;
-                String numberText =
-                        doc.getFieldValue(SolrConstants.CURRENTNO) != null ? (String) doc.getFieldValue(SolrConstants.CURRENTNO) : numberSort;
-                String volumeIddoc = (String) doc.getFieldValue(SolrConstants.IDDOC);
-                String logId = (String) doc.getFieldValue(SolrConstants.LOGID);
-                String topStructPi = (String) doc.getFieldValue(SolrConstants.PI_TOPSTRUCT);
-                String thumbnailFile = (String) doc.getFieldValue(SolrConstants.THUMBNAIL);
-                String dataRepository = (String) doc.getFieldValue(SolrConstants.DATAREPOSITORY);
-                String docStructType = (String) doc.getFieldValue(SolrConstants.DOCSTRCT);
-
-                //                String sourceDocFormat = (String) doc.getFieldValue(LuceneConstants.SOURCEDOCFORMAT);
-
-                if (label.isEmpty()) {
-                    if (StringUtils.isNotEmpty(numberText)) {
-                        label.setValue(new StringBuilder(label.getValue().orElse("")).append(" (").append(numberText).append(')').toString());
-                    } else {
-                        label = new SimpleMetadataValue("-");
-                    }
-                }
-
-                String footerId = getFooterId(doc, DataManager.getInstance().getConfiguration().getWatermarkIdField());
-                int thumbWidth = DataManager.getInstance().getConfiguration().getMultivolumeThumbnailWidth();
-                int thumbHeight = DataManager.getInstance().getConfiguration().getMultivolumeThumbnailHeight();
-                String thumbnailUrl = null;
-                if (StringUtils.isNotEmpty(topStructPi) && StringUtils.isNotEmpty(thumbnailFile)) {
-                    ThumbnailHandler thumbs = BeanUtils.getImageDeliveryBean().getThumbs();
-                    StructElement struct = new StructElement(Long.valueOf(volumeIddoc), doc);
-                    thumbnailUrl = thumbs.getThumbnailUrl(struct, thumbWidth, thumbHeight);
-                }
-                label.mapEach(value -> StringEscapeUtils.unescapeHtml4(value));
-                boolean accessPermissionPdf = sourceFormatPdfAllowed && AccessConditionUtils.checkAccessPermissionByIdentifierAndLogId(topStructPi,
-                        logId, IPrivilegeHolder.PRIV_DOWNLOAD_PDF, request);
-                ret.add(new TOCElement(label, "1", null, volumeIddoc, logId, 1, topStructPi, thumbnailUrl, accessPermissionPdf, false,
-                        thumbnailUrl != null, mimeType, docStructType, footerId));
-            }
+                .search(sbQuery.toString(), SolrSearchIndex.MAX_HITS, sortFields, returnFields);
+        if (groupMemberDocs == null || groupMemberDocs.isEmpty()) {
+            logger.trace("No group records found for {}", groupIdValue);
+            return;
         }
+
+        // Create a manually sorted map of docs, since the order can be contained in different GROUPORDER_* fields
+        Map<Integer, SolrDocument> docOrderMap = createOrderedGroupDocMap(groupMemberDocs, groupIdFields, groupIdValue);
+
+        HttpServletRequest request = BeanUtils.getRequest();
+        for (int order : docOrderMap.keySet()) {
+            SolrDocument doc = docOrderMap.get(order);
+            // IMetadataValue label = new MultiLanguageMetadataValue(SolrSearchIndex.getMetadataValuesForLanguage(doc, SolrConstants.TITLE));
+            IMetadataValue label = buildLabel(doc, template);
+            String numberSort = doc.getFieldValue(SolrConstants.CURRENTNOSORT) != null
+                    ? String.valueOf(doc.getFieldValue(SolrConstants.CURRENTNOSORT)) : null;
+            String numberText =
+                    doc.getFieldValue(SolrConstants.CURRENTNO) != null ? (String) doc.getFieldValue(SolrConstants.CURRENTNO) : numberSort;
+            String volumeIddoc = (String) doc.getFieldValue(SolrConstants.IDDOC);
+            String logId = (String) doc.getFieldValue(SolrConstants.LOGID);
+            String topStructPi = (String) doc.getFieldValue(SolrConstants.PI_TOPSTRUCT);
+            String thumbnailFile = (String) doc.getFieldValue(SolrConstants.THUMBNAIL);
+            String dataRepository = (String) doc.getFieldValue(SolrConstants.DATAREPOSITORY);
+            String docStructType = (String) doc.getFieldValue(SolrConstants.DOCSTRCT);
+
+            if (label.isEmpty()) {
+                if (StringUtils.isNotEmpty(numberText)) {
+                    label.setValue(new StringBuilder(label.getValue().orElse("")).append(" (").append(numberText).append(')').toString());
+                } else {
+                    label = new SimpleMetadataValue("-");
+                }
+            }
+
+            String footerId = getFooterId(doc, DataManager.getInstance().getConfiguration().getWatermarkIdField());
+            int thumbWidth = DataManager.getInstance().getConfiguration().getMultivolumeThumbnailWidth();
+            int thumbHeight = DataManager.getInstance().getConfiguration().getMultivolumeThumbnailHeight();
+            String thumbnailUrl = null;
+            if (StringUtils.isNotEmpty(topStructPi) && StringUtils.isNotEmpty(thumbnailFile)) {
+                ThumbnailHandler thumbs = BeanUtils.getImageDeliveryBean().getThumbs();
+                StructElement struct = new StructElement(Long.valueOf(volumeIddoc), doc);
+                thumbnailUrl = thumbs.getThumbnailUrl(struct, thumbWidth, thumbHeight);
+            }
+            label.mapEach(value -> StringEscapeUtils.unescapeHtml4(value));
+            boolean accessPermissionPdf;
+            try {
+                accessPermissionPdf = sourceFormatPdfAllowed && AccessConditionUtils.checkAccessPermissionByIdentifierAndLogId(topStructPi,
+                        logId, IPrivilegeHolder.PRIV_DOWNLOAD_PDF, request);
+            } catch (RecordNotFoundException e) {
+                logger.error("Record not found in index: {}", topStructPi);
+                continue;
+            }
+            ret.add(new TOCElement(label, "1", null, volumeIddoc, logId, 1, topStructPi, thumbnailUrl, accessPermissionPdf, false,
+                    thumbnailUrl != null, mimeType, docStructType, footerId));
+        }
+    }
+
+    /**
+     * Create a manually sorted map of docs, since the order can be contained in different GROUPORDER_* fields.
+     * 
+     * @param groupMemberDocs
+     * @param groupIdFields
+     * @param groupIdValue
+     * @return
+     * @should create correctly sorted map
+     */
+    static Map<Integer, SolrDocument> createOrderedGroupDocMap(List<SolrDocument> groupMemberDocs, List<String> groupIdFields,
+            String groupIdValue) {
+        if (groupMemberDocs == null || groupMemberDocs.isEmpty()) {
+            return Collections.emptyMap();
+        }
+        if (groupIdFields == null || groupIdFields.isEmpty()) {
+            return Collections.emptyMap();
+        }
+        if (StringUtils.isEmpty(groupIdValue)) {
+            return Collections.emptyMap();
+        }
+
+        Map<Integer, SolrDocument> ret = new TreeMap<>();
+        for (SolrDocument doc : groupMemberDocs) {
+            String groupIdField = null;
+            for (String field : groupIdFields) {
+                if (groupIdValue.equals(doc.getFieldValue(field))) {
+                    groupIdField = field;
+                    break;
+                }
+            }
+            if (groupIdField == null) {
+                logger.warn("Group ID field not found on IDDOC {}", doc.getFieldValue(SolrConstants.IDDOC));
+                continue;
+            }
+            String groupSortField = groupIdField.replace(SolrConstants.GROUPID_, SolrConstants.GROUPORDER_);
+            Integer order = (Integer) doc.getFieldValue(groupSortField);
+            ret.put(order, doc);
+        }
+
+        return ret;
     }
 
     /**
@@ -414,8 +491,14 @@ public class TocMaker {
             for (SolrDocument volumeDoc : queryResponse.getResults()) {
                 String topStructPi = (String) volumeDoc.getFieldValue(SolrConstants.PI_TOPSTRUCT);
                 // Skip volumes that may not be listed
-                if (FacesContext.getCurrentInstance() != null
-                        && !AccessConditionUtils.checkAccessPermissionByIdentifierAndLogId(topStructPi, null, IPrivilegeHolder.PRIV_LIST, request)) {
+                try {
+                    if (FacesContext.getCurrentInstance() != null
+                            && !AccessConditionUtils.checkAccessPermissionByIdentifierAndLogId(topStructPi, null, IPrivilegeHolder.PRIV_LIST,
+                                    request)) {
+                        continue;
+                    }
+                } catch (RecordNotFoundException e) {
+                    logger.error("Record not found in index: {}", topStructPi);
                     continue;
                 }
                 // Determine the TOC group for this volume based on the grouping field, if configured
@@ -456,8 +539,14 @@ public class TocMaker {
 
                 IMetadataValue volumeLabel = buildLabel(volumeDoc, docStructType);
                 volumeLabel.mapEach(l -> StringEscapeUtils.unescapeHtml4(l));
-                boolean accessPermissionPdf = sourceFormatPdfAllowed && AccessConditionUtils.checkAccessPermissionByIdentifierAndLogId(topStructPi,
-                        volumeLogId, IPrivilegeHolder.PRIV_DOWNLOAD_PDF, request);
+                boolean accessPermissionPdf;
+                try {
+                    accessPermissionPdf = sourceFormatPdfAllowed && AccessConditionUtils.checkAccessPermissionByIdentifierAndLogId(topStructPi,
+                            volumeLogId, IPrivilegeHolder.PRIV_DOWNLOAD_PDF, request);
+                } catch (RecordNotFoundException e) {
+                    logger.error("Record not found in index: {}", topStructPi);
+                    continue;
+                }
                 TOCElement tocElement = new TOCElement(volumeLabel, "1", null, volumeIddoc, volumeLogId, 1, topStructPi, thumbnailUrl,
                         accessPermissionPdf, false, thumbnailUrl != null, volumeMimeType, docStructType, footerId);
                 tocElement.getMetadata().put(SolrConstants.DOCSTRCT, docStructType);
@@ -701,7 +790,7 @@ public class TocMaker {
         }
         throw new IllegalArgumentException("Unable to parse string result from " + object);
     }
-    
+
     static public IMetadataValue buildTocElementLabel(SolrDocument doc) {
         String template = Optional.ofNullable(doc.getFieldValue(SolrConstants.DOCSTRCT)).orElse("").toString();
         return buildLabel(doc, template);
@@ -781,15 +870,25 @@ public class TocMaker {
             Set<String> languages = new HashSet<>(value.getLanguages());
             languages.addAll(label.getLanguages());
             // Replace master value placeholders in the label object 
+            Map<String, String> languageLabelMap = new HashMap<>();
             for (String language : languages) {
                 String langValue = label.getValue(language)
                         .orElse(label.getValue().orElse(labelConfig.getMasterValue()))
                         .replace(placeholder, value.getValue(language).orElse(value.getValue().orElse("")));
-                label.setValue(langValue, language);
+                languageLabelMap.put(language, langValue);
+            }
+            for (String language : languageLabelMap.keySet()) {
+                label.setValue(languageLabelMap.get(language), language);
             }
         }
 
-        return label;
+        //convert to SImpleMetadataValue if only one value exists
+        if(label.getValues().size() == 1) {
+            return new SimpleMetadataValue(label.getValue().orElse(""));
+        } else {            
+            return label;
+        }
+        
     }
 
     /**

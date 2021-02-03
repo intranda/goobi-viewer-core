@@ -455,7 +455,7 @@ public class SearchHit implements Comparable<SearchHit> {
 
         try {
             String fulltext = null;
-            if (AccessConditionUtils.checkAccess(BeanUtils.getRequest(), "text", browseElement.getPi(), teiFilename, false)) {
+            if (BeanUtils.getRequest() != null && AccessConditionUtils.checkAccess(BeanUtils.getRequest(), "text", browseElement.getPi(), teiFilename, false)) {
                 fulltext = DataFileTools.loadTei((String) doc.getFieldValue(SolrConstants.PI), language);
             }
             if (fulltext != null) {

@@ -29,6 +29,7 @@ import javax.inject.Named;
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.xerces.impl.dtd.models.ContentModelValidator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -97,12 +98,17 @@ public class ImageDeliveryBean implements Serializable {
     private Object3DHandler objects3d;
     private IIIFPresentationAPIHandler presentation;
 
+    public ImageDeliveryBean() {
+    }
+
     @PostConstruct
     private void init() {
         logger.trace("init");
         try {
             Configuration config = DataManager.getInstance().getConfiguration();
-            init(config);
+            AbstractApiUrlManager dataUrlManager = DataManager.getInstance().getRestApiManager().getDataApiManager().orElse(null);
+            AbstractApiUrlManager contentUrlManager = DataManager.getInstance().getRestApiManager().getContentApiManager().orElse(null);
+            init(config, dataUrlManager, contentUrlManager);
         } catch (NullPointerException e) {
             logger.error("Failed to initialize ImageDeliveryBean: Resources misssing");
         }
@@ -127,10 +133,8 @@ public class ImageDeliveryBean implements Serializable {
      * @param config a {@link io.goobi.viewer.controller.Configuration} object.
      * @param apiUrls a {@link java.lang.String} object.
      */
-    public void init(Configuration config) {
+    public void init(Configuration config, AbstractApiUrlManager dataUrlManager, AbstractApiUrlManager contentUrlManager) {
         this.servletPath = getServletPathFromContext();
-        AbstractApiUrlManager dataUrlManager = DataManager.getInstance().getRestApiManager().getDataApiManager();
-        AbstractApiUrlManager contentUrlManager = DataManager.getInstance().getRestApiManager().getContentApiManager();
 
         this.staticImagesURI = getStaticImagesPath(this.servletPath, config.getTheme());
         this.cmsMediaPath =
@@ -140,7 +144,11 @@ public class ImageDeliveryBean implements Serializable {
 
         iiif = new IIIFUrlHandler(contentUrlManager);
         images = new ImageHandler(contentUrlManager);
-        objects3d = new Object3DHandler(config);
+        if(contentUrlManager != null) {
+            objects3d = new Object3DHandler(contentUrlManager);
+        } else {            
+            objects3d = new Object3DHandler(config);
+        }
         footer = new WatermarkHandler(config, config.getIIIFApiUrl());
         thumbs = new ThumbnailHandler(iiif, config, this.staticImagesURI);
         if (contentUrlManager != null) {

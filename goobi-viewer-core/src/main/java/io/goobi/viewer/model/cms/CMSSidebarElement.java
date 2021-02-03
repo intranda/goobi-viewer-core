@@ -44,7 +44,6 @@ import io.goobi.viewer.messages.Messages;
 import io.goobi.viewer.messages.ViewerResourceBundle;
 import io.goobi.viewer.model.maps.GeoMap;
 import io.goobi.viewer.model.misc.NumberIterator;
-import io.goobi.viewer.servlets.rest.cms.CMSContentResource;
 
 /**
  * <p>
@@ -396,17 +395,6 @@ public class CMSSidebarElement {
      */
     public void setOrder(int order) {
         this.order = order;
-    }
-
-    /**
-     * <p>
-     * getContent.
-     * </p>
-     *
-     * @return a {@link java.lang.String} object.
-     */
-    public String getContent() {
-        return CMSContentResource.getSidebarElementUrl(this);
     }
 
     /**

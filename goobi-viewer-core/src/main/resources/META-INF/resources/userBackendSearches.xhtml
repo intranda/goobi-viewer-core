@@ -51,7 +51,8 @@
                                 <h:outputText value="#{msg.MD_DATEOTHER}" />
                             </f:facet>
                             <h:outputText value="#{search.dateUpdated}">
-                                <f:convertDateTime type="both" dateStyle="short" timeStyle="short" />
+                                <f:converter converterId="localDateTimeConverter" />
+                                <f:attribute name="pattern" value="#{navigationHelper.dateTimePattern}" />
                             </h:outputText>
                         </h:column>
                         <!-- ACTION -->

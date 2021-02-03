@@ -21,9 +21,9 @@ import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -40,6 +40,7 @@ import java.util.concurrent.Future;
 import java.util.concurrent.FutureTask;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
+import java.util.function.BiConsumer;
 import java.util.stream.Collectors;
 
 import javax.annotation.PostConstruct;
@@ -47,6 +48,7 @@ import javax.enterprise.context.SessionScoped;
 import javax.faces.context.FacesContext;
 import javax.inject.Inject;
 import javax.inject.Named;
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang3.StringUtils;
@@ -59,6 +61,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import de.unigoettingen.sub.commons.contentlib.exceptions.IllegalRequestException;
+import io.goobi.viewer.api.rest.AbstractApiUrlManager;
+import io.goobi.viewer.api.rest.model.tasks.Task;
+import io.goobi.viewer.api.rest.model.tasks.TaskParameter;
+import io.goobi.viewer.api.rest.model.tasks.Task.TaskType;
+import io.goobi.viewer.api.rest.v1.ApiUrls;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.DateTools;
 import io.goobi.viewer.controller.SolrConstants;
@@ -153,7 +160,7 @@ public class SearchBean implements SearchInterface, Serializable {
 
     private String searchInCurrentItemString;
     /** Current search object. Contains the results and can be used to persist search parameters in the DB. */
-    Search currentSearch;
+    private Search currentSearch;
 
     private volatile FutureTask<Boolean> downloadReady;
     private volatile FutureTask<Boolean> downloadComplete;
@@ -346,7 +353,7 @@ public class SearchBean implements SearchInterface, Serializable {
             case SearchHelper.SEARCH_TYPE_ADVANCED:
                 return "pretty:" + PageType.advancedSearch.name();
             case SearchHelper.SEARCH_TYPE_CALENDAR:
-                return "pretty:" + PageType.calendarsearch.name();
+                return "pretty:" + PageType.searchCalendar.name();
             default:
                 return "pretty:" + PageType.search.name();
         }
@@ -571,7 +578,6 @@ public class SearchBean implements SearchInterface, Serializable {
                         } catch (DAOException e) {
                             logger.error(e.toString(), e);
                         }
-
                     } else if (userBean.isLoggedIn()) {
                         // User bookmark list
                         try {
@@ -594,7 +600,6 @@ public class SearchBean implements SearchInterface, Serializable {
                         // Skip empty bookmark list
                         continue;
                     }
-
                 } else {
                     // Generate item query
                     itemQuery = queryItem.generateQuery(searchTerms.get(SolrConstants.FULLTEXT), aggregateHits);
@@ -608,7 +613,12 @@ public class SearchBean implements SearchInterface, Serializable {
                         if (!queryItem.getValue().startsWith("\"")) {
                             sbInfo.append('"');
                         }
-                        sbInfo.append(ViewerResourceBundle.getTranslation(queryItem.getValue(), BeanUtils.getLocale()));
+                        if (SolrConstants.BOOKMARKS.equals(queryItem.getField()) && !userBean.isLoggedIn()) {
+                            // Session bookmark list value
+                            sbInfo.append(ViewerResourceBundle.getTranslation("bookmarkList_session", BeanUtils.getLocale()));
+                        } else {
+                            sbInfo.append(ViewerResourceBundle.getTranslation(queryItem.getValue(), BeanUtils.getLocale()));
+                        }
                         if (!queryItem.getValue().endsWith("\"")) {
                             sbInfo.append('"');
                         }
@@ -1105,7 +1115,7 @@ public class SearchBean implements SearchInterface, Serializable {
         }
         // Then unescape custom sequences
         searchString = BeanUtils.unescapeCriticalUrlChracters(searchString);
-        
+
         // Parse search terms from the query (unescape spaces first)
         String discriminatorValue = null;
         if (navigationHelper != null) {
@@ -1235,7 +1245,7 @@ public class SearchBean implements SearchInterface, Serializable {
             }
         }
     }
-    
+
     public String removeChronologyFacetAction() {
         String facet = SolrConstants.YEAR + ":" + facets.getTempValue();
         facets.setTempValue("");
@@ -1455,12 +1465,12 @@ public class SearchBean implements SearchInterface, Serializable {
 
         if (currentHitIndex < currentSearch.getHitsCount() - 1) {
             //            return currentSearch.getHits().get(currentHitIndex + 1).getBrowseElement();
-            return SearchHelper.getBrowseElement(searchString, currentHitIndex + 1, currentSearch.getSortFields(),
+            return SearchHelper.getBrowseElement(searchString, currentHitIndex + 1, currentSearch.getAllSortFields(),
                     facets.generateFacetFilterQueries(advancedSearchGroupOperator, true), SearchHelper.generateQueryParams(), searchTerms,
                     BeanUtils.getLocale(), DataManager.getInstance().getConfiguration().isAggregateHits(), BeanUtils.getRequest());
         }
         //        return currentSearch.getHits().get(currentHitIndex).getBrowseElement();
-        return SearchHelper.getBrowseElement(searchString, currentHitIndex, currentSearch.getSortFields(),
+        return SearchHelper.getBrowseElement(searchString, currentHitIndex, currentSearch.getAllSortFields(),
                 facets.generateFacetFilterQueries(advancedSearchGroupOperator, true), SearchHelper.generateQueryParams(), searchTerms,
                 BeanUtils.getLocale(), DataManager.getInstance().getConfiguration().isAggregateHits(), BeanUtils.getRequest());
     }
@@ -1482,12 +1492,12 @@ public class SearchBean implements SearchInterface, Serializable {
 
         if (currentHitIndex > 0) {
             //            return currentSearch.getHits().get(currentHitIndex - 1).getBrowseElement();
-            return SearchHelper.getBrowseElement(searchString, currentHitIndex - 1, currentSearch.getSortFields(),
+            return SearchHelper.getBrowseElement(searchString, currentHitIndex - 1, currentSearch.getAllSortFields(),
                     facets.generateFacetFilterQueries(advancedSearchGroupOperator, true), SearchHelper.generateQueryParams(), searchTerms,
                     BeanUtils.getLocale(), DataManager.getInstance().getConfiguration().isAggregateHits(), BeanUtils.getRequest());
         } else if (currentSearch.getHitsCount() > 0) {
             //            return currentSearch.getHits().get(currentHitIndex).getBrowseElement();
-            return SearchHelper.getBrowseElement(searchString, currentHitIndex, currentSearch.getSortFields(),
+            return SearchHelper.getBrowseElement(searchString, currentHitIndex, currentSearch.getAllSortFields(),
                     facets.generateFacetFilterQueries(advancedSearchGroupOperator, true), SearchHelper.generateQueryParams(), searchTerms,
                     BeanUtils.getLocale(), DataManager.getInstance().getConfiguration().isAggregateHits(), BeanUtils.getRequest());
         }
@@ -1656,7 +1666,8 @@ public class SearchBean implements SearchInterface, Serializable {
                 Optional<BookmarkList> bookmarkList =
                         DataManager.getInstance().getBookmarkManager().getBookmarkList(BeanUtils.getRequest().getSession());
                 if (bookmarkList.isPresent() && !bookmarkList.get().getItems().isEmpty()) {
-                    ret.add(new StringPair(bookmarkList.get().getName(), bookmarkList.get().getName()));
+                    ret.add(new StringPair(bookmarkList.get().getName(),
+                            ViewerResourceBundle.getTranslation("bookmarkList_session", null)));
                 }
             }
             // public bookmark lists
@@ -1872,33 +1883,13 @@ public class SearchBean implements SearchInterface, Serializable {
             return "";
         }
 
-        //        currentSearch.setUserInput(guiSearchString);
-        //        currentSearch.setQuery(searchString);
-        //        currentSearch.setPage(currentPage);
-        //        currentSearch.setSearchType(activeSearchType);
-        //        currentSearch.setSearchFilter(currentSearchFilter);
-        //        // regular facets
-        //        if (!facets.getCurrentFacets()
-        //                .isEmpty()) {
-        //            currentSearch.setFacetString(facets.getCurrentFacetString());
-        //        }
-        //        // hierarchical facets
-        //        if (!facets.getCurrentHierarchicalFacets()
-        //                .isEmpty()) {
-        //            currentSearch.setHierarchicalFacetString(facets.getCurrentHierarchicalFacetString());
-        //        }
-        //        // sorting
-        //        if (StringUtils.isNotEmpty(sortString)) {
-        //            currentSearch.setSortString(sortString);
-        //        }
-
         currentSearch.setLastHitsCount(currentSearch.getHitsCount());
 
         UserBean ub = BeanUtils.getUserBean();
         if (ub != null) {
             currentSearch.setOwner(ub.getUser());
         }
-        currentSearch.setDateUpdated(new Date());
+        currentSearch.setDateUpdated(LocalDateTime.now());
         if (DataManager.getInstance().getDao().addSearch(currentSearch)) {
             currentSearch.setSaved(true);
             Messages.info("saveSearchSuccess");
@@ -1921,30 +1912,44 @@ public class SearchBean implements SearchInterface, Serializable {
         if (searchString == null) {
             return null;
         }
-
+        
         String currentQuery = SearchHelper.prepareQuery(searchString);
-        try {
-            return new StringBuilder().append(DataManager.getInstance().getConfiguration().getRestApiUrl())
-                    .append("rss/search/")
-                    .append(URLEncoder.encode(currentQuery, URL_ENCODING))
-                    .append('/')
-                    .append(URLEncoder.encode(facets.getCurrentFacetString(), URL_ENCODING))
-                    .append('/')
-                    .append(advancedSearchGroupOperator)
-                    .append("/-/")
-                    .toString();
-        } catch (UnsupportedEncodingException e) {
-            logger.warn("Could not encode query '{}' for URL", currentQuery);
-            return new StringBuilder().append(DataManager.getInstance().getConfiguration().getRestApiUrl())
-                    .append("rss/search/")
-                    .append(currentQuery)
-                    .append('/')
-                    .append(facets.getCurrentFacetString())
-                    .append('/')
-                    .append(advancedSearchGroupOperator)
-                    .append("/-/")
-                    .toString();
+        AbstractApiUrlManager urls = DataManager.getInstance().getRestApiManager().getDataApiManager().orElse(null);
+        if(urls == null) {
+            
+            try {
+                return new StringBuilder().append(DataManager.getInstance().getConfiguration().getRestApiUrl())
+                        .append("rss/search/")
+                        .append(URLEncoder.encode(currentQuery, URL_ENCODING))
+                        .append('/')
+                        .append(URLEncoder.encode(facets.getCurrentFacetString(), URL_ENCODING))
+                        .append('/')
+                        .append(advancedSearchGroupOperator)
+                        .append("/-/")
+                        .toString();
+            } catch (UnsupportedEncodingException e) {
+                logger.warn("Could not encode query '{}' for URL", currentQuery);
+                return new StringBuilder().append(DataManager.getInstance().getConfiguration().getRestApiUrl())
+                        .append("rss/search/")
+                        .append(currentQuery)
+                        .append('/')
+                        .append(facets.getCurrentFacetString())
+                        .append('/')
+                        .append(advancedSearchGroupOperator)
+                        .append("/-/")
+                        .toString();
+            }
+            
+        } else {
+            
+            String facetQuery = StringUtils.isBlank(facets.getCurrentFacetString().replace("-", "")) ? null : facets.getCurrentFacetString();
+            return urls.path(ApiUrls.RECORDS_RSS)
+                    .query("query", currentQuery)
+                    .query("facets", facetQuery)
+                    .query("facetQueryOperator", advancedSearchGroupOperator)
+                    .build();
         }
+
     }
 
     /**
@@ -1995,51 +2000,56 @@ public class SearchBean implements SearchInterface, Serializable {
     public String exportSearchAsExcelAction() throws IndexUnreachableException {
         logger.trace("exportSearchAsExcelAction");
         final FacesContext facesContext = FacesContext.getCurrentInstance();
+        
         String currentQuery = SearchHelper.prepareQuery(searchString);
         String finalQuery = SearchHelper.buildFinalQuery(currentQuery, DataManager.getInstance().getConfiguration().isAggregateHits());
         Locale locale = navigationHelper.getLocale();
+        int timeout = DataManager.getInstance().getConfiguration().getExcelDownloadTimeout(); //[s]
 
-        downloadReady = new FutureTask<>(new Callable<Boolean>() {
-
-            @Override
-            public Boolean call() throws InterruptedException, ViewerConfigurationException {
-                if (!facesContext.getResponseComplete()) {
-                    final SXSSFWorkbook wb = buildExcelSheet(facesContext, finalQuery, currentQuery, locale);
+        BiConsumer<HttpServletRequest, Task> task = (request, job) -> {
+            if (!facesContext.getResponseComplete()) {
+                try {
+                    SXSSFWorkbook wb = buildExcelSheet(facesContext, finalQuery, currentQuery, locale);
                     if (wb == null) {
-                        return Boolean.FALSE;
+                        job.setError("Failed to create excel sheet");
                     } else if (Thread.interrupted()) {
-                        return Boolean.FALSE;
-                    }
-                    Callable<Boolean> download = new Callable<Boolean>() {
-
-                        @Override
-                        public Boolean call() {
-                            try {
-                                logger.debug("Writing excel");
-                                return writeExcelSheet(facesContext, wb);
-                            } finally {
-                                facesContext.responseComplete();
+                        job.setError("Execution cancelled");
+                    } else {                    
+                        Callable<Boolean> download = new Callable<Boolean>() {
+                            
+                            @Override
+                            public Boolean call() {
+                                try {
+                                    logger.debug("Writing excel");
+                                    return writeExcelSheet(facesContext, wb);
+                                } finally {
+                                    facesContext.responseComplete();
+                                }
                             }
-                        }
-                    };
-
-                    downloadComplete = new FutureTask<>(download);
-                    executor.submit(downloadComplete);
-                    return Boolean.TRUE;
-                }
-                return Boolean.FALSE;
+                        };
+                        
+                        downloadComplete = new FutureTask<>(download);
+                        executor.submit(downloadComplete);
+                        downloadComplete.get(timeout, TimeUnit.SECONDS);
+                    }
+                    } catch(TimeoutException | InterruptedException e) {
+                        job.setError("Timeout for excel download");
+                    } catch (ExecutionException | ViewerConfigurationException e) {
+                        logger.error(e.toString(), e);
+                        job.setError("Failed to create excel sheet");
+                    }
+            } else {
+                job.setError("Response is already committed");
             }
-        });
-        executor.submit(downloadReady);
+        };
 
+        
         try {
-            int timeout = DataManager.getInstance().getConfiguration().getExcelDownloadTimeout(); //[s]
-            if (downloadReady.get(timeout, TimeUnit.SECONDS)) {
-                logger.trace("Download ready");
-                //            	Messages.info("download_ready");
-                downloadComplete.get(timeout, TimeUnit.SECONDS);
-                logger.trace("Download complete");
-            }
+            Task excelCreationJob = new Task(new TaskParameter(TaskType.SEARCH_EXCEL_EXPORT), task);
+            Long jobId = DataManager.getInstance().getRestApiJobManager().addTask(excelCreationJob);
+            Future ready = DataManager.getInstance().getRestApiJobManager()
+            .triggerTaskInThread(jobId, (HttpServletRequest)facesContext.getExternalContext().getRequest());
+            ready.get(timeout, TimeUnit.SECONDS);
         } catch (InterruptedException e) {
             logger.debug("Download interrupted");
         } catch (ExecutionException e) {
@@ -2098,7 +2108,7 @@ public class SearchBean implements SearchInterface, Serializable {
             throws InterruptedException, ViewerConfigurationException {
         try {
             Map<String, String> params = SearchHelper.generateQueryParams();
-            final SXSSFWorkbook wb = SearchHelper.exportSearchAsExcel(finalQuery, exportQuery, currentSearch.getSortFields(),
+            final SXSSFWorkbook wb = SearchHelper.exportSearchAsExcel(finalQuery, exportQuery, currentSearch.getAllSortFields(),
                     facets.generateFacetFilterQueries(advancedSearchGroupOperator, true), params, searchTerms, locale,
                     DataManager.getInstance().getConfiguration().isAggregateHits(), BeanUtils.getRequest());
             if (Thread.interrupted()) {
@@ -2108,7 +2118,7 @@ public class SearchBean implements SearchInterface, Serializable {
             facesContext.getExternalContext().setResponseContentType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
             facesContext.getExternalContext()
                     .setResponseHeader("Content-Disposition", "attachment;filename=\"viewer_search_"
-                            + DateTools.format(new Date(), DateTools.formatterISO8601DateTime, false)
+                            + LocalDateTime.now().format(DateTools.formatterISO8601DateTime)
                             + ".xlsx\"");
             return wb;
         } catch (IndexUnreachableException e) {
@@ -2510,21 +2520,21 @@ public class SearchBean implements SearchInterface, Serializable {
                 .orElse("");
         return value.replace("KEY::", "");
     }
-    
+
     public String searchInRecord(String queryField, String queryValue) {
-        
+
         this.getAdvancedQueryGroups().get(0).getQueryItems().get(0).setField(queryField);
-        if(StringUtils.isNotBlank(queryValue))  {            
+        if (StringUtils.isNotBlank(queryValue)) {
             this.getAdvancedQueryGroups().get(0).getQueryItems().get(0).setValue(queryValue);
         }
         this.getAdvancedQueryGroups().get(0).getQueryItems().get(0).setOperator(SearchItemOperator.IS);
         this.getAdvancedQueryGroups().get(0).getQueryItems().get(1).setField("searchAdvanced_allFields");
         this.getAdvancedQueryGroups().get(0).getQueryItems().get(1).setOperator(SearchItemOperator.AUTO);
         this.setActiveSearchType(1);
-       
+
         return this.searchAdvanced();
     }
-    
+
     public boolean isSolrIndexReachable() {
         return DataManager.getInstance().getSearchIndex().pingSolrIndex();
     }

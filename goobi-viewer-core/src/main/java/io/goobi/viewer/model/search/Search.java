@@ -18,9 +18,9 @@ package io.goobi.viewer.model.search;
 import java.io.Serializable;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
@@ -35,8 +35,6 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.Table;
-import javax.persistence.Temporal;
-import javax.persistence.TemporalType;
 import javax.persistence.Transient;
 
 import org.apache.commons.lang3.StringUtils;
@@ -116,9 +114,8 @@ public class Search implements Serializable {
     @Column(name = "sort_field")
     private String sortString;
 
-    @Temporal(TemporalType.TIMESTAMP)
     @Column(name = "date_updated", nullable = false)
-    private Date dateUpdated;
+    private LocalDateTime dateUpdated;
 
     @Column(name = "last_hits_count")
     private long lastHitsCount;
@@ -439,15 +436,7 @@ public class Search implements Serializable {
             }
         }
 
-        List<String> staticSortFields = DataManager.getInstance().getConfiguration().getStaticSortFields();
-        List<StringPair> useSortFields = new ArrayList<>(staticSortFields.size() + sortFields.size());
-        if (!staticSortFields.isEmpty()) {
-            for (String s : staticSortFields) {
-                useSortFields.add(new StringPair(s, "asc"));
-                logger.trace("Added static sort field: {}", s);
-            }
-        }
-        useSortFields.addAll(sortFields);
+        List<StringPair> useSortFields = getAllSortFields();
         List<SearchHit> hits = aggregateHits
                 ? SearchHelper.searchWithAggregation(finalQuery, from, hitsPerPage, useSortFields, null, activeFacetFilterQueries, params,
                         searchTerms, null, BeanUtils.getLocale(), keepSolrDoc)
@@ -743,6 +732,26 @@ public class Search implements Serializable {
     }
 
     /**
+     * Returns a list of currently selected sort fields with any configured static sort fields.
+     * 
+     * @return A list of both static and selected fields
+     * @should return all fields
+     */
+    public List<StringPair> getAllSortFields() {
+        List<String> staticSortFields = DataManager.getInstance().getConfiguration().getStaticSortFields();
+        List<StringPair> ret = new ArrayList<>(staticSortFields.size() + sortFields.size());
+        if (!staticSortFields.isEmpty()) {
+            for (String s : staticSortFields) {
+                ret.add(new StringPair(s, "asc"));
+                logger.trace("Added static sort field: {}", s);
+            }
+        }
+        ret.addAll(sortFields);
+
+        return ret;
+    }
+
+    /**
      * <p>
      * Getter for the field <code>sortFields</code>.
      * </p>
@@ -760,7 +769,7 @@ public class Search implements Serializable {
      *
      * @return the dateUpdated
      */
-    public Date getDateUpdated() {
+    public LocalDateTime getDateUpdated() {
         return dateUpdated;
     }
 
@@ -771,7 +780,7 @@ public class Search implements Serializable {
      *
      * @param dateUpdated the dateUpdated to set
      */
-    public void setDateUpdated(Date dateUpdated) {
+    public void setDateUpdated(LocalDateTime dateUpdated) {
         this.dateUpdated = dateUpdated;
     }
 

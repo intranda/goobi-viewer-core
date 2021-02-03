@@ -191,7 +191,7 @@ public class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
         Assert.assertEquals(
                 " +(ACCESSCONDITION:\"OPENACCESS\""
                         + " ACCESSCONDITION:\"license type 2 name\""
-                        + " (+ACCESSCONDITION:\"restriction on access\" -(-MDNUM_PUBLICRELEASEYEAR:[* TO 2020])))",
+                        + " (+ACCESSCONDITION:\"restriction on access\" -(-MDNUM_PUBLICRELEASEYEAR:[* TO 2021])))",
                 suffix);
     }
 
@@ -232,7 +232,7 @@ public class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
         {
             // Regular IP address (has listing privilege for 'license type 3 name')
             String suffix = SearchHelper.getPersonalFilterQuerySuffix(null, "1.2.3.4");
-            Assert.assertTrue(suffix.contains("+ACCESSCONDITION:\"restriction on access\" +(-MDNUM_PUBLICRELEASEYEAR:[* TO 2020]))"));
+            Assert.assertTrue(suffix.contains("+ACCESSCONDITION:\"restriction on access\" +(-MDNUM_PUBLICRELEASEYEAR:[* TO 2021]))"));
         }
     }
 
@@ -245,7 +245,7 @@ public class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
         String suffix = SearchHelper.getPersonalFilterQuerySuffix(null, null);
         // Moving wall license with negated filter query
         Assert.assertTrue(suffix.contains(
-                "(+ACCESSCONDITION:\"restriction on access\" -(-MDNUM_PUBLICRELEASEYEAR:[* TO 2020]))"));
+                "(+ACCESSCONDITION:\"restriction on access\" -(-MDNUM_PUBLICRELEASEYEAR:[* TO 2021]))"));
     }
 
     /**
@@ -599,6 +599,16 @@ public class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
         //        Assert.assertEquals("FACET_SUPERDOCSTRCT", SearchHelper.facetifyField(SolrConstants.SUPERDOCSTRCT));
         Assert.assertEquals("FACET_TITLE", SearchHelper.facetifyField("MD_TITLE_UNTOKENIZED"));
     }
+    
+
+    /**
+     * @see SearchHelper#facetifyField(String)
+     * @verifies leave bool fields unaltered
+     */
+    @Test
+    public void facetifyField_shouldLeaveBoolFieldsUnaltered() throws Exception {
+        Assert.assertEquals("BOOL_FOO", SearchHelper.facetifyField("BOOL_FOO"));
+    }
 
     /**
      * @see SearchHelper#facetifyList(List)
@@ -640,6 +650,10 @@ public class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
     public void adaptField_shouldApplyPrefixCorrectly() throws Exception {
         Assert.assertEquals("SORT_DC", SearchHelper.adaptField(SolrConstants.DC, "SORT_"));
         Assert.assertEquals("SORT_FOO", SearchHelper.adaptField("MD_FOO", "SORT_"));
+        Assert.assertEquals("SORT_FOO", SearchHelper.adaptField("MD2_FOO", "SORT_"));
+        Assert.assertEquals("SORT_FOO", SearchHelper.adaptField("MDNUM_FOO", "SORT_"));
+        Assert.assertEquals("SORT_FOO", SearchHelper.adaptField("NE_FOO", "SORT_"));
+        Assert.assertEquals("SORT_FOO", SearchHelper.adaptField("BOOL_FOO", "SORT_"));
     }
 
     /**
@@ -1286,5 +1300,4 @@ public class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
         String finalQuery = SearchHelper.buildFinalQuery(SearchHelper.AGGREGATION_QUERY_PREFIX + "DEFAULT:*", true, null);
         Assert.assertEquals(SearchHelper.AGGREGATION_QUERY_PREFIX + "+(DEFAULT:*) -BOOL_HIDE:true -DC:collection1 -DC:collection2", finalQuery);
     }
-
 }

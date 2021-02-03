@@ -19,15 +19,14 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.Serializable;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -49,7 +48,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import de.intranda.metadata.multilanguage.IMetadataValue;
 import de.unigoettingen.sub.commons.contentlib.exceptions.ContentNotFoundException;
 import de.unigoettingen.sub.commons.contentlib.exceptions.IllegalRequestException;
-import de.unigoettingen.sub.commons.contentlib.exceptions.ServiceNotAllowedException;
 import de.unigoettingen.sub.commons.contentlib.imagelib.ImageFileFormat;
 import de.unigoettingen.sub.commons.contentlib.imagelib.ImageType;
 import de.unigoettingen.sub.commons.contentlib.imagelib.ImageType.Colortype;
@@ -72,6 +70,7 @@ import io.goobi.viewer.exceptions.AccessDeniedException;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
+import io.goobi.viewer.exceptions.RecordNotFoundException;
 import io.goobi.viewer.exceptions.ViewerConfigurationException;
 import io.goobi.viewer.managedbeans.ConfigurationBean;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
@@ -733,9 +732,12 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
         if (fulltextAccessPermission == null) {
             boolean access = false;
             try {
-                access = AccessConditionUtils.checkAccessPermissionByIdentifierAndLogId(pi, null, IPrivilegeHolder.PRIV_VIEW_FULLTEXT, BeanUtils.getRequest());
+                access = AccessConditionUtils.checkAccessPermissionByIdentifierAndLogId(pi, null, IPrivilegeHolder.PRIV_VIEW_FULLTEXT,
+                        BeanUtils.getRequest());
             } catch (IndexUnreachableException | DAOException e) {
                 logger.error(String.format("Cannot check fulltext access for pi %s and pageNo %d: %s", pi, order, e.toString()));
+            } catch (RecordNotFoundException e) {
+                logger.error("Record not found in index: {}", pi);
             }
             return access;
         }
@@ -913,7 +915,7 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
             throws AccessDeniedException, FileNotFoundException, IOException, IndexUnreachableException, DAOException, ViewerConfigurationException {
         if (fulltextFileName == null) {
             return null;
-        }else if(!isFulltextAccessPermission()) {
+        } else if (!isFulltextAccessPermission()) {
             throw new AccessDeniedException(String.format("Fulltext access denied for pi %s and pageNo %d", pi, order));
         }
 
@@ -994,7 +996,7 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
         logger.trace("loadAlto: {}", altoFileName);
         if (altoFileName == null) {
             return null;
-        }else if(!isFulltextAccessPermission()) {
+        } else if (!isFulltextAccessPermission()) {
             throw new AccessDeniedException(String.format("Fulltext access denied for pi %s and pageNo %d", pi, order));
         }
 
@@ -1577,7 +1579,7 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
      */
     public void updateCommentAction(Comment comment) throws DAOException {
         // Set updated timestamp
-        comment.setDateUpdated(new Date());
+        comment.setDateUpdated(LocalDateTime.now());
         saveCommentAction(comment);
         resetCurrentComment();
     }
@@ -1799,7 +1801,7 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
                     StructElement ele = new StructElement(Long.valueOf((String) doc.getFieldValue(SolrConstants.IDDOC)), doc);
                     IMetadataValue value = TocMaker.buildTocElementLabel(doc);
                     String label = value.getValue(BeanUtils.getLocale()).orElse(value.getValue().orElse(""));
-                    if(StringUtils.isNotBlank(label)) {
+                    if (StringUtils.isNotBlank(label)) {
                         ele.setLabel(label);
                     }
                     containedStructElements.add(ele);

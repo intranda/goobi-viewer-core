@@ -12,11 +12,9 @@
 				<i class="image-rotate_right"></i>
 			</a>
 		</div>
-		<div class="image-controls__action zoom-slider-wrapper">
-	        <div class="zoom-slider">
-	            <div class="zoom-slider-handle"></div>
-	        </div>
-		</div>
+        <div class="image-controls__action zoom-slider-wrapper">
+        	<input type="range" min="0" max="1" value="0" step="0.01" class="slider zoom-slider" aria-label="zoom slider"/>
+        </div>
 	</div>
 </div>
 

@@ -79,7 +79,7 @@ public class SessionBookmarkResourceBuilder extends AbstractBookmarkResourceBuil
             throws DAOException, IOException, RestApiException, ViewerConfigurationException, IndexUnreachableException, PresentationException {
             BookmarkList bookmarkList = DataManager.getInstance().getBookmarkManager().getOrCreateBookmarkList(session);
             if (bookmarkList != null) {
-                return bookmarkList.getMiradorJsonObject(urls.getApplicationUrl());
+                return bookmarkList.getMiradorJsonObject(urls.getApplicationUrl(), urls.getApiUrl());
             }
             return "";
     }
@@ -317,8 +317,9 @@ public class SessionBookmarkResourceBuilder extends AbstractBookmarkResourceBuil
      */
     @Override
     public SuccessMessage deleteBookmarkList(Long id) throws DAOException, IOException, RestApiException, IllegalRequestException {
-        throw new IllegalRequestException("Cannot delete session bookmark list");
-
+        DataManager.getInstance().getBookmarkManager().deleteBookmarkList(session);
+        DataManager.getInstance().getBookmarkManager().createBookmarkList(session);
+        return new SuccessMessage(true);
     }
 
     /* (non-Javadoc)

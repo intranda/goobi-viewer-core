@@ -34,6 +34,7 @@ import io.goobi.viewer.model.cms.CMSNavigationItem;
 import io.goobi.viewer.model.cms.CMSPage;
 import io.goobi.viewer.model.cms.CMSPageTemplate;
 import io.goobi.viewer.model.cms.CMSPageTemplateEnabled;
+import io.goobi.viewer.model.cms.CMSRecordNote;
 import io.goobi.viewer.model.cms.CMSSidebarElement;
 import io.goobi.viewer.model.cms.CMSStaticPage;
 import io.goobi.viewer.model.crowdsourcing.campaigns.Campaign;
@@ -2147,6 +2148,71 @@ public interface IDAO {
      * @throws DAOException
      */
     List<CMSPage> getCMSPagesForSubtheme(String subtheme) throws DAOException;
+    
+    /**
+     * Get a paginated list of {@link CMSRecordNote}s
+     * 
+     * @param first
+     * @param pageSize
+     * @param sortField
+     * @param descending
+     * @param filters
+     * @return
+     * @throws DAOException
+     */
+    public List<CMSRecordNote> getRecordNotes(int first, int pageSize, String sortField, boolean descending, Map<String, String> filters)
+            throws DAOException;
+   
+    /**
+     * Get all {@link CMSRecordNote}s for the given pi
+     * 
+     * @param pi    The pi of the record.
+     * @param displayedNotesOnly set to true to only return notes with {@link CMSRecordNote#isDisplayŃote()} set to true
+     * @return
+     * @throws DAOException
+     */
+    public List<CMSRecordNote> getRecordNotesForPi(String pi, boolean displayedNotesOnly) throws DAOException;
+
+    
+    /**
+     * Get all persisted {@link CMSRecordNote}s
+     * 
+     * @return
+     * @throws DAOException 
+     */
+    public List<CMSRecordNote> getAllRecordNotes() throws DAOException;
+    
+    /**
+     * Get a {@link CMSRecordNote} by its id property
+     * 
+     * @param id
+     * @return
+     */
+    public CMSRecordNote getRecordNote(Long id) throws DAOException;
+    
+    /**
+     * Persist a new {@link CMSRecordNote}.
+     * 
+     * @param note
+     * @return
+     */
+    public boolean addRecordNote(CMSRecordNote note) throws DAOException;
+    
+    /**
+     * Updates an existing {@link CMSRecordNote}
+     * 
+     * @param note
+     * @return
+     */
+    public boolean updateRecordNote(CMSRecordNote note) throws DAOException;
+    
+    /**
+     * Deletes an existing {@link CMSRecordNote}
+     * 
+     * @param note
+     * @return
+     */
+    public boolean deleteRecordNote(CMSRecordNote note) throws DAOException;
 
     public boolean saveTermsOfUse(TermsOfUse tou) throws DAOException;
 

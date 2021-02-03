@@ -59,7 +59,8 @@ import io.goobi.viewer.model.viewer.pageloader.LeanPageLoader;
 
 /**
  * <p>
- * ImageInformationFilter class.
+ * Filter for IIIF Image info.json requests. Sets the tile sizes, image sizes and maximum sizes 
+ * configured in config_viewer.xml
  * </p>
  */
 @Provider

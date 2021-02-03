@@ -15,7 +15,25 @@
  */
 package io.goobi.viewer.model.iiif.presentation.builder;
 
-import static io.goobi.viewer.api.rest.v1.ApiUrls.*;
+import static io.goobi.viewer.api.rest.v1.ApiUrls.ANNOTATIONS;
+import static io.goobi.viewer.api.rest.v1.ApiUrls.ANNOTATIONS_ANNOTATION;
+import static io.goobi.viewer.api.rest.v1.ApiUrls.ANNOTATIONS_COMMENT;
+import static io.goobi.viewer.api.rest.v1.ApiUrls.COLLECTIONS;
+import static io.goobi.viewer.api.rest.v1.ApiUrls.COLLECTIONS_COLLECTION;
+import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_ANNOTATIONS;
+import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_LAYER;
+import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_MANIFEST;
+import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_MANIFEST_AUTOCOMPLETE;
+import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_MANIFEST_SEARCH;
+import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_PAGES;
+import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_PAGES_ANNOTATIONS;
+import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_PAGES_CANVAS;
+import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_PAGES_COMMENTS;
+import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_PAGES_SEQUENCE;
+import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_PAGES_TEXT;
+import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_RECORD;
+import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_SECTIONS;
+import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_SECTIONS_RANGE;
 
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -42,7 +60,6 @@ import de.intranda.api.iiif.presentation.AbstractPresentationModelElement;
 import de.intranda.api.iiif.presentation.AnnotationList;
 import de.intranda.api.iiif.presentation.Canvas;
 import de.intranda.api.iiif.presentation.enums.AnnotationType;
-import de.intranda.api.iiif.presentation.enums.Format;
 import de.intranda.metadata.multilanguage.IMetadataValue;
 import de.intranda.metadata.multilanguage.Metadata;
 import de.intranda.metadata.multilanguage.MultiLanguageMetadataValue;
@@ -50,7 +67,6 @@ import de.intranda.metadata.multilanguage.SimpleMetadataValue;
 import de.unigoettingen.sub.commons.util.PathConverter;
 import io.goobi.viewer.api.rest.AbstractApiUrlManager;
 import io.goobi.viewer.api.rest.AbstractApiUrlManager.ApiPath;
-import io.goobi.viewer.api.rest.resourcebuilders.AnnotationsResourceBuilder;
 import io.goobi.viewer.api.rest.v1.ApiUrls;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.SolrConstants;
@@ -60,6 +76,8 @@ import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.messages.Messages;
 import io.goobi.viewer.messages.ViewerResourceBundle;
+import io.goobi.viewer.model.iiif.presentation.builder.LinkingProperty.LinkingTarget;
+import io.goobi.viewer.model.iiif.presentation.builder.LinkingProperty.LinkingType;
 import io.goobi.viewer.model.viewer.PageType;
 import io.goobi.viewer.model.viewer.PhysicalElement;
 import io.goobi.viewer.model.viewer.StructElement;
@@ -81,12 +99,16 @@ public abstract class AbstractBuilder {
             SolrConstants.FILENAME_TEI, SolrConstants.FILENAME_WEBM, SolrConstants.PI_PARENT, SolrConstants.PI_ANCHOR, SolrConstants.LOGID,
             SolrConstants.ISWORK, SolrConstants.ISANCHOR, SolrConstants.NUMVOLUMES, SolrConstants.CURRENTNO, SolrConstants.CURRENTNOSORT,
             SolrConstants.LOGID, SolrConstants.THUMBPAGENO, SolrConstants.IDDOC_PARENT, SolrConstants.IDDOC_TOPSTRUCT, SolrConstants.NUMPAGES,
-            SolrConstants.DATAREPOSITORY, SolrConstants.SOURCEDOCFORMAT };
+            SolrConstants.DATAREPOSITORY, SolrConstants.SOURCEDOCFORMAT, SolrConstants.BOOL_IMAGEAVAILABLE };
 
     /** Constant <code>UGC_SOLR_FIELDS</code> */
     
     protected final AbstractApiUrlManager urls;
+    
+    private final Map<LinkingProperty.LinkingType, List<LinkingProperty>> linkingProperties = new HashMap<>();
 
+    private final List<Locale> translationLocales = DataManager.getInstance().getConfiguration().getIIIFTranslationLocales();
+    
     /**
      * <p>
      * Constructor for AbstractBuilder.
@@ -101,6 +123,37 @@ public abstract class AbstractBuilder {
             apiUrlManager = new ApiUrls(apiUrl);
         }
         this.urls = apiUrlManager;
+        this.initLinkingProperties();
+    }
+
+    /**
+     *  Read config for rendering linking properties and add configured properties to linkingProperties map
+     */
+    private void initLinkingProperties() {
+        if(DataManager.getInstance().getConfiguration().isVisibleIIIFRenderingPDF()) {
+            IMetadataValue label = getLabel(DataManager.getInstance().getConfiguration().getLabelIIIFRenderingPDF());
+            addRendering(LinkingTarget.PDF, label);
+        }
+        if(DataManager.getInstance().getConfiguration().isVisibleIIIFRenderingViewer()) {
+            IMetadataValue label = getLabel(DataManager.getInstance().getConfiguration().getLabelIIIFRenderingViewer());
+            addRendering(LinkingTarget.VIEWER, label);
+        }
+        if(DataManager.getInstance().getConfiguration().isVisibleIIIFRenderingPlaintext()) {
+            IMetadataValue label = getLabel(DataManager.getInstance().getConfiguration().getLabelIIIFRenderingPlaintext());
+            addRendering(LinkingTarget.PLAINTEXT, label);
+        }
+        if(DataManager.getInstance().getConfiguration().isVisibleIIIFRenderingAlto()) {
+            IMetadataValue label = getLabel(DataManager.getInstance().getConfiguration().getLabelIIIFRenderingAlto());
+            addRendering(LinkingTarget.ALTO, label);
+        }
+    }
+
+    /**
+     * @param labelIIIFRenderingPDF
+     * @return
+     */
+    protected IMetadataValue getLabel(String value) {
+        return ViewerResourceBundle.getTranslations(value, this.translationLocales, false);
     }
 
     /**
@@ -204,7 +257,7 @@ public abstract class AbstractBuilder {
      * @param solrDocument a {@link org.apache.solr.common.SolrDocument} object.
      * @return a {@link java.util.Optional} object.
      */
-    public static Optional<IMetadataValue> getLabelIfExists(SolrDocument solrDocument) {
+    public Optional<IMetadataValue> getLabelIfExists(SolrDocument solrDocument) {
 
         String label = (String) solrDocument.getFirstValue(SolrConstants.LABEL);
         String title = (String) solrDocument.getFirstValue(SolrConstants.TITLE);
@@ -215,7 +268,7 @@ public abstract class AbstractBuilder {
         } else if (StringUtils.isNotBlank(title)) {
             return Optional.of(new SimpleMetadataValue(title));
         } else if (StringUtils.isNotBlank(docStruct)) {
-            return Optional.of(ViewerResourceBundle.getTranslations(docStruct));
+            return Optional.of(getLabel(docStruct));
         } else {
             return Optional.empty();
         }
@@ -239,8 +292,8 @@ public abstract class AbstractBuilder {
                 String configuredLabel = DataManager.getInstance().getConfiguration().getIIIFMetadataLabel(field);
                 String label = StringUtils.isNotBlank(configuredLabel) ? configuredLabel
                         : (field.contains("/") ? field.substring(field.indexOf("/") + 1) : field);
-                SolrSearchIndex.getTranslations(field, ele, (s1, s2) -> s1 + "; " + s2)
-                        .map(value -> new Metadata(ViewerResourceBundle.getTranslations(label, false), value))
+                SolrSearchIndex.getTranslations(field, ele, this.translationLocales,(s1, s2) -> s1 + "; " + s2)
+                        .map(value -> new Metadata(getLabel(label), value))
                         .ifPresent(md -> {
                             md.getLabel().removeTranslation(MultiLanguageMetadataValue.DEFAULT_LANGUAGE);
                             md.getValue().removeTranslation(MultiLanguageMetadataValue.DEFAULT_LANGUAGE);
@@ -266,7 +319,7 @@ public abstract class AbstractBuilder {
             String pi = this.getPIFromCanvasURI(canvas.getId());
             if (crowdsourcingAnnotations.containsKey(order)) {
                 AnnotationList crowdList = new AnnotationList(getAnnotationListURI(pi, order, AnnotationType.CROWDSOURCING, true));
-                crowdList.setLabel(ViewerResourceBundle.getTranslations(AnnotationType.CROWDSOURCING.name()));
+                crowdList.setLabel(getLabel(AnnotationType.CROWDSOURCING.name()));
                 List<OpenAnnotation> annos = crowdsourcingAnnotations.get(order);
                 annos.forEach(anno -> crowdList.addResource(anno));
                 canvas.addOtherContent(crowdList);
@@ -503,7 +556,7 @@ public abstract class AbstractBuilder {
                 .getConfiguration()
                 .getIIIFAttribution()
                 .stream()
-                .map(ViewerResourceBundle::getTranslations)
+                .map(this::getLabel)
                 .collect(Collectors.toList());
 
         return messages;
@@ -873,6 +926,47 @@ public abstract class AbstractBuilder {
             }
         }
         return URI.create(uri);
+    }
+
+    
+    public AbstractBuilder addSeeAlso(LinkingProperty.LinkingTarget target, IMetadataValue label) {
+        LinkingType type = LinkingType.SEE_ALSO;
+        addLinkingProperty(target, label, type);
+        return this;
+    }
+    
+    public AbstractBuilder addRendering(LinkingProperty.LinkingTarget target, IMetadataValue label) {
+        LinkingType type = LinkingType.RENDERING;
+        addLinkingProperty(target, label, type);
+        return this;
+    }
+
+    private void addLinkingProperty(LinkingProperty.LinkingTarget target, IMetadataValue label, LinkingType type) {
+        LinkingProperty property = new LinkingProperty(type, target, label);
+        List<LinkingProperty> seeAlsos = this.linkingProperties.get(type);
+        if(seeAlsos == null) {
+            seeAlsos = new ArrayList<>();
+            this.linkingProperties.put(type, seeAlsos);
+        }
+        seeAlsos.add(property);
+    }
+    
+    public List<LinkingProperty> getSeeAlsos() {
+        List<LinkingProperty> seeAlsos = this.linkingProperties.get(LinkingType.SEE_ALSO);
+        if(seeAlsos != null) {
+            return seeAlsos;
+        } else {
+            return Collections.emptyList();
+        }
+    }
+    
+    public List<LinkingProperty> getRenderings() {
+        List<LinkingProperty> renderings = this.linkingProperties.get(LinkingType.RENDERING);
+        if(renderings != null) {
+            return renderings;
+        } else {
+            return Collections.emptyList();
+        }
     }
 
 }

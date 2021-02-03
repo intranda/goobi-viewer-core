@@ -36,8 +36,6 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.core.StreamingOutput;
 
 import org.apache.commons.io.FileUtils;
@@ -74,8 +72,6 @@ import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.exceptions.UncheckedPresentationException;
-import io.goobi.viewer.model.security.AccessConditionUtils;
-import io.goobi.viewer.model.security.IPrivilegeHolder;
 
 /**
  * @author florian
@@ -89,7 +85,7 @@ public class TextResourceBuilder {
     }
 
     public String getFulltext(String pi)
-            throws IOException, PresentationException, IndexUnreachableException, ServiceNotAllowedException, DAOException {
+            throws IOException, PresentationException, IndexUnreachableException {
         Map<Path, String> map = this.getFulltextMap(pi);
         StringBuilder sb = new StringBuilder();
         for (String pageText : map.values()) {
@@ -99,26 +95,29 @@ public class TextResourceBuilder {
     }
 
     public StreamingOutput getFulltextAsZip(String pi)
-            throws IOException, PresentationException, IndexUnreachableException, ContentLibException, DAOException {
+            throws IOException, PresentationException, IndexUnreachableException, ContentLibException {
         String filename = pi + "_plaintext.zip";
         String foldername = DataManager.getInstance().getConfiguration().getFulltextFolder();
-        List<Path> files = getFiles(pi, foldername, foldername + "_crowd", null);
+        String crowdsourcingFolderName = DataManager.getInstance().getConfiguration().getFulltextCrowdsourcingFolder();
+        List<Path> files = getFiles(pi, foldername, crowdsourcingFolderName, null);
         return writeZipFile(files, filename);
 
     }
 
     public StreamingOutput getAltoAsZip(String pi)
-            throws IOException, PresentationException, IndexUnreachableException, ContentLibException, DAOException {
+            throws IOException, PresentationException, IndexUnreachableException, ContentLibException {
         String filename = pi + "_alto.zip";
         String foldername = DataManager.getInstance().getConfiguration().getAltoFolder();
-        List<Path> files = getFiles(pi, foldername, foldername + "_crowd", null);
+        String crowdsourcingFolderName = DataManager.getInstance().getConfiguration().getAltoCrowdsourcingFolder();
+        List<Path> files = getFiles(pi, foldername, crowdsourcingFolderName, null);
         return writeZipFile(files, filename);
     }
 
     public String getAltoDocument(String pi)
-            throws IOException, PresentationException, IndexUnreachableException, ContentLibException, DAOException, JDOMException {
+            throws IOException, PresentationException, IndexUnreachableException {
         String foldername = DataManager.getInstance().getConfiguration().getAltoFolder();
-        List<Path> files = getFiles(pi, foldername, foldername + "_crowd", null);
+        String crowdsourcingFolderName = DataManager.getInstance().getConfiguration().getAltoCrowdsourcingFolder();
+        List<Path> files = getFiles(pi, foldername, crowdsourcingFolderName, null);
 
         StringBuilder sb = new StringBuilder();
         for (Path path : files) {
@@ -130,9 +129,9 @@ public class TextResourceBuilder {
     }
 
     public String getAltoDocument(String pi, String fileName) throws PresentationException,
-            IndexUnreachableException, DAOException, ContentNotFoundException {
+            IndexUnreachableException, ContentNotFoundException {
 
-        java.nio.file.Path file = DataFileTools.getDataFilePath(pi, DataManager.getInstance().getConfiguration().getAltoFolder() + "_crowd",
+        java.nio.file.Path file = DataFileTools.getDataFilePath(pi, DataManager.getInstance().getConfiguration().getAltoCrowdsourcingFolder(),
                 DataManager.getInstance().getConfiguration().getAltoFolder(), fileName);
 
         if (file != null && Files.isRegularFile(file)) {
@@ -151,7 +150,7 @@ public class TextResourceBuilder {
     }
 
     public String getFulltextAsTEI(String pi, String filename)
-            throws PresentationException, ContentLibException, IndexUnreachableException, DAOException {
+            throws PresentationException, ContentLibException, IndexUnreachableException {
 
         SolrDocument solrDoc = DataManager.getInstance().getSearchIndex().getDocumentByPI(pi);
         if (solrDoc != null) {
@@ -232,16 +231,19 @@ public class TextResourceBuilder {
     }
 
     public StreamingOutput getTeiAsZip(String pi, String langCode)
-            throws PresentationException, IndexUnreachableException, DAOException, IOException, ContentLibException {
+            throws PresentationException, IndexUnreachableException, IOException, ContentLibException {
 
         final Language language = DataManager.getInstance().getLanguageHelper().getLanguage(langCode);
         java.nio.file.Path teiPath = DataFileTools.getDataFilePath(pi, DataManager.getInstance().getConfiguration().getTeiFolder(), null, null);
         java.nio.file.Path filePath = getDocumentLanguageVersion(teiPath, language);
 
         if (filePath != null && Files.isRegularFile(filePath)) {
+
             String filename = pi + "_tei.zip";
             return writeZipFile(Collections.singletonList(filePath), filename);
+
         }
+
         // All full-text pages as TEI
         SolrDocument solrDoc = DataManager.getInstance().getSearchIndex().getDocumentByPI(pi);
         if (solrDoc == null) {
@@ -347,7 +349,7 @@ public class TextResourceBuilder {
      */
     public String getFulltext(String pi, String fileName) throws PresentationException, IndexUnreachableException, ContentNotFoundException {
 
-        java.nio.file.Path file = DataFileTools.getDataFilePath(pi, DataManager.getInstance().getConfiguration().getFulltextFolder() + "_crowd",
+        java.nio.file.Path file = DataFileTools.getDataFilePath(pi, DataManager.getInstance().getConfiguration().getFulltextCrowdsourcingFolder(),
                 DataManager.getInstance().getConfiguration().getFulltextFolder(), fileName);
         if (file != null && Files.isRegularFile(file)) {
             try {
@@ -358,7 +360,7 @@ public class TextResourceBuilder {
                 logger.error(e.getMessage(), e);
             }
         } else {
-            file = DataFileTools.getDataFilePath(pi, DataManager.getInstance().getConfiguration().getAltoFolder() + "_crowd",
+            file = DataFileTools.getDataFilePath(pi, DataManager.getInstance().getConfiguration().getAltoFolder(),
                     DataManager.getInstance().getConfiguration().getAltoFolder(), fileName.replaceAll("(i?)\\.txt", ".xml"));
             if (file != null && Files.isRegularFile(file)) {
                 try {
@@ -385,7 +387,7 @@ public class TextResourceBuilder {
      */
     public Map<java.nio.file.Path, String> getFulltextMap(String pi) throws IOException, PresentationException, IndexUnreachableException {
         Map<java.nio.file.Path, String> fileMap;
-        List<java.nio.file.Path> fulltextFiles = getFiles(pi, DataManager.getInstance().getConfiguration().getFulltextFolder() + "_crowd",
+        List<java.nio.file.Path> fulltextFiles = getFiles(pi, DataManager.getInstance().getConfiguration().getFulltextCrowdsourcingFolder(),
                 DataManager.getInstance().getConfiguration().getFulltextFolder(), "(i?).*\\.txt");
 
         if (!fulltextFiles.isEmpty()) {
@@ -398,7 +400,7 @@ public class TextResourceBuilder {
                 }
             }));
         } else {
-            List<java.nio.file.Path> altoFiles = getFiles(pi, DataManager.getInstance().getConfiguration().getAltoFolder() + "_crowd",
+            List<java.nio.file.Path> altoFiles = getFiles(pi, DataManager.getInstance().getConfiguration().getAltoFolder(),
                     DataManager.getInstance().getConfiguration().getAltoFolder(), "(i?).*\\.(alto|xml)");
             fileMap = altoFiles.stream()
                     .collect(Collectors.toMap(
@@ -770,6 +772,16 @@ public class TextResourceBuilder {
             return Optional.of(matcher.group(1));
         }
         return Optional.empty();
+    }
+
+    /**
+     * @param id
+     * @param lang
+     * @return
+     */
+    public Object getCMDIURI(String id, String lang) {
+        // TODO Auto-generated method stub
+        return null;
     }
 
 }

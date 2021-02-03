@@ -345,11 +345,16 @@ button {
 }
 
 /* default styling for leaflet map markers font */
-.leaflet-marker-icon .fa-number {
-    font-family: 'Open Sans',sans-serif !important;
-    font-weight: 700 !important;
-    font-size: 13px !important;
-    padding-top: 2px;
+.leaflet-marker-icon {
+	.fa-number {
+	    font-family: @fontFamily, sans-serif !important;
+	    font-weight: 700 !important;
+	    font-size: 13px !important;
+	    padding-top: 2px;
+	}
+	i:not([number]) {
+		margin-left: 2px;
+	}
 }
 
 /* add a focus ring for better accessibility */

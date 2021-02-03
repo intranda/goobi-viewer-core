@@ -27,6 +27,7 @@ import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Random;
@@ -1504,7 +1505,9 @@ public final class SolrSearchIndex {
         }
 
         List<String> fieldNames =
-                doc.getFieldNames().stream().filter(field -> field.equals(key) || field.startsWith(key + "_LANG_")).collect(Collectors.toList());
+                doc.getFieldNames().stream()
+                .filter(field -> field.equals(key) || field.matches(key + "_LANG_\\w{2,3}"))
+                .collect(Collectors.toList());
         Map<String, List<String>> map = new HashMap<>(fieldNames.size());
         for (String languageField : fieldNames) {
             String locale = null;
@@ -1715,7 +1718,7 @@ public final class SolrSearchIndex {
             return Optional.empty();
         }
     }
-
+    
     /**
      * <p>
      * getTranslations.
@@ -1727,12 +1730,27 @@ public final class SolrSearchIndex {
      * @return a {@link java.util.Optional} object.
      */
     public static Optional<IMetadataValue> getTranslations(String fieldName, StructElement doc, BinaryOperator<String> combiner) {
+        return getTranslations(fieldName, doc, ViewerResourceBundle.getAllLocales(), combiner);
+    }
+
+    /**
+     * <p>
+     * getTranslations.
+     * </p>
+     *
+     * @param fieldName a {@link java.lang.String} object.
+     * @param doc a {@link io.goobi.viewer.model.viewer.StructElement} object.
+     * @param combiner a {@link java.util.function.BinaryOperator} object.
+     * @return a {@link java.util.Optional} object.
+     */
+    public static Optional<IMetadataValue> getTranslations(String fieldName, StructElement doc, List<Locale> translationLocales, BinaryOperator<String> combiner) {
         Map<String, List<String>> translations = SolrSearchIndex.getMetadataValuesForLanguage(doc, fieldName);
         if (translations.size() > 1) {
             return Optional.of(new MultiLanguageMetadataValue(translations, combiner));
         } else if (!translations.isEmpty()) {
+            String value = translations.values().iterator().next().stream().reduce((s1, s2) -> combiner.apply(s1, s2)).orElse("");
             return Optional.ofNullable(ViewerResourceBundle
-                    .getTranslations(translations.values().iterator().next().stream().reduce((s1, s2) -> combiner.apply(s1, s2)).orElse("")));
+                    .getTranslations(value, translationLocales, false));
         } else {
             return Optional.empty();
         }

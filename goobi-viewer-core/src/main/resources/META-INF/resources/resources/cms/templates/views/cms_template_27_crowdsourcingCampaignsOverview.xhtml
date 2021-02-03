@@ -26,6 +26,7 @@
     
 
 	<ui:define name="content">
+		<ui:include src="/resources/cms/includes/cms_script.xhtml" />
     
 		<f:param name="currentPage" value="#{cmsBean.random}" />
 		<f:view contentType="text/html" encoding="utf-8">
@@ -45,7 +46,7 @@
 				<h2>#{cmsPage.title}</h2>                
 				
 				<div class="tpl-collection__text">
-					<ui:include src="#{cmsPage.getContent('description')}" />
+					<h:outputText escape="false" value="#{cmsPage.getContent('description')}"></h:outputText>
 				</div>
 				
 				<div class="tpl-collection__wrapper">

@@ -118,7 +118,6 @@ var viewerJS = ( function( viewer ) {
             };
             
             $.extend( true, _defaults, config );
-            
             var modal = '';
             
             modal += '<div class="modal fade" id="' + _defaults.id + '" tabindex="-1" role="dialog" aria-labelledby="' + _defaults.label + '">';

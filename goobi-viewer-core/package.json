@@ -35,7 +35,7 @@
     "less-plugin-autoprefix": "^2.0.0",
     "michelangelo": "^0.8.0",
     "pdfjs-dist": "^2.5.207",
-    "webpack": "5.4.0"
+    "webpack": "5.10.3"
   },
   "scripts": {
     "docs": "jsdoc -c jsdoc.conf",
@@ -44,7 +44,7 @@
   },
   "dependencies": {
     "pixl-xml": "^1.0.13",
-    "tinymce": "~5.5.1",
+    "tinymce": "~5.6.2",
     "leaflet": "1.7.1",
     "leaflet.markercluster": "*",
     "swagger-ui-dist": "*",

@@ -97,44 +97,68 @@
 		height: 32px;
 		margin: 3px;
 		border: 1px solid @gray;
+		display: flex;
+		justify-content: center;
+		align-items: center;
+		cursor: pointer;
+		    &:hover,
+		    &:active,
+		    &:focus {
+		    	background-color: @lightgray; 
+		    }
 	    /* ELEMENT */
 	    a, 
 		span, 
 		button {
-			display: block;
+			display: flex;
+			justify-content: center;
+			align-items: center;
 			height: 100%;
-			line-height: 30px;
-			text-align: center;
+			width: 100%;
+			padding: 0.4rem;
+			font-size: 1.2rem;
+			font-weight: 400;
 			color: @gray;
+			fill: @gray;
 			cursor: pointer;
 			&:hover,
 			&:active,
 			&:focus {
 				text-decoration: none;
-				color: @gray;
-				background-color: @lightgray; 
+			}
+			svg {
+				width: 100%;
+				height: 100%;
+				display: block;
 			}
 		}
+    	.custom-control--select::after {
+    		border-top-color: @gray;
+    	}
 		span {
 			cursor: default;
 		}
 		[class*="image-"] {
 			position: relative;
-			top: 3px;
 			font-size: @fontXLarge;
 		}
 		&.inactive {
 			opacity: 0.4;
+			cursor: default;
+	    	&:hover,
+			&:active,
+			&:focus {
+				background-color: transparent;
+			}
 	    	a,
 	    	span,
-	    	button {
-		    	&:hover,
-				&:active,
-				&:focus {
-					background-color: transparent;
-				}
+	    	button {}
+	    	> svg {
+	    		width: 32px;
+	    		height: 32px;
+	    		padding: 0.4rem;
 	    	}
-		}    
+		}
 	    /* ELEMENT */
 	    &.start {}
 	    &.page-browse,
@@ -161,11 +185,8 @@
 	            background: none;
 	            select {
 	                background: none;
-	        		color: @gray;
 	            }
-	        	&:after {
-	        		border-top-color: @gray;
-	        	}
+	        	&:after {}
 	        }
 	    }
 	    &.forward {}
@@ -177,22 +198,24 @@
 				font-size: @fontXLarge;
 			}	    	
 	    }
+	    &.double-page-view,
+	    &.single-page-view,
+	    &.switch-pages {
+	    	a,
+	    	span,
+	    	button {
+	    		padding: 0.7rem;
+	    	}
+	    }
 	    &.double-page-view {}
 	    &.single-page-view {}
 	    &.switch-pages {
-	    	a {
-	    		padding: 4px;
-	    	}
-	    	svg {
-	    		fill: @gray;
-	    		vertical-align: unset;
-	    	}
+	    	a {}
+	    	svg {}
 	    }
 	    &.rotate-left,
 	    &.rotate-right {
-	    	[class*="image-"] {
-				top: 4px;
-			}
+	    	[class*="image-"] {}
 	    }
 	    &.rotate-left {}
 	    &.rotate-right {}
@@ -201,15 +224,20 @@
 	    &.zoom-slider-wrapper {
 	        width: 100px;
 	        border: none;
+	        cursor: default;
+	        &:hover,
+	        &:focus,
+	        &:active {
+	        	background-color: transparent;
+	        }
 	        .zoom-slider {
-	            height: 16px;
-	            margin-top: 8px;
+	            height: 10px;
 	            border: 1px solid @gray;
 	            max-width: 100%;
 	            //Firefox
 		        &::-moz-range-thumb {
-		            width: 15px;
-		            height: 32px;
+		            width: 8px;
+		            height: 26px;
 		            border: none;
 		            background-color: @gray;
 		            border-radius: 0;
@@ -222,8 +250,8 @@
 				}
 		        &::-webkit-slider-thumb {
 				  -webkit-appearance: none;
-	              width: 15px;
-	              height: 32px;
+	              width: 8px;
+	              height: 26px;
 	              border: none;
 	              background-color: @gray;
 	              border-radius: 0;

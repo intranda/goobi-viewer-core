@@ -15,8 +15,7 @@
  */
 package io.goobi.viewer.api.rest.resourcebuilders;
 
-import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_IMAGE_IIIF;
-import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_RECORD;
+import static io.goobi.viewer.api.rest.v1.ApiUrls.*;
 
 import java.io.IOException;
 import java.net.URI;
@@ -49,6 +48,7 @@ import de.intranda.api.iiif.presentation.enums.AnnotationType;
 import de.unigoettingen.sub.commons.contentlib.exceptions.ContentNotFoundException;
 import de.unigoettingen.sub.commons.contentlib.exceptions.IllegalRequestException;
 import io.goobi.viewer.api.rest.AbstractApiUrlManager;
+import io.goobi.viewer.api.rest.v1.records.RecordFileResource;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.SolrConstants;
 import io.goobi.viewer.controller.SolrSearchIndex;
@@ -69,7 +69,6 @@ import io.goobi.viewer.model.viewer.PageType;
 import io.goobi.viewer.model.viewer.PhysicalElement;
 import io.goobi.viewer.model.viewer.StringPair;
 import io.goobi.viewer.model.viewer.StructElement;
-import io.goobi.viewer.servlets.rest.content.ContentResource;
 
 /**
  * @author florian
@@ -178,11 +177,11 @@ public class IIIFPresentationResourceBuilder {
         if (doc == null) {
             throw new ContentNotFoundException("Not document with PI = " + pi + " found");
         } else if (AnnotationType.TEI.equals(type)) {
-            return getLayerBuilder().createAnnotationLayer(pi, type, Motivation.PAINTING, (id, repo) -> ContentResource.getTEIFiles(id),
-                    (id, lang) -> ContentResource.getTEIURI(id, lang));
+            return getLayerBuilder().createAnnotationLayer(pi, type, Motivation.PAINTING, (id, repo) -> new TextResourceBuilder().getTEIFiles(id),
+                    (id, lang) -> urls.path(RECORDS_RECORD, RECORDS_TEI_LANG).params(id, lang).buildURI());
         } else if (AnnotationType.CMDI.equals(type)) {
-            return getLayerBuilder().createAnnotationLayer(pi, type, Motivation.DESCRIBING, (id, repo) -> ContentResource.getCMDIFiles(id),
-                    (id, lang) -> ContentResource.getCMDIURI(id, lang));
+            return getLayerBuilder().createAnnotationLayer(pi, type, Motivation.DESCRIBING, (id, repo) -> new TextResourceBuilder().getCMDIFiles(id),
+                    (id, lang) -> urls.path(RECORDS_RECORD, RECORDS_CMDI_LANG).params(id, lang).buildURI());
 
         } else {
             Map<AnnotationType, List<AnnotationList>> annoLists = getSequenceBuilder().addBaseSequence(null, doc, "", request);
@@ -356,12 +355,10 @@ public class IIIFPresentationResourceBuilder {
             StructElement ele = new StructElement(luceneId, doc);
             AbstractPresentationModelElement manifest = builder.generateManifest(ele);
 
-            AbstractApiUrlManager imageUrls = DataManager.getInstance().getRestApiManager().getContentApiManager();
-
-            if (imageUrls != null && manifest.getThumbnails().isEmpty()) {
+            if (this.urls != null && manifest.getThumbnails().isEmpty()) {
                 int thumbsWidth = DataManager.getInstance().getConfiguration().getThumbnailsWidth();
                 int thumbsHeight = DataManager.getInstance().getConfiguration().getThumbnailsHeight();
-                String thumbnailUrl = imageUrls.path(RECORDS_RECORD, RECORDS_IMAGE_IIIF)
+                String thumbnailUrl = this.urls.path(RECORDS_RECORD, RECORDS_IMAGE_IIIF)
                         .params(ele.getPi(), "full", "!" + thumbsWidth + "," + thumbsHeight, 0, "default", "jpg")
                         .build();
                 manifest.addThumbnail(new ImageContent(URI.create(thumbnailUrl)));

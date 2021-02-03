@@ -25,17 +25,16 @@
                     </div>
 
                     <div class="admin__content-inner-content">
-                        <p>
-                            <h:outputText escape="false" value="#{msg.admin__create_record__description}" />
-                        </p>
+                        <!-- INFO TEXT -->
+                        <div class="admin__info-text">
+                            <h:outputText value="#{msg.admin__create_record__description}" escape="false" />
+                        </div>
 
                         <h:form prependId="false">
                             <h3>#{msg.admin__create_record__metadata__title}</h3>
-                            <p>
-                                <h:outputText escape="false" value="#{msg.admin__create_record__metadata__description}"/>
-                            </p>
 
                             <div class="admin__default-block">
+                                <p>#{msg.admin__create_record__metadata__description}</p>
                                 <fieldset>
                                     <!-- TITLE -->
                                     <div class="form-group form-row">
@@ -199,7 +198,7 @@
 
                         <script type="text/javascript">
                         var fileUploadConfig = {
-                                postUrl : '#{navigationHelper.applicationUrl}rest/record/dc/#{createRecordBean.uuid}/upload/',
+                                postUrl : '#{navigationHelper.applicationUrl}api/v1/temp/files/#{createRecordBean.uuid}_tif/',
                                 msg : {
                                     buttonUpload : "#{msg.button__upload}",
                                     uploadText : "#{msg.admin__media_upload_text}",

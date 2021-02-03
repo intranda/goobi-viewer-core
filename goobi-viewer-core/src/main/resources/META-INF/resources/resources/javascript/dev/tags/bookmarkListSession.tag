@@ -4,20 +4,22 @@
 
 	
 	<li each="{bookmark in bookmarkList.items}">
-		<div class="row no-margin">
-			<div class="col-4 no-padding">
-				<div class="{mainClass}-image"
-					style="background-image: url({bookmark.representativeImageUrl});">
-				</div>
-			</div>
-			<div class="col-7 no-padding">
-				<h4>
-					<a href="{opts.bookmarks.config.root}{bookmark.url}">{bookmark.name}</a>
-				</h4>
+		<div class="row no-margin {mainClass}-single-entry">
+			<div class="col-11 no-padding {mainClass}-title">
+				<a class="row no-gutters" href="{opts.bookmarks.config.root}{bookmark.url}">
+					<div class="col-4 no-padding">
+						<div class="{mainClass}-image"
+							style="background-image: url({bookmark.representativeImageUrl});">
+						</div>
+					</div>
+					<div class="col-7 no-padding">
+						<h4>{bookmark.name}</h4>
+					</div>
+				</a>
 			</div>
 			<div class="col-1 no-padding {mainClass}-remove">
 				<button class="btn btn--clean" type="button"
-					data-bookshelf-type="delete" onclick="{remove}"
+					data-bookmark-list-type="delete" onclick="{remove}"
 					aria-label="{msg('bookmarkList_removeFromBookmarkList')}">
 					<i class="fa fa-ban" aria-hidden="true"></i>
 				</button>
@@ -30,7 +32,7 @@
 
 	<div if="{mayEmptyList(bookmarkList)}" class="{mainClass}-reset">
 		<button class="btn btn--clean" type="button"
-			data-bookshelf-type="reset" onclick="{deleteList}">
+			data-bookmark-list-type="reset" onclick="{deleteList}">
 			<span>{msg('bookmarkList_reset')}</span>
 			<i class="fa fa-trash-o" aria-hidden="true"></i>
 		</button>
@@ -104,20 +106,13 @@ mayEmptyList(list) {
 }
 
 remove(event) {
-    if(this.opts.bookmarks.config.userLoggedIn) {        
-	    let list = event.item.bookmarkList
-	    this.opts.bookmarks.removeFromBookmarkList(list.id, this.pi, this.page, this.logid, this.opts.bookmarks.isTypePage())
-	    .then( () => this.updateLists())
-    } else {
         let bookmark = event.item.bookmark;
-        this.opts.bookmarks.removeFromBookmarkList(undefined, bookmark.pi, undefined, undefined, false)
+        this.opts.bookmarks.removeFromBookmarkList(0, bookmark.pi, undefined, undefined, false)
 	    .then( () => this.updateLists())
-    }
 }
 
 deleteList(event) {
-    let list = event.item.bookmarkList
-    this.opts.bookmarks.removeBookmarkList(list.id)
+    this.opts.bookmarks.removeBookmarkList(0)
     .then( () => this.updateLists());
 }
 
@@ -148,11 +143,7 @@ mayCompareList(list) {
 }
 
 miradorUrl(list) {
-    if(list.id != null) {
-    	return this.opts.bookmarks.config.root + "/mirador/id/" + list.id + "/";
-    } else {        
-    	return this.opts.bookmarks.config.root + "/mirador/";
-    }
+    	return this.opts.bookmarks.config.root + "/mirador/id/0/";
 }
 
 msg(key) {

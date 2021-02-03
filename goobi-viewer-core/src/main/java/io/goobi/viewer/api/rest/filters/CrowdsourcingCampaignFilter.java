@@ -33,6 +33,7 @@ import org.slf4j.LoggerFactory;
 
 import de.unigoettingen.sub.commons.contentlib.exceptions.ServiceNotAllowedException;
 import de.unigoettingen.sub.commons.contentlib.servlet.rest.ContentExceptionMapper.ErrorMessage;
+import io.goobi.viewer.api.rest.bindings.CrowdsourcingCampaignBinding;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.managedbeans.CrowdsourcingBean;
@@ -41,10 +42,16 @@ import io.goobi.viewer.model.crowdsourcing.campaigns.Campaign;
 import io.goobi.viewer.model.security.user.User;
 
 /**
+ * Allows access to crowdsourcing campaign resources for sessions owned by a goobi-viewer user
+ * who has access to the campaign.
+ * For access check to work, the {@link Campaign#getId() campaign id} must be set as the 
+ * request attribute "CampaignId"
+ * 
  * @author florian
  *
  */
 @Provider
+@CrowdsourcingCampaignBinding
 public class CrowdsourcingCampaignFilter implements ContainerRequestFilter {
 
     private static final Logger logger = LoggerFactory.getLogger(CrowdsourcingCampaignFilter.class);

@@ -125,7 +125,7 @@
                       
                             <!-- RIS (topstruct) -->
                             <ui:fragment>
-                                <a href="#{configurationBean.restApiUrl}records/ris/file/#{activeDocumentBean.viewManager.topDocumentIddoc}"
+                                <a href="#{configurationBean.restApiUrlV1}records/#{activeDocumentBean.persistentIdentifier}/ris"
                                     id="ris"
                                     class="badge badge-dark widget-usage__work-download-ris" 
                                     title="#{msg.risLinkTopstruct}" 
@@ -328,10 +328,9 @@
 	                                </a>    
 	                            </ui:fragment>
                             </ui:fragment>
-                          
                             <!-- RIS (current) -->
                             <ui:fragment rendered="#{activeDocumentBean.viewManager.currentDocument.accessPermissionDownloadMetadata}">
-                                <a href="#{configurationBean.restApiUrl}records/ris/file/#{activeDocumentBean.viewManager.currentDocumentIddoc}"
+                                <a href="#{configurationBean.restApiUrlV1}records/#{activeDocumentBean.persistentIdentifier}/sections/#{activeDocumentBean.viewManager.currentDocument.logid}/ris"
                                     id="risCurrent"
                                     class="badge badge-dark widget-usage__struct-download-ris" 
                                     title="#{msg.risLinkTopstruct}"

@@ -44,6 +44,7 @@ import io.goobi.viewer.controller.SolrSearchIndex;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
+import io.goobi.viewer.exceptions.RecordNotFoundException;
 import io.goobi.viewer.exceptions.ViewerConfigurationException;
 import io.goobi.viewer.managedbeans.NavigationHelper;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
@@ -116,6 +117,16 @@ public class StructElement extends StructElementStub implements Comparable<Struc
     public StructElement(long luceneId, SolrDocument doc) throws IndexUnreachableException {
         super(luceneId);
         init(doc);
+    }
+    
+    /**
+     * Like {@link #StructElement(long, SolrDocument)}, but get the lucene Id from the SolrDocument
+     * 
+     * @param doc
+     * @throws IndexUnreachableException
+     */
+    public StructElement(SolrDocument doc) throws IndexUnreachableException {
+        this(Long.parseLong(doc.getFirstValue(SolrConstants.IDDOC).toString()), doc);
     }
 
     /**
@@ -665,8 +676,9 @@ public class StructElement extends StructElementStub implements Comparable<Struc
      * @return
      * @throws IndexUnreachableException
      * @throws DAOException
+     * @throws RecordNotFoundException
      */
-    public boolean isAccessPermissionDownloadMetadata() throws IndexUnreachableException, DAOException {
+    public boolean isAccessPermissionDownloadMetadata() throws IndexUnreachableException, DAOException, RecordNotFoundException {
         return isAccessPermission(IPrivilegeHolder.PRIV_DOWNLOAD_METADATA);
     }
 
@@ -675,8 +687,9 @@ public class StructElement extends StructElementStub implements Comparable<Struc
      * @return
      * @throws IndexUnreachableException
      * @throws DAOException
+     * @throws RecordNotFoundException 
      */
-    public boolean isAccessPermissionGenerateIiifManifest() throws IndexUnreachableException, DAOException {
+    public boolean isAccessPermissionGenerateIiifManifest() throws IndexUnreachableException, DAOException, RecordNotFoundException {
         return isAccessPermission(IPrivilegeHolder.PRIV_GENERATE_IIIF_MANIFEST);
     }
 
@@ -686,8 +699,9 @@ public class StructElement extends StructElementStub implements Comparable<Struc
      * @return true if current user has the privilege for this record; false otherwise
      * @throws IndexUnreachableException
      * @throws DAOException
+     * @throws RecordNotFoundException
      */
-    boolean isAccessPermission(String privilege) throws IndexUnreachableException, DAOException {
+    boolean isAccessPermission(String privilege) throws IndexUnreachableException, DAOException, RecordNotFoundException {
         HttpServletRequest request = (HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest();
         return AccessConditionUtils.checkAccessPermissionByIdentifierAndLogId(getPi(), logid, privilege, request);
     }

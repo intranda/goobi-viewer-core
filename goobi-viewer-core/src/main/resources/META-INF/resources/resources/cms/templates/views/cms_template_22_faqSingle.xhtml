@@ -26,6 +26,7 @@
 
     <!-- CONTENT -->
     <ui:define name="content">
+		<ui:include src="/resources/cms/includes/cms_script.xhtml" />
         <f:view contentType="text/html" encoding="utf-8">
 			<div id="templateFaqSingle" class="tpl-faq-single #{cmsPage.wrapperElementClass}">		
                 <!-- EDIT PAGE -->
@@ -45,7 +46,7 @@
 					
 					<ui:fragment rendered="#{cmsPage.hasContent('text')}">
 						<div class="tpl-faq-single__text">
-		                    <ui:include src="#{cmsPage.getContent('text')}" />
+						<h:outputText escape="false" value="#{cmsPage.getContent('text')}"></h:outputText>
 		                </div>
 	                </ui:fragment>
                     <!-- IMAGE -->
@@ -61,7 +62,7 @@
 					</ui:fragment>
 					<ui:fragment rendered="#{cmsPage.hasContent('text2')}">
 						<div class="tpl-faq-single__text">
-		                    <ui:include src="#{cmsPage.getContent('text2')}" />
+						<h:outputText escape="false" value="#{cmsPage.getContent('text2')}"></h:outputText>
 						</div>
 					</ui:fragment>
                 </div>

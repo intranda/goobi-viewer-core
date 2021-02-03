@@ -15,16 +15,22 @@
  */
 package io.goobi.viewer.controller;
 
+import java.time.Duration;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+
+import javax.faces.context.FacesContext;
+import javax.servlet.ServletContext;
 
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import de.intranda.monitoring.timer.TimeAnalysis;
+import io.goobi.viewer.api.rest.model.tasks.TaskManager;
 import io.goobi.viewer.controller.language.LanguageHelper;
 import io.goobi.viewer.dao.IDAO;
 import io.goobi.viewer.dao.impl.JPADAO;
@@ -80,6 +86,10 @@ public final class DataManager {
     private RestApiManager restApiManager;
     
     private TimeAnalysis timing = new TimeAnalysis();
+    
+    private FileResourceManager fileResourceManager = null;
+    
+    private final TaskManager restApiJobManager = new TaskManager(Duration.of(7, ChronoUnit.DAYS));
 
     /**
      * <p>
@@ -462,5 +472,29 @@ public final class DataManager {
     public void resetTiming() {
         this.timing = new TimeAnalysis();
         
+    }
+    
+    public FileResourceManager getFileResourceManager() {
+        if(this.fileResourceManager == null) {
+            this.fileResourceManager = createFileResourceManager();
+        }
+        return this.fileResourceManager;
+    }
+    
+    private FileResourceManager createFileResourceManager() {
+        if(FacesContext.getCurrentInstance() != null) {            
+            ServletContext servletContext = (ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext();
+            String themeName = getConfiguration().getTheme();
+            return new FileResourceManager(servletContext, themeName);
+        } else {
+            throw new IllegalStateException("Must be called from within faces context");
+        }
+    }
+    
+    /**
+     * @return the restApiJobManager
+     */
+    public TaskManager getRestApiJobManager() {
+        return restApiJobManager;
     }
 }

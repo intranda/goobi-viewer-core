@@ -27,6 +27,7 @@
 
     <!-- CONTENT -->
     <ui:define name="content">
+		<ui:include src="/resources/cms/includes/cms_script.xhtml" />
         <f:view contentType="text/html" encoding="utf-8">
             <div id="templateOverviewPageLegacy" class="tpl-overviewpage-legacy">
                 <!-- EDIT PAGE -->
@@ -125,7 +126,7 @@
                     </div>
 
                     <div class="tpl-overviewpage-legacy__description-text">
-                        <ui:include src="#{cmsPage.getContent('description')}" />
+                        <h:outputText escape="false" value="#{cmsPage.getContent('description')}"></h:outputText>
                     </div>
                 </div>
 
@@ -136,7 +137,7 @@
                     </div>
 
                     <div class="tpl-overviewpage-legacy__literature-text">
-                        <ui:include src="#{cmsPage.getContent('literature')}" />
+                        <h:outputText escape="false" value="#{cmsPage.getContent('literature')}"></h:outputText>
                     </div>
                 </div>
                 
@@ -144,7 +145,7 @@
                 <ui:fragment rendered="#{userBean.admin}">
                     <div class="tpl-overviewpage-legacy__history">
                         <h3>#{msg.viewOverviewHistory_heading}</h3>
-                        <ui:include src="#{cmsPage.getContent('history')}" />
+                        <h:outputText escape="false" value="#{cmsPage.getContent('history')}"></h:outputText>
                     </div>
                 </ui:fragment>
             </div>

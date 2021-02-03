@@ -28,6 +28,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import de.intranda.api.iiif.presentation.Collection;
+import de.intranda.monitoring.timer.Time;
 import de.unigoettingen.sub.commons.contentlib.exceptions.IllegalRequestException;
 import io.goobi.viewer.api.rest.AbstractApiUrlManager;
 import io.goobi.viewer.api.rest.model.SuccessMessage;
@@ -321,7 +322,7 @@ public class UserBookmarkResourceBuilder extends AbstractBookmarkResourceBuilder
 
         Optional<BookmarkList> bookmarkList = getBookmarkList(user, id);
         if (bookmarkList.isPresent()) {
-            return bookmarkList.get().getMiradorJsonObject(urls.getApplicationUrl());
+            return bookmarkList.get().getMiradorJsonObject(urls.getApplicationUrl(), urls.getApiUrl());
         }
 
         throw new RestApiException("No bookmark list with id '" + id + "' found for user " + user, HttpServletResponse.SC_NOT_FOUND);

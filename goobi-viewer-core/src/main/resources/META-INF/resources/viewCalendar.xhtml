@@ -81,6 +81,7 @@
                                                 </div>
 
                                                 <!-- MONTH WEEKS -->
+                                                
                                                 <ui:repeat var="week" value="#{month.weeksOfMonth}">
                                                     <div class="search-calendar__month-week clearfix">
                                                         <ui:repeat var="day" value="#{week.daysOfWeek}">
@@ -91,7 +92,7 @@
                                                                     </h:panelGroup>
                                                                     <h:panelGroup rendered="#{day.hits != 0}">
                                                                         <button type="button" class="btn btn--clean" data-popover-trigger="calendar-po-trigger"
-                                                                            data-api="#{navigationHelper.applicationUrl}rest/metadata/#{day.query}/PI_TOPSTRUCT,LABEL,THUMBPAGENO,LOGID/">
+                                                                            data-query="#{day.query}" data-fields="PI_TOPSTRUCT,LABEL,THUMBPAGENO,LOGID">
                                                                             #{day.name}</button>
                                                                     </h:panelGroup>
                                                                 </div>
@@ -114,6 +115,7 @@
                 <script type="text/javascript">
 						var calendarPopoverConfig = {
 						    appUrl: "#{navigationHelper.applicationUrl}",
+						    indexResourceUrl: "#{navigationHelper.applicationUrl}api/v1/index/query/",
 						    popoverTitle: "#{activeDocumentBean.titleBarLabel}",
 						};
                         

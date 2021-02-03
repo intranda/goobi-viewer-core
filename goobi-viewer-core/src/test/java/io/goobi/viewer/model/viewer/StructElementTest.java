@@ -56,8 +56,8 @@ public class StructElementTest extends AbstractSolrEnabledTest {
 
         Mockito.when(facesContext.getExternalContext()).thenReturn(externalContext);
         //        Mockito.when(externalContext.getContext()).thenReturn(servletContext);
-        Mockito.when(facesContext.getViewRoot()).thenReturn(viewRoot);
-        Mockito.when(viewRoot.getLocale()).thenReturn(Locale.GERMAN);
+//        Mockito.when(facesContext.getViewRoot()).thenReturn(viewRoot);
+//        Mockito.when(viewRoot.getLocale()).thenReturn(Locale.GERMAN);
     }
 
     /**

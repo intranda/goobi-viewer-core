@@ -38,15 +38,19 @@ public class TocResourceBuilder {
 
     HttpServletRequest request;
     HttpServletResponse response;
-    
-    
+
     public TocResourceBuilder(HttpServletRequest request, HttpServletResponse response) {
         this.request = request;
         this.response = response;
     }
-    
-    public String getToc(String pi) throws ContentNotFoundException, PresentationException, IndexUnreachableException, DAOException, ViewerConfigurationException {
-        if (!AccessConditionUtils.checkAccessPermissionByIdentifierAndLogId(pi, null, IPrivilegeHolder.PRIV_DOWNLOAD_METADATA, request)) {
+
+    public String getToc(String pi)
+            throws ContentNotFoundException, PresentationException, IndexUnreachableException, DAOException, ViewerConfigurationException {
+        try {
+            if (!AccessConditionUtils.checkAccessPermissionByIdentifierAndLogId(pi, null, IPrivilegeHolder.PRIV_DOWNLOAD_METADATA, request)) {
+                throw new ContentNotFoundException("Resource not found");
+            }
+        } catch (RecordNotFoundException e1) {
             throw new ContentNotFoundException("Resource not found");
         }
 
@@ -63,6 +67,5 @@ public class TocResourceBuilder {
 
         return writer.getAsText(toc.getTocElements());
     }
-    
-    
+
 }

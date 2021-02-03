@@ -26,6 +26,7 @@
     </ui:define>
 
 	<ui:define name="content">
+		<ui:include src="/resources/cms/includes/cms_script.xhtml" />
     
 		<f:param name="currentPage" value="#{cmsBean.random}" />
 		
@@ -72,7 +73,7 @@
 							<div class="col-12 col-sm-9">	                    
 			                    <!-- TEXT -->
 			                    <div class="tpl-news-detail__text">
-			    					<ui:include src="#{cmsPage.getContent('A2')}" />
+			    					<h:outputText escape="false" value="#{cmsPage.getContent('A2')}"></h:outputText>
 			                    </div>
 	                    	</div>
 	                    </div>
@@ -97,7 +98,7 @@
 							<div class="col-12 col-sm-9">
 								<!-- TEXT -->
 								<div class="tpl-news-detail__text">
-									<ui:include src="#{cmsPage.getContent('B2')}" />
+									<h:outputText escape="false" value="#{cmsPage.getContent('B2')}"></h:outputText>
 								</div>
 							</div>
 						</div>
@@ -124,7 +125,7 @@
 							<div class="col-12 col-sm-9">
 			                    <!-- TEXT -->
 			                    <div class="tpl-news-detail__text">
-			                        <ui:include src="#{cmsPage.getContent('C2')}" />
+			                        <h:outputText escape="false" value="#{cmsPage.getContent('C2')}"></h:outputText>
 			                    </div>
 							</div>
 						</div>
@@ -151,7 +152,7 @@
 							<div class="col-12 col-sm-9">
 			                    <!-- TEXT -->
 			                    <div class="tpl-news-detail__text">
-			                        <ui:include src="#{cmsPage.getContent('D2')}" />
+			                        <h:outputText escape="false" value="#{cmsPage.getContent('D2')}"></h:outputText>
 			                    </div>
 							</div>
 						</div>

@@ -27,6 +27,7 @@
     
 
     <ui:define name="content">
+		<ui:include src="/resources/cms/includes/cms_script.xhtml" />
 		<f:param name="currentPage" value="#{cmsBean.random}" />
 		<f:view contentType="text/html" encoding="utf-8">
 			<div id="templateStaticGrid" class="tpl-static-grid #{cmsPage.wrapperElementClass}">
@@ -45,7 +46,7 @@
                 <h2>#{cmsPage.title}</h2>                
                 
                 <div class="tpl-static-grid__text">
-                    <ui:include src="#{cmsPage.getContent('text')}" />
+                    <h:outputText escape="false" value="#{cmsPage.getContent('text')}"></h:outputText>
                 </div>
                 
                 <!-- STATIC GRID -->
@@ -58,7 +59,8 @@
                         datatype: "JSON"
                     } ).then( function( data ) {
                         var staticGridConfig = {
-                            gridSelector: ".tpl-static-grid__grid"
+                            gridSelector: ".tpl-static-grid__grid",
+                            language: currentLang
                         };
                         
                         cmsJS.staticGrid.init( staticGridConfig, data );

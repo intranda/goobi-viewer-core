@@ -26,8 +26,6 @@ import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_MANIFEST_AUTOCOMPLETE;
 import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_MANIFEST_SEARCH;
 import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_METADATA_SOURCE;
 import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_NER_TAGS;
-import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_PAGES;
-import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_PAGES_ANNOTATIONS;
 import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_PLAINTEXT;
 import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_PLAINTEXT_ZIP;
 import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_RECORD;
@@ -49,7 +47,10 @@ import java.nio.file.Paths;
 import javax.inject.Inject;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.ws.rs.Consumes;
+import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
+import javax.ws.rs.POST;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
@@ -59,12 +60,11 @@ import javax.ws.rs.core.StreamingOutput;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.solr.common.SolrDocument;
+import org.apache.solr.common.util.ContentStreamBase.URLStream;
 import org.jdom2.JDOMException;
+import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import com.fasterxml.jackson.core.JsonParseException;
-import com.fasterxml.jackson.databind.JsonMappingException;
 
 import de.intranda.api.annotation.IAnnotationCollection;
 import de.intranda.api.annotation.wa.collection.AnnotationPage;
@@ -78,8 +78,12 @@ import de.unigoettingen.sub.commons.contentlib.exceptions.ServiceNotAllowedExcep
 import de.unigoettingen.sub.commons.contentlib.servlet.rest.CORSBinding;
 import io.goobi.viewer.api.rest.AbstractApiUrlManager;
 import io.goobi.viewer.api.rest.AbstractApiUrlManager.ApiPath;
-import io.goobi.viewer.api.rest.IIIFPresentationBinding;
-import io.goobi.viewer.api.rest.ViewerRestServiceBinding;
+import io.goobi.viewer.api.rest.bindings.AccessConditionBinding;
+import io.goobi.viewer.api.rest.bindings.AuthorizationBinding;
+import io.goobi.viewer.api.rest.bindings.IIIFPresentationBinding;
+import io.goobi.viewer.api.rest.bindings.ViewerRestServiceBinding;
+import io.goobi.viewer.api.rest.filters.AccessConditionRequestFilter;
+import io.goobi.viewer.api.rest.filters.FilterTools;
 import io.goobi.viewer.api.rest.model.ner.DocumentReference;
 import io.goobi.viewer.api.rest.resourcebuilders.AnnotationsResourceBuilder;
 import io.goobi.viewer.api.rest.resourcebuilders.IIIFPresentationResourceBuilder;
@@ -90,12 +94,15 @@ import io.goobi.viewer.api.rest.resourcebuilders.TocResourceBuilder;
 import io.goobi.viewer.controller.DataFileTools;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.FileTools;
+import io.goobi.viewer.controller.IndexerTools;
 import io.goobi.viewer.controller.SolrConstants;
 import io.goobi.viewer.controller.StringTools;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
+import io.goobi.viewer.exceptions.RecordNotFoundException;
 import io.goobi.viewer.exceptions.ViewerConfigurationException;
+import io.goobi.viewer.messages.ViewerResourceBundle;
 import io.goobi.viewer.model.iiif.presentation.builder.BuildMode;
 import io.goobi.viewer.model.iiif.presentation.builder.OpenAnnotationBuilder;
 import io.goobi.viewer.model.iiif.presentation.builder.WebAnnotationBuilder;
@@ -126,16 +133,44 @@ public class RecordResource {
 
     private final String pi;
     private final TextResourceBuilder builder = new TextResourceBuilder();
+    
+    private static Thread deleteRecordThread = null;
 
-    public RecordResource(
+
+    public RecordResource(@Context HttpServletRequest request,
             @Parameter(description = "Persistent identifier of the record") @PathParam("pi") String pi) {
         this.pi = pi;
+        request.setAttribute(FilterTools.ATTRIBUTE_PI, pi);
+    }
+
+    /**
+     * Checks the request url for the accessed resource and returns the required access privilege, at least {@link IPrivilegeHolder#PRIV_LIST}
+     * 
+     * @param request
+     * @return
+     * @deprecated not used. 
+     */
+    @Deprecated
+    public static String getRequiredPrivilege(HttpServletRequest request, AbstractApiUrlManager urls) {
+        String requestUri =  request.getRequestURI();
+        String requestUrl = request.getRequestURL().toString();
+        
+        if(urls.path(RECORDS_RECORD, RECORDS_TOC).matches(requestUrl)) {
+            return IPrivilegeHolder.PRIV_DOWNLOAD_METADATA;
+        } else if(urls.path(RECORDS_RECORD, RECORDS_METADATA_SOURCE).matches(requestUrl)) {
+            return IPrivilegeHolder.PRIV_DOWNLOAD_METADATA;
+        } else if(urls.path(RECORDS_RECORD, RECORDS_MANIFEST).matches(requestUrl)) {
+            return IPrivilegeHolder.PRIV_GENERATE_IIIF_MANIFEST;
+        } else {
+            return IPrivilegeHolder.PRIV_LIST;
+        }
     }
 
     @GET
     @javax.ws.rs.Path(RECORDS_RIS_FILE)
     @Produces({ MediaType.TEXT_PLAIN })
     @Operation(tags = { "records" }, summary = "Download ris as file")
+    @AccessConditionBinding
     public String getRISAsFile()
             throws PresentationException, IndexUnreachableException, DAOException, ContentLibException {
 
@@ -190,19 +225,16 @@ public class RecordResource {
     public IAnnotationCollection getAnnotationsForRecord(
             @Parameter(
                     description = "annotation format of the response. If it is 'oa' the comments will be delivered as OpenAnnotations, otherwise as W3C-Webannotations") @QueryParam("format") String format)
-            throws DAOException, PresentationException, IndexUnreachableException {
+            throws PresentationException, IndexUnreachableException {
 
         ApiPath apiPath = urls.path(RECORDS_RECORD, RECORDS_ANNOTATIONS).params(pi);
-            if ("oa".equalsIgnoreCase(format)) {
-                URI uri = URI.create(apiPath.query("format", "oa").build());
-                return new OpenAnnotationBuilder(urls).getCrowdsourcingAnnotationCollection(uri, pi, false, servletRequest);
-            } else {
-                URI uri = URI.create(apiPath.build());
-                return new WebAnnotationBuilder(urls).getCrowdsourcingAnnotationCollection(uri, pi, false, servletRequest);
-            }
-
+        if ("oa".equalsIgnoreCase(format)) {
+            URI uri = URI.create(apiPath.query("format", "oa").build());
+            return new OpenAnnotationBuilder(urls).getCrowdsourcingAnnotationCollection(uri, pi, false, servletRequest);
         }
-
+        URI uri = URI.create(apiPath.build());
+        return new WebAnnotationBuilder(urls).getCrowdsourcingAnnotationCollection(uri, pi, false, servletRequest);
+    }
 
     @GET
     @javax.ws.rs.Path(RECORDS_COMMENTS)
@@ -527,6 +559,74 @@ public class RecordResource {
         }
         return BuildMode.IIIF;
     }
+    
+    /**
+     * <p>
+     * deleteRecord.
+     * </p>
+     *
+     * @param params a {@link io.goobi.viewer.servlets.rest.utils.IndexingRequestParameters} object.
+     * @return Short summary of files created
+     */
+    @DELETE
+    @Produces({ MediaType.APPLICATION_JSON })
+    @Consumes({ MediaType.APPLICATION_JSON })
+    @CORSBinding
+    @AuthorizationBinding
+    @Operation(tags = { "records" }, summary = "Delete the record from the SOLR database",
+    description = "Requires an authentication token. This operation may take a while, depending on the indexer queue. If the request aborts before deletion is complete, further deletion requests will be disallowed until the operation completes")
+    public String deleteRecord(
+            @Parameter(description = "set true to create a trace document of the delete action")@QueryParam("trace") Boolean createTraceDocument) {
+
+        JSONObject ret = new JSONObject();
+
+        if (deleteRecordThread == null || !deleteRecordThread.isAlive()) {
+            deleteRecordThread = new Thread(new Runnable() {
+
+                @Override
+                public void run() {
+                    try {
+                        if (DataManager.getInstance().getSearchIndex().getHitCount(SolrConstants.PI_PARENT + ":" + pi) > 0) {
+                            ret.put("status", HttpServletResponse.SC_FORBIDDEN);
+                            ret.put("message", ViewerResourceBundle.getTranslation("deleteRecord_failure_volumes_present", null));
+                        }
+                        if (IndexerTools.deleteRecord(pi, createTraceDocument == null ? false : createTraceDocument,
+                                Paths.get(DataManager.getInstance().getConfiguration().getHotfolder()))) {
+                            ret.put("status", HttpServletResponse.SC_OK);
+                            ret.put("message", ViewerResourceBundle.getTranslation("deleteRecord_success", null));
+                        } else {
+                            ret.put("status", HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+                            ret.put("message", ViewerResourceBundle.getTranslation("deleteRecord_failure", null));
+                        }
+                    } catch (IOException e) {
+                        logger.error(e.getMessage(), e);
+                        ret.put("status", HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+                        ret.put("message", e.getMessage());
+                    } catch (IndexUnreachableException e) {
+                        logger.debug("IndexUnreachableException thrown here: {}", e.getMessage());
+                        ret.put("status", HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+                        ret.put("message", e.getMessage());
+                    } catch (PresentationException e) {
+                        logger.debug("PresentationException thrown here: {}", e.getMessage());
+                        ret.put("status", HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+                        ret.put("message", e.getMessage());
+                    }
+                }
+            });
+
+            deleteRecordThread.start();
+            try {
+                deleteRecordThread.join();
+            } catch (InterruptedException e) {
+                logger.error(e.getMessage(), e);
+            }
+        } else {
+            ret.put("status", HttpServletResponse.SC_FORBIDDEN);
+            ret.put("message", "Record deletion currently in progress");
+        }
+
+        return ret.toString();
+    }
 
     /**
      * @param pi
@@ -551,6 +651,8 @@ public class RecordResource {
             access = AccessConditionUtils.checkAccessPermissionByIdentifierAndLogId(pi, null, IPrivilegeHolder.PRIV_VIEW_FULLTEXT, servletRequest);
         } catch (IndexUnreachableException | DAOException e) {
             logger.error(String.format("Cannot check fulltext access for pi %s: %s", pi, e.toString()));
+        } catch (RecordNotFoundException e) {
+            access = false;
         }
         if (!access) {
             throw new ServiceNotAllowedException("Access to fulltext of " + pi + " not allowed");

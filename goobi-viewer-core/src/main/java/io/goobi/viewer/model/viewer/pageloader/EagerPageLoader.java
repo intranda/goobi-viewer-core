@@ -188,7 +188,7 @@ public class EagerPageLoader extends AbstractPageLoader implements Serializable 
         Map<Integer, PhysicalElement> ret = new HashMap<>();
 
         if (topElement.isAnchor() || topElement.isGroup()) {
-            logger.debug("Anchor or group document, no pages.");
+            logger.trace("Anchor or group document, no pages.");
             return ret;
         }
 

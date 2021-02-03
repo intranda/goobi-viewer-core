@@ -15,8 +15,6 @@
  */
 package io.goobi.viewer.model.security;
 
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -25,10 +23,8 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Set;
 import java.util.function.Function;
-import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import javax.servlet.http.HttpServletRequest;
@@ -290,18 +286,19 @@ public class AccessConditionUtils {
      * @return a boolean.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
+     * @throws RecordNotFoundException
      */
     public static boolean checkAccessPermissionByIdentifierAndLogId(String identifier, String logId, String privilegeName, HttpServletRequest request)
-            throws IndexUnreachableException, DAOException {
+            throws IndexUnreachableException, DAOException, RecordNotFoundException {
         // logger.trace("checkAccessPermissionByIdentifierAndLogId({}, {}, {})", identifier, logId, privilegeName);
         if (StringUtils.isEmpty(identifier)) {
             return false;
         }
 
-        StringBuilder sbQuery = new StringBuilder("+");
+        String query;
         if (StringUtils.isNotEmpty(logId)) {
             // Sub-docstruct
-            sbQuery.append(SolrConstants.PI_TOPSTRUCT)
+            query = new StringBuilder("+").append(SolrConstants.PI_TOPSTRUCT)
                     .append(':')
                     .append(identifier)
                     .append(" +")
@@ -311,27 +308,54 @@ public class AccessConditionUtils {
                     .append(" +")
                     .append(SolrConstants.DOCTYPE)
                     .append(':')
-                    .append(DocType.DOCSTRCT.name());
+                    .append(DocType.DOCSTRCT.name())
+                    .toString();
         } else {
             // Top document
-            sbQuery.append(SolrConstants.PI).append(':').append(identifier);
+            query = new StringBuilder("+").append(SolrConstants.PI).append(':').append(identifier).toString();
         }
 
         try {
             Set<String> requiredAccessConditions = new HashSet<>();
-            // logger.trace(sbQuery.toString());
             SolrDocumentList results = DataManager.getInstance()
                     .getSearchIndex()
-                    .search(sbQuery.toString(), 1, null, Arrays.asList(new String[] { SolrConstants.ACCESSCONDITION }));
-            if (results != null) {
-                for (SolrDocument doc : results) {
-                    Collection<Object> fieldsAccessConddition = doc.getFieldValues(SolrConstants.ACCESSCONDITION);
-                    if (fieldsAccessConddition != null) {
-                        for (Object accessCondition : fieldsAccessConddition) {
-                            requiredAccessConditions.add((String) accessCondition);
-                            // logger.trace("{}", accessCondition.toString());
-                        }
-                    }
+                    .search(query, 1, null, Collections.singletonList(SolrConstants.ACCESSCONDITION));
+            if (results == null || results.isEmpty()) {
+                throw new RecordNotFoundException(identifier);
+            }
+
+            return checkAccessPermissionBySolrDoc(results.get(0), query, privilegeName, request);
+        } catch (PresentationException e) {
+            logger.debug("PresentationException thrown here: {}", e.getMessage());
+            return false;
+        }
+    }
+
+    /**
+     * 
+     * @param doc
+     * @param originalQuery
+     * @param privilegeName
+     * @param request
+     * @return
+     * @throws IndexUnreachableException
+     * @throws DAOException
+     */
+    public static boolean checkAccessPermissionBySolrDoc(SolrDocument doc, String originalQuery, String privilegeName, HttpServletRequest request)
+            throws IndexUnreachableException, DAOException {
+        // logger.trace("checkAccessPermissionByIdentifierAndLogId({}, {}, {})", identifier, logId, privilegeName);
+        if (doc == null) {
+            return false;
+        }
+
+        try {
+            Set<String> requiredAccessConditions = new HashSet<>();
+
+            Collection<Object> fieldsAccessConddition = doc.getFieldValues(SolrConstants.ACCESSCONDITION);
+            if (fieldsAccessConddition != null) {
+                for (Object accessCondition : fieldsAccessConddition) {
+                    requiredAccessConditions.add((String) accessCondition);
+                    // logger.trace("{}", accessCondition.toString());
                 }
             }
 
@@ -343,7 +367,7 @@ public class AccessConditionUtils {
                 }
             }
             return checkAccessPermission(DataManager.getInstance().getDao().getRecordLicenseTypes(), requiredAccessConditions,
-                    privilegeName, user, NetTools.getIpAddress(request), sbQuery.toString());
+                    privilegeName, user, NetTools.getIpAddress(request), originalQuery);
         } catch (PresentationException e) {
             logger.debug("PresentationException thrown here: {}", e.getMessage());
         }
@@ -779,7 +803,7 @@ public class AccessConditionUtils {
 
         Map<String, Boolean> accessMap = new HashMap<>();
         accessMap.put("", Boolean.FALSE);
-        
+
         // If user is superuser, allow immediately
         if (user != null && user.isSuperuser()) {
             accessMap.keySet().forEach(key -> accessMap.put(key, Boolean.TRUE));

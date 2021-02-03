@@ -25,16 +25,15 @@ import javax.ws.rs.ext.Provider;
 import de.intranda.api.iiif.presentation.AbstractPresentationModelElement;
 import de.intranda.api.iiif.search.AutoSuggestResult;
 import de.intranda.api.iiif.search.SearchResult;
-import io.goobi.viewer.api.rest.IIIFPresentationBinding;
+import io.goobi.viewer.api.rest.bindings.IIIFPresentationBinding;
 
 /**
  * <p>
- * IIIFPresentationResponseFilter class.
+ * Adds the @context property to all IIIF Presentation responses in the topmost json element
  * </p>
  *
  * @author Florian Alpers
  *
- *         Adds the @context property to all IIIF Presentation responses in the topmost json element
  */
 @Provider
 @IIIFPresentationBinding

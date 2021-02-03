@@ -17,10 +17,10 @@ package io.goobi.viewer.managedbeans;
 
 import java.io.IOException;
 import java.io.Serializable;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
-import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.List;
@@ -41,6 +41,7 @@ import de.unigoettingen.sub.commons.contentlib.exceptions.ContentNotFoundExcepti
 import de.unigoettingen.sub.commons.contentlib.servlet.model.ApplicationInfo;
 import de.unigoettingen.sub.commons.contentlib.servlet.rest.ApplicationResource;
 import io.goobi.viewer.controller.DataManager;
+import io.goobi.viewer.controller.DateTools;
 import io.goobi.viewer.controller.JsonTools;
 import io.goobi.viewer.controller.NetTools;
 import io.goobi.viewer.controller.SolrConstants;
@@ -118,7 +119,7 @@ public class StatisticsBean implements Serializable {
         List<Long> dataPointList = new ArrayList<>();
         int dataPointDiv = days / dataPoints;
         days = dataPoints * dataPointDiv;
-        dataPointList.add(new Date().getTime());
+        dataPointList.add(DateTools.getMillisFromLocalDateTime(LocalDateTime.now(), false));
         countList.add(0);
         GregorianCalendar cal = new GregorianCalendar();
         for (int i = 1; i < dataPoints; i++) {

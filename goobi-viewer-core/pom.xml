@@ -2,11 +2,11 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0"
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0
-		http://maven.apache.org/xsd/maven-4.0.0.xsd">
+        http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>io.goobi.viewer</groupId>
 	<artifactId>viewer-core</artifactId>
-	<version>4.13.1</version>
+	<version>21.01-SNAPSHOT</version>
 	<packaging>jar</packaging>
 
 	<name>Goobi viewer - Core</name>
@@ -61,10 +61,10 @@
 		<jdk.version>1.8</jdk.version>
 		<skipTests>true</skipTests>
 
-        <!-- Sonar -->
-        <sonar.projectKey>intranda_goobi-viewer-core</sonar.projectKey>
-        <sonar.organization>intranda</sonar.organization>
-        <sonar.host.url>https://sonarcloud.io</sonar.host.url>
+		<!-- Sonar -->
+		<sonar.projectKey>intranda_goobi-viewer-core</sonar.projectKey>
+		<sonar.organization>intranda</sonar.organization>
+		<sonar.host.url>https://sonarcloud.io</sonar.host.url>
 
 		<!-- Manifest information -->
 		<maven.build.timestamp.format>yyyy-MM-dd HH:mm</maven.build.timestamp.format>
@@ -72,72 +72,73 @@
 
 		<!-- intranda libraries -->
 		<alto.version>1.5.5</alto.version>
-		<contentserver.version>2.5.0</contentserver.version>
+		<contentserver.version>2.6.0-SNAPSHOT</contentserver.version>
 		<tei-conversion.version>1.2.0</tei-conversion.version>
 		<iiif-api-model.version>1.10.0-SNAPSHOT</iiif-api-model.version>
 		<normdataimporter.version>1.5.2</normdataimporter.version>
 
-		<!-- other libraries -->
-		<cdi.version>2.0.SP1</cdi.version>
-		<commons-codec.version>1.15</commons-codec.version>
-		<commons-collections4.version>4.4</commons-collections4.version>
-		<commons-configuration.version>1.10</commons-configuration.version>
-		<commons-fileupload.version>1.4</commons-fileupload.version>
-		<commons-io.version>2.8.0</commons-io.version>
-		<commons-jxpath.version>1.3</commons-jxpath.version>
-		<commons-lang3.version>3.11</commons-lang3.version>
-		<commons-math3.version>3.6.1</commons-math3.version>
-		<commons-net.version>3.7.2</commons-net.version>
-		<commons-text.version>1.9</commons-text.version>
-		<dbunit.version>2.7.0</dbunit.version>
-        <eclipselink.version>2.7.7</eclipselink.version>
-		<h2.version>1.4.200</h2.version>
-		<httpclient.version>4.5.13</httpclient.version>
-		<httpcore.version>4.4.14</httpcore.version>
-		<httpunit.version>1.7.3</httpunit.version>
-		<icu.version>68.1</icu.version>
-		<inject.version>1</inject.version>
-		<jackson.version>2.12.0</jackson.version>
-		<jakarta.annotation-api.version>1.3.5</jakarta.annotation-api.version>
-		<jakarta.xml.bind-api.version>2.3.3</jakarta.xml.bind-api.version>
+        <!-- other libraries -->
+        <cdi.version>2.0.SP1</cdi.version>
+        <commons-codec.version>1.15</commons-codec.version>
+        <commons-collections4.version>4.4</commons-collections4.version>
+        <commons-configuration.version>1.10</commons-configuration.version>
+        <commons-fileupload.version>1.4</commons-fileupload.version>
+        <commons-io.version>2.8.0</commons-io.version>
+        <commons-jxpath.version>1.3</commons-jxpath.version>
+        <commons-lang3.version>3.11</commons-lang3.version>
+        <commons-net.version>3.7.2</commons-net.version>
+        <commons-text.version>1.9</commons-text.version>
+        <dbunit.version>2.7.0</dbunit.version>
+        <eclipselink.version>2.7.8</eclipselink.version>
+        <h2.version>1.4.200</h2.version>
+        <httpclient.version>4.5.13</httpclient.version>
+        <httpcore.version>4.4.14</httpcore.version>
+        <httpunit.version>1.7.3</httpunit.version>
+        <icu.version>68.2</icu.version>
+        <inject.version>1</inject.version>
+        <jackson.version>2.12.1</jackson.version>
+        <jakarta.annotation-api.version>1.3.5</jakarta.annotation-api.version>
+        <jakarta.xml.bind-api.version>2.3.3</jakarta.xml.bind-api.version>
+        <jakarta.servlet-api.version>4.0.4</jakarta.servlet-api.version>
         <javax.annotation.version>1.3.2</javax.annotation.version>
-		<javax.faces.version>2.4.0</javax.faces.version>
-		<javax.mail.version>1.6.2</javax.mail.version>
-		<javax.persistence.version>2.2.1</javax.persistence.version>
-		<javax.websocket.version>1.1</javax.websocket.version>
-		<jaxb-api.version>2.4.0-b180830.0359</jaxb-api.version>
-		<jaxb-impl.version>2.4.0-b180830.0438</jaxb-impl.version>
+        <javax.el.version>3.0.1-b06</javax.el.version>
+        <javax.faces.version>2.4.0</javax.faces.version>
+        <javax.mail.version>1.6.2</javax.mail.version>
+        <javax.persistence.version>2.2.1</javax.persistence.version>
+        <javax.websocket.version>1.1</javax.websocket.version>
+        <javax.ws.rs-api.version>2.1.1</javax.ws.rs-api.version>
+        <!-- This dependency is declared as ignoredUnusedDeclaredDependency, too -->
+        <javax.jstl.version>1.2</javax.jstl.version>
+        <jaxb-api.version>2.4.0-b180830.0359</jaxb-api.version>
+        <jaxb-impl.version>2.4.0-b180830.0438</jaxb-impl.version>
         <jaxb-core.version>2.3.0.1</jaxb-core.version>
-		<jdom2.version>2.0.6</jdom2.version>
-		<jersey.version>2.32</jersey.version>
-		<jersey-guava.version>2.26-b03</jersey-guava.version>
+        <jdom2.version>2.0.6</jdom2.version>
+        <jersey.version>2.33</jersey.version>
+        <jersey-guava.version>2.26-b03</jersey-guava.version>
         <jgravatar.version>1.2</jgravatar.version>
         <!-- https://github.com/stleary/JSON-java -->
-		<json.version>20201115</json.version>
-		<jsoup.version>1.13.1</jsoup.version>
-		<jstl.version>1.2</jstl.version>
-		<junit.version>4.13.1</junit.version>
-		<mariadb-java-client.version>2.3.0</mariadb-java-client.version>
-		<mockito.version>3.6.28</mockito.version>
-		<mockserver.version>5.11.2</mockserver.version>
-		<oauth.version>1.0.2</oauth.version>
-		<openpdf.version>1.3.23</openpdf.version>
-		<poi.version>4.1.2</poi.version>
-		<prettyfaces.version>3.3.4-20120314</prettyfaces.version>
-		<primefaces.version>8.0</primefaces.version>
-		<rome.version>1.15.0</rome.version>
-		<rs-api.version>2.1.1</rs-api.version>
-		<servlet-api.version>4.0.1</servlet-api.version>
-		<slf4j.version>1.7.30</slf4j.version>
-		<solr.version>8.7.0</solr.version>
-		<saml-client.version>4.0.0</saml-client.version>
-		<stax-api.version>1.0-2</stax-api.version>
+        <json.version>20201115</json.version>
+        <jsoup.version>1.13.1</jsoup.version>
+        <junit.version>4.13.1</junit.version>
+        <mariadb-java-client.version>2.3.0</mariadb-java-client.version>
+        <mockito.version>3.7.7</mockito.version>
+        <mockserver.version>5.11.2</mockserver.version>
+        <oauth.version>1.0.2</oauth.version>
+        <openpdf.version>1.3.24</openpdf.version>
+        <poi.version>4.1.2</poi.version>
+        <prettyfaces.version>3.3.4-20120314</prettyfaces.version>
+        <primefaces.version>8.0</primefaces.version>
+        <rome.version>1.15.0</rome.version>
+        <slf4j.version>1.7.30</slf4j.version>
+        <solr.version>8.7.0</solr.version>
+        <saml-client.version>4.0.0</saml-client.version>
+        <stax-api.version>1.0-2</stax-api.version>
         <swagger.version>2.1.6</swagger.version>
-		<tomcat.version>9.0.40</tomcat.version>
-		<weld-servlet-shaded.version>3.1.5.SP1</weld-servlet-shaded.version>
-		<xerces.version>2.12.0</xerces.version>
-		<xmlParserAPIs.version>2.6.2</xmlParserAPIs.version>
-	</properties>
+        <tomcat.version>9.0.41</tomcat.version>
+        <weld-servlet-shaded.version>3.1.6.Final</weld-servlet-shaded.version>
+        <xerces.version>2.12.1</xerces.version>
+        <xmlParserAPIs.version>2.6.2</xmlParserAPIs.version>
+    </properties>
 
 
 	<dependencies>
@@ -191,6 +192,10 @@
 					<groupId>xml-apis</groupId>
 					<artifactId>xml-apis</artifactId>
 				</exclusion>
+				<exclusion>
+					<groupId>jakarta.ws.rs</groupId>
+					<artifactId>jakarta.ws.rs-api</artifactId>
+				</exclusion>
 			</exclusions>
 		</dependency>
 
@@ -215,6 +220,12 @@
 			<groupId>commons-configuration</groupId>
 			<artifactId>commons-configuration</artifactId>
 			<version>${commons-configuration.version}</version>
+			<exclusions>
+				<exclusion>
+					<groupId>commons-lang</groupId>
+					<artifactId>commons-lang</artifactId>
+				</exclusion>
+			</exclusions>
 		</dependency>
 		<dependency>
 			<groupId>commons-fileupload</groupId>
@@ -235,11 +246,6 @@
 			<groupId>org.apache.commons</groupId>
 			<artifactId>commons-lang3</artifactId>
 			<version>${commons-lang3.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>org.apache.commons</groupId>
-			<artifactId>commons-math3</artifactId>
-			<version>${commons-math3.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>commons-net</groupId>
@@ -317,6 +323,11 @@
 			<version>${jackson.version}</version>
 		</dependency>
 		<dependency>
+			<groupId>com.fasterxml.jackson.datatype</groupId>
+			<artifactId>jackson-datatype-jsr310</artifactId>
+			<version>${jackson.version}</version>
+		</dependency>
+		<dependency>
 			<groupId>jakarta.annotation</groupId>
 			<artifactId>jakarta.annotation-api</artifactId>
 			<version>${jakarta.annotation-api.version}</version>
@@ -326,15 +337,20 @@
 			<artifactId>jakarta.xml.bind-api</artifactId>
 			<version>${jakarta.xml.bind-api.version}</version>
 		</dependency>
-        <dependency>
-            <groupId>javax.annotation</groupId>
-            <artifactId>javax.annotation-api</artifactId>
-            <version>${javax.annotation.version}</version>
+		<dependency>
+			<groupId>javax.annotation</groupId>
+			<artifactId>javax.annotation-api</artifactId>
+			<version>${javax.annotation.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>javax.websocket</groupId>
+			<artifactId>javax.websocket-api</artifactId>
+			<version>${javax.websocket.version}</version>
         </dependency>
         <dependency>
-            <groupId>javax.websocket</groupId>
-            <artifactId>javax.websocket-api</artifactId>
-            <version>${javax.websocket.version}</version>
+            <groupId>javax.el</groupId>
+            <artifactId>javax.el-api</artifactId>
+            <version>${javax.el.version}</version>
         </dependency>
 		<dependency>
 			<groupId>org.glassfish</groupId>
@@ -355,17 +371,17 @@
 			<groupId>javax.xml.bind</groupId>
 			<artifactId>jaxb-api</artifactId>
 			<version>${jaxb-api.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>com.sun.xml.bind</groupId>
-            <artifactId>jaxb-impl</artifactId>
-            <version>${jaxb-impl.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>com.sun.xml.bind</groupId>
-            <artifactId>jaxb-core</artifactId>
-            <version>${jaxb-core.version}</version>
-        </dependency>
+		</dependency>
+		<dependency>
+			<groupId>com.sun.xml.bind</groupId>
+			<artifactId>jaxb-impl</artifactId>
+			<version>${jaxb-impl.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>com.sun.xml.bind</groupId>
+			<artifactId>jaxb-core</artifactId>
+			<version>${jaxb-core.version}</version>
+		</dependency>
 		<dependency>
 			<groupId>org.jdom</groupId>
 			<artifactId>jdom2</artifactId>
@@ -375,16 +391,34 @@
 			<groupId>org.glassfish.jersey.core</groupId>
 			<artifactId>jersey-client</artifactId>
 			<version>${jersey.version}</version>
-        </dependency>
+			<exclusions>
+				<exclusion>
+					<groupId>jakarta.ws.rs</groupId>
+					<artifactId>jakarta.ws.rs-api</artifactId>
+				</exclusion>
+			</exclusions>
+		</dependency>
 		<dependency>
 			<groupId>org.glassfish.jersey.core</groupId>
 			<artifactId>jersey-server</artifactId>
 			<version>${jersey.version}</version>
+			<exclusions>
+				<exclusion>
+					<groupId>jakarta.ws.rs</groupId>
+					<artifactId>jakarta.ws.rs-api</artifactId>
+				</exclusion>
+			</exclusions>
 		</dependency>
 		<dependency>
 			<groupId>org.glassfish.jersey.core</groupId>
 			<artifactId>jersey-common</artifactId>
 			<version>${jersey.version}</version>
+			<exclusions>
+				<exclusion>
+					<groupId>jakarta.ws.rs</groupId>
+					<artifactId>jakarta.ws.rs-api</artifactId>
+				</exclusion>
+			</exclusions>
 		</dependency>
 		<dependency>
 			<groupId>org.glassfish.jersey.media</groupId>
@@ -395,17 +429,29 @@
 			<groupId>org.glassfish.jersey.containers</groupId>
 			<artifactId>jersey-container-servlet-core</artifactId>
 			<version>${jersey.version}</version>
+			<exclusions>
+				<exclusion>
+					<groupId>jakarta.ws.rs</groupId>
+					<artifactId>jakarta.ws.rs-api</artifactId>
+				</exclusion>
+			</exclusions>
 		</dependency>
 		<dependency>
-	    	<groupId>org.glassfish.jersey.test-framework</groupId>
-		    <artifactId>jersey-test-framework-core</artifactId>
-            <version>${jersey.version}</version>
+			<groupId>org.glassfish.jersey.test-framework</groupId>
+			<artifactId>jersey-test-framework-core</artifactId>
+			<version>${jersey.version}</version>
 		</dependency>
 		<dependency>
-	    	<groupId>org.glassfish.jersey.test-framework.providers</groupId>
-		    <artifactId>jersey-test-framework-provider-grizzly2</artifactId>
-            <version>${jersey.version}</version>
-            <scope>test</scope>
+			<groupId>org.glassfish.jersey.test-framework.providers</groupId>
+			<artifactId>jersey-test-framework-provider-grizzly2</artifactId>
+			<version>${jersey.version}</version>
+			<scope>test</scope>
+			<exclusions>
+				<exclusion>
+					<groupId>jakarta.ws.rs</groupId>
+					<artifactId>jakarta.ws.rs-api</artifactId>
+				</exclusion>
+			</exclusions>
 		</dependency>
 		<dependency>
 			<groupId>com.timgroup</groupId>
@@ -435,7 +481,7 @@
 		<dependency>
 			<groupId>javax.servlet</groupId>
 			<artifactId>jstl</artifactId>
-			<version>${jstl.version}</version>
+			<version>${javax.jstl.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>junit</groupId>
@@ -443,7 +489,7 @@
 			<version>${junit.version}</version>
 			<scope>test</scope>
 		</dependency>
-        <dependency>
+		<dependency>
 			<groupId>org.mariadb.jdbc</groupId>
 			<artifactId>mariadb-java-client</artifactId>
 			<version>${mariadb-java-client.version}</version>
@@ -459,6 +505,12 @@
 			<artifactId>mockserver-core</artifactId>
 			<version>${mockserver.version}</version>
 			<scope>test</scope>
+			<exclusions>
+				<exclusion>
+					<groupId>javax.servlet</groupId>
+					<artifactId>javax.servlet-api</artifactId>
+				</exclusion>
+			</exclusions>
 		</dependency>
 		<dependency>
 			<groupId>org.mock-server</groupId>
@@ -475,21 +527,6 @@
 		<dependency>
 			<groupId>org.apache.oltu.oauth2</groupId>
 			<artifactId>org.apache.oltu.oauth2.client</artifactId>
-			<version>${oauth.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>org.apache.oltu.oauth2</groupId>
-			<artifactId>org.apache.oltu.oauth2.common</artifactId>
-			<version>${oauth.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>org.apache.oltu.oauth2</groupId>
-			<artifactId>org.apache.oltu.oauth2.httpclient4</artifactId>
-			<version>${oauth.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>org.apache.oltu.oauth2</groupId>
-			<artifactId>org.apache.oltu.oauth2.jwt</artifactId>
 			<version>${oauth.version}</version>
 		</dependency>
 		<dependency>
@@ -510,8 +547,8 @@
 		<dependency>
 			<groupId>com.ocpsoft</groupId>
 			<artifactId>prettyfaces-jsf2</artifactId>
-            <version>${prettyfaces.version}</version>
-        </dependency>
+			<version>${prettyfaces.version}</version>
+		</dependency>
 		<dependency>
 			<groupId>org.primefaces</groupId>
 			<artifactId>primefaces</artifactId>
@@ -525,12 +562,12 @@
 		<dependency>
 			<groupId>javax.ws.rs</groupId>
 			<artifactId>javax.ws.rs-api</artifactId>
-			<version>${rs-api.version}</version>
+			<version>${javax.ws.rs-api.version}</version>
 		</dependency>
 		<dependency>
-			<groupId>javax.servlet</groupId>
-			<artifactId>javax.servlet-api</artifactId>
-			<version>${servlet-api.version}</version>
+			<groupId>jakarta.servlet</groupId>
+			<artifactId>jakarta.servlet-api</artifactId>
+			<version>${jakarta.servlet-api.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.slf4j</groupId>
@@ -573,40 +610,35 @@
 			<artifactId>saml-client</artifactId>
 			<version>${saml-client.version}</version>
 		</dependency>
-        <dependency>
-          <groupId>io.swagger.core.v3</groupId>
-          <artifactId>swagger-jaxrs2</artifactId>
-          <version>${swagger.version}</version>
-        </dependency>
-        <dependency>
-          <groupId>io.swagger.core.v3</groupId>
-          <artifactId>swagger-annotations</artifactId>
-          <version>${swagger.version}</version>
-        </dependency>
-         <dependency>
-            <groupId>io.swagger.core.v3</groupId>
-            <artifactId>swagger-models</artifactId>
-            <version>${swagger.version}</version>
-            <scope>compile</scope>
-        </dependency>
-        <dependency>
-          <groupId>io.swagger.core.v3</groupId>
-          <artifactId>swagger-integration</artifactId>
-          <version>${swagger.version}</version>
-        </dependency>
-        <!--            
 		<dependency>
-		    <groupId>net.bull.javamelody</groupId>
-		    <artifactId>javamelody-core</artifactId>
-		    <version>1.85.0</version>
-            </dependency>
-        -->
+			<groupId>io.swagger.core.v3</groupId>
+			<artifactId>swagger-jaxrs2</artifactId>
+			<version>${swagger.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>io.swagger.core.v3</groupId>
+			<artifactId>swagger-annotations</artifactId>
+			<version>${swagger.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>io.swagger.core.v3</groupId>
+			<artifactId>swagger-models</artifactId>
+			<version>${swagger.version}</version>
+			<scope>compile</scope>
+		</dependency>
+		<dependency>
+			<groupId>io.swagger.core.v3</groupId>
+			<artifactId>swagger-integration</artifactId>
+			<version>${swagger.version}</version>
+		</dependency>
+		<!-- <dependency> <groupId>net.bull.javamelody</groupId> <artifactId>javamelody-core</artifactId> 
+			<version>1.85.0</version> </dependency> -->
 	</dependencies>
 
 
 	<build>
-        <plugins>
-            <!-- used for mvn versions:display-plugin-updates -->
+		<plugins>
+			<!-- used for mvn versions:display-plugin-updates -->
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-enforcer-plugin</artifactId>
@@ -626,8 +658,8 @@
 						</configuration>
 					</execution>
 				</executions>
-            </plugin>
-            <!-- used for mvn verify-->
+			</plugin>
+			<!-- used for mvn verify -->
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-dependency-plugin</artifactId>
@@ -647,37 +679,42 @@
 								<!-- Primefaces is used for autocomplete -->
 								<ignoredUnusedDeclaredDependency>org.primefaces:primefaces</ignoredUnusedDeclaredDependency>
 
-								<!-- xerces is a dependency from the old Solr version. It can be removed when updating to Solr 8 -->
+								<!-- xerces is a dependency from the old Solr version. It can be 
+									removed when updating to Solr 8 -->
 								<ignoredUnusedDeclaredDependency>xerces:xmlParserAPIs</ignoredUnusedDeclaredDependency>
 								<ignoredUnusedDeclaredDependency>xerces:xercesImpl</ignoredUnusedDeclaredDependency>
 
-								<!-- The jersey-container-servlet dependency is used for startup during runtime 
-								     Unit tests run without it though -->
+								<!-- The jersey-container-servlet dependency is used for startup 
+									during runtime Unit tests run without it though -->
 								<ignoredUnusedDeclaredDependency>org.glassfish.jersey.containers:jersey-container-servlet</ignoredUnusedDeclaredDependency>
 
-								<!-- JXPath is used at XPathExpressionEngine from org.apache.commons.configuration2, i.e. LanguageHelper -->
+								<!-- JXPath is used at XPathExpressionEngine from org.apache.commons.configuration2, 
+									i.e. LanguageHelper -->
 								<ignoredUnusedDeclaredDependency>commons-jxpath:commons-jxpath</ignoredUnusedDeclaredDependency>
 
 								<!-- Fileupload is used as a dependency to Primefaces FileUpload -->
 								<ignoredUnusedDeclaredDependency>commons-fileupload:commons-fileupload</ignoredUnusedDeclaredDependency>
 
-								<!-- The MariaDB java client is used for the database connection and configured in the Tomcat -->
+								<!-- The MariaDB java client is used for the database connection 
+									and configured in the Tomcat -->
 								<ignoredUnusedDeclaredDependency>org.mariadb.jdbc:mariadb-java-client</ignoredUnusedDeclaredDependency>
 
-								<!-- The lib is used with annotations and the byte code analysis does not detect it -->
-                                <ignoredUnusedDeclaredDependency>javax.xml.bind:jaxb-api</ignoredUnusedDeclaredDependency>
+								<!-- The lib is used with annotations and the byte code analysis 
+									does not detect it -->
+								<ignoredUnusedDeclaredDependency>javax.xml.bind:jaxb-api</ignoredUnusedDeclaredDependency>
 
-                                <!-- This is not part of Java 11 anymore
-                                     If it is missing the following two tests will fail: ViewerSectionPDFResourceTest#testGetPdf_refuseAccess, ViewerRecordPDFResourceTest.testGetPdf#refuseAcces
-									 The error is: Implementation of JAXB-API has not been found on module path or classpath. -->
-                                <ignoredUnusedDeclaredDependency>com.sun.xml.bind:jaxb-impl</ignoredUnusedDeclaredDependency>
-                                <ignoredUnusedDeclaredDependency>com.sun.xml.bind:jaxb-core</ignoredUnusedDeclaredDependency>
+								<!-- This is not part of Java 11 anymore If it is missing the following 
+									two tests will fail: ViewerSectionPDFResourceTest#testGetPdf_refuseAccess, 
+									ViewerRecordPDFResourceTest.testGetPdf#refuseAcces The error is: Implementation 
+									of JAXB-API has not been found on module path or classpath. -->
+								<ignoredUnusedDeclaredDependency>com.sun.xml.bind:jaxb-impl</ignoredUnusedDeclaredDependency>
+								<ignoredUnusedDeclaredDependency>com.sun.xml.bind:jaxb-core</ignoredUnusedDeclaredDependency>
 
 								<!-- EclipseLink Java Persistence API for database management -->
-                                <ignoredUnusedDeclaredDependency>org.eclipse.persistence:org.eclipse.persistence.jpa</ignoredUnusedDeclaredDependency>
+								<ignoredUnusedDeclaredDependency>org.eclipse.persistence:org.eclipse.persistence.jpa</ignoredUnusedDeclaredDependency>
 
-                                <!-- javax.annotation is not part of jdk 11 anymore -->
-                                <ignoredUnusedDeclaredDependency>javax.annotation:javax.annotation-api</ignoredUnusedDeclaredDependency>
+								<!-- javax.annotation is not part of jdk 11 anymore -->
+								<ignoredUnusedDeclaredDependency>javax.annotation:javax.annotation-api</ignoredUnusedDeclaredDependency>
 							</ignoredUnusedDeclaredDependencies>
 						</configuration>
 					</execution>
@@ -702,13 +739,13 @@
 					<skipTests>${skipTests}</skipTests>
 					<excludes>
 						<exclude>**/Abstract*.java</exclude>
-                    </excludes>
-                    <systemProperties>
-                        <property>
-                            <name>java.util.logging.config.file</name>
-                            <value>src/test/resources/log4j2.test.xml</value>
-                        </property>
-                    </systemProperties>
+					</excludes>
+					<systemProperties>
+						<property>
+							<name>java.util.logging.config.file</name>
+							<value>src/test/resources/log4j2.test.xml</value>
+						</property>
+					</systemProperties>
 				</configuration>
 			</plugin>
 			<plugin>
@@ -723,7 +760,6 @@
 							<version>${project.version}</version>
 							<Implementation-Version>${buildNumber}</Implementation-Version>
 							<Implementation-Build-Date>${buildDate}</Implementation-Build-Date>
-							<Public-Version>${public.version}</Public-Version>
 						</manifestEntries>
 					</archive>
 					<excludes>
@@ -793,8 +829,8 @@
 						</tag>
 					</tags>
 				</configuration>
-            </plugin>
-            <!-- used for test coverage report in Jenkins -->
+			</plugin>
+			<!-- used for test coverage report in Jenkins -->
 			<plugin>
 				<groupId>org.jacoco</groupId>
 				<artifactId>jacoco-maven-plugin</artifactId>
@@ -813,8 +849,8 @@
 						</goals>
 					</execution>
 				</executions>
-            </plugin>
-            <!-- used for mvn versions:display-dependency-updates -->
+			</plugin>
+			<!-- used for mvn versions:display-dependency-updates -->
 			<plugin>
 				<groupId>org.codehaus.mojo</groupId>
 				<artifactId>versions-maven-plugin</artifactId>

@@ -723,17 +723,20 @@
 		<pattern value="/admin/groups/" />
 		<view-id value="/resources/admin/views/adminUserGroups.xhtml" />
 		<action onPostback="false">#{adminBean.setCurrentUserGroup(null)}</action>
+		 <action onPostback="false">#{adminBean.resetDirtyUserRolesAction}</action>
 	</url-mapping>
     <url-mapping id="adminGroupEdit">
         <pattern value="/admin/groups/edit/#{userGroupId:adminBean.currentUserGroupId}/" />
         <view-id value="/resources/admin/views/adminUserGroup.xhtml" />
         <action onPostback="false">#{adminBean.resetCurrentUserRoleAction}</action>
+        <action onPostback="false">#{adminBean.resetDirtyUserRolesAction}</action>
     </url-mapping>
     <url-mapping id="adminGroupNew">
         <pattern value="/admin/groups/new/" />
         <view-id value="/resources/admin/views/adminUserGroup.xhtml" />
         <action onPostback="false">#{adminBean.resetCurrentUserGroupAction}</action>
         <action onPostback="false">#{adminBean.resetCurrentUserRoleAction}</action>
+        <action onPostback="false">#{adminBean.resetDirtyUserRolesAction}</action>
     </url-mapping>
 	<url-mapping id="adminIpRanges">
 		<pattern value="/admin/ipranges/" />
@@ -864,6 +867,26 @@
         <view-id value="/resources/cms/adminCmsCategory.xhtml" />
         <action onPostback="false">#{navigationHelper.resetTheme}</action>
     </url-mapping>
+    <!-- CMS Record Notes -->
+    <url-mapping id="adminCmsRecordNotes">
+        <pattern value="/admin/cms/recordnotes/" />
+        <view-id value="/resources/cms/adminCmsRecordNotes.xhtml" />
+        <action onPostback="false">#{navigationHelper.resetTheme}</action>
+    </url-mapping>
+    <url-mapping id="adminCmsRecordNoteNew">
+        <pattern value="/admin/cms/recordnotes/new/" />
+        <view-id value="/resources/cms/adminCmsRecordNote.xhtml" />
+        <query-param name="pi" onPostback="false" validatorIds="piInSolrValidator">#{cmsRecordNoteEditBean.recordIdentifier}</query-param>
+        <query-param name="from" onPostback="false" >#{cmsRecordNoteEditBean.returnUrl}</query-param>
+        <action onPostback="false">#{navigationHelper.resetTheme}</action>
+    </url-mapping>
+    <url-mapping id="adminCmsRecordNoteEdit">
+        <pattern value="/admin/cms/recordnotes/edit/#{selectedNoteId}/" />
+        <view-id value="/resources/cms/adminCmsRecordNote.xhtml" />
+        <query-param name="from" onPostback="false" >#{cmsRecordNoteEditBean.returnUrl}</query-param>
+        <action onPostback="false">#{navigationHelper.resetTheme}</action>
+        <action onPostback="false">#{cmsRecordNoteEditBean.setNoteId(selectedNoteId)}</action>
+    </url-mapping>
     <!-- CMS GeoMaps -->
     <url-mapping id="adminCmsGeoMaps">
         <pattern value="/admin/cms/maps/" />
@@ -906,6 +929,19 @@
 		<action onPostback="false">#{navigationHelper.resetTheme}</action>
 		<action onPostback="false">#{cmsBean.cmsContextAction(false)}</action>
 	</url-mapping>
+	
+	<url-mapping id="cmsOpenPageWithCollection">
+		<pattern value="/cms/#{page:cmsBean.currentPageId}/expandCollection/#{page:cmsBean.currentPage.collection.topVisibleElement}/" />
+		<view-id value="#{cmsBean.getCurrentPageUrl}" />
+		<action onPostback="false">#{cmsBean.currentPage.collection.populateCollectionList()}</action>
+		<action onPostback="false">#{navigationHelper.resetTheme}</action>
+	</url-mapping>
+	<url-mapping id="cmsOpenPagePreviewWithCollection">
+		<pattern value="/cmspreview/#{page:cmsBean.currentPageId}/expandCollection/#{page:cmsBean.currentPage.collection.topVisibleElement}/" />
+		<view-id value="#{cmsBean.getCurrentPageUrl}" />
+		<action onPostback="false">#{navigationHelper.resetTheme}</action>
+	</url-mapping>
+	
 	<url-mapping id="cmsBrowse3">
 		<pattern value="/cms/#{page:cmsBean.currentPageId}/#{filter:browseBean.currentStringFilter}/#{page:cmsBean.currentPage.listPage}/" />
 		<view-id value="#{cmsBean.getCurrentPageUrl}" />
@@ -939,38 +975,13 @@
 		<action onPostback="false">#{navigationHelper.resetTheme}</action>
         <action onPostback="false">#{cmsBean.cmsContextAction(false)}</action>
 	</url-mapping>
-	<url-mapping id="cmsOpenPageWithCollection">
-		<pattern value="/cms/#{page:cmsBean.currentPageId}/expandCollection/#{page:cmsBean.currentPage.collection.topVisibleElement}/" />
-		<view-id value="#{cmsBean.getCurrentPageUrl}" />
-		<action onPostback="false">#{cmsBean.currentPage.collection.populateCollectionList()}</action>
-		<action onPostback="false">#{navigationHelper.resetTheme}</action>
-	</url-mapping>
-<!-- 	<url-mapping id="cmsOpenPageWithSearch"> -->
-<!-- 		<pattern -->
-<!-- 			value="/cms/#{page:cmsBean.currentPageId}/search/#{page:cmsBean.currentPage.listPage}/#{currentFacetString:searchBean.facets.currentFacetString}/#{currentHierarchicalFacetString:searchBean.facets.currentHierarchicalFacetString}/" /> -->
-<!-- 		<view-id value="#{cmsBean.getCurrentPageUrl}" /> -->
-<!-- 		<action onPostback="false">#{navigationHelper.resetTheme}</action> -->
-<!-- 		<action onPostback="false">#{cmsBean.cmsContextAction(false)}</action> -->
-<!-- 	</url-mapping> -->
-	<!-- <url-mapping id="cmsOpenPageWithSearchSimple"> -->
-	<!-- <pattern value="/cms/#{page:cmsBean.currentPageId}/search/#{query:cmsBean.currentPage.search.simpleSearchQuery}/#{pageNo:cmsBean.currentPage.search.pageNo}/#{sort:cmsBean.currentPage.search.solrSortFields}/#{currentFacetString:cmsBean.currentPage.search.facetString}/#{dc:cmsBean.currentPage.search.collection}/" 
-		/> -->
-	<!-- <view-id value="#{cmsBean.getCurrentPageUrl}" /> -->
-	<!-- <action onPostback="false">#{navigationHelper.resetTheme}</action> -->
-	<!-- <action onPostback="false">#{cmsBean.cmsContextAction(false)}</action> -->
-	<!-- </url-mapping> -->
 	<url-mapping id="cmsOpenPagePreview">
 		<pattern value="/cmspreview/#{page:cmsBean.currentPageId}/" />
 		<view-id value="#{cmsBean.getCurrentPageUrl}" />
 		<action onPostback="false">#{navigationHelper.resetTheme}</action>
 		<action onPostback="false">#{cmsBean.cmsContextAction}</action>
 	</url-mapping>
-	<url-mapping id="cmsOpenPagePreviewWithCollection">
-		<pattern value="/cmspreview/#{page:cmsBean.currentPageId}/expandCollection/#{page:cmsBean.currentPage.collection.topVisibleElement}/" />
-		<view-id value="#{cmsBean.getCurrentPageUrl}" />
-		<action onPostback="false">#{navigationHelper.resetTheme}</action>
-	</url-mapping>
-	
+
     <!-- ADMIN CROWDSOURCING -->
     <url-mapping id="adminCrowdCampaigns">
         <pattern value="/admin/crowdsourcing/campaigns/" />

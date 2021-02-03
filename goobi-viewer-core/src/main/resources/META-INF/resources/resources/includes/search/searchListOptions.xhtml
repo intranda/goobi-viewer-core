@@ -39,7 +39,7 @@
         <h:panelGroup rendered="#{configurationBean.searchExcelExportEnabled}">
             <div class="search-list__excel-export">
                 <h:form id="slExportSearchForm" prependId="false">
-                    <h:commandLink styleClass="btn btn--icon excel-export-trigger" action="#{searchBean.exportSearchAsExcelAction()}" title="#{msg.searchExportExcel}">
+                    <h:commandLink id="excelDownloadButton" styleClass="btn btn--icon excel-export-trigger" action="#{searchBean.exportSearchAsExcelAction()}" title="#{msg.searchExportExcel}">
                         <i class="fa fa-table" aria-hidden="true"></i>
                         <f:passThroughAttribute name="data-toggle" value="tooltip" />
                         <f:passThroughAttribute name="data-placement" value="top" />

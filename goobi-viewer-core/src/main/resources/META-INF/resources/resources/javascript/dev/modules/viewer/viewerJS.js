@@ -95,7 +95,7 @@ var viewerJS = (function () {
         if ( bookmarksEnabled ) {
             viewerJS.bookmarks.init( {
                 root: rootURL,
-                rest: restURL,
+                rest: this.getRestApiUrl(),
                 userLoggedIn: userLoggedIn,
                 language: currentLang
                 
@@ -243,24 +243,7 @@ var viewerJS = (function () {
         // set tinymce language
 
         // init tinymce if it exists
-        if ($('.tinyMCE').length > 0) {
-            this.tinyConfig.language = currentLang;
-            this.tinyConfig.setup = function (ed) {
-                // listen to changes on tinymce input fields
-                ed.on('init', function (e) {
-                    console.log("init ", e);
-                });
-
-                ed.on('change input paste', function (e) {
-                    tinymce.triggerSave();
-                    if (currentPage === 'adminCmsCreatePage') {
-                        createPageConfig.prevBtn.attr('disabled', true);
-                        createPageConfig.prevDescription.show();
-                    }
-                });
-            };
-            viewerJS.tinyMce.init(this.tinyConfig);
-        }
+        viewer.initTinyMCE();
 
         // handle browser bugs
         switch (_defaults.browser) {
@@ -306,6 +289,35 @@ var viewerJS = (function () {
 		
 	// EOL viewerJS function
     };
+    
+    viewer.showLoader = function() {
+        viewer.jsfAjax.complete.pipe(rxjs.operators.first()).subscribe(() => $(".ajax_loader").hide())
+        $(".ajax_loader").show();
+    }
+    
+    viewer.initTinyMCE  = function(event) {
+        //trigger initializazion if either no event was given or if it is a jsf event in status 'success'
+        if(!event || event.status == "success") {            
+            if ($('.tinyMCE').length > 0) {
+                viewer.tinyConfig.language = currentLang;
+                viewer.tinyConfig.setup = function (ed) {
+                    // listen to changes on tinymce input fields
+                    ed.on('init', function (e) {
+                        if(_debug)console.log("init ", e);
+                    });
+                    
+                    ed.on('change input paste', function (e) {
+                        tinymce.triggerSave();
+                        if (currentPage === 'adminCmsCreatePage') {
+                            createPageConfig.prevBtn.attr('disabled', true);
+                            createPageConfig.prevDescription.show();
+                        }
+                    });
+                };
+                viewerJS.tinyMce.init(viewer.tinyConfig);
+            }
+        }
+    }
 
     viewer.initFragmentNavigation = function () {
         if (window.location.hash) {
@@ -388,6 +400,11 @@ var viewerJS = (function () {
             var filter = new viewerJS.listFilter(filterConfig);
         });
     }
+    
+    viewer.getRestApiUrl = function () {
+        return restURL.replace("/rest", "/api/v1");
+    }
+
 
     // init bootstrap 4 popovers
 	$(document).ready(function(){

@@ -96,6 +96,10 @@ var viewerJS = ( function( viewer ) {
         }
         
         if(_debug) {
+            console.log("init GeoMap with config ", this.config);
+        }
+        
+        if(_debug) {
         }
         console.log("init GeoMap with config ", this.config);
          

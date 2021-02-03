@@ -16,7 +16,7 @@
 package io.goobi.viewer.exceptions;
 
 import java.net.SocketException;
-import java.util.Date;
+import java.time.LocalDateTime;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Optional;
@@ -30,6 +30,7 @@ import javax.faces.context.FacesContext;
 import javax.faces.context.Flash;
 import javax.faces.event.ExceptionQueuedEvent;
 import javax.faces.event.ExceptionQueuedEventContext;
+import javax.faces.event.PhaseId;
 import javax.servlet.http.HttpSession;
 
 import org.apache.commons.lang3.StringUtils;
@@ -90,199 +91,65 @@ public class MyExceptionHandler extends ExceptionHandlerWrapper {
             if (fc == null) {
                 return;
             }
-            Map<String, Object> requestMap = fc.getExternalContext().getRequestMap();
-            NavigationHandler nav = fc.getApplication().getNavigationHandler();
-            Flash flash = fc.getExternalContext().getFlash();
-            NavigationHelper navigationHelper = BeanUtils.getNavigationHelper();
-            flash.setKeepMessages(true);
-            if (navigationHelper != null) {
-                requestMap.put("sourceUrl", navigationHelper.getCurrentUrl());
-                // Flash data can only be read once
-                flash.put("sourceUrl", navigationHelper.getCurrentUrl());
-                flash.put("sourceUrl2", navigationHelper.getCurrentUrl());
-            }
-            if (t instanceof ViewExpiredException) {
-                ViewExpiredException vee = (ViewExpiredException) t;
-                try {
-                    // Push some useful stuff to the request scope for use in the page
-                    requestMap.put("currentViewId", vee.getViewId());
-                    requestMap.put("errorType", "viewExpired");
-                    flash.put("errorType", "viewExpired");
-                    HttpSession session = (HttpSession) fc.getExternalContext().getSession(false);
-                    if (session != null) {
-                        StringBuilder details = new StringBuilder();
 
-                        details.append("Session ID: ").append(session.getId());
-                        details.append("</br>");
-                        details.append("Session created: ").append(new Date(session.getCreationTime()));
-                        details.append("</br>");
-                        details.append("Session last accessed: ").append(new Date(session.getLastAccessedTime()));
-
-                        Optional<Map<Object, Map>> logicalViews =
-                                Optional.ofNullable((Map) session.getAttribute("com.sun.faces.renderkit.ServerSideStateHelper.LogicalViewMap"));
-                        Integer numberOfLogicalViews = logicalViews.map(map -> map.keySet().size()).orElse(0);
-                        Integer numberOfTotalViews =
-                                logicalViews.map(map -> map.values().stream().mapToInt(value -> value.keySet().size()).sum()).orElse(0);
-                        details.append("</br>");
-                        details.append("Logical Views stored in session: ").append(numberOfLogicalViews.toString());
-                        details.append("</br>");
-                        details.append("Total views stored in session: ").append(numberOfTotalViews.toString());
-
-                        flash.put("errorDetails", details.toString());
-                    } else {
-                        flash.put("errorDetails", "No session details available");
-                    }
-
-                    nav.handleNavigation(fc, null, "pretty:error");
-                    fc.renderResponse();
-                } finally {
-                    i.remove();
-                }
-            } else if (t instanceof RecordNotFoundException || isCausedByExceptionType(t, RecordNotFoundException.class.getName())
-                    || (t instanceof PrettyException && t.getMessage().contains(RecordNotFoundException.class.getSimpleName()))) {
-                try {
+            try {
+                if (t instanceof ViewExpiredException) {
+                    handleError(getSessionDetails(fc), "viewExpired");
+                } else if (t instanceof RecordNotFoundException || isCausedByExceptionType(t, RecordNotFoundException.class.getName())
+                        || (t instanceof PrettyException && t.getMessage().contains(RecordNotFoundException.class.getSimpleName()))) {
                     String pi =
                             t.getMessage().substring(t.getMessage().indexOf("RecordNotFoundException: ")).replace("RecordNotFoundException: ", "");
                     String msg = ViewerResourceBundle.getTranslation("errRecordNotFoundMsg", null).replace("{0}", pi);
-                    flash.put("errorDetails", msg);
-                    requestMap.put("errMsg", msg);
-                    requestMap.put("errorType", "recordNotFound");
-                    flash.put("errorType", "recordNotFound");
-                    nav.handleNavigation(fc, null, "pretty:error");
-                    fc.renderResponse();
-                } finally {
-                    i.remove();
-                }
-            } else if (t instanceof RecordDeletedException || isCausedByExceptionType(t, RecordDeletedException.class.getName())
-                    || (t instanceof PrettyException && t.getMessage().contains(RecordDeletedException.class.getSimpleName()))) {
-                try {
+                    handleError(msg, "recordNotFound");
+                } else if (t instanceof RecordDeletedException || isCausedByExceptionType(t, RecordDeletedException.class.getName())
+                        || (t instanceof PrettyException && t.getMessage().contains(RecordDeletedException.class.getSimpleName()))) {
                     String pi = t.getMessage().substring(t.getMessage().indexOf("RecordDeletedException: ")).replace("RecordDeletedException: ", "");
                     String msg = ViewerResourceBundle.getTranslation("errRecordDeletedMsg", null).replace("{0}", pi);
-                    flash.put("errorDetails", msg);
-                    requestMap.put("errMsg", msg);
-                    requestMap.put("errorType", "recordDeleted");
-                    flash.put("errorType", "recordDeleted");
-                    nav.handleNavigation(fc, null, "pretty:error");
-                    fc.renderResponse();
-                } finally {
-                    i.remove();
-                }
-            } else if (t instanceof RecordLimitExceededException || isCausedByExceptionType(t, RecordLimitExceededException.class.getName())
-                    || (t instanceof PrettyException && t.getMessage().contains(RecordLimitExceededException.class.getSimpleName()))) {
-                try {
-                    String data = t.getMessage()
-                            .substring(t.getMessage().indexOf("RecordLimitExceededException: "))
-                            .replace("RecordLimitExceededException: ", "");
-                    String pi;
-                    String limit;
-                    String dataSplit[] = data.split(":");
-                    if (dataSplit.length == 2) {
-                        pi = dataSplit[0];
-                        limit = dataSplit[1];
-                    } else {
-                        pi = data;
-                        limit = "???";
+                    handleError(msg, "recordDeleted");
+                } else if (t instanceof RecordLimitExceededException || isCausedByExceptionType(t, RecordLimitExceededException.class.getName())
+                        || (t instanceof PrettyException && t.getMessage().contains(RecordLimitExceededException.class.getSimpleName()))) {
+                    String msg = createRecodLimitExceededMessage(t);
+                    handleError(msg, "errRecordLimitExceeded");
+                } else if (t instanceof IndexUnreachableException || isCausedByExceptionType(t, IndexUnreachableException.class.getName())
+                        || (t instanceof PrettyException && t.getMessage().contains(IndexUnreachableException.class.getSimpleName()))) {
+                    logger.trace("Caused by IndexUnreachableException");
+                    logger.error(t.getMessage());
+                    handleError(null, "indexUnreachable");
+                } else if (t instanceof DAOException || isCausedByExceptionType(t, DAOException.class.getName())
+                        || (t instanceof PrettyException && t.getMessage().contains(DAOException.class.getSimpleName()))) {
+                    logger.trace("Caused by DAOException");
+                    handleError(null, "dao");
+                } else if (t instanceof BaseXException || isCausedByExceptionType(t, BaseXException.class.getName())
+                        || (t instanceof PrettyException && t.getMessage().contains(BaseXException.class.getSimpleName()))) {
+                    logger.trace("Caused by BaseXException");
+                    handleError(null, "basex");
+                } else if (t instanceof ViewerConfigurationException || isCausedByExceptionType(t, ViewerConfigurationException.class.getName())
+                        || (t instanceof PrettyException && t.getMessage().contains(ViewerConfigurationException.class.getSimpleName()))) {
+                    logger.trace("Caused by ViewerConfigurationException");
+                    String msg = getRootCause(t).getMessage();
+                    logger.error(getRootCause(t).getMessage());
+                    handleError(msg, "configuration");
+                } else if (t instanceof SocketException || isCausedByExceptionType(t, SocketException.class.getName())
+                        || (t instanceof PrettyException && t.getMessage().contains(SocketException.class.getSimpleName()))) {
+                    //do nothing
+                } else if (t instanceof DownloadException || isCausedByExceptionType(t, DownloadException.class.getName())
+                        || (t instanceof PrettyException && t.getMessage().contains(DownloadException.class.getSimpleName()))) {
+                    logger.error(getRootCause(t).getMessage());
+                    String msg = getRootCause(t).getMessage();
+                    if (msg.contains(DownloadException.class.getSimpleName() + ":")) {
+                        msg = msg.substring(StringUtils.lastIndexOf(msg, ":") + 1).trim();
                     }
-                    String msg = ViewerResourceBundle.getTranslation("errRecordLimitExceededMsg", null)
-                            .replace("{0}", pi)
-                            .replace("{1}", limit);
-                    flash.put("errorDetails", msg);
-                    requestMap.put("errMsg", msg);
-                    requestMap.put("errorType", "errRecordLimitExceeded");
-                    flash.put("errorType", "errRecordLimitExceeded");
-                    nav.handleNavigation(fc, null, "pretty:error");
-                    fc.renderResponse();
-                } finally {
-                    i.remove();
-                }
-            } else if (t instanceof IndexUnreachableException || isCausedByExceptionType(t, IndexUnreachableException.class.getName())
-                    || (t instanceof PrettyException && t.getMessage().contains(IndexUnreachableException.class.getSimpleName()))) {
-                logger.trace("Caused by IndexUnreachableException");
-                logger.error(t.getMessage());
-                try {
-                    requestMap.put("errorType", "indexUnreachable");
-                    flash.put("errorType", "indexUnreachable");
-                    nav.handleNavigation(fc, null, "pretty:error");
-                    fc.renderResponse();
-                } finally {
-                    i.remove();
-                }
-            } else if (t instanceof DAOException || isCausedByExceptionType(t, DAOException.class.getName())
-                    || (t instanceof PrettyException && t.getMessage().contains(DAOException.class.getSimpleName()))) {
-                logger.trace("Caused by DAOException");
-                try {
-                    requestMap.put("errorType", "dao");
-                    flash.put("errorType", "dao");
-                    nav.handleNavigation(fc, null, "pretty:error");
-                    fc.renderResponse();
-                } finally {
-                    i.remove();
-                }
-            }  else if (t instanceof BaseXException || isCausedByExceptionType(t, BaseXException.class.getName())
-                    || (t instanceof PrettyException && t.getMessage().contains(BaseXException.class.getSimpleName()))) {
-                logger.trace("Caused by BaseXException");
-                try {
-                    requestMap.put("errorType", "basex");
-                    flash.put("errorType", "basex");
-                    nav.handleNavigation(fc, null, "pretty:error");
-                    fc.renderResponse();
-                } finally {
-                    i.remove();
-                }
-            }else if (t instanceof ViewerConfigurationException || isCausedByExceptionType(t, ViewerConfigurationException.class.getName())
-                    || (t instanceof PrettyException && t.getMessage().contains(ViewerConfigurationException.class.getSimpleName()))) {
-                logger.trace("Caused by ViewerConfigurationException");
-                String msg = getRootCause(t).getMessage();
-                logger.error(getRootCause(t).getMessage());
-                try {
-                    flash.put("errorDetails", msg);
-                    requestMap.put("errMsg", msg);
-                    requestMap.put("errorType", "configuration");
-                    flash.put("errorType", "configuration");
-                    nav.handleNavigation(fc, null, "pretty:error");
-                    fc.renderResponse();
-                } finally {
-                    i.remove();
-                }
-            } else if (t instanceof SocketException || isCausedByExceptionType(t, SocketException.class.getName())
-                    || (t instanceof PrettyException && t.getMessage().contains(SocketException.class.getSimpleName()))) {
-
-                try {
-                } finally {
-                    i.remove();
-                }
-            } else if (t instanceof DownloadException || isCausedByExceptionType(t, DownloadException.class.getName())
-                    || (t instanceof PrettyException && t.getMessage().contains(DownloadException.class.getSimpleName()))) {
-                logger.error(getRootCause(t).getMessage());
-                String msg = getRootCause(t).getMessage();
-                if (msg.contains(DownloadException.class.getSimpleName() + ":")) {
-                    msg = msg.substring(StringUtils.lastIndexOf(msg, ":") + 1).trim();
-                }
-                try {
-                    flash.put("errorDetails", msg);
-                    requestMap.put("errMsg", msg);
-                    requestMap.put("errorType", "download");
-                    flash.put("errorType", "download");
-                    nav.handleNavigation(fc, null, "pretty:error");
-                    fc.renderResponse();
-                } finally {
-                    i.remove();
-                }
-            } else {
-                // All other exceptions
-                logger.error(t.getMessage(), t);
-                try {
+                    handleError(msg, "download");
+                } else {
+                    // All other exceptions
+                    logger.error(t.getMessage(), t);
                     // Put the exception in the flash scope to be displayed in the error page if necessary ...
-                    String msg = DateTools.format(new Date(), DateTools.formatterISO8601DateTime, false) + ": " + t.getMessage();
-                    // flash.put("errorDetails", msg);
-                    requestMap.put("errMsg", msg);
-                    requestMap.put("errorType", "general");
-                    flash.put("errorType", "general");
-                    nav.handleNavigation(fc, null, "pretty:error");
-                    fc.renderResponse();
-                } finally {
-                    i.remove();
+
+                    String msg = LocalDateTime.now().format(DateTools.formatterISO8601DateTime) + ": " + t.getMessage();
+                    handleError(msg, "general");
                 }
+            } finally {
+                i.remove();
             }
 
         }
@@ -291,6 +158,111 @@ public class MyExceptionHandler extends ExceptionHandlerWrapper {
         // Therefore, let the parent handle them.
         getWrapped().handle();
 
+    }
+
+    /**
+     * @param i
+     * @param fc
+     * @param requestMap
+     * @param nav
+     * @param flash
+     * @param errorDetails
+     * @param errorType
+     */
+    public void handleError(String errorDetails, String errorType) {
+        FacesContext fc = FacesContext.getCurrentInstance();
+        Map<String, Object> requestMap = fc.getExternalContext().getRequestMap();
+        NavigationHandler nav = fc.getApplication().getNavigationHandler();
+        Flash flash = fc.getExternalContext().getFlash();
+        flash.setKeepMessages(true);
+
+        putNavigationState(requestMap, flash);
+        PhaseId phase = fc.getCurrentPhaseId();
+        if (PhaseId.RENDER_RESPONSE == phase) {
+            flash.putNow("ErrorPhase", phase.toString());
+            flash.putNow("errorDetails", errorDetails);
+            flash.putNow("errorTime", LocalDateTime.now().format(DateTools.formatterISO8601Full));
+            flash.putNow("errorType", errorType);
+        } else {
+            flash.put("ErrorPhase", phase.toString());
+            flash.put("errorDetails", errorDetails);
+            flash.put("errorTime", LocalDateTime.now().format(DateTools.formatterISO8601Full));
+            flash.put("errorType", errorType);
+        }
+
+        requestMap.put("errMsg", errorDetails);
+        requestMap.put("errorType", errorType);
+        nav.handleNavigation(fc, null, "pretty:error");
+        fc.renderResponse();
+    }
+
+    /**
+     * @param t
+     * @return
+     */
+    public String createRecodLimitExceededMessage(Throwable t) {
+        String data = t.getMessage()
+                .substring(t.getMessage().indexOf("RecordLimitExceededException: "))
+                .replace("RecordLimitExceededException: ", "");
+        String pi;
+        String limit;
+        String dataSplit[] = data.split(":");
+        if (dataSplit.length == 2) {
+            pi = dataSplit[0];
+            limit = dataSplit[1];
+        } else {
+            pi = data;
+            limit = "???";
+        }
+        String msg = ViewerResourceBundle.getTranslation("errRecordLimitExceededMsg", null)
+                .replace("{0}", pi)
+                .replace("{1}", limit);
+        return msg;
+    }
+
+    /**
+     * @param requestMap
+     * @param flash
+     */
+    public void putNavigationState(Map<String, Object> requestMap, Flash flash) {
+        NavigationHelper navigationHelper = BeanUtils.getNavigationHelper();
+        if (navigationHelper != null) {
+            requestMap.put("sourceUrl", navigationHelper.getCurrentUrl());
+            flash.put("sourceUrl", navigationHelper.getCurrentUrl());
+        }
+    }
+
+    /**
+     * @param fc
+     * @return
+     */
+    public String getSessionDetails(FacesContext fc) {
+        HttpSession session = (HttpSession) fc.getExternalContext().getSession(false);
+        if (session == null) {
+            return "No session details available";
+        }
+
+        StringBuilder details = new StringBuilder()
+                .append("Session ID: ")
+                .append(session.getId())
+                .append("</br>")
+                .append("Session created: ")
+                .append(DateTools.getLocalDateTimeFromMillis(session.getCreationTime(), false))
+                .append("</br>")
+                .append("Session last accessed: ")
+                .append(DateTools.getLocalDateTimeFromMillis(session.getLastAccessedTime(), false));
+
+        Optional<Map<Object, Map>> logicalViews =
+                Optional.ofNullable((Map) session.getAttribute("com.sun.faces.renderkit.ServerSideStateHelper.LogicalViewMap"));
+        Integer numberOfLogicalViews = logicalViews.map(map -> map.keySet().size()).orElse(0);
+        Integer numberOfTotalViews =
+                logicalViews.map(map -> map.values().stream().mapToInt(value -> value.keySet().size()).sum()).orElse(0);
+        details.append("</br>");
+        details.append("Logical Views stored in session: ").append(numberOfLogicalViews.toString());
+        details.append("</br>");
+        details.append("Total views stored in session: ").append(numberOfTotalViews.toString());
+
+        return details.toString();
     }
 
     /**

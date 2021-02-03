@@ -29,7 +29,7 @@ import javax.ws.rs.core.MediaType;
 
 import org.apache.commons.lang3.StringUtils;
 
-import io.goobi.viewer.api.rest.ViewerRestServiceBinding;
+import io.goobi.viewer.api.rest.bindings.ViewerRestServiceBinding;
 import io.goobi.viewer.exceptions.AuthenticationException;
 import io.goobi.viewer.model.security.authentication.model.LitteraAuthenticationResponse;
 
