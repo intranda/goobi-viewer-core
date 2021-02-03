@@ -79,7 +79,7 @@ public class TasksResource {
         if(isAuthorized(desc.type, Optional.empty(), request)) {
             Task job = new Task(desc, TaskManager.createTask(desc.type));
             DataManager.getInstance().getRestApiJobManager().addTask(job);
-                DataManager.getInstance().getRestApiJobManager().triggerTaskInThread(job.id, request);
+            DataManager.getInstance().getRestApiJobManager().triggerTaskInThread(job.id, request);
             return job;
         } else {
             throw  new WebApplicationException(new AccessDeniedException("Not authorized to create this type of job"));
