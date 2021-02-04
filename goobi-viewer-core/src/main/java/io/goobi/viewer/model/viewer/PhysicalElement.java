@@ -1450,59 +1450,6 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
 
     /**
      * <p>
-     * Getter for the field <code>imageFooterHeight</code>.
-     * </p>
-     *
-     * @return a int.
-     */
-    public int getImageFooterHeight() {
-        return getImageFooterHeight(0);
-    }
-
-    /**
-     * <p>
-     * Getter for the field <code>imageFooterHeight</code>.
-     * </p>
-     *
-     * @param rotation a int.
-     * @return a int.
-     */
-    public int getImageFooterHeight(int rotation) {
-        if (imageFooterHeight == null) {
-            try {
-                List<String> watermark = DataManager.getInstance().getConfiguration().getWatermarkTextConfiguration();
-                if (watermark != null && !watermark.isEmpty() && ContentServerConfiguration.getInstance().getWatermarkUse()) {
-                    int watermarkScale = ContentServerConfiguration.getInstance().getWatermarkPercent();
-                    int imageHeight = this.getImageHeight();
-                    int imageWidth = this.getImageWidth();
-                    if (watermarkScale > 0) {
-                        imageFooterHeight = (int) (imageHeight * watermarkScale / 100.0);
-                        imageFooterHeightRotated = (int) (imageWidth * watermarkScale / 100.0);
-                    } else if (ContentServerConfiguration.getInstance().getScaleWatermark()) {
-                        double relHeight = new ConfigurationBean().getRelativeImageFooterHeight();
-                        imageFooterHeight = (int) (imageHeight * relHeight);
-                        imageFooterHeightRotated = (int) (imageWidth * relHeight);
-                    } else {
-                        imageFooterHeight = new ConfigurationBean().getImageFooterHeight();
-                        imageFooterHeightRotated = imageFooterHeight;
-                    }
-                }
-            } catch (Exception e) {
-                imageFooterHeight = 0;
-                imageFooterHeightRotated = 0;
-            }
-            if (imageFooterHeight == null) {
-                imageFooterHeight = 0;
-            }
-            if (imageFooterHeightRotated == null) {
-                imageFooterHeightRotated = 0;
-            }
-        }
-        return rotation % 180 == 90 ? imageFooterHeightRotated : imageFooterHeight;
-    }
-
-    /**
-     * <p>
      * Getter for the field <code>currentComment</code>.
      * </p>
      *

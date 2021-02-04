@@ -15,13 +15,7 @@
  */
 package io.goobi.viewer.managedbeans;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
 import java.io.Serializable;
-import java.net.URI;
-import java.net.URISyntaxException;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -29,21 +23,13 @@ import java.util.stream.Collectors;
 import javax.enterprise.context.ApplicationScoped;
 import javax.faces.annotation.FacesConfig;
 import javax.inject.Named;
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
 
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.w3c.dom.Document;
-import org.w3c.dom.NamedNodeMap;
-import org.w3c.dom.Node;
-import org.xml.sax.SAXException;
 
 import de.unigoettingen.sub.commons.contentlib.imagelib.ImageFileFormat;
 import de.unigoettingen.sub.commons.contentlib.imagelib.ImageType;
-import de.unigoettingen.sub.commons.contentlib.servlet.model.ContentServerConfiguration;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.SolrSearchIndex;
 import io.goobi.viewer.controller.language.Language;
@@ -107,159 +93,6 @@ public class ConfigurationBean implements Serializable {
      */
     public String getName() {
         return DataManager.getInstance().getConfiguration().getName();
-    }
-
-    /**
-     * Access the height of the image Footer for OpenLayers. With apache commons it is not possible to read the xml root element, therefore this
-     * method uses jdom.
-     *
-     * @return the Height of the Footer
-     */
-    public Double getRelativeImageFooterHeight() {
-        double height = 0;
-
-        if (!ContentServerConfiguration.getInstance().getWatermarkUse()) {
-            return height;
-        }
-
-        // Load Height of the Footer from the config_imageFooter.xml
-        String watermarkConfigFilePath = ContentServerConfiguration.getInstance().getWatermarkConfigFilePath();
-
-        File fileConfigImageFooter = null;
-        try {
-            fileConfigImageFooter = new File(new URI(watermarkConfigFilePath));
-        } catch (URISyntaxException e) {
-            logger.error("Error while reading the watermark attribut from the " + watermarkConfigFilePath + " file.", e);
-        } catch (IllegalArgumentException e) {
-            logger.error(e.getMessage());
-        }
-        logger.debug("Reading path to the file 'config_imageFooter.xml' from the file: {}", watermarkConfigFilePath);
-        try (FileInputStream fis = new FileInputStream(fileConfigImageFooter)) {
-            DocumentBuilderFactory docBuilderFactory = DocumentBuilderFactory.newInstance();
-            docBuilderFactory.setValidating(false);
-            DocumentBuilder docBuilder = docBuilderFactory.newDocumentBuilder();
-            Document xmldoc = docBuilder.parse(fis);
-
-            // iterate over all nodes and read nodes
-            Node topmostelement = xmldoc.getDocumentElement(); // get uppermost
-            if (topmostelement.getNodeName().equals("watermarks")) {
-                Node child = topmostelement.getFirstChild();
-                while (child != null && !"watermark".equals(child.getNodeName())) {
-                    child = child.getNextSibling();
-                }
-                if (child != null) {
-                    topmostelement = child;
-                }
-            }
-            if (!topmostelement.getNodeName().equals("watermark")) {
-                logger.error("Don't get correct xml response - topelement is NOT <watermark>");
-            }
-
-            // iterate over attributes
-            NamedNodeMap nnm = topmostelement.getAttributes();
-            if (nnm != null) {
-                Node heightnode = nnm.getNamedItem("height"); // read heigth
-                Node widthnode = nnm.getNamedItem("width"); // read heigth
-
-                if (heightnode != null && widthnode != null) {
-                    try {
-                        int absHeight = Integer.parseInt(heightnode.getNodeValue());
-                        int absWidth = Integer.parseInt(widthnode.getNodeValue());
-                        height = (double) absHeight / (double) absWidth;
-                        logger.debug("Red '{}px' for the footer from the {} file.", height, watermarkConfigFilePath);
-                    } catch (Exception e) {
-                        logger.error("Invalid value for watermark's height.");
-                    }
-                }
-            }
-        } catch (FileNotFoundException e) {
-            logger.error(e.getMessage());
-        } catch (IOException e) {
-            logger.error("Can't read XML configuration for Watermark stream due to {}", e.getMessage());
-        } catch (ParserConfigurationException e) {
-            logger.error("Can't parse xml configuration file.", e);
-        } catch (SAXException e) {
-            logger.error("Error in xml file.", e);
-        } catch (IllegalArgumentException e) {
-            logger.error(e.getMessage());
-        }
-
-        return height;
-    }
-
-    /**
-     * Access the height of the image Footer for OpenLayers. With apache commons it is not possible to read the xml root element, therefore this
-     * method uses jdom.
-     *
-     * @return the Height of the Footer
-     */
-    public Integer getImageFooterHeight() {
-        int height = 0;
-
-        if (!ContentServerConfiguration.getInstance().getWatermarkUse()) {
-            return height;
-        }
-
-        // Load Height of the Footer from the config_imageFooter.xml
-        String watermarkConfigFilePath = ContentServerConfiguration.getInstance().getWatermarkConfigFilePath();
-        File fileConfigImageFooter = null;
-        try {
-            fileConfigImageFooter = new File(new URI(watermarkConfigFilePath));
-        } catch (URISyntaxException e) {
-            logger.error("Error while reading the watermark attribut from the " + watermarkConfigFilePath + " file.", e);
-        } catch (IllegalArgumentException e) {
-            logger.error(e.getMessage());
-        }
-        logger.debug("Reading path to the file 'config_imageFooter.xml' from the file: {}", watermarkConfigFilePath);
-        try (FileInputStream fis = new FileInputStream(fileConfigImageFooter)) {
-            DocumentBuilderFactory docBuilderFactory = DocumentBuilderFactory.newInstance();
-            docBuilderFactory.setValidating(false);
-            DocumentBuilder docBuilder = docBuilderFactory.newDocumentBuilder();
-            Document xmldoc = docBuilder.parse(fis);
-
-            // iterate over all nodes and read nodes
-            Node topmostelement = xmldoc.getDocumentElement(); // get uppermost
-            if (topmostelement.getNodeName().equals("watermarks")) {
-                Node child = topmostelement.getFirstChild();
-                while (child != null && !"watermark".equals(child.getNodeName())) {
-                    child = child.getNextSibling();
-                }
-                if (child != null) {
-                    topmostelement = child;
-                }
-            }
-            if (!topmostelement.getNodeName().equals("watermark")) {
-                logger.error("Don't get correct xml response - topelement is NOT <watermark>");
-            }
-
-            // iterate over attributes
-            NamedNodeMap nnm = topmostelement.getAttributes();
-            if (nnm != null) {
-                Node heightnode = nnm.getNamedItem("height"); // read heigth
-
-                if (heightnode != null) {
-                    String value = heightnode.getNodeValue();
-                    try {
-                        height = Integer.parseInt(value);
-                        logger.debug("Red '{}px' for the footer from the {} file.", height, watermarkConfigFilePath);
-                    } catch (Exception e) {
-                        logger.error("Invalid value for watermark's height.");
-                    }
-                }
-            }
-        } catch (FileNotFoundException e) {
-            logger.error(e.getMessage());
-        } catch (IOException e) {
-            logger.error("Can't read XML configuration for Watermark stream due to {}", e.getMessage());
-        } catch (ParserConfigurationException e) {
-            logger.error("Can't parse xml configuration file.", e);
-        } catch (SAXException e) {
-            logger.error("Error in xml file.", e);
-        } catch (IllegalArgumentException e) {
-            logger.error(e.getMessage());
-        }
-
-        return height;
     }
 
     /**

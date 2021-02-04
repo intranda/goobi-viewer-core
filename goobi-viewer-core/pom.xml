@@ -81,9 +81,9 @@
 
 		<!-- intranda libraries -->
 		<alto.version>1.5.5</alto.version>
-		<contentserver.version>2.6.0-SNAPSHOT</contentserver.version>
+		<contentserver.version>2.6.0</contentserver.version>
 		<tei-conversion.version>1.2.0</tei-conversion.version>
-		<iiif-api-model.version>1.10.0-SNAPSHOT</iiif-api-model.version>
+		<iiif-api-model.version>1.10.0</iiif-api-model.version>
 		<normdataimporter.version>1.5.2</normdataimporter.version>
 
         <!-- other libraries -->
@@ -624,7 +624,13 @@
 		<dependency>
 			<groupId>xerces</groupId>
 			<artifactId>xercesImpl</artifactId>
-			<version>${xerces.version}</version>
+            <version>${xerces.version}</version>
+			<exclusions>
+				<exclusion>
+					<groupId>xml-apis</groupId>
+					<artifactId>xml-apis</artifactId>
+				</exclusion>
+            </exclusions>
 		</dependency>
 		<dependency>
 			<groupId>xerces</groupId>
@@ -697,7 +703,7 @@
 							<goal>analyze-only</goal>
 						</goals>
 						<configuration>
-							<failOnWarning>false</failOnWarning>
+							<failOnWarning>true</failOnWarning>
 							<ignoredUnusedDeclaredDependencies>
 								<!-- JSTL is used within JSF for example c:forEach -->
 								<ignoredUnusedDeclaredDependency>javax.servlet:jstl</ignoredUnusedDeclaredDependency>
