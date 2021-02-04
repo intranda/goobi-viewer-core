@@ -2497,23 +2497,6 @@ public class ViewManager implements Serializable {
 
     /**
      * <p>
-     * getCurrentFooterHeight.
-     * </p>
-     *
-     * @return a int.
-     * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
-     * @throws io.goobi.viewer.exceptions.DAOException if any.
-     */
-    public int getCurrentFooterHeight() throws IndexUnreachableException, DAOException {
-        PhysicalElement currentPage = getCurrentPage();
-        if (currentPage != null) {
-            return currentPage.getImageFooterHeight(rotate);
-        }
-        return 0;
-    }
-
-    /**
-     * <p>
      * Setter for the field <code>zoomSlider</code>.
      * </p>
      *
