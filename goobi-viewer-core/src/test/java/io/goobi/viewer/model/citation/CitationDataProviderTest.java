@@ -21,10 +21,10 @@ public class CitationDataProviderTest extends AbstractTest {
     @Test
     public void addItemData_shouldAddItemDataCorrectly() throws Exception {
         Map<String, List<String>> fields = new HashMap<>();
-        fields.put(Citation.AUTHOR, Arrays.asList(new String[] { "Zahn, Timothy" }));
-        fields.put(Citation.TITLE, Collections.singletonList("Thrawn"));
-        fields.put(Citation.ISSUED, Collections.singletonList("2017-04-11"));
-        fields.put(Citation.ISBN, Collections.singletonList("9780606412148"));
+        fields.put(CitationDataProvider.AUTHOR, Arrays.asList(new String[] { "Zahn, Timothy" }));
+        fields.put(CitationDataProvider.TITLE, Collections.singletonList("Thrawn"));
+        fields.put(CitationDataProvider.ISSUED, Collections.singletonList("2017-04-11"));
+        fields.put(CitationDataProvider.ISBN, Collections.singletonList("9780606412148"));
 
         CitationDataProvider provider = new CitationDataProvider();
         provider.addItemData("id", fields, CSLType.BOOK);

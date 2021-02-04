@@ -957,18 +957,23 @@
         <sidebarRssFeed display="false" />
 
         <sidebarWidgetUsage display="false">
-                <licenseText>
-                    <metadata label="MD_LICENSETEXT" value="MASTERVALUE_LICENSETEXT">
-                        <param type="field" key="LABEL" />
-                        <param type="translatedfield" key="ACCESSCONDITION" />
-                    </metadata>
-                </licenseText>
-                <page>
-                    <!-- displayLinkToJpegImage: Enables JPEG image download links for pages. Default is false.  -->
-                    <displayLinkToJpegImage maxSize="2000">true</displayLinkToJpegImage>
-                    <!-- displayLinkToJpegImage: Enables TIFF image download links for pages. Default is false.  -->
-                    <displayLinkToMasterImage maxSize="max">true</displayLinkToMasterImage>
-                </page>
+            <licenseText>
+                <metadata label="MD_LICENSETEXT" value="MASTERVALUE_LICENSETEXT">
+                    <param type="field" key="LABEL" />
+                    <param type="translatedfield" key="ACCESSCONDITION" />
+                </metadata>
+            </licenseText>
+            <page>
+                <!-- displayLinkToJpegImage: Enables JPEG image download links for pages. Default is false.  -->
+                <displayLinkToJpegImage maxSize="2000">true</displayLinkToJpegImage>
+                <!-- displayLinkToJpegImage: Enables TIFF image download links for pages. Default is false.  -->
+                <displayLinkToMasterImage maxSize="max">true</displayLinkToMasterImage>
+            </page>
+            <citationStyles>
+                <style>mla</style>
+                <style>apa</style>
+                <style>harvard</style>
+            </citationStyles>
         </sidebarWidgetUsage>
 
 		<!-- page: if false, the image view is hidden -->

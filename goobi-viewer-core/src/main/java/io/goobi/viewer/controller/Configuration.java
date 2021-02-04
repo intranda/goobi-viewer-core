@@ -726,6 +726,15 @@ public final class Configuration extends AbstractConfiguration {
     }
 
     /**
+     * 
+     * @return List of available citation style names
+     * @should return all configured values
+     */
+    public List<String> getSidebarWidgetUsageCitationStyles() {
+        return getLocalList("sidebar.sidebarWidgetUsage.citationStyles.style", Collections.emptyList());
+    }
+
+    /**
      * Get the metadata configuration for the license text in the usage widget
      *
      * @return the metadata configuration for the license text in the usage widget

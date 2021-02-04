@@ -32,16 +32,6 @@ public class Citation {
 
     private static final Logger logger = LoggerFactory.getLogger(Citation.class);
 
-    public static final String AUTHOR = "author";
-    public static final String DOI = "DOI";
-    public static final String ISBN = "ISBN";
-    public static final String ISSN = "ISSN";
-    public static final String ISSUED = "issued";
-    public static final String LANGUAGE = "language";
-    public static final String PUBLISHER_PLACE = "placepublish";
-    public static final String PUBLISHER = "publisher";
-    public static final String TITLE = "title";
-
     private String id;
     private final String style;
     private final CSLType type;

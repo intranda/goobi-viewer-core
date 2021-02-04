@@ -35,10 +35,10 @@ public class CitationTest extends AbstractTest {
     @Test
     public void getCitationString_shouldReturnApaCitationCorrectly() throws Exception {
         Map<String, List<String>> fields = new HashMap<>();
-        fields.put(Citation.AUTHOR, Collections.singletonList("Zahn, Timothy"));
-        fields.put(Citation.TITLE, Collections.singletonList("Thrawn"));
-        fields.put(Citation.ISSUED, Collections.singletonList("2017-04-11"));
-        fields.put(Citation.ISBN, Collections.singletonList("9780606412148"));
+        fields.put(CitationDataProvider.AUTHOR, Collections.singletonList("Zahn, Timothy"));
+        fields.put(CitationDataProvider.TITLE, Collections.singletonList("Thrawn"));
+        fields.put(CitationDataProvider.ISSUED, Collections.singletonList("2017-04-11"));
+        fields.put(CitationDataProvider.ISBN, Collections.singletonList("9780606412148"));
 
         Citation cit = new Citation("id", "apa", CSLType.BOOK, fields);
         String s = cit.getCitationString();
