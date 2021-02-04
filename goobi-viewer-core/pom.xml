@@ -598,7 +598,13 @@
 		<dependency>
 			<groupId>xerces</groupId>
 			<artifactId>xercesImpl</artifactId>
-			<version>${xerces.version}</version>
+            <version>${xerces.version}</version>
+			<exclusions>
+				<exclusion>
+					<groupId>xml-apis</groupId>
+					<artifactId>xml-apis</artifactId>
+				</exclusion>
+            </exclusions>
 		</dependency>
 		<dependency>
 			<groupId>xerces</groupId>
@@ -671,7 +677,7 @@
 							<goal>analyze-only</goal>
 						</goals>
 						<configuration>
-							<failOnWarning>false</failOnWarning>
+							<failOnWarning>true</failOnWarning>
 							<ignoredUnusedDeclaredDependencies>
 								<!-- JSTL is used within JSF for example c:forEach -->
 								<ignoredUnusedDeclaredDependency>javax.servlet:jstl</ignoredUnusedDeclaredDependency>
