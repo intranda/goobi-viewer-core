@@ -184,17 +184,17 @@ public class ApiUrls extends AbstractApiUrlManager {
     public static final String CMS_MEDIA_ITEM_BY_FILE = "/{filename: [^\\/]*\\.\\w{1,4}}";
     public static final String CMS_MEDIA_FILES = "/files";
     public static final String CMS_MEDIA_FILES_FILE = "/files/{filename}";
-    public static final String CMS_MEDIA_FILES_FILE_PDF = "/files/{filename: [^\\/]*\\.(pdf)}";
-    public static final String CMS_MEDIA_FILES_FILE_HTML = "/files/{filename: [^\\/]*\\.(html)}";
+    public static final String CMS_MEDIA_FILES_FILE_PDF = "/files/{filename: (?i)[^\\/]*\\.(pdf)}";
+    public static final String CMS_MEDIA_FILES_FILE_HTML = "/files/{filename: (?i)[^\\/]*\\.(html)}";
     
-    public static final String CMS_MEDIA_FILES_FILE_IMAGE = "/cms/media/files/{filename: [^\\/]*\\.(jpe?g|tiff?|png|gif|jp2)}";
+    public static final String CMS_MEDIA_FILES_FILE_IMAGE = "/cms/media/files/{filename: (?i)[^\\/]*\\.(jpe?g|tiff?|png|gif|jp2)}";
     public static final String CMS_MEDIA_FILES_FILE_IMAGE_IIIF = "/{region}/{size}/{rotation}/{quality}.{format}";
 
     public static final String TEMP_MEDIA_FILES = "/temp/files";
     public static final String TEMP_MEDIA_FILES_FOLDER = "/{folder}";
     public static final String TEMP_MEDIA_FILES_FILE = "/{folder}/{filename}";
     
-    public static final String TEMP_MEDIA_FILES_FILE_IMAGE = "/temp/files/{folder}/{filename: [^\\/]*\\.(jpe?g|tiff?|png|gif|jp2)}";
+    public static final String TEMP_MEDIA_FILES_FILE_IMAGE = "/temp/files/{folder}/{filename: (?i)[^\\/]*\\.(jpe?g|tiff?|png|gif|jp2)}";
     public static final String TEMP_MEDIA_FILES_FILE_IIIF = "/{region}/{size}/{rotation}/{quality}.{format}";
 
 
