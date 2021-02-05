@@ -27,6 +27,9 @@ import io.goobi.viewer.controller.DataManager;
 public class ApiUrls extends AbstractApiUrlManager {
 
     public static final String API = "/api/v1";
+    
+    public static final String CACHE = "/cache";
+    public static final String CACHE_RECORD = "/{pi}";
 
     public static final String INDEXER = "/indexer";
 
