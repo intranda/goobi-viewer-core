@@ -1651,7 +1651,7 @@ public final class Configuration extends AbstractConfiguration {
      * @return a {@link java.lang.String} object.
      */
     public String getOrigContentFolder() {
-        return getLocalString("origContentFolder");
+        return getLocalString("origContentFolder", "source");
     }
 
     /**
@@ -1675,7 +1675,7 @@ public final class Configuration extends AbstractConfiguration {
      * @return a {@link java.lang.String} object.
      */
     public String getAltoFolder() {
-        return getLocalString("altoFolder");
+        return getLocalString("altoFolder", "alto");
     }
 
     /**
@@ -1687,7 +1687,7 @@ public final class Configuration extends AbstractConfiguration {
      * @return a {@link java.lang.String} object.
      */
     public String getAltoCrowdsourcingFolder() {
-        return getLocalString("altoCrowdsourcingFolder");
+        return getLocalString("altoCrowdsourcingFolder", "alto_crowd");
     }
 
     /**
@@ -1699,7 +1699,7 @@ public final class Configuration extends AbstractConfiguration {
      * @return a {@link java.lang.String} object.
      */
     public String getAbbyyFolder() {
-        return getLocalString("abbyyFolder");
+        return getLocalString("abbyyFolder", "abbyy");
     }
 
     /**
@@ -1711,7 +1711,7 @@ public final class Configuration extends AbstractConfiguration {
      * @return a {@link java.lang.String} object.
      */
     public String getFulltextFolder() {
-        return getLocalString("fulltextFolder");
+        return getLocalString("fulltextFolder", "fulltext");
     }
 
     /**
@@ -1723,7 +1723,7 @@ public final class Configuration extends AbstractConfiguration {
      * @return a {@link java.lang.String} object.
      */
     public String getFulltextCrowdsourcingFolder() {
-        return getLocalString("fulltextCrowdsourcingFolder");
+        return getLocalString("fulltextCrowdsourcingFolder", "fulltext_crowd");
     }
 
     /**
@@ -1735,7 +1735,7 @@ public final class Configuration extends AbstractConfiguration {
      * @return a {@link java.lang.String} object.
      */
     public String getTeiFolder() {
-        return getLocalString("teiFolder");
+        return getLocalString("teiFolder", "tei");
     }
 
     /**
@@ -1747,7 +1747,7 @@ public final class Configuration extends AbstractConfiguration {
      * @return a {@link java.lang.String} object.
      */
     public String getCmdiFolder() {
-        return getLocalString("cmdiFolder");
+        return getLocalString("cmdiFolder", "cmdi");
     }
 
     /**
