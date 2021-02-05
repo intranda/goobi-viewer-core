@@ -34,10 +34,8 @@ import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -81,10 +79,10 @@ import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.messages.Messages;
 import io.goobi.viewer.model.calendar.CalendarView;
 import io.goobi.viewer.model.citation.Citation;
-import io.goobi.viewer.model.citation.CitationDataProvider;
 import io.goobi.viewer.model.citation.CitationTools;
 import io.goobi.viewer.model.metadata.Metadata;
 import io.goobi.viewer.model.metadata.MetadataTools;
+import io.goobi.viewer.model.metadata.MetadataValue;
 import io.goobi.viewer.model.search.SearchHelper;
 import io.goobi.viewer.model.security.AccessConditionUtils;
 import io.goobi.viewer.model.security.IPrivilegeHolder;
@@ -3447,21 +3445,31 @@ public class ViewManager implements Serializable {
      * 
      * @return Generated citation string for the selected style
      * @throws IOException
+     * @throws PresentationException
+     * @throws IndexUnreachableException
      */
-    public String getCitationString() throws IOException {
+    public String getCitationString() throws IOException, IndexUnreachableException, PresentationException {
         if (StringUtils.isEmpty(citationStyle)) {
-            return "empty";
+            List<String> availableStyles = DataManager.getInstance().getConfiguration().getSidebarWidgetUsageCitationStyles();
+            if (availableStyles.isEmpty()) {
+                return "";
+            }
+            citationStyle = availableStyles.get(0);
         }
 
         CSL csl = DataManager.getInstance().getCitationProcessor(citationStyle);
-        Map<String, List<String>> fields = new HashMap<>();
-        // TODO
-        fields.put(CitationDataProvider.TITLE, Collections.singletonList(topDocument.getMetadataValue("MD_TITLE")));
-        fields.put(CitationDataProvider.ISSUED, Collections.singletonList(topDocument.getMetadataValue("MD_YEARPUBLISH")));
-        fields.put(CitationDataProvider.AUTHOR, topDocument.getMetadataValues("MD_CREATOR"));
-        Citation citation = new Citation(logId, citationStyle, CitationTools.getCSLTypeForDocstrct(topDocument.getDocStructType()), fields);
+        Metadata md = DataManager.getInstance().getConfiguration().getSidebarWidgetUsageCitationSource();
+        md.populate(topDocument, BeanUtils.getLocale());
+        for (MetadataValue val : md.getValues()) {
+            if (!val.getCitationValues().isEmpty()) {
+                Citation citation = new Citation(logId, citationStyle, CitationTools.getCSLTypeForDocstrct(topDocument.getDocStructType()),
+                        val.getCitationValues());
+                String ret = citation.getCitationString();
+                return ret;
+            }
+        }
 
-        return citation.getCitationString();
+        return "";
     }
 
     /**

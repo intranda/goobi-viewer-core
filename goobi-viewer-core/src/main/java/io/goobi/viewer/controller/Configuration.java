@@ -731,7 +731,26 @@ public final class Configuration extends AbstractConfiguration {
      * @should return all configured values
      */
     public List<String> getSidebarWidgetUsageCitationStyles() {
-        return getLocalList("sidebar.sidebarWidgetUsage.citationStyles.style", Collections.emptyList());
+        return getLocalList("sidebar.sidebarWidgetUsage.citation.styles.style", Collections.emptyList());
+    }
+    
+    /**
+     * 
+     * @return
+     */
+    public Metadata getSidebarWidgetUsageCitationSource() {
+        HierarchicalConfiguration sub = null;
+        try {
+            sub = getLocalConfigurationAt("sidebar.sidebarWidgetUsage.citation.source.metadata");
+        } catch (IllegalArgumentException e) {
+            // no or multiple occurrences 
+        }
+        if (sub != null) {
+            Metadata md = getMetadataFromSubnodeConfig(sub, false);
+            return md;
+        }
+        
+        return new Metadata();
     }
 
     /**

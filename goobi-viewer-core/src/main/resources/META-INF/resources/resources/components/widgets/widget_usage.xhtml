@@ -490,7 +490,8 @@
                         <ui:fragment rendered="#{activeDocumentBean.viewManager.displayCiteLinkWork}">
                             <h:form>
                                 <h:selectOneMenu value="#{activeDocumentBean.viewManager.citationStyle}" immediate="true">
-                                    <f:selectItems var="style" value="#{configurationBean.sidebarWidgetUsageCitationStyles}" />
+                                    <f:selectItems var="style" value="#{configurationBean.sidebarWidgetUsageCitationStyles}"
+                                        itemLabel="#{msg['label__citation_style_'.concat(style)]}" />
                                     <f:ajax render="citationStringOutput" />
                                 </h:selectOneMenu>
                                 <br />
