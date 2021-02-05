@@ -957,18 +957,32 @@
         <sidebarRssFeed display="false" />
 
         <sidebarWidgetUsage display="false">
-                <licenseText>
+            <licenseText>
+                <metadata label="MD_LICENSETEXT" value="MASTERVALUE_LICENSETEXT">
+                    <param type="field" key="LABEL" />
+                    <param type="translatedfield" key="ACCESSCONDITION" />
+                </metadata>
+            </licenseText>
+            <page>
+                <!-- displayLinkToJpegImage: Enables JPEG image download links for pages. Default is false.  -->
+                <displayLinkToJpegImage maxSize="2000">true</displayLinkToJpegImage>
+                <!-- displayLinkToJpegImage: Enables TIFF image download links for pages. Default is false.  -->
+                <displayLinkToMasterImage maxSize="max">true</displayLinkToMasterImage>
+            </page>
+            <citation>
+                <!-- Available citation styles (supported by citeproc) -->
+                <styles>
+                    <style>modern-language-association</style>
+                    <style>apa</style>
+                    <style>harvard</style>
+                </styles>
+                <source>
                     <metadata label="MD_LICENSETEXT" value="MASTERVALUE_LICENSETEXT">
                         <param type="field" key="LABEL" />
                         <param type="translatedfield" key="ACCESSCONDITION" />
                     </metadata>
-                </licenseText>
-                <page>
-                    <!-- displayLinkToJpegImage: Enables JPEG image download links for pages. Default is false.  -->
-                    <displayLinkToJpegImage maxSize="2000">true</displayLinkToJpegImage>
-                    <!-- displayLinkToJpegImage: Enables TIFF image download links for pages. Default is false.  -->
-                    <displayLinkToMasterImage maxSize="max">true</displayLinkToMasterImage>
-                </page>
+                </source>
+            </citation>
         </sidebarWidgetUsage>
 
 		<!-- page: if false, the image view is hidden -->

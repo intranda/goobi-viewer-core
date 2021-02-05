@@ -72,6 +72,7 @@ public class SolrConstants {
         ORIGININFO,
         RECORD,
         SHAPE,
+        CITATION,
         OTHER;
 
         public static MetadataGroupType getByName(String name) {
@@ -89,6 +90,8 @@ public class SolrConstants {
                         return SUBJECT;
                     case "ORIGININFO":
                         return ORIGININFO;
+                    case "CITATION":
+                        return CITATION;
                     case "OTHER":
                         return OTHER;
                     default:
@@ -315,7 +318,7 @@ public class SolrConstants {
     public static final String BOOL_IMAGEAVAILABLE = "BOOL_IMAGEAVAILABLE";
     /** Field containing a list of dates as year **/
     public static final String YEAR = "YEAR";
-    /** Single field containing a date as year for sorting**/
+    /** Single field containing a date as year for sorting **/
     public static final String SORTNUM_YEAR = "SORTNUM_YEAR";
 
 }

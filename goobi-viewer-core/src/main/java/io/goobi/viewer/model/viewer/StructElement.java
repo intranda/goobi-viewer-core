@@ -90,6 +90,7 @@ public class StructElement extends StructElementStub implements Comparable<Struc
      * Empty constructor for unit tests.
      */
     public StructElement() {
+        super();
     }
 
     /**
@@ -687,7 +688,7 @@ public class StructElement extends StructElementStub implements Comparable<Struc
      * @return
      * @throws IndexUnreachableException
      * @throws DAOException
-     * @throws RecordNotFoundException 
+     * @throws RecordNotFoundException
      */
     public boolean isAccessPermissionGenerateIiifManifest() throws IndexUnreachableException, DAOException, RecordNotFoundException {
         return isAccessPermission(IPrivilegeHolder.PRIV_GENERATE_IIIF_MANIFEST);

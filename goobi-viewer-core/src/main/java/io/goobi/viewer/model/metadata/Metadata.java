@@ -63,6 +63,8 @@ public class Metadata implements Serializable {
 
     private static final Logger logger = LoggerFactory.getLogger(Metadata.class);
 
+    /** ID of the owning StructElement. Used for constructing unique value IDs, where required. */
+    private String ownerId;
     /** Label from messages.properties. */
     private final String label;
     /** Value from messages.properties (with placeholders) */
@@ -72,6 +74,8 @@ public class Metadata implements Serializable {
     private final List<MetadataValue> values = new ArrayList<>();
     private final List<MetadataParameter> params = new ArrayList<>();
     private final boolean group;
+    private String ownerDocstrctType;
+    private String citationTemplate;
 
     /**
      * <p>
@@ -79,6 +83,7 @@ public class Metadata implements Serializable {
      * </p>
      */
     public Metadata() {
+        this.ownerId = "";
         this.label = "";
         this.masterValue = "";
         this.type = 0;
@@ -91,14 +96,16 @@ public class Metadata implements Serializable {
      * Constructor for Metadata.
      * </p>
      *
+     * @param ownerId
      * @param label a {@link java.lang.String} object.
      * @param masterValue a {@link java.lang.String} object.
      * @param paramValue a {@link java.lang.String} object.
      */
-    public Metadata(String label, String masterValue, String paramValue) {
+    public Metadata(String ownerId, String label, String masterValue, String paramValue) {
+        this.ownerId = ownerId;
         this.label = label;
         this.masterValue = masterValue;
-        values.add(new MetadataValue(masterValue));
+        values.add(new MetadataValue(ownerId + "_" + 0, masterValue));
         if (paramValue != null) {
             values.get(0).getParamValues().add(new ArrayList<>());
             values.get(0).getParamValues().get(0).add(paramValue);
@@ -119,15 +126,16 @@ public class Metadata implements Serializable {
      * @param paramValue a {@link java.lang.String} object.
      * @param locale
      */
-    public Metadata(String label, String masterValue, MetadataParameter param, String paramValue, Locale locale) {
+    public Metadata(String ownerId, String label, String masterValue, MetadataParameter param, String paramValue, Locale locale) {
+        this.ownerId = ownerId;
         this.label = label;
         this.masterValue = masterValue;
         params.add(param);
-        values.add(new MetadataValue(masterValue));
+        values.add(new MetadataValue(ownerId + "_" + 0, masterValue));
         if (paramValue != null) {
             setParamValue(0, 0, Collections.singletonList(paramValue), label, null, null, null, locale);
-//            values.get(0).getParamValues().add(new ArrayList<>());
-//            values.get(0).getParamValues().get(0).add(paramValue);
+            //            values.get(0).getParamValues().add(new ArrayList<>());
+            //            values.get(0).getParamValues().get(0).add(paramValue);
         }
         this.type = 0;
         this.number = -1;
@@ -301,7 +309,7 @@ public class Metadata implements Serializable {
      * @should add multivalued param values correctly
      * @should set group type correctly
      */
-    public Metadata setParamValue(int valueIndex, int paramIndex, List<String> inValues, String label, String url, Map<String, String> options,
+    public void setParamValue(int valueIndex, int paramIndex, List<String> inValues, String label, String url, Map<String, String> options,
             String groupType, Locale locale) {
         // logger.trace("setParamValue: {}", label);
         if (inValues == null) {
@@ -310,10 +318,12 @@ public class Metadata implements Serializable {
 
         // Adopt indexes to list sizes, if necessary
         while (values.size() - 1 < valueIndex) {
-            values.add(new MetadataValue(masterValue));
+            values.add(new MetadataValue(ownerId + "_" + valueIndex, masterValue));
         }
         MetadataValue mdValue = values.get(valueIndex);
         mdValue.setGroupType(groupType);
+        mdValue.setDocstrct(ownerDocstrctType);
+        mdValue.setCitationStyle(citationTemplate);
         int origParamIndex = paramIndex;
         while (mdValue.getParamValues().size() < paramIndex) {
             paramIndex--;
@@ -321,11 +331,11 @@ public class Metadata implements Serializable {
 
         if (paramIndex >= params.size()) {
             logger.warn("No params defined");
-            return this;
+            return;
         }
 
         if (inValues.isEmpty()) {
-            return this;
+            return;
         }
 
         for (String value : inValues) {
@@ -444,6 +454,18 @@ public class Metadata implements Serializable {
                         value = html;
                     }
                     break;
+                case CITEPROC:
+                    String citationKey = param.getDestination();
+                    if (StringUtils.isNotEmpty(citationKey)) {
+                        List<String> values = mdValue.getCitationValues().get(citationKey);
+                        if (values == null) {
+                            values = new ArrayList<>();
+                            mdValue.getCitationValues().put(citationKey, values);
+                        }
+                        values.add(value);
+                    }
+                    value = MetadataParameterType.CITEPROC.getKey();
+                    break;
                 default:
                     // Values containing random HTML-like elements (e.g. 'V<a>e') will break the table, therefore escape the string
                     value = StringEscapeUtils.escapeHtml4(value);
@@ -466,8 +488,6 @@ public class Metadata implements Serializable {
                 mdValue.getParamUrls().add(paramIndex, url);
             }
         }
-        
-        return this;
     }
 
     /**
@@ -547,17 +567,20 @@ public class Metadata implements Serializable {
      * @should return false if at least one paramValue is not empty
      */
     public boolean isBlank() {
-        if (values != null) {
-            for (MetadataValue value : values) {
-                if (value.getParamValues().isEmpty()) {
-                    return true;
-                }
-                for (List<String> paramValues : value.getParamValues())
-                    for (String paramValue : paramValues) {
-                        if (StringUtils.isNotBlank(paramValue)) {
-                            return false;
-                        }
+        if (values == null || values.isEmpty()) {
+            return true;
+        }
+
+        for (MetadataValue value : values) {
+            if (value.getParamValues().isEmpty()) {
+                return true;
+            }
+            for (List<String> paramValues : value.getParamValues()) {
+                for (String paramValue : paramValues) {
+                    if (StringUtils.isNotBlank(paramValue)) {
+                        return false;
                     }
+                }
             }
         }
 
@@ -574,154 +597,168 @@ public class Metadata implements Serializable {
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @should use default value of no value found
      */
-    @SuppressWarnings("unchecked")
     public boolean populate(StructElement se, Locale locale) throws IndexUnreachableException, PresentationException {
         if (se == null) {
             return false;
         }
+        ownerId = String.valueOf(se.getLuceneId());
+        ownerDocstrctType = se.getDocStructType();
+
+        // Grouped metadata
+        if (group) {
+            return populateGroup(se, locale);
+        }
+
+        // Regular, atomic metadata
+        boolean found = false;
+        for (MetadataParameter param : params) {
+            // Skip topstruct-only parameters, if this is not a topstruct or anchr/group
+            if (param.isTopstructOnly() && !se.isWork() && !se.isAnchor() && !se.isGroup()) {
+                continue;
+            }
+
+            int count = 0;
+            int indexOfParam = params.indexOf(param);
+            // logger.trace("{} ({})", param.toString(), indexOfParam);
+            List<String> values = null;
+            if (MetadataParameterType.TOPSTRUCTFIELD.equals(param.getType()) && se.getTopStruct() != null) {
+                // Topstruct values as the first choice
+                values = getMetadata(se.getTopStruct().getMetadataFields(), param.getKey(), locale);
+            } else {
+                // Own values
+                values = getMetadata(se.getMetadataFields(), param.getKey(), locale);
+            }
+            if (values == null && se.getTopStruct() != null && param.isTopstructValueFallback()) {
+                // Topstruct values as a fallback
+                values = getMetadata(se.getTopStruct().getMetadataFields(), param.getKey(), locale);
+            }
+            if (values != null) {
+                for (String value : values) {
+                    // logger.trace("{}: {}", param.getKey(), mdValue);
+                    if (count >= number && number != -1) {
+                        break;
+                    }
+                    found = true;
+                    // Apply replace rules
+                    if (!param.getReplaceRules().isEmpty()) {
+                        value = MetadataTools.applyReplaceRules(value, param.getReplaceRules(), se.getPi());
+                    }
+                    setParamValue(count, indexOfParam, Collections.singletonList(value), param.getKey(), null, null, null, locale);
+                    count++;
+                }
+            }
+            if (values == null && param.getDefaultValue() != null) {
+                // logger.trace("No value found for {} (index {}), using default value '{}'", param.getKey(), indexOfParam, param.getDefaultValue());
+                setParamValue(0, indexOfParam, Collections.singletonList(param.getDefaultValue()), param.getKey(), null, null, null, locale);
+                found = true;
+                count++;
+            }
+            if (param.getType().equals(MetadataParameterType.LINK_MAPS) && found) {
+                for (MetadataValue mdValue : this.getValues()) {
+                    if (mdValue.getParamValues().size() < 2) {
+                        mdValue.getParamValues().add(new ArrayList<>());
+                        mdValue.getParamValues().get(0).add("");
+                        mdValue.getParamValues().add(2, new ArrayList<>());
+                        mdValue.getParamValues().get(2).add(0, param.getKey());
+                    } else {
+                        mdValue.getParamValues().get(2).add(0, param.getKey());
+                    }
+                }
+
+                // logger.debug("populate theme: type="+param.getType() + " key=" +param.getKey() + "  count="+count );
+                found = true;
+                // setParamValue(count, getParams().indexOf(param), param.getKey());
+                count++;
+            }
+        }
+
+        return found;
+    }
+
+    /**
+     * 
+     * @param se
+     * @param locale
+     * @return
+     * @throws IndexUnreachableException
+     */
+    boolean populateGroup(StructElement se, Locale locale) throws IndexUnreachableException {
         boolean found = false;
 
-        if (group) {
-            // Metadata grouped in an own Solr document
-            if (se.getMetadataFields().get(label) == null) {
-                // If there is no plain value in the docstruct doc, then there shouldn't be a metadata Solr doc. In this case save time by skipping this field.
-                return false;
-            }
-            if (se.getMetadataFields().get(SolrConstants.IDDOC) == null || se.getMetadataFields().get(SolrConstants.IDDOC).isEmpty()) {
-                return false;
-            }
-            String iddoc = se.getMetadataFields().get(SolrConstants.IDDOC).get(0);
-            try {
-                SolrDocumentList groupedMdList = MetadataTools.getGroupedMetadata(iddoc, '+' + SolrConstants.LABEL + ":" + label);
-                int count = 0;
-                for (SolrDocument doc : groupedMdList) {
-                    Map<String, List<String>> groupFieldMap = new HashMap<>();
-                    // Collect values for all fields in this metadata doc
-                    for (String fieldName : doc.getFieldNames()) {
-                        List<String> values = groupFieldMap.get(fieldName);
-                        if (values == null) {
-                            values = new ArrayList<>();
-                            groupFieldMap.put(fieldName, values);
-                        }
-                        // logger.trace(fieldName + ":" + doc.getFieldValue(fieldName).toString());
-                        if (doc.getFieldValue(fieldName) instanceof String) {
-                            String value = (String) doc.getFieldValue(fieldName);
-                            values.add(value);
-                        } else if (doc.getFieldValue(fieldName) instanceof Collection) {
-                            values.addAll((List<String>) doc.getFieldValue(fieldName));
-                        }
+        // Metadata grouped in an own Solr document
+        if (se.getMetadataFields().get(label) == null) {
+            // If there is no plain value in the docstruct doc, then there shouldn't be a metadata Solr doc. In this case save time by skipping this field.
+            return false;
+        }
+        if (se.getMetadataFields().get(SolrConstants.IDDOC) == null || se.getMetadataFields().get(SolrConstants.IDDOC).isEmpty()) {
+            return false;
+        }
+        String iddoc = se.getMetadataFields().get(SolrConstants.IDDOC).get(0);
+        try {
+            SolrDocumentList groupedMdList = MetadataTools.getGroupedMetadata(iddoc, '+' + SolrConstants.LABEL + ":" + label);
+            int count = 0;
+            for (SolrDocument doc : groupedMdList) {
+                Map<String, List<String>> groupFieldMap = new HashMap<>();
+                // Collect values for all fields in this metadata doc
+                for (String fieldName : doc.getFieldNames()) {
+                    List<String> values = groupFieldMap.get(fieldName);
+                    if (values == null) {
+                        values = new ArrayList<>();
+                        groupFieldMap.put(fieldName, values);
                     }
-                    String groupType = null;
-                    if (groupFieldMap.containsKey(SolrConstants.METADATATYPE) && !groupFieldMap.get(SolrConstants.METADATATYPE).isEmpty()) {
-                        groupType = groupFieldMap.get(SolrConstants.METADATATYPE).get(0);
-                    }
-                    // Populate params for which metadata values have been found
-                    for (int i = 0; i < params.size(); ++i) {
-                        MetadataParameter param = params.get(i);
-                        // logger.trace("param: {}", param.getKey());
+                    // logger.trace(fieldName + ":" + doc.getFieldValue(fieldName).toString());
+                    if (doc.getFieldValue(fieldName) instanceof String) {
+                        String value = (String) doc.getFieldValue(fieldName);
+                        values.add(value);
+                    } else if (doc.getFieldValue(fieldName) instanceof Collection) {
+                        values.addAll(SolrSearchIndex.getMetadataValues(doc, fieldName));
 
-                        // Skip topstruct-only parameters, if this is not a topstruct or anchor/group
-                        if (param.isTopstructOnly() && !se.isWork() && !se.isAnchor() && !se.isGroup()) {
-                            continue;
-                        }
-                        if (groupFieldMap.get(param.getKey()) != null) {
-                            found = true;
-                            Map<String, String> options = new HashMap<>();
-                            StringBuilder sbValue = new StringBuilder();
-                            List<String> values = new ArrayList<>(groupFieldMap.get(param.getKey()).size());
-                            for (String mdValue : groupFieldMap.get(param.getKey())) {
-                                if (sbValue.length() == 0) {
-                                    sbValue.append(mdValue);
-                                }
-                                values.add(mdValue);
-                            }
-                            String paramValue = sbValue.toString();
-                            if (param.getKey().startsWith(NormDataImporter.FIELD_URI)) {
-                                //                                    Map<String, String> normDataUrl = new HashMap<>();
-                                //                                    normDataUrl.put(param.getKey(), paramValue);
-                                // logger.trace("found normdata uri: {}", normDataUrl.toString());
-                                //                                    setParamValue(count, i, values, null, null, normDataUrl, groupType, locale);
-                                if (doc.getFieldValue("NORM_TYPE") != null) {
-                                    options.put("NORM_TYPE", SolrSearchIndex.getSingleFieldStringValue(doc, "NORM_TYPE"));
-                                }
-                            }
-                            setParamValue(count, i, values, param.getKey(), null, options, groupType, locale);
-                        } else if (param.getDefaultValue() != null) {
-                            logger.debug("No value found for {}, using default value", param.getKey());
-                            setParamValue(0, i, Collections.singletonList(param.getDefaultValue()), param.getKey(), null, null, groupType, locale);
-                            found = true;
-                        } else {
-                            setParamValue(count, i, Collections.singletonList(""), null, null, null, groupType, locale);
-                        }
                     }
-                    count++;
                 }
-                // logger.trace("GROUP QUERY END");
-            } catch (PresentationException e) {
-                logger.debug("PresentationException thrown here: {}", e.getMessage());
-            }
-        } else {
-            // Regular, atomic metadata
-            for (MetadataParameter param : params) {
-                // Skip topstruct-only parameters, if this is not a topstruct or anchr/group
-                if (param.isTopstructOnly() && !se.isWork() && !se.isAnchor() && !se.isGroup()) {
-                    continue;
+                String groupType = null;
+                if (groupFieldMap.containsKey(SolrConstants.METADATATYPE) && !groupFieldMap.get(SolrConstants.METADATATYPE).isEmpty()) {
+                    groupType = groupFieldMap.get(SolrConstants.METADATATYPE).get(0);
                 }
+                // Populate params for which metadata values have been found
+                for (int i = 0; i < params.size(); ++i) {
+                    MetadataParameter param = params.get(i);
+                    // logger.trace("param: {}", param.getKey());
 
-                int count = 0;
-                int indexOfParam = params.indexOf(param);
-                // logger.trace("{} ({})", param.toString(), indexOfParam);
-                List<String> mdValues = null;
-                if (MetadataParameterType.TOPSTRUCTFIELD.equals(param.getType()) && se.getTopStruct() != null) {
-                    // Topstruct values as the first choice
-                    mdValues = getMetadata(se.getTopStruct().getMetadataFields(), param.getKey(), locale);
-                } else {
-                    // Own values
-                    mdValues = getMetadata(se.getMetadataFields(), param.getKey(), locale);
-                }
-                if (mdValues == null && se.getTopStruct() != null && param.isTopstructValueFallback()) {
-                    // Topstruct values as a fallback
-                    mdValues = getMetadata(se.getTopStruct().getMetadataFields(), param.getKey(), locale);
-                }
-                if (mdValues != null) {
-                    for (String mdValue : mdValues) {
-                        // logger.trace("{}: {}", param.getKey(), mdValue);
-                        if (count >= number && number != -1) {
-                            break;
-                        }
+                    // Skip topstruct-only parameters, if this is not a topstruct or anchor/group
+                    if (param.isTopstructOnly() && !se.isWork() && !se.isAnchor() && !se.isGroup()) {
+                        continue;
+                    }
+                    if (groupFieldMap.get(param.getKey()) != null) {
                         found = true;
-                        // Apply replace rules
-                        if (!param.getReplaceRules().isEmpty()) {
-                            mdValue = MetadataTools.applyReplaceRules(mdValue, param.getReplaceRules(), se.getPi());
+                        Map<String, String> options = new HashMap<>();
+                        StringBuilder sbValue = new StringBuilder();
+                        List<String> values = new ArrayList<>(groupFieldMap.get(param.getKey()).size());
+                        for (String value : groupFieldMap.get(param.getKey())) {
+                            if (sbValue.length() == 0) {
+                                sbValue.append(value);
+                            }
+                            values.add(value);
                         }
-                        setParamValue(count, indexOfParam, Collections.singletonList(mdValue), param.getKey(), null, null, null, locale);
-                        count++;
+                        String paramValue = sbValue.toString();
+                        if (param.getKey().startsWith(NormDataImporter.FIELD_URI)) {
+                            if (doc.getFieldValue("NORM_TYPE") != null) {
+                                options.put("NORM_TYPE", SolrSearchIndex.getSingleFieldStringValue(doc, "NORM_TYPE"));
+                            }
+                        }
+                        setParamValue(count, i, values, param.getKey(), null, options, groupType, locale);
+                    } else if (param.getDefaultValue() != null) {
+                        logger.debug("No value found for {}, using default value", param.getKey());
+                        setParamValue(0, i, Collections.singletonList(param.getDefaultValue()), param.getKey(), null, null, groupType, locale);
+                        found = true;
+                    } else {
+                        setParamValue(count, i, Collections.singletonList(""), null, null, null, groupType, locale);
                     }
                 }
-                if (mdValues == null && param.getDefaultValue() != null) {
-                    // logger.trace("No value found for {} (index {}), using default value '{}'", param.getKey(), indexOfParam, param.getDefaultValue());
-                    setParamValue(0, indexOfParam, Collections.singletonList(param.getDefaultValue()), param.getKey(), null, null, null, locale);
-                    found = true;
-                    count++;
-                }
-                if (param.getType().equals(MetadataParameterType.LINK_MAPS) && found) {
-                    for (MetadataValue mdValue : this.getValues()) {
-                        if (mdValue.getParamValues().size() < 2) {
-                            mdValue.getParamValues().add(new ArrayList<>());
-                            mdValue.getParamValues().get(0).add("");
-                            mdValue.getParamValues().add(2, new ArrayList<>());
-                            mdValue.getParamValues().get(2).add(0, param.getKey());
-                        } else {
-                            mdValue.getParamValues().get(2).add(0, param.getKey());
-                        }
-                    }
-
-                    // logger.debug("populate theme: type="+param.getType() + " key=" +param.getKey() + "  count="+count );
-                    found = true;
-                    // setParamValue(count, getParams().indexOf(param), param.getKey());
-                    count++;
-                }
+                count++;
             }
+            // logger.trace("GROUP QUERY END");
+        } catch (PresentationException e) {
+            logger.debug("PresentationException thrown here: {}", e.getMessage());
         }
 
         return found;
@@ -790,6 +827,36 @@ public class Metadata implements Serializable {
      */
     public boolean isGroup() {
         return group;
+    }
+
+    /**
+     * @return the ownerDocstrct
+     */
+    public String getOwnerDocstrct() {
+        return ownerDocstrctType;
+    }
+
+    /**
+     * @param ownerDocstrct the ownerDocstrct to set
+     */
+    public void setOwnerDocstrct(String ownerDocstrct) {
+        this.ownerDocstrctType = ownerDocstrct;
+    }
+
+    /**
+     * @return the citationTemplate
+     */
+    public String getCitationTemplate() {
+        return citationTemplate;
+    }
+
+    /**
+     * @param citationTemplate the citationTemplate to set
+     * @return this
+     */
+    public Metadata setCitationTemplate(String citationTemplate) {
+        this.citationTemplate = citationTemplate;
+        return this;
     }
 
     /**

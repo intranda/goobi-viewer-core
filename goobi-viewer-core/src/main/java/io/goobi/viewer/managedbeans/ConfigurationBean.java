@@ -726,7 +726,6 @@ public class ConfigurationBean implements Serializable {
     public boolean isDisplayCrowdsourcingModuleLinks() {
         return DataManager.getInstance().getConfiguration().isDisplayCrowdsourcingModuleLinks();
     }
-    
 
     /**
      * <p>
@@ -741,7 +740,7 @@ public class ConfigurationBean implements Serializable {
         String value = DataManager.getInstance().getConfiguration().getStartYearForTimeline();
         if ("MIN".equals(value)) {
             String subQuery = null;
-            if(StringUtils.isNotBlank(subTheme)) {
+            if (StringUtils.isNotBlank(subTheme)) {
                 subQuery = String.format("+%s:%s", DataManager.getInstance().getConfiguration().getSubthemeDiscriminatorField(), subTheme);
             }
             return SearchHelper.getMinMaxYears(subQuery)[0];
@@ -754,7 +753,6 @@ public class ConfigurationBean implements Serializable {
         }
     }
 
-    
     /**
      * <p>
      * getTimeMatrixEndYear.
@@ -768,7 +766,7 @@ public class ConfigurationBean implements Serializable {
         String value = DataManager.getInstance().getConfiguration().getEndYearForTimeline();
         if ("MAX".equals(value)) {
             String subQuery = null;
-            if(StringUtils.isNotBlank(subTheme)) {
+            if (StringUtils.isNotBlank(subTheme)) {
                 subQuery = String.format("+%s:%s", DataManager.getInstance().getConfiguration().getSubthemeDiscriminatorField(), subTheme);
             }
             return SearchHelper.getMinMaxYears(subQuery)[1];
@@ -1266,6 +1264,14 @@ public class ConfigurationBean implements Serializable {
     }
 
     /**
+     * 
+     * @return List of available citation style names
+     */
+    public List<String> getSidebarWidgetUsageCitationStyles() {
+        return DataManager.getInstance().getConfiguration().getSidebarWidgetUsageCitationStyles();
+    }
+
+    /**
      * <p>
      * isSubthemeDiscriminatorFieldSet.
      * </p>
@@ -1310,11 +1316,11 @@ public class ConfigurationBean implements Serializable {
     public String getMapBoxToken() {
         return DataManager.getInstance().getConfiguration().getMapBoxToken();
     }
-    
+
     public String getMapBoxUser() {
         return DataManager.getInstance().getConfiguration().getMapBoxUser();
     }
-    
+
     public String getMapBoxStyleId() {
         return DataManager.getInstance().getConfiguration().getMapBoxStyleId();
     }
@@ -1334,7 +1340,7 @@ public class ConfigurationBean implements Serializable {
     public boolean isAnonymousUserEmailAddressValid() {
         return EmailValidator.validateEmailAddress(DataManager.getInstance().getConfiguration().getAnonymousUserEmailAddress());
     }
-    
+
     /**
      * 
      * @return true if default sorting field is 'RANDOM'; false otherwise

@@ -37,6 +37,15 @@
 			<id>intranda-public</id>
 			<url>https://nexus.intranda.com/repository/maven-public</url>
 		</repository>
+        <repository>
+            <id>oss-snapshots-repo</id>
+            <name>Sonatype OSS Maven Repository</name>
+            <url>https://oss.sonatype.org/content/groups/public</url>
+            <snapshots>
+                <enabled>true</enabled>
+                <updatePolicy>always</updatePolicy>
+            </snapshots>
+        </repository>
 	</repositories>
 
 
@@ -79,6 +88,8 @@
 
         <!-- other libraries -->
         <cdi.version>2.0.SP1</cdi.version>
+        <citationstyles.version>20.11</citationstyles.version>
+        <citeproc-java.version>3.0.0-SNAPSHOT</citeproc-java.version>
         <commons-codec.version>1.15</commons-codec.version>
         <commons-collections4.version>4.4</commons-collections4.version>
         <commons-configuration.version>1.10</commons-configuration.version>
@@ -206,6 +217,23 @@
 			<version>${cdi.version}</version>
 			<scope>provided</scope>
 		</dependency>
+        <dependency>
+            <groupId>de.undercouch</groupId>
+            <artifactId>citeproc-java</artifactId>
+            <version>${citeproc-java.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.citationstyles</groupId>
+            <artifactId>styles</artifactId>
+            <version>${citationstyles.version}</version>
+            <scope>runtime</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.citationstyles</groupId>
+            <artifactId>locales</artifactId>
+            <version>${citationstyles.version}</version>
+            <scope>runtime</scope>
+        </dependency>
 		<dependency>
 			<groupId>commons-codec</groupId>
 			<artifactId>commons-codec</artifactId>
@@ -721,6 +749,10 @@
 
 								<!-- javax.annotation is not part of jdk 11 anymore -->
 								<ignoredUnusedDeclaredDependency>javax.annotation:javax.annotation-api</ignoredUnusedDeclaredDependency>
+								
+								<!-- org.citationstyles.* are runtime resources for citeproc -->
+								<ignoredUnusedDeclaredDependency>org.citationstyles:locales</ignoredUnusedDeclaredDependency>
+								<ignoredUnusedDeclaredDependency>org.citationstyles:styles</ignoredUnusedDeclaredDependency>
 							</ignoredUnusedDeclaredDependencies>
 						</configuration>
 					</execution>

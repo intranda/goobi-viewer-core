@@ -481,8 +481,25 @@
                                 #{msg.citeLinkPage}
                            </a>
                         </ui:fragment>
-
                     </div>
+                    
+                    <!-- CITATION RECOMMENDATION -->
+                    <h4 id="titleCiteRecommendation" class="widget-usage__subtitle">#{msg.citeRecommendation}</h4>
+
+                    <div class="widget-usage__citerecommendation">
+                        <ui:fragment rendered="#{activeDocumentBean.viewManager.displayCiteLinkWork}">
+                            <h:form>
+                                <h:selectOneMenu value="#{activeDocumentBean.viewManager.citationStyle}" immediate="true">
+                                    <f:selectItems var="style" value="#{configurationBean.sidebarWidgetUsageCitationStyles}"
+                                        itemLabel="#{msg['label__citation_style_'.concat(style)]}" />
+                                    <f:ajax render="citationStringOutput" />
+                                </h:selectOneMenu>
+                                <br />
+                                <h:outputText id="citationStringOutput" value="#{activeDocumentBean.viewManager.citationString}" escape="false" />
+                            </h:form>
+                        </ui:fragment>
+                    </div>
+                    
                 </div>
             </div>   
             
