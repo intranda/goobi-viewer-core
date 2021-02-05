@@ -32,7 +32,6 @@ import org.apache.solr.common.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import de.unigoettingen.sub.commons.contentlib.exceptions.ContentNotFoundException;
 import de.unigoettingen.sub.commons.util.CacheUtils;
 import io.goobi.viewer.api.rest.bindings.AuthorizationBinding;
 import io.goobi.viewer.api.rest.v1.ApiUrls;
@@ -61,7 +60,7 @@ public class CacheResource {
     @Produces({ MediaType.APPLICATION_JSON })
     @AuthorizationBinding
     @Operation(summary = "Requires an authentication token. Clears cache for main images, thumbnails and PDFs for all records", tags = { "cache" })
-    public Response clearCache(
+    public String clearCache(
             @Parameter(description = "If true, main image content cache will be cleared for all records") @QueryParam("content") boolean content,
             @Parameter(description = "If true, thumbnail cache will be cleared for all records") @QueryParam("thumbs") boolean thumbs,
             @Parameter(description = "If true, PDF cache will be cleared for all records") @QueryParam("pdf") boolean pdf) {
@@ -69,8 +68,7 @@ public class CacheResource {
 
         CacheUtils.emptyCache(content, thumbs, pdf);
 
-        Response resp = Response.ok().build();
-        return resp;
+        return "OK";
     }
 
     /**
@@ -88,7 +86,7 @@ public class CacheResource {
     @ApiResponse(responseCode = "200", description = "Return the number of deleted cache items")
     @AuthorizationBinding
     @Operation(summary = "Requires an authentication token. Clears cache for main images, thumbnails and PDFs for all records", tags = { "cache" })
-    public Response clearCacheForRecord(@Parameter(description = "Record identifier") @PathParam("pi") String pi,
+    public String clearCacheForRecord(@Parameter(description = "Record identifier") @PathParam("pi") String pi,
             @Parameter(description = "If true, main image content cache will be cleared for all records") @QueryParam("content") boolean content,
             @Parameter(description = "If true, thumbnail cache will be cleared for all records") @QueryParam("thumbs") boolean thumbs,
             @Parameter(description = "If true, PDF cache will be cleared for all records") @QueryParam("pdf") boolean pdf) throws IOException {
@@ -100,7 +98,6 @@ public class CacheResource {
 
         int deleted = CacheUtils.deleteFromCache(pi, content, thumbs, pdf);
 
-        Response resp = Response.ok().tag("" + deleted).build();
-        return resp;
+        return String.valueOf(deleted);
     }
 }
