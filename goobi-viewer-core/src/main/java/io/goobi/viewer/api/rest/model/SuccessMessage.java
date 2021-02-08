@@ -22,7 +22,7 @@ package io.goobi.viewer.api.rest.model;
  *
  * @author Florian Alpers
  */
-public class SuccessMessage {
+public class SuccessMessage implements IResponseMessage {
 
     private final boolean success;
     private final String message;
@@ -72,6 +72,7 @@ public class SuccessMessage {
      *
      * @return the message
      */
+    @Override
     public String getMessage() {
         return message;
     }
@@ -88,9 +89,9 @@ public class SuccessMessage {
         }
         if (obj.getClass().equals(this.getClass())) {
             return this.success == ((SuccessMessage) obj).success;
-        } else {
-            return false;
         }
+        
+        return false;
     }
 
 }

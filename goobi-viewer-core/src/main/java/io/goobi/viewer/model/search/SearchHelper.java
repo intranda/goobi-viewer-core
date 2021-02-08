@@ -1450,6 +1450,7 @@ public final class SearchHelper {
         }
 
         logger.trace("getFilteredTerms: {}", bmfc.getField());
+        logger.trace("startsWith: {}", startsWith);
         List<BrowseTerm> ret = new ArrayList<>();
         ConcurrentMap<String, BrowseTerm> terms = new ConcurrentHashMap<>();
 
