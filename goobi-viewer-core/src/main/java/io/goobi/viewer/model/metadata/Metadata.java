@@ -312,8 +312,12 @@ public class Metadata implements Serializable {
     public void setParamValue(int valueIndex, int paramIndex, List<String> inValues, String label, String url, Map<String, String> options,
             String groupType, Locale locale) {
         // logger.trace("setParamValue: {}", label);
-        if (inValues == null) {
-            throw new IllegalArgumentException("inValues may not be null");
+        if (inValues == null || inValues.isEmpty()) {
+            return;
+        }
+        if (paramIndex >= params.size()) {
+            logger.warn("No params defined");
+            return;
         }
 
         // Adopt indexes to list sizes, if necessary
@@ -324,22 +328,9 @@ public class Metadata implements Serializable {
         mdValue.setGroupType(groupType);
         mdValue.setDocstrct(ownerDocstrctType);
         mdValue.setCitationStyle(citationTemplate);
-        int origParamIndex = paramIndex;
-        while (mdValue.getParamValues().size() < paramIndex) {
-            paramIndex--;
-        }
 
-        if (paramIndex >= params.size()) {
-            logger.warn("No params defined");
-            return;
-        }
-
-        if (inValues.isEmpty()) {
-            return;
-        }
-
+        MetadataParameter param = params.get(paramIndex);
         for (String value : inValues) {
-            MetadataParameter param = params.get(paramIndex);
             if (param.getType() == null) {
                 continue;
             }
@@ -455,6 +446,7 @@ public class Metadata implements Serializable {
                     }
                     break;
                 case CITEPROC:
+                    // Use original param index to retrieve the correct destination
                     String citationKey = param.getDestination();
                     if (StringUtils.isNotEmpty(citationKey)) {
                         List<String> values = mdValue.getCitationValues().get(citationKey);
@@ -476,15 +468,29 @@ public class Metadata implements Serializable {
             value = SearchHelper.replaceHighlightingPlaceholders(value);
 
             if (paramIndex >= 0) {
-                MetadataParameter origParam = params.get(origParamIndex);
-                mdValue.getParamLabels().add(paramIndex, label);
-                if (mdValue.getParamValues().size() <= paramIndex) {
-                    mdValue.getParamValues().add(paramIndex, new ArrayList<>());
+                while(mdValue.getParamLabels().size() <= paramIndex) {
+                    mdValue.getParamLabels().add("");
+                }
+                mdValue.getParamLabels().set(paramIndex, label);
+                while (mdValue.getParamValues().size() <= paramIndex) {
+                    mdValue.getParamValues().add(new ArrayList<>());
                 }
                 mdValue.getParamValues().get(paramIndex).add(StringTools.intern(value));
-                mdValue.getParamMasterValueFragments().add(paramIndex, origParam.getMasterValueFragment());
-                mdValue.getParamPrefixes().add(paramIndex, origParam.getPrefix());
-                mdValue.getParamSuffixes().add(paramIndex, origParam.getSuffix());
+                while(mdValue.getParamMasterValueFragments().size() <= paramIndex) {
+                    mdValue.getParamMasterValueFragments().add("");
+                }
+                mdValue.getParamMasterValueFragments().set(paramIndex, param.getMasterValueFragment());
+                while(mdValue.getParamPrefixes().size() <= paramIndex) {
+                    mdValue.getParamPrefixes().add("");
+                }
+                mdValue.getParamPrefixes().add(paramIndex, param.getPrefix());
+                while(mdValue.getParamSuffixes().size() <= paramIndex) {
+                    mdValue.getParamSuffixes().add("");
+                }
+                mdValue.getParamSuffixes().add(paramIndex, param.getSuffix());
+                while(mdValue.getParamUrls().size() <= paramIndex) {
+                    mdValue.getParamUrls().add("");
+                }
                 mdValue.getParamUrls().add(paramIndex, url);
             }
         }
@@ -633,18 +639,33 @@ public class Metadata implements Serializable {
                 values = getMetadata(se.getTopStruct().getMetadataFields(), param.getKey(), locale);
             }
             if (values != null) {
-                for (String value : values) {
-                    // logger.trace("{}: {}", param.getKey(), mdValue);
-                    if (count >= number && number != -1) {
-                        break;
-                    }
+                if (MetadataParameterType.CITEPROC.equals(param.getType())) {
+                    logger.trace(param.getKey() + ":" + values.get(0));
+                    // Use all available values for citation
                     found = true;
                     // Apply replace rules
                     if (!param.getReplaceRules().isEmpty()) {
-                        value = MetadataTools.applyReplaceRules(value, param.getReplaceRules(), se.getPi());
+                        List<String> moddedValues = new ArrayList<>(values.size());
+                        for (String value : values) {
+                            moddedValues.add(MetadataTools.applyReplaceRules(value, param.getReplaceRules(), se.getPi()));
+                        }
+                        values = moddedValues;
                     }
-                    setParamValue(count, indexOfParam, Collections.singletonList(value), param.getKey(), null, null, null, locale);
-                    count++;
+                    setParamValue(0, indexOfParam, values, param.getKey(), null, null, null, locale);
+                } else {
+                    for (String value : values) {
+                        // logger.trace("{}: {}", param.getKey(), mdValue);
+                        if (count >= number && number != -1) {
+                            break;
+                        }
+                        found = true;
+                        // Apply replace rules
+                        if (!param.getReplaceRules().isEmpty()) {
+                            value = MetadataTools.applyReplaceRules(value, param.getReplaceRules(), se.getPi());
+                        }
+                        setParamValue(count, indexOfParam, Collections.singletonList(value), param.getKey(), null, null, null, locale);
+                        count++;
+                    }
                 }
             }
             if (values == null && param.getDefaultValue() != null) {
@@ -673,6 +694,7 @@ public class Metadata implements Serializable {
         }
 
         return found;
+
     }
 
     /**
