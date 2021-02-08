@@ -3462,7 +3462,7 @@ public class ViewManager implements Serializable {
         md.populate(topDocument, BeanUtils.getLocale());
         for (MetadataValue val : md.getValues()) {
             if (!val.getCitationValues().isEmpty()) {
-                Citation citation = new Citation(logId, citationStyle, CitationTools.getCSLTypeForDocstrct(topDocument.getDocStructType()),
+                Citation citation = new Citation(pi, citationStyle, CitationTools.getCSLTypeForDocstrct(topDocument.getDocStructType()),
                         val.getCitationValues());
                 String ret = citation.getCitationString();
                 return ret;
