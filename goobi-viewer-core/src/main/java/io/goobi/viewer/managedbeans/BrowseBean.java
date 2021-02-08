@@ -467,8 +467,7 @@ public class BrowseBean implements Serializable {
             // Get terms for the current page 
             logger.trace("Fetching terms for page {} ({} - {})", currentPage, start, end - 1);
             terms = SearchHelper.getFilteredTerms(currentBmfc, currentStringFilter, filterQuery, 0, SolrSearchIndex.MAX_HITS,
-                    new BrowseTermComparator(locale),
-                    DataManager.getInstance().getConfiguration().isAggregateHits());
+                    new BrowseTermComparator(locale), DataManager.getInstance().getConfiguration().isAggregateHits());
 
             for (int i = start; i < end; ++i) {
                 if(i >= terms.size()) {

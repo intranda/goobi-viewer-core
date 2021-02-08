@@ -26,9 +26,11 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import de.undercouch.citeproc.CSL;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.messages.ViewerResourceBundle;
 import io.goobi.viewer.model.citation.Citation;
+import io.goobi.viewer.model.citation.CitationDataProvider;
 import io.goobi.viewer.model.citation.CitationTools;
 import io.goobi.viewer.model.metadata.MetadataParameter.MetadataParameterType;
 
@@ -57,7 +59,8 @@ public class MetadataValue implements Serializable {
     private String masterValue;
     private String groupType;
     private String docstrct = null;
-    private String citationStyle = null;
+    private CSL citationProcessor = null;
+    private CitationDataProvider citationItemDataProvider = null;
     private String citationString = null;
 
     /**
@@ -102,13 +105,14 @@ public class MetadataValue implements Serializable {
 
             if (MetadataParameterType.CITEPROC.getKey().equals(paramValue)) {
                 // logger.trace("CitePROC value: {}", index);
-                if (StringUtils.isEmpty(citationStyle)) {
-                    return "No citation style configured";
+                if (citationProcessor == null) {
+                    return "No citation processor";
                 }
                 try {
                     if (citationString == null) {
-                        citationString = new Citation(id, citationStyle, CitationTools.getCSLTypeForDocstrct(docstrct), citationValues)
-                                .getCitationString();
+                        citationString = new Citation(id, citationProcessor, citationItemDataProvider, CitationTools.getCSLTypeForDocstrct(docstrct),
+                                citationValues)
+                                        .getCitationString();
                     }
                     return citationString;
                 } catch (IOException e) {
@@ -401,18 +405,20 @@ public class MetadataValue implements Serializable {
     }
 
     /**
-     * @return the citationStyle
-     */
-    public String getCitationStyle() {
-        return citationStyle;
-    }
-
-    /**
      * @param citationStyle the citationStyle to set
      * @return this
      */
-    public MetadataValue setCitationStyle(String citationStyle) {
-        this.citationStyle = citationStyle;
+    public MetadataValue setCitationProcessor(CSL citationProcessor) {
+        this.citationProcessor = citationProcessor;
+        return this;
+    }
+
+    /**
+     * @param citationItemDataProvider the citationItemDataProvider to set
+     * @return this
+     */
+    public MetadataValue setCitationItemDataProvider(CitationDataProvider citationItemDataProvider) {
+        this.citationItemDataProvider = citationItemDataProvider;
         return this;
     }
 

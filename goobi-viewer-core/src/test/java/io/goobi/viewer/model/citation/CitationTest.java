@@ -40,10 +40,10 @@ public class CitationTest extends AbstractTest {
         fields.put(CitationDataProvider.ISSUED, Collections.singletonList("2017-04-11"));
         fields.put(CitationDataProvider.ISBN, Collections.singletonList("9780606412148"));
 
-        Citation cit = new Citation("id", "apa", CSLType.BOOK, fields);
+        CitationProcessorWrapper cpw = new CitationProcessorWrapper();
+        Citation cit = new Citation("id", cpw.getCitationProcessor("apa"), cpw.getCitationItemDataProvider(), CSLType.BOOK, fields);
         String s = cit.getCitationString();
         Assert.assertNotNull(s);
         Assert.assertTrue(s.contains("Zahn, T. (2017-04-11). <span style=\"font-style: italic\">Thrawn</span>."));
     }
-
 }

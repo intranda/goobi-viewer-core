@@ -26,31 +26,35 @@ import de.undercouch.citeproc.CSL;
 import de.undercouch.citeproc.csl.CSLItemData;
 import de.undercouch.citeproc.csl.CSLType;
 import de.undercouch.citeproc.output.Bibliography;
-import io.goobi.viewer.controller.DataManager;
 
 public class Citation {
 
     private static final Logger logger = LoggerFactory.getLogger(Citation.class);
 
     private String id;
-    private final String style;
     private final CSLType type;
     private final Map<String, List<String>> fields;
+    private final CSL processor;
+    private final CitationDataProvider itemDataProvider;
 
     /**
      * Constructor.
      * 
      * @param id
-     * @param style
+     * @param processor
+     * @param itemDataProvider
      * @param type
      * @param fields Map containing metadata fields
      */
-    public Citation(String id, String style, CSLType type, Map<String, List<String>> fields) {
+    public Citation(String id, CSL processor, CitationDataProvider itemDataProvider, CSLType type, Map<String, List<String>> fields) {
         if (id == null) {
             throw new IllegalArgumentException("id may not be null");
         }
-        if (style == null) {
-            throw new IllegalArgumentException("style may not be null");
+        if (processor == null) {
+            throw new IllegalArgumentException("processor may not be null");
+        }
+        if (itemDataProvider == null) {
+            throw new IllegalArgumentException("itemDataProvider may not be null");
         }
         if (type == null) {
             throw new IllegalArgumentException("type may not be null");
@@ -60,49 +64,33 @@ public class Citation {
         }
 
         this.id = id;
-        this.style = style;
+        this.processor = processor;
+        this.itemDataProvider = itemDataProvider;
         this.type = type;
         this.fields = fields;
     }
 
     /**
      * 
-     * @param style
      * @param outputFormat
      * @param items
      * @return
      * @throws IOException
      */
-    Bibliography makeAdhocBibliography(String style, String outputFormat,
+    Bibliography makeAdhocBibliography(String outputFormat,
             CSLItemData... items) throws IOException {
         // logger.trace("makeAdhocBibliography");
 
-        //        CSL csl = new CSL(provider, style);
-        //        logger.trace("CLS created");
-        //        csl.setOutputFormat(outputFormat);
-        //
-        //        String[] ids = new String[items.length];
-        //        for (int i = 0; i < items.length; ++i) {
-        //            ids[i] = items[i].getId();
-        //        }
-        //        csl.registerCitationItems(ids);
-        //
-        //        return csl.makeBibliography();
-
-        CSL csl = DataManager.getInstance().getCitationProcessor(style);
-        if (csl == null) {
-            throw new IllegalStateException("CSL not created for: " + style);
-        }
-        csl.reset();
-        csl.setOutputFormat(outputFormat);
+        processor.reset();
+        processor.setOutputFormat(outputFormat);
         String[] ids = new String[items.length];
         for (int i = 0; i < items.length; ++i) {
             ids[i] = items[i].getId();
             logger.trace("Item data id: {}", items[i].getId());
         }
-        csl.registerCitationItems(ids);
+        processor.registerCitationItems(ids);
 
-        return csl.makeBibliography();
+        return processor.makeBibliography();
     }
 
     /**
@@ -113,13 +101,8 @@ public class Citation {
      */
     public String getCitationString() throws IOException {
         logger.trace("Citation string generation START");
-        //        if (item == null || provider == null) {
-        //            build();
-        //        }
-        //        String ret = CSL.makeAdhocBibliography(style, item).makeString();
-
-        CSLItemData itemData = DataManager.getInstance().getCitationItemDataProvider().addItemData(id, fields, type);
-        String ret = makeAdhocBibliography(style, "html", itemData).makeString();
+        CSLItemData itemData = itemDataProvider.addItemData(id, fields, type);
+        String ret = makeAdhocBibliography("html", itemData).makeString();
 
         logger.trace("Citation string generation END");
         return ret;

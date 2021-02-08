@@ -94,8 +94,8 @@ public final class SolrSearchIndex {
     private static final int MULTILANGUAGE_FIELD_LANGUAGE_GROUP = 2;
     /** Constant <code>MAX_HITS=1000000</code> */
     public static final int MAX_HITS = 1000000;
-    private static final int TIMEOUT_SO = 120000;
-    private static final int TIMEOUT_CONNECTION = 120000;
+    private static final int TIMEOUT_SO = 240000;
+    private static final int TIMEOUT_CONNECTION = 240000;
 
     public boolean initialized = false;
     private long lastPing = 0;
@@ -104,7 +104,7 @@ public final class SolrSearchIndex {
     Map<String, String> dataRepositoryNames = new HashMap<>();
 
     private SolrClient client;
-    
+
     private List<String> solrFields = null;
 
     /**
@@ -1017,9 +1017,7 @@ public final class SolrSearchIndex {
      * @throws PresentationException
      */
     public long getHitCount(String query, List<String> filterQueries) throws IndexUnreachableException, PresentationException {
-        QueryResponse qr =
-                search(query, 0, 0, null, null, null,
-                        filterQueries, null);
+        QueryResponse qr = search(query, 0, 0, null, null, null, filterQueries, null);
         return qr.getResults().getNumFound();
     }
 
@@ -1201,9 +1199,9 @@ public final class SolrSearchIndex {
             throws PresentationException, IndexUnreachableException {
         return searchFacetsAndStatistics(query, filterQueries, facetFields, facetMinCount, null, getFieldStatistics);
     }
-    
+
     public boolean pingSolrIndex() {
-        if(client != null) {
+        if (client != null) {
             try {
                 SolrPingResponse ping = client.ping();
                 return ping.getStatus() < 400;
@@ -1225,16 +1223,16 @@ public final class SolrSearchIndex {
      * @param facetMinCount a int.
      * @param facetPrefix The facet field value must start with these characters. Ignored if null or blank
      * @param getFieldStatistics If true, field statistics will be generated for every facet field.
-     * @should generate facets correctly
-     * @should generate field statistics for every facet field if requested
-     * @should not return any docs
      * @return a {@link org.apache.solr.client.solrj.response.QueryResponse} object.
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
+     * @should generate facets correctly
+     * @should generate field statistics for every facet field if requested
+     * @should not return any docs
      */
     public QueryResponse searchFacetsAndStatistics(String query, List<String> filterQueries, List<String> facetFields, int facetMinCount,
-            String facetPrefix,
-            boolean getFieldStatistics) throws PresentationException, IndexUnreachableException {
+            String facetPrefix, boolean getFieldStatistics) throws PresentationException, IndexUnreachableException {
+        logger.trace("searchFacetsAndStatistics: {}", query);
         SolrQuery solrQuery = new SolrQuery(query);
         solrQuery.setStart(0);
         solrQuery.setRows(0);
@@ -1403,18 +1401,18 @@ public final class SolrSearchIndex {
      * </p>
      *
      * @return a {@link java.util.List} object.
-     * @throws DAOException 
+     * @throws DAOException
      * @throws org.apache.solr.client.solrj.SolrServerException if any.
      * @throws java.io.IOException if any.
      */
     public List<String> getAllFieldNames() throws DAOException {
-        try {            
-            if(this.solrFields == null) {            
+        try {
+            if (this.solrFields == null) {
                 LukeRequest lukeRequest = new LukeRequest();
                 lukeRequest.setNumTerms(0);
                 LukeResponse lukeResponse = lukeRequest.process(client);
                 Map<String, FieldInfo> fieldInfoMap = lukeResponse.getFieldInfo();
-                
+
                 List<String> list = new ArrayList<>();
                 for (String name : fieldInfoMap.keySet()) {
                     FieldInfo info = fieldInfoMap.get(name);
@@ -1425,7 +1423,7 @@ public final class SolrSearchIndex {
                 }
                 this.solrFields = list;
             }
-        } catch(IllegalStateException | SolrServerException | IOException  e) {
+        } catch (IllegalStateException | SolrServerException | IOException e) {
             throw new DAOException("Failed to load SOLR field names: " + e.toString());
         }
 
@@ -1505,9 +1503,10 @@ public final class SolrSearchIndex {
         }
 
         List<String> fieldNames =
-                doc.getFieldNames().stream()
-                .filter(field -> field.equals(key) || field.matches(key + "_LANG_\\w{2,3}"))
-                .collect(Collectors.toList());
+                doc.getFieldNames()
+                        .stream()
+                        .filter(field -> field.equals(key) || field.matches(key + "_LANG_\\w{2,3}"))
+                        .collect(Collectors.toList());
         Map<String, List<String>> map = new HashMap<>(fieldNames.size());
         for (String languageField : fieldNames) {
             String locale = null;
@@ -1718,7 +1717,7 @@ public final class SolrSearchIndex {
             return Optional.empty();
         }
     }
-    
+
     /**
      * <p>
      * getTranslations.
@@ -1743,7 +1742,8 @@ public final class SolrSearchIndex {
      * @param combiner a {@link java.util.function.BinaryOperator} object.
      * @return a {@link java.util.Optional} object.
      */
-    public static Optional<IMetadataValue> getTranslations(String fieldName, StructElement doc, List<Locale> translationLocales, BinaryOperator<String> combiner) {
+    public static Optional<IMetadataValue> getTranslations(String fieldName, StructElement doc, List<Locale> translationLocales,
+            BinaryOperator<String> combiner) {
         Map<String, List<String>> translations = SolrSearchIndex.getMetadataValuesForLanguage(doc, fieldName);
         if (translations.size() > 1) {
             return Optional.of(new MultiLanguageMetadataValue(translations, combiner));
@@ -1800,7 +1800,7 @@ public final class SolrSearchIndex {
 
         return conditions.trim();
     }
-    
+
     /**
      * Solr supports dynamic random_* sorting fields. Each value represents one particular order, so a random number is required.
      * 
