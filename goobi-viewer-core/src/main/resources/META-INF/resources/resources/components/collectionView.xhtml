@@ -19,7 +19,7 @@
                 	<!-- COLLECTIONS -->
                 	<ul class="collection">
                 		<ui:repeat var="browseDcElement" value="#{collection.visibleDcElements}">
-                            <li class="collection__item collection__item--level-#{browseDcElement.level}" style="padding-inline-start: #{browseDcElement.level * 32}px">
+                            <li class="collection__item collection__item--level-#{browseDcElement.level}" style="#{navigationHelper.localeString eq 'ar' or navigationHelper.localeString eq 'iw' ? 'padding-right:' : 'padding-left:'} #{browseDcElement.level * 32}px">
                 				<div class="row">
                                     <div class="col-2 col-sm-1 collection__structure-col">
                                         <!-- STRUCTURE -->

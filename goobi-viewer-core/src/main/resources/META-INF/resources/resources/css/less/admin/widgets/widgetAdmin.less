@@ -62,14 +62,9 @@
     }
 }
 
-
-
-/* test */
-
 .admin-widget {
 	margin-bottom: 0;
 }
-
 
 .admin-widget ul {
 }
@@ -88,19 +83,16 @@
 
 }
 
-
 .admin-widget li {
    transition: all 0.2s ease;
    padding-left: 2.5rem;
    
 }
 
-
 .admin-widget li:hover {
     background-color: #235396;
     padding-left: 3rem;
 }
-
 
 .admin-widget li.active {
     background-color: #235396;
@@ -111,6 +103,24 @@ margin-top: 2rem;
 border-top: none;
 }
 
+@{RTL} {
+	.admin-widget {
+		li {
+			&:hover {
+				padding-left: 0;
+				padding-right: 3rem;
+			}
+			&.active
+			{
+				&::after {
+					right: unset;
+					left: 0;
+					transform: rotate(180deg);
+				}
+			}
+		}
+	}
+}
 
 
 /* BREAKPOINT FOR LARGE DESKTOPS */

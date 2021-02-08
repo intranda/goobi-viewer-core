@@ -1251,6 +1251,56 @@ html[lang="es"] .admin__radio-switch {
 
 /* USER TABLE FADE IN ANIMATION TEST EOL */
 
+@{RTL} {
+	.admin {
+		&__content {
+			margin-left: unset;
+			margin-right: 250px;
+		}
+		&__topbar-right {
+			margin-left: unset;
+			margin-right: auto;
+		}
+		&__topbar {
+			ul {
+				padding-right: 0;
+			}
+		}
+		&__topbar-dropdown {
+			li {
+				padding: .3rem 2rem .3rem .7rem
+			}
+		}
+		&__topbar-add, &__topbar-language, &__topbar-view-frontend-link {
+			.fa {
+				margin-right: unset;
+				margin-left: 0.9rem;
+			}
+		}
+		&__topbar-logout {
+			margin-right: 0;
+			margin-left: 4rem;
+			.fa {
+				margin-left: unset;
+				margin-right: 0.9rem;
+			}
+		}
+		&__title-bar-action {
+			margin-left: unset;
+			margin-right: 4rem;
+		}
+		&__table-img {
+			margin-right: unset;
+			margin-left: 2rem;
+		}
+		dl dd {
+			margin-right: 0;
+		}
+	}
+}
+
+
+
 /* BREAKPOINT FOR LARGE DESKTOPS */
 @media screen and (max-width: @largeBreakpoint) {} 
 

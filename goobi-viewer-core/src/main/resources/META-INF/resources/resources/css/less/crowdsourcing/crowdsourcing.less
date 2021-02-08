@@ -337,6 +337,7 @@
 		padding: 5px 0;
 		display: flex;
 		justify-content: right;
+		align-items: center;
 		div {
 			margin: 5px 20px;
 		}
@@ -382,6 +383,7 @@
 		margin: 0;
 		li {
 			margin: 10px 3px 5px 0;
+			text-align: center;
 		} 
 		span {
 			&:hover {
@@ -576,3 +578,59 @@
 	&__sidebar-access-licence {}
 	&__sidebar-log {}
 }
+
+@{RTL} {
+	.crowdsourcing-annotations {
+		&__main {
+			padding: 0 1.5rem 0 0;
+		}
+		&__top-brand {
+			margin-right: unset;
+			margin-left: auto;
+		}
+		&__top-title {
+			margin-left: unset;
+			margin-right: auto;
+		}
+		&__annotation-action {
+			text-align: unset;
+			text-align: left;
+		}
+		&__log-expand {
+			text-align: left;
+		}
+		&__log-message-input {
+			margin-right: unset;
+			margin-left: 1rem;
+		}
+		&__log-message-entry {
+			&.-from-me {
+				.crowdsourcing-annotations__log-speech-bubble {
+					margin-right: unset;
+					margin-left: 1.8rem;
+					&::before {
+						left: -10px;
+						right: unset;
+						transform: rotate(180deg);
+					}
+					&::after {
+						left: -8px;
+						right: unset;
+						transform: rotate(180deg);
+					}
+	
+				}
+			}
+		}
+		.numeric-paginator {
+			.navigate_prev, .navigate_next {
+				transform: rotate(180deg);
+			}
+		}
+		.login-navigation__user-dropdown {
+			right: unset;
+			left: 0;
+		}
+	}	
+}
+

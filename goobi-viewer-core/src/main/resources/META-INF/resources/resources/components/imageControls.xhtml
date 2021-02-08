@@ -348,7 +348,7 @@
                         <!-- CROWDSOURCING TRANSCRIPTION MODULE -->
                         <ui:fragment rendered="#{configurationBean.displayCrowdsourcingModuleLinks}">
                             <ui:fragment rendered="#{navigationHelper.currentPage == 'object'}">
-                                <li class="image-controls__option">
+                                <li class="image-controls__option -ltr">
                                     <a href="#{navigationHelper.applicationUrl}crowd/#{activeDocumentBean.viewManager.pi}/#{activeDocumentBean.viewManager.currentImageNo}">#{msg.action__crowdsourcing_participate}!</a>
                                 </li>
                             </ui:fragment>
