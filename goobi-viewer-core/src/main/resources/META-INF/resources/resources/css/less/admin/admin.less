@@ -1296,6 +1296,43 @@ html[lang="es"] .admin__radio-switch {
 		dl dd {
 			margin-right: 0;
 		}
+		&__radio-switch {
+			width: 18rem;
+		    input {
+				width: 6rem;
+				left: 3.5rem;
+				& ~ input:checked ~ .toggle-outside {
+				}
+				& ~ input:checked ~ .toggle-outside .toggle-inside {
+					left: 3.5rem;
+				}
+		    }
+		    input:checked {
+				& ~ .toggle-outside .toggle-inside {
+					left: 0.5rem;
+				}	
+			}
+			input:checked + label {
+			}
+			input:not(:checked) + label:hover {
+			}
+			label {
+			  	width: 3rem;
+			  	text-align: left;
+			  	&:last-of-type {
+					margin-left: 6.5rem;
+					width: 3.2rem;
+					text-align: right;
+				}
+			}
+			.toggle-outside {
+				width: 6rem;
+				left: 3.5rem;
+			}
+			.toggle-inside {
+		 		width: 2rem;
+			}
+		}
 	}
 }
 
