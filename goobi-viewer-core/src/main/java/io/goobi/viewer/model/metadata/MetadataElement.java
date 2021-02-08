@@ -239,7 +239,8 @@ public class MetadataElement {
                 if (adb != null && adb.getViewManager() != null && adb.getViewManager().getCurrentPage() != null
                         && adb.getViewManager().getCurrentPage().getUrn() != null && !adb.getViewManager().getCurrentPage().getUrn().equals("")) {
                     Metadata newMetadata =
-                            new Metadata(metadata.getLabel(), metadata.getMasterValue(), adb.getViewManager().getCurrentPage().getUrn());
+                            new Metadata(String.valueOf(se.getLuceneId()), metadata.getLabel(), metadata.getMasterValue(),
+                                    adb.getViewManager().getCurrentPage().getUrn());
                     sidebarMetadataList.add(newMetadata);
                 }
             } else {

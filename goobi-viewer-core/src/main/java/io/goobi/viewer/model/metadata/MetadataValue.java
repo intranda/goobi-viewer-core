@@ -15,6 +15,7 @@
  */
 package io.goobi.viewer.model.metadata;
 
+import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -27,6 +28,9 @@ import org.slf4j.LoggerFactory;
 
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.messages.ViewerResourceBundle;
+import io.goobi.viewer.model.citation.Citation;
+import io.goobi.viewer.model.citation.CitationTools;
+import io.goobi.viewer.model.metadata.MetadataParameter.MetadataParameterType;
 
 /**
  * Wrapper class for metadata parameter value groups, so that JSF can iterate through them properly.
@@ -48,15 +52,21 @@ public class MetadataValue implements Serializable {
     private final List<String> paramSuffixes = new ArrayList<>();
     private final List<String> paramUrls = new ArrayList<>();
     private final Map<String, String> normDataUrls = new HashMap<>();
+    private final Map<String, List<String>> citationValues = new HashMap<>();
+    private String id;
     private String masterValue;
     private String groupType;
+    private String docstrct = null;
+    private String citationStyle = null;
+    private String citationString = null;
 
     /**
      * Package-private constructor.
      * 
      * @param masterValue
      */
-    MetadataValue(String masterValue) {
+    MetadataValue(String id, String masterValue) {
+        this.id = id;
         this.masterValue = masterValue;
     }
 
@@ -86,6 +96,25 @@ public class MetadataValue implements Serializable {
         for (String paramValue : paramValues.get(index)) {
             if (StringUtils.isEmpty(paramValue)) {
                 continue;
+            }
+
+            // logger.trace("param value: {}", paramValue);
+
+            if (MetadataParameterType.CITEPROC.getKey().equals(paramValue)) {
+                // logger.trace("CitePROC value: {}", index);
+                if (StringUtils.isEmpty(citationStyle)) {
+                    return "No citation style configured";
+                }
+                try {
+                    if (citationString == null) {
+                        citationString = new Citation(id, citationStyle, CitationTools.getCSLTypeForDocstrct(docstrct), citationValues)
+                                .getCitationString();
+                    }
+                    return citationString;
+                } catch (IOException e) {
+                    logger.error(e.getMessage());
+                    return e.getMessage();
+                }
             }
 
             boolean addPrefix = true;
@@ -134,9 +163,9 @@ public class MetadataValue implements Serializable {
      * @param index a int.
      */
     public String getParamLabelWithColon(int index) {
-        logger.trace("getParamLabelWithColon: {}", index);
+        // logger.trace("getParamLabelWithColon: {}", index);
         if (paramLabels.size() > index && paramLabels.get(index) != null) {
-            logger.trace(ViewerResourceBundle.getTranslation(paramLabels.get(index), null) + ": ");
+            // logger.trace(ViewerResourceBundle.getTranslation(paramLabels.get(index), null) + ": ");
             return ViewerResourceBundle.getTranslation(paramLabels.get(index), null) + ": ";
         }
         return "";
@@ -264,6 +293,13 @@ public class MetadataValue implements Serializable {
     }
 
     /**
+     * @return the citationValues
+     */
+    public Map<String, List<String>> getCitationValues() {
+        return citationValues;
+    }
+
+    /**
      * <p>
      * hasParamValue.
      * </p>
@@ -341,9 +377,43 @@ public class MetadataValue implements Serializable {
      * </p>
      *
      * @param groupType the groupType to set
+     * @return this
      */
-    public void setGroupType(String groupType) {
+    public MetadataValue setGroupType(String groupType) {
         this.groupType = groupType;
+        return this;
+    }
+
+    /**
+     * @return the docstrct
+     */
+    public String getDocstrct() {
+        return docstrct;
+    }
+
+    /**
+     * @param docstrct the docstrct to set
+     * @return this
+     */
+    public MetadataValue setDocstrct(String docstrct) {
+        this.docstrct = docstrct;
+        return this;
+    }
+
+    /**
+     * @return the citationStyle
+     */
+    public String getCitationStyle() {
+        return citationStyle;
+    }
+
+    /**
+     * @param citationStyle the citationStyle to set
+     * @return this
+     */
+    public MetadataValue setCitationStyle(String citationStyle) {
+        this.citationStyle = citationStyle;
+        return this;
     }
 
     /** {@inheritDoc} */

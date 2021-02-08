@@ -37,6 +37,15 @@
 			<id>intranda-public</id>
 			<url>https://nexus.intranda.com/repository/maven-public</url>
 		</repository>
+        <repository>
+            <id>oss-snapshots-repo</id>
+            <name>Sonatype OSS Maven Repository</name>
+            <url>https://oss.sonatype.org/content/groups/public</url>
+            <snapshots>
+                <enabled>true</enabled>
+                <updatePolicy>always</updatePolicy>
+            </snapshots>
+        </repository>
 	</repositories>
 
 
@@ -79,6 +88,8 @@
 
         <!-- other libraries -->
         <cdi.version>2.0.SP1</cdi.version>
+        <citationstyles.version>21.2</citationstyles.version>
+        <citeproc-java.version>3.0.0-SNAPSHOT</citeproc-java.version>
         <commons-codec.version>1.15</commons-codec.version>
         <commons-collections4.version>4.4</commons-collections4.version>
         <commons-configuration.version>1.10</commons-configuration.version>
@@ -132,7 +143,6 @@
         <slf4j.version>1.7.30</slf4j.version>
         <solr.version>8.8.0</solr.version>
         <saml-client.version>4.0.0</saml-client.version>
-        <stax-api.version>1.0-2</stax-api.version>
         <swagger.version>2.1.6</swagger.version>
         <tomcat.version>9.0.43</tomcat.version>
         <weld-servlet-shaded.version>3.1.6.Final</weld-servlet-shaded.version>
@@ -199,13 +209,38 @@
 			</exclusions>
 		</dependency>
 
-		<!-- other libraries -->
+
+
+        <!-- other libraries -->
+        <dependency>
+            <groupId>xml-apis</groupId>
+            <artifactId>xml-apis</artifactId>
+            <version>1.4.01</version>
+            <scope>runtime</scope>
+        </dependency>
 		<dependency>
 			<groupId>javax.enterprise</groupId>
 			<artifactId>cdi-api</artifactId>
 			<version>${cdi.version}</version>
 			<scope>provided</scope>
 		</dependency>
+        <dependency>
+            <groupId>de.undercouch</groupId>
+            <artifactId>citeproc-java</artifactId>
+            <version>${citeproc-java.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.citationstyles</groupId>
+            <artifactId>styles</artifactId>
+            <version>${citationstyles.version}</version>
+            <scope>runtime</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.citationstyles</groupId>
+            <artifactId>locales</artifactId>
+            <version>${citationstyles.version}</version>
+            <scope>runtime</scope>
+        </dependency>
 		<dependency>
 			<groupId>commons-codec</groupId>
 			<artifactId>commons-codec</artifactId>
@@ -580,11 +615,6 @@
 			<version>${solr.version}</version>
 		</dependency>
 		<dependency>
-			<groupId>javax.xml.stream</groupId>
-			<artifactId>stax-api</artifactId>
-			<version>${stax-api.version}</version>
-		</dependency>
-		<dependency>
 			<groupId>org.apache.tomcat</groupId>
 			<artifactId>tomcat-catalina</artifactId>
 			<version>${tomcat.version}</version>
@@ -599,12 +629,6 @@
 			<groupId>xerces</groupId>
 			<artifactId>xercesImpl</artifactId>
             <version>${xerces.version}</version>
-			<exclusions>
-				<exclusion>
-					<groupId>xml-apis</groupId>
-					<artifactId>xml-apis</artifactId>
-				</exclusion>
-            </exclusions>
 		</dependency>
 		<dependency>
 			<groupId>xerces</groupId>
@@ -721,6 +745,10 @@
 
 								<!-- javax.annotation is not part of jdk 11 anymore -->
 								<ignoredUnusedDeclaredDependency>javax.annotation:javax.annotation-api</ignoredUnusedDeclaredDependency>
+								
+								<!-- org.citationstyles.* are runtime resources for citeproc -->
+								<ignoredUnusedDeclaredDependency>org.citationstyles:locales</ignoredUnusedDeclaredDependency>
+								<ignoredUnusedDeclaredDependency>org.citationstyles:styles</ignoredUnusedDeclaredDependency>
 							</ignoredUnusedDeclaredDependencies>
 						</configuration>
 					</execution>

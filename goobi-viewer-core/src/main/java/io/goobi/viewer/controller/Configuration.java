@@ -527,6 +527,7 @@ public final class Configuration extends AbstractConfiguration {
         boolean group = sub.getBoolean("[@group]", false);
         int number = sub.getInt("[@number]", -1);
         int type = sub.getInt("[@type]", 0);
+        String citationTemplate = sub.getString("[@citationTemplate]");
         List<HierarchicalConfiguration> params = sub.configurationsAt("param");
         List<MetadataParameter> paramList = null;
         if (params != null) {
@@ -535,6 +536,7 @@ public final class Configuration extends AbstractConfiguration {
                 HierarchicalConfiguration sub2 = it2.next();
                 String fieldType = sub2.getString("[@type]");
                 String source = sub2.getString("[@source]", null);
+                String dest = sub2.getString("[@dest]", null);
                 String key = sub2.getString("[@key]");
                 String altKey = sub2.getString("[@altKey]");
                 String masterValueFragment = sub2.getString("[@value]");
@@ -585,6 +587,7 @@ public final class Configuration extends AbstractConfiguration {
 
                 paramList.add(new MetadataParameter().setType(MetadataParameterType.getByString(fieldType))
                         .setSource(source)
+                        .setDestination(dest)
                         .setKey(key)
                         .setAltKey(altKey)
                         .setMasterValueFragment(masterValueFragment)
@@ -598,7 +601,7 @@ public final class Configuration extends AbstractConfiguration {
             }
         }
 
-        return new Metadata(label, masterValue, type, paramList, group, number);
+        return new Metadata(label, masterValue, type, paramList, group, number).setCitationTemplate(citationTemplate);
     }
 
     /**
@@ -720,6 +723,34 @@ public final class Configuration extends AbstractConfiguration {
      */
     public boolean isDisplayWidgetUsage() {
         return getLocalBoolean("sidebar.sidebarWidgetUsage[@display]", true);
+    }
+
+    /**
+     * 
+     * @return List of available citation style names
+     * @should return all configured values
+     */
+    public List<String> getSidebarWidgetUsageCitationStyles() {
+        return getLocalList("sidebar.sidebarWidgetUsage.citation.styles.style", Collections.emptyList());
+    }
+    
+    /**
+     * 
+     * @return
+     */
+    public Metadata getSidebarWidgetUsageCitationSource() {
+        HierarchicalConfiguration sub = null;
+        try {
+            sub = getLocalConfigurationAt("sidebar.sidebarWidgetUsage.citation.source.metadata");
+        } catch (IllegalArgumentException e) {
+            // no or multiple occurrences 
+        }
+        if (sub != null) {
+            Metadata md = getMetadataFromSubnodeConfig(sub, false);
+            return md;
+        }
+        
+        return new Metadata();
     }
 
     /**

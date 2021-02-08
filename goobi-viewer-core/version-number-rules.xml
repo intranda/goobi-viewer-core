@@ -54,5 +54,11 @@
                 <ignoreVersion type="regex">4.*</ignoreVersion>
             </ignoreVersions>
         </rule>
+        <rule groupId="xml-apis" artifactId="xml-apis">
+            <ignoreVersions>
+                <ignoreVersion>2.0.0</ignoreVersion>
+                <ignoreVersion>2.0.2</ignoreVersion>
+            </ignoreVersions>
+        </rule>
     </rules>
 </ruleset>

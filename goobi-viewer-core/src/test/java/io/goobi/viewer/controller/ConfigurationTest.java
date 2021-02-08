@@ -2852,4 +2852,14 @@ public class ConfigurationTest extends AbstractTest {
     public void isDisplayWidgetUsage_shouldReturnCorrectValue() throws Exception {
         Assert.assertFalse(DataManager.getInstance().getConfiguration().isDisplayWidgetUsage());
     }
+
+    /**
+     * @see Configuration#getSidebarWidgetUsageCitationStyles()
+     * @verifies return all configured values
+     */
+    @Test
+    public void getSidebarWidgetUsageCitationStyles_shouldReturnAllConfiguredValues() throws Exception {
+       List<String> result = DataManager.getInstance().getConfiguration().getSidebarWidgetUsageCitationStyles();
+       Assert.assertEquals(3, result.size());
+    }
 }

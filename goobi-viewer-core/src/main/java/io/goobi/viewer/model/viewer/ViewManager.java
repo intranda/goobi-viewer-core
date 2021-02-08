@@ -15,7 +15,15 @@
  */
 package io.goobi.viewer.model.viewer;
 
-import static io.goobi.viewer.api.rest.v1.ApiUrls.*;
+import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_ALTO;
+import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_FILES;
+import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_FILES_ALTO;
+import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_FILES_PLAINTEXT;
+import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_FILES_TEI;
+import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_PLAINTEXT_ZIP;
+import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_RECORD;
+import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_TEI_LANG;
+
 import java.awt.Dimension;
 import java.io.IOException;
 import java.io.Serializable;
@@ -45,6 +53,7 @@ import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import de.undercouch.citeproc.CSL;
 import de.unigoettingen.sub.commons.contentlib.imagelib.transform.Scale;
 import io.goobi.viewer.api.rest.v1.ApiUrls;
 import io.goobi.viewer.controller.AlphanumCollatorComparator;
@@ -69,8 +78,11 @@ import io.goobi.viewer.managedbeans.UserBean;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.messages.Messages;
 import io.goobi.viewer.model.calendar.CalendarView;
+import io.goobi.viewer.model.citation.Citation;
+import io.goobi.viewer.model.citation.CitationTools;
 import io.goobi.viewer.model.metadata.Metadata;
 import io.goobi.viewer.model.metadata.MetadataTools;
+import io.goobi.viewer.model.metadata.MetadataValue;
 import io.goobi.viewer.model.search.SearchHelper;
 import io.goobi.viewer.model.security.AccessConditionUtils;
 import io.goobi.viewer.model.security.IPrivilegeHolder;
@@ -142,6 +154,7 @@ public class ViewManager implements Serializable {
     private Boolean workHasTEIFiles = null;
     private Boolean metadataViewOnly = null;
     private List<String> downloadFilenames = null;
+    private String citationStyle = null;
 
     /**
      * <p>
@@ -1569,9 +1582,11 @@ public class ViewManager implements Serializable {
      */
     public String getAltoUrlForAllPages() throws ViewerConfigurationException, PresentationException, IndexUnreachableException {
         String pi = getPi();
-        return DataManager.getInstance().getRestApiManager().getContentApiManager().map(urls -> 
-                urls.path(RECORDS_RECORD, RECORDS_ALTO).params(pi).build()
-                ).orElse("");
+        return DataManager.getInstance()
+                .getRestApiManager()
+                .getContentApiManager()
+                .map(urls -> urls.path(RECORDS_RECORD, RECORDS_ALTO).params(pi).build())
+                .orElse("");
     }
 
     /**
@@ -1584,9 +1599,11 @@ public class ViewManager implements Serializable {
      */
     public String getFulltextUrlForAllPages() throws ViewerConfigurationException, PresentationException, IndexUnreachableException {
         String pi = getPi();
-        return DataManager.getInstance().getRestApiManager().getContentApiManager().map(urls ->
-                urls.path(RECORDS_RECORD, RECORDS_PLAINTEXT_ZIP).params(pi).build()
-                ).orElse("");
+        return DataManager.getInstance()
+                .getRestApiManager()
+                .getContentApiManager()
+                .map(urls -> urls.path(RECORDS_RECORD, RECORDS_PLAINTEXT_ZIP).params(pi).build())
+                .orElse("");
     }
 
     /**
@@ -1598,11 +1615,13 @@ public class ViewManager implements Serializable {
      */
     public String getTeiUrlForAllPages() throws ViewerConfigurationException, IndexUnreachableException {
         String pi = getPi();
-        return DataManager.getInstance().getRestApiManager().getContentApiManager().map(urls ->
-                urls.path(RECORDS_RECORD, RECORDS_TEI_LANG)
-                .params(pi, BeanUtils.getLocale().getLanguage())
-                .build()
-                ).orElse("");
+        return DataManager.getInstance()
+                .getRestApiManager()
+                .getContentApiManager()
+                .map(urls -> urls.path(RECORDS_RECORD, RECORDS_TEI_LANG)
+                        .params(pi, BeanUtils.getLocale().getLanguage())
+                        .build())
+                .orElse("");
     }
 
     /**
@@ -1617,13 +1636,15 @@ public class ViewManager implements Serializable {
         String plaintextFilename = FileTools.getFilenameFromPathString(getCurrentPage().getFulltextFileName());
         String altoFilename = FileTools.getFilenameFromPathString(getCurrentPage().getAltoFileName());
         String filenameToUse = StringUtils.isNotBlank(plaintextFilename) ? plaintextFilename : altoFilename;
-        
+
         String pi = getPi();
-        return DataManager.getInstance().getRestApiManager().getContentApiManager().map(urls ->
-                urls.path(RECORDS_FILES, RECORDS_FILES_TEI)
-                .params(pi, filenameToUse)
-                .build()
-                ).orElse("");
+        return DataManager.getInstance()
+                .getRestApiManager()
+                .getContentApiManager()
+                .map(urls -> urls.path(RECORDS_FILES, RECORDS_FILES_TEI)
+                        .params(pi, filenameToUse)
+                        .build())
+                .orElse("");
     }
 
     /**
@@ -1638,11 +1659,13 @@ public class ViewManager implements Serializable {
     public String getAltoUrl() throws ViewerConfigurationException, PresentationException, IndexUnreachableException, DAOException {
         String filename = FileTools.getFilenameFromPathString(getCurrentPage().getAltoFileName());
         String pi = getPi();
-        return DataManager.getInstance().getRestApiManager().getContentApiManager().map(urls ->
-                urls.path(RECORDS_FILES, RECORDS_FILES_ALTO)
-                .params(pi, filename)
-                .build()
-                ).orElse("");
+        return DataManager.getInstance()
+                .getRestApiManager()
+                .getContentApiManager()
+                .map(urls -> urls.path(RECORDS_FILES, RECORDS_FILES_ALTO)
+                        .params(pi, filename)
+                        .build())
+                .orElse("");
     }
 
     /**
@@ -1658,13 +1681,15 @@ public class ViewManager implements Serializable {
         String plaintextFilename = FileTools.getFilenameFromPathString(getCurrentPage().getFulltextFileName());
         String altoFilename = FileTools.getFilenameFromPathString(getCurrentPage().getAltoFileName());
         String filenameToUse = StringUtils.isNotBlank(plaintextFilename) ? plaintextFilename : altoFilename;
-        
+
         String pi = getPi();
-        return DataManager.getInstance().getRestApiManager().getContentApiManager().map(urls ->
-                urls.path(RECORDS_FILES, RECORDS_FILES_PLAINTEXT)
-                .params(pi, filenameToUse)
-                .build()
-                ).orElse("");
+        return DataManager.getInstance()
+                .getRestApiManager()
+                .getContentApiManager()
+                .map(urls -> urls.path(RECORDS_FILES, RECORDS_FILES_PLAINTEXT)
+                        .params(pi, filenameToUse)
+                        .build())
+                .orElse("");
     }
 
     /**
@@ -2288,7 +2313,7 @@ public class ViewManager implements Serializable {
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
-     * @throws RecordNotFoundException 
+     * @throws RecordNotFoundException
      */
     public boolean isFulltextAvailableForWork() throws IndexUnreachableException, DAOException, PresentationException, RecordNotFoundException {
         if (isBornDigital()) {
@@ -2325,7 +2350,7 @@ public class ViewManager implements Serializable {
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
-     * @throws RecordNotFoundException 
+     * @throws RecordNotFoundException
      */
     public boolean isTeiAvailableForWork() throws IndexUnreachableException, DAOException, PresentationException, RecordNotFoundException {
         if (isBornDigital()) {
@@ -2392,7 +2417,7 @@ public class ViewManager implements Serializable {
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
-     * @throws RecordNotFoundException 
+     * @throws RecordNotFoundException
      */
     public boolean isAltoAvailableForWork() throws IndexUnreachableException, PresentationException, DAOException, RecordNotFoundException {
         boolean access = AccessConditionUtils.checkAccessPermissionByIdentifierAndLogId(getPi(), null, IPrivilegeHolder.PRIV_VIEW_FULLTEXT,
@@ -2589,7 +2614,9 @@ public class ViewManager implements Serializable {
         try {
             String pi = getPi();
             String filenameEncoded = URLEncoder.encode(filename, StringTools.DEFAULT_ENCODING);
-            return DataManager.getInstance().getRestApiManager().getContentApiManager()
+            return DataManager.getInstance()
+                    .getRestApiManager()
+                    .getContentApiManager()
                     .map(urls -> urls.path(ApiUrls.RECORDS_FILES, ApiUrls.RECORDS_FILES_SOURCE).params(pi, filenameEncoded).build())
                     .map(url -> new LabeledLink(filename, url, 0))
                     .orElse(LabeledLink.EMPTY);
@@ -3412,6 +3439,51 @@ public class ViewManager implements Serializable {
      */
     public boolean isDisplayCiteLinkPage() throws IndexUnreachableException, DAOException {
         return getCurrentPage() != null;
+    }
+
+    /**
+     * 
+     * @return Generated citation string for the selected style
+     * @throws IOException
+     * @throws PresentationException
+     * @throws IndexUnreachableException
+     */
+    public String getCitationString() throws IOException, IndexUnreachableException, PresentationException {
+        if (StringUtils.isEmpty(citationStyle)) {
+            List<String> availableStyles = DataManager.getInstance().getConfiguration().getSidebarWidgetUsageCitationStyles();
+            if (availableStyles.isEmpty()) {
+                return "";
+            }
+            citationStyle = availableStyles.get(0);
+        }
+
+        CSL csl = DataManager.getInstance().getCitationProcessor(citationStyle);
+        Metadata md = DataManager.getInstance().getConfiguration().getSidebarWidgetUsageCitationSource();
+        md.populate(topDocument, BeanUtils.getLocale());
+        for (MetadataValue val : md.getValues()) {
+            if (!val.getCitationValues().isEmpty()) {
+                Citation citation = new Citation(pi, citationStyle, CitationTools.getCSLTypeForDocstrct(topDocument.getDocStructType()),
+                        val.getCitationValues());
+                String ret = citation.getCitationString();
+                return ret;
+            }
+        }
+
+        return "";
+    }
+
+    /**
+     * @return the citationStyle
+     */
+    public String getCitationStyle() {
+        return citationStyle;
+    }
+
+    /**
+     * @param citationStyle the citationStyle to set
+     */
+    public void setCitationStyle(String citationStyle) {
+        this.citationStyle = citationStyle;
     }
 
     /**
