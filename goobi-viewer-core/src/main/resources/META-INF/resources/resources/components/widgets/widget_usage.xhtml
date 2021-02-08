@@ -484,18 +484,30 @@
                     </div>
                     
                     <!-- CITATION RECOMMENDATION -->
-                    <h4 id="titleCiteRecommendation" class="widget-usage__subtitle">#{msg.citeRecommendation}</h4>
+                    <h4 id="titleCiteRecommendation" class="widget-usage__subtitle">#{msg.citeRecommendation__title}</h4>
 
                     <div class="widget-usage__citerecommendation">
                         <ui:fragment rendered="#{activeDocumentBean.viewManager.displayCiteLinkWork}">
                             <h:form>
-                                <h:selectOneMenu value="#{activeDocumentBean.viewManager.citationStyle}" immediate="true">
+                                <h:selectOneMenu value="#{activeDocumentBean.viewManager.citationStyle}" immediate="true" styleClass="widget-usage__citerecommendation-dropdown">
                                     <f:selectItems var="style" value="#{configurationBean.sidebarWidgetUsageCitationStyles}"
                                         itemLabel="#{msg['label__citation_style_'.concat(style)]}" />
                                     <f:ajax render="citationStringOutput" />
                                 </h:selectOneMenu>
-                                <br />
-                                <h:outputText id="citationStringOutput" value="#{activeDocumentBean.viewManager.citationString}" escape="false" />
+                                <div class="widget-usage__citerecommendation-text-wrapper">
+                                	<i class="fa fa-quote-right" aria-hidden="true"></i>
+	                                <a
+		                                id="citeCopyText" 
+		                                class="widget-usage__citerecommendation-copy-text" 
+		                                data-copy="text-citelink"
+		                                data-clipboard-text="#{activeDocumentBean.viewManager.citationString}" 
+		                                data-copy-done="#{msg.copyUrlDone}" 
+		                                title="#{msg.citeRecommendation__copy_to_clipboard}"
+		                                aria-label="#{msg.citeRecommendation__copy_to_clipboard}">
+	                                	<h:outputText id="citationStringOutput" value="#{activeDocumentBean.viewManager.citationString}" escape="false"/>
+	                                </a>
+                                </div>
+                                <div class="widget-usage__citerecommendation-text-info">#{msg.citeRecommendation__text_info}</div>
                             </h:form>
                         </ui:fragment>
                     </div>

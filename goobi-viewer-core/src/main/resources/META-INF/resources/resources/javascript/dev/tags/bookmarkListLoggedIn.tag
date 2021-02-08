@@ -40,7 +40,7 @@ this.on( 'mount', function() {
 });
 
 getBookmarkLists() {
-    let lists =  this.opts.bookmarks.getBookmarkLists().slice(0,3);
+    let lists =  this.opts.bookmarks.getBookmarkLists().slice(0,5);
     return lists;
 }
 
