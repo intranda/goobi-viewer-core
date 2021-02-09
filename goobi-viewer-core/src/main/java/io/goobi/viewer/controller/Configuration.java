@@ -733,7 +733,7 @@ public final class Configuration extends AbstractConfiguration {
     public List<String> getSidebarWidgetUsageCitationStyles() {
         return getLocalList("sidebar.sidebarWidgetUsage.citation.styles.style", Collections.emptyList());
     }
-    
+
     /**
      * 
      * @return
@@ -749,7 +749,7 @@ public final class Configuration extends AbstractConfiguration {
             Metadata md = getMetadataFromSubnodeConfig(sub, false);
             return md;
         }
-        
+
         return new Metadata();
     }
 
@@ -838,6 +838,18 @@ public final class Configuration extends AbstractConfiguration {
      */
     public boolean isBrowsingMenuEnabled() {
         return getLocalBoolean("metadata.browsingMenu.enabled", false);
+    }
+
+    /**
+     * <p>
+     * getBrowsingMenuIndexSizeThreshold.
+     * </p>
+     *
+     * @return Solr doc count threshold for browsing term calculation
+     * @should return correct value
+     */
+    public int getBrowsingMenuIndexSizeThreshold() {
+        return getLocalInt("metadata.browsingMenu.indexSizeThreshold", 100000);
     }
 
     /**

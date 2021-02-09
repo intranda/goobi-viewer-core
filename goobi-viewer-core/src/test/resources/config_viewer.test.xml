@@ -758,6 +758,10 @@
 				per page -->
 			<hitsPerPage>19</hitsPerPage>
 			
+            <!-- If the number of relevant Solr docs exceeds the configured number, faceting will be used for term browsing
+                (which may break correct sorting but improve performance). Default is 100k. -->
+            <indexSizeThreshold>50000</indexSizeThreshold>
+			
             <sorting>
                 <!-- ignoreLeadingChars: All leading characters to be ignored when comparing browsing terms.
                     If empty, only the first non-alphanumeric char will be removed. -->

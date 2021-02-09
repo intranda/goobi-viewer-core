@@ -94,8 +94,8 @@ public final class SolrSearchIndex {
     private static final int MULTILANGUAGE_FIELD_LANGUAGE_GROUP = 2;
     /** Constant <code>MAX_HITS=1000000</code> */
     public static final int MAX_HITS = 1000000;
-    private static final int TIMEOUT_SO = 240000;
-    private static final int TIMEOUT_CONNECTION = 240000;
+    private static final int TIMEOUT_SO = 30000;
+    private static final int TIMEOUT_CONNECTION = 30000;
 
     public boolean initialized = false;
     private long lastPing = 0;
@@ -264,7 +264,7 @@ public final class SolrSearchIndex {
         if (filterQueries != null && !filterQueries.isEmpty()) {
             for (String fq : filterQueries) {
                 solrQuery.addFilterQuery(fq);
-                logger.trace("adding filter query: {}", fq);
+                // logger.trace("adding filter query: {}", fq);
             }
         }
         if (params != null && !params.isEmpty()) {

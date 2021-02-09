@@ -1601,17 +1601,15 @@ public final class SearchHelper {
             params.put(GroupParams.GROUP_MAIN, "true");
             params.put(GroupParams.GROUP_FIELD, SolrConstants.GROUPFIELD);
         }
-        
-        logger.trace("getting hit count");
-        long hitCount =  DataManager.getInstance().getSearchIndex().getHitCount(query, filterQueries);
-        logger.trace("hit count: {}", hitCount);
 
-        // Faceting (no rows to return or doc count too high)
-        if (rows == 0 || hitCount > 1000000) {
+        // Faceting (no rows requested or expected row count too high)
+        if (rows == 0 || DataManager.getInstance().getSearchIndex().getHitCount(query, filterQueries) > DataManager.getInstance()
+                .getConfiguration()
+                .getBrowsingMenuIndexSizeThreshold()) {
             return DataManager.getInstance().getSearchIndex().searchFacetsAndStatistics(query, filterQueries, facetFields, 1, startsWith, false);
         }
 
-        // Docs
+        // Docs (required for correct mapping of sorting vs displayed term names, but may time out if doc count is too high)
         return DataManager.getInstance().getSearchIndex().search(query, start, rows, sortFields, facetFields, fields, filterQueries, params);
     }
 
