@@ -220,7 +220,7 @@ public class CMSMediaResource {
 
     /**
      * <p>
-     * validateUploadMediaFiles.
+     * Return the media item for the given filename. If no matching media item exists, return a not-found status code
      * </p>
      *
      * @param filename a {@link java.lang.String} object.
@@ -237,7 +237,7 @@ public class CMSMediaResource {
             MediaItem jsonItem = new MediaItem(item, servletRequest);
             return Response.status(Status.OK).entity(jsonItem).build();
         }
-        return Response.status(Status.OK).entity("{}").build();
+        return Response.status(Status.NOT_FOUND).entity("{}").build();
     }
     
     /**
