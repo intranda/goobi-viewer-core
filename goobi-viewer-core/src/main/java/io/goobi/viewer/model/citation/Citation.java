@@ -77,10 +77,8 @@ public class Citation {
      * @return
      * @throws IOException
      */
-    Bibliography makeAdhocBibliography(String outputFormat,
-            CSLItemData... items) throws IOException {
+    Bibliography makeAdhocBibliography(String outputFormat, CSLItemData... items) throws IOException {
         // logger.trace("makeAdhocBibliography");
-
         processor.reset();
         processor.setOutputFormat(outputFormat);
         String[] ids = new String[items.length];
@@ -94,15 +92,16 @@ public class Citation {
     }
 
     /**
-     * 
-     * @return Full citation string
+     * @param outputFormat
+     * @return Citation string
      * @throws IOException
-     * @should return apa citation correctly
+     * @should return apa html citation correctly
+     * @should return apa html plaintext correctly
      */
-    public String getCitationString() throws IOException {
+    public String getCitationString(String outputFormat) throws IOException {
         logger.trace("Citation string generation START");
         CSLItemData itemData = itemDataProvider.addItemData(id, fields, type);
-        String ret = makeAdhocBibliography("html", itemData).makeString();
+        String ret = makeAdhocBibliography(outputFormat, itemData).makeString().trim();
 
         logger.trace("Citation string generation END");
         return ret;
