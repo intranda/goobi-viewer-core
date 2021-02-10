@@ -17,7 +17,9 @@ package io.goobi.viewer.api.rest.v1.cms;
 
 import static io.goobi.viewer.api.rest.v1.ApiUrls.*;
 
+import java.io.UnsupportedEncodingException;
 import java.net.URI;
+import java.net.URLEncoder;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Arrays;
@@ -61,10 +63,11 @@ public class CMSMediaImageResource extends ImageResource {
     public CMSMediaImageResource(
             @Context ContainerRequestContext context, @Context HttpServletRequest request, @Context HttpServletResponse response,
             @Context AbstractApiUrlManager urls,
-            @Parameter(description = "Filename of the image") @PathParam("filename") String filename) {
+            @Parameter(description = "Filename of the image") @PathParam("filename") String filename) throws UnsupportedEncodingException {
         super(context, request, response, "", getMediaFileUrl(filename).toString());
         request.setAttribute("filename", this.imageURI.toString());
         String requestUrl = request.getRequestURI();
+        filename = URLEncoder.encode(filename, "utf-8");
         String baseImageUrl = urls.path(ApiUrls.CMS_MEDIA, ApiUrls.CMS_MEDIA_FILES_FILE).params(filename).build();
         String imageRequestPath = requestUrl.replace(baseImageUrl, "");
         this.resourceURI = URI.create(baseImageUrl);
