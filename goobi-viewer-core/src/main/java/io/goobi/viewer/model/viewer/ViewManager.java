@@ -3445,12 +3445,37 @@ public class ViewManager implements Serializable {
 
     /**
      * 
+     * @return
+     * @throws IOException
+     * @throws IndexUnreachableException
+     * @throws PresentationException
+     */
+    public String getCitationStringHtml() throws IOException, IndexUnreachableException, PresentationException {
+        return getCitationString("html");
+    }
+
+    /**
+     * 
+     * @return
+     * @throws IOException
+     * @throws IndexUnreachableException
+     * @throws PresentationException
+     */
+    public String getCitationStringPlain() throws IOException, IndexUnreachableException, PresentationException {
+        return getCitationString("text");
+    }
+
+    /**
+     * 
+     * @param outputFormat Output format (html or text)
      * @return Generated citation string for the selected style
      * @throws IOException
      * @throws PresentationException
      * @throws IndexUnreachableException
+     * @should return apa html citation correctly
+     * @should return apa html plaintext correctly
      */
-    public String getCitationString() throws IOException, IndexUnreachableException, PresentationException {
+    String getCitationString(String outputFormat) throws IOException, IndexUnreachableException, PresentationException {
         if (StringUtils.isEmpty(citationStyle)) {
             List<String> availableStyles = DataManager.getInstance().getConfiguration().getSidebarWidgetUsageCitationStyles();
             if (availableStyles.isEmpty()) {
@@ -3469,7 +3494,8 @@ public class ViewManager implements Serializable {
             if (!val.getCitationValues().isEmpty()) {
                 Citation citation = new Citation(pi, processor, citationProcessorWrapper.getCitationItemDataProvider(),
                         CitationTools.getCSLTypeForDocstrct(topDocument.getDocStructType()), val.getCitationValues());
-                String ret = citation.getCitationString();
+                String ret = citation.getCitationString(outputFormat);
+                logger.trace("citation: {}", ret);
                 return ret;
             }
         }

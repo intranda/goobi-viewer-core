@@ -29,11 +29,11 @@ import io.goobi.viewer.AbstractTest;
 public class CitationTest extends AbstractTest {
 
     /**
-     * @see Citation#getCitationString()
-     * @verifies return apa citation correctly
+     * @see Citation#getCitationString(String)
+     * @verifies return apa html citation correctly
      */
     @Test
-    public void getCitationString_shouldReturnApaCitationCorrectly() throws Exception {
+    public void getCitationString_shouldReturnApaHtmlCitationCorrectly() throws Exception {
         Map<String, List<String>> fields = new HashMap<>();
         fields.put(CitationDataProvider.AUTHOR, Collections.singletonList("Zahn, Timothy"));
         fields.put(CitationDataProvider.TITLE, Collections.singletonList("Thrawn"));
@@ -42,8 +42,27 @@ public class CitationTest extends AbstractTest {
 
         CitationProcessorWrapper cpw = new CitationProcessorWrapper();
         Citation cit = new Citation("id", cpw.getCitationProcessor("apa"), cpw.getCitationItemDataProvider(), CSLType.BOOK, fields);
-        String s = cit.getCitationString();
+        String s = cit.getCitationString("html");
         Assert.assertNotNull(s);
         Assert.assertTrue(s.contains("Zahn, T. (2017-04-11). <span style=\"font-style: italic\">Thrawn</span>."));
+    }
+
+    /**
+     * @see Citation#getCitationString(String)
+     * @verifies return apa html plaintext correctly
+     */
+    @Test
+    public void getCitationString_shouldReturnApaHtmlPlaintextCorrectly() throws Exception {
+        Map<String, List<String>> fields = new HashMap<>();
+        fields.put(CitationDataProvider.AUTHOR, Collections.singletonList("Zahn, Timothy"));
+        fields.put(CitationDataProvider.TITLE, Collections.singletonList("Thrawn"));
+        fields.put(CitationDataProvider.ISSUED, Collections.singletonList("2017-04-11"));
+        fields.put(CitationDataProvider.ISBN, Collections.singletonList("9780606412148"));
+
+        CitationProcessorWrapper cpw = new CitationProcessorWrapper();
+        Citation cit = new Citation("id", cpw.getCitationProcessor("apa"), cpw.getCitationItemDataProvider(), CSLType.BOOK, fields);
+        String s = cit.getCitationString("text");
+        Assert.assertNotNull(s);
+        Assert.assertTrue(s.equals("Zahn, T. (2017-04-11). Thrawn."));
     }
 }
