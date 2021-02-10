@@ -17,7 +17,9 @@ package io.goobi.viewer.model.cms;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.net.URI;
+import java.net.URLEncoder;
 import java.nio.file.DirectoryStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -59,6 +61,8 @@ import org.slf4j.LoggerFactory;
 
 import de.unigoettingen.sub.commons.contentlib.exceptions.ContentNotFoundException;
 import de.unigoettingen.sub.commons.contentlib.exceptions.IllegalRequestException;
+import io.goobi.viewer.api.rest.AbstractApiUrlManager;
+import io.goobi.viewer.api.rest.v1.ApiUrls;
 import io.goobi.viewer.controller.DataFileTools;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.FileTools;
@@ -1213,9 +1217,26 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable {
                             }
                             break;
                         case CMSMediaItem.CONTENT_TYPE_PDF:
-                            URI uri = URI.create(DataManager.getInstance().getConfiguration().getRestApiUrl() + "cms/media/get/"
-                                    + item.getMediaItem().getId() + ".pdf");
-                            return uri.toString();
+                            boolean useContentApi = DataManager.getInstance().getConfiguration().isUseIIIFApiUrlForCmsMediaUrls();
+                            Optional<AbstractApiUrlManager> urls;
+                            if(useContentApi) {
+                                urls = DataManager.getInstance().getRestApiManager().getContentApiManager();
+                            } else {
+                                urls = DataManager.getInstance().getRestApiManager().getDataApiManager();
+                            }
+                            
+                            boolean legacyApi = !urls.isPresent();
+                            if(legacyApi) {
+                                String baseUrl = useContentApi ? DataManager.getInstance().getRestApiManager().getContentApiUrl() : DataManager.getInstance().getRestApiManager().getDataApiUrl();
+                                URI uri = URI.create(baseUrl + "cms/media/get/"
+                                        + item.getMediaItem().getId() + ".pdf");
+                                return uri.toString();
+                            } else {
+                                String filename = item.getMediaItem().getFileName();
+                                filename = URLEncoder.encode(filename, "utf-8");
+                                return urls.get().path(ApiUrls.CMS_MEDIA, ApiUrls.CMS_MEDIA_FILES_FILE).params(filename).build();
+                            }
+
                         default:
                             // Images
                             contentString = CmsMediaBean.getMediaUrl(item.getMediaItem(), width, height);
@@ -1241,6 +1262,9 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable {
             return "";
         } catch (ViewerConfigurationException e1) {
             logger.error("Error in viewer configuration: " + e1.toString());
+            return "";
+        } catch (UnsupportedEncodingException e1) {
+            logger.error("Error trying to encode string: " + e1.toString());
             return "";
         }
     }

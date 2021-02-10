@@ -1134,6 +1134,11 @@ public final class Configuration extends AbstractConfiguration {
         return urlString;
     }
 
+    /**
+     * url to rest api url for record media files. Always ends with a slash
+     * 
+     * @return
+     */
     public String getIIIFApiUrl() {
         String urlString = getLocalString("urls.iiif", getRestApiUrl());
         if (!urlString.endsWith("/")) {
