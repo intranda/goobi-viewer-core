@@ -79,6 +79,7 @@ import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.messages.Messages;
 import io.goobi.viewer.model.calendar.CalendarView;
 import io.goobi.viewer.model.citation.Citation;
+import io.goobi.viewer.model.citation.CitationProcessorWrapper;
 import io.goobi.viewer.model.citation.CitationTools;
 import io.goobi.viewer.model.metadata.Metadata;
 import io.goobi.viewer.model.metadata.MetadataTools;
@@ -155,6 +156,7 @@ public class ViewManager implements Serializable {
     private Boolean metadataViewOnly = null;
     private List<String> downloadFilenames = null;
     private String citationStyle = null;
+    private CitationProcessorWrapper citationProcessorWrapper;
 
     /**
      * <p>
@@ -3457,13 +3459,16 @@ public class ViewManager implements Serializable {
             citationStyle = availableStyles.get(0);
         }
 
-        CSL csl = DataManager.getInstance().getCitationProcessor(citationStyle);
+        if (citationProcessorWrapper == null) {
+            citationProcessorWrapper = new CitationProcessorWrapper();
+        }
+        CSL processor = citationProcessorWrapper.getCitationProcessor(citationStyle);
         Metadata md = DataManager.getInstance().getConfiguration().getSidebarWidgetUsageCitationSource();
         md.populate(topDocument, BeanUtils.getLocale());
         for (MetadataValue val : md.getValues()) {
             if (!val.getCitationValues().isEmpty()) {
-                Citation citation = new Citation(pi, citationStyle, CitationTools.getCSLTypeForDocstrct(topDocument.getDocStructType()),
-                        val.getCitationValues());
+                Citation citation = new Citation(pi, processor, citationProcessorWrapper.getCitationItemDataProvider(),
+                        CitationTools.getCSLTypeForDocstrct(topDocument.getDocStructType()), val.getCitationValues());
                 String ret = citation.getCitationString();
                 return ret;
             }
@@ -3484,6 +3489,20 @@ public class ViewManager implements Serializable {
      */
     public void setCitationStyle(String citationStyle) {
         this.citationStyle = citationStyle;
+    }
+
+    /**
+     * @return the citationProcessorWrapper
+     */
+    public CitationProcessorWrapper getCitationProcessorWrapper() {
+        return citationProcessorWrapper;
+    }
+
+    /**
+     * @param citationProcessorWrapper the citationProcessorWrapper to set
+     */
+    public void setCitationProcessorWrapper(CitationProcessorWrapper citationProcessorWrapper) {
+        this.citationProcessorWrapper = citationProcessorWrapper;
     }
 
     /**

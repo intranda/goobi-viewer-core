@@ -51,6 +51,7 @@ public class ConfigurationTest extends AbstractTest {
 
     public static final String APPLICATION_ROOT_URL = "https://viewer.goobi.io/";
 
+    @Override
     @Before
     public void setUp() throws Exception {
     }
@@ -88,6 +89,16 @@ public class ConfigurationTest extends AbstractTest {
     @Test
     public void getBrowsingMenuHitsPerPage_shouldReturnCorrectValue() throws Exception {
         Assert.assertEquals(19, DataManager.getInstance().getConfiguration().getBrowsingMenuHitsPerPage());
+    }
+    
+
+    /**
+     * @see Configuration#getBrowsingMenuIndexSizeThreshold()
+     * @verifies return correct value
+     */
+    @Test
+    public void getBrowsingMenuIndexSizeThreshold_shouldReturnCorrectValue() throws Exception {
+        Assert.assertEquals(50000, DataManager.getInstance().getConfiguration().getBrowsingMenuIndexSizeThreshold());
     }
 
     /**

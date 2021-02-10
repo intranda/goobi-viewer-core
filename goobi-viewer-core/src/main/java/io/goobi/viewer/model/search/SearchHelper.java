@@ -1450,7 +1450,6 @@ public final class SearchHelper {
         }
 
         logger.trace("getFilteredTerms: {}", bmfc.getField());
-        logger.trace("startsWith: {}", startsWith);
         List<BrowseTerm> ret = new ArrayList<>();
         ConcurrentMap<String, BrowseTerm> terms = new ConcurrentHashMap<>();
 
@@ -1603,12 +1602,14 @@ public final class SearchHelper {
             params.put(GroupParams.GROUP_FIELD, SolrConstants.GROUPFIELD);
         }
 
-        // Facets
-        if (rows == 0) {
+        // Faceting (no rows requested or expected row count too high)
+        if (rows == 0 || DataManager.getInstance().getSearchIndex().getHitCount(query, filterQueries) > DataManager.getInstance()
+                .getConfiguration()
+                .getBrowsingMenuIndexSizeThreshold()) {
             return DataManager.getInstance().getSearchIndex().searchFacetsAndStatistics(query, filterQueries, facetFields, 1, startsWith, false);
         }
 
-        // Docs
+        // Docs (required for correct mapping of sorting vs displayed term names, but may time out if doc count is too high)
         return DataManager.getInstance().getSearchIndex().search(query, start, rows, sortFields, facetFields, fields, filterQueries, params);
     }
 

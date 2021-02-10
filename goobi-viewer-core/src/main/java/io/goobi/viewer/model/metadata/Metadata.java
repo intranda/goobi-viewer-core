@@ -15,6 +15,7 @@
  */
 package io.goobi.viewer.model.metadata;
 
+import java.io.IOException;
 import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -46,9 +47,11 @@ import io.goobi.viewer.controller.SolrSearchIndex;
 import io.goobi.viewer.controller.StringTools;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
+import io.goobi.viewer.managedbeans.ActiveDocumentBean;
 import io.goobi.viewer.managedbeans.NavigationHelper;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.messages.ViewerResourceBundle;
+import io.goobi.viewer.model.citation.CitationProcessorWrapper;
 import io.goobi.viewer.model.metadata.MetadataParameter.MetadataParameterType;
 import io.goobi.viewer.model.search.SearchHelper;
 import io.goobi.viewer.model.viewer.PageType;
@@ -76,6 +79,7 @@ public class Metadata implements Serializable {
     private final boolean group;
     private String ownerDocstrctType;
     private String citationTemplate;
+    private CitationProcessorWrapper citationProcessorWrapper;
 
     /**
      * <p>
@@ -327,7 +331,14 @@ public class Metadata implements Serializable {
         MetadataValue mdValue = values.get(valueIndex);
         mdValue.setGroupType(groupType);
         mdValue.setDocstrct(ownerDocstrctType);
-        mdValue.setCitationStyle(citationTemplate);
+        if (StringUtils.isNotEmpty(citationTemplate) && citationProcessorWrapper != null) {
+            try {
+                mdValue.setCitationProcessor(citationProcessorWrapper.getCitationProcessor(citationTemplate));
+            } catch (IOException e) {
+                logger.error(e.getMessage());
+            }
+            mdValue.setCitationItemDataProvider(citationProcessorWrapper.getCitationItemDataProvider());
+        }
 
         MetadataParameter param = params.get(paramIndex);
         for (String value : inValues) {
@@ -468,7 +479,7 @@ public class Metadata implements Serializable {
             value = SearchHelper.replaceHighlightingPlaceholders(value);
 
             if (paramIndex >= 0) {
-                while(mdValue.getParamLabels().size() <= paramIndex) {
+                while (mdValue.getParamLabels().size() <= paramIndex) {
                     mdValue.getParamLabels().add("");
                 }
                 mdValue.getParamLabels().set(paramIndex, label);
@@ -476,19 +487,19 @@ public class Metadata implements Serializable {
                     mdValue.getParamValues().add(new ArrayList<>());
                 }
                 mdValue.getParamValues().get(paramIndex).add(StringTools.intern(value));
-                while(mdValue.getParamMasterValueFragments().size() <= paramIndex) {
+                while (mdValue.getParamMasterValueFragments().size() <= paramIndex) {
                     mdValue.getParamMasterValueFragments().add("");
                 }
                 mdValue.getParamMasterValueFragments().set(paramIndex, param.getMasterValueFragment());
-                while(mdValue.getParamPrefixes().size() <= paramIndex) {
+                while (mdValue.getParamPrefixes().size() <= paramIndex) {
                     mdValue.getParamPrefixes().add("");
                 }
                 mdValue.getParamPrefixes().add(paramIndex, param.getPrefix());
-                while(mdValue.getParamSuffixes().size() <= paramIndex) {
+                while (mdValue.getParamSuffixes().size() <= paramIndex) {
                     mdValue.getParamSuffixes().add("");
                 }
                 mdValue.getParamSuffixes().add(paramIndex, param.getSuffix());
-                while(mdValue.getParamUrls().size() <= paramIndex) {
+                while (mdValue.getParamUrls().size() <= paramIndex) {
                     mdValue.getParamUrls().add("");
                 }
                 mdValue.getParamUrls().add(paramIndex, url);
@@ -609,6 +620,14 @@ public class Metadata implements Serializable {
         }
         ownerId = String.valueOf(se.getLuceneId());
         ownerDocstrctType = se.getDocStructType();
+
+        // Retrieve citation processor from ViewManager, if available
+        if (StringUtils.isNotEmpty(citationTemplate)) {
+            ActiveDocumentBean adb = BeanUtils.getActiveDocumentBean();
+            if (adb != null && adb.isRecordLoaded()) {
+                setCitationProcessorWrapper(adb.getViewManager().getCitationProcessorWrapper());
+            }
+        }
 
         // Grouped metadata
         if (group) {
@@ -879,6 +898,20 @@ public class Metadata implements Serializable {
     public Metadata setCitationTemplate(String citationTemplate) {
         this.citationTemplate = citationTemplate;
         return this;
+    }
+
+    /**
+     * @return the citationProcessorWrapper
+     */
+    public CitationProcessorWrapper getCitationProcessorWrapper() {
+        return citationProcessorWrapper;
+    }
+
+    /**
+     * @param citationProcessorWrapper the citationProcessorWrapper to set
+     */
+    public void setCitationProcessorWrapper(CitationProcessorWrapper citationProcessorWrapper) {
+        this.citationProcessorWrapper = citationProcessorWrapper;
     }
 
     /**
