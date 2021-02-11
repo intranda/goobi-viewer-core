@@ -14,6 +14,8 @@
                     <h3>#{msg.menuUser_workInteractions}</h3>
 
                     <ul>
+                        <h4>#{msg.general}</h4>
+                        
                         <h:panelGroup rendered="#{userBean.user.maySetRepresentativeImage and activeDocumentBean.viewManager.hasPages}">
                             <li>
                                 <h:commandLink
@@ -98,9 +100,44 @@
                         
                         
                     </ul>
+                    
+                    <!-- CLEAR CACHE -->
+                    <ui:fragment rendered="#{userBean.admin}">
+                        <ul>
+                            <h4>#{msg.cache_clear__title}</h4>
+                            <div class="widget-user-interactions__clear_cache">
+                                <div class="custom-control custom-control--select">
+                                    <h:selectOneMenu value="#{activeDocumentBean.clearCacheMode}" immediate="true">
+                                        <f:selectItem itemLabel="#{msg.select}" itemValue="#{null}" />
+                                        <f:selectItem itemLabel="#{msg.cache_clear__label_all}" itemValue="content" />
+                                        <f:selectItem itemLabel="#{msg.cache_clear__label_content}" itemValue="content" />
+                                        <f:selectItem itemLabel="#{msg.cache_clear__label_thumbs}" itemValue="thumbs" />
+                                        <f:selectItem itemLabel="#{msg.cache_clear__label_pdf}" itemValue="pdf" />
+                                        <f:passThroughAttribute name="aria-label" value="#{msg.select}"/>
+                                        <f:ajax render="@form" />
+                                    </h:selectOneMenu>
+                                </div>
+                                
+                                <!-- ACTION -->
+                                <!-- TODO: hide when no mode selected -->
+                                <ui:fragment rendered="#{activeDocumentBean.clearCacheMode != null}">
+                                    <div class="widget-user-interactions__clear-cache-action">
+                                        <h:commandLink styleClass="btn btn--danger" role="button"
+                                            onclick="if ( !confirm( &quot;#{msg['cache_clear__confirmation_text_'.concat(activeDocumentBean.clearCacheMode)]}&quot; ) ) { return false };"
+                                            action="#{activeDocumentBean.clearCacheAction}">
+                                            #{msg.button__delete}
+                                        </h:commandLink>
+                                    </div>
+                                </ui:fragment>
+                                
+                            </div>
+                        </ul>
+                    </ui:fragment>
 
                     <!-- DELETE RECORD -->
                     <ui:fragment rendered="#{userBean.admin and !activeDocumentBean.viewManager.hasVolumes}">
+                        <ul>
+                        <h4>#{msg.deleteRecord}</h4>
                         <div class="widget-user-interactions__delete-record">
                             <!-- HAS NO URNS -->
                             <ui:fragment rendered="#{!activeDocumentBean.viewManager.hasUrns}">
@@ -139,7 +176,7 @@
                                 </ui:fragment>
                             </ui:fragment>
                         </div>
-                        
+                        </ul>
                     </ui:fragment>
 
                     <!-- CANNOT DELETE ANCHOR DUE TO VOLUMES PRESENT -->
