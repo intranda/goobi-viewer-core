@@ -73,6 +73,7 @@ public class UrlRedirectFilter implements Filter {
         // logger.trace("doFilter");
         try {
             HttpServletRequest httpRequest = (HttpServletRequest) request;
+            String url = httpRequest.getRequestURI();
             if (isPrefetchingRequest(httpRequest)) {
                 return;
             }

@@ -338,6 +338,17 @@
 <!--                                 </li> -->
                             </ui:fragment>
                         </ui:fragment>
+                        <ui:fragment rendered="#{navigationHelper.currentPage == 'fulltext'}">
+                        	<li class="image-controls__action enter-fullscreen">
+                                <h:outputLink value="#{activeDocumentBean.fullscreenImageUrl}?activetab=fulltext" title="#{msg.fullscreen_enter}">
+                                    <ui:include src="#{navigationHelper.getResource('images/icons/icon_ic-fullscreen.svg')}" />
+                                    <span id="fullScreenLabel" class="labeltext">#{msg.enterFullscreen}</span>
+                                    <f:passThroughAttribute name="data-toggle" value="tooltip" />
+                                    <f:passThroughAttribute name="data-placement" value="#{cc.attrs.tooltipPlacement}" />
+                                    <f:passThroughAttribute name="aria-labelledby" value="fullScreenLabel" />
+                                </h:outputLink>
+                            </li>
+                        </ui:fragment>
                         
                     </ul>
                 </div>
