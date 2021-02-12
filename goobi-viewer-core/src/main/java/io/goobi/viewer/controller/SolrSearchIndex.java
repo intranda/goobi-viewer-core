@@ -264,7 +264,7 @@ public final class SolrSearchIndex {
         if (filterQueries != null && !filterQueries.isEmpty()) {
             for (String fq : filterQueries) {
                 solrQuery.addFilterQuery(fq);
-                // logger.trace("adding filter query: {}", fq);
+                logger.debug("adding filter query: {}", fq);
             }
         }
         if (params != null && !params.isEmpty()) {
@@ -275,7 +275,7 @@ public final class SolrSearchIndex {
         }
 
         try {
-            //             logger.trace("Solr query : {}", solrQuery.getQuery());
+            logger.debug("Solr query : {}", solrQuery.getQuery());
             //             logger.debug("range: {} - {}", first, first + rows);
             //             logger.debug("facetFields: {}", facetFields);
             //             logger.debug("fieldList: {}", fieldList);
