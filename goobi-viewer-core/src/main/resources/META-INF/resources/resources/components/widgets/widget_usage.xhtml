@@ -13,13 +13,13 @@
         <ui:fragment rendered="#{configurationBean.displayWidgetUsage and !activeDocumentBean.group}">
             <div id="widgetUsage" class="widget widget-usage">
                 <!-- WIDGET TITLE -->
-				<h3 class="widget__title #{activeDocumentBean.viewManager.metadataViewOnly ? '' : 'collapseable'}">
+				<h3 class="widget__title #{activeDocumentBean.viewManager.metadataViewOnly or activeDocumentBean.anchor or activeDocumentBean.group ? '' : 'collapseable'}">
                     <span>#{msg.widgetUsage}</span>
                     <i class="fa fa-angle-down" aria-hidden="true"></i>
                 </h3>
                 
                 <!-- WIDGET BODY -->
-				<div class="widget__body #{activeDocumentBean.viewManager.metadataViewOnly ? '' : 'collapseable'}">
+				<div class="widget__body #{activeDocumentBean.viewManager.metadataViewOnly or activeDocumentBean.anchor or activeDocumentBean.group ? '' : 'collapseable'}">
                     <!-- LICENSE TEXT -->
                     <p id="licenseText" class="widget-usage__license-text">
                         <viewerComponent:metadata metadata="#{activeDocumentBean.viewManager.usageWidgetAccessCondition}" displayLabel="false" />
