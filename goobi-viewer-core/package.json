@@ -48,6 +48,7 @@
     "leaflet": "1.7.1",
     "leaflet.markercluster": "*",
     "swagger-ui-dist": "*",
-    "hc-sticky": "~2.2.6"
+    "hc-sticky": "~2.2.6",
+    "mirador": "~3.0.0"
   }
 }

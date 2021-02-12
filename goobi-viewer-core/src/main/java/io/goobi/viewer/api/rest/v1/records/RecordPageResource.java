@@ -44,6 +44,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import de.intranda.api.annotation.IAnnotationCollection;
+import de.intranda.api.annotation.IResource;
+import de.intranda.api.annotation.SimpleResource;
+import de.intranda.api.annotation.oa.OpenAnnotation;
+import de.intranda.api.annotation.oa.SpecificResource;
+import de.intranda.api.annotation.oa.TextualResource;
 import de.intranda.api.annotation.wa.collection.AnnotationPage;
 import de.intranda.api.iiif.presentation.AnnotationList;
 import de.intranda.api.iiif.presentation.Canvas;
