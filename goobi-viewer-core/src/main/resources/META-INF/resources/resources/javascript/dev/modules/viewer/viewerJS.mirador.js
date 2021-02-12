@@ -44,7 +44,7 @@ var viewerJS = ( function( viewer ) {
     }
     var windowObject = {
         thumbnailNavigationPosition: 'far-bottom',    
-        canvasIndex: 1      
+        canvasIndex: 0,
     }
     
     var messageKeys = ["viewMirador", "viewMiradorComparison"];
@@ -211,9 +211,7 @@ var viewerJS = ( function( viewer ) {
         var rows = Math.ceil(manifests.length/columns);
         
         var miradorConfig = { 
-                buildPath : _defaults.root + "/resources/javascript/libs/mirador/",
                 id: "miradorViewer",
-                layout: rows + "x" + columns,
                 manifests: manifests.map(man => {
                     var dataObj = Object.assign({}, dataObject);
                     dataObj.manifestUri = man;
@@ -224,6 +222,9 @@ var viewerJS = ( function( viewer ) {
                     winObj.loadedManifest = man;
                     return winObj;
                 }),
+                window: {
+                	defaultView: 'single'
+                },
                 annotations: {  
              		//'sc:painting' excluded to hide fulltext annotations
              		//'oa:describing' must be included to display viewer (crowdsourcing) annotations
