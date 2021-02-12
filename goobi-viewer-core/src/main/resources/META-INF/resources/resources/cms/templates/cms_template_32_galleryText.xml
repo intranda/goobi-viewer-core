@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<cms_page_template id="customTemplateGalleryText" version="2019-07-15">
+    <name>cms_template_32_galleryText__title</name>
+    <description>cms_template_32_galleryText__description</description>
+    <icon>cms_template_32_galleryText.png</icon>
+    <html>cms_template_32_galleryText.xhtml</html>
+    <content>
+        <item id="image01" order="1" type="MEDIA" label="image" inlinehelp="cms_template_32_galleryText__help"/>
+        <item id="image02" order="2" type="MEDIA" label="image" inlinehelp="cms_template_32_galleryText__help"/>
+        <item id="image03" order="3" type="MEDIA" label="image" inlinehelp="cms_template_32_galleryText__help"/>
+        <item id="image04" order="4" type="MEDIA" label="image" inlinehelp="cms_template_32_galleryText__help"/>
+        <item id="text01" order="4" type="HTML" label="text"/>
+    </content>
+</cms_page_template>

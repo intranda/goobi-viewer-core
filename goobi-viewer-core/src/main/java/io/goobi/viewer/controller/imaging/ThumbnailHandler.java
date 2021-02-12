@@ -844,6 +844,7 @@ public class ThumbnailHandler {
         return optional.map(item -> {
             try {
             String filename = item.getFileName();
+            filename = URLEncoder.encode(filename, "utf-8");
             String size = getSize(width, height);
             ImageFileFormat format = ImageFileFormat.JPG;
             ImageFileFormat formatType = ImageFileFormat.getImageFileFormatFromFileExtension(filename);
@@ -854,7 +855,7 @@ public class ThumbnailHandler {
             String url = this.iiifUrlHandler.getIIIFImageUrl(imageApiUrl, RegionRequest.FULL, Scale.getScaleMethod(size), Rotation.NONE, Colortype.DEFAULT, format);
                 url += "?updated=" + item.getLastModifiedTime();
                 return url;
-            } catch (IllegalRequestException e) {
+            } catch (IllegalRequestException | UnsupportedEncodingException e) {
                 logger.error(e.toString(), e);
                 return "";
             }
