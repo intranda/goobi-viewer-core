@@ -49,5 +49,7 @@ public class RecordsRequestParameters {
     public String language = "";
     @Schema(description = "Set to 'true' to include all child documents (sections, pages) that match the query. Child documents are appended in the 'children' property", example="false")
     public boolean includeChildHits = false;
+    @Schema(description = "A list of SOLR field names to get facet results for", example="[\"DC\",\"DOCSTRCT\"]")
+    public List<String> facetFields = new ArrayList<>();
 
 }

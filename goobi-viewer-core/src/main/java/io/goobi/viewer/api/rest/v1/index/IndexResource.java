@@ -22,6 +22,7 @@ import static io.goobi.viewer.api.rest.v1.ApiUrls.INDEX_STREAM;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -43,9 +44,12 @@ import org.apache.solr.client.solrj.io.Tuple;
 import org.apache.solr.client.solrj.io.stream.SolrStream;
 import org.apache.solr.client.solrj.io.stream.StreamContext;
 import org.apache.solr.client.solrj.io.stream.TupleStream;
+import org.apache.solr.client.solrj.response.FacetField;
 import org.apache.solr.client.solrj.response.QueryResponse;
+import org.apache.solr.client.solrj.response.json.NestableJsonFacet;
 import org.apache.solr.common.SolrDocumentList;
 import org.apache.solr.common.params.ModifiableSolrParams;
+import org.apache.solr.common.util.NamedList;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.slf4j.Logger;
@@ -158,9 +162,12 @@ public class IndexResource {
             }
             //                        QueryResponse response = DataManager.getInstance().getSearchIndex().search(query, params.offset, count, sortFieldList, null, fieldList );
             QueryResponse response =
-                    DataManager.getInstance().getSearchIndex().search(query, params.offset, count, sortFieldList, null, fieldList, null, paramMap);
+                    DataManager.getInstance().getSearchIndex().search(query, params.offset, count, sortFieldList, params.facetFields, fieldList, null, paramMap);
 
             SolrDocumentList result = response.getResults();
+            
+            
+            
             Map<String, SolrDocumentList> expanded = response.getExpandedResults();
             logger.trace("hits: {}", result.size());
             JSONArray jsonArray = null;
@@ -179,8 +186,37 @@ public class IndexResource {
             if (jsonArray == null) {
                 jsonArray = new JSONArray();
             }
+            
+            JSONObject object = new JSONObject();
+            object.put("numFound", result.getNumFound());
+            object.put("docs", jsonArray);
+            
+            List<FacetField> facetFields = response.getFacetFields();
+            if(facetFields != null && !facetFields.isEmpty()) {
+                JSONArray facets = new JSONArray();
+                object.put("facets", facets);
+                facetFields.forEach(ff -> {
+                    JSONObject facet = new JSONObject();
+                    facets.put(facet);
+                    String facetName = ff.getName();
+                    int facetCount = ff.getValueCount();
+                    facet.put("field ", facetName);
+                    facet.put("count", facetCount);
+                    JSONArray facetList = new JSONArray();
+                    facet.put("values", facetList);
+                    ff.getValues().forEach(c -> {
+                        String value = c.getName();
+                        long num = c.getCount();
+                        JSONObject countObject = new JSONObject();
+                        countObject.put("value", value);
+                        countObject.put("count", num);
+                        facetList.put(countObject);
+                    });
+                });
+            }
+            
 
-            return jsonArray.toString();
+            return object.toString();
         } catch (PresentationException e) {
             throw new IllegalRequestException(e.getMessage());
         }
