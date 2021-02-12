@@ -72,7 +72,7 @@
 					</h:panelGroup>
 
 					<!-- Metadata -->
-					<h:panelGroup rendered="#{activeDocumentBean.viewManager.displayMetadataViewLink}">
+					<h:panelGroup rendered="#{activeDocumentBean.viewManager.displayMetadataViewLink and not (activeDocumentBean.anchor or activeDocumentBean.group)}">
 						<li
 							class="#{navigationHelper.currentPage == 'metadata' ? 'active' : ''}">
 							<h:outputLink
