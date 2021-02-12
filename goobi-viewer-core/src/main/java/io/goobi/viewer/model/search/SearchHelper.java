@@ -1602,6 +1602,10 @@ public final class SearchHelper {
             params.put(GroupParams.GROUP_FIELD, SolrConstants.GROUPFIELD);
         }
 
+        if (logger.isTraceEnabled()) {
+            logger.trace("row count: {}", DataManager.getInstance().getSearchIndex().getHitCount(query, filterQueries));
+        }
+
         // Faceting (no rows requested or expected row count too high)
         if (rows == 0 || DataManager.getInstance().getSearchIndex().getHitCount(query, filterQueries) > DataManager.getInstance()
                 .getConfiguration()
@@ -1634,7 +1638,9 @@ public final class SearchHelper {
         String pi = (String) doc.getFieldValue(SolrConstants.PI_TOPSTRUCT);
         String sortTerm = (String) doc.getFieldValue(bmfc.getSortField());
         Set<String> usedTermsInCurrentDoc = new HashSet<>();
+        int count = -1;
         for (Object o : termList) {
+            count++;
             String term = String.valueOf(o);
             if (StringUtils.isEmpty(term)) {
                 continue;
@@ -1646,7 +1652,7 @@ public final class SearchHelper {
             }
 
             String compareTerm = term;
-            if (StringUtils.isNotEmpty(sortTerm)) {
+            if (StringUtils.isNotEmpty(sortTerm) && count == 0) {
                 compareTerm = sortTerm;
             }
             if (StringUtils.isNotEmpty(DataManager.getInstance().getConfiguration().getBrowsingMenuSortingIgnoreLeadingChars())) {
