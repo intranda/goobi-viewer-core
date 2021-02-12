@@ -30,7 +30,7 @@ var viewerJS = ( function( viewer ) {
     var keyPattern = /.*\/mirador\/key\/(\w+)\/?/i;
     
     // variables
-    var _debug = true;
+    var _debug = false;
     var _sessionBookmarkList = '';
     var _defaults = {
     	root: '',
