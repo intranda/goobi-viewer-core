@@ -79,7 +79,7 @@ public class CollectionsResourceTest extends AbstractRestApiTest{
             assertNotNull(entity);
             JSONObject collection = new JSONObject(entity);
             assertEquals(url, collection.getString("@id"));
-            assertEquals(20, collection.getJSONArray("members").length());
+            assertEquals(19, collection.getJSONArray("members").length());
         }
     }
 
