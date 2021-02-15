@@ -20,6 +20,7 @@ import static org.junit.Assert.fail;
 import java.io.File;
 import java.io.IOException;
 import java.net.URISyntaxException;
+import java.net.URLEncoder;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -213,7 +214,8 @@ public class CMSPageTest extends AbstractDatabaseEnabledTest {
         String contentServerUrl = DataManager.getInstance().getConfiguration().getIIIFApiUrl();
 
         String filename = media.getFileName();
-
+        filename = URLEncoder.encode(filename, "utf-8");
+        
         String imageUrl = contentUrls.path(ApiUrls.CMS_MEDIA, ApiUrls.CMS_MEDIA_FILES_FILE).params(filename).build()  + "/full/max/0/default.jpg/";
         Assert.assertEquals(imageUrl, page.getContent(imageId).replaceAll("\\?.*", ""));
         Assert.assertEquals(componentName, page.getContent(componentId));

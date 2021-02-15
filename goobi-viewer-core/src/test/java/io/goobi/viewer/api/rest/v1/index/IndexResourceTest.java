@@ -103,8 +103,11 @@ public class IndexResourceTest extends AbstractRestApiTest{
                 .post(entity)) {
             assertEquals("Should return status 200", 200, response.getStatus());
             String jsonString = response.readEntity(String.class);
-            JSONArray array = new JSONArray(jsonString);
+            JSONObject answer = new JSONObject(jsonString);
+            JSONArray array = answer.getJSONArray("docs");
+            int numFound = answer.getInt("numFound");
             assertEquals(4, array.length());
+            assertTrue(numFound >= 4);
         }
     }
     
