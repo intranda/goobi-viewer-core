@@ -10,7 +10,7 @@
     <composite:interface />
 
     <composite:implementation>
-        <ui:fragment rendered="#{configurationBean.displayWidgetUsage and !activeDocumentBean.group}">
+        <ui:fragment rendered="#{configurationBean.displaySidebarWidgetUsage and !activeDocumentBean.group}">
             <div id="widgetUsage" class="widget widget-usage">
                 <!-- WIDGET TITLE -->
 				<h3 class="widget__title #{activeDocumentBean.viewManager.metadataViewOnly or activeDocumentBean.anchor or activeDocumentBean.group ? '' : 'collapseable'}">
@@ -22,7 +22,7 @@
 				<div class="widget__body #{activeDocumentBean.viewManager.metadataViewOnly or activeDocumentBean.anchor or activeDocumentBean.group ? '' : 'collapseable'}">
                     <!-- INTRODUCTION TEXT -->
                     <p id="introductionText" class="widget-usage__license-text">
-                        <h:outputText value="#{msg[configurationBean.widgetUsageIntroductionText]}" />
+                        <h:outputText value="#{msg[configurationBean.sidebarWidgetUsageIntroductionText]}" />
                     </p>
                     
                     <!-- WORK -->

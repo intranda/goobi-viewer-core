@@ -11,6 +11,11 @@
 			<div id="widgetDownload" class="widget">
 	    	    <h:form id="widgetDownloadForm">
 					<h3>#{msg.downloads}</h3>
+					
+					<!-- INTRODUCTION TEXT -->
+                    <p id="introductionText" class="widget-download__license-text">
+                        <h:outputText value="#{msg[configurationBean.sidebarWidgetDownloadsIntroductionText]}" />
+                    </p>
 						
 					<ul>
 						<ui:repeat value="#{activeDocumentBean.viewManager.contentDownloadLinksForWork}" var="link">

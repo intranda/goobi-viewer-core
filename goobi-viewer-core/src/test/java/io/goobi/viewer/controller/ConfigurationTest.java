@@ -1141,12 +1141,22 @@ public class ConfigurationTest extends AbstractTest {
     }
 
     /**
-     * @see Configuration#isOriginalContentDownload()
+     * @see Configuration#isOriginalContentDownloads()
      * @verifies return correct value
      */
     @Test
-    public void isDisplaySidebarWidgetDownload_shouldReturnCorrectValue() throws Exception {
-        Assert.assertEquals(true, DataManager.getInstance().getConfiguration().isDisplaySidebarWidgetDownload());
+    public void isDisplaySidebarWidgetDownloads_shouldReturnCorrectValue() throws Exception {
+        Assert.assertEquals(true, DataManager.getInstance().getConfiguration().isDisplaySidebarWidgetDownloads());
+    }
+    
+
+    /**
+     * @see Configuration#getSidebarWidgetDownloadsIntroductionText()
+     * @verifies return correct value
+     */
+    @Test
+    public void getSidebarWidgetDownloadsIntroductionText_shouldReturnCorrectValue() throws Exception {
+        Assert.assertEquals("MASTERVALUE_DOWNLOADS_INTRO", DataManager.getInstance().getConfiguration().getSidebarWidgetDownloadsIntroductionText());
     }
 
     @Test
@@ -2864,12 +2874,12 @@ public class ConfigurationTest extends AbstractTest {
     }
 
     /**
-     * @see Configuration#getWidgetUsageIntroductionText()
+     * @see Configuration#getSidebarWidgetUsageIntroductionText()
      * @verifies return correct value
      */
     @Test
-    public void getWidgetUsageIntroductionText_shouldReturnCorrectValue() throws Exception {
-        Assert.assertEquals("MASTERVALUE_USAGE_INTRO", DataManager.getInstance().getConfiguration().getWidgetUsageIntroductionText());
+    public void getSidebarWidgetUsageIntroductionText_shouldReturnCorrectValue() throws Exception {
+        Assert.assertEquals("MASTERVALUE_USAGE_INTRO", DataManager.getInstance().getConfiguration().getSidebarWidgetUsageIntroductionText());
     }
 
     /**

@@ -697,8 +697,17 @@ public final class Configuration extends AbstractConfiguration {
      * @should return correct value
      * @return a boolean.
      */
-    public boolean isDisplaySidebarWidgetDownload() {
+    public boolean isDisplaySidebarWidgetDownloads() {
         return getLocalBoolean("sidebar.sidebarWidgetDownloads[@visible]", false);
+    }
+    
+    /**
+     * 
+     * @return
+     * @should return correct value
+     */
+    public String getSidebarWidgetDownloadsIntroductionText() {
+        return getLocalString("sidebar.sidebarWidgetDownloads[@introductionText]", "");
     }
 
     /**
@@ -758,7 +767,7 @@ public final class Configuration extends AbstractConfiguration {
      * @return
      * @should return correct value
      */
-    public String getWidgetUsageIntroductionText() {
+    public String getSidebarWidgetUsageIntroductionText() {
         return getLocalString("sidebar.sidebarWidgetUsage[@introductionText]", "");
     }
 
@@ -788,23 +797,23 @@ public final class Configuration extends AbstractConfiguration {
 
     /**
      * <p>
-     * getWidgetUsageMaxJpegSize.
+     * getSidebarWidgetUsageMaxJpegSize.
      * </p>
      *
      * @return a {@link java.lang.String} object.
      */
-    public String getWidgetUsageMaxJpegSize() {
+    public String getSidebarWidgetUsageMaxJpegSize() {
         return getLocalString("sidebar.sidebarWidgetUsage.page.displayLinkToJpegImage[@maxSize]", Scale.MAX_SIZE);
     }
 
     /**
      * <p>
-     * getWidgetUsageMaxMasterImageSize.
+     * getSidebarWidgetUsageMaxMasterImageSize.
      * </p>
      *
      * @return a {@link java.lang.String} object.
      */
-    public String getWidgetUsageMaxMasterImageSize() {
+    public String getSidebarWidgetUsageMaxMasterImageSize() {
         return getLocalString("sidebar.sidebarWidgetUsage.page.displayLinkToMasterImage[@maxSize]", Scale.MAX_SIZE);
     }
 
