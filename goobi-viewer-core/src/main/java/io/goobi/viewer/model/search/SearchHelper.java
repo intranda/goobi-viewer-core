@@ -559,6 +559,9 @@ public final class SearchHelper {
             boolean filterForWhitelist, boolean filterForBlacklist, String splittingChar) throws IndexUnreachableException {
         logger.trace("findAllCollectionsFromField: {}", luceneField);
         Map<String, CollectionResult> ret = new HashMap<>();
+        if(splittingChar.isBlank()) {
+            throw new IllegalArgumentException("Splitting char may not be empty. Check configuration for collection field " + luceneField);
+        }
         try {
             StringBuilder sbQuery = new StringBuilder();
             if (StringUtils.isNotBlank(filterQuery)) {
@@ -2348,7 +2351,12 @@ public final class SearchHelper {
             request = BeanUtils.getRequest();
         }
         if (request == null) {
-            return null;
+            try {
+                return getPersonalFilterQuerySuffix(null, null);
+            } catch (IndexUnreachableException | PresentationException | DAOException e) {
+                logger.error(e.getMessage(), e);
+                return "";
+            }
         }
         HttpSession session = request.getSession(false);
         if (session == null) {

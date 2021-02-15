@@ -53,6 +53,7 @@ import io.goobi.viewer.managedbeans.ImageDeliveryBean;
 import io.goobi.viewer.managedbeans.MetadataBean;
 import io.goobi.viewer.managedbeans.NavigationHelper;
 import io.goobi.viewer.managedbeans.SearchBean;
+import io.goobi.viewer.managedbeans.SessionBean;
 import io.goobi.viewer.managedbeans.UserBean;
 import io.goobi.viewer.model.security.user.User;
 import io.goobi.viewer.servlets.utils.ServletUtils;
@@ -85,6 +86,12 @@ public class BeanUtils {
      * @return a {@link javax.servlet.http.HttpServletRequest} object.
      */
     public static HttpServletRequest getRequest() {
+                
+        SessionBean sb = getSessionBean();
+        if(sb != null) {
+            return sb.getRequest();
+        }
+        
         FacesContext context = FacesContext.getCurrentInstance();
         return getRequest(context);
     }
@@ -383,6 +390,15 @@ public class BeanUtils {
         return (UserBean) getBeanByName("userBean", UserBean.class);
     }
 
+    public static SessionBean getSessionBean() {
+        Object bean = getBeanByName("sessionBean", SessionBean.class);
+        if(bean != null) {
+            return (SessionBean) bean;
+        } else {
+            return new SessionBean();
+        }
+    }
+    
     /**
      * <p>
      * getImageDeliveryBean.
