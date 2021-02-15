@@ -200,6 +200,8 @@ public class ApiUrls extends AbstractApiUrlManager {
     public static final String TEMP_MEDIA_FILES_FILE_IMAGE = "/temp/files/{folder}/{filename: (?i)[^\\/]*\\.(jpe?g|tiff?|png|gif|jp2)}";
     public static final String TEMP_MEDIA_FILES_FILE_IIIF = "/{region}/{size}/{rotation}/{quality}.{format}";
 
+    public static final String EXTERNAL_IMAGES = "/images/external/{filename}";
+    public static final String EXTERNAL_IMAGES_IIIF = "/{region}/{size}/{rotation}/{quality}.{format}";
 
 
 
