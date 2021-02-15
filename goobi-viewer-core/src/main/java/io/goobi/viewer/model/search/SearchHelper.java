@@ -2351,12 +2351,7 @@ public final class SearchHelper {
             request = BeanUtils.getRequest();
         }
         if (request == null) {
-            try {
-                return getPersonalFilterQuerySuffix(null, null);
-            } catch (IndexUnreachableException | PresentationException | DAOException e) {
-                logger.error(e.getMessage(), e);
-                return "";
-            }
+            return "";
         }
         HttpSession session = request.getSession(false);
         if (session == null) {
