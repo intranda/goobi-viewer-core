@@ -206,6 +206,20 @@ public class SearchBean implements SearchInterface, Serializable {
     }
 
     /**
+     * Dummy method for component cross-compatibility with CMS searches.
+     * 
+     * @param subtheme
+     * @return
+     * @throws PresentationException
+     * @throws IndexUnreachableException
+     * @throws DAOException
+     * @throws ViewerConfigurationException
+     */
+    public String search(String subtheme) throws PresentationException, IndexUnreachableException, DAOException, ViewerConfigurationException {
+        return search();
+    }
+
+    /**
      * Executes the search using already set parameters. Usually called from Pretty URLs.
      *
      * @return {@link java.lang.String} null
@@ -1912,11 +1926,11 @@ public class SearchBean implements SearchInterface, Serializable {
         if (searchString == null) {
             return null;
         }
-        
+
         String currentQuery = SearchHelper.prepareQuery(searchString);
         AbstractApiUrlManager urls = DataManager.getInstance().getRestApiManager().getDataApiManager().orElse(null);
-        if(urls == null) {
-            
+        if (urls == null) {
+
             try {
                 return new StringBuilder().append(DataManager.getInstance().getConfiguration().getRestApiUrl())
                         .append("rss/search/")
@@ -1939,9 +1953,9 @@ public class SearchBean implements SearchInterface, Serializable {
                         .append("/-/")
                         .toString();
             }
-            
+
         } else {
-            
+
             String facetQuery = StringUtils.isBlank(facets.getCurrentFacetString().replace("-", "")) ? null : facets.getCurrentFacetString();
             return urls.path(ApiUrls.RECORDS_RSS)
                     .query("query", currentQuery)
@@ -2000,7 +2014,7 @@ public class SearchBean implements SearchInterface, Serializable {
     public String exportSearchAsExcelAction() throws IndexUnreachableException {
         logger.trace("exportSearchAsExcelAction");
         final FacesContext facesContext = FacesContext.getCurrentInstance();
-        
+
         String currentQuery = SearchHelper.prepareQuery(searchString);
         String finalQuery = SearchHelper.buildFinalQuery(currentQuery, DataManager.getInstance().getConfiguration().isAggregateHits());
         Locale locale = navigationHelper.getLocale();
@@ -2014,9 +2028,9 @@ public class SearchBean implements SearchInterface, Serializable {
                         job.setError("Failed to create excel sheet");
                     } else if (Thread.interrupted()) {
                         job.setError("Execution cancelled");
-                    } else {                    
+                    } else {
                         Callable<Boolean> download = new Callable<Boolean>() {
-                            
+
                             @Override
                             public Boolean call() {
                                 try {
@@ -2027,28 +2041,28 @@ public class SearchBean implements SearchInterface, Serializable {
                                 }
                             }
                         };
-                        
+
                         downloadComplete = new FutureTask<>(download);
                         executor.submit(downloadComplete);
                         downloadComplete.get(timeout, TimeUnit.SECONDS);
                     }
-                    } catch(TimeoutException | InterruptedException e) {
-                        job.setError("Timeout for excel download");
-                    } catch (ExecutionException | ViewerConfigurationException e) {
-                        logger.error(e.toString(), e);
-                        job.setError("Failed to create excel sheet");
-                    }
+                } catch (TimeoutException | InterruptedException e) {
+                    job.setError("Timeout for excel download");
+                } catch (ExecutionException | ViewerConfigurationException e) {
+                    logger.error(e.toString(), e);
+                    job.setError("Failed to create excel sheet");
+                }
             } else {
                 job.setError("Response is already committed");
             }
         };
 
-        
         try {
             Task excelCreationJob = new Task(new TaskParameter(TaskType.SEARCH_EXCEL_EXPORT), task);
             Long jobId = DataManager.getInstance().getRestApiJobManager().addTask(excelCreationJob);
-            Future ready = DataManager.getInstance().getRestApiJobManager()
-            .triggerTaskInThread(jobId, (HttpServletRequest)facesContext.getExternalContext().getRequest());
+            Future ready = DataManager.getInstance()
+                    .getRestApiJobManager()
+                    .triggerTaskInThread(jobId, (HttpServletRequest) facesContext.getExternalContext().getRequest());
             ready.get(timeout, TimeUnit.SECONDS);
         } catch (InterruptedException e) {
             logger.debug("Download interrupted");
