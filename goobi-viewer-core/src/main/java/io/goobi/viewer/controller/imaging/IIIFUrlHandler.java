@@ -103,6 +103,7 @@ public class IIIFUrlHandler {
                     logger.warn("file url {} is not a valid url: {}", fileUrl, e.getMessage());
                 }
                 if(urls != null) {
+                    fileUrl = BeanUtils.escapeCriticalUrlChracters(fileUrl, false);
                     return urls.path(EXTERNAL_IMAGES, EXTERNAL_IMAGES_IIIF).params(fileUrl, region, size, rotation, quality, format).toString();
                 } else {                    
                     StringBuilder sb = new StringBuilder(apiUrl);
@@ -115,14 +116,14 @@ public class IIIFUrlHandler {
                 } else if (ImageHandler.isImageUrl(fileUrl, false)) {
                     
                     if(urls != null) {
-                        fileUrl = BeanUtils.escapeCriticalUrlChracters(fileUrl, true);
+                        fileUrl = BeanUtils.escapeCriticalUrlChracters(fileUrl, false);
                         return urls.path(EXTERNAL_IMAGES, EXTERNAL_IMAGES_IIIF).params(fileUrl, region, size, rotation, quality, format).toString();
                     } else {
                         StringBuilder sb = new StringBuilder(apiUrl);
                         if (!apiUrl.endsWith("/")) {
                             sb.append("/");
                         }
-                        sb.append("image/-/").append(BeanUtils.escapeCriticalUrlChracters(fileUrl, true)).append("/");
+                        sb.append("image/-/").append(BeanUtils.escapeCriticalUrlChracters(fileUrl, false)).append("/");
                         sb.append(region).append("/");
                         sb.append(size).append("/");
                         sb.append(rotation).append("/");
