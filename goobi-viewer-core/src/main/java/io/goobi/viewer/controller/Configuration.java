@@ -754,22 +754,12 @@ public final class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * Get the metadata configuration for the license text in the usage widget
-     *
-     * @return the metadata configuration for the license text in the usage widget
+     * 
+     * @return
+     * @should return correct value
      */
-    public Metadata getWidgetUsageLicenceTextMetadata() {
-        HierarchicalConfiguration sub = null;
-        try {
-            sub = getLocalConfigurationAt("sidebar.sidebarWidgetUsage.licenseText.metadata");
-        } catch (IllegalArgumentException e) {
-            // no or multiple occurrences 
-        }
-        if (sub != null) {
-            Metadata md = getMetadataFromSubnodeConfig(sub, false);
-            return md;
-        }
-        return new Metadata();
+    public String getWidgetUsageIntroductionText() {
+        return getLocalString("sidebar.sidebarWidgetUsage[@introductionText]", "");
     }
 
     /**

@@ -20,9 +20,9 @@
                 
                 <!-- WIDGET BODY -->
 				<div class="widget__body #{activeDocumentBean.viewManager.metadataViewOnly or activeDocumentBean.anchor or activeDocumentBean.group ? '' : 'collapseable'}">
-                    <!-- LICENSE TEXT -->
-                    <p id="licenseText" class="widget-usage__license-text">
-                        <viewerComponent:metadata metadata="#{activeDocumentBean.viewManager.usageWidgetAccessCondition}" displayLabel="false" />
+                    <!-- INTRODUCTION TEXT -->
+                    <p id="introductionText" class="widget-usage__license-text">
+                        <h:outputText value="#{msg[configurationBean.widgetUsageIntroductionText]}" />
                     </p>
                     
                     <!-- WORK -->

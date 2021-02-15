@@ -1240,6 +1240,14 @@ public class ConfigurationBean implements Serializable {
     public boolean isDisplayWidgetUsage() {
         return DataManager.getInstance().getConfiguration().isDisplayWidgetUsage();
     }
+    
+    /**
+     * 
+     * @return
+     */
+    public String getWidgetUsageIntroductionText() {
+        return DataManager.getInstance().getConfiguration().getWidgetUsageIntroductionText();
+    }
 
     /**
      * <p>

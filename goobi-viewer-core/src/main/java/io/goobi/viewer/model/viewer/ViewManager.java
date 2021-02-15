@@ -3344,21 +3344,6 @@ public class ViewManager implements Serializable {
 
     /**
      * <p>
-     * getUsageWidgetAccessCondition.
-     * </p>
-     *
-     * @return a {@link io.goobi.viewer.model.metadata.Metadata} object.
-     * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
-     * @throws io.goobi.viewer.exceptions.PresentationException if any.
-     */
-    public Metadata getUsageWidgetAccessCondition() throws IndexUnreachableException, PresentationException {
-        Metadata md = DataManager.getInstance().getConfiguration().getWidgetUsageLicenceTextMetadata();
-        md.populate(getTopDocument(), BeanUtils.getLocale());
-        return md;
-    }
-
-    /**
-     * <p>
      * getCiteLinkWork.
      * </p>
      *

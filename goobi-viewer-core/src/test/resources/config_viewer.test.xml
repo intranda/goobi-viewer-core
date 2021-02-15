@@ -960,13 +960,7 @@
         <!-- sidebarBrowsingTerms: If true, the sidebar RSS widget it displayed. Default is true. -->
         <sidebarRssFeed display="false" />
 
-        <sidebarWidgetUsage display="false">
-            <licenseText>
-                <metadata label="MD_LICENSETEXT" value="MASTERVALUE_LICENSETEXT">
-                    <param type="field" key="LABEL" />
-                    <param type="translatedfield" key="ACCESSCONDITION" />
-                </metadata>
-            </licenseText>
+        <sidebarWidgetUsage display="false" introductionText="MASTERVALUE_USAGE_INTRO">
             <page>
                 <!-- displayLinkToJpegImage: Enables JPEG image download links for pages. Default is false.  -->
                 <displayLinkToJpegImage maxSize="2000">true</displayLinkToJpegImage>

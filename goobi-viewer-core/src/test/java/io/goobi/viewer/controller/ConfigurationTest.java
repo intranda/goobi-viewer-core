@@ -90,7 +90,6 @@ public class ConfigurationTest extends AbstractTest {
     public void getBrowsingMenuHitsPerPage_shouldReturnCorrectValue() throws Exception {
         Assert.assertEquals(19, DataManager.getInstance().getConfiguration().getBrowsingMenuHitsPerPage());
     }
-    
 
     /**
      * @see Configuration#getBrowsingMenuIndexSizeThreshold()
@@ -2865,12 +2864,21 @@ public class ConfigurationTest extends AbstractTest {
     }
 
     /**
+     * @see Configuration#getWidgetUsageIntroductionText()
+     * @verifies return correct value
+     */
+    @Test
+    public void getWidgetUsageIntroductionText_shouldReturnCorrectValue() throws Exception {
+        Assert.assertEquals("MASTERVALUE_USAGE_INTRO", DataManager.getInstance().getConfiguration().getWidgetUsageIntroductionText());
+    }
+
+    /**
      * @see Configuration#getSidebarWidgetUsageCitationStyles()
      * @verifies return all configured values
      */
     @Test
     public void getSidebarWidgetUsageCitationStyles_shouldReturnAllConfiguredValues() throws Exception {
-       List<String> result = DataManager.getInstance().getConfiguration().getSidebarWidgetUsageCitationStyles();
-       Assert.assertEquals(3, result.size());
+        List<String> result = DataManager.getInstance().getConfiguration().getSidebarWidgetUsageCitationStyles();
+        Assert.assertEquals(3, result.size());
     }
 }
