@@ -377,10 +377,6 @@ public class BrowseBean implements Serializable {
                 searchBean.resetSearchParameters(true);
             }
             hitsCount = 0;
-            String useFilterQuery = "+" + SolrConstants.DOCTYPE + ":" + DocType.DOCSTRCT.name();
-            if (StringUtils.isNotEmpty(filterQuery)) {
-                useFilterQuery += " +(" + filterQuery + ")";
-            }
 
             // Sort filters
             Locale locale = null;
@@ -405,6 +401,14 @@ public class BrowseBean implements Serializable {
                 resetTerms();
                 Messages.error(ViewerResourceBundle.getTranslation("browse_errFieldNotConfigured", null).replace("{0}", browsingMenuField));
                 throw new RedirectException("");
+            }
+
+            String useFilterQuery = "";
+            if (currentBmfc.getField().startsWith("MD_") || currentBmfc.getField().startsWith("MD2_")) {
+                useFilterQuery += "+" + SolrConstants.DOCTYPE + ":" + DocType.DOCSTRCT.name();
+            }
+            if (StringUtils.isNotEmpty(filterQuery)) {
+                useFilterQuery += " +(" + filterQuery + ")";
             }
 
             // Populate the list of available starting characters with ones that actually exist in the complete terms list
