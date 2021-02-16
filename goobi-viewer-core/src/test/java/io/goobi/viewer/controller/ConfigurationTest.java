@@ -90,7 +90,6 @@ public class ConfigurationTest extends AbstractTest {
     public void getBrowsingMenuHitsPerPage_shouldReturnCorrectValue() throws Exception {
         Assert.assertEquals(19, DataManager.getInstance().getConfiguration().getBrowsingMenuHitsPerPage());
     }
-    
 
     /**
      * @see Configuration#getBrowsingMenuIndexSizeThreshold()
@@ -1142,12 +1141,22 @@ public class ConfigurationTest extends AbstractTest {
     }
 
     /**
-     * @see Configuration#isOriginalContentDownload()
+     * @see Configuration#isOriginalContentDownloads()
      * @verifies return correct value
      */
     @Test
-    public void isDisplaySidebarWidgetDownload_shouldReturnCorrectValue() throws Exception {
-        Assert.assertEquals(true, DataManager.getInstance().getConfiguration().isDisplaySidebarWidgetDownload());
+    public void isDisplaySidebarWidgetDownloads_shouldReturnCorrectValue() throws Exception {
+        Assert.assertEquals(true, DataManager.getInstance().getConfiguration().isDisplaySidebarWidgetDownloads());
+    }
+    
+
+    /**
+     * @see Configuration#getSidebarWidgetDownloadsIntroductionText()
+     * @verifies return correct value
+     */
+    @Test
+    public void getSidebarWidgetDownloadsIntroductionText_shouldReturnCorrectValue() throws Exception {
+        Assert.assertEquals("MASTERVALUE_DOWNLOADS_INTRO", DataManager.getInstance().getConfiguration().getSidebarWidgetDownloadsIntroductionText());
     }
 
     @Test
@@ -2865,12 +2874,21 @@ public class ConfigurationTest extends AbstractTest {
     }
 
     /**
+     * @see Configuration#getSidebarWidgetUsageIntroductionText()
+     * @verifies return correct value
+     */
+    @Test
+    public void getSidebarWidgetUsageIntroductionText_shouldReturnCorrectValue() throws Exception {
+        Assert.assertEquals("MASTERVALUE_USAGE_INTRO", DataManager.getInstance().getConfiguration().getSidebarWidgetUsageIntroductionText());
+    }
+
+    /**
      * @see Configuration#getSidebarWidgetUsageCitationStyles()
      * @verifies return all configured values
      */
     @Test
     public void getSidebarWidgetUsageCitationStyles_shouldReturnAllConfiguredValues() throws Exception {
-       List<String> result = DataManager.getInstance().getConfiguration().getSidebarWidgetUsageCitationStyles();
-       Assert.assertEquals(3, result.size());
+        List<String> result = DataManager.getInstance().getConfiguration().getSidebarWidgetUsageCitationStyles();
+        Assert.assertEquals(3, result.size());
     }
 }

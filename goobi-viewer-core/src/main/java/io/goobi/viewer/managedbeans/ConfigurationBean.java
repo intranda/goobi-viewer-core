@@ -1237,8 +1237,26 @@ public class ConfigurationBean implements Serializable {
      *
      * @return a boolean.
      */
-    public boolean isDisplayWidgetUsage() {
+    public boolean isDisplaySidebarWidgetUsage() {
         return DataManager.getInstance().getConfiguration().isDisplayWidgetUsage();
+    }
+
+    /**
+     * 
+     * @return
+     * @should return correct value
+     */
+    public String getSidebarWidgetUsageIntroductionText() {
+        return DataManager.getInstance().getConfiguration().getSidebarWidgetUsageIntroductionText();
+    }
+
+    /**
+     * 
+     * @return
+     * @should return correct value
+     */
+    public String getSidebarWidgetDownloadsIntroductionText() {
+        return DataManager.getInstance().getConfiguration().getSidebarWidgetDownloadsIntroductionText();
     }
 
     /**

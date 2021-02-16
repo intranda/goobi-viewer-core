@@ -404,9 +404,6 @@ public class BrowseBean implements Serializable {
             }
 
             String useFilterQuery = "";
-            if (currentBmfc.getField().startsWith("MD_") || currentBmfc.getField().startsWith("MD2_")) {
-                useFilterQuery += "+" + SolrConstants.DOCTYPE + ":" + DocType.DOCSTRCT.name();
-            }
             if (StringUtils.isNotEmpty(filterQuery)) {
                 useFilterQuery += " +(" + filterQuery + ")";
             }

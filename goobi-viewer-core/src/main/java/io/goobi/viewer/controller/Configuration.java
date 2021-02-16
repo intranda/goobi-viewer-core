@@ -697,8 +697,17 @@ public final class Configuration extends AbstractConfiguration {
      * @should return correct value
      * @return a boolean.
      */
-    public boolean isDisplaySidebarWidgetDownload() {
+    public boolean isDisplaySidebarWidgetDownloads() {
         return getLocalBoolean("sidebar.sidebarWidgetDownloads[@visible]", false);
+    }
+    
+    /**
+     * 
+     * @return
+     * @should return correct value
+     */
+    public String getSidebarWidgetDownloadsIntroductionText() {
+        return getLocalString("sidebar.sidebarWidgetDownloads[@introductionText]", "");
     }
 
     /**
@@ -754,22 +763,12 @@ public final class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * Get the metadata configuration for the license text in the usage widget
-     *
-     * @return the metadata configuration for the license text in the usage widget
+     * 
+     * @return
+     * @should return correct value
      */
-    public Metadata getWidgetUsageLicenceTextMetadata() {
-        HierarchicalConfiguration sub = null;
-        try {
-            sub = getLocalConfigurationAt("sidebar.sidebarWidgetUsage.licenseText.metadata");
-        } catch (IllegalArgumentException e) {
-            // no or multiple occurrences 
-        }
-        if (sub != null) {
-            Metadata md = getMetadataFromSubnodeConfig(sub, false);
-            return md;
-        }
-        return new Metadata();
+    public String getSidebarWidgetUsageIntroductionText() {
+        return getLocalString("sidebar.sidebarWidgetUsage[@introductionText]", "");
     }
 
     /**
@@ -798,23 +797,23 @@ public final class Configuration extends AbstractConfiguration {
 
     /**
      * <p>
-     * getWidgetUsageMaxJpegSize.
+     * getSidebarWidgetUsageMaxJpegSize.
      * </p>
      *
      * @return a {@link java.lang.String} object.
      */
-    public String getWidgetUsageMaxJpegSize() {
+    public String getSidebarWidgetUsageMaxJpegSize() {
         return getLocalString("sidebar.sidebarWidgetUsage.page.displayLinkToJpegImage[@maxSize]", Scale.MAX_SIZE);
     }
 
     /**
      * <p>
-     * getWidgetUsageMaxMasterImageSize.
+     * getSidebarWidgetUsageMaxMasterImageSize.
      * </p>
      *
      * @return a {@link java.lang.String} object.
      */
-    public String getWidgetUsageMaxMasterImageSize() {
+    public String getSidebarWidgetUsageMaxMasterImageSize() {
         return getLocalString("sidebar.sidebarWidgetUsage.page.displayLinkToMasterImage[@maxSize]", Scale.MAX_SIZE);
     }
 

@@ -555,7 +555,7 @@ public class ViewManager implements Serializable {
 
         Scale scale;
 
-        String maxSize = DataManager.getInstance().getConfiguration().getWidgetUsageMaxJpegSize();
+        String maxSize = DataManager.getInstance().getConfiguration().getSidebarWidgetUsageMaxJpegSize();
         if (maxSize.equalsIgnoreCase(Scale.MAX_SIZE) || maxSize.equalsIgnoreCase(Scale.FULL_SIZE)) {
             scale = Scale.MAX;
         } else if (maxSize.matches("\\d{1,9}")) {
@@ -580,7 +580,7 @@ public class ViewManager implements Serializable {
 
         Scale scale;
 
-        String maxSize = DataManager.getInstance().getConfiguration().getWidgetUsageMaxMasterImageSize();
+        String maxSize = DataManager.getInstance().getConfiguration().getSidebarWidgetUsageMaxMasterImageSize();
         if (maxSize.equalsIgnoreCase(Scale.MAX_SIZE) || maxSize.equalsIgnoreCase(Scale.FULL_SIZE)) {
             scale = Scale.MAX;
         } else if (maxSize.matches("\\d{1,9}")) {
@@ -2580,7 +2580,7 @@ public class ViewManager implements Serializable {
      * @return a boolean.
      */
     public boolean isDisplayContentDownloadMenu() {
-        if (!DataManager.getInstance().getConfiguration().isDisplaySidebarWidgetDownload()) {
+        if (!DataManager.getInstance().getConfiguration().isDisplaySidebarWidgetDownloads()) {
             return false;
         }
         try {
@@ -3340,21 +3340,6 @@ public class ViewManager implements Serializable {
     public void setPageLoader(IPageLoader loader) {
         this.pageLoader = loader;
 
-    }
-
-    /**
-     * <p>
-     * getUsageWidgetAccessCondition.
-     * </p>
-     *
-     * @return a {@link io.goobi.viewer.model.metadata.Metadata} object.
-     * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
-     * @throws io.goobi.viewer.exceptions.PresentationException if any.
-     */
-    public Metadata getUsageWidgetAccessCondition() throws IndexUnreachableException, PresentationException {
-        Metadata md = DataManager.getInstance().getConfiguration().getWidgetUsageLicenceTextMetadata();
-        md.populate(getTopDocument(), BeanUtils.getLocale());
-        return md;
     }
 
     /**

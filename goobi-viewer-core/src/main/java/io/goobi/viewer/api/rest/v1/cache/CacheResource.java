@@ -26,7 +26,6 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
 
 import org.apache.solr.common.StringUtils;
 import org.slf4j.Logger;
@@ -58,7 +57,6 @@ public class CacheResource {
      * @return
      */
     @DELETE
-    @Path("/")
     @Produces({ MediaType.APPLICATION_JSON })
     @AuthorizationBinding
     @Operation(summary = "Requires an authentication token. Clears cache for main images, thumbnails and PDFs for all records", tags = { "cache" })

@@ -559,7 +559,7 @@ public final class SearchHelper {
             boolean filterForWhitelist, boolean filterForBlacklist, String splittingChar) throws IndexUnreachableException {
         logger.trace("findAllCollectionsFromField: {}", luceneField);
         Map<String, CollectionResult> ret = new HashMap<>();
-        if(splittingChar.isBlank()) {
+        if (splittingChar.isBlank()) {
             throw new IllegalArgumentException("Splitting char may not be empty. Check configuration for collection field " + luceneField);
         }
         try {
@@ -2589,4 +2589,5 @@ public final class SearchHelper {
         return AGGREGATION_QUERY_PREFIX + "+(ISWORK:true ISANCHOR:true DOCTYPE:UGC)" + " +" + SolrConstants.ACCESSCONDITION + ":\"" + accessCondition
                 + "\"";
     }
+
 }
