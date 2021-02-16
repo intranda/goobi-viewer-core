@@ -21,9 +21,11 @@
                 <!-- WIDGET BODY -->
 				<div class="widget__body #{activeDocumentBean.viewManager.metadataViewOnly or activeDocumentBean.anchor or activeDocumentBean.group ? '' : 'collapseable'}">
                     <!-- INTRODUCTION TEXT -->
-                    <p id="introductionText" class="widget-usage__license-text">
-                        <h:outputText value="#{msg[configurationBean.sidebarWidgetUsageIntroductionText]}" escape="false" />
-                    </p>
+                    <ui:fragment rendered="#{fn:length(configurationBean.sidebarWidgetUsageIntroductionText) > 0}">
+                        <p id="introductionText" class="widget-usage__license-text">
+                            <h:outputText value="#{msg[configurationBean.sidebarWidgetUsageIntroductionText]}" escape="false" />
+                        </p>
+                    </ui:fragment>
                     
                     <!-- WORK -->
                     <h4 id="titleWork" class="widget-usage__subtitle">#{msg[activeDocumentBean.viewManager.topDocument.docStructType]}</h4>
@@ -484,6 +486,7 @@
                     </div>
                     
                     <!-- CITATION RECOMMENDATION -->
+                    <ui:fragment rendered="#{fn:length(activeDocumentBean.viewManager.citationStringHtml) > 0}">
                     <h4 id="titleCiteRecommendation" class="widget-usage__subtitle">#{msg.citeRecommendation__title}</h4>
 
                     <div class="widget-usage__citerecommendation">
@@ -513,6 +516,7 @@
                             </h:form>
                         </ui:fragment>
                     </div>
+                    </ui:fragment>
                     
                 </div>
             </div>   
