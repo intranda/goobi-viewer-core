@@ -559,7 +559,7 @@ public final class SearchHelper {
             boolean filterForWhitelist, boolean filterForBlacklist, String splittingChar) throws IndexUnreachableException {
         logger.trace("findAllCollectionsFromField: {}", luceneField);
         Map<String, CollectionResult> ret = new HashMap<>();
-        if (splittingChar.isBlank()) {
+        if (StringUtils.isBlank(splittingChar)) {
             throw new IllegalArgumentException("Splitting char may not be empty. Check configuration for collection field " + luceneField);
         }
         try {
