@@ -226,7 +226,7 @@ public class RecordPageResource {
             SequenceBuilder builder = new SequenceBuilder(urls);
             StructElement doc = new ManifestBuilder(urls).getDocument(pi);
             PhysicalElement page = builder.getPage(doc, pageNo);
-            Canvas canvas = builder.generateCanvas(doc, page);
+            Canvas canvas = builder.generateCanvas(doc.getPi(), page);
             annotations = builder.addOtherContent(doc, page, canvas, true);
         } else {
             annotations = new HashMap<>();

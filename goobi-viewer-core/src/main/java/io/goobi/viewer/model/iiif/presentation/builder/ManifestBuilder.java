@@ -197,28 +197,6 @@ public class ManifestBuilder extends AbstractBuilder {
             addSeeAlsos(manifest, ele);
             addRenderings(manifest, ele);
 
-//            /*VIEWER*/
-//            try {
-//                String applicationUrl = this.urls.getApplicationUrl();
-//                String pageUrl = ele.getUrl();
-//                LinkingContent viewerPage = new LinkingContent(new URI(applicationUrl + pageUrl));
-//                viewerPage.setLabel(new SimpleMetadataValue("goobi viewer"));
-//                manifest.addRendering(viewerPage);
-//            } catch (URISyntaxException e) {
-//                logger.error("Unable to retrieve viewer url for {}", ele);
-//            }
-//            if (manifest instanceof Manifest) {
-//                /*PDF*/
-//                try {
-//                    String pdfDownloadUrl = BeanUtils.getImageDeliveryBean().getPdf().getPdfUrl(ele, manifest.getLabel().getValue().orElse(null));
-//                    LinkingContent pdfDownload = new LinkingContent(new URI(pdfDownloadUrl));
-//                    pdfDownload.setFormat(Format.APPLICATION_PDF);
-//                    pdfDownload.setLabel(new SimpleMetadataValue("PDF"));
-//                    manifest.addRendering(pdfDownload);
-//                } catch (URISyntaxException e) {
-//                    logger.error("Unable to retrieve pdf download url for {}", ele);
-//                }
-//            }
 
             /*CMS pages*/
             try {
