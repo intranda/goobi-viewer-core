@@ -484,6 +484,7 @@
                     </div>
                     
                     <!-- CITATION RECOMMENDATION -->
+                    <ui:fragment rendered="#{fn:length(activeDocumentBean.viewManager.citationStringHtml) > 0}">
                     <h4 id="titleCiteRecommendation" class="widget-usage__subtitle">#{msg.citeRecommendation__title}</h4>
 
                     <div class="widget-usage__citerecommendation">
@@ -513,6 +514,7 @@
                             </h:form>
                         </ui:fragment>
                     </div>
+                    </ui:fragment>
                     
                 </div>
             </div>   
