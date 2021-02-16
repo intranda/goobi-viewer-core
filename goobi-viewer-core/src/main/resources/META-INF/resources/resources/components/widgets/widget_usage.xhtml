@@ -22,7 +22,7 @@
 				<div class="widget__body #{activeDocumentBean.viewManager.metadataViewOnly or activeDocumentBean.anchor or activeDocumentBean.group ? '' : 'collapseable'}">
                     <!-- INTRODUCTION TEXT -->
                     <p id="introductionText" class="widget-usage__license-text">
-                        <h:outputText value="#{msg[configurationBean.sidebarWidgetUsageIntroductionText]}" />
+                        <h:outputText value="#{msg[configurationBean.sidebarWidgetUsageIntroductionText]}" escape="false" />
                     </p>
                     
                     <!-- WORK -->
