@@ -1606,7 +1606,7 @@ public class CmsBean implements Serializable {
                         }
                         break;
                     case COLLECTION:
-                        getCollection(item.getItemId(), currentPage).reset(true);
+                        getCollectionIfStored(item.getItemId(), currentPage).ifPresent(c -> c.reset(true));
                         break;
                     case BROWSETERMS:
                         BrowseFunctionality browse = currentPage.getBrowse();
@@ -2031,6 +2031,12 @@ public class CmsBean implements Serializable {
         return collection;
     }
 
+    public Optional<CollectionView> getCollectionIfStored(String id, CMSPage page) {
+        String myId = page.getId() + "_" + id;
+        CollectionView collection = collections.get(myId);
+        return Optional.ofNullable(collection);
+    }
+    
     /**
      * get a list of all {@link io.goobi.viewer.model.viewer.CollectionView}s with the given solr field which are already loaded via
      * {@link #getCollection(CMSPage)} or {@link #getCollection(String, CMSPage)
@@ -2057,6 +2063,16 @@ public class CmsBean implements Serializable {
                 page.getGlobalContentItems().stream().filter(item -> CMSContentItemType.COLLECTION.equals(item.getType())).findFirst();
         if (collectionItem.isPresent()) {
             return getCollection(collectionItem.get().getItemId(), page);
+        }
+
+        return null;
+    }
+    
+    public Optional<CollectionView> getCollectionIfStored(CMSPage page) throws PresentationException, IndexUnreachableException, IllegalRequestException {
+        Optional<CMSContentItem> collectionItem =
+                page.getGlobalContentItems().stream().filter(item -> CMSContentItemType.COLLECTION.equals(item.getType())).findFirst();
+        if (collectionItem.isPresent()) {
+            return getCollectionIfStored(collectionItem.get().getItemId(), page);
         }
 
         return null;
@@ -2580,11 +2596,16 @@ public class CmsBean implements Serializable {
      * @return a {@link java.util.List} object.
      * @throws org.apache.solr.client.solrj.SolrServerException if any.
      * @throws java.io.IOException if any.
+     * @throws DAOException 
      */
-    public List<String> getPossibleGroupFields() throws SolrServerException, IOException {
+    public List<String> getPossibleGroupFields() throws SolrServerException, IOException, DAOException {
             
             if (this.solrGroupFields == null) {
-                this.solrGroupFields = DataManager.getInstance().getSearchIndex().getAllGroupFieldNames();
+                this.solrGroupFields = DataManager.getInstance().getSearchIndex().getAllFieldNames()
+                        .stream()
+                        .filter(field -> !field.startsWith("SORT_") && !field.startsWith("FACET_") && !field.endsWith("_UNTOKENIZED") && !field.matches(".*_LANG_\\w{2,3}"))
+                        .collect(Collectors.toList());
+//                this.solrGroupFields = DataManager.getInstance().getSearchIndex().getAllGroupFieldNames();
                 Collections.sort(solrGroupFields);
             }
             return this.solrGroupFields;

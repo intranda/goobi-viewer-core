@@ -36,6 +36,8 @@ public class SessionBean implements Serializable{
 
     private Map<String, Object> sessionObjects = new ConcurrentHashMap<String, Object>();
     
+    private static final boolean ALLOW_CACHING = true;
+    
     @Inject 
     private HttpServletRequest httpRequest;
     
@@ -48,7 +50,7 @@ public class SessionBean implements Serializable{
     }
     
     public boolean containsKey(String key) {
-        return this.sessionObjects.containsKey(key);
+        return ALLOW_CACHING && this.sessionObjects.containsKey(key);
     }
     
     public HttpServletRequest getRequest() {

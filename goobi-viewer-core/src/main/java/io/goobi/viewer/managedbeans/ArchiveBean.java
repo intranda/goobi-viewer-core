@@ -149,7 +149,6 @@ public class ArchiveBean implements Serializable {
     @Deprecated
     public void loadDatabaseAndStoreInApplicationScope(BasexEADParser eadParser, String databaseName)
             throws ClientProtocolException, IOException, HTTPException, IllegalStateException, JDOMException {
-        try (Time t = DataManager.getInstance().getTiming().takeTime("loadDatabase")) {
             Document databaseDoc = null;
             String storageKey = databaseName + "@" + eadParser.getBasexUrl();
             List<ArchiveResource> dbs;
@@ -174,7 +173,6 @@ public class ArchiveBean implements Serializable {
                 // TODO Auto-generated catch block
                 e.printStackTrace();
             }
-        }
     }
 
     /**

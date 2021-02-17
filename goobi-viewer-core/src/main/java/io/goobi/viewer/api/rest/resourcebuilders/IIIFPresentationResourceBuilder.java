@@ -94,10 +94,7 @@ public class IIIFPresentationResourceBuilder {
             ContentNotFoundException, URISyntaxException, ViewerConfigurationException, DAOException {
         getManifestBuilder().setBuildMode(mode);
         getSequenceBuilder().setBuildMode(mode);
-        List<StructElement> docs = null;
-        try(Time time = DataManager.getInstance().getTiming().takeTime("get all documents")) {            
-            docs = getManifestBuilder().getDocumentWithChildren(pi);
-        }
+        List<StructElement> docs = getManifestBuilder().getDocumentWithChildren(pi);
         if (docs.isEmpty()) {
             throw new ContentNotFoundException("No document found for pi " + pi);
         }
