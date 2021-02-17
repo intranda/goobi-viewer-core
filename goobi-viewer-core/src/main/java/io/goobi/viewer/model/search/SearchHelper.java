@@ -631,7 +631,7 @@ public final class SearchHelper {
                     collectionResult.setFacetValues(facetResults.getValues()
                             .stream()
                             .map(Count::getName)
-                            .filter(v -> !v.startsWith("#1;") && !v.startsWith("\\u0001") && !v.startsWith(Character.toString(1))) //
+                            .filter(v -> !v.startsWith("#1;") && !v.startsWith("\\u0001") && !v.startsWith("\u0001"))
                             .collect(Collectors.toSet()));
                 }
             }
