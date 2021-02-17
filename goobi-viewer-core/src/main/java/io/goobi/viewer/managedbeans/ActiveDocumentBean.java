@@ -47,8 +47,8 @@ import de.intranda.metadata.multilanguage.MultiLanguageMetadataValue;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.IndexerTools;
 import io.goobi.viewer.controller.SolrConstants;
-import io.goobi.viewer.controller.SolrSearchIndex;
 import io.goobi.viewer.controller.SolrConstants.DocType;
+import io.goobi.viewer.controller.SolrSearchIndex;
 import io.goobi.viewer.controller.language.Language;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IDDOCNotFoundException;
@@ -65,6 +65,7 @@ import io.goobi.viewer.messages.ViewerResourceBundle;
 import io.goobi.viewer.model.cms.CMSPage;
 import io.goobi.viewer.model.cms.CMSSidebarElement;
 import io.goobi.viewer.model.download.DownloadJob;
+import io.goobi.viewer.model.download.DownloadOption;
 import io.goobi.viewer.model.download.EPUBDownloadJob;
 import io.goobi.viewer.model.download.PDFDownloadJob;
 import io.goobi.viewer.model.maps.GeoMap;
@@ -149,6 +150,10 @@ public class ActiveDocumentBean implements Serializable {
     private CMSSidebarElement mapWidget = null;
 
     private int reloads = 0;
+
+    private boolean downloadImageModalVisible = false;
+
+    private String selectedDownloadOptionLabel;
 
     /**
      * Empty constructor.
@@ -1396,18 +1401,17 @@ public class ActiveDocumentBean implements Serializable {
                 }
             }
         }
-        
-        if(navigationHelper.getCurrentPageType() != null) {
+
+        if (navigationHelper.getCurrentPageType() != null) {
             PageType pageType = navigationHelper.getCurrentPageType();
-            if(PageType.other.equals(pageType)) {
+            if (PageType.other.equals(pageType)) {
                 String pageLabel = navigationHelper.getCurrentPage();
                 return Messages.translate(pageLabel, Locale.forLanguageTag(language));
-            } else {
-                return Messages.translate(pageType.getLabel(), Locale.forLanguageTag(language));
             }
-        } else {
-            return null;
+            return Messages.translate(pageType.getLabel(), Locale.forLanguageTag(language));
         }
+
+        return null;
     }
 
     /**
@@ -1911,7 +1915,7 @@ public class ActiveDocumentBean implements Serializable {
             if ("-".equals(getPersistentIdentifier())) {
                 return null;
             }
-            
+
             GeoMap map = new GeoMap();
             map.setId(Long.MAX_VALUE);
             map.setType(GeoMapType.SOLR_QUERY);
@@ -1927,6 +1931,46 @@ public class ActiveDocumentBean implements Serializable {
             logger.error("Unable to load geomap", e);
         }
         return widget;
+    }
+
+    /**
+     * 
+     */
+    public void toggleDownloadImageModal() {
+        downloadImageModalVisible = !downloadImageModalVisible;
+    }
+
+    /**
+     * @return the downloadImageModalVisible
+     */
+    public boolean isDownloadImageModalVisible() {
+        return downloadImageModalVisible;
+    }
+
+    /**
+     * 
+     */
+    public DownloadOption getSelectedDownloadOption() {
+        if (selectedDownloadOptionLabel == null) {
+            return null;
+        }
+        
+        return DownloadOption.getByLabel(selectedDownloadOptionLabel);
+    }
+
+    /**
+     * @return the selectedDownloadOptionLabel
+     */
+    public String getSelectedDownloadOptionLabel() {
+        return selectedDownloadOptionLabel;
+    }
+
+    /**
+     * @param selectedDownloadOptionLabel the selectedDownloadOptionLabel to set
+     */
+    public void setSelectedDownloadOptionLabel(String selectedDownloadOptionLabel) {
+        logger.trace("setSelectedDownloadOption: {}", selectedDownloadOptionLabel != null ? selectedDownloadOptionLabel.toString() : null);
+        this.selectedDownloadOptionLabel = selectedDownloadOptionLabel;
     }
 
 }

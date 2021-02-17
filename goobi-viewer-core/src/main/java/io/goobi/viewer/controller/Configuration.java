@@ -46,10 +46,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import de.unigoettingen.sub.commons.contentlib.imagelib.ImageType;
-import de.unigoettingen.sub.commons.contentlib.imagelib.transform.Scale;
 import io.goobi.viewer.exceptions.ViewerConfigurationException;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.messages.ViewerResourceBundle;
+import io.goobi.viewer.model.download.DownloadOption;
 import io.goobi.viewer.model.maps.GeoMapMarker;
 import io.goobi.viewer.model.metadata.Metadata;
 import io.goobi.viewer.model.metadata.MetadataParameter;
@@ -700,7 +700,7 @@ public final class Configuration extends AbstractConfiguration {
     public boolean isDisplaySidebarWidgetDownloads() {
         return getLocalBoolean("sidebar.sidebarWidgetDownloads[@visible]", false);
     }
-    
+
     /**
      * 
      * @return
@@ -772,49 +772,25 @@ public final class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * <p>
-     * isDisplaySidebarUsageWidgetLinkToJpegImage.
-     * </p>
-     *
-     * @should return correct value
-     * @return a boolean.
+     * Returns a list of configured page download options.
+     * 
+     * @return List of configured <code>DownloadOption</code> items
+     * @should return all configured elements
      */
-    public boolean isDisplaySidebarUsageWidgetLinkToJpegImage() {
-        return getLocalBoolean("sidebar.sidebarWidgetUsage.page.displayLinkToJpegImage", false);
-    }
+    public List<DownloadOption> getSidebarWidgetUsagePageDownloadOptions() {
+        List<HierarchicalConfiguration> configs = getLocalConfigurationsAt("sidebar.sidebarWidgetUsage.page.downloadOptions.option");
+        if (configs == null || configs.isEmpty()) {
+            return Collections.emptyList();
+        }
 
-    /**
-     * <p>
-     * isDisplaySidebarUsageWidgetLinkToMasterImage.
-     * </p>
-     *
-     * @should return correct value
-     * @return a boolean.
-     */
-    public boolean isDisplaySidebarUsageWidgetLinkToMasterImage() {
-        return getLocalBoolean("sidebar.sidebarWidgetUsage.page.displayLinkToMasterImage", false);
-    }
+        List<DownloadOption> ret = new ArrayList<>(configs.size());
+        for (HierarchicalConfiguration config : configs) {
+            ret.add(new DownloadOption().setLabel(config.getString("[@label]"))
+                    .setFormat(config.getString("[@format]"))
+                    .setBoxSizeInPixel(config.getString("[@boxSizeInPixel]")));
+        }
 
-    /**
-     * <p>
-     * getSidebarWidgetUsageMaxJpegSize.
-     * </p>
-     *
-     * @return a {@link java.lang.String} object.
-     */
-    public String getSidebarWidgetUsageMaxJpegSize() {
-        return getLocalString("sidebar.sidebarWidgetUsage.page.displayLinkToJpegImage[@maxSize]", Scale.MAX_SIZE);
-    }
-
-    /**
-     * <p>
-     * getSidebarWidgetUsageMaxMasterImageSize.
-     * </p>
-     *
-     * @return a {@link java.lang.String} object.
-     */
-    public String getSidebarWidgetUsageMaxMasterImageSize() {
-        return getLocalString("sidebar.sidebarWidgetUsage.page.displayLinkToMasterImage[@maxSize]", Scale.MAX_SIZE);
+        return ret;
     }
 
     /**

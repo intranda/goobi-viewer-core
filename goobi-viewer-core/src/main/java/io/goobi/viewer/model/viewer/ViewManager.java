@@ -81,6 +81,7 @@ import io.goobi.viewer.model.calendar.CalendarView;
 import io.goobi.viewer.model.citation.Citation;
 import io.goobi.viewer.model.citation.CitationProcessorWrapper;
 import io.goobi.viewer.model.citation.CitationTools;
+import io.goobi.viewer.model.download.DownloadOption;
 import io.goobi.viewer.model.metadata.Metadata;
 import io.goobi.viewer.model.metadata.MetadataTools;
 import io.goobi.viewer.model.metadata.MetadataValue;
@@ -544,27 +545,43 @@ public class ViewManager implements Serializable {
 
     /**
      * <p>
-     * getJpegUrlForDownload.
+     * getPageDownloadUrl.
      * </p>
      *
+     * @param option
      * @return a {@link java.lang.String} object.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
-    public String getJpegUrlForDownload() throws IndexUnreachableException, DAOException {
-
-        Scale scale;
-
-        String maxSize = DataManager.getInstance().getConfiguration().getSidebarWidgetUsageMaxJpegSize();
-        if (maxSize.equalsIgnoreCase(Scale.MAX_SIZE) || maxSize.equalsIgnoreCase(Scale.FULL_SIZE)) {
-            scale = Scale.MAX;
-        } else if (maxSize.matches("\\d{1,9}")) {
-            scale = new Scale.ScaleToBox(Integer.parseInt(maxSize), Integer.parseInt(maxSize));
-        } else {
-            throw new IllegalArgumentException("Not a valid size paramter in config: " + maxSize);
+    public String getPageDownloadUrl(DownloadOption option) throws IndexUnreachableException, DAOException {
+        logger.trace("getPageDownloadUrl: {}", option);
+        if (option == null || !option.isValid()) {
+            return null;
         }
 
-        return imageDeliveryBean.getThumbs().getThumbnailUrl(getCurrentPage(), scale);
+        switch (option.getFormat().toLowerCase()) {
+            case "jpg":
+            case "jpeg":
+            case "master":
+                Scale scale;
+                if (option.getBoxSizeInPixel().equalsIgnoreCase(Scale.MAX_SIZE) || option.getBoxSizeInPixel().equalsIgnoreCase(Scale.FULL_SIZE)) {
+                    scale = Scale.MAX;
+                } else if (option.getBoxSizeInPixel().matches("\\d{1,9}")) {
+                    scale = new Scale.ScaleToBox(Integer.valueOf(option.getBoxSizeInPixel()), Integer.valueOf(option.getBoxSizeInPixel()));
+                } else {
+                    throw new IllegalArgumentException("Invalid box size: " + option.getBoxSizeInPixel());
+                }
+                switch (option.getFormat().toLowerCase()) {
+                    case "jpg":
+                    case "jpeg":
+                        return imageDeliveryBean.getThumbs().getThumbnailUrl(getCurrentPage(), scale);
+                    default:
+                        return getCurrentMasterImageUrl(scale);
+                }
+            default:
+                throw new IllegalArgumentException("Invalid format: " + option.getFormat());
+        }
+
     }
 
     /**
@@ -572,25 +589,26 @@ public class ViewManager implements Serializable {
      * getMasterImageUrlForDownload.
      * </p>
      *
+     * @param boxSizeInPixel
      * @return a {@link java.lang.String} object.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
-    public String getMasterImageUrlForDownload() throws IndexUnreachableException, DAOException {
+    public String getMasterImageUrlForDownload(String boxSizeInPixel) throws IndexUnreachableException, DAOException {
+        if (boxSizeInPixel == null) {
+            throw new IllegalArgumentException("boxSizeInPixel may not be null");
+        }
 
         Scale scale;
-
-        String maxSize = DataManager.getInstance().getConfiguration().getSidebarWidgetUsageMaxMasterImageSize();
-        if (maxSize.equalsIgnoreCase(Scale.MAX_SIZE) || maxSize.equalsIgnoreCase(Scale.FULL_SIZE)) {
+        if (boxSizeInPixel.equalsIgnoreCase(Scale.MAX_SIZE) || boxSizeInPixel.equalsIgnoreCase(Scale.FULL_SIZE)) {
             scale = Scale.MAX;
-        } else if (maxSize.matches("\\d{1,9}")) {
-            scale = new Scale.ScaleToBox(Integer.parseInt(maxSize), Integer.parseInt(maxSize));
+        } else if (boxSizeInPixel.matches("\\d{1,9}")) {
+            scale = new Scale.ScaleToBox(Integer.valueOf(boxSizeInPixel), Integer.valueOf(boxSizeInPixel));
         } else {
-            throw new IllegalArgumentException("Not a valid size paramter in config: " + maxSize);
+            throw new IllegalArgumentException("Not a valid size parameter: " + boxSizeInPixel);
         }
 
         return getCurrentMasterImageUrl(scale);
-
     }
 
     /**
@@ -3480,7 +3498,7 @@ public class ViewManager implements Serializable {
                 Citation citation = new Citation(pi, processor, citationProcessorWrapper.getCitationItemDataProvider(),
                         CitationTools.getCSLTypeForDocstrct(topDocument.getDocStructType()), val.getCitationValues());
                 String ret = citation.getCitationString(outputFormat);
-                logger.trace("citation: {}", ret);
+                // logger.trace("citation: {}", ret);
                 return ret;
             }
         }
@@ -3525,7 +3543,7 @@ public class ViewManager implements Serializable {
             return null;
         }
 
-        logger.trace("getArchiveEntryIdentifier: {}", topDocument.getMetadataValue(SolrConstants.ARCHIVE_ENTRY_ID));
+        // logger.trace("getArchiveEntryIdentifier: {}", topDocument.getMetadataValue(SolrConstants.ARCHIVE_ENTRY_ID));
         return topDocument.getMetadataValue(SolrConstants.ARCHIVE_ENTRY_ID);
     }
 

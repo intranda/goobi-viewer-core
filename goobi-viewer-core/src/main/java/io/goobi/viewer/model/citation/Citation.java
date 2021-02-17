@@ -84,7 +84,7 @@ public class Citation {
         String[] ids = new String[items.length];
         for (int i = 0; i < items.length; ++i) {
             ids[i] = items[i].getId();
-            logger.trace("Item data id: {}", items[i].getId());
+            // logger.trace("Item data id: {}", items[i].getId());
         }
         processor.registerCitationItems(ids);
 
@@ -99,11 +99,11 @@ public class Citation {
      * @should return apa html plaintext correctly
      */
     public String getCitationString(String outputFormat) throws IOException {
-        logger.trace("Citation string generation START");
+        // logger.trace("Citation string generation START");
         CSLItemData itemData = itemDataProvider.addItemData(id, fields, type);
         String ret = makeAdhocBibliography(outputFormat, itemData).makeString().trim();
 
-        logger.trace("Citation string generation END");
+        // logger.trace("Citation string generation END");
         return ret;
     }
 }

@@ -1,5 +1,6 @@
 <ui:composition
     xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:c="http://java.sun.com/jsp/jstl/core"
     xmlns:f="http://xmlns.jcp.org/jsf/core"
     xmlns:fn="http://java.sun.com/jsp/jstl/functions"
     xmlns:h="http://xmlns.jcp.org/jsf/html"
@@ -366,27 +367,23 @@
 							</ui:fragment>
 
                             <ui:fragment rendered="#{!activeDocumentBean.viewManager.bornDigital}">
-							    <!-- JPEG -->
-							    <ui:fragment
-								    rendered="#{configurationBean.displaySidebarUsageWidgetLinkToJpegImage and activeDocumentBean.viewManager.currentPage.accessPermissionImage}">
-								    <a href="#{activeDocumentBean.viewManager.jpegUrlForDownload}"
-									    id="jpeg"
-									    class="badge badge-dark widget-usage__page-download-jpeg"
+
+                                <!-- IMAGE -->
+                                <!-- TODO: style -->
+                                <ui:fragment rendered="#{activeDocumentBean.viewManager.currentPage.accessPermissionImage}">
+                                    <h:commandButton
+                                        id="downloadImageButton"
+                                        class="badge badge-dark"
                                         title="#{msg.imageLinkDesc}" target="_blank" rel="nofollow noopener"
+                                        value="#{msg.imageLink}"
+                                        action="#{activeDocumentBean.toggleDownloadImageModal}"
+                                        immediate="true"
                                         aria-label="#{msg.image}: #{msg.imageLink}">
-									    #{msg.imageLink} </a>
-							    </ui:fragment>
-							
-                                <!-- MASTER IMAGE (TIFF) -->
-                                <ui:fragment
-                                    rendered="#{configurationBean.displaySidebarUsageWidgetLinkToMasterImage and activeDocumentBean.viewManager.currentPage.accessPermissionImage}">
-                                    <a href="#{activeDocumentBean.viewManager.masterImageUrlForDownload}"
-                                        id="tiff"
-                                        class="badge badge-dark widget-usage__page-download-tiff"
-                                        title="#{msg.action__downloadMasterImage}" target="_blank" rel="nofollow noopener"
-                                        aria-label="#{msg.image}: #{msg.imageLink} (#{activeDocumentBean.viewManager.currentPage.fileNameExtension.toUpperCase()})">
-                                        #{msg.imageLinkMaster} (#{activeDocumentBean.viewManager.currentPage.fileNameExtension.toUpperCase()}) </a>
+                                        <f:ajax render="downloadImageModal" />
+                                    </h:commandButton>
+                                                             
                                 </ui:fragment>
+
                             </ui:fragment>
 
                             <!-- PAGE FULLTEXT FORMATS (VIEW_FULLTEXT CHECK) -->
@@ -426,6 +423,33 @@
 									       #{msg.fulltext} </a>
                                     </ui:fragment>
                                 </ui:fragment>
+                                
+                                <!-- TODO: Proper popup -->
+                                <h:panelGroup id="downloadImageModal">
+                                    <ui:fragment rendered="#{activeDocumentBean.downloadImageModalVisible}">
+                                        <h:form>
+                                            <h:selectOneRadio value="#{activeDocumentBean.selectedDownloadOptionLabel}" immediate="true">
+<!--                                                 <c:forEach var="option" items="#{configurationBean.sidebarWidgetUsagePageDownloadOptions}"> -->
+<!--                                                     <f:selectItem value="#{option}" -->
+<!--                                                         itemLabel="#{option.label}  #{option.format}" /> -->
+<!--                                                     <br /> -->
+<!--                                                 </c:forEach> -->
+                                                <f:selectItems var="option" value="#{configurationBean.sidebarWidgetUsagePageDownloadOptions}"
+                                                    itemLabel="#{msg[option.label]}  #{option.format}"
+                                                    itemValue="#{option.label}" />
+                                                <f:ajax render="downloadPageLink" execute="@form" />
+                                            </h:selectOneRadio>
+                                            <!-- TODO This takes a few seconds to update the link after selection -->
+                                            <h:outputLink id="downloadPageLink"
+                                                title="#{msg.download}" target="_blank" rel="nofollow noopener"
+                                                aria-label="#{msg.download}"
+                                                value="#{activeDocumentBean.viewManager.getPageDownloadUrl(activeDocumentBean.selectedDownloadOption)}">
+                                                #{msg.download}
+                                            </h:outputLink>
+                                              
+                                        </h:form>
+                                    </ui:fragment>
+                                </h:panelGroup>     
                                 
 							</ui:fragment>
 						</div>

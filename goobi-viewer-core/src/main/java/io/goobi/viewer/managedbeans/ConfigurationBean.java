@@ -38,6 +38,7 @@ import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.exceptions.ViewerConfigurationException;
 import io.goobi.viewer.faces.validators.EmailValidator;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
+import io.goobi.viewer.model.download.DownloadOption;
 import io.goobi.viewer.model.search.SearchHelper;
 import io.goobi.viewer.model.viewer.PageType;
 import io.goobi.viewer.modules.IModule;
@@ -1252,33 +1253,19 @@ public class ConfigurationBean implements Serializable {
 
     /**
      * 
+     * @return List of configured <code>DownloadOption</code> items
+     */
+    public List<DownloadOption> getSidebarWidgetUsagePageDownloadOptions() {
+        return DataManager.getInstance().getConfiguration().getSidebarWidgetUsagePageDownloadOptions();
+    }
+
+    /**
+     * 
      * @return
      * @should return correct value
      */
     public String getSidebarWidgetDownloadsIntroductionText() {
         return DataManager.getInstance().getConfiguration().getSidebarWidgetDownloadsIntroductionText();
-    }
-
-    /**
-     * <p>
-     * isDisplaySidebarUsageWidgetLinkToJpegImage.
-     * </p>
-     *
-     * @return a boolean.
-     */
-    public boolean isDisplaySidebarUsageWidgetLinkToJpegImage() {
-        return DataManager.getInstance().getConfiguration().isDisplaySidebarUsageWidgetLinkToJpegImage();
-    }
-
-    /**
-     * <p>
-     * isDisplaySidebarUsageWidgetLinkToMasterImage.
-     * </p>
-     *
-     * @return a boolean.
-     */
-    public boolean isDisplaySidebarUsageWidgetLinkToMasterImage() {
-        return DataManager.getInstance().getConfiguration().isDisplaySidebarUsageWidgetLinkToMasterImage();
     }
 
     /**
