@@ -2075,7 +2075,7 @@ public class CmsBean implements Serializable {
             return getCollectionIfStored(collectionItem.get().getItemId(), page);
         }
 
-        return null;
+        return Optional.empty();
     }
 
     /**
