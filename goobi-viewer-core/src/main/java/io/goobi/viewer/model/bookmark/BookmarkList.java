@@ -696,7 +696,7 @@ public class BookmarkList implements Serializable {
     public String getIIIFCollectionURI() {
         if(StringUtils.isNotBlank(getShareKey())) {            
             return DataManager.getInstance().getRestApiManager().getDataApiManager()
-                    .map(urls -> urls.path(ApiUrls.USERS_BOOKMARKS, ApiUrls.USERS_BOOKMARKS_LIST_IIIF).params(getShareKey()).build())
+                    .map(urls -> urls.path(ApiUrls.USERS_BOOKMARKS, ApiUrls.USERS_BOOKMARKS_LIST_SHARED_IIIF).params(getShareKey()).build())
                     .orElse(DataManager.getInstance().getConfiguration().getRestApiUrl() + "bookmarks/key/" + getShareKey() + "/");
         } else {
             return null;
