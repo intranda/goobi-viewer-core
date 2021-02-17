@@ -161,7 +161,8 @@ public class BreadcrumbBean implements Serializable {
             }
         }
 
-    }
+    }    
+
 
     /**
      * Updates breadcrumbs from the given CMS page (and any breadcrumb predecessor pages).
