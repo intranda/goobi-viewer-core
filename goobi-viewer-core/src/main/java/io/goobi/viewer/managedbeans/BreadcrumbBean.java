@@ -52,6 +52,7 @@ import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.messages.Messages;
 import io.goobi.viewer.model.cms.CMSPage;
 import io.goobi.viewer.model.search.SearchFacets;
+import io.goobi.viewer.model.viewer.CollectionView;
 import io.goobi.viewer.model.viewer.CompoundLabeledLink;
 import io.goobi.viewer.model.viewer.LabeledLink;
 import io.goobi.viewer.model.viewer.PageType;
@@ -160,7 +161,8 @@ public class BreadcrumbBean implements Serializable {
             }
         }
 
-    }
+    }    
+
 
     /**
      * Updates breadcrumbs from the given CMS page (and any breadcrumb predecessor pages).
@@ -206,7 +208,7 @@ public class BreadcrumbBean implements Serializable {
 
             // If the current cms page contains a collection and we are in a subcollection of it, attempt to add a breadcrumb link for the subcollection
             try {
-                if (cmsPage.getCollection() != null && cmsPage.getCollection().isSubcollection()) {
+                if (cmsPage.getCollectionIfLoaded().map(CollectionView::isSubcollection).orElse(false)) {
                     LabeledLink link = new LabeledLink(cmsPage.getCollection().getTopVisibleElement(),
                             cmsPage.getCollection().getCollectionUrl(cmsPage.getCollection().getTopVisibleElement()), WEIGHT_SEARCH_RESULTS);
                     tempBreadcrumbs.add(0, link);

@@ -397,6 +397,10 @@ public class StructElement extends StructElementStub implements Comparable<Struc
         return this.topStruct;
     }
 
+    public void setTopStruct(StructElement topStruct) {
+        this.topStruct = topStruct;
+    }
+
     /**
      * <p>
      * isGroupMember.
@@ -1050,5 +1054,14 @@ public class StructElement extends StructElementStub implements Comparable<Struc
             return logId;
         }
 
+    }
+    
+    public static StructElement create(SolrDocument solrDoc) {
+        try {
+            return new StructElement(solrDoc);
+        } catch (IndexUnreachableException e) {
+            logger.error(e.toString());
+            return null;
+        }
     }
 }

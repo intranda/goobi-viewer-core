@@ -177,7 +177,7 @@ public class TOCElement implements Serializable {
     public String getContentServerPdfUrl() throws ViewerConfigurationException {
         return BeanUtils.getImageDeliveryBean()
                 .getPdf()
-                .getPdfUrl(topStructPi, Optional.ofNullable(logId), Optional.ofNullable(getFooterId()), Optional.empty(), label.getValue());
+                .getPdfUrl(topStructPi, Optional.ofNullable(logId), label.getValue());
 
     }
 

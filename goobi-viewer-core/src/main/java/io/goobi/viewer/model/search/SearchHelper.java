@@ -34,6 +34,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
 import javax.servlet.http.HttpServletRequest;
@@ -543,14 +544,16 @@ public final class SearchHelper {
     }
 
     /**
-     * Returns a Map with hierarchical values from the given field and their respective record counts.
+     * Returns a Map with hierarchical values from the given field and their respective record counts. Results are filtered by AccessConditions
+     * available for current HttpRequest
      *
-     * @param luceneField a {@link java.lang.String} object.
-     * @param facetField a {@link java.lang.String} object.
-     * @param filterQuery An addition solr-query to filer collections by
+     * @param luceneField the SOLR field over which to build the collections (typically "DC")
+     * @param facetField a SOLR field which values should be recorded for each collection. Values are written into
+     *            {@link CollectionResult#getFacetValues()}. Used for grouping service of IIIF collections
+     * @param filterQuery An addition solr-query to filer collections by.
      * @param filterForWhitelist a boolean.
      * @param filterForBlacklist a boolean.
-     * @param splittingChar a {@link java.lang.String} object.
+     * @param splittingChar Character used for separating collection hierarchy levels within a collection name (typically ".")
      * @should find all collections
      * @return a {@link java.util.Map} object.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
@@ -581,59 +584,58 @@ public final class SearchHelper {
             // Iterate over record hits instead of using facets to determine the size of the parent collections
             {
                 logger.trace("query: {}", sbQuery.toString());
-                List<String> fieldList = new ArrayList<>();
-                fieldList.add(luceneField);
-                if (facetField != null) {
-                    fieldList.add(facetField);
-                }
-                SolrDocumentList results =
-                        DataManager.getInstance().getSearchIndex().search(sbQuery.toString(), fieldList);
-                //                logger.trace("query done");
-                for (SolrDocument doc : results) {
-                    Set<String> dcDoneForThisRecord = new HashSet<>();
-                    Collection<Object> mdList = doc.getFieldValues(luceneField);
-                    if (mdList == null) {
-                        continue;
-                    }
-                    for (Object o : mdList) {
-                        String dc = SolrSearchIndex.getAsString(o);
-                        if (StringUtils.isBlank(dc)) {
-                            continue;
-                        }
-                        {
-                            CollectionResult result = ret.get(dc);
-                            if (result == null) {
-                                result = new CollectionResult(dc);
-                                ret.put(dc, result);
-                            }
-                            result.incrementCount();
-                            if (StringUtils.isNotBlank(facetField)) {
-                                result.addFacetValues(doc.getFieldValues(facetField));
-                            }
-                            dcDoneForThisRecord.add(dc);
-                        }
 
-                        if (dc.contains(splittingChar)) {
-                            String parent = dc;
-                            while (parent.lastIndexOf(splittingChar) != -1) {
-                                parent = parent.substring(0, parent.lastIndexOf(splittingChar));
-                                if (!dcDoneForThisRecord.contains(parent)) {
-                                    CollectionResult result = ret.get(parent);
-                                    if (result == null) {
-                                        result = new CollectionResult(parent);
-                                        ret.put(parent, result);
-                                    }
-                                    result.incrementCount();
-                                    if (StringUtils.isNotBlank(facetField)) {
-                                        result.addFacetValues(doc.getFieldValues(facetField));
-                                    }
-                                    dcDoneForThisRecord.add(parent);
-                                }
+                QueryResponse response = DataManager.getInstance()
+                        .getSearchIndex()
+                        .searchFacetsAndStatistics(sbQuery.toString(), null, Collections.singletonList(luceneField), 1, false);
+                FacetField facetResults = response.getFacetField(luceneField);
+
+                for (Count count : facetResults.getValues()) {
+                    String dc = count.getName();
+
+                    CollectionResult result = ret.get(dc);
+                    if (result == null) {
+                        result = new CollectionResult(dc);
+                        ret.put(dc, result);
+                    }
+                    result.incrementCount(count.getCount());
+
+                    if (dc.contains(splittingChar)) {
+                        String parent = dc;
+                        while (parent.lastIndexOf(splittingChar) != -1) {
+                            parent = parent.substring(0, parent.lastIndexOf(splittingChar));
+                            CollectionResult parentCollection = ret.get(parent);
+                            if (parentCollection == null) {
+                                parentCollection = new CollectionResult(parent);
+                                ret.put(parent, parentCollection);
                             }
+                            parentCollection.incrementCount(count.getCount());
                         }
                     }
                 }
             }
+
+            //Add facet (grouping) field values
+            if (StringUtils.isNotBlank(facetField)) {
+                for (String collectionName : ret.keySet()) {
+                    //query all results from above filtered for this collection and subcollections
+                    String collectionFilterQuery = "+($1:$2 $1:$2.*)".replace("$1", luceneField).replace("$2", collectionName);
+                    String query = sbQuery.toString() + " " + collectionFilterQuery;
+
+                    QueryResponse response = DataManager.getInstance()
+                            .getSearchIndex()
+                            .searchFacetsAndStatistics(query, null, Collections.singletonList(facetField), 1, false);
+                    FacetField facetResults = response.getFacetField(facetField);
+
+                    CollectionResult collectionResult = ret.get(collectionName);
+                    collectionResult.setFacetValues(facetResults.getValues()
+                            .stream()
+                            .map(Count::getName)
+                            .filter(v -> !v.startsWith("#1;") && !v.startsWith("\\u0001") && !v.startsWith("\u0001"))
+                            .collect(Collectors.toSet()));
+                }
+            }
+
         } catch (PresentationException e) {
             logger.debug("PresentationException thrown here: {}", e.getMessage());
         }

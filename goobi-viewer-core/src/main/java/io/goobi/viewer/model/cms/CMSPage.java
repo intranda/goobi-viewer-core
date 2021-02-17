@@ -1757,6 +1757,10 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable {
     public CollectionView getCollection() throws PresentationException, IndexUnreachableException, IllegalRequestException {
         return BeanUtils.getCmsBean().getCollection(this);
     }
+    
+    public Optional<CollectionView> getCollectionIfLoaded() throws PresentationException, IndexUnreachableException, IllegalRequestException {
+        return BeanUtils.getCmsBean().getCollectionIfStored(this);
+    }
 
     /**
      * Returns the property with the given key or else creates a new one with that key and returns it

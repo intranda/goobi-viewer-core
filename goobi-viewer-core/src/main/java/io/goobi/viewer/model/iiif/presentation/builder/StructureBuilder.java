@@ -25,6 +25,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -100,7 +101,7 @@ public class StructureBuilder extends AbstractBuilder {
         List<Range> ranges = new ArrayList<>();
         Map<String, String> idMap = new HashMap<>();
         if (elements != null && !elements.isEmpty()) {
-
+            Optional<StructElement> work = Optional.empty();
             for (StructElement structElement : elements) {
                 URI rangeURI = getRangeURI(pi, structElement.getLogid());
                 Range range = new Range(rangeURI);
@@ -110,6 +111,7 @@ public class StructureBuilder extends AbstractBuilder {
                     IMetadataValue label = getLabel(BASE_RANGE_LABEL);
                     range.setLabel(label);
                     range.addViewingHint(ViewingHint.top);
+                    work = Optional.of(structElement);
                 } else {
                     IMetadataValue label = structElement.getMultiLanguageDisplayLabel();
                     range.setLabel(label);
@@ -117,6 +119,7 @@ public class StructureBuilder extends AbstractBuilder {
                     if (StringUtils.isNotBlank(parentId)) {
                         range.addWithin(new Range(getRangeURI(pi, parentId)));
                     }
+                    work.ifPresent(w -> structElement.setTopStruct(w));
                     populatePages(structElement, pi, range);
                     populate(structElement, pi, range);
                 }

@@ -512,6 +512,24 @@ public final class SolrSearchIndex {
 
         return ret;
     }
+    
+    public SolrDocument getDocumentByPIAndLogId(String pi, String divId) throws IndexUnreachableException, PresentationException {
+        
+        SolrDocument ret = null;
+        if(StringUtils.isNoneBlank(pi, divId)) {
+            // logger.trace("getDocumentByIddoc: {}", iddoc);
+            String query = SolrConstants.PI_TOPSTRUCT + ":" + pi + " AND " + SolrConstants.LOGID + ":" + divId;
+            SolrDocumentList hits = search(query, 0, 1, null, null, null).getResults();
+            if (hits != null && hits.size() > 0) {
+                ret = hits.get(0);
+            }            
+        } else if(StringUtils.isNotBlank(pi)) {
+            ret = getDocumentByPI(pi);
+        }
+        
+
+        return ret;
+    }
 
     /**
      * Returns a list of Tags created from the terms for the given field name. This method uses the slower doc search instead of term search, but can
