@@ -2883,7 +2883,7 @@ public class ConfigurationTest extends AbstractTest {
         List<DownloadOption> result = DataManager.getInstance().getConfiguration().getSidebarWidgetUsagePageDownloadOptions();
         Assert.assertEquals(5, result.size());
         DownloadOption option = result.get(4);
-        Assert.assertEquals("downloadOptionLabel_large_4096", option.getLabel());
+        Assert.assertEquals("label__download_option_large_4096", option.getLabel());
         Assert.assertEquals("jpg", option.getFormat());
         Assert.assertEquals("4096", option.getBoxSizeInPixel());
     }
