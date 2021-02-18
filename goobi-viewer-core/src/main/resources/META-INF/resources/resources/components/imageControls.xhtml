@@ -130,7 +130,7 @@
                             </ui:fragment>
                             
                             <!-- SELECT TEXT -->
-                            <ui:fragment rendered="#{activeDocumentBean.viewManager.imagesCount gt 2}">
+                            <ui:fragment rendered="#{activeDocumentBean.viewManager.imagesCount ge configurationBean.pageSelectDropdownDisplayMinPages}">
 	                            <ui:fragment rendered="#{navigationHelper.currentPage == 'fulltext' and activeDocumentBean.viewManager.belowFulltextThreshold}">
 	                                <li class="image-controls__action select-text">
 	                                    <span>#{msg.pageSelectDropdown}</span>

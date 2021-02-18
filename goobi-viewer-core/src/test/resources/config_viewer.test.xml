@@ -224,11 +224,6 @@
 	</epub>
 
 	<viewer>
-		<!--zoomImageView and zoomFullscreenView: define the different viewer options 
-			for the standard view and fullscreen view, respecively. Possibilities for 
-			the "type" attribute are: classic and openlayers "Width" and "height" attributes 
-			define the size of the image display, in pixel set the attribute "tileImage" 
-			to true to use tiled images if possible (only possible when type=openlayers) -->
 
 		<pageBrowse>
 			<enabled>true</enabled>
@@ -236,11 +231,17 @@
 			<pageBrowseStep>5</pageBrowseStep>
 			<pageBrowseStep>10</pageBrowseStep>
 		</pageBrowse>
+		
+		<!-- pageSelectDropdownDisplayMinPages: Minimum number of pages a record needs to possess in order for the drop-down to be displayed. Default is 3. -->
+        <pageSelectDropdownDisplayMinPages>1</pageSelectDropdownDisplayMinPages>
 
 		<doublePageMode>
 			<enabled>true</enabled>
 		</doublePageMode>
-
+		
+        <!--zoomImageView and zoomFullscreenView: define the different viewer options for the standard view and fullscreen view, respecively. Possibilities for
+            the "type" attribute are: classic and openlayers "Width" and "height" attributes define the size of the image display, in pixel set the attribute "tileImage"
+            to true to use tiled images if possible (only possible when type=openlayers) -->
 		<zoomImageView type="classic" tileImage="true"
 			footerHeight="50">
 			<useFor>
