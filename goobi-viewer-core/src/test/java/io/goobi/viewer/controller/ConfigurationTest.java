@@ -1148,7 +1148,6 @@ public class ConfigurationTest extends AbstractTest {
     public void isDisplaySidebarWidgetDownloads_shouldReturnCorrectValue() throws Exception {
         Assert.assertEquals(true, DataManager.getInstance().getConfiguration().isDisplaySidebarWidgetDownloads());
     }
-    
 
     /**
      * @see Configuration#getSidebarWidgetDownloadsIntroductionText()
@@ -2890,5 +2889,14 @@ public class ConfigurationTest extends AbstractTest {
     public void getSidebarWidgetUsageCitationStyles_shouldReturnAllConfiguredValues() throws Exception {
         List<String> result = DataManager.getInstance().getConfiguration().getSidebarWidgetUsageCitationStyles();
         Assert.assertEquals(3, result.size());
+    }
+
+    /**
+     * @see Configuration#getPageSelectDropdownDisplayMinPages()
+     * @verifies return correct value
+     */
+    @Test
+    public void getPageSelectDropdownDisplayMinPages_shouldReturnCorrectValue() throws Exception {
+        Assert.assertEquals(1, DataManager.getInstance().getConfiguration().getPageSelectDropdownDisplayMinPages());
     }
 }

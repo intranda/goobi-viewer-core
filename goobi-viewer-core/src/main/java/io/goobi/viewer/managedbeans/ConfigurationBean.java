@@ -981,6 +981,14 @@ public class ConfigurationBean implements Serializable {
     }
 
     /**
+     * 
+     * @return
+     */
+    public int getPageSelectDropdownDisplayMinPages() {
+        return DataManager.getInstance().getConfiguration().getPageSelectDropdownDisplayMinPages();
+    }
+
+    /**
      * <p>
      * getReCaptchaSiteKey.
      * </p>
