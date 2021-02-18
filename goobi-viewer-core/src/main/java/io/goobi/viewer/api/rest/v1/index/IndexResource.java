@@ -23,8 +23,12 @@ import static io.goobi.viewer.api.rest.v1.ApiUrls.INDEX_STREAM;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
+import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -59,16 +63,17 @@ import de.unigoettingen.sub.commons.contentlib.exceptions.IllegalRequestExceptio
 import de.unigoettingen.sub.commons.contentlib.servlet.rest.CORSBinding;
 import io.goobi.viewer.api.rest.bindings.AuthorizationBinding;
 import io.goobi.viewer.api.rest.bindings.ViewerRestServiceBinding;
-import io.goobi.viewer.api.rest.model.IResponseMessage;
 import io.goobi.viewer.api.rest.model.RecordsRequestParameters;
-import io.goobi.viewer.api.rest.model.SuccessMessage;
+import io.goobi.viewer.api.rest.model.index.SolrFieldInfo;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.JsonTools;
+import io.goobi.viewer.controller.SolrConstants;
 import io.goobi.viewer.controller.SolrSearchIndex;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.exceptions.ViewerConfigurationException;
+import io.goobi.viewer.messages.ViewerResourceBundle;
 import io.goobi.viewer.model.search.SearchHelper;
 import io.goobi.viewer.model.viewer.StringPair;
 import io.swagger.v3.oas.annotations.Operation;
@@ -271,17 +276,65 @@ public class IndexResource {
     @Produces({ MediaType.APPLICATION_JSON })
     @AuthorizationBinding
     @Operation(summary = "Requires an authentication token. Retrieves a JSON list of all existing Solr fields.", tags = { "solr" })
-    public IResponseMessage getAllIndexFields() throws IOException {
+    public List<SolrFieldInfo> getAllIndexFields() throws IOException {
         logger.trace("getAllIndexFields");
 
         try {
-            List<String> fieldNames = DataManager.getInstance().getSearchIndex().getAllFieldNames();
+            return collectFieldInfo();
         } catch (DAOException e) {
             logger.error(e.getMessage());
             servletResponse.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, e.getMessage());
         }
 
-        return new SuccessMessage(true, "");
+        return Collections.emptyList();
+    }
+
+    /**
+     * 
+     * @return
+     * @throws DAOException
+     */
+    static List<SolrFieldInfo> collectFieldInfo() throws DAOException {
+        List<String> fieldNames = DataManager.getInstance().getSearchIndex().getAllFieldNames();
+        if (fieldNames == null) {
+            return Collections.emptyList();
+        }
+        logger.trace("{} field names collectied", fieldNames.size());
+        Collections.sort(fieldNames);
+
+        Set<String> reference = new HashSet<>(fieldNames);
+        List<SolrFieldInfo> ret = new ArrayList<>();
+        for (String fieldName : fieldNames) {
+            if (fieldName.startsWith("SORT_") || fieldName.startsWith("FACET_") || fieldName.endsWith("_UNTOKENIZED")) {
+                continue;
+            }
+
+            SolrFieldInfo sfi = new SolrFieldInfo(fieldName);
+            ret.add(sfi);
+
+            sfi.setStored(!SolrConstants.FULLTEXT.equals(fieldName)); // All fields except for FULLTEXT are stored
+
+            String sortFieldName = SearchHelper.sortifyField(fieldName);
+            if (!sortFieldName.equals(fieldName) && reference.contains(sortFieldName)) {
+                sfi.setSortField(sortFieldName);
+            }
+            String facetFieldName = SearchHelper.facetifyField(fieldName);
+            if (!facetFieldName.equals(fieldName) &&reference.contains(facetFieldName)) {
+                sfi.setFacetField(facetFieldName);
+            }
+            String boolFieldName = SearchHelper.boolifyField(fieldName);
+            if (!boolFieldName.equals(fieldName) &&reference.contains(boolFieldName)) {
+                sfi.setBoolField(boolFieldName);
+            }
+            for (Locale locale : ViewerResourceBundle.getAllLocales()) {
+                String translation = ViewerResourceBundle.getTranslation(fieldName, locale, false);
+                if (translation != null && !translation.equals(fieldName)) {
+                    sfi.getTranslations().put(locale.getLanguage(), translation);
+                }
+            }
+        }
+
+        return ret;
     }
 
     /**
