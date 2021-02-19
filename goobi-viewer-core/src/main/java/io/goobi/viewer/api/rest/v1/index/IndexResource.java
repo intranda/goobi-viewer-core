@@ -292,6 +292,7 @@ public class IndexResource {
      * 
      * @return
      * @throws DAOException
+     * @should create list correctly
      */
     static List<SolrFieldInfo> collectFieldInfo() throws DAOException {
         List<String> fieldNames = DataManager.getInstance().getSearchIndex().getAllFieldNames();
