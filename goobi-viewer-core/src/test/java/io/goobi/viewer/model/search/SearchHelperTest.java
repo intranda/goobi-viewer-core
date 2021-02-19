@@ -631,6 +631,8 @@ public class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
         Assert.assertEquals("SORT_DC", SearchHelper.sortifyField(SolrConstants.DC));
         Assert.assertEquals("SORT_DOCSTRCT", SearchHelper.sortifyField(SolrConstants.DOCSTRCT));
         Assert.assertEquals("SORT_TITLE", SearchHelper.sortifyField("MD_TITLE_UNTOKENIZED"));
+        Assert.assertEquals("SORTNUM_YEAR", SearchHelper.sortifyField(SolrConstants.YEAR));
+        Assert.assertEquals("SORTNUM_FOO", SearchHelper.sortifyField("MDNUM_FOO"));
     }
 
     /**
@@ -651,7 +653,7 @@ public class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
         Assert.assertEquals("SORT_DC", SearchHelper.adaptField(SolrConstants.DC, "SORT_"));
         Assert.assertEquals("SORT_FOO", SearchHelper.adaptField("MD_FOO", "SORT_"));
         Assert.assertEquals("SORT_FOO", SearchHelper.adaptField("MD2_FOO", "SORT_"));
-        Assert.assertEquals("SORT_FOO", SearchHelper.adaptField("MDNUM_FOO", "SORT_"));
+        Assert.assertEquals("SORTNUM_FOO", SearchHelper.adaptField("MDNUM_FOO", "SORT_"));
         Assert.assertEquals("SORT_FOO", SearchHelper.adaptField("NE_FOO", "SORT_"));
         Assert.assertEquals("SORT_FOO", SearchHelper.adaptField("BOOL_FOO", "SORT_"));
     }
