@@ -18,6 +18,9 @@ package io.goobi.viewer.api.rest.model.index;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonInclude.Include;
+
 /**
  * Solr field information as JSON.
  */
@@ -25,17 +28,21 @@ public class SolrFieldInfo {
 
     private final String field;
 
-    private String sortField = "";
+    @JsonInclude(Include.NON_ABSENT)
+    private String sortField = null;
 
-    private String facetField = "";
+    @JsonInclude(Include.NON_ABSENT)
+    private String facetField = null;
 
-    private String boolField = "";
+    @JsonInclude(Include.NON_ABSENT)
+    private String boolField = null;
 
     private boolean indexed = true;
 
     private boolean stored = true;
 
-    private final Map<String, String> translations = new HashMap<>();
+    @JsonInclude(Include.NON_NULL)
+    private Map<String, String> translations = null;
 
     /**
      * Constructor.
@@ -127,6 +134,10 @@ public class SolrFieldInfo {
      * @return the translations
      */
     public Map<String, String> getTranslations() {
+        if (translations == null) {
+            translations = new HashMap<>();
+        }
+
         return translations;
     }
 }

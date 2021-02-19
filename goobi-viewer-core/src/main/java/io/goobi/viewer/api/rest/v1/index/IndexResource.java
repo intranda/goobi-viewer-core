@@ -274,7 +274,6 @@ public class IndexResource {
     @GET
     @Path(INDEX_FIELDS)
     @Produces({ MediaType.APPLICATION_JSON })
-    @AuthorizationBinding
     @Operation(summary = "Requires an authentication token. Retrieves a JSON list of all existing Solr fields.", tags = { "solr" })
     public List<SolrFieldInfo> getAllIndexFields() throws IOException {
         logger.trace("getAllIndexFields");
