@@ -226,8 +226,8 @@ public class SearchFacetsTest extends AbstractSolrEnabledTest {
     @Test
     public void generateFacetFilterQuery_shouldGenerateQueryCorrectly() throws Exception {
         SearchFacets facets = new SearchFacets();
-        facets.setCurrentFacetString("FIELD1:a;;FIELD2:b;;YEAR:[c TO d]");
-        Assert.assertEquals("FIELD1:a AND FIELD2:b AND YEAR:[c TO d]", facets.generateFacetFilterQuery(true));
+        facets.setCurrentFacetString("MD_FIELD1:a;;FIELD2:b;;YEAR:[c TO d]");
+        Assert.assertEquals("FACET_FIELD1:a AND FIELD2:b AND FACET_YEAR:[c TO d]", facets.generateFacetFilterQuery(true));
     }
 
     /**
