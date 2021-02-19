@@ -9,7 +9,7 @@
 
     <composite:implementation>
         <h:panelGroup rendered="#{activeDocumentBean.viewManager.hasVersionHistory and fn:length(activeDocumentBean.viewManager.versionHistory) > 1}">
-            <div id="widgetVersionHistory" class="widget">
+            <div id="widgetVersionHistory" class="widget widget-version-history">
                 <h3>#{msg.versionHistory}:</h3>
 
                 <ul>
