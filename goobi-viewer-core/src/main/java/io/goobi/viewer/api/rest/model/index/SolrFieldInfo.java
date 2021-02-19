@@ -21,26 +21,37 @@ import java.util.Map;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 
+import io.swagger.v3.oas.annotations.media.Schema;
+
 /**
  * Solr field information as JSON.
  */
+@Schema(name = "SolrFieldInfo", description = "Solr field information", requiredProperties = { "field" })
 public class SolrFieldInfo {
 
+    @Schema(description = "Main Solr field", example = "MD_TITLE, MDNUM_COUNT, DOCSTRCT, ACCESSCONDITION, PI, YEAR")
     private final String field;
 
+    @Schema(description = "Field variant for sorting", example = "SORT_TITLE, SORTNUM_YEAR")
     @JsonInclude(Include.NON_ABSENT)
     private String sortField = null;
 
+    @Schema(description = "Field variant for faceting", example = "FACET_TITLE, FACET_YEAR")
     @JsonInclude(Include.NON_ABSENT)
     private String facetField = null;
 
+    @Schema(description = "Boolean field variant, indicates whether values for the main field exist in a given Solr document",
+            example = "BOOL_TITLE")
     @JsonInclude(Include.NON_ABSENT)
     private String boolField = null;
 
+    @Schema(description = "Indicates whether this field is configured as 'indexed' (value is searchable) in the Solr schema")
     private boolean indexed = true;
 
+    @Schema(description = "Indicates whether this field is configured as 'stored' (value is readable) in the Solr schema")
     private boolean stored = true;
 
+    @Schema(description = "Field name translation for available languages", example = "en: Title, de: Titel")
     @JsonInclude(Include.NON_NULL)
     private Map<String, String> translations = null;
 
