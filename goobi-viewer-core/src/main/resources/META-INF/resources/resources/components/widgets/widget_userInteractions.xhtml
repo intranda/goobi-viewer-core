@@ -158,7 +158,7 @@
                                     <h:selectOneMenu value="#{activeDocumentBean.deleteRecordKeepTrace}">
                                         <f:selectItem itemLabel="#{msg.select}" itemValue="#{null}" />
                                         <c:if test="#{activeDocumentBean.viewManager.hasUrns}">
-                                        	<f:selectItem itemLabel="#{msg.deleteRecord_select_delete}" />
+                                        	<f:selectItem itemLabel="#{msg.deleteRecord_select_delete}" itemValue="#{true}"/>
                                         </c:if>
                                         <f:selectItem itemLabel="#{msg.deleteRecord_select_purge}" itemValue="#{false}" />
                                         <f:passThroughAttribute name="aria-label" value="#{msg.select}"/>
