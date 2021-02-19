@@ -1903,11 +1903,23 @@ public final class SearchHelper {
      * </p>
      *
      * @param fieldName a {@link java.lang.String} object.
-     * @should sortify correctly
      * @return a {@link java.lang.String} object.
+     * @should sortify correctly
      */
     public static String sortifyField(String fieldName) {
         return adaptField(fieldName, "SORT_");
+    }
+
+    /**
+     * <p>
+     * boolifyField.
+     * </p>
+     *
+     * @param fieldName a {@link java.lang.String} object.
+     * @return a {@link java.lang.String} object.
+     */
+    public static String boolifyField(String fieldName) {
+        return adaptField(fieldName, "BOOL_");
     }
 
     /**
@@ -1942,6 +1954,13 @@ public final class SearchHelper {
             case SolrConstants.DOCSTRCT_SUB:
             case SolrConstants.DOCSTRCT_TOP:
                 return prefix + fieldName;
+            case SolrConstants._CALENDAR_YEAR:
+            case SolrConstants._CALENDAR_MONTH:
+            case SolrConstants._CALENDAR_DAY:
+                if ("SORT_".equals(prefix)) {
+                    return "SORTNUM_" + fieldName;
+                }
+                return prefix + fieldName;
             default:
                 if (StringUtils.isNotEmpty(prefix)) {
                     if (fieldName.startsWith("MD_")) {
@@ -1949,7 +1968,11 @@ public final class SearchHelper {
                     } else if (fieldName.startsWith("MD2_")) {
                         fieldName = fieldName.replace("MD2_", prefix);
                     } else if (fieldName.startsWith("MDNUM_")) {
-                        fieldName = fieldName.replace("MDNUM_", prefix);
+                        if ("SORT_".equals(prefix)) {
+                            fieldName = fieldName.replace("MDNUM_", "SORTNUM_");
+                        } else {
+                            fieldName = fieldName.replace("MDNUM_", prefix);
+                        }
                     } else if (fieldName.startsWith("NE_")) {
                         fieldName = fieldName.replace("NE_", prefix);
                     } else if (fieldName.startsWith("BOOL_")) {
