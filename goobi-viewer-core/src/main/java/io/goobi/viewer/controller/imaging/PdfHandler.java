@@ -110,7 +110,7 @@ public class PdfHandler {
                 .map(this::escapeURI)
                 .collect(Collectors.joining("$"));
         if (this.urls != null) {
-            sb.append(urls.path(ApiUrls.RECORDS_FILES, ApiUrls.RECORDS_FILES_PDF).params(pages[0].getPi(), filenames).build());
+            sb.append(urls.path(ApiUrls.RECORDS_FILES_IMAGE, ApiUrls.RECORDS_FILES_IMAGE_PDF).params(pages[0].getPi(), filenames).build());
         } else {
             sb.append(this.iiifUrl);
             sb.append("image")
@@ -153,7 +153,7 @@ public class PdfHandler {
      */
     public String getPdfUrl(String pi, String filename) {
         if (this.urls != null) {
-            return urls.path(ApiUrls.RECORDS_FILES, ApiUrls.RECORDS_FILES_PDF).params(pi, filename).build();
+            return urls.path(ApiUrls.RECORDS_FILES_IMAGE, ApiUrls.RECORDS_FILES_IMAGE_PDF).params(pi, filename).build();
         }
         StringBuilder sb = new StringBuilder(this.iiifUrl);
         sb.append("image").append("/").append(pi).append("/").append(filename).append("/").append("full/max/0/").append(filename);
