@@ -19,7 +19,9 @@ package io.goobi.viewer.controller;
 import org.junit.Assert;
 import org.junit.Test;
 
-public class NetToolsTest {
+import io.goobi.viewer.AbstractTest;
+
+public class NetToolsTest extends AbstractTest {
 
     /**
      * @see NetTools#parseMultipleIpAddresses(String)
@@ -46,5 +48,21 @@ public class NetToolsTest {
     @Test
     public void scrambleIpAddress_shouldModifyStringCorrectly() throws Exception {
         Assert.assertEquals("192.168.X.X", NetTools.scrambleIpAddress("192.168.0.1"));
+    }
+
+    /**
+     * @see NetTools#buildClearCacheUrl(String,String,String)
+     * @verifies build url correctly
+     */
+    @Test
+    public void buildClearCacheUrl_shouldBuildUrlCorrectly() throws Exception {
+        Assert.assertEquals("https://example.com/api/v1/cache/PPN123/?token=test&content=true&thumbs=true&pdf=true",
+                NetTools.buildClearCacheUrl(NetTools.PARAM_CLEAR_CACHE_ALL, "PPN123", "https://example.com/", "test"));
+        Assert.assertEquals("https://example.com/api/v1/cache/PPN123/?token=test&content=true",
+                NetTools.buildClearCacheUrl(NetTools.PARAM_CLEAR_CACHE_CONTENT, "PPN123", "https://example.com/", "test"));
+        Assert.assertEquals("https://example.com/api/v1/cache/PPN123/?token=test&thumbs=true",
+                NetTools.buildClearCacheUrl(NetTools.PARAM_CLEAR_CACHE_THUMBS, "PPN123", "https://example.com/", "test"));
+        Assert.assertEquals("https://example.com/api/v1/cache/PPN123/?token=test&pdf=true",
+                NetTools.buildClearCacheUrl(NetTools.PARAM_CLEAR_CACHE_PDF, "PPN123", "https://example.com/", "test"));
     }
 }

@@ -659,7 +659,7 @@ public class Metadata implements Serializable {
             }
             if (values != null) {
                 if (MetadataParameterType.CITEPROC.equals(param.getType())) {
-                    logger.trace(param.getKey() + ":" + values.get(0));
+                    // logger.trace(param.getKey() + ":" + values.get(0));
                     // Use all available values for citation
                     found = true;
                     // Apply replace rules

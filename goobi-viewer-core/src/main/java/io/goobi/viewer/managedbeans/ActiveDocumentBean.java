@@ -35,6 +35,7 @@ import javax.servlet.http.HttpSession;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.text.StringEscapeUtils;
+import org.apache.http.client.ClientProtocolException;
 import org.apache.solr.common.SolrDocumentList;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -46,11 +47,13 @@ import de.intranda.metadata.multilanguage.IMetadataValue;
 import de.intranda.metadata.multilanguage.MultiLanguageMetadataValue;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.IndexerTools;
+import io.goobi.viewer.controller.NetTools;
 import io.goobi.viewer.controller.SolrConstants;
 import io.goobi.viewer.controller.SolrSearchIndex;
 import io.goobi.viewer.controller.SolrConstants.DocType;
 import io.goobi.viewer.controller.language.Language;
 import io.goobi.viewer.exceptions.DAOException;
+import io.goobi.viewer.exceptions.HTTPException;
 import io.goobi.viewer.exceptions.IDDOCNotFoundException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
@@ -145,6 +148,8 @@ public class ActiveDocumentBean implements Serializable {
     private String selectedRecordLanguage;
 
     private Boolean deleteRecordKeepTrace;
+
+    private String clearCacheMode;
 
     private CMSSidebarElement mapWidget = null;
 
@@ -1396,18 +1401,17 @@ public class ActiveDocumentBean implements Serializable {
                 }
             }
         }
-        
-        if(navigationHelper.getCurrentPageType() != null) {
+
+        if (navigationHelper.getCurrentPageType() != null) {
             PageType pageType = navigationHelper.getCurrentPageType();
-            if(PageType.other.equals(pageType)) {
+            if (PageType.other.equals(pageType)) {
                 String pageLabel = navigationHelper.getCurrentPage();
                 return Messages.translate(pageLabel, Locale.forLanguageTag(language));
-            } else {
-                return Messages.translate(pageType.getLabel(), Locale.forLanguageTag(language));
             }
-        } else {
-            return null;
+            return Messages.translate(pageType.getLabel(), Locale.forLanguageTag(language));
         }
+
+        return null;
     }
 
     /**
@@ -1532,6 +1536,42 @@ public class ActiveDocumentBean implements Serializable {
             Messages.error("deleteRecord_failure");
         } finally {
             deleteRecordKeepTrace = null;
+        }
+
+        return "";
+    }
+
+    /**
+     * 
+     * @return
+     * @throws ClientProtocolException
+     * @throws IOException
+     * @throws IndexUnreachableException
+     */
+    public String clearCacheAction() throws ClientProtocolException, IOException, IndexUnreachableException {
+        logger.trace("clearCacheAction: {}", clearCacheMode);
+        if (clearCacheMode == null || viewManager == null) {
+            return "";
+        }
+
+        String url = NetTools.buildClearCacheUrl(clearCacheMode, viewManager.getPi(), navigationHelper.getApplicationUrl(),
+                DataManager.getInstance().getConfiguration().getWebApiToken());
+        try {
+            try {
+                String result = NetTools.getWebContentDELETE(url, null, null, null, null);
+                Messages.info("cache_clear__success");
+            } catch (ClientProtocolException e) {
+                logger.error(e.getMessage());
+                Messages.error("cache_clear__failure");
+            } catch (IOException e) {
+                logger.error(e.getMessage());
+                Messages.error("cache_clear__failure");;
+            } catch (HTTPException e) {
+                logger.error(e.getMessage());
+                Messages.error("cache_clear__failure");
+            }
+        } finally {
+            clearCacheMode = null;
         }
 
         return "";
@@ -1897,6 +1937,21 @@ public class ActiveDocumentBean implements Serializable {
         this.deleteRecordKeepTrace = deleteRecordKeepTrace;
     }
 
+    /**
+     * @return the clearCacheMode
+     */
+    public String getClearCacheMode() {
+        return clearCacheMode;
+    }
+
+    /**
+     * @param clearCacheMode the clearCacheMode to set
+     */
+    public void setClearCacheMode(String clearCacheMode) {
+        logger.trace("setClearCacheMode: {}", clearCacheMode);
+        this.clearCacheMode = clearCacheMode;
+    }
+
     public CMSSidebarElement getMapWidget() throws PresentationException, DAOException {
         if (this.mapWidget == null) {
             this.mapWidget = generateMapWidget();
@@ -1911,7 +1966,7 @@ public class ActiveDocumentBean implements Serializable {
             if ("-".equals(getPersistentIdentifier())) {
                 return null;
             }
-            
+
             GeoMap map = new GeoMap();
             map.setId(Long.MAX_VALUE);
             map.setType(GeoMapType.SOLR_QUERY);

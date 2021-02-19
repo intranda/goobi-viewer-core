@@ -38,6 +38,7 @@ import javax.inject.Named;
 
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.http.client.ClientProtocolException;
 import org.jdom2.Attribute;
 import org.jdom2.Document;
 import org.jdom2.Element;
@@ -49,6 +50,7 @@ import org.slf4j.LoggerFactory;
 import de.unigoettingen.sub.commons.util.CacheUtils;
 import io.goobi.viewer.controller.DataFileTools;
 import io.goobi.viewer.controller.DataManager;
+import io.goobi.viewer.controller.NetTools;
 import io.goobi.viewer.controller.SolrConstants;
 import io.goobi.viewer.controller.StringTools;
 import io.goobi.viewer.controller.XmlTools;
@@ -1813,7 +1815,7 @@ public class AdminBean implements Serializable {
     }
 
     public void triggerMessage(String message) {
-        logger.debug("Show message " + message);
+        logger.debug("Show message: {}", message);
         Messages.info(ViewerResourceBundle.getTranslation(message, null));
     }
 

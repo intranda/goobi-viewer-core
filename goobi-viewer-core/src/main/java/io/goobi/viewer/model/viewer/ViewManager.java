@@ -3480,7 +3480,7 @@ public class ViewManager implements Serializable {
                 Citation citation = new Citation(pi, processor, citationProcessorWrapper.getCitationItemDataProvider(),
                         CitationTools.getCSLTypeForDocstrct(topDocument.getDocStructType()), val.getCitationValues());
                 String ret = citation.getCitationString(outputFormat);
-                logger.trace("citation: {}", ret);
+                // logger.trace("citation: {}", ret);
                 return ret;
             }
         }
