@@ -2,7 +2,8 @@
     xmlns:f="http://xmlns.jcp.org/jsf/core" 
     xmlns:h="http://xmlns.jcp.org/jsf/html"
     xmlns:ui="http://xmlns.jcp.org/jsf/facelets" 
-    xmlns:composite="http://xmlns.jcp.org/jsf/composite">
+    xmlns:composite="http://xmlns.jcp.org/jsf/composite"
+    xmlns:c="http://java.sun.com/jsp/jstl/core">
     
 	<composite:interface />
 
@@ -12,10 +13,7 @@
             <div id="widgetUserInteractions" class="widget widget-user-interactions">
                 <h:form id="widgetUserInteractionsStandardForm" prependId="false">
                     <h3>#{msg.menuUser_workInteractions}</h3>
-
                     <ul>
-                        <h4>#{msg.general}</h4>
-                        
                         <h:panelGroup rendered="#{userBean.user.maySetRepresentativeImage and activeDocumentBean.viewManager.hasPages}">
                             <li>
                                 <h:commandLink
@@ -105,11 +103,12 @@
                     <ui:fragment rendered="#{userBean.admin}">
                         <ul>
                             <h4>#{msg.cache_clear__title}</h4>
+                            <p class="widget-user-interactions__info-text">#{msg.cache_clear__info_text}</p>
                             <div class="widget-user-interactions__clear_cache">
                                 <div class="custom-control custom-control--select">
                                     <h:selectOneMenu value="#{activeDocumentBean.clearCacheMode}" immediate="true">
                                         <f:selectItem itemLabel="#{msg.select}" itemValue="#{null}" />
-                                        <f:selectItem itemLabel="#{msg.cache_clear__label_all}" itemValue="content" />
+                                        <f:selectItem itemLabel="#{msg.cache_clear__label_all}" itemValue="all" />
                                         <f:selectItem itemLabel="#{msg.cache_clear__label_content}" itemValue="content" />
                                         <f:selectItem itemLabel="#{msg.cache_clear__label_thumbs}" itemValue="thumbs" />
                                         <f:selectItem itemLabel="#{msg.cache_clear__label_pdf}" itemValue="pdf" />
@@ -122,10 +121,10 @@
                                 <!-- TODO: hide when no mode selected -->
                                 <ui:fragment rendered="#{activeDocumentBean.clearCacheMode != null}">
                                     <div class="widget-user-interactions__clear-cache-action">
-                                        <h:commandLink styleClass="btn btn--danger" role="button"
+                                        <h:commandLink styleClass="btn btn--full" role="button"
                                             onclick="if ( !confirm( &quot;#{msg['cache_clear__confirmation_text_'.concat(activeDocumentBean.clearCacheMode)]}&quot; ) ) { return false };"
                                             action="#{activeDocumentBean.clearCacheAction}">
-                                            #{msg.button__delete}
+                                            #{msg.cache_clear__button}
                                         </h:commandLink>
                                     </div>
                                 </ui:fragment>
@@ -140,24 +139,27 @@
                         <h4>#{msg.deleteRecord}</h4>
                         <div class="widget-user-interactions__delete-record">
                             <!-- HAS NO URNS -->
-                            <ui:fragment rendered="#{!activeDocumentBean.viewManager.hasUrns}">
-                                <div class="widget-user-interactions__delete-record-action has-no-urn">
-                                    <h:commandLink 
-                                        styleClass="btn btn--link" 
-                                        role="button"
-                                        onclick="if ( !confirm( &quot;#{msg.deleteRecord_confirmationText}&quot; ) ) { return false };"
-                                        action="#{activeDocumentBean.deleteRecordAction(false)}">
-                                        #{msg.deleteRecord}
-                                    </h:commandLink>
-                                </div>
-                            </ui:fragment>
+<!--                             <ui:fragment rendered="#{!activeDocumentBean.viewManager.hasUrns}"> -->
+<!--                                 <div class="widget-user-interactions__delete-record-action has-no-urn"> -->
+<!--                                     <h:commandLink  -->
+<!--                                         styleClass="btn"  -->
+<!--                                         role="button" -->
+<!--                                         onclick="if ( !confirm( &quot;#{msg.deleteRecord_confirmationText}&quot; ) ) { return false };" -->
+<!--                                         action="#{activeDocumentBean.deleteRecordAction(false)}"> -->
+<!--                                         #{msg.deleteRecord} -->
+<!--                                     </h:commandLink> -->
+<!--                                 </div> -->
+<!--                             </ui:fragment> -->
 
                             <!-- HAS URNS -->
-                            <ui:fragment rendered="#{activeDocumentBean.viewManager.hasUrns}">
+                            
+                            <ui:fragment>
                                 <div class="custom-control custom-control--select">
                                     <h:selectOneMenu value="#{activeDocumentBean.deleteRecordKeepTrace}">
                                         <f:selectItem itemLabel="#{msg.select}" itemValue="#{null}" />
-                                        <f:selectItem itemLabel="#{msg.deleteRecord_select_delete}" itemValue="#{true}" />
+                                        <c:if test="#{activeDocumentBean.viewManager.hasUrns}">
+                                        	<f:selectItem itemLabel="#{msg.deleteRecord_select_delete}" />
+                                        </c:if>
                                         <f:selectItem itemLabel="#{msg.deleteRecord_select_purge}" itemValue="#{false}" />
                                         <f:passThroughAttribute name="aria-label" value="#{msg.select}"/>
                                         <f:ajax render="@form" />
