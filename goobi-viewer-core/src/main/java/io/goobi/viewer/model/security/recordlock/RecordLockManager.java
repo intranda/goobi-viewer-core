@@ -33,6 +33,14 @@ public class RecordLockManager {
 
     /** Currently viewed records */
     private final Map<String, Set<RecordLock>> loadedRecordMap = new ConcurrentHashMap<>();
+    /**
+     * Cache for record access conditions. Null value means the record is not yet cached, while empty list means the record has no access conditions.
+     */
+    private final Map<String, List<String>> recordAccessConditionsCache = new ConcurrentHashMap<>();
+    /**
+     * Cache for record access limits. Null value means the record is not yet cached, while empty list means the record has no limits.
+     */
+    private final Map<String, List<String>> recordLimitsCache = new ConcurrentHashMap<>();
 
     /**
      * 
@@ -177,5 +185,32 @@ public class RecordLockManager {
      */
     Map<String, Set<RecordLock>> getLoadedRecordMap() {
         return loadedRecordMap;
+    }
+
+    /**
+     * 
+     * @param pi
+     */
+    public void emptyCacheForRecord(String pi) {
+        if (pi == null) {
+            return;
+        }
+
+        recordAccessConditionsCache.remove(pi);
+        recordLimitsCache.remove(pi);
+    }
+
+    /**
+     * @return the recordAccessConditionsCache
+     */
+    public Map<String, List<String>> getRecordAccessConditionsCache() {
+        return recordAccessConditionsCache;
+    }
+
+    /**
+     * @return the recordLimitsCache
+     */
+    public Map<String, List<String>> getRecordLimitsCache() {
+        return recordLimitsCache;
     }
 }
