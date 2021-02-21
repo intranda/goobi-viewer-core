@@ -64,8 +64,11 @@
 	}
 	/* PAGE DOWNLOADS */
 	&__page-downloads {
+		display: flex;
 		a {}
-		.badge {}
+		.badge {
+			margin-right: 0.4rem;
+		}
 	}
 	&__page-download-alto {}
 	&__page-download-fulltext {}
@@ -75,7 +78,9 @@
 			padding-right: 0.5rem;
 		}
 	}
-	&__page-download-jpeg {}
+	&__page-download-jpeg {
+		border: none;
+	}
 	/*IMAGE FRAGMENT */
 	&__image-fragment__wrapper {
 		display: none;
