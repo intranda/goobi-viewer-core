@@ -92,46 +92,46 @@
                                     </ui:fragment>
                                 </ui:fragment>
 
-			        			<popover id="downloadImagePopover">
-									<h:panelGroup
-										id="downloadImageSizes">
-										<ui:fragment>
-											<h:form styleClass="widget-usage__download-image-size-form">
-												<fieldset>
-													<ui:repeat varStatus="status" var="option"
-														value="#{configurationBean.sidebarWidgetUsagePageDownloadOptions}">
-														<input
-															class="widget-usage__download-image-size-input"
-															onclick="setDownloadOptionLabel({optionvalue: this.getAttribute('value')});"
-															value="#{option.label}" name="abc" type="radio"
-															id="#{status.index}" />
-														<label for="#{status.index}"><span class="widget-usage__download-image-size-radio-label">#{msg[option.label]}</span><span class="widget-usage__download-image-size-radio-size">#{option.boxSizeLabel}</span><span class="widget-usage__download-image-size-radio-format">#{option.format}</span></label>
-													</ui:repeat>
-												</fieldset>
-					
-												<!-- SCRIPT TO CHANGE HREF ON BUTTON -->
-												<h:commandScript name="setDownloadOptionLabel"
-													action="#{activeDocumentBean.setDownloadOptionLabelFromRequestParameter()}"
-													render="downloadPageLink">
-												</h:commandScript>
-					
-												<!-- maybe TODO This takes a few seconds to update the link after selection -->
-												<h:outputLink id="downloadPageLink"
-													styleClass="btn btn--full widget-usage__download-image-size-button"
-													title="#{msg.download}" target="_blank"
-													rel="nofollow noopener" aria-label="#{msg.download}"
-													value="#{activeDocumentBean.viewManager.getPageDownloadUrl(activeDocumentBean.selectedDownloadOption)}">
-					                                             #{msg.download}
-					                                         </h:outputLink>
-											</h:form>
-										</ui:fragment>
-									</h:panelGroup> 
-								</popover>
-                                
 							</ui:fragment>
 						</div>
+						
+						<!-- POPOVER FOR IMAGE DOWNLOAD -->
+	        			<popover id="downloadImagePopover">
+							<h:panelGroup
+								id="downloadImageSizes">
+								<ui:fragment>
+									<h:form styleClass="widget-usage__download-image-size-form">
+										<fieldset>
+											<ui:repeat varStatus="status" var="option"
+												value="#{configurationBean.sidebarWidgetUsagePageDownloadOptions}">
+												<input
+													class="widget-usage__download-image-size-input"
+													onclick="setDownloadOptionLabel({optionvalue: this.getAttribute('value')});"
+													value="#{option.label}" name="abc" type="radio"
+													id="#{status.index}" />
+												<label for="#{status.index}"><span class="widget-usage__download-image-size-radio-label">#{msg[option.label]}</span><span class="widget-usage__download-image-size-radio-size">#{option.boxSizeLabel}</span><span class="widget-usage__download-image-size-radio-format">#{option.format}</span></label>
+											</ui:repeat>
+										</fieldset>
+			
+										<!-- SCRIPT TO CHANGE HREF ON BUTTON -->
+										<h:commandScript name="setDownloadOptionLabel"
+											action="#{activeDocumentBean.setDownloadOptionLabelFromRequestParameter()}"
+											render="downloadPageLink">
+										</h:commandScript>
+			
+										<!-- maybe TODO This takes a few seconds to update the link after selection -->
+										<h:outputLink id="downloadPageLink"
+											styleClass="btn btn--full widget-usage__download-image-size-button"
+											title="#{msg.download}" target="_blank"
+											rel="nofollow noopener" aria-label="#{msg.download}"
+											value="#{activeDocumentBean.viewManager.getPageDownloadUrl(activeDocumentBean.selectedDownloadOption)}">
+			                                             #{msg.download}
+			                                         </h:outputLink>
+									</h:form>
+								</ui:fragment>
+							</h:panelGroup> 
+						</popover>
 					</ui:fragment>
-					
 					
 					<!-- IMAGE FRAGMENT -->
 					<ui:fragment rendered="#{activeDocumentBean.viewManager.currentPage.accessPermissionImage}">
