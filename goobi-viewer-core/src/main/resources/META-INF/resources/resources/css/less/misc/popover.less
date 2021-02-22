@@ -88,9 +88,9 @@ imageFilters {
 
 #downloadImagePopover {
 	fieldset {
+	}
+	.widget-usage__download-image-size-option-wrapper {
 		display: flex;
-		flex-wrap: wrap;
-		align-items: center;
 	}
 	label {
 		padding-left: 1rem;
@@ -100,13 +100,13 @@ imageFilters {
 		font-weight: normal;
 	}
 	.widget-usage__download-image-size-input {
-		flex: 0 0 20px;
+		flex: 0 0 auto;
 		max-width: 20px;
+		min-width: unset;
 	}
 	.widget-usage__download-image-size-form {
 		label {
 			display: flex;
-			flex: 0 0 calc(~"100% - 30px");
 		}
 	}
 	.widget-usage__download-image-size-radio-label {
@@ -119,7 +119,6 @@ imageFilters {
 	}
 	.widget-usage__download-image-size-radio-format {
 	    flex: 0 0 auto;
-	    min-width: 50px;
 	    text-transform: uppercase;
 	}
 	.widget-usage__download-image-size-button {
