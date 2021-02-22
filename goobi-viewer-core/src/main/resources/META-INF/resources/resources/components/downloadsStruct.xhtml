@@ -1,0 +1,71 @@
+<ui:composition
+    xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:f="http://xmlns.jcp.org/jsf/core"
+    xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+    xmlns:h="http://xmlns.jcp.org/jsf/html"
+    xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+    xmlns:composite="http://xmlns.jcp.org/jsf/composite"
+    xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components">
+    
+    <composite:interface />
+
+    <composite:implementation>
+ 
+                    <!-- STRUCT ELEMENT -->
+					<ui:fragment
+						rendered="#{(activeDocumentBean.viewManager.currentDocumentIddoc != activeDocumentBean.viewManager.topDocumentIddoc) 
+							and ((activeDocumentBean.viewManager.currentDocument.accessPermissionDownloadMetadata)
+						    or (!activeDocumentBean.viewManager.filesOnly and activeDocumentBean.viewManager.hasPages and activeDocumentBean.accessPermissionPdf))}">
+						<h4 id="titlePage" class="widget-usage__subtitle" title="#{activeDocumentBean.viewManager.currentDocument.label}">#{msg[activeDocumentBean.viewManager.currentDocument.docStructType]}</h4>
+
+						<!-- STRUCT ELEMENT DOWNLOADS -->
+						<div class="widget-usage__struct-downloads">
+						
+							<!-- PDF (STRUCT ELEMENT) -->
+							<ui:fragment rendered="#{!activeDocumentBean.viewManager.filesOnly and activeDocumentBean.viewManager.hasPages
+							    and activeDocumentBean.accessPermissionPdf}">
+	                            <ui:fragment rendered="#{!configurationBean.generatePdfInTaskManager}">
+	                                <a 
+	                                    href="#{activeDocumentBean.viewManager.pdfStructDownloadLink}" 
+	                                    id="pdfStruct" 
+	                                    class="badge badge-dark widget-usage__struct-download-pdf" 
+	                                    title="#{msg.label__pdf_download_section}" 
+                                        target="_blank" rel="nofollow noopener"
+                                        aria-label="#{msg[activeDocumentBean.viewManager.currentDocument.docStructType]}: #{msg.label__pdf_download}">
+                                    	<i class="fa fa-file-pdf-o" aria-hidden="true"></i>
+	                                    #{msg.label__pdf_download}</a>
+	                            </ui:fragment>
+	                            <ui:fragment rendered="#{configurationBean.generatePdfInTaskManager}">
+	                                <a 
+	                                    href="#" 
+	                                    id="pdfStruct" 
+	                                    class="badge badge-dark widget-usage__struct-download-pdf download-modal-widget" 
+	                                    data-type="pdf" 
+	                                    data-title="#{activeDocumentBean.titleBarLabel}" 
+	                                    data-id="#{activeDocumentBean.viewManager.currentDocument.logid}"
+	                                    data-pi="#{activeDocumentBean.viewManager.pi}" 
+                                        title="#{msg.label__pdf_download_section}"
+                                        aria-label="#{msg[activeDocumentBean.viewManager.currentDocument.docStructType]}: #{msg.label__pdf_download}">
+	                                    <i class="fa fa-file-pdf-o" aria-hidden="true"></i>
+	                                    #{msg.label__pdf_download}
+	                                </a>    
+	                            </ui:fragment>
+                            </ui:fragment>
+                            <!-- RIS (current) -->
+                            <ui:fragment rendered="#{activeDocumentBean.viewManager.currentDocument.accessPermissionDownloadMetadata}">
+                                <a href="#{configurationBean.restApiUrlV1}records/#{activeDocumentBean.persistentIdentifier}/sections/#{activeDocumentBean.viewManager.currentDocument.logid}/ris"
+                                    id="risCurrent"
+                                    class="badge badge-dark widget-usage__struct-download-ris" 
+                                    title="#{msg.risLinkTopstruct}"
+                                    rel="nofollow"
+                                    aria-label="#{msg[activeDocumentBean.viewManager.currentDocument.docStructType]}: #{msg.risLinkTopstruct}">
+                                    #{msg.risLinkTopstruct}
+                                </a>
+                            </ui:fragment>
+                        
+						</div>
+                    </ui:fragment>
+                    
+                    
+	</composite:implementation>
+</ui:composition>
