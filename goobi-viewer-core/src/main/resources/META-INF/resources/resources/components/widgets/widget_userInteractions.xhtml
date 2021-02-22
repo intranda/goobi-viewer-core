@@ -119,7 +119,7 @@
                                 
                                 <!-- ACTION -->
                                 <!-- TODO: hide when no mode selected -->
-                                <ui:fragment rendered="#{activeDocumentBean.clearCacheMode != ''}">
+                                <ui:fragment rendered="#{activeDocumentBean.clearCacheMode != null and activeDocumentBean.clearCacheMode != ''}">
                                     <div class="widget-user-interactions__clear-cache-action">
                                         <h:commandLink styleClass="btn btn--full" role="button"
                                             onclick="if ( !confirm( &quot;#{msg['cache_clear__confirmation_text_'.concat(activeDocumentBean.clearCacheMode)]}&quot; ) ) { return false };"
