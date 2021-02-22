@@ -13,6 +13,7 @@
 		font-style: italic;
 	}
 	&__action {
+		text-align: right;
 		a {
 			display: inline-block;
 			width: 28px;
@@ -136,6 +137,14 @@
 	&:active,
 	&:focus {
 		color: @btnDanger;
+	}
+}
+
+@{RTL} {
+	.view-bookmark {
+		&__action {
+			text-align: left;
+		}
 	}
 }
 

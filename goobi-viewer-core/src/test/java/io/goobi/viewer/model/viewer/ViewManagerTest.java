@@ -198,7 +198,7 @@ public class ViewManagerTest extends AbstractDatabaseAndSolrEnabledTest {
         viewManager.setFirstPdfPage("14");
         viewManager.setLastPdfPage("16");
         String url = viewManager.getPdfPartDownloadLink();
-        String expect = "records/" + PI_KLEIUNIV + "/files/pdf/00000014.tif$00000015.tif$00000016.tif";
+        String expect = "records/" + PI_KLEIUNIV + "/files/images/00000014.tif$00000015.tif$00000016.tif/full.pdf";
         Assert.assertTrue("expeted url to contain " + expect + " but was " + url, url.contains(expect));
     }
 

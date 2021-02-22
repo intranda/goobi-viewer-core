@@ -48,14 +48,23 @@ public class UserDataBean implements Serializable {
 
     /** Logger for this class. */
     private static final Logger logger = LoggerFactory.getLogger(UserBean.class);
-    
+
     private static final int DEFAULT_ROWS_PER_PAGE = 15;
 
     @Inject
     private UserBean userBean;
-    
+
     private TableDataProvider<PersistentAnnotation> lazyModelAnnotations;
-    
+
+    /**
+     * Required setter for ManagedProperty injection
+     *
+     * @param userBean the userBean to set
+     */
+    public void setBreadcrumbBean(UserBean userBean) {
+        this.userBean = userBean;
+    }
+
     /**
      * Initialize all campaigns as lazily loaded list
      */
@@ -138,6 +147,22 @@ public class UserDataBean implements Serializable {
     }
 
     /**
+     * 
+     * @return
+     * @throws DAOException
+     * @should return correct value
+     */
+    public long getAnnotationCount() throws DAOException {
+        if (userBean == null || userBean.getUser() == null) {
+            return 0;
+        }
+
+        return DataManager.getInstance()
+                .getDao()
+                .getAnnotationCount(Collections.singletonMap("creatorId_reviewerId", String.valueOf(userBean.getUser().getId())));
+    }
+
+    /**
      * Deletes the given persistent user search.
      *
      * @param search a {@link io.goobi.viewer.model.search.Search} object.
@@ -160,7 +185,7 @@ public class UserDataBean implements Serializable {
 
         return "";
     }
-    
+
     /**
      * <p>
      * Getter for the field <code>lazyModelAnnotations</code>.

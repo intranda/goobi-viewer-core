@@ -1218,6 +1218,10 @@ public final class SolrSearchIndex {
         return searchFacetsAndStatistics(query, filterQueries, facetFields, facetMinCount, null, getFieldStatistics);
     }
 
+    /**
+     * 
+     * @return
+     */
     public boolean pingSolrIndex() {
         if (client != null) {
             try {
@@ -1227,9 +1231,9 @@ public final class SolrSearchIndex {
                 logger.trace("Ping to solr failed " + e.toString());
                 return false;
             }
-        } else {
-            return false;
         }
+        
+        return false;
     }
 
     /**
