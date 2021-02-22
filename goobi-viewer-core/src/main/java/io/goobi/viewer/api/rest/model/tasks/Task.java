@@ -54,7 +54,7 @@ public class Task {
     
     public static enum Accessibility {
         /**
-         * Anyome may access this task
+         * Anyone may access this task
          */
         PUBLIC,
         /**
