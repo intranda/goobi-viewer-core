@@ -25,6 +25,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Optional;
 
 import javax.enterprise.context.SessionScoped;
 import javax.faces.context.ExternalContext;
@@ -45,6 +46,7 @@ import com.ocpsoft.pretty.faces.url.URL;
 
 import de.intranda.metadata.multilanguage.IMetadataValue;
 import de.intranda.metadata.multilanguage.MultiLanguageMetadataValue;
+import de.unigoettingen.sub.commons.contentlib.imagelib.ImageFileFormat;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.IndexerTools;
 import io.goobi.viewer.controller.SolrConstants;
@@ -1983,6 +1985,26 @@ public class ActiveDocumentBean implements Serializable {
             setSelectedDownloadOptionLabel(value);
         }
         
+    }
+    
+    /**
+     * return the current image format if argument is 'MASTER', or the argument itself otherwise
+     * 
+     * @param format
+     * @return  
+     */
+    public String getImageFormat(String format) {
+        if(format != null && format.equalsIgnoreCase("master")) {            
+            return Optional.ofNullable(viewManager)
+                    .map(vm -> vm.getCurrentPage())
+                    .map(page -> page.getFilename())
+                    .filter(name -> StringUtils.isNotBlank(name))
+                    .map(name -> ImageFileFormat.getImageFileFormatFromFileExtension(name))
+                    .map(iff -> iff.name())
+                    .orElse(format);
+        } else {
+            return format;
+        }
     }
 
 }

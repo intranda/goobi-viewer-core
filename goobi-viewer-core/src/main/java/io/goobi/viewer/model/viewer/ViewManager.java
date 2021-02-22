@@ -990,7 +990,7 @@ public class ViewManager implements Serializable {
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
-    public PhysicalElement getCurrentPage() throws IndexUnreachableException, DAOException {
+    public PhysicalElement getCurrentPage()  {
         return getPage(currentImageOrder).orElse(null);
     }
 
@@ -1006,10 +1006,15 @@ public class ViewManager implements Serializable {
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
-    public Optional<PhysicalElement> getPage(int order) throws IndexUnreachableException, DAOException {
-        if (pageLoader != null && pageLoader.getPage(order) != null) {
-            // logger.debug("page " + order + ": " + pageLoader.getPage(order).getFileName());
-            return Optional.ofNullable(pageLoader.getPage(order));
+    public Optional<PhysicalElement> getPage(int order)  {
+        
+        try {
+            if (pageLoader != null && pageLoader.getPage(order) != null) {
+                // logger.debug("page " + order + ": " + pageLoader.getPage(order).getFileName());
+                return Optional.ofNullable(pageLoader.getPage(order));
+            }
+        } catch (IndexUnreachableException | DAOException e) {
+            logger.error("Error getting current page " + e.toString());
         }
 
         return Optional.empty();

@@ -165,14 +165,7 @@ public class ImageDeliveryBean implements Serializable {
     }
 
     private static Optional<PhysicalElement> getCurrentPageIfExists() {
-        return Optional.ofNullable(BeanUtils.getActiveDocumentBean()).map(adb -> adb.getViewManager()).map(vm -> {
-            try {
-                return vm.getCurrentPage();
-            } catch (IndexUnreachableException | DAOException e) {
-                logger.error(e.toString());
-                return null;
-            }
-        });
+        return Optional.ofNullable(BeanUtils.getActiveDocumentBean()).map(adb -> adb.getViewManager()).map(vm -> vm.getCurrentPage());
     }
 
     private static Optional<StructElement> getTopDocumentIfExists() {
