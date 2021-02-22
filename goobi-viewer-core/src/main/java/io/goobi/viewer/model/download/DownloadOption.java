@@ -110,6 +110,14 @@ public class DownloadOption {
         this.boxSizeInPixel = boxSizeInPixel;
         return this;
     }
+    
+    public String getBoxSizeLabel() {
+        if(StringUtils.isNotBlank(boxSizeInPixel) && boxSizeInPixel.matches("\\d+")) {
+            return boxSizeInPixel + "x" + boxSizeInPixel;
+        } else {
+            return "";
+        }
+    }
 
     @Override
     public String toString() {
