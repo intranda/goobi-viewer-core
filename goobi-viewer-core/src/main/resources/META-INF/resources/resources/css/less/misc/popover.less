@@ -80,7 +80,17 @@ imageFilters {
 	}
 }
 
+.page-content__sidebar {
+	.popover {
+		z-index: 2050;
+	}
+}
+
 #downloadImagePopover {
+	fieldset {
+		display: flex;
+		flex-wrap: wrap;
+	}
 	label {
 		padding-left: 1rem;
 		margin-bottom: 0.2rem;
@@ -88,11 +98,34 @@ imageFilters {
 	input[type="radio"]:checked + label {
 		font-weight: normal;
 	}
-	.widget-usage__download-image-size-form {}
+	.widget-usage__download-image-size-input {
+		flex: 0 0 20px;
+		max-width: 20px;
+	}
+	.widget-usage__download-image-size-form {
+		label {
+			display: flex;
+			flex: 0 0 calc(~"100% - 30px");
+		}
+	}
+	.widget-usage__download-image-size-radio-label {
+	    flex: 0 0 auto;
+	    min-width: 95px;
+	}
+	.widget-usage__download-image-size-radio-size {
+	    flex: 0 0 auto;
+	    min-width: 110px;
+	}
+	.widget-usage__download-image-size-radio-format {
+	    flex: 0 0 auto;
+	    min-width: 50px;
+	    text-transform: uppercase;
+	}
 	.widget-usage__download-image-size-button {
 		margin: 0 auto;
 		display: block;
 		width: 80%;
+		margin-top: 2rem;
 		
 	}
 	

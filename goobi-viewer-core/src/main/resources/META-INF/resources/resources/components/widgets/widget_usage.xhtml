@@ -383,6 +383,8 @@
                                         <f:passThroughAttribute name="data-popover-element" value="#downloadImagePopover" />
                                         <f:passThroughAttribute name="data-popover-dismiss" value="click-outside" />
                                         <f:passThroughAttribute name="data-popover-placement" value="bottom" />
+                                        <f:passThroughAttribute name="data-container" value=".page-content__sidebar" />
+                                        
                                         
                                     </h:commandButton>
                            
@@ -428,73 +430,47 @@
                                     </ui:fragment>
                                 </ui:fragment>
 
-								<popover id="downloadImagePopover">
-	                                <h:panelGroup id="downloadImageSizes">
-	                                    <ui:fragment>
-	                                        <h:form styleClass="widget-usage__download-image-size-form">
-<!-- 												<ul> -->
-<!-- 												    <ui:repeat id="items" value="#{activeDocumentBean.selectedDownloadOptionLabel}" var="item"> -->
-<!-- 												        <li> -->
-<!-- 												            <h:selectOneRadio group="foo" value="#{configurationBean.sidebarWidgetUsagePageDownloadOptions}"> -->
-<!-- 												                <f:selectItem itemValue="#{option.label}" /> -->
-<!-- 												            </h:selectOneRadio> -->
-<!-- 												        </li> -->
-<!-- 												    </ui:repeat> -->
-<!-- 												</ul> -->
-<!-- 	                                            <h:selectOneRadio layout="pageDirection" value="#{activeDocumentBean.selectedDownloadOptionLabel}" immediate="true"> -->
-<!-- 	                                                <c:forEach var="option" items="#{configurationBean.sidebarWidgetUsagePageDownloadOptions}"> -->
-<!-- 	                                                    <f:selectItem value="#{option}" -->
-<!-- 	                                                        itemLabel="#{option.label}  #{option.format}" /> -->
-<!-- 	                                                    <br /> -->
-<!-- 	                                                </c:forEach> -->
-<!-- 	                                                <f:selectItems var="option" itemLabelEscaped="false" value="#{configurationBean.sidebarWidgetUsagePageDownloadOptions}" -->
-<!-- 	                                                    itemLabel="#{msg[option.label]}  #{option.format} &lt;span&gt;test&lt;/span&gt;" -->
-<!-- 	                                                    itemValue="#{option.label}" /> -->
-	                                                    
-<!-- 	                                                <f:ajax render="downloadPageLink" execute="@form" /> -->
-<!-- 	                                            </h:selectOneRadio> -->
-<!-- 	                                            <ul> -->
-<!-- 												    <ui:repeat id="items" value="#{configurationBean.sidebarWidgetUsagePageDownloadOptions}" var="item"> -->
-<!-- 												        <li> -->
-<!-- 												            <h:selectOneRadio group="foo" value="#{activeDocumentBean.selectedDownloadOptionLabel}"> -->
-<!-- 												                <f:selectItem value="#{item}"/> -->
-<!-- 												            </h:selectOneRadio> -->
-<!-- 												        </li> -->
-<!-- 												    </ui:repeat> -->
-<!-- 	                                            </ul> -->
-
-	                                            <!-- TODO This takes a few seconds to update the link after selection -->
-	                                            <h:outputLink id="downloadPageLink" styleClass="btn btn--full widget-usage__download-image-size-button"
-	                                                title="#{msg.download}" target="_blank" rel="nofollow noopener"
-	                                                aria-label="#{msg.download}"
-	                                                value="#{activeDocumentBean.viewManager.getPageDownloadUrl(activeDocumentBean.selectedDownloadOption)}">
-	                                                #{msg.download}
-	                                            </h:outputLink>
-	                                              
-
-											  <fieldset>
-												  <ui:repeat varStatus="status" var="option" value="#{configurationBean.sidebarWidgetUsagePageDownloadOptions}">
-												    <input onclick="setDownloadOptionLabel({optionvalue: this.getAttribute('value')});" value="#{option.label}" name="abc" type="radio" id="#{status.index}" />
-												    <label  for="#{status.index}">#{option.label}</label>
-												</ui:repeat>
-											  </fieldset>
-											  
-											  <h:commandScript name="setDownloadOptionLabel" action="#{activeDocumentBean.setDownloadOptionLabelFromRequestParameter()}" render="downloadPageLink">
-											  </h:commandScript>
-
-	                                              
-	                                        </h:form>
 
 
-	                                        
-	                                    </ui:fragment>
-	                                </h:panelGroup>
-
-                         		  </popover>
-                                
 							</ui:fragment>
 						</div>
 					</ui:fragment>
+					            
+        			<popover id="downloadImagePopover">
+						<h:panelGroup
+							id="downloadImageSizes">
+							<ui:fragment>
+								<h:form styleClass="widget-usage__download-image-size-form">
+									<fieldset>
+										<ui:repeat varStatus="status" var="option"
+											value="#{configurationBean.sidebarWidgetUsagePageDownloadOptions}">
+											<input
+												class="widget-usage__download-image-size-input"
+												onclick="setDownloadOptionLabel({optionvalue: this.getAttribute('value')});"
+												value="#{option.label}" name="abc" type="radio"
+												id="#{status.index}" />
+											<label for="#{status.index}"><span class="widget-usage__download-image-size-radio-label">#{msg[option.label]}</span><span class="widget-usage__download-image-size-radio-size">#{option.boxSizeLabel}</span><span class="widget-usage__download-image-size-radio-format">#{option.format}</span></label>
+										</ui:repeat>
+									</fieldset>
+		
+									<!-- SCRIPT TO CHANGE HREF ON BUTTON -->
+									<h:commandScript name="setDownloadOptionLabel"
+										action="#{activeDocumentBean.setDownloadOptionLabelFromRequestParameter()}"
+										render="downloadPageLink">
+									</h:commandScript>
+		
+									<!-- maybe TODO This takes a few seconds to update the link after selection -->
+									<h:outputLink id="downloadPageLink"
+										styleClass="btn btn--full widget-usage__download-image-size-button"
+										title="#{msg.download}" target="_blank"
+										rel="nofollow noopener" aria-label="#{msg.download}"
+										value="#{activeDocumentBean.viewManager.getPageDownloadUrl(activeDocumentBean.selectedDownloadOption)}">
+		                                             #{msg.download}
+		                                         </h:outputLink>
+								</h:form>
+							</ui:fragment>
+						</h:panelGroup> 
+					</popover>
 
 					<!-- IMAGE FRAGMENT -->
 					<ui:fragment rendered="#{activeDocumentBean.viewManager.currentPage.accessPermissionImage}">
