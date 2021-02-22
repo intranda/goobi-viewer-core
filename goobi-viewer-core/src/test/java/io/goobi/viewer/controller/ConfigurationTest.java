@@ -2887,4 +2887,11 @@ public class ConfigurationTest extends AbstractTest {
         Assert.assertEquals("jpg", option.getFormat());
         Assert.assertEquals("4096", option.getBoxSizeInPixel());
     }
+     /** @see Configuration#getPageSelectDropdownDisplayMinPages()
+     * @verifies return correct value
+     */
+    @Test
+    public void getPageSelectDropdownDisplayMinPages_shouldReturnCorrectValue() throws Exception {
+        Assert.assertEquals(1, DataManager.getInstance().getConfiguration().getPageSelectDropdownDisplayMinPages());
+    }
 }

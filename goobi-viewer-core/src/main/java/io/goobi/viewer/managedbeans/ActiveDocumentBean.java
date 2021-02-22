@@ -25,6 +25,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Optional;
 
 import javax.enterprise.context.SessionScoped;
 import javax.faces.context.ExternalContext;
@@ -36,6 +37,7 @@ import javax.servlet.http.HttpSession;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.text.StringEscapeUtils;
+import org.apache.http.client.ClientProtocolException;
 import org.apache.solr.common.SolrDocumentList;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -45,13 +47,16 @@ import com.ocpsoft.pretty.faces.url.URL;
 
 import de.intranda.metadata.multilanguage.IMetadataValue;
 import de.intranda.metadata.multilanguage.MultiLanguageMetadataValue;
+import de.unigoettingen.sub.commons.contentlib.imagelib.ImageFileFormat;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.IndexerTools;
+import io.goobi.viewer.controller.NetTools;
 import io.goobi.viewer.controller.SolrConstants;
 import io.goobi.viewer.controller.SolrConstants.DocType;
 import io.goobi.viewer.controller.SolrSearchIndex;
 import io.goobi.viewer.controller.language.Language;
 import io.goobi.viewer.exceptions.DAOException;
+import io.goobi.viewer.exceptions.HTTPException;
 import io.goobi.viewer.exceptions.IDDOCNotFoundException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
@@ -148,6 +153,8 @@ public class ActiveDocumentBean implements Serializable {
 
     private Boolean deleteRecordKeepTrace;
 
+    private String clearCacheMode;
+
     private CMSSidebarElement mapWidget = null;
 
     private int reloads = 0;
@@ -226,6 +233,7 @@ public class ActiveDocumentBean implements Serializable {
             nextHit = null;
             group = false;
             mapWidget = null; //mapWidget needs to be reset when PI changes
+            clearCacheMode = null;
 
             // Any cleanup modules need to do when a record is unloaded
             for (IModule module : DataManager.getInstance().getModules()) {
@@ -1543,6 +1551,42 @@ public class ActiveDocumentBean implements Serializable {
     }
 
     /**
+     * 
+     * @return
+     * @throws ClientProtocolException
+     * @throws IOException
+     * @throws IndexUnreachableException
+     */
+    public String clearCacheAction() throws ClientProtocolException, IOException, IndexUnreachableException {
+        logger.trace("clearCacheAction: {}", clearCacheMode);
+        if (clearCacheMode == null || viewManager == null) {
+            return "";
+        }
+
+        String url = NetTools.buildClearCacheUrl(clearCacheMode, viewManager.getPi(), navigationHelper.getApplicationUrl(),
+                DataManager.getInstance().getConfiguration().getWebApiToken());
+        try {
+            try {
+                String result = NetTools.getWebContentDELETE(url, null, null, null, null);
+                Messages.info("cache_clear__success");
+            } catch (ClientProtocolException e) {
+                logger.error(e.getMessage());
+                Messages.error("cache_clear__failure");
+            } catch (IOException e) {
+                logger.error(e.getMessage());
+                Messages.error("cache_clear__failure");;
+            } catch (HTTPException e) {
+                logger.error(e.getMessage());
+                Messages.error("cache_clear__failure");
+            }
+        } finally {
+            clearCacheMode = null;
+        }
+
+        return "";
+    }
+
+    /**
      * <p>
      * getCurrentThumbnailPage.
      * </p>
@@ -1902,6 +1946,21 @@ public class ActiveDocumentBean implements Serializable {
         this.deleteRecordKeepTrace = deleteRecordKeepTrace;
     }
 
+    /**
+     * @return the clearCacheMode
+     */
+    public String getClearCacheMode() {
+        return clearCacheMode;
+    }
+
+    /**
+     * @param clearCacheMode the clearCacheMode to set
+     */
+    public void setClearCacheMode(String clearCacheMode) {
+        logger.trace("setClearCacheMode: {}", clearCacheMode);
+        this.clearCacheMode = clearCacheMode;
+    }
+
     public CMSSidebarElement getMapWidget() throws PresentationException, DAOException {
         if (this.mapWidget == null) {
             this.mapWidget = generateMapWidget();
@@ -1983,6 +2042,26 @@ public class ActiveDocumentBean implements Serializable {
             setSelectedDownloadOptionLabel(value);
         }
         
+    }
+    
+    /**
+     * return the current image format if argument is 'MASTER', or the argument itself otherwise
+     * 
+     * @param format
+     * @return  
+     */
+    public String getImageFormat(String format) {
+        if(format != null && format.equalsIgnoreCase("master")) {            
+            return Optional.ofNullable(viewManager)
+                    .map(vm -> vm.getCurrentPage())
+                    .map(page -> page.getFilename())
+                    .filter(name -> StringUtils.isNotBlank(name))
+                    .map(name -> ImageFileFormat.getImageFileFormatFromFileExtension(name))
+                    .map(iff -> iff.name())
+                    .orElse(format);
+        } else {
+            return format;
+        }
     }
 
 }

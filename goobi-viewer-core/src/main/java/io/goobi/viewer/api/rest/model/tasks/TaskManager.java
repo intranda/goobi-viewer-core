@@ -46,29 +46,27 @@ import io.goobi.viewer.model.search.SearchHitsNotifier;
 import io.goobi.viewer.model.sitemap.SitemapBuilder;
 
 /**
- * Manages (possibly timeconsuming) {@link Task tasks} within the viewer which can be triggered and monitored
- * via the {@link TasksResource}. The tasks are not executed sequentially or queued in any way, except
- * through the limit of the internal thread pool (5 parallel tasks)
+ * Manages (possibly timeconsuming) {@link Task tasks} within the viewer which can be triggered and monitored via the {@link TasksResource}. The tasks
+ * are not executed sequentially or queued in any way, except through the limit of the internal thread pool (5 parallel tasks)
  * 
  * @author florian
  *
  */
 public class TaskManager {
-    
-    
+
     private final ConcurrentHashMap<Long, Task> tasks = new ConcurrentHashMap<>();
     private final ExecutorService executorService = Executors.newFixedThreadPool(5);
-    private final  Duration timeToLive;
-    
+    private final Duration timeToLive;
+
     /**
      * Create new JobManager
      * 
-     * @param jobLiveTime   The guaranteed live time of jobs in the jobManager
+     * @param jobLiveTime The guaranteed live time of jobs in the jobManager
      */
     public TaskManager(Duration jobLiveTime) {
         this.timeToLive = jobLiveTime;
     }
-    
+
     public Long addTask(Task job) {
         cleanOldTasks();
         tasks.put(job.id, job);
@@ -79,33 +77,35 @@ public class TaskManager {
      * Clean out all jobs that are older than {@link #timeToLive}
      */
     private void cleanOldTasks() {
-        this.tasks.values().stream().filter(
-                job -> job.timeCreated.isBefore((LocalDateTime.now().minus(timeToLive))))
-        .map(job -> job.id)
-        .forEach(this::removeTask);
+        this.tasks.values()
+                .stream()
+                .filter(
+                        job -> job.timeCreated.isBefore((LocalDateTime.now().minus(timeToLive))))
+                .map(job -> job.id)
+                .forEach(this::removeTask);
     }
 
     public Task getTask(long jobId) {
         return tasks.get(jobId);
     }
-    
+
     public Task removeTask(long jobId) {
         return tasks.remove(jobId);
     }
-    
+
     public Future triggerTaskInThread(long jobId, HttpServletRequest request) {
         Task job = tasks.get(jobId);
-        if(job != null) {
-//            System.out.println("executorService " + executorService.toString());
+        if (job != null) {
+            //            System.out.println("executorService " + executorService.toString());
             return executorService.submit(() -> job.doTask(request));
         }
         return CompletableFuture.completedFuture(null);
     }
-    
+
     public List<Task> getTasks(TaskType type) {
         return this.tasks.values().stream().filter(job -> job.type == type).collect(Collectors.toList());
     }
-    
+
     public List<Task> getTasks() {
         return this.tasks.values().stream().collect(Collectors.toList());
     }
@@ -115,7 +115,7 @@ public class TaskManager {
      * @return
      */
     public static BiConsumer<HttpServletRequest, Task> createTask(TaskType type) {
-        switch(type) {
+        switch (type) {
             case NOTIFY_SEARCH_UPDATE:
                 return (request, job) -> {
                     try {
@@ -124,28 +124,31 @@ public class TaskManager {
                         job.setError(e.toString());
                     }
                 };
-            case UPDATE_SITEMAP: 
+            case UPDATE_SITEMAP:
                 return (request, job) -> {
-                        SitemapRequestParameters params = Optional.ofNullable(job.params)
-                                .filter(p -> p instanceof SitemapRequestParameters)
-                                .map(p -> (SitemapRequestParameters)p)
-                                .orElse(null);
-                        try {
-                            new SitemapBuilder(request).updateSitemap(params);
-                        } catch (IllegalRequestException | AccessDeniedException | JSONException | InterruptedException | PresentationException e) {
-                            job.setError(e.getMessage());
-                        }
+                    SitemapRequestParameters params = Optional.ofNullable(job.params)
+                            .filter(p -> p instanceof SitemapRequestParameters)
+                            .map(p -> (SitemapRequestParameters) p)
+                            .orElse(null);
+                    try {
+                        new SitemapBuilder(request).updateSitemap(params);
+                    } catch (IllegalRequestException | AccessDeniedException | JSONException | InterruptedException | PresentationException e) {
+                        job.setError(e.getMessage());
+                    }
                 };
-            case UPDATE_DATA_REPOSITORY_NAMES: 
+            case UPDATE_DATA_REPOSITORY_NAMES:
                 return (request, job) -> {
                     ToolsRequestParameters params = Optional.ofNullable(job.params)
                             .filter(p -> p instanceof ToolsRequestParameters)
-                            .map(p -> (ToolsRequestParameters)p)
+                            .map(p -> (ToolsRequestParameters) p)
                             .orElse(null);
                     DataManager.getInstance().getSearchIndex().updateDataRepositoryNames(params.getPi(), params.getDataRepositoryName());
+                    // Reset access condition and view limit for record
+                    DataManager.getInstance().getRecordLockManager().emptyCacheForRecord(params.getPi());
                 };
             default:
-                return (request, job) -> {};
+                return (request, job) -> {
+                };
         }
     }
 }

@@ -18,13 +18,6 @@
 
     <!-- SEARCH STANDARD -->
     <div class="search-standard">
-        <!-- SEARCH STANDARD HELP -->
-        <div class="search-standard__help pull-right clearfix">
-            <button type="button" data-toggle="modal" data-target="#searchHelpModal" aria-label="#{msg.search_helpModalTitle}">
-                <i class="fa fa-question-circle" aria-hidden="true"></i>
-            </button>
-        </div>
-
         <!-- SEARCH STANDRAD TITLE -->
         <div class="search-standard__title">
             <h3>
@@ -41,6 +34,12 @@
                 </h:panelGroup>
                 
             </h3>
+	        <!-- SEARCH STANDARD HELP -->
+	        <div class="search-standard__help">
+	            <button type="button" data-toggle="modal" data-target="#searchHelpModal" aria-label="#{msg.search_helpModalTitle}">
+	                <i class="fa fa-question-circle" aria-hidden="true"></i>
+	            </button>
+	        </div>
 <!--            <ui:fragment rendered="#{search.searchPerformed}"> -->
 <!--                <ui:include src="/resources/includes/search/searchListOptions.xhtml" />                 -->
 <!--            </ui:fragment> -->

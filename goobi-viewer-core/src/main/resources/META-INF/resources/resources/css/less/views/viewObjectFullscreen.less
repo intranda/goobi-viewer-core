@@ -412,6 +412,27 @@
 	}
 }
 
+@{RTL} {
+	.fullscreen {
+		&__view-image-thumbs-wrapper {
+			right: unset;
+			&.-ltr {
+				direction: rtl;
+			}
+		}
+		&__view-sidebar-work-title {
+			word-break: normal;
+		}
+		&__view-sidebar-panel-controls {
+			right: unset;
+			left: 15px;
+		}
+	    &__header-exit {
+	    	margin-left: unset;
+	    	margin-right: auto;	
+	    }
+	}
+}
 /* BREAKPOINT FOR LARGE DESKTOPS */
 @media screen and (max-width: @largeBreakpoint) {}
  

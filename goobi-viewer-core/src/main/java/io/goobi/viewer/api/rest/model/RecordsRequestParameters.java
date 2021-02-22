@@ -29,7 +29,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 @Schema(name="SolrRequestParameters", description="SOLR query and additional parameters", requiredProperties= {"query"})
 public class RecordsRequestParameters {
 
-    @Schema(description = "Raw SOLR query", example="ISWORK:true")
+    @Schema(description = "Raw SOLR query", example="+ISWORK:true +DOCSTRCT:monograph +(FACET_PLACEPUBLISH:Berlin FACET_PLACEPUBLISH:'New York')")
     public String query;
     @Schema(description = "A string list of SOLR field names which should be included in the response, allows wildcards", example="[\"PI*\",\"IDDOC\",\"DOCTYPE\",\"DOCSTRCT\",\"LABEL\"]")
     public List<String> resultFields = new ArrayList<>();

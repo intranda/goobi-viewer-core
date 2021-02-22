@@ -9,9 +9,26 @@
 	}
 }
 .widget-user-interactions {
-	&__delete-record,
+	ul {
+		li:first-of-type {
+			a {
+		    	padding-top: 0;
+			}
+		}
+		&:last-of-type {
+			border-bottom: 1px solid @middlegray;
+		}
+	}
+	&__info-text {
+		font-size: 1.2rem;
+		font-style: italic;
+		margin-bottom: 1rem;
+		color: #666;
+	}
+	&__delete-record {
+	}
 	&__delete-record-message {
-		padding: 10px;
+		padding: 1.5rem;
 		padding-top: 5px;
 		border: 1px solid @middlegray;
 		border-top: 0;
@@ -27,17 +44,47 @@
 			background-color: @btnWarningBgc;
 		}
 	}
-	&__delete-record-action {
+	&__delete-record-action,
+	&__clear-cache-action {
 		padding: 5px 0 10px 0;
 		&.has-no-urn {
+			padding-top: 0;
 			.btn {
 				text-align: left;
+			}
+			a {
+				padding-top: 0;
 			}
 		}
 		&.has-urn {
 			.btn {
 				width: 100%;
 			}			
+		}
+	}
+	h4 {
+		margin-bottom: 1rem;
+	}
+}
+
+// MODIFICATION
+
+.widget .btn--full {
+	&:hover,
+	&:active,
+	&:focus {
+		color: @white;
+	}
+}
+
+@{RTL} {
+	.widget-user-interactions {
+		&__delete-record-action {
+			&.has-no-urn {
+				.btn {
+					text-align: right;
+				}
+			}
 		}
 	}
 }

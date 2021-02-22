@@ -6,10 +6,10 @@
 /* BLOCK */
 .image-controls {
 	position: relative;
-    &.-ltr {
+    &.-ltr, .-ltr {
         direction: ltr;
     }
-    &.-rtl {
+    &.-rtl, .-rtl {
         direction: rtl;
     }
 	form {
@@ -302,13 +302,26 @@
 	font-size: @fontSmall;
 }
 
+@{RTL} {
+	.image-controls {
+		direction: rtl;
+		&__option {
+			direction: rtl;
+		}
+		&.-ltr {
+			.forward, .back, .start, .end {
+				transform: rotate(180deg);
+			}
+		}
+	}
+}
 
 /* FIREFOX CORRECTION */
 @-moz-document url-prefix() {
 	.image-controls__action.switch-pages .image-switchPages {
 		width: 21px;
 	}
-} 
+}
 
 /* BREAKPOINT FOR LARGE DESKTOP */
 @media screen and (max-width: @largeBreakpoint) {} 

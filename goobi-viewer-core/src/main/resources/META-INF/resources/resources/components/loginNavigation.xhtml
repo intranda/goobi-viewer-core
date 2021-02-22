@@ -110,16 +110,18 @@
                                     </ui:fragment>
                                     
                                     <!-- ANNOTIATIONS -->
-									<li>
-										<div class="login-navigation__user-dropdown-item">
-											<div class="login-navigation__user-dropdown-item-icon">
-												<i class="fa fa-sticky-note " aria-hidden="true"></i>
-											</div>
-											<div class="login-navigation__user-dropdown-item-string">
-												<a href="#{navigationHelper.applicationUrl}user/annotations/">#{msg.annotations}</a>
-											</div>
-										</div>
-									</li>	
+                                    <ui:fragment rendered="#{userDataBean.annotationCount != 0}">
+									    <li>
+										    <div class="login-navigation__user-dropdown-item">
+											    <div class="login-navigation__user-dropdown-item-icon">
+												    <i class="fa fa-sticky-note " aria-hidden="true"></i>
+											    </div>
+											    <div class="login-navigation__user-dropdown-item-string">
+												    <a href="#{navigationHelper.applicationUrl}user/annotations/">#{msg.annotations}</a>
+											    </div>
+										    </div>
+									    </li>
+									</ui:fragment>
                                     
                                     <!-- MODULE CONTRIBUTIONS -->
                                     <c:forEach var="module" items="#{configurationBean.modules}">

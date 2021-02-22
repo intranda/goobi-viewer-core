@@ -106,11 +106,11 @@
 												value="#{configurationBean.sidebarWidgetUsagePageDownloadOptions}">
 												<div class="widget-usage__download-image-size-option-wrapper">
 													<input
-														class="widget-usage__download-image-size-input"
-														onclick="setDownloadOptionLabel({optionvalue: this.getAttribute('value')});"
-														value="#{option.label}" name="abc" type="radio"
-														id="#{status.index}" />
-													<label for="#{status.index}"><span class="widget-usage__download-image-size-radio-label">#{msg[option.label]}</span><span class="widget-usage__download-image-size-radio-size">#{option.boxSizeLabel}</span><span class="widget-usage__download-image-size-radio-format">#{option.format}</span></label>
+													class="widget-usage__download-image-size-input"
+													onclick="setDownloadOptionLabel({optionvalue: this.getAttribute('value')});"
+													value="#{option.label}" name="abc" type="radio"
+													id="#{status.index}" />
+												<label for="#{status.index}"><span class="widget-usage__download-image-size-radio-label">#{msg[option.label]}</span><span class="widget-usage__download-image-size-radio-size">#{option.boxSizeLabel}</span><span class="widget-usage__download-image-size-radio-format">#{activeDocumentBean.getImageFormat(option.format)}</span></label>
 												</div>
 											</ui:repeat>
 										</fieldset>

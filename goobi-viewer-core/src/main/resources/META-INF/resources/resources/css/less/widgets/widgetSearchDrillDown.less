@@ -128,6 +128,18 @@
     }
 }
 
+@{RTL} .widget-search-drilldown {
+	&__filter {
+		[data-toggle="filter-input"] {
+			right: unset;
+			left: 0;
+		}
+		input {
+		right: unset;
+		left: 32px;
+		}
+	}
+}
 
 /* BREAKPOINT FOR LARGE DESKTOPS */
 @media screen and (max-width: @largeBreakpoint) {} 

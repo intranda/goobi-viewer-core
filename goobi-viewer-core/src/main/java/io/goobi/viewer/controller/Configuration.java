@@ -4299,6 +4299,15 @@ public final class Configuration extends AbstractConfiguration {
         }
         return intList;
     }
+    
+    /**
+     * 
+     * @return
+     * @should return correct value
+     */
+    public int getPageSelectDropdownDisplayMinPages() {
+        return getLocalInt("viewer.pageSelectDropdownDisplayMinPages", 3);
+    }
 
     /**
      * <p>
