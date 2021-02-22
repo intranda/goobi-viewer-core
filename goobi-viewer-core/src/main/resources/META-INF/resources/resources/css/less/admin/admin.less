@@ -1294,6 +1294,95 @@ html[lang="es"] .admin__radio-switch {
 
 /* USER TABLE FADE IN ANIMATION TEST EOL */
 
+@{RTL} {
+	.admin {
+		&__content {
+			margin-left: unset;
+			margin-right: 250px;
+		}
+		&__topbar-right {
+			margin-left: unset;
+			margin-right: auto;
+		}
+		&__topbar {
+			ul {
+				padding-right: 0;
+			}
+		}
+		&__topbar-dropdown {
+			left: unset;
+			right: 0;
+			li {
+				padding: .3rem 2rem .3rem .7rem
+			}
+		}
+		&__topbar-add, &__topbar-language, &__topbar-view-frontend-link {
+			.fa {
+				margin-right: unset;
+				margin-left: 0.9rem;
+			}
+		}
+		&__topbar-logout {
+			margin-right: 0;
+			margin-left: 4rem;
+			.fa {
+				margin-left: unset;
+				margin-right: 0.9rem;
+			}
+		}
+		&__title-bar-action {
+			margin-left: unset;
+			margin-right: 4rem;
+		}
+		&__table-img {
+			margin-right: unset;
+			margin-left: 2rem;
+		}
+		dl dd {
+			margin-right: 0;
+		}
+		&__radio-switch {
+			width: 18rem;
+		    input {
+				width: 6rem;
+				left: 3.5rem;
+				& ~ input:checked ~ .toggle-outside {
+				}
+				& ~ input:checked ~ .toggle-outside .toggle-inside {
+					left: 3.5rem;
+				}
+		    }
+		    input:checked {
+				& ~ .toggle-outside .toggle-inside {
+					left: 0.5rem;
+				}	
+			}
+			input:checked + label {
+			}
+			input:not(:checked) + label:hover {
+			}
+			label {
+			  	width: 3rem;
+			  	text-align: left;
+			  	&:last-of-type {
+					margin-left: 6.5rem;
+					width: 3.2rem;
+					text-align: right;
+				}
+			}
+			.toggle-outside {
+				width: 6rem;
+				left: 3.5rem;
+			}
+			.toggle-inside {
+		 		width: 2rem;
+			}
+		}
+	}
+}
+
+
+
 /* BREAKPOINT FOR LARGE DESKTOPS */
 @media screen and (max-width: @largeBreakpoint) {} 
 

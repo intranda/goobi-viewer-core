@@ -166,6 +166,21 @@
 }
 /* MODIFICATION */    
 
+@{RTL} .search-advanced {
+	&__input-group {
+		.input-group-append {
+			border-left: 1px solid @middlegray;
+			border-right: none;
+		}
+        .form-control__select,
+        input[type="text"] {
+            border-left: none;
+            border-right: 1px solid @middlegray;
+        }
+	}
+}
+
+
 /* BREAKPOINT FOR LARGE DESKTOPS */
 @media screen and (max-width: @largeBreakpoint) {} 
 
