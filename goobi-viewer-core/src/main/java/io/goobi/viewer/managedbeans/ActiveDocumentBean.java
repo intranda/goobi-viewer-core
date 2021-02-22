@@ -225,6 +225,7 @@ public class ActiveDocumentBean implements Serializable {
             nextHit = null;
             group = false;
             mapWidget = null; //mapWidget needs to be reset when PI changes
+            clearCacheMode = null;
 
             // Any cleanup modules need to do when a record is unloaded
             for (IModule module : DataManager.getInstance().getModules()) {
