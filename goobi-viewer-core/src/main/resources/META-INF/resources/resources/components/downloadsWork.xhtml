@@ -1,0 +1,276 @@
+<ui:composition
+    xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:f="http://xmlns.jcp.org/jsf/core"
+    xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+    xmlns:h="http://xmlns.jcp.org/jsf/html"
+    xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+    xmlns:composite="http://xmlns.jcp.org/jsf/composite"
+    xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components">
+    
+    <composite:interface />
+
+    <composite:implementation>
+
+                    <!-- WORK DOWNLOADS -->
+                    <div class="widget-usage__work-downloads">     
+                    
+                        <!-- WORK METADATA DOWNLOAD (DOWNLOAD_METADATA CHECK) -->
+                        <ui:fragment rendered="#{activeDocumentBean.viewManager.topDocument.accessPermissionDownloadMetadata}">           
+                        
+                            <!-- METS -->
+                            <ui:fragment rendered="#{activeDocumentBean.viewManager.topDocument.sourceDocFormat == 'METS'}">
+                                <a 
+                                    href="#{activeDocumentBean.viewManager.metsResolverUrl}"
+                                    id="lidomets" 
+                                    class="badge badge-dark widget-usage__work-download-lido-mets" 
+                                    title="#{msg.metadata_dl_mets}" 
+                                    target="_blank" rel="nofollow noopener"
+                                    aria-label="#{msg[activeDocumentBean.viewManager.topDocument.docStructType]}: #{msg.downloadMetsButtonLabel}"> 
+                                    #{msg.downloadMetsButtonLabel}
+                                </a>
+                            <ui:fragment rendered="#{activeDocumentBean.viewManager.anchorMetsResolverUrl != null}">
+                                <a 
+                                    href="#{activeDocumentBean.viewManager.anchorMetsResolverUrl}"
+                                    id="metsanchor" 
+                                    class="badge badge-dark widget-usage__work-download-mets-anchor" 
+                                    title="#{msg.metadata_dl_metsAnchor}" 
+                                    target="_blank" rel="nofollow noopener"
+                                    aria-label="#{msg[activeDocumentBean.viewManager.topDocument.docStructType]}: #{msg.downloadAnchorMetsButtonLabel}"> 
+                                    #{msg.downloadAnchorMetsButtonLabel}
+                                </a>
+                            </ui:fragment>
+                            </ui:fragment>
+                        
+                            <!-- LIDO -->
+                            <ui:fragment rendered="#{activeDocumentBean.viewManager.topDocument.sourceDocFormat == 'LIDO'}">
+                                <a 
+                                    href="#{activeDocumentBean.viewManager.lidoResolverUrl}"
+                                    id="lidomets" 
+                                    class="badge badge-dark widget-usage__work-download-lido-mets" 
+                                    title="#{msg.metadata_dl_lido}" 
+                                    target="_blank" rel="nofollow noopener"
+                                    aria-label="#{msg[activeDocumentBean.viewManager.topDocument.docStructType]}: #{msg.downloadLidoButtonLabel}"> 
+                                    #{msg.downloadLidoButtonLabel}
+                                </a>
+                            </ui:fragment>
+                            
+                            <!-- DENKXWEB -->
+                            <ui:fragment rendered="#{activeDocumentBean.viewManager.topDocument.sourceDocFormat == 'DENKXWEB'}">
+                                <a 
+                                    href="#{activeDocumentBean.viewManager.denkxwebResolverUrl}"
+                                    id="denkxweb"
+                                    class="badge badge-dark widget-usage__work-download-lido-mets" 
+                                    title="#{msg.metadata_dl_denkxweb}" 
+                                    target="_blank" rel="nofollow noopener"
+                                    aria-label="#{msg[activeDocumentBean.viewManager.topDocument.docStructType]}: #{msg.downloadDenkxwebButtonLabel}"> 
+                                    #{msg.downloadDenkxwebButtonLabel}
+                                </a>
+                            </ui:fragment>
+     
+                            <!-- DUBLINCORE -->
+                            <ui:fragment rendered="#{activeDocumentBean.viewManager.topDocument.sourceDocFormat == 'DUBLINCORE'}">
+                                <a 
+                                    href="#{activeDocumentBean.viewManager.dublinCoreResolverUrl}"
+                                    id="dublincorexml"
+                                    class="badge badge-dark widget-usage__work-download-lido-mets" 
+                                    title="#{msg.metadata_dl_dublincore}" 
+                                    target="_blank" rel="nofollow noopener"
+                                    aria-label="#{msg[activeDocumentBean.viewManager.topDocument.docStructType]}: #{msg.downloadDublinCoreButtonLabel}"> 
+                                    #{msg.downloadDublinCoreButtonLabel}
+                                </a>
+                            </ui:fragment>
+
+                            <!-- MARCXML -->
+                            <ui:fragment rendered="#{activeDocumentBean.viewManager.oaiMarcUrl != null and activeDocumentBean.viewManager.topDocument.sourceDocFormat != 'DUBLINCORE'}">
+                                <a
+                                    id="marc"
+                                    href="#{activeDocumentBean.viewManager.oaiMarcUrl}"
+                                    class="badge badge-dark widget-usage__work-download-oai-marc"
+                                    title="#{msg.metadata_dl_marc}"
+                                    target="_blank" rel="nofollow noopener"
+                                    aria-label="#{msg[activeDocumentBean.viewManager.topDocument.docStructType]}: #{msg.marcLink}">
+                                    #{msg.marcLink}
+                                </a>
+                            </ui:fragment>
+                        
+                            <!-- OAI DC -->
+                            <ui:fragment rendered="#{activeDocumentBean.viewManager.oaiDcUrl != null}">
+                                <a
+                                    id="dc"
+                                    href="#{activeDocumentBean.viewManager.oaiDcUrl}"
+                                    class="badge badge-dark widget-usage__work-download-oai-dc"
+                                    title="#{msg.metadata_dl_dublinCore}"
+                                    target="_blank" rel="nofollow noopener"
+                                    aria-label="#{msg[activeDocumentBean.viewManager.topDocument.docStructType]}: #{msg.dcLink}"> 
+                                    #{msg.dcLink} 
+                                </a>
+                            </ui:fragment>
+                      
+                            <!-- RIS (topstruct) -->
+                            <ui:fragment>
+                                <a href="#{configurationBean.restApiUrlV1}records/#{activeDocumentBean.persistentIdentifier}/ris"
+                                    id="ris"
+                                    class="badge badge-dark widget-usage__work-download-ris" 
+                                    title="#{msg.risLinkTopstruct}" 
+                                    rel="nofollow"
+                                    aria-label="#{msg[activeDocumentBean.viewManager.topDocument.docStructType]}: #{msg.risLinkTopstruct}"> 
+                                    #{msg.risLinkTopstruct} 
+                                </a>
+                            </ui:fragment>
+                        
+                        </ui:fragment>
+                        
+                        <!-- WORK IIIF-RELIANT FUNCTIONS (GENERATE_IIIF_MANIFEST CHECK) -->
+                        <ui:fragment rendered="#{activeDocumentBean.viewManager.topDocument.accessPermissionGenerateIiifManifest}">   
+                        
+                            <!-- IIIF MANIFEST -->
+                            <ui:fragment rendered="#{!activeDocumentBean.viewManager.bornDigital and activeDocumentBean.viewManager.currentPage.displayImage}">
+	                           <a 
+                                   id="iiifManifest"
+                                   class="badge badge-dark widget-usage__work-download-iiif" 
+	                               data-copy="iiif-manifest" 
+	                               data-clipboard-text="#{imageDelivery.iiifManifest}" 
+	                               data-copy-done="#{msg.copyUrlDone}"
+                                   title="#{msg.copyUrl}"
+                                   aria-label="#{msg[activeDocumentBean.viewManager.topDocument.docStructType]}: #{msg.iiif}"> 
+	                               #{msg.iiif}
+	                           </a> 
+	                       </ui:fragment>      
+	                    
+                            <!-- MIRADOR -->
+                            <ui:fragment
+                                rendered="#{!activeDocumentBean.anchor and activeDocumentBean.viewManager.hasPages and !activeDocumentBean.viewManager.filesOnly}">                     
+                                    <a
+                                        href="#{request.contextPath}/mirador/?pi=#{activeDocumentBean.persistentIdentifier}" 
+                                        id="mirador"
+                                        class="badge badge-dark widget-usage__work-link-mirador-viewer" 
+                                        title="#{msg.action__view_in_mirador__tooltip}" 
+                                        target="_blank" rel="nofollow noopener"
+                                        aria-label="#{msg[activeDocumentBean.viewManager.topDocument.docStructType]}: #{msg.action__view_in_mirador}"> 
+                                        #{msg.action__view_in_mirador}
+                                    </a>
+                            </ui:fragment>
+                        
+                        </ui:fragment>
+                        
+                        <!-- WORK FULLTEXT FORMATS (VIEW_FULLTEXT not checked here because each method already has access permission checks) -->
+                        <ui:fragment>
+    
+                        <!-- ALTO (WORK) -->
+                        <ui:fragment rendered="#{activeDocumentBean.viewManager.altoAvailableForWork}">
+                            <a 
+                                href="#{activeDocumentBean.viewManager.altoUrlForAllPages}"
+                                id="alto" 
+                                class="badge badge-dark widget-usage__work-download-alto" 
+                                title="#{msg.metadata_dl_alto_work}"
+                                target="_blank" rel="nofollow noopener"
+                                aria-label="#{msg[activeDocumentBean.viewManager.topDocument.docStructType]}: #{msg.downloadAltoWorkButtonLabel}"> 
+                                #{msg.downloadAltoWorkButtonLabel}
+                            </a>
+                        </ui:fragment>
+                        
+                        <!-- TEI (WORK) -->
+                        <ui:fragment rendered="#{activeDocumentBean.viewManager.teiAvailableForWork}">
+                            <a 
+                                href="#{activeDocumentBean.viewManager.teiUrlForAllPages}"
+                                id="teiWork" 
+                                class="badge badge-dark widget-usage__work-download-tei" 
+                                title="#{msg.downloadWorkTei}"
+                                target="_blank" rel="nofollow noopener"
+                                aria-label="#{msg[activeDocumentBean.viewManager.topDocument.docStructType]}: #{msg.TEI}">
+                                #{msg.TEI}
+                            </a>
+                        </ui:fragment>
+
+                        <!-- FULLTEXT (WORK) -->
+                        <ui:fragment rendered="#{activeDocumentBean.viewManager.fulltextAvailableForWork}">
+                            <a 
+                                href="#{activeDocumentBean.viewManager.fulltextUrlForAllPages}"
+                                id="textWork" 
+                                class="badge badge-dark widget-usage__work-download-fulltext" 
+                                title="#{msg.downloadWorkFulltext}"
+                                target="_blank" rel="nofollow noopener"
+                                aria-label="#{msg[activeDocumentBean.viewManager.topDocument.docStructType]}: #{msg.fulltext}">
+                                #{msg.fulltext}
+                            </a>
+                        </ui:fragment>
+                        
+                        </ui:fragment>
+        
+                        <!-- PDF (WORK) -->
+                        <ui:fragment rendered="#{!activeDocumentBean.viewManager.filesOnly and activeDocumentBean.viewManager.hasPages
+                            and activeDocumentBean.accessPermissionPdf}">
+                            <ui:fragment rendered="#{!configurationBean.generatePdfInTaskManager}">
+                                <a 
+                                    href="#{activeDocumentBean.viewManager.pdfDownloadLink}" 
+                                    id="pdfWork" 
+                                    class="badge badge-dark widget-usage__work-download-pdf" 
+                                    title="#{msg.label__pdf_download_record}" 
+                                    target="_blank" rel="nofollow noopener"
+                                    aria-label="#{msg[activeDocumentBean.viewManager.topDocument.docStructType]}: #{msg.label__pdf_download}">
+                                    <i class="fa fa-file-pdf-o" aria-hidden="true"></i>
+                                    #{msg.label__pdf_download}</a>
+                            </ui:fragment>
+                            <ui:fragment rendered="#{configurationBean.generatePdfInTaskManager}">
+                                <a 
+                                    href="#" 
+                                    id="pdfWork" 
+                                    class="badge badge-dark widget-usage__work-download-pdf download-modal-widget" 
+                                    data-type="pdf" 
+                                    data-title="#{activeDocumentBean.titleBarLabel}" 
+                                    data-id=""
+                                    data-pi="#{activeDocumentBean.viewManager.pi}" 
+                                    title="#{msg.label__pdf_download_record}"
+                                    aria-label="#{msg[activeDocumentBean.viewManager.topDocument.docStructType]}: #{msg.label__pdf_download}">
+                                    <i class="fa fa-file-pdf-o" aria-hidden="true"></i>
+                                    #{msg.label__pdf_download}
+                                </a>    
+                            </ui:fragment>
+                        </ui:fragment>
+        
+                        <!-- EPUB -->
+                        <ui:fragment rendered="#{activeDocumentBean.accessPermissionEpub}">
+                            <a 
+                                href="#" 
+                                class="badge badge-dark widget-usage__work-download-epub download-modal-widget" 
+                                data-type="epub" 
+                                data-title="#{activeDocumentBean.titleBarLabel}" 
+                                data-id=""
+                                data-pi="#{activeDocumentBean.viewManager.pi}" 
+                                title="#{msg.epubDownload}"
+                                aria-label="#{msg[activeDocumentBean.viewManager.topDocument.docStructType]}: #{msg.epub}">
+                                #{msg.epub}
+                            </a>
+                        </ui:fragment>
+        
+                        <!-- DFG Viewer -->
+                        <ui:fragment rendered="#{!activeDocumentBean.anchor and activeDocumentBean.viewManager.hasPages
+                            and activeDocumentBean.viewManager.linkForDFGViewer != null and !activeDocumentBean.viewManager.bornDigital}">
+                           <a 
+                                href="#{activeDocumentBean.viewManager.linkForDFGViewer}"
+                                id="dfgViewer" 
+                                class="badge badge-dark widget-usage__work-link-dfg-viewer" 
+                                title="#{msg.dfgViewerLink}" 
+                                target="_blank" rel="nofollow noopener"
+                                aria-label="#{msg[activeDocumentBean.viewManager.topDocument.docStructType]}: #{msg.dfgViewerLink}"> 
+                               #{msg.dfgViewerLink}
+                            </a>
+                        </ui:fragment>
+    
+                        <!-- OPAC -->
+                        <ui:fragment rendered="#{activeDocumentBean.viewManager.opacUrl != null}">
+                            <a href="#{activeDocumentBean.viewManager.opacUrl}"
+                                id="opac"
+                                class="badge badge-dark widget-usage__work-link-opac" 
+                                title="#{msg.opacLink}" 
+                                target="_blank" rel="nofollow noopener"
+                                aria-label="#{msg[activeDocumentBean.viewManager.topDocument.docStructType]}: #{msg.opacLink}">
+                                #{msg.opacLink} 
+                            </a>
+                        </ui:fragment>
+                      
+                    </div>
+                    
+                    
+	</composite:implementation>
+</ui:composition>
