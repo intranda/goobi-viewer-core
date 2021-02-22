@@ -473,14 +473,13 @@
 	                                              
 
 											  <fieldset>
-											  <ui:repeat varStatus="status" var="option" value="#{configurationBean.sidebarWidgetUsagePageDownloadOptions}">
-											    <input value="#{option.label}" a:name="abc" type="radio" id="#{status.index}" />
-											    <label for="#{status.index}">#{option.label}</label>
-											</ui:repeat>
+												  <ui:repeat varStatus="status" var="option" value="#{configurationBean.sidebarWidgetUsagePageDownloadOptions}">
+												    <input onclick="setDownloadOptionLabel({optionvalue: this.getAttribute('value')});" value="#{option.label}" name="abc" type="radio" id="#{status.index}" />
+												    <label  for="#{status.index}">#{option.label}</label>
+												</ui:repeat>
 											  </fieldset>
 											  
-											  <h:commandScript action="">
-											  	
+											  <h:commandScript name="setDownloadOptionLabel" action="#{activeDocumentBean.setDownloadOptionLabelFromRequestParameter()}" render="downloadPageLink">
 											  </h:commandScript>
 
 	                                              

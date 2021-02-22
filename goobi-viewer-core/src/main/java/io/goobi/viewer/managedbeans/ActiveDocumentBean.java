@@ -24,6 +24,7 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 
 import javax.enterprise.context.SessionScoped;
 import javax.faces.context.ExternalContext;
@@ -1971,6 +1972,17 @@ public class ActiveDocumentBean implements Serializable {
     public void setSelectedDownloadOptionLabel(String selectedDownloadOptionLabel) {
         logger.trace("setSelectedDownloadOption: {}", selectedDownloadOptionLabel != null ? selectedDownloadOptionLabel.toString() : null);
         this.selectedDownloadOptionLabel = selectedDownloadOptionLabel;
+    }
+    
+    public void setDownloadOptionLabelFromRequestParameter() {
+        Map<String, String> params = FacesContext.getCurrentInstance().
+                getExternalContext().getRequestParameterMap();
+        
+        String value = params.get("optionvalue");
+        if(StringUtils.isNotBlank(value)) {
+            setSelectedDownloadOptionLabel(value);
+        }
+        
     }
 
 }
