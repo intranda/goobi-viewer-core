@@ -110,7 +110,7 @@
 													class="widget-usage__download-image-size-input"
 													onclick="setDownloadOptionLabel({optionvalue: this.getAttribute('value')});"
 													value="#{option.label}" name="downloadSelectSizes" type="radio"
-													id="downloadSelectSizes_#{status.index}" />
+													id="downloadSelectSizes_#{status.index}" data-checked="#{status.first}"/>
 												<label for="downloadSelectSizes_#{status.index}"><span class="widget-usage__download-image-size-radio-label">#{msg[option.label]}</span><span class="widget-usage__download-image-size-radio-size">#{option.boxSizeLabel}</span><span class="widget-usage__download-image-size-radio-format">#{option.format}</span></label>
 												</div>
 											</ui:repeat>

@@ -557,31 +557,26 @@ public class ViewManager implements Serializable {
     public String getPageDownloadUrl(DownloadOption option) throws IndexUnreachableException, DAOException {
         logger.trace("getPageDownloadUrl: {}", option);
         if (option == null || !option.isValid()) {
+//            option = getDownloadOptionsForCurrentImage().get(0);
             return null;
         }
 
+        Scale scale;
+        if (DownloadOption.MAX == option.getBoxSizeInPixel()) {
+            scale = Scale.MAX;
+        } else if (option.getBoxSizeInPixel() == DownloadOption.NONE) {
+            throw new IllegalArgumentException("Invalid box size: " + option.getBoxSizeInPixel());
+        } else {
+            scale = new Scale.ScaleToBox(option.getBoxSizeInPixel());
+        }
         switch (option.getFormat().toLowerCase()) {
             case "jpg":
             case "jpeg":
-            case "master":
-                Scale scale;
-                if (DownloadOption.MAX == option.getBoxSizeInPixel()) {
-                    scale = Scale.MAX;
-                } else if (option.getBoxSizeInPixel() == DownloadOption.NONE) {
-                    throw new IllegalArgumentException("Invalid box size: " + option.getBoxSizeInPixel());
-                } else {
-                    scale = new Scale.ScaleToBox(option.getBoxSizeInPixel());
-                }
-                switch (option.getFormat().toLowerCase()) {
-                    case "jpg":
-                    case "jpeg":
-                        return imageDeliveryBean.getThumbs().getThumbnailUrl(getCurrentPage(), scale);
-                    default:
-                        return getCurrentMasterImageUrl(scale);
-                }
+                return imageDeliveryBean.getThumbs().getThumbnailUrl(getCurrentPage(), scale);
             default:
-                throw new IllegalArgumentException("Invalid format: " + option.getFormat());
+                return getCurrentMasterImageUrl(scale);
         }
+
 
     }
 
