@@ -341,6 +341,11 @@ public class ViewManagerTest extends AbstractDatabaseAndSolrEnabledTest {
         assertNotNull(masterOption);
         assertEquals(imageSize, masterOption.getBoxSizeInPixel());
         
+        DownloadOption thumbOption = options.stream().filter(o -> o.getFormat().equalsIgnoreCase("jpg")).findFirst().orElse(null);
+        assertNotNull(thumbOption);
+        assertEquals(new Dimension(1000*600/2000, 600), thumbOption.getBoxSizeInPixel());
+
+
     }
 
 

@@ -617,7 +617,9 @@ public class ViewManager implements Serializable {
             } else if ((maxWidth > 0 && maxWidth < dim.width) || (maxHeight > 0 && maxHeight < dim.height)) {
                 continue;
             } else{
-                options.add(new DownloadOption(option.getLabel(), getImageFormat(option.getFormat(), imageFilename), option.getBoxSizeInPixel()));
+                Scale scale = new Scale.ScaleToBox(option.getBoxSizeInPixel());
+                Dimension size = scale.scale(origImageSize);
+                options.add(new DownloadOption(option.getLabel(), getImageFormat(option.getFormat(), imageFilename), size));
             }
         }
         return options;
@@ -644,8 +646,12 @@ public class ViewManager implements Serializable {
      * @return  
      */
     public static String getImageFormat(String format, String imageFilename) {
-        if(format != null && format.equalsIgnoreCase("master")) {        
-            return ImageFileFormat.getImageFileFormatFromFileExtension(imageFilename).name();
+
+        if(format != null && format.equalsIgnoreCase("master")) {    
+            return Optional.ofNullable(imageFilename)
+                    .map(ImageFileFormat::getImageFileFormatFromFileExtension)
+                    .map(ImageFileFormat::name)
+                    .orElse(format);
         } else {
             return format;
         }
