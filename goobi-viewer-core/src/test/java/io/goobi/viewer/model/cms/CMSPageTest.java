@@ -216,7 +216,7 @@ public class CMSPageTest extends AbstractDatabaseEnabledTest {
         String filename = media.getFileName();
         filename = URLEncoder.encode(filename, "utf-8");
         
-        String imageUrl = contentUrls.path(ApiUrls.CMS_MEDIA, ApiUrls.CMS_MEDIA_FILES_FILE).params(filename).build()  + "/full/max/0/default.jpg/";
+        String imageUrl = contentUrls.path(ApiUrls.CMS_MEDIA, ApiUrls.CMS_MEDIA_FILES_FILE).params(filename).build()  + "/full/max/0/default.jpg";
         Assert.assertEquals(imageUrl, page.getContent(imageId).replaceAll("\\?.*", ""));
         Assert.assertEquals(componentName, page.getContent(componentId));
 
