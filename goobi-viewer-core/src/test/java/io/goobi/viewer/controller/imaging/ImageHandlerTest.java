@@ -79,6 +79,19 @@ public class ImageHandlerTest {
         String url = handler.getImageUrl(page);
         Assert.assertEquals(ConfigurationTest.APPLICATION_ROOT_URL + "api/v1/image/1234/00000001.tif/info.json", url);
     }
+    
+    @Test
+    public void testGetImageUrlLocal_handleSpecialCharacters() {
+        PhysicalElement page =
+                new PhysicalElement("PHYS_0001", "ab 00000001.tif", 1, "Seite 1", "urn:234235:3423", "http://purl", "PI 1234", "image/tiff", null);
+
+        String url = handler.getImageUrl(page);
+        URI uri = URI.create(url);
+        Assert.assertEquals(ConfigurationTest.APPLICATION_ROOT_URL + "api/v1/image/PI+1234/ab+00000001.tif/info.json", url);
+        Assert.assertEquals(url, uri.toString());
+        
+
+    }
 
     @Test
     public void testGetImageUrlExternal() {
@@ -88,6 +101,7 @@ public class ImageHandlerTest {
         String url = handler.getImageUrl(page);
         Assert.assertEquals("http://otherServer/images/00000001.tif/info.json", url);
     }
+
 
     @Test
     public void testGetImageUrlInternal() {
@@ -99,6 +113,7 @@ public class ImageHandlerTest {
                 ConfigurationTest.APPLICATION_ROOT_URL + "api/v1/image/-/http:U002FU002FexteralU002FrestrictedU002FimagesU002F00000001.tif/info.json",
                 url);
     }
+
 
     @Test
     public void testResolveURIs() throws URISyntaxException {
