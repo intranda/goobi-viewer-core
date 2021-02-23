@@ -557,10 +557,9 @@ public class ViewManager implements Serializable {
     public String getPageDownloadUrl(DownloadOption option) throws IndexUnreachableException, DAOException {
         logger.trace("getPageDownloadUrl: {}", option);
         if (option == null || !option.isValid()) {
-//            option = getDownloadOptionsForCurrentImage().get(0);
-            return null;
+            option = getDownloadOptionsForCurrentImage().stream().findFirst()
+                    .orElseThrow(() -> new IllegalStateException("No valid download options available"));
         }
-
         Scale scale;
         if (DownloadOption.MAX == option.getBoxSizeInPixel()) {
             scale = Scale.MAX;
