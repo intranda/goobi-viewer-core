@@ -66,6 +66,8 @@ public class MetadataBean {
     /** List of LIDO events. */
     private List<EventElement> events = new ArrayList<>();
 
+    private int metadataViewIndex;
+
     /**
      * Empty constructor.
      */
@@ -145,6 +147,7 @@ public class MetadataBean {
      * @return the metadataElementList
      */
     public List<MetadataElement> getMetadataElementList(int index) {
+        logger.trace("getMetadataElementList({})", index);
         if (metadataElementMap.get(index) == null) {
             // Only reload if empty, otherwise a c:forEach (used by p:tabView) will cause a reload on every iteration
             try {
@@ -307,7 +310,7 @@ public class MetadataBean {
             }
         }
     }
-    
+
     /**
      * 
      * @return List of available <code>MetadataView</code>s
@@ -315,4 +318,21 @@ public class MetadataBean {
     public List<MetadataView> getMetadataViews() {
         return DataManager.getInstance().getConfiguration().getMetadataViews();
     }
+
+    /**
+     * @return the metadataViewIndex
+     */
+    public int getMetadataViewIndex() {
+        logger.trace("getMetadataViewIndex");
+        return metadataViewIndex;
+    }
+
+    /**
+     * @param metadataViewIndex the metadataViewIndex to set
+     */
+    public void setMetadataViewIndex(int metadataViewIndex) {
+        logger.trace("setMetadataViewIndex: {}", metadataViewIndex);
+        this.metadataViewIndex = metadataViewIndex;
+    }
+
 }
