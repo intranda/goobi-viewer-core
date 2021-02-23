@@ -32,7 +32,7 @@ public class DownloadOption {
     /**
      * 
      */
-    private static final String TIMES_SYMBOL = "\u00D7";
+    public static final String TIMES_SYMBOL = "\u00D7";
     /**
      * Dimension symbolizing the maximal image size
      */

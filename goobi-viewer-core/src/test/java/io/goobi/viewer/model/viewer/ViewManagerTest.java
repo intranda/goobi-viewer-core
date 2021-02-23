@@ -296,7 +296,7 @@ public class ViewManagerTest extends AbstractDatabaseAndSolrEnabledTest {
         Assert.assertEquals(2, links.size());
     }
     
-//    @Test
+    @Test
     public void testGetPageDownloadUrl() throws IndexUnreachableException, DAOException, PresentationException, ViewerConfigurationException {
         
         String pi = "PPN123";
@@ -307,15 +307,15 @@ public class ViewManagerTest extends AbstractDatabaseAndSolrEnabledTest {
         
         
         String baseUrl = DataManager.getInstance().getRestApiManager().getContentApiUrl()
-                + "records/" + pi + "/files/image/" + filename;
+                + "records/" + pi + "/files/images/" + filename;
         
         DownloadOption maxSizeTiff = new DownloadOption("Master", "master", "max");
         String masterTiffUrl = baseUrl + "/full/max/0/default.tif";
-        assertEquals(masterTiffUrl, viewManager.getPageDownloadUrl(maxSizeTiff));
+        assertEquals(masterTiffUrl, viewManager.getPageDownloadUrl(maxSizeTiff).replaceAll("\\?.*", "")); //ignore query params
         
         DownloadOption scaledJpeg = new DownloadOption("Thumbnail", "jpg", new Dimension(800, 1200));
         String thumbnailUrl = baseUrl + "/full/!800,1200/0/default.jpg";
-        assertEquals(thumbnailUrl, viewManager.getPageDownloadUrl(scaledJpeg));
+        assertEquals(thumbnailUrl, viewManager.getPageDownloadUrl(scaledJpeg).replaceAll("\\?.*", "")); //ignore query params
 
     }
 
@@ -326,6 +326,7 @@ public class ViewManagerTest extends AbstractDatabaseAndSolrEnabledTest {
         se.getMetadataFields().put(SolrConstants.PI_TOPSTRUCT, Collections.singletonList(pi));
         PhysicalElement page = Mockito.mock(PhysicalElement.class);
         Mockito.when(page.getFilename()).thenReturn(pageFilename);
+        Mockito.when(page.getFilepath()).thenReturn(pi + "/" + pageFilename);
         Mockito.when(page.getMimeType()).thenReturn("image/tiff");
         
         IPageLoader pageLoader = Mockito.mock(EagerPageLoader.class);

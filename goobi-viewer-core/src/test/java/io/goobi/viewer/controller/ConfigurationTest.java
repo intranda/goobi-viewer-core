@@ -2885,7 +2885,7 @@ public class ConfigurationTest extends AbstractTest {
         DownloadOption option = result.get(4);
         Assert.assertEquals("label__download_option_large_4096", option.getLabel());
         Assert.assertEquals("jpg", option.getFormat());
-        Assert.assertEquals("4096", option.getBoxSizeInPixel());
+        Assert.assertEquals("4096" + DownloadOption.TIMES_SYMBOL + "4096", option.getBoxSizeLabel());
     }
      /** @see Configuration#getPageSelectDropdownDisplayMinPages()
      * @verifies return correct value
