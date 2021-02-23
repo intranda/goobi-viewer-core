@@ -24,6 +24,8 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
+import java.util.Optional;
 
 import javax.enterprise.context.SessionScoped;
 import javax.faces.context.ExternalContext;
@@ -45,12 +47,13 @@ import com.ocpsoft.pretty.faces.url.URL;
 
 import de.intranda.metadata.multilanguage.IMetadataValue;
 import de.intranda.metadata.multilanguage.MultiLanguageMetadataValue;
+import de.unigoettingen.sub.commons.contentlib.imagelib.ImageFileFormat;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.IndexerTools;
 import io.goobi.viewer.controller.NetTools;
 import io.goobi.viewer.controller.SolrConstants;
-import io.goobi.viewer.controller.SolrSearchIndex;
 import io.goobi.viewer.controller.SolrConstants.DocType;
+import io.goobi.viewer.controller.SolrSearchIndex;
 import io.goobi.viewer.controller.language.Language;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.HTTPException;
@@ -68,6 +71,7 @@ import io.goobi.viewer.messages.ViewerResourceBundle;
 import io.goobi.viewer.model.cms.CMSPage;
 import io.goobi.viewer.model.cms.CMSSidebarElement;
 import io.goobi.viewer.model.download.DownloadJob;
+import io.goobi.viewer.model.download.DownloadOption;
 import io.goobi.viewer.model.download.EPUBDownloadJob;
 import io.goobi.viewer.model.download.PDFDownloadJob;
 import io.goobi.viewer.model.maps.GeoMap;
@@ -154,6 +158,10 @@ public class ActiveDocumentBean implements Serializable {
     private CMSSidebarElement mapWidget = null;
 
     private int reloads = 0;
+
+    private boolean downloadImageModalVisible = false;
+
+    private String selectedDownloadOptionLabel;
 
     /**
      * Empty constructor.
@@ -1983,6 +1991,57 @@ public class ActiveDocumentBean implements Serializable {
             logger.error("Unable to load geomap", e);
         }
         return widget;
+    }
+
+    /**
+     * 
+     */
+    public void toggleDownloadImageModal() {
+        downloadImageModalVisible = !downloadImageModalVisible;
+    }
+
+    /**
+     * @return the downloadImageModalVisible
+     */
+    public boolean isDownloadImageModalVisible() {
+        return downloadImageModalVisible;
+    }
+
+    /**
+     * 
+     */
+    public DownloadOption getSelectedDownloadOption() {
+        if (selectedDownloadOptionLabel == null) {
+            return null;
+        }
+        
+        return DownloadOption.getByLabel(selectedDownloadOptionLabel);
+    }
+
+    /**
+     * @return the selectedDownloadOptionLabel
+     */
+    public String getSelectedDownloadOptionLabel() {
+        return selectedDownloadOptionLabel;
+    }
+
+    /**
+     * @param selectedDownloadOptionLabel the selectedDownloadOptionLabel to set
+     */
+    public void setSelectedDownloadOptionLabel(String selectedDownloadOptionLabel) {
+        logger.trace("setSelectedDownloadOption: {}", selectedDownloadOptionLabel != null ? selectedDownloadOptionLabel.toString() : null);
+        this.selectedDownloadOptionLabel = selectedDownloadOptionLabel;
+    }
+    
+    public void setDownloadOptionLabelFromRequestParameter() {
+        Map<String, String> params = FacesContext.getCurrentInstance().
+                getExternalContext().getRequestParameterMap();
+        
+        String value = params.get("optionvalue");
+        if(StringUtils.isNotBlank(value)) {
+            setSelectedDownloadOptionLabel(value);
+        }
+        
     }
 
 }

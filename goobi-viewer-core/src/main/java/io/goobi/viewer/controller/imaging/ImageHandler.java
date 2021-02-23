@@ -18,6 +18,7 @@ package io.goobi.viewer.controller.imaging;
 import java.io.FileNotFoundException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.net.URLEncoder;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Collections;
@@ -39,6 +40,8 @@ import io.goobi.viewer.api.rest.AbstractApiUrlManager.ApiPath;
 import io.goobi.viewer.api.rest.v1.ApiUrls;
 import io.goobi.viewer.controller.DataFileTools;
 import io.goobi.viewer.controller.DataManager;
+import io.goobi.viewer.controller.FileTools;
+import io.goobi.viewer.controller.StringTools;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
@@ -105,22 +108,24 @@ public class ImageHandler {
      * @return
      */
     public String getImageUrl(PageType pageType, String pi, String filepath, String filename) {
-            
+        String escPi = StringTools.encodeUrl(pi);
+        String escFilename = StringTools.encodeUrl(filename);
             if (isRestrictedUrl(filepath)) {
+                String escFilepath = BeanUtils.escapeCriticalUrlChracters(filepath, true);
                 StringBuilder sb = new StringBuilder(DataManager.getInstance().getConfiguration().getIIIFApiUrl());
-                sb.append("image").append("/-/").append(BeanUtils.escapeCriticalUrlChracters(filepath, true)).append("/info.json");
+                sb.append("image").append("/-/").append(escFilepath).append("/info.json");
                 return sb.toString();
             } else if (isExternalUrl(filepath)) {
                 return filepath;
             } else if(urls != null) {
-                ApiPath path = this.urls.path(ApiUrls.RECORDS_FILES_IMAGE, ApiUrls.RECORDS_FILES_IMAGE_INFO).params(pi, filename);
+                ApiPath path = this.urls.path(ApiUrls.RECORDS_FILES_IMAGE, ApiUrls.RECORDS_FILES_IMAGE_INFO).params(escPi, escFilename);
                 if(pageType != null) {
                     path = path.query("pageType", pageType.name());
                 }
                 return path.build();
             } else {
                 StringBuilder sb = new StringBuilder(DataManager.getInstance().getConfiguration().getIIIFApiUrl());
-                sb.append("image").append("/").append(pi).append("/").append(filename).append("/info.json");
+                sb.append("image").append("/").append(escPi).append("/").append(escFilename).append("/info.json");
                 return sb.toString();
             }
     }

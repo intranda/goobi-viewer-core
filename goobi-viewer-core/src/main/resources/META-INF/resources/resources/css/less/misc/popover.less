@@ -5,6 +5,9 @@
 popover {
 	display: none;
 }
+.popover {
+	max-width: 350px;
+}
 .popover popover {
 	display: block;
 }
@@ -76,3 +79,70 @@ imageFilters {
 		}
 	}
 }
+
+.page-content__sidebar {
+	.popover {
+		z-index: 2050;
+	}
+}
+
+#downloadImagePopover {
+	fieldset {
+	}
+	.widget-usage__download-image-size-option-wrapper {
+		display: flex;
+	}
+	label {
+		padding-left: 1rem;
+		margin-bottom: 0.2rem;
+	}
+	input[type="radio"]:checked + label {
+		font-weight: normal;
+	}
+	.widget-usage__download-image-size-input {
+		flex: 0 0 auto;
+		max-width: 20px;
+		min-width: unset;
+	}
+	.widget-usage__download-image-size-form {
+		label {
+			display: flex;
+		}
+	}
+	.widget-usage__download-image-size-radio-label {
+	    flex: 0 0 auto;
+	    min-width: 75px;
+	}
+	.widget-usage__download-image-size-radio-size {
+	    flex: 0 0 auto;
+	    min-width: 90px;
+	}
+	.widget-usage__download-image-size-radio-format {
+	    flex: 0 0 auto;
+	    text-transform: uppercase;
+	}
+	.widget-usage__download-image-size-button {
+		margin: 0 auto;
+		display: block;
+		width: 80%;
+		margin-top: 2rem;
+		
+	}
+	
+}
+
+/* BREAKPOINT FOR LARGE DESKTOPS */
+@media screen and (max-width: @largeBreakpoint) {} 
+
+/* BREAKPOINT FOR DESKTOPS */
+@media screen and (max-width: @mediumBreakpoint) {}
+
+/* BREAKPOINT FOR TABLETS */
+@media screen and (max-width: @smallBreakpoint) {
+	.widget-usage__download-image-size-radio-label {
+		display: none;
+	}
+}
+
+/* BREAKPOINT FOR SMARTPHONES */
+@media screen and (max-width: @xSmallBreakpoint) {}

@@ -84,7 +84,7 @@ public class Citation {
         String[] ids = new String[items.length];
         for (int i = 0; i < items.length; ++i) {
             ids[i] = items[i].getId();
-            logger.trace("Item data id: {}", items[i].getId());
+            // logger.trace("Item data id: {}", items[i].getId());
         }
         processor.registerCitationItems(ids);
 

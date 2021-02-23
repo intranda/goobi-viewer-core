@@ -28,6 +28,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
@@ -188,59 +189,68 @@ public class IndexResource {
                             .getSearchIndex()
                             .search(query, params.offset, count, sortFieldList, params.facetFields, fieldList, null, paramMap);
 
-            SolrDocumentList result = response.getResults();
 
-            Map<String, SolrDocumentList> expanded = response.getExpandedResults();
-            logger.trace("hits: {}", result.size());
-            JSONArray jsonArray = null;
-            if (params.jsonFormat != null) {
-                switch (params.jsonFormat) {
-                    case "datecentric":
-                        jsonArray = JsonTools.getDateCentricRecordJsonArray(result, servletRequest);
-                        break;
-                    default:
-                        jsonArray = JsonTools.getRecordJsonArray(result, expanded, servletRequest, params.language);
-                        break;
-                }
-            } else {
-                jsonArray = JsonTools.getRecordJsonArray(result, expanded, servletRequest, params.language);
-            }
-            if (jsonArray == null) {
-                jsonArray = new JSONArray();
-            }
 
             JSONObject object = new JSONObject();
-            object.put("numFound", result.getNumFound());
-            object.put("docs", jsonArray);
-
-            List<FacetField> facetFields = response.getFacetFields();
-            if (facetFields != null && !facetFields.isEmpty()) {
-                JSONArray facets = new JSONArray();
-                object.put("facets", facets);
-                facetFields.forEach(ff -> {
-                    JSONObject facet = new JSONObject();
-                    facets.put(facet);
-                    String facetName = ff.getName();
-                    int facetCount = ff.getValueCount();
-                    facet.put("field ", facetName);
-                    facet.put("count", facetCount);
-                    JSONArray facetList = new JSONArray();
-                    facet.put("values", facetList);
-                    ff.getValues().forEach(c -> {
-                        String value = c.getName();
-                        long num = c.getCount();
-                        JSONObject countObject = new JSONObject();
-                        countObject.put("value", value);
-                        countObject.put("count", num);
-                        facetList.put(countObject);
-                    });
-                });
-            }
+            object.put("numFound", response.getResults().getNumFound());
+            object.put("docs", getQueryResults(params, response));
+            getFacetResults(response).ifPresent(facets -> object.put("facets", facets));
 
             return object.toString();
         } catch (PresentationException e) {
             throw new IllegalRequestException(e.getMessage());
         }
+    }
+
+    private Optional<JSONArray> getFacetResults(QueryResponse response) {
+        List<FacetField> facetFields = response.getFacetFields();
+        if (facetFields != null && !facetFields.isEmpty()) {
+            JSONArray facets = new JSONArray();
+            facetFields.forEach(ff -> {
+                JSONObject facet = new JSONObject();
+                facets.put(facet);
+                String facetName = ff.getName();
+                int facetCount = ff.getValueCount();
+                facet.put("field", facetName);
+                facet.put("count", facetCount);
+                JSONArray facetList = new JSONArray();
+                facet.put("values", facetList);
+                ff.getValues().forEach(c -> {
+                    String value = c.getName();
+                    long num = c.getCount();
+                    JSONObject countObject = new JSONObject();
+                    countObject.put("value", value);
+                    countObject.put("count", num);
+                    facetList.put(countObject);
+                });
+            });
+            return Optional.of(facets);
+        }
+        return Optional.empty();
+    }
+
+    private JSONArray getQueryResults(RecordsRequestParameters params, QueryResponse response)
+            throws IndexUnreachableException, PresentationException, DAOException, ViewerConfigurationException {
+        SolrDocumentList result = response.getResults();
+        Map<String, SolrDocumentList> expanded = response.getExpandedResults();
+        logger.trace("hits: {}", result.size());
+        JSONArray jsonArray = null;
+        if (params.jsonFormat != null) {
+            switch (params.jsonFormat) {
+                case "datecentric":
+                    jsonArray = JsonTools.getDateCentricRecordJsonArray(result, servletRequest);
+                    break;
+                default:
+                    jsonArray = JsonTools.getRecordJsonArray(result, expanded, servletRequest, params.language);
+                    break;
+            }
+        } else {
+            jsonArray = JsonTools.getRecordJsonArray(result, expanded, servletRequest, params.language);
+        }
+        if (jsonArray == null) {
+            jsonArray = new JSONArray();
+        }
+        return jsonArray;
     }
 
     /**

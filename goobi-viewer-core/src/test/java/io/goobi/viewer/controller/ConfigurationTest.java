@@ -32,6 +32,7 @@ import org.slf4j.LoggerFactory;
 
 import io.goobi.viewer.AbstractTest;
 import io.goobi.viewer.exceptions.ViewerConfigurationException;
+import io.goobi.viewer.model.download.DownloadOption;
 import io.goobi.viewer.model.maps.GeoMapMarker;
 import io.goobi.viewer.model.metadata.Metadata;
 import io.goobi.viewer.model.metadata.MetadataParameter;
@@ -2605,24 +2606,6 @@ public class ConfigurationTest extends AbstractTest {
     }
 
     /**
-     * @see Configuration#isDisplaySidebarUsageWidgetLinkToJpegImage()
-     * @verifies return correct value
-     */
-    @Test
-    public void isDisplaySidebarUsageWidgetLinkToJpegImage_shouldReturnCorrectValue() throws Exception {
-        Assert.assertTrue(DataManager.getInstance().getConfiguration().isDisplaySidebarUsageWidgetLinkToJpegImage());
-    }
-
-    /**
-     * @see Configuration#isDisplaySidebarUsageWidgetLinkToTiffImage()
-     * @verifies return correct value
-     */
-    @Test
-    public void isDisplaySidebarUsageWidgetLinkToMasterImage_shouldReturnCorrectValue() throws Exception {
-        Assert.assertTrue(DataManager.getInstance().getConfiguration().isDisplaySidebarUsageWidgetLinkToMasterImage());
-    }
-
-    /**
      * @see Configuration#getMetadataFromSubnodeConfig(HierarchicalConfiguration,boolean)
      * @verifies load replace rules correctly
      */
@@ -2907,7 +2890,19 @@ public class ConfigurationTest extends AbstractTest {
     }
 
     /**
-     * @see Configuration#getPageSelectDropdownDisplayMinPages()
+     * @see Configuration#getSidebarWidgetUsagePageDownloadOptions()
+     * @verifies return all configured elements
+     */
+    @Test
+    public void getSidebarWidgetUsagePageDownloadOptions_shouldReturnAllConfiguredElements() throws Exception {
+        List<DownloadOption> result = DataManager.getInstance().getConfiguration().getSidebarWidgetUsagePageDownloadOptions();
+        Assert.assertEquals(5, result.size());
+        DownloadOption option = result.get(4);
+        Assert.assertEquals("label__download_option_large_4096", option.getLabel());
+        Assert.assertEquals("jpg", option.getFormat());
+        Assert.assertEquals("4096" + DownloadOption.TIMES_SYMBOL + "4096", option.getBoxSizeLabel());
+    }
+     /** @see Configuration#getPageSelectDropdownDisplayMinPages()
      * @verifies return correct value
      */
     @Test

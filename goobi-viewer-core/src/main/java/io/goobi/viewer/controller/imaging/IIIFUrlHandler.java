@@ -208,7 +208,7 @@ public class IIIFUrlHandler {
         url.append(size).append("/");
         url.append(Math.round(rotation.getRotation())).append("/");
         url.append(quality.getLabel()).append(".");
-        url.append(format.getFileExtension()).append("/");
+        url.append(format.getFileExtension());
 
         return url.toString();
     }
