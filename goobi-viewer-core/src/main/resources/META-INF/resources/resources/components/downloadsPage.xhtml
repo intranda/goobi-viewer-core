@@ -5,7 +5,8 @@
     xmlns:h="http://xmlns.jcp.org/jsf/html"
     xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
     xmlns:composite="http://xmlns.jcp.org/jsf/composite"
-    xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components">
+    xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components"
+    xmlns:a="http://xmlns.jcp.org/jsf/passthrough">
     
     <composite:interface />
 
@@ -108,9 +109,9 @@
 													<input
 													class="widget-usage__download-image-size-input"
 													onclick="setDownloadOptionLabel({optionvalue: this.getAttribute('value')});"
-													value="#{option.label}" name="abc" type="radio"
-													id="#{status.index}" />
-												<label for="#{status.index}"><span class="widget-usage__download-image-size-radio-label">#{msg[option.label]}</span><span class="widget-usage__download-image-size-radio-size">#{option.boxSizeLabel}</span><span class="widget-usage__download-image-size-radio-format">#{option.format}</span></label>
+													value="#{option.label}" name="downloadSelectSizes" type="radio"
+													id="downloadSelectSizes_#{status.index}" />
+												<label for="downloadSelectSizes_#{status.index}"><span class="widget-usage__download-image-size-radio-label">#{msg[option.label]}</span><span class="widget-usage__download-image-size-radio-size">#{option.boxSizeLabel}</span><span class="widget-usage__download-image-size-radio-format">#{option.format}</span></label>
 												</div>
 											</ui:repeat>
 										</fieldset>
@@ -126,9 +127,9 @@
 											styleClass="btn btn--full widget-usage__download-image-size-button"
 											title="#{msg.downloadButton}" target="_blank"
 											rel="nofollow noopener" aria-label="#{msg.downloadButton}"
-											value="#{activeDocumentBean.viewManager.getPageDownloadUrl(activeDocumentBean.selectedDownloadOption)}">
+											value="#{activeDocumentBean.viewManager.getPageDownloadUrl(activeDocumentBean.selectedDownloadOption)}" a:download="#{activeDocumentBean.viewManager.currentPage.fileNameBase}">
 			                                             #{msg.downloadButton}
-			                                         </h:outputLink>
+			                            </h:outputLink>
 									</h:form>
 								</ui:fragment>
 							</h:panelGroup> 
