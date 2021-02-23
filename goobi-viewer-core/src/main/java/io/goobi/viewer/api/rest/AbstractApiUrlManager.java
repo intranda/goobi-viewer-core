@@ -197,17 +197,11 @@ public abstract class AbstractApiUrlManager {
                 }
             }
             
-            try {
-                URI uri = URI.create(urlString);
-                String path = uri.getPath();
-                path = URLEncoder.encode(path, "utf-8");
-//            Path path = FileTools.getPathFromUrlString(urlString);
-                if (urlString.endsWith("/") && Paths.get(path).getFileName().toString().contains(".")) {
-                    urlString = urlString.substring(0, urlString.length() - 1);
-                }
-            } catch (UnsupportedEncodingException e) {
+            //remove trailing slash if the url contains a dot in the last path segment
+            if (urlString.matches(".*\\.\\w+\\/")) {
+                urlString = urlString.substring(0, urlString.length() - 1);
             }
-            
+
 
             return urlString;
         }
