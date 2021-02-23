@@ -16,9 +16,11 @@
 package io.goobi.viewer.model.viewer;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 
 import java.awt.Dimension;
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
@@ -318,6 +320,29 @@ public class ViewManagerTest extends AbstractDatabaseAndSolrEnabledTest {
         assertEquals(thumbnailUrl, viewManager.getPageDownloadUrl(scaledJpeg).replaceAll("\\?.*", "")); //ignore query params
 
     }
+    
+    @Test
+    public void testGetDownloadOptionsForImage() {
+        
+        DownloadOption tooLarge = new DownloadOption("", "master", new Dimension(10000, 10000));
+        DownloadOption master = new DownloadOption("", "master", DownloadOption.MAX);
+        DownloadOption thumb = new DownloadOption("", "jpg", "600");
+        DownloadOption largeThumb = new DownloadOption("", "jpg", "2000");
+        DownloadOption empty = new DownloadOption("", "jpg", DownloadOption.NONE);
+        List<DownloadOption> configuredOptions = Arrays.asList(tooLarge, master, largeThumb, thumb, empty);
+        
+        Dimension maxSize =  new Dimension(20000, 5000);
+        Dimension imageSize = new Dimension(1000, 2000);
+        
+        List<DownloadOption> options = ViewManager.getDownloadOptionsForImage(configuredOptions, imageSize, maxSize, "00000001.tif");
+        assertEquals(2, options.size());
+        
+        DownloadOption masterOption = options.stream().filter(o -> o.getFormat().equalsIgnoreCase("tiff")).findFirst().orElse(null);
+        assertNotNull(masterOption);
+        assertEquals(imageSize, masterOption.getBoxSizeInPixel());
+        
+    }
+
 
     private ViewManager createViewManager(String pi, String docstructType, String pageFilename)
             throws IndexUnreachableException, PresentationException, DAOException, ViewerConfigurationException {

@@ -2043,25 +2043,5 @@ public class ActiveDocumentBean implements Serializable {
         }
         
     }
-    
-    /**
-     * return the current image format if argument is 'MASTER', or the argument itself otherwise
-     * 
-     * @param format
-     * @return  
-     */
-    public String getImageFormat(String format) {
-        if(format != null && format.equalsIgnoreCase("master")) {            
-            return Optional.ofNullable(viewManager)
-                    .map(vm -> vm.getCurrentPage())
-                    .map(page -> page.getFilename())
-                    .filter(name -> StringUtils.isNotBlank(name))
-                    .map(name -> ImageFileFormat.getImageFileFormatFromFileExtension(name))
-                    .map(iff -> iff.name())
-                    .orElse(format);
-        } else {
-            return format;
-        }
-    }
 
 }

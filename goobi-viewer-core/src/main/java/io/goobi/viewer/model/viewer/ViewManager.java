@@ -54,6 +54,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import de.undercouch.citeproc.CSL;
+import de.unigoettingen.sub.commons.contentlib.imagelib.ImageFileFormat;
 import de.unigoettingen.sub.commons.contentlib.imagelib.transform.Scale;
 import io.goobi.viewer.api.rest.v1.ApiUrls;
 import io.goobi.viewer.controller.AlphanumCollatorComparator;
@@ -583,30 +584,72 @@ public class ViewManager implements Serializable {
         }
 
     }
+
+    public static List<DownloadOption> getDownloadOptionsForImage(
+            List<DownloadOption> configuredOptions,
+            Dimension origImageSize,
+            Dimension configuredMaxSize,
+            String imageFilename) {
+
+        List<DownloadOption> options = new ArrayList<DownloadOption>();
+        
+        int maxWidth;
+        int maxHeight;
+        Dimension maxSize;
+        if(origImageSize != null && origImageSize.height*origImageSize.width > 0) {            
+            maxWidth = Math.min(origImageSize.width, configuredMaxSize.width);
+            maxHeight = Math.min(origImageSize.height, configuredMaxSize.height);
+            maxSize = new Dimension(maxWidth, maxHeight);
+        } else {
+            maxWidth = configuredMaxSize.width;
+            maxHeight = configuredMaxSize.height;
+            maxSize = configuredMaxSize;
+        }
+        
+        for (DownloadOption option : configuredOptions) {
+            Dimension dim = option.getBoxSizeInPixel();
+            if(dim == DownloadOption.MAX) {
+                Scale scale = new Scale.ScaleToBox(maxSize);
+                Dimension size = scale.scale(origImageSize);
+                options.add(new DownloadOption(option.getLabel(), getImageFormat(option.getFormat(), imageFilename), size));
+            } else if(dim.width * dim.height == 0) {
+                continue;
+            } else if ((maxWidth > 0 && maxWidth < dim.width) || (maxHeight > 0 && maxHeight < dim.height)) {
+                continue;
+            } else{
+                options.add(new DownloadOption(option.getLabel(), getImageFormat(option.getFormat(), imageFilename), option.getBoxSizeInPixel()));
+            }
+        }
+        return options;
+    }
+
     
-//    public List<DownloadOption> getDownloadOptionsForCurrentImage() {
-//        int maxWidth = DataManager.getInstance().getConfiguration().getViewerMaxImageWidth();
-//        int maxHeight = DataManager.getInstance().getConfiguration().getViewerMaxImageHeight();
-//        List<Dimension> dimensions = new ArrayList<>();
-//        for (Integer size : imageSizes) {
-//            float ratio = imageInfo.getHeight() / (float) imageInfo.getWidth();
-//            dimensions.add(new Dimension(size, Math.round(size * ratio)));
-//            Dimension dim = new Dimension(size, Math.round(size * ratio));
-//            //only add size if it doesn't violate size restrictions
-//            if ((maxWidth > 0 && maxWidth < dim.width) || (maxHeight > 0 && maxHeight < dim.height)) {
-//                Dimension maxSize = new Dimension(Math.min(maxWidth, imageInfo.getWidth()), Math.min(maxHeight, imageInfo.getHeight()));
-//                Scale scale = new Scale.ScaleToBox(maxSize);
-//                try {
-//                    dimensions.add(scale.scale(new Dimension(imageInfo.getWidth(), imageInfo.getHeight())));
-//                } catch (IllegalRequestException e) {
-//                    //max Size is larger than orig size. Just set orig size
-//                    dimensions.add(new Dimension(imageInfo.getWidth(), imageInfo.getHeight()));
-//                }
-//            } else {
-//                dimensions.add(dim);
-//            }
-//        }
-//    }
+    public List<DownloadOption> getDownloadOptionsForCurrentImage() {
+        PhysicalElement page = getCurrentPage();
+        if(page != null && page.isHasImage()) {
+            List<DownloadOption> configuredOptions = DataManager.getInstance().getConfiguration().getSidebarWidgetUsagePageDownloadOptions();
+            String imageFilename = page.getFilename();
+            Dimension maxSize = new Dimension(DataManager.getInstance().getConfiguration().getViewerMaxImageWidth(), DataManager.getInstance().getConfiguration().getViewerMaxImageHeight());
+            Dimension imageSize = new Dimension(page.getImageWidth(), page.getImageHeight());
+            return getDownloadOptionsForImage(configuredOptions, imageSize, maxSize, imageFilename);
+        } else {
+            return Collections.emptyList();
+        }
+    }
+    
+    /**
+     * return the current image format if argument is 'MASTER', or the argument itself otherwise
+     * 
+     * @param format
+     * @return  
+     */
+    public static String getImageFormat(String format, String imageFilename) {
+        if(format != null && format.equalsIgnoreCase("master")) {        
+            return ImageFileFormat.getImageFileFormatFromFileExtension(imageFilename).name();
+        } else {
+            return format;
+        }
+    }
 
     /**
      * <p>
