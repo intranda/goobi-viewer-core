@@ -608,10 +608,10 @@
 	</collections>
 
 	<metadata>
-		<!-- mainMetadataList: whitelist with metadata fields, that are displayed 
+		<!-- metadataView: whitelist with metadata fields, that are displayed 
 			in the Goobi viewer. The order of this files defines the order of the 
 			fields in the bibliographic data as well. -->
-		<mainMetadataList>
+		<metadataView>
 			<template name="_DEFAULT">
 				<metadata label="URN" value="">
 					<param type="field" key="URN" />
@@ -640,7 +640,16 @@
 					<param type="field" key="DC" />
 				</metadata>
 			</template>
-		</mainMetadataList>
+		</metadataView>
+        <metadataView index="1" label="label__metadata_other" url="other" >
+            <template name="_DEFAULT">
+                <metadata label="MD_TITLE" value="">
+                    <param type="field" key="MD_TITLE">
+                        <replace string="foo">bar</replace>
+                    </param>
+                </metadata>
+            </template>
+        </metadataView>
 
 		<!-- titleBarMetadataList: defines metadata that is displayed above an 
 			image. The syntax is the same as in mainMetadataList -->

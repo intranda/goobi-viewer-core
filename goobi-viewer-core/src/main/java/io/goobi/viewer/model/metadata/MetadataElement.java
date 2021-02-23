@@ -167,13 +167,14 @@ public class MetadataElement {
      * </p>
      *
      * @param se {@link io.goobi.viewer.model.viewer.StructElement}
+     * @param index
      * @param sessionLocale a {@link java.util.Locale} object.
      * @param selectedRecordLanguage a {@link java.lang.String} object.
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
-    public MetadataElement(StructElement se, Locale sessionLocale, String selectedRecordLanguage)
+    public MetadataElement(StructElement se, int index, Locale sessionLocale, String selectedRecordLanguage)
             throws PresentationException, IndexUnreachableException, DAOException {
         if (se == null) {
             logger.error("StructElement not defined!");
@@ -197,7 +198,7 @@ public class MetadataElement {
         PageType pageType = PageType.determinePageType(docStructType, getMimeType(se), se.isAnchor(), true, false);
         url = se.getUrl(pageType);
 
-        for (Metadata metadata : DataManager.getInstance().getConfiguration().getMainMetadataForTemplate(se.getDocStructType())) {
+        for (Metadata metadata : DataManager.getInstance().getConfiguration().getMainMetadataForTemplate(index, se.getDocStructType())) {
             try {
                 if (!metadata.populate(se, sessionLocale)) {
                     continue;

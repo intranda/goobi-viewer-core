@@ -52,6 +52,7 @@ import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.messages.ViewerResourceBundle;
 import io.goobi.viewer.model.maps.GeoMapMarker;
 import io.goobi.viewer.model.metadata.Metadata;
+import io.goobi.viewer.model.metadata.MetadataView;
 import io.goobi.viewer.model.metadata.MetadataParameter;
 import io.goobi.viewer.model.metadata.MetadataParameter.MetadataParameterType;
 import io.goobi.viewer.model.metadata.MetadataReplaceRule;
@@ -403,17 +404,40 @@ public final class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * Returns the list of configured metadata for the main metadata page.
-     *
-     * @param template a {@link java.lang.String} object.
+     * 
+     * @return
+     * @should return all configured values
+     */
+    public List<MetadataView> getMetadataViews() {
+        List<HierarchicalConfiguration> metadataPageList = getLocalConfigurationsAt("metadata.metadataView");
+
+        List<MetadataView> ret = new ArrayList<>(metadataPageList.size());
+        for (HierarchicalConfiguration metadataView : metadataPageList) {
+            int index = metadataView.getInt("[@index]", 0);
+            String label = metadataView.getString("[@label]");
+            String url = metadataView.getString("[@url]");
+            MetadataView view = new MetadataView().setIndex(index).setLabel(label).setUrl(url);
+            ret.add(view);
+        }
+
+        return ret;
+    }
+
+    /**
+     * 
+     * @param index
+     * @param template
+     * @return List of configured <code>Metadata</code> fields for the given template
      * @should return correct template configuration
      * @should return default template configuration if template not found
      * @should return default template if template is null
-     * @return a {@link java.util.List} object.
      */
-    public List<Metadata> getMainMetadataForTemplate(String template) {
+    public List<Metadata> getMainMetadataForTemplate(int index, String template) {
         logger.trace("getMainMetadataForTemplate: {}", template);
-        List<HierarchicalConfiguration> templateList = getLocalConfigurationsAt("metadata.mainMetadataList.template");
+        List<HierarchicalConfiguration> templateList = getLocalConfigurationsAt("metadata.metadataView(" + index + ").template");
+        if (templateList == null) {
+            templateList = getLocalConfigurationsAt("metadata.metadataView.template");
+        }
         if (templateList == null) {
             return Collections.emptyList();
         }
@@ -700,7 +724,7 @@ public final class Configuration extends AbstractConfiguration {
     public boolean isDisplaySidebarWidgetDownloads() {
         return getLocalBoolean("sidebar.sidebarWidgetDownloads[@visible]", false);
     }
-    
+
     /**
      * 
      * @return
@@ -3758,11 +3782,11 @@ public final class Configuration extends AbstractConfiguration {
      * getTocVolumeSortFieldsForTemplate.
      * </p>
      *
+     * @param template a {@link java.lang.String} object.
+     * @return a {@link java.util.List} object.
      * @should return correct template configuration
      * @should return default template configuration if template not found
      * @should return default template configuration if template is null
-     * @param template a {@link java.lang.String} object.
-     * @return a {@link java.util.List} object.
      */
     public List<StringPair> getTocVolumeSortFieldsForTemplate(String template) {
         HierarchicalConfiguration usingTemplate = null;
@@ -4323,7 +4347,7 @@ public final class Configuration extends AbstractConfiguration {
         }
         return intList;
     }
-    
+
     /**
      * 
      * @return

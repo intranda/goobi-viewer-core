@@ -31,7 +31,7 @@
                     </button>
             </ui:fragment>
 	    </div>
-        <ui:repeat value="#{metadataBean.metadataElementList}" var="metadataElement" varStatus="status">
+        <ui:repeat value="#{metadataBean.getMetadataElementList(metadataViewIndex)}" var="metadataElement" varStatus="status">
             <ui:include src="/resources/includes/metadata/metadataElement.xhtml">
             	<ui:param name="metadataElement" value="#{metadataElement}"/>
             </ui:include>

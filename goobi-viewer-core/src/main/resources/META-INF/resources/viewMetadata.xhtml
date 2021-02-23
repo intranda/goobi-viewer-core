@@ -38,7 +38,9 @@
             <div id="view_metadata" class="view-metadata">
                 <!-- METADATA -->
                 <ui:insert name="viewMetadataMetadata">
-                    <ui:include src="/resources/includes/metadata/metadata.xhtml" />
+                    <ui:include src="/resources/includes/metadata/metadata.xhtml">
+                        <ui:param name="metadataViewIndex" value="0"/>
+                    </ui:include>
                 </ui:insert>
 
                 <!-- BORN DIGITAL MATERIALS -->
