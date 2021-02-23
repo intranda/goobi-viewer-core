@@ -15,6 +15,9 @@
  */
 package io.goobi.viewer.model.viewer;
 
+import static org.junit.Assert.assertEquals;
+
+import java.awt.Dimension;
 import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
@@ -24,6 +27,7 @@ import javax.faces.context.FacesContext;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.Mockito;
 
 import io.goobi.viewer.AbstractDatabaseAndSolrEnabledTest;
 import io.goobi.viewer.TestUtils;
@@ -36,7 +40,9 @@ import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.exceptions.ViewerConfigurationException;
 import io.goobi.viewer.managedbeans.ImageDeliveryBean;
+import io.goobi.viewer.model.download.DownloadOption;
 import io.goobi.viewer.model.viewer.pageloader.EagerPageLoader;
+import io.goobi.viewer.model.viewer.pageloader.IPageLoader;
 
 public class ViewManagerTest extends AbstractDatabaseAndSolrEnabledTest {
 
@@ -289,4 +295,43 @@ public class ViewManagerTest extends AbstractDatabaseAndSolrEnabledTest {
         List<LabeledLink> links = viewManager.getContentDownloadLinksForWork();
         Assert.assertEquals(2, links.size());
     }
+    
+//    @Test
+    public void testGetPageDownloadUrl() throws IndexUnreachableException, DAOException, PresentationException, ViewerConfigurationException {
+        
+        String pi = "PPN123";
+        String docstructType = "Catalogue";
+        String filename = "00000001.tif";
+
+        ViewManager viewManager = createViewManager(pi, docstructType, filename);
+        
+        
+        String baseUrl = DataManager.getInstance().getRestApiManager().getContentApiUrl()
+                + "records/" + pi + "/files/image/" + filename;
+        
+        DownloadOption maxSizeTiff = new DownloadOption("Master", "master", "max");
+        String masterTiffUrl = baseUrl + "/full/max/0/default.tif";
+        assertEquals(masterTiffUrl, viewManager.getPageDownloadUrl(maxSizeTiff));
+        
+        DownloadOption scaledJpeg = new DownloadOption("Thumbnail", "jpg", new Dimension(800, 1200));
+        String thumbnailUrl = baseUrl + "/full/!800,1200/0/default.jpg";
+        assertEquals(thumbnailUrl, viewManager.getPageDownloadUrl(scaledJpeg));
+
+    }
+
+    private ViewManager createViewManager(String pi, String docstructType, String pageFilename)
+            throws IndexUnreachableException, PresentationException, DAOException, ViewerConfigurationException {
+        StructElement se = new StructElement(123L);
+        se.setDocStructType(docstructType);
+        se.getMetadataFields().put(SolrConstants.PI_TOPSTRUCT, Collections.singletonList(pi));
+        PhysicalElement page = Mockito.mock(PhysicalElement.class);
+        Mockito.when(page.getFilename()).thenReturn(pageFilename);
+        Mockito.when(page.getMimeType()).thenReturn("image/tiff");
+        
+        IPageLoader pageLoader = Mockito.mock(EagerPageLoader.class);
+        Mockito.when(pageLoader.getPage(Mockito.anyInt())).thenReturn(page);
+        
+        return new ViewManager(se, pageLoader, se.getLuceneId(), null, null, new ImageDeliveryBean());
+    }
+    
 }

@@ -15,9 +15,11 @@
  */
 package io.goobi.viewer.model.download;
 
+import java.awt.Dimension;
 import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
+import org.jboss.weld.exceptions.IllegalArgumentException;
 
 import de.unigoettingen.sub.commons.contentlib.imagelib.transform.Scale;
 import io.goobi.viewer.controller.DataManager;
@@ -26,17 +28,49 @@ import io.goobi.viewer.controller.DataManager;
  * Download option configuration item.
  */
 public class DownloadOption {
+    
+    /**
+     * 
+     */
+    private static final String TIMES_SYMBOL = "\u00D7";
+    /**
+     * Dimension symbolizing the maximal image size
+     */
+    public static final Dimension MAX = new Dimension(Integer.MAX_VALUE, Integer.MAX_VALUE);
+    /**
+     * Dimension symbolizing that no image size has been set
+     */
+    public static final Dimension NONE = new Dimension(0, 0);
+
 
     private String label;
     private String format;
-    private String boxSizeInPixel;
+    private Dimension boxSize = NONE;
 
+    /**
+     * 
+     */
+    public DownloadOption() {
+    }
+    
+    public DownloadOption(String label, String format, String boxSize) {
+        this.label = label;
+        this.format = format;
+        setBoxSizeInPixel(boxSize);
+    }
+    
+    public DownloadOption(String label, String format, Dimension boxSize) {
+        this.label = label;
+        this.format = format;
+        this.boxSize = boxSize != null ? boxSize : NONE; 
+    }
+    
     /**
      * 
      * @return true if all properties are set; false otherwise
      */
     public boolean isValid() {
-        return StringUtils.isNotEmpty(label) && StringUtils.isNotEmpty(format) && StringUtils.isNotEmpty(boxSizeInPixel);
+        return StringUtils.isNotEmpty(label) && StringUtils.isNotEmpty(format) && boxSize != NONE;
     }
 
     /**
@@ -98,8 +132,8 @@ public class DownloadOption {
     /**
      * @return the boxSizeInPixel
      */
-    public String getBoxSizeInPixel() {
-        return boxSizeInPixel;
+    public Dimension getBoxSizeInPixel() {
+        return boxSize;
     }
 
     /**
@@ -107,17 +141,27 @@ public class DownloadOption {
      * @return this
      */
     public DownloadOption setBoxSizeInPixel(String boxSizeInPixel) {
-        this.boxSizeInPixel = boxSizeInPixel;
+        if(StringUtils.isBlank(boxSizeInPixel)) {
+            this.boxSize = NONE;
+        } else if("max".equalsIgnoreCase(boxSizeInPixel)) {
+            this.boxSize = MAX;
+        } else if(boxSizeInPixel.matches("\\d+")) {
+            int size = Integer.parseInt(boxSizeInPixel);
+            this.boxSize = new Dimension(size, size);
+        } else {
+            throw new IllegalArgumentException("Not a valid box size: " + boxSizeInPixel);
+        }
         return this;
     }
     
     public String getBoxSizeLabel() {
-        if(StringUtils.isNotBlank(boxSizeInPixel) && boxSizeInPixel.matches("\\d+")) {
-            return boxSizeInPixel + "x" + boxSizeInPixel;
+        if(boxSize != MAX && boxSize != NONE) {
+            return boxSize.width + TIMES_SYMBOL + boxSize.height;
         } else {
             return "";
         }
     }
+
 
     @Override
     public String toString() {

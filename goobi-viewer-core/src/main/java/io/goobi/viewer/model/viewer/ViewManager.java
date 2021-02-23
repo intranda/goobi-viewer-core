@@ -505,7 +505,7 @@ public class ViewManager implements Serializable {
      */
     public String getCurrentMasterImageUrl(Scale scale) throws IndexUnreachableException, DAOException {
 
-        PageType pageType = BeanUtils.getNavigationHelper().getCurrentPageType();
+        PageType pageType = Optional.ofNullable(BeanUtils.getNavigationHelper()).map(nh -> nh.getCurrentPageType()).orElse(null);
         if (pageType == null) {
             pageType = PageType.viewObject;
         }
@@ -564,12 +564,12 @@ public class ViewManager implements Serializable {
             case "jpeg":
             case "master":
                 Scale scale;
-                if (option.getBoxSizeInPixel().equalsIgnoreCase(Scale.MAX_SIZE) || option.getBoxSizeInPixel().equalsIgnoreCase(Scale.FULL_SIZE)) {
+                if (DownloadOption.MAX == option.getBoxSizeInPixel()) {
                     scale = Scale.MAX;
-                } else if (option.getBoxSizeInPixel().matches("\\d{1,9}")) {
-                    scale = new Scale.ScaleToBox(Integer.valueOf(option.getBoxSizeInPixel()), Integer.valueOf(option.getBoxSizeInPixel()));
-                } else {
+                } else if (option.getBoxSizeInPixel() == DownloadOption.NONE) {
                     throw new IllegalArgumentException("Invalid box size: " + option.getBoxSizeInPixel());
+                } else {
+                    scale = new Scale.ScaleToBox(option.getBoxSizeInPixel());
                 }
                 switch (option.getFormat().toLowerCase()) {
                     case "jpg":
@@ -583,6 +583,30 @@ public class ViewManager implements Serializable {
         }
 
     }
+    
+//    public List<DownloadOption> getDownloadOptionsForCurrentImage() {
+//        int maxWidth = DataManager.getInstance().getConfiguration().getViewerMaxImageWidth();
+//        int maxHeight = DataManager.getInstance().getConfiguration().getViewerMaxImageHeight();
+//        List<Dimension> dimensions = new ArrayList<>();
+//        for (Integer size : imageSizes) {
+//            float ratio = imageInfo.getHeight() / (float) imageInfo.getWidth();
+//            dimensions.add(new Dimension(size, Math.round(size * ratio)));
+//            Dimension dim = new Dimension(size, Math.round(size * ratio));
+//            //only add size if it doesn't violate size restrictions
+//            if ((maxWidth > 0 && maxWidth < dim.width) || (maxHeight > 0 && maxHeight < dim.height)) {
+//                Dimension maxSize = new Dimension(Math.min(maxWidth, imageInfo.getWidth()), Math.min(maxHeight, imageInfo.getHeight()));
+//                Scale scale = new Scale.ScaleToBox(maxSize);
+//                try {
+//                    dimensions.add(scale.scale(new Dimension(imageInfo.getWidth(), imageInfo.getHeight())));
+//                } catch (IllegalRequestException e) {
+//                    //max Size is larger than orig size. Just set orig size
+//                    dimensions.add(new Dimension(imageInfo.getWidth(), imageInfo.getHeight()));
+//                }
+//            } else {
+//                dimensions.add(dim);
+//            }
+//        }
+//    }
 
     /**
      * <p>
