@@ -558,7 +558,10 @@ public class ViewManager implements Serializable {
         logger.trace("getPageDownloadUrl: {}", option);
         if (option == null || !option.isValid()) {
             option = getDownloadOptionsForCurrentImage().stream().findFirst()
-                    .orElseThrow(() -> new IllegalStateException("No valid download options available"));
+                    .orElse(null);
+            if(option == null) {
+                return "";
+            }
         }
         Scale scale;
         if (DownloadOption.MAX == option.getBoxSizeInPixel()) {

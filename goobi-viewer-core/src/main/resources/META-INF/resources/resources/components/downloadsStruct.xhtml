@@ -53,7 +53,7 @@
                             </ui:fragment>
                             <!-- RIS (current) -->
                             <ui:fragment rendered="#{activeDocumentBean.viewManager.currentDocument.accessPermissionDownloadMetadata}">
-                                <a href="#{configurationBean.restApiUrlV1}records/#{activeDocumentBean.persistentIdentifier}/sections/#{activeDocumentBean.viewManager.currentDocument.logid}/ris"
+                                <a href="#{configurationBean.restApiUrlV1}records/#{activeDocumentBean.persistentIdentifier}/sections/#{activeDocumentBean.viewManager.currentDocument.logid}/ris/"
                                     id="risCurrent"
                                     class="badge badge-dark widget-usage__struct-download-ris" 
                                     title="#{msg.risLinkTopstruct}"

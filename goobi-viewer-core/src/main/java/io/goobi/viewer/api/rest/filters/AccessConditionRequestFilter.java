@@ -86,9 +86,6 @@ public class AccessConditionRequestFilter implements ContainerRequestFilter {
     public void filter(ContainerRequestContext request) throws IOException {
         
         String responseMediaType = MediaType.APPLICATION_JSON;
-        if (servletRequest != null && servletRequest.getRequestURI().toLowerCase().contains("xml")) {
-            responseMediaType = MediaType.TEXT_XML;
-        }
         
         try {
                 String pi = (String) servletRequest.getAttribute(FilterTools.ATTRIBUTE_PI);

@@ -18,23 +18,14 @@ package io.goobi.viewer.api.rest.model;
 import java.util.Collections;
 import java.util.List;
 
-import javax.xml.bind.annotation.XmlAnyElement;
-import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.XmlSeeAlso;
-
 import com.fasterxml.jackson.annotation.JsonValue;
 
-import io.goobi.viewer.api.rest.model.ner.DocumentReference;
-import io.goobi.viewer.api.rest.model.ner.ElementReference;
-import io.goobi.viewer.api.rest.model.ner.NERTag;
 
 /**
  * <p>
  * GenericList class.
  * </p>
  */
-@XmlRootElement(name = "list")
-@XmlSeeAlso({ NERTag.class, NERTag.Type.class, DocumentReference.class, ElementReference.class })
 public class GenericList<T> {
 
     private List<T> list;
@@ -66,7 +57,6 @@ public class GenericList<T> {
      *
      * @return a {@link java.util.List} object.
      */
-    @XmlAnyElement
     @JsonValue
     public List<T> getList() {
         return list;

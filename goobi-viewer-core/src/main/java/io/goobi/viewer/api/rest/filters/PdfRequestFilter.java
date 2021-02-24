@@ -108,7 +108,7 @@ public class PdfRequestFilter implements ContainerRequestFilter {
             filterForDownloadQuota(pi, divId, imageName, servletRequest);
             addRequestParameters(pi, divId, imageName, request);
         } catch (ServiceNotAllowedException | IndexUnreachableException | PresentationException | DAOException e) {
-            String mediaType = MediaType.TEXT_XML;
+            String mediaType = MediaType.APPLICATION_JSON;
             if (request.getUriInfo() != null && request.getUriInfo().getPath().endsWith("json")) {
                 mediaType = MediaType.APPLICATION_JSON;
             }
