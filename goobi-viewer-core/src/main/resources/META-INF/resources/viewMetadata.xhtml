@@ -39,7 +39,10 @@
                 <!-- METADATA -->
                 <ui:insert name="viewMetadataMetadata">
                     <ui:include src="/resources/includes/metadata/metadata.xhtml">
-                        <ui:param name="metadataViewIndex" value="#{metadataBean.metadataViewIndex}"/>
+                        <ui:param name="metadataViewIndex" value="#{metadataBean.activeMetadataView.index}"/>
+                        <ui:param name="metadataViewLabel"
+                            value="#{metadataBean.activeMetadataView.label != null ? metadataBean.activeMetadataView.label : 'bibData'}"/>
+                        
                     </ui:include>
                 </ui:insert>
 

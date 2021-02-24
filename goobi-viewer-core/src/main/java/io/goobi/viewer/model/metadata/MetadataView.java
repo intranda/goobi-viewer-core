@@ -15,8 +15,6 @@
  */
 package io.goobi.viewer.model.metadata;
 
-import org.apache.commons.lang3.StringUtils;
-
 /**
  * A MetadataView represents a single record metadata view page within a record (along with an own link in the views widget).
  */
@@ -24,7 +22,7 @@ public class MetadataView {
 
     public int index = 0;
     public String label;
-    public String url;
+    public String url = "";
 
     /**
      * @return the index

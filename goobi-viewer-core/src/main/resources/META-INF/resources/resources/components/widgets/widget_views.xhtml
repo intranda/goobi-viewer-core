@@ -78,12 +78,10 @@
                                 <h:outputLink value="#{navigationHelper.metadataActiveUrl}#{metadataView.url}#{activeDocumentBean.logPart}">
                                     <h:outputText rendered="#{metadataView.label != null}" value="#{msg[metadataView.label]}" />
                                     <h:outputText rendered="#{metadataView.label == null and !activeDocumentBean.viewManager.topDocument.lidoRecord}"
-                                        value="#{msg.bibData}" />
-                                    <h:outputText rendered="#{metadataView.label == null and activeDocumentBean.viewManager.topDocument.lidoRecord}"
-                                        value="#{msg.metadata}" />
+                                        value="#{msg[metadataBean.defaultMetadataLabel]}" />
                                     <!-- TODO: metadataView.label as aria-label -->
                                     <f:passThroughAttribute name="aria-label"
-                                        value="#{msg.view}: #{activeDocumentBean.viewManager.topDocument.lidoRecord ? msg.metadata : msg.bibData}"/>
+                                        value="#{msg.view}: #{metadataView.label != null ? msg[metadataView.label] : msg[metadataBean.defaultMetadataLabel]}"/>
                                 </h:outputLink>
                             </li>
                         </ui:repeat>

@@ -26,6 +26,7 @@ import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.solr.common.SolrDocument;
 import org.apache.solr.common.SolrDocumentList;
 import org.slf4j.Logger;
@@ -68,6 +69,7 @@ public class MetadataBean {
 
     private int metadataViewIndex;
     private String metadataViewUrl;
+    private MetadataView activeMetadataView;
 
     /**
      * Empty constructor.
@@ -96,7 +98,7 @@ public class MetadataBean {
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
     public String loadMetadata(int index) throws IndexUnreachableException, DAOException {
-        logger.debug("loadMetadata({})", index);
+        // logger.trace("loadMetadata({})", index);
         if (activeDocumentBean == null) {
             return "viewMetadata";
         }
@@ -265,6 +267,19 @@ public class MetadataBean {
     }
 
     /**
+     * Convenience method for the metadata page/link label key, depending on the document type.
+     * 
+     * @return Message key for the label
+     */
+    public String getDefaultMetadataLabel() {
+        if (activeDocumentBean != null && activeDocumentBean.getViewManager().getTopDocument().isLidoRecord()) {
+            return "metadata";
+        }
+
+        return "bibData";
+    }
+
+    /**
      * <p>
      * Getter for the field <code>events</code>.
      * </p>
@@ -322,20 +337,6 @@ public class MetadataBean {
     }
 
     /**
-     * @return the metadataViewIndex
-     */
-    public int getMetadataViewIndex() {
-        return metadataViewIndex;
-    }
-
-    /**
-     * @param metadataViewIndex the metadataViewIndex to set
-     */
-    public void setMetadataViewIndex(int metadataViewIndex) {
-        this.metadataViewIndex = metadataViewIndex;
-    }
-
-    /**
      * @return the metadataViewUrl
      */
     public String getMetadataViewUrl() {
@@ -346,17 +347,41 @@ public class MetadataBean {
      * @param metadataViewUrl the metadataViewUrl to set
      */
     public void setMetadataViewUrl(String metadataViewUrl) {
-        logger.trace("setMetadataViewUrl({})", metadataViewUrl);
-        this.metadataViewUrl = metadataViewUrl;
-        if (metadataViewUrl != null) {
-            for (MetadataView view : DataManager.getInstance().getConfiguration().getMetadataViews()) {
-                if (metadataViewUrl.equals(view.getUrl())) {
-                    setMetadataViewIndex(view.getIndex());
+        logger.debug("setMetadataViewUrl({})", metadataViewUrl);
+        try {
+            this.metadataViewUrl = metadataViewUrl;
+            List<MetadataView> views = DataManager.getInstance().getConfiguration().getMetadataViews();
+            if (StringUtils.isEmpty(metadataViewUrl)) {
+                if (!views.isEmpty()) {
+                    activeMetadataView = views.get(0);
                     return;
                 }
+            } else {
+                for (MetadataView view : views) {
+                    if (metadataViewUrl.equals(view.getUrl())) {
+                        activeMetadataView = view;
+                        return;
+                    }
+                }
             }
-        }
 
-        setMetadataViewIndex(0);
+            activeMetadataView = null;
+        } finally {
+            logger.debug("setMetadataViewUrl END");
+        }
+    }
+
+    /**
+     * @return the activeMetadataView
+     */
+    public MetadataView getActiveMetadataView() {
+        return activeMetadataView;
+    }
+
+    /**
+     * @param activeMetadataView the activeMetadataView to set
+     */
+    public void setActiveMetadataView(MetadataView activeMetadataView) {
+        this.activeMetadataView = activeMetadataView;
     }
 }

@@ -17,7 +17,9 @@
     <!-- METADATA -->
     <div id="metadataElementWrapper" class="metadata">
 	    <div class="metadata__title-wrapper">
-	    	<h2 class="metadata__title">#{activeDocumentBean.viewManager.metadataViewOnly ? activeDocumentBean.viewManager.topDocument.label : msg.bibData}</h2>
+	    	<h2 class="metadata__title">
+	    	    #{activeDocumentBean.viewManager.metadataViewOnly ? activeDocumentBean.viewManager.topDocument.label : msg[metadataViewLabel]}
+	    	</h2>
             <!-- ADD TO BOOKMARK -->
             <ui:fragment rendered="#{configurationBean.bookshelvesEnabled and activeDocumentBean.viewManager.metadataViewOnly}">
                     <button type="button" class="btn btn--icon metadata__bookmark-button"
