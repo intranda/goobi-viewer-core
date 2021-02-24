@@ -96,7 +96,7 @@ public class NetTools {
      *         or the error message.
      */
     public static String[] callUrlGET(String url) {
-        logger.debug("callUrlGET: {}", url);
+        logger.trace("callUrlGET: {}", url);
         String[] ret = new String[2];
         try (CloseableHttpClient httpClient = HttpClients.custom().build()) {
             HttpGet httpGet = new HttpGet(url);

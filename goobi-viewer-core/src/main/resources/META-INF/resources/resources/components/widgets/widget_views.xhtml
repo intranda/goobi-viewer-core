@@ -75,7 +75,7 @@
                     <h:panelGroup rendered="#{activeDocumentBean.viewManager.displayMetadataViewLink}">
                         <ui:repeat var="metadataView" value="#{metadataBean.metadataViews}">
                             <li class="#{navigationHelper.currentPage == 'metadata'.concat(metadataView.index) ? 'active' : ''}">
-                                <h:outputLink value="#{navigationHelper.metadataActiveUrl}#{metadataView.index}#{activeDocumentBean.logPart}">
+                                <h:outputLink value="#{navigationHelper.metadataActiveUrl}#{metadataView.url}#{activeDocumentBean.logPart}">
                                     <h:outputText rendered="#{metadataView.label != null}" value="#{msg[metadataView.label]}" />
                                     <h:outputText rendered="#{metadataView.label == null and !activeDocumentBean.viewManager.topDocument.lidoRecord}"
                                         value="#{msg.bibData}" />

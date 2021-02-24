@@ -67,6 +67,7 @@ public class MetadataBean {
     private List<EventElement> events = new ArrayList<>();
 
     private int metadataViewIndex;
+    private String metadataViewUrl;
 
     /**
      * Empty constructor.
@@ -95,6 +96,7 @@ public class MetadataBean {
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
     public String loadMetadata(int index) throws IndexUnreachableException, DAOException {
+        logger.debug("loadMetadata({})", index);
         if (activeDocumentBean == null) {
             return "viewMetadata";
         }
@@ -147,7 +149,7 @@ public class MetadataBean {
      * @return the metadataElementList
      */
     public List<MetadataElement> getMetadataElementList(int index) {
-        logger.trace("getMetadataElementList({})", index);
+        //        logger.trace("getMetadataElementList({})", index);
         if (metadataElementMap.get(index) == null) {
             // Only reload if empty, otherwise a c:forEach (used by p:tabView) will cause a reload on every iteration
             try {
@@ -323,7 +325,6 @@ public class MetadataBean {
      * @return the metadataViewIndex
      */
     public int getMetadataViewIndex() {
-        logger.trace("getMetadataViewIndex");
         return metadataViewIndex;
     }
 
@@ -331,8 +332,31 @@ public class MetadataBean {
      * @param metadataViewIndex the metadataViewIndex to set
      */
     public void setMetadataViewIndex(int metadataViewIndex) {
-        logger.trace("setMetadataViewIndex: {}", metadataViewIndex);
         this.metadataViewIndex = metadataViewIndex;
     }
 
+    /**
+     * @return the metadataViewUrl
+     */
+    public String getMetadataViewUrl() {
+        return metadataViewUrl;
+    }
+
+    /**
+     * @param metadataViewUrl the metadataViewUrl to set
+     */
+    public void setMetadataViewUrl(String metadataViewUrl) {
+        logger.trace("setMetadataViewUrl({})", metadataViewUrl);
+        this.metadataViewUrl = metadataViewUrl;
+        if (metadataViewUrl != null) {
+            for (MetadataView view : DataManager.getInstance().getConfiguration().getMetadataViews()) {
+                if (metadataViewUrl.equals(view.getUrl())) {
+                    setMetadataViewIndex(view.getIndex());
+                    return;
+                }
+            }
+        }
+
+        setMetadataViewIndex(0);
+    }
 }

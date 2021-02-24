@@ -52,11 +52,11 @@ import io.goobi.viewer.messages.ViewerResourceBundle;
 import io.goobi.viewer.model.download.DownloadOption;
 import io.goobi.viewer.model.maps.GeoMapMarker;
 import io.goobi.viewer.model.metadata.Metadata;
-import io.goobi.viewer.model.metadata.MetadataView;
 import io.goobi.viewer.model.metadata.MetadataParameter;
 import io.goobi.viewer.model.metadata.MetadataParameter.MetadataParameterType;
 import io.goobi.viewer.model.metadata.MetadataReplaceRule;
 import io.goobi.viewer.model.metadata.MetadataReplaceRule.MetadataReplaceRuleType;
+import io.goobi.viewer.model.metadata.MetadataView;
 import io.goobi.viewer.model.search.AdvancedSearchFieldConfiguration;
 import io.goobi.viewer.model.search.SearchFilter;
 import io.goobi.viewer.model.search.SearchHelper;
@@ -410,12 +410,20 @@ public final class Configuration extends AbstractConfiguration {
      */
     public List<MetadataView> getMetadataViews() {
         List<HierarchicalConfiguration> metadataPageList = getLocalConfigurationsAt("metadata.metadataView");
+        if (metadataPageList == null) {
+            metadataPageList = getLocalConfigurationsAt("metadata.mainMetadataList");
+            if (metadataPageList != null) {
+                logger.warn("Old <mainMetadataList> configuration found - please migrate to <metadataView>.");
+                return Collections.singletonList(new MetadataView());
+            }
+            return Collections.emptyList();
+        }
 
         List<MetadataView> ret = new ArrayList<>(metadataPageList.size());
         for (HierarchicalConfiguration metadataView : metadataPageList) {
             int index = metadataView.getInt("[@index]", 0);
             String label = metadataView.getString("[@label]");
-            String url = metadataView.getString("[@url]");
+            String url = metadataView.getString("[@url]", "");
             MetadataView view = new MetadataView().setIndex(index).setLabel(label).setUrl(url);
             ret.add(view);
         }
@@ -437,9 +445,15 @@ public final class Configuration extends AbstractConfiguration {
         List<HierarchicalConfiguration> templateList = getLocalConfigurationsAt("metadata.metadataView(" + index + ").template");
         if (templateList == null) {
             templateList = getLocalConfigurationsAt("metadata.metadataView.template");
-        }
-        if (templateList == null) {
-            return Collections.emptyList();
+            if (templateList == null) {
+                templateList = getLocalConfigurationsAt("metadata.mainMetadataList.template");
+                // Old configuration fallback
+                if (templateList != null) {
+                    logger.warn("Old <mainMetadataList> configuration found - please migrate to <metadataView>.");
+                } else {
+                    return Collections.emptyList();
+                }
+            }
         }
 
         return getMetadataForTemplate(template, templateList, true, false);
