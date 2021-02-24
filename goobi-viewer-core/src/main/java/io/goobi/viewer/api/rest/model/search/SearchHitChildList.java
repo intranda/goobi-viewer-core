@@ -18,8 +18,6 @@ package io.goobi.viewer.api.rest.model.search;
 import java.util.Collections;
 import java.util.List;
 
-import javax.xml.bind.annotation.XmlRootElement;
-
 import io.goobi.viewer.model.search.SearchHit;
 
 /**
@@ -27,7 +25,6 @@ import io.goobi.viewer.model.search.SearchHit;
  * SearchHitChildList class.
  * </p>
  */
-@XmlRootElement(name = "childHits")
 public class SearchHitChildList {
 
     final private boolean hasMoreChildren;

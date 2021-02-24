@@ -33,8 +33,6 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.ext.ExceptionMapper;
 import javax.ws.rs.ext.Provider;
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlRootElement;
 
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.slf4j.Logger;
@@ -112,20 +110,15 @@ public class ContentExceptionMapper implements ExceptionMapper<ContentLibExcepti
         return  Response.status(status).type(mediaType).entity(new ErrorMessage(status, e, printStackTrace)).build();
     }
     
-    @XmlRootElement
     @JsonInclude(Include.NON_NULL)
     public static class ErrorMessage {
 
-        @XmlElement(name = "status")
         @JsonProperty("status")
         private int status;
-        @XmlElement(name = "message")
         @JsonProperty("message")
         private String message;
-        @XmlElement(name = "errorImage")
         @JsonProperty("errorImage")
         private String errorImage;
-        @XmlElement(name = "stacktrace", nillable = false)
         @JsonProperty("stacktrace")
         private String stacktrace;
         
