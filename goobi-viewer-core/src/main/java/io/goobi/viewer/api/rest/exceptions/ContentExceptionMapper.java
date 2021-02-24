@@ -104,9 +104,7 @@ public class ContentExceptionMapper implements ExceptionMapper<ContentLibExcepti
         }
         
         String mediaType = MediaType.APPLICATION_JSON;
-        if(request != null && request.getRequestURI().toLowerCase().endsWith(".xml")) {
-            mediaType = MediaType.TEXT_XML;
-        }
+
         return  Response.status(status).type(mediaType).entity(new ErrorMessage(status, e, printStackTrace)).build();
     }
     

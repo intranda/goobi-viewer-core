@@ -75,9 +75,6 @@ public class ImageRequestFilter implements ContainerRequestFilter {
     public void filter(ContainerRequestContext request) throws IOException {
 
         String mediaType = MediaType.APPLICATION_JSON;
-        if (servletRequest != null && servletRequest.getRequestURI().toLowerCase().contains("xml")) {
-            mediaType = MediaType.TEXT_XML;
-        }
 
         String pi = (String) servletRequest.getAttribute(FilterTools.ATTRIBUTE_PI);
         String imageName = (String) servletRequest.getAttribute(FilterTools.ATTRIBUTE_FILENAME);
