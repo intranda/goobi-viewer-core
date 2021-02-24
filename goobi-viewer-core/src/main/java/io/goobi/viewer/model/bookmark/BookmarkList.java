@@ -96,7 +96,7 @@ public class BookmarkList implements Serializable {
     private Boolean isPublic = false;
 
     @Column(name = "share_key", unique = true)
-    public String shareKey;
+    private String shareKey;
 
     @OneToMany(mappedBy = "bookmarkList", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @PrivateOwned

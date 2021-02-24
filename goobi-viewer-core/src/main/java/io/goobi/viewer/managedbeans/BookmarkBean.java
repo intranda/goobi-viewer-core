@@ -738,7 +738,7 @@ public class BookmarkBean implements Serializable {
             throw new PresentationException("No bookmark list found with shared key " + key);
         }
         setCurrentBookmarkList(bl);
-        currentBookmarkListSharedKey = bl.shareKey;
+        currentBookmarkListSharedKey = bl.getShareKey();
     }
 
     /**

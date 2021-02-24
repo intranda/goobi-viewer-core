@@ -15,8 +15,6 @@
  */
 package io.goobi.viewer.model.security.authentication.model;
 
-import javax.xml.bind.annotation.XmlAttribute;
-import javax.xml.bind.annotation.XmlRootElement;
 
 /**
  * Representation of the Littera authentication response which is delivered as xml. It only contains the single information if a login attempt
@@ -24,7 +22,6 @@ import javax.xml.bind.annotation.XmlRootElement;
  *
  * @author florian
  */
-@XmlRootElement(name = "Response")
 public class LitteraAuthenticationResponse {
 
     private boolean authenticationSuccessful;
@@ -55,7 +52,6 @@ public class LitteraAuthenticationResponse {
      *
      * @return the authenticationSuccessful
      */
-    @XmlAttribute
     public boolean isAuthenticationSuccessful() {
         return authenticationSuccessful;
     }
