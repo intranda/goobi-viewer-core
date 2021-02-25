@@ -36,6 +36,7 @@ import io.goobi.viewer.model.cms.CMSPageTemplate;
 import io.goobi.viewer.model.cms.CMSPageTemplateEnabled;
 import io.goobi.viewer.model.cms.CMSRecordNote;
 import io.goobi.viewer.model.cms.CMSSidebarElement;
+import io.goobi.viewer.model.cms.CMSSlider;
 import io.goobi.viewer.model.cms.CMSStaticPage;
 import io.goobi.viewer.model.crowdsourcing.campaigns.Campaign;
 import io.goobi.viewer.model.crowdsourcing.campaigns.CampaignRecordStatistic;
@@ -2222,4 +2223,13 @@ public interface IDAO {
 
     public boolean resetUserAgreementsToTermsOfUse() throws DAOException;
 
+    public List<CMSSlider> getAllSliders() throws DAOException;
+    
+    public CMSSlider getSlider(Long id) throws DAOException; 
+    
+    public boolean addSlider(CMSSlider slider) throws DAOException;
+    
+    public boolean updateSlider(CMSSlider slider) throws DAOException;
+    
+    public boolean deleteSlider(CMSSlider slider) throws DAOException;
 }
