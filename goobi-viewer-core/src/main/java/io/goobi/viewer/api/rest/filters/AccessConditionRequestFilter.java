@@ -86,9 +86,6 @@ public class AccessConditionRequestFilter implements ContainerRequestFilter {
     public void filter(ContainerRequestContext request) throws IOException {
         
         String responseMediaType = MediaType.APPLICATION_JSON;
-        if (servletRequest != null && servletRequest.getRequestURI().toLowerCase().contains("xml")) {
-            responseMediaType = MediaType.TEXT_XML;
-        }
         
         try {
                 String pi = (String) servletRequest.getAttribute(FilterTools.ATTRIBUTE_PI);
@@ -136,7 +133,9 @@ public class AccessConditionRequestFilter implements ContainerRequestFilter {
                 if(StringUtils.isBlank(privilege)) {
                     privilege = IPrivilegeHolder.PRIV_LIST;
                 }
-                if(StringUtils.isNotBlank(contentFileName)) {                    
+                if(StringUtils.isBlank(pi)) {
+                    throw new ServiceNotAllowedException("Serving this resource is currently impossible Because no persistent identifier is given");
+                } else if(StringUtils.isNotBlank(contentFileName)) {                    
                     access = AccessConditionUtils.checkAccessPermissionByIdentifierAndFileNameWithSessionMap(request, pi, contentFileName, privilege);
                 } else {
                     access = AccessConditionUtils.checkAccessPermissionByIdentifierAndLogId(pi, logid, privilege, request);

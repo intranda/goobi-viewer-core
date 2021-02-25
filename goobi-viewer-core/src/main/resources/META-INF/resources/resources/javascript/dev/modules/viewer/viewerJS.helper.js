@@ -430,6 +430,9 @@ var viewerJS = ( function( viewer ) {
               })
               return paramMap;
           },
+          getUrlSearchParam: function(key) {
+          	return this.getUrlSearchParamMap().get(key);
+          },
           setUrlSearchParams: function(map) {
               let paramList = [];
               map.forEach((value, key) => {

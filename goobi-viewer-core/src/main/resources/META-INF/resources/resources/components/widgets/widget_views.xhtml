@@ -19,7 +19,7 @@
 	</composite:interface>
 
 	<composite:implementation>
-	    <ui:fragment rendered="#{activeDocumentBean.recordLoaded and !activeDocumentBean.viewManager.metadataViewOnly}">
+	    <ui:fragment rendered="#{activeDocumentBean.recordLoaded and !activeDocumentBean.viewManager.metadataViewOnly and not activeDocumentBean.anchor and not activeDocumentBean.group}">
 		<div id="widgetViews" class="widget">
 			<h:form id="widgetViewsForm">
 				<h3>#{msg.view}</h3>

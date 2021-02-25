@@ -43,10 +43,8 @@ var viewerJS = ( function( viewer ) {
         location: "Goobi viewer" 
     }
     var windowObject = {
-        bottomPanel: false,
-        sidePanel: true,
-        sidePanelVisible: false,
-        viewType: "ImageView"                            
+        thumbnailNavigationPosition: 'far-bottom',    
+        canvasIndex: 0,
     }
     
     var messageKeys = ["viewMirador", "viewMiradorComparison"];
@@ -80,15 +78,24 @@ var viewerJS = ( function( viewer ) {
             } else if ( _getBookmarkListId() != null ) {
             	// User bookmarks
                 miradorConfigPromise = _getUserMiradorObjects( _defaults.restEndpoint, _getBookmarkListId() )
-                .then( response => response.json());
+                .then( response => response.json())
+                .then( json => json.members.filter(manifest => manifest["@type"] == "sc:Manifest" || manifest.type == "Manifest") )
+                .then( members => members.map(manifest => manifest["@id"] ? manifest["@id"] : manifest.id).filter(id => id != undefined) )
+                .then( ids => _getMiradorConfigForManifestUrls(ids, _defaults) );
             } else if ( _getBookmarkListKey() != null ) {
                 //public/shared bookmarks
                 miradorConfigPromise = _getSharedMiradorObjects( _defaults.restEndpoint, _getBookmarkListKey() )
-                .then( response => response.json());
+                .then( response => response.json())
+                .then( json => json.members.filter(manifest => manifest["@type"] == "sc:Manifest" || manifest.type == "Manifest") )
+                .then( members => members.map(manifest => manifest["@id"] ? manifest["@id"] : manifest.id).filter(id => id != undefined) )
+                .then( ids => _getMiradorConfigForManifestUrls(ids, _defaults) );
             } else {
             	// Session mark list
                 miradorConfigPromise = _getMiradorSessionObjects( _defaults.restEndpoint )
-                .then( response => response.json());
+                .then( response => response.json())
+                .then( json => json.members.filter(manifest => manifest["@type"] == "sc:Manifest" || manifest.type == "Manifest") )
+                .then( members => members.map(manifest => manifest["@id"] ? manifest["@id"] : manifest.id).filter(id => id != undefined) )
+                .then( ids => _getMiradorConfigForManifestUrls(ids, _defaults) );
             }
             
             if(miradorConfigPromise) {  
@@ -96,12 +103,12 @@ var viewerJS = ( function( viewer ) {
                 .then( elements => {                    
                         console.log("elements ", elements)
                         this.miradorConfig = elements;
-                        Mirador( this.miradorConfig );
+                        this.mirador = Mirador.viewer(this.miradorConfig);
                 })
                 .then(() => translator.init(messageKeys))
                 .then( () => {
                     // Override window title if more than one record
-                    if (this.miradorConfig.data.length > 1) {
+                    if (this.miradorConfig.manifests.length > 1) {
                         document.title = translator.translate('viewMiradorComparison');
                     }
                 }).catch(function(error) {
@@ -147,7 +154,7 @@ var viewerJS = ( function( viewer ) {
 			console.log( '_getSessionElementCount: id - ', id );
 		}
 
-		let url = restUrl + "bookmarks/" + id + "/mirador.json";
+		let url = restUrl + "bookmarks/" + id + "/collection.json";
 		console.log("rest url ", url);
 		return fetch(url);
 	}
@@ -159,7 +166,7 @@ var viewerJS = ( function( viewer ) {
 	            console.log( '_getSessionElementCount: id - ', key );
 	        }
 
-	        let url = restUrl + "bookmarks/shared/" + key + "/mirador.json";
+	        let url = restUrl + "bookmarks/shared/" + key + "/collection.json";
 	        return fetch(url);
 	    }
 	/**
@@ -175,7 +182,7 @@ var viewerJS = ( function( viewer ) {
 			console.log( '_getMiradorSessionObjects: root - ', root );
 		}
 		
-		let url = restUrl + "bookmarks/0/mirador.json";
+		let url = restUrl + "bookmarks/0/collection.json";
         return fetch(url);
 	}
 
@@ -183,7 +190,7 @@ var viewerJS = ( function( viewer ) {
 	function _getManifestsFromUrlQuery(_defaults) {
         var manifests = _getQueryVariable("manifest").split("$").filter(man => man.length > 0);
         var pis = _getQueryVariable("pi").split("$").filter(man => man.length > 0);
-        var piManifests = pis.map(pi => _defaults.restEndpoint + "records/" + pi + "/manifest");
+        var piManifests = pis.map(pi => _defaults.restEndpoint + "records/" + pi + "/manifest/");
         manifests = manifests.concat(piManifests);
         return manifests;
 	}
@@ -203,20 +210,26 @@ var viewerJS = ( function( viewer ) {
         var columns = Math.ceil(Math.sqrt(manifests.length));
         var rows = Math.ceil(manifests.length/columns);
         
-        var miradorConfig = {
-                buildPath : _defaults.root + "/resources/javascript/libs/mirador/",
+        var miradorConfig = { 
                 id: "miradorViewer",
-                layout: rows + "x" + columns,
-                data: manifests.map(man => {
+                manifests: manifests.map(man => {
                     var dataObj = Object.assign({}, dataObject);
                     dataObj.manifestUri = man;
                     return dataObj;
                 }),
-                windowObjects: manifests.map(man => {
+                windows: manifests.map(man => {
                     var winObj = Object.assign({}, windowObject);
                     winObj.loadedManifest = man;
                     return winObj;
-                })
+                }),
+                window: {
+                	defaultView: 'single'
+                },
+                annotations: {  
+             		//'sc:painting' excluded to hide fulltext annotations
+             		//'oa:describing' must be included to display viewer (crowdsourcing) annotations
+            	    filteredMotivations: ['oa:commenting', 'oa:tagging','oa:describing', 'commenting', 'tagging'],
+                }
         }
         return Q(Promise.resolve(miradorConfig));
     }

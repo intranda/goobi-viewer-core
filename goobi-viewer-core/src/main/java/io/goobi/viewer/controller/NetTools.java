@@ -47,9 +47,14 @@ import org.apache.http.client.CookieStore;
 import org.apache.http.client.config.RequestConfig;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.CloseableHttpResponse;
+import org.apache.http.client.methods.HttpDelete;
+import org.apache.http.client.methods.HttpEntityEnclosingRequestBase;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
+import org.apache.http.client.methods.HttpPut;
+import org.apache.http.client.methods.HttpRequestBase;
 import org.apache.http.client.protocol.HttpClientContext;
+import org.apache.http.entity.ByteArrayEntity;
 import org.apache.http.impl.client.BasicCookieStore;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
@@ -59,6 +64,7 @@ import org.apache.http.util.EntityUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import io.goobi.viewer.api.rest.v1.ApiUrls;
 import io.goobi.viewer.exceptions.HTTPException;
 
 /**
@@ -74,6 +80,11 @@ public class NetTools {
     public static final String ADDRESS_LOCALHOST_IPV4 = "127.0.0.1";
     /** Constant <code>ADDRESS_LOCALHOST_IPV6="0:0:0:0:0:0:0:1"</code> */
     public static final String ADDRESS_LOCALHOST_IPV6 = "0:0:0:0:0:0:0:1";
+
+    public static final String PARAM_CLEAR_CACHE_ALL = "all";
+    public static final String PARAM_CLEAR_CACHE_CONTENT = "content";
+    public static final String PARAM_CLEAR_CACHE_THUMBS = "thumbs";
+    public static final String PARAM_CLEAR_CACHE_PDF = "pdf";
 
     /**
      * <p>
@@ -155,25 +166,70 @@ public class NetTools {
      * @param url a {@link java.lang.String} object.
      * @param params a {@link java.util.Map} object.
      * @param cookies a {@link java.util.Map} object.
+     * @param body Optional entity content.
+     * @param contentType Optional mime type.
      * @return a {@link java.lang.String} object.
      * @throws org.apache.http.client.ClientProtocolException if any.
      * @throws java.io.IOException if any.
-     * @throws io.goobi.viewer.exceptions.HTTPException if any.
+     * @throws io.goobi.viewer.exceptions.HTTPException if return code is not 200
      */
-    public static String getWebContentPOST(String url, Map<String, String> params, Map<String, String> cookies)
+    public static String getWebContentPOST(String url, Map<String, String> params, Map<String, String> cookies, String body, String contentType)
             throws ClientProtocolException, IOException, HTTPException {
+        return getWebContent("POST", url, params, cookies, body, contentType);
+    }
+
+    /**
+     * <p>
+     * getWebContentDELETE.
+     * </p>
+     *
+     * @param url a {@link java.lang.String} object.
+     * @param params a {@link java.util.Map} object.
+     * @param cookies a {@link java.util.Map} object.
+     * @param body Optional entity content.
+     * @param contentType Optional mime type.
+     * @return a {@link java.lang.String} object.
+     * @throws org.apache.http.client.ClientProtocolException if any.
+     * @throws java.io.IOException if any.
+     * @throws io.goobi.viewer.exceptions.HTTPException if return code is not 200
+     */
+    public static String getWebContentDELETE(String url, Map<String, String> params, Map<String, String> cookies, String body, String contentType)
+            throws ClientProtocolException, IOException, HTTPException {
+        return getWebContent("DELETE", url, params, cookies, body, contentType);
+    }
+
+    /**
+     * <p>
+     * getWebContent.
+     * </p>
+     *
+     * @param method POST or PUT
+     * @param url a {@link java.lang.String} object.
+     * @param params a {@link java.util.Map} object.
+     * @param cookies a {@link java.util.Map} object.
+     * @param body Optional entity content.
+     * @param contentType Optional mime type.
+     * @return a {@link java.lang.String} object.
+     * @throws org.apache.http.client.ClientProtocolException if any.
+     * @throws java.io.IOException if any.
+     * @throws io.goobi.viewer.exceptions.HTTPException if return code is not 200
+     */
+    static String getWebContent(String method, String url, Map<String, String> params, Map<String, String> cookies, String body, String contentType)
+            throws ClientProtocolException, IOException, HTTPException {
+        if (method == null || !("POST".equals(method.toUpperCase()) || "PUT".equals(method.toUpperCase()) || "DELETE".equals(method.toUpperCase()))) {
+            throw new IllegalArgumentException("Illegal method: " + method);
+        }
         if (url == null) {
             throw new IllegalArgumentException("url may not be null");
         }
 
-        logger.trace("url: {}", url);
+        logger.debug("url: {}", url);
         List<NameValuePair> nameValuePairs = null;
         if (params == null) {
             nameValuePairs = new ArrayList<>(0);
         } else {
             nameValuePairs = new ArrayList<>(params.size());
             for (String key : params.keySet()) {
-                // logger.trace("param: {}:{}", key, params.get(key)); // TODO do not log passwords!
                 nameValuePairs.add(new BasicNameValuePair(key, params.get(key)));
             }
         }
@@ -182,7 +238,6 @@ public class NetTools {
         if (cookies != null && !cookies.isEmpty()) {
             context = HttpClientContext.create();
             for (String key : cookies.keySet()) {
-                // logger.trace("cookie: {}:{}", key, cookies.get(key)); // TODO do not log passwords!
                 BasicClientCookie cookie = new BasicClientCookie(key, cookies.get(key));
                 cookie.setPath("/");
                 cookie.setDomain("0.0.0.0");
@@ -197,20 +252,40 @@ public class NetTools {
                 .setConnectionRequestTimeout(HTTP_TIMEOUT)
                 .build();
         try (CloseableHttpClient httpClient = HttpClients.custom().setDefaultRequestConfig(defaultRequestConfig).build()) {
-            HttpPost post = new HttpPost(url);
+
+            HttpRequestBase requestBase;
+            switch (method.toUpperCase()) {
+                case "POST":
+                    requestBase = new HttpPost(url);
+                    break;
+                case "PUT":
+                    requestBase = new HttpPut(url);
+                    break;
+                case "DELETE":
+                    requestBase = new HttpDelete(url);
+                    break;
+                default:
+                    return "";
+            }
+            if (StringUtils.isNotEmpty(contentType)) {
+                requestBase.setHeader("Content-Type", contentType);
+            }
             Charset.forName(StringTools.DEFAULT_ENCODING);
-            post.setEntity(new UrlEncodedFormEntity(nameValuePairs));
-            try (CloseableHttpResponse response = (context == null ? httpClient.execute(post) : httpClient.execute(post, context));
+            // TODO allow combinations of params + body
+            if (requestBase instanceof HttpPost || requestBase instanceof HttpPut) {
+                if (StringUtils.isNotEmpty(body)) {
+                    ((HttpEntityEnclosingRequestBase) requestBase).setEntity(new ByteArrayEntity(body.getBytes(StringTools.DEFAULT_ENCODING)));
+                } else {
+                    ((HttpEntityEnclosingRequestBase) requestBase).setEntity(new UrlEncodedFormEntity(nameValuePairs));
+                }
+            }
+            try (CloseableHttpResponse response = (context == null ? httpClient.execute(requestBase) : httpClient.execute(requestBase, context));
                     StringWriter writer = new StringWriter()) {
                 int code = response.getStatusLine().getStatusCode();
                 if (code == HttpStatus.SC_OK) {
                     logger.trace("{}: {}", code, response.getStatusLine().getReasonPhrase());
                     return EntityUtils.toString(response.getEntity(), StringTools.DEFAULT_ENCODING);
-                    //                    IOUtils.copy(response.getEntity().getContent(), writer, DEFAULT_ENCODING);
-                    //                    return writer.toString();
                 }
-                logger.trace("{}: {}\n{}", code, response.getStatusLine().getReasonPhrase(),
-                        IOUtils.toString(response.getEntity().getContent(), StringTools.DEFAULT_ENCODING));
                 throw new HTTPException(code, response.getStatusLine().getReasonPhrase());
             }
         }
@@ -320,7 +395,8 @@ public class NetTools {
         props.setProperty("mail.smtp.connectiontimeout", "15000");
         props.setProperty("mail.smtp.timeout", "15000");
         props.setProperty("mail.smtp.auth", String.valueOf(auth));
-        logger.debug("Connecting to email server " + smtpServer + " on port " + String.valueOf(smtpPort) + " via SMTP security " + smtpSecurity.toUpperCase());
+        logger.debug("Connecting to email server " + smtpServer + " on port " + String.valueOf(smtpPort) + " via SMTP security "
+                + smtpSecurity.toUpperCase());
         // logger.trace(props.toString());
 
         Session session;
@@ -487,5 +563,42 @@ public class NetTools {
         }
 
         return ADDRESS_LOCALHOST_IPV6.equals(address) || ADDRESS_LOCALHOST_IPV4.equals(address);
+    }
+
+    /**
+     * 
+     * @param mode
+     * @param pi
+     * @param rootUrl
+     * @param webApiToken
+     * @return
+     * @should build url correctly
+     */
+    public static String buildClearCacheUrl(String mode, String pi, String rootUrl, String webApiToken) {
+        if (mode == null) {
+            throw new IllegalArgumentException("mode may not be null");
+        }
+
+        StringBuilder sbUrl =
+                new StringBuilder(rootUrl).append("api/v1")
+                        .append(ApiUrls.CACHE)
+                        .append('/')
+                        .append(pi)
+                        .append("/?token=")
+                        .append(webApiToken);
+        switch (mode) {
+            case NetTools.PARAM_CLEAR_CACHE_ALL:
+                sbUrl.append("&content=true&thumbs=true&pdf=true");
+                break;
+            case NetTools.PARAM_CLEAR_CACHE_CONTENT:
+            case NetTools.PARAM_CLEAR_CACHE_THUMBS:
+            case NetTools.PARAM_CLEAR_CACHE_PDF:
+                sbUrl.append("&").append(mode).append("=true");
+                break;
+            default:
+                return "";
+        }
+
+        return sbUrl.toString();
     }
 }

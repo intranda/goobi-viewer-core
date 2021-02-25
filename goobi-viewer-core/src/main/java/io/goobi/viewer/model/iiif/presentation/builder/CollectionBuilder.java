@@ -21,6 +21,8 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
+import javax.servlet.http.HttpServletRequest;
+
 import org.apache.commons.lang3.StringUtils;
 import org.apache.solr.common.SolrDocument;
 import org.apache.solr.common.SolrDocumentList;
@@ -48,6 +50,7 @@ import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.exceptions.ViewerConfigurationException;
+import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.model.cms.CMSCollection;
 import io.goobi.viewer.model.iiif.presentation.builder.LinkingProperty.LinkingTarget;
 import io.goobi.viewer.model.search.SearchHelper;
@@ -81,8 +84,8 @@ public class CollectionBuilder extends AbstractBuilder {
      * Caching for collections
      */
     private static Map<String, String> facetFieldMap = new HashMap<>();
-    private static Map<String, CollectionView> collectionViewMap = new HashMap<>();
-
+//    private static Map<String, CollectionView> collectionViewMap = new HashMap<>();
+    
     /**
      * <p>
      * Constructor for CollectionBuilder.
@@ -343,7 +346,7 @@ public class CollectionBuilder extends AbstractBuilder {
      * @throws IllegalRequestException 
      */
     public void addTagListService(Collection collection, String collectionField, final String facetField, String label) throws IndexUnreachableException, IllegalRequestException {
-        CollectionView view = getCollectionView(collectionField, facetField, "");
+        CollectionView view = getCollectionView(collectionField, facetField, DataManager.getInstance().getConfiguration().getCollectionSplittingChar(collectionField));
         addTagListService(collection, view, label);
         collection.collections.forEach(c -> addTagListService(c, view, label));
         
@@ -381,10 +384,8 @@ public class CollectionBuilder extends AbstractBuilder {
             throws IndexUnreachableException, IllegalRequestException {
 
         String key = collectionField + "::" + groupingField;
-        synchronized (collectionViewMap) {
-            if (collectionViewMap.containsKey(key)) {
-                return new CollectionView(collectionViewMap.get(key));
-            }
+        if (BeanUtils.getSessionBean().containsKey(key)) {
+            return new CollectionView((CollectionView)BeanUtils.getSessionBean().get(key));
         }
 
         CollectionView view = createCollectionView(collectionField, groupingField, splittingChar);
@@ -407,10 +408,8 @@ public class CollectionBuilder extends AbstractBuilder {
         view.populateCollectionList();
         
         String key = collectionField + "::" + facetField;
-        synchronized (collectionViewMap) {
-            collectionViewMap.put(key, view);
-            return view;
-        }
+        BeanUtils.getSessionBean().put(key, view);
+        return view;
         
     }
 

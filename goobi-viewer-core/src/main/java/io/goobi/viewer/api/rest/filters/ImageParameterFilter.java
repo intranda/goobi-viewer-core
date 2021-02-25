@@ -72,10 +72,7 @@ public class ImageParameterFilter implements ContainerRequestFilter {
                     addRepositoryPathIfRequired(request, pi);
                 }
             } catch (PresentationException e) {
-                String mediaType = MediaType.TEXT_XML;
-                if (request.getUriInfo() != null && request.getUriInfo().getPath().endsWith("json")) {
-                    mediaType = MediaType.APPLICATION_JSON;
-                }
+                String mediaType = MediaType.APPLICATION_JSON;
                 Response errorResponse = Response.status(Status.INTERNAL_SERVER_ERROR)
                         .type(mediaType)
                         .entity(new ErrorMessage(Status.INTERNAL_SERVER_ERROR, e, false))

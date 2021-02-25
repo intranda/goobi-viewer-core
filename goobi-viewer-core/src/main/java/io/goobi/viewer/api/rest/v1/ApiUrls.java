@@ -27,10 +27,14 @@ import io.goobi.viewer.controller.DataManager;
 public class ApiUrls extends AbstractApiUrlManager {
 
     public static final String API = "/api/v1";
+    
+    public static final String CACHE = "/cache";
+    public static final String CACHE_RECORD = "/{pi}";
 
     public static final String INDEXER = "/indexer";
 
     public static final String INDEX = "/index";
+    public static final String INDEX_FIELDS = "/fields";
     public static final String INDEX_QUERY = "/query";
     public static final String INDEX_STREAM = "/stream";
     public static final String INDEX_STATISTICS = "/statistics";
@@ -94,6 +98,10 @@ public class ApiUrls extends AbstractApiUrlManager {
     public static final String RECORDS_FILES_ALTO = "/alto/{filename}";
     public static final String RECORDS_FILES_CMDI = "/cmdi/{filename}";
     public static final String RECORDS_FILES_TEI = "/tei/{filename}";
+    @Deprecated
+    /**
+     * @deprecated use {@link #RECORDS_FILES_IMAGE}{@link #RECORDS_FILES_IMAGE_PDF} instead
+     */
     public static final String RECORDS_FILES_PDF = "/pdf/{filename}";
     public static final String RECORDS_FILES_SOURCE = "/source/{filename}";
     public static final String RECORDS_FILES_AUDIO = "/audio/{mimetype}/{filename}";
@@ -197,6 +205,8 @@ public class ApiUrls extends AbstractApiUrlManager {
     public static final String TEMP_MEDIA_FILES_FILE_IMAGE = "/temp/files/{folder}/{filename: (?i)[^\\/]*\\.(jpe?g|tiff?|png|gif|jp2)}";
     public static final String TEMP_MEDIA_FILES_FILE_IIIF = "/{region}/{size}/{rotation}/{quality}.{format}";
 
+    public static final String EXTERNAL_IMAGES = "/images/external/{filename}";
+    public static final String EXTERNAL_IMAGES_IIIF = "/{region}/{size}/{rotation}/{quality}.{format}";
 
 
 

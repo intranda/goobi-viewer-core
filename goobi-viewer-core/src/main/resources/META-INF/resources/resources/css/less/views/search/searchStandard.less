@@ -18,7 +18,11 @@
         }
     }
     &__title {
-        h3 {}
+		display: flex;
+		justify-content: space-between;
+        h3 {
+        	padding-inline-end: 1rem;
+        }
     }
     &__input {}
     &__input-label,
@@ -130,6 +134,11 @@
         }
     }
     /* MODIFICATION */
+}
+
+@{RTL} .search-standard {
+	&__title {}
+	&__help {}
 }
         
 /* BREAKPOINT FOR LARGE DESKTOPS */

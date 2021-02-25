@@ -32,6 +32,7 @@ import org.slf4j.LoggerFactory;
 
 import io.goobi.viewer.AbstractTest;
 import io.goobi.viewer.exceptions.ViewerConfigurationException;
+import io.goobi.viewer.model.download.DownloadOption;
 import io.goobi.viewer.model.maps.GeoMapMarker;
 import io.goobi.viewer.model.metadata.Metadata;
 import io.goobi.viewer.model.metadata.MetadataParameter;
@@ -51,6 +52,7 @@ public class ConfigurationTest extends AbstractTest {
 
     public static final String APPLICATION_ROOT_URL = "https://viewer.goobi.io/";
 
+    @Override
     @Before
     public void setUp() throws Exception {
     }
@@ -88,6 +90,15 @@ public class ConfigurationTest extends AbstractTest {
     @Test
     public void getBrowsingMenuHitsPerPage_shouldReturnCorrectValue() throws Exception {
         Assert.assertEquals(19, DataManager.getInstance().getConfiguration().getBrowsingMenuHitsPerPage());
+    }
+
+    /**
+     * @see Configuration#getBrowsingMenuIndexSizeThreshold()
+     * @verifies return correct value
+     */
+    @Test
+    public void getBrowsingMenuIndexSizeThreshold_shouldReturnCorrectValue() throws Exception {
+        Assert.assertEquals(50000, DataManager.getInstance().getConfiguration().getBrowsingMenuIndexSizeThreshold());
     }
 
     /**
@@ -1131,12 +1142,21 @@ public class ConfigurationTest extends AbstractTest {
     }
 
     /**
-     * @see Configuration#isOriginalContentDownload()
+     * @see Configuration#isOriginalContentDownloads()
      * @verifies return correct value
      */
     @Test
-    public void isDisplaySidebarWidgetDownload_shouldReturnCorrectValue() throws Exception {
-        Assert.assertEquals(true, DataManager.getInstance().getConfiguration().isDisplaySidebarWidgetDownload());
+    public void isDisplaySidebarWidgetDownloads_shouldReturnCorrectValue() throws Exception {
+        Assert.assertEquals(true, DataManager.getInstance().getConfiguration().isDisplaySidebarWidgetDownloads());
+    }
+
+    /**
+     * @see Configuration#getSidebarWidgetDownloadsIntroductionText()
+     * @verifies return correct value
+     */
+    @Test
+    public void getSidebarWidgetDownloadsIntroductionText_shouldReturnCorrectValue() throws Exception {
+        Assert.assertEquals("MASTERVALUE_DOWNLOADS_INTRO", DataManager.getInstance().getConfiguration().getSidebarWidgetDownloadsIntroductionText());
     }
 
     @Test
@@ -2571,24 +2591,6 @@ public class ConfigurationTest extends AbstractTest {
     }
 
     /**
-     * @see Configuration#isDisplaySidebarUsageWidgetLinkToJpegImage()
-     * @verifies return correct value
-     */
-    @Test
-    public void isDisplaySidebarUsageWidgetLinkToJpegImage_shouldReturnCorrectValue() throws Exception {
-        Assert.assertTrue(DataManager.getInstance().getConfiguration().isDisplaySidebarUsageWidgetLinkToJpegImage());
-    }
-
-    /**
-     * @see Configuration#isDisplaySidebarUsageWidgetLinkToTiffImage()
-     * @verifies return correct value
-     */
-    @Test
-    public void isDisplaySidebarUsageWidgetLinkToMasterImage_shouldReturnCorrectValue() throws Exception {
-        Assert.assertTrue(DataManager.getInstance().getConfiguration().isDisplaySidebarUsageWidgetLinkToMasterImage());
-    }
-
-    /**
      * @see Configuration#getMetadataFromSubnodeConfig(HierarchicalConfiguration,boolean)
      * @verifies load replace rules correctly
      */
@@ -2851,5 +2853,45 @@ public class ConfigurationTest extends AbstractTest {
     @Test
     public void isDisplayWidgetUsage_shouldReturnCorrectValue() throws Exception {
         Assert.assertFalse(DataManager.getInstance().getConfiguration().isDisplayWidgetUsage());
+    }
+
+    /**
+     * @see Configuration#getSidebarWidgetUsageIntroductionText()
+     * @verifies return correct value
+     */
+    @Test
+    public void getSidebarWidgetUsageIntroductionText_shouldReturnCorrectValue() throws Exception {
+        Assert.assertEquals("MASTERVALUE_USAGE_INTRO", DataManager.getInstance().getConfiguration().getSidebarWidgetUsageIntroductionText());
+    }
+
+    /**
+     * @see Configuration#getSidebarWidgetUsageCitationStyles()
+     * @verifies return all configured values
+     */
+    @Test
+    public void getSidebarWidgetUsageCitationStyles_shouldReturnAllConfiguredValues() throws Exception {
+        List<String> result = DataManager.getInstance().getConfiguration().getSidebarWidgetUsageCitationStyles();
+        Assert.assertEquals(3, result.size());
+    }
+
+    /**
+     * @see Configuration#getSidebarWidgetUsagePageDownloadOptions()
+     * @verifies return all configured elements
+     */
+    @Test
+    public void getSidebarWidgetUsagePageDownloadOptions_shouldReturnAllConfiguredElements() throws Exception {
+        List<DownloadOption> result = DataManager.getInstance().getConfiguration().getSidebarWidgetUsagePageDownloadOptions();
+        Assert.assertEquals(5, result.size());
+        DownloadOption option = result.get(4);
+        Assert.assertEquals("label__download_option_large_4096", option.getLabel());
+        Assert.assertEquals("jpg", option.getFormat());
+        Assert.assertEquals("4096" + DownloadOption.TIMES_SYMBOL + "4096", option.getBoxSizeLabel());
+    }
+     /** @see Configuration#getPageSelectDropdownDisplayMinPages()
+     * @verifies return correct value
+     */
+    @Test
+    public void getPageSelectDropdownDisplayMinPages_shouldReturnCorrectValue() throws Exception {
+        Assert.assertEquals(1, DataManager.getInstance().getConfiguration().getPageSelectDropdownDisplayMinPages());
     }
 }

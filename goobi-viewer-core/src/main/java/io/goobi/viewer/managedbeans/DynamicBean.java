@@ -15,32 +15,26 @@
  */
 package io.goobi.viewer.managedbeans;
 
-import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
+import java.util.Map;
 
-import javax.faces.FacesException;
-import javax.faces.application.Application;
-import javax.faces.application.Resource;
 import javax.faces.component.UIComponent;
-import javax.faces.component.UIPanel;
 import javax.faces.component.html.HtmlPanelGroup;
 import javax.faces.context.FacesContext;
 import javax.faces.view.ViewScoped;
-import javax.faces.view.facelets.FaceletContext;
 import javax.inject.Named;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import io.goobi.viewer.controller.DataManager;
+import com.rometools.rome.io.SyndFeedOutput;
+
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.model.jsf.DynamicContent;
 import io.goobi.viewer.model.jsf.DynamicContentBuilder;
 import io.goobi.viewer.model.jsf.DynamicContentType;
-import io.goobi.viewer.model.maps.GeoMap;
 
 /**
  * @author florian
@@ -130,6 +124,12 @@ public class DynamicBean implements Serializable {
         }
     }
 
+    public void receiveScriptCommand() {
+        System.out.println("Received script command");
+        Map<String, String> params = FacesContext.getCurrentInstance().
+                getExternalContext().getRequestParameterMap();
+        params.forEach( (key, value) -> System.out.println(key + ": " + value) );
+    }
 
 
 }

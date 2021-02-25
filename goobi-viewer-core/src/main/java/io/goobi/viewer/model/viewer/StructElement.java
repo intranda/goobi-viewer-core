@@ -90,6 +90,7 @@ public class StructElement extends StructElementStub implements Comparable<Struc
      * Empty constructor for unit tests.
      */
     public StructElement() {
+        super();
     }
 
     /**
@@ -396,6 +397,10 @@ public class StructElement extends StructElementStub implements Comparable<Struc
         return this.topStruct;
     }
 
+    public void setTopStruct(StructElement topStruct) {
+        this.topStruct = topStruct;
+    }
+
     /**
      * <p>
      * isGroupMember.
@@ -687,7 +692,7 @@ public class StructElement extends StructElementStub implements Comparable<Struc
      * @return
      * @throws IndexUnreachableException
      * @throws DAOException
-     * @throws RecordNotFoundException 
+     * @throws RecordNotFoundException
      */
     public boolean isAccessPermissionGenerateIiifManifest() throws IndexUnreachableException, DAOException, RecordNotFoundException {
         return isAccessPermission(IPrivilegeHolder.PRIV_GENERATE_IIIF_MANIFEST);
@@ -1049,5 +1054,14 @@ public class StructElement extends StructElementStub implements Comparable<Struc
             return logId;
         }
 
+    }
+    
+    public static StructElement create(SolrDocument solrDoc) {
+        try {
+            return new StructElement(solrDoc);
+        } catch (IndexUnreachableException e) {
+            logger.error(e.toString());
+            return null;
+        }
     }
 }

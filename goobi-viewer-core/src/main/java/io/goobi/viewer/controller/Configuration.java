@@ -46,10 +46,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import de.unigoettingen.sub.commons.contentlib.imagelib.ImageType;
-import de.unigoettingen.sub.commons.contentlib.imagelib.transform.Scale;
 import io.goobi.viewer.exceptions.ViewerConfigurationException;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.messages.ViewerResourceBundle;
+import io.goobi.viewer.model.download.DownloadOption;
 import io.goobi.viewer.model.maps.GeoMapMarker;
 import io.goobi.viewer.model.metadata.Metadata;
 import io.goobi.viewer.model.metadata.MetadataParameter;
@@ -527,6 +527,7 @@ public final class Configuration extends AbstractConfiguration {
         boolean group = sub.getBoolean("[@group]", false);
         int number = sub.getInt("[@number]", -1);
         int type = sub.getInt("[@type]", 0);
+        String citationTemplate = sub.getString("[@citationTemplate]");
         List<HierarchicalConfiguration> params = sub.configurationsAt("param");
         List<MetadataParameter> paramList = null;
         if (params != null) {
@@ -535,6 +536,7 @@ public final class Configuration extends AbstractConfiguration {
                 HierarchicalConfiguration sub2 = it2.next();
                 String fieldType = sub2.getString("[@type]");
                 String source = sub2.getString("[@source]", null);
+                String dest = sub2.getString("[@dest]", null);
                 String key = sub2.getString("[@key]");
                 String altKey = sub2.getString("[@altKey]");
                 String masterValueFragment = sub2.getString("[@value]");
@@ -585,6 +587,7 @@ public final class Configuration extends AbstractConfiguration {
 
                 paramList.add(new MetadataParameter().setType(MetadataParameterType.getByString(fieldType))
                         .setSource(source)
+                        .setDestination(dest)
                         .setKey(key)
                         .setAltKey(altKey)
                         .setMasterValueFragment(masterValueFragment)
@@ -598,7 +601,7 @@ public final class Configuration extends AbstractConfiguration {
             }
         }
 
-        return new Metadata(label, masterValue, type, paramList, group, number);
+        return new Metadata(label, masterValue, type, paramList, group, number).setCitationTemplate(citationTemplate);
     }
 
     /**
@@ -694,8 +697,17 @@ public final class Configuration extends AbstractConfiguration {
      * @should return correct value
      * @return a boolean.
      */
-    public boolean isDisplaySidebarWidgetDownload() {
+    public boolean isDisplaySidebarWidgetDownloads() {
         return getLocalBoolean("sidebar.sidebarWidgetDownloads[@visible]", false);
+    }
+
+    /**
+     * 
+     * @return
+     * @should return correct value
+     */
+    public String getSidebarWidgetDownloadsIntroductionText() {
+        return getLocalString("sidebar.sidebarWidgetDownloads[@introductionText]", "");
     }
 
     /**
@@ -723,14 +735,22 @@ public final class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * Get the metadata configuration for the license text in the usage widget
-     *
-     * @return the metadata configuration for the license text in the usage widget
+     * 
+     * @return List of available citation style names
+     * @should return all configured values
      */
-    public Metadata getWidgetUsageLicenceTextMetadata() {
+    public List<String> getSidebarWidgetUsageCitationStyles() {
+        return getLocalList("sidebar.sidebarWidgetUsage.citation.styles.style", Collections.emptyList());
+    }
+
+    /**
+     * 
+     * @return
+     */
+    public Metadata getSidebarWidgetUsageCitationSource() {
         HierarchicalConfiguration sub = null;
         try {
-            sub = getLocalConfigurationAt("sidebar.sidebarWidgetUsage.licenseText.metadata");
+            sub = getLocalConfigurationAt("sidebar.sidebarWidgetUsage.citation.source.metadata");
         } catch (IllegalArgumentException e) {
             // no or multiple occurrences 
         }
@@ -738,53 +758,39 @@ public final class Configuration extends AbstractConfiguration {
             Metadata md = getMetadataFromSubnodeConfig(sub, false);
             return md;
         }
+
         return new Metadata();
     }
 
     /**
-     * <p>
-     * isDisplaySidebarUsageWidgetLinkToJpegImage.
-     * </p>
-     *
+     * 
+     * @return
      * @should return correct value
-     * @return a boolean.
      */
-    public boolean isDisplaySidebarUsageWidgetLinkToJpegImage() {
-        return getLocalBoolean("sidebar.sidebarWidgetUsage.page.displayLinkToJpegImage", false);
+    public String getSidebarWidgetUsageIntroductionText() {
+        return getLocalString("sidebar.sidebarWidgetUsage[@introductionText]", "");
     }
 
     /**
-     * <p>
-     * isDisplaySidebarUsageWidgetLinkToMasterImage.
-     * </p>
-     *
-     * @should return correct value
-     * @return a boolean.
+     * Returns a list of configured page download options.
+     * 
+     * @return List of configured <code>DownloadOption</code> items
+     * @should return all configured elements
      */
-    public boolean isDisplaySidebarUsageWidgetLinkToMasterImage() {
-        return getLocalBoolean("sidebar.sidebarWidgetUsage.page.displayLinkToMasterImage", false);
-    }
+    public List<DownloadOption> getSidebarWidgetUsagePageDownloadOptions() {
+        List<HierarchicalConfiguration> configs = getLocalConfigurationsAt("sidebar.sidebarWidgetUsage.page.downloadOptions.option");
+        if (configs == null || configs.isEmpty()) {
+            return Collections.emptyList();
+        }
 
-    /**
-     * <p>
-     * getWidgetUsageMaxJpegSize.
-     * </p>
-     *
-     * @return a {@link java.lang.String} object.
-     */
-    public String getWidgetUsageMaxJpegSize() {
-        return getLocalString("sidebar.sidebarWidgetUsage.page.displayLinkToJpegImage[@maxSize]", Scale.MAX_SIZE);
-    }
+        List<DownloadOption> ret = new ArrayList<>(configs.size());
+        for (HierarchicalConfiguration config : configs) {
+            ret.add(new DownloadOption().setLabel(config.getString("[@label]"))
+                    .setFormat(config.getString("[@format]"))
+                    .setBoxSizeInPixel(config.getString("[@boxSizeInPixel]")));
+        }
 
-    /**
-     * <p>
-     * getWidgetUsageMaxMasterImageSize.
-     * </p>
-     *
-     * @return a {@link java.lang.String} object.
-     */
-    public String getWidgetUsageMaxMasterImageSize() {
-        return getLocalString("sidebar.sidebarWidgetUsage.page.displayLinkToMasterImage[@maxSize]", Scale.MAX_SIZE);
+        return ret;
     }
 
     /**
@@ -807,6 +813,18 @@ public final class Configuration extends AbstractConfiguration {
      */
     public boolean isBrowsingMenuEnabled() {
         return getLocalBoolean("metadata.browsingMenu.enabled", false);
+    }
+
+    /**
+     * <p>
+     * getBrowsingMenuIndexSizeThreshold.
+     * </p>
+     *
+     * @return Solr doc count threshold for browsing term calculation
+     * @should return correct value
+     */
+    public int getBrowsingMenuIndexSizeThreshold() {
+        return getLocalInt("metadata.browsingMenu.indexSizeThreshold", 100000);
     }
 
     /**
@@ -1656,7 +1674,7 @@ public final class Configuration extends AbstractConfiguration {
      * @return a {@link java.lang.String} object.
      */
     public String getOrigContentFolder() {
-        return getLocalString("origContentFolder");
+        return getLocalString("origContentFolder", "source");
     }
 
     /**
@@ -1680,7 +1698,7 @@ public final class Configuration extends AbstractConfiguration {
      * @return a {@link java.lang.String} object.
      */
     public String getAltoFolder() {
-        return getLocalString("altoFolder");
+        return getLocalString("altoFolder", "alto");
     }
 
     /**
@@ -1692,7 +1710,7 @@ public final class Configuration extends AbstractConfiguration {
      * @return a {@link java.lang.String} object.
      */
     public String getAltoCrowdsourcingFolder() {
-        return getLocalString("altoCrowdsourcingFolder");
+        return getLocalString("altoCrowdsourcingFolder", "alto_crowd");
     }
 
     /**
@@ -1704,7 +1722,7 @@ public final class Configuration extends AbstractConfiguration {
      * @return a {@link java.lang.String} object.
      */
     public String getAbbyyFolder() {
-        return getLocalString("abbyyFolder");
+        return getLocalString("abbyyFolder", "abbyy");
     }
 
     /**
@@ -1716,7 +1734,7 @@ public final class Configuration extends AbstractConfiguration {
      * @return a {@link java.lang.String} object.
      */
     public String getFulltextFolder() {
-        return getLocalString("fulltextFolder");
+        return getLocalString("fulltextFolder", "fulltext");
     }
 
     /**
@@ -1728,7 +1746,7 @@ public final class Configuration extends AbstractConfiguration {
      * @return a {@link java.lang.String} object.
      */
     public String getFulltextCrowdsourcingFolder() {
-        return getLocalString("fulltextCrowdsourcingFolder");
+        return getLocalString("fulltextCrowdsourcingFolder", "fulltext_crowd");
     }
 
     /**
@@ -1740,7 +1758,7 @@ public final class Configuration extends AbstractConfiguration {
      * @return a {@link java.lang.String} object.
      */
     public String getTeiFolder() {
-        return getLocalString("teiFolder");
+        return getLocalString("teiFolder", "tei");
     }
 
     /**
@@ -1752,7 +1770,7 @@ public final class Configuration extends AbstractConfiguration {
      * @return a {@link java.lang.String} object.
      */
     public String getCmdiFolder() {
-        return getLocalString("cmdiFolder");
+        return getLocalString("cmdiFolder", "cmdi");
     }
 
     /**
@@ -4280,6 +4298,15 @@ public final class Configuration extends AbstractConfiguration {
             }
         }
         return intList;
+    }
+    
+    /**
+     * 
+     * @return
+     * @should return correct value
+     */
+    public int getPageSelectDropdownDisplayMinPages() {
+        return getLocalInt("viewer.pageSelectDropdownDisplayMinPages", 3);
     }
 
     /**

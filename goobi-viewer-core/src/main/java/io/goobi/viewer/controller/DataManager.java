@@ -84,11 +84,11 @@ public final class DataManager {
     private String indexerVersion = "";
 
     private RestApiManager restApiManager;
-    
+
     private TimeAnalysis timing = new TimeAnalysis();
-    
+
     private FileResourceManager fileResourceManager = null;
-    
+
     private final TaskManager restApiJobManager = new TaskManager(Duration.of(7, ChronoUnit.DAYS));
 
     /**
@@ -458,7 +458,7 @@ public final class DataManager {
     public RecordLockManager getRecordLockManager() {
         return recordLockManager;
     }
-    
+
     /**
      * @return the timing
      */
@@ -471,26 +471,26 @@ public final class DataManager {
      */
     public void resetTiming() {
         this.timing = new TimeAnalysis();
-        
+
     }
-    
+
     public FileResourceManager getFileResourceManager() {
-        if(this.fileResourceManager == null) {
+        if (this.fileResourceManager == null) {
             this.fileResourceManager = createFileResourceManager();
         }
         return this.fileResourceManager;
     }
-    
+
     private FileResourceManager createFileResourceManager() {
-        if(FacesContext.getCurrentInstance() != null) {            
+        if (FacesContext.getCurrentInstance() != null) {
             ServletContext servletContext = (ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext();
             String themeName = getConfiguration().getTheme();
             return new FileResourceManager(servletContext, themeName);
-        } else {
-            throw new IllegalStateException("Must be called from within faces context");
         }
+
+        throw new IllegalStateException("Must be called from within faces context");
     }
-    
+
     /**
      * @return the restApiJobManager
      */

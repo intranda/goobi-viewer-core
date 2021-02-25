@@ -62,12 +62,10 @@ public class PdfHandlerTest {
     public void test() {
         String pi = "1234";
         Optional<String> divId = Optional.ofNullable("LOG_0003");
-        Optional<String> watermarkId = Optional.ofNullable("footerId");
-        Optional<String> watermarkText = Optional.ofNullable("watermark text");
         Optional<String> label = Optional.ofNullable("output-filename.pdf");
 
-        String url = handler.getPdfUrl(pi, divId, watermarkId, watermarkText, label);
+        String url = handler.getPdfUrl(pi, divId, label);
         Assert.assertEquals(ConfigurationTest.APPLICATION_ROOT_URL
-                + "api/v1/records/1234/sections/LOG_0003/pdf/?watermarkText=watermark+text&watermarkId=footerId", url);
+                + "api/v1/records/1234/sections/LOG_0003/pdf/", url);
     }
 }

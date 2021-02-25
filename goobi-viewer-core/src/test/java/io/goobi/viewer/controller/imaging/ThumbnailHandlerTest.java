@@ -43,8 +43,10 @@ import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.SolrConstants;
 import io.goobi.viewer.controller.SolrConstants.DocType;
 import io.goobi.viewer.controller.SolrConstants.MetadataGroupType;
+import io.goobi.viewer.controller.StringTools;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
+import io.goobi.viewer.model.cms.CMSMediaItem;
 import io.goobi.viewer.model.viewer.PhysicalElement;
 import io.goobi.viewer.model.viewer.StructElement;
 
@@ -118,7 +120,7 @@ public class ThumbnailHandlerTest extends AbstractTest {
                 urlBox);
 
         String urlFraction = handler.getFullImageUrl(page, new Scale.ScaleToFraction(0.5));
-        Assert.assertEquals("/api/v1/records/1234/files/images/00000001.tif/full/pct%3A50/0/default.tif",
+        Assert.assertEquals("/api/v1/records/1234/files/images/00000001.tif/full/pct:50/0/default.tif",
                 urlFraction);
     }
 
@@ -198,7 +200,7 @@ public class ThumbnailHandlerTest extends AbstractTest {
         StructElement doc = new StructElement(1, solrDoc);
 
         String url = handler.getThumbnailUrl(doc, 200, 300);
-        Assert.assertEquals("/api/v1/image/-/http:U002FU002FexternalU002FiiifU002FimageU002F00000001.tif/full/!200,300/0/default.jpg", url);
+        Assert.assertEquals("/api/v1/images/external/http:U002FU002FexternalU002FiiifU002FimageU002F00000001.tif/full/!200,300/0/default.jpg", url);
     }
 
     @Test
@@ -246,6 +248,29 @@ public class ThumbnailHandlerTest extends AbstractTest {
 
         String thumbUrlV1 = ThumbnailHandler.getCMSMediaImageApiUrl(filename, currentApiUrl);
         assertEquals(currentApiUrl + ApiUrls.CMS_MEDIA + ApiUrls.CMS_MEDIA_FILES_FILE.replace("{filename}", filename), thumbUrlV1);
+    }
+    
+    @Test
+    public void testCMSMediaThumbnailUrl() throws UnsupportedEncodingException {
+
+        String currentApiUrl = "https://viewer.goobi.io/api/v1";
+
+        String filename = "image 01.jpg";
+        String escFilename = StringTools.encodeUrl(filename); 
+
+        CMSMediaItem item = new CMSMediaItem();
+        item.setFileName(filename);
+        
+        String thumbUrlV1 = handler.getThumbnailUrl(item, 100, 200);
+        thumbUrlV1 = thumbUrlV1.replaceAll("\\?.*", "");
+        String iiifPath = ApiUrls.CMS_MEDIA_FILES_FILE_IMAGE_IIIF
+                .replace("{region}", "full")
+                .replace("{size}", "!100,200")
+                .replace("{rotation}", "0")
+                .replace("{quality}", "default")
+                .replace("{format}", "jpg");
+                assertEquals(currentApiUrl + ApiUrls.CMS_MEDIA + 
+                ApiUrls.CMS_MEDIA_FILES_FILE.replace("{filename}", escFilename) + iiifPath, thumbUrlV1);
     }
 
 }

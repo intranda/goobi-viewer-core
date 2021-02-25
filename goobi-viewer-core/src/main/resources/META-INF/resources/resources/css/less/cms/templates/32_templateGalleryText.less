@@ -1,0 +1,57 @@
+/* ==============================================================
+   CMS Template "Gallery with Text"
+   style declarations for cms_template_32_GalleryText.xhtml
+   ==============================================================*/
+.tpl-gallery-text {
+    margin-bottom: 2rem;
+}
+/* GALLERY */
+.tpl-gallery-text__gallery {
+    display: flex;
+    flex-wrap: wrap;
+    margin-bottom: 2rem;
+    display: -webkit-box;
+    display: -moz-box;
+    display: -ms-flexbox;
+    display: -webkit-flex;
+}
+.tpl-gallery-text__gallery-item {
+    background-image: none;
+    background-size: auto;
+	margin: 5px;
+	color: white;
+	font-weight: bold;
+	font-size: 1.5em;
+	text-align: center;
+	-ms-flex: 1 0 50%;
+	-webkit-flex: 1 0 50%;
+	flex: 1 0 50%;
+	height: auto;
+	background-size: 100% 100%;
+	max-width: calc(50% - 10px);
+    a {
+       display: block;
+       height: 100%;
+//       border: 1px solid black;  
+    }
+    &:before{ 
+    	content:'';
+    	float:left;
+    	padding-top:100%;}
+	}
+
+
+/* TEXT */
+	.custom-tpl-gallery-text__text {}
+
+/* BREAKPOINT FOR LARGE DESKTOPS */
+@media screen and (max-width: @largeBreakpoint) {}
+
+/* BREAKPOINT FOR DESKTOPS */
+@media screen and (max-width: @mediumBreakpoint) {}
+
+/* BREAKPOINT FOR TABLETS */
+@media screen and (max-width: @smallBreakpoint) {}
+
+/* BREAKPOINT FOR SMARTPHONES */
+@media screen and (max-width: @xSmallBreakpoint) {}

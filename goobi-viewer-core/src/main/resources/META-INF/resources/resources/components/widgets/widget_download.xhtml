@@ -1,5 +1,6 @@
-<ui:composition xmlns="http://www.w3.org/1999/xhtml" 
-    xmlns:f="http://xmlns.jcp.org/jsf/core" 
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:f="http://xmlns.jcp.org/jsf/core"
+    xmlns:fn="http://java.sun.com/jsp/jstl/functions"
     xmlns:h="http://xmlns.jcp.org/jsf/html"
     xmlns:ui="http://xmlns.jcp.org/jsf/facelets" 
     xmlns:composite="http://xmlns.jcp.org/jsf/composite">
@@ -11,6 +12,13 @@
 			<div id="widgetDownload" class="widget">
 	    	    <h:form id="widgetDownloadForm">
 					<h3>#{msg.downloads}</h3>
+					
+					<!-- INTRODUCTION TEXT -->
+					<ui:fragment rendered="#{fn:length(configurationBean.sidebarWidgetDownloadsIntroductionText) > 0}">
+                        <p id="introductionText" class="widget-download__license-text">
+                            <h:outputText value="#{msg[configurationBean.sidebarWidgetDownloadsIntroductionText]}" escape="false" />
+                        </p>
+                    </ui:fragment>
 						
 					<ul>
 						<ui:repeat value="#{activeDocumentBean.viewManager.contentDownloadLinksForWork}" var="link">

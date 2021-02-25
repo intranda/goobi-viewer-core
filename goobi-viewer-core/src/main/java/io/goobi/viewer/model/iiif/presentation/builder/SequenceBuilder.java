@@ -135,9 +135,9 @@ public class SequenceBuilder extends AbstractBuilder {
         for (int i = pageLoader.getFirstPageOrder(); i <= pageLoader.getLastPageOrder(); ++i) {
             PhysicalElement page = pageLoader.getPage(i);
 
-            Canvas canvas = generateCanvas(doc, page);
+            Canvas canvas = generateCanvas(doc.getPi(), page);
             if (canvas != null && getBuildMode().equals(BuildMode.IIIF)) {
-                addSeeAlsos(canvas, doc, page);
+                addSeeAlsos(canvas, page);
                 Map<AnnotationType, AnnotationList> content = addOtherContent(doc, page, canvas, false);
 
                 merge(annotationMap, content);
@@ -178,11 +178,11 @@ public class SequenceBuilder extends AbstractBuilder {
      * @throws java.net.URISyntaxException if any.
      * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
      */
-    public void addSeeAlsos(Canvas canvas, StructElement doc, PhysicalElement page) throws URISyntaxException, ViewerConfigurationException {
+    public void addSeeAlsos(Canvas canvas, PhysicalElement page) throws URISyntaxException, ViewerConfigurationException {
 
         this.getSeeAlsos().forEach(link -> {
             try {
-                URI id = getCanvasLinkingPropertyUri(page, doc, link.target);
+                URI id = getCanvasLinkingPropertyUri(page, link.target);
                 if (id != null) {
                     canvas.addSeeAlso(link.getLinkingContent(id));
                 }
@@ -197,11 +197,11 @@ public class SequenceBuilder extends AbstractBuilder {
      * @param canvas
      * @throws URISyntaxException
      */
-    public void addRenderings(PhysicalElement page, StructElement doc, Canvas canvas) throws URISyntaxException {
+    public void addRenderings(PhysicalElement page, Canvas canvas) throws URISyntaxException {
 
         this.getRenderings().forEach(link -> {
             try {
-                URI id = getCanvasLinkingPropertyUri(page, doc, link.target);
+                URI id = getCanvasLinkingPropertyUri(page, link.target);
                 if (id != null) {
                     canvas.addRendering(link.getLinkingContent(id));
                 }
@@ -310,20 +310,20 @@ public class SequenceBuilder extends AbstractBuilder {
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      */
-    public Canvas generateCanvas(StructElement doc, PhysicalElement page)
+    public Canvas generateCanvas(String pi, PhysicalElement page)
             throws URISyntaxException, ViewerConfigurationException, IndexUnreachableException, PresentationException {
-        if (doc == null || page == null) {
+        if (pi == null || page == null) {
             return null;
         }
-        URI canvasId = getCanvasURI(doc.getPi(), page.getOrder());
+        URI canvasId = getCanvasURI(pi, page.getOrder());
         Canvas canvas = new Canvas(canvasId);
         canvas.setLabel(new SimpleMetadataValue(page.getOrderLabel()));
         canvas.addThumbnail(new ImageContent(new URI(imageDelivery.getThumbs().getThumbnailUrl(page))));
 
-        Sequence parent = new Sequence(getSequenceURI(doc.getPi(), null));
+        Sequence parent = new Sequence(getSequenceURI(pi, null));
         canvas.addWithin(parent);
 
-        addRenderings(page, doc, canvas);
+        addRenderings(page, canvas);
 
         if (!getBuildMode().equals(BuildMode.THUMBS)) {
             Dimension size = getSize(page);
@@ -376,7 +376,7 @@ public class SequenceBuilder extends AbstractBuilder {
      * @param link
      * @throws URISyntaxException
      */
-    private URI getCanvasLinkingPropertyUri(PhysicalElement page, StructElement doc, LinkingProperty.LinkingTarget target) throws URISyntaxException {
+    private URI getCanvasLinkingPropertyUri(PhysicalElement page, LinkingProperty.LinkingTarget target) throws URISyntaxException {
         if (target.equals(LinkingTarget.PLAINTEXT) && StringUtils.isAllBlank(page.getFulltextFileName(), page.getAltoFileName())) {
             return null;
         }
@@ -399,7 +399,7 @@ public class SequenceBuilder extends AbstractBuilder {
                 uri = this.urls.path(RECORDS_FILES, RECORDS_FILES_PLAINTEXT).params(page.getPi(), page.getFileName("txt")).buildURI();
                 break;
             case PDF:
-                uri = URI.create(imageDelivery.getPdf().getPdfUrl(doc, page));
+                uri = URI.create(imageDelivery.getPdf().getPdfUrl(null, page));
         }
         return uri;
     }

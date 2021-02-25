@@ -54,6 +54,7 @@ import de.unigoettingen.sub.commons.util.PathConverter;
 import io.goobi.viewer.api.rest.AbstractApiUrlManager;
 import io.goobi.viewer.api.rest.bindings.ViewerRestServiceBinding;
 import io.goobi.viewer.api.rest.resourcebuilders.TextResourceBuilder;
+import io.goobi.viewer.api.rest.v1.records.media.RecordsFilesImageResource;
 import io.goobi.viewer.controller.DataFileTools;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.StringTools;
@@ -136,6 +137,10 @@ public class RecordFileResource {
         return builder.getFulltextAsTEI(pi, filename);
     }
 
+    /**
+     *@deprecated use {@link RecordsFilesImageResource#getPdf()} instead
+     */
+    @Deprecated
     @GET
     @javax.ws.rs.Path(RECORDS_FILES_PDF)
     @Produces({ "application/pdf" })

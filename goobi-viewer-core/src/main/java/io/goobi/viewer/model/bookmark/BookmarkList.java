@@ -96,7 +96,7 @@ public class BookmarkList implements Serializable {
     private Boolean isPublic = false;
 
     @Column(name = "share_key", unique = true)
-    public String shareKey;
+    private String shareKey;
 
     @OneToMany(mappedBy = "bookmarkList", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @PrivateOwned
@@ -694,7 +694,13 @@ public class BookmarkList implements Serializable {
      * @return a {@link java.lang.String} object.
      */
     public String getIIIFCollectionURI() {
-        return DataManager.getInstance().getConfiguration().getRestApiUrl() + "bookmarks/key/" + getShareKey() + "/";
+        if(StringUtils.isNotBlank(getShareKey())) {            
+            return DataManager.getInstance().getRestApiManager().getDataApiManager()
+                    .map(urls -> urls.path(ApiUrls.USERS_BOOKMARKS, ApiUrls.USERS_BOOKMARKS_LIST_SHARED_IIIF).params(getShareKey()).build())
+                    .orElse(DataManager.getInstance().getConfiguration().getRestApiUrl() + "bookmarks/key/" + getShareKey() + "/");
+        } else {
+            return null;
+        }
     }
 
     /**

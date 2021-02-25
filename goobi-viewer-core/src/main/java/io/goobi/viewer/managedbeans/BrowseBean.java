@@ -40,6 +40,7 @@ import de.unigoettingen.sub.commons.contentlib.exceptions.IllegalRequestExceptio
 import io.goobi.viewer.controller.AlphanumCollatorComparator;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.SolrConstants;
+import io.goobi.viewer.controller.SolrConstants.DocType;
 import io.goobi.viewer.controller.SolrSearchIndex;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
@@ -402,9 +403,14 @@ public class BrowseBean implements Serializable {
                 throw new RedirectException("");
             }
 
+            String useFilterQuery = "";
+            if (StringUtils.isNotEmpty(filterQuery)) {
+                useFilterQuery += " +(" + filterQuery + ")";
+            }
+
             // Populate the list of available starting characters with ones that actually exist in the complete terms list
             if (availableStringFilters.get(browsingMenuField) == null) {
-                terms = SearchHelper.getFilteredTerms(currentBmfc, "", filterQuery, 0, 0, new BrowseTermComparator(locale),
+                terms = SearchHelper.getFilteredTerms(currentBmfc, "", useFilterQuery, 0, 0, new BrowseTermComparator(locale),
                         DataManager.getInstance().getConfiguration().isAggregateHits());
                 if (availableStringFilters.get(browsingMenuField) == null || filterQuery != null) {
                     logger.trace("Populating search term filters for field '{}'...", browsingMenuField);
@@ -446,7 +452,7 @@ public class BrowseBean implements Serializable {
                 throw new RedirectException("");
             }
 
-            hitsCount = SearchHelper.getFilteredTermsCount(currentBmfc, currentStringFilter, filterQuery);
+            hitsCount = SearchHelper.getFilteredTermsCount(currentBmfc, currentStringFilter, useFilterQuery);
             if (hitsCount == 0) {
                 resetTerms();
                 return "searchTermList";
@@ -466,12 +472,11 @@ public class BrowseBean implements Serializable {
 
             // Get terms for the current page 
             logger.trace("Fetching terms for page {} ({} - {})", currentPage, start, end - 1);
-            terms = SearchHelper.getFilteredTerms(currentBmfc, currentStringFilter, filterQuery, 0, SolrSearchIndex.MAX_HITS,
-                    new BrowseTermComparator(locale),
-                    DataManager.getInstance().getConfiguration().isAggregateHits());
+            terms = SearchHelper.getFilteredTerms(currentBmfc, currentStringFilter, useFilterQuery, 0, SolrSearchIndex.MAX_HITS,
+                    new BrowseTermComparator(locale), DataManager.getInstance().getConfiguration().isAggregateHits());
 
             for (int i = start; i < end; ++i) {
-                if(i >= terms.size()) {
+                if (i >= terms.size()) {
                     //filtered queries may return less results than max (why? SearchHelper.getFilteredTermsCount should already account for filtering)
                     break;
                 }
@@ -846,10 +851,11 @@ public class BrowseBean implements Serializable {
      * @throws ViewerConfigurationException
      * @throws DAOException
      * @throws RecordDeletedException
-     * @throws RecordLimitExceededException 
+     * @throws RecordLimitExceededException
      */
     public String openWorkInTargetCollection()
-            throws IndexUnreachableException, PresentationException, RecordDeletedException, DAOException, ViewerConfigurationException, RecordLimitExceededException {
+            throws IndexUnreachableException, PresentationException, RecordDeletedException, DAOException, ViewerConfigurationException,
+            RecordLimitExceededException {
         if (StringUtils.isBlank(getTargetCollection())) {
             return null;
         }

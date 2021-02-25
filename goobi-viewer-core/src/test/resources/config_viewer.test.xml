@@ -224,11 +224,6 @@
 	</epub>
 
 	<viewer>
-		<!--zoomImageView and zoomFullscreenView: define the different viewer options 
-			for the standard view and fullscreen view, respecively. Possibilities for 
-			the "type" attribute are: classic and openlayers "Width" and "height" attributes 
-			define the size of the image display, in pixel set the attribute "tileImage" 
-			to true to use tiled images if possible (only possible when type=openlayers) -->
 
 		<pageBrowse>
 			<enabled>true</enabled>
@@ -236,11 +231,17 @@
 			<pageBrowseStep>5</pageBrowseStep>
 			<pageBrowseStep>10</pageBrowseStep>
 		</pageBrowse>
+		
+		<!-- pageSelectDropdownDisplayMinPages: Minimum number of pages a record needs to possess in order for the drop-down to be displayed. Default is 3. -->
+        <pageSelectDropdownDisplayMinPages>1</pageSelectDropdownDisplayMinPages>
 
 		<doublePageMode>
 			<enabled>true</enabled>
 		</doublePageMode>
-
+		
+        <!--zoomImageView and zoomFullscreenView: define the different viewer options for the standard view and fullscreen view, respecively. Possibilities for
+            the "type" attribute are: classic and openlayers "Width" and "height" attributes define the size of the image display, in pixel set the attribute "tileImage"
+            to true to use tiled images if possible (only possible when type=openlayers) -->
 		<zoomImageView type="classic" tileImage="true"
 			footerHeight="50">
 			<useFor>
@@ -758,6 +759,10 @@
 				per page -->
 			<hitsPerPage>19</hitsPerPage>
 			
+            <!-- If the number of relevant Solr docs exceeds the configured number, faceting will be used for term browsing
+                (which may break correct sorting but improve performance). Default is 100k. -->
+            <indexSizeThreshold>50000</indexSizeThreshold>
+			
             <sorting>
                 <!-- ignoreLeadingChars: All leading characters to be ignored when comparing browsing terms.
                     If empty, only the first non-alphanumeric char will be removed. -->
@@ -943,7 +948,7 @@
 		<!-- sidebarWidgetDownloads: If true, the download widget within a records 
 			view for additional files from the source directory is displayed. Default 
 			is true. -->
-		<sidebarWidgetDownloads visible="true">
+		<sidebarWidgetDownloads visible="true" introductionText="MASTERVALUE_DOWNLOADS_INTRO">
 	
 			<!-- hideFileRegex: If a regular expression is defined, files matching 
 				it are hidden from the widget display. The download is still possible. -->
@@ -956,19 +961,35 @@
         <!-- sidebarBrowsingTerms: If true, the sidebar RSS widget it displayed. Default is true. -->
         <sidebarRssFeed display="false" />
 
-        <sidebarWidgetUsage display="false">
-                <licenseText>
+        <sidebarWidgetUsage display="false" introductionText="MASTERVALUE_USAGE_INTRO">
+            <page>
+                <downloadOptions>
+                <!-- Each option contains a label and a format. The label is translated via the messages. 
+                    The format can take the values supported by the ContentServer, for example "pdf", "tif", 
+                    "jpg" or "png". If the static string "MASTER" is used, the format is dynamically set to 
+                    the format of the master image. The attribute boxSizeInPixel specifies the size of a box 
+                    in pixels into which the image is scaled while maintaining the aspect ratio. -->
+                    <option label="Master" format="MASTER" boxSizeInPixel="max"/>
+                    <option label="label__download_option_preview_150" format="jpg" boxSizeInPixel="150" />
+                    <option label="label__download_option_small_1024" format="jpg" boxSizeInPixel="1024" />
+                    <option label="label__download_option_medium_2048" format="jpg" boxSizeInPixel="2048" />
+                    <option label="label__download_option_large_4096" format="jpg" boxSizeInPixel="4096" />
+                </downloadOptions>
+            </page>
+            <citation>
+                <!-- Available citation styles (supported by citeproc) -->
+                <styles>
+                    <style>modern-language-association</style>
+                    <style>apa</style>
+                    <style>harvard</style>
+                </styles>
+                <source>
                     <metadata label="MD_LICENSETEXT" value="MASTERVALUE_LICENSETEXT">
                         <param type="field" key="LABEL" />
                         <param type="translatedfield" key="ACCESSCONDITION" />
                     </metadata>
-                </licenseText>
-                <page>
-                    <!-- displayLinkToJpegImage: Enables JPEG image download links for pages. Default is false.  -->
-                    <displayLinkToJpegImage maxSize="2000">true</displayLinkToJpegImage>
-                    <!-- displayLinkToJpegImage: Enables TIFF image download links for pages. Default is false.  -->
-                    <displayLinkToMasterImage maxSize="max">true</displayLinkToMasterImage>
-                </page>
+                </source>
+            </citation>
         </sidebarWidgetUsage>
 
 		<!-- page: if false, the image view is hidden -->

@@ -34,6 +34,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
 import javax.servlet.http.HttpServletRequest;
@@ -543,14 +544,16 @@ public final class SearchHelper {
     }
 
     /**
-     * Returns a Map with hierarchical values from the given field and their respective record counts.
+     * Returns a Map with hierarchical values from the given field and their respective record counts. Results are filtered by AccessConditions
+     * available for current HttpRequest
      *
-     * @param luceneField a {@link java.lang.String} object.
-     * @param facetField a {@link java.lang.String} object.
-     * @param filterQuery An addition solr-query to filer collections by
+     * @param luceneField the SOLR field over which to build the collections (typically "DC")
+     * @param facetField a SOLR field which values should be recorded for each collection. Values are written into
+     *            {@link CollectionResult#getFacetValues()}. Used for grouping service of IIIF collections
+     * @param filterQuery An addition solr-query to filer collections by.
      * @param filterForWhitelist a boolean.
      * @param filterForBlacklist a boolean.
-     * @param splittingChar a {@link java.lang.String} object.
+     * @param splittingChar Character used for separating collection hierarchy levels within a collection name (typically ".")
      * @should find all collections
      * @return a {@link java.util.Map} object.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
@@ -559,6 +562,9 @@ public final class SearchHelper {
             boolean filterForWhitelist, boolean filterForBlacklist, String splittingChar) throws IndexUnreachableException {
         logger.trace("findAllCollectionsFromField: {}", luceneField);
         Map<String, CollectionResult> ret = new HashMap<>();
+        if (StringUtils.isBlank(splittingChar)) {
+            throw new IllegalArgumentException("Splitting char may not be empty. Check configuration for collection field " + luceneField);
+        }
         try {
             StringBuilder sbQuery = new StringBuilder();
             if (StringUtils.isNotBlank(filterQuery)) {
@@ -578,59 +584,58 @@ public final class SearchHelper {
             // Iterate over record hits instead of using facets to determine the size of the parent collections
             {
                 logger.trace("query: {}", sbQuery.toString());
-                List<String> fieldList = new ArrayList<>();
-                fieldList.add(luceneField);
-                if (facetField != null) {
-                    fieldList.add(facetField);
-                }
-                SolrDocumentList results =
-                        DataManager.getInstance().getSearchIndex().search(sbQuery.toString(), fieldList);
-                //                logger.trace("query done");
-                for (SolrDocument doc : results) {
-                    Set<String> dcDoneForThisRecord = new HashSet<>();
-                    Collection<Object> mdList = doc.getFieldValues(luceneField);
-                    if (mdList == null) {
-                        continue;
-                    }
-                    for (Object o : mdList) {
-                        String dc = SolrSearchIndex.getAsString(o);
-                        if (StringUtils.isBlank(dc)) {
-                            continue;
-                        }
-                        {
-                            CollectionResult result = ret.get(dc);
-                            if (result == null) {
-                                result = new CollectionResult(dc);
-                                ret.put(dc, result);
-                            }
-                            result.incrementCount();
-                            if (StringUtils.isNotBlank(facetField)) {
-                                result.addFacetValues(doc.getFieldValues(facetField));
-                            }
-                            dcDoneForThisRecord.add(dc);
-                        }
 
-                        if (dc.contains(splittingChar)) {
-                            String parent = dc;
-                            while (parent.lastIndexOf(splittingChar) != -1) {
-                                parent = parent.substring(0, parent.lastIndexOf(splittingChar));
-                                if (!dcDoneForThisRecord.contains(parent)) {
-                                    CollectionResult result = ret.get(parent);
-                                    if (result == null) {
-                                        result = new CollectionResult(parent);
-                                        ret.put(parent, result);
-                                    }
-                                    result.incrementCount();
-                                    if (StringUtils.isNotBlank(facetField)) {
-                                        result.addFacetValues(doc.getFieldValues(facetField));
-                                    }
-                                    dcDoneForThisRecord.add(parent);
-                                }
+                QueryResponse response = DataManager.getInstance()
+                        .getSearchIndex()
+                        .searchFacetsAndStatistics(sbQuery.toString(), null, Collections.singletonList(luceneField), 1, false);
+                FacetField facetResults = response.getFacetField(luceneField);
+
+                for (Count count : facetResults.getValues()) {
+                    String dc = count.getName();
+
+                    CollectionResult result = ret.get(dc);
+                    if (result == null) {
+                        result = new CollectionResult(dc);
+                        ret.put(dc, result);
+                    }
+                    result.incrementCount(count.getCount());
+
+                    if (dc.contains(splittingChar)) {
+                        String parent = dc;
+                        while (parent.lastIndexOf(splittingChar) != -1) {
+                            parent = parent.substring(0, parent.lastIndexOf(splittingChar));
+                            CollectionResult parentCollection = ret.get(parent);
+                            if (parentCollection == null) {
+                                parentCollection = new CollectionResult(parent);
+                                ret.put(parent, parentCollection);
                             }
+                            parentCollection.incrementCount(count.getCount());
                         }
                     }
                 }
             }
+
+            //Add facet (grouping) field values
+            if (StringUtils.isNotBlank(facetField)) {
+                for (String collectionName : ret.keySet()) {
+                    //query all results from above filtered for this collection and subcollections
+                    String collectionFilterQuery = "+($1:$2 $1:$2.*)".replace("$1", luceneField).replace("$2", collectionName);
+                    String query = sbQuery.toString() + " " + collectionFilterQuery;
+
+                    QueryResponse response = DataManager.getInstance()
+                            .getSearchIndex()
+                            .searchFacetsAndStatistics(query, null, Collections.singletonList(facetField), 1, false);
+                    FacetField facetResults = response.getFacetField(facetField);
+
+                    CollectionResult collectionResult = ret.get(collectionName);
+                    collectionResult.setFacetValues(facetResults.getValues()
+                            .stream()
+                            .map(Count::getName)
+                            .filter(v -> !v.startsWith("#1;") && !v.startsWith("\\u0001") && !v.startsWith("\u0001"))
+                            .collect(Collectors.toSet()));
+                }
+            }
+
         } catch (PresentationException e) {
             logger.debug("PresentationException thrown here: {}", e.getMessage());
         }
@@ -1602,12 +1607,18 @@ public final class SearchHelper {
             params.put(GroupParams.GROUP_FIELD, SolrConstants.GROUPFIELD);
         }
 
-        // Facets
-        if (rows == 0) {
+        if (logger.isTraceEnabled()) {
+            logger.trace("row count: {}", DataManager.getInstance().getSearchIndex().getHitCount(query, filterQueries));
+        }
+
+        // Faceting (no rows requested or expected row count too high)
+        if (rows == 0 || DataManager.getInstance().getSearchIndex().getHitCount(query, filterQueries) > DataManager.getInstance()
+                .getConfiguration()
+                .getBrowsingMenuIndexSizeThreshold()) {
             return DataManager.getInstance().getSearchIndex().searchFacetsAndStatistics(query, filterQueries, facetFields, 1, startsWith, false);
         }
 
-        // Docs
+        // Docs (required for correct mapping of sorting vs displayed term names, but may time out if doc count is too high)
         return DataManager.getInstance().getSearchIndex().search(query, start, rows, sortFields, facetFields, fields, filterQueries, params);
     }
 
@@ -1632,7 +1643,9 @@ public final class SearchHelper {
         String pi = (String) doc.getFieldValue(SolrConstants.PI_TOPSTRUCT);
         String sortTerm = (String) doc.getFieldValue(bmfc.getSortField());
         Set<String> usedTermsInCurrentDoc = new HashSet<>();
+        int count = -1;
         for (Object o : termList) {
+            count++;
             String term = String.valueOf(o);
             if (StringUtils.isEmpty(term)) {
                 continue;
@@ -1644,7 +1657,7 @@ public final class SearchHelper {
             }
 
             String compareTerm = term;
-            if (StringUtils.isNotEmpty(sortTerm)) {
+            if (StringUtils.isNotEmpty(sortTerm) && count == 0) {
                 compareTerm = sortTerm;
             }
             if (StringUtils.isNotEmpty(DataManager.getInstance().getConfiguration().getBrowsingMenuSortingIgnoreLeadingChars())) {
@@ -1890,11 +1903,23 @@ public final class SearchHelper {
      * </p>
      *
      * @param fieldName a {@link java.lang.String} object.
-     * @should sortify correctly
      * @return a {@link java.lang.String} object.
+     * @should sortify correctly
      */
     public static String sortifyField(String fieldName) {
         return adaptField(fieldName, "SORT_");
+    }
+
+    /**
+     * <p>
+     * boolifyField.
+     * </p>
+     *
+     * @param fieldName a {@link java.lang.String} object.
+     * @return a {@link java.lang.String} object.
+     */
+    public static String boolifyField(String fieldName) {
+        return adaptField(fieldName, "BOOL_");
     }
 
     /**
@@ -1929,6 +1954,13 @@ public final class SearchHelper {
             case SolrConstants.DOCSTRCT_SUB:
             case SolrConstants.DOCSTRCT_TOP:
                 return prefix + fieldName;
+            case SolrConstants._CALENDAR_YEAR:
+            case SolrConstants._CALENDAR_MONTH:
+            case SolrConstants._CALENDAR_DAY:
+                if ("SORT_".equals(prefix)) {
+                    return "SORTNUM_" + fieldName;
+                }
+                return prefix + fieldName;
             default:
                 if (StringUtils.isNotEmpty(prefix)) {
                     if (fieldName.startsWith("MD_")) {
@@ -1936,7 +1968,11 @@ public final class SearchHelper {
                     } else if (fieldName.startsWith("MD2_")) {
                         fieldName = fieldName.replace("MD2_", prefix);
                     } else if (fieldName.startsWith("MDNUM_")) {
-                        fieldName = fieldName.replace("MDNUM_", prefix);
+                        if ("SORT_".equals(prefix)) {
+                            fieldName = fieldName.replace("MDNUM_", "SORTNUM_");
+                        } else {
+                            fieldName = fieldName.replace("MDNUM_", prefix);
+                        }
                     } else if (fieldName.startsWith("NE_")) {
                         fieldName = fieldName.replace("NE_", prefix);
                     } else if (fieldName.startsWith("BOOL_")) {
@@ -2340,7 +2376,7 @@ public final class SearchHelper {
             request = BeanUtils.getRequest();
         }
         if (request == null) {
-            return null;
+            return "";
         }
         HttpSession session = request.getSession(false);
         if (session == null) {
@@ -2578,4 +2614,5 @@ public final class SearchHelper {
         return AGGREGATION_QUERY_PREFIX + "+(ISWORK:true ISANCHOR:true DOCTYPE:UGC)" + " +" + SolrConstants.ACCESSCONDITION + ":\"" + accessCondition
                 + "\"";
     }
+
 }

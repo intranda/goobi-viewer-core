@@ -29,7 +29,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 @Schema(name="SolrRequestParameters", description="SOLR query and additional parameters", requiredProperties= {"query"})
 public class RecordsRequestParameters {
 
-    @Schema(description = "Raw SOLR query", example="ISWORK:true")
+    @Schema(description = "Raw SOLR query", example="+ISWORK:true +DOCSTRCT:monograph +(FACET_PLACEPUBLISH:Berlin FACET_PLACEPUBLISH:'New York')")
     public String query;
     @Schema(description = "A string list of SOLR field names which should be included in the response, allows wildcards", example="[\"PI*\",\"IDDOC\",\"DOCTYPE\",\"DOCSTRCT\",\"LABEL\"]")
     public List<String> resultFields = new ArrayList<>();
@@ -49,5 +49,7 @@ public class RecordsRequestParameters {
     public String language = "";
     @Schema(description = "Set to 'true' to include all child documents (sections, pages) that match the query. Child documents are appended in the 'children' property", example="false")
     public boolean includeChildHits = false;
+    @Schema(description = "A list of SOLR field names to get facet results for", example="[\"DC\",\"DOCSTRCT\"]")
+    public List<String> facetFields = new ArrayList<>();
 
 }

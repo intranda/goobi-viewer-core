@@ -286,7 +286,7 @@ var viewerJS = (function () {
      
 		viewer.initialized.next();
 		viewer.initialized.complete();
-		
+		viewer.setCheckedStatus();
 	// EOL viewerJS function
     };
     
@@ -399,6 +399,19 @@ var viewerJS = (function () {
 
             var filter = new viewerJS.listFilter(filterConfig);
         });
+    }
+    
+    //for all html elements with attribute "data-checked" add the "checked" attribute - or remove it if the value of "data-checked" is "false"
+    viewer.setCheckedStatus = function() {
+    	$("[data-checked]").each( (index, element) => {
+    		let checked = element.getAttribute("data-checked");
+    		if(checked == "false") {
+    			element.removeAttribute("checked");
+    		} else {
+    			element.setAttribute("checked", null);
+    		}
+    		
+    	});
     }
     
     viewer.getRestApiUrl = function () {

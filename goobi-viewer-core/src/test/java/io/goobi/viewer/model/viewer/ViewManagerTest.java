@@ -15,7 +15,12 @@
  */
 package io.goobi.viewer.model.viewer;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+
+import java.awt.Dimension;
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
@@ -24,6 +29,7 @@ import javax.faces.context.FacesContext;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.Mockito;
 
 import io.goobi.viewer.AbstractDatabaseAndSolrEnabledTest;
 import io.goobi.viewer.TestUtils;
@@ -36,7 +42,9 @@ import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.exceptions.ViewerConfigurationException;
 import io.goobi.viewer.managedbeans.ImageDeliveryBean;
+import io.goobi.viewer.model.download.DownloadOption;
 import io.goobi.viewer.model.viewer.pageloader.EagerPageLoader;
+import io.goobi.viewer.model.viewer.pageloader.IPageLoader;
 
 public class ViewManagerTest extends AbstractDatabaseAndSolrEnabledTest {
 
@@ -198,7 +206,7 @@ public class ViewManagerTest extends AbstractDatabaseAndSolrEnabledTest {
         viewManager.setFirstPdfPage("14");
         viewManager.setLastPdfPage("16");
         String url = viewManager.getPdfPartDownloadLink();
-        String expect = "records/" + PI_KLEIUNIV + "/files/pdf/00000014.tif$00000015.tif$00000016.tif";
+        String expect = "records/" + PI_KLEIUNIV + "/files/images/00000014.tif$00000015.tif$00000016.tif/full.pdf";
         Assert.assertTrue("expeted url to contain " + expect + " but was " + url, url.contains(expect));
     }
 
@@ -289,4 +297,72 @@ public class ViewManagerTest extends AbstractDatabaseAndSolrEnabledTest {
         List<LabeledLink> links = viewManager.getContentDownloadLinksForWork();
         Assert.assertEquals(2, links.size());
     }
+    
+    @Test
+    public void testGetPageDownloadUrl() throws IndexUnreachableException, DAOException, PresentationException, ViewerConfigurationException {
+        
+        String pi = "PPN123";
+        String docstructType = "Catalogue";
+        String filename = "00000001.tif";
+
+        ViewManager viewManager = createViewManager(pi, docstructType, filename);
+        
+        
+        String baseUrl = DataManager.getInstance().getRestApiManager().getContentApiUrl()
+                + "records/" + pi + "/files/images/" + filename;
+        
+        DownloadOption maxSizeTiff = new DownloadOption("Master", "master", "max");
+        String masterTiffUrl = baseUrl + "/full/max/0/default.tif";
+        assertEquals(masterTiffUrl, viewManager.getPageDownloadUrl(maxSizeTiff).replaceAll("\\?.*", "")); //ignore query params
+        
+        DownloadOption scaledJpeg = new DownloadOption("Thumbnail", "jpg", new Dimension(800, 1200));
+        String thumbnailUrl = baseUrl + "/full/!800,1200/0/default.jpg";
+        assertEquals(thumbnailUrl, viewManager.getPageDownloadUrl(scaledJpeg).replaceAll("\\?.*", "")); //ignore query params
+
+    }
+    
+    @Test
+    public void testGetDownloadOptionsForImage() {
+        
+        DownloadOption tooLarge = new DownloadOption("", "master", new Dimension(10000, 10000));
+        DownloadOption master = new DownloadOption("", "master", DownloadOption.MAX);
+        DownloadOption thumb = new DownloadOption("", "jpg", "600");
+        DownloadOption largeThumb = new DownloadOption("", "jpg", "2000");
+        DownloadOption empty = new DownloadOption("", "jpg", DownloadOption.NONE);
+        List<DownloadOption> configuredOptions = Arrays.asList(tooLarge, master, largeThumb, thumb, empty);
+        
+        Dimension maxSize =  new Dimension(20000, 5000);
+        Dimension imageSize = new Dimension(1000, 2000);
+        
+        List<DownloadOption> options = ViewManager.getDownloadOptionsForImage(configuredOptions, imageSize, maxSize, "00000001.tif");
+        assertEquals(2, options.size());
+        
+        DownloadOption masterOption = options.stream().filter(o -> o.getFormat().equalsIgnoreCase("tiff")).findFirst().orElse(null);
+        assertNotNull(masterOption);
+        assertEquals(imageSize, masterOption.getBoxSizeInPixel());
+        
+        DownloadOption thumbOption = options.stream().filter(o -> o.getFormat().equalsIgnoreCase("jpg")).findFirst().orElse(null);
+        assertNotNull(thumbOption);
+        assertEquals(new Dimension(1000*600/2000, 600), thumbOption.getBoxSizeInPixel());
+
+
+    }
+
+
+    private ViewManager createViewManager(String pi, String docstructType, String pageFilename)
+            throws IndexUnreachableException, PresentationException, DAOException, ViewerConfigurationException {
+        StructElement se = new StructElement(123L);
+        se.setDocStructType(docstructType);
+        se.getMetadataFields().put(SolrConstants.PI_TOPSTRUCT, Collections.singletonList(pi));
+        PhysicalElement page = Mockito.mock(PhysicalElement.class);
+        Mockito.when(page.getFilename()).thenReturn(pageFilename);
+        Mockito.when(page.getFilepath()).thenReturn(pi + "/" + pageFilename);
+        Mockito.when(page.getMimeType()).thenReturn("image/tiff");
+        
+        IPageLoader pageLoader = Mockito.mock(EagerPageLoader.class);
+        Mockito.when(pageLoader.getPage(Mockito.anyInt())).thenReturn(page);
+        
+        return new ViewManager(se, pageLoader, se.getLuceneId(), null, null, new ImageDeliveryBean());
+    }
+    
 }

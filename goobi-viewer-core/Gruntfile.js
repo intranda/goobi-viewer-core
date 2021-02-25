@@ -163,6 +163,7 @@ module.exports = function (grunt) {
                             "leaflet.markercluster/dist/leaflet.markercluster.js" : "leaflet/markercluster",
                             "swagger-ui-dist/swagger-ui-bundle.js" : "swagger/",
                             "hc-sticky/dist/hc-sticky.js" : "hcsticky/",
+                            "mirador/dist/mirador.min.js*": "mirador/"
                         },
                         css : {
                             "leaflet/dist/leaflet.css" : "leaflet/",

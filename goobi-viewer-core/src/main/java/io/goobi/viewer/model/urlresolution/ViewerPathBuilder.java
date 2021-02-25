@@ -107,7 +107,9 @@ public class ViewerPathBuilder {
         } catch (UnsupportedEncodingException e) {
         }
 
-        final URI servicePath = URI.create(serviceUrl);
+        URI servicePath = URI.create(serviceUrl);
+
+        servicePath = cleanPath(servicePath);
         String[] pathParts = serviceUrl.split("/");
 
         ViewerPath currentPath = new ViewerPath();
@@ -217,7 +219,6 @@ public class ViewerPathBuilder {
      * @return a {@link java.util.Optional} object.
      */
     public static Optional<PageType> getPageType(final URI servicePath) {
-
         List<PageType> matchingTypes =
                 EnumSet.complementOf(EnumSet.of(PageType.other)).stream().filter(type -> type.matches(servicePath)).collect(Collectors.toList());
         matchingTypes.sort((type1, type2) -> Integer.compare(type2.getName().length(), type1.getName().length()));
@@ -247,7 +248,9 @@ public class ViewerPathBuilder {
             }
             boolean match = true;
             for (int i = 0; i < stringParts.length; i++) {
-                if (!stringParts[i].equals(uriParts[i])) {
+            	String uriPart = uriParts[i];
+            	uriPart = cleanPathPart(uriPart);
+                if (!stringParts[i].equals(uriPart)) {
                     match = false;
                 }
             }
@@ -255,6 +258,26 @@ public class ViewerPathBuilder {
         } else {
             return false;
         }
+    }
+
+    /**
+     * @param uriPart
+     * @return
+     */
+    private static String cleanPathPart(String uriPart) {
+        if(uriPart.startsWith("!")) {
+        	uriPart = uriPart.substring(1);
+        } else if(uriPart.startsWith("%21")) {
+        	//escaped '!'
+        	uriPart = uriPart.substring(3);
+        }
+        return uriPart;
+    }
+    
+    private static URI cleanPath(URI uri) {
+    	String string = uri.toString();
+    	string = cleanPathPart(string);
+    	return URI.create(string);
     }
 
     /**

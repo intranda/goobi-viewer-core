@@ -95,6 +95,7 @@ public class WebApplicationExceptionMapper implements ExceptionMapper<WebApplica
             status = Status.BAD_REQUEST;
             printStackTrace = true;
             logger.error(e.getMessage());
+            e.printStackTrace();
         }
 
         String mediaType = MediaType.APPLICATION_JSON;

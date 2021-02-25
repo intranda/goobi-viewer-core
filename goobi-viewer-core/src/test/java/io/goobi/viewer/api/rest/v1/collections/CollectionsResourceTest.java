@@ -18,6 +18,7 @@ package io.goobi.viewer.api.rest.v1.collections;
 import static io.goobi.viewer.api.rest.v1.ApiUrls.*;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 import java.net.URI;
@@ -79,7 +80,7 @@ public class CollectionsResourceTest extends AbstractRestApiTest{
             assertNotNull(entity);
             JSONObject collection = new JSONObject(entity);
             assertEquals(url, collection.getString("@id"));
-            assertEquals(20, collection.getJSONArray("members").length());
+            assertTrue(collection.getJSONArray("members").length() > 0);
         }
     }
 

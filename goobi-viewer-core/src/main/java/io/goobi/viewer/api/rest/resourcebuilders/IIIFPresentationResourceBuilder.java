@@ -45,6 +45,7 @@ import de.intranda.api.iiif.presentation.Range;
 import de.intranda.api.iiif.presentation.Sequence;
 import de.intranda.api.iiif.presentation.content.ImageContent;
 import de.intranda.api.iiif.presentation.enums.AnnotationType;
+import de.intranda.monitoring.timer.Time;
 import de.unigoettingen.sub.commons.contentlib.exceptions.ContentNotFoundException;
 import de.unigoettingen.sub.commons.contentlib.exceptions.IllegalRequestException;
 import io.goobi.viewer.api.rest.AbstractApiUrlManager;
@@ -206,9 +207,9 @@ public class IIIFPresentationResourceBuilder {
         StructElement doc = getManifestBuilder().getDocument(pi);
         if (doc != null) {
             PhysicalElement page = getSequenceBuilder().getPage(doc, pageNo);
-            Canvas canvas = getSequenceBuilder().generateCanvas(doc, page);
+            Canvas canvas = getSequenceBuilder().generateCanvas(doc.getPi(), page);
             if (canvas != null) {
-                getSequenceBuilder().addSeeAlsos(canvas, doc, page);
+                getSequenceBuilder().addSeeAlsos(canvas, page);
                 getSequenceBuilder().addOtherContent(doc, page, canvas, false);
                 getSequenceBuilder().addCrowdourcingAnnotations(Collections.singletonList(canvas),
                         new OpenAnnotationBuilder(urls).getCrowdsourcingAnnotations(pi, false, request), null);

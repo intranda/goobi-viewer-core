@@ -11,7 +11,7 @@
 	<composite:interface />
 
 	<composite:implementation>
-		<h:panelGroup rendered="#{metadataBean.bottomMetadataElement.hasSidebarMetadata}">
+		<h:panelGroup rendered="#{metadataBean.bottomMetadataElement.hasSidebarMetadata  and not (activeDocumentBean.anchor or activeDocumentBean.group)}">
 
 				<ui:fragment rendered="#{!activeDocumentBean.viewManager.topDocument.lidoRecord}">
 				<div id="widgetMetadata" class="widget">

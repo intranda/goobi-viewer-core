@@ -37,8 +37,10 @@ import io.goobi.viewer.model.security.authentication.model.LitteraAuthentication
  * Sample littera authentication server mock for testing
  *
  * @author florian
+ * @deprecated Testing is instead done with a mock server
  */
-@Path("/littera")
+//@Path("/littera")
+@Deprecated
 public class LitteraAuthenticationResource {
 
     private static final String QUERY_PARAM_REGEX_ID = "id=(.*?)(?:&|$)";
@@ -59,10 +61,10 @@ public class LitteraAuthenticationResource {
      * @return a {@link io.goobi.viewer.model.security.authentication.model.LitteraAuthenticationResponse} object.
      * @throws io.goobi.viewer.exceptions.AuthenticationException if any.
      */
-    @GET
-    @Path("/externalauth")
-    @Produces(MediaType.TEXT_XML)
-    @ViewerRestServiceBinding
+//    @GET
+//    @Path("/externalauth")
+//    @Produces(MediaType.TEXT_XML)
+//    @ViewerRestServiceBinding
     public LitteraAuthenticationResponse getResponse() throws AuthenticationException {
         String query = servletRequest.getQueryString();
         String name = getFirstGroup(query, QUERY_PARAM_REGEX_ID).orElseThrow(() -> new AuthenticationException("No login name given"));

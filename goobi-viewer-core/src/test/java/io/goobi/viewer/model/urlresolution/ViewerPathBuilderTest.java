@@ -18,12 +18,14 @@ package io.goobi.viewer.model.urlresolution;
 import static org.junit.Assert.*;
 
 import java.net.URI;
+import java.util.Optional;
 
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
+import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.model.urlresolution.ViewerPathBuilder;
 
 /**
@@ -64,6 +66,16 @@ public class ViewerPathBuilderTest {
         Assert.assertFalse(ViewerPathBuilder.startsWith(uri, url5));
         Assert.assertFalse(ViewerPathBuilder.startsWith(uri, url6));
 
+    }
+    
+    @Test
+    public void testCreateCorrectPathWIthLeadingExcamationMark() throws DAOException {
+        String url = "http://localhost:8082/viewer/!fulltext/AC03343066/13/";
+        String serverUrl = "http://localhost:8082/viewer";
+        String applicationName ="/viewer";
+        Optional<ViewerPath> path = ViewerPathBuilder.createPath(serverUrl, applicationName, url);
+        assertTrue(path.isPresent());
+        assertEquals("fulltext/AC03343066/13/", path.get().getCombinedPath().toString());
     }
 
 }

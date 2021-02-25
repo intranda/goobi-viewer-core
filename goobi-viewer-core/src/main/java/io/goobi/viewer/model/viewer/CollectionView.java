@@ -717,10 +717,14 @@ public class CollectionView {
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws IllegalRequestException 
      */
-    public void reset(boolean reset) throws DAOException, IndexUnreachableException, IllegalRequestException {
+    public void reset(boolean reset){
         if (reset && StringUtils.isNotBlank(getTopVisibleElement()) && !getTopVisibleElement().equals(getBaseElementName())) {
             setTopVisibleElement((String) null);
-            populateCollectionList();
+            try {
+                populateCollectionList();
+            } catch (IllegalRequestException | IndexUnreachableException e) {
+                logger.error("Error resetting collection: ", e);
+            }
         }
     }
 

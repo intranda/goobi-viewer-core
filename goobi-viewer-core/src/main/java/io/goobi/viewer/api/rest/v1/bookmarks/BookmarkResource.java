@@ -360,7 +360,7 @@ public class BookmarkResource {
     @Produces({ MediaType.APPLICATION_JSON })
     @Operation(
             tags = { "bookmarks", "iiif" },
-            summary = "Get a public or shared bookmark list by its share key as a Mirador viewer config")
+            summary = "Get a public or shared bookmark list by its share key as a IIIF collection")
     @ApiResponse(responseCode = "404", description = "Bookmark list not found")
     @ApiResponse(responseCode = "500", description = "Error querying database")
     public Collection getSharedBookmarkListAsCollection(

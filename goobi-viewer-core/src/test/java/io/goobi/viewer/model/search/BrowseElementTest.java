@@ -90,7 +90,7 @@ public class BrowseElementTest extends AbstractSolrEnabledTest {
         se.getMetadataFields().put("SORT_FOO", Collections.singletonList("bar"));
 
         BrowseElement be = new BrowseElement(se, new ArrayList<>(), Locale.ENGLISH, null, null, null);
-        be.getMetadataList().add(new Metadata("MD_FOO", "", "old value"));
+        be.getMetadataList().add(new Metadata(String.valueOf(se.getLuceneId()), "MD_FOO", "", "old value"));
 
         be.addSortFieldsToMetadata(se, Collections.singletonList(new StringPair("SORT_FOO", "bar")), null);
         Assert.assertEquals(1, be.getMetadataList().size());
@@ -163,7 +163,7 @@ public class BrowseElementTest extends AbstractSolrEnabledTest {
     @Test
     public void addAdditionalMetadataContainingSearchTerms_shouldNotAddDuplicatesFromExplicitTerms() throws Exception {
         BrowseElement be = new BrowseElement(null, 1, "FROM FOO TO BAR", null, Locale.ENGLISH, null, null);
-        be.getMetadataList().add(new Metadata("MD_TITLE", "", "FROM FOO TO BAR"));
+        be.getMetadataList().add(new Metadata("", "MD_TITLE", "", "FROM FOO TO BAR"));
 
         StructElement se = new StructElement();
         se.getMetadataFields().put("MD_TITLE", Collections.singletonList("FROM FOO TO BAR")); // same value as the main label
@@ -183,7 +183,7 @@ public class BrowseElementTest extends AbstractSolrEnabledTest {
     @Test
     public void addAdditionalMetadataContainingSearchTerms_shouldNotAddIgnoredFields() throws Exception {
         BrowseElement be = new BrowseElement(null, 1, "FROM FOO TO BAR", null, Locale.ENGLISH, null, null);
-        be.getMetadataList().add(new Metadata("MD_TITLE", "", "FROM FOO TO BAR"));
+        be.getMetadataList().add(new Metadata("", "MD_TITLE", "", "FROM FOO TO BAR"));
 
         StructElement se = new StructElement();
         se.getMetadataFields().put("MD_IGNOREME", Collections.singletonList("foo ignores bar"));
@@ -203,7 +203,7 @@ public class BrowseElementTest extends AbstractSolrEnabledTest {
     @Test
     public void addAdditionalMetadataContainingSearchTerms_shouldTranslateConfiguredFieldValuesCorrectly() throws Exception {
         BrowseElement be = new BrowseElement(null, 1, "FROM FOO TO BAR", null, Locale.ENGLISH, null, null);
-        be.getMetadataList().add(new Metadata("MD_TITLE", "", "FROM FOO TO BAR"));
+        be.getMetadataList().add(new Metadata("", "MD_TITLE", "", "FROM FOO TO BAR"));
 
         StructElement se = new StructElement();
         se.getMetadataFields().put(SolrConstants.DC, Collections.singletonList("admin"));

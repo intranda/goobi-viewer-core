@@ -53,7 +53,7 @@ public class DFGViewerImageTest {
     public void testForwardToImageApiUrl() throws ServletException, IOException {
         
         String requestUrl = "/1574750503285_37/800/0/1575272395963.jpg";
-        String expectedForwardUrl = DataManager.getInstance().getConfiguration().getIIIFApiUrl() + "records/1574750503285_37/files/images/1575272395963/full/800,/0/default.jpg/";
+        String expectedForwardUrl = DataManager.getInstance().getConfiguration().getIIIFApiUrl() + "records/1574750503285_37/files/images/1575272395963/full/800,/0/default.jpg";
 
         HttpServletRequest request = Mockito.mock(HttpServletRequest.class);
         HttpServletResponse response = Mockito.mock(HttpServletResponse.class);

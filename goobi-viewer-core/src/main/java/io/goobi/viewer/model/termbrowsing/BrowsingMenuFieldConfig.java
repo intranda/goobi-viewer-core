@@ -22,6 +22,7 @@ import java.util.List;
 import org.apache.commons.lang3.StringUtils;
 
 import io.goobi.viewer.controller.SolrConstants;
+import io.goobi.viewer.controller.SolrConstants.DocType;
 import io.goobi.viewer.model.search.SearchHelper;
 
 /**
@@ -46,9 +47,9 @@ public class BrowsingMenuFieldConfig implements Serializable {
      * @param sortField a {@link java.lang.String} object.
      * @param filterQuery a {@link java.lang.String} object.
      * @param translate
-     * @param docstructFilterString a {@link java.lang.String} object.
      * @param recordsAndAnchorsOnly a boolean.
      * @param alwaysApplyFilter If true, no unfiltered browsing will be allowed
+     * @should add doctype filter if field MD or MD2
      */
     public BrowsingMenuFieldConfig(String field, String sortField, String filterQuery, boolean translate,
             @Deprecated boolean recordsAndAnchorsOnly, boolean alwaysApplyFilter) {
@@ -57,9 +58,37 @@ public class BrowsingMenuFieldConfig implements Serializable {
         if (StringUtils.isNotEmpty(filterQuery)) {
             filterQueries.add(filterQuery);
         }
+
         this.translate = translate;
         this.alwaysApplyFilter = alwaysApplyFilter;
         setRecordsAndAnchorsOnly(recordsAndAnchorsOnly);
+        addDoctypeFilterQuery();
+    }
+
+    /**
+     * Adds a filter for DOCTYPE:DOCSTRCT for certain field types to reduce the number of returned docs.
+     * 
+     * @should add doctype filter if field MD or MD2
+     * @should add doctype filter if field DC
+     * @should add doctype filter if field DOCSTRCT
+     * @should not add doctype filter if field NE
+     */
+    void addDoctypeFilterQuery() {
+        if (field == null) {
+            return;
+        }
+
+        switch (field) {
+            case SolrConstants.DC:
+            case SolrConstants.DOCSTRCT:
+                filterQueries.add("+" + SolrConstants.DOCTYPE + ":" + DocType.DOCSTRCT.name());
+                break;
+            default:
+                if (field.startsWith("MD_") || field.startsWith("MD2_")) {
+                    filterQueries.add("+" + SolrConstants.DOCTYPE + ":" + DocType.DOCSTRCT.name());
+                }
+                break;
+        }
     }
 
     /**

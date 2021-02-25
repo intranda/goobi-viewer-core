@@ -15,7 +15,15 @@
  */
 package io.goobi.viewer.model.viewer;
 
-import static io.goobi.viewer.api.rest.v1.ApiUrls.*;
+import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_ALTO;
+import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_FILES;
+import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_FILES_ALTO;
+import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_FILES_PLAINTEXT;
+import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_FILES_TEI;
+import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_PLAINTEXT_ZIP;
+import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_RECORD;
+import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_TEI_LANG;
+
 import java.awt.Dimension;
 import java.io.IOException;
 import java.io.Serializable;
@@ -45,6 +53,8 @@ import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import de.undercouch.citeproc.CSL;
+import de.unigoettingen.sub.commons.contentlib.imagelib.ImageFileFormat;
 import de.unigoettingen.sub.commons.contentlib.imagelib.transform.Scale;
 import io.goobi.viewer.api.rest.v1.ApiUrls;
 import io.goobi.viewer.controller.AlphanumCollatorComparator;
@@ -69,8 +79,13 @@ import io.goobi.viewer.managedbeans.UserBean;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.messages.Messages;
 import io.goobi.viewer.model.calendar.CalendarView;
+import io.goobi.viewer.model.citation.Citation;
+import io.goobi.viewer.model.citation.CitationProcessorWrapper;
+import io.goobi.viewer.model.citation.CitationTools;
+import io.goobi.viewer.model.download.DownloadOption;
 import io.goobi.viewer.model.metadata.Metadata;
 import io.goobi.viewer.model.metadata.MetadataTools;
+import io.goobi.viewer.model.metadata.MetadataValue;
 import io.goobi.viewer.model.search.SearchHelper;
 import io.goobi.viewer.model.security.AccessConditionUtils;
 import io.goobi.viewer.model.security.IPrivilegeHolder;
@@ -142,6 +157,8 @@ public class ViewManager implements Serializable {
     private Boolean workHasTEIFiles = null;
     private Boolean metadataViewOnly = null;
     private List<String> downloadFilenames = null;
+    private String citationStyle = null;
+    private CitationProcessorWrapper citationProcessorWrapper;
 
     /**
      * <p>
@@ -489,7 +506,7 @@ public class ViewManager implements Serializable {
      */
     public String getCurrentMasterImageUrl(Scale scale) throws IndexUnreachableException, DAOException {
 
-        PageType pageType = BeanUtils.getNavigationHelper().getCurrentPageType();
+        PageType pageType = Optional.ofNullable(BeanUtils.getNavigationHelper()).map(nh -> nh.getCurrentPageType()).orElse(null);
         if (pageType == null) {
             pageType = PageType.viewObject;
         }
@@ -529,27 +546,112 @@ public class ViewManager implements Serializable {
 
     /**
      * <p>
-     * getJpegUrlForDownload.
+     * getPageDownloadUrl.
      * </p>
      *
+     * @param option
      * @return a {@link java.lang.String} object.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
-    public String getJpegUrlForDownload() throws IndexUnreachableException, DAOException {
-
+    public String getPageDownloadUrl(DownloadOption option) throws IndexUnreachableException, DAOException {
+        logger.trace("getPageDownloadUrl: {}", option);
+        if (option == null || !option.isValid()) {
+            option = getDownloadOptionsForCurrentImage().stream().findFirst()
+                    .orElse(null);
+            if(option == null) {
+                return "";
+            }
+        }
         Scale scale;
-
-        String maxSize = DataManager.getInstance().getConfiguration().getWidgetUsageMaxJpegSize();
-        if (maxSize.equalsIgnoreCase(Scale.MAX_SIZE) || maxSize.equalsIgnoreCase(Scale.FULL_SIZE)) {
+        if (DownloadOption.MAX == option.getBoxSizeInPixel()) {
             scale = Scale.MAX;
-        } else if (maxSize.matches("\\d{1,9}")) {
-            scale = new Scale.ScaleToBox(Integer.parseInt(maxSize), Integer.parseInt(maxSize));
+        } else if (option.getBoxSizeInPixel() == DownloadOption.NONE) {
+            throw new IllegalArgumentException("Invalid box size: " + option.getBoxSizeInPixel());
         } else {
-            throw new IllegalArgumentException("Not a valid size paramter in config: " + maxSize);
+            scale = new Scale.ScaleToBox(option.getBoxSizeInPixel());
+        }
+        switch (option.getFormat().toLowerCase()) {
+            case "jpg":
+            case "jpeg":
+                return imageDeliveryBean.getThumbs().getThumbnailUrl(getCurrentPage(), scale);
+            default:
+                return getCurrentMasterImageUrl(scale);
         }
 
-        return imageDeliveryBean.getThumbs().getThumbnailUrl(getCurrentPage(), scale);
+
+    }
+
+    public static List<DownloadOption> getDownloadOptionsForImage(
+            List<DownloadOption> configuredOptions,
+            Dimension origImageSize,
+            Dimension configuredMaxSize,
+            String imageFilename) {
+
+        List<DownloadOption> options = new ArrayList<DownloadOption>();
+        
+        int maxWidth;
+        int maxHeight;
+        Dimension maxSize;
+        if(origImageSize != null && origImageSize.height*origImageSize.width > 0) {            
+            maxWidth = Math.min(origImageSize.width, configuredMaxSize.width);
+            maxHeight = Math.min(origImageSize.height, configuredMaxSize.height);
+            maxSize = new Dimension(maxWidth, maxHeight);
+        } else {
+            maxWidth = configuredMaxSize.width;
+            maxHeight = configuredMaxSize.height;
+            maxSize = configuredMaxSize;
+        }
+        
+        for (DownloadOption option : configuredOptions) {
+            Dimension dim = option.getBoxSizeInPixel();
+            if(dim == DownloadOption.MAX) {
+                Scale scale = new Scale.ScaleToBox(maxSize);
+                Dimension size = scale.scale(origImageSize);
+                options.add(new DownloadOption(option.getLabel(), getImageFormat(option.getFormat(), imageFilename), size));
+            } else if(dim.width * dim.height == 0) {
+                continue;
+            } else if ((maxWidth > 0 && maxWidth < dim.width) || (maxHeight > 0 && maxHeight < dim.height)) {
+                continue;
+            } else{
+                Scale scale = new Scale.ScaleToBox(option.getBoxSizeInPixel());
+                Dimension size = scale.scale(origImageSize);
+                options.add(new DownloadOption(option.getLabel(), getImageFormat(option.getFormat(), imageFilename), size));
+            }
+        }
+        return options;
+    }
+
+    
+    public List<DownloadOption> getDownloadOptionsForCurrentImage() {
+        PhysicalElement page = getCurrentPage();
+        if(page != null && page.isHasImage()) {
+            List<DownloadOption> configuredOptions = DataManager.getInstance().getConfiguration().getSidebarWidgetUsagePageDownloadOptions();
+            String imageFilename = page.getFilename();
+            Dimension maxSize = new Dimension(DataManager.getInstance().getConfiguration().getViewerMaxImageWidth(), DataManager.getInstance().getConfiguration().getViewerMaxImageHeight());
+            Dimension imageSize = new Dimension(page.getImageWidth(), page.getImageHeight());
+            return getDownloadOptionsForImage(configuredOptions, imageSize, maxSize, imageFilename);
+        } else {
+            return Collections.emptyList();
+        }
+    }
+    
+    /**
+     * return the current image format if argument is 'MASTER', or the argument itself otherwise
+     * 
+     * @param format
+     * @return  
+     */
+    public static String getImageFormat(String format, String imageFilename) {
+
+        if(format != null && format.equalsIgnoreCase("master")) {    
+            return Optional.ofNullable(imageFilename)
+                    .map(ImageFileFormat::getImageFileFormatFromFileExtension)
+                    .map(ImageFileFormat::name)
+                    .orElse(format);
+        } else {
+            return format;
+        }
     }
 
     /**
@@ -557,25 +659,26 @@ public class ViewManager implements Serializable {
      * getMasterImageUrlForDownload.
      * </p>
      *
+     * @param boxSizeInPixel
      * @return a {@link java.lang.String} object.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
-    public String getMasterImageUrlForDownload() throws IndexUnreachableException, DAOException {
+    public String getMasterImageUrlForDownload(String boxSizeInPixel) throws IndexUnreachableException, DAOException {
+        if (boxSizeInPixel == null) {
+            throw new IllegalArgumentException("boxSizeInPixel may not be null");
+        }
 
         Scale scale;
-
-        String maxSize = DataManager.getInstance().getConfiguration().getWidgetUsageMaxMasterImageSize();
-        if (maxSize.equalsIgnoreCase(Scale.MAX_SIZE) || maxSize.equalsIgnoreCase(Scale.FULL_SIZE)) {
+        if (boxSizeInPixel.equalsIgnoreCase(Scale.MAX_SIZE) || boxSizeInPixel.equalsIgnoreCase(Scale.FULL_SIZE)) {
             scale = Scale.MAX;
-        } else if (maxSize.matches("\\d{1,9}")) {
-            scale = new Scale.ScaleToBox(Integer.parseInt(maxSize), Integer.parseInt(maxSize));
+        } else if (boxSizeInPixel.matches("\\d{1,9}")) {
+            scale = new Scale.ScaleToBox(Integer.valueOf(boxSizeInPixel), Integer.valueOf(boxSizeInPixel));
         } else {
-            throw new IllegalArgumentException("Not a valid size paramter in config: " + maxSize);
+            throw new IllegalArgumentException("Not a valid size parameter: " + boxSizeInPixel);
         }
 
         return getCurrentMasterImageUrl(scale);
-
     }
 
     /**
@@ -957,7 +1060,7 @@ public class ViewManager implements Serializable {
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
-    public PhysicalElement getCurrentPage() throws IndexUnreachableException, DAOException {
+    public PhysicalElement getCurrentPage()  {
         return getPage(currentImageOrder).orElse(null);
     }
 
@@ -973,10 +1076,15 @@ public class ViewManager implements Serializable {
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
-    public Optional<PhysicalElement> getPage(int order) throws IndexUnreachableException, DAOException {
-        if (pageLoader != null && pageLoader.getPage(order) != null) {
-            // logger.debug("page " + order + ": " + pageLoader.getPage(order).getFileName());
-            return Optional.ofNullable(pageLoader.getPage(order));
+    public Optional<PhysicalElement> getPage(int order)  {
+        
+        try {
+            if (pageLoader != null && pageLoader.getPage(order) != null) {
+                // logger.debug("page " + order + ": " + pageLoader.getPage(order).getFileName());
+                return Optional.ofNullable(pageLoader.getPage(order));
+            }
+        } catch (IndexUnreachableException | DAOException e) {
+            logger.error("Error getting current page " + e.toString());
         }
 
         return Optional.empty();
@@ -1569,9 +1677,11 @@ public class ViewManager implements Serializable {
      */
     public String getAltoUrlForAllPages() throws ViewerConfigurationException, PresentationException, IndexUnreachableException {
         String pi = getPi();
-        return DataManager.getInstance().getRestApiManager().getContentApiManager().map(urls -> 
-                urls.path(RECORDS_RECORD, RECORDS_ALTO).params(pi).build()
-                ).orElse("");
+        return DataManager.getInstance()
+                .getRestApiManager()
+                .getContentApiManager()
+                .map(urls -> urls.path(RECORDS_RECORD, RECORDS_ALTO).params(pi).build())
+                .orElse("");
     }
 
     /**
@@ -1584,9 +1694,11 @@ public class ViewManager implements Serializable {
      */
     public String getFulltextUrlForAllPages() throws ViewerConfigurationException, PresentationException, IndexUnreachableException {
         String pi = getPi();
-        return DataManager.getInstance().getRestApiManager().getContentApiManager().map(urls ->
-                urls.path(RECORDS_RECORD, RECORDS_PLAINTEXT_ZIP).params(pi).build()
-                ).orElse("");
+        return DataManager.getInstance()
+                .getRestApiManager()
+                .getContentApiManager()
+                .map(urls -> urls.path(RECORDS_RECORD, RECORDS_PLAINTEXT_ZIP).params(pi).build())
+                .orElse("");
     }
 
     /**
@@ -1598,11 +1710,13 @@ public class ViewManager implements Serializable {
      */
     public String getTeiUrlForAllPages() throws ViewerConfigurationException, IndexUnreachableException {
         String pi = getPi();
-        return DataManager.getInstance().getRestApiManager().getContentApiManager().map(urls ->
-                urls.path(RECORDS_RECORD, RECORDS_TEI_LANG)
-                .params(pi, BeanUtils.getLocale().getLanguage())
-                .build()
-                ).orElse("");
+        return DataManager.getInstance()
+                .getRestApiManager()
+                .getContentApiManager()
+                .map(urls -> urls.path(RECORDS_RECORD, RECORDS_TEI_LANG)
+                        .params(pi, BeanUtils.getLocale().getLanguage())
+                        .build())
+                .orElse("");
     }
 
     /**
@@ -1617,13 +1731,15 @@ public class ViewManager implements Serializable {
         String plaintextFilename = FileTools.getFilenameFromPathString(getCurrentPage().getFulltextFileName());
         String altoFilename = FileTools.getFilenameFromPathString(getCurrentPage().getAltoFileName());
         String filenameToUse = StringUtils.isNotBlank(plaintextFilename) ? plaintextFilename : altoFilename;
-        
+
         String pi = getPi();
-        return DataManager.getInstance().getRestApiManager().getContentApiManager().map(urls ->
-                urls.path(RECORDS_FILES, RECORDS_FILES_TEI)
-                .params(pi, filenameToUse)
-                .build()
-                ).orElse("");
+        return DataManager.getInstance()
+                .getRestApiManager()
+                .getContentApiManager()
+                .map(urls -> urls.path(RECORDS_FILES, RECORDS_FILES_TEI)
+                        .params(pi, filenameToUse)
+                        .build())
+                .orElse("");
     }
 
     /**
@@ -1638,11 +1754,13 @@ public class ViewManager implements Serializable {
     public String getAltoUrl() throws ViewerConfigurationException, PresentationException, IndexUnreachableException, DAOException {
         String filename = FileTools.getFilenameFromPathString(getCurrentPage().getAltoFileName());
         String pi = getPi();
-        return DataManager.getInstance().getRestApiManager().getContentApiManager().map(urls ->
-                urls.path(RECORDS_FILES, RECORDS_FILES_ALTO)
-                .params(pi, filename)
-                .build()
-                ).orElse("");
+        return DataManager.getInstance()
+                .getRestApiManager()
+                .getContentApiManager()
+                .map(urls -> urls.path(RECORDS_FILES, RECORDS_FILES_ALTO)
+                        .params(pi, filename)
+                        .build())
+                .orElse("");
     }
 
     /**
@@ -1658,13 +1776,15 @@ public class ViewManager implements Serializable {
         String plaintextFilename = FileTools.getFilenameFromPathString(getCurrentPage().getFulltextFileName());
         String altoFilename = FileTools.getFilenameFromPathString(getCurrentPage().getAltoFileName());
         String filenameToUse = StringUtils.isNotBlank(plaintextFilename) ? plaintextFilename : altoFilename;
-        
+
         String pi = getPi();
-        return DataManager.getInstance().getRestApiManager().getContentApiManager().map(urls ->
-                urls.path(RECORDS_FILES, RECORDS_FILES_PLAINTEXT)
-                .params(pi, filenameToUse)
-                .build()
-                ).orElse("");
+        return DataManager.getInstance()
+                .getRestApiManager()
+                .getContentApiManager()
+                .map(urls -> urls.path(RECORDS_FILES, RECORDS_FILES_PLAINTEXT)
+                        .params(pi, filenameToUse)
+                        .build())
+                .orElse("");
     }
 
     /**
@@ -2288,7 +2408,7 @@ public class ViewManager implements Serializable {
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
-     * @throws RecordNotFoundException 
+     * @throws RecordNotFoundException
      */
     public boolean isFulltextAvailableForWork() throws IndexUnreachableException, DAOException, PresentationException, RecordNotFoundException {
         if (isBornDigital()) {
@@ -2325,7 +2445,7 @@ public class ViewManager implements Serializable {
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
-     * @throws RecordNotFoundException 
+     * @throws RecordNotFoundException
      */
     public boolean isTeiAvailableForWork() throws IndexUnreachableException, DAOException, PresentationException, RecordNotFoundException {
         if (isBornDigital()) {
@@ -2392,7 +2512,7 @@ public class ViewManager implements Serializable {
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
-     * @throws RecordNotFoundException 
+     * @throws RecordNotFoundException
      */
     public boolean isAltoAvailableForWork() throws IndexUnreachableException, PresentationException, DAOException, RecordNotFoundException {
         boolean access = AccessConditionUtils.checkAccessPermissionByIdentifierAndLogId(getPi(), null, IPrivilegeHolder.PRIV_VIEW_FULLTEXT,
@@ -2497,23 +2617,6 @@ public class ViewManager implements Serializable {
 
     /**
      * <p>
-     * getCurrentFooterHeight.
-     * </p>
-     *
-     * @return a int.
-     * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
-     * @throws io.goobi.viewer.exceptions.DAOException if any.
-     */
-    public int getCurrentFooterHeight() throws IndexUnreachableException, DAOException {
-        PhysicalElement currentPage = getCurrentPage();
-        if (currentPage != null) {
-            return currentPage.getImageFooterHeight(rotate);
-        }
-        return 0;
-    }
-
-    /**
-     * <p>
      * Setter for the field <code>zoomSlider</code>.
      * </p>
      *
@@ -2570,7 +2673,7 @@ public class ViewManager implements Serializable {
      * @return a boolean.
      */
     public boolean isDisplayContentDownloadMenu() {
-        if (!DataManager.getInstance().getConfiguration().isDisplaySidebarWidgetDownload()) {
+        if (!DataManager.getInstance().getConfiguration().isDisplaySidebarWidgetDownloads()) {
             return false;
         }
         try {
@@ -2606,7 +2709,9 @@ public class ViewManager implements Serializable {
         try {
             String pi = getPi();
             String filenameEncoded = URLEncoder.encode(filename, StringTools.DEFAULT_ENCODING);
-            return DataManager.getInstance().getRestApiManager().getContentApiManager()
+            return DataManager.getInstance()
+                    .getRestApiManager()
+                    .getContentApiManager()
                     .map(urls -> urls.path(ApiUrls.RECORDS_FILES, ApiUrls.RECORDS_FILES_SOURCE).params(pi, filenameEncoded).build())
                     .map(url -> new LabeledLink(filename, url, 0))
                     .orElse(LabeledLink.EMPTY);
@@ -3332,21 +3437,6 @@ public class ViewManager implements Serializable {
 
     /**
      * <p>
-     * getUsageWidgetAccessCondition.
-     * </p>
-     *
-     * @return a {@link io.goobi.viewer.model.metadata.Metadata} object.
-     * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
-     * @throws io.goobi.viewer.exceptions.PresentationException if any.
-     */
-    public Metadata getUsageWidgetAccessCondition() throws IndexUnreachableException, PresentationException {
-        Metadata md = DataManager.getInstance().getConfiguration().getWidgetUsageLicenceTextMetadata();
-        md.populate(getTopDocument(), BeanUtils.getLocale());
-        return md;
-    }
-
-    /**
-     * <p>
      * getCiteLinkWork.
      * </p>
      *
@@ -3434,13 +3524,101 @@ public class ViewManager implements Serializable {
     /**
      * 
      * @return
+     * @throws IOException
+     * @throws IndexUnreachableException
+     * @throws PresentationException
+     */
+    public String getCitationStringHtml() throws IOException, IndexUnreachableException, PresentationException {
+        return getCitationString("html");
+    }
+
+    /**
+     * 
+     * @return
+     * @throws IOException
+     * @throws IndexUnreachableException
+     * @throws PresentationException
+     */
+    public String getCitationStringPlain() throws IOException, IndexUnreachableException, PresentationException {
+        return getCitationString("text");
+    }
+
+    /**
+     * 
+     * @param outputFormat Output format (html or text)
+     * @return Generated citation string for the selected style
+     * @throws IOException
+     * @throws PresentationException
+     * @throws IndexUnreachableException
+     * @should return apa html citation correctly
+     * @should return apa html plaintext correctly
+     */
+    String getCitationString(String outputFormat) throws IOException, IndexUnreachableException, PresentationException {
+        if (StringUtils.isEmpty(citationStyle)) {
+            List<String> availableStyles = DataManager.getInstance().getConfiguration().getSidebarWidgetUsageCitationStyles();
+            if (availableStyles.isEmpty()) {
+                return "";
+            }
+            citationStyle = availableStyles.get(0);
+        }
+
+        if (citationProcessorWrapper == null) {
+            citationProcessorWrapper = new CitationProcessorWrapper();
+        }
+        CSL processor = citationProcessorWrapper.getCitationProcessor(citationStyle);
+        Metadata md = DataManager.getInstance().getConfiguration().getSidebarWidgetUsageCitationSource();
+        md.populate(topDocument, BeanUtils.getLocale());
+        for (MetadataValue val : md.getValues()) {
+            if (!val.getCitationValues().isEmpty()) {
+                Citation citation = new Citation(pi, processor, citationProcessorWrapper.getCitationItemDataProvider(),
+                        CitationTools.getCSLTypeForDocstrct(topDocument.getDocStructType()), val.getCitationValues());
+                String ret = citation.getCitationString(outputFormat);
+                // logger.trace("citation: {}", ret);
+                return ret;
+            }
+        }
+
+        return "";
+    }
+
+    /**
+     * @return the citationStyle
+     */
+    public String getCitationStyle() {
+        return citationStyle;
+    }
+
+    /**
+     * @param citationStyle the citationStyle to set
+     */
+    public void setCitationStyle(String citationStyle) {
+        this.citationStyle = citationStyle;
+    }
+
+    /**
+     * @return the citationProcessorWrapper
+     */
+    public CitationProcessorWrapper getCitationProcessorWrapper() {
+        return citationProcessorWrapper;
+    }
+
+    /**
+     * @param citationProcessorWrapper the citationProcessorWrapper to set
+     */
+    public void setCitationProcessorWrapper(CitationProcessorWrapper citationProcessorWrapper) {
+        this.citationProcessorWrapper = citationProcessorWrapper;
+    }
+
+    /**
+     * 
+     * @return
      */
     public String getArchiveEntryIdentifier() {
         if (topDocument == null) {
             return null;
         }
 
-        logger.trace("getArchiveEntryIdentifier: {}", topDocument.getMetadataValue(SolrConstants.ARCHIVE_ENTRY_ID));
+        // logger.trace("getArchiveEntryIdentifier: {}", topDocument.getMetadataValue(SolrConstants.ARCHIVE_ENTRY_ID));
         return topDocument.getMetadataValue(SolrConstants.ARCHIVE_ENTRY_ID);
     }
 
