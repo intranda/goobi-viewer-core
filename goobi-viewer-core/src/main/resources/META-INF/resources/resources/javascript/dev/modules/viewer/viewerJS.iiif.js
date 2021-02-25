@@ -234,7 +234,30 @@ var viewerJS = ( function( viewer ) {
                 } else {
                     return service;
                 }
-            }
+            },
+            
+            isCollection(element) {
+		    	return (element.type == "Collection" || element["@type"] == "sc:Collection") && element.viewingHint != "multi-part";
+		    },
+		    
+		    isSingleManifest(element) {
+		    	return (element.type == "Manifest" || element["@type"] == "sc:Manifest") ;
+		    },
+		    
+		    isManifest(element) {
+		    	return element.type == "Manifest" || 
+		    	element["@type"] == "sc:Manifest" || 
+		    	(element.type == "Collection" && element.viewingHint == "multi-part") ||
+		    	(element["@type"] == "sc:Collection" && element.viewingHint == "multi-part");
+		    },
+		    
+		    getId(element) {
+		    	if(element.id) {
+		    		return element.id;
+		    	} else {
+		    		return element["@id"];	
+		    	}
+		    },
     }
 
     

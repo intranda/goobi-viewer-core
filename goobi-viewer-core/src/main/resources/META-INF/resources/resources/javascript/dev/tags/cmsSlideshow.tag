@@ -12,7 +12,7 @@
 <!-- MOUNT IN XHTML -->
 <!-- riot.mount( 'slideshow' ); -->
 
-<slideshow>
+<cmsSlideshow>
 	<!-- dummy link to catch scrollling to stored position (viewerJS.checkScrollPosition()) which executes before manifest is loaded -->
 	<a if="{manifest === undefined}" data-linkid="{opts.pis}"/>
     <figure class="slideshow" if="{manifest !== undefined}" onmouseenter="{mouseenter}" onmouseleave="{mouseleave}"> 
@@ -268,4 +268,4 @@
             viewerJS.handleScrollPositionClick($target);
         }
     </script> 
-</slideshow>
+</cmsSlideshow>

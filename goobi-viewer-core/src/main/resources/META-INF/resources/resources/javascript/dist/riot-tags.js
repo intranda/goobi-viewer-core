@@ -787,69 +787,6 @@ this.msg = function(key) {
 }.bind(this)
 
 });
-riot.tag2('carousel', '<h3>SLIDER 2</h3>', '', '', function(opts) {
-
-    this.on( 'mount', function() {
-    	this.collectionsUrl = this.opts.source;
-
-    	let pCollection = fetch(this.collectionsUrl)
-    	.then(result => result.json());
-
-    	rxjs.from(pCollection)
-    	.pipe(
-    		rxjs.operators.flatMap(collection => collection.members),
-    		rxjs.operators.filter(member => this.isCollection(member)),
-    		rxjs.operators.map(collection => this.createSlide(collection)),
-    		rxjs.operators.reduce((res, item) => res.concat(item), []),
-    	)
-    	.subscribe(slides => this.setSlides(slides))
-    });
-
-    this.setSlides = function(slides) {
-    	this.slides = slides;
-    	this.update();
-    }.bind(this)
-
-    this.isCollection = function(element) {
-    	return (element.type == "Collection" || element["@type"] == "sc:Collection") && element.viewingHint != "multi-part";
-    }.bind(this)
-
-    this.isSingleManifest = function(element) {
-    	return (element.type == "Manifest" || element["@type"] == "sc:Manifest") ;
-    }.bind(this)
-
-    this.isManifest = function(element) {
-    	return element.type == "Manifest" ||
-    	element["@type"] == "sc:Manifest" ||
-    	(element.type == "Collection" && element.viewingHint == "multi-part") ||
-    	(element["@type"] == "sc:Collection" && element.viewingHint == "multi-part");
-    }.bind(this)
-
-    this.getId = function(element) {
-    	if(element.id) {
-    		return element.id;
-    	} else {
-    		return element["@id"];
-    	}
-    }.bind(this)
-
-    this.createSlide = function(element) {
-    	if(this.isCollection(element) || this.isManifest(element)) {
-    		let slide = {
-    				text : element.label,
-    				thumbnail : this.getId(element.thumbnail),
-    				link : element.rendering
-    					.filter(rendering => rendering.format == "text/html")
-    					.map(rendering => this.getId(rendering))
-    					.shift()
-    		}
-    		return slide;
-    	} else {
-    		console.err("Creating slide not implemented for ", element);
-    	}
-    }.bind(this)
-
-});
 
 
 
@@ -864,7 +801,7 @@ riot.tag2('carousel', '<h3>SLIDER 2</h3>', '', '', function(opts) {
 
 
 
-riot.tag2('slideshow', '<a if="{manifest === undefined}" data-linkid="{opts.pis}"></a><figure class="slideshow" if="{manifest !== undefined}" onmouseenter="{mouseenter}" onmouseleave="{mouseleave}"><div class="slideshow__image"><a href="{getLink(manifest)}" class="remember-scroll-position" data-linkid="{opts.pis}" onclick="{storeScrollPosition}"><img riot-src="{getThumbnail(manifest)}" class="{\'active\' : active}" alt="{getLabel(manifest)}" onload="{setImageActive}"></a></div><figcaption><h4>{getTitleOrLabel(manifest)}</h4><p><span each="{md in metadataList}"> {getMetadataValue(manifest, md)} <br></span></p><div if="{pis.length > 1}" class="slideshow__dots"><ul><li each="{imagepi in pis}"><button class="btn btn--clean {\'active\' : pi === imagepi}" onclick="{setPi}"></button></li></ul></div></figcaption></figure>', '', '', function(opts) {
+riot.tag2('cmsslideshow', '<a if="{manifest === undefined}" data-linkid="{opts.pis}"></a><figure class="slideshow" if="{manifest !== undefined}" onmouseenter="{mouseenter}" onmouseleave="{mouseleave}"><div class="slideshow__image"><a href="{getLink(manifest)}" class="remember-scroll-position" data-linkid="{opts.pis}" onclick="{storeScrollPosition}"><img riot-src="{getThumbnail(manifest)}" class="{\'active\' : active}" alt="{getLabel(manifest)}" onload="{setImageActive}"></a></div><figcaption><h4>{getTitleOrLabel(manifest)}</h4><p><span each="{md in metadataList}"> {getMetadataValue(manifest, md)} <br></span></p><div if="{pis.length > 1}" class="slideshow__dots"><ul><li each="{imagepi in pis}"><button class="btn btn--clean {\'active\' : pi === imagepi}" onclick="{setPi}"></button></li></ul></div></figcaption></figure>', '', '', function(opts) {
 
     	$.fn.isInViewport = function() {
         	var elementTop = $( this ).offset().top;
@@ -2767,6 +2704,73 @@ this.addCloseHandler = function() {
 });
 
 
+
+
+riot.tag2('slideshow', '<div ref="container" class="swiper-container slider-{this.style}__container"><div class="swiper-wrapper slider-{this.style}__wrapper"><div each="{slide in slides}" class="swiper-slide slider-{this.style}__slide"><h3 class="slider-{this.style}__header">{translate(slide.header)}</h3><div class="slider-{this.style}__image" riot-style="background-image: url({slide.image})"></div><div class="slider-{this.style}__description">{translate(slide.description)}</div></div></div></div>', '', '', function(opts) {
+
+    this.on( 'mount', function() {
+    	this.style = this.opts.style;
+
+    	let pSource = fetch(this.opts.source)
+    	.then(result => result.json());
+
+    	rxjs.from(pSource)
+    	.pipe(
+    		rxjs.operators.flatMap(source => this.getElements(source)),
+    		rxjs.operators.map(collection => this.createSlide(collection)),
+    		rxjs.operators.reduce((res, item) => res.concat(item), []),
+    	)
+    	.subscribe(slides => this.setSlides(slides))
+    });
+
+    this.on( 'updated', function() {
+    	if(this.slides && this.slides.length > 0) {
+    		if(this.slider) {
+    			this.slider.destroy();
+    		}
+    		let style = this.opts.styles.get(this.opts.style);
+    		console.log("create slideshow with ", style)
+    		this.swiper = new Swiper(this.refs.container, style);
+    	}
+    });
+
+    this.setSlides = function(slides) {
+    	console.log("set slides", slides);
+    	this.slides = slides;
+    	this.update();
+    }.bind(this)
+
+	this.getElements = function(source) {
+		if(viewerJS.iiif.isCollection(source)) {
+			return source.members.filter(member => viewerJS.iiif.isCollection(member));
+		} else {
+			console.err("Cannot get slides from ", source);
+		}
+	}.bind(this)
+
+    this.createSlide = function(element) {
+    	if(viewerJS.iiif.isCollection(element) || viewerJS.iiif.isManifest(element)) {
+    		let slide = {
+    				header : element.label,
+    				description : element.description,
+    				image : viewerJS.iiif.getId(element.thumbnail),
+    				link : element.rendering
+    					.filter(rendering => rendering.format == "text/html")
+    					.map(rendering => viewerJS.iiif.getId(rendering))
+    					.shift()
+    		}
+    		return slide;
+    	} else {
+    		console.err("Creating slide not implemented for ", element);
+    	}
+    }.bind(this)
+
+    this.translate = function(text) {
+    	let translation =  viewerJS.iiif.getValue(text, this.opts.language);
+    	return translation;
+    }.bind(this)
+
+});
 riot.tag2('timematrix', '<div class="timematrix__objects"><div each="{manifest in manifests}" class="timematrix__content"><div class="timematrix__img"><a href="{getViewerUrl(manifest)}"><img riot-src="{getImageUrl(manifest)}" class="timematrix__image" data-viewer-thumbnail="thumbnail" alt="" aria-hidden="true" onerror="this.onerror=null;this.src=\'/viewer/resources/images/access_denied.png\'"><div class="timematrix__text"><p if="{hasTitle(manifest)}" name="timetext" class="timetext">{getDisplayTitle(manifest)}</p></div></a></div></div></div>', '', '', function(opts) {
 	    this.on( 'mount', function() {
 
