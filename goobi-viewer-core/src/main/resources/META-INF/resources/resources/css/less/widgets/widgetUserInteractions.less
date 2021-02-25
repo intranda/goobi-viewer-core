@@ -4,41 +4,33 @@
    ==============================================================*/
 /* WIDGET USER INTERACTIONS */
 #widgetUserInteractions {
-	ul {
-		border-bottom: 0;
-	}
-}
-.widget-user-interactions {
-	ul {
+		ul {
 		li:first-of-type {
 			a {
 		    	padding-top: 0;
 			}
 		}
-		&:last-of-type {
-			border-bottom: 1px solid @middlegray;
-		}
+		&:last-of-type {}
 	}
+}
+
+.widget-user-interactions {
 	&__info-text {
 		font-size: 1.2rem;
 		font-style: italic;
 		margin-bottom: 1rem;
 		color: #666;
 	}
-	&__delete-record {
-	}
+	&__delete-record {}
 	&__delete-record-message {
 		padding: 1.5rem;
 		padding-top: 5px;
-		border: 1px solid @middlegray;
 		border-top: 0;
-	}
-	&__delete-record-message {
 		span {
 			display: inline-block;
 			padding: 10px;
 			font-size: @fontMedium;
-			line-height: 1.4rem; 
+			line-height: 1.4rem;
 			color: @black;
 			border: 1px solid @validWarning;
 			background-color: @btnWarningBgc;
@@ -64,16 +56,6 @@
 	}
 	h4 {
 		margin-bottom: 1rem;
-	}
-}
-
-// MODIFICATION
-
-.widget .btn--full {
-	&:hover,
-	&:active,
-	&:focus {
-		color: @white;
 	}
 }
 

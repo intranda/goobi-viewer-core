@@ -125,10 +125,54 @@
 }
 
 /* MODIFICATION */
-
 .widget .widget-usage__citerecommendation-copy-text {
 	padding: 0;
 	line-height: 1.4;
+}
+
+/* WIDGET USAGE DOWNLOAD IMAGES SIZES POPOVER */
+#downloadImagePopover {
+	fieldset {}
+	label {
+		padding-left: 1rem;
+		margin-bottom: 0.2rem;
+	}
+	input[type="radio"]:checked + label {
+		font-weight: normal;
+	}
+	.widget-usage {
+		&__download-image-size-option-wrapper {
+			display: flex;
+		}
+		&__download-image-size-input {
+			flex: 0 0 auto;
+			max-width: 20px;
+			min-width: unset;
+		}
+		&__download-image-size-form {
+			label {
+				display: flex;
+			}
+		}
+		&__download-image-size-radio-label {
+		    flex: 0 0 auto;
+		    min-width: 75px;
+	    }
+		&__download-image-size-radio-size {
+		    flex: 0 0 auto;
+		    min-width: 90px;
+	    }
+		&__download-image-size-radio-format {
+		    flex: 0 0 auto;
+		    text-transform: uppercase;
+	    }
+		&__download-image-size-button {
+			margin: 0 auto;
+			display: block;
+			width: 80%;
+			margin-top: 2rem;
+		}
+	}
 }
 
 @{RTL} {
@@ -149,7 +193,11 @@
 @media screen and (max-width: @mediumBreakpoint) {}
 
 /* BREAKPOINT FOR TABLETS */
-@media screen and (max-width: @smallBreakpoint) {}
+@media screen and (max-width: @smallBreakpoint) {
+	.widget-usage__download-image-size-radio-label {
+		display: none;
+	}
+}
 
 /* BREAKPOINT FOR SMARTPHONES */
 @media screen and (max-width: @xSmallBreakpoint) {}
