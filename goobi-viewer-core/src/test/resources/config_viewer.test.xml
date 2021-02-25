@@ -641,7 +641,7 @@
 				</metadata>
 			</template>
 		</metadataView>
-        <metadataView index="1" label="label__metadata_other" url="other" >
+        <metadataView index="1" label="label__metadata_other" url="_other" condition="foo:bar" >
             <template name="_DEFAULT">
                 <metadata label="MD_TITLE" value="">
                     <param type="field" key="MD_TITLE">

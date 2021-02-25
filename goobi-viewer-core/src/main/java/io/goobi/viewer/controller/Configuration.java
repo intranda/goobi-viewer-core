@@ -424,7 +424,8 @@ public final class Configuration extends AbstractConfiguration {
             int index = metadataView.getInt("[@index]", 0);
             String label = metadataView.getString("[@label]");
             String url = metadataView.getString("[@url]", "");
-            MetadataView view = new MetadataView().setIndex(index).setLabel(label).setUrl(url);
+            String condition = metadataView.getString("[@condition]");
+            MetadataView view = new MetadataView().setIndex(index).setLabel(label).setUrl(url).setCondition(condition);
             ret.add(view);
         }
 

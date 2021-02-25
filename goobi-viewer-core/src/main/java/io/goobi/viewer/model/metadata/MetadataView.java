@@ -15,14 +15,69 @@
  */
 package io.goobi.viewer.model.metadata;
 
+import java.util.List;
+
+import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import io.goobi.viewer.controller.Configuration;
+import io.goobi.viewer.model.viewer.StructElement;
+
 /**
  * A MetadataView represents a single record metadata view page within a record (along with an own link in the views widget).
  */
 public class MetadataView {
 
+    /** Logger for this class. */
+    private static final Logger logger = LoggerFactory.getLogger(MetadataView.class);
+
+    /** Metadata view index. The first entry implies the value 0, all subsequent entries must provide an index value. */
     public int index = 0;
+    /** Optional label for the link and the metadata page title. */
     public String label;
+    /** URL schema suffix for the metadata page (/metadata<url>/). */
     public String url = "";
+    /** Optional condition for link display. May contain a Solr field name or name:value pair. */
+    public String condition;
+
+    /**
+     * Checks link visibility conditions.
+     * 
+     * @param se
+     * @return true if conditions empty or satisfied; false otherwise
+     * @should return true if condition null or empty
+     * @should return false if struct element null
+     * @should return true if field value pair found
+     * @should return false if field value pair not found
+     * @should return true if field name found
+     * @should return false if field name not found
+     */
+    public boolean isVisible(StructElement se) {
+        if (StringUtils.isBlank(condition)) {
+            return true;
+        }
+        if (se == null) {
+            return false;
+        }
+
+        // Field and value
+        if (condition.contains(":")) {
+            String[] conditionSplit = condition.split(":");
+            switch (conditionSplit.length) {
+                case 2:
+                    List<String> values = se.getMetadataValues(conditionSplit[0]);
+                    return values.contains(conditionSplit[1]);
+                default:
+                    logger.warn("Incorrect condition '{}'. Condition must be a Solr field or field:value pair.", condition);
+                    return false;
+            }
+
+        }
+
+        // Just field name
+        return se.getMetadataValue(condition) != null;
+    }
 
     /**
      * @return the index
@@ -72,4 +127,19 @@ public class MetadataView {
         return this;
     }
 
+    /**
+     * @return the condition
+     */
+    public String getCondition() {
+        return condition;
+    }
+
+    /**
+     * @param condition the condition to set
+     * @return this
+     */
+    public MetadataView setCondition(String condition) {
+        this.condition = condition;
+        return this;
+    }
 }

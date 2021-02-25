@@ -342,10 +342,11 @@ public class ConfigurationTest extends AbstractTest {
     public void getMetadataViews_shouldReturnAllConfiguredValues() throws Exception {
         List<MetadataView> result = DataManager.getInstance().getConfiguration().getMetadataViews();
         Assert.assertEquals(2, result.size());
-        //        MetadataView view = result.get(1);
-        //        Assert.assertEquals(1, view.getIndex());
-        //        Assert.assertEquals("label__metadata_other", view.getLabel());
-        //        Assert.assertEquals("other", view.getUrl());
+        MetadataView view = result.get(1);
+        Assert.assertEquals(1, view.getIndex());
+        Assert.assertEquals("label__metadata_other", view.getLabel());
+        Assert.assertEquals("_other", view.getUrl());
+        Assert.assertEquals("foo:bar", view.getCondition());
     }
 
     /**
@@ -2902,7 +2903,9 @@ public class ConfigurationTest extends AbstractTest {
         Assert.assertEquals("jpg", option.getFormat());
         Assert.assertEquals("4096" + DownloadOption.TIMES_SYMBOL + "4096", option.getBoxSizeLabel());
     }
-     /** @see Configuration#getPageSelectDropdownDisplayMinPages()
+
+    /**
+     * @see Configuration#getPageSelectDropdownDisplayMinPages()
      * @verifies return correct value
      */
     @Test
