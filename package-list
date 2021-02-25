@@ -4,6 +4,7 @@ io.goobi.viewer.api.rest.bindings
 io.goobi.viewer.api.rest.exceptions
 io.goobi.viewer.api.rest.filters
 io.goobi.viewer.api.rest.model
+io.goobi.viewer.api.rest.model.index
 io.goobi.viewer.api.rest.model.ner
 io.goobi.viewer.api.rest.model.search
 io.goobi.viewer.api.rest.model.tasks
@@ -14,6 +15,7 @@ io.goobi.viewer.api.rest.v1.annotations
 io.goobi.viewer.api.rest.v1.authentication
 io.goobi.viewer.api.rest.v1.authorities
 io.goobi.viewer.api.rest.v1.bookmarks
+io.goobi.viewer.api.rest.v1.cache
 io.goobi.viewer.api.rest.v1.cms
 io.goobi.viewer.api.rest.v1.collections
 io.goobi.viewer.api.rest.v1.crowdsourcing
@@ -47,6 +49,7 @@ io.goobi.viewer.model.annotation.export
 io.goobi.viewer.model.archives
 io.goobi.viewer.model.bookmark
 io.goobi.viewer.model.calendar
+io.goobi.viewer.model.citation
 io.goobi.viewer.model.cms
 io.goobi.viewer.model.cms.itemfunctionality
 io.goobi.viewer.model.crowdsourcing
