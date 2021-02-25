@@ -787,6 +787,69 @@ this.msg = function(key) {
 }.bind(this)
 
 });
+riot.tag2('carousel', '<h3>SLIDER 2</h3>', '', '', function(opts) {
+
+    this.on( 'mount', function() {
+    	this.collectionsUrl = this.opts.source;
+
+    	let pCollection = fetch(this.collectionsUrl)
+    	.then(result => result.json());
+
+    	rxjs.from(pCollection)
+    	.pipe(
+    		rxjs.operators.flatMap(collection => collection.members),
+    		rxjs.operators.filter(member => this.isCollection(member)),
+    		rxjs.operators.map(collection => this.createSlide(collection)),
+    		rxjs.operators.reduce((res, item) => res.concat(item), []),
+    	)
+    	.subscribe(slides => this.setSlides(slides))
+    });
+
+    this.setSlides = function(slides) {
+    	this.slides = slides;
+    	this.update();
+    }.bind(this)
+
+    this.isCollection = function(element) {
+    	return (element.type == "Collection" || element["@type"] == "sc:Collection") && element.viewingHint != "multi-part";
+    }.bind(this)
+
+    this.isSingleManifest = function(element) {
+    	return (element.type == "Manifest" || element["@type"] == "sc:Manifest") ;
+    }.bind(this)
+
+    this.isManifest = function(element) {
+    	return element.type == "Manifest" ||
+    	element["@type"] == "sc:Manifest" ||
+    	(element.type == "Collection" && element.viewingHint == "multi-part") ||
+    	(element["@type"] == "sc:Collection" && element.viewingHint == "multi-part");
+    }.bind(this)
+
+    this.getId = function(element) {
+    	if(element.id) {
+    		return element.id;
+    	} else {
+    		return element["@id"];
+    	}
+    }.bind(this)
+
+    this.createSlide = function(element) {
+    	if(this.isCollection(element) || this.isManifest(element)) {
+    		let slide = {
+    				text : element.label,
+    				thumbnail : this.getId(element.thumbnail),
+    				link : element.rendering
+    					.filter(rendering => rendering.format == "text/html")
+    					.map(rendering => this.getId(rendering))
+    					.shift()
+    		}
+    		return slide;
+    	} else {
+    		console.err("Creating slide not implemented for ", element);
+    	}
+    }.bind(this)
+
+});
 
 
 
