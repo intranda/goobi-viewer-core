@@ -19,12 +19,13 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
+import io.goobi.viewer.AbstractTest;
 import io.goobi.viewer.controller.Configuration;
 import io.goobi.viewer.controller.DataManager;
-import io.goobi.viewer.model.viewer.PageType;
 
-public class PageTypeTest {
+public class PageTypeTest extends AbstractTest {
 
+    @Override
     @Before
     public void setUp() throws Exception {
         // Initialize the instance with a custom config file
@@ -101,5 +102,14 @@ public class PageTypeTest {
     @Test
     public void getByName_shouldReturnCorrectTypeForEnumNames() throws Exception {
         Assert.assertEquals(PageType.viewFulltext, PageType.getByName("viewFulltext"));
+    }
+
+    /**
+     * @see PageType#getByName(String)
+     * @verifies return correct type if name starts with metadata
+     */
+    @Test
+    public void getByName_shouldReturnCorrectTypeIfNameStartsWithMetadata() throws Exception {
+        Assert.assertEquals(PageType.viewMetadata, PageType.getByName("metadata_other"));
     }
 }
