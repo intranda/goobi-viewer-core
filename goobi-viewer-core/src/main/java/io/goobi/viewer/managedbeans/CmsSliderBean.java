@@ -16,8 +16,12 @@
 package io.goobi.viewer.managedbeans;
 
 import java.io.Serializable;
+import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
+
+import javax.faces.view.ViewScoped;
+import javax.inject.Named;
 
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -25,22 +29,29 @@ import org.slf4j.LoggerFactory;
 
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.exceptions.DAOException;
+import io.goobi.viewer.managedbeans.tabledata.TableDataFilter;
+import io.goobi.viewer.model.cms.CMSPage;
 import io.goobi.viewer.model.cms.CMSSlider;
+import io.goobi.viewer.model.cms.CMSSlider.SourceType;
 
 /**
  * @author florian
  *
  */
+@Named
+@ViewScoped
 public class CmsSliderBean implements Serializable{
 
     private static final long serialVersionUID = -2204866565916114208L;
-
-    private static final Logger logger = LoggerFactory.getLogger(CmsSliderBean.class);
     
-    private String filter = "";
+    /**
+     * We actually only need a filter String, but we use a complete {@link TableDataFilter} 
+     * so we can utilize the dataTableColumnFilter component
+     */
+    private TableDataFilter filter = new TableDataFilter("name_description", "", null);
     
     public List<CMSSlider> getSliders() throws DAOException {
-        return getSliders(filter);
+        return getSliders(filter.getValue());
     }
     
     public List<CMSSlider> getSliders(String filter) throws DAOException {
@@ -60,14 +71,13 @@ public class CmsSliderBean implements Serializable{
     /**
      * @return the filter
      */
-    public String getFilter() {
+    public TableDataFilter getFilter() {
         return filter;
     }
     
-    /**
-     * @param filter the filter to set
-     */
-    public void setFilter(String filter) {
-        this.filter = filter;
+    public List<CMSPage> getEmbeddingCmsPages(CMSSlider slider) throws DAOException {
+        return DataManager.getInstance().getDao().getPagesUsingSlider(slider);
+
     }
+
 }

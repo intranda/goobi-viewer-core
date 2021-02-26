@@ -113,7 +113,8 @@ public class CMSContentItem implements Comparable<CMSContentItem>, CMSMediaHolde
         CAMPAIGNOVERVIEW,
         BOOKMARKLISTS,
         BROWSETERMS,
-        GEOMAP;
+        GEOMAP,
+        SLIDER;
 
         /**
          * This method evaluates the text from cms-template xml files to select the correct item type
@@ -268,6 +269,9 @@ public class CMSContentItem implements Comparable<CMSContentItem>, CMSMediaHolde
     @Column(name = "searchType")
     private int searchType = SearchHelper.SEARCH_TYPE_REGULAR;
 
+    @Column(name = "slider_id")
+    private Long sliderId = null;
+    
     /**
      * This object may contain item type specific functionality (methods and transient properties)
      * 
@@ -349,6 +353,7 @@ public class CMSContentItem implements Comparable<CMSContentItem>, CMSMediaHolde
         this.setMetadataFields(blueprint.getMetadataFields());
         this.setGroupBy(blueprint.groupBy);
         this.setGeoMap(blueprint.getGeoMap());
+        this.setSliderId(blueprint.sliderId);
 
     }
 
@@ -1750,6 +1755,27 @@ public class CMSContentItem implements Comparable<CMSContentItem>, CMSMediaHolde
     public boolean isPaginated() {
         return ContentItemMode.paginated.equals(getMode());
     }
-
+    
+    /**
+     * @param sliderId the sliderId to set
+     */
+    public void setSliderId(Long sliderId) {
+        this.sliderId = sliderId;
+    }
+    
+    /**
+     * @return the sliderId
+     */
+    public Long getSliderId() {
+        return sliderId;
+    }
+ 
+    public boolean hasSlider() {
+        return sliderId != null;
+    }
+    
+    public CMSSlider getSlider() throws DAOException {
+        return DataManager.getInstance().getDao().getSlider(getSliderId());
+    }
 
 }

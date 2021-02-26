@@ -2232,4 +2232,7 @@ public interface IDAO {
     public boolean updateSlider(CMSSlider slider) throws DAOException;
     
     public boolean deleteSlider(CMSSlider slider) throws DAOException;
+
+    List<CMSPage> getPagesUsingSlider(CMSSlider slider) throws DAOException
+    ;
 }

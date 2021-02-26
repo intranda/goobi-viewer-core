@@ -57,6 +57,7 @@ import io.goobi.viewer.model.cms.CMSPageLanguageVersion.CMSPageStatus;
 import io.goobi.viewer.model.cms.CMSPageTemplateEnabled;
 import io.goobi.viewer.model.cms.CMSRecordNote;
 import io.goobi.viewer.model.cms.CMSSlider;
+import io.goobi.viewer.model.cms.CMSSlider.SourceType;
 import io.goobi.viewer.model.cms.CMSStaticPage;
 import io.goobi.viewer.model.cms.CMSTemplateManager;
 import io.goobi.viewer.model.crowdsourcing.campaigns.Campaign;
@@ -2950,7 +2951,7 @@ public class JPADAOTest extends AbstractDatabaseEnabledTest {
     @Test
     public void testAddSlider() throws DAOException {
         String name = "Test Slider";
-        CMSSlider slider = new CMSSlider();
+        CMSSlider slider = new CMSSlider(SourceType.COLLECTIONS);
         slider.setName(name);
         assertTrue(DataManager.getInstance().getDao().addSlider(slider));
         
@@ -2978,7 +2979,7 @@ public class JPADAOTest extends AbstractDatabaseEnabledTest {
     @Test
     public void testDeleteSlider() throws DAOException {
         String name = "Test Slider";
-        CMSSlider slider = new CMSSlider();
+        CMSSlider slider = new CMSSlider(SourceType.COLLECTIONS);
         slider.setName(name);
         assertTrue(DataManager.getInstance().getDao().addSlider(slider));
         assertNotNull(DataManager.getInstance().getDao().getSlider(slider.getId()));
@@ -2986,5 +2987,13 @@ public class JPADAOTest extends AbstractDatabaseEnabledTest {
         assertTrue(DataManager.getInstance().getDao().deleteSlider(slider));
         assertNull(DataManager.getInstance().getDao().getSlider(slider.getId()));
 
+    }
+    
+    @Test
+    public void testGetEmbeddingCmsPage() throws DAOException {
+        CMSSlider slider = DataManager.getInstance().getDao().getSlider(1l);
+        List<CMSPage> pages = DataManager.getInstance().getDao().getPagesUsingSlider(slider);
+        assertEquals(1, pages.size());
+        assertEquals(Long.valueOf(2l), pages.iterator().next().getId());
     }
 }

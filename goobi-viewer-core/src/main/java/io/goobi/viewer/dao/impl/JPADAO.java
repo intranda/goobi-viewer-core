@@ -5101,4 +5101,26 @@ public class JPADAO implements IDAO {
         }
     }
 
+    /* (non-Javadoc)
+     * @see io.goobi.viewer.dao.IDAO#getPagesUsingSlider(io.goobi.viewer.model.cms.CMSSlider)
+     */
+    @Override
+    public List<CMSPage> getPagesUsingSlider(CMSSlider slider) throws DAOException {
+        preQuery();
+
+        Query qItems = em.createQuery(
+                "SELECT item FROM CMSContentItem item WHERE item.sliderId = :sliderId");
+        qItems.setParameter("sliderId", slider.getId());
+        List<CMSContentItem> itemList = qItems.getResultList();
+
+
+        List<CMSPage> pageList = itemList.stream()
+                .map(CMSContentItem::getOwnerPageLanguageVersion)
+                .map(CMSPageLanguageVersion::getOwnerPage)
+                .distinct()
+                .collect(Collectors.toList());
+
+        return pageList;
+    }
+
 }

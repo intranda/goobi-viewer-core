@@ -44,6 +44,8 @@ public class CMSSlider implements Serializable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "slider_id")
     private Long id;
+    @Column(name="source_type", nullable=false)
+    private SourceType sourceType;
     @Column(name = "name", columnDefinition = "LONGTEXT")
     private String name;
     @Column(name = "description", columnDefinition = "LONGTEXT")
@@ -59,7 +61,7 @@ public class CMSSlider implements Serializable {
     @Column(name="style")
     private String style;
     /**
-     * @param o
+     * Copy constructor
      */
     public CMSSlider(CMSSlider o) {
         this.id = o.id;
@@ -71,8 +73,20 @@ public class CMSSlider implements Serializable {
         this.style = o.style;
     }
     
+    /**
+     * persistence constructor
+     */
     public CMSSlider() {
         
+    }
+    
+    /**
+     * Default constructor. Provides the source type which should be treated as final
+     * 
+     * @param type
+     */
+    public CMSSlider(SourceType type) {
+        this.sourceType = type;
     }
     
     /**
@@ -168,9 +182,32 @@ public class CMSSlider implements Serializable {
         this.style = style;
     }
     
+    /**
+     * @return the sourceType
+     */
+    public SourceType getSourceType() {
+        return sourceType;
+    }
+    
     public String getSourceUrl() {
         //TODO: return rest url, probably something like "/api/v1/slider/1/source.json"
         return null;
+    }
+    
+    public static enum SourceType {
+        RECORDS("cms__slider_type__records"), //has solrQuery
+        COLLECTIONS("cms__slider_type__collections"), //has collections
+        PAGES("cms__slider_type__pages"); //has categories
+    
+        private final String label;
+        
+        private SourceType(String label) {
+            this.label = label;
+        }
+
+        public String getLabel() {
+            return label;
+        }
     }
 
 }
