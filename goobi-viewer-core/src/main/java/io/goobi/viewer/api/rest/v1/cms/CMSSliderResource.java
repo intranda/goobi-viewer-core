@@ -17,14 +17,98 @@ package io.goobi.viewer.api.rest.v1.cms;
 
 import static io.goobi.viewer.api.rest.v1.ApiUrls.CMS_MEDIA;
 
+import java.net.URI;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+
+import javax.ws.rs.GET;
+import javax.ws.rs.PathParam;
+import javax.ws.rs.Produces;
+import javax.ws.rs.core.MediaType;
+
+import org.apache.solr.common.SolrDocument;
+import org.apache.solr.common.SolrDocumentList;
+
+import de.intranda.api.iiif.presentation.Collection;
+import de.unigoettingen.sub.commons.contentlib.exceptions.ContentNotFoundException;
+import de.unigoettingen.sub.commons.contentlib.exceptions.IllegalRequestException;
+import io.goobi.viewer.api.rest.AbstractApiUrlManager;
 import io.goobi.viewer.api.rest.bindings.ViewerRestServiceBinding;
+import io.goobi.viewer.api.rest.v1.ApiUrls;
+import io.goobi.viewer.controller.DataManager;
+import io.goobi.viewer.controller.SolrConstants;
+import io.goobi.viewer.controller.SolrSearchIndex;
+import io.goobi.viewer.exceptions.DAOException;
+import io.goobi.viewer.exceptions.IndexUnreachableException;
+import io.goobi.viewer.exceptions.PresentationException;
+import io.goobi.viewer.managedbeans.utils.BeanUtils;
+import io.goobi.viewer.model.cms.CMSSlider;
+import io.goobi.viewer.model.iiif.presentation.builder.CollectionBuilder;
+import io.goobi.viewer.model.iiif.presentation.builder.ManifestBuilder;
 
 /**
  * @author florian
  *
  */
-@javax.ws.rs.Path(CMS_MEDIA)
+@javax.ws.rs.Path("/cms/slider/{sliderId}")
 @ViewerRestServiceBinding
 public class CMSSliderResource {
+
+    private final CMSSlider slider;
+
+    public CMSSliderResource(@PathParam("sliderId") Long sliderId) throws DAOException {
+        this.slider = DataManager.getInstance().getDao().getSlider(sliderId);
+    }
+
+    @GET
+    @javax.ws.rs.Path("/slides")
+    @Produces({ MediaType.APPLICATION_JSON })
+    public List<URI> getSlides() throws ContentNotFoundException, PresentationException, IndexUnreachableException, IllegalRequestException {
+        if (this.slider != null) {
+            switch (slider.getSourceType()) {
+                case COLLECTIONS:
+                    return getCollectionsAsCollection(slider.getCollections());
+                case RECORDS:
+                    return getRecordsAsCollection(slider.getSolrQuery());
+                default:
+                    throw new IllegalRequestException("Cannot create collection for slider " + slider.getName());
+            }
+        } else {
+            throw new ContentNotFoundException("Slider with requested id not found");
+        }
+    }
+
+    /**
+     * @param solrQuery
+     * @return
+     * @throws IndexUnreachableException
+     * @throws PresentationException
+     */
+    private List<URI> getRecordsAsCollection(String solrQuery) throws PresentationException, IndexUnreachableException {
+        SolrDocumentList solrDocs = DataManager.getInstance().getSearchIndex().search(solrQuery, Arrays.asList(SolrConstants.PI));
+
+        List<URI> manifests = new ArrayList<>();
+        AbstractApiUrlManager urls = DataManager.getInstance().getRestApiManager().getDataApiManager().orElse(null);
+        if(urls == null) {
+            return Collections.emptyList();
+        }
+        
+        for (SolrDocument doc : solrDocs) {
+            String pi = (String) SolrSearchIndex.getSingleFieldValue(doc, SolrConstants.PI);
+            URI uri = urls.path(ApiUrls.RECORDS_RECORD, ApiUrls.RECORDS_MANIFEST).params(pi).buildURI();
+            manifests.add(uri);
+        }
+        return manifests;
+    }
+
+    /**
+     * @param collections
+     * @return
+     */
+    private List<URI> getCollectionsAsCollection(List<String> collectionNames) {
+        return null;
+    }
 
 }

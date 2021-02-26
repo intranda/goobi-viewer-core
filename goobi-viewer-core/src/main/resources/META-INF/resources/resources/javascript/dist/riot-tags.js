@@ -2716,8 +2716,10 @@ riot.tag2('slideshow', '<div ref="container" class="swiper-container slider-{thi
 
     	rxjs.from(pSource)
     	.pipe(
-    		rxjs.operators.flatMap(source => this.getElements(source)),
-    		rxjs.operators.map(collection => this.createSlide(collection)),
+    		rxjs.operators.flatMap(source => source),
+    		rxjs.operators.flatMap(uri => fetch(uri)),
+    		rxjs.operators.flatMap(result => result.json()),
+    		rxjs.operators.map(element => this.createSlide(element)),
     		rxjs.operators.reduce((res, item) => res.concat(item), []),
     	)
     	.subscribe(slides => this.setSlides(slides))
@@ -2744,11 +2746,12 @@ riot.tag2('slideshow', '<div ref="container" class="swiper-container slider-{thi
 		if(viewerJS.iiif.isCollection(source)) {
 			return source.members.filter(member => viewerJS.iiif.isCollection(member));
 		} else {
-			console.err("Cannot get slides from ", source);
+			console.error("Cannot get slides from ", source);
 		}
 	}.bind(this)
 
     this.createSlide = function(element) {
+    	console.log("got element ", element);
     	if(viewerJS.iiif.isCollection(element) || viewerJS.iiif.isManifest(element)) {
     		let slide = {
     				header : element.label,
@@ -2761,7 +2764,7 @@ riot.tag2('slideshow', '<div ref="container" class="swiper-container slider-{thi
     		}
     		return slide;
     	} else {
-    		console.err("Creating slide not implemented for ", element);
+    		console.error("Creating slide not implemented for ", element);
     	}
     }.bind(this)
 
