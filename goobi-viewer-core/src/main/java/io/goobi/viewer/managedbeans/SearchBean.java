@@ -1704,6 +1704,10 @@ public class SearchBean implements SearchInterface, Serializable {
             List<BrowseDcElement> elementList = browseBean.getList(field, displayDepth);
             StringBuilder sbItemLabel = new StringBuilder();
             for (BrowseDcElement dc : elementList) {
+                // Skip reversed values that MD_* and MD2_* fields will return
+                if (StringUtils.isEmpty(dc.getName()) || dc.getName().charAt(0) == 1) {
+                    continue;
+                }
                 for (int i = 0; i < dc.getLevel(); ++i) {
                     sbItemLabel.append("- ");
                 }
