@@ -584,7 +584,9 @@ public class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
     public void defacetifyField_shouldDefacetifyCorrectly() throws Exception {
         Assert.assertEquals(SolrConstants.DC, SearchHelper.defacetifyField(SolrConstants.FACET_DC));
         Assert.assertEquals(SolrConstants.DOCSTRCT, SearchHelper.defacetifyField("FACET_DOCSTRCT"));
-        //        Assert.assertEquals(SolrConstants.DOCSTRCT, SearchHelper.defacetifyField("FACET_SUPERDOCSTRCT"));
+        Assert.assertEquals(SolrConstants._CALENDAR_YEAR, SearchHelper.defacetifyField("FACET_YEAR"));
+        Assert.assertEquals(SolrConstants._CALENDAR_MONTH, SearchHelper.defacetifyField("FACET_YEARMONTH"));
+        Assert.assertEquals(SolrConstants._CALENDAR_DAY, SearchHelper.defacetifyField("FACET_YEARMONTHDAY"));
         Assert.assertEquals("MD_TITLE", SearchHelper.defacetifyField("FACET_TITLE"));
     }
 
@@ -599,7 +601,6 @@ public class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
         //        Assert.assertEquals("FACET_SUPERDOCSTRCT", SearchHelper.facetifyField(SolrConstants.SUPERDOCSTRCT));
         Assert.assertEquals("FACET_TITLE", SearchHelper.facetifyField("MD_TITLE_UNTOKENIZED"));
     }
-    
 
     /**
      * @see SearchHelper#facetifyField(String)
