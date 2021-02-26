@@ -178,6 +178,7 @@ public class CmsBeanTest extends AbstractDatabaseAndSolrEnabledTest {
                 SearchHit.createSearchHit(doc, null, null, Locale.GERMAN, "", null, null, null, null, null, SearchHit.HitType.DOCSTRCT,
                         null);
         hit.getBrowseElement().setLabelShort(new SimpleMetadataValue(iddoc));
+        logger.debug("labelShort: " + hit.getBrowseElement().getLabelShort());
         hit.setSolrDoc(doc);
         return hit;
     }

@@ -56,6 +56,8 @@ public class StructElementStub implements Comparable<StructElementStub>, Seriali
     protected String logid;
     /** Type of this structure element. */
     protected String docStructType = "";
+    /** Solr document type. */
+    protected DocType docType = null;
     /** True if this element is a top level structure element. */
     protected boolean work = false;
     /** True if this element is an anchor element. */
@@ -115,6 +117,28 @@ public class StructElementStub implements Comparable<StructElementStub>, Seriali
             return -1;
         }
         return 0;
+    }
+
+    /**
+     * <p>
+     * getDisplayLabel.
+     * </p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
+    public String getDisplayLabel() {
+        String label = getMetadataValue(SolrConstants.LABEL);
+        if (StringUtils.isEmpty(label)) {
+            label = getMetadataValue(SolrConstants.TITLE);
+            if (StringUtils.isEmpty(label)) {
+                label = getDocStructType();
+            }
+            if (StringUtils.isEmpty(label)) {
+                label = "doctype_" + docType.name();
+            }
+        }
+
+        return label;
     }
 
     /**
@@ -193,6 +217,17 @@ public class StructElementStub implements Comparable<StructElementStub>, Seriali
     public long getNumVolumes() {
         return numVolumes;
     }
+    
+    /**
+     * <p>
+     * isGroup.
+     * </p>
+     *
+     * @return a boolean.
+     */
+    public boolean isGroup() {
+        return DocType.GROUP.equals(docType);
+    }
 
     /**
      * <p>
@@ -269,6 +304,20 @@ public class StructElementStub implements Comparable<StructElementStub>, Seriali
      */
     public void setDocStructType(String docStructType) {
         this.docStructType = docStructType;
+    }
+
+    /**
+     * @return the docType
+     */
+    public DocType getDocType() {
+        return docType;
+    }
+
+    /**
+     * @param docType the docType to set
+     */
+    public void setDocType(DocType docType) {
+        this.docType = docType;
     }
 
     /**

@@ -65,7 +65,6 @@ public class StructElement extends StructElementStub implements Comparable<Struc
 
     /** If false; the Solr document with the given IDDOC does not exist in the index. */
     private boolean exists = false;
-    private DocType docType = null;;
     /** True if full-text is available for this record (top-level structure elements only). */
     private boolean fulltextAvailable = false;
     /** True if ALTO is available for this record. */
@@ -119,7 +118,7 @@ public class StructElement extends StructElementStub implements Comparable<Struc
         super(luceneId);
         init(doc);
     }
-    
+
     /**
      * Like {@link #StructElement(long, SolrDocument)}, but get the lucene Id from the SolrDocument
      * 
@@ -156,6 +155,9 @@ public class StructElement extends StructElementStub implements Comparable<Struc
             // Only add DOCSTRCT if the page doc has none yet (Indexer older than 2.0.20120619)
             if (docToMerge.getFieldValue(SolrConstants.DOCSTRCT) != null && doc.getFieldValue(SolrConstants.DOCSTRCT) == null) {
                 doc.addField(SolrConstants.DOCSTRCT, docToMerge.getFieldValue(SolrConstants.DOCSTRCT));
+            }
+            if (docToMerge.getFieldValue(SolrConstants.DOCTYPE) != null && doc.getFieldValue(SolrConstants.DOCTYPE) == null) {
+                doc.addField(SolrConstants.DOCTYPE, docToMerge.getFieldValue(SolrConstants.DOCTYPE));
             }
             if (docToMerge.getFieldValue(SolrConstants.CURRENTNO) != null) {
                 volumeNo = (String) docToMerge.getFieldValue(SolrConstants.CURRENTNO);
@@ -410,17 +412,6 @@ public class StructElement extends StructElementStub implements Comparable<Struc
      */
     public boolean isGroupMember() {
         return !groupMemberships.isEmpty();
-    }
-
-    /**
-     * <p>
-     * isGroup.
-     * </p>
-     *
-     * @return a boolean.
-     */
-    public boolean isGroup() {
-        return DocType.GROUP.equals(docType);
     }
 
     /**
@@ -730,14 +721,15 @@ public class StructElement extends StructElementStub implements Comparable<Struc
     /**
      * Returns a stub representation of this object that only contains simple members to conserve memory.
      *
-     * @should create stub correctly
      * @return a {@link io.goobi.viewer.model.viewer.StructElementStub} object.
+     * @should create stub correctly
      */
     public StructElementStub createStub() {
         StructElementStub ret = new StructElementStub(luceneId);
         ret.setPi(getPi());
         ret.setLogid(logid);
         ret.setDocStructType(getDocStructType());
+        ret.setDocType(docType);
         ret.setSourceDocFormat(sourceDocFormat);
         ret.setImageNumber(getImageNumber());
         ret.setWork(work);
@@ -769,25 +761,6 @@ public class StructElement extends StructElementStub implements Comparable<Struc
      */
     public Map<String, String> getGroupMemberships() {
         return groupMemberships;
-    }
-
-    /**
-     * <p>
-     * getDisplayLabel.
-     * </p>
-     *
-     * @return a {@link java.lang.String} object.
-     */
-    public String getDisplayLabel() {
-        String label = getMetadataValue(SolrConstants.LABEL);
-        if (StringUtils.isEmpty(label)) {
-            label = getMetadataValue(SolrConstants.TITLE);
-            if (StringUtils.isEmpty(label)) {
-                label = getDocStructType();
-            }
-        }
-
-        return label;
     }
 
     /**
@@ -1055,7 +1028,7 @@ public class StructElement extends StructElementStub implements Comparable<Struc
         }
 
     }
-    
+
     public static StructElement create(SolrDocument solrDoc) {
         try {
             return new StructElement(solrDoc);
