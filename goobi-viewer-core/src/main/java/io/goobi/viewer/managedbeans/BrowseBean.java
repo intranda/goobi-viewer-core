@@ -913,6 +913,25 @@ public class BrowseBean implements Serializable {
     public CollectionView getCollection(String field) {
         return collections.get(field);
     }
+    
+    public CollectionView getOrCreateCollection(String field) {
+        CollectionView collection = getCollection(field);
+        if(collection == null) {
+            initializeCollection(field, getFacetField(field));
+            collection = getCollection(field);
+        }
+        return collection;
+    }
+
+    private String getFacetField(String field) {
+        if(field.startsWith("MD_")) {
+            return field.replace("MD_", "FACET_");
+        } else if(field.equals("YEAR") || field.equals("DC")) {
+            return "FACET_" + field;
+        } else {
+            return field;
+        }
+    }
 
     /**
      * <p>

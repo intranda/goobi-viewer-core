@@ -59,12 +59,13 @@ public class CMSSlider implements Serializable {
     @Convert(converter = StringListConverter.class)
     private List<String> collections  = new ArrayList<>();
     @Column(name="style")
-    private String style;
+    private String style = "base";
     /**
      * Copy constructor
      */
     public CMSSlider(CMSSlider o) {
         this.id = o.id;
+        this.sourceType = o.sourceType;
         this.name = o.name;
         this.description = o.description;
         this.solrQuery = o.solrQuery;

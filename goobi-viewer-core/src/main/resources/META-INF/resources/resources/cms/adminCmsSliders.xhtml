@@ -26,8 +26,7 @@
 						<h2 class="admin__title">#{msg.cms__sliders__title}</h2>
 						<!-- CREATE NEW NOTE -->
 						<ui:fragment rendered="#{userBean.user.cmsAdmin}">
-							<a
-								href="#{navigationHelper.applicationUrl}admin/cms/sliders/new/"
+							<a href="#{navigationHelper.applicationUrl}admin/cms/slider/new/"
 								class="btn btn--default admin__title-bar-action"> <span>#{msg.add}</span>
 							</a>
 						</ui:fragment>
@@ -46,26 +45,43 @@
 						</div>
 
 						<div class="admin__entry-list">
-							<ui:repeat var="slider"
-								value="#{cmsSliderBean.sliders}">
-								<div class="admin__boxed-entry -w33">
-								
+							<ui:repeat var="slider" value="#{cmsSliderBean.sliders}">
+								<div class="admin__boxed-entry -w33 admin__table-entry">
+
 									<h3>#{slider.name}</h3>
 									<p>#{slider.description}</p>
 									<dl>
 										<dt>#{msg.label__type}:</dt>
 										<dd>#{msg[slider.sourceType.label]}</dd>
-										
+
 										<dt>#{msg.label__usage}:</dt>
 										<dd>
-											<ui:repeat var="cmsPage" value="#{cmsSliderBean.getEmbeddingCmsPages(slider)}">
-                                            	<a href="#{cmsPage.pageUrl}" class="-bluelink">#{cmsPage.title}</a>
-                                            </ui:repeat>
+											<ui:repeat var="cmsPage"
+												value="#{cmsSliderBean.getEmbeddingCmsPages(slider)}">
+												<a href="#{cmsPage.pageUrl}" class="-bluelink">#{cmsPage.title}</a>
+											</ui:repeat>
 										</dd>
 									</dl>
+									<div class="admin__table-data">
+                                        <!-- EDIT -->
+                                        <a href="#{navigationHelper.applicationUrl}admin/cms/slider/edit/#{slider.id}/" 
+                                        class="admin__table-action-link" 
+                                        aria-label="#{msg.edit}: #{slider.name}">#{msg.edit}</a>
+                                        <!-- DELETE -->
+                                        <h:commandLink 
+                                        	styleClass="admin__table-action-link -redlink" 
+                                        	onclick="if ( !confirm( &quot;#{msg.cms__delete_slider__confirmation}&quot; ) ) { return false };"
+                                        	action="#{cmsSliderBean.deleteSlider(slider)}" 
+                                        	aria-label="#{msg.delete}: #{slider.name}"
+                                        	title="#{msg.cms__sliders__delete}">#{msg.delete}</h:commandLink>
+                                    </div>
 								</div>
 							</ui:repeat>
 						</div>
+					</div>
+				</h:form>
+			</h:panelGroup>
+		</div>
 	</ui:define>
 
 </ui:composition>

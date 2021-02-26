@@ -929,6 +929,16 @@ public final class Configuration extends AbstractConfiguration {
 
         return null;
     }
+    
+    
+    public List<String> getConfiguredCollectionFields() {
+        List<String> list = getLocalList("collections.collection[@field]");
+        if(list == null || list.isEmpty()) {
+            return Collections.singletonList("DC");
+        } else {
+            return list;
+        }
+    }
 
     /**
      * <p>

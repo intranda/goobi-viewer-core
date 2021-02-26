@@ -68,6 +68,10 @@ public class CmsSliderBean implements Serializable{
         return DataManager.getInstance().getDao().getSlider(id);
     }
     
+    public boolean deleteSlider(CMSSlider slider) throws DAOException {
+        return DataManager.getInstance().getDao().deleteSlider(slider);
+    }
+    
     /**
      * @return the filter
      */

@@ -71,6 +71,14 @@
                                 </h:outputLink>
                             </li>
                         </ui:fragment>
+                        <ui:fragment rendered="#{userBean.user.isHasCmsPrivilege('CMS_SLIDERS')}">
+                            <li class="#{navigationHelper.currentPage == 'adminCmsSliders' ? 'active' : ''}">
+                                <h:outputLink value="#{navigationHelper.getPageUrl('adminCmsSliders')}/">
+                                    <i class="fa fa-play-circle" aria-hidden="true"></i>
+                                    <span>#{msg.cms__sliders__title_plural}</span>
+                                </h:outputLink>
+                            </li>
+                        </ui:fragment>
                          <ui:fragment rendered="#{userBean.user.isHasCmsPrivilege('CMS_RECORD_NOTES')}">
                             <li class="#{navigationHelper.currentPage == 'adminCmsRecordNotes' ? 'active' : ''}">
                                 <h:outputLink value="#{navigationHelper.getPageUrl('adminCmsRecordNotes')}/">
