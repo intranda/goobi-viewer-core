@@ -27,13 +27,4 @@ if (getFacesConfigXmlVersion(facesContext).equals("2.3") || getWebXmlVersion(fac
 		<phase-listener>com.ocpsoft.pretty.faces.event.MultiPageMessagesSupport</phase-listener>
 	</lifecycle>
 
-	<navigation-rule>
-		<from-view-id>*</from-view-id>
-		<navigation-case>
-			<from-outcome>currentPage</from-outcome>
-			<to-view-id>#{navigationHelper.currentViewPrettyUrl}</to-view-id>
-			<redirect />
-		</navigation-case>
-	</navigation-rule>	
-
 </faces-config>
