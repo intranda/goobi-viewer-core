@@ -269,8 +269,8 @@ public class CMSContentItem implements Comparable<CMSContentItem>, CMSMediaHolde
     @Column(name = "searchType")
     private int searchType = SearchHelper.SEARCH_TYPE_REGULAR;
 
-    @Column(name = "slider_id")
-    private Long sliderId = null;
+    @JoinColumn(name = "slider_id")
+    private CMSSlider slider = null;
     
     /**
      * This object may contain item type specific functionality (methods and transient properties)
@@ -353,7 +353,7 @@ public class CMSContentItem implements Comparable<CMSContentItem>, CMSMediaHolde
         this.setMetadataFields(blueprint.getMetadataFields());
         this.setGroupBy(blueprint.groupBy);
         this.setGeoMap(blueprint.getGeoMap());
-        this.setSliderId(blueprint.sliderId);
+        this.setSlider(blueprint.slider);
 
     }
 
@@ -1758,24 +1758,29 @@ public class CMSContentItem implements Comparable<CMSContentItem>, CMSMediaHolde
     
     /**
      * @param sliderId the sliderId to set
+     * @throws DAOException 
      */
-    public void setSliderId(Long sliderId) {
-        this.sliderId = sliderId;
+    public void setSliderId(Long sliderId) throws DAOException {
+        this.slider = DataManager.getInstance().getDao().getSlider(getSliderId());
     }
     
     /**
      * @return the sliderId
      */
     public Long getSliderId() {
-        return sliderId;
+        return this.slider != null ? this.slider.getId() : null;
     }
  
     public boolean hasSlider() {
-        return sliderId != null;
+        return this.slider != null;
     }
     
-    public CMSSlider getSlider() throws DAOException {
-        return DataManager.getInstance().getDao().getSlider(getSliderId());
+    public CMSSlider getSlider(){
+        return slider;
+    }
+    
+    public void setSlider(CMSSlider slider) {
+        this.slider = slider;
     }
 
 }

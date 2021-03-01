@@ -50,6 +50,20 @@ public class CmsSliderBean implements Serializable{
      */
     private TableDataFilter filter = new TableDataFilter("name_description", "", null);
     
+    /**
+     * 
+     * @return an unfiltered list of all persisted sliders
+     * @throws DAOException
+     */
+    public List<CMSSlider> getAllSliders() throws DAOException {
+        return getSliders("");
+    }
+    
+    /**
+     * 
+     * @return all persisted sliders filtered by the current {@link filter}
+     * @throws DAOException
+     */
     public List<CMSSlider> getSliders() throws DAOException {
         return getSliders(filter.getValue());
     }
