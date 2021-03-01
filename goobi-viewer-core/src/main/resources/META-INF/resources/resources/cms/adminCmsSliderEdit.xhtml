@@ -152,6 +152,9 @@
 															value="#{slider.collections}">
 															<f:selectItems 
 																value="#{cmsSliderEditBean.availableCollections}"
+																var="collection"
+																itemLabel="#{collection.label}"
+																itemValue="#{collection.toString()}"
 															></f:selectItems>
 														</h:selectManyListbox>
 														<span class="admin__form-help-text">#{msg.cms__edit_slider__collections__help}</span>

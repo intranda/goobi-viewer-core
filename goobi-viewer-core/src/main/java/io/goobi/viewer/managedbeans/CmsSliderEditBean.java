@@ -19,11 +19,13 @@ import java.io.Serializable;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.Locale;
 import java.util.stream.Collectors;
 
 import javax.faces.view.ViewScoped;
 import javax.inject.Named;
 
+import org.apache.commons.lang.ObjectUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -55,7 +57,7 @@ public class CmsSliderEditBean implements Serializable {
     
     private List<Selectable<CMSCategory>> selectableCategories;
 
-    private List<String> dcStrings;
+    private List<CMSCollection> cmsCollections;
 
 
 
@@ -135,16 +137,17 @@ public class CmsSliderEditBean implements Serializable {
         return Arrays.asList(SourceType.values());
     }
     
-    public List<String> getAvailableCollections() {
-        if(dcStrings == null) {            
-                dcStrings = DataManager.getInstance().getConfiguration().getConfiguredCollectionFields()
+    public List<CMSCollection> getAvailableCollections() {
+        Locale locale = BeanUtils.getLocale();
+        if(cmsCollections == null) {            
+                cmsCollections = DataManager.getInstance().getConfiguration().getConfiguredCollectionFields()
                 .stream()
                 .flatMap(field -> getCollections(field).stream())
-                .map(collection -> collection.getLabel(BeanUtils.getLocale()))
-                .sorted()
+//                .map(collection -> collection.getLabel(BeanUtils.getLocale()))
+                .sorted( (c1, c2) -> ObjectUtils.compare(c1.getLabel(locale), c2.getLabel(locale)))
                 .collect(Collectors.toList());
         }
-        return dcStrings;
+        return cmsCollections;
     }
     
     private List<CMSCollection> getCollections(String field) {
@@ -188,4 +191,5 @@ public class CmsSliderEditBean implements Serializable {
     public List<Selectable<CMSCategory>> getSelectableCategories() {
         return selectableCategories;
     }
+
 }

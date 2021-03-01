@@ -30,6 +30,8 @@ import javax.ws.rs.core.MediaType;
 
 import org.apache.solr.common.SolrDocument;
 import org.apache.solr.common.SolrDocumentList;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import de.intranda.api.iiif.presentation.Collection;
 import de.unigoettingen.sub.commons.contentlib.exceptions.ContentNotFoundException;
@@ -44,6 +46,7 @@ import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
+import io.goobi.viewer.model.cms.CMSCollection;
 import io.goobi.viewer.model.cms.CMSSlider;
 import io.goobi.viewer.model.iiif.presentation.builder.CollectionBuilder;
 import io.goobi.viewer.model.iiif.presentation.builder.ManifestBuilder;
@@ -56,6 +59,8 @@ import io.goobi.viewer.model.iiif.presentation.builder.ManifestBuilder;
 @ViewerRestServiceBinding
 public class CMSSliderResource {
 
+    private static final Logger logger = LoggerFactory.getLogger(CMSSliderResource.class);
+    
     private final CMSSlider slider;
 
     public CMSSliderResource(@PathParam("sliderId") Long sliderId) throws DAOException {
@@ -87,20 +92,21 @@ public class CMSSliderResource {
      * @throws PresentationException
      */
     private List<URI> getRecordsAsCollection(String solrQuery) throws PresentationException, IndexUnreachableException {
-        SolrDocumentList solrDocs = DataManager.getInstance().getSearchIndex().search(solrQuery, Arrays.asList(SolrConstants.PI));
 
         List<URI> manifests = new ArrayList<>();
         AbstractApiUrlManager urls = DataManager.getInstance().getRestApiManager().getDataApiManager().orElse(null);
         if(urls == null) {
             return Collections.emptyList();
+        } else {            
+            SolrDocumentList solrDocs = DataManager.getInstance().getSearchIndex().search(solrQuery, Arrays.asList(SolrConstants.PI));
+            for (SolrDocument doc : solrDocs) {
+                String pi = (String) SolrSearchIndex.getSingleFieldValue(doc, SolrConstants.PI);
+                URI uri = urls.path(ApiUrls.RECORDS_RECORD, ApiUrls.RECORDS_MANIFEST).params(pi).buildURI();
+                manifests.add(uri);
+            }
+            return manifests;
         }
         
-        for (SolrDocument doc : solrDocs) {
-            String pi = (String) SolrSearchIndex.getSingleFieldValue(doc, SolrConstants.PI);
-            URI uri = urls.path(ApiUrls.RECORDS_RECORD, ApiUrls.RECORDS_MANIFEST).params(pi).buildURI();
-            manifests.add(uri);
-        }
-        return manifests;
     }
 
     /**
@@ -108,7 +114,24 @@ public class CMSSliderResource {
      * @return
      */
     private List<URI> getCollectionsAsCollection(List<String> collectionNames) {
-        return null;
+        List<URI> collections = new ArrayList<>();
+        AbstractApiUrlManager urls = DataManager.getInstance().getRestApiManager().getDataApiManager().orElse(null);
+        if(urls == null) {
+            return Collections.emptyList();
+        } else {
+            for (String collectionName : collectionNames) {
+                String[] nameParts = collectionName.split("/");
+                if(nameParts.length != 2) {
+                    logger.error("Collection name for slider source has wrong format: " + collectionName);
+                    continue;
+                }
+                String field = nameParts[0];
+                String value = nameParts[1];
+                URI uri = urls.path(ApiUrls.COLLECTIONS, ApiUrls.COLLECTIONS_COLLECTION).params(field, value).buildURI();
+                collections.add(uri);
+            }
+            return collections;
+        }
     }
 
 }

@@ -220,6 +220,23 @@ var viewerJS = ( function( viewer ) {
                 }
             },
             
+            /**
+            * @return the first found element in the "rendering" attribute with format='text/html'. Returns 'undefined' 
+            * if no such element was found
+            */
+            getViewerPage(presentationElement) {
+            	if(!presentationElement.rendering) {
+            		return undefined;
+            	} else if(Array.isArray(presentationElement.rendering)) {
+            		return presentationElement.rendering
+    					.filter(rendering => rendering.format == "text/html")
+    					.shift();
+    			} else if(presentationElement.rendering.format == "text/html"){
+    				return presentationElement.rendering;
+    			} else {
+    				return undefined;
+    			}
+            },
             
             /**
              * @return the object in the service property which @context ends in <name>.context.json, if any
