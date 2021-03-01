@@ -20,12 +20,15 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import java.util.stream.Collectors;
 
+import javax.faces.context.FacesContext;
 import javax.faces.view.ViewScoped;
 import javax.inject.Named;
 
 import org.apache.commons.lang.ObjectUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -58,7 +61,7 @@ public class CmsSliderEditBean implements Serializable {
     private List<Selectable<CMSCategory>> selectableCategories;
 
     private List<CMSCollection> cmsCollections;
-
+    
 
 
     /**
@@ -81,6 +84,15 @@ public class CmsSliderEditBean implements Serializable {
         this.selectedSlider = selectedSlider;
         readCategories();
         
+    }
+    
+    /**
+     * Set the selected slider via id string
+     * @throws DAOException 
+     */
+    public void setSliderId(String idString) throws DAOException {
+        Long id = Long.parseLong(idString);
+        setSelectedSlider(DataManager.getInstance().getDao().getSlider(id));
     }
     
     /**
@@ -113,6 +125,9 @@ public class CmsSliderEditBean implements Serializable {
     public String save() {
         if(this.selectedSlider != null) { 
             try {
+                if(this.selectedSlider.getStyle() == null) {
+                    this.selectedSlider.setStyle("base");
+                }
             if(this.selectedSlider.getId() != null) {
                 DataManager.getInstance().getDao().updateSlider(selectedSlider);
             } else {
@@ -193,6 +208,16 @@ public class CmsSliderEditBean implements Serializable {
      */
     public List<Selectable<CMSCategory>> getSelectableCategories() {
         return selectableCategories;
+    }
+    
+    public void setStyleFromRequestParameter() {
+        Map<String, String> params = FacesContext.getCurrentInstance().
+                getExternalContext().getRequestParameterMap();
+        
+        String style = params.get("sliderStyle");
+        if(StringUtils.isNotBlank(style) && this.selectedSlider != null) {
+            selectedSlider.setStyle(style);
+        }
     }
 
 }

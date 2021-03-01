@@ -44,6 +44,13 @@ var viewerJS = ( function( viewer ) {
      	]),
      	init: function() {
      		riot.mount("slideshow", {language: currentLang, styles: this.styles});
+     	},
+     	set: function(name, config) {
+     		this.styles.set(name, config);
+     	},
+     	update: function(name, configFragment) {
+     		let config = $.extend( true, {}, this.styles.get(name), configFragment );
+     		this.set(name, config);
      	}
             
     }

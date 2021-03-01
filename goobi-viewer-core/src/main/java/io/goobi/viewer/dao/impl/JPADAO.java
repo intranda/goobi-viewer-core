@@ -5109,8 +5109,8 @@ public class JPADAO implements IDAO {
         preQuery();
 
         Query qItems = em.createQuery(
-                "SELECT item FROM CMSContentItem item WHERE item.sliderId = :sliderId");
-        qItems.setParameter("sliderId", slider.getId());
+                "SELECT item FROM CMSContentItem item WHERE item.slider = :slider");
+        qItems.setParameter("slider", slider);
         List<CMSContentItem> itemList = qItems.getResultList();
 
 

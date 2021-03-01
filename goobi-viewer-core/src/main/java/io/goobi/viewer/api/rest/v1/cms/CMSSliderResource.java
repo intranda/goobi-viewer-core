@@ -97,6 +97,7 @@ public class CMSSliderResource {
     private List<URI> getPages(List<String> categories) {
         return categories.stream()
         .map(this::getCategoryById)
+        .filter(category -> category != null)
         .flatMap(category -> getPagesForCategory(category).stream())
         .map(this::getApiUrl)
         .collect(Collectors.toList());

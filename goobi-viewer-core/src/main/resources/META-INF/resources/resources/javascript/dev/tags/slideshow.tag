@@ -19,7 +19,7 @@
 
     this.on( 'mount', function() {
     	this.style = this.opts.style;
-    	
+    	console.log("")
     	let pSource = fetch(this.opts.source)
     	.then(result => result.json());
     	
