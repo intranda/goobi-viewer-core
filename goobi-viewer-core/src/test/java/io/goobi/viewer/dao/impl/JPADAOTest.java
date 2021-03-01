@@ -2294,7 +2294,7 @@ public class JPADAOTest extends AbstractDatabaseEnabledTest {
             campaign.setSelectedLocale(Locale.ENGLISH);
             Assert.assertEquals(Long.valueOf(3), campaign.getId());
             Assert.assertEquals(CampaignVisibility.PUBLIC, campaign.getVisibility());
-            Assert.assertEquals("+DC:varia", campaign.getSolrQuery());
+            Assert.assertEquals("+PI:PI_5", campaign.getSolrQuery());
 
 
             Assert.assertEquals(1, campaign.getStatistics().size());
