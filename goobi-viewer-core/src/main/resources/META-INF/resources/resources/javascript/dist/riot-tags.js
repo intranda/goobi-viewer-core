@@ -2718,8 +2718,10 @@ riot.tag2('slideshow', '<div ref="container" class="swiper-container slider-{thi
     	.pipe(
     		rxjs.operators.flatMap(source => source),
     		rxjs.operators.flatMap(uri => fetch(uri)),
+    		rxjs.operators.filter(result => result.status == 200),
     		rxjs.operators.flatMap(result => result.json()),
     		rxjs.operators.map(element => this.createSlide(element)),
+    		rxjs.operators.filter(element => element != undefined),
     		rxjs.operators.reduce((res, item) => res.concat(item), []),
     	)
     	.subscribe(slides => this.setSlides(slides))
@@ -2757,10 +2759,7 @@ riot.tag2('slideshow', '<div ref="container" class="swiper-container slider-{thi
     				header : element.label,
     				description : element.description,
     				image : viewerJS.iiif.getId(element.thumbnail),
-    				link : element.rendering
-    					.filter(rendering => rendering.format == "text/html")
-    					.map(rendering => viewerJS.iiif.getId(rendering))
-    					.shift()
+    				link : viewerJS.iiif.getId(viewerJS.iiif.getViewerPage(element))
     		}
     		return slide;
     	} else {
