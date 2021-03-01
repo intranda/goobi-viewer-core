@@ -226,13 +226,15 @@
     
     <download_job_observers download_job_id="1" observer="viewer@intranda.com" />
     
+    <!-- Campaign -->
     <cs_campaigns campaign_id="1" visibility="PUBLIC" date_created="2019-08-29 00:00:00.000000000"
         date_start="2019-08-29 00:00:00.000000000" date_end="2020-08-29 00:00:00.000000000"
         solr_query="+DC:varia" />
-        
     <cs_campaigns campaign_id="2" visibility="PRIVATE" date_created="2019-08-30 00:00:00.000000000"
         date_start="2019-09-01 00:00:00.000000000" date_end="2020-09-02 00:00:00.000000000"
         solr_query="+(DOCSTRCT:manuscript DOCSTRCT:Manuscript)" />
+    <cs_campaigns campaign_id="3" visibility="PUBLIC" date_created="2021-03-01 00:00:00.000000000"
+        date_start="2021-03-01 00:00:00.000000000" date_end="2021-04-01 00:00:00.000000000" />
         
     <cs_campaign_translations translation_id="1" owner_id="1" language="en" tag="title" value="English title" />
     
@@ -240,17 +242,30 @@
     <cs_questions question_id="2" owner_id="1" question_type="PLAINTEXT" target_selector="RECTANGLE" target_frequency="0" />
     <cs_questions question_id="3" owner_id="2" question_type="PLAINTEXT" target_selector="RECTANGLE" target_frequency="0" />
 
+    <!-- CampaignRecordStatistic -->
     <cs_campaign_record_statistics campaign_record_statistic_id="1" owner_id="1" pi="PI_1" status="FINISHED" date_created="2019-08-30 00:00:00.000000000" />
     <cs_campaign_record_statistics campaign_record_statistic_id="2" owner_id="1" pi="PI_2" status="REVIEW" date_created="2019-08-30 00:00:00.000000000" />
     <cs_campaign_record_statistics campaign_record_statistic_id="3" owner_id="1" pi="PI_3" status="REVIEW" date_created="2019-08-30 00:00:00.000000000" />
     <cs_campaign_record_statistics campaign_record_statistic_id="4" owner_id="1" pi="PI_4" status="REVIEW" date_created="2019-08-30 00:00:00.000000000" />
     <cs_campaign_record_statistics campaign_record_statistic_id="5" owner_id="2" pi="PI_3" status="REVIEW" date_created="2019-08-30 00:00:00.000000000" />
+    <cs_campaign_record_statistics campaign_record_statistic_id="6" owner_id="3" pi="PI_5" status="FINISHED" date_created="2021-03-01 00:00:00.000000000" />
     
     <cs_campaign_record_statistic_annotators campaign_record_statistic_id="1" user_id="1"/>
     <cs_campaign_record_statistic_annotators campaign_record_statistic_id="2" user_id="1"/>
     <cs_campaign_record_statistic_reviewers campaign_record_statistic_id="3" user_id="1"/>
     <cs_campaign_record_statistic_reviewers campaign_record_statistic_id="4" user_id="1"/>
     <cs_campaign_record_statistic_reviewers campaign_record_statistic_id="1" user_id="2"/>
+    
+    <!-- CampaignRecordPagestatistic -->
+    <cs_campaign_record_page_statistics campaign_record_page_statistic_id="1" owner_id="6" pi="PI 5" page="1" status="FINISHED"
+        date_created="2021-03-01 00:00:00.000000000" />
+    <cs_campaign_record_page_statistics campaign_record_page_statistic_id="2" owner_id="6" pi="PI 5" page="1" status="FINISHED"
+        date_created="2021-03-01 00:00:00.000000000" />
+        
+    <cs_campaign_record_page_statistic_annotators campaign_record_page_statistic_id="1" user_id="1"/>
+    <cs_campaign_record_page_statistic_annotators campaign_record_page_statistic_id="2" user_id="1"/>
+    <cs_campaign_record_page_statistic_reviewers campaign_record_page_statistic_id="1" user_id="2"/>
+    <cs_campaign_record_page_statistic_reviewers campaign_record_page_statistic_id="2" user_id="2"/>
     
     <cs_campaign_log message_id="1" creator_id="1" campaign_id="1" pi="PI_1" date_created="2020-11-05 09:09:12" message="Eine Nachricht im Log"></cs_campaign_log>
     

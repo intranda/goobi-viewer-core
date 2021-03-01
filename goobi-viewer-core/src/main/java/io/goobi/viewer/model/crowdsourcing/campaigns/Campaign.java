@@ -87,7 +87,6 @@ import io.goobi.viewer.model.log.LogMessage;
 import io.goobi.viewer.model.misc.IPolyglott;
 import io.goobi.viewer.model.misc.Translation;
 import io.goobi.viewer.model.security.ILicenseType;
-import io.goobi.viewer.model.security.IPrivilegeHolder;
 import io.goobi.viewer.model.security.user.User;
 import io.goobi.viewer.model.security.user.UserGroup;
 

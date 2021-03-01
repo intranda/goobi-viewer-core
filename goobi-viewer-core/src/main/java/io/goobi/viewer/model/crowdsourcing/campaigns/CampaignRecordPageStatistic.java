@@ -20,7 +20,6 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
@@ -33,7 +32,6 @@ import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
-import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -43,12 +41,12 @@ import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import io.goobi.viewer.model.security.user.User;
 
 /**
- * Annotation status of a record in the context of a particular campaign.
+ * Annotation status of a single page in a record in the context of a particular campaign.
  */
 @Entity
-@Table(name = "cs_campaign_record_statistics")
+@Table(name = "cs_campaign_record_page_statistics")
 @JsonInclude(Include.NON_EMPTY)
-public class CampaignRecordStatistic implements Serializable {
+public class CampaignRecordPageStatistic implements Serializable {
 
     /**
      * The status of a specific resource (iiif manifest or similar) within a campaign
@@ -56,7 +54,7 @@ public class CampaignRecordStatistic implements Serializable {
      * @author florian
      *
      */
-    public enum CampaignRecordStatus {
+    public enum CampaignRecordPageStatus {
         /**
          * Annotations may be made to this resource
          */
@@ -75,8 +73,8 @@ public class CampaignRecordStatistic implements Serializable {
             return this.name();
         }
 
-        public static CampaignRecordStatus forName(String name) {
-            for (CampaignRecordStatus status : CampaignRecordStatus.values()) {
+        public static CampaignRecordPageStatus forName(String name) {
+            for (CampaignRecordPageStatus status : CampaignRecordPageStatus.values()) {
                 if (status.getName().equalsIgnoreCase(name)) {
                     return status;
                 }
@@ -85,11 +83,11 @@ public class CampaignRecordStatistic implements Serializable {
         }
     }
 
-    private static final long serialVersionUID = 8902904205183851565L;
+    private static final long serialVersionUID = -5449329014162706484L;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "campaign_record_statistic_id")
+    @Column(name = "campaign_record_page_statistic_id")
     private Long id;
 
     @Column(name = "date_created", nullable = false)
@@ -103,26 +101,26 @@ public class CampaignRecordStatistic implements Serializable {
     @ManyToOne
     @JoinColumn(name = "owner_id", nullable = false)
     @JsonIgnore
-    private Campaign owner;
+    private CampaignRecordStatistic owner;
 
     @Column(name = "pi", nullable = false)
     private String pi;
 
+    @Column(name = "page", nullable = false)
+    private Long page;
+
     @Enumerated(EnumType.STRING)
     @Column(name = "status", nullable = false)
     @JsonIgnore
-    private CampaignRecordStatus status;
-
-    @OneToMany(mappedBy = "owner", fetch = FetchType.LAZY, cascade = { CascadeType.ALL })
-    private List<CampaignRecordPageStatistic> pageStatistics = new ArrayList<>();
+    private CampaignRecordPageStatus status;
 
     @ManyToMany(fetch = FetchType.LAZY)
-    @JoinTable(name = "cs_campaign_record_statistic_annotators", joinColumns = @JoinColumn(name = "campaign_record_statistic_id"),
+    @JoinTable(name = "cs_campaign_record_page_statistic_annotators", joinColumns = @JoinColumn(name = "campaign_record_page_statistic_id"),
             inverseJoinColumns = @JoinColumn(name = "user_id"))
     private List<User> annotators = new ArrayList<>();
 
     @ManyToMany(fetch = FetchType.LAZY)
-    @JoinTable(name = "cs_campaign_record_statistic_reviewers", joinColumns = @JoinColumn(name = "campaign_record_statistic_id"),
+    @JoinTable(name = "cs_campaign_record_page_statistic_reviewers", joinColumns = @JoinColumn(name = "campaign_record_page_statistic_id"),
             inverseJoinColumns = @JoinColumn(name = "user_id"))
     private List<User> reviewers = new ArrayList<>();
 
@@ -151,7 +149,7 @@ public class CampaignRecordStatistic implements Serializable {
             return false;
         if (getClass() != obj.getClass())
             return false;
-        CampaignRecordStatistic other = (CampaignRecordStatistic) obj;
+        CampaignRecordPageStatistic other = (CampaignRecordPageStatistic) obj;
         if (owner == null) {
             if (other.owner != null)
                 return false;
@@ -238,7 +236,7 @@ public class CampaignRecordStatistic implements Serializable {
      *
      * @return the owner
      */
-    public Campaign getOwner() {
+    public CampaignRecordStatistic getOwner() {
         return owner;
     }
 
@@ -249,7 +247,7 @@ public class CampaignRecordStatistic implements Serializable {
      *
      * @param owner the owner to set
      */
-    public void setOwner(Campaign owner) {
+    public void setOwner(CampaignRecordStatistic owner) {
         this.owner = owner;
     }
 
@@ -276,17 +274,17 @@ public class CampaignRecordStatistic implements Serializable {
     }
 
     /**
-     * @return the pageStatistics
+     * @return the page
      */
-    public List<CampaignRecordPageStatistic> getPageStatistics() {
-        return pageStatistics;
+    public Long getPage() {
+        return page;
     }
 
     /**
-     * @param pageStatistics the pageStatistics to set
+     * @param page the page to set
      */
-    public void setPageStatistics(List<CampaignRecordPageStatistic> pageStatistics) {
-        this.pageStatistics = pageStatistics;
+    public void setPage(Long page) {
+        this.page = page;
     }
 
     /**
@@ -296,7 +294,7 @@ public class CampaignRecordStatistic implements Serializable {
      *
      * @return the status
      */
-    public CampaignRecordStatus getStatus() {
+    public CampaignRecordPageStatus getStatus() {
         return status;
     }
 
@@ -307,7 +305,7 @@ public class CampaignRecordStatistic implements Serializable {
      *
      * @param status the status to set
      */
-    public void setStatus(CampaignRecordStatus status) {
+    public void setStatus(CampaignRecordPageStatus status) {
         this.status = status;
     }
 
