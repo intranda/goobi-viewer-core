@@ -5,12 +5,12 @@
 <div ref="container" class="swiper-container slider-{this.style}__container">
 	<div class="swiper-wrapper slider-{this.style}__wrapper">
 		<div each="{slide in slides}" class="swiper-slide slider-{this.style}__slide">
-			
+			<a href="{slide.link}">
 				<h3 class="slider-{this.style}__header">{translate(slide.header)}</h3>
-				<div class="slider-{this.style}__image" style="background-image: url({slide.image})">
+				<div class="slider-{this.style}__image" style="background-image: url({getImage(slide)})">
 				</div>
 				<div class="slider-{this.style}__description">{translate(slide.description)}</div>
-				
+			</a>
 		</div>
 	</div>
 </div>
@@ -42,13 +42,13 @@
     			this.slider.destroy();
     		}
     		let style = this.opts.styles.get(this.opts.style);
-    		console.log("create slideshow with ", style)
+//     		console.log("create slideshow with ", style)
     		this.swiper = new Swiper(this.refs.container, style);
     	}
     });
     
     setSlides(slides) {
-    	console.log("set slides", slides);
+//     	console.log("set slides", slides);
     	this.slides = slides;
     	this.update();
     }
@@ -62,7 +62,7 @@
 	}
      
     createSlide(element) {
-    	console.log("got element ", element);
+//     	console.log("got element ", element);
     	if(viewerJS.iiif.isCollection(element) || viewerJS.iiif.isManifest(element)) {
     		let slide = { 
     				header : element.label,
@@ -72,13 +72,27 @@
     		}
     		return slide;
     	} else {
-    		console.error("Creating slide not implemented for ", element);
+    		return element;
     	}
     }
     
     translate(text) {
     	let translation =  viewerJS.iiif.getValue(text, this.opts.language);
+    	if(!translation) {
+    			translation = viewerJS.getMetadataValue(text, this.opts.language);
+    	}
     	return translation;
+    }
+    
+    getImage(slide) {
+    	let image = slide.image;
+    	if(viewerJS.isString(image)) {
+    		return image;
+    	} else if(image["@id"]) {
+    		return image["@id"]
+    	} else {
+    		return image.id;
+    	}
     }
     
 </script>

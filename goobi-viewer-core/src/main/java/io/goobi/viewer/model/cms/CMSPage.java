@@ -15,6 +15,8 @@
  */
 package io.goobi.viewer.model.cms;
 
+import static io.goobi.viewer.api.rest.v1.ApiUrls.CMS_MEDIA;
+
 import java.io.File;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
@@ -31,6 +33,7 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -59,6 +62,9 @@ import org.jdom2.JDOMException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import de.intranda.metadata.multilanguage.IMetadataValue;
+import de.intranda.metadata.multilanguage.MultiLanguageMetadataValue;
+import de.intranda.metadata.multilanguage.SimpleMetadataValue;
 import de.unigoettingen.sub.commons.contentlib.exceptions.ContentNotFoundException;
 import de.unigoettingen.sub.commons.contentlib.exceptions.IllegalRequestException;
 import io.goobi.viewer.api.rest.AbstractApiUrlManager;
@@ -85,8 +91,6 @@ import io.goobi.viewer.model.cms.itemfunctionality.SearchFunctionality;
 import io.goobi.viewer.model.glossary.GlossaryManager;
 import io.goobi.viewer.model.misc.Harvestable;
 import io.goobi.viewer.model.viewer.CollectionView;
-
-import static io.goobi.viewer.api.rest.v1.ApiUrls.*;
 
 /**
  * <p>
@@ -757,6 +761,33 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable {
             return getLanguageVersion(locale.getLanguage()).getTitle();
         } catch (CmsElementNotFoundException e) {
             return getTitle();
+        }
+    }
+    
+    public IMetadataValue getTitleTranslations() {
+        Map<String, String> titles = getLanguageVersions().stream().filter(lv -> StringUtils.isNotBlank(lv.getTitle()))
+        .collect(Collectors.toMap(lv -> lv.getLanguage(), lv -> lv.getTitle()));
+        if(titles.size() == 0) {
+            return new SimpleMetadataValue("");
+        } else if(titles.size() == 1) {
+            return new SimpleMetadataValue(titles.entrySet().iterator().next().getValue());
+        } else {
+            return new MultiLanguageMetadataValue(titles);
+        }
+    }
+    
+    public IMetadataValue getPreviewTranslations() {
+        Map<String, String> previewTexts = getLanguageVersions().stream()
+            .flatMap(lv -> lv.getContentItems().stream())
+            .filter(item -> CMSContentItemType.HTML.equals(item.getType()))
+            .filter(CMSContentItem::isPreview)
+            .collect(Collectors.toMap(item -> item.getOwnerPageLanguageVersion().getLanguage(), item -> item.getHtmlFragment()));
+        if(previewTexts.size() == 0) {
+            return new SimpleMetadataValue("");
+        } else if(previewTexts.size() == 1) {
+            return new SimpleMetadataValue(previewTexts.entrySet().iterator().next().getValue());
+        } else {
+            return new MultiLanguageMetadataValue(previewTexts);
         }
     }
 

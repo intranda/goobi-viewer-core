@@ -22,6 +22,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.PathParam;
@@ -46,7 +47,9 @@ import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
+import io.goobi.viewer.model.cms.CMSCategory;
 import io.goobi.viewer.model.cms.CMSCollection;
+import io.goobi.viewer.model.cms.CMSPage;
 import io.goobi.viewer.model.cms.CMSSlider;
 import io.goobi.viewer.model.iiif.presentation.builder.CollectionBuilder;
 import io.goobi.viewer.model.iiif.presentation.builder.ManifestBuilder;
@@ -74,9 +77,11 @@ public class CMSSliderResource {
         if (this.slider != null) {
             switch (slider.getSourceType()) {
                 case COLLECTIONS:
-                    return getCollectionsAsCollection(slider.getCollections());
+                    return getCollections(slider.getCollections());
                 case RECORDS:
-                    return getRecordsAsCollection(slider.getSolrQuery());
+                    return getRecords(slider.getSolrQuery());
+                case PAGES:
+                    return getPages(slider.getCategories());
                 default:
                     throw new IllegalRequestException("Cannot create collection for slider " + slider.getName());
             }
@@ -86,12 +91,49 @@ public class CMSSliderResource {
     }
 
     /**
+     * @param categories
+     * @return
+     */
+    private List<URI> getPages(List<String> categories) {
+        return categories.stream()
+        .map(this::getCategoryById)
+        .flatMap(category -> getPagesForCategory(category).stream())
+        .map(this::getApiUrl)
+        .collect(Collectors.toList());
+    }
+    
+    private CMSCategory getCategoryById(String idString) {
+        try {
+            Long id = Long.parseLong(idString);
+            return DataManager.getInstance().getDao().getCategory(id);
+        } catch(NumberFormatException | DAOException e) {
+            logger.error(e.toString(), e);
+            return null;
+        }
+    }
+    
+    private List<CMSPage> getPagesForCategory(CMSCategory category) {
+        try {
+            return DataManager.getInstance().getDao().getCMSPagesByCategory(category);
+        } catch (DAOException e) {
+            logger.error(e.toString(), e);
+            return Collections.emptyList();
+        }
+        
+    }
+    
+    private URI getApiUrl(CMSPage page) {
+        return DataManager.getInstance().getRestApiManager().getDataApiManager()
+                .map(urls -> urls.path("/cms/pages/{pageId}").params(page.getId()).buildURI()).orElse(null);
+    }
+
+    /**
      * @param solrQuery
      * @return
      * @throws IndexUnreachableException
      * @throws PresentationException
      */
-    private List<URI> getRecordsAsCollection(String solrQuery) throws PresentationException, IndexUnreachableException {
+    private List<URI> getRecords(String solrQuery) throws PresentationException, IndexUnreachableException {
 
         List<URI> manifests = new ArrayList<>();
         AbstractApiUrlManager urls = DataManager.getInstance().getRestApiManager().getDataApiManager().orElse(null);
@@ -113,7 +155,7 @@ public class CMSSliderResource {
      * @param collections
      * @return
      */
-    private List<URI> getCollectionsAsCollection(List<String> collectionNames) {
+    private List<URI> getCollections(List<String> collectionNames) {
         List<URI> collections = new ArrayList<>();
         AbstractApiUrlManager urls = DataManager.getInstance().getRestApiManager().getDataApiManager().orElse(null);
         if(urls == null) {

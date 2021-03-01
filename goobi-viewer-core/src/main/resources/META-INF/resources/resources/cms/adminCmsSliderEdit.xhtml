@@ -216,7 +216,7 @@
 														<div>
 															<h:panelGroup layout="block" class="overflow-hidden"
 																id="selectedCategories">
-																<ui:repeat var="category" value="#{slider.categories}">
+																<ui:repeat var="category" value="#{cmsSliderEditBean.selectableCategories.stream().filter(sel -> sel.selected).map(sel -> sel.value.name).toList()}">
 																	<div class="badge badge-violet">#{msg[category]}</div>
 																</ui:repeat>
 															</h:panelGroup>

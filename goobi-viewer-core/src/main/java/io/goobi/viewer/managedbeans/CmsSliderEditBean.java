@@ -129,9 +129,11 @@ public class CmsSliderEditBean implements Serializable {
 
     }
     
+    
     public String getReturnUrl() {
-        return "pretty:adminCmsSliders";
+        return BeanUtils.getServletPathWithHostAsUrlFromJsfContext() +  "/admin/cms/slider/";
     }
+
 
     public List<SourceType> getSourceTypes() {
         return Arrays.asList(SourceType.values());
@@ -167,7 +169,8 @@ public class CmsSliderEditBean implements Serializable {
             this.selectedSlider.setCategories(this.selectableCategories.stream()
                     .filter(Selectable::isSelected)
                     .map(Selectable::getValue)
-                    .map(CMSCategory::getName)
+                    .map(CMSCategory::getId)
+                    .map(l -> l.toString())
                     .collect(Collectors.toList()));
         }
     }
@@ -175,8 +178,8 @@ public class CmsSliderEditBean implements Serializable {
     private void readCategories() {
         if(this.selectableCategories != null && this.selectedSlider != null) {
             this.selectableCategories.forEach(selCat -> {
-                String catName = selCat.getValue().getName();
-                if(this.selectedSlider.getCategories().contains(catName)) {
+                Long catId = selCat.getValue().getId();
+                if(this.selectedSlider.getCategories().contains(catId.toString())) {
                     selCat.setSelected(true);
                 } else {
                     selCat.setSelected(false);
