@@ -107,7 +107,7 @@ public class CampaignRecordPageStatistic implements Serializable {
     private String pi;
 
     @Column(name = "page", nullable = false)
-    private Long page;
+    private Integer page;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "status", nullable = false)
@@ -276,14 +276,14 @@ public class CampaignRecordPageStatistic implements Serializable {
     /**
      * @return the page
      */
-    public Long getPage() {
+    public Integer getPage() {
         return page;
     }
 
     /**
      * @param page the page to set
      */
-    public void setPage(Long page) {
+    public void setPage(Integer page) {
         this.page = page;
     }
 
