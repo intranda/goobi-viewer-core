@@ -285,6 +285,7 @@ public class BookmarkBean implements Serializable {
         UserBean userBean = BeanUtils.getUserBean();
         if (userBean != null && userBean.getUser() != null && currentBookmarkList != null && StringUtils.isNotEmpty(currentBookmark.getName())) {
             logger.trace("saving bookmark to bookmark list");
+            currentBookmarkList.setDateUpdated(LocalDateTime.now());
             try {
                 if (currentBookmarkList.getItems().contains(currentBookmark)) {
                     // TODO Do not throw error if item already in bookmark list. Instead, offer to edit or remove.
