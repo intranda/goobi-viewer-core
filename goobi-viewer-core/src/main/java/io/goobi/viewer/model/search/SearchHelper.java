@@ -1992,8 +1992,8 @@ public final class SearchHelper {
      * </p>
      *
      * @param fieldName a {@link java.lang.String} object.
-     * @should defacetify correctly
      * @return a {@link java.lang.String} object.
+     * @should defacetify correctly
      */
     public static String defacetifyField(String fieldName) {
         if (fieldName == null) {
@@ -2005,6 +2005,9 @@ public final class SearchHelper {
             case "FACET_" + SolrConstants.DOCSTRCT:
             case "FACET_" + SolrConstants.DOCSTRCT_SUB:
             case "FACET_" + SolrConstants.DOCSTRCT_TOP:
+            case "FACET_" + SolrConstants._CALENDAR_YEAR:
+            case "FACET_" + SolrConstants._CALENDAR_MONTH:
+            case "FACET_" + SolrConstants._CALENDAR_DAY:
                 return fieldName.substring(6);
             default:
                 if (fieldName.startsWith("FACET_")) {

@@ -918,9 +918,9 @@ public class CMSContentItem implements Comparable<CMSContentItem>, CMSMediaHolde
         CMSContentItemTemplate template = getItemTemplate();
         if (template != null) {
             return template.getOrder();
-        } else {
-            return Integer.MAX_VALUE;
         }
+        
+        return Integer.MAX_VALUE;
     }
 
     /**
@@ -1491,7 +1491,7 @@ public class CMSContentItem implements Comparable<CMSContentItem>, CMSMediaHolde
     public List<String> getAvailableMetadataFields() {
         return DataManager.getInstance()
                 .getConfiguration()
-                .getMainMetadataForTemplate(null)
+                .getMainMetadataForTemplate(0, null)
                 .stream()
                 .map(md -> md.getLabel())
                 .map(md -> md.replaceAll("_LANG_.*", ""))
@@ -1743,9 +1743,9 @@ public class CMSContentItem implements Comparable<CMSContentItem>, CMSMediaHolde
     public Long getGeoMapId() {
         if (this.geoMap == null) {
             return null;
-        } else {
-            return this.geoMap.getId();
         }
+        
+        return this.geoMap.getId();
     }
 
     public void setGeoMapId(Long id) throws DAOException {

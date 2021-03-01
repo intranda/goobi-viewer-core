@@ -106,7 +106,7 @@ public class EventElement implements Comparable<EventElement>, Serializable {
             }
         }
         checkDates();
-        metadata = DataManager.getInstance().getConfiguration().getMainMetadataForTemplate(type);
+        metadata = DataManager.getInstance().getConfiguration().getMainMetadataForTemplate(0, type);
         populateMetadata(metadata, type, doc, locale);
         sidebarMetadata = DataManager.getInstance().getConfiguration().getSidebarMetadataForTemplate(type);
         populateMetadata(sidebarMetadata, type, doc, locale);

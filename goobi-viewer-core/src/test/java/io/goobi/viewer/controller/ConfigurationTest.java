@@ -40,6 +40,7 @@ import io.goobi.viewer.model.maps.GeoMapMarker;
 import io.goobi.viewer.model.metadata.Metadata;
 import io.goobi.viewer.model.metadata.MetadataParameter;
 import io.goobi.viewer.model.metadata.MetadataReplaceRule.MetadataReplaceRuleType;
+import io.goobi.viewer.model.metadata.MetadataView;
 import io.goobi.viewer.model.search.AdvancedSearchFieldConfiguration;
 import io.goobi.viewer.model.security.SecurityQuestion;
 import io.goobi.viewer.model.security.authentication.HttpAuthenticationProvider;
@@ -337,12 +338,27 @@ public class ConfigurationTest extends AbstractTest {
     }
 
     /**
+     * @see Configuration#getMetadataViews()
+     * @verifies return all configured values
+     */
+    @Test
+    public void getMetadataViews_shouldReturnAllConfiguredValues() throws Exception {
+        List<MetadataView> result = DataManager.getInstance().getConfiguration().getMetadataViews();
+        Assert.assertEquals(2, result.size());
+        MetadataView view = result.get(1);
+        Assert.assertEquals(1, view.getIndex());
+        Assert.assertEquals("label__metadata_other", view.getLabel());
+        Assert.assertEquals("_other", view.getUrl());
+        Assert.assertEquals("foo:bar", view.getCondition());
+    }
+
+    /**
      * @see Configuration#getMainMetadataForTemplate(String)
      * @verifies return correct template configuration
      */
     @Test
     public void getMainMetadataForTemplate_shouldReturnCorrectTemplateConfiguration() throws Exception {
-        Assert.assertEquals(1, DataManager.getInstance().getConfiguration().getMainMetadataForTemplate("Chapter").size());
+        Assert.assertEquals(1, DataManager.getInstance().getConfiguration().getMainMetadataForTemplate(0, "Chapter").size());
     }
 
     /**
@@ -351,7 +367,7 @@ public class ConfigurationTest extends AbstractTest {
      */
     @Test
     public void getMainMetadataForTemplate_shouldReturnDefaultTemplateConfigurationIfTemplateNotFound() throws Exception {
-        Assert.assertEquals(6, DataManager.getInstance().getConfiguration().getMainMetadataForTemplate("nonexisting").size());
+        Assert.assertEquals(6, DataManager.getInstance().getConfiguration().getMainMetadataForTemplate(0, "nonexisting").size());
     }
 
     /**
@@ -360,7 +376,7 @@ public class ConfigurationTest extends AbstractTest {
      */
     @Test
     public void getMainMetadataForTemplate_shouldReturnDefaultTemplateIfTemplateIsNull() throws Exception {
-        Assert.assertEquals(6, DataManager.getInstance().getConfiguration().getMainMetadataForTemplate(null).size());
+        Assert.assertEquals(6, DataManager.getInstance().getConfiguration().getMainMetadataForTemplate(0, null).size());
     }
 
     /**
@@ -2599,7 +2615,7 @@ public class ConfigurationTest extends AbstractTest {
      */
     @Test
     public void getMetadataFromSubnodeConfig_shouldLoadReplaceRulesCorrectly() throws Exception {
-        List<Metadata> metadataList = DataManager.getInstance().getConfiguration().getMainMetadataForTemplate("_DEFAULT");
+        List<Metadata> metadataList = DataManager.getInstance().getConfiguration().getMainMetadataForTemplate(0, "_DEFAULT");
         Assert.assertEquals(6, metadataList.size());
         Metadata mdTitle = metadataList.get(2);
         Assert.assertEquals("MD_TITLE", mdTitle.getLabel());
@@ -2890,7 +2906,9 @@ public class ConfigurationTest extends AbstractTest {
         Assert.assertEquals("jpg", option.getFormat());
         Assert.assertEquals("4096" + DownloadOption.TIMES_SYMBOL + "4096", option.getBoxSizeLabel());
     }
-     /** @see Configuration#getPageSelectDropdownDisplayMinPages()
+
+    /**
+     * @see Configuration#getPageSelectDropdownDisplayMinPages()
      * @verifies return correct value
      */
     @Test

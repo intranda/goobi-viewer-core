@@ -6,7 +6,7 @@ if (getFacesConfigXmlVersion(facesContext).equals("2.3") || getWebXmlVersion(fac
  -->
 <faces-config version="2.3" xmlns="http://xmlns.jcp.org/xml/ns/javaee"
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-    xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/javaee http://xmlns.jcp.org/xml/ns/javaee/web-facesconfig_2_2.xsd">
+    xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/javaee http://xmlns.jcp.org/xml/ns/javaee/web-facesconfig_2_3.xsd">
 	<application>
 
 		<resource-bundle>
@@ -26,14 +26,5 @@ if (getFacesConfigXmlVersion(facesContext).equals("2.3") || getWebXmlVersion(fac
 	<lifecycle>
 		<phase-listener>com.ocpsoft.pretty.faces.event.MultiPageMessagesSupport</phase-listener>
 	</lifecycle>
-
-	<navigation-rule>
-		<from-view-id>*</from-view-id>
-		<navigation-case>
-			<redirect>true</redirect>
-			<from-outcome>currentPage</from-outcome>
-			<to-view-id>#{navigationHelper.currentViewPrettyUrl}</to-view-id>
-		</navigation-case>
-	</navigation-rule>	
 
 </faces-config>

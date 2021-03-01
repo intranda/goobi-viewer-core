@@ -270,12 +270,7 @@ public class BrowseElement implements Serializable {
         numVolumes = structElement.getNumVolumes();
         docStructType = structElement.getDocStructType();
         dataRepository = structElement.getMetadataValue(SolrConstants.DATAREPOSITORY);
-
-        if (DocType.GROUP.equals(docType)) {
-            label = new SimpleMetadataValue(docType.getLabel(null));
-        } else {
-            label = createMultiLanguageLabel(structElement);
-        }
+        label = createMultiLanguageLabel(structElement);
 
         pi = structElement.getPi();
         if (pi == null) {
@@ -792,12 +787,18 @@ public class BrowseElement implements Serializable {
             if (StringUtils.isEmpty(ret)) {
                 ret = se.getMetadataValue(SolrConstants.TITLE);
             }
-        }
-        if (StringUtils.isEmpty(ret)) {
-            ret = ViewerResourceBundle.getTranslation(se.getDocStructType(), locale);
+            // Fallback to DOCSTRCT
+            if (StringUtils.isEmpty(ret)) {
+                ret = ViewerResourceBundle.getTranslation(se.getDocStructType(), locale);
+                // Fallback to DOCTYPE
+                if (StringUtils.isEmpty(ret)) {
+                    ret = ViewerResourceBundle.getTranslation("doctype_" + se.getMetadataValue(SolrConstants.DOCTYPE), locale);
+                }
+            }
         }
 
         return ret;
+
     }
 
     /**
@@ -1002,6 +1003,14 @@ public class BrowseElement implements Serializable {
      */
     public void setVolumeNo(String volumeNo) {
         this.volumeNo = volumeNo;
+    }
+    
+    /**
+     * 
+     * @return true if doctype is GROUP; false otherwise
+     */
+    public boolean isGroup() {
+        return DocType.GROUP.equals(docType);
     }
 
     /**

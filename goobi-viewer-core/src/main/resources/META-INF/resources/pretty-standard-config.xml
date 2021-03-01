@@ -484,27 +484,53 @@
 		<pattern value="/metadata/#{pi:activeDocumentBean.persistentIdentifier}/" />
 		<view-id value="/viewMetadata.xhtml" />
 		<action onPostback="false">#{activeDocumentBean.open}</action>
+		<action onPostback="false">#{metadataBean.setMetadataViewUrl(null)}</action>
 	</url-mapping>
+    <url-mapping id="metadata1url">
+        <pattern value="/metadata#{metadataBean.metadataViewUrl}/#{pi:activeDocumentBean.persistentIdentifier}/" />
+        <view-id value="/viewMetadata.xhtml" />
+        <action onPostback="false">#{activeDocumentBean.open}</action>
+    </url-mapping>
 	<url-mapping id="metadata2">
 		<pattern value="/metadata/#{pi:activeDocumentBean.persistentIdentifier}/#{imageToShow:activeDocumentBean.imageToShow}/" />
 		<view-id value="/viewMetadata.xhtml" />
 		<action onPostback="false">#{activeDocumentBean.open}</action>
+		<action onPostback="false">#{metadataBean.setMetadataViewUrl(null)}</action>
 	</url-mapping>
+    <url-mapping id="metadata2url">
+        <pattern value="/metadata#{metadataBean.metadataViewUrl}/#{pi:activeDocumentBean.persistentIdentifier}/#{imageToShow:activeDocumentBean.imageToShow}/" />
+        <view-id value="/viewMetadata.xhtml" />
+        <action onPostback="false">#{activeDocumentBean.open}</action>
+    </url-mapping>
 	<url-mapping id="metadata3">
 		<pattern value="/metadata/#{pi:activeDocumentBean.persistentIdentifier}/#{imageToShow:activeDocumentBean.imageToShow}/#{logId:activeDocumentBean.logid}/" />
 		<view-id value="/viewMetadata.xhtml" />
 		<action onPostback="false">#{activeDocumentBean.open}</action>
+		<action onPostback="false">#{metadataBean.setMetadataViewUrl(null)}</action>
 	</url-mapping>
+    <url-mapping id="metadata3url">
+        <pattern value="/metadata#{metadataBean.metadataViewUrl}/#{pi:activeDocumentBean.persistentIdentifier}/#{imageToShow:activeDocumentBean.imageToShow}/#{logId:activeDocumentBean.logid}/" />
+        <view-id value="/viewMetadata.xhtml" />
+        <action onPostback="false">#{activeDocumentBean.open}</action>
+    </url-mapping>
 	<url-mapping id="metadata3active">
 		<pattern value="/!metadata/#{pi:activeDocumentBean.persistentIdentifier}/#{imageToShow:activeDocumentBean.imageToShow}/#{logId:activeDocumentBean.logid}/" />
 		<view-id value="/viewMetadata.xhtml" />
 		<action onPostback="false">#{navigationHelper.setPreferredView('metadata')}</action>
 		<action onPostback="false">#{activeDocumentBean.open}</action>
+		<action onPostback="false">#{metadataBean.setMetadataViewUrl(null)}</action>
 	</url-mapping>
+    <url-mapping id="metadata3activeurl">
+        <pattern value="/!metadata#{metadataBean.metadataViewUrl}/#{pi:activeDocumentBean.persistentIdentifier}/#{imageToShow:activeDocumentBean.imageToShow}/#{logId:activeDocumentBean.logid}/" />
+        <view-id value="/viewMetadata.xhtml" />
+        <action onPostback="false">#{navigationHelper.setPreferredView('metadata')}</action>
+        <action onPostback="false">#{activeDocumentBean.open}</action>
+    </url-mapping>
 	<url-mapping id="metadata4">
 		<pattern value="/metadata/#{action:activeDocumentBean.action}/#{pi:activeDocumentBean.persistentIdentifier}/#{imageToShow:activeDocumentBean.imageToShow}/#{logId:activeDocumentBean.logid}/" />
 		<view-id value="/viewMetadata.xhtml" />
 		<action onPostback="false">#{activeDocumentBean.open}</action>
+		<action onPostback="false">#{metadataBean.setMetadataViewUrl(null)}</action>
 	</url-mapping>
 
 	<!-- THUMBS -->

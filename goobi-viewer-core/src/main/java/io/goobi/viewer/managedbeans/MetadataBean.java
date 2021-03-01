@@ -26,6 +26,7 @@ import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.solr.common.SolrDocument;
 import org.apache.solr.common.SolrDocumentList;
 import org.slf4j.Logger;
@@ -40,6 +41,7 @@ import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.messages.Messages;
 import io.goobi.viewer.model.metadata.MetadataElement;
+import io.goobi.viewer.model.metadata.MetadataView;
 import io.goobi.viewer.model.viewer.EventElement;
 import io.goobi.viewer.model.viewer.StringPair;
 import io.goobi.viewer.model.viewer.StructElement;
@@ -58,12 +60,16 @@ public class MetadataBean {
     private ActiveDocumentBean activeDocumentBean;
 
     /** Metadata blocks for the docstruct hierarchy from the anchor to the current element. */
-    private List<MetadataElement> metadataElementList = null;
+    private Map<Integer, List<MetadataElement>> metadataElementMap = new HashMap<>();
 
     /** Metadata blocks for all docstructs that are included within a specific page. */
     private Map<Integer, List<MetadataElement>> allMetadataElementsforPage = new HashMap<>();
     /** List of LIDO events. */
     private List<EventElement> events = new ArrayList<>();
+
+    private int metadataViewIndex;
+    private String metadataViewUrl;
+    private MetadataView activeMetadataView;
 
     /**
      * Empty constructor.
@@ -86,11 +92,13 @@ public class MetadataBean {
      * loadMetadata.
      * </p>
      *
+     * @param index
      * @return a {@link java.lang.String} object.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
-    public String loadMetadata() throws IndexUnreachableException, DAOException {
+    public String loadMetadata(int index) throws IndexUnreachableException, DAOException {
+        // logger.trace("loadMetadata({})", index);
         if (activeDocumentBean == null) {
             return "viewMetadata";
         }
@@ -101,17 +109,22 @@ public class MetadataBean {
         }
 
         logger.trace("loadMetadata for: {}", currentElement.getLabel());
-        metadataElementList = new ArrayList<>();
+        List<MetadataElement> metadataElementList = metadataElementMap.get(index);
+        if (metadataElementList == null) {
+            metadataElementList = new ArrayList<>();
+            metadataElementMap.put(index, metadataElementList);
+        }
+
         try {
             Locale locale = BeanUtils.getLocale();
-            MetadataElement metadataElement = new MetadataElement(currentElement, locale, activeDocumentBean.getSelectedRecordLanguage());
+            MetadataElement metadataElement = new MetadataElement(currentElement, index, locale, activeDocumentBean.getSelectedRecordLanguage());
             metadataElementList.add(metadataElement);
 
             // Retrieve any struct elements above the current and generate metadata for each of them
             StructElement se = currentElement;
             while (se.getParent() != null) {
                 se = se.getParent();
-                metadataElementList.add(new MetadataElement(se, locale, activeDocumentBean.getSelectedRecordLanguage()));
+                metadataElementList.add(new MetadataElement(se, index, locale, activeDocumentBean.getSelectedRecordLanguage()));
             }
             Collections.reverse(metadataElementList);
 
@@ -131,47 +144,40 @@ public class MetadataBean {
 
     /**
      * <p>
-     * Setter for the field <code>metadataElementList</code>.
-     * </p>
-     *
-     * @param metadataElementList the metadataElementList to set
-     */
-    public void setMetadataElementList(List<MetadataElement> metadataElementList) {
-        this.metadataElementList = metadataElementList;
-    }
-
-    /**
-     * <p>
      * Getter for the field <code>metadataElementList</code>.
      * </p>
      *
+     * @param index
      * @return the metadataElementList
      */
-    public List<MetadataElement> getMetadataElementList() {
-        if (metadataElementList == null) {
+    public List<MetadataElement> getMetadataElementList(int index) {
+        //        logger.trace("getMetadataElementList({})", index);
+        if (metadataElementMap.get(index) == null) {
             // Only reload if empty, otherwise a c:forEach (used by p:tabView) will cause a reload on every iteration
             try {
-                loadMetadata();
+                loadMetadata(index);
             } catch (IndexUnreachableException | DAOException e) {
                 logger.error("Error loading metadatalist ", e);
                 return Collections.emptyList();
             }
 
         }
-        return metadataElementList;
+        return metadataElementMap.get(index);
     }
 
     /**
      * Returns a list of <code>MetadataElement</code>s for all structure elements contained on the given page (as opposed to just the immediate
      * hierarchy down to the first element that BEGINS on the current page, such as returned by <code>getMetadataElementList</code>.
      * 
+     * @param index Metadata view index
      * @param order Page number
      * @return List of <code>MetadataElement</code>s for all structure elements contained on the given page
      * @throws IndexUnreachableException
      * @throws DAOException
      * @should return metadata elements for all contained docstructs
      */
-    public List<MetadataElement> getAllMetadataElementsForPage(int order) throws IndexUnreachableException, DAOException {
+    @Deprecated
+    public List<MetadataElement> getAllMetadataElementsForPage(int index, int order) throws IndexUnreachableException, DAOException {
         if (allMetadataElementsforPage.get(order) != null) {
             return allMetadataElementsforPage.get(order);
         }
@@ -204,7 +210,7 @@ public class MetadataBean {
                 if (thumbPage == order || thumbPage + numPages - 1 >= order) {
                     StructElement se = new StructElement(Long.valueOf((String) doc.getFieldValue(SolrConstants.IDDOC)), doc);
                     Locale locale = BeanUtils.getLocale();
-                    MetadataElement metadataElement = new MetadataElement(se, locale, activeDocumentBean.getSelectedRecordLanguage());
+                    MetadataElement metadataElement = new MetadataElement(se, index, locale, activeDocumentBean.getSelectedRecordLanguage());
                     if (allMetadataElementsforPage.get(order) == null) {
                         allMetadataElementsforPage.put(order, new ArrayList<>(docs.size()));
                     }
@@ -226,14 +232,16 @@ public class MetadataBean {
      * getTopMetadataElement.
      * </p>
      *
+     * @param index Metadata view index
      * @return a {@link io.goobi.viewer.model.metadata.MetadataElement} object.
      */
-    public MetadataElement getTopMetadataElement() {
-        if (getMetadataElementList() != null && !getMetadataElementList().isEmpty()) {
-            return getMetadataElementList().get(0);
+    public MetadataElement getTopMetadataElement(int index) {
+        List<MetadataElement> metadataElementList = getMetadataElementList(index);
+        if (metadataElementList == null || metadataElementList.isEmpty()) {
+            return null;
         }
 
-        return null;
+        return metadataElementList.get(index);
     }
 
     /**
@@ -241,19 +249,34 @@ public class MetadataBean {
      * metadata, the next higher element is checked until an element with sidebar metadata is found. TODO for some reason this method is called 6-15
      * times per page
      *
+     * @param index Metadata view index
      * @return a {@link io.goobi.viewer.model.metadata.MetadataElement} object.
      */
-    public MetadataElement getBottomMetadataElement() {
-        if (getMetadataElementList() != null && !getMetadataElementList().isEmpty()) {
-            int index = getMetadataElementList().size() - 1;
-            while (!getMetadataElementList().get(index).isHasSidebarMetadata() && index > 0) {
-                index--;
-            }
-            // logger.debug("index: " + index);
-            return getMetadataElementList().get(index);
+    public MetadataElement getBottomMetadataElement(int index) {
+        List<MetadataElement> metadataElementList = getMetadataElementList(index);
+        if (metadataElementList == null || metadataElementList.isEmpty()) {
+            return null;
         }
 
-        return null;
+        int i = metadataElementList.size() - 1;
+        while (!metadataElementList.get(i).isHasSidebarMetadata() && i > 0) {
+            index--;
+        }
+        // logger.debug("i: " + i);
+        return metadataElementList.get(i);
+    }
+
+    /**
+     * Convenience method for the metadata page/link label key, depending on the document type.
+     * 
+     * @return Message key for the label
+     */
+    public String getDefaultMetadataLabel() {
+        if (activeDocumentBean != null && activeDocumentBean.getViewManager().getTopDocument().isLidoRecord()) {
+            return "metadata";
+        }
+
+        return "bibData";
     }
 
     /**
@@ -297,8 +320,68 @@ public class MetadataBean {
      * @param selectedRecordLanguage a {@link java.lang.String} object.
      */
     public void setSelectedRecordLanguage(String selectedRecordLanguage) {
-        if (metadataElementList != null) {
-            metadataElementList.forEach(element -> element.setSelectedRecordLanguage(selectedRecordLanguage));
+        for (int index : metadataElementMap.keySet()) {
+            List<MetadataElement> metadataElementList = metadataElementMap.get(index);
+            if (metadataElementList != null) {
+                metadataElementList.forEach(element -> element.setSelectedRecordLanguage(selectedRecordLanguage));
+            }
         }
+    }
+
+    /**
+     * 
+     * @return List of available <code>MetadataView</code>s
+     */
+    public List<MetadataView> getMetadataViews() {
+        return DataManager.getInstance().getConfiguration().getMetadataViews();
+    }
+
+    /**
+     * @return the metadataViewUrl
+     */
+    public String getMetadataViewUrl() {
+        return metadataViewUrl;
+    }
+
+    /**
+     * @param metadataViewUrl the metadataViewUrl to set
+     */
+    public void setMetadataViewUrl(String metadataViewUrl) {
+        logger.debug("setMetadataViewUrl({})", metadataViewUrl);
+        try {
+            this.metadataViewUrl = metadataViewUrl;
+            List<MetadataView> views = DataManager.getInstance().getConfiguration().getMetadataViews();
+            if (StringUtils.isEmpty(metadataViewUrl)) {
+                if (!views.isEmpty()) {
+                    activeMetadataView = views.get(0);
+                    return;
+                }
+            } else {
+                for (MetadataView view : views) {
+                    if (metadataViewUrl.equals(view.getUrl())) {
+                        activeMetadataView = view;
+                        return;
+                    }
+                }
+            }
+
+            activeMetadataView = null;
+        } finally {
+            logger.debug("setMetadataViewUrl END");
+        }
+    }
+
+    /**
+     * @return the activeMetadataView
+     */
+    public MetadataView getActiveMetadataView() {
+        return activeMetadataView;
+    }
+
+    /**
+     * @param activeMetadataView the activeMetadataView to set
+     */
+    public void setActiveMetadataView(MetadataView activeMetadataView) {
+        this.activeMetadataView = activeMetadataView;
     }
 }

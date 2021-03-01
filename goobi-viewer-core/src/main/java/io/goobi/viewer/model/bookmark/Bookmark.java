@@ -595,7 +595,7 @@ public class Bookmark implements Serializable {
         Locale sessionLocale = BeanUtils.getLocale();
         String selectedRecordLanguage = sessionLocale.getLanguage();
         try {
-            MetadataElement md = new MetadataElement(se, sessionLocale, selectedRecordLanguage);
+            MetadataElement md = new MetadataElement(se, 0, sessionLocale, selectedRecordLanguage);
             return md;
         } catch (DAOException | PresentationException e) {
             throw new IndexUnreachableException(e.getMessage());
