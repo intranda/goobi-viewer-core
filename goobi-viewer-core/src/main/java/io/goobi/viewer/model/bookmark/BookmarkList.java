@@ -18,6 +18,7 @@ package io.goobi.viewer.model.bookmark;
 import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import javax.persistence.CascadeType;
@@ -171,14 +172,19 @@ public class BookmarkList implements Serializable, Comparable<BookmarkList> {
         return true;
     }
 
-    /** {@inheritDoc} */
+    /**
+     * Descending order by dateUpdated.
+     */
     @Override
     public int compareTo(BookmarkList o) {
         if (dateUpdated != null) {
-            return dateUpdated.compareTo(o.getDateUpdated());
+            if (o.getDateUpdated() == null) {
+                return -1;
+            }
+            return dateUpdated.compareTo(o.getDateUpdated()) * -1;
         }
 
-        return -1;
+        return 1;
     }
 
     /**
@@ -752,5 +758,40 @@ public class BookmarkList implements Serializable, Comparable<BookmarkList> {
 
     public long numItemsWithoutImages() {
         return this.getItems().stream().filter(bm -> !bm.isHasImages()).count();
+    }
+
+    /**
+     * 
+     * @param bookmarkLists
+     * @should sort lists correctly
+     */
+    public static void sortBookmarkLists(List<BookmarkList> bookmarkLists) {
+        if (bookmarkLists == null || bookmarkLists.isEmpty()) {
+            return;
+        }
+
+        // If a list has no dateUpdated value, add the latest item date
+        boolean sort = false;
+        for (BookmarkList list : bookmarkLists) {
+            if (list.getDateUpdated() != null || list.getItems() == null || list.getItems().isEmpty()) {
+                continue;
+            }
+            LocalDateTime latest = null;
+            for (Bookmark bookmark : list.getItems()) {
+                if (bookmark.getDateAdded() == null) {
+                    continue;
+                }
+                if (latest == null || bookmark.getDateAdded().isAfter(latest)) {
+                    latest = bookmark.getDateAdded();
+                }
+            }
+            if (latest != null) {
+                list.setDateUpdated(latest);
+                sort = true;
+            }
+        }
+        if (sort) {
+            Collections.sort(bookmarkLists);
+        }
     }
 }

@@ -66,31 +66,7 @@ public class UserBookmarkResourceBuilder extends AbstractBookmarkResourceBuilder
     @Override
     public List<BookmarkList> getAllBookmarkLists() throws DAOException, IOException, RestApiException {
         List<BookmarkList> ret = DataManager.getInstance().getDao().getBookmarkLists(user);
-
-        // If a list has no dateUpdated value, add the latest item date
-        boolean sort = false;
-        for (BookmarkList list : ret) {
-            if (list.getDateUpdated() != null || list.getItems().isEmpty()) {
-                continue;
-            }
-            LocalDateTime latest = null;
-            for (Bookmark bookmark : list.getItems()) {
-                if (bookmark.getDateAdded() == null) {
-                    continue;
-                }
-                if (latest == null || bookmark.getDateAdded().isAfter(latest)) {
-                    latest = bookmark.getDateAdded();
-                }
-            }
-            if (latest != null) {
-                list.setDateUpdated(latest);
-                sort = true;
-            }
-        }
-        if (sort) {
-            Collections.sort(ret);
-            Collections.reverse(ret);
-        }
+        BookmarkList.sortBookmarkLists(ret);
 
         return ret;
     }
