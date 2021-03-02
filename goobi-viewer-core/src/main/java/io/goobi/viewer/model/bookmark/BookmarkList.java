@@ -16,7 +16,9 @@
 package io.goobi.viewer.model.bookmark;
 
 import java.io.Serializable;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import javax.persistence.CascadeType;
@@ -66,7 +68,7 @@ import io.goobi.viewer.model.security.user.UserGroup;
 @Entity
 @Table(name = "bookshelves")
 @JsonInclude(Include.NON_NULL)
-public class BookmarkList implements Serializable {
+public class BookmarkList implements Serializable, Comparable<BookmarkList> {
 
     /**
      * 
@@ -97,6 +99,9 @@ public class BookmarkList implements Serializable {
 
     @Column(name = "share_key", unique = true)
     private String shareKey;
+
+    @Column(name = "date_updated")
+    private LocalDateTime dateUpdated;
 
     @OneToMany(mappedBy = "bookmarkList", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @PrivateOwned
@@ -168,6 +173,21 @@ public class BookmarkList implements Serializable {
     }
 
     /**
+     * Descending order by dateUpdated.
+     */
+    @Override
+    public int compareTo(BookmarkList o) {
+        if (dateUpdated != null) {
+            if (o.getDateUpdated() == null) {
+                return -1;
+            }
+            return dateUpdated.compareTo(o.getDateUpdated()) * -1;
+        }
+
+        return 1;
+    }
+
+    /**
      * add bookshelf to list and save
      *
      * @param item a {@link io.goobi.viewer.model.bookmark.Bookmark} object.
@@ -226,7 +246,7 @@ public class BookmarkList implements Serializable {
      */
     public String generateSolrQueryForItems() {
         StringBuilder sb = new StringBuilder();
-        if(items.isEmpty()) {
+        if (items.isEmpty()) {
             return "-*:*";
         }
         for (Bookmark item : items) {
@@ -515,6 +535,20 @@ public class BookmarkList implements Serializable {
     }
 
     /**
+     * @return the dateUpdated
+     */
+    public LocalDateTime getDateUpdated() {
+        return dateUpdated;
+    }
+
+    /**
+     * @param dateUpdated the dateUpdated to set
+     */
+    public void setDateUpdated(LocalDateTime dateUpdated) {
+        this.dateUpdated = dateUpdated;
+    }
+
+    /**
      * <p>
      * getNumItems.
      * </p>
@@ -581,7 +615,7 @@ public class BookmarkList implements Serializable {
      */
     public String getOwnerName() {
         if (getOwner() != null) {
-            return getOwner().getDisplayNameObfuscated();
+            return getOwner().getDisplayName();
         }
         return null;
     }
@@ -598,7 +632,8 @@ public class BookmarkList implements Serializable {
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      */
-    public String getMiradorJsonObject(String applicationRoot, String restApiUrl) throws ViewerConfigurationException, IndexUnreachableException, PresentationException {
+    public String getMiradorJsonObject(String applicationRoot, String restApiUrl)
+            throws ViewerConfigurationException, IndexUnreachableException, PresentationException {
         // int cols = (int) Math.sqrt(items.size());
         int cols = (int) Math.ceil(Math.sqrt(items.size()));
         int rows = (int) Math.ceil(items.size() / (float) cols);
@@ -616,7 +651,7 @@ public class BookmarkList implements Serializable {
         for (Bookmark bi : items) {
             String pi = bi.getPi();
             String manifestUrl;
-            if(RestApiManager.isLegacyUrl(restApiUrl)) {                
+            if (RestApiManager.isLegacyUrl(restApiUrl)) {
                 manifestUrl = getLegacyManifestUrl(pi);
             } else {
                 manifestUrl = new ApiUrls(restApiUrl)
@@ -694,13 +729,15 @@ public class BookmarkList implements Serializable {
      * @return a {@link java.lang.String} object.
      */
     public String getIIIFCollectionURI() {
-        if(StringUtils.isNotBlank(getShareKey())) {            
-            return DataManager.getInstance().getRestApiManager().getDataApiManager()
-                    .map(urls -> urls.path(ApiUrls.USERS_BOOKMARKS, ApiUrls.USERS_BOOKMARKS_LIST_SHARED_IIIF).params(getShareKey()).build())
-                    .orElse(DataManager.getInstance().getConfiguration().getRestApiUrl() + "bookmarks/key/" + getShareKey() + "/");
-        } else {
+        if (StringUtils.isBlank(getShareKey())) {
             return null;
         }
+
+        return DataManager.getInstance()
+                .getRestApiManager()
+                .getDataApiManager()
+                .map(urls -> urls.path(ApiUrls.USERS_BOOKMARKS, ApiUrls.USERS_BOOKMARKS_LIST_SHARED_IIIF).params(getShareKey()).build())
+                .orElse(DataManager.getInstance().getConfiguration().getRestApiUrl() + "bookmarks/key/" + getShareKey() + "/");
     }
 
     /**
@@ -718,8 +755,43 @@ public class BookmarkList implements Serializable {
     public boolean isOwnedBy(User user) {
         return user != null && user.equals(this.owner);
     }
-        
+
     public long numItemsWithoutImages() {
         return this.getItems().stream().filter(bm -> !bm.isHasImages()).count();
+    }
+
+    /**
+     * 
+     * @param bookmarkLists
+     * @should sort lists correctly
+     */
+    public static void sortBookmarkLists(List<BookmarkList> bookmarkLists) {
+        if (bookmarkLists == null || bookmarkLists.isEmpty()) {
+            return;
+        }
+
+        // If a list has no dateUpdated value, add the latest item date
+        boolean sort = false;
+        for (BookmarkList list : bookmarkLists) {
+            if (list.getDateUpdated() != null || list.getItems() == null || list.getItems().isEmpty()) {
+                continue;
+            }
+            LocalDateTime latest = null;
+            for (Bookmark bookmark : list.getItems()) {
+                if (bookmark.getDateAdded() == null) {
+                    continue;
+                }
+                if (latest == null || bookmark.getDateAdded().isAfter(latest)) {
+                    latest = bookmark.getDateAdded();
+                }
+            }
+            if (latest != null) {
+                list.setDateUpdated(latest);
+                sort = true;
+            }
+        }
+        if (sort) {
+            Collections.sort(bookmarkLists);
+        }
     }
 }

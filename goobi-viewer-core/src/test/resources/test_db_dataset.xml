@@ -82,9 +82,13 @@
 
 	<bookshelves bookshelf_id="1" owner_id="1" name="bookmark list 1 name"
 		description="bookmark list 1 desc" public="false"
+		date_updated="2021-02-01 00:00:00.000000000"
         share_key="c548e2ea6915acbfa17c3dc6f453f5b1" />
 	<bookshelves bookshelf_id="2" owner_id="2" name="bookmark list 2 name"
 		description="bookmark list 2 desc" public="true" />
+    <bookshelves bookshelf_id="3" owner_id="1" name="bookmark list 3 name"
+        description="bookmark list 3 desc" public="false"
+        date_updated="2021-03-01 00:00:00.000000000" />
 		
     <bookshelf_items bookshelf_item_id="1" bookshelf_id="1"
         name="bookmark 1 name" description="bookmark 1 desc"

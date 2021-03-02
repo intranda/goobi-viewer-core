@@ -703,7 +703,7 @@ public class JPADAO implements IDAO {
     @Override
     public List<BookmarkList> getBookmarkLists(User user) throws DAOException {
         preQuery();
-        Query q = em.createQuery("SELECT o FROM BookmarkList o WHERE o.owner = :user");
+        Query q = em.createQuery("SELECT o FROM BookmarkList o WHERE o.owner = :user ORDER BY o.dateUpdated DESC");
         q.setParameter("user", user);
         // q.setHint("javax.persistence.cache.storeMode", "REFRESH");
         return q.getResultList();
