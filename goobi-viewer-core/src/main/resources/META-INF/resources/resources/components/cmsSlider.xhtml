@@ -11,6 +11,10 @@
             name="slider"
             required="true"
             type="io.goobi.viewer.model.cms.CMSSlider" />
+            <composite:attribute
+            name="sourceElement"
+            required="false"
+            default=""/>
     </composite:interface>
 
 
@@ -18,7 +22,11 @@
     <composite:implementation>
     
         <ui:fragment rendered="#{cc.attrs.slider != null}">
-                <slideshow source="#{request.contextPath}/api/v1/cms/slider/#{cc.attrs.slider.id}/slides/" style="#{cc.attrs.slider.style}"></slideshow>
+                <slideshow 
+                	source="#{request.contextPath}/api/v1/cms/slider/#{cc.attrs.slider.id}/slides/" 
+                	style="#{cc.attrs.slider.style}"
+                	sourceelement="#{cc.attrs.sourceElement}"                	
+                	></slideshow>
         </ui:fragment>
 
     </composite:implementation>

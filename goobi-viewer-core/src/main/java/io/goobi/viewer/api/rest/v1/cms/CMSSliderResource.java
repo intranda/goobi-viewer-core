@@ -69,6 +69,11 @@ public class CMSSliderResource {
     public CMSSliderResource(@PathParam("sliderId") Long sliderId) throws DAOException {
         this.slider = DataManager.getInstance().getDao().getSlider(sliderId);
     }
+    
+    public CMSSliderResource(CMSSlider slider) {
+        this.slider = slider;
+    }
+
 
     @GET
     @javax.ws.rs.Path("/slides")

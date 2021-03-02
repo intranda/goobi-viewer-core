@@ -19,9 +19,22 @@
 
     this.on( 'mount', function() {
     	this.style = this.opts.style;
-    	console.log("")
-    	let pSource = fetch(this.opts.source)
-    	.then(result => result.json());
+    	console.log("inti slider with", this.style);
+    	
+    	let pSource;
+    	if(this.opts.sourceelement) {
+    		let sourceElement = document.getElementById(this.opts.sourceelement);
+    		if(sourceElement) {    			
+    			pSource = Promise.resolve(JSON.parse(sourceElement.value));
+    			console.log("getting source from ", sourceElement.value);
+    		} else {
+    			logger.error("sourceElement was included but no matching dom element found");
+    			return;
+    		}
+    	}  else {
+    		pSource = fetch(this.opts.source)
+        	.then(result => result.json());
+    	}
     	
     	rxjs.from(pSource)
     	.pipe(
@@ -42,7 +55,7 @@
     			this.slider.destroy();
     		}
     		let style = this.opts.styles.get(this.opts.style);
-//     		console.log("create slideshow with ", style)
+    		console.log("create slideshow with ", style)
     		this.swiper = new Swiper(this.refs.container, style);
     	}
     });

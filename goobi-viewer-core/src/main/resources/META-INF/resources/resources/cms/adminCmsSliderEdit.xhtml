@@ -156,6 +156,7 @@
 																itemLabel="#{collection.label}"
 																itemValue="#{collection.toString()}"
 															></f:selectItems>
+															<f:ajax event="change" render="previewSlider"/>
 														</h:selectManyListbox>
 														<span class="admin__form-help-text">#{msg.cms__edit_slider__collections__help}</span>
 													</div>
@@ -191,6 +192,7 @@
 															required="true"
 															requiredMessage="#{msg.info__input_required}"
 															value="#{slider.solrQuery}">
+															<f:ajax event="change" render="previewSlider"/>
 														</h:inputText>
 														<span class="admin__form-help-text">#{msg.cms__edit_slider__solr_query__help}</span>
 													</div>
@@ -236,7 +238,7 @@
 																	<li><label> <h:selectBooleanCheckbox
 																				type="checkbox" value="#{selectable.selected}">
 																			#{selectable.value.name}
-																			<f:ajax event="change" render="selectedCategories"
+																			<f:ajax event="change" render="selectedCategories previewSlider"
 																					listener="#{cmsSliderEditBean.writeCategories}"></f:ajax>
 																			</h:selectBooleanCheckbox>
 																	</label></li>
@@ -271,11 +273,18 @@
 												</button>
 											</div>
 										</div>
-										<h:commandScript name="setStyle" action="#{cmsSliderEditBean.setStyleFromRequestParameter()}"></h:commandScript>
+										<h:commandScript render="previewSlider" name="setStyle" action="#{cmsSliderEditBean.setStyleFromRequestParameter()}"></h:commandScript>
 										
 
 									</div>
+									<h3>#{msg.title__preview}</h3>
+									<h:panelGroup layout="block" id="previewSlider" class="cms-module__slider__preview" rendered="#{slider != null}">
+										<h:inputHidden id="previewSource" value="#{cmsSliderEditBean.sliderSource}"></h:inputHidden>
+										<viewerComponent:cmsSlider slider="#{slider}" sourceElement="previewSource"/>
+									</h:panelGroup>
 								</div>
+								
+								
 							</div>
 	
 							<div

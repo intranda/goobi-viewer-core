@@ -16,6 +16,7 @@
 package io.goobi.viewer.managedbeans;
 
 import java.io.Serializable;
+import java.net.URI;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -32,8 +33,16 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
+import de.unigoettingen.sub.commons.contentlib.exceptions.ContentNotFoundException;
+import de.unigoettingen.sub.commons.contentlib.exceptions.IllegalRequestException;
+import io.goobi.viewer.api.rest.v1.cms.CMSSliderResource;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.exceptions.DAOException;
+import io.goobi.viewer.exceptions.IndexUnreachableException;
+import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.messages.Messages;
 import io.goobi.viewer.model.cms.CMSCategory;
@@ -128,19 +137,26 @@ public class CmsSliderEditBean implements Serializable {
                 if(this.selectedSlider.getStyle() == null) {
                     this.selectedSlider.setStyle("base");
                 }
+            boolean saved = false;
             if(this.selectedSlider.getId() != null) {
-                DataManager.getInstance().getDao().updateSlider(selectedSlider);
+                saved = DataManager.getInstance().getDao().updateSlider(selectedSlider);
             } else {
-                DataManager.getInstance().getDao().addSlider(selectedSlider);
+                saved = DataManager.getInstance().getDao().addSlider(selectedSlider);
+            }
+            if(saved) {
+                Messages.info(null, "button__save__success", "\"" + selectedSlider.getName() + "\"");
+            } else {
+                Messages.error("button__save__error");
+
             }
             } catch(DAOException e) {
                 logger.error("Error saving slider", e);
-                Messages.error("button_save_error");
+                Messages.error(null, "button__save__error", e.toString());
                 return "";
             }
             
         }
-        return "pretty:adminCmsSliders";
+        return "";//"pretty:adminCmsSliders";
 
     }
     
@@ -220,4 +236,13 @@ public class CmsSliderEditBean implements Serializable {
         }
     }
 
+    public String getSliderSource() throws ContentNotFoundException, IllegalRequestException, PresentationException, IndexUnreachableException, JsonProcessingException {
+        if(this.selectedSlider != null) {            
+            List<URI> list = new CMSSliderResource(selectedSlider).getSlides();
+            return new ObjectMapper().writeValueAsString(list);
+        } else {
+            return "[]";
+        }
+    }
+    
 }

@@ -84,7 +84,6 @@ var viewerJS = (function () {
         viewerJS.userLogin.init();
         
         viewerJS.popovers.init();
-        
 	    viewerJS.userDropdown.init();
 	    
 	    //init toggle hide/show
@@ -92,7 +91,7 @@ var viewerJS = (function () {
 
        
         // init bookmarks if enabled
-        if ( bookmarksEnabled ) {
+        if ( bookmarksEnabled ) { 
             viewerJS.bookmarks.init( {
                 root: rootURL,
                 rest: this.getRestApiUrl(),

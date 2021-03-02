@@ -16,7 +16,8 @@
  * You should have received a copy of the GNU General Public License along with this
  * program. If not, see <http://www.gnu.org/licenses/>.
  * 
- * Module for cms slider creation
+ * Module for cms backend slider creation
+ * This enables listing slider styles defined in javascript in a dropdown element in the slider creation page
  * 
  * @module cmsJS.createSlider
  * @requires jQuery
@@ -25,11 +26,11 @@
 var cmsJS = ( function( cms ) {
     'use strict';
     
-    var _debug = true;
+    var _debug = false;
     
     cms.createSlider = {
         /**
-         * Method which initializes the CMS create page module.
+         * Method which initializes CMS backend slider functionalities
          * 
          * @method init
          * @param {Object} settings
@@ -41,12 +42,18 @@ var cmsJS = ( function( cms ) {
                 console.log( '##############################' );
             }
             
-            cmsJS.createSlider.initStyleOptions();
+            /**
+            *	initialize sliders only after document load to wait after 
+            */
+            $(document).ready(() => {
+	            cmsJS.createSlider.initStyleOptions();
+            });
 
         },
         
         /**
-        *	Initializes the list of options for any elements with data-options="slider-styles" 
+        * Initializes the list of options for any elements with data-options="slider-styles" 
+        * Possible values for the option list are taken from viewerJS.slideshow.js
         */
         initStyleOptions: function() {
         	$("[data-options='slider-styles']").each((index, element) => {

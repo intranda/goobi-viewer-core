@@ -44,6 +44,15 @@ var viewerJS = ( function( viewer ) {
      	]),
      	init: function() {
      		riot.mount("slideshow", {language: currentLang, styles: this.styles});
+     		viewer.jsfAjax.success
+     		.pipe(
+     			rxjs.operators.filter( e => e.responseText && e.responseText.includes("<slideshow ")),
+     			rxjs.operators.debounceTime(500)
+     			)
+     		.subscribe((e) => {
+     			console.log("update slideshow");
+     			riot.mount("slideshow", {language: currentLang, styles: this.styles});
+     		});
      	},
      	set: function(name, config) {
      		this.styles.set(name, config);
