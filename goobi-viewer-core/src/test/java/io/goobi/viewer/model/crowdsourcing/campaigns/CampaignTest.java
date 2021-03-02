@@ -437,13 +437,13 @@ public class CampaignTest extends AbstractDatabaseEnabledTest {
                 CampaignRecordPageStatistic pageStatistic = new CampaignRecordPageStatistic();
                 pageStatistic.setPage(1);
                 pageStatistic.setStatus(CampaignRecordPageStatus.FINISHED);
-                statistic.getPageStatistics().add(pageStatistic);
+                statistic.getPageStatistics().put("PI1_1", pageStatistic);
             }
             {
                 CampaignRecordPageStatistic pageStatistic = new CampaignRecordPageStatistic();
                 pageStatistic.setPage(2);
                 pageStatistic.setStatus(CampaignRecordPageStatus.FINISHED);
-                statistic.getPageStatistics().add(pageStatistic);
+                statistic.getPageStatistics().put("PI1_2", pageStatistic);
             }
             campaign.getStatistics().put("PI1", statistic);
         }
@@ -453,7 +453,7 @@ public class CampaignTest extends AbstractDatabaseEnabledTest {
                 CampaignRecordPageStatistic pageStatistic = new CampaignRecordPageStatistic();
                 pageStatistic.setPage(1);
                 pageStatistic.setStatus(CampaignRecordPageStatus.FINISHED);
-                statistic.getPageStatistics().add(pageStatistic);
+                statistic.getPageStatistics().put("PI2_1", pageStatistic);
             }
             campaign.getStatistics().put("PI2", statistic);
         }
@@ -463,13 +463,13 @@ public class CampaignTest extends AbstractDatabaseEnabledTest {
                 CampaignRecordPageStatistic pageStatistic = new CampaignRecordPageStatistic();
                 pageStatistic.setPage(1);
                 pageStatistic.setStatus(CampaignRecordPageStatus.FINISHED);
-                statistic.getPageStatistics().add(pageStatistic);
+                statistic.getPageStatistics().put("PI3_1", pageStatistic);
             }
             {
                 CampaignRecordPageStatistic pageStatistic = new CampaignRecordPageStatistic();
                 pageStatistic.setPage(2);
                 pageStatistic.setStatus(CampaignRecordPageStatus.REVIEW);
-                statistic.getPageStatistics().add(pageStatistic);
+                statistic.getPageStatistics().put("PI3_2", pageStatistic);
             }
             campaign.getStatistics().put("PI3", statistic);
         }
