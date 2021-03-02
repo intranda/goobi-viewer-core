@@ -3509,7 +3509,7 @@ public class JPADAO implements IDAO {
             try {
                 Campaign o = em.getReference(Campaign.class, id);
                 if (o != null) {
-//                    em.refresh(o);
+                    //                    em.refresh(o);
                 }
                 return o;
             } catch (EntityNotFoundException e) {
@@ -3644,7 +3644,15 @@ public class JPADAO implements IDAO {
                     .executeUpdate();
             rows += emLocal
                     .createNativeQuery(
+                            "DELETE FROM cs_campaign_record_page_statistic_annotators WHERE user_id=" + user.getId())
+                    .executeUpdate();
+            rows += emLocal
+                    .createNativeQuery(
                             "DELETE FROM cs_campaign_record_statistic_reviewers WHERE user_id=" + user.getId())
+                    .executeUpdate();
+            rows += emLocal
+                    .createNativeQuery(
+                            "DELETE FROM cs_campaign_record_page_statistic_reviewers WHERE user_id=" + user.getId())
                     .executeUpdate();
             emLocal.getTransaction().commit();
             updateCampaignsFromDatabase();
@@ -3677,7 +3685,16 @@ public class JPADAO implements IDAO {
                     .executeUpdate();
             rows += emLocal
                     .createNativeQuery(
+                            "UPDATE cs_campaign_record_page_statistic_annotators SET user_id=" + toUser.getId() + " WHERE user_id="
+                                    + fromUser.getId())
+                    .executeUpdate();
+            rows += emLocal
+                    .createNativeQuery(
                             "UPDATE cs_campaign_record_statistic_reviewers SET user_id=" + toUser.getId() + " WHERE user_id=" + fromUser.getId())
+                    .executeUpdate();
+            rows += emLocal
+                    .createNativeQuery(
+                            "UPDATE cs_campaign_record_page_statistic_reviewers SET user_id=" + toUser.getId() + " WHERE user_id=" + fromUser.getId())
                     .executeUpdate();
             emLocal.getTransaction().commit();
             updateCampaignsFromDatabase();
@@ -4868,42 +4885,42 @@ public class JPADAO implements IDAO {
     @Override
     public List<CMSRecordNote> getRecordNotes(int first, int pageSize, String sortField, boolean descending, Map<String, String> filters)
             throws DAOException {
-            preQuery();
-            StringBuilder sbQuery = new StringBuilder("SELECT DISTINCT a FROM CMSRecordNote a");
-            StringBuilder order = new StringBuilder();
-            try {
-                Map<String, Object> params = new HashMap<>();
-                if(filters != null) {
-                   String filterValue = filters.values().stream().findAny().orElse(null);
-                   if(StringUtils.isNotBlank(filterValue)) {
-                       String filterString = " WHERE (UPPER(a.recordPi) LIKE :filter OR UPPER(a.recordTitle) LIKE :filter OR UPPER(a.noteTitle) LIKE :filter)";
-                       params.put("filter", sanitizeQueryParam(filterValue, true));
-                       sbQuery.append(filterString);
-                   }
+        preQuery();
+        StringBuilder sbQuery = new StringBuilder("SELECT DISTINCT a FROM CMSRecordNote a");
+        StringBuilder order = new StringBuilder();
+        try {
+            Map<String, Object> params = new HashMap<>();
+            if (filters != null) {
+                String filterValue = filters.values().stream().findAny().orElse(null);
+                if (StringUtils.isNotBlank(filterValue)) {
+                    String filterString =
+                            " WHERE (UPPER(a.recordPi) LIKE :filter OR UPPER(a.recordTitle) LIKE :filter OR UPPER(a.noteTitle) LIKE :filter)";
+                    params.put("filter", sanitizeQueryParam(filterValue, true));
+                    sbQuery.append(filterString);
                 }
-                if (StringUtils.isNotEmpty(sortField)) {
-                    order.append(" ORDER BY a.").append(sortField);
-                    if (descending) {
-                        order.append(" DESC");
-                    }
-                }
-                sbQuery.append(order);
-
-                logger.trace(sbQuery.toString());
-                Query q = em.createQuery(sbQuery.toString());
-                params.entrySet().forEach(entry -> q.setParameter(entry.getKey(), entry.getValue()));
-                //            q.setParameter("lang", BeanUtils.getLocale().getLanguage());
-                q.setFirstResult(first);
-                q.setMaxResults(pageSize);
-                q.setFlushMode(FlushModeType.COMMIT);
-                // q.setHint("javax.persistence.cache.storeMode", "REFRESH");
-                return q.getResultList();
-            } catch (PersistenceException e) {
-                logger.error("Exception \"" + e.toString() + "\" when trying to get CMSRecordNotes. Returning empty list");
-                return Collections.emptyList();
             }
-    }
+            if (StringUtils.isNotEmpty(sortField)) {
+                order.append(" ORDER BY a.").append(sortField);
+                if (descending) {
+                    order.append(" DESC");
+                }
+            }
+            sbQuery.append(order);
 
+            logger.trace(sbQuery.toString());
+            Query q = em.createQuery(sbQuery.toString());
+            params.entrySet().forEach(entry -> q.setParameter(entry.getKey(), entry.getValue()));
+            //            q.setParameter("lang", BeanUtils.getLocale().getLanguage());
+            q.setFirstResult(first);
+            q.setMaxResults(pageSize);
+            q.setFlushMode(FlushModeType.COMMIT);
+            // q.setHint("javax.persistence.cache.storeMode", "REFRESH");
+            return q.getResultList();
+        } catch (PersistenceException e) {
+            logger.error("Exception \"" + e.toString() + "\" when trying to get CMSRecordNotes. Returning empty list");
+            return Collections.emptyList();
+        }
+    }
 
     /* (non-Javadoc)
      * @see io.goobi.viewer.dao.IDAO#getAllRecordNotes()
@@ -4923,7 +4940,6 @@ public class JPADAO implements IDAO {
             return Collections.emptyList();
         }
     }
-    
 
     /* (non-Javadoc)
      * @see io.goobi.viewer.dao.IDAO#getRecordNotesForPi(java.lang.String)
@@ -4932,13 +4948,13 @@ public class JPADAO implements IDAO {
     public List<CMSRecordNote> getRecordNotesForPi(String pi, boolean displayedNotesOnly) throws DAOException {
         preQuery();
         String query = "SELECT a FROM CMSRecordNote a WHERE a.recordPi = :pi";
-        if(displayedNotesOnly) {
+        if (displayedNotesOnly) {
             query += " AND a.displayNote = :display";
         }
         logger.trace(query);
         Query q = em.createQuery(query.toString());
         q.setParameter("pi", pi);
-        if(displayedNotesOnly) {            
+        if (displayedNotesOnly) {
             q.setParameter("display", true);
         }
         q.setFlushMode(FlushModeType.COMMIT);
@@ -4953,7 +4969,7 @@ public class JPADAO implements IDAO {
         preQuery();
         try {
             CMSRecordNote o = em.getReference(CMSRecordNote.class, id);
-            if(o != null) {
+            if (o != null) {
                 em.refresh(o);
             }
             return new CMSRecordNote(o);
