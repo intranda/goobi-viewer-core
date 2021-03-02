@@ -2301,8 +2301,8 @@ public class JPADAOTest extends AbstractDatabaseEnabledTest {
             CampaignRecordStatistic recordStatistic = campaign.getStatistics().get("PI_5");
             Assert.assertNotNull(recordStatistic);
             Assert.assertEquals(2, recordStatistic.getPageStatistics().size());
-            Assert.assertEquals(Integer.valueOf(1), recordStatistic.getPageStatistics().get(0).getPage());
-            Assert.assertEquals("PI_5", recordStatistic.getPageStatistics().get(0).getPi());
+            Assert.assertEquals(Integer.valueOf(1), recordStatistic.getPageStatistics().get("PI_5_1").getPage());
+            Assert.assertEquals("PI_5", recordStatistic.getPageStatistics().get("PI_5_1").getPi());
         }
     }
 
