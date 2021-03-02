@@ -2589,7 +2589,7 @@ public class JPADAOTest extends AbstractDatabaseEnabledTest {
         }
 
         int rows = DataManager.getInstance().getDao().deleteCampaignStatisticsForUser(user);
-        Assert.assertEquals(4, rows);
+        Assert.assertEquals(6, rows);
         {
             Campaign campaign = DataManager.getInstance().getDao().getCampaign(1L);
             Assert.assertNotNull(campaign);
