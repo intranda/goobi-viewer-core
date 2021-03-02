@@ -141,6 +141,9 @@ public class CMSSliderResource {
      */
     private List<URI> getRecords(String solrQuery) throws PresentationException, IndexUnreachableException {
 
+        //limit query to records only
+        solrQuery = "+(" + solrQuery + ") +(ISWORK:* ISANCHOR:*)";
+        
         List<URI> manifests = new ArrayList<>();
         AbstractApiUrlManager urls = DataManager.getInstance().getRestApiManager().getDataApiManager().orElse(null);
         if(urls == null) {

@@ -2710,14 +2710,13 @@ riot.tag2('slideshow', '<div ref="container" class="swiper-container slider-{thi
 
     this.on( 'mount', function() {
     	this.style = this.opts.style;
-    	console.log("inti slider with", this.style);
 
     	let pSource;
     	if(this.opts.sourceelement) {
     		let sourceElement = document.getElementById(this.opts.sourceelement);
     		if(sourceElement) {
-    			pSource = Promise.resolve(JSON.parse(sourceElement.value));
-    			console.log("getting source from ", sourceElement.value);
+    			pSource = Promise.resolve(JSON.parse(sourceElement.textContent));
+
     		} else {
     			logger.error("sourceElement was included but no matching dom element found");
     			return;
@@ -2726,12 +2725,12 @@ riot.tag2('slideshow', '<div ref="container" class="swiper-container slider-{thi
     		pSource = fetch(this.opts.source)
         	.then(result => result.json());
     	}
-
     	rxjs.from(pSource)
     	.pipe(
     		rxjs.operators.flatMap(source => source),
-    		rxjs.operators.flatMap(uri => fetch(uri)),
+    		rxjs.operators.flatMap(uri => fetch(uri), undefined, 5),
     		rxjs.operators.filter(result => result.status == 200),
+    		rxjs.operators.takeUntil(rxjs.timer(10000)),
     		rxjs.operators.flatMap(result => result.json()),
     		rxjs.operators.map(element => this.createSlide(element)),
     		rxjs.operators.filter(element => element != undefined),
@@ -2746,7 +2745,7 @@ riot.tag2('slideshow', '<div ref="container" class="swiper-container slider-{thi
     			this.slider.destroy();
     		}
     		let style = this.opts.styles.get(this.opts.style);
-    		console.log("create slideshow with ", style)
+
     		this.swiper = new Swiper(this.refs.container, style);
     	}
     });
@@ -2790,7 +2789,9 @@ riot.tag2('slideshow', '<div ref="container" class="swiper-container slider-{thi
 
     this.getImage = function(slide) {
     	let image = slide.image;
-    	if(viewerJS.isString(image)) {
+    	if(image == undefined) {
+    		return undefined;
+    	} else if(viewerJS.isString(image)) {
     		return image;
     	} else if(image["@id"]) {
     		return image["@id"]

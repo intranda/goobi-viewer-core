@@ -41,7 +41,7 @@
 					<c:if test="#{slider == null}">
 	
 						<div class="admin__content-inner-content">
-							<div class="admin__info-text">#{msg.cms__add_slider__description}</div>
+							<div class="admin__info-text">#{msg.cms__add_slider__select_type}</div>
 	
 							<div class="admin__entry-list">
 								<ui:repeat var="type" value="#{cmsSliderEditBean.sourceTypes}">
@@ -245,6 +245,13 @@
 																</ui:repeat>
 															</ul>
 														</div>
+														<span class="admin__form-help-text">#{msg.cms__edit_slider__categories__help}</span>
+													</div>
+													<div class="col-1 admin__form-help-icon">
+														<button type="button" class="btn btn--clean"
+															data-toggle="helptext" aria-label="inline help icon">
+															<i class="fa fa-question-circle" aria-hidden="true"></i>
+														</button>
 													</div>
 												</div>
 											</c:when>
@@ -279,7 +286,7 @@
 									</div>
 									<h3>#{msg.title__preview}</h3>
 									<h:panelGroup layout="block" id="previewSlider" class="cms-module__slider__preview" rendered="#{slider != null}">
-										<h:inputHidden id="previewSource" value="#{cmsSliderEditBean.sliderSource}"></h:inputHidden>
+										<h:outputText id="previewSource" class="hidden" value="#{cmsSliderEditBean.sliderSource}"></h:outputText>
 										<viewerComponent:cmsSlider slider="#{slider}" sourceElement="previewSource"/>
 									</h:panelGroup>
 								</div>

@@ -269,7 +269,9 @@ var viewerJS = ( function( viewer ) {
 		    },
 		    
 		    getId(element) {
-		    	if(element.id) {
+			    if(element == undefined) {
+			    	return undefined;
+			    } else if(element.id) {
 		    		return element.id;
 		    	} else {
 		    		return element["@id"];	

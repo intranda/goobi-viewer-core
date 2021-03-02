@@ -196,9 +196,9 @@ public class CMSSlider implements Serializable {
     }
     
     public static enum SourceType {
-        RECORDS("cms__slider_type__records"), //has solrQuery
-        COLLECTIONS("cms__slider_type__collections"), //has collections
-        PAGES("cms__slider_type__pages"); //has categories
+        RECORDS("label__records"), //has solrQuery
+        COLLECTIONS("cms_collections"), //has collections
+        PAGES("label__cms_pages"); //has categories
     
         private final String label;
         
