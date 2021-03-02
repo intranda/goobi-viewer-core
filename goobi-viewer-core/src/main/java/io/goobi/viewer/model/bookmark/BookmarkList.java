@@ -101,6 +101,7 @@ public class BookmarkList implements Serializable, Comparable<BookmarkList> {
     private String shareKey;
 
     @Column(name = "date_updated")
+    @JsonIgnore
     private LocalDateTime dateUpdated;
 
     @OneToMany(mappedBy = "bookmarkList", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
