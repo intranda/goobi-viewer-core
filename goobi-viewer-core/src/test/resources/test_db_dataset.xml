@@ -99,16 +99,6 @@
         pi="AC123456789" logid="LOG_1111" urn="urn:nbn:bookmark2"
         main_title="bookmark 2 main title"/>
 
-	<!-- <annotations annotation_id="1" pi="PI_1" page="1" owner_id="1" -->
-	<!-- date_created="2013-07-15 00:00:00.000000000" status="PUBLIC" -->
-	<!-- text="annotation 1 text" /> -->
-	<!-- <annotations annotation_id="2" pi="PI_1" page="1" owner_id="2" -->
-	<!-- date_created="2013-07-15 00:01:00.000000000" status="PUBLIC" -->
-	<!-- text="annotation 2 text" /> -->
-	<!-- <annotations annotation_id="3" pi="PI_1" page="2" owner_id="1" -->
-	<!-- date_created="2013-07-15 12:00:00.000000000" status="PUBLIC" -->
-	<!-- text="annotation 3 text" /> -->
-
 	<comments comment_id="1" pi="PI_1" page="1" owner_id="1"
 		date_created="2013-07-15 00:00:00.000000000" text="comment 1 text" />
 	<comments comment_id="2" pi="PI_1" page="1" owner_id="2"
@@ -183,7 +173,7 @@
     <cms_page_language_versions cms_page_language_version_id="2" owner_page_id="1" language="en" status="FINISHED"
         title="Title 1" menu_title="Menu title 1" />
     <cms_page_language_versions cms_page_language_version_id="3" owner_page_id="2" language="global" status="FINISHED"
-     title="Title 1" menu_title="Menu title 1"/>
+        title="Title 1" menu_title="Menu title 1"/>
         
     <cms_content_items cms_content_item_id="1" item_id="C1" type="HTML"  owner_page_language_version_id="1"
         html_fragment="&lt;b&gt;Hello CMS&lt;/b&gt;" />
@@ -258,9 +248,9 @@
     <cs_campaign_record_statistic_reviewers campaign_record_statistic_id="1" user_id="2"/>
     
     <!-- CampaignRecordPagestatistic -->
-    <cs_campaign_record_page_statistics campaign_record_page_statistic_id="1" owner_id="6" pi="PI_5" page="1" status="FINISHED"
+    <cs_campaign_record_page_statistics campaign_record_page_statistic_id="1" owner_id="6" pi="PI_5" page="1" key="PI_5_1" status="FINISHED"
         date_created="2021-03-01 00:00:00.000000000" />
-    <cs_campaign_record_page_statistics campaign_record_page_statistic_id="2" owner_id="6" pi="PI_5" page="1" status="FINISHED"
+    <cs_campaign_record_page_statistics campaign_record_page_statistic_id="2" owner_id="6" pi="PI_5" page="2" key="PI_5_2" status="FINISHED"
         date_created="2021-03-01 00:00:00.000000000" />
         
     <cs_campaign_record_page_statistic_annotators campaign_record_page_statistic_id="1" user_id="1"/>

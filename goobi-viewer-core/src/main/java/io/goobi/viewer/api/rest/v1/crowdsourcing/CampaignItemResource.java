@@ -30,7 +30,6 @@ import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
 import javax.ws.rs.PUT;
@@ -45,7 +44,6 @@ import org.apache.solr.common.SolrDocument;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import de.intranda.api.annotation.wa.TextualResource;
 import de.intranda.api.annotation.wa.WebAnnotation;
 import de.unigoettingen.sub.commons.contentlib.exceptions.ContentNotFoundException;
 import de.unigoettingen.sub.commons.contentlib.servlet.rest.CORSBinding;
@@ -55,7 +53,6 @@ import io.goobi.viewer.api.rest.bindings.ViewerRestServiceBinding;
 import io.goobi.viewer.api.rest.filters.CrowdsourcingCampaignFilter;
 import io.goobi.viewer.api.rest.resourcebuilders.AnnotationsResourceBuilder;
 import io.goobi.viewer.controller.DataManager;
-import io.goobi.viewer.controller.HtmlParser;
 import io.goobi.viewer.controller.IndexerTools;
 import io.goobi.viewer.dao.IDAO;
 import io.goobi.viewer.exceptions.DAOException;
@@ -95,7 +92,7 @@ public class CampaignItemResource {
     protected AbstractApiUrlManager urls;
 
     private final Long campaignId;
-    
+
     /**
      * <p>
      * Constructor for CampaignItemResource.
@@ -129,8 +126,7 @@ public class CampaignItemResource {
     @CORSBinding
     public CampaignItem getItemForManifest(@PathParam("pi") String pi, @Context HttpServletRequest servletRequest)
             throws URISyntaxException, DAOException, ContentNotFoundException {
-        
-        
+
         URI manifestURI = new ManifestBuilder(urls).getManifestURI(pi);
         Campaign campaign = DataManager.getInstance().getDao().getCampaign(campaignId);
         if (campaign != null) {
@@ -145,21 +141,22 @@ public class CampaignItemResource {
                         .collect(Collectors.toList()));
             }
             try {
-                List<String> allMetadataFields = campaign.getQuestions().stream().flatMap(q -> q.getMetadataFields().stream()).distinct().collect(Collectors.toList());
+                List<String> allMetadataFields =
+                        campaign.getQuestions().stream().flatMap(q -> q.getMetadataFields().stream()).distinct().collect(Collectors.toList());
                 SolrDocument doc = DataManager.getInstance().getSearchIndex().getFirstDoc("PI:" + pi, allMetadataFields);
-                Map<String, List<String>> fieldValueMap = doc.getFieldNames().stream().collect(Collectors.toMap(field -> field, field -> getFieldValues(doc, field)));
+                Map<String, List<String>> fieldValueMap =
+                        doc.getFieldNames().stream().collect(Collectors.toMap(field -> field, field -> getFieldValues(doc, field)));
                 item.setMetadata(fieldValueMap);
             } catch (PresentationException | IndexUnreachableException e) {
                 logger.error("Error getting metadata valued for campaign item ", e);
             }
-            
-            
+
             return item;
         }
         throw new ContentNotFoundException("No campaign found with id " + campaignId);
     }
-    
-    private List<String> getFieldValues(SolrDocument doc, String field) {
+
+    private static List<String> getFieldValues(SolrDocument doc, String field) {
         return doc.getFieldValues(field).stream().map(Object::toString).collect(Collectors.toList());
     }
 
@@ -168,7 +165,6 @@ public class CampaignItemResource {
      * records the {@link io.goobi.viewer.model.security.user.User} who made the change
      *
      * @param item a {@link io.goobi.viewer.model.crowdsourcing.campaigns.CampaignItem} object.
-     * @param campaignId a {@link java.lang.Long} object.
      * @param pi a {@link java.lang.String} object.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
@@ -188,6 +184,39 @@ public class CampaignItemResource {
         }
         if (status != null && campaign != null) {
             campaign.setRecordStatus(pi, status, Optional.ofNullable(user));
+            DataManager.getInstance().getDao().updateCampaign(campaign);
+            // Re-index finished record to have its annotations indexed
+            if (status.equals(CampaignRecordStatus.FINISHED)) {
+                IndexerTools.triggerReIndexRecord(pi);
+            }
+        }
+    }
+
+    /**
+     * Sets the {@link io.goobi.viewer.model.crowdsourcing.campaigns.CampaignRecordStatistic.CampaignRecordStatus} for the given campaign and work and
+     * records the {@link io.goobi.viewer.model.security.user.User} who made the change
+     *
+     * @param item a {@link io.goobi.viewer.model.crowdsourcing.campaigns.CampaignItem} object.
+     * @param pi a {@link java.lang.String} object.
+     * @param page
+     * @throws io.goobi.viewer.exceptions.DAOException if any.
+     */
+    @PUT
+    @Path("/{pi}/{page}")
+    @Consumes({ MediaType.APPLICATION_JSON })
+    @CORSBinding
+    public void setItemForManifest(CampaignItem item, @PathParam("pi") String pi, @PathParam("page") int page) throws DAOException {
+        CampaignRecordStatus status = item.getRecordStatus();
+
+        Campaign campaign = DataManager.getInstance().getDao().getCampaign(campaignId);
+
+        User user = null;
+        Long userId = User.getId(item.getCreatorURI());
+        if (userId != null) {
+            user = DataManager.getInstance().getDao().getUser(userId);
+        }
+        if (status != null && campaign != null) {
+            campaign.setRecordPageStatus(pi, page, status, Optional.ofNullable(user));
             DataManager.getInstance().getDao().updateCampaign(campaign);
             // Re-index finished record to have its annotations indexed
             if (status.equals(CampaignRecordStatus.FINISHED)) {
@@ -269,7 +298,7 @@ public class CampaignItemResource {
 
             //add new annotaion and update existing ones
             for (PersistentAnnotation anno : newAnnotations) {
-                if(campaign != null && campaign.isRestrictAnnotationAccess()) {
+                if (campaign != null && campaign.isRestrictAnnotationAccess()) {
                     anno.setAccessCondition(campaign.getTitle(IPolyglott.getDefaultLocale().getLanguage()));
                 }
                 try {
@@ -303,7 +332,6 @@ public class CampaignItemResource {
         PersistentAnnotation pAnno = new PersistentAnnotation(anno, id, pi, pageOrder);
         return pAnno;
     }
-
 
     /**
      * Used to create or read a list of WebAnnotations sorted by their target (a iiif manifest or canvas)

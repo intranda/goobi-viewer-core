@@ -109,6 +109,10 @@ public class CampaignRecordPageStatistic implements Serializable {
     @Column(name = "page", nullable = false)
     private Integer page;
 
+    /** Key composed of pi and page values. */
+    @Column(name = "key", nullable = false)
+    private String key;
+
     @Enumerated(EnumType.STRING)
     @Column(name = "status", nullable = false)
     @JsonIgnore
@@ -285,6 +289,20 @@ public class CampaignRecordPageStatistic implements Serializable {
      */
     public void setPage(Integer page) {
         this.page = page;
+    }
+
+    /**
+     * @return the key
+     */
+    public String getKey() {
+        return key;
+    }
+
+    /**
+     * @param key the key to set
+     */
+    public void setKey(String key) {
+        this.key = key;
     }
 
     /**

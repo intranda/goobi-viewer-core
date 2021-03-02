@@ -18,7 +18,9 @@ package io.goobi.viewer.model.crowdsourcing.campaigns;
 import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -33,6 +35,7 @@ import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
+import javax.persistence.MapKeyColumn;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
@@ -114,7 +117,9 @@ public class CampaignRecordStatistic implements Serializable {
     private CampaignRecordStatus status;
 
     @OneToMany(mappedBy = "owner", fetch = FetchType.LAZY, cascade = { CascadeType.ALL })
-    private List<CampaignRecordPageStatistic> pageStatistics = new ArrayList<>();
+    @MapKeyColumn(name = "key", insertable = false, updatable = false) // CampaignRecordStatistic.pi may not be writable here
+    @JsonIgnore
+    private Map<String, CampaignRecordPageStatistic> pageStatistics = new HashMap<>();
 
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(name = "cs_campaign_record_statistic_annotators", joinColumns = @JoinColumn(name = "campaign_record_statistic_id"),
@@ -278,14 +283,14 @@ public class CampaignRecordStatistic implements Serializable {
     /**
      * @return the pageStatistics
      */
-    public List<CampaignRecordPageStatistic> getPageStatistics() {
+    public Map<String, CampaignRecordPageStatistic> getPageStatistics() {
         return pageStatistics;
     }
 
     /**
      * @param pageStatistics the pageStatistics to set
      */
-    public void setPageStatistics(List<CampaignRecordPageStatistic> pageStatistics) {
+    public void setPageStatistics(Map<String, CampaignRecordPageStatistic> pageStatistics) {
         this.pageStatistics = pageStatistics;
     }
 
