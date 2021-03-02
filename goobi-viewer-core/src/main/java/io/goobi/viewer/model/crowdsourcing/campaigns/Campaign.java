@@ -398,6 +398,8 @@ public class Campaign implements CMSMediaHolder, ILicenseType, IPolyglott {
      *
      * @param status a {@link java.lang.String} object.
      * @return number of records with the given status
+     * @should do record-based count correctly
+     * @should do page-based count correctly
      */
     public long getNumRecordsForStatus(String status) {
         if (status == null) {
@@ -407,7 +409,20 @@ public class Campaign implements CMSMediaHolder, ILicenseType, IPolyglott {
         long count = 0;
         for (String pi : statistics.keySet()) {
             CampaignRecordStatistic statistic = statistics.get(pi);
-            if (statistic.getStatus().name().equals(status)) {
+            if (!statistic.getPageStatistics().isEmpty()) {
+                // Page-based count
+                boolean match = true;
+                for (CampaignRecordPageStatistic pageStatistic : statistic.getPageStatistics()) {
+                    if (!pageStatistic.getStatus().name().equals(status)) {
+                        match = false;
+                        break;
+                    }
+                }
+                if (match) {
+                    count++;
+                }
+            } else if (statistic.getStatus().name().equals(status)) {
+                // Record-based count
                 count++;
             }
         }
@@ -1314,7 +1329,6 @@ public class Campaign implements CMSMediaHolder, ILicenseType, IPolyglott {
         return StringUtils.isNotBlank(getTitle(locale.getLanguage(), false));
 
     }
-    
 
     /* (non-Javadoc)
      * @see io.goobi.viewer.model.misc.IPolyglott#isEmpty(java.util.Locale)
@@ -1723,6 +1737,5 @@ public class Campaign implements CMSMediaHolder, ILicenseType, IPolyglott {
     public String toString() {
         return getTitle();
     }
-
 
 }

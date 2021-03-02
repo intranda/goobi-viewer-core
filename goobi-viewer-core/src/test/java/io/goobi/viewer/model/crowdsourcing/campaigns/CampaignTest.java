@@ -8,6 +8,7 @@ import org.junit.Test;
 import io.goobi.viewer.AbstractDatabaseEnabledTest;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.model.crowdsourcing.campaigns.Campaign.CampaignVisibility;
+import io.goobi.viewer.model.crowdsourcing.campaigns.CampaignRecordPageStatistic.CampaignRecordPageStatus;
 import io.goobi.viewer.model.crowdsourcing.campaigns.CampaignRecordStatistic.CampaignRecordStatus;
 import io.goobi.viewer.model.security.Role;
 import io.goobi.viewer.model.security.user.User;
@@ -396,5 +397,82 @@ public class CampaignTest extends AbstractDatabaseEnabledTest {
         Campaign campaign = new Campaign();
         campaign.setLimitToGroup(true);
         Assert.assertFalse(campaign.isGroupLimitActive());
+    }
+
+    /**
+     * @see Campaign#getNumRecordsForStatus(String)
+     * @verifies do record-based count correctly
+     */
+    @Test
+    public void getNumRecordsForStatus_shouldDoRecordbasedCountCorrectly() throws Exception {
+        Campaign campaign = new Campaign();
+        {
+            CampaignRecordStatistic statistic = new CampaignRecordStatistic();
+            statistic.setStatus(CampaignRecordStatus.FINISHED);
+            campaign.getStatistics().put("PI1", statistic);
+        }
+        {
+            CampaignRecordStatistic statistic = new CampaignRecordStatistic();
+            statistic.setStatus(CampaignRecordStatus.FINISHED);
+            campaign.getStatistics().put("PI2", statistic);
+        }
+        {
+            CampaignRecordStatistic statistic = new CampaignRecordStatistic();
+            statistic.setStatus(CampaignRecordStatus.REVIEW);
+            campaign.getStatistics().put("PI3", statistic);
+        }
+        Assert.assertEquals(2, campaign.getNumRecordsForStatus(CampaignRecordStatus.FINISHED.name()));
+    }
+
+    /**
+     * @see Campaign#getNumRecordsForStatus(String)
+     * @verifies do page-based count correctly
+     */
+    @Test
+    public void getNumRecordsForStatus_shouldDoPagebasedCountCorrectly() throws Exception {
+        Campaign campaign = new Campaign();
+        {
+            CampaignRecordStatistic statistic = new CampaignRecordStatistic();
+            {
+                CampaignRecordPageStatistic pageStatistic = new CampaignRecordPageStatistic();
+                pageStatistic.setPage(1);
+                pageStatistic.setStatus(CampaignRecordPageStatus.FINISHED);
+                statistic.getPageStatistics().add(pageStatistic);
+            }
+            {
+                CampaignRecordPageStatistic pageStatistic = new CampaignRecordPageStatistic();
+                pageStatistic.setPage(2);
+                pageStatistic.setStatus(CampaignRecordPageStatus.FINISHED);
+                statistic.getPageStatistics().add(pageStatistic);
+            }
+            campaign.getStatistics().put("PI1", statistic);
+        }
+        {
+            CampaignRecordStatistic statistic = new CampaignRecordStatistic();
+            {
+                CampaignRecordPageStatistic pageStatistic = new CampaignRecordPageStatistic();
+                pageStatistic.setPage(1);
+                pageStatistic.setStatus(CampaignRecordPageStatus.FINISHED);
+                statistic.getPageStatistics().add(pageStatistic);
+            }
+            campaign.getStatistics().put("PI2", statistic);
+        }
+        {
+            CampaignRecordStatistic statistic = new CampaignRecordStatistic();
+            {
+                CampaignRecordPageStatistic pageStatistic = new CampaignRecordPageStatistic();
+                pageStatistic.setPage(1);
+                pageStatistic.setStatus(CampaignRecordPageStatus.FINISHED);
+                statistic.getPageStatistics().add(pageStatistic);
+            }
+            {
+                CampaignRecordPageStatistic pageStatistic = new CampaignRecordPageStatistic();
+                pageStatistic.setPage(2);
+                pageStatistic.setStatus(CampaignRecordPageStatus.REVIEW);
+                statistic.getPageStatistics().add(pageStatistic);
+            }
+            campaign.getStatistics().put("PI3", statistic);
+        }
+        Assert.assertEquals(2, campaign.getNumRecordsForStatus(CampaignRecordStatus.FINISHED.name()));
     }
 }
