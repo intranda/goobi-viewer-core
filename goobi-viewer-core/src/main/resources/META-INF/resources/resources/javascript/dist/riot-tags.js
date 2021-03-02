@@ -2706,10 +2706,13 @@ this.addCloseHandler = function() {
 
 
 
-riot.tag2('slideshow', '<div ref="container" class="swiper-container slider-{this.style}__container"><div class="swiper-wrapper slider-{this.style}__wrapper"><div each="{slide in slides}" class="swiper-slide slider-{this.style}__slide"><a href="{slide.link}"><h3 class="slider-{this.style}__header">{translate(slide.header)}</h3><div class="slider-{this.style}__image" riot-style="background-image: url({getImage(slide)})"></div><div class="slider-{this.style}__description">{translate(slide.description)}</div></a></div></div></div>', '', '', function(opts) {
+riot.tag2('slideshow', '<div ref="container" class="swiper-container slider-{this.opts.style}__container"><div class="swiper-wrapper slider-{this.opts.style}__wrapper"><div each="{slide in slides}" class="swiper-slide slider-{this.opts.style}__slide"><a href="{slide.link}"><h3 class="slider-{this.opts.style}__header">{translate(slide.header)}</h3><div class="slider-{this.opts.style}__image" riot-style="background-image: url({getImage(slide)})"></div><div class="slider-{this.opts.style}__description">{translate(slide.description)}</div></a></div></div></div>', '', '', function(opts) {
 
     this.on( 'mount', function() {
-    	this.style = this.opts.style;
+		this.style = this.opts.styles.get(this.opts.style);
+		this.timeout = this.style.timeout ? this.style.timeout : 100000;
+		this.maxSlides = this.style.maxSlides ? this.style.maxSlides : 1000;
+    	console.log("inti slider with", this.style);
 
     	let pSource;
     	if(this.opts.sourceelement) {
@@ -2730,10 +2733,11 @@ riot.tag2('slideshow', '<div ref="container" class="swiper-container slider-{thi
     		rxjs.operators.flatMap(source => source),
     		rxjs.operators.flatMap(uri => fetch(uri), undefined, 5),
     		rxjs.operators.filter(result => result.status == 200),
-    		rxjs.operators.takeUntil(rxjs.timer(10000)),
+    		rxjs.operators.takeUntil(rxjs.timer(this.timeout)),
     		rxjs.operators.flatMap(result => result.json()),
     		rxjs.operators.map(element => this.createSlide(element)),
     		rxjs.operators.filter(element => element != undefined),
+    		rxjs.operators.take(this.maxSlides),
     		rxjs.operators.reduce((res, item) => res.concat(item), []),
     	)
     	.subscribe(slides => this.setSlides(slides))
@@ -2744,9 +2748,8 @@ riot.tag2('slideshow', '<div ref="container" class="swiper-container slider-{thi
     		if(this.slider) {
     			this.slider.destroy();
     		}
-    		let style = this.opts.styles.get(this.opts.style);
 
-    		this.swiper = new Swiper(this.refs.container, style);
+    		this.swiper = new Swiper(this.refs.container, this.style.swiperConfig);
     	}
     });
 
@@ -2770,7 +2773,7 @@ riot.tag2('slideshow', '<div ref="container" class="swiper-container slider-{thi
     		let slide = {
     				header : element.label,
     				description : element.description,
-    				image : viewerJS.iiif.getId(element.thumbnail),
+    				image : element.thumbnail,
     				link : viewerJS.iiif.getId(viewerJS.iiif.getViewerPage(element))
     		}
     		return slide;
@@ -2793,10 +2796,25 @@ riot.tag2('slideshow', '<div ref="container" class="swiper-container slider-{thi
     		return undefined;
     	} else if(viewerJS.isString(image)) {
     		return image;
+    	} else if(image.service && (this.style.imageWidth || this.style.imageHeight)) {
+    		let url = viewerJS.iiif.getId(image.service) + "/full/" + this.getIIIFSize(this.style.imageWidth, this.style.imageHeight) + "/0/default.jpg"
+    		return url;
     	} else if(image["@id"]) {
     		return image["@id"]
     	} else {
     		return image.id;
+    	}
+    }.bind(this)
+
+    this.getIIIFSize = function(width, height) {
+    	if(width && height) {
+    		return "!" + width + "," + height;
+    	} else if(width) {
+    		return width + ",";
+    	} else if(height) {
+    		return "," + height;
+    	} else {
+    		return "max";
     	}
     }.bind(this)
 

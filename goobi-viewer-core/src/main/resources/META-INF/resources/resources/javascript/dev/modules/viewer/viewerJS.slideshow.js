@@ -30,20 +30,34 @@ var viewerJS = ( function( viewer ) {
      	
      	styles: new Map([
 	     	["base", {
+	     		maxSlides: 20,
+	     		timeout: 10000, //ms
+	     		imageWidth: 800,
+	     		imageHeight: 1000,
+	     		swiperConfig: {
 				  direction: 'horizontal',
 				  loop: false,
 			      slidesPerView: 1,
 			      spaceBetween: 50,
-				}],
+			    }
+			  }],
 			["vertical", {
+				maxSlides: 20,
+	     		timeout: 10000, //ms
+	     		imageWidth: 800,
+	     		imageHeight: 1000,
+	     		swiperConfig: {
 				  direction: 'vertical',
 				  loop: true,
 			      slidesPerView: 1,
 			      spaceBetween: 50,
-				}],	
+			    }
+			}],	
      	]),
      	init: function() {
      		riot.mount("slideshow", {language: currentLang, styles: this.styles});
+     		
+     		//Remount all sliders after each ajax call which responst contains a slideshow tag
      		viewer.jsfAjax.success
      		.pipe(
      			rxjs.operators.filter( e => e.responseText && e.responseText.includes("<slideshow ")),
