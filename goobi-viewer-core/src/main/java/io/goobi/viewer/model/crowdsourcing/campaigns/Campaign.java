@@ -447,7 +447,7 @@ public class Campaign implements CMSMediaHolder, ILicenseType, IPolyglott {
                 if (match) {
                     count++;
                 }
-            } else if (statistic.getStatus().name().equals(status)) {
+            } else if (statistic.getStatus() != null && statistic.getStatus().name().equals(status)) {
                 // Record-based count
                 count++;
             }

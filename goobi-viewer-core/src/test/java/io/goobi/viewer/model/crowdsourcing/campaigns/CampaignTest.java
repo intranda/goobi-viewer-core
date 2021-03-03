@@ -8,6 +8,7 @@ import org.junit.Test;
 import io.goobi.viewer.AbstractDatabaseEnabledTest;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.model.crowdsourcing.campaigns.Campaign.CampaignVisibility;
+import io.goobi.viewer.model.crowdsourcing.campaigns.Campaign.StatisticMode;
 import io.goobi.viewer.model.crowdsourcing.campaigns.CampaignRecordPageStatistic.CampaignRecordPageStatus;
 import io.goobi.viewer.model.crowdsourcing.campaigns.CampaignRecordStatistic.CampaignRecordStatus;
 import io.goobi.viewer.model.security.Role;
@@ -431,6 +432,7 @@ public class CampaignTest extends AbstractDatabaseEnabledTest {
     @Test
     public void getNumRecordsForStatus_shouldDoPagebasedCountCorrectly() throws Exception {
         Campaign campaign = new Campaign();
+        campaign.setStatisticMode(StatisticMode.PAGE);
         {
             CampaignRecordStatistic statistic = new CampaignRecordStatistic();
             {
