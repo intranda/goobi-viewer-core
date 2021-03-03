@@ -53,13 +53,13 @@ var cmsJS = ( function( cms ) {
         
         /**
         * Initializes the list of options for any elements with data-options="slider-styles" 
-        * Possible values for the option list are taken from viewerJS.slideshow.js
+        * Possible values for the option list are taken from viewerJS.slider.js
         */
         initStyleOptions: function() {
         	$("[data-options='slider-styles']").each((index, element) => {
         		if(_debug)console.log("add options to", element);
         		let $select = $(element);
-	        	let styles = viewerJS.slideshows.styles.keys();
+	        	let styles = viewerJS.slider.styles.keys();
 	        	let value = $select.attr("data-value");
 	        	if(_debug)console.log("add options to dropdown", $select, styles);
     			for (let style of styles) { 
@@ -68,7 +68,9 @@ var cmsJS = ( function( cms ) {
     				} else {
 	    				$select.append("<option value='"+style+"'>" +style+ "</option>");
     				}
-    			}   		
+    			}
+    			//trigger the dropdown once to set the style in the java bean
+    			$select.trigger("change");   		
         	});
         },
 

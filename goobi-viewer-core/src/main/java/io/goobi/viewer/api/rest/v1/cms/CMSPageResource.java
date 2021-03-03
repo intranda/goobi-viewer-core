@@ -39,7 +39,7 @@ import io.goobi.viewer.model.cms.CMSSlider;
 
 /**
  * Return basic information about cms pages.
- * Used for slideshows
+ * Used for sliders
  * 
  * @author florian
  *

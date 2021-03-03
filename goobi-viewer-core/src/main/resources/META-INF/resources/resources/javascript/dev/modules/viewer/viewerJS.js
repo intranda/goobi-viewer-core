@@ -286,7 +286,7 @@ var viewerJS = (function () {
 		viewer.initialized.next();
 		viewer.initialized.complete();
 		viewer.setCheckedStatus();
-		viewer.slideshows.init();
+		viewer.slider.init();
 	// EOL viewerJS function
     };
     

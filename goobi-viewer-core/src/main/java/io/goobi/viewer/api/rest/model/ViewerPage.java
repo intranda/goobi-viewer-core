@@ -24,7 +24,7 @@ import io.goobi.viewer.model.cms.CMSPage;
 
 /**
  * Simple template to create a json-representation of a viewer page, typically a CMS-Page.
- * Used to provide slides to slideshows
+ * Used to provide slides to sliders
  * 
  * @author florian
  *

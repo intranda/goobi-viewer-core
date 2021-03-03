@@ -16,6 +16,16 @@
  * You should have received a copy of the GNU General Public License along with this
  * program. If not, see <http://www.gnu.org/licenses/>.
  * 
+ * Manages styles for (image) sliders. A style includes both css-styling (defined by a less file in resources/css/less/slider/)
+ * and behaviour which is defined in the styles map in this module.
+ * the "base" slider style must always exist as a default for slider without style information.
+ * 
+ * Additional styles may be added by using the 'set' method; existing styles may be altered by using the 'update' method. 
+ * Any such changes must be performed before document.ready is called to they are available when the styles are used.
+ * 
+ * Styles are used in two places:
+ *   1. the slider.tag riot-tag in  resources/javascript/dev/tags/ to render the actual slider
+ *   2. createSlider.js in resources/javascript/dev/modules/cms/ where a dropdown is rendered via jquery to select a style in resorces/cms/adminCmsSliderEdit.xhtml
  * 
  * @version 3.2.0
  * @module viewerJS.slideshow
@@ -26,7 +36,7 @@ var viewerJS = ( function( viewer ) {
     // default variables
     var _debug = false;
     
-    viewer.slideshows = {
+    viewer.slider = {
      	
      	styles: new Map([
 	     	["base", {
@@ -55,17 +65,17 @@ var viewerJS = ( function( viewer ) {
 			}],	
      	]),
      	init: function() {
-     		riot.mount("slideshow", {language: currentLang, styles: this.styles});
+     		riot.mount("slider", {language: currentLang, styles: this});
      		
-     		//Remount all sliders after each ajax call which responst contains a slideshow tag
+     		//Remount all sliders after each ajax call which responst contains a slider tag
      		viewer.jsfAjax.success
      		.pipe(
-     			rxjs.operators.filter( e => e.responseText && e.responseText.includes("<slideshow ")),
+     			rxjs.operators.filter( e => e.responseText && e.responseText.includes("<slider ")),
      			rxjs.operators.debounceTime(500)
      			)
      		.subscribe((e) => {
-     			console.log("update slideshow");
-     			riot.mount("slideshow", {language: currentLang, styles: this.styles});
+     			console.log("update slider");
+     			riot.mount("slider", {language: currentLang, styles: this});
      		});
      	},
      	set: function(name, config) {
@@ -78,6 +88,22 @@ var viewerJS = ( function( viewer ) {
      	copy: function(name) {
      		let config = $.extend( true, {}, this.styles.get(name));
      		return config;
+     	},
+     	get: function(name) {
+     		let config = this.styles.get(name);
+     		if(!config) {
+     			console.warn("Style \"" + name + "\" is not included in the list of slider styles. Using \"base\" as fallback");
+     			return this.styles.get("base");
+     		} else {
+     			return config;
+     		}
+     	},
+     	getStyleNameOrDefault: function(name) {
+     		if(this.styles.has(name)) {
+     			return name;
+     		} else {
+     			return "base";
+     		}
      	}
             
     }
