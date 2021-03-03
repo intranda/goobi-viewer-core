@@ -153,6 +153,24 @@ public class Campaign implements CMSMediaHolder, ILicenseType, IPolyglott {
         }
     }
 
+    /**
+     * Statistics calculation mode (status per record or per record page).
+     */
+    public enum StatisticMode {
+        RECORD("label__campaign_statistic_mode_record"),
+        PAGE("label__campaign_statistic_mode_page");
+
+        private final String label;
+
+        private StatisticMode(String label) {
+            this.label = label;
+        }
+
+        public String getLabel() {
+            return this.label;
+        }
+    }
+
     private static final Logger logger = LoggerFactory.getLogger(Campaign.class);
 
     private static final String URI_ID_TEMPLATE =
@@ -211,6 +229,9 @@ public class Campaign implements CMSMediaHolder, ILicenseType, IPolyglott {
 
     @Column(name = "review_mode")
     private ReviewMode reviewMode = ReviewMode.REQUIRE_REVIEW;
+
+    @Column(name = "statistic_mode")
+    private StatisticMode statisticMode = StatisticMode.RECORD;
 
     @ManyToOne
     @JoinColumn(name = "revewier_user_group_id")
@@ -1405,7 +1426,7 @@ public class Campaign implements CMSMediaHolder, ILicenseType, IPolyglott {
      * @return true if
      *         <ul>
      *         <li>the status is {@link io.goobi.viewer.model.crowdsourcing.campaigns.CampaignRecordStatistic.CampaignRecordStatus#REVIEW REVIEW} and
-     *         the user is not contained in the annotaters list</li> or
+     *         the user is not contained in the annotators list</li> or
      *         <li>the status is {@link io.goobi.viewer.model.crowdsourcing.campaigns.CampaignRecordStatistic.CampaignRecordStatus#ANNOTATE ANNOTATE}
      *         and the user is not contained in the reviewers list</li> or
      *         <li>The user is admin</li> or
@@ -1671,6 +1692,20 @@ public class Campaign implements CMSMediaHolder, ILicenseType, IPolyglott {
      */
     public void setReviewMode(ReviewMode reviewMode) {
         this.reviewMode = reviewMode;
+    }
+
+    /**
+     * @return the statisticMode
+     */
+    public StatisticMode getStatisticMode() {
+        return statisticMode;
+    }
+
+    /**
+     * @param statisticMode the statisticMode to set
+     */
+    public void setStatisticMode(StatisticMode statisticMode) {
+        this.statisticMode = statisticMode;
     }
 
     /**

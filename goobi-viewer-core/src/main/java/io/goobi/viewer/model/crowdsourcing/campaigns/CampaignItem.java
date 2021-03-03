@@ -30,7 +30,6 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import io.goobi.viewer.model.crowdsourcing.campaigns.CampaignRecordStatistic.CampaignRecordStatus;
 import io.goobi.viewer.model.crowdsourcing.questions.Question;
 import io.goobi.viewer.model.log.LogMessage;
-import io.goobi.viewer.model.security.user.User;
 
 /**
  * An item containing a campaign and a source to be annotated. Used to set up a frontend annotation view in javascript as well as process status
