@@ -177,21 +177,9 @@ public class SearchFunctionality implements Functionality, SearchInterface {
             return;
         }
         String facetString = getSearchBean().getFacets().getCurrentFacetString();
-        String searchFilterString = getCompleteFacetString(facetString, subtheme);
-        String searchString = searchBean.getExactSearchString().replace("-", "").isEmpty() ? "" : searchBean.getExactSearchString();
-        
-        String completeSearchString = "";
-        if(StringUtils.isNoneBlank(searchString, searchFilterString)) {
-            completeSearchString = "+($1) +($2)".replace("$1", searchString).replace("$2", searchFilterString);
-        } else if(StringUtils.isNotBlank(searchString)) {
-            completeSearchString = searchString;
-        } else if(StringUtils.isNotBlank(searchFilterString)) {
-            completeSearchString = searchFilterString;
-        }
-        searchBean.setExactSearchString(completeSearchString);
+        searchBean.getFacets().setCurrentFacetString(getCompleteFacetString(facetString, subtheme));
         searchBean.search();
-        
-        searchBean.setExactSearchString(searchString);
+        searchBean.getFacets().setCurrentFacetString(facetString);
     }
 
     /**
