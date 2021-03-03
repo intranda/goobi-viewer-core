@@ -65,6 +65,7 @@ import io.goobi.viewer.model.crowdsourcing.CrowdsourcingTools;
 import io.goobi.viewer.model.crowdsourcing.campaigns.Campaign;
 import io.goobi.viewer.model.crowdsourcing.campaigns.Campaign.CampaignVisibility;
 import io.goobi.viewer.model.crowdsourcing.campaigns.Campaign.ReviewMode;
+import io.goobi.viewer.model.crowdsourcing.campaigns.Campaign.StatisticMode;
 import io.goobi.viewer.model.crowdsourcing.campaigns.CampaignRecordStatistic.CampaignRecordStatus;
 import io.goobi.viewer.model.crowdsourcing.questions.Question;
 import io.goobi.viewer.model.misc.IPolyglott;
@@ -939,4 +940,10 @@ public class CrowdsourcingBean implements Serializable {
         return EnumSet.allOf(ReviewMode.class);
     }
 
+    /**
+     * @return List of enum values
+     */
+    public Set<StatisticMode> getAvailableStatisticModes() {
+        return EnumSet.allOf(StatisticMode.class);
+    }
 }

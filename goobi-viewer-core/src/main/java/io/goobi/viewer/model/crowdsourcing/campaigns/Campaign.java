@@ -157,8 +157,8 @@ public class Campaign implements CMSMediaHolder, ILicenseType, IPolyglott {
      * Statistics calculation mode (status per record or per record page).
      */
     public enum StatisticMode {
-        RECORD("label__campaign_statistic_mode_record"),
-        PAGE("label__campaign_statistic_mode_page");
+        RECORD("label__crowdsourcing_campaign_statistic_mode_record"),
+        PAGE("label__crowdsourcing_campaign_statistic_mode_page");
 
         private final String label;
 
@@ -230,6 +230,7 @@ public class Campaign implements CMSMediaHolder, ILicenseType, IPolyglott {
     @Column(name = "review_mode")
     private ReviewMode reviewMode = ReviewMode.REQUIRE_REVIEW;
 
+    @Enumerated(EnumType.STRING)
     @Column(name = "statistic_mode")
     private StatisticMode statisticMode = StatisticMode.RECORD;
 
@@ -431,9 +432,12 @@ public class Campaign implements CMSMediaHolder, ILicenseType, IPolyglott {
         long count = 0;
         for (String pi : statistics.keySet()) {
             CampaignRecordStatistic statistic = statistics.get(pi);
-            if (!statistic.getPageStatistics().isEmpty()) {
+            if (statistic == null) {
+                continue;
+            }
+            if (StatisticMode.PAGE.equals(statisticMode)) {
                 // Page-based count
-                boolean match = true;
+                boolean match = !statistic.getPageStatistics().isEmpty();
                 for (String key : statistic.getPageStatistics().keySet()) {
                     if (!statistic.getPageStatistics().get(key).getStatus().name().equals(status)) {
                         match = false;

@@ -59,6 +59,7 @@ import io.goobi.viewer.model.cms.CMSStaticPage;
 import io.goobi.viewer.model.cms.CMSTemplateManager;
 import io.goobi.viewer.model.crowdsourcing.campaigns.Campaign;
 import io.goobi.viewer.model.crowdsourcing.campaigns.Campaign.CampaignVisibility;
+import io.goobi.viewer.model.crowdsourcing.campaigns.Campaign.StatisticMode;
 import io.goobi.viewer.model.crowdsourcing.campaigns.CampaignLogMessage;
 import io.goobi.viewer.model.crowdsourcing.campaigns.CampaignRecordStatistic;
 import io.goobi.viewer.model.crowdsourcing.campaigns.CampaignRecordStatistic.CampaignRecordStatus;
@@ -2276,6 +2277,7 @@ public class JPADAOTest extends AbstractDatabaseEnabledTest {
             campaign.setSelectedLocale(Locale.ENGLISH);
             Assert.assertEquals(Long.valueOf(1), campaign.getId());
             Assert.assertEquals(CampaignVisibility.PUBLIC, campaign.getVisibility());
+            Assert.assertEquals(StatisticMode.RECORD, campaign.getStatisticMode());
             Assert.assertEquals("+DC:varia", campaign.getSolrQuery());
             Assert.assertEquals("English title", campaign.getTitle());
 
@@ -2300,6 +2302,7 @@ public class JPADAOTest extends AbstractDatabaseEnabledTest {
             Assert.assertEquals(1, campaign.getStatistics().size());
             CampaignRecordStatistic recordStatistic = campaign.getStatistics().get("PI_5");
             Assert.assertNotNull(recordStatistic);
+            Assert.assertEquals(StatisticMode.PAGE, campaign.getStatisticMode());
             Assert.assertEquals(2, recordStatistic.getPageStatistics().size());
             Assert.assertEquals(Integer.valueOf(1), recordStatistic.getPageStatistics().get("PI_5_1").getPage());
             Assert.assertEquals("PI_5", recordStatistic.getPageStatistics().get("PI_5_1").getPi());
