@@ -101,12 +101,16 @@ public class Search implements Serializable {
     @Column(name = "expand_query", nullable = false, columnDefinition = "LONGTEXT")
     private String expandQuery;
 
+    /** Optional custom filter query. */
+    @Column(name = "custom_filter_query", columnDefinition = "LONGTEXT")
+    private String customFilterQuery;
+
     @Column(name = "page", nullable = false)
     private int page;
-
-    @Deprecated
-    @Column(name = "collection")
-    private String hierarchicalFacetString;
+    //
+    //    @Deprecated
+    //    @Column(name = "collection")
+    //    private String hierarchicalFacetString;
 
     @Column(name = "filter")
     private String facetString;
@@ -305,6 +309,10 @@ public class Search implements Serializable {
             // Search without range facet queries to determine absolute slider range
             List<String> rangeFacetFields = DataManager.getInstance().getConfiguration().getRangeFacetFields();
             List<String> nonRangeFacetFilterQueries = facets.generateFacetFilterQueries(advancedSearchGroupOperator, false);
+            // Add custom filter query
+            if (StringUtils.isNotEmpty(customFilterQuery)) {
+                nonRangeFacetFilterQueries.add(customFilterQuery);
+            }
             resp = DataManager.getInstance()
                     .getSearchIndex()
                     .search(finalQuery, 0, 0, null, rangeFacetFields, Collections.singletonList(SolrConstants.IDDOC), nonRangeFacetFilterQueries,
@@ -455,9 +463,7 @@ public class Search implements Serializable {
         StringBuilder sbUrl = new StringBuilder();
         sbUrl.append(BeanUtils.getServletPathWithHostAsUrlFromJsfContext());
         sbUrl.append('/').append(PageType.search.getName());
-        sbUrl.append('/')
-                .append((StringUtils.isNotEmpty(hierarchicalFacetString) ? URLEncoder.encode(hierarchicalFacetString, SearchBean.URL_ENCODING)
-                        : "-"));
+        sbUrl.append("/-");
         sbUrl.append('/').append(StringUtils.isNotEmpty(query) ? URLEncoder.encode(query, SearchBean.URL_ENCODING) : "-").append('/').append(page);
         sbUrl.append('/').append((StringUtils.isNotEmpty(sortString) ? sortString : "-"));
         sbUrl.append('/').append((StringUtils.isNotEmpty(facetString) ? URLEncoder.encode(facetString, SearchBean.URL_ENCODING) : "-")).append('/');
@@ -641,6 +647,20 @@ public class Search implements Serializable {
     }
 
     /**
+     * @return the customFilterQuery
+     */
+    public String getCustomFilterQuery() {
+        return customFilterQuery;
+    }
+
+    /**
+     * @param customFilterQuery the customFilterQuery to set
+     */
+    public void setCustomFilterQuery(String customFilterQuery) {
+        this.customFilterQuery = customFilterQuery;
+    }
+
+    /**
      * <p>
      * Getter for the field <code>page</code>.
      * </p>
@@ -660,30 +680,6 @@ public class Search implements Serializable {
      */
     public void setPage(int page) {
         this.page = page;
-    }
-
-    /**
-     * <p>
-     * Getter for the field <code>hierarchicalFacetString</code>.
-     * </p>
-     *
-     * @return the hierarchicalFacetString
-     */
-    @Deprecated
-    public String getHierarchicalFacetString() {
-        return hierarchicalFacetString;
-    }
-
-    /**
-     * <p>
-     * Setter for the field <code>hierarchicalFacetString</code>.
-     * </p>
-     *
-     * @param hierarchicalFacetString the hierarchicalFacetString to set
-     */
-    @Deprecated
-    public void setHierarchicalFacetString(String hierarchicalFacetString) {
-        this.hierarchicalFacetString = hierarchicalFacetString;
     }
 
     /**
