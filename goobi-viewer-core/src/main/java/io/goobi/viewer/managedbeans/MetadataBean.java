@@ -269,7 +269,7 @@ public class MetadataBean {
 
         int i = metadataElementList.size() - 1;
         while (!metadataElementList.get(i).isHasSidebarMetadata() && i > 0) {
-            index--;
+            i--;
         }
         // logger.debug("i: " + i);
         return metadataElementList.get(i);
