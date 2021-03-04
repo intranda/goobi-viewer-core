@@ -277,9 +277,11 @@ public class ManifestBuilder extends AbstractBuilder {
         URI uri = null;
         switch(target) {
             case VIEWER:
-                String applicationUrl = this.urls.getApplicationUrl();
                 String pageUrl = ele.getUrl();
-                uri = URI.create(applicationUrl + pageUrl);
+                uri = URI.create(pageUrl);
+                if(!uri.isAbsolute()) {
+                    uri = URI.create(this.urls.getApplicationUrl() + pageUrl);
+                }
                 break;
             case ALTO:
                 uri = this.urls.path(RECORDS_RECORD, RECORDS_ALTO).params(ele.getPi()).buildURI();
