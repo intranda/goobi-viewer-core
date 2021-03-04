@@ -232,7 +232,7 @@ public class Campaign implements CMSMediaHolder, ILicenseType, IPolyglott {
 
     @Enumerated(EnumType.STRING)
     @Column(name = "statistic_mode")
-    private StatisticMode statisticMode = StatisticMode.RECORD;
+    private StatisticMode statisticMode;
 
     @ManyToOne
     @JoinColumn(name = "revewier_user_group_id")
@@ -331,6 +331,7 @@ public class Campaign implements CMSMediaHolder, ILicenseType, IPolyglott {
         this.limitToGroup = orig.limitToGroup;
         this.reviewMode = orig.reviewMode;
         this.reviewerUserGroup = orig.reviewerUserGroup;
+        this.statisticMode = orig.statisticMode;
     }
 
     /**
