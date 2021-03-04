@@ -48,7 +48,7 @@
 	                                <h:selectOneMenu value="#{activeDocumentBean.viewManager.citationStyle}" immediate="true">
 	                                    <f:selectItems var="style" value="#{configurationBean.sidebarWidgetUsageCitationStyles}"
 	                                        itemLabel="#{msg['label__citation_style_'.concat(style)]}" />
-	                                    <f:ajax render="citationStringOutput" />
+	                                    <f:ajax render="@form" />
 	                                </h:selectOneMenu>
                                 </div>
                                 <div class="widget-usage__citerecommendation-text-wrapper">
