@@ -1761,7 +1761,7 @@ public class CMSContentItem implements Comparable<CMSContentItem>, CMSMediaHolde
      * @throws DAOException 
      */
     public void setSliderId(Long sliderId) throws DAOException {
-        this.slider = DataManager.getInstance().getDao().getSlider(getSliderId());
+        this.slider = DataManager.getInstance().getDao().getSlider(sliderId);
     }
     
     /**
