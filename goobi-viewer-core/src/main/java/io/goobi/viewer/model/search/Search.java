@@ -312,6 +312,7 @@ public class Search implements Serializable {
             // Add custom filter query
             if (StringUtils.isNotEmpty(customFilterQuery)) {
                 nonRangeFacetFilterQueries.add(customFilterQuery);
+                activeFacetFilterQueries.add(customFilterQuery);
             }
             resp = DataManager.getInstance()
                     .getSearchIndex()

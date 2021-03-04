@@ -176,37 +176,43 @@ public class SearchFunctionality implements Functionality, SearchInterface {
             logger.error("Cannot search: SearchBean is null");
             return;
         }
-        String facetString = getSearchBean().getFacets().getCurrentFacetString();
-        searchBean.getFacets().setCurrentFacetString(getCompleteFacetString(facetString, subtheme));
+        searchBean.setCustomFilterQuery(getCompleteFilterString(subtheme));
         searchBean.search();
-        searchBean.getFacets().setCurrentFacetString(facetString);
     }
 
     /**
      * @return
      */
-    private String getCompleteFacetString(String baseFacetString, String subtheme) {
-        StringBuilder sb = new StringBuilder();
-        if (StringUtils.isNotBlank(getPageFacetString())) {
-            String pageFacetString = getPageFacetString().replaceAll("(?i)^(AND|OR)\\s", "");
-            sb.append(pageFacetString);
-        } 
-        if (StringUtils.isNotBlank(subtheme)) {
-            if(sb.length() > 0) {
-                sb.append(";;");
-            }
-            String subthemeDiscriminatorField = DataManager.getInstance().getConfiguration().getSubthemeDiscriminatorField();
-            sb.append(subthemeDiscriminatorField).append(":").append(subtheme);
+    private String getCompleteFilterString(String subtheme) {
+        
+        String filterString = getPageFacetString();
+        String subthemeFilter = getSubthemeFilter(subtheme);
+        
+        if(StringUtils.isNoneBlank(subthemeFilter, filterString)) {
+            return "+($1) +($2)".replace("$1", filterString).replace("$2", subthemeFilter);
+        } else if(StringUtils.isNotBlank(filterString)) {
+            return filterString;
+        } else if(StringUtils.isNotBlank(subthemeFilter)) {
+            return subthemeFilter;
+        } else {
+            return "";
         }
-        if (StringUtils.isNotBlank(baseFacetString) && !"-".equals(baseFacetString)) {
-            if(sb.length() > 0) {
-                sb.append(";;");
-            }
-            sb.append(baseFacetString);
-        }
-        return sb.toString();
     }
 
+
+    /**
+     * @param subtheme
+     * @return
+     */
+    private String getSubthemeFilter(String subtheme) {
+        if(StringUtils.isNotBlank(subtheme)) {            
+            String subthemeDiscriminatorField = DataManager.getInstance().getConfiguration().getSubthemeDiscriminatorField();
+            return subthemeDiscriminatorField + ":" + subtheme;
+        } else {
+            return "";
+        }
+        
+    }
 
     /**
      * The part of the search url before the page number
