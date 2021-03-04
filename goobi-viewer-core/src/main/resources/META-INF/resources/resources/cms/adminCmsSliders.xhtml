@@ -17,7 +17,7 @@
 	</ui:define>
 
 	<ui:define name="content">
-		<div id="cmsSliders" class="cms_sliders">
+		<div id="cmsSliders" class="cms-sliders">
 			<h:panelGroup rendered="#{userBean.user.cmsAdmin}">
 				<h:form prependId="false">
 
@@ -36,44 +36,43 @@
 					<div class="admin__content-inner-content">
 						<div class="admin__info-text">#{msg.cms__sliders__description}</div>
 
-						<div class="admin__table-tools">
 							<!-- FILTER -->
-							<div class="admin__table-filter">
+							<div class="cms-sliders__search">
 								<viewerComponent:dataTableColumnFilter
 									key="cms__sliders__search" filter="#{cmsSliderBean.filter}" />
 							</div>
-						</div>
 
 						<div class="admin__entry-list">
 							<ui:repeat var="slider" value="#{cmsSliderBean.sliders}">
-								<div class="admin__boxed-entry -w33 admin__table-entry">
+								<div class="admin__boxed-entry -w33">
+									<div class="row"><h3 class="col-12">#{slider.name}</h3></div>
+									<div class="row"><p class="col-12">#{slider.description}</p></div>
+									<dl class="row">
+										<dt class="col-sm-4">#{msg.label__type}:</dt>
+										<dd class="col-sm-8">#{msg[slider.sourceType.label]}</dd>
 
-									<h3>#{slider.name}</h3>
-									<p>#{slider.description}</p>
-									<dl>
-										<dt>#{msg.label__type}:</dt>
-										<dd>#{msg[slider.sourceType.label]}</dd>
-
-										<dt>#{msg.label__usage}:</dt>
-										<dd>
+										<dt class="col-sm-4">#{msg.label__usage}:</dt>
+										<dd class="col-sm-8">
 											<ui:repeat var="cmsPage"
 												value="#{cmsSliderBean.getEmbeddingCmsPages(slider)}">
 												<a href="#{cmsPage.pageUrl}" class="-bluelink">#{cmsPage.title}</a>
 											</ui:repeat>
 										</dd>
 									</dl>
-									<div class="admin__table-data">
+									<div class="row admin__boxed-entry-actions">
+										<div class="col-3 d-flex">
                                         <!-- EDIT -->
                                         <a href="#{navigationHelper.applicationUrl}admin/cms/slider/edit/#{slider.id}/" 
-                                        class="admin__table-action-link" 
+                                        class="admin__boxed-entry-actions-edit" 
                                         aria-label="#{msg.edit}: #{slider.name}">#{msg.edit}</a>
                                         <!-- DELETE -->
                                         <h:commandLink 
-                                        	styleClass="admin__table-action-link -redlink" 
+                                        	styleClass="admin__boxed-entry-actions-delete -redlink" 
                                         	onclick="if ( !confirm( &quot;#{msg.cms__delete_slider__confirmation}&quot; ) ) { return false };"
                                         	action="#{cmsSliderBean.deleteSlider(slider)}" 
                                         	aria-label="#{msg.delete}: #{slider.name}"
                                         	title="#{msg.cms__sliders__delete}">#{msg.delete}</h:commandLink>
+                                        </div>
                                     </div>
 								</div>
 							</ui:repeat>

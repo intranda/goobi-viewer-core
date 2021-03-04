@@ -5,7 +5,7 @@
 <div ref="container" class="swiper-container slider-{this.styleName}__container">
 	<div class="swiper-wrapper slider-{this.styleName}__wrapper">
 		<div each="{slide in slides}" class="swiper-slide slider-{this.styleName}__slide">
-			<a href="{slide.link}">
+			<a class="slider-{this.styleName}__link" href="{slide.link}">
 				<h3 class="slider-{this.styleName}__header">{translate(slide.header)}</h3>
 				<div class="slider-{this.styleName}__image" style="background-image: url({getImage(slide)})">
 				</div>
@@ -13,6 +13,7 @@
 			</a>
 		</div>
 	</div>
+	<div class="slider-{this.styleName}__dots"></div>
 </div>
 
 <script>
