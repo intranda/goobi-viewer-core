@@ -20,7 +20,7 @@
 	</ui:define>
 
 	<ui:define name="content">
-		<div id="cmsSlidersSelect" class="cms_sliders_select">
+		<div id="cmsSlidersSelect" class="cms-sliders-select">
 			<h:panelGroup rendered="#{userBean.user.cmsAdmin}">
 
 				<div class="admin__title-bar">
@@ -237,11 +237,10 @@
 																	value="#{cmsSliderEditBean.selectableCategories}">
 																	<li><label> <h:selectBooleanCheckbox
 																				type="checkbox" value="#{selectable.selected}">
-																			#{selectable.value.name}
 																			<f:ajax event="change" render="selectedCategories previewSlider"
 																					listener="#{cmsSliderEditBean.writeCategories}"></f:ajax>
 																			</h:selectBooleanCheckbox>
-																	</label></li>
+																			#{selectable.value.name}</label></li>
 																</ui:repeat>
 															</ul>
 														</div>
@@ -270,8 +269,8 @@
 													<select onchange="setStyle({sliderStyle : this.value});" id="styleSelect" class="form-control" data-value="#{slider.style}" data-options="slider-styles">
 														<option value="" disabled="disabled">#{msg.select}</option>
 													</select>
-													<span class="admin__form-help-text">#{msg.cms__edit_slider__style__help}</span>
 												</div>
+												<span class="admin__form-help-text">#{msg.cms__edit_slider__style__help}</span>
 											</div>
 											<div class="col-1 admin__form-help-icon">
 												<button type="button" class="btn btn--clean"
@@ -285,9 +284,12 @@
 
 									</div>
 									<h3>#{msg.title__preview}</h3>
-									<h:panelGroup layout="block" id="previewSlider" class="cms-module__slider__preview" rendered="#{slider != null}">
-										<h:outputText id="previewSource" class="hidden" value="#{cmsSliderEditBean.sliderSource}"></h:outputText>
-										<viewerComponent:cmsSlider slider="#{slider}" sourceElement="previewSource"/>
+									<h:panelGroup layout="block" id="previewSlider" class="cms-sliders-select__preview" rendered="#{slider != null}">
+										<div class="cms-sliders-select__preview-inner">
+											<h:outputText id="previewSource" class="hidden" value="#{cmsSliderEditBean.sliderSource}"></h:outputText>
+											<viewerComponent:cmsSlider slider="#{slider}" sourceElement="previewSource"/>
+											<div class="swiper-pagination"></div>
+										</div>
 									</h:panelGroup>
 								</div>
 								
