@@ -42,17 +42,17 @@
     	}
     	rxjs.from(pSource)
     	.pipe(
-    		rxjs.operators.flatMap(source => source),
-    		rxjs.operators.flatMap(uri => fetch(uri), undefined, 5),
-    		rxjs.operators.filter(result => result.status == 200),
-    		rxjs.operators.takeUntil(rxjs.timer(this.timeout)),
-    		rxjs.operators.flatMap(result => result.json()),
-    		rxjs.operators.map(element => this.createSlide(element)),
-    		rxjs.operators.filter(element => element != undefined),
-    		rxjs.operators.take(this.maxSlides),
-    		rxjs.operators.reduce((res, item) => res.concat(item), []),
+    		rxjs.operators.flatMap(source => source),					//split array into sub-observables
+    		rxjs.operators.flatMap(uri => fetch(uri), undefined, 5),	//call urls in list, maximal 5 at a time
+    		rxjs.operators.filter(result => result.status == 200),		//drop all failed requests
+    		rxjs.operators.takeUntil(rxjs.timer(this.timeout)),			//stop waiting for responses after timeout expires
+    		rxjs.operators.flatMap(result => result.json()),			//get json object from response
+    		rxjs.operators.map(element => this.createSlide(element)),	//create slide object from response
+    		rxjs.operators.filter(element => element != undefined),		//drop all responses which could not be mapped to a slide
+    		rxjs.operators.take(this.maxSlides),						//stop after maxSlides slides have been created
+    		rxjs.operators.reduce((res, item) => res.concat(item), []),	//create an array out of the sub-observables
     	)
-    	.subscribe(slides => this.setSlides(slides))
+    	.subscribe(slides => this.setSlides(slides))		//add the slides and call update
     });
     
     this.on( 'updated', function() {
