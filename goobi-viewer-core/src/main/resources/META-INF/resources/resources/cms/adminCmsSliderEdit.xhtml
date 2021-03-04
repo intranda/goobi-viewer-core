@@ -43,14 +43,23 @@
 						<div class="admin__content-inner-content">
 							<div class="admin__info-text">#{msg.cms__add_slider__select_type}</div>
 	
-							<div class="admin__entry-list">
+							<div class="admin__entry-list -w25">
 								<ui:repeat var="type" value="#{cmsSliderEditBean.sourceTypes}">
 									<div class="admin__boxed-entry -w25">
-	
-										<h3>#{msg[type.label]}</h3>
-										<p>#{msg['cms__slider_type_description__'.concat(type.name().toLowerCase())]}</p>
-										<button class="btn btn-default"
-											jsf:action="#{cmsSliderEditBean.createSlider(type)}">#{msg.select}</button>
+										<div class="row">
+											<div class="col-12">
+												<h3>#{msg[type.label]}</h3>
+											</div>
+											<div class="col-12 mb-3">
+												<p>#{msg['cms__slider_type_description__'.concat(type.name().toLowerCase())]}</p>
+											</div>
+											<div class="col-12">
+												<div class="d-flex">
+													<button class="btn btn--default ml-auto"
+														jsf:action="#{cmsSliderEditBean.createSlider(type)}">#{msg.select}</button>
+												</div>
+											</div>
+										</div>
 									</div>
 								</ui:repeat>
 							</div>

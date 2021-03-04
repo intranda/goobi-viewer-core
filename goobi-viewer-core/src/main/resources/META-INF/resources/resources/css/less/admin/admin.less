@@ -232,11 +232,21 @@
 		display: flex;
 		justify-content: space-between;
 		flex-wrap: wrap;
-		&::after {
-		    content: '';
-		    flex: 0 0 calc(33.3333% - 2rem);
-		    width: calc(33.3333% - 2rem);
-		    max-width: calc(33.3333% - 2rem);
+		&.-w33 {
+			&::after {
+			    content: '';
+			    flex: 0 0 calc(33.3333% - 2rem);
+			    width: calc(33.3333% - 2rem);
+			    max-width: calc(33.3333% - 2rem);
+			}
+		}
+		&.-w25 {
+			&::after {
+			    content: '';
+			    flex: 0 0 calc(25% - 2rem);
+			    width: calc(25% - 2rem);
+			    max-width: calc(25% - 2rem);
+			}
 		}
 	}
 	&__boxed-entry {
