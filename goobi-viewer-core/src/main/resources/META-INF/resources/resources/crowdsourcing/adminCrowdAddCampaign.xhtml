@@ -666,28 +666,6 @@
                                                 </div>
 												</c:if>
 											</h:panelGroup>
-										
-										
-                                            <!-- STATISTIC MODE -->
-                                            <h:panelGroup id="statisticModeGroup" layout="block"
-                                                styleClass="admin__default-block crowdsourcing-annotations__sidebar-statistic-settings">
-                                                <h3>#{msg.label__crowdsourcing_campaign_statistic_mode}</h3>
-                                                <div class="admin__form-help-text in mb-2">
-                                                    #{msg.admin__crowdsourcing_campaign_statistic_mode__help}
-                                                </div>
-                                                <div class="d-flex justify-content-between crowdsourcing-annotations__sidebar-statistic-dropdown">
-                                                    <h:selectOneMenu
-                                                        value="#{crowdsourcingBean.selectedCampaign.statisticMode}"
-                                                        styleClass="form-control mt-2">
-                                                        <f:selectItems var="mode" value="#{crowdsourcingBean.availableStatisticModes}"
-                                                            itemLabel="#{msg[mode.label]}"
-                                                            itemValue="#{mode}">
-                                                        </f:selectItems>
-                                                        <f:passThroughAttribute name="aria-label" value="#{msg.aria_label__crowdsourcing_campaign_statistic_mode}"/>
-                                                    </h:selectOneMenu>                                              
-                                                </div>
-                                            </h:panelGroup>
-
 					                   	
 					                   	<!-- ACCESS LICENCE WIDGET -->
 										<div class="admin__default-block crowdsourcing-annotations__access-licence">
@@ -716,6 +694,26 @@
 												</div>
 											</div>
 										</div>
+										
+                                            <!-- STATISTIC MODE -->
+                                            <h:panelGroup id="statisticModeGroup" layout="block"
+                                                styleClass="admin__default-block crowdsourcing-annotations__sidebar-statistic-settings">
+                                                <h3>#{msg.label__crowdsourcing_campaign_statistic_mode}</h3>
+                                                <div class="admin__form-help-text in mb-2">
+                                                    #{msg.admin__crowdsourcing_campaign_statistic_mode__help}
+                                                </div>
+                                                <div class="d-flex justify-content-between crowdsourcing-annotations__sidebar-statistic-dropdown">
+                                                    <h:selectOneMenu
+                                                        value="#{crowdsourcingBean.selectedCampaign.statisticMode}"
+                                                        styleClass="form-control mt-2">
+                                                        <f:selectItems var="mode" value="#{crowdsourcingBean.availableStatisticModes}"
+                                                            itemLabel="#{msg[mode.label]}"
+                                                            itemValue="#{mode}">
+                                                        </f:selectItems>
+                                                        <f:passThroughAttribute name="aria-label" value="#{msg.aria_label__crowdsourcing_campaign_statistic_mode}"/>
+                                                    </h:selectOneMenu>                                              
+                                                </div>
+                                            </h:panelGroup>
 
 										<!-- STATISTICS SIDEBAR WIDGET -->
 										<h:panelGroup id="statisticsArea">
