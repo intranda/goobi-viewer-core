@@ -13,7 +13,7 @@
 			</a>
 		</div>
 	</div>
-	<div class="slider-{this.styleName}__dots"></div>
+	<div class="swiper-pagination slider-{this.styleName}__dots"></div>
 </div>
 
 <script>

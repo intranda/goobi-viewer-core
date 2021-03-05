@@ -39,19 +39,80 @@ var viewerJS = ( function( viewer ) {
     viewer.slider = {
      	
      	styles: new Map([
-	     	["base", {
+	     	["full-width", {
 	     		maxSlides: 20,
 	     		timeout: 10000, //ms
-	     		imageWidth: 800,
+	     		imageWidth: 1920,
 	     		imageHeight: 1000,
 	     		swiperConfig: {
 				  direction: 'horizontal',
 				  loop: false,
 			      slidesPerView: 1,
-			      spaceBetween: 50,
 			    }
 			  }],
-			["vertical", {
+			["3-slides-pagination", {
+				maxSlides: 20,
+	     		timeout: 10000, //ms
+	     		imageWidth: 800,
+	     		imageHeight: 1000,
+	     		swiperConfig: {
+				  loop: true,
+			      slidesPerView: 1, 
+			      spaceBetween: 25,
+			      pagination: {
+			          el: '.swiper-pagination',
+			          clickable: true
+			      },
+			      breakpoints: {
+			    	    // when window width is >= 450px
+			    	    450: {
+			    	      slidesPerView: 1,
+			    	      spaceBetween: 0
+			    	    },
+			    	    // when window width is >= 320px
+			    	    700: {
+			    	      slidesPerView: 2,
+			    	      spaceBetween: 0
+			    	    },
+			    	    // when window width is >= 640px
+			    	    1200: {
+			    	      slidesPerView: 3,
+			    	      spaceBetween: 40
+			    	    }
+			      }
+			    }
+			}],
+			["fade-effect-auto-play", {
+				maxSlides: 20,
+	     		timeout: 10000, //ms
+	     		imageWidth: 1600,
+	     		imageHeight: 1000,
+	     		swiperConfig: {
+				  loop: true,
+				  simulateTouch: false,
+			      effect: 'fade',
+			      fadeEffect: {
+			        crossFade: true
+			      },
+			      autoplay: {
+			    	   delay: 3700,
+			      },
+			    }
+			}],
+			["centered-mode", {
+				maxSlides: 20,
+	     		timeout: 10000, //ms
+	     		imageWidth: 800,
+	     		imageHeight: 1000,
+	     		swiperConfig: {
+	     		  centeredSlides: true,
+			      spaceBetween: 30,
+			      slidesPerView: 4,
+			      loop: true,
+			      
+			    }
+			}],
+			["vertical-auto-play", {
 				maxSlides: 20,
 	     		timeout: 10000, //ms
 	     		imageWidth: 800,
@@ -60,9 +121,13 @@ var viewerJS = ( function( viewer ) {
 				  direction: 'vertical',
 				  loop: true,
 			      slidesPerView: 1,
-			      spaceBetween: 50,
+			      spaceBetween: 10,
+			      autoplay: {
+			    	   delay: 3200,
+			      },
 			    }
-			}],	
+			}],
+			
      	]),
      	init: function() {
      		riot.mount("slider", {language: currentLang, styles: this});
