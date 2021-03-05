@@ -39,7 +39,19 @@ var viewerJS = ( function( viewer ) {
     viewer.slider = {
      	
      	styles: new Map([
-	     	["full-width", {
+		  ["base", {
+	     		maxSlides: 20,
+	     		timeout: 10000, //ms
+	     		imageWidth: 800,
+	     		imageHeight: 1000,
+	     		swiperConfig: {
+				  direction: 'horizontal',
+				  loop: false,
+			      slidesPerView: 1,
+			      spaceBetween: 20,
+			    }
+		  }], 
+     	["full-width", {
 	     		maxSlides: 20,
 	     		timeout: 10000, //ms
 	     		imageWidth: 1920,
@@ -49,23 +61,8 @@ var viewerJS = ( function( viewer ) {
 				  loop: false,
 			      slidesPerView: 1,
 			    }
-			  }], 
-			  ["pagination", {
-	     		maxSlides: 20,
-	     		timeout: 10000, //ms
-	     		imageWidth: 800,
-	     		imageHeight: 1000,
-	     		swiperConfig: {
-				  direction: 'horizontal',
-				  loop: false,
-			      slidesPerView: 1,
-			      spaceBetween: 50,
-			      pagination: {
-			          clickable: true
-			      },
-			    }
 			  }],
-			["3-slides-pagination", {
+		["3-slides-pagination", {
 				maxSlides: 20,
 	     		timeout: 10000, //ms
 	     		imageWidth: 800,
@@ -73,7 +70,7 @@ var viewerJS = ( function( viewer ) {
 	     		swiperConfig: {
 				  loop: true,
 			      slidesPerView: 1, 
-			      spaceBetween: 25,
+			      spaceBetween: 20,
 			      pagination: {
 			          el: '.swiper-pagination',
 			          clickable: true
@@ -87,17 +84,17 @@ var viewerJS = ( function( viewer ) {
 			    	    // when window width is >= 320px
 			    	    700: {
 			    	      slidesPerView: 2,
-			    	      spaceBetween: 0
+			    	      spaceBetween: 10
 			    	    },
 			    	    // when window width is >= 640px
 			    	    1200: {
 			    	      slidesPerView: 3,
-			    	      spaceBetween: 40
+			    	      spaceBetween: 20
 			    	    }
 			      }
 			    }
 			}],
-			["fade-effect-auto-play", {
+		["fade-effect-auto-play", {
 				maxSlides: 20,
 	     		timeout: 10000, //ms
 	     		imageWidth: 1600,
@@ -114,7 +111,7 @@ var viewerJS = ( function( viewer ) {
 			      },
 			    }
 			}],
-			["centered-mode", {
+		["centered-mode", {
 				maxSlides: 20,
 	     		timeout: 10000, //ms
 	     		imageWidth: 800,
@@ -127,7 +124,7 @@ var viewerJS = ( function( viewer ) {
 			      
 			    }
 			}],
-			["vertical-auto-play", {
+		["vertical-auto-play", {
 				maxSlides: 20,
 	     		timeout: 10000, //ms
 	     		imageWidth: 800,
@@ -142,7 +139,6 @@ var viewerJS = ( function( viewer ) {
 			      },
 			    }
 			}],
-			
      	]),
      	init: function() {
      		riot.mount("slider", {language: currentLang, styles: this});

@@ -40,19 +40,23 @@
                 </h:panelGroup>
 
 				<h2>#{cmsPage.title}</h2>
-
-				<ui:fragment rendered="#{cmsPage.hasContent('slider')}">
-					<div class="tpl-slider__slider">
-						<viewerComponent:cmsSlider
-							slider="#{cmsPage.getContentItem('slider').slider}" />
-					</div>
-				</ui:fragment>
-
-				<ui:fragment rendered="#{cmsPage.hasContent('text')}">
-                    <div class="tpl-slider__text">
-    					<h:outputText escape="false" value="#{cmsPage.getContent('text')}"></h:outputText>
-    				</div>
-                </ui:fragment>
+				
+				<div class="tpl-slider__inner">
+	
+					<ui:fragment rendered="#{cmsPage.hasContent('slider')}">
+						<div class="tpl-slider__slider">
+							<viewerComponent:cmsSlider
+								slider="#{cmsPage.getContentItem('slider').slider}" />
+						</div>
+					</ui:fragment>
+	
+					<ui:fragment rendered="#{cmsPage.hasContent('text')}">
+	                    <div class="tpl-slider__text">
+	    					<h:outputText escape="false" value="#{cmsPage.getContent('text')}"></h:outputText>
+	    				</div>
+	                </ui:fragment>
+	                
+                </div>
 				
 			</div>
 		</f:view>
