@@ -143,6 +143,15 @@ public class MetadataBean {
     }
 
     /**
+     * Convenience method for {@link #getMetadataElementList(int) getMetadataElementList(0)} 
+     * @return the first metadata element list
+     */
+    public List<MetadataElement> getMetadataElementList() {
+        return getMetadataElementList(0);
+    }
+
+    
+    /**
      * <p>
      * Getter for the field <code>metadataElementList</code>.
      * </p>
@@ -260,7 +269,7 @@ public class MetadataBean {
 
         int i = metadataElementList.size() - 1;
         while (!metadataElementList.get(i).isHasSidebarMetadata() && i > 0) {
-            index--;
+            i--;
         }
         // logger.debug("i: " + i);
         return metadataElementList.get(i);

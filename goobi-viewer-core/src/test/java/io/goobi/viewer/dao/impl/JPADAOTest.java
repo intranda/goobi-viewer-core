@@ -94,7 +94,7 @@ public class JPADAOTest extends AbstractDatabaseEnabledTest {
     String germanNote = "Bemerkung";
     String englishNote = "Note";
     String changed = "CHANGED";
-    
+
     @Override
     @Before
     public void setUp() throws Exception {
@@ -1107,7 +1107,7 @@ public class JPADAOTest extends AbstractDatabaseEnabledTest {
     @Test
     public void getAllBookmarkListsTest() throws DAOException {
         List<BookmarkList> result = DataManager.getInstance().getDao().getAllBookmarkLists();
-        Assert.assertEquals(2, result.size());
+        Assert.assertEquals(3, result.size());
     }
 
     @Test
@@ -1122,7 +1122,8 @@ public class JPADAOTest extends AbstractDatabaseEnabledTest {
         User user = DataManager.getInstance().getDao().getUser(1);
         Assert.assertNotNull(user);
         List<BookmarkList> boomarkLists = DataManager.getInstance().getDao().getBookmarkLists(user);
-        Assert.assertEquals(1, boomarkLists.size());
+        Assert.assertEquals(2, boomarkLists.size());
+        Assert.assertEquals(Long.valueOf(3), boomarkLists.get(0).getId());
         Assert.assertEquals(user, boomarkLists.get(0).getOwner());
     }
 
@@ -1223,12 +1224,12 @@ public class JPADAOTest extends AbstractDatabaseEnabledTest {
 
     @Test
     public void deleteBookmarkListTest() throws DAOException {
-        Assert.assertEquals(2, DataManager.getInstance().getDao().getAllBookmarkLists().size());
+        Assert.assertEquals(3, DataManager.getInstance().getDao().getAllBookmarkLists().size());
         BookmarkList bl = DataManager.getInstance().getDao().getBookmarkList(1);
         Assert.assertNotNull(bl);
         Assert.assertTrue(DataManager.getInstance().getDao().deleteBookmarkList(bl));
         Assert.assertNull(DataManager.getInstance().getDao().getBookmarkList(1));
-        Assert.assertEquals(1, DataManager.getInstance().getDao().getAllBookmarkLists().size());
+        Assert.assertEquals(2, DataManager.getInstance().getDao().getAllBookmarkLists().size());
     }
 
     @Test
@@ -2851,14 +2852,14 @@ public class JPADAOTest extends AbstractDatabaseEnabledTest {
             Assert.assertEquals("%PPN123%", params.get("targetPIbody"));
         }
     }
-    
+
     @Test
     public void testGetAllRecordNotes() throws DAOException {
         List<CMSRecordNote> notes = DataManager.getInstance().getDao().getAllRecordNotes();
         assertEquals(3, notes.size());
 
     }
-    
+
     @Test
     public void testGetCMSRecordNotesPaginated() throws DAOException {
         List<CMSRecordNote> notesP1 = DataManager.getInstance().getDao().getRecordNotes(0, 2, null, false, null);
@@ -2866,7 +2867,7 @@ public class JPADAOTest extends AbstractDatabaseEnabledTest {
         List<CMSRecordNote> notesP2 = DataManager.getInstance().getDao().getRecordNotes(2, 2, null, false, null);
         assertEquals(1, notesP2.size());
     }
-    
+
     @Test
     public void testGetCMSRecordNote() throws DAOException {
         CMSRecordNote note = DataManager.getInstance().getDao().getRecordNote(1l);
@@ -2878,16 +2879,15 @@ public class JPADAOTest extends AbstractDatabaseEnabledTest {
         assertEquals("<p>First paragraph</p>", note.getNoteText().getText(Locale.ENGLISH));
         assertEquals("<p>Erster Paragraph</p>", note.getNoteText().getText(Locale.GERMAN));
     }
-    
+
     @Test
     public void testAddCMSRecordNote() throws DAOException {
 
-        
         CMSRecordNote note = new CMSRecordNote();
         note.getRecordTitle().setSelectedLocale(Locale.GERMAN);
         note.setRecordPi(pi);
         note.getRecordTitle().setText(title);
-        
+
         assertTrue(DataManager.getInstance().getDao().addRecordNote(note));
         assertNotNull(note.getId());
         CMSRecordNote pNote = DataManager.getInstance().getDao().getRecordNote(note.getId());
@@ -2895,24 +2895,23 @@ public class JPADAOTest extends AbstractDatabaseEnabledTest {
         assertEquals(title, pNote.getRecordTitle().getText());
         assertEquals(title, pNote.getRecordTitle().getText(Locale.GERMAN));
     }
-    
+
     @Test
     public void testUpdateRecordNote() throws DAOException {
 
-        
         CMSRecordNote note = DataManager.getInstance().getDao().getRecordNote(2l);
         note.getNoteTitle().setText(changed, Locale.GERMAN);
         note.getNoteText().setText(changed, Locale.GERMAN);
-        
+
         DataManager.getInstance().getDao().updateRecordNote(note);
-        
+
         CMSRecordNote pNote = DataManager.getInstance().getDao().getRecordNote(2l);
         assertEquals(changed, note.getNoteTitle().getText(Locale.GERMAN));
         assertEquals("Notes 2", note.getNoteTitle().getText(Locale.ENGLISH));
         assertEquals(changed, note.getNoteText().getText(Locale.GERMAN));
         assertFalse(note.getNoteText().getValue(Locale.ENGLISH).isPresent());
     }
-    
+
     @Test
     public void testDeleteRecordNote() throws DAOException {
         assertEquals(3, DataManager.getInstance().getDao().getAllRecordNotes().size());
@@ -2923,13 +2922,12 @@ public class JPADAOTest extends AbstractDatabaseEnabledTest {
         assertNull(DataManager.getInstance().getDao().getRecordNote(2l));
 
     }
-    
+
     @Test
     public void testGetRecordNotesForPi() throws DAOException {
         assertEquals(2, DataManager.getInstance().getDao().getRecordNotesForPi("PI1", false).size());
         assertEquals(1, DataManager.getInstance().getDao().getRecordNotesForPi("PI1", true).size());
         assertEquals(0, DataManager.getInstance().getDao().getRecordNotesForPi("PI5", false).size());
     }
-    
-    
+
 }
