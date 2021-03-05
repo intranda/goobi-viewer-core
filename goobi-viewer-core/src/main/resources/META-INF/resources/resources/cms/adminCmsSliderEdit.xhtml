@@ -296,7 +296,7 @@
 									<h:panelGroup layout="block" id="previewSlider" class="cms-sliders-select__preview" rendered="#{slider != null}">
 										<div class="cms-sliders-select__preview-inner">
 											<h:outputText id="previewSource" class="hidden" value="#{cmsSliderEditBean.sliderSource}"></h:outputText>
-											<viewerComponent:cmsSlider slider="#{slider}" sourceElement="previewSource"/>
+											<viewerComponent:cmsSlider slider="#{slider}" sourceElement="previewSource" linkTarget="none"/>
 											<div class="swiper-pagination"></div>
 										</div>
 									</h:panelGroup>
