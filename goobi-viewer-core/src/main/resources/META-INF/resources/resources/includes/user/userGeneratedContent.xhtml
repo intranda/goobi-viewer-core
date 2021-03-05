@@ -83,6 +83,13 @@
                             	$Obj.addClass( 'ugc-highlight' );
                             };
                             
+                            // jump to image if user generated content clicked below image
+                            $( '.view-object #user_generated_content_nav li' ).click(function() {
+                                $([document.documentElement, document.body]).animate({
+                                    scrollTop: $("#imageContainer").offset().top - 175
+                                }, 200);
+                            });
+                            
                             var coordinates = {
                             	name: 'ugc',
                             	displayTooltip: true,
