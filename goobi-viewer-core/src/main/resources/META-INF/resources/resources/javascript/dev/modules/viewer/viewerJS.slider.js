@@ -50,6 +50,21 @@ var viewerJS = ( function( viewer ) {
 			      slidesPerView: 1,
 			      spaceBetween: 50,
 			    }
+			  }], 
+			  ["pagination", {
+	     		maxSlides: 20,
+	     		timeout: 10000, //ms
+	     		imageWidth: 800,
+	     		imageHeight: 1000,
+	     		swiperConfig: {
+				  direction: 'horizontal',
+				  loop: false,
+			      slidesPerView: 1,
+			      spaceBetween: 50,
+			      pagination: {
+			          clickable: true
+			      },
+			    }
 			  }],
 			["vertical", {
 				maxSlides: 20,

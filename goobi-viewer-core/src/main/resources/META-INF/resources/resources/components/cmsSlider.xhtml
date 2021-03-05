@@ -15,6 +15,10 @@
             name="sourceElement"
             required="false"
             default=""/>
+            <composite:attribute
+            name="linkTarget"
+            required="false"
+            default="_self"/>
     </composite:interface>
 
 
@@ -25,7 +29,8 @@
                 <slider 
                 	source="#{request.contextPath}/api/v1/cms/slider/#{cc.attrs.slider.id}/slides/" 
                 	style="#{cc.attrs.slider.style}"
-                	sourceelement="#{cc.attrs.sourceElement}"                	
+                	sourceelement="#{cc.attrs.sourceElement}"   
+                	linkTarget="#{cc.attrs.linkTarget}"             	
                 	></slider>
         </ui:fragment>
 
