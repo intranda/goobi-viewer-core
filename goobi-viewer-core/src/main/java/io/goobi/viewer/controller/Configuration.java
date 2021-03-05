@@ -4973,4 +4973,8 @@ public final class Configuration extends AbstractConfiguration {
     public HierarchicalConfiguration getBaseXMetadataConfig() {
         return getLocalConfigurationAt("metadata.basexMetadataList");
     }
+    
+    public boolean isDisplayUserGeneratedContentBelowImage() {
+        return getLocalBoolean("webGuiDisplay.displayUserGeneratedContentBelowImage", false);
+    }
 }
