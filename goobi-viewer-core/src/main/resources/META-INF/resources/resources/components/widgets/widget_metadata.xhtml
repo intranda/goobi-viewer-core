@@ -98,7 +98,7 @@
                         <h:panelGroup rendered="#{fn:length(metadataElement.metadataList) > 0}">
                             <ui:repeat value="#{metadataElement.metadataTypes}" var="type">
                                 <ui:fragment rendered="#{metadataElement.hasMetadata()}">
-	                                <h3>#{msg[type.tabName]}</h3>
+	                                <h3>#{msg[type.getTabName(metadataBean.activeMetadataView.index)]}</h3>
 	                             </ui:fragment>
 	                        </ui:repeat>  
 	                         
