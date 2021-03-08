@@ -69,13 +69,19 @@
                             <h:outputText value="#{msg.cms_pageMetadata_date}:" />
                         </dt>
                         <dd>
-                            <h:outputText value="#{cmsBean.selectedPage.dateCreated}" />
+                            <h:outputText value="#{cmsBean.selectedPage.dateCreated}">
+                                <f:converter converterId="localDateTimeConverter" />
+                                <f:attribute name="pattern" value="#{navigationHelper.dateTimePattern}" />
+                            </h:outputText>
                         </dd>
                         <dt>
                             <h:outputText value="#{msg.cms_pageMetadata_lastEdited}:" />
                         </dt>
                         <dd>
-                            <h:outputText value="#{cmsBean.selectedPage.dateUpdated}" />
+                            <h:outputText value="#{cmsBean.selectedPage.dateUpdated}">
+                                <f:converter converterId="localDateTimeConverter" />
+                                <f:attribute name="pattern" value="#{navigationHelper.dateTimePattern}" />
+                            </h:outputText>
                         </dd>
                     </dl>
                 </div>
