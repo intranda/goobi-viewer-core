@@ -150,7 +150,7 @@ var viewerJS = ( function( viewer ) {
      			rxjs.operators.debounceTime(500)
      			)
      		.subscribe((e) => {
-     			console.log("update slider");
+     			// console.log("update slider");
      			riot.mount("slider", {language: currentLang, styles: this});
      		});
      	},

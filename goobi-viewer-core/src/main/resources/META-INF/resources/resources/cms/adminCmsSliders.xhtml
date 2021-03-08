@@ -51,6 +51,7 @@
 										<dt class="col-sm-4">#{msg.label__type}:</dt>
 										<dd class="col-sm-8">#{msg[slider.sourceType.label]}</dd>
 
+										<ui:fragment rendered="#{not empty cmsSliderBean.getEmbeddingCmsPages(slider)}">
 										<dt class="col-sm-4">#{msg.label__usage}:</dt>
 										<dd class="col-sm-8">
 											<ui:repeat var="cmsPage"
@@ -58,6 +59,7 @@
 												<a href="#{cmsPage.pageUrl}" class="-bluelink">#{cmsPage.title}</a>
 											</ui:repeat>
 										</dd>
+										</ui:fragment>
 									</dl>
 									<div class="row admin__boxed-entry-actions">
 										<div class="col-3 d-flex">
@@ -65,13 +67,15 @@
                                         <a href="#{navigationHelper.applicationUrl}admin/cms/slider/edit/#{slider.id}/" 
                                         class="admin__boxed-entry-actions-edit" 
                                         aria-label="#{msg.edit}: #{slider.name}">#{msg.edit}</a>
-                                        <!-- DELETE -->
-                                        <h:commandLink 
-                                        	styleClass="admin__boxed-entry-actions-delete -redlink" 
-                                        	onclick="if ( !confirm( &quot;#{msg.cms__delete_slider__confirmation}&quot; ) ) { return false };"
-                                        	action="#{cmsSliderBean.deleteSlider(slider)}" 
-                                        	aria-label="#{msg.delete}: #{slider.name}"
-                                        	title="#{msg.cms__sliders__delete}">#{msg.delete}</h:commandLink>
+	                                        <ui:fragment rendered="#{empty cmsSliderBean.getEmbeddingCmsPages(slider)}">
+	                                        <!-- DELETE -->
+	                                        <h:commandLink 
+	                                        	styleClass="admin__boxed-entry-actions-delete -redlink" 
+	                                        	onclick="if ( !confirm( &quot;#{msg.cms__delete_slider__confirmation}&quot; ) ) { return false };"
+	                                        	action="#{cmsSliderBean.deleteSlider(slider)}" 
+	                                        	aria-label="#{msg.delete}: #{slider.name}"
+	                                        	title="#{msg.cms__sliders__delete}">#{msg.delete}</h:commandLink>
+	                                        </ui:fragment>
                                         </div>
                                     </div>
 								</div>

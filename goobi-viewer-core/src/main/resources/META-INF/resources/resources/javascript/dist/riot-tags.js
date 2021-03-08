@@ -2478,11 +2478,11 @@ riot.tag2('slider', '<div ref="container" class="swiper-container slider-{this.s
 	this.showPaginator = true;
 
     this.on( 'mount', function() {
-    	console.log("mounting 'slider.tag' ", this.opts);
+
 		this.style = this.opts.styles.get(this.opts.style);
 		this.amendStyle(this.style);
 		this.styleName = this.opts.styles.getStyleNameOrDefault(this.opts.style);
-    	console.log("init slider with '" + this.opts.style + "''", this.style);
+
 		this.timeout = this.style.timeout ? this.style.timeout : 100000;
 		this.maxSlides = this.style.maxSlides ? this.style.maxSlides : 1000;
 		this.linkTarget = this.opts.linktarget ? this.opts.linktarget : "_self";
