@@ -112,7 +112,7 @@ public class MetadataValue implements Serializable {
                     if (citationString == null) {
                         citationString = new Citation(id, citationProcessor, citationItemDataProvider, CitationTools.getCSLTypeForDocstrct(docstrct),
                                 citationValues)
-                                        .getCitationString("html");
+                                        .getCitationString("text");
                     }
                     return citationString;
                 } catch (IOException e) {
