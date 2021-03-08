@@ -187,24 +187,30 @@
 														</label>
 													</div>
 	
-													<div
+													<h:panelGroup id="recordsQueryValidation" layout="block" 
 														class="col-9 admin__form-input cms-module__option-control">
 	
-														<h:message for="recordsQuery"
-															errorClass="-validation-message -danger"></h:message>
-														<div class="-validation-mark">
-															<i class="fa fa-check" aria-hidden="true"></i> <i
-																class="fa fa-exclamation" aria-hidden="true"></i>
-														</div>
+														<div class="cms-module__option-message">
+										                    <h:messages for="recordsQuery" 
+										                        infoClass="cms-module__option-message-status success" 
+										                        warnClass="cms-module__option-message-status warning"
+										                        errorClass="cms-module__option-message-status danger" />
+										
+										                    <div class="cms-module__option-message-mark">
+										                        <i class="fa fa-check" aria-hidden="true"></i>
+										                        <i class="fa fa-exclamation" aria-hidden="true"></i>
+										                    </div>
+										                </div>
 														<h:inputText id="recordsQuery"
 															styleClass="form-control -validation-input"
 															required="true"
 															requiredMessage="#{msg.info__input_required}"
 															value="#{slider.solrQuery}">
-															<f:ajax event="change" render="previewSlider"/>
+															<f:validator validatorId="solrQueryValidator" for="recordsQuery" />
+															<f:ajax event="change" render="previewSlider recordsQueryValidation"/>
 														</h:inputText>
 														<span class="admin__form-help-text">#{msg.cms__edit_slider__solr_query__help}</span>
-													</div>
+													</h:panelGroup>
 													<div class="col-1 admin__form-help-icon">
 														<button type="button" class="btn btn--clean"
 															data-toggle="helptext" aria-label="inline help icon">

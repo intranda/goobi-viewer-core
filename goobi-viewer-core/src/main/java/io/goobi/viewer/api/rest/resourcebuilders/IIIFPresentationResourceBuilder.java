@@ -94,7 +94,9 @@ public class IIIFPresentationResourceBuilder {
             ContentNotFoundException, URISyntaxException, ViewerConfigurationException, DAOException {
         getManifestBuilder().setBuildMode(mode);
         getSequenceBuilder().setBuildMode(mode);
-        List<StructElement> docs = getManifestBuilder().getDocumentWithChildren(pi);
+        List<StructElement> docs = BuildMode.IIIF.equals(mode) || BuildMode.THUMBS.equals(mode) ? 
+                getManifestBuilder().getDocumentWithChildren(pi) :
+                Arrays.asList(getManifestBuilder().getDocument(pi));
         if (docs.isEmpty()) {
             throw new ContentNotFoundException("No document found for pi " + pi);
         }
@@ -110,10 +112,12 @@ public class IIIFPresentationResourceBuilder {
 
             String topLogId = mainDoc.getMetadataValue(SolrConstants.LOGID);
             if (StringUtils.isNotBlank(topLogId)) {
-                List<Range> ranges = getStructureBuilder().generateStructure(docs, pi, false);
-                ranges.forEach(range -> {
-                    ((Manifest) manifest).addStructure(range);
-                });
+                if(BuildMode.IIIF.equals(mode)) {                    
+                    List<Range> ranges = getStructureBuilder().generateStructure(docs, pi, false);
+                    ranges.forEach(range -> {
+                        ((Manifest) manifest).addStructure(range);
+                    });
+                }
             }
         }
 

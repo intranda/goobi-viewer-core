@@ -62,6 +62,11 @@ import io.goobi.viewer.model.iiif.presentation.builder.ManifestBuilder;
 @ViewerRestServiceBinding
 public class CMSSliderResource {
 
+    /**
+     * 
+     */
+    private static final int MAX_SLIDER_ITEMS = 200;
+
     private static final Logger logger = LoggerFactory.getLogger(CMSSliderResource.class);
     
     private final CMSSlider slider;
@@ -84,7 +89,7 @@ public class CMSSliderResource {
                 case COLLECTIONS:
                     return getCollections(slider.getCollections());
                 case RECORDS:
-                    return getRecords(slider.getSolrQuery());
+                    return getRecords(slider.getSolrQuery(), MAX_SLIDER_ITEMS);
                 case PAGES:
                     return getPages(slider.getCategories());
                 default:
@@ -139,7 +144,7 @@ public class CMSSliderResource {
      * @throws IndexUnreachableException
      * @throws PresentationException
      */
-    private List<URI> getRecords(String solrQuery) throws PresentationException, IndexUnreachableException {
+    private List<URI> getRecords(String solrQuery, int maxResults) throws PresentationException, IndexUnreachableException {
 
         //limit query to records only
         solrQuery = "+(" + solrQuery + ") +(ISWORK:* ISANCHOR:*)";
@@ -149,10 +154,10 @@ public class CMSSliderResource {
         if(urls == null) {
             return Collections.emptyList();
         } else {            
-            SolrDocumentList solrDocs = DataManager.getInstance().getSearchIndex().search(solrQuery, Arrays.asList(SolrConstants.PI));
+            SolrDocumentList solrDocs = DataManager.getInstance().getSearchIndex().search(solrQuery, 0, maxResults, null, null, Arrays.asList(SolrConstants.PI)).getResults();
             for (SolrDocument doc : solrDocs) {
                 String pi = (String) SolrSearchIndex.getSingleFieldValue(doc, SolrConstants.PI);
-                URI uri = urls.path(ApiUrls.RECORDS_RECORD, ApiUrls.RECORDS_MANIFEST).params(pi).buildURI();
+                URI uri = urls.path(ApiUrls.RECORDS_RECORD, ApiUrls.RECORDS_MANIFEST).params(pi).query("mode", "simple").buildURI();
                 manifests.add(uri);
             }
             return manifests;
