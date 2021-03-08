@@ -560,7 +560,7 @@ public final class SearchHelper {
      */
     public static Map<String, CollectionResult> findAllCollectionsFromField(String luceneField, String facetField, String filterQuery,
             boolean filterForWhitelist, boolean filterForBlacklist, String splittingChar) throws IndexUnreachableException {
-        logger.trace("findAllCollectionsFromField: {}", luceneField);
+        logger.debug("findAllCollectionsFromField: {}", luceneField);
         Map<String, CollectionResult> ret = new HashMap<>();
         if (StringUtils.isBlank(splittingChar)) {
             throw new IllegalArgumentException("Splitting char may not be empty. Check configuration for collection field " + luceneField);
@@ -592,6 +592,10 @@ public final class SearchHelper {
 
                 for (Count count : facetResults.getValues()) {
                     String dc = count.getName();
+                    // Skip inverted values
+                    if (StringTools.checkValueEmptyOrInverted(dc)) {
+                        continue;
+                    }
 
                     CollectionResult result = ret.get(dc);
                     if (result == null) {
@@ -850,7 +854,7 @@ public final class SearchHelper {
      * @return a {@link java.lang.String} object.
      */
     protected static String generateCollectionBlacklistFilterSuffix(String field) {
-        logger.debug("Generating blacklist suffix for field '{}'...", field);
+        logger.trace("Generating blacklist suffix for field '{}'...", field);
         StringBuilder sbQuery = new StringBuilder();
         List<String> list = DataManager.getInstance().getConfiguration().getCollectionBlacklist(field);
         if (list != null && !list.isEmpty()) {
