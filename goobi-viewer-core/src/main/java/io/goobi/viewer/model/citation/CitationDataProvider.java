@@ -72,15 +72,15 @@ public class CitationDataProvider implements ItemDataProvider {
                             if (nameSplit.length > 1) {
                                 names.add(new CSLNameBuilder().given(nameSplit[1].trim()).family(nameSplit[0].trim()).build());
                             } else {
-                                builder.author("", nameSplit[0].trim());
+                                //                                builder.author("", nameSplit[0].trim());
                             }
                         } else {
-                            String[] nameSplit = name.split(" ");
-                            if (nameSplit.length > 1) {
-                                names.add(new CSLNameBuilder().given(nameSplit[0].trim()).family(nameSplit[1].trim()).build());
-                            } else {
-                                builder.author("", name);
-                            }
+                            //                            String[] nameSplit = name.split(" ");
+                            //                            if (nameSplit.length > 1) {
+                            //                                names.add(new CSLNameBuilder().given(nameSplit[0].trim()).family(nameSplit[1].trim()).build());
+                            //                            } else {
+                            //                                builder.author("", name);
+                            //                            }
                         }
                     }
                     if (!names.isEmpty()) {
