@@ -143,6 +143,15 @@ public class MetadataBean {
     }
 
     /**
+     * Convenience method for {@link #getMetadataElementList(int) getMetadataElementList(0)} 
+     * @return the first metadata element list
+     */
+    public List<MetadataElement> getMetadataElementList() {
+        return getMetadataElementList(0);
+    }
+
+    
+    /**
      * <p>
      * Getter for the field <code>metadataElementList</code>.
      * </p>

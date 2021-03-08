@@ -625,6 +625,9 @@ public class Metadata implements Serializable {
         if (StringUtils.isNotEmpty(citationTemplate)) {
             ActiveDocumentBean adb = BeanUtils.getActiveDocumentBean();
             if (adb != null && adb.isRecordLoaded()) {
+                if (adb.getViewManager().getCitationProcessorWrapper() == null) {
+                    adb.getViewManager().setCitationProcessorWrapper(new CitationProcessorWrapper());
+                }
                 setCitationProcessorWrapper(adb.getViewManager().getCitationProcessorWrapper());
             }
         }

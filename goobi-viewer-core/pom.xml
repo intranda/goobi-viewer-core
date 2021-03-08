@@ -81,70 +81,70 @@
 
 		<!-- intranda libraries -->
 		<alto.version>1.5.5</alto.version>
-		<contentserver.version>2.7.0</contentserver.version>
+		<contentserver.version>2.7.1</contentserver.version>
 		<tei-conversion.version>1.2.0</tei-conversion.version>
 		<iiif-api-model.version>1.11.0</iiif-api-model.version>
 		<normdataimporter.version>1.5.2</normdataimporter.version>
 
-		<!-- other libraries -->
-		<cdi.version>2.0.SP1</cdi.version>
-		<citationstyles.version>21.2</citationstyles.version>
-		<citeproc-java.version>3.0.0-SNAPSHOT</citeproc-java.version>
-		<commons-codec.version>1.15</commons-codec.version>
-		<commons-collections4.version>4.4</commons-collections4.version>
-		<commons-configuration.version>1.10</commons-configuration.version>
-		<commons-fileupload.version>1.4</commons-fileupload.version>
-		<commons-io.version>2.8.0</commons-io.version>
-		<commons-jxpath.version>1.3</commons-jxpath.version>
-		<commons-lang3.version>3.11</commons-lang3.version>
-		<commons-net.version>3.8.0</commons-net.version>
-		<commons-text.version>1.9</commons-text.version>
-		<dbunit.version>2.7.0</dbunit.version>
-		<eclipselink.version>2.7.8</eclipselink.version>
-		<h2.version>1.4.200</h2.version>
-		<httpclient.version>4.5.13</httpclient.version>
-		<httpcore.version>4.4.14</httpcore.version>
-		<httpunit.version>1.7.3</httpunit.version>
-		<icu.version>68.2</icu.version>
-		<inject.version>1</inject.version>
-		<jackson.version>2.12.1</jackson.version>
-		<jakarta.annotation-api.version>1.3.5</jakarta.annotation-api.version>
-		<jakarta.servlet-api.version>4.0.4</jakarta.servlet-api.version>
-		<javax.annotation.version>1.3.2</javax.annotation.version>
-		<javax.el.version>3.0.1-b06</javax.el.version>
-		<javax.faces.version>2.4.0</javax.faces.version>
-		<javax.mail.version>1.6.2</javax.mail.version>
-		<javax.persistence.version>2.2.1</javax.persistence.version>
-		<javax.websocket.version>1.1</javax.websocket.version>
-		<javax.ws.rs-api.version>2.1.1</javax.ws.rs-api.version>
-		<!-- This dependency is declared as ignoredUnusedDeclaredDependency, too -->
-		<javax.jstl.version>1.2</javax.jstl.version>
-		<jdom2.version>2.0.6</jdom2.version>
-		<jersey.version>2.33</jersey.version>
-		<jersey-guava.version>2.26-b03</jersey-guava.version>
-		<jgravatar.version>1.2</jgravatar.version>
-		<!-- https://github.com/stleary/JSON-java -->
-		<json.version>20201115</json.version>
-		<jsoup.version>1.13.1</jsoup.version>
-		<junit.version>4.13.2</junit.version>
-		<mariadb-java-client.version>2.3.0</mariadb-java-client.version>
-		<mockito.version>3.8.0</mockito.version>
-		<mockserver.version>5.11.2</mockserver.version>
-		<oauth.version>1.0.2</oauth.version>
-		<openpdf.version>1.3.25</openpdf.version>
-		<poi.version>4.1.2</poi.version>
-		<prettyfaces.version>3.3.4-20120314</prettyfaces.version>
-		<primefaces.version>8.0</primefaces.version>
-		<rome.version>1.15.0</rome.version>
-		<slf4j.version>1.7.30</slf4j.version>
-		<solr.version>8.8.1</solr.version>
-		<saml-client.version>4.0.0</saml-client.version>
-		<swagger.version>2.1.7</swagger.version>
-		<tomcat.version>9.0.43</tomcat.version>
-		<weld-servlet-shaded.version>3.1.6.Final</weld-servlet-shaded.version>
-		<xerces.version>2.12.1</xerces.version>
-		<xmlParserAPIs.version>2.6.2</xmlParserAPIs.version>
-	</properties>
+        <!-- other libraries -->
+        <cdi.version>2.0.SP1</cdi.version>
+        <citationstyles.version>21.2</citationstyles.version>
+        <citeproc-java.version>3.0.0-SNAPSHOT</citeproc-java.version>
+        <commons-codec.version>1.15</commons-codec.version>
+        <commons-collections4.version>4.4</commons-collections4.version>
+        <commons-configuration.version>1.10</commons-configuration.version>
+        <commons-fileupload.version>1.4</commons-fileupload.version>
+        <commons-io.version>2.8.0</commons-io.version>
+        <commons-jxpath.version>1.3</commons-jxpath.version>
+        <commons-lang3.version>3.12.0</commons-lang3.version>
+        <commons-net.version>3.8.0</commons-net.version>
+        <commons-text.version>1.9</commons-text.version>
+        <dbunit.version>2.7.0</dbunit.version>
+        <eclipselink.version>2.7.8</eclipselink.version>
+        <h2.version>1.4.200</h2.version>
+        <httpclient.version>4.5.13</httpclient.version>
+        <httpcore.version>4.4.14</httpcore.version>
+        <httpunit.version>1.7.3</httpunit.version>
+        <icu.version>68.2</icu.version>
+        <inject.version>1</inject.version>
+        <jackson.version>2.12.2</jackson.version>
+        <jakarta.annotation-api.version>1.3.5</jakarta.annotation-api.version>
+        <jakarta.servlet-api.version>4.0.4</jakarta.servlet-api.version>
+        <javax.annotation.version>1.3.2</javax.annotation.version>
+        <javax.el.version>3.0.1-b06</javax.el.version>
+        <javax.faces.version>2.4.0</javax.faces.version>
+        <javax.mail.version>1.6.2</javax.mail.version>
+        <javax.persistence.version>2.2.1</javax.persistence.version>
+        <javax.websocket.version>1.1</javax.websocket.version>
+        <javax.ws.rs-api.version>2.1.1</javax.ws.rs-api.version>
+        <!-- This dependency is declared as ignoredUnusedDeclaredDependency, too -->
+        <javax.jstl.version>1.2</javax.jstl.version>
+        <jdom2.version>2.0.6</jdom2.version>
+        <jersey.version>2.33</jersey.version>
+        <jersey-guava.version>2.26-b03</jersey-guava.version>
+        <jgravatar.version>1.2</jgravatar.version>
+        <!-- https://github.com/stleary/JSON-java -->
+        <json.version>20201115</json.version>
+        <jsoup.version>1.13.1</jsoup.version>
+        <junit.version>4.13.2</junit.version>
+        <mariadb-java-client.version>2.3.0</mariadb-java-client.version>
+        <mockito.version>3.8.0</mockito.version>
+        <mockserver.version>5.11.2</mockserver.version>
+        <oauth.version>1.0.2</oauth.version>
+        <openpdf.version>1.3.25</openpdf.version>
+        <poi.version>4.1.2</poi.version>
+        <prettyfaces.version>3.3.4-20120314</prettyfaces.version>
+        <primefaces.version>8.0</primefaces.version>
+        <rome.version>1.15.0</rome.version>
+        <slf4j.version>1.7.30</slf4j.version>
+        <solr.version>8.8.1</solr.version>
+        <saml-client.version>4.0.0</saml-client.version>
+        <swagger.version>2.1.7</swagger.version>
+        <tomcat.version>9.0.43</tomcat.version>
+        <weld-servlet-shaded.version>3.1.6.Final</weld-servlet-shaded.version>
+        <xerces.version>2.12.1</xerces.version>
+        <xmlParserAPIs.version>2.6.2</xmlParserAPIs.version>
+    </properties>
 
 
 	<dependencies>
