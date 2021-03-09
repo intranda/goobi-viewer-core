@@ -27,4 +27,4 @@ public enum BuildMode {
     IIIF,
     THUMBS,
     IIIF_SIMPLE
-}
+    }

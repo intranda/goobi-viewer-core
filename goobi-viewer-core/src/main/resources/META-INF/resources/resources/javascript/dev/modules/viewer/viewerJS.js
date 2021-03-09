@@ -84,7 +84,6 @@ var viewerJS = (function () {
         viewerJS.userLogin.init();
         
         viewerJS.popovers.init();
-        
 	    viewerJS.userDropdown.init();
 	    
 	    //init toggle hide/show
@@ -92,7 +91,7 @@ var viewerJS = (function () {
 
        
         // init bookmarks if enabled
-        if ( bookmarksEnabled ) {
+        if ( bookmarksEnabled ) { 
             viewerJS.bookmarks.init( {
                 root: rootURL,
                 rest: this.getRestApiUrl(),
@@ -287,6 +286,7 @@ var viewerJS = (function () {
 		viewer.initialized.next();
 		viewer.initialized.complete();
 		viewer.setCheckedStatus();
+		viewer.slider.init();
 	// EOL viewerJS function
     };
     
@@ -429,13 +429,7 @@ var viewerJS = (function () {
 	        //no bootstrap defined
 	    }
 	});
-    
-    /**
-     * Check if a variable is a string
-     */
-    viewer.isString = function(variable) {
-        return typeof variable === 'string' || variable instanceof String
-    }
+
 
     // global object for tinymce config
     viewer.tinyConfig = {};

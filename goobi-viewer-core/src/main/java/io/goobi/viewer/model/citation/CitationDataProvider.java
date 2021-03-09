@@ -20,6 +20,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
+import org.apache.commons.lang3.StringUtils;
+
 import de.undercouch.citeproc.ItemDataProvider;
 import de.undercouch.citeproc.csl.CSLDateBuilder;
 import de.undercouch.citeproc.csl.CSLItemData;
@@ -62,16 +64,23 @@ public class CitationDataProvider implements ItemDataProvider {
                 case AUTHOR:
                     List<CSLName> names = new ArrayList<>(fields.get(key).size());
                     for (String name : fields.get(key)) {
+                        if (StringUtils.isBlank(name)) {
+                            continue;
+                        }
                         if (name.contains(",")) {
                             String[] nameSplit = name.split(",");
                             if (nameSplit.length > 1) {
                                 names.add(new CSLNameBuilder().given(nameSplit[1].trim()).family(nameSplit[0].trim()).build());
                             } else {
-                                builder.author("", nameSplit[0].trim());
+                                //                                builder.author("", nameSplit[0].trim());
                             }
                         } else {
-                            names.add(new CSLNameBuilder().given(id).family(id).build());
-                            builder.author("", name);
+                            //                            String[] nameSplit = name.split(" ");
+                            //                            if (nameSplit.length > 1) {
+                            //                                names.add(new CSLNameBuilder().given(nameSplit[0].trim()).family(nameSplit[1].trim()).build());
+                            //                            } else {
+                            //                                builder.author("", name);
+                            //                            }
                         }
                     }
                     if (!names.isEmpty()) {

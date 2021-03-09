@@ -62,8 +62,6 @@ public class ImageInformationRequestFilter implements ContainerRequestFilter {
     private HttpServletRequest servletRequest;
     @Context
     private HttpServletResponse servletResponse;
-    @Inject
-    AbstractApiUrlManager urls;
 
     /** {@inheritDoc} */
     @Override
@@ -103,11 +101,11 @@ public class ImageInformationRequestFilter implements ContainerRequestFilter {
             Optional<String> filename = DataManager.getInstance().getSearchIndex().getFilename(pi, Integer.parseInt(imageName));
             if (filename.isPresent()) {
                 request.setAttribute(FilterTools.ATTRIBUTE_FILENAME, filename.get());
-                String redirectURI = urls
+                String redirectURI = DataManager.getInstance().getRestApiManager().getContentApiManager().map(urls -> urls
                         .path(RECORDS_FILES_IMAGE, RECORDS_FILES_IMAGE_INFO)
                         .params(pi, filename.get())
-                        .build();
-//                String redirectURI = request.getRequestURI().replace("/" + imageName, "/" + filename.get());
+                        .build())
+                        .orElse(request.getRequestURI().replace("/" + imageName, "/" + filename.get()));
                 response.sendRedirect(redirectURI);
                 return true;
             }

@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<cms_page_template id="template_slider" version="2021-03-01">
+    <name>cms__template_33__title</name>
+    <description>cms__template_33__description</description>
+    <icon>cms_template_33_slider.png</icon>
+    <html>cms_template_33_slider.xhtml</html>
+    <content>
+        <item id="slider" order="1" label="label__image_slider" type="SLIDER" inlinehelp="cms__template_33__slider__help"/>
+        <item id="text" order="2" label="text" type="HTML" />
+    </content>
+</cms_page_template>

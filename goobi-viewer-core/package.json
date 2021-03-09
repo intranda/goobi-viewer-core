@@ -24,9 +24,10 @@
   },
   "dependencies": {
     "hc-sticky": "~2.2.6",
+    "mirador": "~3.0.0",
+    "swiper": "*",
     "leaflet": "*",
     "leaflet.markercluster": "*",
-    "mirador": "~3.0.0",
     "pixl-xml": "^1.0.13",
     "swagger-ui-dist": "*",
     "tinymce": "~5.7.0"

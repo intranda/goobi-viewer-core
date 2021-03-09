@@ -163,13 +163,15 @@ module.exports = function (grunt) {
                             "leaflet.markercluster/dist/leaflet.markercluster.js" : "leaflet/markercluster",
                             "swagger-ui-dist/swagger-ui-bundle.js" : "swagger/",
                             "hc-sticky/dist/hc-sticky.js" : "hcsticky/",
-                            "mirador/dist/mirador.min.js*": "mirador/"
+                            "mirador/dist/mirador.min.js*" : "mirador/",
+                            "swiper/swiper-bundle.min.js" : "swiper/",
                         },
                         css : {
                             "leaflet/dist/leaflet.css" : "leaflet/",
                             "leaflet/dist/images" : "leaflet",
                             "leaflet.markercluster/dist/MarkerCluster.css" : "leaflet/markercluster",
-                            "swagger-ui-dist/swagger-ui.css" : "swagger/"
+                            "swagger-ui-dist/swagger-ui.css" : "swagger/",
+                            "swiper/swiper-bundle.min.css" :  "swiper/",
                         }
                     }
                 },

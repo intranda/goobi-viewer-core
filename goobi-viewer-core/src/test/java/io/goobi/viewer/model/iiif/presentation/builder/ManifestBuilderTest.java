@@ -15,6 +15,9 @@
  */
 package io.goobi.viewer.model.iiif.presentation.builder;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -26,6 +29,7 @@ import org.apache.solr.common.SolrDocumentList;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.Mockito;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationFeature;
@@ -37,6 +41,9 @@ import de.intranda.api.iiif.presentation.Canvas;
 import de.intranda.api.iiif.presentation.IPresentationModelElement;
 import de.intranda.api.iiif.presentation.Manifest;
 import de.intranda.api.iiif.presentation.Range;
+import de.intranda.api.iiif.presentation.content.LinkingContent;
+import de.intranda.api.iiif.presentation.enums.DcType;
+import de.intranda.metadata.multilanguage.SimpleMetadataValue;
 import de.unigoettingen.sub.commons.contentlib.exceptions.ContentNotFoundException;
 import io.goobi.viewer.AbstractDatabaseAndSolrEnabledTest;
 import io.goobi.viewer.AbstractSolrEnabledTest;
@@ -55,6 +62,7 @@ import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.exceptions.ViewerConfigurationException;
 import io.goobi.viewer.managedbeans.ImageDeliveryBean;
+import io.goobi.viewer.model.iiif.presentation.builder.LinkingProperty.LinkingTarget;
 import io.goobi.viewer.model.viewer.StructElement;
 
 /**
@@ -129,4 +137,19 @@ public class ManifestBuilderTest extends AbstractDatabaseAndSolrEnabledTest {
         Assert.assertTrue(StringUtils.isNotBlank(json));
     }
 
+    @Test
+    public void getValidViewerRenderingUrl() {
+        ApiUrls urls = new ApiUrls("https://viewer.goobi.io/api/v1/");
+        ManifestBuilder builder = new ManifestBuilder(urls);
+        Manifest manifest = new Manifest(URI.create(urls.getApiUrl() + "/" + PI + "/manifest"));
+        StructElement ele = new StructElement();
+        ele.setPi(PI);
+        ele.setImageNumber(1);
+        ele.setLogid("LOG_0003");
+        builder.addRenderings(manifest, ele);
+        LinkingContent viewerRendering = manifest.getRendering().stream().filter(rend -> rend.getType().equals(DcType.INTERACTIVE_RESOURCE)).findFirst().orElse(null);
+        assertNotNull(viewerRendering);
+        assertEquals("https://viewer.goobi.io/object/" + PI + "/1/LOG_0003/",viewerRendering.getId().toString());
+    }
+    
 }

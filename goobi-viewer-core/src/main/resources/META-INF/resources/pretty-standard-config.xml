@@ -913,6 +913,23 @@
         <action onPostback="false">#{navigationHelper.resetTheme}</action>
         <action onPostback="false">#{cmsRecordNoteEditBean.setNoteId(selectedNoteId)}</action>
     </url-mapping>
+        <!-- CMS Sliders -->
+    <url-mapping id="adminCmsSliders">
+        <pattern value="/admin/cms/slider/" />
+        <view-id value="/resources/cms/adminCmsSliders.xhtml" />
+        <action onPostback="false">#{navigationHelper.resetTheme}</action>
+    </url-mapping>
+    <url-mapping id="adminCmsSliderNew">
+        <pattern value="/admin/cms/slider/new/" />
+        <view-id value="/resources/cms/adminCmsSliderEdit.xhtml" />
+        <action onPostback="false">#{navigationHelper.resetTheme}</action>
+    </url-mapping>
+    <url-mapping id="adminCmsSliderEdit">
+        <pattern value="/admin/cms/slider/edit/#{selectedSliderId}/" />
+        <view-id value="/resources/cms/adminCmsSliderEdit.xhtml" />
+        <action onPostback="false">#{navigationHelper.resetTheme}</action>
+        <action onPostback="false">#{cmsSliderEditBean.setSliderId(selectedSliderId)}</action>
+    </url-mapping>
     <!-- CMS GeoMaps -->
     <url-mapping id="adminCmsGeoMaps">
         <pattern value="/admin/cms/maps/" />

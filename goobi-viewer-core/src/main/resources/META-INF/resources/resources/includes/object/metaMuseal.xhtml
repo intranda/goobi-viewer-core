@@ -18,7 +18,9 @@
                             <ui:repeat value="#{metadataElement.metadataTypes}" var="type">
                                 <ui:fragment rendered="#{metadataElement.hasMetadata()}">
 	                                <li class="active">
-	                                    <a href="##{msg[type.tabName]}" data-toggle="tab">#{msg[type.tabName]}</a>
+	                                    <a href="##{msg[type.getTabName(metadataBean.activeMetadataView.index)]}" data-toggle="tab">
+	                                        #{msg[type.getTabName(metadataBean.activeMetadataView.index)]}
+	                                    </a>
 	                                </li>
                                 </ui:fragment>
                             </ui:repeat>
@@ -37,7 +39,7 @@
                         <h:panelGroup rendered="#{fn:length(metadataElement.metadataList) > 0}">
                             <ui:repeat value="#{metadataElement.metadataTypes}" var="type">
                             	<ui:fragment rendered="#{metadataElement.hasMetadata()}">
-	                                <div class="tab-pane fade in active" id="#{msg[type.tabName]}">
+	                                <div class="tab-pane fade in active" id="#{msg[type.getTabName(metadataBean.activeMetadataView.index)]}">
 	                                    <ui:repeat value="#{metadataElement.metadataList}" var="metadata">
 	                                        <h:panelGroup rendered="#{!metadata.blank and metadata.type == type.type}">
 	                                            <dl class="dl-horizontal">

@@ -2,7 +2,7 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0"
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0
-        http://maven.apache.org/xsd/maven-4.0.0.xsd">
+		http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>io.goobi.viewer</groupId>
 	<artifactId>viewer-core</artifactId>
@@ -37,15 +37,15 @@
 			<id>intranda-public</id>
 			<url>https://nexus.intranda.com/repository/maven-public</url>
 		</repository>
-        <repository>
-            <id>oss-snapshots-repo</id>
-            <name>Sonatype OSS Maven Repository</name>
-            <url>https://oss.sonatype.org/content/groups/public</url>
-            <snapshots>
-                <enabled>true</enabled>
-                <updatePolicy>always</updatePolicy>
-            </snapshots>
-        </repository>
+		<repository>
+			<id>oss-snapshots-repo</id>
+			<name>Sonatype OSS Maven Repository</name>
+			<url>https://oss.sonatype.org/content/groups/public</url>
+			<snapshots>
+				<enabled>true</enabled>
+				<updatePolicy>always</updatePolicy>
+			</snapshots>
+		</repository>
 	</repositories>
 
 
@@ -81,7 +81,7 @@
 
 		<!-- intranda libraries -->
 		<alto.version>1.5.5</alto.version>
-		<contentserver.version>2.7.0</contentserver.version>
+		<contentserver.version>2.7.1</contentserver.version>
 		<tei-conversion.version>1.2.0</tei-conversion.version>
 		<iiif-api-model.version>1.11.0</iiif-api-model.version>
 		<normdataimporter.version>1.5.2</normdataimporter.version>
@@ -96,7 +96,7 @@
         <commons-fileupload.version>1.4</commons-fileupload.version>
         <commons-io.version>2.8.0</commons-io.version>
         <commons-jxpath.version>1.3</commons-jxpath.version>
-        <commons-lang3.version>3.11</commons-lang3.version>
+        <commons-lang3.version>3.12.0</commons-lang3.version>
         <commons-net.version>3.8.0</commons-net.version>
         <commons-text.version>1.9</commons-text.version>
         <dbunit.version>2.7.0</dbunit.version>
@@ -107,7 +107,7 @@
         <httpunit.version>1.7.3</httpunit.version>
         <icu.version>68.2</icu.version>
         <inject.version>1</inject.version>
-        <jackson.version>2.12.1</jackson.version>
+        <jackson.version>2.12.2</jackson.version>
         <jakarta.annotation-api.version>1.3.5</jakarta.annotation-api.version>
         <jakarta.servlet-api.version>4.0.4</jakarta.servlet-api.version>
         <javax.annotation.version>1.3.2</javax.annotation.version>
@@ -207,36 +207,36 @@
 
 
 
-        <!-- other libraries -->
-        <dependency>
-            <groupId>xml-apis</groupId>
-            <artifactId>xml-apis</artifactId>
-            <version>1.4.01</version>
-            <scope>runtime</scope>
-        </dependency>
+		<!-- other libraries -->
+		<dependency>
+			<groupId>xml-apis</groupId>
+			<artifactId>xml-apis</artifactId>
+			<version>1.4.01</version>
+			<scope>runtime</scope>
+		</dependency>
 		<dependency>
 			<groupId>javax.enterprise</groupId>
 			<artifactId>cdi-api</artifactId>
 			<version>${cdi.version}</version>
 			<scope>provided</scope>
 		</dependency>
-        <dependency>
-            <groupId>de.undercouch</groupId>
-            <artifactId>citeproc-java</artifactId>
-            <version>${citeproc-java.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.citationstyles</groupId>
-            <artifactId>styles</artifactId>
-            <version>${citationstyles.version}</version>
-            <scope>runtime</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.citationstyles</groupId>
-            <artifactId>locales</artifactId>
-            <version>${citationstyles.version}</version>
-            <scope>runtime</scope>
-        </dependency>
+		<dependency>
+			<groupId>de.undercouch</groupId>
+			<artifactId>citeproc-java</artifactId>
+			<version>${citeproc-java.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.citationstyles</groupId>
+			<artifactId>styles</artifactId>
+			<version>${citationstyles.version}</version>
+			<scope>runtime</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.citationstyles</groupId>
+			<artifactId>locales</artifactId>
+			<version>${citationstyles.version}</version>
+			<scope>runtime</scope>
+		</dependency>
 		<dependency>
 			<groupId>commons-codec</groupId>
 			<artifactId>commons-codec</artifactId>
@@ -362,7 +362,7 @@
 			<groupId>jakarta.annotation</groupId>
 			<artifactId>jakarta.annotation-api</artifactId>
 			<version>${jakarta.annotation-api.version}</version>
-        </dependency>
+		</dependency>
 		<dependency>
 			<groupId>javax.annotation</groupId>
 			<artifactId>javax.annotation-api</artifactId>
@@ -372,12 +372,12 @@
 			<groupId>javax.websocket</groupId>
 			<artifactId>javax.websocket-api</artifactId>
 			<version>${javax.websocket.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>javax.el</groupId>
-            <artifactId>javax.el-api</artifactId>
-            <version>${javax.el.version}</version>
-        </dependency>
+		</dependency>
+		<dependency>
+			<groupId>javax.el</groupId>
+			<artifactId>javax.el-api</artifactId>
+			<version>${javax.el.version}</version>
+		</dependency>
 		<dependency>
 			<groupId>org.glassfish</groupId>
 			<artifactId>javax.faces</artifactId>
@@ -399,7 +399,7 @@
 			<version>${jdom2.version}</version>
 		</dependency>
  		<dependency>
- 			<groupId>org.glassfish.jersey.core</groupId>
+ 			<groupId>org.glassfish.jersey.core</groupId> 
  			<artifactId>jersey-client</artifactId>
  			<version>${jersey.version}</version>
  			<exclusions>
@@ -604,7 +604,7 @@
 		<dependency>
 			<groupId>xerces</groupId>
 			<artifactId>xercesImpl</artifactId>
-            <version>${xerces.version}</version>
+			<version>${xerces.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>xerces</groupId>
@@ -637,7 +637,7 @@
 			<artifactId>swagger-integration</artifactId>
 			<version>${swagger.version}</version>
 		</dependency>
-		<!-- <dependency> <groupId>net.bull.javamelody</groupId> <artifactId>javamelody-core</artifactId> 
+		<!-- <dependency> <groupId>net.bull.javamelody</groupId> <artifactId>javamelody-core</artifactId>
 			<version>1.85.0</version> </dependency> -->
 	</dependencies>
 
@@ -685,24 +685,20 @@
 								<!-- Primefaces is used for autocomplete -->
 								<ignoredUnusedDeclaredDependency>org.primefaces:primefaces</ignoredUnusedDeclaredDependency>
 
-								<!-- xerces is a dependency from the old Solr version. It can be 
-									removed when updating to Solr 8 -->
+								<!-- xerces is a dependency from the old Solr version. It can be removed when updating to Solr 8 -->
 								<ignoredUnusedDeclaredDependency>xerces:xmlParserAPIs</ignoredUnusedDeclaredDependency>
 								<ignoredUnusedDeclaredDependency>xerces:xercesImpl</ignoredUnusedDeclaredDependency>
 
-								<!-- The jersey-container-servlet dependency is used for startup 
-									during runtime Unit tests run without it though -->
+								<!-- The jersey-container-servlet dependency is used for startup during runtime Unit tests run without it though -->
 								<ignoredUnusedDeclaredDependency>org.glassfish.jersey.containers:jersey-container-servlet</ignoredUnusedDeclaredDependency>
 
-								<!-- JXPath is used at XPathExpressionEngine from org.apache.commons.configuration2, 
-									i.e. LanguageHelper -->
+								<!-- JXPath is used at XPathExpressionEngine from org.apache.commons.configuration2, i.e. LanguageHelper -->
 								<ignoredUnusedDeclaredDependency>commons-jxpath:commons-jxpath</ignoredUnusedDeclaredDependency>
 
 								<!-- Fileupload is used as a dependency to Primefaces FileUpload -->
 								<ignoredUnusedDeclaredDependency>commons-fileupload:commons-fileupload</ignoredUnusedDeclaredDependency>
 
-								<!-- The MariaDB java client is used for the database connection 
-									and configured in the Tomcat -->
+								<!-- The MariaDB java client is used for the database connection and configured in the Tomcat -->
 								<ignoredUnusedDeclaredDependency>org.mariadb.jdbc:mariadb-java-client</ignoredUnusedDeclaredDependency>
 
 								<!-- EclipseLink Java Persistence API for database management -->
@@ -710,7 +706,7 @@
 
 								<!-- javax.annotation is not part of jdk 11 anymore -->
 								<ignoredUnusedDeclaredDependency>javax.annotation:javax.annotation-api</ignoredUnusedDeclaredDependency>
-								
+
 								<!-- org.citationstyles.* are runtime resources for citeproc -->
 								<ignoredUnusedDeclaredDependency>org.citationstyles:locales</ignoredUnusedDeclaredDependency>
 								<ignoredUnusedDeclaredDependency>org.citationstyles:styles</ignoredUnusedDeclaredDependency>

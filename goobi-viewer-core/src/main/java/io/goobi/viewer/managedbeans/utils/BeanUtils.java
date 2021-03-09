@@ -136,10 +136,17 @@ public class BeanUtils {
             HttpServletRequest request = (HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest();
             if (request != null) {
                 return ServletUtils.getServletPathWithHostAsUrlFromRequest(request);
+            } else {
+                return "";
+            }
+        } else {
+        	HttpServletRequest request = getRequest();
+            if (request != null) {
+                return ServletUtils.getServletPathWithHostAsUrlFromRequest(request);
+            } else {
+            	return "";
             }
         }
-
-        return "";
     }
 
     /**

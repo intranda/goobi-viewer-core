@@ -118,8 +118,19 @@ public class MetadataElement {
             return 0;
         }
 
+        @Deprecated
         public String getTabName() {
             return KEY_ROOT + type;
+        }
+
+        /**
+         * 
+         * @param viewIndex Metadata view index
+         * @return Message key for this tab
+         * @should return correct message key
+         */
+        public String getTabName(int viewIndex) {
+            return KEY_ROOT + "_" + viewIndex + "_" + type;
         }
 
         public void setTabName(String tabName) {

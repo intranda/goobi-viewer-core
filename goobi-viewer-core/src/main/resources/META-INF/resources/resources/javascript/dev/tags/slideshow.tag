@@ -157,7 +157,7 @@
         		.then(function(data) {
         		})
         		.catch(function(error) {
-        			console.error("error laoding ", url, ": ", error);
+        			console.error("error loading ", url, ": ", error);
         		});
         	} 
         	else {

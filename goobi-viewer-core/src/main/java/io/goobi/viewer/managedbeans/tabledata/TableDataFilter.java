@@ -109,7 +109,9 @@ public class TableDataFilter implements Serializable {
     public void setValue(String value) {
         this.value = value;
         // Reset number of records as soon as the value has changed so that the paginator etc. can be updated on time
-        owner.resetTotalNumberOfRecords();
+        if(owner != null) {            
+            owner.resetTotalNumberOfRecords();
+        }
     }
 
     /**

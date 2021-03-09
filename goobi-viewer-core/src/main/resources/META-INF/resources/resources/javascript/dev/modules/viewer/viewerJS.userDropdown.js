@@ -41,7 +41,6 @@ var viewerJS = ( function( viewer ) {
             if ( $( '.bookmark-navigation__dropdown:visible' ) ) {
                 _bookshelfDropdown = true;
             }
-            
             // user dropdown
             $( '[data-toggle="user-dropdown"]' ).on( 'click', function( event ) {
                 event.stopPropagation();

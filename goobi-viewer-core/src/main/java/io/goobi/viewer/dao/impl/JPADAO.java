@@ -68,6 +68,7 @@ import io.goobi.viewer.model.cms.CMSPageTemplate;
 import io.goobi.viewer.model.cms.CMSPageTemplateEnabled;
 import io.goobi.viewer.model.cms.CMSRecordNote;
 import io.goobi.viewer.model.cms.CMSSidebarElement;
+import io.goobi.viewer.model.cms.CMSSlider;
 import io.goobi.viewer.model.cms.CMSStaticPage;
 import io.goobi.viewer.model.crowdsourcing.campaigns.Campaign;
 import io.goobi.viewer.model.crowdsourcing.campaigns.CampaignRecordStatistic;
@@ -5028,6 +5029,117 @@ public class JPADAO implements IDAO {
         } finally {
             em.close();
         }
+    }
+
+    /* (non-Javadoc)
+     * @see io.goobi.viewer.dao.IDAO#getAllSliders()
+     */
+    @Override
+    public List<CMSSlider> getAllSliders() throws DAOException {
+        preQuery();
+        StringBuilder sbQuery = new StringBuilder("SELECT DISTINCT a FROM CMSSlider a");
+        try {
+            logger.trace(sbQuery.toString());
+            Query q = em.createQuery(sbQuery.toString());
+            q.setFlushMode(FlushModeType.COMMIT);
+            return q.getResultList();
+        } catch (PersistenceException e) {
+            logger.error("Exception \"" + e.toString() + "\" when trying to get CMSSliders. Returning empty list");
+            return Collections.emptyList();
+        }
+    }
+
+    /* (non-Javadoc)
+     * @see io.goobi.viewer.dao.IDAO#getSlider(java.lang.Long)
+     */
+    @Override
+    public CMSSlider getSlider(Long id) throws DAOException {
+        if(id == null) {
+            return null;
+        }
+        preQuery();
+        try {
+            CMSSlider o = em.getReference(CMSSlider.class, id);
+            if(o != null) {
+                em.refresh(o);
+            }
+            return new CMSSlider(o);
+        } catch (EntityNotFoundException e) {
+            return null;
+        }
+    }
+
+    /* (non-Javadoc)
+     * @see io.goobi.viewer.dao.IDAO#addSlider(io.goobi.viewer.model.cms.CMSSlider)
+     */
+    @Override
+    public boolean addSlider(CMSSlider slider) throws DAOException {
+        preQuery();
+        try {
+            em.getTransaction().begin();
+            em.persist(slider);
+            em.getTransaction().commit();
+            return true;
+        } catch (IllegalArgumentException e) {
+            return false;
+        }
+    }
+
+    /* (non-Javadoc)
+     * @see io.goobi.viewer.dao.IDAO#updateSlider(io.goobi.viewer.model.cms.CMSSlider)
+     */
+    @Override
+    public boolean updateSlider(CMSSlider slider) throws DAOException {
+        preQuery();
+        try {
+            em.getTransaction().begin();
+            em.merge(slider);
+            em.getTransaction().commit();
+            return true;
+        } catch (IllegalArgumentException e) {
+            return false;
+        }
+    }
+
+    /* (non-Javadoc)
+     * @see io.goobi.viewer.dao.IDAO#deleteSlider(io.goobi.viewer.model.cms.CMSSlider)
+     */
+    @Override
+    public boolean deleteSlider(CMSSlider slider) throws DAOException {
+        preQuery();
+        try {
+            em.getTransaction().begin();
+            CMSSlider o = em.getReference(CMSSlider.class, slider.getId());
+            em.remove(o);
+            em.getTransaction().commit();
+            return true;
+        } catch (IllegalArgumentException e) {
+            return false;
+        } finally {
+            em.close();
+        }
+    }
+
+    /* (non-Javadoc)
+     * @see io.goobi.viewer.dao.IDAO#getPagesUsingSlider(io.goobi.viewer.model.cms.CMSSlider)
+     */
+    @Override
+    public List<CMSPage> getPagesUsingSlider(CMSSlider slider) throws DAOException {
+        preQuery();
+
+        Query qItems = em.createQuery(
+                "SELECT item FROM CMSContentItem item WHERE item.slider = :slider");
+        qItems.setParameter("slider", slider);
+        List<CMSContentItem> itemList = qItems.getResultList();
+
+
+        List<CMSPage> pageList = itemList.stream()
+                .map(CMSContentItem::getOwnerPageLanguageVersion)
+                .map(CMSPageLanguageVersion::getOwnerPage)
+                .distinct()
+                .collect(Collectors.toList());
+
+        return pageList;
     }
 
 }

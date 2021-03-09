@@ -144,6 +144,21 @@ public class ManifestBuilder extends AbstractBuilder {
 
         addMetadata(manifest, ele);
 
+        addThumbnail(ele, manifest);
+        
+        addLogo(ele, manifest);
+        addLicences(manifest);
+        addNavDate(ele, manifest);
+        addSeeAlsos(manifest, ele);
+        addRenderings(manifest, ele);
+
+        if (getBuildMode().equals(BuildMode.IIIF)) {
+            addCmsPages(ele, manifest);
+        }
+    }
+
+
+    private void addThumbnail(StructElement ele, final AbstractPresentationModelElement manifest) {
         try {
             String thumbUrl = imageDelivery.getThumbs().getThumbnailUrl(ele);
             if (StringUtils.isNotBlank(thumbUrl)) {
@@ -157,66 +172,72 @@ public class ManifestBuilder extends AbstractBuilder {
         } catch (URISyntaxException e) {
             logger.warn("Unable to retrieve thumbnail url", e);
         }
-
-        if (getBuildMode().equals(BuildMode.IIIF)) {
-            List<String> logoUrl = getLogoUrl();
-            if(logoUrl.isEmpty()) {
-                Optional<String> url = BeanUtils.getImageDeliveryBean().getFooter().getWatermarkUrl(Optional.empty(), Optional.ofNullable(ele), Optional.empty());
-                url.ifPresent(l -> logoUrl.add(l));
-            }
-            for (String url : logoUrl) {
-                ImageContent logo;
-                try {
-                    logo = new ImageContent(new URI(url));
-                    manifest.addLogo(logo);
-                } catch (URISyntaxException e) {
-                    logger.error("Error adding manifest logo from " + url, e);
-                }
-            }
-            
-            for(String license : DataManager.getInstance().getConfiguration().getIIIFLicenses()) {
-                try {
-                    URI uri = new URI(license);
-                    manifest.addLicense(uri);
-                } catch(URISyntaxException e) {
-                    logger.error("Configured license '" + license + "' is not a URI");
-                }
-            }
-
-            String navDateField = DataManager.getInstance().getConfiguration().getIIIFNavDateField();
-            if (StringUtils.isNotBlank(navDateField) && StringUtils.isNotBlank(ele.getMetadataValue(navDateField))) {
-                try {
-                    String eleValue = ele.getMetadataValue(navDateField);
-                    LocalDate date = LocalDate.parse(eleValue);
-                    manifest.setNavDate(Date.from(Instant.from(date.atStartOfDay(ZoneId.of("Z")))));
-                } catch (NullPointerException | DateTimeParseException e) {
-                    logger.warn("Unable to parse {} as Date", ele.getMetadataValue(navDateField));
-                }
-            }
-
-            addSeeAlsos(manifest, ele);
-            addRenderings(manifest, ele);
+    }
 
 
-            /*CMS pages*/
+    private void addCmsPages(StructElement ele, final AbstractPresentationModelElement manifest) {
+        try {
+            DataManager.getInstance()
+                    .getDao()
+                    .getCMSPagesForRecord(ele.getPi(), null)
+                    .stream()
+                    .filter(page -> page.isPublished())
+                    .forEach(page -> {
+                        try {
+                            LinkingContent cmsPage = new LinkingContent(new URI(this.urls.getApplicationUrl() + "/" + page.getUrl()));
+                            cmsPage.setLabel(new SimpleMetadataValue(page.getTitle()));
+                            cmsPage.setFormat(Format.TEXT_HTML);
+                            manifest.addRelated(cmsPage);
+                        } catch (URISyntaxException e) {
+                            logger.error("Unable to retrieve viewer url for {}", ele);
+                        }
+                    });
+        } catch (Throwable e) {
+            logger.warn(e.toString());
+        }
+    }
+
+
+    private void addNavDate(StructElement ele, final AbstractPresentationModelElement manifest) {
+        String navDateField = DataManager.getInstance().getConfiguration().getIIIFNavDateField();
+        if (StringUtils.isNotBlank(navDateField) && StringUtils.isNotBlank(ele.getMetadataValue(navDateField))) {
             try {
-                DataManager.getInstance()
-                        .getDao()
-                        .getCMSPagesForRecord(ele.getPi(), null)
-                        .stream()
-                        .filter(page -> page.isPublished())
-                        .forEach(page -> {
-                            try {
-                                LinkingContent cmsPage = new LinkingContent(new URI(this.urls.getApplicationUrl() + "/" + page.getUrl()));
-                                cmsPage.setLabel(new SimpleMetadataValue(page.getTitle()));
-                                cmsPage.setFormat(Format.TEXT_HTML);
-                                manifest.addRelated(cmsPage);
-                            } catch (URISyntaxException e) {
-                                logger.error("Unable to retrieve viewer url for {}", ele);
-                            }
-                        });
-            } catch (Throwable e) {
-                logger.warn(e.toString());
+                String eleValue = ele.getMetadataValue(navDateField);
+                LocalDate date = LocalDate.parse(eleValue);
+                manifest.setNavDate(Date.from(Instant.from(date.atStartOfDay(ZoneId.of("Z")))));
+            } catch (NullPointerException | DateTimeParseException e) {
+                logger.warn("Unable to parse {} as Date", ele.getMetadataValue(navDateField));
+            }
+        }
+    }
+
+
+    private void addLicences(final AbstractPresentationModelElement manifest) {
+        for(String license : DataManager.getInstance().getConfiguration().getIIIFLicenses()) {
+            try {
+                URI uri = new URI(license);
+                manifest.addLicense(uri);
+            } catch(URISyntaxException e) {
+                logger.error("Configured license '" + license + "' is not a URI");
+            }
+        }
+    }
+
+
+    private void addLogo(StructElement ele, final AbstractPresentationModelElement manifest)
+            throws ViewerConfigurationException, IndexUnreachableException, DAOException {
+        List<String> logoUrl = getLogoUrl();
+        if(logoUrl.isEmpty()) {
+            Optional<String> url = BeanUtils.getImageDeliveryBean().getFooter().getWatermarkUrl(Optional.empty(), Optional.ofNullable(ele), Optional.empty());
+            url.ifPresent(l -> logoUrl.add(l));
+        }
+        for (String url : logoUrl) {
+            ImageContent logo;
+            try {
+                logo = new ImageContent(new URI(url));
+                manifest.addLogo(logo);
+            } catch (URISyntaxException e) {
+                logger.error("Error adding manifest logo from " + url, e);
             }
         }
     }
@@ -277,9 +298,11 @@ public class ManifestBuilder extends AbstractBuilder {
         URI uri = null;
         switch(target) {
             case VIEWER:
-                String applicationUrl = this.urls.getApplicationUrl();
                 String pageUrl = ele.getUrl();
-                uri = URI.create(applicationUrl + pageUrl);
+                uri = URI.create(pageUrl);
+                if(!uri.isAbsolute()) {
+                    uri = URI.create(this.urls.getApplicationUrl() + pageUrl);
+                }
                 break;
             case ALTO:
                 uri = this.urls.path(RECORDS_RECORD, RECORDS_ALTO).params(ele.getPi()).buildURI();

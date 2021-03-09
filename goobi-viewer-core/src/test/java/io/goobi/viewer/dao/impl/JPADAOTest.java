@@ -17,6 +17,7 @@ package io.goobi.viewer.dao.impl;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
@@ -55,6 +56,8 @@ import io.goobi.viewer.model.cms.CMSPageLanguageVersion;
 import io.goobi.viewer.model.cms.CMSPageLanguageVersion.CMSPageStatus;
 import io.goobi.viewer.model.cms.CMSPageTemplateEnabled;
 import io.goobi.viewer.model.cms.CMSRecordNote;
+import io.goobi.viewer.model.cms.CMSSlider;
+import io.goobi.viewer.model.cms.CMSSlider.SourceType;
 import io.goobi.viewer.model.cms.CMSStaticPage;
 import io.goobi.viewer.model.cms.CMSTemplateManager;
 import io.goobi.viewer.model.crowdsourcing.campaigns.Campaign;
@@ -2950,6 +2953,69 @@ public class JPADAOTest extends AbstractDatabaseEnabledTest {
         assertEquals(2, DataManager.getInstance().getDao().getRecordNotesForPi("PI1", false).size());
         assertEquals(1, DataManager.getInstance().getDao().getRecordNotesForPi("PI1", true).size());
         assertEquals(0, DataManager.getInstance().getDao().getRecordNotesForPi("PI5", false).size());
+    }
+    
+    @Test
+    public void testGetAllSliders() throws DAOException {
+        List<CMSSlider> sliders = DataManager.getInstance().getDao().getAllSliders();
+        assertEquals(3, sliders.size());
+        assertTrue(sliders.stream().anyMatch(sl -> sl.getName().equals("Query Slider")));
+        assertTrue(sliders.stream().anyMatch(sl -> sl.getDescription().equals("Slider from collections")));
+    }
+    
+    @Test
+    public void testGetSlider() throws DAOException {
+        CMSSlider slider = DataManager.getInstance().getDao().getSlider(1l);
+        assertNotNull(slider);
+    }
+    
+    @Test
+    public void testAddSlider() throws DAOException {
+        String name = "Test Slider";
+        CMSSlider slider = new CMSSlider(SourceType.COLLECTIONS);
+        slider.setName(name);
+        assertTrue(DataManager.getInstance().getDao().addSlider(slider));
+        
+        assertNotNull(slider.getId());
+        CMSSlider loadedSlider = DataManager.getInstance().getDao().getSlider(slider.getId());
+        assertNotNull(loadedSlider);
+        assertFalse(loadedSlider == slider);
+        assertEquals(loadedSlider.getId(), slider.getId());
+        assertEquals(name, loadedSlider.getName());
+    }
+    
+    @Test
+    public void testUpdateSlider() throws DAOException {
+        String name = "Test Slider";
+        CMSSlider slider = DataManager.getInstance().getDao().getSlider(1l);
+        assertNotEquals(name, slider.getName());
+        
+        slider.setName(name);
+        assertNotEquals(name, DataManager.getInstance().getDao().getSlider(1l).getName());
+        
+        DataManager.getInstance().getDao().updateSlider(slider);
+        assertEquals(name, DataManager.getInstance().getDao().getSlider(1l).getName());
+    }
+    
+    @Test
+    public void testDeleteSlider() throws DAOException {
+        String name = "Test Slider";
+        CMSSlider slider = new CMSSlider(SourceType.COLLECTIONS);
+        slider.setName(name);
+        assertTrue(DataManager.getInstance().getDao().addSlider(slider));
+        assertNotNull(DataManager.getInstance().getDao().getSlider(slider.getId()));
+        
+        assertTrue(DataManager.getInstance().getDao().deleteSlider(slider));
+        assertNull(DataManager.getInstance().getDao().getSlider(slider.getId()));
+
+    }
+    
+    @Test
+    public void testGetEmbeddingCmsPage() throws DAOException {
+        CMSSlider slider = DataManager.getInstance().getDao().getSlider(1l);
+        List<CMSPage> pages = DataManager.getInstance().getDao().getPagesUsingSlider(slider);
+        assertEquals(1, pages.size());
+        assertEquals(Long.valueOf(2l), pages.iterator().next().getId());
     }
 
 }

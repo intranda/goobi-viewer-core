@@ -1361,4 +1361,8 @@ public class ConfigurationBean implements Serializable {
     public boolean isDefaultSortFieldRandom() {
         return "RANDOM".equals(DataManager.getInstance().getConfiguration().getDefaultSortField());
     }
+    
+    public boolean isDisplayUserGeneratedContentBelowImage() {
+        return DataManager.getInstance().getConfiguration().isDisplayUserGeneratedContentBelowImage();
+    }
 }

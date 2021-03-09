@@ -15,6 +15,9 @@
  */
 package io.goobi.viewer.controller;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+
 import java.io.FileNotFoundException;
 import java.util.Collections;
 import java.util.List;
@@ -2911,5 +2914,14 @@ public class ConfigurationTest extends AbstractTest {
     @Test
     public void getPageSelectDropdownDisplayMinPages_shouldReturnCorrectValue() throws Exception {
         Assert.assertEquals(1, DataManager.getInstance().getConfiguration().getPageSelectDropdownDisplayMinPages());
+    }
+    
+    @Test
+    public void testGetConfiguredCollectionFields() {
+        List<String> fields = DataManager.getInstance().getConfiguration().getConfiguredCollectionFields();
+        assertEquals(3, fields.size());
+        assertTrue(fields.contains("DC"));
+        assertTrue(fields.contains("MD_KNOWLEDGEFIELD"));
+        assertTrue(fields.contains("MD_HIERARCHICALFIELD"));
     }
 }
