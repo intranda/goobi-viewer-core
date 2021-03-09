@@ -46,6 +46,7 @@ import de.intranda.api.iiif.presentation.enums.Format;
 import de.intranda.api.iiif.presentation.enums.ViewingHint;
 import de.intranda.api.iiif.search.AutoSuggestService;
 import de.intranda.api.iiif.search.SearchService;
+import de.intranda.api.iiif3.presentation.Manifest3;
 import de.intranda.metadata.multilanguage.SimpleMetadataValue;
 import de.unigoettingen.sub.commons.contentlib.imagelib.ImageFileFormat;
 import de.unigoettingen.sub.commons.contentlib.imagelib.ImageType.Colortype;
@@ -111,7 +112,7 @@ public class ManifestBuilder extends AbstractBuilder {
             manifest.addViewingHint(ViewingHint.multipart);
         } else {
             ele.setImageNumber(1);
-            manifest = new Manifest(getManifestURI(ele.getPi()));
+            manifest = new Manifest3(getManifestURI(ele.getPi()));
             SearchService search = new SearchService(getSearchServiceURI(manifest.getId()));
             search.setLabel(getLabel("label__iiif_api_search"));
             AutoSuggestService autoComplete = new AutoSuggestService(getAutoSuggestServiceURI(manifest.getId()));
