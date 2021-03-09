@@ -5038,6 +5038,9 @@ public class JPADAO implements IDAO {
      */
     @Override
     public CMSSlider getSlider(Long id) throws DAOException {
+        if(id == null) {
+            return null;
+        }
         preQuery();
         try {
             CMSSlider o = em.getReference(CMSSlider.class, id);
