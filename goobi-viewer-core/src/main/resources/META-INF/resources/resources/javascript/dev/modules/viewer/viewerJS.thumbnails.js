@@ -57,6 +57,12 @@ var viewerJS = ( function( viewer ) {
     }
     
     function _loadImage(element, source) {
+		//Hide broken image icon while loading by either setting style.display to "none" or setting empty alt attribute
+		//first solution hides whole image, the latter only its content
+		let alt = element.alt;
+		let display = element.style.display;
+		element.style.display = "none";
+		//element.alt = "";
         $.ajax({
             url: source,
             cache: true,
@@ -67,6 +73,8 @@ var viewerJS = ( function( viewer ) {
         .done(function(blob) {
             var url = window.URL || window.webkitURL;
             element.src = url.createObjectURL(blob);
+            element.alt = alt;
+            element.style.display = display;
             viewer.thumbnailImageLoaded.next(element);
         })
         .fail(function(error) {
@@ -82,8 +90,9 @@ var viewerJS = ( function( viewer ) {
                         break;
                     default:
                          element.src = source;
-//                        element.src = _notFound;
                 }
+                element.alt = alt;
+                element.style.display = display;
                 viewer.thumbnailImageLoaded.next(element);
             });  
     }
