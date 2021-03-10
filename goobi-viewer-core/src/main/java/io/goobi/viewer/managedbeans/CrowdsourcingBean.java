@@ -799,7 +799,7 @@ public class CrowdsourcingBean implements Serializable {
     public String getRandomItemUrl(Campaign campaign, CampaignRecordStatus status) {
         String mappingId = CampaignRecordStatus.REVIEW.equals(status) ? "crowdCampaignReview1" : "crowdCampaignAnnotate1";
         URL mappedUrl = PrettyContext.getCurrentInstance().getConfig().getMappingById(mappingId).getPatternParser().getMappedURL(campaign.getId());
-        logger.debug("Mapped URL " + mappedUrl);
+        logger.debug("Mapped URL {}", mappedUrl);
         return BeanUtils.getServletPathWithHostAsUrlFromJsfContext() + mappedUrl.toString();
     }
 

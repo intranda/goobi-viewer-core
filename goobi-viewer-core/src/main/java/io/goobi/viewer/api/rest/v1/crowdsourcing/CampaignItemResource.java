@@ -61,6 +61,7 @@ import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.model.annotation.PersistentAnnotation;
 import io.goobi.viewer.model.crowdsourcing.campaigns.Campaign;
 import io.goobi.viewer.model.crowdsourcing.campaigns.CampaignItem;
+import io.goobi.viewer.model.crowdsourcing.campaigns.Campaign.StatisticMode;
 import io.goobi.viewer.model.crowdsourcing.campaigns.CampaignRecordStatistic.CampaignRecordStatus;
 import io.goobi.viewer.model.iiif.presentation.builder.ManifestBuilder;
 import io.goobi.viewer.model.log.LogMessage;
@@ -172,23 +173,37 @@ public class CampaignItemResource {
     @Path("/{pi}")
     @Consumes({ MediaType.APPLICATION_JSON })
     @CORSBinding
+    @Deprecated
     public void setItemForManifest(CampaignItem item, @PathParam("pi") String pi) throws DAOException {
+        if (item == null) {
+            throw new IllegalArgumentException("item may not be null");
+        }
         CampaignRecordStatus status = item.getRecordStatus();
+        if (status == null) {
+            logger.error("Status not found: {}", item.getRecordStatus());
+            return;
+        }
 
         Campaign campaign = DataManager.getInstance().getDao().getCampaign(campaignId);
+        if (campaign == null) {
+            logger.error("Campaign not found: {}", campaignId);
+            return;
+        }
+        if (!StatisticMode.RECORD.equals(campaign.getStatisticMode())) {
+            logger.warn("Wrong campaign statistic mode: {}", campaign.getStatisticMode().name());
+        }
 
         User user = null;
         Long userId = User.getId(item.getCreatorURI());
         if (userId != null) {
             user = DataManager.getInstance().getDao().getUser(userId);
         }
-        if (status != null && campaign != null) {
-            campaign.setRecordStatus(pi, status, Optional.ofNullable(user));
-            DataManager.getInstance().getDao().updateCampaign(campaign);
-            // Re-index finished record to have its annotations indexed
-            if (status.equals(CampaignRecordStatus.FINISHED)) {
-                IndexerTools.triggerReIndexRecord(pi);
-            }
+
+        campaign.setRecordStatus(pi, status, Optional.ofNullable(user));
+        DataManager.getInstance().getDao().updateCampaign(campaign);
+        // Re-index finished record to have its annotations indexed
+        if (status.equals(CampaignRecordStatus.FINISHED)) {
+            IndexerTools.triggerReIndexRecord(pi);
         }
     }
 
@@ -206,22 +221,43 @@ public class CampaignItemResource {
     @Consumes({ MediaType.APPLICATION_JSON })
     @CORSBinding
     public void setItemForManifest(CampaignItem item, @PathParam("pi") String pi, @PathParam("page") int page) throws DAOException {
+        if (item == null) {
+            throw new IllegalArgumentException("item may not be null");
+        }
         CampaignRecordStatus status = item.getRecordStatus();
-
+        if (status == null) {
+            logger.error("Status not found: {}", item.getRecordStatus());
+            return;
+        }
         Campaign campaign = DataManager.getInstance().getDao().getCampaign(campaignId);
+        if (campaign == null) {
+            logger.error("Campaign not found: {}", campaignId);
+            return;
+        }
 
         User user = null;
         Long userId = User.getId(item.getCreatorURI());
         if (userId != null) {
             user = DataManager.getInstance().getDao().getUser(userId);
         }
-        if (status != null && campaign != null) {
-            campaign.setRecordPageStatus(pi, page, status, Optional.ofNullable(user));
-            DataManager.getInstance().getDao().updateCampaign(campaign);
-            // Re-index finished record to have its annotations indexed
-            if (status.equals(CampaignRecordStatus.FINISHED)) {
-                IndexerTools.triggerReIndexRecord(pi);
-            }
+
+        switch (campaign.getStatisticMode()) {
+            case RECORD:
+                campaign.setRecordStatus(pi, status, Optional.ofNullable(user));
+                break;
+            case PAGE:
+                campaign.setRecordPageStatus(pi, page, status, Optional.ofNullable(user));
+                break;
+            default:
+                logger.warn("Wrong campaign statistic mode: {}", campaign.getStatisticMode().name());
+                break;
+
+        }
+
+        DataManager.getInstance().getDao().updateCampaign(campaign);
+        // Re-index finished record to have its annotations indexed
+        if (status.equals(CampaignRecordStatus.FINISHED)) {
+            IndexerTools.triggerReIndexRecord(pi);
         }
     }
 

@@ -28,6 +28,7 @@
                     <campaignItem restapiurl="#{request.contextPath}/api/v1/" 
                         campaign="#{crowdsourcingBean.targetCampaignId}"
                         pi="#{crowdsourcingBean.targetIdentifier}"
+                        page="#{crowdsourcingBean.targetPage}"
                         loaderimageurl="#{request.contextPath}/resources/images/infinity_loader.svg"
                         nextitemurl="#{crowdsourcingBean.getRandomItemUrl(crowdsourcingBean.targetCampaign, crowdsourcingBean.targetRecordStatus)}"
                         itemstatus="#{crowdsourcingBean.targetRecordStatus}"

@@ -51,7 +51,7 @@
 
 <script>
 
-	this.itemSource = this.opts.restapiurl + "crowdsourcing/campaigns/" + this.opts.campaign + "/" + this.opts.pi + "/";
+	this.itemSource = this.opts.restapiurl + "crowdsourcing/campaigns/" + this.opts.campaign + "/" + this.opts.pi + "/" + this.opts.page + "/";
 	this.annotationSource = this.itemSource + "annotations/";
 	this.loading = true;
 		
