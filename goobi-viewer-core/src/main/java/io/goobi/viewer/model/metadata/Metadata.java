@@ -621,14 +621,17 @@ public class Metadata implements Serializable {
         ownerId = String.valueOf(se.getLuceneId());
         ownerDocstrctType = se.getDocStructType();
 
-        // Retrieve citation processor from ViewManager, if available
         if (StringUtils.isNotEmpty(citationTemplate)) {
             ActiveDocumentBean adb = BeanUtils.getActiveDocumentBean();
             if (adb != null && adb.isRecordLoaded()) {
+                // Retrieve citation processor from ViewManager, if available
                 if (adb.getViewManager().getCitationProcessorWrapper() == null) {
                     adb.getViewManager().setCitationProcessorWrapper(new CitationProcessorWrapper());
                 }
                 setCitationProcessorWrapper(adb.getViewManager().getCitationProcessorWrapper());
+            } else {
+                // Create a new processor for situations where no record is loaded, but a metadata view with citations is requested
+                setCitationProcessorWrapper(new CitationProcessorWrapper());
             }
         }
 
