@@ -36,7 +36,7 @@ import de.intranda.api.annotation.oa.TextualResource;
 import de.intranda.api.annotation.oa.FragmentSelector;
 
 import de.intranda.api.iiif.presentation.AnnotationList;
-import de.intranda.api.iiif.presentation.Canvas;
+import de.intranda.api.iiif.presentation.v2.Canvas;
 import de.intranda.digiverso.ocr.alto.model.structureclasses.Page;
 import de.intranda.digiverso.ocr.alto.model.structureclasses.logical.AltoDocument;
 import de.intranda.digiverso.ocr.alto.model.superclasses.GeometricData;
@@ -67,7 +67,7 @@ public class AltoAnnotationBuilder {
      * </p>
      *
      * @param alto a {@link de.intranda.digiverso.ocr.alto.model.structureclasses.Page} object.
-     * @param canvas a {@link de.intranda.api.iiif.presentation.Canvas} object.
+     * @param canvas a {@link de.intranda.api.iiif.presentation.v2.Canvas} object.
      * @param granularity a {@link io.goobi.viewer.model.annotation.AltoAnnotationBuilder.Granularity} object.
      * @param baseUrl a {@link java.lang.String} object.
      * @param urlOnlyTarget a boolean.
@@ -104,7 +104,7 @@ public class AltoAnnotationBuilder {
      * </p>
      *
      * @param elements a {@link java.util.List} object.
-     * @param canvas a {@link de.intranda.api.iiif.presentation.Canvas} object.
+     * @param canvas a {@link de.intranda.api.iiif.presentation.v2.Canvas} object.
      * @param baseUrl a {@link java.lang.String} object.
      * @param urlOnlyTarget a boolean.
      * @return a {@link java.util.List} object.

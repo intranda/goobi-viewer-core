@@ -30,8 +30,8 @@ import org.junit.Test;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 
-import de.intranda.api.iiif.presentation.Manifest;
 import de.intranda.api.iiif.presentation.Range;
+import de.intranda.api.iiif.presentation.v2.Manifest;
 import io.goobi.viewer.api.rest.AbstractRestApiTest;
 
 /**

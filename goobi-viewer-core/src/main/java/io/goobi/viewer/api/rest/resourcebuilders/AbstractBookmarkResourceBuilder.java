@@ -26,9 +26,9 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import de.intranda.api.iiif.presentation.Collection;
-import de.intranda.api.iiif.presentation.Manifest;
 import de.intranda.api.iiif.presentation.content.ImageContent;
+import de.intranda.api.iiif.presentation.v2.Collection2;
+import de.intranda.api.iiif.presentation.v2.Manifest;
 import de.intranda.metadata.multilanguage.SimpleMetadataValue;
 import de.unigoettingen.sub.commons.contentlib.exceptions.ContentNotFoundException;
 import de.unigoettingen.sub.commons.contentlib.exceptions.IllegalRequestException;
@@ -57,7 +57,7 @@ public abstract class AbstractBookmarkResourceBuilder {
     public abstract SuccessMessage addBookmarkList(String name) throws DAOException, IOException, RestApiException, IllegalRequestException;
     public abstract BookmarkList getBookmarkListById(Long id) throws DAOException, IOException, RestApiException;
     public abstract SuccessMessage deleteBookmarkList(Long id) throws DAOException, IOException, RestApiException, IllegalRequestException;
-    public abstract Collection getAsCollection(Long id, AbstractApiUrlManager urls) throws DAOException, RestApiException, IOException;
+    public abstract Collection2 getAsCollection(Long id, AbstractApiUrlManager urls) throws DAOException, RestApiException, IOException;
     public abstract String getBookmarkListForMirador(Long id, AbstractApiUrlManager urls)
             throws DAOException, IOException, RestApiException, ViewerConfigurationException, IndexUnreachableException, PresentationException;
 
@@ -81,7 +81,7 @@ public abstract class AbstractBookmarkResourceBuilder {
      */
     public abstract List<BookmarkList> getAllSharedBookmarkLists() throws DAOException, IOException, RestApiException, IllegalRequestException;
     
-    public abstract Collection createCollection(BookmarkList list, AbstractApiUrlManager urls);
+    public abstract Collection2 createCollection(BookmarkList list, AbstractApiUrlManager urls);
     
     
     /**
@@ -133,16 +133,16 @@ public abstract class AbstractBookmarkResourceBuilder {
      * </p>
      *
      * @param id a {@link java.lang.Long} object.
-     * @return a {@link de.intranda.api.iiif.presentation.Collection} object.
+     * @return a {@link de.intranda.api.iiif.presentation.v2.Collection2} object.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      * @throws io.goobi.viewer.exceptions.RestApiException if any.
      */
 
-    public Collection getAsCollection(String sharedKey, AbstractApiUrlManager urls) throws ContentNotFoundException, DAOException {
+    public Collection2 getAsCollection(String sharedKey, AbstractApiUrlManager urls) throws ContentNotFoundException, DAOException {
 
         try {
             BookmarkList list = getSharedBookmarkList(sharedKey);
-            Collection collection = createCollection(list, urls);
+            Collection2 collection = createCollection(list, urls);
             return collection;
         } catch (ContentNotFoundException | RestApiException e) {
             throw new ContentNotFoundException("No matching bookmark list found");
@@ -155,9 +155,9 @@ public abstract class AbstractBookmarkResourceBuilder {
      * @param list
      * @return
      */
-    protected Collection createCollection(BookmarkList list, String url) {
+    protected Collection2 createCollection(BookmarkList list, String url) {
         ManifestBuilder builder = new ManifestBuilder(new ApiUrls(DataManager.getInstance().getConfiguration().getRestApiUrl()));
-        Collection collection = new Collection(URI.create(url), list.getName());
+        Collection2 collection = new Collection2(URI.create(url), list.getName());
         collection.setLabel(new SimpleMetadataValue(list.getName()));
         collection.setDescription(new SimpleMetadataValue(list.getDescription()));
         list.getItems().forEach(item -> {

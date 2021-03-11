@@ -31,7 +31,7 @@ import javax.ws.rs.core.MediaType;
 
 import org.apache.commons.lang3.StringUtils;
 
-import de.intranda.api.iiif.presentation.Collection;
+import de.intranda.api.iiif.presentation.v2.Collection2;
 import de.unigoettingen.sub.commons.contentlib.exceptions.ContentLibException;
 import de.unigoettingen.sub.commons.contentlib.exceptions.IllegalRequestException;
 import io.goobi.viewer.api.rest.AbstractApiUrlManager;
@@ -72,12 +72,12 @@ public class CollectionsResource {
     @Produces({ MediaType.APPLICATION_JSON })
     @Operation(tags = { "iiif" }, summary = "Get all collections as IIIF presentation collection")
     @ApiResponse(responseCode="400", description="No collections available for field")
-    public Collection getAllCollections(
+    public Collection2 getAllCollections(
             @Parameter(description ="Add values of this field to response to allow grouping of results")@QueryParam("grouping")String grouping
                     )
             throws PresentationException, IndexUnreachableException, DAOException, ContentLibException, URISyntaxException, ViewerConfigurationException {
         IIIFPresentationResourceBuilder builder = new IIIFPresentationResourceBuilder(urls, request);
-        Collection collection;
+        Collection2 collection;
         if(StringUtils.isBlank(grouping)) {            
             collection = builder.getCollections(solrField);
         } else {
@@ -95,14 +95,14 @@ public class CollectionsResource {
     @Produces({ MediaType.APPLICATION_JSON })
     @Operation(tags = { "iiif" }, summary = "Get given collection as a IIIF presentation collection")
     @ApiResponse(responseCode="400", description="Invalid collection name or field")
-    public Collection getCollection(
+    public Collection2 getCollection(
             @Parameter(description="Name of the collection. Must be a value of the SOLR field the collection is based on")@PathParam("collection")String collectionName,
             @Parameter(description ="Add values of this field to response to allow grouping of results")@QueryParam("grouping")String grouping
             )
             throws PresentationException, IndexUnreachableException, DAOException, ContentLibException, URISyntaxException, ViewerConfigurationException {
         IIIFPresentationResourceBuilder builder = new IIIFPresentationResourceBuilder(urls, request);
         collectionName = StringTools.decodeUrl(collectionName);
-        Collection collection;
+        Collection2 collection;
         if(StringUtils.isBlank(grouping)) {                   
             collection = builder.getCollection(solrField, collectionName);
         } else {

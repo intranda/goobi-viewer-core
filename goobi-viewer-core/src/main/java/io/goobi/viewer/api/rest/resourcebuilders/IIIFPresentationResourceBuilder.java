@@ -36,15 +36,15 @@ import org.apache.solr.common.SolrDocumentList;
 import de.intranda.api.annotation.oa.Motivation;
 import de.intranda.api.iiif.presentation.AbstractPresentationModelElement;
 import de.intranda.api.iiif.presentation.AnnotationList;
-import de.intranda.api.iiif.presentation.Canvas;
-import de.intranda.api.iiif.presentation.Collection;
 import de.intranda.api.iiif.presentation.IPresentationModelElement;
 import de.intranda.api.iiif.presentation.Layer;
-import de.intranda.api.iiif.presentation.Manifest;
 import de.intranda.api.iiif.presentation.Range;
 import de.intranda.api.iiif.presentation.Sequence;
 import de.intranda.api.iiif.presentation.content.ImageContent;
 import de.intranda.api.iiif.presentation.enums.AnnotationType;
+import de.intranda.api.iiif.presentation.v2.Canvas;
+import de.intranda.api.iiif.presentation.v2.Collection2;
+import de.intranda.api.iiif.presentation.v2.Manifest;
 import de.intranda.monitoring.timer.Time;
 import de.unigoettingen.sub.commons.contentlib.exceptions.ContentNotFoundException;
 import de.unigoettingen.sub.commons.contentlib.exceptions.IllegalRequestException;
@@ -103,8 +103,8 @@ public class IIIFPresentationResourceBuilder {
         StructElement mainDoc = docs.get(0);
         IPresentationModelElement manifest = getManifestBuilder().generateManifest(mainDoc);
 
-        if (manifest instanceof Collection && docs.size() > 1) {
-            getManifestBuilder().addVolumes((Collection) manifest, docs.subList(1, docs.size()));
+        if (manifest instanceof Collection2 && docs.size() > 1) {
+            getManifestBuilder().addVolumes((Collection2) manifest, docs.subList(1, docs.size()));
         } else if (manifest instanceof Manifest) {
             getManifestBuilder().addAnchor((Manifest) manifest, mainDoc.getMetadataValue(SolrConstants.PI_ANCHOR));
 
@@ -145,7 +145,7 @@ public class IIIFPresentationResourceBuilder {
 
         IPresentationModelElement manifest = new ManifestBuilder(urls).setBuildMode(buildMode).generateManifest(doc);
 
-        if (manifest instanceof Collection) {
+        if (manifest instanceof Collection2) {
             throw new IllegalRequestException("Identifier refers to a collection which does not have a sequence");
         } else if (manifest instanceof Manifest) {
             new SequenceBuilder(urls).setBuildMode(buildMode)
@@ -278,16 +278,16 @@ public class IIIFPresentationResourceBuilder {
      * to set the language for all metadata values
      *
      * @param collectionField a {@link java.lang.String} object.
-     * @return a {@link de.intranda.api.iiif.presentation.Collection} object.
+     * @return a {@link de.intranda.api.iiif.presentation.v2.Collection2} object.
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws java.net.URISyntaxException if any.
      * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
      */
-    public Collection getCollections(String collectionField)
+    public Collection2 getCollections(String collectionField)
             throws PresentationException, IndexUnreachableException, URISyntaxException, ViewerConfigurationException, IllegalRequestException {
 
-        Collection collection = getCollectionBuilder().generateCollection(collectionField, null, null,
+        Collection2 collection = getCollectionBuilder().generateCollection(collectionField, null, null,
                 DataManager.getInstance().getConfiguration().getCollectionSplittingChar(collectionField));
 
         return collection;
@@ -300,16 +300,16 @@ public class IIIFPresentationResourceBuilder {
      * to set the language for all metadata values
      *
      * @param collectionField a {@link java.lang.String} object.
-     * @return a {@link de.intranda.api.iiif.presentation.Collection} object.
+     * @return a {@link de.intranda.api.iiif.presentation.v2.Collection2} object.
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws java.net.URISyntaxException if any.
      * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
      */
-    public Collection getCollectionsWithGrouping(String collectionField, String groupingField)
+    public Collection2 getCollectionsWithGrouping(String collectionField, String groupingField)
             throws PresentationException, IndexUnreachableException, URISyntaxException, ViewerConfigurationException, IllegalRequestException {
 
-        Collection collection = getCollectionBuilder().generateCollection(collectionField, null, groupingField,
+        Collection2 collection = getCollectionBuilder().generateCollection(collectionField, null, groupingField,
                 DataManager.getInstance().getConfiguration().getCollectionSplittingChar(collectionField));
 
         getCollectionBuilder().addTagListService(collection, collectionField, groupingField, "grouping");
@@ -325,17 +325,17 @@ public class IIIFPresentationResourceBuilder {
      *
      * @param collectionField a {@link java.lang.String} object.
      * @param topElement a {@link java.lang.String} object.
-     * @return a {@link de.intranda.api.iiif.presentation.Collection} object.
+     * @return a {@link de.intranda.api.iiif.presentation.v2.Collection2} object.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws java.net.URISyntaxException if any.
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
      * @throws IllegalRequestException If the topElement is not a collection
      */
-    public Collection getCollection(String collectionField, String topElement)
+    public Collection2 getCollection(String collectionField, String topElement)
             throws IndexUnreachableException, URISyntaxException, PresentationException, ViewerConfigurationException, IllegalRequestException {
 
-        Collection collection = getCollectionBuilder().generateCollection(collectionField, topElement, null,
+        Collection2 collection = getCollectionBuilder().generateCollection(collectionField, topElement, null,
                 DataManager.getInstance().getConfiguration().getCollectionSplittingChar(collectionField));
 
         return collection;
@@ -385,17 +385,17 @@ public class IIIFPresentationResourceBuilder {
      * @param topElement a {@link java.lang.String} object.
      * @param groupingField a solr field by which the collections may be grouped. Included in the response for each {@link BrowseDcElement} to enable
      *            grouping by client
-     * @return a {@link de.intranda.api.iiif.presentation.Collection} object.
+     * @return a {@link de.intranda.api.iiif.presentation.v2.Collection2} object.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws java.net.URISyntaxException if any.
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
      * @throws IllegalRequestException if the topElement is not a collection
      */
-    public Collection getCollectionWithGrouping(String collectionField, String topElement, String facetField)
+    public Collection2 getCollectionWithGrouping(String collectionField, String topElement, String facetField)
             throws IndexUnreachableException, URISyntaxException, PresentationException, ViewerConfigurationException, IllegalRequestException {
 
-        Collection collection = getCollectionBuilder().generateCollection(collectionField, topElement, facetField,
+        Collection2 collection = getCollectionBuilder().generateCollection(collectionField, topElement, facetField,
                 DataManager.getInstance().getConfiguration().getCollectionSplittingChar(collectionField));
 
         getCollectionBuilder().addTagListService(collection, collectionField, facetField, "grouping");

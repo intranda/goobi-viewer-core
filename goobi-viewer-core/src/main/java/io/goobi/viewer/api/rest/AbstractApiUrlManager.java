@@ -62,7 +62,6 @@ public abstract class AbstractApiUrlManager {
         if (url.startsWith(within)) {
             return url.substring(within.length());
         }
-
         return url;
     }
 

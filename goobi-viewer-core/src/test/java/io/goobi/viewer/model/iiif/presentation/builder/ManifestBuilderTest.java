@@ -37,12 +37,12 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
 
 import de.intranda.api.iiif.presentation.AbstractPresentationModelElement;
-import de.intranda.api.iiif.presentation.Canvas;
 import de.intranda.api.iiif.presentation.IPresentationModelElement;
-import de.intranda.api.iiif.presentation.Manifest;
 import de.intranda.api.iiif.presentation.Range;
 import de.intranda.api.iiif.presentation.content.LinkingContent;
 import de.intranda.api.iiif.presentation.enums.DcType;
+import de.intranda.api.iiif.presentation.v2.Canvas;
+import de.intranda.api.iiif.presentation.v2.Manifest;
 import de.intranda.metadata.multilanguage.SimpleMetadataValue;
 import de.unigoettingen.sub.commons.contentlib.exceptions.ContentNotFoundException;
 import io.goobi.viewer.AbstractDatabaseAndSolrEnabledTest;

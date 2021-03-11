@@ -39,8 +39,8 @@ import com.fasterxml.jackson.databind.JsonMappingException;
 
 import de.intranda.api.annotation.wa.collection.AnnotationCollection;
 import de.intranda.api.annotation.wa.collection.AnnotationPage;
-import de.intranda.api.iiif.presentation.Canvas;
 import de.intranda.api.iiif.presentation.Sequence;
+import de.intranda.api.iiif.presentation.v2.Canvas;
 import io.goobi.viewer.api.rest.AbstractRestApiTest;
 
 /**

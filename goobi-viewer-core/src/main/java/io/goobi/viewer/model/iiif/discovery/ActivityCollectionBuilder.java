@@ -38,7 +38,7 @@ import de.intranda.api.iiif.discovery.ActivityType;
 import de.intranda.api.iiif.discovery.OrderedCollection;
 import de.intranda.api.iiif.discovery.OrderedCollectionPage;
 import de.intranda.api.iiif.presentation.IPresentationModelElement;
-import de.intranda.api.iiif.presentation.Manifest;
+import de.intranda.api.iiif.presentation.v2.Manifest;
 import io.goobi.viewer.api.rest.AbstractApiUrlManager;
 import io.goobi.viewer.api.rest.v1.ApiUrls;
 import io.goobi.viewer.controller.DataManager;

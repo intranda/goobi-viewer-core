@@ -32,13 +32,13 @@ import org.slf4j.LoggerFactory;
 import de.intranda.api.iiif.IIIFUrlResolver;
 import de.intranda.api.iiif.image.ImageInformation;
 import de.intranda.api.iiif.presentation.AbstractPresentationModelElement;
-import de.intranda.api.iiif.presentation.Collection;
 import de.intranda.api.iiif.presentation.CollectionExtent;
-import de.intranda.api.iiif.presentation.Manifest;
 import de.intranda.api.iiif.presentation.TagListService;
 import de.intranda.api.iiif.presentation.content.ImageContent;
 import de.intranda.api.iiif.presentation.content.LinkingContent;
 import de.intranda.api.iiif.presentation.enums.ViewingHint;
+import de.intranda.api.iiif.presentation.v2.Collection2;
+import de.intranda.api.iiif.presentation.v2.Manifest;
 import de.intranda.metadata.multilanguage.SimpleMetadataValue;
 import de.unigoettingen.sub.commons.contentlib.exceptions.IllegalRequestException;
 import io.goobi.viewer.api.rest.AbstractApiUrlManager;
@@ -108,14 +108,14 @@ public class CollectionBuilder extends AbstractBuilder {
      * @param topElement a {@link java.lang.String} object.
      * @param splittingChar a {@link java.lang.String} object.
      * @param facetField    A SOLR field which values are requested for all records within the collection and stored within the collection for later use
-     * @return a {@link de.intranda.api.iiif.presentation.Collection} object.
+     * @return a {@link de.intranda.api.iiif.presentation.v2.Collection2} object.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws java.net.URISyntaxException if any.
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
      * @throws IllegalRequestException if the top element is not empty and is not a collection
      */
-    public Collection generateCollection(String collectionField, final String topElement, final String facetField, final String splittingChar)
+    public Collection2 generateCollection(String collectionField, final String topElement, final String facetField, final String splittingChar)
             throws IndexUnreachableException, URISyntaxException, PresentationException, ViewerConfigurationException, IllegalRequestException {
         
         CollectionView collectionView = getCollectionView(collectionField, facetField, splittingChar);
@@ -138,7 +138,7 @@ public class CollectionBuilder extends AbstractBuilder {
 
         }
 
-        Collection collection;
+        Collection2 collection;
         if (baseElement != null) {
             /*
              * First make sure that the base Element is contained within visibleElements, then recalculate the visibleElements to
@@ -152,11 +152,11 @@ public class CollectionBuilder extends AbstractBuilder {
             if (baseElement.getParent() != null) {
                 parentName = baseElement.getParent().getName();
             }
-            Collection parent = createCollection(collectionView, baseElement.getParent(), getCollectionURI(collectionField, parentName));
+            Collection2 parent = createCollection(collectionView, baseElement.getParent(), getCollectionURI(collectionField, parentName));
             collection.addWithin(parent);
 
             for (HierarchicalBrowseDcElement childElement : baseElement.getChildren()) {
-                Collection child = createCollection(collectionView, childElement, getCollectionURI(collectionField, childElement.getName()));
+                Collection2 child = createCollection(collectionView, childElement, getCollectionURI(collectionField, childElement.getName()));
                 collection.addCollection(child);
             }
 
@@ -166,7 +166,7 @@ public class CollectionBuilder extends AbstractBuilder {
             collection = createCollection(collectionView, null, getCollectionURI(collectionField, null));
 
             for (HierarchicalBrowseDcElement childElement : collectionView.getVisibleDcElements()) {
-                Collection child = createCollection(collectionView, childElement, getCollectionURI(collectionField, childElement.getName()));
+                Collection2 child = createCollection(collectionView, childElement, getCollectionURI(collectionField, childElement.getName()));
                 collection.addCollection(child);
             }
         }
@@ -181,12 +181,12 @@ public class CollectionBuilder extends AbstractBuilder {
      *
      * @param collectionField a {@link java.lang.String} object.
      * @param topElement a {@link java.lang.String} object.
-     * @param collection a {@link de.intranda.api.iiif.presentation.Collection} object.
+     * @param collection a {@link de.intranda.api.iiif.presentation.v2.Collection2} object.
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws java.net.URISyntaxException if any.
      */
-    public void addContainedWorks(String collectionField, final String topElement, Collection collection)
+    public void addContainedWorks(String collectionField, final String topElement, Collection2 collection)
             throws PresentationException, IndexUnreachableException, URISyntaxException {
         SolrDocumentList containedWorks = getContainedWorks(createCollectionQuery(collectionField, topElement));
         if (containedWorks != null) {
@@ -197,9 +197,9 @@ public class CollectionBuilder extends AbstractBuilder {
                 String pi = solrDocument.getFirstValue(SolrConstants.PI).toString();
                 URI uri = getManifestURI(pi);
                 if (Boolean.TRUE.equals(anchor)) {
-                    work = new Collection(uri, pi);
+                    work = new Collection2(uri, pi);
                     work.addViewingHint(ViewingHint.multipart);
-                    collection.addCollection((Collection) work);
+                    collection.addCollection((Collection2) work);
                 } else {
                     work = new Manifest(uri);
                     collection.addManifest((Manifest) work);
@@ -247,14 +247,14 @@ public class CollectionBuilder extends AbstractBuilder {
      * @param baseElement a {@link io.goobi.viewer.model.viewer.HierarchicalBrowseDcElement} object.
      * @param collectionView a {@link io.goobi.viewer.model.viewer.CollectionView} object.
      * @param uri a {@link java.net.URI} object.
-     * @return a {@link de.intranda.api.iiif.presentation.Collection} object.
+     * @return a {@link de.intranda.api.iiif.presentation.v2.Collection2} object.
      * @throws java.net.URISyntaxException if any.
      * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
      */
-    public Collection createCollection(CollectionView collectionView, HierarchicalBrowseDcElement baseElement, URI uri)
+    public Collection2 createCollection(CollectionView collectionView, HierarchicalBrowseDcElement baseElement, URI uri)
             throws URISyntaxException, ViewerConfigurationException {
         try {
-            Collection collection = new Collection(uri, baseElement == null ? null : baseElement.getName());
+            Collection2 collection = new Collection2(uri, baseElement == null ? null : baseElement.getName());
             this.getAttributions().forEach(attr -> collection.addAttribution(attr));
             if (baseElement != null) {
 
@@ -306,7 +306,7 @@ public class CollectionBuilder extends AbstractBuilder {
      * @param baseElement
      * @param collection
      */
-    private void addRenderings(HierarchicalBrowseDcElement baseElement, CollectionView collectionView, Collection collection) {
+    private void addRenderings(HierarchicalBrowseDcElement baseElement, CollectionView collectionView, Collection2 collection) {
         
         this.getRenderings().forEach(link -> {
             URI id = getLinkingPropertyUri(baseElement, collectionView, link.target);
@@ -345,7 +345,7 @@ public class CollectionBuilder extends AbstractBuilder {
      * @throws IndexUnreachableException
      * @throws IllegalRequestException 
      */
-    public void addTagListService(Collection collection, String collectionField, final String facetField, String label) throws IndexUnreachableException, IllegalRequestException {
+    public void addTagListService(Collection2 collection, String collectionField, final String facetField, String label) throws IndexUnreachableException, IllegalRequestException {
         CollectionView view = getCollectionView(collectionField, facetField, DataManager.getInstance().getConfiguration().getCollectionSplittingChar(collectionField));
         addTagListService(collection, view, label);
         collection.collections.forEach(c -> addTagListService(c, view, label));
@@ -356,7 +356,7 @@ public class CollectionBuilder extends AbstractBuilder {
      * @param ele
      * @return
      */
-    private void addTagListService(Collection collection, CollectionView view, String label) {
+    private void addTagListService(Collection2 collection, CollectionView view, String label) {
             if(collection.getInternalName() != null) {
                 view.getCompleteList().stream().filter(e -> collection.getInternalName().equals(e.getName())).findAny().ifPresent( ele -> {
                     TagListService tagsService = new TagListService(label, urls.path(ApiUrls.CONTEXT).build());

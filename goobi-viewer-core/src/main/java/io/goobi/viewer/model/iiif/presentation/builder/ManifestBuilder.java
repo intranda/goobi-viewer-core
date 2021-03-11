@@ -37,16 +37,16 @@ import org.slf4j.LoggerFactory;
 import de.intranda.api.iiif.IIIFUrlResolver;
 import de.intranda.api.iiif.image.ImageInformation;
 import de.intranda.api.iiif.presentation.AbstractPresentationModelElement;
-import de.intranda.api.iiif.presentation.Collection;
 import de.intranda.api.iiif.presentation.IPresentationModelElement;
-import de.intranda.api.iiif.presentation.Manifest;
 import de.intranda.api.iiif.presentation.content.ImageContent;
 import de.intranda.api.iiif.presentation.content.LinkingContent;
 import de.intranda.api.iiif.presentation.enums.Format;
 import de.intranda.api.iiif.presentation.enums.ViewingHint;
+import de.intranda.api.iiif.presentation.v2.Collection2;
+import de.intranda.api.iiif.presentation.v2.Manifest;
+import de.intranda.api.iiif.presentation.v3.Manifest3;
 import de.intranda.api.iiif.search.AutoSuggestService;
 import de.intranda.api.iiif.search.SearchService;
-import de.intranda.api.iiif3.presentation.Manifest3;
 import de.intranda.metadata.multilanguage.SimpleMetadataValue;
 import de.unigoettingen.sub.commons.contentlib.imagelib.ImageFileFormat;
 import de.unigoettingen.sub.commons.contentlib.imagelib.ImageType.Colortype;
@@ -108,11 +108,11 @@ public class ManifestBuilder extends AbstractBuilder {
         final AbstractPresentationModelElement manifest;
 
         if (ele.isAnchor()) {
-            manifest = new Collection(getManifestURI(ele.getPi()), ele.getPi());
+            manifest = new Collection2(getManifestURI(ele.getPi()), ele.getPi());
             manifest.addViewingHint(ViewingHint.multipart);
         } else {
             ele.setImageNumber(1);
-            manifest = new Manifest3(getManifestURI(ele.getPi()));
+            manifest = new Manifest(getManifestURI(ele.getPi()));
             SearchService search = new SearchService(getSearchServiceURI(manifest.getId()));
             search.setLabel(getLabel("label__iiif_api_search"));
             AutoSuggestService autoComplete = new AutoSuggestService(getAutoSuggestServiceURI(manifest.getId()));
@@ -323,10 +323,10 @@ public class ManifestBuilder extends AbstractBuilder {
      * addVolumes.
      * </p>
      *
-     * @param anchor a {@link de.intranda.api.iiif.presentation.Collection} object.
+     * @param anchor a {@link de.intranda.api.iiif.presentation.v2.Collection2} object.
      * @param volumes a {@link java.util.List} object.
      */
-    public void addVolumes(Collection anchor, List<StructElement> volumes) {
+    public void addVolumes(Collection2 anchor, List<StructElement> volumes) {
         for (StructElement volume : volumes) {
             try {
                 IPresentationModelElement child = generateManifest(volume);
@@ -346,7 +346,7 @@ public class ManifestBuilder extends AbstractBuilder {
      * addAnchor.
      * </p>
      *
-     * @param manifest a {@link de.intranda.api.iiif.presentation.Manifest} object.
+     * @param manifest a {@link de.intranda.api.iiif.v2.Manifest} object.
      * @param anchorPI a {@link java.lang.String} object.
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
@@ -358,7 +358,7 @@ public class ManifestBuilder extends AbstractBuilder {
 
         /*ANCHOR*/
         if (StringUtils.isNotBlank(anchorPI)) {
-            manifest.addWithin(new Collection(getManifestURI(anchorPI), anchorPI));
+            manifest.addWithin(new Collection2(getManifestURI(anchorPI), anchorPI));
         }
 
     }

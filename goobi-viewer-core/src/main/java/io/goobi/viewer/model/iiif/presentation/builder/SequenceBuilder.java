@@ -47,14 +47,14 @@ import de.intranda.api.annotation.oa.TextualResource;
 import de.intranda.api.iiif.IIIFUrlResolver;
 import de.intranda.api.iiif.image.ImageInformation;
 import de.intranda.api.iiif.presentation.AnnotationList;
-import de.intranda.api.iiif.presentation.Canvas;
-import de.intranda.api.iiif.presentation.Manifest;
 import de.intranda.api.iiif.presentation.Sequence;
 import de.intranda.api.iiif.presentation.content.ImageContent;
 import de.intranda.api.iiif.presentation.content.LinkingContent;
 import de.intranda.api.iiif.presentation.enums.AnnotationType;
 import de.intranda.api.iiif.presentation.enums.DcType;
 import de.intranda.api.iiif.presentation.enums.Format;
+import de.intranda.api.iiif.presentation.v2.Canvas;
+import de.intranda.api.iiif.presentation.v2.Manifest;
 import de.intranda.digiverso.ocr.alto.model.structureclasses.logical.AltoDocument;
 import de.intranda.metadata.multilanguage.SimpleMetadataValue;
 import de.unigoettingen.sub.commons.contentlib.exceptions.ContentLibException;
@@ -176,7 +176,7 @@ public class SequenceBuilder extends AbstractBuilder {
      * addSeeAlsos.
      * </p>
      *
-     * @param canvas a {@link de.intranda.api.iiif.presentation.Canvas} object.
+     * @param canvas a {@link de.intranda.api.iiif.presentation.v2.Canvas} object.
      * @param doc a {@link io.goobi.viewer.model.viewer.StructElement} object.
      * @param page a {@link io.goobi.viewer.model.viewer.PhysicalElement} object.
      * @throws java.net.URISyntaxException if any.
@@ -308,7 +308,7 @@ public class SequenceBuilder extends AbstractBuilder {
      *
      * @param doc a {@link io.goobi.viewer.model.viewer.StructElement} object.
      * @param page a {@link io.goobi.viewer.model.viewer.PhysicalElement} object.
-     * @return a {@link de.intranda.api.iiif.presentation.Canvas} object.
+     * @return a {@link de.intranda.api.iiif.presentation.v2.Canvas} object.
      * @throws java.net.URISyntaxException if any.
      * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
@@ -415,7 +415,7 @@ public class SequenceBuilder extends AbstractBuilder {
      *
      * @param doc a {@link io.goobi.viewer.model.viewer.StructElement} object.
      * @param page a {@link io.goobi.viewer.model.viewer.PhysicalElement} object.
-     * @param canvas a {@link de.intranda.api.iiif.presentation.Canvas} object.
+     * @param canvas a {@link de.intranda.api.iiif.presentation.v2.Canvas} object.
      * @param populate a boolean.
      * @return a {@link java.util.Map} object.
      * @throws java.net.URISyntaxException if any.

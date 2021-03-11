@@ -48,7 +48,7 @@ import com.fasterxml.jackson.databind.JsonMappingException;
 import de.intranda.api.annotation.wa.collection.AnnotationCollection;
 import de.intranda.api.annotation.wa.collection.AnnotationPage;
 import de.intranda.api.iiif.presentation.Layer;
-import de.intranda.api.iiif.presentation.Manifest;
+import de.intranda.api.iiif.presentation.v2.Manifest;
 import io.goobi.viewer.api.rest.AbstractApiUrlManager;
 import io.goobi.viewer.api.rest.AbstractRestApiTest;
 import io.goobi.viewer.api.rest.model.RecordsRequestParameters;
