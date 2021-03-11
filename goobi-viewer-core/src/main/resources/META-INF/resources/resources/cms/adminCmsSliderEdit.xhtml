@@ -46,14 +46,14 @@
 							<div class="admin__entry-list -w25">
 								<ui:repeat var="type" value="#{cmsSliderEditBean.sourceTypes}">
 									<div class="admin__boxed-entry -w25">
-										<div class="row">
-											<div class="col-12">
+										<div class="d-flex flex-column h-100">
+											<div>
 												<h3>#{msg[type.label]}</h3>
 											</div>
-											<div class="col-12 mb-3">
+											<div class="mb-2">
 												<p>#{msg['cms__slider_type_description__'.concat(type.name().toLowerCase())]}</p>
 											</div>
-											<div class="col-12">
+											<div class="mt-auto">
 												<div class="d-flex">
 													<button class="btn btn--default ml-auto"
 														jsf:action="#{cmsSliderEditBean.createSlider(type)}">#{msg.select}</button>
