@@ -1255,7 +1255,7 @@ public class NavigationHelper implements Serializable {
      * @return a {@link java.lang.String} object.
      */
     public String getSearchUrl() {
-        return BeanUtils.getServletPathWithHostAsUrlFromJsfContext() + "/" + PageType.search.getName();
+        return getSearchUrl(SearchHelper.SEARCH_TYPE_REGULAR);
     }
 
     /**
@@ -1266,7 +1266,7 @@ public class NavigationHelper implements Serializable {
      * @return a {@link java.lang.String} object.
      */
     public String getAdvancedSearchUrl() {
-        return BeanUtils.getServletPathWithHostAsUrlFromJsfContext() + "/" + PageType.advancedSearch.getName();
+        return getSearchUrl(SearchHelper.SEARCH_TYPE_ADVANCED);
     }
 
     /**
