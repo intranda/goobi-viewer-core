@@ -51,7 +51,7 @@
 
 <script>
 
-	this.itemSource = this.opts.restapiurl + "crowdsourcing/campaigns/" + this.opts.campaign + "/" + this.opts.pi + "/" + this.opts.page + "/";
+	this.itemSource = this.opts.restapiurl + "crowdsourcing/campaigns/" + this.opts.campaign + "/" + this.opts.pi + "/";
 	this.annotationSource = this.itemSource + "annotations/";
 	this.loading = true;
 		
@@ -155,7 +155,7 @@
 	    .catch((error) => {
 	        console.error(error);
 	    })
-	    .then(() => {
+	    .then(() => { 
 	        this.loading = false;
 		    this.update();
 	    });
@@ -193,7 +193,7 @@
 	            recordStatus: status,
 	            creator: this.item.getCreator().id,
 	    }
-	    return fetch(this.itemSource, {
+	    return fetch(this.itemSource + (this.item.currentCanvasIndex + 1 ) + "/", {
             method: "PUT",
             headers: {
                 'Content-Type': 'application/json',

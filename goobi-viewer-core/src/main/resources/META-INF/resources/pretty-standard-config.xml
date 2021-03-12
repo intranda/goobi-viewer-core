@@ -1067,6 +1067,11 @@
 		<action onPostback="false">#{crowdsourcingBean.setRandomIdentifierForAnnotation}</action>
 		<action onPostback="false">#{crowdsourcingBean.forwardToAnnotationTarget}</action>
 	</url-mapping>
+    <url-mapping id="crowdCampaignAnnotate2">
+        <pattern value="/campaigns/#{campaign:crowdsourcingBean.targetCampaignId}/annotate/#{pi:crowdsourcingBean.targetIdentifierForUrl}/"/>
+        <view-id value="/resources/crowdsourcing/views/CampaignEdit.xhtml" />
+        <action onPostback="false">#{navigationHelper.resetTheme}</action>
+    </url-mapping>
     <url-mapping id="crowdCampaignAnnotate3">
 		<pattern value="/campaigns/#{campaign:crowdsourcingBean.targetCampaignId}/annotate/#{pi:crowdsourcingBean.targetIdentifierForUrl}/#{page:crowdsourcingBean.targetPage}/"/>
         <view-id value="/resources/crowdsourcing/views/CampaignEdit.xhtml" />
@@ -1079,6 +1084,11 @@
 		<action onPostback="false">#{crowdsourcingBean.setRandomIdentifierForReview}</action>
 		<action onPostback="false">#{crowdsourcingBean.forwardToReviewTarget}</action>
 	</url-mapping>
+    <url-mapping id="crowdCampaignReview2">
+        <pattern value="/campaigns/#{campaign:crowdsourcingBean.targetCampaignId}/review/#{pi:crowdsourcingBean.targetIdentifierForUrl}/"/>
+        <view-id value="/resources/crowdsourcing/views/CampaignEdit.xhtml" />
+        <action onPostback="false">#{navigationHelper.resetTheme}</action>
+    </url-mapping>
     <url-mapping id="crowdCampaignReview3">
 		<pattern value="/campaigns/#{campaign:crowdsourcingBean.targetCampaignId}/review/#{pi:crowdsourcingBean.targetIdentifierForUrl}/#{page:crowdsourcingBean.targetPage}/"/>
         <view-id value="/resources/crowdsourcing/views/CampaignEdit.xhtml" />

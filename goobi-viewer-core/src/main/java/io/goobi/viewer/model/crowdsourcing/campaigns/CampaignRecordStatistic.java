@@ -117,7 +117,7 @@ public class CampaignRecordStatistic implements Serializable {
     private CampaignRecordStatus status;
 
     @OneToMany(mappedBy = "owner", fetch = FetchType.LAZY, cascade = { CascadeType.ALL })
-    @MapKeyColumn(name = "key", insertable = false, updatable = false) // CampaignRecordStatistic.pi may not be writable here
+    @MapKeyColumn(name = "pi_page_key", insertable = false, updatable = false)
     @JsonIgnore
     private Map<String, CampaignRecordPageStatistic> pageStatistics = new HashMap<>();
 

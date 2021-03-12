@@ -1607,6 +1607,7 @@ public class Campaign implements CMSMediaHolder, ILicenseType, IPolyglott {
             pageStatistic.setPi(pi);
             pageStatistic.setPage(page);
             pageStatistic.setDateCreated(now);
+            pageStatistic.setKey(key);
             pageStatistic.setStatus(CampaignRecordPageStatus.ANNOTATE);
             statistic.getPageStatistics().put(key, pageStatistic);
         }

@@ -110,7 +110,7 @@ public class CampaignRecordPageStatistic implements Serializable {
     private Integer page;
 
     /** Key composed of pi and page values. */
-    @Column(name = "key", nullable = false)
+    @Column(name = "pi_page_key", nullable = false)
     private String key;
 
     @Enumerated(EnumType.STRING)

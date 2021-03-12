@@ -54,6 +54,7 @@ import io.goobi.viewer.api.rest.filters.CrowdsourcingCampaignFilter;
 import io.goobi.viewer.api.rest.resourcebuilders.AnnotationsResourceBuilder;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.IndexerTools;
+import io.goobi.viewer.controller.SolrConstants;
 import io.goobi.viewer.dao.IDAO;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
@@ -144,7 +145,12 @@ public class CampaignItemResource {
             try {
                 List<String> allMetadataFields =
                         campaign.getQuestions().stream().flatMap(q -> q.getMetadataFields().stream()).distinct().collect(Collectors.toList());
-                SolrDocument doc = DataManager.getInstance().getSearchIndex().getFirstDoc("PI:" + pi, allMetadataFields);
+                String query = SolrConstants.PI + ":" + pi;
+                logger.debug("Query: {}", query);
+                SolrDocument doc = DataManager.getInstance().getSearchIndex().getFirstDoc(query, allMetadataFields);
+                if (doc == null) {
+                    throw new ContentNotFoundException("Record not found: " + pi);
+                }
                 Map<String, List<String>> fieldValueMap =
                         doc.getFieldNames().stream().collect(Collectors.toMap(field -> field, field -> getFieldValues(doc, field)));
                 item.setMetadata(fieldValueMap);
@@ -175,6 +181,7 @@ public class CampaignItemResource {
     @CORSBinding
     @Deprecated
     public void setItemForManifest(CampaignItem item, @PathParam("pi") String pi) throws DAOException {
+        logger.debug("setItemForManifest: {}/{}", pi);
         if (item == null) {
             throw new IllegalArgumentException("item may not be null");
         }
@@ -199,6 +206,11 @@ public class CampaignItemResource {
             user = DataManager.getInstance().getDao().getUser(userId);
         }
 
+        if (true) {
+            logger.info("Aborting save");
+            return;
+        }
+
         campaign.setRecordStatus(pi, status, Optional.ofNullable(user));
         DataManager.getInstance().getDao().updateCampaign(campaign);
         // Re-index finished record to have its annotations indexed
@@ -221,6 +233,7 @@ public class CampaignItemResource {
     @Consumes({ MediaType.APPLICATION_JSON })
     @CORSBinding
     public void setItemForManifest(CampaignItem item, @PathParam("pi") String pi, @PathParam("page") int page) throws DAOException {
+        logger.debug("setItemForManifest: {}/{}", pi, page);
         if (item == null) {
             throw new IllegalArgumentException("item may not be null");
         }
@@ -276,7 +289,7 @@ public class CampaignItemResource {
     @CORSBinding
     public List<WebAnnotation> getAnnotationsForManifest(@PathParam("pi") String pi, @Context HttpServletRequest request)
             throws URISyntaxException, DAOException {
-
+        logger.debug("getAnnotationsForManifest: {}", pi);
         Campaign campaign = DataManager.getInstance().getDao().getCampaign(campaignId);
         List<PersistentAnnotation> annotations = DataManager.getInstance().getDao().getAnnotationsForCampaignAndWork(campaign, pi);
 
@@ -290,12 +303,11 @@ public class CampaignItemResource {
     }
 
     /**
-     * Takes a map of annotation target (canvas/manifest) ids and replaces all annotations for the given campaign, pi and targeted pages (if target is
-     * canvas) with the ones contained in the map
+     * Takes a map of annotation target (canvas/manifest) ids and replaces all annotations for the given campaign, pi and targeted pages 
+     * if target is canvas) with the ones contained in the map.
      *
-     * @param campaignId a {@link java.lang.Long} object.
-     * @param pi a {@link java.lang.String} object.
      * @param pages a {@link java.util.List} object.
+     * @param pi a {@link java.lang.String} object.
      * @throws java.net.URISyntaxException if any.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
@@ -305,7 +317,7 @@ public class CampaignItemResource {
     @CORSBinding
     public void setAnnotationsForManifest(List<AnnotationPage> pages, @PathParam("pi") String pi)
             throws URISyntaxException, DAOException {
-
+        logger.debug("setAnnotationsForManifest: {}", pi);
         IDAO dao = DataManager.getInstance().getDao();
         Campaign campaign = dao.getCampaign(campaignId);
 
@@ -332,7 +344,7 @@ public class CampaignItemResource {
                 }
             }
 
-            //add new annotaion and update existing ones
+            //add new annotation and update existing ones
             for (PersistentAnnotation anno : newAnnotations) {
                 if (campaign != null && campaign.isRestrictAnnotationAccess()) {
                     anno.setAccessCondition(campaign.getTitle(IPolyglott.getDefaultLocale().getLanguage()));

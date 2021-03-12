@@ -101,10 +101,10 @@ public class CrowdsourcingBean implements Serializable {
      * The campaign being annotated/reviewed
      */
     private Campaign targetCampaign = null;
-    /**
-     * The identifier (PI) of the work currently targeted by this campaign
-     */
+    /** The identifier (PI) of the record currently targeted by this campaign */
     private String targetIdentifier;
+    /** Current page of the current record. */
+    private int targetPage;
 
     /**
      * Initialize all campaigns as lazily loaded list
@@ -728,6 +728,20 @@ public class CrowdsourcingBean implements Serializable {
      */
     public void setTargetIdentifier(String targetIdentifier) {
         this.targetIdentifier = targetIdentifier;
+    }
+
+    /**
+     * @return the targetPage
+     */
+    public int getTargetPage() {
+        return targetPage;
+    }
+
+    /**
+     * @param targetPage the targetPage to set
+     */
+    public void setTargetPage(int targetPage) {
+        this.targetPage = targetPage;
     }
 
     /**

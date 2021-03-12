@@ -253,9 +253,9 @@
     <cs_campaign_record_statistic_reviewers campaign_record_statistic_id="1" user_id="2"/>
     
     <!-- CampaignRecordPagestatistic -->
-    <cs_campaign_record_page_statistics campaign_record_page_statistic_id="1" owner_id="6" pi="PI_5" page="1" key="PI_5_1" status="FINISHED"
+    <cs_campaign_record_page_statistics campaign_record_page_statistic_id="1" owner_id="6" pi="PI_5" page="1" pi_page_key="PI_5_1" status="FINISHED"
         date_created="2021-03-01 00:00:00.000000000" />
-    <cs_campaign_record_page_statistics campaign_record_page_statistic_id="2" owner_id="6" pi="PI_5" page="2" key="PI_5_2" status="FINISHED"
+    <cs_campaign_record_page_statistics campaign_record_page_statistic_id="2" owner_id="6" pi="PI_5" page="2" pi_page_key="PI_5_2" status="FINISHED"
         date_created="2021-03-01 00:00:00.000000000" />
         
     <cs_campaign_record_page_statistic_annotators campaign_record_page_statistic_id="1" user_id="1"/>

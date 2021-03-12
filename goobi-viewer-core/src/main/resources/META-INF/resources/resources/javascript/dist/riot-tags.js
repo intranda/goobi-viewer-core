@@ -1133,7 +1133,7 @@ riot.tag2('campaignitem', '<div if="{!opts.pi}" class="crowdsourcing-annotations
 	            recordStatus: status,
 	            creator: this.item.getCreator().id,
 	    }
-	    return fetch(this.itemSource, {
+	    return fetch(this.itemSource + (this.item.currentCanvasIndex + 1 ) + "/", {
             method: "PUT",
             headers: {
                 'Content-Type': 'application/json',
