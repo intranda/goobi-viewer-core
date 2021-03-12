@@ -42,6 +42,7 @@
             <ignoreVersions>
                 <ignoreVersion>10.0.0</ignoreVersion>
                 <ignoreVersion>10.0.2</ignoreVersion>
+                <ignoreVersion>10.0.4</ignoreVersion>
             </ignoreVersions>
         </rule>
         <rule groupId="org.eclipse.persistence" artifactId="org.eclipse.persistence.*">
