@@ -62,6 +62,7 @@ import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.model.annotation.PersistentAnnotation;
 import io.goobi.viewer.model.crowdsourcing.campaigns.Campaign;
 import io.goobi.viewer.model.crowdsourcing.campaigns.CampaignItem;
+import io.goobi.viewer.model.crowdsourcing.campaigns.CampaignRecordPageStatistic.CampaignRecordPageStatus;
 import io.goobi.viewer.model.crowdsourcing.campaigns.Campaign.StatisticMode;
 import io.goobi.viewer.model.crowdsourcing.campaigns.CampaignRecordStatistic.CampaignRecordStatus;
 import io.goobi.viewer.model.iiif.presentation.builder.ManifestBuilder;
@@ -259,7 +260,8 @@ public class CampaignItemResource {
                 campaign.setRecordStatus(pi, status, Optional.ofNullable(user));
                 break;
             case PAGE:
-                campaign.setRecordPageStatus(pi, page, status, Optional.ofNullable(user));
+                CampaignRecordPageStatus pageStatus = CampaignRecordPageStatus.forName(status.getName());
+                campaign.setRecordPageStatus(pi, page, pageStatus, Optional.ofNullable(user));
                 break;
             default:
                 logger.warn("Wrong campaign statistic mode: {}", campaign.getStatisticMode().name());

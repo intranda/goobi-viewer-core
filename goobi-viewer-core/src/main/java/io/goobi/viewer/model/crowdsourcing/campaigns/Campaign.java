@@ -1587,7 +1587,7 @@ public class Campaign implements CMSMediaHolder, ILicenseType, IPolyglott {
      * @param status
      * @param user
      */
-    public void setRecordPageStatus(String pi, int page, CampaignRecordStatus status, Optional<User> user) {
+    public void setRecordPageStatus(String pi, int page, CampaignRecordPageStatus status, Optional<User> user) {
         logger.debug("setRecordPageStatus: {}/{}", pi, page);
         LocalDateTime now = LocalDateTime.now();
         CampaignRecordStatistic statistic = statistics.get(pi);
@@ -1617,6 +1617,7 @@ public class Campaign implements CMSMediaHolder, ILicenseType, IPolyglott {
             user.ifPresent(pageStatistic::addReviewer);
         }
 
+        pageStatistic.setStatus(status);
         pageStatistic.setDateUpdated(now);
         statistic.setDateUpdated(now);
         statistics.put(pi, statistic);
