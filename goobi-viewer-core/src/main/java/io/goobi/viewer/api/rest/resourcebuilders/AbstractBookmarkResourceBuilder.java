@@ -28,7 +28,7 @@ import org.slf4j.LoggerFactory;
 
 import de.intranda.api.iiif.presentation.content.ImageContent;
 import de.intranda.api.iiif.presentation.v2.Collection2;
-import de.intranda.api.iiif.presentation.v2.Manifest;
+import de.intranda.api.iiif.presentation.v2.Manifest2;
 import de.intranda.metadata.multilanguage.SimpleMetadataValue;
 import de.unigoettingen.sub.commons.contentlib.exceptions.ContentNotFoundException;
 import de.unigoettingen.sub.commons.contentlib.exceptions.IllegalRequestException;
@@ -163,7 +163,7 @@ public abstract class AbstractBookmarkResourceBuilder {
         list.getItems().forEach(item -> {
             try {
                 URI manifestURI = builder.getManifestURI(item.getPi());
-                Manifest manifest = new Manifest(manifestURI);
+                Manifest2 manifest = new Manifest2(manifestURI);
                 manifest.setLabel(new SimpleMetadataValue(item.getName()));
                 manifest.addThumbnail(new ImageContent(URI.create(item.getRepresentativeImageUrl())));
                 collection.addManifest(manifest);
