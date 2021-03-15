@@ -29,7 +29,7 @@ var Crowdsourcing = ( function(crowdsourcing) {
     
     /**
      * Constructor for a new item. 
-     * @param item  A json object containing the campaign item data
+     * @param item  A json object built from CampaignItem.java containing the campaign item data
      * @param initialCanvasIndex the index of the canvas to open initially. If not used, index = 0 is used
      */
     crowdsourcing.Item = function(item, initialCanvasIndex) {
@@ -52,6 +52,8 @@ var Crowdsourcing = ( function(crowdsourcing) {
         this.currentCanvasIndex = initialCanvasIndex ? initialCanvasIndex : 0;
         this.imageSource = item.source;
         this.metadata = item.metadata;
+        this.pageStatisticMode = item.pageStatisticMode;
+        this.pageStatusMap = item.pageStatusMap;
         this.reviewActive = item.campaign.reviewMode != "NO_REVIEW";
         this.currentUser = {};
         this.imageOpenEvents = new rxjs.Subject();
@@ -286,7 +288,12 @@ var Crowdsourcing = ( function(crowdsourcing) {
     }
 
     crowdsourcing.Item.prototype.isReviewMode = function() {
-        return this.reviewMode;
+        console.log(Object.keys(this.pageStatusMap))
+        if (this.pageStatisticMode) {
+            return this.pageStatusMap[this.currentCanvasIndex+1];
+        } else {
+            return this.reviewMode;
+        }
     }
     
     crowdsourcing.Item.prototype.isReviewActive = function() {

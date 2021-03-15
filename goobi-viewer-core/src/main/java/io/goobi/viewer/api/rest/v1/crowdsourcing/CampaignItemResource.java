@@ -23,6 +23,7 @@ import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_PAGES_CANVAS;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -61,9 +62,10 @@ import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.model.annotation.PersistentAnnotation;
 import io.goobi.viewer.model.crowdsourcing.campaigns.Campaign;
-import io.goobi.viewer.model.crowdsourcing.campaigns.CampaignItem;
-import io.goobi.viewer.model.crowdsourcing.campaigns.CampaignRecordPageStatistic.CampaignRecordPageStatus;
 import io.goobi.viewer.model.crowdsourcing.campaigns.Campaign.StatisticMode;
+import io.goobi.viewer.model.crowdsourcing.campaigns.CampaignItem;
+import io.goobi.viewer.model.crowdsourcing.campaigns.CampaignRecordPageStatistic;
+import io.goobi.viewer.model.crowdsourcing.campaigns.CampaignRecordPageStatistic.CampaignRecordPageStatus;
 import io.goobi.viewer.model.crowdsourcing.campaigns.CampaignRecordStatistic.CampaignRecordStatus;
 import io.goobi.viewer.model.iiif.presentation.builder.ManifestBuilder;
 import io.goobi.viewer.model.log.LogMessage;
@@ -129,95 +131,55 @@ public class CampaignItemResource {
     @CORSBinding
     public CampaignItem getItemForManifest(@PathParam("pi") String pi, @Context HttpServletRequest servletRequest)
             throws URISyntaxException, DAOException, ContentNotFoundException {
-
-        URI manifestURI = new ManifestBuilder(urls).getManifestURI(pi);
+        logger.debug("getItemForManifest: {}", pi);
         Campaign campaign = DataManager.getInstance().getDao().getCampaign(campaignId);
-        if (campaign != null) {
-            CampaignItem item = new CampaignItem();
-            item.setSource(manifestURI);
-            item.setCampaign(campaign);
-            if (campaign.isShowLog()) {
-                item.setLog(campaign.getLogMessages()
-                        .stream()
-                        .filter(m -> m.getPi().equals(pi))
-                        .map(clm -> new LogMessage(clm, servletRequest))
-                        .collect(Collectors.toList()));
-            }
-            try {
-                List<String> allMetadataFields =
-                        campaign.getQuestions().stream().flatMap(q -> q.getMetadataFields().stream()).distinct().collect(Collectors.toList());
-                String query = SolrConstants.PI + ":" + pi;
-                logger.debug("Query: {}", query);
-                SolrDocument doc = DataManager.getInstance().getSearchIndex().getFirstDoc(query, allMetadataFields);
-                if (doc == null) {
-                    throw new ContentNotFoundException("Record not found: " + pi);
-                }
-                Map<String, List<String>> fieldValueMap =
-                        doc.getFieldNames().stream().collect(Collectors.toMap(field -> field, field -> getFieldValues(doc, field)));
-                item.setMetadata(fieldValueMap);
-            } catch (PresentationException | IndexUnreachableException e) {
-                logger.error("Error getting metadata valued for campaign item ", e);
-            }
-
-            return item;
+        if (campaign == null) {
+            throw new ContentNotFoundException("No campaign found with id " + campaignId);
         }
-        throw new ContentNotFoundException("No campaign found with id " + campaignId);
+
+        CampaignItem item = new CampaignItem();
+        URI manifestURI = new ManifestBuilder(urls).getManifestURI(pi);
+        item.setSource(manifestURI);
+        item.setCampaign(campaign);
+        item.setPageStatisticMode(StatisticMode.PAGE.equals(campaign.getStatisticMode()));
+        if (item.isPageStatisticMode() && campaign.getStatistics().get(pi) != null) {
+            Map<Integer, String> pageStatusMap = new HashMap<>(campaign.getStatistics().get(pi).getPageStatistics().size());
+            for (String key : campaign.getStatistics().get(pi).getPageStatistics().keySet()) {
+                CampaignRecordPageStatistic pageStatistic = campaign.getStatistics().get(pi).getPageStatistics().get(key);
+                pageStatusMap.put(pageStatistic.getPage(), pageStatistic.getStatus().name());
+            }
+            item.setPageStatusMap(pageStatusMap);
+            logger.debug("pageStatusMap set");
+        }
+        item.setPageStatusMap(null);
+        if (campaign.isShowLog()) {
+            item.setLog(campaign.getLogMessages()
+                    .stream()
+                    .filter(m -> m.getPi().equals(pi))
+                    .map(clm -> new LogMessage(clm, servletRequest))
+                    .collect(Collectors.toList()));
+        }
+        try {
+            List<String> allMetadataFields =
+                    campaign.getQuestions().stream().flatMap(q -> q.getMetadataFields().stream()).distinct().collect(Collectors.toList());
+            String query = SolrConstants.PI + ":" + pi;
+            logger.debug("Query: {}", query);
+            SolrDocument doc = DataManager.getInstance().getSearchIndex().getFirstDoc(query, allMetadataFields);
+            if (doc == null) {
+                throw new ContentNotFoundException("Record not found: " + pi);
+            }
+            Map<String, List<String>> fieldValueMap =
+                    doc.getFieldNames().stream().collect(Collectors.toMap(field -> field, field -> getFieldValues(doc, field)));
+            item.setMetadata(fieldValueMap);
+        } catch (PresentationException | IndexUnreachableException e) {
+            logger.error("Error getting metadata valued for campaign item ", e);
+        }
+
+        return item;
     }
 
     private static List<String> getFieldValues(SolrDocument doc, String field) {
         return doc.getFieldValues(field).stream().map(Object::toString).collect(Collectors.toList());
-    }
-
-    /**
-     * Sets the {@link io.goobi.viewer.model.crowdsourcing.campaigns.CampaignRecordStatistic.CampaignRecordStatus} for the given campaign and work and
-     * records the {@link io.goobi.viewer.model.security.user.User} who made the change
-     *
-     * @param item a {@link io.goobi.viewer.model.crowdsourcing.campaigns.CampaignItem} object.
-     * @param pi a {@link java.lang.String} object.
-     * @throws io.goobi.viewer.exceptions.DAOException if any.
-     */
-    @PUT
-    @Path("/{pi}")
-    @Consumes({ MediaType.APPLICATION_JSON })
-    @CORSBinding
-    @Deprecated
-    public void setItemForManifest(CampaignItem item, @PathParam("pi") String pi) throws DAOException {
-        logger.debug("setItemForManifest: {}/{}", pi);
-        if (item == null) {
-            throw new IllegalArgumentException("item may not be null");
-        }
-        CampaignRecordStatus status = item.getRecordStatus();
-        if (status == null) {
-            logger.error("Status not found: {}", item.getRecordStatus());
-            return;
-        }
-
-        Campaign campaign = DataManager.getInstance().getDao().getCampaign(campaignId);
-        if (campaign == null) {
-            logger.error("Campaign not found: {}", campaignId);
-            return;
-        }
-        if (!StatisticMode.RECORD.equals(campaign.getStatisticMode())) {
-            logger.warn("Wrong campaign statistic mode: {}", campaign.getStatisticMode().name());
-        }
-
-        User user = null;
-        Long userId = User.getId(item.getCreatorURI());
-        if (userId != null) {
-            user = DataManager.getInstance().getDao().getUser(userId);
-        }
-
-        if (true) {
-            logger.info("Aborting save");
-            return;
-        }
-
-        campaign.setRecordStatus(pi, status, Optional.ofNullable(user));
-        DataManager.getInstance().getDao().updateCampaign(campaign);
-        // Re-index finished record to have its annotations indexed
-        if (status.equals(CampaignRecordStatus.FINISHED)) {
-            IndexerTools.triggerReIndexRecord(pi);
-        }
     }
 
     /**
@@ -305,8 +267,8 @@ public class CampaignItemResource {
     }
 
     /**
-     * Takes a map of annotation target (canvas/manifest) ids and replaces all annotations for the given campaign, pi and targeted pages 
-     * if target is canvas) with the ones contained in the map.
+     * Takes a map of annotation target (canvas/manifest) ids and replaces all annotations for the given campaign, pi and targeted pages if target is
+     * canvas) with the ones contained in the map.
      *
      * @param pages a {@link java.util.List} object.
      * @param pi a {@link java.lang.String} object.
