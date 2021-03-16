@@ -485,17 +485,31 @@ public class Campaign implements CMSMediaHolder, ILicenseType, IPolyglott {
     /**
      * Determines the number of distinct users that have created or reviewed annotations in the context of this campaign.
      *
-     * @return number of users
+     * @return number of users who either annotated or reviewed annotations
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
     public long getContributorCount() throws DAOException {
         Set<Long> userIds = new HashSet<>();
-        for (String pi : statistics.keySet()) {
-            for (User u : statistics.get(pi).getAnnotators()) {
-                userIds.add(u.getId());
+        if (StatisticMode.PAGE.equals(statisticMode)) {
+            for (String pi : statistics.keySet()) {
+                for (String key : statistics.get(pi).getPageStatistics().keySet()) {
+                    CampaignRecordPageStatistic pageStatistic = statistics.get(pi).getPageStatistics().get(key);
+                    for (User u : pageStatistic.getAnnotators()) {
+                        userIds.add(u.getId());
+                    }
+                    for (User u : pageStatistic.getReviewers()) {
+                        userIds.add(u.getId());
+                    }
+                }
             }
-            for (User u : statistics.get(pi).getReviewers()) {
-                userIds.add(u.getId());
+        } else {
+            for (String pi : statistics.keySet()) {
+                for (User u : statistics.get(pi).getAnnotators()) {
+                    userIds.add(u.getId());
+                }
+                for (User u : statistics.get(pi).getReviewers()) {
+                    userIds.add(u.getId());
+                }
             }
         }
 
@@ -504,12 +518,22 @@ public class Campaign implements CMSMediaHolder, ILicenseType, IPolyglott {
 
     /**
      * 
-     * @return
+     * @return true if this campaign has at least one annotation; false otherwise
      */
     public boolean isHasAnnotations() {
-        for (String pi : statistics.keySet()) {
-            if (!statistics.get(pi).getAnnotators().isEmpty()) {
-                return true;
+        if (StatisticMode.PAGE.equals(statisticMode)) {
+            for (String pi : statistics.keySet()) {
+                for (String key : statistics.get(pi).getPageStatistics().keySet()) {
+                    if (!statistics.get(pi).getPageStatistics().get(key).getAnnotators().isEmpty()) {
+                        return true;
+                    }
+                }
+            }
+        } else {
+            for (String pi : statistics.keySet()) {
+                if (!statistics.get(pi).getAnnotators().isEmpty()) {
+                    return true;
+                }
             }
         }
 
