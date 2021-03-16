@@ -68,6 +68,8 @@
 	    	this.error = error;
 	    	this.update();
 		})
+	    
+
 	});
 
 	loadItem(itemConfig) {
@@ -87,6 +89,10 @@
 		})
 	    
 		this.item.onImageRotated( () => this.update());
+		
+        this.item.onImageOpen(function() {
+            this.update();
+        }.bind(this));
 	}
 	
 	initImageView(imageSource) {

@@ -288,9 +288,9 @@ var Crowdsourcing = ( function(crowdsourcing) {
     }
 
     crowdsourcing.Item.prototype.isReviewMode = function() {
-        console.log(Object.keys(this.pageStatusMap))
         if (this.pageStatisticMode) {
-            return this.pageStatusMap[this.currentCanvasIndex+1];
+            console.log('statistic mode index ' + (this.currentCanvasIndex+1) + ': '  + (this.pageStatusMap['' + (this.currentCanvasIndex+1)] == 'REVIEW'))
+            return this.pageStatusMap['' + (this.currentCanvasIndex+1)] == 'REVIEW';
         } else {
             return this.reviewMode;
         }

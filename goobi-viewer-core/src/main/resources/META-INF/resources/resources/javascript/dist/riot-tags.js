@@ -1009,6 +1009,7 @@ riot.tag2('campaignitem', '<div if="{!opts.pi}" class="crowdsourcing-annotations
 	    	this.error = error;
 	    	this.update();
 		})
+
 	});
 
 	this.loadItem = function(itemConfig) {
@@ -1028,6 +1029,10 @@ riot.tag2('campaignitem', '<div if="{!opts.pi}" class="crowdsourcing-annotations
 		})
 
 		this.item.onImageRotated( () => this.update());
+
+        this.item.onImageOpen(function() {
+            this.update();
+        }.bind(this));
 	}.bind(this)
 
 	this.initImageView = function(imageSource) {
