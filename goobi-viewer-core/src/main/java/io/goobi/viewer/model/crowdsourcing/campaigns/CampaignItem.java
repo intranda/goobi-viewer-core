@@ -214,7 +214,7 @@ public class CampaignItem {
      * @return the pageStatusMap
      */
     public Map<Integer, String> getPageStatusMap() {
-        return Collections.unmodifiableMap(pageStatusMap);
+        return pageStatusMap;
     }
 
     /**

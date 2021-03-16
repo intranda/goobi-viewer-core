@@ -143,15 +143,13 @@ public class CampaignItemResource {
         item.setCampaign(campaign);
         item.setPageStatisticMode(StatisticMode.PAGE.equals(campaign.getStatisticMode()));
         if (item.isPageStatisticMode() && campaign.getStatistics().get(pi) != null) {
-            Map<Integer, String> pageStatusMap = new HashMap<>(campaign.getStatistics().get(pi).getPageStatistics().size());
             for (String key : campaign.getStatistics().get(pi).getPageStatistics().keySet()) {
                 CampaignRecordPageStatistic pageStatistic = campaign.getStatistics().get(pi).getPageStatistics().get(key);
-                pageStatusMap.put(pageStatistic.getPage(), pageStatistic.getStatus().name());
+                if (pageStatistic.getPage() != null)
+                    item.getPageStatusMap().put(pageStatistic.getPage(), pageStatistic.getStatus().name());
             }
-            item.setPageStatusMap(pageStatusMap);
             logger.debug("pageStatusMap set");
         }
-        item.setPageStatusMap(null);
         if (campaign.isShowLog()) {
             item.setLog(campaign.getLogMessages()
                     .stream()
