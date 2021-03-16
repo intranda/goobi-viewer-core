@@ -66,7 +66,7 @@ var cmsJS = ( function( cms ) {
             } );
             
             cmsJS.createPage.initSortables( _defaults );
-            cmsJS.createPage.initStyleOptions();
+            cmsJS.createSlider.initStyleOptions();
             
             // check preview status and open new tab
             if ( sessionStorage.getItem( 'previewStatus' ) === 'false' ) {
