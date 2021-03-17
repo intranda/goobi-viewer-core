@@ -77,7 +77,7 @@ public class SitemapTest extends AbstractDatabaseAndSolrEnabledTest {
             long start = System.nanoTime();
             Thread thread = new Thread(() -> {
                 try {
-                    sitemap.generate("https://viewer-demo01.intranda.com", path.toAbsolutePath().toString());
+                    sitemap.generate(null, path.toAbsolutePath().toString());
                 } catch (IOException | PresentationException | IndexUnreachableException | DAOException e) {
                     e.printStackTrace();
                     Thread.currentThread().interrupt();
