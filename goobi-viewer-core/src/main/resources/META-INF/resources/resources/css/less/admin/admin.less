@@ -1097,7 +1097,7 @@
 		}
 	}
 	.-deactivated {
-		opacity: .7;
+		opacity: .4;
 		a {
 			&:hover {
 				text-decoration: none !important;
@@ -1106,6 +1106,12 @@
 		}
 		.delete, .edit {
 			visibility: hidden;
+		}
+		.admin__radio-switch input~input:checked~.toggle-outside{
+			background: @middlegray;
+		}
+		.admin-cms-media__file-image {
+			filter: grayscale(1);
 		}
 	}
 	&__non-clickable-area-overlay {
