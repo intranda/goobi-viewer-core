@@ -293,7 +293,7 @@ public class EventElement implements Comparable<EventElement>, Serializable {
     public List<Metadata> getMetadata() {
         ActiveDocumentBean adb = BeanUtils.getActiveDocumentBean();
         if (adb != null) {
-            List<Metadata> ret = Metadata.filterMetadataByLanguage(metadata, adb.getSelectedRecordLanguage());
+            List<Metadata> ret = Metadata.filterMetadata(metadata, adb.getSelectedRecordLanguage(), null);
             return ret;
         }
 

@@ -401,7 +401,7 @@ public class MetadataElement {
      * @return the oneMetadataList
      */
     public List<Metadata> getMetadataList() {
-        return Metadata.filterMetadataByLanguage(metadataList, selectedRecordLanguage);
+        return Metadata.filterMetadata(metadataList, selectedRecordLanguage, null);
     }
 
     /**
@@ -440,7 +440,7 @@ public class MetadataElement {
      * @return the sidebarMetadataList
      */
     public List<Metadata> getSidebarMetadataList() {
-        return Metadata.filterMetadataByLanguage(this.sidebarMetadataList, selectedRecordLanguage);
+        return Metadata.filterMetadata(this.sidebarMetadataList, selectedRecordLanguage, null);
     }
 
     /**

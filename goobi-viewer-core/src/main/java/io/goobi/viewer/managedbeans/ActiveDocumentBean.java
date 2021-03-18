@@ -25,7 +25,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-import java.util.Optional;
 
 import javax.enterprise.context.SessionScoped;
 import javax.faces.context.ExternalContext;
@@ -47,7 +46,6 @@ import com.ocpsoft.pretty.faces.url.URL;
 
 import de.intranda.metadata.multilanguage.IMetadataValue;
 import de.intranda.metadata.multilanguage.MultiLanguageMetadataValue;
-import de.unigoettingen.sub.commons.contentlib.imagelib.ImageFileFormat;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.IndexerTools;
 import io.goobi.viewer.controller.NetTools;
@@ -716,7 +714,7 @@ public class ActiveDocumentBean implements Serializable {
      * @return the titleBarMetadata
      */
     public List<Metadata> getTitleBarMetadata() {
-        return Metadata.filterMetadataByLanguage(titleBarMetadata, selectedRecordLanguage);
+        return Metadata.filterMetadata(titleBarMetadata, selectedRecordLanguage, null);
     }
 
     /**
@@ -1574,7 +1572,8 @@ public class ActiveDocumentBean implements Serializable {
                 Messages.error("cache_clear__failure");
             } catch (IOException e) {
                 logger.error(e.getMessage());
-                Messages.error("cache_clear__failure");;
+                Messages.error("cache_clear__failure");
+                ;
             } catch (HTTPException e) {
                 logger.error(e.getMessage());
                 Messages.error("cache_clear__failure");
@@ -2014,7 +2013,7 @@ public class ActiveDocumentBean implements Serializable {
         if (selectedDownloadOptionLabel == null) {
             return null;
         }
-        
+
         return DownloadOption.getByLabel(selectedDownloadOptionLabel);
     }
 
@@ -2032,16 +2031,15 @@ public class ActiveDocumentBean implements Serializable {
         logger.trace("setSelectedDownloadOption: {}", selectedDownloadOptionLabel != null ? selectedDownloadOptionLabel.toString() : null);
         this.selectedDownloadOptionLabel = selectedDownloadOptionLabel;
     }
-    
+
     public void setDownloadOptionLabelFromRequestParameter() {
-        Map<String, String> params = FacesContext.getCurrentInstance().
-                getExternalContext().getRequestParameterMap();
-        
+        Map<String, String> params = FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap();
+
         String value = params.get("optionvalue");
-        if(StringUtils.isNotBlank(value)) {
+        if (StringUtils.isNotBlank(value)) {
             setSelectedDownloadOptionLabel(value);
         }
-        
+
     }
 
 }

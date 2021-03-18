@@ -925,31 +925,44 @@ public class Metadata implements Serializable {
      * language.
      *
      * @param metadataList a {@link java.util.List} object.
-     * @param recordLanguage a {@link java.lang.String} object.
+     * @param language a {@link java.lang.String} object.
+     * @param field
      * @return Metadata list without any fields with non-matching language; original list if no language is given
      * @should return language-specific version of a field
      * @should return generic version if no language specific version is found
      * @should preserve metadata field order
+     * @should filter by desired field name correctly
      */
-    public static List<Metadata> filterMetadataByLanguage(List<Metadata> metadataList, String recordLanguage) {
+    public static List<Metadata> filterMetadata(List<Metadata> metadataList, String language, String field) {
         // logger.trace("filterMetadataByLanguage: {}", recordLanguage);
-        if (recordLanguage == null || metadataList == null || metadataList.isEmpty()) {
+        if (language == null || metadataList == null || metadataList.isEmpty()) {
             return metadataList;
         }
 
         List<Metadata> ret = new ArrayList<>(metadataList);
         Set<String> addedLanguageSpecificFields = new HashSet<>();
         Set<Metadata> toRemove = new HashSet<>();
-        String languageCode = recordLanguage.toUpperCase();
+        String languageCode = language.toUpperCase();
         for (Metadata md : metadataList) {
-            if (StringUtils.isNotBlank(md.getLabel()) && md.getLabel().contains(SolrConstants._LANG_)) {
+            if (StringUtils.isBlank(md.getLabel())) {
+                continue;
+            }
+            if (md.getLabel().contains(SolrConstants._LANG_)) {
                 String lang = md.getLabel().substring(md.getLabel().length() - 2);
                 String rawFieldName = md.getLabel().substring(0, md.getLabel().length() - 8);
-                // logger.trace("{}, {}", md.getLabel(), lang);
+                // Mark wrong field names for removal
+                if (field != null && !field.equals(rawFieldName)) {
+                    toRemove.add(md);
+                }
                 if (languageCode.equals(lang)) {
                     addedLanguageSpecificFields.add(rawFieldName);
                 } else {
                     // Mark wrong language versions for removal
+                    toRemove.add(md);
+                }
+            } else {
+                // Mark wrong non-language version field names for removal
+                if (field != null && !field.equals(md.getLabel())) {
                     toRemove.add(md);
                 }
             }
