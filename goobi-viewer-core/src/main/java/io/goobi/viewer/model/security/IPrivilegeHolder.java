@@ -15,6 +15,9 @@
  */
 package io.goobi.viewer.model.security;
 
+import java.util.List;
+import java.util.Set;
+
 /**
  * <p>
  * IPrivilegeHolder interface.
@@ -97,6 +100,12 @@ public interface IPrivilegeHolder {
     public static final String PRIV_CROWDSOURCING_ANNOTATE_CAMPAIGN = "CROWDSOURCING_ANNOTATE_CAMPAIGN";
     /** Constant <code>PRIV_CROWDSOURCING_REVIEW_CAMPAIGN="CROWDSOURCING_REVIEW_CAMPAIGN"</code> */
     public static final String PRIV_CROWDSOURCING_REVIEW_CAMPAIGN = "CROWDSOURCING_REVIEW_CAMPAIGN";
+
+    public List<String> getSortedPrivileges(Set<String> privileges);
+
+    public boolean addPrivilege(String privilege);
+
+    public boolean removePrivilege(String privilege);
 
     /**
      * <p>

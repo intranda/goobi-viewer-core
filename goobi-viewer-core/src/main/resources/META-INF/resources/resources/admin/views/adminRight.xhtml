@@ -526,7 +526,8 @@
                                                             </div>
                                                         </ui:repeat>
                                                         <ui:repeat var="priv" value="#{adminBean.currentLicense.getSortedPrivileges(adminBean.currentLicense.privilegesCopy)}">
-                                                            <h:commandLink styleClass="admin__license-action" action="#{adminBean.currentLicense.removePrivilege(priv)}" title="#{msg.remove}">
+                                                            <h:commandLink styleClass="admin__license-action"
+                                                                action="#{adminBean.currentLicense.removePrivilege(priv)}" title="#{msg.remove}">
                                                                 <div class="badge badge-success">
                                                                     #{msg[adminBean.getMessageKeyForPrivilege(priv)]}
                                                                     <i class="fa fa-trash-o" aria-hidden="true"></i>

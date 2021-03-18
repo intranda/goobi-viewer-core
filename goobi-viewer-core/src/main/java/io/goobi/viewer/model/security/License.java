@@ -202,7 +202,9 @@ public class License implements IPrivilegeHolder, Serializable {
      * @param privilege
      * @return true if successful; false otherwise
      */
+    @Override
     public boolean addPrivilege(String privilege) {
+        logger.debug("addPrivilege: {}", privilege);
         return privilegesCopy.add(privilege);
     }
 
@@ -212,7 +214,9 @@ public class License implements IPrivilegeHolder, Serializable {
      * @param privilege
      * @return true if successful; false otherwise
      */
+    @Override
     public boolean removePrivilege(String privilege) {
+        logger.debug("removePrivilege: {}", privilege);
         return privilegesCopy.remove(privilege);
     }
 
@@ -555,6 +559,7 @@ public class License implements IPrivilegeHolder, Serializable {
      * @param sourcePrivileges List containing the desired order
      * @return Sorted list of privileges contained in <code>privileges</code>
      */
+    @Override
     public List<String> getSortedPrivileges(Set<String> privileges) {
         if (privileges == null || privileges.isEmpty()) {
             return Collections.emptyList();
@@ -567,6 +572,7 @@ public class License implements IPrivilegeHolder, Serializable {
             // Skip PRIV_CMS_PAGES
             if (privileges.contains(priv) && !IPrivilegeHolder.PRIV_CMS_PAGES.equals(priv)) {
                 ret.add(priv);
+                logger.debug("has priv: {}", priv);
             }
         }
 
