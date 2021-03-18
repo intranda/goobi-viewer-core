@@ -45,16 +45,20 @@ public interface IPrivilegeHolder {
     public static final String PRIV_DOWNLOAD_PAGE_PDF = "DOWNLOAD_PAGE_PDF";
     /** Constant <code>PRIV_DOWNLOAD_ORIGINAL_CONTENT="DOWNLOAD_ORIGINAL_CONTENT"</code> */
     public static final String PRIV_DOWNLOAD_ORIGINAL_CONTENT = "DOWNLOAD_ORIGINAL_CONTENT";
-    /** Constant <code>PRIV_DOWNLOAD_METADATA="PRIV_DOWNLOAD_METADATA"</code> */
+    /** Constant <code>PRIV_DOWNLOAD_METADATA="DOWNLOAD_METADATA"</code> */
     public static final String PRIV_DOWNLOAD_METADATA = "DOWNLOAD_METADATA";
-    /** Constant <code>PRIV_GENERATE_IIIF_MANIFEST="PRIV_GENERATE_IIIF_MANIFEST"</code> */
+    /** Constant <code>PRIV_DOWNLOAD_IMAGES="DOWNLOAD_IMAGES"</code> */
+    public static final String PRIV_DOWNLOAD_IMAGES = "DOWNLOAD_IMAGES";
+    /** Constant <code>PRIV_GENERATE_IIIF_MANIFEST="GENERATE_IIIF_MANIFEST"</code> */
     public static final String PRIV_GENERATE_IIIF_MANIFEST = "GENERATE_IIIF_MANIFEST";
+    /** Constant <code>PRIV_ZOOM_IMAGES="ZOOM_IMAGES"</code> */
+    public static final String PRIV_ZOOM_IMAGES = "ZOOM_IMAGES";
 
     /** Constant array containing all constants for record privileges. */
     public static final String[] PRIVS_RECORD =
-            { PRIV_LIST, PRIV_VIEW_THUMBNAILS, PRIV_VIEW_IMAGES, PRIV_VIEW_VIDEO, PRIV_VIEW_AUDIO, PRIV_VIEW_FULLTEXT, PRIV_DOWNLOAD_ORIGINAL_CONTENT,
-                    PRIV_DOWNLOAD_PAGE_PDF, PRIV_DOWNLOAD_PDF, PRIV_DOWNLOAD_METADATA, PRIV_GENERATE_IIIF_MANIFEST,
-                    PRIV_VIEW_UGC };
+            { PRIV_LIST, PRIV_VIEW_THUMBNAILS, PRIV_VIEW_IMAGES, PRIV_VIEW_VIDEO, PRIV_VIEW_AUDIO, PRIV_VIEW_FULLTEXT, PRIV_ZOOM_IMAGES,
+                    PRIV_DOWNLOAD_IMAGES, PRIV_DOWNLOAD_ORIGINAL_CONTENT, PRIV_DOWNLOAD_PAGE_PDF, PRIV_DOWNLOAD_PDF, PRIV_DOWNLOAD_METADATA,
+                    PRIV_GENERATE_IIIF_MANIFEST, PRIV_VIEW_UGC };
 
     // Role privileges
     /** Constant <code>PRIV_DELETE_OCR_PAGE="DELETE_OCR_PAGE"</code> */
@@ -79,7 +83,7 @@ public interface IPrivilegeHolder {
     public static final String PRIV_CMS_COLLECTIONS = "CMS_COLLECTIONS";
     /** Constant <code>PRIV_CMS_CATEGORIES="CMS_CATEGORIES"</code> */
     public static final String PRIV_CMS_CATEGORIES = "CMS_CATEGORIES";
-    
+
     /** Constant array containing all constants for CMS privileges. */
     public static final String[] PRIVS_CMS =
             { PRIV_CMS_PAGES, PRIV_CMS_MENU, PRIV_CMS_STATIC_PAGES,
