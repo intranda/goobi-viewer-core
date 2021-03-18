@@ -1369,6 +1369,23 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
      * @throws IndexUnreachableException
      * @throws DAOException
      */
+    public boolean isAccessPermissionImageZoom() throws IndexUnreachableException, DAOException {
+        if (FacesContext.getCurrentInstance() != null && FacesContext.getCurrentInstance().getExternalContext() != null) {
+            HttpServletRequest request = (HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest();
+            return AccessConditionUtils.checkAccessPermissionByIdentifierAndFileNameWithSessionMap(request, pi, fileName,
+                    IPrivilegeHolder.PRIV_ZOOM_IMAGES);
+        }
+        logger.trace("FacesContext not found");
+
+        return false;
+    }
+
+    /**
+     * 
+     * @return
+     * @throws IndexUnreachableException
+     * @throws DAOException
+     */
     public boolean isAccessPermissionImageDownload() throws IndexUnreachableException, DAOException {
         if (FacesContext.getCurrentInstance() != null && FacesContext.getCurrentInstance().getExternalContext() != null) {
             HttpServletRequest request = (HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest();
