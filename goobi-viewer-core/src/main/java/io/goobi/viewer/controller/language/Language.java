@@ -238,16 +238,33 @@ public class Language implements Comparable<Language> {
     }
 
     /* (non-Javadoc)
+     * @see java.lang.Object#hashCode()
+     */
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + ((isoCode_639_2_B == null) ? 0 : isoCode_639_2_B.hashCode());
+        return result;
+    }
+
+    /* (non-Javadoc)
      * @see java.lang.Object#equals(java.lang.Object)
      */
     @Override
     public boolean equals(Object obj) {
-        if (obj != null && obj.getClass().equals(this.getClass())) {
-            Language other = (Language) obj;
-            return this.getIsoCode().equals(other.getIsoCode());
-        }
-
-        return false;
+        if (this == obj)
+            return true;
+        if (obj == null)
+            return false;
+        if (getClass() != obj.getClass())
+            return false;
+        Language other = (Language) obj;
+        if (isoCode_639_2_B == null) {
+            if (other.isoCode_639_2_B != null)
+                return false;
+        } else if (!isoCode_639_2_B.equals(other.isoCode_639_2_B))
+            return false;
+        return true;
     }
-
 }

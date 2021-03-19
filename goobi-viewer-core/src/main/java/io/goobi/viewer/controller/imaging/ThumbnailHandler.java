@@ -154,8 +154,8 @@ public class ThumbnailHandler {
      * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
      */
     public String getThumbnailUrl(String pi) throws IndexUnreachableException, PresentationException, ViewerConfigurationException {
-            return getThumbnailUrl(pi, DataManager.getInstance().getConfiguration().getThumbnailsWidth(),
-                    DataManager.getInstance().getConfiguration().getThumbnailsHeight());
+        return getThumbnailUrl(pi, DataManager.getInstance().getConfiguration().getThumbnailsWidth(),
+                DataManager.getInstance().getConfiguration().getThumbnailsHeight());
     }
 
     /**
@@ -172,22 +172,21 @@ public class ThumbnailHandler {
      */
     public String getThumbnailUrl(String pi, int width, int height)
             throws IndexUnreachableException, PresentationException, ViewerConfigurationException {
-        
-        if(iiifUrlHandler.getUrlManager() != null) {
+
+        if (iiifUrlHandler.getUrlManager() != null) {
             String size = "!" + width + "," + height;
             return iiifUrlHandler.getUrlManager()
                     .path(ApiUrls.RECORDS_RECORD, ApiUrls.RECORDS_IMAGE_IIIF)
                     .params(pi, "full", size, "0", "default", "jpg")
                     .build();
-        } else {            
+        } else {
             SolrDocument doc = DataManager.getInstance().getSearchIndex().getDocumentByPI(pi);
             if (doc != null) {
                 return getThumbnailUrl(doc, width, height);
             }
             return null;
         }
-        
-        
+
     }
 
     /**
@@ -843,16 +842,17 @@ public class ThumbnailHandler {
     public String getThumbnailUrl(Optional<CMSMediaItem> optional, int width, int height) {
         return optional.map(item -> {
             try {
-            String filename = item.getFileName();
-            filename = URLEncoder.encode(filename, "utf-8");
-            String size = getSize(width, height);
-            ImageFileFormat format = ImageFileFormat.JPG;
-            ImageFileFormat formatType = ImageFileFormat.getImageFileFormatFromFileExtension(filename);
-            if (formatType != null && !formatType.getMimeType().matches("(?i)(image\\/(?!png|jpg|gif).*)")) { //match any image-mimetype except jpg and png
-                format = formatType;
-            }
-            String imageApiUrl = getCMSMediaImageApiUrl(filename);
-            String url = this.iiifUrlHandler.getIIIFImageUrl(imageApiUrl, RegionRequest.FULL, Scale.getScaleMethod(size), Rotation.NONE, Colortype.DEFAULT, format);
+                String filename = item.getFileName();
+                filename = URLEncoder.encode(filename, "utf-8");
+                String size = getSize(width, height);
+                ImageFileFormat format = ImageFileFormat.JPG;
+                ImageFileFormat formatType = ImageFileFormat.getImageFileFormatFromFileExtension(filename);
+                if (formatType != null && !formatType.getMimeType().matches("(?i)(image\\/(?!png|jpg|gif).*)")) { //match any image-mimetype except jpg and png
+                    format = formatType;
+                }
+                String imageApiUrl = getCMSMediaImageApiUrl(filename);
+                String url = this.iiifUrlHandler.getIIIFImageUrl(imageApiUrl, RegionRequest.FULL, Scale.getScaleMethod(size), Rotation.NONE,
+                        Colortype.DEFAULT, format);
                 url += "?updated=" + item.getLastModifiedTime();
                 return url;
             } catch (IllegalRequestException | UnsupportedEncodingException e) {
@@ -865,53 +865,53 @@ public class ThumbnailHandler {
     /**
      * Get the thumbnailUrl for a IIIF image identifier with default size
      * 
-     * @param baseUri   IIIF image identifier
+     * @param baseUri IIIF image identifier
      * @return
      */
     public String getThumbnailUrl(URI baseUri) {
         return getThumbnailUrl(baseUri, thumbWidth, thumbHeight, false);
     }
-    
+
     /**
      * Get the thumbnailUrl for a IIIF image identifier
      * 
-     * @param baseUri   IIIF image identifier
-     * @param width     thumbnail width
-     * @param height    thumbnail height
+     * @param baseUri IIIF image identifier
+     * @param width thumbnail width
+     * @param height thumbnail height
      * @return
      */
     public String getThumbnailUrl(URI baseUri, int width, int height) {
         return getThumbnailUrl(baseUri, width, height, false);
     }
-    
+
     /**
      * Get the square thumbnailUrl for a IIIF image identifier with default size
      * 
-     * @param baseUri   IIIF image identifier
+     * @param baseUri IIIF image identifier
      * @return
      */
     public String getSquareThumbnailUrl(URI baseUri) {
         return getThumbnailUrl(baseUri, thumbWidth, thumbWidth, true);
     }
-    
+
     /**
      * Get the square thumbnailUrl for a IIIF image identifier
      * 
-     * @param baseUri   IIIF image identifier
-     * @param size     thumbnail size
+     * @param baseUri IIIF image identifier
+     * @param size thumbnail size
      * @return
      */
     public String getSquareThumbnailUrl(URI baseUri, int size) {
         return getThumbnailUrl(baseUri, size, size, true);
     }
-    
+
     /**
      * Get the thumbnailUrl for a IIIF image identifier
      * 
-     * @param baseUri   IIIF image identifier
-     * @param width     thumbnail width
-     * @param height    thumbnail height
-     * @param square    true to deliver a square image
+     * @param baseUri IIIF image identifier
+     * @param width thumbnail width
+     * @param height thumbnail height
+     * @param square true to deliver a square image
      * @return
      */
     public String getThumbnailUrl(URI baseUri, int width, int height, boolean square) {
@@ -923,35 +923,34 @@ public class ThumbnailHandler {
         }
         RegionRequest region = square ? RegionRequest.SQUARE : RegionRequest.FULL;
         try {
-            String url = this.iiifUrlHandler.getIIIFImageUrl(baseUri.toString(), region, Scale.getScaleMethod(size), Rotation.NONE, Colortype.DEFAULT, format);
+            String url = this.iiifUrlHandler.getIIIFImageUrl(baseUri.toString(), region, Scale.getScaleMethod(size), Rotation.NONE, Colortype.DEFAULT,
+                    format);
             return url;
         } catch (IllegalRequestException e) {
             logger.error("Error creating thumbnail url", e);
             return "";
         }
-}
-
+    }
 
     /**
      * @return
      */
     public static String getCMSMediaImageApiUrl(String filename) {
-        if(DataManager.getInstance().getConfiguration().isUseIIIFApiUrlForCmsMediaUrls()) {
-           return getCMSMediaImageApiUrl(filename, DataManager.getInstance().getRestApiManager().getContentApiUrl());
+        if (DataManager.getInstance().getConfiguration().isUseIIIFApiUrlForCmsMediaUrls()) {
+            return getCMSMediaImageApiUrl(filename, DataManager.getInstance().getRestApiManager().getContentApiUrl());
         } else {
             return getCMSMediaImageApiUrl(filename, DataManager.getInstance().getRestApiManager().getDataApiUrl());
         }
     }
-    
+
     public static String getCMSMediaImageApiUrl(String filename, String restApiUrl) {
-        if(RestApiManager.isLegacyUrl(restApiUrl)) {
+        if (RestApiManager.isLegacyUrl(restApiUrl)) {
             return buildLegacyCMSMediaUrl(restApiUrl, filename);
         } else {
             AbstractApiUrlManager urls = new ApiUrls(restApiUrl);
             return urls.path(CMS_MEDIA, CMS_MEDIA_FILES_FILE).params(filename).build();
         }
     }
-
 
     /**
      * @param contentApiUrl
@@ -969,7 +968,7 @@ public class ThumbnailHandler {
             encFilePath = URLEncoder.encode(encFilePath, "utf-8");
             String url = contentApiUrl + "image/-/" + encFilePath;
             return url;
-        } catch (UnsupportedEncodingException  e) {
+        } catch (UnsupportedEncodingException e) {
             throw new IllegalStateException(e.toString());
         }
     }
@@ -1045,14 +1044,19 @@ public class ThumbnailHandler {
      * @param width
      * @param height
      * @return
+     * @should use width only if height null or zero
+     * @should use height only if width null or zero
+     * @should use width and height if both non zero
+     * @should return max if both zero
      */
-    private static String getSize(Integer width, Integer height) {
+    static String getSize(Integer width, Integer height) {
         String size = "max";
+        // TODO getSize(null, null) will return "null,"
         if (height == null || (height.equals(0) && width != null && !width.equals(0))) {
             size = width + ",";
         } else if ((width == null || (width.equals(0)) && !height.equals(0))) {
             size = "," + height;
-        } else if (!width.equals(0) && !width.equals(0)) {
+        } else if (!width.equals(0) && !height.equals(0)) {
             size = "!" + width + "," + height;
         }
         return size;

@@ -531,21 +531,26 @@ public class FileTools {
      * 
      * @param pathString
      * @return The filename, or an empty String if it could not be determined
+     * @throws FileNotFoundException 
      * @should return file name correctly
      */
-    public static String getFilenameFromPathString(String pathString) {
+    public static String getFilenameFromPathString(String pathString) throws FileNotFoundException {
         if (StringUtils.isBlank(pathString)) {
             return "";
         }
 
         Path path = getPathFromUrlString(pathString);
+        if (path == null) {
+            throw new FileNotFoundException(pathString);
+        }
         return path.getFileName().toString();
     }
 
     /**
      * Creates a Path from the given URL in a way that word on Windows machines.
      * 
-     * @param urlString Relative or absolute path or URL, with or without protocol. If a URL parameter is in itself a complete URL, it must be escaped first!
+     * @param urlString Relative or absolute path or URL, with or without protocol. If a URL parameter is in itself a complete URL, it must be escaped
+     *            first!
      * @return Constructed Path
      */
     public static Path getPathFromUrlString(String urlString) {
