@@ -543,7 +543,7 @@ public class AdminBean implements Serializable {
             return;
         }
 
-        if (currentUserGroup != null || currentUserGroup.getMemberships().contains(currentUserRole)) {
+        if (currentUserGroup != null && currentUserGroup.getMemberships().contains(currentUserRole)) {
             currentUserGroup.getMemberships().add(currentUserRole);
             dirtyUserRoles.put(currentUserRole, "save");
         }
