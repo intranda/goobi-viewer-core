@@ -5,12 +5,27 @@
 <div ref="container" class="swiper-container slider-{this.styleName}__container">
 	<div class="swiper-wrapper slider-{this.styleName}__wrapper">
 		<div each="{slide in slides}" class="swiper-slide slider-{this.styleName}__slide">
-			<a class="slider-{this.styleName}__link" href="{getLink(slide)}" target="{this.linkTarget}">
-				<h3 class="slider-{this.styleName}__header">{translate(slide.label)}</h3>
-				<div class="slider-{this.styleName}__image" style="background-image: url({getImage(slide)})">
-				</div>
-				<div class="slider-{this.styleName}__description">{translate(slide.description)}</div>
-			</a>
+			<slide_default if="{getLayout() == 'default'}"
+				stylename="{this.styleName}" 
+				link="{getLink(slide)}" 
+				link_target="{this.linkTarget}" 
+				image="{getImage(slide)}"
+				label="{translate(slide.label)}"
+				description="{translate(slide.description)}"/>
+			<slide_stories if="{getLayout() == 'stories'}"
+				stylename="{this.styleName}" 
+				link="{getLink(slide)}" 
+				link_target="{this.linkTarget}" 
+				image="{getImage(slide)}"
+				label="{translate(slide.label)}"
+				description="{translate(slide.description)}"/>
+			
+<!-- 			<a class="slider-{this.styleName}__link" href="{getLink(slide)}" target="{this.linkTarget}"> -->
+<!-- 				<h3 class="slider-{this.styleName}__header">{translate(slide.label)}</h3> -->
+<!-- 				<div class="slider-{this.styleName}__image" style="background-image: url({getImage(slide)})"> -->
+<!-- 				</div> -->
+<!-- 				<div class="slider-{this.styleName}__description">{translate(slide.description)}</div> -->
+<!-- 			</a> -->
 		</div>
 	</div>
 	<div if="{this.showPaginator}" ref="paginator" class="swiper-pagination slider-{this.styleName}__dots"></div>
@@ -22,8 +37,8 @@
 	this.showPaginator = true;
 
     this.on( 'mount', function() {
-    	// console.log("mounting 'slider.tag' ", this.opts);
 		this.style = this.opts.styles.get(this.opts.style);
+    	console.log("mounting 'slider.tag' ", this.opts, this.style);
 		this.amendStyle(this.style);
 		this.styleName = this.opts.styles.getStyleNameOrDefault(this.opts.style);
     	// console.log("init slider with '" + this.opts.style + "''", this.style);
@@ -150,6 +165,11 @@
     	} else {
     		this.showPaginator = false;
     	}
+    }
+    
+    getLayout() {
+    	let layout = this.style.layout ? this.style.layout : 'default';
+    	return layout;
     }
     
 </script>
