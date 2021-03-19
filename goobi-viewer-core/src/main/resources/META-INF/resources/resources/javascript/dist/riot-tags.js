@@ -2476,14 +2476,14 @@ riot.tag2('slide_stories', '<div class="slider-{this.opts.stylename}__image" rio
 });
 
 
-riot.tag2('slider', '<div ref="container" class="swiper-container slider-{this.styleName}__container"><div class="swiper-wrapper slider-{this.styleName}__wrapper"><div each="{slide in slides}" class="swiper-slide slider-{this.styleName}__slide"><slide_default if="{getLayout() == \'default\'}" stylename="{this.styleName}" link="{getLink(slide)}" link_target="{this.linkTarget}" image="{getImage(slide)}" label="{translate(slide.label)}" description="{translate(slide.description)}"></slide_default><slide_stories if="{getLayout() == \'stories\'}" stylename="{this.styleName}" link="{getLink(slide)}" link_target="{this.linkTarget}" image="{getImage(slide)}" label="{translate(slide.label)}" description="{translate(slide.description)}"></slide_stories></div></div><div if="{this.showPaginator}" ref="paginator" class="swiper-pagination slider-{this.styleName}__dots"></div></div>', '', '', function(opts) {
+riot.tag2('slider', '<div ref="container" class="swiper-container slider-{this.styleName}__container"><div class="swiper-wrapper slider-{this.styleName}__wrapper"><div each="{slide, index in slides}" class="swiper-slide slider-{this.styleName}__slide" ref="slide_{index}"></div></div><div if="{this.showPaginator}" ref="paginator" class="swiper-pagination slider-{this.styleName}__dots"></div></div>', '', '', function(opts) {
 
 
 	this.showPaginator = true;
 
     this.on( 'mount', function() {
 		this.style = this.opts.styles.get(this.opts.style);
-    	console.log("mounting 'slider.tag' ", this.opts, this.style);
+
 		this.amendStyle(this.style);
 		this.styleName = this.opts.styles.getStyleNameOrDefault(this.opts.style);
 
@@ -2521,10 +2521,14 @@ riot.tag2('slider', '<div ref="container" class="swiper-container slider-{this.s
     });
 
     this.on( 'updated', function() {
+
+    	console.log("layout = ", this.getLayout());
+
     	if(this.slides && this.slides.length > 0) {
     		if(this.slider) {
     			this.slider.destroy();
     		}
+			this.initSlideTags(this.slides);
     		this.swiper = new Swiper(this.refs.container, this.style.swiperConfig);
     	}
     });
@@ -2533,6 +2537,21 @@ riot.tag2('slider', '<div ref="container" class="swiper-container slider-{this.s
 
     	this.slides = slides;
     	this.update();
+    }.bind(this)
+
+    this.initSlideTags = function(slides) {
+    	slides.forEach( (slide, index) => {
+    		let tagElement = this.refs["slide_" + index];
+
+    		riot.mount(tagElement, "slide_" + this.getLayout(),  {
+    			stylename: this.styleName,
+   				link: this.getLink(slide),
+   				link_target: this.linkTarget,
+   				image: this.getImage(slide),
+   				label: this.translate(slide.label),
+   				description: this.translate(slide.description),
+    		});
+    	});
     }.bind(this)
 
 	this.getElements = function(source) {
