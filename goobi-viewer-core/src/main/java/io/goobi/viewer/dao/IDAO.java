@@ -1452,6 +1452,16 @@ public interface IDAO {
     public List<CMSPage> getMediaOwners(CMSMediaItem item) throws DAOException;
 
     /**
+     * Get a list of all {@link CMSMediaItem}s which contain the given category
+     * 
+     * @param category
+     * @return  all containing cmsPages
+     * @throws DAOException
+     */
+    List<CMSMediaItem> getCMSMediaItemsByCategory(CMSCategory category) throws DAOException;
+
+    
+    /**
      * <p>
      * getAllTopCMSNavigationItems.
      * </p>
@@ -2235,4 +2245,5 @@ public interface IDAO {
 
     List<CMSPage> getPagesUsingSlider(CMSSlider slider) throws DAOException
     ;
+
 }

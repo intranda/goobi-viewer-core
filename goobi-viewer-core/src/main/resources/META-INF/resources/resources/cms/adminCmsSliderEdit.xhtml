@@ -220,7 +220,7 @@
 												</div>
 											</c:when>
 	
-											<c:when test="#{slider.sourceType == 'PAGES'}">
+											<c:when test="#{slider.sourceType == 'PAGES' or slider.sourceType == 'MEDIA'}">
 												<div class="form-group form-row">
 													<div class="col-2 control-label admin__form-label">
 														<label for="categoriesSelect"> #{msg.categories}: <span

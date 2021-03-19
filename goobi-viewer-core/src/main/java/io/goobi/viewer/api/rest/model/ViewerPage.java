@@ -33,7 +33,7 @@ public class ViewerPage {
 
     public final URI link;
     public final IContent image;
-    public final IMetadataValue header;
+    public final IMetadataValue label;
     public final IMetadataValue description;
     /**
      * @param link
@@ -41,16 +41,16 @@ public class ViewerPage {
      * @param header
      * @param description
      */
-    public ViewerPage(URI link, IContent image, IMetadataValue header, IMetadataValue description) {
+    public ViewerPage(URI link, IContent image, IMetadataValue label, IMetadataValue description) {
         super();
         this.link = link;
         this.image = image;
-        this.header = header;
+        this.label = label;
         this.description = description;
     }
     
     public ViewerPage(CMSPage page) {
-        this.header = page.getTitleTranslations();
+        this.label = page.getTitleTranslations();
         this.description = page.getPreviewTranslations();
         this.link = URI.create(page.getUrl());
         this.image = page.getGlobalContentItems().stream()

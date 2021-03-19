@@ -3231,6 +3231,20 @@ public class JPADAO implements IDAO {
             }
         }
     }
+    
+    /* (non-Javadoc)
+     * @see io.goobi.viewer.dao.IDAO#getCMSPagesByCategory(io.goobi.viewer.model.cms.Category)
+     */
+    /** {@inheritDoc} */
+    @Override
+    @SuppressWarnings("unchecked")
+    public List<CMSMediaItem> getCMSMediaItemsByCategory(CMSCategory category) throws DAOException {
+        preQuery();
+        Query q = getEntityManager().createQuery("SELECT DISTINCT media FROM CMSMediaItem media JOIN media.categories category WHERE category.id = :id");
+        q.setParameter("id", category.getId());
+        List<CMSMediaItem> pageList = q.getResultList();
+        return pageList;
+    }
 
     /** {@inheritDoc} */
     @SuppressWarnings("unchecked")

@@ -201,6 +201,7 @@ public class CMSSlider implements Serializable {
             case COLLECTIONS:
                 return this.collections.isEmpty();
             case PAGES:
+            case MEDIA:
                 return this.categories.isEmpty();
             case RECORDS:
                 return StringUtils.isBlank(this.solrQuery);
@@ -212,7 +213,8 @@ public class CMSSlider implements Serializable {
     public static enum SourceType {
         RECORDS("label__records"), //has solrQuery
         COLLECTIONS("cms_collections"), //has collections
-        PAGES("label__cms_pages"); //has categories
+        PAGES("label__cms_pages"), //has categories
+        MEDIA("cms_overviewMedia"); //has categories
     
         private final String label;
         

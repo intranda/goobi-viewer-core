@@ -6,7 +6,7 @@
 	<div class="swiper-wrapper slider-{this.styleName}__wrapper">
 		<div each="{slide in slides}" class="swiper-slide slider-{this.styleName}__slide">
 			<a class="slider-{this.styleName}__link" href="{getLink(slide)}" target="{this.linkTarget}">
-				<h3 class="slider-{this.styleName}__header">{translate(slide.header)}</h3>
+				<h3 class="slider-{this.styleName}__header">{translate(slide.label)}</h3>
 				<div class="slider-{this.styleName}__image" style="background-image: url({getImage(slide)})">
 				</div>
 				<div class="slider-{this.styleName}__description">{translate(slide.description)}</div>
@@ -87,7 +87,7 @@
 //     	console.log("got element ", element);
     	if(viewerJS.iiif.isCollection(element) || viewerJS.iiif.isManifest(element)) {
     		let slide = { 
-    				header : element.label,
+    				label : element.label,
     				description : element.description,
     				image : element.thumbnail,
     				link : viewerJS.iiif.getId(viewerJS.iiif.getViewerPage(element))
