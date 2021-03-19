@@ -1371,7 +1371,11 @@ public class ActiveDocumentBean implements Serializable {
      */
     public String getTitleBarLabel(String language)
             throws IndexUnreachableException, PresentationException, DAOException, ViewerConfigurationException {
-        if (navigationHelper != null && PageType.getByName(navigationHelper.getCurrentPage()) != null
+        if (navigationHelper == null) {
+            return null;
+        }
+        
+        if (PageType.getByName(navigationHelper.getCurrentPage()) != null
                 && PageType.getByName(navigationHelper.getCurrentPage()).isDocumentPage() && viewManager != null) {
             // Prefer the label of the current TOC element
             TOC toc = getToc();
