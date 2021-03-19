@@ -298,13 +298,15 @@
 										
 
 									</div>
-									<h3>#{msg.title__preview}</h3>
-									<h:panelGroup layout="block" id="previewSlider" class="cms-sliders-select__preview" rendered="#{slider != null}">
-										<div class="cms-sliders-select__preview-inner">
-											<h:outputText id="previewSource" class="hidden" value="#{cmsSliderEditBean.sliderSource}"></h:outputText>
-											<viewerComponent:cmsSlider slider="#{slider}" sourceElement="previewSource" linkTarget="none"/>
-											<div class="swiper-pagination"></div>
-										</div>
+									<h:panelGroup id="previewSlider" >
+										<h:panelGroup layout="block" class="cms-sliders-select__preview" rendered="#{not slider.isEmpty()}">
+											<h3>#{msg.title__preview}</h3>
+											<div class="cms-sliders-select__preview-inner">
+												<h:outputText id="previewSource" class="hidden" value="#{cmsSliderEditBean.sliderSource}"></h:outputText>
+												<viewerComponent:cmsSlider slider="#{slider}" sourceElement="previewSource" linkTarget="none"/>
+												<div class="swiper-pagination"></div>
+											</div>
+										</h:panelGroup>
 									</h:panelGroup>
 								</div>
 								

@@ -27,6 +27,8 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
+import org.apache.commons.lang3.StringUtils;
+
 import io.goobi.viewer.dao.converter.StringListConverter;
 
 /**
@@ -190,9 +192,21 @@ public class CMSSlider implements Serializable {
         return sourceType;
     }
     
-    public String getSourceUrl() {
-        //TODO: return rest url, probably something like "/api/v1/slider/1/source.json"
-        return null;
+    /**
+     * 
+     * @return true if either {@link #solrQuery}, {@link #collections} or {@link #categories} is empty, depending on the {@link sourceType}
+     */
+    public boolean isEmpty() {
+        switch(sourceType) {
+            case COLLECTIONS:
+                return this.collections.isEmpty();
+            case PAGES:
+                return this.categories.isEmpty();
+            case RECORDS:
+                return StringUtils.isBlank(this.solrQuery);
+            default:
+                return true;
+        }
     }
     
     public static enum SourceType {

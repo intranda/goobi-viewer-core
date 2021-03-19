@@ -55,6 +55,7 @@ public class ViewerPage {
         this.link = URI.create(page.getUrl());
         this.image = page.getGlobalContentItems().stream()
                 .filter(item -> CMSContentItemType.MEDIA.equals(item.getType()))
+                .sorted()
                 .map(item -> MediaItem.getMediaResource(item.getMediaItem()))
                 .findFirst().orElse(null);
     }
