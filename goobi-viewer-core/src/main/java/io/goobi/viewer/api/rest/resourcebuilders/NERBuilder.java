@@ -15,10 +15,6 @@
  */
 package io.goobi.viewer.api.rest.resourcebuilders;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
@@ -44,12 +40,9 @@ import io.goobi.viewer.api.rest.v1.ApiUrls;
 import io.goobi.viewer.controller.ALTOTools;
 import io.goobi.viewer.controller.DataFileTools;
 import io.goobi.viewer.controller.DataManager;
-import io.goobi.viewer.controller.NetTools;
 import io.goobi.viewer.controller.SolrConstants;
 import io.goobi.viewer.controller.SolrSearchIndex;
-import io.goobi.viewer.exceptions.AccessDeniedException;
 import io.goobi.viewer.exceptions.DAOException;
-import io.goobi.viewer.exceptions.HTTPException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.exceptions.ViewerConfigurationException;
@@ -161,7 +154,7 @@ public class NERBuilder {
         return new DocumentReference();
     }
     
-    private Integer getPageOrder(SolrDocument solrDoc) {
+    private static Integer getPageOrder(SolrDocument solrDoc) {
         Integer order = (Integer) solrDoc.getFieldValue(SolrConstants.ORDER);
         return order;
     }
@@ -179,7 +172,7 @@ public class NERBuilder {
             }
         }
         TagGroup group;
-        if (firstPage == lastPage) {
+        if (firstPage != null && firstPage.equals(lastPage)) {
             group = new PageReference(firstPage);
         } else {
             group = new MultiPageReference(firstPage, lastPage);
