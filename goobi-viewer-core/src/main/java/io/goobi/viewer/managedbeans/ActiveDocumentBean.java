@@ -703,7 +703,9 @@ public class ActiveDocumentBean implements Serializable {
      * @return the imageToShow
      */
     public int getImageToShow() {
-        return imageToShow;
+        synchronized (this) {
+            return imageToShow;
+        }
     }
 
     /**
@@ -742,11 +744,13 @@ public class ActiveDocumentBean implements Serializable {
      * @return the logid
      */
     public String getLogid() {
-        if (StringUtils.isEmpty(logid)) {
-            return "-";
-        }
+        synchronized (this) {
+            if (StringUtils.isEmpty(logid)) {
+                return "-";
+            }
 
-        return logid;
+            return logid;
+        }
     }
 
     /**
@@ -801,7 +805,9 @@ public class ActiveDocumentBean implements Serializable {
      * @return the action
      */
     public String getAction() {
-        return action;
+        synchronized (this) {
+            return action;
+        }
     }
 
     /**
@@ -879,10 +885,12 @@ public class ActiveDocumentBean implements Serializable {
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      */
     public String getPersistentIdentifier() throws IndexUnreachableException {
-        if (viewManager != null) {
-            return viewManager.getPi();
+        synchronized (this) {
+            if (viewManager != null) {
+                return viewManager.getPi();
+            }
+            return "-";
         }
-        return "-";
     }
 
     /**
@@ -1279,7 +1287,9 @@ public class ActiveDocumentBean implements Serializable {
      * @return a int.
      */
     public int getTocCurrentPage() {
-        return tocCurrentPage;
+        synchronized (this) {
+            return tocCurrentPage;
+        }
     }
 
     /**
@@ -1374,7 +1384,7 @@ public class ActiveDocumentBean implements Serializable {
         if (navigationHelper == null) {
             return null;
         }
-        
+
         if (PageType.getByName(navigationHelper.getCurrentPage()) != null
                 && PageType.getByName(navigationHelper.getCurrentPage()).isDocumentPage() && viewManager != null) {
             // Prefer the label of the current TOC element
@@ -1597,7 +1607,9 @@ public class ActiveDocumentBean implements Serializable {
      * @return a int.
      */
     public int getCurrentThumbnailPage() {
-        return viewManager != null ? viewManager.getCurrentThumbnailPage() : 1;
+        synchronized (this) {
+            return viewManager != null ? viewManager.getCurrentThumbnailPage() : 1;
+        }
     }
 
     /**
