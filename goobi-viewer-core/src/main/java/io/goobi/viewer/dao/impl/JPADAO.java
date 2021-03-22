@@ -103,7 +103,8 @@ public class JPADAO implements IDAO {
     static final String KEY_FIELD_SEPARATOR = "-";
 
     private final EntityManagerFactory factory;
-    private ThreadLocal<EntityManager> threadLocalEm = new ThreadLocal<>();
+    // private ThreadLocal<EntityManager> threadLocalEm = new ThreadLocal<>();
+    private EntityManager em;
     private Object cmsRequestLock = new Object();
     private Object crowdsourcingRequestLock = new Object();
 
@@ -137,11 +138,17 @@ public class JPADAO implements IDAO {
      * @return {@link javax.persistence.EntityManager} for the current thread
      */
     public EntityManager getEntityManager() {
-        if (threadLocalEm.get() == null) {
-            threadLocalEm.set(factory.createEntityManager());
+        //        if (threadLocalEm.get() == null) {
+        //            threadLocalEm.set(factory.createEntityManager());
+        //        }
+        //
+        //        return threadLocalEm.get();
+
+        if (em == null) {
+            em = factory.createEntityManager();
         }
 
-        return threadLocalEm.get();
+        return em;
     }
 
     /**
@@ -170,7 +177,8 @@ public class JPADAO implements IDAO {
             factory = Persistence.createEntityManagerFactory(persistenceUnitName);
             currentThread.setContextClassLoader(saveClassLoader);
 
-            threadLocalEm.set(factory.createEntityManager());
+            // threadLocalEm.set(factory.createEntityManager());
+            em = factory.createEntityManager();
             preQuery();
         } catch (DatabaseException | PersistenceException e) {
             logger.error(e.getMessage(), e);
@@ -3731,9 +3739,9 @@ public class JPADAO implements IDAO {
         if (factory != null && factory.isOpen()) {
             factory.close();
         }
-        if (threadLocalEm.get() != null) {
-            threadLocalEm.remove();
-        }
+        //        if (threadLocalEm.get() != null) {
+        //            threadLocalEm.remove();
+        //        }
 
         // This is MySQL specific, but needed to prevent OOMs when redeploying
         //        try {
@@ -3755,7 +3763,8 @@ public class JPADAO implements IDAO {
             throw new DAOException("EntityManager is not initialized");
         }
         if (!getEntityManager().isOpen()) {
-            threadLocalEm.set(factory.createEntityManager());
+            // threadLocalEm.set(factory.createEntityManager());
+            em = factory.createEntityManager();
         }
     }
 
