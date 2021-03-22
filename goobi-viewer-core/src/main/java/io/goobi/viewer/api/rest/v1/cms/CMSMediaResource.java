@@ -166,11 +166,11 @@ public class CMSMediaResource {
     @CORSBinding
     public static StreamingOutput getPDFMediaItemContent(@PathParam("filename") String filename, @Context HttpServletResponse response)
             throws ContentNotFoundException, DAOException {
-
+        String decFilename = StringTools.decodeUrl(filename);
         Path path = Paths.get(
                 DataManager.getInstance().getConfiguration().getViewerHome(), 
                 DataManager.getInstance().getConfiguration().getCmsMediaFolder(),
-                filename);
+                decFilename);
             if (Files.exists(path)) {
                 return new StreamingOutput() {
 
@@ -199,11 +199,12 @@ public class CMSMediaResource {
     @javax.ws.rs.Path(CMS_MEDIA_FILES_FILE_HTML)
     @Produces({ MediaType.TEXT_HTML })
     public static String getMediaItemContent(@PathParam("filename") String filename) throws ContentNotFoundException, DAOException {
-
+        
+        String decFilename = StringTools.decodeUrl(filename);
         Path path = Paths.get(
                 DataManager.getInstance().getConfiguration().getViewerHome(), 
                 DataManager.getInstance().getConfiguration().getCmsMediaFolder(),
-                filename);
+                decFilename);
         if (Files.isRegularFile(path)) {
                 try {
                     String encoding = "windows-1252";

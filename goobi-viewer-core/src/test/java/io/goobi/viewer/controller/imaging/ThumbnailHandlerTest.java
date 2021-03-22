@@ -16,8 +16,10 @@
 package io.goobi.viewer.controller.imaging;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 
 import java.io.UnsupportedEncodingException;
+import java.net.URI;
 import java.net.URLEncoder;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -243,6 +245,19 @@ public class ThumbnailHandlerTest extends AbstractTest {
 
         String thumbUrlV1 = ThumbnailHandler.getCMSMediaImageApiUrl(filename, currentApiUrl);
         assertEquals(currentApiUrl + ApiUrls.CMS_MEDIA + ApiUrls.CMS_MEDIA_FILES_FILE.replace("{filename}", filename), thumbUrlV1);
+    }
+    
+    @Test
+    public void testGetCMSMediaImageApiUrl_withSpaces() {
+
+        String currentApiUrl = "https://viewer.goobi.io/api/v1";
+
+        String filename = "Some PDF.pdf";
+        String encFilename = StringTools.encodeUrl(filename);
+
+        String thumbUrlV1 = ThumbnailHandler.getCMSMediaImageApiUrl(filename, currentApiUrl);
+        assertEquals(currentApiUrl + ApiUrls.CMS_MEDIA + ApiUrls.CMS_MEDIA_FILES_FILE.replace("{filename}", encFilename), thumbUrlV1);
+        assertNotNull(URI.create(thumbUrlV1));
     }
 
     @Test

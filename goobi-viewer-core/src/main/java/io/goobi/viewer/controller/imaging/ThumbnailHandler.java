@@ -15,12 +15,13 @@
  */
 package io.goobi.viewer.controller.imaging;
 
+import static io.goobi.viewer.api.rest.v1.ApiUrls.CMS_MEDIA;
+import static io.goobi.viewer.api.rest.v1.ApiUrls.CMS_MEDIA_FILES_FILE;
+
 import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URLEncoder;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.Optional;
 
@@ -30,7 +31,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import de.intranda.api.iiif.IIIFUrlResolver;
-import de.intranda.monitoring.timer.Time;
 import de.unigoettingen.sub.commons.contentlib.exceptions.IllegalRequestException;
 import de.unigoettingen.sub.commons.contentlib.imagelib.ImageFileFormat;
 import de.unigoettingen.sub.commons.contentlib.imagelib.ImageType.Colortype;
@@ -38,9 +38,7 @@ import de.unigoettingen.sub.commons.contentlib.imagelib.transform.Region;
 import de.unigoettingen.sub.commons.contentlib.imagelib.transform.RegionRequest;
 import de.unigoettingen.sub.commons.contentlib.imagelib.transform.Rotation;
 import de.unigoettingen.sub.commons.contentlib.imagelib.transform.Scale;
-import de.unigoettingen.sub.commons.util.PathConverter;
 import io.goobi.viewer.api.rest.AbstractApiUrlManager;
-import io.goobi.viewer.api.rest.AbstractApiUrlManager.ApiPath;
 import io.goobi.viewer.api.rest.v1.ApiUrls;
 import io.goobi.viewer.controller.Configuration;
 import io.goobi.viewer.controller.DataManager;
@@ -58,7 +56,6 @@ import io.goobi.viewer.model.cms.CMSMediaItem;
 import io.goobi.viewer.model.viewer.PhysicalElement;
 import io.goobi.viewer.model.viewer.StructElement;
 import io.goobi.viewer.model.viewer.pageloader.LeanPageLoader;
-import static io.goobi.viewer.api.rest.v1.ApiUrls.*;
 
 /**
  * Delivers Thumbnail urls for pages and StructElements
@@ -843,7 +840,6 @@ public class ThumbnailHandler {
         return optional.map(item -> {
             try {
                 String filename = item.getFileName();
-                filename = URLEncoder.encode(filename, "utf-8");
                 String size = getSize(width, height);
                 ImageFileFormat format = ImageFileFormat.JPG;
                 ImageFileFormat formatType = ImageFileFormat.getImageFileFormatFromFileExtension(filename);
@@ -855,7 +851,7 @@ public class ThumbnailHandler {
                         Colortype.DEFAULT, format);
                 url += "?updated=" + item.getLastModifiedTime();
                 return url;
-            } catch (IllegalRequestException | UnsupportedEncodingException e) {
+            } catch (IllegalRequestException e) {
                 logger.error(e.toString(), e);
                 return "";
             }
@@ -948,7 +944,7 @@ public class ThumbnailHandler {
             return buildLegacyCMSMediaUrl(restApiUrl, filename);
         } else {
             AbstractApiUrlManager urls = new ApiUrls(restApiUrl);
-            return urls.path(CMS_MEDIA, CMS_MEDIA_FILES_FILE).params(filename).build();
+            return urls.path(CMS_MEDIA, CMS_MEDIA_FILES_FILE).params(StringTools.encodeUrl(filename)).build();
         }
     }
 

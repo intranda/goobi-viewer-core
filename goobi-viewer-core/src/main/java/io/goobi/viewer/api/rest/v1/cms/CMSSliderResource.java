@@ -142,6 +142,7 @@ public class CMSSliderResource {
                 .map(this::getCategoryById)
                 .filter(category -> category != null)
                 .flatMap(category -> getMediaForCategory(category).stream())
+                .sorted( (item1,item2) -> Integer.compare(item1.getDisplayOrder(), item2.getDisplayOrder()))
                 .map(this::getApiUrl)
                 .collect(Collectors.toList());
     }
