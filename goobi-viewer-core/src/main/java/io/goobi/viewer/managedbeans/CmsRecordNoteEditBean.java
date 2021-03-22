@@ -180,18 +180,20 @@ public class CmsRecordNoteEditBean implements Serializable, IPolyglott {
      * @throws PresentationException
      */
     private MetadataElement loadMetadataElement(String recordPi, int index) throws PresentationException, IndexUnreachableException, DAOException {
-        if (StringUtils.isNotBlank(recordPi)) {
-            SolrDocument solrDoc = DataManager.getInstance().getSearchIndex().getDocumentByPI(recordPi);
-            if (solrDoc != null) {
-                if (this.note != null) {
-                    this.note.setRecordTitle(createRecordTitle(solrDoc));
-                }
-                StructElement structElement = new StructElement(solrDoc);
-                MetadataElement metadataElement = new MetadataElement(structElement, index, BeanUtils.getLocale(), getSelectedLocale().getLanguage());
-                return metadataElement;
-            }
+        if (StringUtils.isBlank(recordPi)) {
+            return null;
         }
-        return null;
+
+        SolrDocument solrDoc = DataManager.getInstance().getSearchIndex().getDocumentByPI(recordPi);
+        if (solrDoc == null) {
+            return null;
+        }
+
+        if (this.note != null) {
+            this.note.setRecordTitle(createRecordTitle(solrDoc));
+        }
+        StructElement structElement = new StructElement(solrDoc);
+        return new MetadataElement().init(structElement, index, BeanUtils.getLocale()).setSelectedRecordLanguage(getSelectedLocale().getLanguage());
     }
 
     /**
