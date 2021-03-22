@@ -948,7 +948,7 @@ public class ThumbnailHandler {
             return buildLegacyCMSMediaUrl(restApiUrl, filename);
         } else {
             AbstractApiUrlManager urls = new ApiUrls(restApiUrl);
-            return urls.path(CMS_MEDIA, CMS_MEDIA_FILES_FILE).params(filename).build();
+            return urls.path(CMS_MEDIA, CMS_MEDIA_FILES_FILE).params(StringTools.encodeUrl(filename)).build();
         }
     }
 
