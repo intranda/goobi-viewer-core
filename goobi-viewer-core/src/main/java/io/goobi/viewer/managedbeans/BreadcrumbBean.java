@@ -434,7 +434,7 @@ public class BreadcrumbBean implements Serializable {
         }
         // If volume name is the same as anchor name, add the volume number, otherwise the volume breadcrumb will be rejected as a duplicate
         if (anchorName != null && anchorName.getValue().equals(name.getValue())) {
-            StringBuilder sb = new StringBuilder(name.getValue().get());
+            StringBuilder sb = new StringBuilder(name.getValue().isPresent() ? name.getValue().get() : "");
             sb.append(" (");
             if (viewManager.getTopDocument().getMetadataValue(SolrConstants.CURRENTNO) != null) {
                 sb.append(viewManager.getTopDocument().getMetadataValue(SolrConstants.CURRENTNO));

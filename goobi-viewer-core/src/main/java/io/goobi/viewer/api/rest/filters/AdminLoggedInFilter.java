@@ -38,23 +38,23 @@ public class AdminLoggedInFilter implements ContainerRequestFilter {
 
     @Context
     private HttpServletRequest servletRequest;
-    
+
     /* (non-Javadoc)
      * @see javax.ws.rs.container.ContainerRequestFilter#filter(javax.ws.rs.container.ContainerRequestContext)
      */
     @Override
     public void filter(ContainerRequestContext requestContext) throws IOException {
-        if(!isAdminLoggedIn(servletRequest)) {
+        if (!isAdminLoggedIn(servletRequest)) {
             Response response = Response.status(Response.Status.UNAUTHORIZED)
                     .entity("You must be logged in as administrator to access this resource")
                     .build();
             requestContext.abortWith(response);
         }
     }
-    
+
     public static boolean isAdminLoggedIn(HttpServletRequest request) {
         User user = BeanUtils.getUserFromRequest(request);
-        return user == null && user.isSuperuser();
+        return user != null && user.isSuperuser();
     }
 
 }
