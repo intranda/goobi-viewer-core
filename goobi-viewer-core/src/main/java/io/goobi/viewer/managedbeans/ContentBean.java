@@ -120,7 +120,7 @@ public class ContentBean implements Serializable {
      * @throws PresentationException
      * @throws DAOException
      */
-    public List<DisplayUserGeneratedContent> getUserGeneratedContentsForDisplay(PhysicalElement page)
+    public List<DisplayUserGeneratedContent> getUserGeneratedContentsOfPageForDisplay(PhysicalElement page)
             throws PresentationException, IndexUnreachableException, DAOException {
         List<DisplayUserGeneratedContent> content = getUserGeneratedContentsForDisplay(page.getPi()).stream().filter(ugc -> ugc.isOnThisPage(page)).collect(Collectors.toList());
         return content;
@@ -180,7 +180,7 @@ public class ContentBean implements Serializable {
      */
     public List<List<String>> getCurrentUGCCoords(PhysicalElement page) throws IndexUnreachableException, PresentationException, DAOException {
         List<DisplayUserGeneratedContent> currentContents;
-        currentContents = getUserGeneratedContentsForDisplay(page);
+        currentContents = getUserGeneratedContentsOfPageForDisplay(page);
         if (currentContents == null) {
             return Collections.emptyList();
         }
