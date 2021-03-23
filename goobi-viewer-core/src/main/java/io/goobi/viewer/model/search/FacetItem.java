@@ -649,7 +649,9 @@ public class FacetItem implements Comparable<FacetItem>, Serializable {
 
         @Override
         public int compare(FacetItem o1, FacetItem o2) {
-            int ret = o1.getLabel().compareTo(o2.getLabel());
+            String label1 = o1.getTranslatedLabel() != null ? o1.getTranslatedLabel() : o1.getLabel();
+            String label2 = o2.getTranslatedLabel() != null ? o2.getTranslatedLabel() : o2.getLabel();
+            int ret = label1.compareTo(label2);
             return ret;
         }
 
