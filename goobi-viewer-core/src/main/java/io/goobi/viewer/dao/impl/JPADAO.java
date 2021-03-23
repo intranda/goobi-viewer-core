@@ -4005,10 +4005,12 @@ public class JPADAO implements IDAO {
     @Override
     @SuppressWarnings("unchecked")
     public List<CMSCollection> getCMSCollections(String solrField) throws DAOException {
-        preQuery();
-        Query q = getEntityManager().createQuery("SELECT c FROM CMSCollection c WHERE c.solrField = :field");
-        q.setParameter("field", solrField);
-        return q.getResultList();
+        synchronized (cmsRequestLock) {
+            preQuery();
+            Query q = getEntityManager().createQuery("SELECT c FROM CMSCollection c WHERE c.solrField = :field");
+            q.setParameter("field", solrField);
+            return q.getResultList();
+        }
     }
 
     /* (non-Javadoc)
