@@ -81,7 +81,7 @@
       this._mouseInit();
       this._calculateNewMax();
 
-      this._addClass( "ui-slider ui-slider-" + this.orientation + ( o.isRTL ? " ui-slider-rtl" : "" ) + // RTL,
+      this._addClass( "ui-slider ui-slider-" + this.orientation + ( o.isRTL ? " ui-slider-rtl" : " " ) + // RTL,
         "ui-widget ui-widget-content" );
 
       this._refresh();
