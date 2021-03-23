@@ -109,6 +109,8 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
     /** Constant <code>defaultVideoHeight=240</code> */
     public static int defaultVideoHeight = 240;
 
+    private final Object lock = new Object();
+
     /** Persistent identifier. */
     private final String pi;
     /** Physical ID from the METS file. */
@@ -1769,15 +1771,24 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
         return containedStructElements;
     }
 
+    /**
+     * 
+     * @return
+     * @throws PresentationException
+     * @throws IndexUnreachableException
+     * @throws JsonProcessingException
+     */
     public String getContainedStructElementsAsJson() throws PresentationException, IndexUnreachableException, JsonProcessingException {
-        List<StructElement> elements = getContainedStructElements();
+        synchronized (lock) {
+            List<StructElement> elements = getContainedStructElements();
 
-        ObjectMapper mapper = new ObjectMapper();
-        List<ShapeMetadata> shapes = elements.stream()
-                .filter(ele -> ele.getShapeMetadata() != null && !ele.getShapeMetadata().isEmpty())
-                .flatMap(ele -> ele.getShapeMetadata().stream())
-                .collect(Collectors.toList());
-        String json = mapper.writeValueAsString(shapes);
-        return json;
+            ObjectMapper mapper = new ObjectMapper();
+            List<ShapeMetadata> shapes = elements.stream()
+                    .filter(ele -> ele.getShapeMetadata() != null && !ele.getShapeMetadata().isEmpty())
+                    .flatMap(ele -> ele.getShapeMetadata().stream())
+                    .collect(Collectors.toList());
+            String json = mapper.writeValueAsString(shapes);
+            return json;
+        }
     }
 }
