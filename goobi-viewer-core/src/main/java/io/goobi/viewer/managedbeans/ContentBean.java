@@ -122,8 +122,12 @@ public class ContentBean implements Serializable {
      */
     public List<DisplayUserGeneratedContent> getUserGeneratedContentsOfPageForDisplay(PhysicalElement page)
             throws PresentationException, IndexUnreachableException, DAOException {
-        List<DisplayUserGeneratedContent> content = getUserGeneratedContentsForDisplay(page.getPi()).stream().filter(ugc -> ugc.isOnThisPage(page)).collect(Collectors.toList());
-        return content;
+        if(page != null) {            
+            List<DisplayUserGeneratedContent> content = getUserGeneratedContentsForDisplay(page.getPi()).stream().filter(ugc -> ugc.isOnThisPage(page)).collect(Collectors.toList());
+            return content;
+        } else {
+            return Collections.emptyList();
+        }
     }
 
     /**

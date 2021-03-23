@@ -2956,9 +2956,11 @@ riot.tag2('timematrix', '<div class="timematrix__objects"><div each="{manifest i
 
 	    this.initSlider = function( sliderSelector, startDate, endDate ) {
 	        let $slider = $( sliderSelector );
+	        let rtl = $( sliderSelector ).closest('[dir="rtl"]').length > 0;
 
 	        $slider.slider( {
 	            range: true,
+	            isRTL: rtl,
 	            min: parseInt( startDate ),
 	            max: parseInt( endDate ),
 	            values: [ startDate, endDate ],
