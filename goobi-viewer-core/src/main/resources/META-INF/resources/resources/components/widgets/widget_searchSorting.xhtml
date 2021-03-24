@@ -13,12 +13,11 @@
     	<h:panelGroup rendered="#{searchBean.sortingEnabled and searchBean.hitsCount > 1}">
 	        <div id="widgetSearchSorting" class="widget">
 	        	<h3>#{msg.sortBy}</h3>
-		
 				<ul>
 					<ui:repeat var="sortField" value="#{configurationBean.sortFields}">
 						<li>
 							<h:outputLink
-								value="#{navigationHelper.searchUrl}/#{searchBean.facets.currentCollection}/#{searchBean.exactSearchString}/#{searchBean.currentPage}/#{sortField}/#{searchBean.facets.currentFacetString}/"
+								value="#{navigationHelper.getSearchUrl(searchBean.activeSearchType)}/#{searchBean.facets.currentCollection}/#{searchBean.exactSearchString}/#{searchBean.currentPage}/#{sortField}/#{searchBean.facets.currentFacetString}/"
 								rendered="#{searchBean.sortString != sortField}">
 								<h:outputText value="#{msg[sortField]}" />
 								<h:panelGroup rendered="#{searchBean.sortString == '!'.concat(sortField)}">
@@ -26,7 +25,7 @@
 								</h:panelGroup>
 							</h:outputLink> 
 							<h:outputLink
-								value="#{navigationHelper.searchUrl}/#{searchBean.facets.currentCollection}/#{searchBean.exactSearchString}/#{searchBean.currentPage}/!#{sortField}/#{searchBean.facets.currentFacetString}/"
+								value="#{navigationHelper.getSearchUrl(searchBean.activeSearchType)}/#{searchBean.facets.currentCollection}/#{searchBean.exactSearchString}/#{searchBean.currentPage}/!#{sortField}/#{searchBean.facets.currentFacetString}/"
 								rendered="#{searchBean.sortString == sortField}">
 								<h:outputText value="#{msg[sortField]}" />
 								<h:graphicImage styleClass="sort_image" library="themes/#{navigationHelper.theme}/images/navigate/" name="arrow_up.png" />

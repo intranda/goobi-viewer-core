@@ -34,6 +34,8 @@ import org.apache.solr.common.SolrDocument;
 import org.apache.solr.common.SolrDocumentList;
 
 import de.intranda.api.annotation.oa.Motivation;
+import de.intranda.api.iiif.IIIFUrlResolver;
+import de.intranda.api.iiif.image.ImageInformation;
 import de.intranda.api.iiif.presentation.AbstractPresentationModelElement;
 import de.intranda.api.iiif.presentation.AnnotationList;
 import de.intranda.api.iiif.presentation.IPresentationModelElement;
@@ -57,6 +59,7 @@ import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.exceptions.ViewerConfigurationException;
+import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.model.iiif.presentation.builder.BuildMode;
 import io.goobi.viewer.model.iiif.presentation.builder.CollectionBuilder;
 import io.goobi.viewer.model.iiif.presentation.builder.LayerBuilder;
@@ -363,10 +366,11 @@ public class IIIFPresentationResourceBuilder {
             if (this.urls != null && manifest.getThumbnails().isEmpty()) {
                 int thumbsWidth = DataManager.getInstance().getConfiguration().getThumbnailsWidth();
                 int thumbsHeight = DataManager.getInstance().getConfiguration().getThumbnailsHeight();
-                String thumbnailUrl = this.urls.path(RECORDS_RECORD, RECORDS_IMAGE_IIIF)
-                        .params(ele.getPi(), "full", "!" + thumbsWidth + "," + thumbsHeight, 0, "default", "jpg")
-                        .build();
-                manifest.addThumbnail(new ImageContent(URI.create(thumbnailUrl)));
+                String thumbnailUrl = BeanUtils.getImageDeliveryBean().getThumbs().getThumbnailUrl(ele.getPi(), thumbsWidth, thumbsHeight);
+                ImageContent thumbnail = new ImageContent(URI.create(thumbnailUrl));
+                String imageInfoURI = IIIFUrlResolver.getIIIFImageBaseUrl(thumbnailUrl);
+                thumbnail.setService(new ImageInformation(imageInfoURI));
+                manifest.addThumbnail(thumbnail);
             }
 
             manifests.add(manifest);

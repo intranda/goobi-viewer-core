@@ -566,6 +566,7 @@ public final class Configuration extends AbstractConfiguration {
         boolean group = sub.getBoolean("[@group]", false);
         int number = sub.getInt("[@number]", -1);
         int type = sub.getInt("[@type]", 0);
+        boolean hideIfOnlyMetadataField = sub.getBoolean("[@hideIfOnlyMetadataField]", false);
         String citationTemplate = sub.getString("[@citationTemplate]");
         List<HierarchicalConfiguration> params = sub.configurationsAt("param");
         List<MetadataParameter> paramList = null;
@@ -640,7 +641,9 @@ public final class Configuration extends AbstractConfiguration {
             }
         }
 
-        return new Metadata(label, masterValue, type, paramList, group, number).setCitationTemplate(citationTemplate);
+        return new Metadata(label, masterValue, type, paramList, group, number)
+                .setHideIfOnlyMetadataField(hideIfOnlyMetadataField)
+                .setCitationTemplate(citationTemplate);
     }
 
     /**
@@ -968,11 +971,10 @@ public final class Configuration extends AbstractConfiguration {
 
         return null;
     }
-    
-    
+
     public List<String> getConfiguredCollectionFields() {
         List<String> list = getLocalList("collections.collection[@field]");
-        if(list == null || list.isEmpty()) {
+        if (list == null || list.isEmpty()) {
             return Collections.singletonList("DC");
         } else {
             return list;
@@ -1375,7 +1377,7 @@ public final class Configuration extends AbstractConfiguration {
     public List<AdvancedSearchFieldConfiguration> getAdvancedSearchFields() {
         List<HierarchicalConfiguration> fieldList = getLocalConfigurationsAt("search.advanced.searchFields.field");
         if (fieldList == null) {
-            Collections.emptyList();
+            return Collections.emptyList();
         }
 
         List<AdvancedSearchFieldConfiguration> ret = new ArrayList<>(fieldList.size());
@@ -4983,7 +4985,7 @@ public final class Configuration extends AbstractConfiguration {
     public HierarchicalConfiguration getBaseXMetadataConfig() {
         return getLocalConfigurationAt("metadata.basexMetadataList");
     }
-    
+
     public boolean isDisplayUserGeneratedContentBelowImage() {
         return getLocalBoolean("webGuiDisplay.displayUserGeneratedContentBelowImage", false);
     }

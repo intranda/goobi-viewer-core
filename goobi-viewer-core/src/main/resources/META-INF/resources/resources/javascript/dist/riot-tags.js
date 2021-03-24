@@ -2470,16 +2470,20 @@ this.addCloseHandler = function() {
 });
 
 
+riot.tag2('slide_default', '<a class="slider-{this.opts.stylename}__link" href="{this.opts.link}" target="{this.opts.link_target}"><h3 class="slider-{this.opts.stylename}__header">{this.opts.label}</h3><div class="slider-{this.opts.stylename}__image" riot-style="background-image: url({this.opts.image})"></div><div class="slider-{this.opts.stylename}__description">{this.opts.description}</div></a>', '', '', function(opts) {
+});
+riot.tag2('slide_stories', '<div class="slider-{this.opts.stylename}__image" riot-style="background-image: url({this.opts.image})"></div><a class="slider-{this.opts.stylename}__info-link" href="{this.opts.link}"><div class="slider-{this.opts.stylename}__info-symbol"><svg width="6" height="13" viewbox="0 0 6 13" fill="none" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" clip-rule="evenodd" d="M4.664 1.21C4.664 2.134 4.092 2.728 3.168 2.728C2.354 2.728 1.936 2.134 1.936 1.474C1.936 0.506 2.706 0 3.454 0C4.136 0 4.664 0.506 4.664 1.21ZM5.258 11.528C4.664 12.1 3.586 12.584 2.42 12.716C1.386 12.496 0.748 11.792 0.748 10.78C0.748 10.362 0.836 9.658 1.1 8.58C1.276 7.81 1.452 6.534 1.452 5.852C1.452 5.588 1.43 5.302 1.408 5.236C1.144 5.17 0.726 5.104 0.198 5.104L0 4.488C0.572 4.07 1.716 3.718 2.398 3.718C3.542 3.718 4.202 4.312 4.202 5.566C4.202 6.248 4.026 7.194 3.828 8.118C3.542 9.328 3.432 10.12 3.432 10.472C3.432 10.802 3.454 11.022 3.542 11.154C3.96 11.066 4.4 10.868 4.928 10.56L5.258 11.528Z" fill="white"></path></svg></div><div class="slider-single-story__info-phrase">{this.opts.label}</div></a>', '', '', function(opts) {
+});
 
 
-riot.tag2('slider', '<div ref="container" class="swiper-container slider-{this.styleName}__container"><div class="swiper-wrapper slider-{this.styleName}__wrapper"><div each="{slide in slides}" class="swiper-slide slider-{this.styleName}__slide"><a class="slider-{this.styleName}__link" href="{getLink(slide)}" target="{this.linkTarget}"><h3 class="slider-{this.styleName}__header">{translate(slide.header)}</h3><div class="slider-{this.styleName}__image" riot-style="background-image: url({getImage(slide)})"></div><div class="slider-{this.styleName}__description">{translate(slide.description)}</div></a></div></div><div if="{this.showPaginator}" ref="paginator" class="swiper-pagination slider-{this.styleName}__dots"></div></div>', '', '', function(opts) {
+riot.tag2('slider', '<div ref="container" class="swiper-container slider-{this.styleName}__container"><div class="swiper-wrapper slider-{this.styleName}__wrapper"><div each="{slide, index in slides}" class="swiper-slide slider-{this.styleName}__slide" ref="slide_{index}"></div></div><div if="{this.showPaginator}" ref="paginator" class="swiper-pagination slider-{this.styleName}__dots"></div></div>', '', '', function(opts) {
 
 
 	this.showPaginator = true;
 
     this.on( 'mount', function() {
-
 		this.style = this.opts.styles.get(this.opts.style);
+
 		this.amendStyle(this.style);
 		this.styleName = this.opts.styles.getStyleNameOrDefault(this.opts.style);
 
@@ -2517,10 +2521,14 @@ riot.tag2('slider', '<div ref="container" class="swiper-container slider-{this.s
     });
 
     this.on( 'updated', function() {
+
+    	console.log("layout = ", this.getLayout());
+
     	if(this.slides && this.slides.length > 0) {
     		if(this.slider) {
     			this.slider.destroy();
     		}
+			this.initSlideTags(this.slides);
     		this.swiper = new Swiper(this.refs.container, this.style.swiperConfig);
     	}
     });
@@ -2529,6 +2537,21 @@ riot.tag2('slider', '<div ref="container" class="swiper-container slider-{this.s
 
     	this.slides = slides;
     	this.update();
+    }.bind(this)
+
+    this.initSlideTags = function(slides) {
+    	slides.forEach( (slide, index) => {
+    		let tagElement = this.refs["slide_" + index];
+
+    		riot.mount(tagElement, "slide_" + this.getLayout(),  {
+    			stylename: this.styleName,
+   				link: this.getLink(slide),
+   				link_target: this.linkTarget,
+   				image: this.getImage(slide),
+   				label: this.translate(slide.label),
+   				description: this.translate(slide.description),
+    		});
+    	});
     }.bind(this)
 
 	this.getElements = function(source) {
@@ -2543,7 +2566,7 @@ riot.tag2('slider', '<div ref="container" class="swiper-container slider-{this.s
 
     	if(viewerJS.iiif.isCollection(element) || viewerJS.iiif.isManifest(element)) {
     		let slide = {
-    				header : element.label,
+    				label : element.label,
     				description : element.description,
     				image : element.thumbnail,
     				link : viewerJS.iiif.getId(viewerJS.iiif.getViewerPage(element))
@@ -2606,6 +2629,11 @@ riot.tag2('slider', '<div ref="container" class="swiper-container slider-{this.s
     	} else {
     		this.showPaginator = false;
     	}
+    }.bind(this)
+
+    this.getLayout = function() {
+    	let layout = this.style.layout ? this.style.layout : 'default';
+    	return layout;
     }.bind(this)
 
 });
@@ -2928,9 +2956,11 @@ riot.tag2('timematrix', '<div class="timematrix__objects"><div each="{manifest i
 
 	    this.initSlider = function( sliderSelector, startDate, endDate ) {
 	        let $slider = $( sliderSelector );
+	        let rtl = $( sliderSelector ).closest('[dir="rtl"]').length > 0;
 
 	        $slider.slider( {
 	            range: true,
+	            isRTL: rtl,
 	            min: parseInt( startDate ),
 	            max: parseInt( endDate ),
 	            values: [ startDate, endDate ],

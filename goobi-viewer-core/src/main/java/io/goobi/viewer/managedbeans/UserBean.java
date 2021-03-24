@@ -29,7 +29,6 @@ import java.util.Random;
 import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.ExecutionException;
-import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import javax.enterprise.context.SessionScoped;
@@ -71,6 +70,7 @@ import io.goobi.viewer.model.security.authentication.IAuthenticationProvider;
 import io.goobi.viewer.model.security.authentication.LoginResult;
 import io.goobi.viewer.model.security.user.User;
 import io.goobi.viewer.model.security.user.UserGroup;
+import io.goobi.viewer.model.security.user.UserTools;
 import io.goobi.viewer.model.transkribus.TranskribusUtils;
 import io.goobi.viewer.model.urlresolution.ViewHistory;
 import io.goobi.viewer.model.urlresolution.ViewerPath;
@@ -113,6 +113,9 @@ public class UserBean implements Serializable {
     private Feedback feedback;
     private String transkribusUserName;
     private String transkribusPassword;
+
+    /** Reusable Random object. */
+    Random random = new Random();
 
     // private CompletableFuture<Optional<User>> loginFuture = null;
 
@@ -538,8 +541,7 @@ public class UserBean implements Serializable {
                     logger.warn("No backup user object found, cannot restore data in case of cancellation / error.");
                 }
                 // Do not allow the same nickname being used for multiple users
-                User nicknameOwner = DataManager.getInstance().getDao().getUserByNickname(user.getNickName()); // This basically resets all changes
-                if (nicknameOwner != null && nicknameOwner.getId() != user.getId()) {
+                if (UserTools.isNicknameInUse(user.getNickName(), user.getId())) {
                     Messages.error(ViewerResourceBundle.getTranslation("user_nicknameTaken", null).replace("{0}", user.getNickName().trim()));
                     user = copy;
                     if (copy.getCopy() != null) {
@@ -811,16 +813,16 @@ public class UserBean implements Serializable {
             logger.debug("Honeypot field entry: {}", lastName);
             return "";
         }
-        if(!EmailValidator.validateEmailAddress(this.feedback.getEmail())) {
+        if (!EmailValidator.validateEmailAddress(this.feedback.getEmail())) {
             Messages.error("email_errlnvalid");
             logger.debug("Invalid email: " + this.feedback.getEmail());
             return "";
         }
-        if(StringUtils.isBlank(feedback.getName())) {
+        if (StringUtils.isBlank(feedback.getName())) {
             Messages.error("errFeedbackNameRequired");
             return "";
         }
-        if(StringUtils.isBlank(feedback.getMessage())) {
+        if (StringUtils.isBlank(feedback.getMessage())) {
             Messages.error("errFeedbackMessageRequired");
             return "";
         }
@@ -1150,8 +1152,6 @@ public class UserBean implements Serializable {
             // Do not reset if not set set or not yet answered
             return true;
         }
-
-        Random random = new Random();
         securityQuestion = questions.get(random.nextInt(questions.size()));
 
         return true;

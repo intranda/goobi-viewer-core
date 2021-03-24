@@ -178,4 +178,32 @@ public class StringToolsTest {
     public void generateMD5_shouldHashStringCorrectly() throws Exception {
         Assert.assertEquals("098f6bcd4621d373cade4e832627b4f6", StringTools.generateMD5("test"));
     }
+
+    /**
+     * @see StringTools#checkValueEmptyOrInverted(String)
+     * @verifies return true if value null or empty
+     */
+    @Test
+    public void checkValueEmptyOrInverted_shouldReturnTrueIfValueNullOrEmpty() throws Exception {
+        Assert.assertTrue(StringTools.checkValueEmptyOrInverted(null));
+        Assert.assertTrue(StringTools.checkValueEmptyOrInverted(""));
+    }
+
+    /**
+     * @see StringTools#checkValueEmptyOrInverted(String)
+     * @verifies return true if value starts with 0x1
+     */
+    @Test
+    public void checkValueEmptyOrInverted_shouldReturnTrueIfValueStartsWith0x1() throws Exception {
+        Assert.assertTrue(StringTools.checkValueEmptyOrInverted("oof"));
+    }
+
+    /**
+     * @see StringTools#checkValueEmptyOrInverted(String)
+     * @verifies return false otherwise
+     */
+    @Test
+    public void checkValueEmptyOrInverted_shouldReturnFalseOtherwise() throws Exception {
+        Assert.assertFalse(StringTools.checkValueEmptyOrInverted("foo"));
+    }
 }

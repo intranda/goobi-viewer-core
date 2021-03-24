@@ -425,17 +425,19 @@ public class NavigationHelper implements Serializable {
      * @param status a {@link io.goobi.viewer.model.crowdsourcing.campaigns.CampaignRecordStatistic.CampaignRecordStatus} object.
      */
     public void setCrowdsourcingAnnotationPage(Campaign campaign, String pi, CampaignRecordStatus status) {
+        if (campaign == null) {
+            return;
+        }
         String urlActionParam = CampaignRecordStatus.REVIEW.equals(status) ? "review" : "annotate";
         setCurrentPage("crowdsourcingAnnotation", false, true);
-        if (campaign != null) {
-            breadcrumbBean.updateBreadcrumbs(new LabeledLink(campaign.getMenuTitleOrElseTitle(getLocaleString(), true),
-                    BeanUtils.getServletPathWithHostAsUrlFromJsfContext() + "/campaigns/" + campaign.getId() + "/" + urlActionParam + "/",
-                    BreadcrumbBean.WEIGHT_CROWDSOURCING_CAMPAIGN));
+        breadcrumbBean.updateBreadcrumbs(new LabeledLink(campaign.getMenuTitleOrElseTitle(getLocaleString(), true),
+                BeanUtils.getServletPathWithHostAsUrlFromJsfContext() + "/campaigns/" + campaign.getId() + "/" + urlActionParam + "/",
+                BreadcrumbBean.WEIGHT_CROWDSOURCING_CAMPAIGN));
 
-        }
         if (pi != null) {
             breadcrumbBean.updateBreadcrumbs(new LabeledLink(pi,
-                    BeanUtils.getServletPathWithHostAsUrlFromJsfContext() + "/campaigns/" + campaign.getId() + "/" + urlActionParam + "/" + pi + "/",
+                    BeanUtils.getServletPathWithHostAsUrlFromJsfContext() + "/campaigns/" + campaign.getId() + "/" + urlActionParam + "/" + pi
+                            + "/",
                     BreadcrumbBean.WEIGHT_CROWDSOURCING_CAMPAIGN_ITEM));
         }
     }
@@ -1255,7 +1257,7 @@ public class NavigationHelper implements Serializable {
      * @return a {@link java.lang.String} object.
      */
     public String getSearchUrl() {
-        return BeanUtils.getServletPathWithHostAsUrlFromJsfContext() + "/" + PageType.search.getName();
+        return getSearchUrl(SearchHelper.SEARCH_TYPE_REGULAR);
     }
 
     /**
@@ -1266,7 +1268,7 @@ public class NavigationHelper implements Serializable {
      * @return a {@link java.lang.String} object.
      */
     public String getAdvancedSearchUrl() {
-        return BeanUtils.getServletPathWithHostAsUrlFromJsfContext() + "/" + PageType.advancedSearch.getName();
+        return getSearchUrl(SearchHelper.SEARCH_TYPE_ADVANCED);
     }
 
     /**
@@ -1695,14 +1697,14 @@ public class NavigationHelper implements Serializable {
         }
         return previousUrl;
     }
-    
+
     public String getCurrentViewPrettyUrl() {
         HttpServletRequest request = (HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest();
         String previousUrl = ViewHistory.getCurrentView(request).map(ViewerPath::getCombinedPrettyfiedUrl).orElse("");
         if (StringUtils.isBlank(previousUrl)) {
             previousUrl = "/";//getApplicationUrl();
-        } else if(previousUrl.endsWith("/")) {
-            previousUrl = previousUrl.substring(0, previousUrl.length()-1);
+        } else if (previousUrl.endsWith("/")) {
+            previousUrl = previousUrl.substring(0, previousUrl.length() - 1);
         }
         return previousUrl;
     }

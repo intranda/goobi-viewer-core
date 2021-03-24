@@ -413,7 +413,7 @@ public class DataFileTools {
     }
 
     public static String loadAlto(String altoFilePath)
-            throws ContentNotFoundException, IndexUnreachableException, DAOException, PresentationException {
+            throws ContentNotFoundException, IndexUnreachableException, PresentationException, FileNotFoundException {
         TextResourceBuilder builder = new TextResourceBuilder();
         if (altoFilePath != null) {
             // ALTO file

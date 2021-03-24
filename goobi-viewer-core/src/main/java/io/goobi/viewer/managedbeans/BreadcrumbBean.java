@@ -161,8 +161,7 @@ public class BreadcrumbBean implements Serializable {
             }
         }
 
-    }    
-
+    }
 
     /**
      * Updates breadcrumbs from the given CMS page (and any breadcrumb predecessor pages).
@@ -435,7 +434,7 @@ public class BreadcrumbBean implements Serializable {
         }
         // If volume name is the same as anchor name, add the volume number, otherwise the volume breadcrumb will be rejected as a duplicate
         if (anchorName != null && anchorName.getValue().equals(name.getValue())) {
-            StringBuilder sb = new StringBuilder(name.getValue().get());
+            StringBuilder sb = new StringBuilder(name.getValue().isPresent() ? name.getValue().get() : "");
             sb.append(" (");
             if (viewManager.getTopDocument().getMetadataValue(SolrConstants.CURRENTNO) != null) {
                 sb.append(viewManager.getTopDocument().getMetadataValue(SolrConstants.CURRENTNO));
@@ -457,16 +456,18 @@ public class BreadcrumbBean implements Serializable {
      */
     public List<LabeledLink> getBreadcrumbs() {
         List<LabeledLink> baseLinks = Collections.synchronizedList(this.breadcrumbs);
-        List<LabeledLink> flattenedLinks = new ArrayList<>();
-        for (LabeledLink labeledLink : baseLinks) {
-            if (labeledLink instanceof CompoundLabeledLink) {
-                flattenedLinks.addAll(((CompoundLabeledLink) labeledLink).getSubLinks());
-            } else {
-                flattenedLinks.add(labeledLink);
+        synchronized (baseLinks) {
+            List<LabeledLink> flattenedLinks = new ArrayList<>();
+            for (LabeledLink labeledLink : baseLinks) {
+                if (labeledLink instanceof CompoundLabeledLink) {
+                    flattenedLinks.addAll(((CompoundLabeledLink) labeledLink).getSubLinks());
+                } else {
+                    flattenedLinks.add(labeledLink);
+                }
             }
+            // logger.trace("getBreadcrumbs: {}", flattenedLinks.toString());
+            return flattenedLinks;
         }
-        // logger.trace("getBreadcrumbs: {}", flattenedLinks.toString());
-        return flattenedLinks;
     }
 
     /**

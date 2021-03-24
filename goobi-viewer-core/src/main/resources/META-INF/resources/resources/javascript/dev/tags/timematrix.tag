@@ -102,9 +102,11 @@
 	
 	    initSlider( sliderSelector, startDate, endDate ) {
 	        let $slider = $( sliderSelector );
+	        let rtl = $( sliderSelector ).closest('[dir="rtl"]').length > 0;
 	        // range slider settings
 	        $slider.slider( {
 	            range: true,
+	            isRTL: rtl,
 	            min: parseInt( startDate ),
 	            max: parseInt( endDate ),
 	            values: [ startDate, endDate ],

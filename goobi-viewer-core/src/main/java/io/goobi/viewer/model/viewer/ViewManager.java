@@ -25,6 +25,7 @@ import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_RECORD;
 import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_TEI_LANG;
 
 import java.awt.Dimension;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.Serializable;
 import java.io.UnsupportedEncodingException;
@@ -557,9 +558,10 @@ public class ViewManager implements Serializable {
     public String getPageDownloadUrl(DownloadOption option) throws IndexUnreachableException, DAOException {
         logger.trace("getPageDownloadUrl: {}", option);
         if (option == null || !option.isValid()) {
-            option = getDownloadOptionsForCurrentImage().stream().findFirst()
+            option = getDownloadOptionsForCurrentImage().stream()
+                    .findFirst()
                     .orElse(null);
-            if(option == null) {
+            if (option == null) {
                 return "";
             }
         }
@@ -579,7 +581,6 @@ public class ViewManager implements Serializable {
                 return getCurrentMasterImageUrl(scale);
         }
 
-
     }
 
     public static List<DownloadOption> getDownloadOptionsForImage(
@@ -588,12 +589,12 @@ public class ViewManager implements Serializable {
             Dimension configuredMaxSize,
             String imageFilename) {
 
-        List<DownloadOption> options = new ArrayList<DownloadOption>();
-        
+        List<DownloadOption> options = new ArrayList<>();
+
         int maxWidth;
         int maxHeight;
         Dimension maxSize;
-        if(origImageSize != null && origImageSize.height*origImageSize.width > 0) {            
+        if (origImageSize != null && origImageSize.height * origImageSize.width > 0) {
             maxWidth = Math.min(origImageSize.width, configuredMaxSize.width);
             maxHeight = Math.min(origImageSize.height, configuredMaxSize.height);
             maxSize = new Dimension(maxWidth, maxHeight);
@@ -602,18 +603,18 @@ public class ViewManager implements Serializable {
             maxHeight = configuredMaxSize.height;
             maxSize = configuredMaxSize;
         }
-        
+
         for (DownloadOption option : configuredOptions) {
             Dimension dim = option.getBoxSizeInPixel();
-            if(dim == DownloadOption.MAX) {
+            if (dim == DownloadOption.MAX) {
                 Scale scale = new Scale.ScaleToBox(maxSize);
                 Dimension size = scale.scale(origImageSize);
                 options.add(new DownloadOption(option.getLabel(), getImageFormat(option.getFormat(), imageFilename), size));
-            } else if(dim.width * dim.height == 0) {
+            } else if (dim.width * dim.height == 0) {
                 continue;
             } else if ((maxWidth > 0 && maxWidth < dim.width) || (maxHeight > 0 && maxHeight < dim.height)) {
                 continue;
-            } else{
+            } else {
                 Scale scale = new Scale.ScaleToBox(option.getBoxSizeInPixel());
                 Dimension size = scale.scale(origImageSize);
                 options.add(new DownloadOption(option.getLabel(), getImageFormat(option.getFormat(), imageFilename), size));
@@ -622,36 +623,35 @@ public class ViewManager implements Serializable {
         return options;
     }
 
-    
     public List<DownloadOption> getDownloadOptionsForCurrentImage() {
         PhysicalElement page = getCurrentPage();
-        if(page != null && page.isHasImage()) {
+        if (page != null && page.isHasImage()) {
             List<DownloadOption> configuredOptions = DataManager.getInstance().getConfiguration().getSidebarWidgetUsagePageDownloadOptions();
             String imageFilename = page.getFilename();
-            Dimension maxSize = new Dimension(DataManager.getInstance().getConfiguration().getViewerMaxImageWidth(), DataManager.getInstance().getConfiguration().getViewerMaxImageHeight());
+            Dimension maxSize = new Dimension(DataManager.getInstance().getConfiguration().getViewerMaxImageWidth(),
+                    DataManager.getInstance().getConfiguration().getViewerMaxImageHeight());
             Dimension imageSize = new Dimension(page.getImageWidth(), page.getImageHeight());
             return getDownloadOptionsForImage(configuredOptions, imageSize, maxSize, imageFilename);
-        } else {
-            return Collections.emptyList();
         }
+
+        return Collections.emptyList();
     }
-    
+
     /**
      * return the current image format if argument is 'MASTER', or the argument itself otherwise
      * 
      * @param format
-     * @return  
+     * @return
      */
     public static String getImageFormat(String format, String imageFilename) {
-
-        if(format != null && format.equalsIgnoreCase("master")) {    
+        if (format != null && format.equalsIgnoreCase("master")) {
             return Optional.ofNullable(imageFilename)
                     .map(ImageFileFormat::getImageFileFormatFromFileExtension)
                     .map(ImageFileFormat::name)
                     .orElse(format);
-        } else {
-            return format;
         }
+
+        return format;
     }
 
     /**
@@ -1060,7 +1060,7 @@ public class ViewManager implements Serializable {
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
-    public PhysicalElement getCurrentPage()  {
+    public PhysicalElement getCurrentPage() {
         return getPage(currentImageOrder).orElse(null);
     }
 
@@ -1076,8 +1076,8 @@ public class ViewManager implements Serializable {
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
-    public Optional<PhysicalElement> getPage(int order)  {
-        
+    public Optional<PhysicalElement> getPage(int order) {
+
         try {
             if (pageLoader != null && pageLoader.getPage(order) != null) {
                 // logger.debug("page " + order + ": " + pageLoader.getPage(order).getFileName());
@@ -1728,9 +1728,22 @@ public class ViewManager implements Serializable {
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
     public String getTeiUrl() throws ViewerConfigurationException, IndexUnreachableException, DAOException {
-        String plaintextFilename = FileTools.getFilenameFromPathString(getCurrentPage().getFulltextFileName());
-        String altoFilename = FileTools.getFilenameFromPathString(getCurrentPage().getAltoFileName());
+        String plaintextFilename = null;
+        try {
+            plaintextFilename = FileTools.getFilenameFromPathString(getCurrentPage().getFulltextFileName());
+        } catch (FileNotFoundException e) {
+            logger.trace("FULLTEXT not found: {}", e.getMessage());
+        }
+        String altoFilename = null;
+        try {
+            altoFilename = FileTools.getFilenameFromPathString(getCurrentPage().getAltoFileName());
+        } catch (FileNotFoundException e) {
+            logger.trace("ALTO not found: {}", e.getMessage());
+        }
         String filenameToUse = StringUtils.isNotBlank(plaintextFilename) ? plaintextFilename : altoFilename;
+        if (StringUtils.isBlank(filenameToUse)) {
+            return "";
+        }
 
         String pi = getPi();
         return DataManager.getInstance()
@@ -1752,7 +1765,12 @@ public class ViewManager implements Serializable {
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
     public String getAltoUrl() throws ViewerConfigurationException, PresentationException, IndexUnreachableException, DAOException {
-        String filename = FileTools.getFilenameFromPathString(getCurrentPage().getAltoFileName());
+        String filename;
+        try {
+            filename = FileTools.getFilenameFromPathString(getCurrentPage().getAltoFileName());
+        } catch (FileNotFoundException e) {
+            return "";
+        }
         String pi = getPi();
         return DataManager.getInstance()
                 .getRestApiManager()
@@ -1773,9 +1791,22 @@ public class ViewManager implements Serializable {
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
     public String getFulltextUrl() throws ViewerConfigurationException, PresentationException, IndexUnreachableException, DAOException {
-        String plaintextFilename = FileTools.getFilenameFromPathString(getCurrentPage().getFulltextFileName());
-        String altoFilename = FileTools.getFilenameFromPathString(getCurrentPage().getAltoFileName());
+        String plaintextFilename = null;
+        try {
+            plaintextFilename = FileTools.getFilenameFromPathString(getCurrentPage().getFulltextFileName());
+        } catch (FileNotFoundException e) {
+            logger.trace("FULLTEXT not found: {}", e.getMessage());
+        }
+        String altoFilename = null;
+        try {
+            altoFilename = FileTools.getFilenameFromPathString(getCurrentPage().getAltoFileName());
+        } catch (FileNotFoundException e) {
+            logger.trace("ALTO not found: {}", e.getMessage());
+        }
         String filenameToUse = StringUtils.isNotBlank(plaintextFilename) ? plaintextFilename : altoFilename;
+        if (StringUtils.isBlank(filenameToUse)) {
+            return "";
+        }
 
         String pi = getPi();
         return DataManager.getInstance()

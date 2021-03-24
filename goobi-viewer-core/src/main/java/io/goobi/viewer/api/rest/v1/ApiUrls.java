@@ -15,9 +15,6 @@
  */
 package io.goobi.viewer.api.rest.v1;
 
-import javax.ws.rs.client.Client;
-import javax.ws.rs.client.ClientBuilder;
-
 import org.apache.commons.lang3.StringUtils;
 
 import io.goobi.viewer.api.rest.AbstractApiUrlManager;
@@ -138,7 +135,8 @@ public class ApiUrls extends AbstractApiUrlManager {
     public static final String DOWNLOADS_EPUB_SECTION = "/epub/records/{pi}/sections/{divId}";
     public static final String DOWNLOADS_PDF_SECTION = "/pdf/records/{pi}/sections/{divId}";
 
-    public static final String USERS = "/users/{userId}";
+    public static final String USERS = "/users";
+    public static final String USERS_USERID = "/users/{userId}";
 
     public static final String USERS_BOOKMARKS = "/bookmarks";
     public static final String USERS_BOOKMARKS_LIST = "/{listId}";
@@ -155,6 +153,8 @@ public class ApiUrls extends AbstractApiUrlManager {
     public static final String USERS_BOOKMARKS_LIST_SHARED_IIIF = "/shared/{key}/collection.json";
     public static final String USERS_BOOKMARKS_LIST_SHARED_RSS = "/shared/{key}/rss.xml";
     public static final String USERS_BOOKMARKS_LIST_SHARED_RSS_JSON = "/shared/{key}/rss.json";
+    
+    public static final String USERS_CURRENT = "/current";
 
     public static final String AUTHORITY = "/authority";
     public static final String AUTHORITY_RESOLVER = "/resolver";
@@ -191,6 +191,7 @@ public class ApiUrls extends AbstractApiUrlManager {
     
     public static final String CMS = "/cms";
     public static final String CMS_MEDIA = "/cms/media";
+    public static final String CMS_MEDIA_ITEM = "/{id}";
     public static final String CMS_MEDIA_ITEM_BY_ID = "/{id: \\d+}";
     public static final String CMS_MEDIA_ITEM_BY_FILE = "/{filename: [^\\/]*\\.\\w{1,4}}";
     public static final String CMS_MEDIA_FILES = "/files";

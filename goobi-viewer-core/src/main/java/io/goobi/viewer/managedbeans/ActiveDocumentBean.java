@@ -25,7 +25,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-import java.util.Optional;
 
 import javax.enterprise.context.SessionScoped;
 import javax.faces.context.ExternalContext;
@@ -47,7 +46,6 @@ import com.ocpsoft.pretty.faces.url.URL;
 
 import de.intranda.metadata.multilanguage.IMetadataValue;
 import de.intranda.metadata.multilanguage.MultiLanguageMetadataValue;
-import de.unigoettingen.sub.commons.contentlib.imagelib.ImageFileFormat;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.IndexerTools;
 import io.goobi.viewer.controller.NetTools;
@@ -705,7 +703,9 @@ public class ActiveDocumentBean implements Serializable {
      * @return the imageToShow
      */
     public int getImageToShow() {
-        return imageToShow;
+        synchronized (this) {
+            return imageToShow;
+        }
     }
 
     /**
@@ -716,7 +716,7 @@ public class ActiveDocumentBean implements Serializable {
      * @return the titleBarMetadata
      */
     public List<Metadata> getTitleBarMetadata() {
-        return Metadata.filterMetadataByLanguage(titleBarMetadata, selectedRecordLanguage);
+        return Metadata.filterMetadata(titleBarMetadata, selectedRecordLanguage, null);
     }
 
     /**
@@ -744,11 +744,13 @@ public class ActiveDocumentBean implements Serializable {
      * @return the logid
      */
     public String getLogid() {
-        if (StringUtils.isEmpty(logid)) {
-            return "-";
-        }
+        synchronized (this) {
+            if (StringUtils.isEmpty(logid)) {
+                return "-";
+            }
 
-        return logid;
+            return logid;
+        }
     }
 
     /**
@@ -803,7 +805,9 @@ public class ActiveDocumentBean implements Serializable {
      * @return the action
      */
     public String getAction() {
-        return action;
+        synchronized (this) {
+            return action;
+        }
     }
 
     /**
@@ -881,10 +885,12 @@ public class ActiveDocumentBean implements Serializable {
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      */
     public String getPersistentIdentifier() throws IndexUnreachableException {
-        if (viewManager != null) {
-            return viewManager.getPi();
+        synchronized (this) {
+            if (viewManager != null) {
+                return viewManager.getPi();
+            }
+            return "-";
         }
-        return "-";
     }
 
     /**
@@ -1281,7 +1287,9 @@ public class ActiveDocumentBean implements Serializable {
      * @return a int.
      */
     public int getTocCurrentPage() {
-        return tocCurrentPage;
+        synchronized (this) {
+            return tocCurrentPage;
+        }
     }
 
     /**
@@ -1373,7 +1381,11 @@ public class ActiveDocumentBean implements Serializable {
      */
     public String getTitleBarLabel(String language)
             throws IndexUnreachableException, PresentationException, DAOException, ViewerConfigurationException {
-        if (navigationHelper != null && PageType.getByName(navigationHelper.getCurrentPage()) != null
+        if (navigationHelper == null) {
+            return null;
+        }
+
+        if (PageType.getByName(navigationHelper.getCurrentPage()) != null
                 && PageType.getByName(navigationHelper.getCurrentPage()).isDocumentPage() && viewManager != null) {
             // Prefer the label of the current TOC element
             TOC toc = getToc();
@@ -1574,7 +1586,8 @@ public class ActiveDocumentBean implements Serializable {
                 Messages.error("cache_clear__failure");
             } catch (IOException e) {
                 logger.error(e.getMessage());
-                Messages.error("cache_clear__failure");;
+                Messages.error("cache_clear__failure");
+                ;
             } catch (HTTPException e) {
                 logger.error(e.getMessage());
                 Messages.error("cache_clear__failure");
@@ -1594,7 +1607,9 @@ public class ActiveDocumentBean implements Serializable {
      * @return a int.
      */
     public int getCurrentThumbnailPage() {
-        return viewManager != null ? viewManager.getCurrentThumbnailPage() : 1;
+        synchronized (this) {
+            return viewManager != null ? viewManager.getCurrentThumbnailPage() : 1;
+        }
     }
 
     /**
@@ -2014,7 +2029,7 @@ public class ActiveDocumentBean implements Serializable {
         if (selectedDownloadOptionLabel == null) {
             return null;
         }
-        
+
         return DownloadOption.getByLabel(selectedDownloadOptionLabel);
     }
 
@@ -2032,16 +2047,15 @@ public class ActiveDocumentBean implements Serializable {
         logger.trace("setSelectedDownloadOption: {}", selectedDownloadOptionLabel != null ? selectedDownloadOptionLabel.toString() : null);
         this.selectedDownloadOptionLabel = selectedDownloadOptionLabel;
     }
-    
+
     public void setDownloadOptionLabelFromRequestParameter() {
-        Map<String, String> params = FacesContext.getCurrentInstance().
-                getExternalContext().getRequestParameterMap();
-        
+        Map<String, String> params = FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap();
+
         String value = params.get("optionvalue");
-        if(StringUtils.isNotBlank(value)) {
+        if (StringUtils.isNotBlank(value)) {
             setSelectedDownloadOptionLabel(value);
         }
-        
+
     }
 
 }

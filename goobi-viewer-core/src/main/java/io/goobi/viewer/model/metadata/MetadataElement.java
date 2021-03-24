@@ -27,7 +27,6 @@ import org.slf4j.LoggerFactory;
 
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.SolrConstants;
-import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.managedbeans.ActiveDocumentBean;
@@ -167,26 +166,23 @@ public class MetadataElement {
     private List<Metadata> sidebarMetadataList = null;
     private List<MetadataType> metadataTypes;
     /** True if this ISWORK=true or ISANCHOR=true. */
-    private final boolean topElement;
-    private final boolean anchor;
-    private final boolean filesOnly;
+    private boolean topElement;
+    private boolean anchor;
+    private boolean filesOnly;
+    /** Selected language version of the current record. This can be different from the current viewer locale. */
     private String selectedRecordLanguage;
 
     /**
-     * <p>
-     * Constructor for MetadataElement.
-     * </p>
-     *
-     * @param se {@link io.goobi.viewer.model.viewer.StructElement}
-     * @param index
-     * @param sessionLocale a {@link java.util.Locale} object.
-     * @param selectedRecordLanguage a {@link java.lang.String} object.
-     * @throws io.goobi.viewer.exceptions.PresentationException if any.
-     * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
-     * @throws io.goobi.viewer.exceptions.DAOException if any.
+     * 
+     * @param se StructElement
+     * @param metadataViewIndex Metadata view index
+     * @param sessionLocale
+     * @return
+     * @throws PresentationException
+     * @throws IndexUnreachableException
      */
-    public MetadataElement(StructElement se, int index, Locale sessionLocale, String selectedRecordLanguage)
-            throws PresentationException, IndexUnreachableException, DAOException {
+    public MetadataElement init(StructElement se, int metadataViewIndex, Locale sessionLocale)
+            throws PresentationException, IndexUnreachableException {
         if (se == null) {
             logger.error("StructElement not defined!");
             throw new PresentationException("errMetaRead");
@@ -204,12 +200,11 @@ public class MetadataElement {
         se.getPi(); // TODO why?
         anchor = se.isAnchor();
         filesOnly = "application".equalsIgnoreCase(getMimeType(se));
-        this.selectedRecordLanguage = selectedRecordLanguage;
 
         PageType pageType = PageType.determinePageType(docStructType, getMimeType(se), se.isAnchor(), true, false);
         url = se.getUrl(pageType);
 
-        for (Metadata metadata : DataManager.getInstance().getConfiguration().getMainMetadataForTemplate(index, se.getDocStructType())) {
+        for (Metadata metadata : DataManager.getInstance().getConfiguration().getMainMetadataForTemplate(metadataViewIndex, se.getDocStructType())) {
             try {
                 if (!metadata.populate(se, sessionLocale)) {
                     continue;
@@ -237,7 +232,7 @@ public class MetadataElement {
             sidebarMetadataTempList = DataManager.getInstance().getConfiguration().getSidebarMetadataForTemplate("_DEFAULT");
         }
         if (sidebarMetadataTempList.isEmpty()) {
-            return;
+            return this;
         }
         // The component is only rendered if sidebarMetadataList != null
         sidebarMetadataList = new ArrayList<>(sidebarMetadataTempList.size());
@@ -259,6 +254,8 @@ public class MetadataElement {
                 sidebarMetadataList.add(metadata);
             }
         }
+
+        return this;
     }
 
     /**
@@ -279,6 +276,24 @@ public class MetadataElement {
         }
 
         return mimeType;
+    }
+
+    /**
+     * 
+     * @return true if all available metadata fields for this element are marked as hidden; false otherwise
+     * @should return true if metadata list empty
+     * @should return true if all metadata fields blank
+     * @should return true if all metadata fields hidden
+     * @should return false if non hidden metadata fields exist
+     */
+    public boolean isSkip() {
+        for (Metadata md : metadataList) {
+            if (!md.isBlank() && !md.isHideIfOnlyMetadataField()) {
+                return false;
+            }
+        }
+
+        return true;
     }
 
     /**
@@ -401,7 +416,7 @@ public class MetadataElement {
      * @return the oneMetadataList
      */
     public List<Metadata> getMetadataList() {
-        return Metadata.filterMetadataByLanguage(metadataList, selectedRecordLanguage);
+        return Metadata.filterMetadata(metadataList, selectedRecordLanguage, null);
     }
 
     /**
@@ -440,7 +455,7 @@ public class MetadataElement {
      * @return the sidebarMetadataList
      */
     public List<Metadata> getSidebarMetadataList() {
-        return Metadata.filterMetadataByLanguage(this.sidebarMetadataList, selectedRecordLanguage);
+        return Metadata.filterMetadata(this.sidebarMetadataList, selectedRecordLanguage, null);
     }
 
     /**
@@ -638,8 +653,10 @@ public class MetadataElement {
      * </p>
      *
      * @param language a {@link java.lang.String} object.
+     * @return this
      */
-    public void setSelectedRecordLanguage(String language) {
+    public MetadataElement setSelectedRecordLanguage(String language) {
         this.selectedRecordLanguage = language;
+        return this;
     }
 }

@@ -18,49 +18,65 @@ import io.goobi.viewer.model.metadata.MetadataParameter.MetadataParameterType;
 public class MetadataTest extends AbstractTest {
 
     /**
-     * @see Metadata#filterMetadataByLanguage(List,Locale)
+     * @see Metadata#filterMetadata(List,Locale)
      * @verifies return language-specific version of a field
      */
     @Test
-    public void filterMetadataByLanguage_shouldReturnLanguagespecificVersionOfAField() throws Exception {
+    public void filterMetadata_shouldReturnLanguagespecificVersionOfAField() throws Exception {
         List<Metadata> metadataList = new ArrayList<>();
         metadataList.add(new Metadata("", "MD_TITLE_LANG_EN", "", "foo"));
         metadataList.add(new Metadata("", "MD_TITLE", "", "bar"));
-        List<Metadata> filteredList = Metadata.filterMetadataByLanguage(metadataList, "en");
+        List<Metadata> filteredList = Metadata.filterMetadata(metadataList, "en", null);
         Assert.assertEquals(1, filteredList.size());
         Assert.assertEquals("MD_TITLE_LANG_EN", filteredList.get(0).getLabel());
     }
 
     /**
-     * @see Metadata#filterMetadataByLanguage(List,Locale)
+     * @see Metadata#filterMetadata(List,Locale)
      * @verifies return generic version if no language specific version is found
      */
     @Test
-    public void filterMetadataByLanguage_shouldReturnGenericVersionIfNoLanguageSpecificVersionIsFound() throws Exception {
+    public void filterMetadata_shouldReturnGenericVersionIfNoLanguageSpecificVersionIsFound() throws Exception {
         List<Metadata> metadataList = new ArrayList<>();
         metadataList.add(new Metadata("", "MD_TITLE_LANG_DE", "", "foo"));
         metadataList.add(new Metadata("", "MD_TITLE", "", "bar"));
-        List<Metadata> filteredList = Metadata.filterMetadataByLanguage(metadataList, "en");
+        List<Metadata> filteredList = Metadata.filterMetadata(metadataList, "en", null);
         Assert.assertEquals(1, filteredList.size());
         Assert.assertEquals("MD_TITLE", filteredList.get(0).getLabel());
     }
 
     /**
-     * @see Metadata#filterMetadataByLanguage(List,String)
+     * @see Metadata#filterMetadata(List,String)
      * @verifies preserve metadata field order
      */
     @Test
-    public void filterMetadataByLanguage_shouldPreserveMetadataFieldOrder() throws Exception {
+    public void filterMetadata_shouldPreserveMetadataFieldOrder() throws Exception {
         List<Metadata> metadataList = new ArrayList<>();
         metadataList.add(new Metadata("", "MD_TITLE_LANG_EN", "", "foo"));
         metadataList.add(new Metadata("", "MD_TITLE_LANG_DE", "", "foo"));
         metadataList.add(new Metadata("", SolrConstants.PI, "", "PPN123"));
         metadataList.add(new Metadata("", "MD_DESCRIPTION_LANG_EN", "", "foo"));
-        List<Metadata> filteredList = Metadata.filterMetadataByLanguage(metadataList, "en");
+        List<Metadata> filteredList = Metadata.filterMetadata(metadataList, "en", null);
         Assert.assertEquals(3, filteredList.size());
         Assert.assertEquals("MD_TITLE_LANG_EN", filteredList.get(0).getLabel());
         Assert.assertEquals(SolrConstants.PI, filteredList.get(1).getLabel());
         Assert.assertEquals("MD_DESCRIPTION_LANG_EN", filteredList.get(2).getLabel());
+    }
+
+    /**
+     * @see Metadata#filterMetadata(List,String,String)
+     * @verifies filter by desired field name correctly
+     */
+    @Test
+    public void filterMetadata_shouldFilterByDesiredFieldNameCorrectly() throws Exception {
+        List<Metadata> metadataList = new ArrayList<>();
+        metadataList.add(new Metadata("", "MD_TITLE_LANG_EN", "", "foo"));
+        metadataList.add(new Metadata("", "MD_TITLE_LANG_DE", "", "foo"));
+        metadataList.add(new Metadata("", SolrConstants.PI, "", "PPN123"));
+        metadataList.add(new Metadata("", "MD_DESCRIPTION_LANG_EN", "", "foo"));
+        List<Metadata> filteredList = Metadata.filterMetadata(metadataList, "en", "MD_DESCRIPTION");
+        Assert.assertEquals(1, filteredList.size());
+        Assert.assertEquals("MD_DESCRIPTION_LANG_EN", filteredList.get(0).getLabel());
     }
 
     /**
