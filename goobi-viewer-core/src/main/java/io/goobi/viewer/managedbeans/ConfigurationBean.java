@@ -1361,8 +1361,17 @@ public class ConfigurationBean implements Serializable {
     public boolean isDefaultSortFieldRandom() {
         return "RANDOM".equals(DataManager.getInstance().getConfiguration().getDefaultSortField());
     }
-    
+
     public boolean isDisplayUserGeneratedContentBelowImage() {
         return DataManager.getInstance().getConfiguration().isDisplayUserGeneratedContentBelowImage();
+    }
+
+    /**
+     * 
+     * @return true if docstruct navigation is enabled and properly configured; false otherwise
+     */
+    public boolean isDisplayDocstructNavigation() {
+        return DataManager.getInstance().getConfiguration().isDocstructNavigationEnabled()
+                && !DataManager.getInstance().getConfiguration().getDocstructNavigationTypes().isEmpty();
     }
 }

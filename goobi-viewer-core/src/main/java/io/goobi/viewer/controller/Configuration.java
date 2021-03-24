@@ -3737,6 +3737,24 @@ public final class Configuration extends AbstractConfiguration {
         return getLocalList("viewer.watermarkIdField", Collections.singletonList(SolrConstants.DC));
 
     }
+    
+    /**
+     * 
+     * @return
+     * @should return correct value
+     */
+    public boolean isDocstructNavigationEnabled() {
+        return getLocalBoolean("viewer.docstructNavigation[@enabled]", false);
+    }
+    
+    /**
+     * 
+     * @return
+     * @should return all configured values
+     */
+    public List<String> getDocstructNavigationTypes() {
+        return getLocalList("viewer.docstructNavigation.docstruct", Collections.emptyList());
+    }
 
     /**
      * <p>

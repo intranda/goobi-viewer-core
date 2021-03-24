@@ -315,13 +315,13 @@ public class ActiveDocumentBean implements Serializable {
             boolean doublePageMode = false;
             titleBarMetadata.clear();
 
-            if (viewManager != null && viewManager.getCurrentDocument() != null) {
+            if (viewManager != null && viewManager.getCurrentStructElement() != null) {
                 doublePageMode = viewManager.isDoublePageMode();
             }
 
             // Do these steps only if a new document has been loaded
             boolean mayChangeHitIndex = false;
-            if (viewManager == null || viewManager.getTopDocument() == null || viewManager.getTopDocumentIddoc() != topDocumentIddoc) {
+            if (viewManager == null || viewManager.getTopStructElement() == null || viewManager.getTopStructElementIddoc() != topDocumentIddoc) {
                 anchor = false;
                 volume = false;
                 group = false;
@@ -383,10 +383,10 @@ public class ActiveDocumentBean implements Serializable {
                             .getRecordLockManager()
                             .removeLocksForSessionId(session.getId(), Collections.singletonList(viewManager.getPi()));
                 }
-                String limit = viewManager.getTopDocument().getMetadataValue(SolrConstants.ACCESSCONDITION_CONCURRENTUSE);
+                String limit = viewManager.getTopStructElement().getMetadataValue(SolrConstants.ACCESSCONDITION_CONCURRENTUSE);
                 // Lock limited view records, if limit exists and record has a license type that has this feature enabled
                 if (limit != null && AccessConditionUtils.isConcurrentViewsLimitEnabledForAnyAccessCondition(
-                        viewManager.getTopDocument().getMetadataValues(SolrConstants.ACCESSCONDITION))) {
+                        viewManager.getTopStructElement().getMetadataValues(SolrConstants.ACCESSCONDITION))) {
                     if (session != null) {
                         DataManager.getInstance()
                                 .getRecordLockManager()
@@ -424,7 +424,7 @@ public class ActiveDocumentBean implements Serializable {
                     subElementIddoc = Long.valueOf((String) docList.get(0).getFieldValue(SolrConstants.IDDOC));
                     // Re-initialize ViewManager with the new current element
                     PageOrientation firstPageOrientation = viewManager.getFirstPageOrientation();
-                    viewManager = new ViewManager(viewManager.getTopDocument(), viewManager.getPageLoader(), subElementIddoc, logid,
+                    viewManager = new ViewManager(viewManager.getTopStructElement(), viewManager.getPageLoader(), subElementIddoc, logid,
                             viewManager.getMainMimeType(), imageDelivery);
                     viewManager.setFirstPageOrientation(firstPageOrientation);
                 } else {
@@ -432,9 +432,9 @@ public class ActiveDocumentBean implements Serializable {
                 }
             }
 
-            if (viewManager != null && viewManager.getCurrentDocument() != null) {
+            if (viewManager != null && viewManager.getCurrentStructElement() != null) {
                 viewManager.setDoublePageMode(doublePageMode);
-                StructElement structElement = viewManager.getCurrentDocument();
+                StructElement structElement = viewManager.getCurrentStructElement();
                 if (!structElement.isExists()) {
                     logger.trace("StructElement {} is not marked as existing. Record will be reloaded", structElement.getLuceneId());
                     throw new IDDOCNotFoundException(lastReceivedIdentifier + " - " + structElement.getLuceneId());
@@ -450,7 +450,7 @@ public class ActiveDocumentBean implements Serializable {
                 }
 
                 // Populate title bar metadata
-                StructElement topSe = viewManager.getCurrentDocument().getTopStruct();
+                StructElement topSe = viewManager.getCurrentStructElement().getTopStruct();
                 // logger.debug("topSe: " + topSe.getId());
                 for (Metadata md : DataManager.getInstance().getConfiguration().getTitleBarMetadata()) {
                     md.populate(topSe, BeanUtils.getLocale());
@@ -488,7 +488,7 @@ public class ActiveDocumentBean implements Serializable {
             }
 
             // Metadata language versions
-            recordLanguages = viewManager.getTopDocument().getMetadataValues(SolrConstants.LANGUAGE);
+            recordLanguages = viewManager.getTopStructElement().getMetadataValues(SolrConstants.LANGUAGE);
             // If the record has metadata language versions, pre-select the current locale as the record language
             //            if (StringUtils.isBlank(selectedRecordLanguage) && !recordLanguages.isEmpty()) {
             if (StringUtils.isBlank(selectedRecordLanguage) && navigationHelper != null) {
@@ -516,7 +516,7 @@ public class ActiveDocumentBean implements Serializable {
         TOC toc = new TOC();
         synchronized (toc) {
             if (viewManager != null) {
-                toc.generate(viewManager.getTopDocument(), viewManager.isListAllVolumesInTOC(), viewManager.getMainMimeType(), tocCurrentPage);
+                toc.generate(viewManager.getTopStructElement(), viewManager.isListAllVolumesInTOC(), viewManager.getMainMimeType(), tocCurrentPage);
                 // The TOC object will correct values that are too high, so update the local value, if necessary
                 if (toc.getCurrentPage() != this.tocCurrentPage) {
                     this.tocCurrentPage = toc.getCurrentPage();
@@ -549,7 +549,7 @@ public class ActiveDocumentBean implements Serializable {
                     return "";
                 }
 
-                IMetadataValue name = viewManager.getTopDocument().getMultiLanguageDisplayLabel();
+                IMetadataValue name = viewManager.getTopStructElement().getMultiLanguageDisplayLabel();
                 HttpServletRequest request = (HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest();
                 URL url = PrettyContext.getCurrentInstance(request).getRequestURL();
 
@@ -654,7 +654,7 @@ public class ActiveDocumentBean implements Serializable {
      */
     public long getActiveDocumentIddoc() {
         if (viewManager != null) {
-            return viewManager.getTopDocumentIddoc();
+            return viewManager.getTopStructElementIddoc();
         }
 
         return 0;
@@ -670,7 +670,7 @@ public class ActiveDocumentBean implements Serializable {
      */
     public StructElement getCurrentElement() throws IndexUnreachableException {
         if (viewManager != null) {
-            return viewManager.getCurrentDocument();
+            return viewManager.getCurrentStructElement();
         }
 
         return null;
@@ -1116,6 +1116,73 @@ public class ActiveDocumentBean implements Serializable {
     }
 
     /**
+     * 
+     * @return
+     * @throws IndexUnreachableException
+     */
+    public String getPreviousDocstructUrl() throws IndexUnreachableException {
+        if (viewManager == null) {
+            return null;
+        }
+        List<String> docstructTypes = DataManager.getInstance().getConfiguration().getDocstructNavigationTypes();
+        if (docstructTypes.isEmpty()) {
+            return null;
+        }
+        int currentElementIndex =
+                viewManager.getToc().findTocElementIndexByIddoc(String.valueOf(viewManager.getCurrentStructElement().getLuceneId()));
+        if (currentElementIndex == -1) {
+            logger.warn("Current IDDOC not found in TOC: {}", viewManager.getCurrentStructElement().getLuceneId());
+            return null;
+        }
+
+        for (int i = currentElementIndex - 1; i >= 0; --i) {
+            TOCElement tocElement = viewManager.getToc().getTocElements().get(i);
+            String docstructType = tocElement.getMetadataValue(SolrConstants.DOCSTRCT);
+            logger.debug(docstructType);
+            if (docstructType != null && docstructTypes.contains(docstructType)) {
+                logger.debug("Found previous {}: {}", docstructType, tocElement.getLogId());
+                return getPageUrl(navigationHelper.getCurrentPageType().getName(), Integer.valueOf(tocElement.getPageNo()));
+            }
+
+        }
+
+        return null;
+    }
+
+    /**
+     * 
+     * @return
+     * @throws IndexUnreachableException
+     */
+    public String getNextDocstructUrl() throws IndexUnreachableException {
+        if (viewManager == null) {
+            return null;
+        }
+        List<String> docstructTypes = DataManager.getInstance().getConfiguration().getDocstructNavigationTypes();
+        if (docstructTypes.isEmpty()) {
+            return null;
+        }
+        int currentElementIndex =
+                viewManager.getToc().findTocElementIndexByIddoc(String.valueOf(viewManager.getCurrentStructElement().getLuceneId()));
+        if (currentElementIndex == -1) {
+            return null;
+        }
+
+        for (int i = currentElementIndex - 1; i < viewManager.getToc().getTocElements().size(); ++i) {
+            TOCElement tocElement = viewManager.getToc().getTocElements().get(i);
+            String docstructType = tocElement.getMetadataValue(SolrConstants.DOCSTRCT);
+            logger.debug(docstructType);
+            if (docstructType != null && docstructTypes.contains(docstructType)) {
+                logger.debug("Found next {}: {}", docstructType, tocElement.getLogId());
+                return getPageUrl(navigationHelper.getCurrentPageType().getName(), Integer.valueOf(tocElement.getPageNo()));
+            }
+
+        }
+
+        return null;
+    }
+
+    /**
      * <p>
      * getImageUrl.
      * </p>
@@ -1185,7 +1252,7 @@ public class ActiveDocumentBean implements Serializable {
      */
     public StructElement getTopDocument() {
         if (viewManager != null) {
-            return viewManager.getTopDocument();
+            return viewManager.getTopStructElement();
         }
 
         return null;
@@ -1323,7 +1390,7 @@ public class ActiveDocumentBean implements Serializable {
                 if (currentCurrentPage != this.tocCurrentPage && DataManager.getInstance().getConfiguration().getTocAnchorGroupElementsPerPage() > 0
                         && viewManager != null) {
                     viewManager.getToc()
-                            .generate(viewManager.getTopDocument(), viewManager.isListAllVolumesInTOC(), viewManager.getMainMimeType(),
+                            .generate(viewManager.getTopStructElement(), viewManager.isListAllVolumesInTOC(), viewManager.getMainMimeType(),
                                     this.tocCurrentPage);
                 }
             }
@@ -1393,7 +1460,7 @@ public class ActiveDocumentBean implements Serializable {
                 String label = null;
                 String labelTemplate = "_DEFAULT";
                 if (getViewManager() != null) {
-                    labelTemplate = getViewManager().getTopDocument().getDocStructType();
+                    labelTemplate = getViewManager().getTopStructElement().getDocStructType();
                 }
                 if (DataManager.getInstance().getConfiguration().isDisplayAnchorLabelInTitleBar(labelTemplate)
                         && StringUtils.isNotBlank(viewManager.getAnchorPi())) {
@@ -1409,7 +1476,7 @@ public class ActiveDocumentBean implements Serializable {
                     return label;
                 }
             }
-            String label = viewManager.getTopDocument().getLabel(selectedRecordLanguage);
+            String label = viewManager.getTopStructElement().getLabel(selectedRecordLanguage);
             if (StringUtils.isNotEmpty(label)) {
                 return label;
             }
@@ -1489,7 +1556,7 @@ public class ActiveDocumentBean implements Serializable {
      */
     public long getTopDocumentIddoc() {
         if (viewManager != null) {
-            return viewManager.getTopDocumentIddoc();
+            return viewManager.getTopStructElementIddoc();
         }
         return 0;
     }
@@ -1827,7 +1894,7 @@ public class ActiveDocumentBean implements Serializable {
             return null;
         }
 
-        List<String> relatedItemIdentifiers = viewManager.getTopDocument().getMetadataValues(identifierField);
+        List<String> relatedItemIdentifiers = viewManager.getTopStructElement().getMetadataValues(identifierField);
         List<SearchHit> ret = SearchHelper.searchWithFulltext(query, 0, SolrSearchIndex.MAX_HITS, null, null, null, null, null, null,
                 navigationHelper.getLocale(), BeanUtils.getRequest());
 
@@ -1844,7 +1911,7 @@ public class ActiveDocumentBean implements Serializable {
      */
     public String getRelatedItemsQueryString(String identifierField) {
         logger.trace("getRelatedItemsQueryString: {}", identifierField);
-        List<String> relatedItemIdentifiers = viewManager.getTopDocument().getMetadataValues(identifierField);
+        List<String> relatedItemIdentifiers = viewManager.getTopStructElement().getMetadataValues(identifierField);
         if (relatedItemIdentifiers.isEmpty()) {
             return null;
         }

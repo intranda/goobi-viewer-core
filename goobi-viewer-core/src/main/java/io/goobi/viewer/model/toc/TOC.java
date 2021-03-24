@@ -443,6 +443,27 @@ public class TOC implements Serializable {
     }
 
     /**
+     * 
+     * @param iddoc IDDOC of the element to find
+     * @return Index of the element with the matching IDDOC within the list of elements; -1 if none found
+     */
+    public int findTocElementIndexByIddoc(String iddoc) {
+        if (StringUtils.isEmpty(iddoc)) {
+            return -1;
+        }
+
+        int index = 0;
+        for (TOCElement element : getTocElements()) {
+            if (iddoc.equals(element.getIddoc())) {
+                return index;
+            }
+            index++;
+        }
+
+        return -1;
+    }
+
+    /**
      * <p>
      * Getter for the field <code>tocVisible</code>.
      * </p>
