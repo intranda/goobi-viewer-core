@@ -13,7 +13,7 @@
  *
  * You should have received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
-package io.goobi.viewer.model.iiif.presentation.builder;
+package io.goobi.viewer.model.iiif.presentation.v2.builder;
 
 import static io.goobi.viewer.api.rest.v1.ApiUrls.ANNOTATIONS;
 import static io.goobi.viewer.api.rest.v1.ApiUrls.ANNOTATIONS_ANNOTATION;
@@ -56,10 +56,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import de.intranda.api.annotation.oa.OpenAnnotation;
-import de.intranda.api.iiif.presentation.AbstractPresentationModelElement;
-import de.intranda.api.iiif.presentation.AnnotationList;
 import de.intranda.api.iiif.presentation.enums.AnnotationType;
-import de.intranda.api.iiif.presentation.v2.Canvas;
+import de.intranda.api.iiif.presentation.v2.AbstractPresentationModelElement2;
+import de.intranda.api.iiif.presentation.v2.AnnotationList;
+import de.intranda.api.iiif.presentation.v2.Canvas2;
 import de.intranda.metadata.multilanguage.IMetadataValue;
 import de.intranda.metadata.multilanguage.Metadata;
 import de.intranda.metadata.multilanguage.MultiLanguageMetadataValue;
@@ -76,8 +76,8 @@ import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.messages.Messages;
 import io.goobi.viewer.messages.ViewerResourceBundle;
-import io.goobi.viewer.model.iiif.presentation.builder.LinkingProperty.LinkingTarget;
-import io.goobi.viewer.model.iiif.presentation.builder.LinkingProperty.LinkingType;
+import io.goobi.viewer.model.iiif.presentation.v2.builder.LinkingProperty.LinkingTarget;
+import io.goobi.viewer.model.iiif.presentation.v2.builder.LinkingProperty.LinkingType;
 import io.goobi.viewer.model.viewer.PageType;
 import io.goobi.viewer.model.viewer.PhysicalElement;
 import io.goobi.viewer.model.viewer.StructElement;
@@ -282,7 +282,7 @@ public abstract class AbstractBuilder {
      * @param manifest a {@link de.intranda.api.iiif.presentation.AbstractPresentationModelElement} object.
      * @param ele a {@link io.goobi.viewer.model.viewer.StructElement} object.
      */
-    public void addMetadata(AbstractPresentationModelElement manifest, StructElement ele) {
+    public void addMetadata(AbstractPresentationModelElement2 manifest, StructElement ele) {
         List<String> displayFields = DataManager.getInstance().getConfiguration().getIIIFMetadataFields();
         List<String> eventFields = DataManager.getInstance().getConfiguration().getIIIFEventFields();
         displayFields.addAll(eventFields);
@@ -311,10 +311,10 @@ public abstract class AbstractBuilder {
      * @param crowdsourcingAnnotations A map of annotations by page number
      * @param annotationMap A global annotation map for a whole manifest; may be null if not needed
      */
-    public void addCrowdourcingAnnotations(List<Canvas> canvases, Map<Integer, List<OpenAnnotation>> crowdsourcingAnnotations,
+    public void addCrowdourcingAnnotations(List<Canvas2> canvases, Map<Integer, List<OpenAnnotation>> crowdsourcingAnnotations,
             Map<AnnotationType, List<AnnotationList>> annotationMap) {
 
-        for (Canvas canvas : canvases) {
+        for (Canvas2 canvas : canvases) {
             Integer order = this.getPageOrderFromCanvasURI(canvas.getId());
             String pi = this.getPIFromCanvasURI(canvas.getId());
             if (crowdsourcingAnnotations.containsKey(order)) {
@@ -381,7 +381,7 @@ public abstract class AbstractBuilder {
 
     /**
      * Queries all DocStructs which have the given PI as PI_TOPSTRUCT or anchor (or are the anchor themselves). Works are sorted by a
-     * {@link io.goobi.viewer.model.iiif.presentation.builder.StructElementComparator} If no hits are found, an empty list is returned
+     * {@link io.goobi.viewer.model.iiif.presentation.v2.builder.StructElementComparator} If no hits are found, an empty list is returned
      *
      * @param pi a {@link java.lang.String} object.
      * @return A list of all docstructs with the given pi or children thereof. An empty list if no hits are found
@@ -623,7 +623,7 @@ public abstract class AbstractBuilder {
      * </p>
      *
      * @param pi a {@link java.lang.String} object.
-     * @param mode a {@link io.goobi.viewer.model.iiif.presentation.builder.BuildMode} object.
+     * @param mode a {@link io.goobi.viewer.model.iiif.presentation.v2.builder.BuildMode} object.
      * @return a {@link java.net.URI} object.
      */
     public URI getManifestURI(String pi, BuildMode mode) {

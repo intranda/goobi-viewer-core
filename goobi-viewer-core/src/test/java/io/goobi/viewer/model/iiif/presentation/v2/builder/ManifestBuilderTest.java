@@ -13,7 +13,7 @@
  *
  * You should have received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
-package io.goobi.viewer.model.iiif.presentation.builder;
+package io.goobi.viewer.model.iiif.presentation.v2.builder;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -29,40 +29,30 @@ import org.apache.solr.common.SolrDocumentList;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-import org.mockito.Mockito;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
 
-import de.intranda.api.iiif.presentation.AbstractPresentationModelElement;
 import de.intranda.api.iiif.presentation.IPresentationModelElement;
-import de.intranda.api.iiif.presentation.Range;
 import de.intranda.api.iiif.presentation.content.LinkingContent;
 import de.intranda.api.iiif.presentation.enums.DcType;
-import de.intranda.api.iiif.presentation.v2.Canvas;
-import de.intranda.api.iiif.presentation.v2.Manifest;
-import de.intranda.metadata.multilanguage.SimpleMetadataValue;
+import de.intranda.api.iiif.presentation.v2.Canvas2;
+import de.intranda.api.iiif.presentation.v2.Manifest2;
+import de.intranda.api.iiif.presentation.v2.Range2;
 import de.unigoettingen.sub.commons.contentlib.exceptions.ContentNotFoundException;
 import io.goobi.viewer.AbstractDatabaseAndSolrEnabledTest;
-import io.goobi.viewer.AbstractSolrEnabledTest;
 import io.goobi.viewer.api.rest.filters.IIIFPresentationResponseFilter;
 import io.goobi.viewer.api.rest.v1.ApiUrls;
 import io.goobi.viewer.controller.Configuration;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.SolrConstants;
 import io.goobi.viewer.controller.SolrSearchIndex;
-import io.goobi.viewer.controller.imaging.IIIFUrlHandler;
-import io.goobi.viewer.controller.imaging.ImageHandler;
-import io.goobi.viewer.controller.imaging.PdfHandler;
-import io.goobi.viewer.controller.imaging.ThumbnailHandler;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.exceptions.ViewerConfigurationException;
-import io.goobi.viewer.managedbeans.ImageDeliveryBean;
-import io.goobi.viewer.model.iiif.presentation.builder.LinkingProperty.LinkingTarget;
 import io.goobi.viewer.model.viewer.StructElement;
 
 /**
@@ -102,21 +92,21 @@ public class ManifestBuilderTest extends AbstractDatabaseAndSolrEnabledTest {
         }
         StructElement mainDoc = docs.get(0);
         IPresentationModelElement manifest = builder.generateManifest(mainDoc);
-        ((Manifest) manifest).setContext(IIIFPresentationResponseFilter.CONTEXT);
-        sequenceBuilder.addBaseSequence((Manifest) manifest, mainDoc, manifest.getId().toString(), null);
+        ((Manifest2) manifest).setContext(IIIFPresentationResponseFilter.CONTEXT_PRESENTATION_2);
+        sequenceBuilder.addBaseSequence((Manifest2) manifest, mainDoc, manifest.getId().toString(), null);
 
         String topLogId = mainDoc.getMetadataValue(SolrConstants.LOGID);
         if (StringUtils.isNotBlank(topLogId)) {
-            List<Range> ranges = structureBuilder.generateStructure(docs, PI, false);
+            List<Range2> ranges = structureBuilder.generateStructure(docs, PI, false);
             ranges.forEach(range -> {
-                ((Manifest) manifest).addStructure(range);
+                ((Manifest2) manifest).addStructure(range);
             });
         }
 
         ObjectMapper mapper = new ObjectMapper();
         mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
         mapper.configure(DeserializationFeature.ACCEPT_SINGLE_VALUE_AS_ARRAY, true);
-        ObjectWriter writer = mapper.writer().forType(Manifest.class);
+        ObjectWriter writer = mapper.writer().forType(Manifest2.class);
         String json = writer.writeValueAsString(manifest);
         Assert.assertTrue(StringUtils.isNotBlank(json));
         //            File jsonFile = new File("C:\\opt\\digiverso\\viewer\\manifest.json");
@@ -126,13 +116,13 @@ public class ManifestBuilderTest extends AbstractDatabaseAndSolrEnabledTest {
 
     @Test
     public void testDeserializeCanvas() throws URISyntaxException, JsonProcessingException {
-        Range range = new Range("http://viewer/manifest/1/ranges/1");
-        Canvas canvas = new Canvas("http://viewer/manifest/1/canvas/1");
+        Range2 range = new Range2("http://viewer/manifest/1/ranges/1");
+        Canvas2 canvas = new Canvas2("http://viewer/manifest/1/canvas/1");
         range.addCanvas(canvas);
         ObjectMapper mapper = new ObjectMapper();
         mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
         mapper.configure(DeserializationFeature.ACCEPT_SINGLE_VALUE_AS_ARRAY, true);
-        ObjectWriter writer = mapper.writer().forType(Range.class);
+        ObjectWriter writer = mapper.writer().forType(Range2.class);
         String json = writer.writeValueAsString(range);
         Assert.assertTrue(StringUtils.isNotBlank(json));
     }
@@ -141,13 +131,13 @@ public class ManifestBuilderTest extends AbstractDatabaseAndSolrEnabledTest {
     public void getValidViewerRenderingUrl() {
         ApiUrls urls = new ApiUrls("https://viewer.goobi.io/api/v1/");
         ManifestBuilder builder = new ManifestBuilder(urls);
-        Manifest manifest = new Manifest(URI.create(urls.getApiUrl() + "/" + PI + "/manifest"));
+        Manifest2 manifest = new Manifest2(URI.create(urls.getApiUrl() + "/" + PI + "/manifest"));
         StructElement ele = new StructElement();
         ele.setPi(PI);
         ele.setImageNumber(1);
         ele.setLogid("LOG_0003");
         builder.addRenderings(manifest, ele);
-        LinkingContent viewerRendering = manifest.getRendering().stream().filter(rend -> rend.getType().equals(DcType.INTERACTIVE_RESOURCE)).findFirst().orElse(null);
+        LinkingContent viewerRendering = manifest.getRendering().stream().filter(rend -> rend.getType().equals(DcType.INTERACTIVE_RESOURCE.getLabel())).findFirst().orElse(null);
         assertNotNull(viewerRendering);
         assertEquals("https://viewer.goobi.io/object/" + PI + "/1/LOG_0003/",viewerRendering.getId().toString());
     }

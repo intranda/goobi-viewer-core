@@ -39,8 +39,8 @@ import com.fasterxml.jackson.databind.JsonMappingException;
 
 import de.intranda.api.annotation.wa.collection.AnnotationCollection;
 import de.intranda.api.annotation.wa.collection.AnnotationPage;
-import de.intranda.api.iiif.presentation.Sequence;
-import de.intranda.api.iiif.presentation.v2.Canvas;
+import de.intranda.api.iiif.presentation.v2.Canvas2;
+import de.intranda.api.iiif.presentation.v2.Sequence;
 import io.goobi.viewer.api.rest.AbstractRestApiTest;
 
 /**
@@ -118,7 +118,7 @@ public class RecordPageResourceTest extends AbstractRestApiTest {
             assertNotNull("Should return user object as json", response.getEntity());
             String entity = response.readEntity(String.class);
             assertNotNull(entity);
-            Canvas canvas = mapper.readValue(entity, Canvas.class);
+            Canvas2 canvas = mapper.readValue(entity, Canvas2.class);
             assertEquals(URI.create(url), canvas.getId());
         }
     }

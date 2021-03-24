@@ -13,16 +13,14 @@
  *
  * You should have received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
-package io.goobi.viewer.model.iiif.presentation.builder;
+package io.goobi.viewer.model.iiif.presentation.v2.builder;
 
-import java.io.File;
+import java.awt.Canvas;
 import java.io.IOException;
-import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.junit.Assert;
 import org.junit.Test;
@@ -31,10 +29,10 @@ import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
 
-import de.intranda.api.iiif.presentation.AnnotationList;
 import de.intranda.api.iiif.presentation.IPresentationModelElement;
 import de.intranda.api.iiif.presentation.enums.AnnotationType;
-import de.intranda.api.iiif.presentation.v2.Canvas;
+import de.intranda.api.iiif.presentation.v2.AnnotationList;
+import de.intranda.api.iiif.presentation.v2.Canvas2;
 import de.unigoettingen.sub.commons.contentlib.exceptions.ContentNotFoundException;
 import io.goobi.viewer.AbstractDatabaseAndSolrEnabledTest;
 import io.goobi.viewer.api.rest.v1.ApiUrls;
@@ -74,7 +72,7 @@ public class SequenceBuilderTest extends AbstractDatabaseAndSolrEnabledTest {
 
         PhysicalElement page = sequenceBuilder.getPage(mainDoc, ORDER);
 
-        Canvas canvas = sequenceBuilder.generateCanvas(mainDoc.getPi(), page);
+        Canvas2 canvas = sequenceBuilder.generateCanvas(mainDoc.getPi(), page);
 
         Map<AnnotationType, AnnotationList> annoMap = sequenceBuilder.addOtherContent(mainDoc, page, canvas, true);
         AnnotationList fulltext = annoMap.get(AnnotationType.FULLTEXT);

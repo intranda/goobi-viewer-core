@@ -13,7 +13,7 @@
  *
  * You should have received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
-package io.goobi.viewer.model.iiif.presentation.builder;
+package io.goobi.viewer.model.iiif.presentation.v2.builder;
 
 import java.util.ArrayList;
 import java.util.Arrays;

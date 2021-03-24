@@ -13,11 +13,7 @@
  *
  * You should have received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
-package io.goobi.viewer.model.iiif.presentation.builder;
-
-import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_ALTO;
-import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_PLAINTEXT;
-import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_RECORD;
+package io.goobi.viewer.model.iiif.presentation.v2.builder;
 
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -33,17 +29,13 @@ import org.slf4j.LoggerFactory;
 
 import de.intranda.api.iiif.IIIFUrlResolver;
 import de.intranda.api.iiif.image.ImageInformation;
-import de.intranda.api.iiif.presentation.AbstractPresentationModelElement;
-import de.intranda.api.iiif.presentation.Range;
 import de.intranda.api.iiif.presentation.content.ImageContent;
-import de.intranda.api.iiif.presentation.content.LinkingContent;
-import de.intranda.api.iiif.presentation.enums.Format;
 import de.intranda.api.iiif.presentation.enums.ViewingHint;
-import de.intranda.api.iiif.presentation.v2.Canvas;
+import de.intranda.api.iiif.presentation.v2.AbstractPresentationModelElement2;
+import de.intranda.api.iiif.presentation.v2.Canvas2;
+import de.intranda.api.iiif.presentation.v2.Range2;
 import de.intranda.metadata.multilanguage.IMetadataValue;
-import de.intranda.metadata.multilanguage.SimpleMetadataValue;
 import io.goobi.viewer.api.rest.AbstractApiUrlManager;
-import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.SolrConstants;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
@@ -51,9 +43,7 @@ import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.exceptions.ViewerConfigurationException;
 import io.goobi.viewer.managedbeans.ImageDeliveryBean;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
-import io.goobi.viewer.messages.ViewerResourceBundle;
-import io.goobi.viewer.model.iiif.presentation.builder.LinkingProperty.LinkingTarget;
-import io.goobi.viewer.model.viewer.PageType;
+import io.goobi.viewer.model.iiif.presentation.v2.builder.LinkingProperty.LinkingTarget;
 import io.goobi.viewer.model.viewer.StructElement;
 
 /**
@@ -96,15 +86,15 @@ public class StructureBuilder extends AbstractBuilder {
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @throws java.net.URISyntaxException if any.
      */
-    public List<Range> generateStructure(List<StructElement> elements, String pi, boolean useMembers)
+    public List<Range2> generateStructure(List<StructElement> elements, String pi, boolean useMembers)
             throws ViewerConfigurationException, IndexUnreachableException, DAOException, PresentationException, URISyntaxException {
-        List<Range> ranges = new ArrayList<>();
+        List<Range2> ranges = new ArrayList<>();
         Map<String, String> idMap = new HashMap<>();
         if (elements != null && !elements.isEmpty()) {
             Optional<StructElement> work = Optional.empty();
             for (StructElement structElement : elements) {
                 URI rangeURI = getRangeURI(pi, structElement.getLogid());
-                Range range = new Range(rangeURI);
+                Range2 range = new Range2(rangeURI);
                 range.setUseMembers(useMembers);
                 idMap.put(Long.toString(structElement.getLuceneId()), structElement.getLogid());
                 if (structElement.isWork()) {
@@ -117,7 +107,7 @@ public class StructureBuilder extends AbstractBuilder {
                     range.setLabel(label);
                     String parentId = idMap.get(structElement.getMetadataValue(SolrConstants.IDDOC_PARENT));
                     if (StringUtils.isNotBlank(parentId)) {
-                        range.addWithin(new Range(getRangeURI(pi, parentId)));
+                        range.addWithin(new Range2(getRangeURI(pi, parentId)));
                     }
                     work.ifPresent(w -> structElement.setTopStruct(w));
                     populatePages(structElement, pi, range);
@@ -138,12 +128,12 @@ public class StructureBuilder extends AbstractBuilder {
      * @param luceneId
      * @param range
      */
-    private void populateChildren(List<StructElement> elements, long parentIddoc, String pi, Range range) {
+    private void populateChildren(List<StructElement> elements, long parentIddoc, String pi, Range2 range) {
         elements.stream()
                 .filter(element -> Long.toString(parentIddoc).equals(element.getMetadataValue(SolrConstants.IDDOC_PARENT)))
                 .map(element -> element.getLogid())
                 .forEach(logId -> {
-                    range.addRange(new Range(getRangeURI(pi, logId)));
+                    range.addRange(new Range2(getRangeURI(pi, logId)));
                 });
 
     }
@@ -159,7 +149,7 @@ public class StructureBuilder extends AbstractBuilder {
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      */
-    public void populate(StructElement ele, String pi, final Range range)
+    public void populate(StructElement ele, String pi, final Range2 range)
             throws ViewerConfigurationException, IndexUnreachableException, DAOException, PresentationException {
 
         addMetadata(range, ele);
@@ -189,7 +179,7 @@ public class StructureBuilder extends AbstractBuilder {
      * @param canvas
      * @throws URISyntaxException
      */
-    public void addRenderings(AbstractPresentationModelElement range, StructElement ele) {
+    public void addRenderings(AbstractPresentationModelElement2 range, StructElement ele) {
         
         this.getRenderings().forEach(link -> {
             try {
@@ -234,7 +224,7 @@ public class StructureBuilder extends AbstractBuilder {
      * @throws java.net.URISyntaxException if any.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      */
-    public void populatePages(StructElement doc, String pi, Range range) throws URISyntaxException, IndexUnreachableException {
+    public void populatePages(StructElement doc, String pi, Range2 range) throws URISyntaxException, IndexUnreachableException {
         int startPageNo = doc.getImageNumber();
         int numPages = 1;
         try {
@@ -245,7 +235,7 @@ public class StructureBuilder extends AbstractBuilder {
         if (startPageNo > 0) {
             for (int i = startPageNo; i < startPageNo + numPages; i++) {
                 URI pageURI = getCanvasURI(pi, i);
-                Canvas canvas = new Canvas(pageURI);
+                Canvas2 canvas = new Canvas2(pageURI);
                 range.addCanvas(canvas);
             }
         }
@@ -259,9 +249,9 @@ public class StructureBuilder extends AbstractBuilder {
      * @param range a {@link de.intranda.api.iiif.presentation.Range} object.
      * @return a {@link java.util.List} object.
      */
-    public List<Range> getDescendents(Range range) {
-        List<Range> children = new ArrayList<>();
-        for (Range child : range.getRangeList()) {
+    public List<Range2> getDescendents(Range2 range) {
+        List<Range2> children = new ArrayList<>();
+        for (Range2 child : range.getRangeList()) {
             children.add(child);
             children.addAll(getDescendents(child));
         }

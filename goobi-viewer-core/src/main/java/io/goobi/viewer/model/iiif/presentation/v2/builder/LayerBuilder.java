@@ -13,7 +13,7 @@
  *
  * You should have received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
-package io.goobi.viewer.model.iiif.presentation.builder;
+package io.goobi.viewer.model.iiif.presentation.v2.builder;
 
 import java.io.IOException;
 import java.net.URI;
@@ -35,17 +35,16 @@ import org.slf4j.LoggerFactory;
 import de.intranda.api.annotation.IAnnotation;
 import de.intranda.api.annotation.oa.Motivation;
 import de.intranda.api.annotation.oa.OpenAnnotation;
-import de.intranda.api.iiif.presentation.AnnotationList;
-import de.intranda.api.iiif.presentation.Layer;
 import de.intranda.api.iiif.presentation.content.LinkingContent;
 import de.intranda.api.iiif.presentation.enums.AnnotationType;
 import de.intranda.api.iiif.presentation.enums.DcType;
 import de.intranda.api.iiif.presentation.enums.Format;
+import de.intranda.api.iiif.presentation.v2.AnnotationList;
+import de.intranda.api.iiif.presentation.v2.Layer;
 import io.goobi.viewer.api.rest.AbstractApiUrlManager;
 import io.goobi.viewer.api.rest.resourcebuilders.TextResourceBuilder;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
-import io.goobi.viewer.messages.ViewerResourceBundle;
 
 /**
  * <p>
@@ -124,7 +123,7 @@ public class LayerBuilder extends AbstractBuilder {
             link.setFormat(format);
         }
         if (dcType != null) {
-            link.setType(dcType);
+            link.setType(dcType.getLabel());
         }
         if (annoType != null) {
             link.setLabel(getLabel(annoType.name()));

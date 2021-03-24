@@ -13,7 +13,7 @@
  *
  * You should have received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
-package io.goobi.viewer.model.iiif.presentation.builder;
+package io.goobi.viewer.model.iiif.presentation.v2.builder;
 
 import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_ALTO;
 import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_PLAINTEXT;
@@ -36,15 +36,14 @@ import org.slf4j.LoggerFactory;
 
 import de.intranda.api.iiif.IIIFUrlResolver;
 import de.intranda.api.iiif.image.ImageInformation;
-import de.intranda.api.iiif.presentation.AbstractPresentationModelElement;
 import de.intranda.api.iiif.presentation.IPresentationModelElement;
 import de.intranda.api.iiif.presentation.content.ImageContent;
 import de.intranda.api.iiif.presentation.content.LinkingContent;
 import de.intranda.api.iiif.presentation.enums.Format;
 import de.intranda.api.iiif.presentation.enums.ViewingHint;
+import de.intranda.api.iiif.presentation.v2.AbstractPresentationModelElement2;
 import de.intranda.api.iiif.presentation.v2.Collection2;
-import de.intranda.api.iiif.presentation.v2.Manifest;
-import de.intranda.api.iiif.presentation.v3.Manifest3;
+import de.intranda.api.iiif.presentation.v2.Manifest2;
 import de.intranda.api.iiif.search.AutoSuggestService;
 import de.intranda.api.iiif.search.SearchService;
 import de.intranda.metadata.multilanguage.SimpleMetadataValue;
@@ -61,7 +60,7 @@ import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.exceptions.ViewerConfigurationException;
 import io.goobi.viewer.managedbeans.ImageDeliveryBean;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
-import io.goobi.viewer.model.iiif.presentation.builder.LinkingProperty.LinkingTarget;
+import io.goobi.viewer.model.iiif.presentation.v2.builder.LinkingProperty.LinkingTarget;
 import io.goobi.viewer.model.viewer.StructElement;
 
 /**
@@ -102,19 +101,18 @@ public class ManifestBuilder extends AbstractBuilder {
      * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
-    public AbstractPresentationModelElement generateManifest(StructElement ele)
+    public AbstractPresentationModelElement2 generateManifest(StructElement ele)
             throws URISyntaxException, PresentationException, IndexUnreachableException, ViewerConfigurationException, DAOException {
 
-        final AbstractPresentationModelElement manifest;
+        final AbstractPresentationModelElement2 manifest;
 
         if (ele.isAnchor()) {
             manifest = new Collection2(getManifestURI(ele.getPi()), ele.getPi());
             manifest.addViewingHint(ViewingHint.multipart);
         } else {
             ele.setImageNumber(1);
-            manifest = new Manifest(getManifestURI(ele.getPi()));
+            manifest = new Manifest2(getManifestURI(ele.getPi()));
             SearchService search = new SearchService(getSearchServiceURI(manifest.getId()));
-            search.setLabel(getLabel("label__iiif_api_search"));
             AutoSuggestService autoComplete = new AutoSuggestService(getAutoSuggestServiceURI(manifest.getId()));
             search.addService(autoComplete);
             manifest.addService(search);
@@ -137,7 +135,7 @@ public class ManifestBuilder extends AbstractBuilder {
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      */
-    public void populate(StructElement ele, final AbstractPresentationModelElement manifest)
+    public void populate(StructElement ele, final AbstractPresentationModelElement2 manifest)
             throws ViewerConfigurationException, IndexUnreachableException, DAOException, PresentationException {
         this.getAttributions().forEach(attr -> manifest.addAttribution(attr));
         manifest.setLabel(new SimpleMetadataValue(ele.getLabel()));
@@ -159,7 +157,7 @@ public class ManifestBuilder extends AbstractBuilder {
     }
 
 
-    private void addThumbnail(StructElement ele, final AbstractPresentationModelElement manifest) {
+    private void addThumbnail(StructElement ele, final AbstractPresentationModelElement2 manifest) {
         try {
             String thumbUrl = imageDelivery.getThumbs().getThumbnailUrl(ele);
             if (StringUtils.isNotBlank(thumbUrl)) {
@@ -176,7 +174,7 @@ public class ManifestBuilder extends AbstractBuilder {
     }
 
 
-    private void addCmsPages(StructElement ele, final AbstractPresentationModelElement manifest) {
+    private void addCmsPages(StructElement ele, final AbstractPresentationModelElement2 manifest) {
         try {
             DataManager.getInstance()
                     .getDao()
@@ -199,7 +197,7 @@ public class ManifestBuilder extends AbstractBuilder {
     }
 
 
-    private void addNavDate(StructElement ele, final AbstractPresentationModelElement manifest) {
+    private void addNavDate(StructElement ele, final AbstractPresentationModelElement2 manifest) {
         String navDateField = DataManager.getInstance().getConfiguration().getIIIFNavDateField();
         if (StringUtils.isNotBlank(navDateField) && StringUtils.isNotBlank(ele.getMetadataValue(navDateField))) {
             try {
@@ -213,7 +211,7 @@ public class ManifestBuilder extends AbstractBuilder {
     }
 
 
-    private void addLicences(final AbstractPresentationModelElement manifest) {
+    private void addLicences(final AbstractPresentationModelElement2 manifest) {
         for(String license : DataManager.getInstance().getConfiguration().getIIIFLicenses()) {
             try {
                 URI uri = new URI(license);
@@ -225,7 +223,7 @@ public class ManifestBuilder extends AbstractBuilder {
     }
 
 
-    private void addLogo(StructElement ele, final AbstractPresentationModelElement manifest)
+    private void addLogo(StructElement ele, final AbstractPresentationModelElement2 manifest)
             throws ViewerConfigurationException, IndexUnreachableException, DAOException {
         List<String> logoUrl = getLogoUrl();
         if(logoUrl.isEmpty()) {
@@ -243,7 +241,7 @@ public class ManifestBuilder extends AbstractBuilder {
         }
     }
     
-    public void addSeeAlsos(AbstractPresentationModelElement manifest, StructElement ele) {
+    public void addSeeAlsos(AbstractPresentationModelElement2 manifest, StructElement ele) {
 
         if (ele.isLidoRecord()) {
             /*LIDO*/
@@ -273,7 +271,7 @@ public class ManifestBuilder extends AbstractBuilder {
      * @param canvas
      * @throws URISyntaxException
      */
-    public void addRenderings(AbstractPresentationModelElement manifest, StructElement ele) {
+    public void addRenderings(AbstractPresentationModelElement2 manifest, StructElement ele) {
         
         this.getRenderings().forEach(link -> {
             try {
@@ -330,9 +328,9 @@ public class ManifestBuilder extends AbstractBuilder {
         for (StructElement volume : volumes) {
             try {
                 IPresentationModelElement child = generateManifest(volume);
-                if (child instanceof Manifest) {
+                if (child instanceof Manifest2) {
                     //                    addBaseSequence((Manifest)child, volume, child.getId().toString());
-                    anchor.addManifest((Manifest) child);
+                    anchor.addManifest((Manifest2) child);
                 }
             } catch (ViewerConfigurationException | URISyntaxException | PresentationException | IndexUnreachableException | DAOException e) {
                 logger.error("Error creating child manigest for " + volume);
@@ -353,7 +351,7 @@ public class ManifestBuilder extends AbstractBuilder {
      * @throws java.net.URISyntaxException if any.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
-    public void addAnchor(Manifest manifest, String anchorPI)
+    public void addAnchor(Manifest2 manifest, String anchorPI)
             throws PresentationException, IndexUnreachableException, URISyntaxException, DAOException {
 
         /*ANCHOR*/
@@ -435,7 +433,7 @@ public class ManifestBuilder extends AbstractBuilder {
      * </p>
      *
      * @param buildMode the buildMode to set
-     * @return a {@link io.goobi.viewer.model.iiif.presentation.builder.ManifestBuilder} object.
+     * @return a {@link io.goobi.viewer.model.iiif.presentation.v2.builder.ManifestBuilder} object.
      */
     public ManifestBuilder setBuildMode(BuildMode buildMode) {
         this.buildMode = buildMode;

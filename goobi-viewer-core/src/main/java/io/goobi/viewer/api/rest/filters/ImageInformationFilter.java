@@ -190,7 +190,7 @@ public class ImageInformationFilter implements ContainerResponseFilter {
      * @return
      */
     private static ImageType getImageType(ImageInformation info) {
-        String id = info.getId();
+        String id = info.getId().toString();
         ImageFileFormat iff = ImageFileFormat.getImageFileFormatFromFileExtension(id);
         if (iff != null) {
             return new ImageType(iff);

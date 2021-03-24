@@ -15,8 +15,13 @@
  */
 package io.goobi.viewer.api.rest.v1.records;
 
-import static io.goobi.viewer.api.rest.v1.ApiUrls.*;
-import static org.junit.Assert.*;
+import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_SECTIONS;
+import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_SECTIONS_RANGE;
+import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_SECTIONS_RIS_FILE;
+import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_SECTIONS_RIS_TEXT;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 import java.net.URI;
 
@@ -30,8 +35,7 @@ import org.junit.Test;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 
-import de.intranda.api.iiif.presentation.Range;
-import de.intranda.api.iiif.presentation.v2.Manifest;
+import de.intranda.api.iiif.presentation.v2.Range2;
 import io.goobi.viewer.api.rest.AbstractRestApiTest;
 
 /**
@@ -105,7 +109,7 @@ public class RecordSectionResourceTest extends AbstractRestApiTest {
             assertNotNull("Should return user object as json", response.getEntity());
             String entity = response.readEntity(String.class);
             assertNotNull(entity);
-            Range range = mapper.readValue(entity, Range.class);
+            Range2 range = mapper.readValue(entity, Range2.class);
             assertEquals(URI.create(url), range.getId());
         }
     }

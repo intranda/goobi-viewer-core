@@ -43,8 +43,8 @@ import de.intranda.api.annotation.wa.SpecificResource;
 import de.intranda.api.annotation.wa.WebAnnotation;
 import de.intranda.api.annotation.wa.collection.AnnotationCollection;
 import de.intranda.api.annotation.wa.collection.AnnotationPage;
-import de.intranda.api.iiif.presentation.v2.Canvas;
-import de.intranda.api.iiif.presentation.v2.Manifest;
+import de.intranda.api.iiif.presentation.v2.Canvas2;
+import de.intranda.api.iiif.presentation.v2.Manifest2;
 import de.unigoettingen.sub.commons.contentlib.exceptions.ContentLibException;
 import de.unigoettingen.sub.commons.contentlib.exceptions.ContentNotFoundException;
 import de.unigoettingen.sub.commons.contentlib.exceptions.ServiceNotAllowedException;
@@ -212,14 +212,15 @@ public class AnnotationResource {
         if (anno instanceof WebAnnotation) {
             IResource target = anno.getTarget();
             String template;
-            if (target instanceof Manifest) {
+            if (target instanceof Manifest2) {
                 template = urls.path(RECORDS_RECORD, RECORDS_MANIFEST).build();
-            } else if (target instanceof Canvas) {
+            } else if (target instanceof Canvas2) {
                 template = urls.path(RECORDS_PAGES, RECORDS_PAGES_CANVAS).build();
             } else if (target instanceof SpecificResource) {
                 //assume specific resources are on a canvas
                 template = urls.path(RECORDS_PAGES, RECORDS_PAGES_CANVAS).build();
             } else {
+                //TODO: implement handling IIIF 3 resources
                 return null;//not implemented
             }
 

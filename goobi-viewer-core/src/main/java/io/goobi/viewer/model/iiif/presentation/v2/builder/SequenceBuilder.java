@@ -13,7 +13,7 @@
  *
  * You should have received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
-package io.goobi.viewer.model.iiif.presentation.builder;
+package io.goobi.viewer.model.iiif.presentation.v2.builder;
 
 import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_FILES;
 import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_FILES_ALTO;
@@ -46,15 +46,15 @@ import de.intranda.api.annotation.oa.SpecificResource;
 import de.intranda.api.annotation.oa.TextualResource;
 import de.intranda.api.iiif.IIIFUrlResolver;
 import de.intranda.api.iiif.image.ImageInformation;
-import de.intranda.api.iiif.presentation.AnnotationList;
-import de.intranda.api.iiif.presentation.Sequence;
 import de.intranda.api.iiif.presentation.content.ImageContent;
 import de.intranda.api.iiif.presentation.content.LinkingContent;
 import de.intranda.api.iiif.presentation.enums.AnnotationType;
 import de.intranda.api.iiif.presentation.enums.DcType;
 import de.intranda.api.iiif.presentation.enums.Format;
-import de.intranda.api.iiif.presentation.v2.Canvas;
-import de.intranda.api.iiif.presentation.v2.Manifest;
+import de.intranda.api.iiif.presentation.v2.AnnotationList;
+import de.intranda.api.iiif.presentation.v2.Canvas2;
+import de.intranda.api.iiif.presentation.v2.Manifest2;
+import de.intranda.api.iiif.presentation.v2.Sequence;
 import de.intranda.digiverso.ocr.alto.model.structureclasses.logical.AltoDocument;
 import de.intranda.metadata.multilanguage.SimpleMetadataValue;
 import de.unigoettingen.sub.commons.contentlib.exceptions.ContentLibException;
@@ -71,7 +71,7 @@ import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.messages.ViewerResourceBundle;
 import io.goobi.viewer.model.annotation.AltoAnnotationBuilder;
 import io.goobi.viewer.model.annotation.Comment;
-import io.goobi.viewer.model.iiif.presentation.builder.LinkingProperty.LinkingTarget;
+import io.goobi.viewer.model.iiif.presentation.v2.builder.LinkingProperty.LinkingTarget;
 import io.goobi.viewer.model.viewer.MimeType;
 import io.goobi.viewer.model.viewer.PageType;
 import io.goobi.viewer.model.viewer.PhysicalElement;
@@ -119,7 +119,7 @@ public class SequenceBuilder extends AbstractBuilder {
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
      */
-    public Map<AnnotationType, List<AnnotationList>> addBaseSequence(Manifest manifest, StructElement doc, String manifestId,
+    public Map<AnnotationType, List<AnnotationList>> addBaseSequence(Manifest2 manifest, StructElement doc, String manifestId,
             HttpServletRequest request)
             throws URISyntaxException, PresentationException, IndexUnreachableException, DAOException, ViewerConfigurationException {
 
@@ -137,11 +137,11 @@ public class SequenceBuilder extends AbstractBuilder {
         if(BuildMode.IIIF.equals(buildMode) || BuildMode.THUMBS.equals(buildMode)) {
 
             IPageLoader pageLoader = new EagerPageLoader(doc);
-            Map<Integer, Canvas> canvasMap = new HashMap<>();
+            Map<Integer, Canvas2> canvasMap = new HashMap<>();
             for (int i = pageLoader.getFirstPageOrder(); i <= pageLoader.getLastPageOrder(); ++i) {
                 PhysicalElement page = pageLoader.getPage(i);
     
-                Canvas canvas = generateCanvas(doc.getPi(), page);
+                Canvas2 canvas = generateCanvas(doc.getPi(), page);
                 if (canvas != null && getBuildMode().equals(BuildMode.IIIF)) {
                     addSeeAlsos(canvas, page);
                     Map<AnnotationType, AnnotationList> content = addOtherContent(doc, page, canvas, false);
@@ -182,7 +182,7 @@ public class SequenceBuilder extends AbstractBuilder {
      * @throws java.net.URISyntaxException if any.
      * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
      */
-    public void addSeeAlsos(Canvas canvas, PhysicalElement page) throws URISyntaxException, ViewerConfigurationException {
+    public void addSeeAlsos(Canvas2 canvas, PhysicalElement page) throws URISyntaxException, ViewerConfigurationException {
 
         this.getSeeAlsos().forEach(link -> {
             try {
@@ -201,7 +201,7 @@ public class SequenceBuilder extends AbstractBuilder {
      * @param canvas
      * @throws URISyntaxException
      */
-    public void addRenderings(PhysicalElement page, Canvas canvas) throws URISyntaxException {
+    public void addRenderings(PhysicalElement page, Canvas2 canvas) throws URISyntaxException {
 
         this.getRenderings().forEach(link -> {
             try {
@@ -226,12 +226,12 @@ public class SequenceBuilder extends AbstractBuilder {
      * @throws java.net.URISyntaxException if any.
      * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
      */
-    public List<AnnotationList> addComments(Map<Integer, Canvas> canvases, String pi, boolean populate)
+    public List<AnnotationList> addComments(Map<Integer, Canvas2> canvases, String pi, boolean populate)
             throws DAOException, URISyntaxException, ViewerConfigurationException {
         List<AnnotationList> list = new ArrayList<>();
         List<Integer> pages = DataManager.getInstance().getDao().getPagesWithComments(pi);
         for (Integer order : pages) {
-            Canvas canvas = canvases.get(order);
+            Canvas2 canvas = canvases.get(order);
             if (canvas != null) {
                 AnnotationList annoList = new AnnotationList(getAnnotationListURI(pi, order, AnnotationType.COMMENT, true));
                 annoList.setLabel(ViewerResourceBundle.getTranslations(AnnotationType.COMMENT.name()));
@@ -261,7 +261,7 @@ public class SequenceBuilder extends AbstractBuilder {
      * @param height
      * @return
      */
-    private static SpecificResource createSpecificResource(Canvas canvas, int x, int y, int width, int height) {
+    private static SpecificResource createSpecificResource(Canvas2 canvas, int x, int y, int width, int height) {
         SpecificResource part = new SpecificResource(canvas.getId(), new FragmentSelector(new Rectangle(x, y, width, height)));
         return part;
     }
@@ -314,13 +314,13 @@ public class SequenceBuilder extends AbstractBuilder {
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      */
-    public Canvas generateCanvas(String pi, PhysicalElement page)
+    public Canvas2 generateCanvas(String pi, PhysicalElement page)
             throws URISyntaxException, ViewerConfigurationException, IndexUnreachableException, PresentationException {
         if (pi == null || page == null) {
             return null;
         }
         URI canvasId = getCanvasURI(pi, page.getOrder());
-        Canvas canvas = new Canvas(canvasId);
+        Canvas2 canvas = new Canvas2(canvasId);
         canvas.setLabel(new SimpleMetadataValue(page.getOrderLabel()));
         canvas.addThumbnail(new ImageContent(new URI(imageDelivery.getThumbs().getThumbnailUrl(page))));
 
@@ -422,7 +422,7 @@ public class SequenceBuilder extends AbstractBuilder {
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
      */
-    public Map<AnnotationType, AnnotationList> addOtherContent(StructElement doc, PhysicalElement page, Canvas canvas, boolean populate)
+    public Map<AnnotationType, AnnotationList> addOtherContent(StructElement doc, PhysicalElement page, Canvas2 canvas, boolean populate)
             throws URISyntaxException, IndexUnreachableException, ViewerConfigurationException {
 
         Map<AnnotationType, AnnotationList> annotationMap = new HashMap<>();
@@ -483,7 +483,7 @@ public class SequenceBuilder extends AbstractBuilder {
                 Format format = Format.fromFilename(url);
                 LinkingContent audioLink = new LinkingContent(new URI(url));
                 audioLink.setFormat(format);
-                audioLink.setType(DcType.SOUND);
+                audioLink.setType(DcType.SOUND.getLabel());
                 audioLink.setLabel(ViewerResourceBundle.getTranslations("AUDIO"));
                 annotation.setBody(audioLink);
             }
@@ -502,7 +502,7 @@ public class SequenceBuilder extends AbstractBuilder {
                 Format format = Format.fromFilename(url);
                 LinkingContent link = new LinkingContent(new URI(url));
                 link.setFormat(format);
-                link.setType(DcType.MOVING_IMAGE);
+                link.setType(DcType.MOVING_IMAGE.getLabel());
                 link.setLabel(ViewerResourceBundle.getTranslations("VIDEO"));
                 annotation.setBody(link);
             }
@@ -522,7 +522,7 @@ public class SequenceBuilder extends AbstractBuilder {
 
                     LinkingContent link = new LinkingContent(new URI(url));
                     link.setFormat(Format.TEXT_HTML);
-                    link.setType(DcType.MOVING_IMAGE);
+                    link.setType(DcType.MOVING_IMAGE.getLabel());
                     link.setLabel(ViewerResourceBundle.getTranslations("VIDEO"));
                     annotation.setBody(link);
                 }
@@ -589,7 +589,7 @@ public class SequenceBuilder extends AbstractBuilder {
      * </p>
      *
      * @param buildMode the buildMode to set
-     * @return a {@link io.goobi.viewer.model.iiif.presentation.builder.SequenceBuilder} object.
+     * @return a {@link io.goobi.viewer.model.iiif.presentation.v2.builder.SequenceBuilder} object.
      */
     public SequenceBuilder setBuildMode(BuildMode buildMode) {
         this.buildMode = buildMode;
@@ -613,7 +613,7 @@ public class SequenceBuilder extends AbstractBuilder {
      * </p>
      *
      * @param preferredView the preferredView to set
-     * @return a {@link io.goobi.viewer.model.iiif.presentation.builder.SequenceBuilder} object.
+     * @return a {@link io.goobi.viewer.model.iiif.presentation.v2.builder.SequenceBuilder} object.
      */
     public SequenceBuilder setPreferedView(PageType preferredView) {
         this.preferedView = preferredView;

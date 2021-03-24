@@ -13,13 +13,12 @@
  *
  * You should have received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
-package io.goobi.viewer.model.iiif.presentation.builder;
+package io.goobi.viewer.model.iiif.presentation.v2.builder;
 
-import java.net.URI;
-import java.util.List;
-import java.util.Map;
+import static org.junit.Assert.*;
 
-import org.junit.Assert;
+import org.apache.solr.common.SolrDocument;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -27,15 +26,21 @@ import org.junit.Test;
 import io.goobi.viewer.api.rest.v1.ApiUrls;
 import io.goobi.viewer.controller.Configuration;
 import io.goobi.viewer.controller.DataManager;
-import io.goobi.viewer.model.iiif.presentation.builder.AbstractBuilder;
+import io.goobi.viewer.model.iiif.presentation.v2.builder.OpenAnnotationBuilder;
 
 /**
  * @author florian
  *
  */
-public class AbstractBuilderTest {
+public class OpenAnnotationBuilderTest {
 
-    AbstractBuilder builder;
+    final static String PI = "1234";
+    final static Integer PAGENO = 27;
+    final static String FRAGMENT = "xywh=742,2230,2322,342";
+    
+
+    OpenAnnotationBuilder builder;
+    SolrDocument solrDocument;
 
     @BeforeClass
     public static void setUpClass() throws Exception {
@@ -44,20 +49,26 @@ public class AbstractBuilderTest {
 
     @Before
     public void SetUp() {
-        builder = new AbstractBuilder(new ApiUrls("http://localhost:8080/viewer/rest")) {
+        builder = new OpenAnnotationBuilder(new ApiUrls("http://localhost:8080/viewer/rest")) {
         };
+    }
+    
+    /**
+     * @throws java.lang.Exception
+     */
+    @Before
+    public void setUp() throws Exception {
+    }
+
+    /**
+     * @throws java.lang.Exception
+     */
+    @After
+    public void tearDown() throws Exception {
     }
 
     @Test
-    public void testGetEventFields() {
-        Map<String, List<String>> events = builder.getEventFields();
-        Assert.assertNotNull(events);
-        Assert.assertEquals(3, events.size());
-        Assert.assertEquals(2, events.get("").size());
-        Assert.assertEquals(2, events.get("Provenienz").size());
-        Assert.assertEquals(1, events.get("Expression Creation").size());
-        Assert.assertEquals("MD_EVENTARTIST", events.get("Expression Creation").iterator().next());
-
+    public void test() {
     }
 
 }

@@ -15,7 +15,9 @@
  */
 package io.goobi.viewer.api.rest.resourcebuilders;
 
-import static io.goobi.viewer.api.rest.v1.ApiUrls.*;
+import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_CMDI_LANG;
+import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_RECORD;
+import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_TEI_LANG;
 
 import java.io.IOException;
 import java.net.URI;
@@ -36,22 +38,20 @@ import org.apache.solr.common.SolrDocumentList;
 import de.intranda.api.annotation.oa.Motivation;
 import de.intranda.api.iiif.IIIFUrlResolver;
 import de.intranda.api.iiif.image.ImageInformation;
-import de.intranda.api.iiif.presentation.AbstractPresentationModelElement;
-import de.intranda.api.iiif.presentation.AnnotationList;
 import de.intranda.api.iiif.presentation.IPresentationModelElement;
-import de.intranda.api.iiif.presentation.Layer;
-import de.intranda.api.iiif.presentation.Range;
-import de.intranda.api.iiif.presentation.Sequence;
 import de.intranda.api.iiif.presentation.content.ImageContent;
 import de.intranda.api.iiif.presentation.enums.AnnotationType;
-import de.intranda.api.iiif.presentation.v2.Canvas;
+import de.intranda.api.iiif.presentation.v2.AbstractPresentationModelElement2;
+import de.intranda.api.iiif.presentation.v2.AnnotationList;
+import de.intranda.api.iiif.presentation.v2.Canvas2;
 import de.intranda.api.iiif.presentation.v2.Collection2;
-import de.intranda.api.iiif.presentation.v2.Manifest;
-import de.intranda.monitoring.timer.Time;
+import de.intranda.api.iiif.presentation.v2.Layer;
+import de.intranda.api.iiif.presentation.v2.Manifest2;
+import de.intranda.api.iiif.presentation.v2.Range2;
+import de.intranda.api.iiif.presentation.v2.Sequence;
 import de.unigoettingen.sub.commons.contentlib.exceptions.ContentNotFoundException;
 import de.unigoettingen.sub.commons.contentlib.exceptions.IllegalRequestException;
 import io.goobi.viewer.api.rest.AbstractApiUrlManager;
-import io.goobi.viewer.api.rest.v1.records.RecordFileResource;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.SolrConstants;
 import io.goobi.viewer.controller.SolrSearchIndex;
@@ -60,13 +60,13 @@ import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.exceptions.ViewerConfigurationException;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
-import io.goobi.viewer.model.iiif.presentation.builder.BuildMode;
-import io.goobi.viewer.model.iiif.presentation.builder.CollectionBuilder;
-import io.goobi.viewer.model.iiif.presentation.builder.LayerBuilder;
-import io.goobi.viewer.model.iiif.presentation.builder.ManifestBuilder;
-import io.goobi.viewer.model.iiif.presentation.builder.OpenAnnotationBuilder;
-import io.goobi.viewer.model.iiif.presentation.builder.SequenceBuilder;
-import io.goobi.viewer.model.iiif.presentation.builder.StructureBuilder;
+import io.goobi.viewer.model.iiif.presentation.v2.builder.BuildMode;
+import io.goobi.viewer.model.iiif.presentation.v2.builder.CollectionBuilder;
+import io.goobi.viewer.model.iiif.presentation.v2.builder.LayerBuilder;
+import io.goobi.viewer.model.iiif.presentation.v2.builder.ManifestBuilder;
+import io.goobi.viewer.model.iiif.presentation.v2.builder.OpenAnnotationBuilder;
+import io.goobi.viewer.model.iiif.presentation.v2.builder.SequenceBuilder;
+import io.goobi.viewer.model.iiif.presentation.v2.builder.StructureBuilder;
 import io.goobi.viewer.model.search.SearchHelper;
 import io.goobi.viewer.model.viewer.BrowseDcElement;
 import io.goobi.viewer.model.viewer.PageType;
@@ -78,7 +78,7 @@ import io.goobi.viewer.model.viewer.StructElement;
  * @author florian
  *
  */
-public class IIIFPresentationResourceBuilder {
+public class IIIFPresentation2ResourceBuilder {
 
     private ManifestBuilder manifestBuilder;
     private StructureBuilder structureBuilder;
@@ -88,7 +88,7 @@ public class IIIFPresentationResourceBuilder {
     private final AbstractApiUrlManager urls;
     private final HttpServletRequest request;
 
-    public IIIFPresentationResourceBuilder(AbstractApiUrlManager urls, HttpServletRequest request) {
+    public IIIFPresentation2ResourceBuilder(AbstractApiUrlManager urls, HttpServletRequest request) {
         this.urls = urls;
         this.request = request;
     }
@@ -108,17 +108,17 @@ public class IIIFPresentationResourceBuilder {
 
         if (manifest instanceof Collection2 && docs.size() > 1) {
             getManifestBuilder().addVolumes((Collection2) manifest, docs.subList(1, docs.size()));
-        } else if (manifest instanceof Manifest) {
-            getManifestBuilder().addAnchor((Manifest) manifest, mainDoc.getMetadataValue(SolrConstants.PI_ANCHOR));
+        } else if (manifest instanceof Manifest2) {
+            getManifestBuilder().addAnchor((Manifest2) manifest, mainDoc.getMetadataValue(SolrConstants.PI_ANCHOR));
 
-            getSequenceBuilder().addBaseSequence((Manifest) manifest, mainDoc, manifest.getId().toString(), request);
+            getSequenceBuilder().addBaseSequence((Manifest2) manifest, mainDoc, manifest.getId().toString(), request);
 
             String topLogId = mainDoc.getMetadataValue(SolrConstants.LOGID);
             if (StringUtils.isNotBlank(topLogId)) {
                 if(BuildMode.IIIF.equals(mode)) {                    
-                    List<Range> ranges = getStructureBuilder().generateStructure(docs, pi, false);
+                    List<Range2> ranges = getStructureBuilder().generateStructure(docs, pi, false);
                     ranges.forEach(range -> {
-                        ((Manifest) manifest).addStructure(range);
+                        ((Manifest2) manifest).addStructure(range);
                     });
                 }
             }
@@ -127,15 +127,15 @@ public class IIIFPresentationResourceBuilder {
         return manifest;
     }
 
-    public Range getRange(String pi, String logId) throws PresentationException, IndexUnreachableException,
+    public Range2 getRange(String pi, String logId) throws PresentationException, IndexUnreachableException,
             ContentNotFoundException, URISyntaxException, ViewerConfigurationException, DAOException {
         List<StructElement> docs = getStructureBuilder().getDocumentWithChildren(pi);
 
         if (docs.isEmpty()) {
             throw new ContentNotFoundException("Not document with PI = " + pi + " and logId = " + logId + " found");
         }
-        List<Range> ranges = getStructureBuilder().generateStructure(docs, pi, false);
-        Optional<Range> range = ranges.stream().filter(r -> r.getId().toString().contains(logId + "/")).findFirst();
+        List<Range2> ranges = getStructureBuilder().generateStructure(docs, pi, false);
+        Optional<Range2> range = ranges.stream().filter(r -> r.getId().toString().contains(logId + "/")).findFirst();
         return range.orElseThrow(() -> new ContentNotFoundException("Not document with PI = " + pi + " and logId = " + logId + " found"));
     }
 
@@ -150,11 +150,11 @@ public class IIIFPresentationResourceBuilder {
 
         if (manifest instanceof Collection2) {
             throw new IllegalRequestException("Identifier refers to a collection which does not have a sequence");
-        } else if (manifest instanceof Manifest) {
+        } else if (manifest instanceof Manifest2) {
             new SequenceBuilder(urls).setBuildMode(buildMode)
                     .setPreferedView(preferedView)
-                    .addBaseSequence((Manifest) manifest, doc, manifest.getId().toString(), request);
-            return ((Manifest) manifest).getSequences().get(0);
+                    .addBaseSequence((Manifest2) manifest, doc, manifest.getId().toString(), request);
+            return ((Manifest2) manifest).getSequences().get(0);
         }
         throw new ContentNotFoundException("Not manifest with identifier " + pi + " found");
 
@@ -214,7 +214,7 @@ public class IIIFPresentationResourceBuilder {
         StructElement doc = getManifestBuilder().getDocument(pi);
         if (doc != null) {
             PhysicalElement page = getSequenceBuilder().getPage(doc, pageNo);
-            Canvas canvas = getSequenceBuilder().generateCanvas(doc.getPi(), page);
+            Canvas2 canvas = getSequenceBuilder().generateCanvas(doc.getPi(), page);
             if (canvas != null) {
                 getSequenceBuilder().addSeeAlsos(canvas, page);
                 getSequenceBuilder().addOtherContent(doc, page, canvas, false);
@@ -238,7 +238,7 @@ public class IIIFPresentationResourceBuilder {
      * Getter for the field <code>manifestBuilder</code>.
      * </p>
      *
-     * @return a {@link io.goobi.viewer.model.iiif.presentation.builder.ManifestBuilder} object.
+     * @return a {@link io.goobi.viewer.model.iiif.presentation.v2.builder.ManifestBuilder} object.
      */
     public ManifestBuilder getManifestBuilder() {
         if (this.manifestBuilder == null) {
@@ -252,7 +252,7 @@ public class IIIFPresentationResourceBuilder {
      * Getter for the field <code>sequenceBuilder</code>.
      * </p>
      *
-     * @return a {@link io.goobi.viewer.model.iiif.presentation.builder.SequenceBuilder} object.
+     * @return a {@link io.goobi.viewer.model.iiif.presentation.v2.builder.SequenceBuilder} object.
      */
     public SequenceBuilder getSequenceBuilder() {
         if (this.sequenceBuilder == null) {
@@ -266,7 +266,7 @@ public class IIIFPresentationResourceBuilder {
      * Getter for the field <code>layerBuilder</code>.
      * </p>
      *
-     * @return a {@link io.goobi.viewer.model.iiif.presentation.builder.LayerBuilder} object.
+     * @return a {@link io.goobi.viewer.model.iiif.presentation.v2.builder.LayerBuilder} object.
      */
     public LayerBuilder getLayerBuilder() {
         if (this.layerBuilder == null) {
@@ -361,7 +361,7 @@ public class IIIFPresentationResourceBuilder {
         for (SolrDocument doc : queryResults) {
             long luceneId = Long.parseLong(doc.getFirstValue(SolrConstants.IDDOC).toString());
             StructElement ele = new StructElement(luceneId, doc);
-            AbstractPresentationModelElement manifest = builder.generateManifest(ele);
+            AbstractPresentationModelElement2 manifest = builder.generateManifest(ele);
 
             if (this.urls != null && manifest.getThumbnails().isEmpty()) {
                 int thumbsWidth = DataManager.getInstance().getConfiguration().getThumbnailsWidth();

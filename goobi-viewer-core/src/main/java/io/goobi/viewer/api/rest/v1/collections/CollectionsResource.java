@@ -37,7 +37,7 @@ import de.unigoettingen.sub.commons.contentlib.exceptions.IllegalRequestExceptio
 import io.goobi.viewer.api.rest.AbstractApiUrlManager;
 import io.goobi.viewer.api.rest.bindings.ViewerRestServiceBinding;
 import io.goobi.viewer.api.rest.resourcebuilders.ContentAssistResourceBuilder;
-import io.goobi.viewer.api.rest.resourcebuilders.IIIFPresentationResourceBuilder;
+import io.goobi.viewer.api.rest.resourcebuilders.IIIFPresentation2ResourceBuilder;
 import io.goobi.viewer.controller.StringTools;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
@@ -76,7 +76,7 @@ public class CollectionsResource {
             @Parameter(description ="Add values of this field to response to allow grouping of results")@QueryParam("grouping")String grouping
                     )
             throws PresentationException, IndexUnreachableException, DAOException, ContentLibException, URISyntaxException, ViewerConfigurationException {
-        IIIFPresentationResourceBuilder builder = new IIIFPresentationResourceBuilder(urls, request);
+        IIIFPresentation2ResourceBuilder builder = new IIIFPresentation2ResourceBuilder(urls, request);
         Collection2 collection;
         if(StringUtils.isBlank(grouping)) {            
             collection = builder.getCollections(solrField);
@@ -100,7 +100,7 @@ public class CollectionsResource {
             @Parameter(description ="Add values of this field to response to allow grouping of results")@QueryParam("grouping")String grouping
             )
             throws PresentationException, IndexUnreachableException, DAOException, ContentLibException, URISyntaxException, ViewerConfigurationException {
-        IIIFPresentationResourceBuilder builder = new IIIFPresentationResourceBuilder(urls, request);
+        IIIFPresentation2ResourceBuilder builder = new IIIFPresentation2ResourceBuilder(urls, request);
         collectionName = StringTools.decodeUrl(collectionName);
         Collection2 collection;
         if(StringUtils.isBlank(grouping)) {                   

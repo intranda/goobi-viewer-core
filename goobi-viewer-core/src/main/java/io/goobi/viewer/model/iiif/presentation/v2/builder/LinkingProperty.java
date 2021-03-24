@@ -13,7 +13,7 @@
  *
  * You should have received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
-package io.goobi.viewer.model.iiif.presentation.builder;
+package io.goobi.viewer.model.iiif.presentation.v2.builder;
 
 import java.net.URI;
 
@@ -73,7 +73,7 @@ public class LinkingProperty {
     public LinkingContent getLinkingContent(URI id) {
         LinkingContent link = new LinkingContent(id);
         link.setFormat(target.mimeType);
-        link.setType(target.type);
+        link.setType(target.type.getLabel());
         if(label != null && !label.isEmpty()) {            
             link.setLabel(label);
         }

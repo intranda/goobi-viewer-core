@@ -31,7 +31,6 @@ import static org.junit.Assert.assertTrue;
 
 import java.net.URI;
 
-import javax.servlet.ServletRequest;
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
@@ -47,11 +46,8 @@ import com.fasterxml.jackson.databind.JsonMappingException;
 
 import de.intranda.api.annotation.wa.collection.AnnotationCollection;
 import de.intranda.api.annotation.wa.collection.AnnotationPage;
-import de.intranda.api.iiif.presentation.Layer;
-import de.intranda.api.iiif.presentation.v2.Manifest;
-import io.goobi.viewer.api.rest.AbstractApiUrlManager;
+import de.intranda.api.iiif.presentation.v2.Layer;
 import io.goobi.viewer.api.rest.AbstractRestApiTest;
-import io.goobi.viewer.api.rest.model.RecordsRequestParameters;
 import io.goobi.viewer.api.rest.v1.ApiUrls;
 
 /**

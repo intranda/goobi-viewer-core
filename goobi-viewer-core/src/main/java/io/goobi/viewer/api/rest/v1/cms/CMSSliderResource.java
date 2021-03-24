@@ -53,8 +53,8 @@ import io.goobi.viewer.model.cms.CMSCollection;
 import io.goobi.viewer.model.cms.CMSMediaItem;
 import io.goobi.viewer.model.cms.CMSPage;
 import io.goobi.viewer.model.cms.CMSSlider;
-import io.goobi.viewer.model.iiif.presentation.builder.CollectionBuilder;
-import io.goobi.viewer.model.iiif.presentation.builder.ManifestBuilder;
+import io.goobi.viewer.model.iiif.presentation.v2.builder.CollectionBuilder;
+import io.goobi.viewer.model.iiif.presentation.v2.builder.ManifestBuilder;
 
 /**
  * @author florian

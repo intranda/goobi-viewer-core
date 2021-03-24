@@ -23,24 +23,18 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
-import org.jdom2.Element;
 
 import de.intranda.api.annotation.AbstractAnnotation;
 import de.intranda.api.annotation.IAnnotation;
 import de.intranda.api.annotation.IResource;
+import de.intranda.api.annotation.oa.FragmentSelector;
 import de.intranda.api.annotation.oa.Motivation;
 import de.intranda.api.annotation.oa.OpenAnnotation;
 import de.intranda.api.annotation.oa.SpecificResource;
 import de.intranda.api.annotation.oa.SpecificResourceURI;
 import de.intranda.api.annotation.oa.TextualResource;
-import de.intranda.api.annotation.oa.FragmentSelector;
-
-import de.intranda.api.iiif.presentation.AnnotationList;
-import de.intranda.api.iiif.presentation.v2.Canvas;
 import de.intranda.digiverso.ocr.alto.model.structureclasses.Page;
-import de.intranda.digiverso.ocr.alto.model.structureclasses.logical.AltoDocument;
 import de.intranda.digiverso.ocr.alto.model.superclasses.GeometricData;
-import de.intranda.digiverso.ocr.alto.utils.IDManager;
 import io.goobi.viewer.api.rest.AbstractApiUrlManager;
 import io.goobi.viewer.api.rest.AbstractApiUrlManager.ApiPath;
 import io.goobi.viewer.api.rest.v1.ApiUrls;
@@ -73,7 +67,7 @@ public class AltoAnnotationBuilder {
      * @param urlOnlyTarget a boolean.
      * @return a {@link java.util.List} object.
      */
-    public List<IAnnotation> createAnnotations(Page alto, String pi, Integer pageNo, Canvas canvas, Granularity granularity, boolean urlOnlyTarget) {
+    public List<IAnnotation> createAnnotations(Page alto, String pi, Integer pageNo, IResource target, Granularity granularity, boolean urlOnlyTarget) {
         List<GeometricData> elementsToInclude = new ArrayList<>();
         switch (granularity) {
             case PAGE:
@@ -94,7 +88,7 @@ public class AltoAnnotationBuilder {
         }
 
         List<IAnnotation> annoList =
-                elementsToInclude.stream().map(element -> createAnnotation(element, pi, pageNo, canvas, urlOnlyTarget)).collect(Collectors.toList());
+                elementsToInclude.stream().map(element -> createAnnotation(element, pi, pageNo, target, urlOnlyTarget)).collect(Collectors.toList());
         return annoList;
     }
 
@@ -109,9 +103,9 @@ public class AltoAnnotationBuilder {
      * @param urlOnlyTarget a boolean.
      * @return a {@link java.util.List} object.
      */
-    public List<IAnnotation> createAnnotations(List<GeometricData> elements, String pi, Integer pageNo, Canvas canvas, boolean urlOnlyTarget) {
+    public List<IAnnotation> createAnnotations(List<GeometricData> elements, String pi, Integer pageNo, IResource target, boolean urlOnlyTarget) {
         List<IAnnotation> annoList =
-                elements.stream().map(element -> createAnnotation(element, pi, pageNo, canvas, urlOnlyTarget)).collect(Collectors.toList());
+                elements.stream().map(element -> createAnnotation(element, pi, pageNo, target, urlOnlyTarget)).collect(Collectors.toList());
         return annoList;
     }
 

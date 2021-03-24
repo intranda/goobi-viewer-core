@@ -13,15 +13,13 @@
  *
  * You should have received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
-package io.goobi.viewer.model.iiif.presentation.builder;
+package io.goobi.viewer.model.iiif.presentation.v2.builder;
 
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
-
-import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.solr.common.SolrDocument;
@@ -31,19 +29,18 @@ import org.slf4j.LoggerFactory;
 
 import de.intranda.api.iiif.IIIFUrlResolver;
 import de.intranda.api.iiif.image.ImageInformation;
-import de.intranda.api.iiif.presentation.AbstractPresentationModelElement;
 import de.intranda.api.iiif.presentation.CollectionExtent;
 import de.intranda.api.iiif.presentation.TagListService;
 import de.intranda.api.iiif.presentation.content.ImageContent;
 import de.intranda.api.iiif.presentation.content.LinkingContent;
 import de.intranda.api.iiif.presentation.enums.ViewingHint;
+import de.intranda.api.iiif.presentation.v2.AbstractPresentationModelElement2;
 import de.intranda.api.iiif.presentation.v2.Collection2;
-import de.intranda.api.iiif.presentation.v2.Manifest;
+import de.intranda.api.iiif.presentation.v2.Manifest2;
 import de.intranda.metadata.multilanguage.SimpleMetadataValue;
 import de.unigoettingen.sub.commons.contentlib.exceptions.IllegalRequestException;
 import io.goobi.viewer.api.rest.AbstractApiUrlManager;
 import io.goobi.viewer.api.rest.v1.ApiUrls;
-import io.goobi.viewer.api.rest.v1.services.JsonLdDefinitionsResource;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.SolrConstants;
 import io.goobi.viewer.exceptions.DAOException;
@@ -52,7 +49,7 @@ import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.exceptions.ViewerConfigurationException;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.model.cms.CMSCollection;
-import io.goobi.viewer.model.iiif.presentation.builder.LinkingProperty.LinkingTarget;
+import io.goobi.viewer.model.iiif.presentation.v2.builder.LinkingProperty.LinkingTarget;
 import io.goobi.viewer.model.search.SearchHelper;
 import io.goobi.viewer.model.viewer.BrowseElementInfo;
 import io.goobi.viewer.model.viewer.CollectionView;
@@ -192,7 +189,7 @@ public class CollectionBuilder extends AbstractBuilder {
         if (containedWorks != null) {
             for (SolrDocument solrDocument : containedWorks) {
 
-                AbstractPresentationModelElement work;
+                AbstractPresentationModelElement2 work;
                 Boolean anchor = (Boolean) solrDocument.getFirstValue(SolrConstants.ISANCHOR);
                 String pi = solrDocument.getFirstValue(SolrConstants.PI).toString();
                 URI uri = getManifestURI(pi);
@@ -201,8 +198,8 @@ public class CollectionBuilder extends AbstractBuilder {
                     work.addViewingHint(ViewingHint.multipart);
                     collection.addCollection((Collection2) work);
                 } else {
-                    work = new Manifest(uri);
-                    collection.addManifest((Manifest) work);
+                    work = new Manifest2(uri);
+                    collection.addManifest((Manifest2) work);
                 }
                 getLabelIfExists(solrDocument).ifPresent(label -> work.setLabel(label));
             }
