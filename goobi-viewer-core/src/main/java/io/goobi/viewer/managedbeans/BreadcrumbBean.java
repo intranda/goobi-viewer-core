@@ -101,8 +101,6 @@ public class BreadcrumbBean implements Serializable {
     /** Constant <code>WEIGHT_CROWDSOURCING_CAMPAIGN_PARENT=1</code> */
     public static final int WEIGHT_CROWDSOURCING_CAMPAIGN_PARENT = 1;
 
-    private final Object lockObj = new Object();
-
     private List<LabeledLink> breadcrumbs = new LinkedList<>();
 
     /**
@@ -457,8 +455,8 @@ public class BreadcrumbBean implements Serializable {
      * @return the List of flattened breadcrumb links
      */
     public List<LabeledLink> getBreadcrumbs() {
-        synchronized (lockObj) {
-            List<LabeledLink> baseLinks = Collections.synchronizedList(this.breadcrumbs);
+        List<LabeledLink> baseLinks = Collections.synchronizedList(this.breadcrumbs);
+        synchronized (baseLinks) {
             List<LabeledLink> flattenedLinks = new ArrayList<>();
             for (LabeledLink labeledLink : baseLinks) {
                 if (labeledLink instanceof CompoundLabeledLink) {
