@@ -13,9 +13,11 @@
  *
  * You should have received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
-package io.goobi.viewer.api.rest.v1.media;
+package io.goobi.viewer.api.rest.v2.records.media;
 
-import static io.goobi.viewer.api.rest.v1.ApiUrls.*;
+import static io.goobi.viewer.api.rest.v2.ApiUrls.RECORDS_FILES_IMAGE;
+import static io.goobi.viewer.api.rest.v2.ApiUrls.RECORDS_FILES_IMAGE_PDF;
+
 import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -41,6 +43,8 @@ import org.primefaces.shaded.commons.io.FilenameUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import de.intranda.api.iiif.image.ImageInformation;
+import de.intranda.api.iiif.image.v3.ImageInformation3;
 import de.unigoettingen.sub.commons.contentlib.exceptions.ContentLibException;
 import de.unigoettingen.sub.commons.contentlib.exceptions.IllegalRequestException;
 import de.unigoettingen.sub.commons.contentlib.servlet.rest.CORSBinding;
@@ -53,7 +57,7 @@ import io.goobi.viewer.api.rest.AbstractApiUrlManager;
 import io.goobi.viewer.api.rest.bindings.AccessConditionBinding;
 import io.goobi.viewer.api.rest.filters.AccessConditionRequestFilter;
 import io.goobi.viewer.api.rest.filters.FilterTools;
-import io.goobi.viewer.api.rest.v1.ApiUrls;
+import io.goobi.viewer.api.rest.v2.ApiUrls;
 import io.goobi.viewer.model.security.IPrivilegeHolder;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -61,31 +65,31 @@ import io.swagger.v3.oas.annotations.Parameter;
 /**
  * @author florian
  *
- * Used to call ContentServer with external image resource URLs
- *
  */
-@Path(EXTERNAL_IMAGES)
+@Path(RECORDS_FILES_IMAGE)
 @ContentServerBinding
 @AccessConditionBinding
 @CORSBinding
-public class ExternalImageResource extends ImageResource {
+public class RecordsFilesImageResource extends ImageResource {
     
-    private static final Logger logger = LoggerFactory.getLogger(ExternalImageResource.class);
+    private static final Logger logger = LoggerFactory.getLogger(RecordsFilesImageResource.class);
     
     /**
      * @param request
      * @param directory
      * @param filename
      */
-    public ExternalImageResource(
+    public RecordsFilesImageResource(
             @Context ContainerRequestContext context, @Context HttpServletRequest request, @Context HttpServletResponse response,
             @Context ApiUrls urls,
-            @Parameter(description = "URL of the image") @PathParam("filename") String imageUrl) {
-        super(context, request, response, "", imageUrl);
-        request.setAttribute(FilterTools.ATTRIBUTE_FILENAME, imageUrl);
+            @Parameter(description = "Persistent identifier of the record") @PathParam("pi") String pi,
+            @Parameter(description = "Filename of the image") @PathParam("filename") String filename) {
+        super(context, request, response, pi, filename);
+        request.setAttribute(FilterTools.ATTRIBUTE_PI, pi);
+        request.setAttribute(FilterTools.ATTRIBUTE_FILENAME, filename);
         request.setAttribute(AccessConditionRequestFilter.REQUIRED_PRIVILEGE, IPrivilegeHolder.PRIV_VIEW_IMAGES);
         String requestUrl = request.getRequestURI();
-        String baseImageUrl = urls.path(ApiUrls.EXTERNAL_IMAGES).params(imageUrl).build();
+        String baseImageUrl = urls.path(ApiUrls.RECORDS_FILES_IMAGE).params(pi, filename).build();
         String imageRequestPath = requestUrl.replace(baseImageUrl, "");
 
         List<String> parts = Arrays.stream(imageRequestPath.split("/")).filter(StringUtils::isNotBlank).collect(Collectors.toList());
@@ -146,6 +150,16 @@ public class ExternalImageResource extends ImageResource {
             this.resourceURI = URI.create(this.resourceURI.toString().replace(toReplace, directory));
         } catch (UnsupportedEncodingException e) {
         }
+    }
+    
+    @GET
+    @javax.ws.rs.Path("/info.json")
+    @Produces({ MEDIA_TYPE_APPLICATION_JSONLD, MediaType.APPLICATION_JSON })
+    @ContentServerImageInfoBinding
+    @CORSBinding
+    public ImageInformation getInfoAsJson() throws ContentLibException {
+        ImageInformation info = super.getInfoAsJson();
+        return new ImageInformation3(info);
     }
 
 }

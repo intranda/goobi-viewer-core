@@ -290,5 +290,10 @@ public abstract class AbstractApiUrlManager {
             return new ApiInfo();
         }
     }
+    
+    public static enum Version  {
+            v1,
+            v2;
+    }
 
 }

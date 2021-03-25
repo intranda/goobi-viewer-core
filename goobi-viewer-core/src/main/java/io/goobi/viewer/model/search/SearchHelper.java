@@ -617,6 +617,8 @@ public final class SearchHelper {
                         }
                     }
                 }
+                
+                
             }
 
             //Add facet (grouping) field values

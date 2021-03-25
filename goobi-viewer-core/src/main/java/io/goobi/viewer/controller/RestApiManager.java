@@ -22,6 +22,7 @@ import org.slf4j.LoggerFactory;
 
 import io.goobi.viewer.api.rest.AbstractApiUrlManager;
 import io.goobi.viewer.api.rest.AbstractApiUrlManager.ApiInfo;
+import io.goobi.viewer.api.rest.AbstractApiUrlManager.Version;
 import io.goobi.viewer.api.rest.v1.ApiUrls;
 
 /**
@@ -70,13 +71,20 @@ public class RestApiManager {
     }
 
     /**
+     * @param version 
      * @return the dataApiManager if it is either set directly or if the configured rest endpoint points to a goobi viewer v1 rest endpoint. Otherwise
      *         null is returned
      */
     public Optional<AbstractApiUrlManager> getDataApiManager() {
+        return getDataApiManager(Version.v1);
+    }
+    
+    public Optional<AbstractApiUrlManager> getDataApiManager(Version version) {
         String apiUrl = this.config.getRestApiUrl();
         if(isLegacyUrl(apiUrl)) {
             return Optional.empty();
+        } else if(Version.v2.equals(version)){
+            return Optional.of(new io.goobi.viewer.api.rest.v2.ApiUrls(apiUrl.replace("/api/v1", "/api/v2")));
         } else {
             return Optional.of(new ApiUrls(apiUrl));
         }
@@ -99,15 +107,34 @@ public class RestApiManager {
     }
 
     /**
+     * @param version 
      * @return the contentApiManager if it is either set directly or if the configured rest endpoint points to a goobi viewer v1 rest endpoint.
      *         Otherwise null is returned
      */
     public Optional<AbstractApiUrlManager> getContentApiManager() {
+        return getContentApiManager(Version.v1);
+    }
+    
+    public Optional<AbstractApiUrlManager> getContentApiManager(Version version) {
         String apiUrl = this.config.getIIIFApiUrl();
         if(isLegacyUrl(apiUrl)) {
             return Optional.empty();
+        } else if(Version.v2.equals(version)){
+            return Optional.of(new io.goobi.viewer.api.rest.v2.ApiUrls(apiUrl.replace("/api/v1", "/api/v2")));
         } else {
             return Optional.of(new ApiUrls(apiUrl));
+        }
+    }
+    
+    public AbstractApiUrlManager getCMSMediaImageApiManager() {
+        return getCMSMediaImageApiManager(Version.v1);
+    }
+    
+    public AbstractApiUrlManager getCMSMediaImageApiManager(Version version) {
+        if (DataManager.getInstance().getConfiguration().isUseIIIFApiUrlForCmsMediaUrls()) {
+            return getContentApiManager(version).orElse(null);
+        } else {
+            return getDataApiManager(version).orElse(null);
         }
     }
 

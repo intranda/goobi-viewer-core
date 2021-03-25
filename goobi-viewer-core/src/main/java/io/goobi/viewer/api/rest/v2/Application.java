@@ -13,7 +13,7 @@
  *
  * You should have received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
-package io.goobi.viewer.api.rest.v1;
+package io.goobi.viewer.api.rest.v2;
 
 import javax.servlet.ServletConfig;
 import javax.servlet.http.HttpServlet;
@@ -49,7 +49,7 @@ public class Application extends ResourceConfig {
             @Override
             protected void configure() {
                 String apiUrl = DataManager.getInstance().getConfiguration().getRestApiUrl();
-                apiUrl = apiUrl.replace("/rest", "/api/v1");
+                apiUrl = apiUrl.replace("/rest", "/api/v2").replace("/api/v1", "/api/v2");
                 bind(new ApiUrls(apiUrl)).to(ApiUrls.class);
             }
         };
@@ -73,7 +73,7 @@ public class Application extends ResourceConfig {
         //inject properties into Resources classes
         register(injectionBinder);
         //define Java packages to observe
-        packages(true, "io.goobi.viewer.api.rest.v1");
+        packages(true, "io.goobi.viewer.api.rest.v2");
         packages(true, "io.goobi.viewer.api.rest.filters");
         packages(true, "io.goobi.viewer.api.rest.exceptions");
         packages(true, "io.swagger");

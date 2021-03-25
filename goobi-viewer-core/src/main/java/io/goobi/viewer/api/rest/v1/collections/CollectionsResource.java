@@ -15,7 +15,9 @@
  */
 package io.goobi.viewer.api.rest.v1.collections;
 
-import static io.goobi.viewer.api.rest.v1.ApiUrls.*;
+import static io.goobi.viewer.api.rest.v1.ApiUrls.COLLECTIONS;
+import static io.goobi.viewer.api.rest.v1.ApiUrls.COLLECTIONS_COLLECTION;
+import static io.goobi.viewer.api.rest.v1.ApiUrls.COLLECTIONS_CONTENTASSIST;
 
 import java.net.URISyntaxException;
 import java.util.List;
@@ -34,10 +36,10 @@ import org.apache.commons.lang3.StringUtils;
 import de.intranda.api.iiif.presentation.v2.Collection2;
 import de.unigoettingen.sub.commons.contentlib.exceptions.ContentLibException;
 import de.unigoettingen.sub.commons.contentlib.exceptions.IllegalRequestException;
-import io.goobi.viewer.api.rest.AbstractApiUrlManager;
 import io.goobi.viewer.api.rest.bindings.ViewerRestServiceBinding;
 import io.goobi.viewer.api.rest.resourcebuilders.ContentAssistResourceBuilder;
 import io.goobi.viewer.api.rest.resourcebuilders.IIIFPresentation2ResourceBuilder;
+import io.goobi.viewer.api.rest.v1.ApiUrls;
 import io.goobi.viewer.controller.StringTools;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
@@ -59,7 +61,7 @@ public class CollectionsResource {
     private final HttpServletRequest request;
     
     @Inject
-    AbstractApiUrlManager urls;
+    ApiUrls urls;
 
     public CollectionsResource(
             @Parameter(description="Name of the SOLR field the collection is based on. Typically 'DC'")@PathParam("field")String solrField,

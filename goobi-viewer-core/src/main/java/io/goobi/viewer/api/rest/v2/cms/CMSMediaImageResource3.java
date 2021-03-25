@@ -13,9 +13,9 @@
  *
  * You should have received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
-package io.goobi.viewer.api.rest.v1.cms;
+package io.goobi.viewer.api.rest.v2.cms;
 
-import static io.goobi.viewer.api.rest.v1.ApiUrls.*;
+import static io.goobi.viewer.api.rest.v2.ApiUrls.CMS_MEDIA_FILES_FILE_IMAGE;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URI;
@@ -38,15 +38,15 @@ import javax.ws.rs.core.Response;
 
 import org.apache.commons.lang3.StringUtils;
 
+import de.intranda.api.iiif.image.ImageInformation;
+import de.intranda.api.iiif.image.v3.ImageInformation3;
 import de.unigoettingen.sub.commons.contentlib.exceptions.ContentLibException;
 import de.unigoettingen.sub.commons.contentlib.exceptions.IllegalRequestException;
 import de.unigoettingen.sub.commons.contentlib.servlet.rest.CORSBinding;
-import de.unigoettingen.sub.commons.contentlib.servlet.rest.ContentServerBinding;
 import de.unigoettingen.sub.commons.contentlib.servlet.rest.ContentServerImageInfoBinding;
 import de.unigoettingen.sub.commons.contentlib.servlet.rest.ImageResource;
 import de.unigoettingen.sub.commons.util.PathConverter;
-import io.goobi.viewer.api.rest.AbstractApiUrlManager;
-import io.goobi.viewer.api.rest.v1.ApiUrls;
+import io.goobi.viewer.api.rest.v2.ApiUrls;
 import io.goobi.viewer.controller.DataManager;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -57,10 +57,10 @@ import io.swagger.v3.oas.annotations.Parameter;
  */
 @javax.ws.rs.Path(CMS_MEDIA_FILES_FILE_IMAGE)
 @CORSBinding
-public class CMSMediaImageResource extends ImageResource {
+public class CMSMediaImageResource3 extends ImageResource {
 
     
-    public CMSMediaImageResource(
+    public CMSMediaImageResource3(
             @Context ContainerRequestContext context, @Context HttpServletRequest request, @Context HttpServletResponse response,
             @Context ApiUrls urls,
             @Parameter(description = "Filename of the image") @PathParam("filename") String filename) throws UnsupportedEncodingException {
@@ -110,5 +110,16 @@ public class CMSMediaImageResource extends ImageResource {
     public Response redirectToCanonicalImageInfo() throws ContentLibException {
        return super.redirectToCanonicalImageInfo();
     }
+    
+    @GET
+    @javax.ws.rs.Path("/info.json")
+    @Produces({ MEDIA_TYPE_APPLICATION_JSONLD, MediaType.APPLICATION_JSON })
+    @ContentServerImageInfoBinding
+    @CORSBinding
+    public ImageInformation getInfoAsJson() throws ContentLibException {
+        ImageInformation info = super.getInfoAsJson();
+        return new ImageInformation3(info);
+    }
+    
     
 }

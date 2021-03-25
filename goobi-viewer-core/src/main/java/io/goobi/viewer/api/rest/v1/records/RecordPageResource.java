@@ -54,7 +54,6 @@ import de.intranda.api.iiif.presentation.v2.Sequence;
 import de.unigoettingen.sub.commons.contentlib.exceptions.ContentNotFoundException;
 import de.unigoettingen.sub.commons.contentlib.exceptions.IllegalRequestException;
 import de.unigoettingen.sub.commons.contentlib.servlet.rest.CORSBinding;
-import io.goobi.viewer.api.rest.AbstractApiUrlManager;
 import io.goobi.viewer.api.rest.AbstractApiUrlManager.ApiPath;
 import io.goobi.viewer.api.rest.bindings.IIIFPresentationBinding;
 import io.goobi.viewer.api.rest.bindings.ViewerRestServiceBinding;
@@ -62,6 +61,7 @@ import io.goobi.viewer.api.rest.model.ner.DocumentReference;
 import io.goobi.viewer.api.rest.resourcebuilders.AnnotationsResourceBuilder;
 import io.goobi.viewer.api.rest.resourcebuilders.IIIFPresentation2ResourceBuilder;
 import io.goobi.viewer.api.rest.resourcebuilders.NERBuilder;
+import io.goobi.viewer.api.rest.v1.ApiUrls;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
@@ -96,7 +96,7 @@ public class RecordPageResource {
     @Context
     private HttpServletResponse servletResponse;
     @Inject
-    private AbstractApiUrlManager urls;
+    private ApiUrls urls;
 
     private final String pi;
 

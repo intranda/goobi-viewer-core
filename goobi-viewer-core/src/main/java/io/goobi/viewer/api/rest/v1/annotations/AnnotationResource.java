@@ -77,10 +77,11 @@ public class AnnotationResource {
     private HttpServletRequest servletRequest;
     @Context
     private HttpServletResponse servletResponse;
-    @Inject
-    private AbstractApiUrlManager urls;
+    
+    private final AbstractApiUrlManager urls;
 
     public AnnotationResource() {
+        this.urls = DataManager.getInstance().getRestApiManager().getContentApiManager().orElse(null);
     }
 
     /**

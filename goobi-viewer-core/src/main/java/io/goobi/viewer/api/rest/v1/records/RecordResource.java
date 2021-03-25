@@ -87,6 +87,7 @@ import io.goobi.viewer.api.rest.resourcebuilders.NERBuilder;
 import io.goobi.viewer.api.rest.resourcebuilders.RisResourceBuilder;
 import io.goobi.viewer.api.rest.resourcebuilders.TextResourceBuilder;
 import io.goobi.viewer.api.rest.resourcebuilders.TocResourceBuilder;
+import io.goobi.viewer.api.rest.v1.ApiUrls;
 import io.goobi.viewer.controller.DataFileTools;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.FileTools;
@@ -125,7 +126,7 @@ public class RecordResource {
     @Context
     private HttpServletResponse servletResponse;
     @Inject
-    private AbstractApiUrlManager urls;
+    private ApiUrls urls;
 
     private final String pi;
     private final TextResourceBuilder builder = new TextResourceBuilder();
