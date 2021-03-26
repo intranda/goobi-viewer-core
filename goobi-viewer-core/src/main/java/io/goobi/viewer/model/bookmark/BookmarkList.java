@@ -525,7 +525,7 @@ public class BookmarkList implements Serializable, Comparable<BookmarkList> {
      * Generates a persistent share key for public sharing via link.
      */
     public void generateShareKey() {
-        setShareKey(StringTools.generateMD5(String.valueOf(System.currentTimeMillis())));
+        setShareKey(StringTools.generateHash(String.valueOf(System.currentTimeMillis())));
     }
 
     /**
