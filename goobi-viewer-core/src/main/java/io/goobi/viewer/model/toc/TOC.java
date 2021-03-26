@@ -448,6 +448,7 @@ public class TOC implements Serializable {
      * @return Index of the element with the matching IDDOC within the list of elements; -1 if none found
      */
     public int findTocElementIndexByIddoc(String iddoc) {
+        // logger.trace("findTocElementIndexByIddoc: {}", iddoc);
         if (StringUtils.isEmpty(iddoc)) {
             return -1;
         }

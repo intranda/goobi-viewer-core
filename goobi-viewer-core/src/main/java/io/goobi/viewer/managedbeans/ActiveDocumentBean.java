@@ -21,6 +21,7 @@ import java.io.Serializable;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
@@ -160,6 +161,10 @@ public class ActiveDocumentBean implements Serializable {
     private boolean downloadImageModalVisible = false;
 
     private String selectedDownloadOptionLabel;
+    /* Previous docstruct URL cache. TODO Implement differently once other views beside full-screen are used. */
+    private Map<String, String> prevDocstructUrlCache = new HashMap<>();
+    /* Next docstruct URL cache. TODO Implement differently once other views beside full-screen are used. */
+    private Map<String, String> nextDocstructUrlCache = new HashMap<>();
 
     /**
      * Empty constructor.
@@ -232,6 +237,8 @@ public class ActiveDocumentBean implements Serializable {
             group = false;
             mapWidget = null; //mapWidget needs to be reset when PI changes
             clearCacheMode = null;
+            prevDocstructUrlCache.clear();
+            nextDocstructUrlCache.clear();
 
             // Any cleanup modules need to do when a record is unloaded
             for (IModule module : DataManager.getInstance().getModules()) {
@@ -1121,6 +1128,7 @@ public class ActiveDocumentBean implements Serializable {
      * @throws IndexUnreachableException
      */
     public String getPreviousDocstructUrl() throws IndexUnreachableException {
+        // logger.trace("getPreviousDocstructUrl");
         if (viewManager == null) {
             return null;
         }
@@ -1128,25 +1136,38 @@ public class ActiveDocumentBean implements Serializable {
         if (docstructTypes.isEmpty()) {
             return null;
         }
-        int currentElementIndex =
-                viewManager.getToc().findTocElementIndexByIddoc(String.valueOf(viewManager.getCurrentStructElement().getLuceneId()));
-        if (currentElementIndex == -1) {
-            logger.warn("Current IDDOC not found in TOC: {}", viewManager.getCurrentStructElement().getLuceneId());
-            return null;
-        }
 
-        for (int i = currentElementIndex - 1; i >= 0; --i) {
-            TOCElement tocElement = viewManager.getToc().getTocElements().get(i);
-            String docstructType = tocElement.getMetadataValue(SolrConstants.DOCSTRCT);
-            logger.debug(docstructType);
-            if (docstructType != null && docstructTypes.contains(docstructType)) {
-                logger.debug("Found previous {}: {}", docstructType, tocElement.getLogId());
-                return getPageUrl(navigationHelper.getCurrentPageType().getName(), Integer.valueOf(tocElement.getPageNo()));
+        String currentDocstructIddoc = String.valueOf(viewManager.getCurrentStructElementIddoc());
+        // Determine docstruct URL and cache it
+        if (prevDocstructUrlCache.get(currentDocstructIddoc) == null) {
+            int currentElementIndex = viewManager.getToc().findTocElementIndexByIddoc(currentDocstructIddoc);
+            if (currentElementIndex == -1) {
+                logger.warn("Current IDDOC not found in TOC: {}", viewManager.getCurrentStructElement().getLuceneId());
+                return null;
             }
 
+            boolean found = false;
+            for (int i = currentElementIndex - 1; i >= 0; --i) {
+                TOCElement tocElement = viewManager.getToc().getTocElements().get(i);
+                String docstructType = tocElement.getMetadataValue(SolrConstants.DOCSTRCT);
+                if (docstructType != null && docstructTypes.contains(docstructType)) {
+                    logger.trace("Found previous {}: {}", docstructType, tocElement.getLogId());
+                    // Add LOGID to the URL because ViewManager.currentStructElementIddoc (IDDOC_OWNER) can be incorrect in the index sometimes,
+                    // resulting in the URL pointing at the current element
+                    prevDocstructUrlCache.put(currentDocstructIddoc,
+                            getPageUrl(navigationHelper.getCurrentPageType().getName(), Integer.valueOf(tocElement.getPageNo()))
+                                    + tocElement.getLogId()
+                                    + "/");
+                    found = true;
+                    break;
+                }
+            }
+            if (!found) {
+                prevDocstructUrlCache.put(currentDocstructIddoc, "");
+            }
         }
 
-        return null;
+        return prevDocstructUrlCache.get(currentDocstructIddoc);
     }
 
     /**
@@ -1155,31 +1176,46 @@ public class ActiveDocumentBean implements Serializable {
      * @throws IndexUnreachableException
      */
     public String getNextDocstructUrl() throws IndexUnreachableException {
+        // logger.trace("getNextDocstructUrl");
         if (viewManager == null) {
-            return null;
+            return "";
         }
         List<String> docstructTypes = DataManager.getInstance().getConfiguration().getDocstructNavigationTypes();
         if (docstructTypes.isEmpty()) {
-            return null;
-        }
-        int currentElementIndex =
-                viewManager.getToc().findTocElementIndexByIddoc(String.valueOf(viewManager.getCurrentStructElement().getLuceneId()));
-        if (currentElementIndex == -1) {
-            return null;
+            return "";
         }
 
-        for (int i = currentElementIndex - 1; i < viewManager.getToc().getTocElements().size(); ++i) {
-            TOCElement tocElement = viewManager.getToc().getTocElements().get(i);
-            String docstructType = tocElement.getMetadataValue(SolrConstants.DOCSTRCT);
-            logger.debug(docstructType);
-            if (docstructType != null && docstructTypes.contains(docstructType)) {
-                logger.debug("Found next {}: {}", docstructType, tocElement.getLogId());
-                return getPageUrl(navigationHelper.getCurrentPageType().getName(), Integer.valueOf(tocElement.getPageNo()));
+        String currentDocstructIddoc = String.valueOf(viewManager.getCurrentStructElementIddoc());
+        // Determine docstruct URL and cache it
+        if (nextDocstructUrlCache.get(currentDocstructIddoc) == null) {
+            int currentElementIndex = viewManager.getToc().findTocElementIndexByIddoc(currentDocstructIddoc);
+            logger.trace("currentIndexElement: {}", currentElementIndex);
+            if (currentElementIndex == -1) {
+                return null;
             }
 
+            boolean found = false;
+            for (int i = currentElementIndex + 1; i < viewManager.getToc().getTocElements().size(); ++i) {
+                TOCElement tocElement = viewManager.getToc().getTocElements().get(i);
+                String docstructType = tocElement.getMetadataValue(SolrConstants.DOCSTRCT);
+                if (docstructType != null && docstructTypes.contains(docstructType)) {
+                    logger.trace("Found next {}: {}", docstructType, tocElement.getLogId());
+                    // Add LOGID to the URL because ViewManager.currentStructElementIddoc (IDDOC_OWNER) can be incorrect in the index sometimes,
+                    // resulting in the URL pointing at the current element
+                    nextDocstructUrlCache.put(currentDocstructIddoc,
+                            getPageUrl(navigationHelper.getCurrentPageType().getName(), Integer.valueOf(tocElement.getPageNo()))
+                                    + tocElement.getLogId()
+                                    + "/");
+                    found = true;
+                    break;
+                }
+            }
+            if (!found) {
+                nextDocstructUrlCache.put(currentDocstructIddoc, "");
+            }
         }
 
-        return null;
+        return nextDocstructUrlCache.get(currentDocstructIddoc);
     }
 
     /**
