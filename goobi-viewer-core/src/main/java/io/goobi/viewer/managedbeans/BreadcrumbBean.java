@@ -20,6 +20,7 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 
 import javax.annotation.PostConstruct;
@@ -432,8 +433,9 @@ public class BreadcrumbBean implements Serializable {
             updateBreadcrumbs(new LabeledLink(anchorName, BeanUtils.getServletPathWithHostAsUrlFromJsfContext() + anchorUrl, weight++));
         }
         // If volume name is the same as anchor name, add the volume number, otherwise the volume breadcrumb will be rejected as a duplicate
-        if (anchorName != null && anchorName.getValue().equals(name.getValue())) {
-            StringBuilder sb = new StringBuilder(name.getValue().isPresent() ? name.getValue().get() : "");
+        Optional<String> nameValue = name.getValue();
+        if (anchorName != null && anchorName.getValue().equals(nameValue)) {
+            StringBuilder sb = new StringBuilder(nameValue.isPresent() ? nameValue.get() : "");
             sb.append(" (");
             if (viewManager.getTopStructElement().getMetadataValue(SolrConstants.CURRENTNO) != null) {
                 sb.append(viewManager.getTopStructElement().getMetadataValue(SolrConstants.CURRENTNO));
