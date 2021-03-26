@@ -55,11 +55,13 @@ import de.unigoettingen.sub.commons.contentlib.imagelib.transform.RegionRequest;
 import de.unigoettingen.sub.commons.contentlib.imagelib.transform.Rotation;
 import de.unigoettingen.sub.commons.contentlib.imagelib.transform.Scale;
 import io.goobi.viewer.api.rest.resourcebuilders.TextResourceBuilder;
+import io.goobi.viewer.api.rest.v1.ApiUrls;
 import io.goobi.viewer.controller.ALTOTools;
 import io.goobi.viewer.controller.Configuration;
 import io.goobi.viewer.controller.DataFileTools;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.FileTools;
+import io.goobi.viewer.controller.NetTools;
 import io.goobi.viewer.controller.SolrConstants;
 import io.goobi.viewer.controller.SolrSearchIndex;
 import io.goobi.viewer.controller.imaging.IIIFUrlHandler;
@@ -1013,9 +1015,7 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
         }
 
         try {
-            TextResourceBuilder builder = new TextResourceBuilder();
-            altoText = builder.getAltoDocument(FileTools.getBottomFolderFromPathString(altoFileName),
-                    FileTools.getFilenameFromPathString(altoFileName));
+            altoText = DataFileTools.loadAlto(altoFileName);
             //Text from alto is always plain text
             textContentType = "text/plain";
             if (altoText != null) {

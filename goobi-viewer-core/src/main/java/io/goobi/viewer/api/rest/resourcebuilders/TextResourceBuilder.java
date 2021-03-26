@@ -148,15 +148,7 @@ public class TextResourceBuilder {
                 logger.error(e.getMessage(), e);
                 throw new PresentationException("Error reading resource");
             }
-        } else if(!DataManager.getInstance().getRestApiManager().getContentApiUrl().equals(DataManager.getInstance().getRestApiManager().getDataApiManager())){
-            return DataManager.getInstance().getRestApiManager().getContentApiManager()
-            .map(urls -> {
-                return urls.path(ApiUrls.RECORDS_FILES, ApiUrls.RECORDS_FILES_ALTO).params(pi, fileName).build();
-            })
-            .map(url -> NetTools.callUrlGET(url))
-            .map(array -> array[1])
-            .orElseThrow(() -> new ContentNotFoundException("Resource not found"));
-        } else {
+        }  else {
             throw new ContentNotFoundException("Resource not found"); 
         }
 
@@ -381,15 +373,7 @@ public class TextResourceBuilder {
                 } catch (IOException e) {
                     logger.error(e.getMessage(), e);
                 }
-            } else if(!DataManager.getInstance().getRestApiManager().getContentApiUrl().equals(DataManager.getInstance().getRestApiManager().getDataApiManager())){
-                return DataManager.getInstance().getRestApiManager().getContentApiManager()
-                        .map(urls -> {
-                            return urls.path(ApiUrls.RECORDS_FILES, ApiUrls.RECORDS_FILES_PLAINTEXT).params(pi, fileName).build();
-                        })
-                        .map(url -> NetTools.callUrlGET(url))
-                        .map(array -> array[1])
-                        .orElseThrow(() -> new ContentNotFoundException("Resource not found"));
-            } 
+            }
         }
         throw new ContentNotFoundException("Resource not found");
 
