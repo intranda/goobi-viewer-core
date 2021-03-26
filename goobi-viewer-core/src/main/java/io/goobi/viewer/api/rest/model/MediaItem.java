@@ -82,7 +82,7 @@ public class MediaItem {
      * @param source
      * @return 
      */
-    public IContent getMediaResource(CMSMediaItem source) {
+    public static IContent getMediaResource(CMSMediaItem source) {
         
         ImageContent image = new ImageContent(source.getIconURI());
         image.setFormat(Format.fromFilename(source.getFileName()));

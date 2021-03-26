@@ -25,6 +25,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.servlet.http.HttpServletRequest;
+
 import org.apache.commons.io.FileUtils;
 import org.apache.solr.client.solrj.response.QueryResponse;
 import org.apache.solr.common.SolrDocument;
@@ -48,6 +50,7 @@ import io.goobi.viewer.model.cms.CMSPage;
 import io.goobi.viewer.model.search.SearchHelper;
 import io.goobi.viewer.model.viewer.PageType;
 import io.goobi.viewer.model.viewer.StringPair;
+import io.goobi.viewer.servlets.utils.ServletUtils;
 
 /**
  * Sitemap generation.
@@ -85,9 +88,9 @@ public class Sitemap {
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
-    public List<File> generate(String viewerRootUrl, String outputPath)
+    public List<File> generate(HttpServletRequest request, String outputPath)
             throws IOException, PresentationException, IndexUnreachableException, DAOException {
-        this.viewerRootUrl = viewerRootUrl;
+        this.viewerRootUrl = ServletUtils.getServletPathWithHostAsUrlFromRequest(request);
         // Sitemap index root
         docIndex.setRootElement(new Element("sitemapindex", nsSitemap));
 
@@ -102,7 +105,7 @@ public class Sitemap {
             List<CMSPage> pages = DataManager.getInstance().getDao().getAllCMSPages();
             if (!pages.isEmpty()) {
                 for (CMSPage page : pages) {
-                    String url = viewerRootUrl + page.getUrl();
+                    String url = viewerRootUrl + "/" + page.getRelativeUrlPath();
                     String dateUpdated = "";
                     if (page.getDateUpdated() != null) {
                         dateUpdated = DateTools.format(page.getDateUpdated(), DateTools.formatterISO8601Date, false);
@@ -124,7 +127,7 @@ public class Sitemap {
                 .append(":* AND NOT(")
                 .append(SolrConstants.DATEDELETED)
                 .append(":*)")
-                .append(SearchHelper.getAllSuffixes());
+                .append(SearchHelper.getAllSuffixes(request, true, true));
         logger.debug("Sitemap: sitemap query: {}", sbQuery.toString());
         String[] fields = { SolrConstants.PI, SolrConstants.DATECREATED, SolrConstants.DATEUPDATED, SolrConstants.FULLTEXTAVAILABLE,
                 SolrConstants.DOCTYPE, SolrConstants.ISANCHOR, SolrConstants.THUMBPAGENO };

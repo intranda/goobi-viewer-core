@@ -56,7 +56,7 @@
                     <div class="tpl-overviewpage-legacy__overview-metadata">
                         <h:form id="overviewMetadataForm" prependId="false">
                             <ui:fragment rendered="true">
-                                <ui:repeat value="#{metadataBean.topMetadataElement.getMetadata(cmsPage.getContentItem('metadata').metadataFieldsAsList)}" var="metadata" varStatus="status">
+                                <ui:repeat value="#{metadataBean.getTopMetadataElement(0).getMetadata(cmsPage.getContentItem('metadata').metadataFieldsAsList)}" var="metadata" varStatus="status">
                                     <ui:fragment rendered="#{metadata.values != null and !metadata.values.isEmpty()}">
                                         <dl class="dl-horizontal 'edit-metadata'">
                                             <dt>

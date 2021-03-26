@@ -125,43 +125,47 @@ public class SequenceBuilder extends AbstractBuilder {
 
         Map<AnnotationType, List<AnnotationList>> annotationMap = new HashMap<>();
 
+        
         Sequence sequence = new Sequence(getSequenceURI(doc.getPi(), null));
 
         sequence.addWithin(manifest);
 
-        IPageLoader pageLoader = new EagerPageLoader(doc);
-
-        Map<Integer, Canvas> canvasMap = new HashMap<>();
-        for (int i = pageLoader.getFirstPageOrder(); i <= pageLoader.getLastPageOrder(); ++i) {
-            PhysicalElement page = pageLoader.getPage(i);
-
-            Canvas canvas = generateCanvas(doc.getPi(), page);
-            if (canvas != null && getBuildMode().equals(BuildMode.IIIF)) {
-                addSeeAlsos(canvas, page);
-                Map<AnnotationType, AnnotationList> content = addOtherContent(doc, page, canvas, false);
-
-                merge(annotationMap, content);
-                canvasMap.put(i, canvas);
-            }
-            if (canvas != null) {
-                sequence.addCanvas(canvas);
-            }
-        }
-        if (getBuildMode().equals(BuildMode.IIIF)) {
-            try {
-                annotationMap.put(AnnotationType.COMMENT, addComments(canvasMap, doc.getPi(), false));
-            } catch (DAOException e) {
-                logger.error(e.toString());
-            }
-            if (sequence.getCanvases() != null) {
-                OpenAnnotationBuilder annoBuilder = new OpenAnnotationBuilder(urls);
-                addCrowdourcingAnnotations(sequence.getCanvases(), annoBuilder.getCrowdsourcingAnnotations(doc.getPi(), false, request),
-                        annotationMap);
-            }
-        }
-
-        if (manifest != null && sequence.getCanvases() != null) {
+        if (manifest != null) {
             manifest.setSequence(sequence);
+        }
+        
+        if(BuildMode.IIIF.equals(buildMode) || BuildMode.THUMBS.equals(buildMode)) {
+
+            IPageLoader pageLoader = new EagerPageLoader(doc);
+            Map<Integer, Canvas> canvasMap = new HashMap<>();
+            for (int i = pageLoader.getFirstPageOrder(); i <= pageLoader.getLastPageOrder(); ++i) {
+                PhysicalElement page = pageLoader.getPage(i);
+    
+                Canvas canvas = generateCanvas(doc.getPi(), page);
+                if (canvas != null && getBuildMode().equals(BuildMode.IIIF)) {
+                    addSeeAlsos(canvas, page);
+                    Map<AnnotationType, AnnotationList> content = addOtherContent(doc, page, canvas, false);
+    
+                    merge(annotationMap, content);
+                    canvasMap.put(i, canvas);
+                }
+                if (canvas != null) {
+                    sequence.addCanvas(canvas);
+                }
+            }
+            
+            if (getBuildMode().equals(BuildMode.IIIF)) {
+                try {
+                    annotationMap.put(AnnotationType.COMMENT, addComments(canvasMap, doc.getPi(), false));
+                } catch (DAOException e) {
+                    logger.error(e.toString());
+                }
+                if (sequence.getCanvases() != null) {
+                    OpenAnnotationBuilder annoBuilder = new OpenAnnotationBuilder(urls);
+                    addCrowdourcingAnnotations(sequence.getCanvases(), annoBuilder.getCrowdsourcingAnnotations(doc.getPi(), false, request),
+                            annotationMap);
+                }
+            }
         }
 
         return annotationMap;

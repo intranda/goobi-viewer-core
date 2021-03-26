@@ -787,240 +787,6 @@ this.msg = function(key) {
 }.bind(this)
 
 });
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-riot.tag2('slideshow', '<a if="{manifest === undefined}" data-linkid="{opts.pis}"></a><figure class="slideshow" if="{manifest !== undefined}" onmouseenter="{mouseenter}" onmouseleave="{mouseleave}"><div class="slideshow__image"><a href="{getLink(manifest)}" class="remember-scroll-position" data-linkid="{opts.pis}" onclick="{storeScrollPosition}"><img riot-src="{getThumbnail(manifest)}" class="{\'active\' : active}" alt="{getLabel(manifest)}" onload="{setImageActive}"></a></div><figcaption><h4>{getTitleOrLabel(manifest)}</h4><p><span each="{md in metadataList}"> {getMetadataValue(manifest, md)} <br></span></p><div if="{pis.length > 1}" class="slideshow__dots"><ul><li each="{imagepi in pis}"><button class="btn btn--clean {\'active\' : pi === imagepi}" onclick="{setPi}"></button></li></ul></div></figcaption></figure>', '', '', function(opts) {
-
-    	$.fn.isInViewport = function() {
-        	var elementTop = $( this ).offset().top;
-        	var elementBottom = elementTop + $( this ).outerHeight();
-        	var elementHeight = $( this ).outerHeight();
-        	var viewportTop = $( window ).scrollTop();
-        	var viewportBottom = viewportTop + $( window ).height();
-
-        	return elementBottom > (viewportTop + elementHeight) && elementTop < (viewportBottom - elementHeight);
-    	};
-
-    	this.pis = this.opts.pis.split(/[\s,;]+/);
-    	this.pis = this.pis.filter( function( pi ) {
-    		return pi != undefined && pi.length > 0;
-    	} );
-        this.metadataList = this.opts.metadata.split(/[,;]+/);
-        this.manifest = undefined;
-        this.manifests = new Map();
-        this.active = false;
-        this.visible = false;
-        this.mouseover = false;
-
-        this.on( 'mount', function() {
-        	this.loadManifest( this.pis[0] );
-        }.bind( this ));
-
-        this.mouseenter = function() {
-        	this.mouseover = true;
-        }.bind(this)
-
-        this.mouseleave = function() {
-        	this.mouseover = false;
-        }.bind(this)
-
-        this.checkPosition = function() {
-        	var slideshow = $( '#' + this.opts.id + ' figure' );
-
-        	if ( !this.visible && this.pis.length > 1 && slideshow.isInViewport() ) {
-        		this.visible = true;
-            	this.moveSlides( this.pis, true );
-        	}
-        	else if ( this.visible && !slideshow.isInViewport() ) {
-        		this.visible = false;
-        		this.moveSlides( this.pis, false );
-        	}
-        }.bind(this)
-
-        this.moveSlides = function( pis, move ) {
-        	var index = 1;
-
-        	if ( move ) {
-        		clearInterval( this.interval );
-
-        		this.interval = setInterval( function() {
-                	if ( index === pis.length ) {
-                		index = 0;
-                	}
-                	if ( !this.mouseover ) {
-            			this.loadManifest( pis[ index ] );
-                    	index++;
-                	}
-                }.bind( this ), 3000 );
-        	}
-        	else {
-        		clearInterval( this.interval );
-        	}
-        }.bind(this)
-
-        this.setPi = function( event ) {
-        	let pi = event.item.imagepi;
-
-        	if ( pi != this.pi ) {
-        		this.pi = pi;
-
-        		return this.loadManifest( pi );
-        	}
-        }.bind(this)
-
-        this.setImageActive = function() {
-        	this.active = true;
-        	this.update();
-        }.bind(this)
-
-        this.loadManifest = function( pi ) {
-        	let url = this.opts.manifest_base_url.replace( "{pi}", pi );
-        	let json = this.manifests.get( url );
-        	this.pi = pi;
-        	this.active = false;
-        	this.update();
-
-        	if ( !json ) {
-        		$.getJSON( url, function( manifest ) {
-        			if ( manifest ) {
-
-        				this.manifest = manifest;
-        				this.manifests.set( url, manifest );
-        				this.update();
-            			this.checkPosition();
-
-        				$( window ).on( 'resize scroll', function() {
-            				this.checkPosition();
-        				}.bind( this ) );
-        			}
-        		}.bind( this ))
-        		.then(function(data) {
-        		})
-        		.catch(function(error) {
-        			console.error("error laoding ", url, ": ", error);
-        		});
-        	}
-        	else {
-
-            	setTimeout( function() {
-            		this.manifest = json;
-            		this.update();
-            	}.bind( this ), 300 );
-        	}
-        }.bind(this)
-        this.getThumbnail = function( manifest, width, height ) {
-        	if( !manifest.thumbnail.service || ( !width && !height ) ) {
-        		return manifest.thumbnail['@id'];
-        	}
-        	else {
-        		let sizePrefix = width && height ? "!" : "";
-
-        		return manifest.thumbnail.service['@id'] + "/full/" + sizePrefix + width + "," + height + "/0/default.jpg";
-        	}
-        }.bind(this)
-
-        this.getLink = function( manifest ) {
-        	rendering = manifest.rendering;
-
-        	if ( Array.isArray( rendering ) ) {
-        		rendering = rendering.find( ( rend ) => rend.format == "text/html" );
-        	}
-        	if ( rendering ) {
-        		return rendering['@id'];
-        	}
-        	else {
-        		return '';
-        	}
-        }.bind(this)
-
-        this.getTitleOrLabel = function( manifest ) {
-        	var title = this.getMetadataValue( manifest, 'Title' );
-
-        	if(title) {
-        		return title;
-        	} else {
-        		return getLabel( manifest );
-        	}
-        }.bind(this)
-
-        this.getLabel = function( manifest ) {
-        	return this.getValue(manifest.label, this.opts.locale);
-        }.bind(this)
-
-        this.getMetadataValue = function( manifest, metadataLabel ) {
-        	if ( manifest && metadataLabel ) {
-        		let metadata = manifest.metadata.find( ( md ) => {
-        			let label = md.label;
-        			if ( Array.isArray( label ) ) {
-        				label = label.find( (l) => l['@value'].trim() == metadataLabel.trim());
-        				if ( label ) {
-        					label = label['@value']
-        				}
-        			}
-        			return label && label.trim() == metadataLabel.trim();
-        		});
-
-        		if ( metadata ) {
-        			let value = this.getValue( metadata.value, this.opts.locale );
-
-        			return value;
-        		}
-        	}
-        }.bind(this)
-
-        this.getValue = function ( element, locale ) {
-            if ( element ) {
-            	if ( typeof element === 'string' ) {
-            		return element;
-            	}
-        		else if ( Array.isArray( element ) ) {
-            		var fallback;
-
-            		for ( var index in element  ) {
-            			var item = element[index];
-
-            			if ( typeof item === 'string' ) {
-            				return item;
-            			}
-            			else {
-            				var value = item['@value'];
-            				var language = item['@language'];
-
-            				if ( locale == language ) {
-            					return value;
-            				}
-            				else if ( !fallback || language == 'en' ) {
-            					fallback = value;
-            				}
-            			}
-            		}
-
-            		return fallback;
-            	}
-            	else {
-            		return element['@value'];
-            	}
-            }
-        }.bind(this)
-
-        this.storeScrollPosition = function(event) {
-            $target = $(event.target).closest("a");
-            viewerJS.handleScrollPositionClick($target);
-        }.bind(this)
-});
-
 riot.tag2('collectionlist', '<div if="{collections}" each="{collection, index in collections}" class="card-group"><div class="card" role="tablist"><div class="card-header"><div class="card-thumbnail"><img if="{collection.thumbnail}" class="img-fluid" riot-src="{collection.thumbnail[\'@id\']}"></div><h4 class="card-title"><a if="{!hasChildren(collection)}" href="{collection.rendering[0][\'@id\']}">{getValue(collection.label)} ({viewerJS.iiif.getContainedWorks(collection)})</a><a if="{hasChildren(collection)}" class="collapsed" href="#collapse-{this.opts.setindex}-{index}" role="button" data-toggle="collapse" aria-expanded="false"><span>{getValue(collection.label)} ({viewerJS.iiif.getContainedWorks(collection)})</span><i class="fa fa-angle-flip" aria-hidden="true"></i></a></h4><div class="tpl-stacked-collection__actions"><div class="tpl-stacked-collection__info-toggle"><a if="{hasDescription(collection)}" href="#description-{this.opts.setindex}-{index}" role="button" data-toggle="collapse" aria-expanded="false"><i class="fa fa-info-circle" aria-hidden="true"></i></a></div><div class="card-rss"><a href="{viewerJS.iiif.getRelated(collection, \'Rss feed\')[\'@id\']}"><i class="fa fa-rss" aria-hidden="true"></i></a></div></div></div><div if="{hasDescription(collection)}" id="description-{this.opts.setindex}-{index}" class="card-collapse collapse" role="tabcard" aria-expanded="false"><p class="tpl-stacked-collection__long-info"> {getDescription(collection)} </p></div><div if="{hasChildren(collection)}" id="collapse-{this.opts.setindex}-{index}" class="card-collapse collapse" role="tabcard" aria-expanded="false"><div class="card-body"><ul if="{collection.members && collection.members.length > 0}" class="list"><li each="{child in getChildren(collection)}"><a class="card-body__collection" href="{child.rendering[0][\'@id\']}">{getValue(child.label)} ({viewerJS.iiif.getContainedWorks(child)})</a><a class="card-body__rss" href="{viewerJS.iiif.getRelated(child, \'Rss feed\')[\'@id\']}" target="_blank"><i class="fa fa-rss" aria-hidden="true"></i></a></li></ul></div></div></div></div>', '', 'class="tpl-stacked-collection__collection-list"', function(opts) {
 
 this.collections = this.opts.collections;
@@ -1252,7 +1018,7 @@ riot.tag2('campaignitem', '<div if="{!opts.pi}" class="crowdsourcing-annotations
 	        this.item.setCurrentUser(this.opts.currentuserid, this.opts.currentusername, this.opts.currentuseravatar);
 	    }
 	    this.item.setReviewMode(this.opts.itemstatus && this.opts.itemstatus.toUpperCase() == "REVIEW");
-		fetch(this.item.imageSource + "?mode=simple")
+		fetch(this.item.imageSource)
 		.then( response => response.json() )
 		.then( imageSource => this.initImageView(imageSource))
 		.then( () => {this.loading = false; this.update()})
@@ -2704,6 +2470,406 @@ this.addCloseHandler = function() {
 });
 
 
+riot.tag2('slide_default', '<a class="swiper-link slider-{this.opts.stylename}__link" href="{this.opts.link}" target="{this.opts.link_target}"><h3 class="swiper-heading slider-{this.opts.stylename}__header">{this.opts.label}</h3><div class="swiper-image slider-{this.opts.stylename}__image" riot-style="background-image: url({this.opts.image})"></div><div class="swiper-description slider-{this.opts.stylename}__description">{this.opts.description}</div></a>', '', '', function(opts) {
+});
+riot.tag2('slide_stories', '<div class="slider-{this.opts.stylename}__image" riot-style="background-image: url({this.opts.image})"></div><a class="slider-{this.opts.stylename}__info-link" href="{this.opts.link}"><div class="slider-{this.opts.stylename}__info-symbol"><svg width="6" height="13" viewbox="0 0 6 13" fill="none" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" clip-rule="evenodd" d="M4.664 1.21C4.664 2.134 4.092 2.728 3.168 2.728C2.354 2.728 1.936 2.134 1.936 1.474C1.936 0.506 2.706 0 3.454 0C4.136 0 4.664 0.506 4.664 1.21ZM5.258 11.528C4.664 12.1 3.586 12.584 2.42 12.716C1.386 12.496 0.748 11.792 0.748 10.78C0.748 10.362 0.836 9.658 1.1 8.58C1.276 7.81 1.452 6.534 1.452 5.852C1.452 5.588 1.43 5.302 1.408 5.236C1.144 5.17 0.726 5.104 0.198 5.104L0 4.488C0.572 4.07 1.716 3.718 2.398 3.718C3.542 3.718 4.202 4.312 4.202 5.566C4.202 6.248 4.026 7.194 3.828 8.118C3.542 9.328 3.432 10.12 3.432 10.472C3.432 10.802 3.454 11.022 3.542 11.154C3.96 11.066 4.4 10.868 4.928 10.56L5.258 11.528Z" fill="white"></path></svg></div><div class="slider-single-story__info-phrase">{this.opts.label}</div></a>', '', '', function(opts) {
+});
+
+
+riot.tag2('slider', '<div ref="container" class="swiper-container slider-{this.styleName}__container"><div class="swiper-wrapper slider-{this.styleName}__wrapper"><div each="{slide, index in slides}" class="swiper-slide slider-{this.styleName}__slide" ref="slide_{index}"></div></div><div if="{this.showPaginator}" ref="paginator" class="swiper-pagination slider-{this.styleName}__dots"></div></div>', '', '', function(opts) {
+
+
+	this.showPaginator = true;
+
+    this.on( 'mount', function() {
+		this.style = this.opts.styles.get(this.opts.style);
+
+		this.amendStyle(this.style);
+		this.styleName = this.opts.styles.getStyleNameOrDefault(this.opts.style);
+
+		this.timeout = this.style.timeout ? this.style.timeout : 100000;
+		this.maxSlides = this.style.maxSlides ? this.style.maxSlides : 1000;
+		this.linkTarget = this.opts.linktarget ? this.opts.linktarget : "_self";
+
+    	let pSource;
+    	if(this.opts.sourceelement) {
+    		let sourceElement = document.getElementById(this.opts.sourceelement);
+    		if(sourceElement) {
+    			pSource = Promise.resolve(JSON.parse(sourceElement.textContent));
+
+    		} else {
+    			logger.error("sourceElement was included but no matching dom element found");
+    			return;
+    		}
+    	}  else {
+    		pSource = fetch(this.opts.source)
+        	.then(result => result.json());
+    	}
+    	rxjs.from(pSource)
+    	.pipe(
+    		rxjs.operators.flatMap(source => source),
+    		rxjs.operators.flatMap(uri => fetch(uri), undefined, 5),
+    		rxjs.operators.filter(result => result.status == 200),
+    		rxjs.operators.takeUntil(rxjs.timer(this.timeout)),
+    		rxjs.operators.flatMap(result => result.json()),
+    		rxjs.operators.map(element => this.createSlide(element)),
+    		rxjs.operators.filter(element => element != undefined),
+    		rxjs.operators.take(this.maxSlides),
+    		rxjs.operators.reduce((res, item) => res.concat(item), []),
+    	)
+    	.subscribe(slides => this.setSlides(slides))
+    });
+
+    this.on( 'updated', function() {
+
+    	console.log("layout = ", this.getLayout());
+
+    	if(this.slides && this.slides.length > 0) {
+    		if(this.slider) {
+    			this.slider.destroy();
+    		}
+			this.initSlideTags(this.slides);
+    		this.swiper = new Swiper(this.refs.container, this.style.swiperConfig);
+    	}
+    });
+
+    this.setSlides = function(slides) {
+
+    	this.slides = slides;
+    	this.update();
+    }.bind(this)
+
+    this.initSlideTags = function(slides) {
+    	slides.forEach( (slide, index) => {
+    		let tagElement = this.refs["slide_" + index];
+
+    		riot.mount(tagElement, "slide_" + this.getLayout(),  {
+    			stylename: this.styleName,
+   				link: this.getLink(slide),
+   				link_target: this.linkTarget,
+   				image: this.getImage(slide),
+   				label: this.translate(slide.label),
+   				description: this.translate(slide.description),
+    		});
+    	});
+    }.bind(this)
+
+	this.getElements = function(source) {
+		if(viewerJS.iiif.isCollection(source)) {
+			return source.members.filter(member => viewerJS.iiif.isCollection(member));
+		} else {
+			console.error("Cannot get slides from ", source);
+		}
+	}.bind(this)
+
+    this.createSlide = function(element) {
+
+    	if(viewerJS.iiif.isCollection(element) || viewerJS.iiif.isManifest(element)) {
+    		let slide = {
+    				label : element.label,
+    				description : element.description,
+    				image : element.thumbnail,
+    				link : viewerJS.iiif.getId(viewerJS.iiif.getViewerPage(element))
+    		}
+    		return slide;
+    	} else {
+    		return element;
+    	}
+    }.bind(this)
+
+    this.translate = function(text) {
+    	let translation =  viewerJS.iiif.getValue(text, this.opts.language);
+    	if(!translation) {
+    			translation = viewerJS.getMetadataValue(text, this.opts.language);
+    	}
+    	return translation;
+    }.bind(this)
+
+    this.getImage = function(slide) {
+    	let image = slide.image;
+    	if(image == undefined) {
+    		return undefined;
+    	} else if(viewerJS.isString(image)) {
+    		return image;
+    	} else if(image.service && (this.style.imageWidth || this.style.imageHeight)) {
+    		let url = viewerJS.iiif.getId(image.service) + "/full/" + this.getIIIFSize(this.style.imageWidth, this.style.imageHeight) + "/0/default.jpg"
+    		return url;
+    	} else if(image["@id"]) {
+    		return image["@id"]
+    	} else {
+    		return image.id;
+    	}
+    }.bind(this)
+
+    this.getIIIFSize = function(width, height) {
+    	if(width && height) {
+    		return "!" + width + "," + height;
+    	} else if(width) {
+    		return width + ",";
+    	} else if(height) {
+    		return "," + height;
+    	} else {
+    		return "max";
+    	}
+    }.bind(this)
+
+    this.getLink = function(slide) {
+    	if(this.linkTarget == 'none') {
+    		return "";
+    	} else {
+    		return slide.link;
+    	}
+    }.bind(this)
+
+    this.amendStyle = function(styleConfig) {
+    	let swiperConfig = styleConfig.swiperConfig;
+    	if(swiperConfig.pagination) {
+    		swiperConfig.pagination.el = this.refs.paginator;
+    		this.showPaginator = true;
+    	} else {
+    		this.showPaginator = false;
+    	}
+    }.bind(this)
+
+    this.getLayout = function() {
+    	let layout = this.style.layout ? this.style.layout : 'default';
+    	return layout;
+    }.bind(this)
+
+});
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+riot.tag2('slideshow', '<a if="{manifest === undefined}" data-linkid="{opts.pis}"></a><figure class="slideshow" if="{manifest !== undefined}" onmouseenter="{mouseenter}" onmouseleave="{mouseleave}"><div class="slideshow__image"><a href="{getLink(manifest)}" class="remember-scroll-position" data-linkid="{opts.pis}" onclick="{storeScrollPosition}"><img riot-src="{getThumbnail(manifest)}" class="{\'active\' : active}" alt="{getLabel(manifest)}" onload="{setImageActive}"></a></div><figcaption><h4>{getTitleOrLabel(manifest)}</h4><p><span each="{md in metadataList}"> {getMetadataValue(manifest, md)} <br></span></p><div if="{pis.length > 1}" class="slideshow__dots"><ul><li each="{imagepi in pis}"><button class="btn btn--clean {\'active\' : pi === imagepi}" onclick="{setPi}"></button></li></ul></div></figcaption></figure>', '', '', function(opts) {
+
+    	$.fn.isInViewport = function() {
+        	var elementTop = $( this ).offset().top;
+        	var elementBottom = elementTop + $( this ).outerHeight();
+        	var elementHeight = $( this ).outerHeight();
+        	var viewportTop = $( window ).scrollTop();
+        	var viewportBottom = viewportTop + $( window ).height();
+
+        	return elementBottom > (viewportTop + elementHeight) && elementTop < (viewportBottom - elementHeight);
+    	};
+
+    	this.pis = this.opts.pis.split(/[\s,;]+/);
+    	this.pis = this.pis.filter( function( pi ) {
+    		return pi != undefined && pi.length > 0;
+    	} );
+        this.metadataList = this.opts.metadata.split(/[,;]+/);
+        this.manifest = undefined;
+        this.manifests = new Map();
+        this.active = false;
+        this.visible = false;
+        this.mouseover = false;
+
+        this.on( 'mount', function() {
+        	this.loadManifest( this.pis[0] );
+        }.bind( this ));
+
+        this.mouseenter = function() {
+        	this.mouseover = true;
+        }.bind(this)
+
+        this.mouseleave = function() {
+        	this.mouseover = false;
+        }.bind(this)
+
+        this.checkPosition = function() {
+        	var slideshow = $( '#' + this.opts.id + ' figure' );
+
+        	if ( !this.visible && this.pis.length > 1 && slideshow.isInViewport() ) {
+        		this.visible = true;
+            	this.moveSlides( this.pis, true );
+        	}
+        	else if ( this.visible && !slideshow.isInViewport() ) {
+        		this.visible = false;
+        		this.moveSlides( this.pis, false );
+        	}
+        }.bind(this)
+
+        this.moveSlides = function( pis, move ) {
+        	var index = 1;
+
+        	if ( move ) {
+        		clearInterval( this.interval );
+
+        		this.interval = setInterval( function() {
+                	if ( index === pis.length ) {
+                		index = 0;
+                	}
+                	if ( !this.mouseover ) {
+            			this.loadManifest( pis[ index ] );
+                    	index++;
+                	}
+                }.bind( this ), 3000 );
+        	}
+        	else {
+        		clearInterval( this.interval );
+        	}
+        }.bind(this)
+
+        this.setPi = function( event ) {
+        	let pi = event.item.imagepi;
+
+        	if ( pi != this.pi ) {
+        		this.pi = pi;
+
+        		return this.loadManifest( pi );
+        	}
+        }.bind(this)
+
+        this.setImageActive = function() {
+        	this.active = true;
+        	this.update();
+        }.bind(this)
+
+        this.loadManifest = function( pi ) {
+        	let url = this.opts.manifest_base_url.replace( "{pi}", pi );
+        	let json = this.manifests.get( url );
+        	this.pi = pi;
+        	this.active = false;
+        	this.update();
+
+        	if ( !json ) {
+        		$.getJSON( url, function( manifest ) {
+        			if ( manifest ) {
+
+        				this.manifest = manifest;
+        				this.manifests.set( url, manifest );
+        				this.update();
+            			this.checkPosition();
+
+        				$( window ).on( 'resize scroll', function() {
+            				this.checkPosition();
+        				}.bind( this ) );
+        			}
+        		}.bind( this ))
+        		.then(function(data) {
+        		})
+        		.catch(function(error) {
+        			console.error("error loading ", url, ": ", error);
+        		});
+        	}
+        	else {
+
+            	setTimeout( function() {
+            		this.manifest = json;
+            		this.update();
+            	}.bind( this ), 300 );
+        	}
+        }.bind(this)
+        this.getThumbnail = function( manifest, width, height ) {
+        	if( !manifest.thumbnail.service || ( !width && !height ) ) {
+        		return manifest.thumbnail['@id'];
+        	}
+        	else {
+        		let sizePrefix = width && height ? "!" : "";
+
+        		return manifest.thumbnail.service['@id'] + "/full/" + sizePrefix + width + "," + height + "/0/default.jpg";
+        	}
+        }.bind(this)
+
+        this.getLink = function( manifest ) {
+        	rendering = manifest.rendering;
+
+        	if ( Array.isArray( rendering ) ) {
+        		rendering = rendering.find( ( rend ) => rend.format == "text/html" );
+        	}
+        	if ( rendering ) {
+        		return rendering['@id'];
+        	}
+        	else {
+        		return '';
+        	}
+        }.bind(this)
+
+        this.getTitleOrLabel = function( manifest ) {
+        	var title = this.getMetadataValue( manifest, 'Title' );
+
+        	if(title) {
+        		return title;
+        	} else {
+        		return getLabel( manifest );
+        	}
+        }.bind(this)
+
+        this.getLabel = function( manifest ) {
+        	return this.getValue(manifest.label, this.opts.locale);
+        }.bind(this)
+
+        this.getMetadataValue = function( manifest, metadataLabel ) {
+        	if ( manifest && metadataLabel ) {
+        		let metadata = manifest.metadata.find( ( md ) => {
+        			let label = md.label;
+        			if ( Array.isArray( label ) ) {
+        				label = label.find( (l) => l['@value'].trim() == metadataLabel.trim());
+        				if ( label ) {
+        					label = label['@value']
+        				}
+        			}
+        			return label && label.trim() == metadataLabel.trim();
+        		});
+
+        		if ( metadata ) {
+        			let value = this.getValue( metadata.value, this.opts.locale );
+
+        			return value;
+        		}
+        	}
+        }.bind(this)
+
+        this.getValue = function ( element, locale ) {
+            if ( element ) {
+            	if ( typeof element === 'string' ) {
+            		return element;
+            	}
+        		else if ( Array.isArray( element ) ) {
+            		var fallback;
+
+            		for ( var index in element  ) {
+            			var item = element[index];
+
+            			if ( typeof item === 'string' ) {
+            				return item;
+            			}
+            			else {
+            				var value = item['@value'];
+            				var language = item['@language'];
+
+            				if ( locale == language ) {
+            					return value;
+            				}
+            				else if ( !fallback || language == 'en' ) {
+            					fallback = value;
+            				}
+            			}
+            		}
+
+            		return fallback;
+            	}
+            	else {
+            		return element['@value'];
+            	}
+            }
+        }.bind(this)
+
+        this.storeScrollPosition = function(event) {
+            $target = $(event.target).closest("a");
+            viewerJS.handleScrollPositionClick($target);
+        }.bind(this)
+});
 riot.tag2('timematrix', '<div class="timematrix__objects"><div each="{manifest in manifests}" class="timematrix__content"><div class="timematrix__img"><a href="{getViewerUrl(manifest)}"><img riot-src="{getImageUrl(manifest)}" class="timematrix__image" data-viewer-thumbnail="thumbnail" alt="" aria-hidden="true" onerror="this.onerror=null;this.src=\'/viewer/resources/images/access_denied.png\'"><div class="timematrix__text"><p if="{hasTitle(manifest)}" name="timetext" class="timetext">{getDisplayTitle(manifest)}</p></div></a></div></div></div>', '', '', function(opts) {
 	    this.on( 'mount', function() {
 
@@ -2790,9 +2956,11 @@ riot.tag2('timematrix', '<div class="timematrix__objects"><div each="{manifest i
 
 	    this.initSlider = function( sliderSelector, startDate, endDate ) {
 	        let $slider = $( sliderSelector );
+	        let rtl = $( sliderSelector ).closest('[dir="rtl"]').length > 0;
 
 	        $slider.slider( {
 	            range: true,
+	            isRTL: rtl,
 	            min: parseInt( startDate ),
 	            max: parseInt( endDate ),
 	            values: [ startDate, endDate ],

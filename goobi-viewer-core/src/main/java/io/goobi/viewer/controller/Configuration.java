@@ -56,6 +56,7 @@ import io.goobi.viewer.model.metadata.MetadataParameter;
 import io.goobi.viewer.model.metadata.MetadataParameter.MetadataParameterType;
 import io.goobi.viewer.model.metadata.MetadataReplaceRule;
 import io.goobi.viewer.model.metadata.MetadataReplaceRule.MetadataReplaceRuleType;
+import io.goobi.viewer.model.metadata.MetadataView;
 import io.goobi.viewer.model.search.AdvancedSearchFieldConfiguration;
 import io.goobi.viewer.model.search.SearchFilter;
 import io.goobi.viewer.model.search.SearchHelper;
@@ -403,19 +404,57 @@ public final class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * Returns the list of configured metadata for the main metadata page.
-     *
-     * @param template a {@link java.lang.String} object.
+     * 
+     * @return
+     * @should return all configured values
+     */
+    public List<MetadataView> getMetadataViews() {
+        List<HierarchicalConfiguration> metadataPageList = getLocalConfigurationsAt("metadata.metadataView");
+        if (metadataPageList == null) {
+            metadataPageList = getLocalConfigurationsAt("metadata.mainMetadataList");
+            if (metadataPageList != null) {
+                logger.warn("Old <mainMetadataList> configuration found - please migrate to <metadataView>.");
+                return Collections.singletonList(new MetadataView());
+            }
+            return Collections.emptyList();
+        }
+
+        List<MetadataView> ret = new ArrayList<>(metadataPageList.size());
+        for (HierarchicalConfiguration metadataView : metadataPageList) {
+            int index = metadataView.getInt("[@index]", 0);
+            String label = metadataView.getString("[@label]");
+            String url = metadataView.getString("[@url]", "");
+            String condition = metadataView.getString("[@condition]");
+            MetadataView view = new MetadataView().setIndex(index).setLabel(label).setUrl(url).setCondition(condition);
+            ret.add(view);
+        }
+
+        return ret;
+    }
+
+    /**
+     * 
+     * @param index
+     * @param template
+     * @return List of configured <code>Metadata</code> fields for the given template
      * @should return correct template configuration
      * @should return default template configuration if template not found
      * @should return default template if template is null
-     * @return a {@link java.util.List} object.
      */
-    public List<Metadata> getMainMetadataForTemplate(String template) {
+    public List<Metadata> getMainMetadataForTemplate(int index, String template) {
         logger.trace("getMainMetadataForTemplate: {}", template);
-        List<HierarchicalConfiguration> templateList = getLocalConfigurationsAt("metadata.mainMetadataList.template");
+        List<HierarchicalConfiguration> templateList = getLocalConfigurationsAt("metadata.metadataView(" + index + ").template");
         if (templateList == null) {
-            return Collections.emptyList();
+            templateList = getLocalConfigurationsAt("metadata.metadataView.template");
+            if (templateList == null) {
+                templateList = getLocalConfigurationsAt("metadata.mainMetadataList.template");
+                // Old configuration fallback
+                if (templateList != null) {
+                    logger.warn("Old <mainMetadataList> configuration found - please migrate to <metadataView>.");
+                } else {
+                    return Collections.emptyList();
+                }
+            }
         }
 
         return getMetadataForTemplate(template, templateList, true, false);
@@ -527,6 +566,7 @@ public final class Configuration extends AbstractConfiguration {
         boolean group = sub.getBoolean("[@group]", false);
         int number = sub.getInt("[@number]", -1);
         int type = sub.getInt("[@type]", 0);
+        boolean hideIfOnlyMetadataField = sub.getBoolean("[@hideIfOnlyMetadataField]", false);
         String citationTemplate = sub.getString("[@citationTemplate]");
         List<HierarchicalConfiguration> params = sub.configurationsAt("param");
         List<MetadataParameter> paramList = null;
@@ -601,7 +641,9 @@ public final class Configuration extends AbstractConfiguration {
             }
         }
 
-        return new Metadata(label, masterValue, type, paramList, group, number).setCitationTemplate(citationTemplate);
+        return new Metadata(label, masterValue, type, paramList, group, number)
+                .setHideIfOnlyMetadataField(hideIfOnlyMetadataField)
+                .setCitationTemplate(citationTemplate);
     }
 
     /**
@@ -928,6 +970,15 @@ public final class Configuration extends AbstractConfiguration {
         }
 
         return null;
+    }
+
+    public List<String> getConfiguredCollectionFields() {
+        List<String> list = getLocalList("collections.collection[@field]");
+        if (list == null || list.isEmpty()) {
+            return Collections.singletonList("DC");
+        } else {
+            return list;
+        }
     }
 
     /**
@@ -1326,7 +1377,7 @@ public final class Configuration extends AbstractConfiguration {
     public List<AdvancedSearchFieldConfiguration> getAdvancedSearchFields() {
         List<HierarchicalConfiguration> fieldList = getLocalConfigurationsAt("search.advanced.searchFields.field");
         if (fieldList == null) {
-            Collections.emptyList();
+            return Collections.emptyList();
         }
 
         List<AdvancedSearchFieldConfiguration> ret = new ArrayList<>(fieldList.size());
@@ -1911,7 +1962,7 @@ public final class Configuration extends AbstractConfiguration {
                     myConfigToUse.getString("user.authenticationProviders.provider(" + i + ")[@relyingPartyIdentifier]", null);
             String samlPublicKeyPath = myConfigToUse.getString("user.authenticationProviders.provider(" + i + ")[@publicKeyPath]", null);
             String samlPrivateKeyPath = myConfigToUse.getString("user.authenticationProviders.provider(" + i + ")[@privateKeyPath]", null);
-            long timeoutMillis = myConfigToUse.getLong("user.authenticationProviders.provider(" + i + ")[@timeout]", 10000);
+            long timeoutMillis = myConfigToUse.getLong("user.authenticationProviders.provider(" + i + ")[@timeout]", 60000);
 
             if (visible) {
                 IAuthenticationProvider provider = null;
@@ -3734,11 +3785,11 @@ public final class Configuration extends AbstractConfiguration {
      * getTocVolumeSortFieldsForTemplate.
      * </p>
      *
+     * @param template a {@link java.lang.String} object.
+     * @return a {@link java.util.List} object.
      * @should return correct template configuration
      * @should return default template configuration if template not found
      * @should return default template configuration if template is null
-     * @param template a {@link java.lang.String} object.
-     * @return a {@link java.util.List} object.
      */
     public List<StringPair> getTocVolumeSortFieldsForTemplate(String template) {
         HierarchicalConfiguration usingTemplate = null;
@@ -4299,7 +4350,7 @@ public final class Configuration extends AbstractConfiguration {
         }
         return intList;
     }
-    
+
     /**
      * 
      * @return
@@ -4933,5 +4984,9 @@ public final class Configuration extends AbstractConfiguration {
      */
     public HierarchicalConfiguration getBaseXMetadataConfig() {
         return getLocalConfigurationAt("metadata.basexMetadataList");
+    }
+
+    public boolean isDisplayUserGeneratedContentBelowImage() {
+        return getLocalBoolean("webGuiDisplay.displayUserGeneratedContentBelowImage", false);
     }
 }

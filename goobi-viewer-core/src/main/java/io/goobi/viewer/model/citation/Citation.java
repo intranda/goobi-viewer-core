@@ -79,16 +79,18 @@ public class Citation {
      */
     Bibliography makeAdhocBibliography(String outputFormat, CSLItemData... items) throws IOException {
         // logger.trace("makeAdhocBibliography");
-        processor.reset();
-        processor.setOutputFormat(outputFormat);
-        String[] ids = new String[items.length];
-        for (int i = 0; i < items.length; ++i) {
-            ids[i] = items[i].getId();
-            // logger.trace("Item data id: {}", items[i].getId());
-        }
-        processor.registerCitationItems(ids);
+        synchronized (processor) {
+            processor.reset();
+            processor.setOutputFormat(outputFormat);
+            String[] ids = new String[items.length];
+            for (int i = 0; i < items.length; ++i) {
+                ids[i] = items[i].getId();
+                // logger.trace("Item data id: {}", items[i].getId());
+            }
+            processor.registerCitationItems(ids);
 
-        return processor.makeBibliography();
+            return processor.makeBibliography();
+        }
     }
 
     /**

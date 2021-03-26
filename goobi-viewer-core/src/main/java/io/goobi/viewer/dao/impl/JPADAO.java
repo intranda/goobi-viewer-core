@@ -68,6 +68,7 @@ import io.goobi.viewer.model.cms.CMSPageTemplate;
 import io.goobi.viewer.model.cms.CMSPageTemplateEnabled;
 import io.goobi.viewer.model.cms.CMSRecordNote;
 import io.goobi.viewer.model.cms.CMSSidebarElement;
+import io.goobi.viewer.model.cms.CMSSlider;
 import io.goobi.viewer.model.cms.CMSStaticPage;
 import io.goobi.viewer.model.crowdsourcing.campaigns.Campaign;
 import io.goobi.viewer.model.crowdsourcing.campaigns.CampaignRecordStatistic;
@@ -102,6 +103,7 @@ public class JPADAO implements IDAO {
     static final String KEY_FIELD_SEPARATOR = "-";
 
     private final EntityManagerFactory factory;
+    // private ThreadLocal<EntityManager> threadLocalEm = new ThreadLocal<>();
     private EntityManager em;
     private Object cmsRequestLock = new Object();
     private Object crowdsourcingRequestLock = new Object();
@@ -133,9 +135,19 @@ public class JPADAO implements IDAO {
      * getEntityManager.
      * </p>
      *
-     * @return a {@link javax.persistence.EntityManager} object.
+     * @return {@link javax.persistence.EntityManager} for the current thread
      */
     public EntityManager getEntityManager() {
+        //        if (threadLocalEm.get() == null) {
+        //            threadLocalEm.set(factory.createEntityManager());
+        //        }
+        //
+        //        return threadLocalEm.get();
+
+        if (em == null) {
+            em = factory.createEntityManager();
+        }
+
         return em;
     }
 
@@ -165,6 +177,7 @@ public class JPADAO implements IDAO {
             factory = Persistence.createEntityManagerFactory(persistenceUnitName);
             currentThread.setContextClassLoader(saveClassLoader);
 
+            // threadLocalEm.set(factory.createEntityManager());
             em = factory.createEntityManager();
             preQuery();
         } catch (DatabaseException | PersistenceException e) {
@@ -180,7 +193,7 @@ public class JPADAO implements IDAO {
      */
     @Override
     public void startTransaction() {
-        em.getTransaction().begin();
+        getEntityManager().getTransaction().begin();
     }
 
     /**
@@ -190,7 +203,7 @@ public class JPADAO implements IDAO {
      */
     @Override
     public void commitTransaction() {
-        em.getTransaction().commit();
+        getEntityManager().getTransaction().commit();
     }
 
     /**
@@ -201,7 +214,7 @@ public class JPADAO implements IDAO {
      */
     @Override
     public Query createNativeQuery(String string) {
-        return em.createNativeQuery(string);
+        return getEntityManager().createNativeQuery(string);
     }
 
     /**
@@ -212,7 +225,7 @@ public class JPADAO implements IDAO {
      */
     @Override
     public Query createQuery(String string) {
-        return em.createQuery(string);
+        return getEntityManager().createQuery(string);
     }
 
     /*
@@ -225,7 +238,7 @@ public class JPADAO implements IDAO {
     @Override
     public List<User> getAllUsers(boolean refresh) throws DAOException {
         preQuery();
-        Query q = em.createQuery("SELECT u FROM User u");
+        Query q = getEntityManager().createQuery("SELECT u FROM User u");
         if (refresh) {
             q.setHint("javax.persistence.cache.storeMode", "REFRESH");
         }
@@ -271,7 +284,7 @@ public class JPADAO implements IDAO {
             }
         }
         logger.trace(sbQuery.toString());
-        Query q = em.createQuery(sbQuery.toString());
+        Query q = getEntityManager().createQuery(sbQuery.toString());
         for (String param : params.keySet()) {
             q.setParameter(param, params.get(param));
         }
@@ -324,9 +337,9 @@ public class JPADAO implements IDAO {
     public User getUser(long id) throws DAOException {
         preQuery();
         try {
-            User o = em.getReference(User.class, id);
+            User o = getEntityManager().getReference(User.class, id);
             if (o != null) {
-                em.refresh(o);
+                getEntityManager().refresh(o);
             }
             return o;
         } catch (EntityNotFoundException e) {
@@ -343,14 +356,14 @@ public class JPADAO implements IDAO {
     @Override
     public User getUserByEmail(String email) throws DAOException {
         preQuery();
-        Query q = em.createQuery("SELECT u FROM User u WHERE UPPER(u.email) = :email");
+        Query q = getEntityManager().createQuery("SELECT u FROM User u WHERE UPPER(u.email) = :email");
         if (email != null) {
             q.setParameter("email", email.toUpperCase());
         }
         try {
             User o = (User) q.getSingleResult();
             if (o != null) {
-                em.refresh(o);
+                getEntityManager().refresh(o);
             }
             return o;
         } catch (NoResultException e) {
@@ -370,13 +383,13 @@ public class JPADAO implements IDAO {
     @Override
     public User getUserByOpenId(String identifier) throws DAOException {
         preQuery();
-        Query q = em.createQuery("SELECT u FROM User u WHERE :claimed_identifier MEMBER OF u.openIdAccounts");
+        Query q = getEntityManager().createQuery("SELECT u FROM User u WHERE :claimed_identifier MEMBER OF u.openIdAccounts");
         q.setParameter("claimed_identifier", identifier);
         q.setHint("javax.persistence.cache.storeMode", "REFRESH");
         try {
             User o = (User) q.getSingleResult();
             if (o != null) {
-                em.refresh(o);
+                getEntityManager().refresh(o);
             }
             return o;
         } catch (NoResultException e) {
@@ -396,13 +409,13 @@ public class JPADAO implements IDAO {
         }
 
         preQuery();
-        Query q = em.createQuery("SELECT u FROM User u WHERE UPPER(u.nickName) = :nickname");
+        Query q = getEntityManager().createQuery("SELECT u FROM User u WHERE UPPER(u.nickName) = :nickname");
         q.setParameter("nickname", nickname.trim().toUpperCase());
         q.setHint("javax.persistence.cache.storeMode", "REFRESH");
         try {
             User o = (User) q.getSingleResult();
             if (o != null) {
-                em.refresh(o);
+                getEntityManager().refresh(o);
             }
             return o;
         } catch (NoResultException e) {
@@ -447,8 +460,8 @@ public class JPADAO implements IDAO {
             em.merge(user);
             em.getTransaction().commit();
             // Refresh the object from the DB so that any new licenses etc. have IDs
-            if (this.em.contains(user)) {
-                this.em.refresh(user);
+            if (this.getEntityManager().contains(user)) {
+                this.getEntityManager().refresh(user);
             }
             return true;
         } finally {
@@ -489,7 +502,7 @@ public class JPADAO implements IDAO {
     @Override
     public List<UserGroup> getAllUserGroups() throws DAOException {
         preQuery();
-        Query q = em.createQuery("SELECT ug FROM UserGroup ug");
+        Query q = getEntityManager().createQuery("SELECT ug FROM UserGroup ug");
         // q.setHint("javax.persistence.cache.storeMode", "REFRESH");
         return q.getResultList();
     }
@@ -521,9 +534,11 @@ public class JPADAO implements IDAO {
                 sbQuery.append(" DESC");
             }
         }
-        Query q = em.createQuery(sbQuery.toString());
-        for (String key : filterKeys) {
-            q.setParameter(key, "%" + filters.get(key).toUpperCase() + "%");
+        Query q = getEntityManager().createQuery(sbQuery.toString());
+        if (filters != null) {
+            for (String key : filterKeys) {
+                q.setParameter(key, "%" + filters.get(key).toUpperCase() + "%");
+            }
         }
         q.setFirstResult(first);
         q.setMaxResults(pageSize);
@@ -542,7 +557,7 @@ public class JPADAO implements IDAO {
     @Override
     public List<UserGroup> getUserGroups(User owner) throws DAOException {
         preQuery();
-        Query q = em.createQuery("SELECT ug FROM UserGroup ug WHERE ug.owner = :owner");
+        Query q = getEntityManager().createQuery("SELECT ug FROM UserGroup ug WHERE ug.owner = :owner");
         q.setParameter("owner", owner);
         // q.setHint("javax.persistence.cache.storeMode", "REFRESH");
         return q.getResultList();
@@ -558,9 +573,9 @@ public class JPADAO implements IDAO {
     public UserGroup getUserGroup(long id) throws DAOException {
         preQuery();
         try {
-            UserGroup o = em.getReference(UserGroup.class, id);
+            UserGroup o = getEntityManager().getReference(UserGroup.class, id);
             if (o != null) {
-                em.refresh(o);
+                getEntityManager().refresh(o);
             }
             return o;
         } catch (EntityNotFoundException e) {
@@ -577,12 +592,12 @@ public class JPADAO implements IDAO {
     @Override
     public UserGroup getUserGroup(String name) throws DAOException {
         preQuery();
-        Query q = em.createQuery("SELECT ug FROM UserGroup ug WHERE ug.name = :name");
+        Query q = getEntityManager().createQuery("SELECT ug FROM UserGroup ug WHERE ug.name = :name");
         q.setParameter("name", name);
         try {
             UserGroup o = (UserGroup) q.getSingleResult();
             if (o != null) {
-                em.refresh(o);
+                getEntityManager().refresh(o);
             }
             return o;
         } catch (NoResultException e) {
@@ -630,8 +645,8 @@ public class JPADAO implements IDAO {
             em.merge(userGroup);
             em.getTransaction().commit();
             // Refresh the object from the DB so that any new licenses etc. have IDs
-            if (this.em.contains(userGroup)) {
-                this.em.refresh(userGroup);
+            if (this.getEntityManager().contains(userGroup)) {
+                this.getEntityManager().refresh(userGroup);
             }
             return true;
         } finally {
@@ -674,7 +689,7 @@ public class JPADAO implements IDAO {
     @Override
     public List<BookmarkList> getAllBookmarkLists() throws DAOException {
         preQuery();
-        Query q = em.createQuery("SELECT o FROM BookmarkList o");
+        Query q = getEntityManager().createQuery("SELECT o FROM BookmarkList o");
         // q.setHint("javax.persistence.cache.storeMode", "REFRESH");
         return q.getResultList();
     }
@@ -687,7 +702,7 @@ public class JPADAO implements IDAO {
     @Override
     public List<BookmarkList> getPublicBookmarkLists() throws DAOException {
         preQuery();
-        Query q = em.createQuery("SELECT o FROM BookmarkList o WHERE o.isPublic=true");
+        Query q = getEntityManager().createQuery("SELECT o FROM BookmarkList o WHERE o.isPublic=true");
         // q.setHint("javax.persistence.cache.storeMode", "REFRESH");
         return q.getResultList();
     }
@@ -702,7 +717,7 @@ public class JPADAO implements IDAO {
     @Override
     public List<BookmarkList> getBookmarkLists(User user) throws DAOException {
         preQuery();
-        Query q = em.createQuery("SELECT o FROM BookmarkList o WHERE o.owner = :user");
+        Query q = getEntityManager().createQuery("SELECT o FROM BookmarkList o WHERE o.owner = :user ORDER BY o.dateUpdated DESC");
         q.setParameter("user", user);
         // q.setHint("javax.persistence.cache.storeMode", "REFRESH");
         return q.getResultList();
@@ -718,9 +733,9 @@ public class JPADAO implements IDAO {
     public BookmarkList getBookmarkList(long id) throws DAOException {
         preQuery();
         try {
-            BookmarkList o = em.getReference(BookmarkList.class, id);
+            BookmarkList o = getEntityManager().getReference(BookmarkList.class, id);
             if (o != null) {
-                em.refresh(o);
+                getEntityManager().refresh(o);
             }
             return o;
         } catch (EntityNotFoundException e) {
@@ -739,17 +754,17 @@ public class JPADAO implements IDAO {
         preQuery();
         Query q;
         if (user != null) {
-            q = em.createQuery("SELECT o FROM BookmarkList o WHERE o.name = :name AND o.owner = :user");
+            q = getEntityManager().createQuery("SELECT o FROM BookmarkList o WHERE o.name = :name AND o.owner = :user");
             q.setParameter("name", name);
             q.setParameter("user", user);
         } else {
-            q = em.createQuery("SELECT o FROM BookmarkList o WHERE o.name = :name");
+            q = getEntityManager().createQuery("SELECT o FROM BookmarkList o WHERE o.name = :name");
             q.setParameter("name", name);
         }
         try {
             BookmarkList o = (BookmarkList) q.getSingleResult();
             if (o != null) {
-                em.refresh(o);
+                getEntityManager().refresh(o);
             }
             return o;
         } catch (NoResultException e) {
@@ -757,7 +772,7 @@ public class JPADAO implements IDAO {
         } catch (NonUniqueResultException e) {
             BookmarkList o = (BookmarkList) q.getResultList().get(0);
             if (o != null) {
-                em.refresh(o);
+                getEntityManager().refresh(o);
             }
             return o;
         }
@@ -767,12 +782,12 @@ public class JPADAO implements IDAO {
     @Override
     public BookmarkList getBookmarkListByShareKey(String shareKey) throws DAOException {
         preQuery();
-        Query q = em.createQuery("SELECT o FROM BookmarkList o WHERE o.shareKey = :shareKey");
+        Query q = getEntityManager().createQuery("SELECT o FROM BookmarkList o WHERE o.shareKey = :shareKey");
         q.setParameter("shareKey", shareKey);
         try {
             BookmarkList o = (BookmarkList) q.getSingleResult();
             if (o != null) {
-                em.refresh(o);
+                getEntityManager().refresh(o);
             }
             return o;
         } catch (NoResultException e) {
@@ -818,8 +833,8 @@ public class JPADAO implements IDAO {
             em.merge(bookmarkList);
             em.getTransaction().commit();
             // Refresh the object from the DB so that any new items have IDs
-            if (this.em.contains(bookmarkList)) {
-                this.em.refresh(bookmarkList);
+            if (this.getEntityManager().contains(bookmarkList)) {
+                this.getEntityManager().refresh(bookmarkList);
             }
             return true;
         } finally {
@@ -860,7 +875,7 @@ public class JPADAO implements IDAO {
     @Override
     public List<Role> getAllRoles() throws DAOException {
         preQuery();
-        Query q = em.createQuery("SELECT r FROM Role r");
+        Query q = getEntityManager().createQuery("SELECT r FROM Role r");
         q.setFlushMode(FlushModeType.COMMIT);
         // q.setHint("javax.persistence.cache.storeMode", "REFRESH");
         return q.getResultList();
@@ -892,9 +907,11 @@ public class JPADAO implements IDAO {
                 sbQuery.append(" DESC");
             }
         }
-        Query q = em.createQuery(sbQuery.toString());
-        for (String key : filterKeys) {
-            q.setParameter(key, "%" + filters.get(key).toUpperCase() + "%");
+        Query q = getEntityManager().createQuery(sbQuery.toString());
+        if (filters != null) {
+            for (String key : filterKeys) {
+                q.setParameter(key, "%" + filters.get(key).toUpperCase() + "%");
+            }
         }
         q.setFirstResult(first);
         q.setMaxResults(pageSize);
@@ -914,9 +931,9 @@ public class JPADAO implements IDAO {
     public Role getRole(long id) throws DAOException {
         preQuery();
         try {
-            Role o = em.getReference(Role.class, id);
+            Role o = getEntityManager().getReference(Role.class, id);
             if (o != null) {
-                em.refresh(o);
+                getEntityManager().refresh(o);
             }
             return o;
         } catch (EntityNotFoundException e) {
@@ -933,12 +950,12 @@ public class JPADAO implements IDAO {
     @Override
     public Role getRole(String name) throws DAOException {
         preQuery();
-        Query q = em.createQuery("SELECT r FROM Role r WHERE r.name = :name");
+        Query q = getEntityManager().createQuery("SELECT r FROM Role r WHERE r.name = :name");
         q.setParameter("name", name);
         try {
             Role o = (Role) q.getSingleResult();
             if (o != null) {
-                em.refresh(o);
+                getEntityManager().refresh(o);
             }
             return o;
         } catch (NoResultException e) {
@@ -1020,7 +1037,7 @@ public class JPADAO implements IDAO {
     @Override
     public List<UserRole> getAllUserRoles() throws DAOException {
         preQuery();
-        Query q = em.createQuery("SELECT ur FROM UserRole ur");
+        Query q = getEntityManager().createQuery("SELECT ur FROM UserRole ur");
         q.setFlushMode(FlushModeType.COMMIT);
         // q.setHint("javax.persistence.cache.storeMode", "REFRESH");
         return q.getResultList();
@@ -1057,7 +1074,7 @@ public class JPADAO implements IDAO {
                 args++;
             }
         }
-        Query q = em.createQuery(sbQuery.toString());
+        Query q = getEntityManager().createQuery(sbQuery.toString());
         // logger.debug(sbQuery.toString());
         if (userGroup != null) {
             q.setParameter("userGroup", userGroup);
@@ -1107,7 +1124,7 @@ public class JPADAO implements IDAO {
                 args++;
             }
         }
-        Query q = em.createQuery(sbQuery.toString());
+        Query q = getEntityManager().createQuery(sbQuery.toString());
         // logger.debug(sbQuery.toString());
         if (userGroup != null) {
             q.setParameter("userGroup", userGroup);
@@ -1195,7 +1212,7 @@ public class JPADAO implements IDAO {
     @Override
     public List<LicenseType> getAllLicenseTypes() throws DAOException {
         preQuery();
-        Query q = em.createQuery("SELECT lt FROM LicenseType lt");
+        Query q = getEntityManager().createQuery("SELECT lt FROM LicenseType lt");
         q.setFlushMode(FlushModeType.COMMIT);
         // q.setHint("javax.persistence.cache.storeMode", "REFRESH");
         return q.getResultList();
@@ -1243,9 +1260,11 @@ public class JPADAO implements IDAO {
                 sbQuery.append(" DESC");
             }
         }
-        Query q = em.createQuery(sbQuery.toString());
-        for (String key : filterKeys) {
-            q.setParameter(key, "%" + filters.get(key).toUpperCase() + "%");
+        Query q = getEntityManager().createQuery(sbQuery.toString());
+        if (filters != null) {
+            for (String key : filterKeys) {
+                q.setParameter(key, "%" + filters.get(key).toUpperCase() + "%");
+            }
         }
         q.setFirstResult(first);
         q.setMaxResults(pageSize);
@@ -1279,9 +1298,11 @@ public class JPADAO implements IDAO {
                 sbQuery.append(" DESC");
             }
         }
-        Query q = em.createQuery(sbQuery.toString());
-        for (String key : filterKeys) {
-            q.setParameter(key, "%" + filters.get(key).toUpperCase() + "%");
+        Query q = getEntityManager().createQuery(sbQuery.toString());
+        if (filters != null) {
+            for (String key : filterKeys) {
+                q.setParameter(key, "%" + filters.get(key).toUpperCase() + "%");
+            }
         }
         q.setFirstResult(first);
         q.setMaxResults(pageSize);
@@ -1301,9 +1322,9 @@ public class JPADAO implements IDAO {
     public LicenseType getLicenseType(long id) throws DAOException {
         preQuery();
         try {
-            LicenseType o = em.getReference(LicenseType.class, id);
+            LicenseType o = getEntityManager().getReference(LicenseType.class, id);
             if (o != null) {
-                em.refresh(o);
+                getEntityManager().refresh(o);
             }
             return o;
         } catch (EntityNotFoundException e) {
@@ -1320,13 +1341,13 @@ public class JPADAO implements IDAO {
     @Override
     public LicenseType getLicenseType(String name) throws DAOException {
         preQuery();
-        Query q = em.createQuery("SELECT lt FROM LicenseType lt WHERE lt.name = :name");
+        Query q = getEntityManager().createQuery("SELECT lt FROM LicenseType lt WHERE lt.name = :name");
         q.setParameter("name", name);
         q.setFlushMode(FlushModeType.COMMIT);
         try {
             LicenseType o = (LicenseType) q.getSingleResult();
             if (o != null) {
-                em.refresh(o);
+                getEntityManager().refresh(o);
             }
             return o;
         } catch (NoResultException e) {
@@ -1349,7 +1370,7 @@ public class JPADAO implements IDAO {
         }
 
         preQuery();
-        Query q = em.createQuery("SELECT a FROM LicenseType a WHERE a.name IN :names");
+        Query q = getEntityManager().createQuery("SELECT a FROM LicenseType a WHERE a.name IN :names");
         q.setParameter("names", names);
         q.setFlushMode(FlushModeType.COMMIT);
         try {
@@ -1434,7 +1455,7 @@ public class JPADAO implements IDAO {
     @Override
     public List<License> getAllLicenses() throws DAOException {
         preQuery();
-        Query q = em.createQuery("SELECT o FROM License o");
+        Query q = getEntityManager().createQuery("SELECT o FROM License o");
         q.setFlushMode(FlushModeType.COMMIT);
         // q.setHint("javax.persistence.cache.storeMode", "REFRESH");
         return q.getResultList();
@@ -1447,9 +1468,9 @@ public class JPADAO implements IDAO {
     public License getLicense(Long id) throws DAOException {
         preQuery();
         try {
-            License o = em.find(License.class, id);
+            License o = getEntityManager().find(License.class, id);
             if (o != null) {
-                em.refresh(o);
+                getEntityManager().refresh(o);
             }
             return o;
         } catch (EntityNotFoundException e) {
@@ -1470,7 +1491,7 @@ public class JPADAO implements IDAO {
 
         preQuery();
         String query = "SELECT a FROM License a WHERE a.licenseType = :licenseType";
-        Query q = em.createQuery(query);
+        Query q = getEntityManager().createQuery(query);
         q.setParameter("licenseType", licenseType);
         return q.getResultList();
     }
@@ -1487,7 +1508,7 @@ public class JPADAO implements IDAO {
 
         preQuery();
         String query = "SELECT COUNT(a) FROM License a WHERE a.licenseType = :licenseType";
-        Query q = em.createQuery(query);
+        Query q = getEntityManager().createQuery(query);
         q.setParameter("licenseType", licenseType);
 
         Object o = q.getResultList().get(0);
@@ -1509,7 +1530,7 @@ public class JPADAO implements IDAO {
     @Override
     public List<IpRange> getAllIpRanges() throws DAOException {
         preQuery();
-        Query q = em.createQuery("SELECT ipr FROM IpRange ipr");
+        Query q = getEntityManager().createQuery("SELECT ipr FROM IpRange ipr");
         q.setFlushMode(FlushModeType.COMMIT);
         // q.setHint("javax.persistence.cache.storeMode", "REFRESH");
         return q.getResultList();
@@ -1541,9 +1562,11 @@ public class JPADAO implements IDAO {
                 sbQuery.append(" DESC");
             }
         }
-        Query q = em.createQuery(sbQuery.toString());
-        for (String key : filterKeys) {
-            q.setParameter(key, "%" + filters.get(key).toUpperCase() + "%");
+        Query q = getEntityManager().createQuery(sbQuery.toString());
+        if (filters != null) {
+            for (String key : filterKeys) {
+                q.setParameter(key, "%" + filters.get(key).toUpperCase() + "%");
+            }
         }
         q.setFirstResult(first);
         q.setMaxResults(pageSize);
@@ -1563,9 +1586,9 @@ public class JPADAO implements IDAO {
     public IpRange getIpRange(long id) throws DAOException {
         preQuery();
         try {
-            IpRange o = em.find(IpRange.class, id);
+            IpRange o = getEntityManager().find(IpRange.class, id);
             if (o != null) {
-                em.refresh(o);
+                getEntityManager().refresh(o);
             }
             return o;
         } catch (EntityNotFoundException e) {
@@ -1582,12 +1605,12 @@ public class JPADAO implements IDAO {
     @Override
     public IpRange getIpRange(String name) throws DAOException {
         preQuery();
-        Query q = em.createQuery("SELECT ipr FROM IpRange ipr WHERE ipr.name = :name");
+        Query q = getEntityManager().createQuery("SELECT ipr FROM IpRange ipr WHERE ipr.name = :name");
         q.setParameter("name", name);
         try {
             IpRange o = (IpRange) q.getSingleResult();
             if (o != null) {
-                em.refresh(o);
+                getEntityManager().refresh(o);
             }
             return o;
         } catch (NoResultException e) {
@@ -1633,8 +1656,8 @@ public class JPADAO implements IDAO {
             em.merge(ipRange);
             em.getTransaction().commit();
             // Refresh the object from the DB so that any new licenses etc. have IDs
-            if (this.em.contains(ipRange)) {
-                this.em.refresh(ipRange);
+            if (this.getEntityManager().contains(ipRange)) {
+                this.getEntityManager().refresh(ipRange);
             }
             return true;
         } finally {
@@ -1671,7 +1694,7 @@ public class JPADAO implements IDAO {
     @Override
     public List<Comment> getAllComments() throws DAOException {
         preQuery();
-        Query q = em.createQuery("SELECT o FROM Comment o");
+        Query q = getEntityManager().createQuery("SELECT o FROM Comment o");
         q.setFlushMode(FlushModeType.COMMIT);
         // q.setHint("javax.persistence.cache.storeMode", "REFRESH");
         return q.getResultList();
@@ -1693,7 +1716,7 @@ public class JPADAO implements IDAO {
             }
         }
 
-        Query q = em.createQuery(sbQuery.toString());
+        Query q = getEntityManager().createQuery(sbQuery.toString());
         params.entrySet().forEach(entry -> q.setParameter(entry.getKey(), entry.getValue()));
         // q.setHint("javax.persistence.cache.storeMode", "REFRESH");
         return q.setFirstResult(first).setMaxResults(pageSize).setFlushMode(FlushModeType.COMMIT).getResultList();
@@ -1709,7 +1732,7 @@ public class JPADAO implements IDAO {
         preQuery();
         StringBuilder sbQuery = new StringBuilder(80);
         sbQuery.append("SELECT o FROM Comment o WHERE o.pi = :pi AND o.page = :page");
-        Query q = em.createQuery(sbQuery.toString());
+        Query q = getEntityManager().createQuery(sbQuery.toString());
         q.setParameter("pi", pi);
         q.setParameter("page", page);
         q.setFlushMode(FlushModeType.COMMIT);
@@ -1724,7 +1747,7 @@ public class JPADAO implements IDAO {
         preQuery();
         StringBuilder sbQuery = new StringBuilder(80);
         sbQuery.append("SELECT o FROM Comment o WHERE o.pi = :pi");
-        Query q = em.createQuery(sbQuery.toString());
+        Query q = getEntityManager().createQuery(sbQuery.toString());
         q.setParameter("pi", pi);
         q.setFlushMode(FlushModeType.COMMIT);
         q.setHint("javax.persistence.cache.storeMode", "REFRESH");
@@ -1739,9 +1762,9 @@ public class JPADAO implements IDAO {
     public Comment getComment(long id) throws DAOException {
         preQuery();
         try {
-            Comment o = em.getReference(Comment.class, id);
+            Comment o = getEntityManager().getReference(Comment.class, id);
             if (o != null) {
-                em.refresh(o);
+                getEntityManager().refresh(o);
             }
             return o;
         } catch (EntityNotFoundException e) {
@@ -1828,7 +1851,7 @@ public class JPADAO implements IDAO {
             emLocal.getTransaction().commit();
 
             // Refresh objects in context
-            em.createQuery("SELECT o FROM Comment o WHERE o.owner = :owner")
+            getEntityManager().createQuery("SELECT o FROM Comment o WHERE o.owner = :owner")
                     .setParameter("owner", toUser)
                     .setHint("javax.persistence.cache.storeMode", "REFRESH")
                     .getResultList();
@@ -1896,7 +1919,7 @@ public class JPADAO implements IDAO {
         preQuery();
         StringBuilder sbQuery = new StringBuilder(80);
         sbQuery.append("SELECT o.page FROM Comment o WHERE o.pi = :pi");
-        Query q = em.createQuery(sbQuery.toString());
+        Query q = getEntityManager().createQuery(sbQuery.toString());
         q.setParameter("pi", pi);
         q.setFlushMode(FlushModeType.COMMIT);
         q.setHint("javax.persistence.cache.storeMode", "REFRESH");
@@ -1912,7 +1935,7 @@ public class JPADAO implements IDAO {
     @Override
     public List<Search> getAllSearches() throws DAOException {
         preQuery();
-        Query q = em.createQuery("SELECT o FROM Search o");
+        Query q = getEntityManager().createQuery("SELECT o FROM Search o");
         q.setFlushMode(FlushModeType.COMMIT);
         // q.setHint("javax.persistence.cache.storeMode", "REFRESH");
         return q.getResultList();
@@ -1945,12 +1968,14 @@ public class JPADAO implements IDAO {
                 count++;
             }
         }
-        Query q = em.createQuery(sbQuery.toString());
+        Query q = getEntityManager().createQuery(sbQuery.toString());
         if (owner != null) {
             q.setParameter("owner", owner);
         }
-        for (String key : filterKeys) {
-            q.setParameter(key, "%" + filters.get(key).toUpperCase() + "%");
+        if (filters != null) {
+            for (String key : filterKeys) {
+                q.setParameter(key, "%" + filters.get(key).toUpperCase() + "%");
+            }
         }
         // q.setHint("javax.persistence.cache.storeMode", "REFRESH");
 
@@ -1998,12 +2023,14 @@ public class JPADAO implements IDAO {
                 sbQuery.append(" DESC");
             }
         }
-        Query q = em.createQuery(sbQuery.toString());
+        Query q = getEntityManager().createQuery(sbQuery.toString());
         if (owner != null) {
             q.setParameter("owner", owner);
         }
-        for (String key : filterKeys) {
-            q.setParameter(key, "%" + filters.get(key).toUpperCase() + "%");
+        if (filters != null) {
+            for (String key : filterKeys) {
+                q.setParameter(key, "%" + filters.get(key).toUpperCase() + "%");
+            }
         }
         q.setFirstResult(first);
         q.setMaxResults(pageSize);
@@ -2021,7 +2048,7 @@ public class JPADAO implements IDAO {
     public List<Search> getSearches(User owner) throws DAOException {
         preQuery();
         String query = "SELECT o FROM Search o WHERE o.owner = :owner";
-        Query q = em.createQuery(query);
+        Query q = getEntityManager().createQuery(query);
         q.setParameter("owner", owner);
         // q.setHint("javax.persistence.cache.storeMode", "REFRESH");
         return q.getResultList();
@@ -2035,9 +2062,9 @@ public class JPADAO implements IDAO {
     public Search getSearch(long id) throws DAOException {
         preQuery();
         try {
-            Search o = em.find(Search.class, id);
+            Search o = getEntityManager().find(Search.class, id);
             if (o != null) {
-                em.refresh(o);
+                getEntityManager().refresh(o);
             }
             return o;
         } catch (EntityNotFoundException e) {
@@ -2112,7 +2139,7 @@ public class JPADAO implements IDAO {
     @Override
     public List<DownloadJob> getAllDownloadJobs() throws DAOException {
         preQuery();
-        Query q = em.createQuery("SELECT o FROM DownloadJob o");
+        Query q = getEntityManager().createQuery("SELECT o FROM DownloadJob o");
         // q.setHint("javax.persistence.cache.storeMode", "REFRESH");
         return q.getResultList();
     }
@@ -2126,9 +2153,9 @@ public class JPADAO implements IDAO {
     public DownloadJob getDownloadJob(long id) throws DAOException {
         preQuery();
         try {
-            DownloadJob o = em.getReference(DownloadJob.class, id);
+            DownloadJob o = getEntityManager().getReference(DownloadJob.class, id);
             if (o != null) {
-                em.refresh(o);
+                getEntityManager().refresh(o);
             }
             return o;
         } catch (EntityNotFoundException e) {
@@ -2150,13 +2177,13 @@ public class JPADAO implements IDAO {
         preQuery();
         StringBuilder sbQuery = new StringBuilder();
         sbQuery.append("SELECT o FROM DownloadJob o WHERE o.identifier = :identifier");
-        Query q = em.createQuery(sbQuery.toString());
+        Query q = getEntityManager().createQuery(sbQuery.toString());
         q.setParameter("identifier", identifier);
         q.setMaxResults(1);
         try {
             DownloadJob o = (DownloadJob) q.getSingleResult();
             if (o != null) {
-                em.refresh(o);
+                getEntityManager().refresh(o);
             }
             return o;
         } catch (NoResultException e) {
@@ -2184,7 +2211,7 @@ public class JPADAO implements IDAO {
         if (logId != null) {
             sbQuery.append(" AND o.logId = :logId");
         }
-        Query q = em.createQuery(sbQuery.toString());
+        Query q = getEntityManager().createQuery(sbQuery.toString());
         q.setParameter("type", type);
         q.setParameter("pi", pi);
         if (logId != null) {
@@ -2194,7 +2221,7 @@ public class JPADAO implements IDAO {
         try {
             DownloadJob o = (DownloadJob) q.getSingleResult();
             if (o != null) {
-                em.refresh(o);
+                getEntityManager().refresh(o);
             }
             return o;
         } catch (NoResultException e) {
@@ -2228,8 +2255,8 @@ public class JPADAO implements IDAO {
             em.merge(downloadJob);
             em.getTransaction().commit();
 
-            if (this.em.contains(downloadJob)) {
-                this.em.refresh(downloadJob);
+            if (this.getEntityManager().contains(downloadJob)) {
+                this.getEntityManager().refresh(downloadJob);
             }
 
             return true;
@@ -2261,13 +2288,13 @@ public class JPADAO implements IDAO {
     @Override
     public CMSPageTemplateEnabled getCMSPageTemplateEnabled(String templateId) throws DAOException {
         preQuery();
-        Query q = em.createQuery("SELECT o FROM CMSPageTemplateEnabled o where o.templateId = :templateId");
+        Query q = getEntityManager().createQuery("SELECT o FROM CMSPageTemplateEnabled o where o.templateId = :templateId");
         q.setParameter("templateId", templateId);
         q.setFlushMode(FlushModeType.COMMIT);
         try {
             CMSPageTemplateEnabled o = (CMSPageTemplateEnabled) q.getSingleResult();
             if (o != null) {
-                em.refresh(o);
+                getEntityManager().refresh(o);
             }
             return o;
         } catch (NoResultException e) {
@@ -2308,8 +2335,8 @@ public class JPADAO implements IDAO {
             em.merge(o);
             em.getTransaction().commit();
             // Refresh the object from the DB
-            if (this.em.contains(o)) {
-                this.em.refresh(o);
+            if (this.getEntityManager().contains(o)) {
+                this.getEntityManager().refresh(o);
             }
             return true;
         } finally {
@@ -2348,7 +2375,7 @@ public class JPADAO implements IDAO {
         try {
             synchronized (cmsRequestLock) {
                 preQuery();
-                Query q = em.createQuery("SELECT o FROM CMSPage o");
+                Query q = getEntityManager().createQuery("SELECT o FROM CMSPage o");
                 q.setFlushMode(FlushModeType.COMMIT);
                 // q.setHint("javax.persistence.cache.storeMode", "REFRESH");
                 return q.getResultList();
@@ -2367,7 +2394,7 @@ public class JPADAO implements IDAO {
     public CMSPage getCmsPageForStaticPage(String pageName) throws DAOException {
         synchronized (cmsRequestLock) {
             preQuery();
-            Query q = em.createQuery("SELECT o FROM CMSPage o WHERE o.staticPageName = :pageName");
+            Query q = getEntityManager().createQuery("SELECT o FROM CMSPage o WHERE o.staticPageName = :pageName");
             q.setParameter("pageName", pageName);
             q.setHint("javax.persistence.cache.storeMode", "REFRESH");
             if (!q.getResultList().isEmpty()) {
@@ -2414,7 +2441,7 @@ public class JPADAO implements IDAO {
                 sbQuery.append(filterString).append(rightsFilterString).append(order);
 
                 logger.trace("CMS page query: {}", sbQuery.toString());
-                Query q = em.createQuery(sbQuery.toString());
+                Query q = getEntityManager().createQuery(sbQuery.toString());
                 params.entrySet().forEach(entry -> q.setParameter(entry.getKey(), entry.getValue()));
                 q.setFirstResult(first);
                 q.setMaxResults(pageSize);
@@ -2813,7 +2840,7 @@ public class JPADAO implements IDAO {
             sbQuery.append(')');
         }
         sbQuery.append(" GROUP BY o.relatedPI ORDER BY o.dateUpdated DESC");
-        Query q = em.createQuery(sbQuery.toString());
+        Query q = getEntityManager().createQuery(sbQuery.toString());
         if (fromDate != null) {
             q.setParameter("fromDate", fromDate);
         }
@@ -2842,7 +2869,7 @@ public class JPADAO implements IDAO {
         if (toDate != null) {
             sbQuery.append(" AND o.dateUpdated <= :toDate");
         }
-        Query q = em.createQuery(sbQuery.toString());
+        Query q = getEntityManager().createQuery(sbQuery.toString());
         q.setParameter("pi", pi);
         if (fromDate != null) {
             q.setParameter("fromDate", fromDate);
@@ -2880,7 +2907,7 @@ public class JPADAO implements IDAO {
             }
             sbQuery.append(')');
         }
-        Query q = em.createQuery(sbQuery.toString());
+        Query q = getEntityManager().createQuery(sbQuery.toString());
         if (fromDate != null) {
             q.setParameter("fromDate", fromDate);
         }
@@ -2904,7 +2931,7 @@ public class JPADAO implements IDAO {
             logger.trace("getCMSPage: {}", id);
             preQuery();
             try {
-                CMSPage o = em.getReference(CMSPage.class, id);
+                CMSPage o = getEntityManager().getReference(CMSPage.class, id);
                 if (o != null) {
                     updateCMSPageFromDatabase(o.getId());
                 }
@@ -2933,8 +2960,8 @@ public class JPADAO implements IDAO {
             logger.trace("getCMSSidebarElement: {}", id);
             preQuery();
             try {
-                CMSSidebarElement o = em.getReference(CMSSidebarElement.class, id);
-                em.refresh(o);
+                CMSSidebarElement o = getEntityManager().getReference(CMSSidebarElement.class, id);
+                getEntityManager().refresh(o);
                 return o;
             } catch (EntityNotFoundException e) {
                 return null;
@@ -2950,7 +2977,7 @@ public class JPADAO implements IDAO {
     public List<CMSNavigationItem> getRelatedNavItem(CMSPage page) throws DAOException {
         synchronized (cmsRequestLock) {
             preQuery();
-            Query q = em.createQuery("SELECT o FROM CMSNavigationItem o WHERE o.cmsPage = :page");
+            Query q = getEntityManager().createQuery("SELECT o FROM CMSNavigationItem o WHERE o.cmsPage = :page");
             q.setParameter("page", page);
             // q.setHint("javax.persistence.cache.storeMode", "REFRESH");
             return q.getResultList();
@@ -3001,8 +3028,8 @@ public class JPADAO implements IDAO {
     private boolean updateCMSPageFromDatabase(Long id) {
         CMSPage o = null;
         try {
-            o = this.em.getReference(CMSPage.class, id);
-            this.em.refresh(o);
+            o = this.getEntityManager().getReference(CMSPage.class, id);
+            this.getEntityManager().refresh(o);
             return true;
         } catch (IllegalArgumentException e) {
             logger.error("CMSPage with ID '{}' has an invalid type, or is not persisted: {}", id, e.getMessage());
@@ -3011,7 +3038,7 @@ public class JPADAO implements IDAO {
             logger.debug("CMSPage with ID '{}' not found in database.", id);
             //remove from em as well
             if (o != null) {
-                em.remove(o);
+                getEntityManager().remove(o);
             }
             return false;
         }
@@ -3029,8 +3056,8 @@ public class JPADAO implements IDAO {
     private boolean updateFromDatabase(Long id, Class clazz) {
         Object o = null;
         try {
-            o = this.em.getReference(clazz, id);
-            this.em.refresh(o);
+            o = this.getEntityManager().getReference(clazz, id);
+            this.getEntityManager().refresh(o);
             return true;
         } catch (IllegalArgumentException e) {
             logger.error("CMSPage with ID '{}' has an invalid type, or is not persisted: {}", id, e.getMessage());
@@ -3039,7 +3066,7 @@ public class JPADAO implements IDAO {
             logger.debug("CMSPage with ID '{}' not found in database.", id);
             //remove from em as well
             if (o != null) {
-                em.remove(o);
+                getEntityManager().remove(o);
             }
             return false;
         }
@@ -3073,7 +3100,7 @@ public class JPADAO implements IDAO {
         synchronized (cmsRequestLock) {
             try {
                 preQuery();
-                Query q = em.createQuery("SELECT o FROM CMSMediaItem o");
+                Query q = getEntityManager().createQuery("SELECT o FROM CMSMediaItem o");
                 q.setFlushMode(FlushModeType.COMMIT);
                 q.setHint("javax.persistence.cache.storeMode", "REFRESH");
                 return q.getResultList();
@@ -3091,7 +3118,7 @@ public class JPADAO implements IDAO {
         synchronized (cmsRequestLock) {
             try {
                 preQuery();
-                Query q = em.createQuery("SELECT o FROM CMSMediaItem o WHERE o.collection = true");
+                Query q = getEntityManager().createQuery("SELECT o FROM CMSMediaItem o WHERE o.collection = true");
                 q.setFlushMode(FlushModeType.COMMIT);
                 // q.setHint("javax.persistence.cache.storeMode", "REFRESH");
                 return q.getResultList();
@@ -3108,7 +3135,7 @@ public class JPADAO implements IDAO {
         synchronized (cmsRequestLock) {
             try {
                 preQuery();
-                Query q = em.createQuery("SELECT o FROM CMSMediaItem o WHERE o.fileName = :fileName");
+                Query q = getEntityManager().createQuery("SELECT o FROM CMSMediaItem o WHERE o.fileName = :fileName");
                 q.setFlushMode(FlushModeType.COMMIT);
                 q.setParameter("fileName", filename);
                 // q.setHint("javax.persistence.cache.storeMode", "REFRESH");
@@ -3130,8 +3157,8 @@ public class JPADAO implements IDAO {
 
             preQuery();
             try {
-                CMSMediaItem o = em.getReference(CMSMediaItem.class, id);
-                em.refresh(o);
+                CMSMediaItem o = getEntityManager().getReference(CMSMediaItem.class, id);
+                getEntityManager().refresh(o);
                 return o;
             } catch (EntityNotFoundException e) {
                 return null;
@@ -3204,7 +3231,7 @@ public class JPADAO implements IDAO {
             List<CMSPage> ownerList = new ArrayList<>();
             try {
                 preQuery();
-                Query q = em.createQuery("SELECT o FROM CMSContentItem o WHERE o.mediaItem = :media");
+                Query q = getEntityManager().createQuery("SELECT o FROM CMSContentItem o WHERE o.mediaItem = :media");
                 q.setParameter("media", item);
                 q.setFlushMode(FlushModeType.COMMIT);
                 // q.setHint("javax.persistence.cache.storeMode", "REFRESH");
@@ -3227,6 +3254,21 @@ public class JPADAO implements IDAO {
         }
     }
 
+    /* (non-Javadoc)
+     * @see io.goobi.viewer.dao.IDAO#getCMSPagesByCategory(io.goobi.viewer.model.cms.Category)
+     */
+    /** {@inheritDoc} */
+    @Override
+    @SuppressWarnings("unchecked")
+    public List<CMSMediaItem> getCMSMediaItemsByCategory(CMSCategory category) throws DAOException {
+        preQuery();
+        Query q = getEntityManager()
+                .createQuery("SELECT DISTINCT media FROM CMSMediaItem media JOIN media.categories category WHERE category.id = :id");
+        q.setParameter("id", category.getId());
+        List<CMSMediaItem> pageList = q.getResultList();
+        return pageList;
+    }
+
     /** {@inheritDoc} */
     @SuppressWarnings("unchecked")
     @Override
@@ -3234,7 +3276,7 @@ public class JPADAO implements IDAO {
         preQuery();
         synchronized (cmsRequestLock) {
             try {
-                Query q = em.createQuery("SELECT o FROM CMSNavigationItem o WHERE o.parentItem IS NULL");
+                Query q = getEntityManager().createQuery("SELECT o FROM CMSNavigationItem o WHERE o.parentItem IS NULL");
                 q.setHint("javax.persistence.cache.storeMode", "REFRESH");
                 q.setFlushMode(FlushModeType.COMMIT);
                 List<CMSNavigationItem> list = q.getResultList();
@@ -3253,8 +3295,8 @@ public class JPADAO implements IDAO {
         preQuery();
         synchronized (cmsRequestLock) {
             try {
-                CMSNavigationItem o = em.find(CMSNavigationItem.class, id);
-                em.refresh(o);
+                CMSNavigationItem o = getEntityManager().find(CMSNavigationItem.class, id);
+                getEntityManager().refresh(o);
                 return o;
             } catch (EntityNotFoundException e) {
                 return null;
@@ -3326,7 +3368,7 @@ public class JPADAO implements IDAO {
     @Override
     public List<TranskribusJob> getAllTranskribusJobs() throws DAOException {
         preQuery();
-        Query q = em.createQuery("SELECT o FROM TranskribusJob o");
+        Query q = getEntityManager().createQuery("SELECT o FROM TranskribusJob o");
         // q.setHint("javax.persistence.cache.storeMode", "REFRESH");
         return q.getResultList();
     }
@@ -3343,11 +3385,6 @@ public class JPADAO implements IDAO {
         sbQuery.append("SELECT o FROM TranskribusJob o");
         int filterCount = 0;
         if (pi != null) {
-            if (filterCount == 0) {
-                sbQuery.append(" WHERE ");
-            } else {
-                sbQuery.append(" AND ");
-            }
             sbQuery.append(" WHERE o.pi = :pi");
             filterCount++;
         }
@@ -3357,7 +3394,7 @@ public class JPADAO implements IDAO {
             } else {
                 sbQuery.append(" AND ");
             }
-            sbQuery.append(" WHERE o.ownerId = :ownerId");
+            sbQuery.append("o.ownerId = :ownerId");
             filterCount++;
         }
         if (status != null) {
@@ -3366,11 +3403,11 @@ public class JPADAO implements IDAO {
             } else {
                 sbQuery.append(" AND ");
             }
-            sbQuery.append(" WHERE o.status = :status");
+            sbQuery.append("o.status = :status");
             filterCount++;
         }
 
-        Query q = em.createQuery(sbQuery.toString());
+        Query q = getEntityManager().createQuery(sbQuery.toString());
         if (pi != null) {
             q.setParameter("pi", pi);
         }
@@ -3440,7 +3477,7 @@ public class JPADAO implements IDAO {
         try {
             synchronized (crowdsourcingRequestLock) {
                 preQuery();
-                Query q = em.createQuery("SELECT o FROM Campaign o");
+                Query q = getEntityManager().createQuery("SELECT o FROM Campaign o");
                 q.setFlushMode(FlushModeType.COMMIT);
                 // q.setHint("javax.persistence.cache.storeMode", "REFRESH");
                 return q.getResultList();
@@ -3457,7 +3494,7 @@ public class JPADAO implements IDAO {
         preQuery();
         StringBuilder sbQuery = new StringBuilder("SELECT count(a) FROM Campaign a");
         Map<String, Object> params = new HashMap<>();
-        Query q = em.createQuery(sbQuery.append(createCampaignsFilterQuery(null, filters, params)).toString());
+        Query q = getEntityManager().createQuery(sbQuery.append(createCampaignsFilterQuery(null, filters, params)).toString());
         params.entrySet().forEach(entry -> q.setParameter(entry.getKey(), entry.getValue()));
 
         return (long) q.getSingleResult();
@@ -3485,7 +3522,7 @@ public class JPADAO implements IDAO {
                 sbQuery.append(filterString).append(order);
 
                 logger.trace(sbQuery.toString());
-                Query q = em.createQuery(sbQuery.toString());
+                Query q = getEntityManager().createQuery(sbQuery.toString());
                 params.entrySet().forEach(entry -> q.setParameter(entry.getKey(), entry.getValue()));
                 //            q.setParameter("lang", BeanUtils.getLocale().getLanguage());
                 q.setFirstResult(first);
@@ -3507,9 +3544,9 @@ public class JPADAO implements IDAO {
         synchronized (crowdsourcingRequestLock) {
             preQuery();
             try {
-                Campaign o = em.getReference(Campaign.class, id);
+                Campaign o = getEntityManager().getReference(Campaign.class, id);
                 if (o != null) {
-//                    em.refresh(o);
+                    //                    getEntityManager().refresh(o);
                 }
                 return o;
             } catch (EntityNotFoundException e) {
@@ -3525,7 +3562,7 @@ public class JPADAO implements IDAO {
         synchronized (crowdsourcingRequestLock) {
             preQuery();
             try {
-                Question o = em.getReference(Question.class, id);
+                Question o = getEntityManager().getReference(Question.class, id);
                 return o;
             } catch (EntityNotFoundException e) {
                 return null;
@@ -3544,7 +3581,7 @@ public class JPADAO implements IDAO {
                 if (status != null) {
                     query += " AND a.status = :status";
                 }
-                Query q = em.createQuery(query);
+                Query q = getEntityManager().createQuery(query);
                 q.setParameter("pi", pi);
                 if (status != null) {
                     q.setParameter("status", status);
@@ -3570,9 +3607,9 @@ public class JPADAO implements IDAO {
             preQuery();
             try {
                 campaign.onPrePersist();
-                em.getTransaction().begin();
-                em.persist(campaign);
-                em.getTransaction().commit();
+                getEntityManager().getTransaction().begin();
+                getEntityManager().persist(campaign);
+                getEntityManager().getTransaction().commit();
                 return true;
             } catch (RollbackException e) {
                 return false;
@@ -3590,10 +3627,10 @@ public class JPADAO implements IDAO {
             preQuery();
             campaign.onPreUpdate();
             try {
-                em.getTransaction().begin();
-                em.setFlushMode(FlushModeType.COMMIT);
-                Campaign c = em.merge(campaign);
-                em.getTransaction().commit();
+                getEntityManager().getTransaction().begin();
+                getEntityManager().setFlushMode(FlushModeType.COMMIT);
+                Campaign c = getEntityManager().merge(campaign);
+                getEntityManager().getTransaction().commit();
                 //solrQueryResults remains unchanged in managed campaign even after merge. Manually reset results to account for changed solrquery
                 c.resetSolrQueryResults();
                 return true;
@@ -3613,10 +3650,10 @@ public class JPADAO implements IDAO {
 
             preQuery();
             try {
-                em.getTransaction().begin();
-                Campaign o = em.getReference(Campaign.class, campaign.getId());
-                em.remove(o);
-                em.getTransaction().commit();
+                getEntityManager().getTransaction().begin();
+                Campaign o = getEntityManager().getReference(Campaign.class, campaign.getId());
+                getEntityManager().remove(o);
+                getEntityManager().getTransaction().commit();
                 return true;
             } catch (RollbackException e) {
                 return false;
@@ -3696,12 +3733,16 @@ public class JPADAO implements IDAO {
     /** {@inheritDoc} */
     @Override
     public void shutdown() {
-        if (em != null && em.isOpen()) {
-            em.close();
+        if (getEntityManager() != null && getEntityManager().isOpen()) {
+            getEntityManager().close();
         }
         if (factory != null && factory.isOpen()) {
             factory.close();
         }
+        //        if (threadLocalEm.get() != null) {
+        //            threadLocalEm.remove();
+        //        }
+
         // This is MySQL specific, but needed to prevent OOMs when redeploying
         //        try {
         //            AbandonedConnectionCleanupThread.shutdown();
@@ -3718,20 +3759,13 @@ public class JPADAO implements IDAO {
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
     public void preQuery() throws DAOException {
-        if (em == null) {
+        if (getEntityManager() == null) {
             throw new DAOException("EntityManager is not initialized");
         }
-        if (!em.isOpen()) {
+        if (!getEntityManager().isOpen()) {
+            // threadLocalEm.set(factory.createEntityManager());
             em = factory.createEntityManager();
         }
-        //        EntityManager em = factory.createEntityManager();
-        //        try {
-        //            Query q = em.createNativeQuery("SELECT 1");
-        //            q.getResultList();
-        //        } finally {
-        //            em.close();
-        //        }
-
     }
 
     /** {@inheritDoc} */
@@ -3791,7 +3825,7 @@ public class JPADAO implements IDAO {
         } catch (AccessDeniedException e) {
             return 0;
         }
-        Query q = em.createQuery(sbQuery.toString());
+        Query q = getEntityManager().createQuery(sbQuery.toString());
         params.entrySet().forEach(entry -> q.setParameter(entry.getKey(), entry.getValue()));
 
         return (long) q.getSingleResult();
@@ -3808,7 +3842,7 @@ public class JPADAO implements IDAO {
     private long getFilteredRowCount(String className, String filter, Map<String, String> params) throws DAOException {
         preQuery();
         StringBuilder sbQuery = new StringBuilder("SELECT count(DISTINCT a) FROM ").append(className).append(" a").append(" ").append(filter);
-        Query q = em.createQuery(sbQuery.toString());
+        Query q = getEntityManager().createQuery(sbQuery.toString());
         params.entrySet().forEach(entry -> q.setParameter(entry.getKey(), entry.getValue()));
 
         return (long) q.getSingleResult();
@@ -3827,7 +3861,7 @@ public class JPADAO implements IDAO {
         preQuery();
         StringBuilder sbQuery = new StringBuilder("SELECT count(a) FROM ").append(className).append(" a");
         Map<String, String> params = new HashMap<>();
-        Query q = em.createQuery(sbQuery.append(createFilterQuery(staticFilterQuery, filters, params)).toString());
+        Query q = getEntityManager().createQuery(sbQuery.append(createFilterQuery(staticFilterQuery, filters, params)).toString());
         params.entrySet().forEach(entry -> q.setParameter(entry.getKey(), entry.getValue()));
 
         return (long) q.getSingleResult();
@@ -3841,7 +3875,7 @@ public class JPADAO implements IDAO {
     @SuppressWarnings("unchecked")
     public List<CMSStaticPage> getAllStaticPages() throws DAOException {
         preQuery();
-        Query q = em.createQuery("SELECT o FROM CMSStaticPage o");
+        Query q = getEntityManager().createQuery("SELECT o FROM CMSStaticPage o");
         // q.setHint("javax.persistence.cache.storeMode", "REFRESH");
         return q.getResultList();
     }
@@ -3906,7 +3940,7 @@ public class JPADAO implements IDAO {
     @Override
     public List<CMSStaticPage> getStaticPageForCMSPage(CMSPage page) throws DAOException, NonUniqueResultException {
         preQuery();
-        Query q = em.createQuery("SELECT sp FROM CMSStaticPage sp WHERE sp.cmsPageId = :id");
+        Query q = getEntityManager().createQuery("SELECT sp FROM CMSStaticPage sp WHERE sp.cmsPageId = :id");
         q.setParameter("id", page.getId());
         return q.getResultList();
         // q.setHint("javax.persistence.cache.storeMode", "REFRESH");
@@ -3920,7 +3954,7 @@ public class JPADAO implements IDAO {
     @Override
     public Optional<CMSStaticPage> getStaticPageForTypeType(PageType pageType) throws DAOException {
         preQuery();
-        Query q = em.createQuery("SELECT sp FROM CMSStaticPage sp WHERE sp.pageName = :name");
+        Query q = getEntityManager().createQuery("SELECT sp FROM CMSStaticPage sp WHERE sp.pageName = :name");
         q.setParameter("name", pageType.getName());
         // q.setHint("javax.persistence.cache.storeMode", "REFRESH");
         return getSingleResult(q);
@@ -3955,6 +3989,7 @@ public class JPADAO implements IDAO {
      * @return an Optional containing the first query result, or an empty Optional if no results are present
      */
     @SuppressWarnings("unchecked")
+    @Deprecated
     private static <T> Optional<T> getFirstResult(Query q) throws ClassCastException {
         List<Object> results = q.getResultList();
         if (results == null || results.isEmpty()) {
@@ -3970,10 +4005,12 @@ public class JPADAO implements IDAO {
     @Override
     @SuppressWarnings("unchecked")
     public List<CMSCollection> getCMSCollections(String solrField) throws DAOException {
-        preQuery();
-        Query q = em.createQuery("SELECT c FROM CMSCollection c WHERE c.solrField = :field");
-        q.setParameter("field", solrField);
-        return q.getResultList();
+        synchronized (cmsRequestLock) {
+            preQuery();
+            Query q = getEntityManager().createQuery("SELECT c FROM CMSCollection c WHERE c.solrField = :field");
+            q.setParameter("field", solrField);
+            return q.getResultList();
+        }
     }
 
     /* (non-Javadoc)
@@ -4007,8 +4044,8 @@ public class JPADAO implements IDAO {
             em.merge(collection);
             em.getTransaction().commit();
             // Refresh the object from the DB so that any new licenses etc. have IDs
-            if (this.em.contains(collection)) {
-                this.em.refresh(collection);
+            if (this.getEntityManager().contains(collection)) {
+                this.getEntityManager().refresh(collection);
             }
             return true;
         } finally {
@@ -4023,7 +4060,7 @@ public class JPADAO implements IDAO {
     @Override
     public CMSCollection getCMSCollection(String solrField, String solrFieldValue) throws DAOException {
         preQuery();
-        Query q = em.createQuery("SELECT c FROM CMSCollection c WHERE c.solrField = :field AND c.solrFieldValue = :value");
+        Query q = getEntityManager().createQuery("SELECT c FROM CMSCollection c WHERE c.solrField = :field AND c.solrFieldValue = :value");
         q.setParameter("field", solrField);
         q.setParameter("value", solrFieldValue);
         return (CMSCollection) getSingleResult(q).orElse(null);
@@ -4033,7 +4070,7 @@ public class JPADAO implements IDAO {
     @Override
     public void refreshCMSCollection(CMSCollection collection) throws DAOException {
         preQuery();
-        this.em.refresh(collection);
+        this.getEntityManager().refresh(collection);
     }
 
     /* (non-Javadoc)
@@ -4063,7 +4100,7 @@ public class JPADAO implements IDAO {
     @SuppressWarnings("unchecked")
     public List<CMSPage> getCMSPagesByCategory(CMSCategory category) throws DAOException {
         preQuery();
-        Query q = em.createQuery("SELECT DISTINCT page FROM CMSPage page JOIN page.categories category WHERE category.id = :id");
+        Query q = getEntityManager().createQuery("SELECT DISTINCT page FROM CMSPage page JOIN page.categories category WHERE category.id = :id");
         q.setParameter("id", category.getId());
         List<CMSPage> pageList = q.getResultList();
         return pageList;
@@ -4073,7 +4110,7 @@ public class JPADAO implements IDAO {
     @SuppressWarnings("unchecked")
     public List<CMSPage> getCMSPagesForSubtheme(String subtheme) throws DAOException {
         preQuery();
-        Query q = em.createQuery("SELECT DISTINCT page FROM CMSPage page WHERE page.subThemeDiscriminatorValue = :subtheme");
+        Query q = getEntityManager().createQuery("SELECT DISTINCT page FROM CMSPage page WHERE page.subThemeDiscriminatorValue = :subtheme");
         q.setParameter("subtheme", subtheme);
         List<CMSPage> pageList = q.getResultList();
         return pageList;
@@ -4089,14 +4126,14 @@ public class JPADAO implements IDAO {
         preQuery();
         Query q;
         if (category != null) {
-            q = em.createQuery(
+            q = getEntityManager().createQuery(
                     "SELECT DISTINCT page FROM CMSPage page JOIN page.categories category WHERE category.id = :id AND page.relatedPI = :pi");
             q.setParameter("id", category.getId());
         } else {
             StringBuilder sbQuery = new StringBuilder(70);
             sbQuery.append("SELECT o from CMSPage o WHERE o.relatedPI='").append(pi).append("'");
 
-            q = em.createQuery("SELECT page FROM CMSPage page WHERE page.relatedPI = :pi");
+            q = getEntityManager().createQuery("SELECT page FROM CMSPage page WHERE page.relatedPI = :pi");
         }
         q.setParameter("pi", pi);
         List<CMSPage> pageList = q.getResultList();
@@ -4183,7 +4220,7 @@ public class JPADAO implements IDAO {
     @Override
     public List<CMSCategory> getAllCategories() throws DAOException {
         preQuery();
-        Query q = em.createQuery("SELECT c FROM CMSCategory c ORDER BY c.name");
+        Query q = getEntityManager().createQuery("SELECT c FROM CMSCategory c ORDER BY c.name");
         q.setFlushMode(FlushModeType.COMMIT);
         List<CMSCategory> list = q.getResultList();
         return list;
@@ -4196,7 +4233,7 @@ public class JPADAO implements IDAO {
     @Override
     public long getCountPagesUsingCategory(CMSCategory category) throws DAOException {
         preQuery();
-        Query q = em.createQuery("SELECT COUNT(o) FROM CMSPage o WHERE :category MEMBER OF o.categories");
+        Query q = getEntityManager().createQuery("SELECT COUNT(o) FROM CMSPage o WHERE :category MEMBER OF o.categories");
         q.setParameter("category", category);
 
         Object o = q.getResultList().get(0);
@@ -4215,7 +4252,7 @@ public class JPADAO implements IDAO {
     @Override
     public long getCountMediaItemsUsingCategory(CMSCategory category) throws DAOException {
         preQuery();
-        Query q = em.createQuery("SELECT COUNT(o) FROM CMSMediaItem o WHERE :category MEMBER OF o.categories");
+        Query q = getEntityManager().createQuery("SELECT COUNT(o) FROM CMSMediaItem o WHERE :category MEMBER OF o.categories");
         q.setParameter("category", category);
 
         Object o = q.getResultList().get(0);
@@ -4291,7 +4328,7 @@ public class JPADAO implements IDAO {
     @Override
     public CMSCategory getCategoryByName(String name) throws DAOException {
         preQuery();
-        Query q = em.createQuery("SELECT c FROM CMSCategory c WHERE c.name = :name");
+        Query q = getEntityManager().createQuery("SELECT c FROM CMSCategory c WHERE c.name = :name");
         q.setParameter("name", name);
         q.setFlushMode(FlushModeType.COMMIT);
         // q.setHint("javax.persistence.cache.storeMode", "REFRESH");
@@ -4307,7 +4344,7 @@ public class JPADAO implements IDAO {
     @Override
     public CMSCategory getCategory(Long id) throws DAOException {
         preQuery();
-        Query q = em.createQuery("SELECT c FROM CMSCategory c WHERE c.id = :id");
+        Query q = getEntityManager().createQuery("SELECT c FROM CMSCategory c WHERE c.id = :id");
         q.setParameter("id", id);
         q.setFlushMode(FlushModeType.COMMIT);
         // q.setHint("javax.persistence.cache.storeMode", "REFRESH");
@@ -4322,9 +4359,9 @@ public class JPADAO implements IDAO {
      */
     @Override
     public boolean tableExists(String tableName) throws SQLException {
-        EntityTransaction transaction = em.getTransaction();
+        EntityTransaction transaction = getEntityManager().getTransaction();
         transaction.begin();
-        Connection connection = em.unwrap(Connection.class);
+        Connection connection = getEntityManager().unwrap(Connection.class);
         DatabaseMetaData metaData = connection.getMetaData();
         try (ResultSet tables = metaData.getTables(null, null, tableName, null)) {
             return tables.next();
@@ -4340,9 +4377,9 @@ public class JPADAO implements IDAO {
      */
     @Override
     public boolean columnsExists(String tableName, String columnName) throws SQLException {
-        EntityTransaction transaction = em.getTransaction();
+        EntityTransaction transaction = getEntityManager().getTransaction();
         transaction.begin();
-        Connection connection = em.unwrap(Connection.class);
+        Connection connection = getEntityManager().unwrap(Connection.class);
         DatabaseMetaData metaData = connection.getMetaData();
         try (ResultSet columns = metaData.getColumns(null, null, tableName, columnName)) {
             return columns.next();
@@ -4355,7 +4392,7 @@ public class JPADAO implements IDAO {
     @Override
     public PersistentAnnotation getAnnotation(Long id) throws DAOException {
         preQuery();
-        Query q = em.createQuery("SELECT a FROM PersistentAnnotation a WHERE a.id = :id");
+        Query q = getEntityManager().createQuery("SELECT a FROM PersistentAnnotation a WHERE a.id = :id");
         q.setParameter("id", id);
         q.setFlushMode(FlushModeType.COMMIT);
         // q.setHint("javax.persistence.cache.storeMode", "REFRESH");
@@ -4377,7 +4414,7 @@ public class JPADAO implements IDAO {
             query = query.substring(0, query.length() - 2); //remove trailing "OR"
             query += " )";
         }
-        Query q = em.createQuery(query);
+        Query q = getEntityManager().createQuery(query);
         for (Question question : campaign.getQuestions()) {
             q.setParameter("questionId_" + question.getId(), question.getId());
         }
@@ -4397,7 +4434,7 @@ public class JPADAO implements IDAO {
     public List<PersistentAnnotation> getAnnotationsForWork(String pi) throws DAOException {
         preQuery();
         String query = "SELECT a FROM PersistentAnnotation a WHERE a.targetPI = :pi";
-        Query q = em.createQuery(query);
+        Query q = getEntityManager().createQuery(query);
         q.setParameter("pi", pi);
 
         // q.setHint("javax.persistence.cache.storeMode", "REFRESH");
@@ -4409,7 +4446,7 @@ public class JPADAO implements IDAO {
     public long getAnnotationCountForWork(String pi) throws DAOException {
         preQuery();
         String query = "SELECT COUNT(a) FROM PersistentAnnotation a WHERE a.targetPI = :pi";
-        Query q = em.createQuery(query);
+        Query q = getEntityManager().createQuery(query);
         q.setParameter("pi", pi);
 
         Object o = q.getResultList().get(0);
@@ -4432,7 +4469,7 @@ public class JPADAO implements IDAO {
         } else {
             query += " AND a.targetPageOrder IS NULL";
         }
-        Query q = em.createQuery(query);
+        Query q = getEntityManager().createQuery(query);
         q.setParameter("pi", pi);
         if (page != null) {
             q.setParameter("page", page);
@@ -4452,7 +4489,7 @@ public class JPADAO implements IDAO {
         } else {
             query += " AND a.targetPageOrder IS NULL";
         }
-        Query q = em.createQuery(query);
+        Query q = getEntityManager().createQuery(query);
         q.setParameter("pi", pi);
         if (page != null) {
             q.setParameter("page", page);
@@ -4481,7 +4518,7 @@ public class JPADAO implements IDAO {
             query = query.substring(0, query.length() - 2); //remove trailing "OR"
             query += " )";
         }
-        Query q = em.createQuery(query);
+        Query q = getEntityManager().createQuery(query);
         for (Question question : campaign.getQuestions()) {
             q.setParameter("questionId_" + question.getId(), question.getId());
         }
@@ -4510,7 +4547,7 @@ public class JPADAO implements IDAO {
             query = query.substring(0, query.length() - 2); //remove trailing "OR"
             query += " )";
         }
-        Query q = em.createQuery(query);
+        Query q = getEntityManager().createQuery(query);
         for (Question question : campaign.getQuestions()) {
             q.setParameter("questionId_" + question.getId(), question.getId());
         }
@@ -4537,7 +4574,7 @@ public class JPADAO implements IDAO {
         preQuery();
         String query = "SELECT a FROM PersistentAnnotation a WHERE a.creatorId = :userId OR a.reviewerId = :userId";
 
-        return em.createQuery(query).setParameter("userId", userId).getResultList();
+        return getEntityManager().createQuery(query).setParameter("userId", userId).getResultList();
     }
 
     /**
@@ -4566,7 +4603,7 @@ public class JPADAO implements IDAO {
                 sbQuery.append(filterString).append(order);
 
                 logger.trace(sbQuery.toString());
-                Query q = em.createQuery(sbQuery.toString());
+                Query q = getEntityManager().createQuery(sbQuery.toString());
                 params.entrySet().forEach(entry -> q.setParameter(entry.getKey(), entry.getValue()));
                 //            q.setParameter("lang", BeanUtils.getLocale().getLanguage());
                 q.setFirstResult(first);
@@ -4587,7 +4624,7 @@ public class JPADAO implements IDAO {
         preQuery();
         StringBuilder sbQuery = new StringBuilder("SELECT count(a) FROM PersistentAnnotation a");
         Map<String, Object> params = new HashMap<>();
-        Query q = em.createQuery(sbQuery.append(createAnnotationsFilterQuery(null, filters, params)).toString());
+        Query q = getEntityManager().createQuery(sbQuery.append(createAnnotationsFilterQuery(null, filters, params)).toString());
         params.entrySet().forEach(entry -> q.setParameter(entry.getKey(), entry.getValue()));
 
         return (long) q.getSingleResult();
@@ -4662,9 +4699,9 @@ public class JPADAO implements IDAO {
         }
         preQuery();
         try {
-            GeoMap o = em.find(GeoMap.class, mapId);
+            GeoMap o = getEntityManager().find(GeoMap.class, mapId);
             if (o != null) {
-                em.refresh(o);
+                getEntityManager().refresh(o);
             }
             return o;
         } catch (EntityNotFoundException e) {
@@ -4679,7 +4716,7 @@ public class JPADAO implements IDAO {
     @Override
     public List<GeoMap> getAllGeoMaps() throws DAOException {
         preQuery();
-        Query q = em.createQuery("SELECT u FROM GeoMap u");
+        Query q = getEntityManager().createQuery("SELECT u FROM GeoMap u");
         q.setFlushMode(FlushModeType.COMMIT);
         List<GeoMap> list = q.getResultList();
         list.forEach(map -> {
@@ -4723,9 +4760,9 @@ public class JPADAO implements IDAO {
             em.merge(map);
             em.getTransaction().commit();
             //Update the map in the persistent entity manager, removing the feature cache string
-            GeoMap o = this.em.getReference(GeoMap.class, map.getId());
+            GeoMap o = this.getEntityManager().getReference(GeoMap.class, map.getId());
             o.updateFeatures();
-            this.em.refresh(o);
+            this.getEntityManager().refresh(o);
             return true;
         } catch (IllegalArgumentException e) {
             return false;
@@ -4765,12 +4802,12 @@ public class JPADAO implements IDAO {
     public List<CMSPage> getPagesUsingMap(GeoMap map) throws DAOException {
         preQuery();
 
-        Query qItems = em.createQuery(
+        Query qItems = getEntityManager().createQuery(
                 "SELECT item FROM CMSContentItem item WHERE item.geoMap = :map");
         qItems.setParameter("map", map);
         List<CMSContentItem> itemList = qItems.getResultList();
 
-        Query qWidgets = em.createQuery(
+        Query qWidgets = getEntityManager().createQuery(
                 "SELECT ele FROM CMSSidebarElement ele WHERE ele.geoMapId = :mapId");
         qWidgets.setParameter("mapId", map.getId());
         List<CMSSidebarElement> widgetList = qWidgets.getResultList();
@@ -4805,8 +4842,8 @@ public class JPADAO implements IDAO {
             }
             em.getTransaction().commit();
 
-            tou = this.em.getReference(TermsOfUse.class, tou.getId());
-            this.em.refresh(tou);
+            tou = this.getEntityManager().getReference(TermsOfUse.class, tou.getId());
+            this.getEntityManager().refresh(tou);
         } finally {
             em.close();
         }
@@ -4819,15 +4856,16 @@ public class JPADAO implements IDAO {
     @Override
     public TermsOfUse getTermsOfUse() throws DAOException {
         preQuery();
-        Query q = em.createQuery("SELECT u FROM TermsOfUse u");
+        Query q = getEntityManager().createQuery("SELECT u FROM TermsOfUse u");
         //         q.setHint("javax.persistence.cache.storeMode", "REFRESH");
 
-        List results = q.getResultList();
+        @SuppressWarnings("unchecked")
+        List<TermsOfUse> results = q.getResultList();
         if (results.isEmpty()) {
             //No results. Just return a new object which may be saved later
             return new TermsOfUse();
         }
-        return (TermsOfUse) results.get(0);
+        return results.get(0);
     }
 
     /* (non-Javadoc)
@@ -4836,13 +4874,14 @@ public class JPADAO implements IDAO {
     @Override
     public boolean isTermsOfUseActive() throws DAOException {
         preQuery();
-        Query q = em.createQuery("SELECT u.active FROM TermsOfUse u");
-        List results = q.getResultList();
+        Query q = getEntityManager().createQuery("SELECT u.active FROM TermsOfUse u");
+        @SuppressWarnings("unchecked")
+        List<Boolean> results = q.getResultList();
         if (results.isEmpty()) {
             //If no terms of use object exists, it is inactive
             return false;
         }
-        return (boolean) results.get(0);
+        return results.get(0);
     }
 
     /* (non-Javadoc)
@@ -4865,56 +4904,38 @@ public class JPADAO implements IDAO {
     /* (non-Javadoc)
      * @see io.goobi.viewer.dao.IDAO#getRecordNotes(int, int, java.lang.String, boolean, java.util.Map)
      */
+    @SuppressWarnings("unchecked")
     @Override
     public List<CMSRecordNote> getRecordNotes(int first, int pageSize, String sortField, boolean descending, Map<String, String> filters)
             throws DAOException {
-            preQuery();
-            StringBuilder sbQuery = new StringBuilder("SELECT DISTINCT a FROM CMSRecordNote a");
-            StringBuilder order = new StringBuilder();
-            try {
-                Map<String, Object> params = new HashMap<>();
-                if(filters != null) {
-                   String filterValue = filters.values().stream().findAny().orElse(null);
-                   if(StringUtils.isNotBlank(filterValue)) {
-                       String filterString = " WHERE (UPPER(a.recordPi) LIKE :filter OR UPPER(a.recordTitle) LIKE :filter OR UPPER(a.noteTitle) LIKE :filter)";
-                       params.put("filter", sanitizeQueryParam(filterValue, true));
-                       sbQuery.append(filterString);
-                   }
-                }
-                if (StringUtils.isNotEmpty(sortField)) {
-                    order.append(" ORDER BY a.").append(sortField);
-                    if (descending) {
-                        order.append(" DESC");
-                    }
-                }
-                sbQuery.append(order);
-
-                logger.trace(sbQuery.toString());
-                Query q = em.createQuery(sbQuery.toString());
-                params.entrySet().forEach(entry -> q.setParameter(entry.getKey(), entry.getValue()));
-                //            q.setParameter("lang", BeanUtils.getLocale().getLanguage());
-                q.setFirstResult(first);
-                q.setMaxResults(pageSize);
-                q.setFlushMode(FlushModeType.COMMIT);
-                // q.setHint("javax.persistence.cache.storeMode", "REFRESH");
-                return q.getResultList();
-            } catch (PersistenceException e) {
-                logger.error("Exception \"" + e.toString() + "\" when trying to get CMSRecordNotes. Returning empty list");
-                return Collections.emptyList();
-            }
-    }
-
-
-    /* (non-Javadoc)
-     * @see io.goobi.viewer.dao.IDAO#getAllRecordNotes()
-     */
-    @Override
-    public List<CMSRecordNote> getAllRecordNotes() throws DAOException {
         preQuery();
         StringBuilder sbQuery = new StringBuilder("SELECT DISTINCT a FROM CMSRecordNote a");
+        StringBuilder order = new StringBuilder();
         try {
+            Map<String, Object> params = new HashMap<>();
+            if (filters != null) {
+                String filterValue = filters.values().stream().findAny().orElse(null);
+                if (StringUtils.isNotBlank(filterValue)) {
+                    String filterString =
+                            " WHERE (UPPER(a.recordPi) LIKE :filter OR UPPER(a.recordTitle) LIKE :filter OR UPPER(a.noteTitle) LIKE :filter)";
+                    params.put("filter", sanitizeQueryParam(filterValue, true));
+                    sbQuery.append(filterString);
+                }
+            }
+            if (StringUtils.isNotEmpty(sortField)) {
+                order.append(" ORDER BY a.").append(sortField);
+                if (descending) {
+                    order.append(" DESC");
+                }
+            }
+            sbQuery.append(order);
+
             logger.trace(sbQuery.toString());
-            Query q = em.createQuery(sbQuery.toString());
+            Query q = getEntityManager().createQuery(sbQuery.toString());
+            params.entrySet().forEach(entry -> q.setParameter(entry.getKey(), entry.getValue()));
+            //            q.setParameter("lang", BeanUtils.getLocale().getLanguage());
+            q.setFirstResult(first);
+            q.setMaxResults(pageSize);
             q.setFlushMode(FlushModeType.COMMIT);
             // q.setHint("javax.persistence.cache.storeMode", "REFRESH");
             return q.getResultList();
@@ -4923,22 +4944,42 @@ public class JPADAO implements IDAO {
             return Collections.emptyList();
         }
     }
-    
+
+    /* (non-Javadoc)
+     * @see io.goobi.viewer.dao.IDAO#getAllRecordNotes()
+     */
+    @SuppressWarnings("unchecked")
+    @Override
+    public List<CMSRecordNote> getAllRecordNotes() throws DAOException {
+        preQuery();
+        StringBuilder sbQuery = new StringBuilder("SELECT DISTINCT a FROM CMSRecordNote a");
+        try {
+            logger.trace(sbQuery.toString());
+            Query q = getEntityManager().createQuery(sbQuery.toString());
+            q.setFlushMode(FlushModeType.COMMIT);
+            // q.setHint("javax.persistence.cache.storeMode", "REFRESH");
+            return q.getResultList();
+        } catch (PersistenceException e) {
+            logger.error("Exception \"" + e.toString() + "\" when trying to get CMSRecordNotes. Returning empty list");
+            return Collections.emptyList();
+        }
+    }
 
     /* (non-Javadoc)
      * @see io.goobi.viewer.dao.IDAO#getRecordNotesForPi(java.lang.String)
      */
+    @SuppressWarnings("unchecked")
     @Override
     public List<CMSRecordNote> getRecordNotesForPi(String pi, boolean displayedNotesOnly) throws DAOException {
         preQuery();
         String query = "SELECT a FROM CMSRecordNote a WHERE a.recordPi = :pi";
-        if(displayedNotesOnly) {
+        if (displayedNotesOnly) {
             query += " AND a.displayNote = :display";
         }
         logger.trace(query);
-        Query q = em.createQuery(query.toString());
+        Query q = getEntityManager().createQuery(query.toString());
         q.setParameter("pi", pi);
-        if(displayedNotesOnly) {            
+        if (displayedNotesOnly) {
             q.setParameter("display", true);
         }
         q.setFlushMode(FlushModeType.COMMIT);
@@ -4952,9 +4993,9 @@ public class JPADAO implements IDAO {
     public CMSRecordNote getRecordNote(Long id) throws DAOException {
         preQuery();
         try {
-            CMSRecordNote o = em.getReference(CMSRecordNote.class, id);
-            if(o != null) {
-                em.refresh(o);
+            CMSRecordNote o = getEntityManager().getReference(CMSRecordNote.class, id);
+            if (o != null) {
+                getEntityManager().refresh(o);
             }
             return new CMSRecordNote(o);
         } catch (EntityNotFoundException e) {
@@ -4969,9 +5010,9 @@ public class JPADAO implements IDAO {
     public boolean addRecordNote(CMSRecordNote note) throws DAOException {
         preQuery();
         try {
-            em.getTransaction().begin();
-            em.persist(note);
-            em.getTransaction().commit();
+            getEntityManager().getTransaction().begin();
+            getEntityManager().persist(note);
+            getEntityManager().getTransaction().commit();
             return true;
         } catch (IllegalArgumentException e) {
             return false;
@@ -4985,9 +5026,9 @@ public class JPADAO implements IDAO {
     public boolean updateRecordNote(CMSRecordNote note) throws DAOException {
         preQuery();
         try {
-            em.getTransaction().begin();
-            em.merge(note);
-            em.getTransaction().commit();
+            getEntityManager().getTransaction().begin();
+            getEntityManager().merge(note);
+            getEntityManager().getTransaction().commit();
             return true;
         } catch (IllegalArgumentException e) {
             return false;
@@ -5012,6 +5053,118 @@ public class JPADAO implements IDAO {
         } finally {
             em.close();
         }
+    }
+
+    /* (non-Javadoc)
+     * @see io.goobi.viewer.dao.IDAO#getAllSliders()
+     */
+    @SuppressWarnings("unchecked")
+    @Override
+    public List<CMSSlider> getAllSliders() throws DAOException {
+        preQuery();
+        StringBuilder sbQuery = new StringBuilder("SELECT DISTINCT a FROM CMSSlider a");
+        try {
+            logger.trace(sbQuery.toString());
+            Query q = getEntityManager().createQuery(sbQuery.toString());
+            q.setFlushMode(FlushModeType.COMMIT);
+            return q.getResultList();
+        } catch (PersistenceException e) {
+            logger.error("Exception \"" + e.toString() + "\" when trying to get CMSSliders. Returning empty list");
+            return Collections.emptyList();
+        }
+    }
+
+    /* (non-Javadoc)
+     * @see io.goobi.viewer.dao.IDAO#getSlider(java.lang.Long)
+     */
+    @Override
+    public CMSSlider getSlider(Long id) throws DAOException {
+        if (id == null) {
+            return null;
+        }
+        preQuery();
+        try {
+            CMSSlider o = getEntityManager().getReference(CMSSlider.class, id);
+            if (o != null) {
+                getEntityManager().refresh(o);
+            }
+            return new CMSSlider(o);
+        } catch (EntityNotFoundException e) {
+            return null;
+        }
+    }
+
+    /* (non-Javadoc)
+     * @see io.goobi.viewer.dao.IDAO#addSlider(io.goobi.viewer.model.cms.CMSSlider)
+     */
+    @Override
+    public boolean addSlider(CMSSlider slider) throws DAOException {
+        preQuery();
+        try {
+            getEntityManager().getTransaction().begin();
+            getEntityManager().persist(slider);
+            getEntityManager().getTransaction().commit();
+            return true;
+        } catch (IllegalArgumentException e) {
+            return false;
+        }
+    }
+
+    /* (non-Javadoc)
+     * @see io.goobi.viewer.dao.IDAO#updateSlider(io.goobi.viewer.model.cms.CMSSlider)
+     */
+    @Override
+    public boolean updateSlider(CMSSlider slider) throws DAOException {
+        preQuery();
+        try {
+            getEntityManager().getTransaction().begin();
+            getEntityManager().merge(slider);
+            getEntityManager().getTransaction().commit();
+            return true;
+        } catch (IllegalArgumentException e) {
+            return false;
+        }
+    }
+
+    /* (non-Javadoc)
+     * @see io.goobi.viewer.dao.IDAO#deleteSlider(io.goobi.viewer.model.cms.CMSSlider)
+     */
+    @Override
+    public boolean deleteSlider(CMSSlider slider) throws DAOException {
+        preQuery();
+        try {
+            getEntityManager().getTransaction().begin();
+            CMSSlider o = getEntityManager().getReference(CMSSlider.class, slider.getId());
+            getEntityManager().remove(o);
+            getEntityManager().getTransaction().commit();
+            return true;
+        } catch (IllegalArgumentException e) {
+            return false;
+        } finally {
+            getEntityManager().close();
+        }
+    }
+
+    /* (non-Javadoc)
+     * @see io.goobi.viewer.dao.IDAO#getPagesUsingSlider(io.goobi.viewer.model.cms.CMSSlider)
+     */
+    @SuppressWarnings("unchecked")
+    @Override
+    public List<CMSPage> getPagesUsingSlider(CMSSlider slider) throws DAOException {
+        preQuery();
+
+        Query qItems = getEntityManager().createQuery(
+                "SELECT item FROM CMSContentItem item WHERE item.slider = :slider");
+        qItems.setParameter("slider", slider);
+        List<CMSContentItem> itemList = qItems.getResultList();
+
+        List<CMSPage> pageList = itemList.stream()
+                .map(CMSContentItem::getOwnerPageLanguageVersion)
+                .map(CMSPageLanguageVersion::getOwnerPage)
+                .distinct()
+                .collect(Collectors.toList());
+
+        return pageList;
     }
 
 }

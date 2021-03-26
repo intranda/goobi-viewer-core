@@ -484,27 +484,53 @@
 		<pattern value="/metadata/#{pi:activeDocumentBean.persistentIdentifier}/" />
 		<view-id value="/viewMetadata.xhtml" />
 		<action onPostback="false">#{activeDocumentBean.open}</action>
+		<action onPostback="false">#{metadataBean.setMetadataViewUrl(null)}</action>
 	</url-mapping>
+    <url-mapping id="metadata1url">
+        <pattern value="/metadata#{metadataBean.metadataViewUrl}/#{pi:activeDocumentBean.persistentIdentifier}/" />
+        <view-id value="/viewMetadata.xhtml" />
+        <action onPostback="false">#{activeDocumentBean.open}</action>
+    </url-mapping>
 	<url-mapping id="metadata2">
 		<pattern value="/metadata/#{pi:activeDocumentBean.persistentIdentifier}/#{imageToShow:activeDocumentBean.imageToShow}/" />
 		<view-id value="/viewMetadata.xhtml" />
 		<action onPostback="false">#{activeDocumentBean.open}</action>
+		<action onPostback="false">#{metadataBean.setMetadataViewUrl(null)}</action>
 	</url-mapping>
+    <url-mapping id="metadata2url">
+        <pattern value="/metadata#{metadataBean.metadataViewUrl}/#{pi:activeDocumentBean.persistentIdentifier}/#{imageToShow:activeDocumentBean.imageToShow}/" />
+        <view-id value="/viewMetadata.xhtml" />
+        <action onPostback="false">#{activeDocumentBean.open}</action>
+    </url-mapping>
 	<url-mapping id="metadata3">
 		<pattern value="/metadata/#{pi:activeDocumentBean.persistentIdentifier}/#{imageToShow:activeDocumentBean.imageToShow}/#{logId:activeDocumentBean.logid}/" />
 		<view-id value="/viewMetadata.xhtml" />
 		<action onPostback="false">#{activeDocumentBean.open}</action>
+		<action onPostback="false">#{metadataBean.setMetadataViewUrl(null)}</action>
 	</url-mapping>
+    <url-mapping id="metadata3url">
+        <pattern value="/metadata#{metadataBean.metadataViewUrl}/#{pi:activeDocumentBean.persistentIdentifier}/#{imageToShow:activeDocumentBean.imageToShow}/#{logId:activeDocumentBean.logid}/" />
+        <view-id value="/viewMetadata.xhtml" />
+        <action onPostback="false">#{activeDocumentBean.open}</action>
+    </url-mapping>
 	<url-mapping id="metadata3active">
 		<pattern value="/!metadata/#{pi:activeDocumentBean.persistentIdentifier}/#{imageToShow:activeDocumentBean.imageToShow}/#{logId:activeDocumentBean.logid}/" />
 		<view-id value="/viewMetadata.xhtml" />
 		<action onPostback="false">#{navigationHelper.setPreferredView('metadata')}</action>
 		<action onPostback="false">#{activeDocumentBean.open}</action>
+		<action onPostback="false">#{metadataBean.setMetadataViewUrl(null)}</action>
 	</url-mapping>
+    <url-mapping id="metadata3activeurl">
+        <pattern value="/!metadata#{metadataBean.metadataViewUrl}/#{pi:activeDocumentBean.persistentIdentifier}/#{imageToShow:activeDocumentBean.imageToShow}/#{logId:activeDocumentBean.logid}/" />
+        <view-id value="/viewMetadata.xhtml" />
+        <action onPostback="false">#{navigationHelper.setPreferredView('metadata')}</action>
+        <action onPostback="false">#{activeDocumentBean.open}</action>
+    </url-mapping>
 	<url-mapping id="metadata4">
 		<pattern value="/metadata/#{action:activeDocumentBean.action}/#{pi:activeDocumentBean.persistentIdentifier}/#{imageToShow:activeDocumentBean.imageToShow}/#{logId:activeDocumentBean.logid}/" />
 		<view-id value="/viewMetadata.xhtml" />
 		<action onPostback="false">#{activeDocumentBean.open}</action>
+		<action onPostback="false">#{metadataBean.setMetadataViewUrl(null)}</action>
 	</url-mapping>
 
 	<!-- THUMBS -->
@@ -886,6 +912,23 @@
         <query-param name="from" onPostback="false" >#{cmsRecordNoteEditBean.returnUrl}</query-param>
         <action onPostback="false">#{navigationHelper.resetTheme}</action>
         <action onPostback="false">#{cmsRecordNoteEditBean.setNoteId(selectedNoteId)}</action>
+    </url-mapping>
+        <!-- CMS Sliders -->
+    <url-mapping id="adminCmsSliders">
+        <pattern value="/admin/cms/slider/" />
+        <view-id value="/resources/cms/adminCmsSliders.xhtml" />
+        <action onPostback="false">#{navigationHelper.resetTheme}</action>
+    </url-mapping>
+    <url-mapping id="adminCmsSliderNew">
+        <pattern value="/admin/cms/slider/new/" />
+        <view-id value="/resources/cms/adminCmsSliderEdit.xhtml" />
+        <action onPostback="false">#{navigationHelper.resetTheme}</action>
+    </url-mapping>
+    <url-mapping id="adminCmsSliderEdit">
+        <pattern value="/admin/cms/slider/edit/#{selectedSliderId}/" />
+        <view-id value="/resources/cms/adminCmsSliderEdit.xhtml" />
+        <action onPostback="false">#{navigationHelper.resetTheme}</action>
+        <action onPostback="false">#{cmsSliderEditBean.setSliderId(selectedSliderId)}</action>
     </url-mapping>
     <!-- CMS GeoMaps -->
     <url-mapping id="adminCmsGeoMaps">

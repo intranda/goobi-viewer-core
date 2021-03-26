@@ -89,6 +89,7 @@ public enum PageType {
     adminCmsGeoMapEdit("admin/cms/maps/edit"),
     adminCmsGeoMapNew("admin/cms/maps/new"),
     adminCmsRecordNotes("admin/cms/recordnotes", "cms__record_notes__title_plural"),
+    adminCmsSliders("admin/cms/slider", "cms__sliders__title"),
     cmsPageOfWork("page"),
     cmsPage("cms"),
     //admin/crowdsourcing
@@ -134,7 +135,7 @@ public enum PageType {
         this.label = name;
         this.handling = handling;
     }
-    
+
     private PageType(String path, String label) {
         this.path = path;
         this.label = label;
@@ -244,21 +245,27 @@ public enum PageType {
      * </p>
      *
      * @param name a {@link java.lang.String} object.
+     * @return a {@link io.goobi.viewer.model.viewer.PageType} object.
      * @should return correct type for raw names
      * @should return correct type for mapped names
      * @should return correct type for enum names
-     * @return a {@link io.goobi.viewer.model.viewer.PageType} object.
+     * @should return correct type if name starts with metadata
      */
     public static PageType getByName(String name) {
         if (name == null) {
             return null;
         }
         for (PageType p : PageType.values()) {
-            if (p.getName().equalsIgnoreCase(name) || p.path.equalsIgnoreCase(name) || p.label.equalsIgnoreCase(name) || p.name().equalsIgnoreCase(name)) {
+            if (p.getName().equalsIgnoreCase(name) || p.path.equalsIgnoreCase(name) || p.label.equalsIgnoreCase(name)
+                    || p.name().equalsIgnoreCase(name)) {
                 return p;
             }
         }
-        //look for configured names
+        // Set type viewMetadata is page name starts with "metadata"
+        if (name.startsWith(PageType.viewMetadata.getName())) {
+            return PageType.viewMetadata;
+        }
+        // look for configured names
         for (PageType p : PageType.values()) {
             String configName = DataManager.getInstance().getConfiguration().getPageType(p);
             if (configName != null && configName.equalsIgnoreCase(name)) {

@@ -55,66 +55,65 @@ public class CmsRecordNoteEditBean implements Serializable, IPolyglott {
     private static final long serialVersionUID = -8850189223154382470L;
 
     private static final Logger logger = LoggerFactory.getLogger(CmsRecordNotesBean.class);
-    
+
     private CMSRecordNote note = null;
     private Locale selectedLocale = BeanUtils.getLocale();
     private MetadataElement metadataElement = null;
     private String returnUrl = BeanUtils.getServletPathWithHostAsUrlFromJsfContext() + "/" + PageType.adminCmsRecordNotes.getName();
-    
+
     /**
      * @return the note
      */
     public CMSRecordNote getNote() {
         return note;
     }
-    
+
     /**
      * @param note the note to set
      */
     public void setNote(CMSRecordNote note) {
-        if(this.note == null || !this.note.equals(note)) {            
+        if (this.note == null || !this.note.equals(note)) {
             this.note = note;
             this.selectedLocale = setSelectedLocale(this.note, this.selectedLocale, BeanUtils.getDefaultLocale());
         }
     }
-    
+
     public void setNoteId(Long id) throws DAOException {
-        if(id != null) {
+        if (id != null) {
             setNote(DataManager.getInstance().getDao().getRecordNote(id));
         }
     }
-    
+
     public Long getNoteId() {
-        if(this.note != null) {
+        if (this.note != null) {
             return this.note.getId();
-        } else {
-            return null;
         }
+
+        return null;
     }
 
-    
     public void setRecordIdentifier(String pi) {
         setNote(new CMSRecordNote(pi));
     }
-    
+
     public String getRecordIdentifier() {
         return Optional.ofNullable(this.note).map(CMSRecordNote::getRecordPi).orElse("");
     }
-    
+
     /**
      * @return the returnUrl
      */
     public String getReturnUrl() {
         return returnUrl;
     }
-    
+
     /**
      * @param returnUrl the returnUrl to set
      */
     public void setReturnUrl(String returnUrl) {
         this.returnUrl = returnUrl;
     }
-    
+
     /**
      * 
      * @return true if {@link #note} is not null, because it always has a record identifier
@@ -122,25 +121,25 @@ public class CmsRecordNoteEditBean implements Serializable, IPolyglott {
     public boolean isRecordSelected() {
         return this.note != null;
     }
-    
+
     /**
      * Save the selected note to the database
      * 
      * @return false if saving was not successful
      */
     public boolean save() {
-        try {            
-            if(this.note != null && this.note.getId() != null) {
+        try {
+            if (this.note != null && this.note.getId() != null) {
                 boolean success = DataManager.getInstance().getDao().updateRecordNote(note);
-                if(success) {
+                if (success) {
                     Messages.info(null, "button__save__success", this.note.getNoteTitle().getText());
                 } else {
                     Messages.error("button__save__error");
                 }
                 return success;
-            } else if(this.note != null) {
+            } else if (this.note != null) {
                 boolean success = DataManager.getInstance().getDao().addRecordNote(note);
-                if(success) {
+                if (success) {
                     Messages.info(null, "button__save__success", this.note.getNoteTitle().getText());
                 } else {
                     Messages.error("button__save__error");
@@ -150,59 +149,58 @@ public class CmsRecordNoteEditBean implements Serializable, IPolyglott {
                 logger.warn("Attempting to save note, but no note is selected");
                 return false;
             }
-        } catch(DAOException e) {
+        } catch (DAOException e) {
             logger.error("Error saving RecordNote", e);
             Messages.error(null, "button__save__success", e.toString());
             return false;
         }
     }
 
-
     /**
      * 
-     * @return true if either no note has been created yet (record identifier not yet entered)
-     * or if the note has not been persisted yet.
+     * @return true if either no note has been created yet (record identifier not yet entered) or if the note has not been persisted yet.
      */
     public boolean isNewNote() {
         return this.note == null || this.note.getId() == null;
     }
-    
+
     public MetadataElement getMetadataElement() throws PresentationException, IndexUnreachableException, DAOException {
-        if(this.metadataElement == null && this.note != null) {
-            this.metadataElement = loadMetadataElement(this.note.getRecordPi());
+        if (this.metadataElement == null && this.note != null) {
+            this.metadataElement = loadMetadataElement(this.note.getRecordPi(), 0);
         }
         return this.metadataElement;
     }
-    
 
     /**
      * @param recordPi
+     * @param index Metadata view index
      * @return
-     * @throws DAOException 
-     * @throws IndexUnreachableException 
-     * @throws PresentationException 
+     * @throws DAOException
+     * @throws IndexUnreachableException
+     * @throws PresentationException
      */
-    private MetadataElement loadMetadataElement(String recordPi) throws PresentationException, IndexUnreachableException, DAOException {
-        if(StringUtils.isNotBlank(recordPi)) {
-            SolrDocument solrDoc = DataManager.getInstance().getSearchIndex().getDocumentByPI(recordPi);
-            if(solrDoc != null) {
-                if(this.note != null) {
-                    this.note.setRecordTitle(createRecordTitle(solrDoc));
-                }
-                StructElement structElement = new StructElement(solrDoc);
-                MetadataElement metadataElement = new MetadataElement(structElement, BeanUtils.getLocale(), getSelectedLocale().getLanguage());
-                return metadataElement;
-            }
+    private MetadataElement loadMetadataElement(String recordPi, int index) throws PresentationException, IndexUnreachableException, DAOException {
+        if (StringUtils.isBlank(recordPi)) {
+            return null;
         }
-        return null;
+
+        SolrDocument solrDoc = DataManager.getInstance().getSearchIndex().getDocumentByPI(recordPi);
+        if (solrDoc == null) {
+            return null;
+        }
+
+        if (this.note != null) {
+            this.note.setRecordTitle(createRecordTitle(solrDoc));
+        }
+        StructElement structElement = new StructElement(solrDoc);
+        return new MetadataElement().init(structElement, index, BeanUtils.getLocale()).setSelectedRecordLanguage(getSelectedLocale().getLanguage());
     }
-    
-    
+
     /**
      * @param note2
      * @param metadataElement2
      */
-    private TranslatedText createRecordTitle( SolrDocument solrDoc) {
+    private TranslatedText createRecordTitle(SolrDocument solrDoc) {
         IMetadataValue label = TocMaker.buildTocElementLabel(solrDoc);
         return createRecordTitle(label);
     }
@@ -212,14 +210,14 @@ public class CmsRecordNoteEditBean implements Serializable, IPolyglott {
      * @return
      */
     public TranslatedText createRecordTitle(IMetadataValue label) {
-        if(label instanceof MultiLanguageMetadataValue) {
-            MultiLanguageMetadataValue mLabel = (MultiLanguageMetadataValue)label;
+        if (label instanceof MultiLanguageMetadataValue) {
+            MultiLanguageMetadataValue mLabel = (MultiLanguageMetadataValue) label;
             TranslatedText labelAsText = new TranslatedText(mLabel);
             return labelAsText;
-        } else {
-            TranslatedText labelAsText = new TranslatedText(((SimpleMetadataValue)label).getValue().orElse(""));
-            return labelAsText;
         }
+
+        TranslatedText labelAsText = new TranslatedText(((SimpleMetadataValue) label).getValue().orElse(""));
+        return labelAsText;
     }
 
     /* (non-Javadoc)
@@ -239,7 +237,6 @@ public class CmsRecordNoteEditBean implements Serializable, IPolyglott {
     public boolean isValid(Locale locale) {
         return isComplete(locale);
     }
-    
 
     /* (non-Javadoc)
      * @see io.goobi.viewer.model.misc.IPolyglott#isEmpty(java.util.Locale)
@@ -267,29 +264,25 @@ public class CmsRecordNoteEditBean implements Serializable, IPolyglott {
     }
 
     /**
-     * Set all note texts to the given locale unless the note texts are not filled ("valid") 
-     * for the defaultLocale. In this case set them to the defaultLocale 
+     * Set all note texts to the given locale unless the note texts are not filled ("valid") for the defaultLocale. In this case set them to the
+     * defaultLocale
      * 
      * @param note2
      * @return the given locale if texts are valid for the default locale, otherwise the default locale
      */
-    private Locale setSelectedLocale(CMSRecordNote note, Locale locale, Locale defaultLocale) {
-        if(note != null && locale != null && defaultLocale != null) {
-            if(note.getNoteText().isValid(defaultLocale) && note.getNoteTitle().isValid(defaultLocale))  {
+    private static Locale setSelectedLocale(CMSRecordNote note, Locale locale, Locale defaultLocale) {
+        if (note != null && locale != null && defaultLocale != null) {
+            if (note.getNoteText().isValid(defaultLocale) && note.getNoteTitle().isValid(defaultLocale)) {
                 note.getNoteText().setSelectedLocale(locale);
                 note.getNoteTitle().setSelectedLocale(locale);
                 return locale;
-            } else {
-                note.getNoteText().setSelectedLocale(defaultLocale);
-                note.getNoteTitle().setSelectedLocale(defaultLocale);
-                return defaultLocale;
             }
-        } else {
-            return locale;
+            note.getNoteText().setSelectedLocale(defaultLocale);
+            note.getNoteTitle().setSelectedLocale(defaultLocale);
+            return defaultLocale;
         }
+
+        return locale;
     }
 
-
-    
-    
 }

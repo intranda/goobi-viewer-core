@@ -20,9 +20,6 @@ import static io.goobi.viewer.api.rest.v1.ApiUrls.TASKS_TASK;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
 import java.util.stream.Collectors;
 
 import javax.servlet.http.HttpServletRequest;
@@ -42,19 +39,16 @@ import de.unigoettingen.sub.commons.contentlib.exceptions.IllegalRequestExceptio
 import io.goobi.viewer.api.rest.filters.AdminLoggedInFilter;
 import io.goobi.viewer.api.rest.filters.AuthorizationFilter;
 import io.goobi.viewer.api.rest.model.tasks.Task;
+import io.goobi.viewer.api.rest.model.tasks.Task.TaskType;
 import io.goobi.viewer.api.rest.model.tasks.TaskManager;
 import io.goobi.viewer.api.rest.model.tasks.TaskParameter;
-import io.goobi.viewer.api.rest.model.tasks.Task.TaskType;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.exceptions.AccessDeniedException;
-import io.goobi.viewer.exceptions.AuthenticationException;
-import io.goobi.viewer.exceptions.PresentationException;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 
 /**
- * Create and monitor (possibly time consuming) {@link Task tasks} within the viewer. These tasks are 
- * managed by the {@link TaskManager}
+ * Create and monitor (possibly time consuming) {@link Task tasks} within the viewer. These tasks are managed by the {@link TaskManager}
  * 
  * @author florian
  *
@@ -73,45 +67,44 @@ public class TasksResource {
     @Produces({ MediaType.APPLICATION_JSON })
     @Operation(tags = { "tasks" }, summary = "Create a (possibly time consuming) task to execute in a limited thread pool. See javadoc for details")
     public Task addTask(TaskParameter desc) throws WebApplicationException {
-        if(desc.type == null) {
+        if (desc.type == null) {
             throw new WebApplicationException(new IllegalRequestException("Must provide job type"));
         }
-        if(isAuthorized(desc.type, Optional.empty(), request)) {
+        if (isAuthorized(desc.type, Optional.empty(), request)) {
             Task job = new Task(desc, TaskManager.createTask(desc.type));
             DataManager.getInstance().getRestApiJobManager().addTask(job);
             DataManager.getInstance().getRestApiJobManager().triggerTaskInThread(job.id, request);
             return job;
-        } else {
-            throw  new WebApplicationException(new AccessDeniedException("Not authorized to create this type of job"));
         }
+        
+        throw new WebApplicationException(new AccessDeniedException("Not authorized to create this type of job"));
     }
-    
+
     @GET
     @Path(TASKS_TASK)
     @Produces({ MediaType.APPLICATION_JSON })
-    @Operation(tags = { "tasks" }, summary = "Return the task with the given id, provided it is accessibly by the request (determined by session or access token)")
-    public Task getTask(
-            @Parameter(description="The id of the task")@PathParam("id")Long id) throws ContentNotFoundException {
+    @Operation(tags = { "tasks" },
+            summary = "Return the task with the given id, provided it is accessibly by the request (determined by session or access token)")
+    public Task getTask(@Parameter(description = "The id of the task") @PathParam("id") Long id) throws ContentNotFoundException {
         Task job = DataManager.getInstance().getRestApiJobManager().getTask(id);
-        if(job == null || !isAuthorized(job.type, job.sessionId, request)) {
+        if (job == null || !isAuthorized(job.type, job.sessionId, request)) {
             throw new ContentNotFoundException("No Job found with id " + id);
-        } else {
-            return job;
         }
+
+        return job;
     }
-    
+
     @GET
     @Produces({ MediaType.APPLICATION_JSON })
     @Operation(tags = { "tasks" }, summary = "Return a list of all tasks accessible to the request (determined by session or access token)")
-    public List<Task> getTasks() throws ContentNotFoundException {
-        return DataManager.getInstance().getRestApiJobManager().getTasks().stream()
-        .filter(job -> this.isAuthorized(job.type, job.sessionId, request))
-        .collect(Collectors.toList());
+    public List<Task> getTasks() {
+        return DataManager.getInstance()
+                .getRestApiJobManager()
+                .getTasks()
+                .stream()
+                .filter(job -> this.isAuthorized(job.type, job.sessionId, request))
+                .collect(Collectors.toList());
     }
-
-    
-
-    
 
     public boolean isAuthorized(TaskType type, Optional<String> jobSessionId, HttpServletRequest request) {
         Task.Accessibility access = Task.getAccessibility(type);
@@ -124,11 +117,10 @@ public class TasksResource {
                 return AdminLoggedInFilter.isAdminLoggedIn(request);
             case SESSION:
                 String sessionId = request.getSession().getId();
-                if(sessionId != null) {
+                if (sessionId != null) {
                     return jobSessionId.map(id -> id.equals(sessionId)).orElse(false);
-                } else {
-                    return false;
                 }
+                return false;
             default:
                 return false;
         }

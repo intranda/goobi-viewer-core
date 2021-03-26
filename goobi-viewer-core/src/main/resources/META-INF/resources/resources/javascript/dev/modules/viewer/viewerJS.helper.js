@@ -488,6 +488,13 @@ var viewerJS = ( function( viewer ) {
         return p.reduce(reducer , o);
     };
     
+    /**
+     * Check if a variable is a string
+     */
+    viewer.isString = function(variable) {
+        return typeof variable === 'string' || variable instanceof String
+    }
+    
     if(!Array.prototype.includes) {
         Array.prototype.includes = function(element) {
             for ( var int = 0; int < this.length; int++ ) {
@@ -519,7 +526,7 @@ var viewerJS = ( function( viewer ) {
     viewer.unique = (value, index, self) => {
         return self.indexOf(value) === index;
     }
-    
+
 
 
     

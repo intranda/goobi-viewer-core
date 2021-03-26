@@ -357,10 +357,9 @@ button {
 	}
 }
 
-// bugfix for tinymce dropdown link behaviour
-.tox-tiered-menu {
-     position: fixed !important;
-     z-index: 1111 !important;
+// prevent tinymce dropdowns from overlapping backend components
+.tox.tox-tinymce-aux {
+	z-index: 1250;
 }
 
 /* add a focus ring for better accessibility */

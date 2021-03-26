@@ -79,6 +79,7 @@
 
         <!-- PAGINATOR -->
         <viewerComponent:simplePaginator 
+        	classSuffix="-top"
             itemCount="#{search.lastPage}" 
             itemActive="#{search.currentPage}" 
             urlPrefix="#{search.currentSearchUrlRoot}/-/#{search.exactSearchString}/"
@@ -144,6 +145,7 @@
 
         <!-- PAGINATOR -->
         <viewerComponent:simplePaginator 
+        	classSuffix="-bottom"
             itemCount="#{search.lastPage}" 
             itemActive="#{search.currentPage}" 
             urlPrefix="#{search.currentSearchUrlRoot}/-/#{search.exactSearchString}/"

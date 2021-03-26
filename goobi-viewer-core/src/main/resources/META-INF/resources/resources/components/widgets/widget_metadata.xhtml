@@ -11,7 +11,7 @@
 	<composite:interface />
 
 	<composite:implementation>
-		<h:panelGroup rendered="#{metadataBean.bottomMetadataElement.hasSidebarMetadata  and not (activeDocumentBean.anchor or activeDocumentBean.group)}">
+		<h:panelGroup rendered="#{metadataBean.getBottomMetadataElement(0).hasSidebarMetadata and not (activeDocumentBean.anchor or activeDocumentBean.group)}">
 
 				<ui:fragment rendered="#{!activeDocumentBean.viewManager.topDocument.lidoRecord}">
 				<div id="widgetMetadata" class="widget">
@@ -24,7 +24,7 @@
 							</dd>
 						</h:panelGroup>
 	
-						<ui:repeat value="#{metadataBean.bottomMetadataElement.sidebarMetadataList}" var="metadata">
+						<ui:repeat value="#{metadataBean.getBottomMetadataElement(0).sidebarMetadataList}" var="metadata">
 							<dt title="#{msg[metadata.label]}">
 								<h:outputText value="#{msg[metadata.label]}:" escape="false" />
 							</dt>
@@ -98,7 +98,7 @@
                         <h:panelGroup rendered="#{fn:length(metadataElement.metadataList) > 0}">
                             <ui:repeat value="#{metadataElement.metadataTypes}" var="type">
                                 <ui:fragment rendered="#{metadataElement.hasMetadata()}">
-	                                <h3>#{msg[type.tabName]}</h3>
+	                                <h3>#{msg[type.getTabName(metadataBean.activeMetadataView.index)]}</h3>
 	                             </ui:fragment>
 	                        </ui:repeat>  
 	                         

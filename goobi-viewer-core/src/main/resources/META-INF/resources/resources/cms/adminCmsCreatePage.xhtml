@@ -239,6 +239,11 @@
                                                                     <ui:include src="/resources/cms/includes/contentTypes/cms_createPageContentTypeGeoMap.xhtml" />
                                                                 </ui:fragment>
                                                                 
+                                                                <!-- CONTENT TYPE SLIDER -->
+                                                                <ui:fragment rendered="#{contentItem.type == 'SLIDER'}">
+                                                                    <ui:include src="/resources/cms/includes/contentTypes/cms_createPageContentTypeSlider.xhtml" />
+                                                                </ui:fragment>
+                                                                
                                                             </ui:repeat>
 
                                                             <!-- CONTENT TYPE LOCALE -->

@@ -17,6 +17,7 @@ package io.goobi.viewer.model.security.user;
 
 import java.util.List;
 
+import org.jboss.weld.exceptions.IllegalArgumentException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -225,5 +226,21 @@ public class UserTools {
         }
 
         return user;
+    }
+
+    /**
+     * 
+     * @param nickname
+     * @param userId
+     * @return
+     * @throws DAOException 
+     */
+    public static boolean isNicknameInUse(String nickname, Long userId) throws DAOException {
+        if (nickname == null) {
+            throw new IllegalArgumentException("nickname may not be null");
+        }
+        
+        User nicknameOwner = DataManager.getInstance().getDao().getUserByNickname(nickname); // This basically resets all changes
+        return nicknameOwner != null && nicknameOwner.getId() != null && !nicknameOwner.getId().equals(userId);
     }
 }

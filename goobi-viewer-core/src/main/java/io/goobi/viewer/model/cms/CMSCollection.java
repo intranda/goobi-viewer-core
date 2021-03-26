@@ -590,7 +590,7 @@ public class CMSCollection implements Comparable<CMSCollection>, BrowseElementIn
                 .filter(l -> StringUtils.isNotBlank(l.getValue()))
                 .collect(Collectors.toMap(l -> l.getLanguage(), l -> l.getValue()));
         if (labels.isEmpty()) {
-            return ViewerResourceBundle.getTranslations(getSolrField());
+            return ViewerResourceBundle.getTranslations(getSolrFieldValue());
         } else {
             IMetadataValue value = new MultiLanguageMetadataValue(labels);
             return value;
@@ -632,5 +632,6 @@ public class CMSCollection implements Comparable<CMSCollection>, BrowseElementIn
             return null;
         }
     }
+    
 
 }

@@ -1,0 +1,38 @@
+<ui:composition
+    xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+    xmlns:composite="http://xmlns.jcp.org/jsf/composite"
+    xmlns:c="http://java.sun.com/jsp/jstl/core"
+    xmlns:f="http://xmlns.jcp.org/jsf/core"
+    xmlns:h="http://xmlns.jcp.org/jsf/html">
+
+    <composite:interface>
+        <composite:attribute
+            name="slider"
+            required="true"
+            type="io.goobi.viewer.model.cms.CMSSlider" />
+            <composite:attribute
+            name="sourceElement"
+            required="false"
+            default=""/>
+            <composite:attribute
+            name="linkTarget"
+            required="false"
+            default="_self"/>
+    </composite:interface>
+
+
+
+    <composite:implementation>
+    
+        <ui:fragment rendered="#{cc.attrs.slider != null}">
+                <slider 
+                	source="#{request.contextPath}/api/v1/cms/slider/#{cc.attrs.slider.id}/slides/" 
+                	style="#{cc.attrs.slider.style}"
+                	sourceelement="#{cc.attrs.sourceElement}"   
+                	linkTarget="#{cc.attrs.linkTarget}"             	
+                	></slider>
+        </ui:fragment>
+
+    </composite:implementation>
+</ui:composition>

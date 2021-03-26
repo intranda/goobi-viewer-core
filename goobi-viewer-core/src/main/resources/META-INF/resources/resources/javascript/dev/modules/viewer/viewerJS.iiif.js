@@ -220,6 +220,23 @@ var viewerJS = ( function( viewer ) {
                 }
             },
             
+            /**
+            * @return the first found element in the "rendering" attribute with format='text/html'. Returns 'undefined' 
+            * if no such element was found
+            */
+            getViewerPage(presentationElement) {
+            	if(!presentationElement.rendering) {
+            		return undefined;
+            	} else if(Array.isArray(presentationElement.rendering)) {
+            		return presentationElement.rendering
+    					.filter(rendering => rendering.format == "text/html")
+    					.shift();
+    			} else if(presentationElement.rendering.format == "text/html"){
+    				return presentationElement.rendering;
+    			} else {
+    				return undefined;
+    			}
+            },
             
             /**
              * @return the object in the service property which @context ends in <name>.context.json, if any
@@ -234,7 +251,32 @@ var viewerJS = ( function( viewer ) {
                 } else {
                     return service;
                 }
-            }
+            },
+            
+            isCollection(element) {
+		    	return (element.type == "Collection" || element["@type"] == "sc:Collection") && element.viewingHint != "multi-part";
+		    },
+		    
+		    isSingleManifest(element) {
+		    	return (element.type == "Manifest" || element["@type"] == "sc:Manifest") ;
+		    },
+		    
+		    isManifest(element) {
+		    	return element.type == "Manifest" || 
+		    	element["@type"] == "sc:Manifest" || 
+		    	(element.type == "Collection" && element.viewingHint == "multi-part") ||
+		    	(element["@type"] == "sc:Collection" && element.viewingHint == "multi-part");
+		    },
+		    
+		    getId(element) {
+			    if(element == undefined) {
+			    	return undefined;
+			    } else if(element.id) {
+		    		return element.id;
+		    	} else {
+		    		return element["@id"];	
+		    	}
+		    },
     }
 
     

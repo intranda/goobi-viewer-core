@@ -9,11 +9,14 @@
 	xmlns:viewer="http://xmlns.jcp.org/jsf/composite/components/partner"
 	xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components"
 	xmlns:widgetComponent="http://xmlns.jcp.org/jsf/composite/components/widgets">
+	
+	    <ui:fragment rendered="#{!metadataElement.skip}">
             <ui:repeat var="type" value="#{metadataElement.metadataTypes}">
                 <!-- METADATA ELEMENT -->
                 <div class="metadata__elements level-#{status.index}">
                     <h3 class="metadata__elements-h3">
-                        <h:outputText rendered="#{fn:length(metadataElement.metadataTypes) > 0}" value="#{msg[type.tabName]}" />
+                        <h:outputText rendered="#{fn:length(metadataElement.metadataTypes) > 0}"
+                            value="#{msg[type.getTabName(metadataBean.activeMetadataView.index)]}" />
                     </h3>
                     
                     <div class="metadata__element-wrapper">
@@ -60,5 +63,6 @@
                     </div>                    
                 </div>
             </ui:repeat>
+        </ui:fragment>
 </ui:composition>
 

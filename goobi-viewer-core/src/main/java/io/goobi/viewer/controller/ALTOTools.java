@@ -18,7 +18,6 @@ package io.goobi.viewer.controller;
 import java.awt.Dimension;
 import java.awt.Rectangle;
 import java.io.ByteArrayInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
@@ -492,7 +491,7 @@ public class ALTOTools {
 
     private static String addWordCoords(int rotation, Dimension pageSize, Word eleWord, List<String> tempList) {
         String coords = ALTOTools.getALTOCoords(eleWord);
-        if (rotation != 0) {
+        if (coords != null && rotation != 0) {
             try {
                 Rectangle wordRect = getRectangle(coords);
                 wordRect = rotate(wordRect, rotation, pageSize);
@@ -507,6 +506,7 @@ public class ALTOTools {
             tempList.add(coords);
             logger.trace("ALTO word found: {} ({})", eleWord.getAttributeValue("CONTENT"), coords);
         }
+        
         return coords;
     }
 

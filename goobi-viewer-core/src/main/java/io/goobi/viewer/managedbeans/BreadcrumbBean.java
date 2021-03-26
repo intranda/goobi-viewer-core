@@ -17,7 +17,6 @@ package io.goobi.viewer.managedbeans;
 
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
@@ -123,7 +122,7 @@ public class BreadcrumbBean implements Serializable {
      */
     public void updateBreadcrumbs(LabeledLink newLink) {
         logger.trace("updateBreadcrumbs (LabeledLink): {}", newLink.toString());
-        List<LabeledLink> breadcrumbs = Collections.synchronizedList(this.breadcrumbs);
+        //        List<LabeledLink> breadcrumbs = Collections.synchronizedList(this.breadcrumbs);
         synchronized (breadcrumbs) {
 
             // Always add the home page if there are no breadcrumbs
@@ -161,8 +160,7 @@ public class BreadcrumbBean implements Serializable {
             }
         }
 
-    }    
-
+    }
 
     /**
      * Updates breadcrumbs from the given CMS page (and any breadcrumb predecessor pages).
@@ -255,7 +253,7 @@ public class BreadcrumbBean implements Serializable {
 
             }
         } finally {
-            List<LabeledLink> breadcrumbs = Collections.synchronizedList(this.breadcrumbs);
+            //            List<LabeledLink> breadcrumbs = Collections.synchronizedList(this.breadcrumbs);
             synchronized (breadcrumbs) {
                 for (LabeledLink bc : tempBreadcrumbs) {
                     bc.setWeight(weight++);
@@ -321,7 +319,7 @@ public class BreadcrumbBean implements Serializable {
      */
     void resetBreadcrumbs() {
         // logger.trace("reset breadcrumbs");
-        List<LabeledLink> breadcrumbs = Collections.synchronizedList(this.breadcrumbs);
+        //        List<LabeledLink> breadcrumbs = Collections.synchronizedList(this.breadcrumbs);
         synchronized (breadcrumbs) {
             breadcrumbs.clear();
             breadcrumbs.add(new LabeledLink("home", BeanUtils.getServletPathWithHostAsUrlFromJsfContext(), 0));
@@ -435,7 +433,7 @@ public class BreadcrumbBean implements Serializable {
         }
         // If volume name is the same as anchor name, add the volume number, otherwise the volume breadcrumb will be rejected as a duplicate
         if (anchorName != null && anchorName.getValue().equals(name.getValue())) {
-            StringBuilder sb = new StringBuilder(name.getValue().get());
+            StringBuilder sb = new StringBuilder(name.getValue().isPresent() ? name.getValue().get() : "");
             sb.append(" (");
             if (viewManager.getTopDocument().getMetadataValue(SolrConstants.CURRENTNO) != null) {
                 sb.append(viewManager.getTopDocument().getMetadataValue(SolrConstants.CURRENTNO));
@@ -456,17 +454,19 @@ public class BreadcrumbBean implements Serializable {
      * @return the List of flattened breadcrumb links
      */
     public List<LabeledLink> getBreadcrumbs() {
-        List<LabeledLink> baseLinks = Collections.synchronizedList(this.breadcrumbs);
-        List<LabeledLink> flattenedLinks = new ArrayList<>();
-        for (LabeledLink labeledLink : baseLinks) {
-            if (labeledLink instanceof CompoundLabeledLink) {
-                flattenedLinks.addAll(((CompoundLabeledLink) labeledLink).getSubLinks());
-            } else {
-                flattenedLinks.add(labeledLink);
+        //      List<LabeledLink> breadcrumbs = Collections.synchronizedList(this.breadcrumbs);
+        synchronized (breadcrumbs) {
+            List<LabeledLink> flattenedLinks = new ArrayList<>(breadcrumbs.size());
+            for (LabeledLink labeledLink : breadcrumbs) {
+                if (labeledLink instanceof CompoundLabeledLink) {
+                    flattenedLinks.addAll(((CompoundLabeledLink) labeledLink).getSubLinks());
+                } else {
+                    flattenedLinks.add(labeledLink);
+                }
             }
+            // logger.trace("getBreadcrumbs: {}", flattenedLinks.toString());
+            return flattenedLinks;
         }
-        // logger.trace("getBreadcrumbs: {}", flattenedLinks.toString());
-        return flattenedLinks;
     }
 
     /**
@@ -475,7 +475,7 @@ public class BreadcrumbBean implements Serializable {
      * @return a {@link io.goobi.viewer.model.viewer.LabeledLink} object.
      */
     public LabeledLink getLastBreadcrumb() {
-        List<LabeledLink> breadcrumbs = Collections.synchronizedList(this.breadcrumbs);
+        //        List<LabeledLink> breadcrumbs = Collections.synchronizedList(this.breadcrumbs);
         synchronized (breadcrumbs) {
             if (!breadcrumbs.isEmpty()) {
                 return breadcrumbs.get(breadcrumbs.size() - 1);

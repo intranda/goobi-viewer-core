@@ -51,6 +51,12 @@
 	                             </ui:repeat>
 	                         </ul>
 	                     </div>
+	                                                 
+	                 </h:panelGroup>
+	                 <h:panelGroup rendered="#{browseElement.group}">
+	                     <div class="search-list__hit-docstruct">
+	                         <h:outputText value="#{msg['doctype_'.concat(browseElement.docType)]}" />
+	                     </div>
 	                 </h:panelGroup>
 	
 	                 <!-- VALUES -->

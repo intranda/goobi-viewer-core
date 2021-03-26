@@ -15,8 +15,6 @@
  */
 package io.goobi.viewer.model.viewer;
 
-import java.util.Locale;
-
 import javax.faces.component.UIViewRoot;
 import javax.faces.context.ExternalContext;
 import javax.faces.context.FacesContext;
@@ -34,6 +32,7 @@ import io.goobi.viewer.controller.Configuration;
 import io.goobi.viewer.controller.ConfigurationTest;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.SolrConstants;
+import io.goobi.viewer.controller.SolrConstants.DocType;
 import io.goobi.viewer.managedbeans.ContextMocker;
 
 public class StructElementTest extends AbstractSolrEnabledTest {
@@ -75,6 +74,7 @@ public class StructElementTest extends AbstractSolrEnabledTest {
         Assert.assertEquals(element.getPi(), stub.getPi());
         Assert.assertEquals(element.getLogid(), stub.getLogid());
         Assert.assertEquals(element.getDocStructType(), stub.getDocStructType());
+        Assert.assertEquals(DocType.DOCSTRCT, stub.getDocType());
         Assert.assertEquals(element.getSourceDocFormat(), stub.getSourceDocFormat());
         Assert.assertEquals(element.getImageNumber(), stub.getImageNumber());
         Assert.assertEquals(element.isAnchor(), stub.isAnchor());

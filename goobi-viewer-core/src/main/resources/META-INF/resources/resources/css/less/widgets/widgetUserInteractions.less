@@ -5,21 +5,45 @@
 /* WIDGET USER INTERACTIONS */
 #widgetUserInteractions {
 		ul {
-		li:first-of-type {
+			background: @blue;
+			border: none;
+			margin-bottom: 2rem;
+		li {
 			a {
-		    	padding-top: 0;
+				padding: 0.3rem 0;
+				color: @white;
+				&:hover,
+				&:focus,
+				&:active {
+					color: @white;
+				}
+			}
+			&:first-of-type {
+				a {
+		    		padding-top: 0;
+				}
 			}
 		}
 		&:last-of-type {}
 	}
+	h3 {
+		font-weight: 700;
+		font-size: 2.2rem;
+	}
+	.widget-user-interactions__delete-record-wrapper {
+		margin-bottom: 0;
+	}
 }
 
 .widget-user-interactions {
+	background: @blue;
+	padding: 2rem;
+
 	&__info-text {
 		font-size: 1.2rem;
 		font-style: italic;
 		margin-bottom: 1rem;
-		color: #666;
+		color: @white;
 	}
 	&__delete-record {}
 	&__delete-record-message {
@@ -38,11 +62,16 @@
 	}
 	&__delete-record-action,
 	&__clear-cache-action {
+		.btn {
+			display: block;
+			padding: 8px 12px;
+		}
 		padding: 5px 0 10px 0;
 		&.has-no-urn {
 			padding-top: 0;
 			.btn {
 				text-align: left;
+				display: block;
 			}
 			a {
 				padding-top: 0;
@@ -51,11 +80,17 @@
 		&.has-urn {
 			.btn {
 				width: 100%;
+				display: block;
 			}			
 		}
 	}
-	h4 {
+	h3, h4 {
+		color: @white;
+		font-weight: 700;
 		margin-bottom: 1rem;
+	}
+	.custom-control--select {
+		font-size: 1.3rem;
 	}
 }
 

@@ -72,19 +72,21 @@
 					</h:panelGroup>
 
 					<!-- Metadata -->
-					<h:panelGroup rendered="#{activeDocumentBean.viewManager.displayMetadataViewLink}">
-						<li
-							class="#{navigationHelper.currentPage == 'metadata' ? 'active' : ''}">
-							<h:outputLink
-								value="#{navigationHelper.metadataActiveUrl}#{activeDocumentBean.logPart}">
-								<h:outputText rendered="#{!activeDocumentBean.viewManager.topDocument.lidoRecord}"
-									value="#{msg.bibData}" />
-								<h:outputText rendered="#{activeDocumentBean.viewManager.topDocument.lidoRecord}"
-									value="#{msg.metadata}" />
-								<f:passThroughAttribute name="aria-label" value="#{msg.view}: #{activeDocumentBean.viewManager.topDocument.lidoRecord ? msg.metadata : msg.bibData}"/>
-							</h:outputLink>
-						</li>
-					</h:panelGroup>
+                    <h:panelGroup rendered="#{activeDocumentBean.viewManager.displayMetadataViewLink}">
+                        <ui:repeat var="metadataView" value="#{metadataBean.metadataViews}">
+                            <ui:fragment rendered="#{metadataView.isVisible(activeDocumentBean.viewManager.topDocument)}">
+                                <li class="#{navigationHelper.currentPage == 'metadata'.concat(metadataView.url) ? 'active' : ''}">
+                                    <h:outputLink value="#{navigationHelper.metadataActiveUrl}#{metadataView.url}#{activeDocumentBean.logPart}">
+                                        <h:outputText rendered="#{metadataView.label != null}" value="#{msg[metadataView.label]}" />
+                                        <h:outputText rendered="#{metadataView.label == null and !activeDocumentBean.viewManager.topDocument.lidoRecord}"
+                                            value="#{msg[metadataBean.defaultMetadataLabel]}" />
+                                        <f:passThroughAttribute name="aria-label"
+                                            value="#{msg.view}: #{metadataView.label != null ? msg[metadataView.label] : msg[metadataBean.defaultMetadataLabel]}"/>
+                                    </h:outputLink>
+                                </li>
+                            </ui:fragment>
+                        </ui:repeat>
+                    </h:panelGroup>
 
 					<!-- Full-text -->
 					<h:panelGroup rendered="#{activeDocumentBean.viewManager.displayFulltextViewLink}">

@@ -136,6 +136,8 @@ public class SearchBean implements SearchInterface, Serializable {
     private String searchString = "";
     /** User-entered search query that is displayed in the search field after the search. */
     private String guiSearchString = "";
+    /** Optional custom filter query. */
+    private String customFilterQuery = null;
     /** Individual terms extracted from the user query (used for highlighting). */
     private Map<String, Set<String>> searchTerms = new HashMap<>();
 
@@ -169,6 +171,8 @@ public class SearchBean implements SearchInterface, Serializable {
      * Whether to only display the current search parameters rather than the full input mask
      */
     private boolean showReducedSearchOptions = false;
+    /** Reusable Random object. */
+    private Random random = new Random();
 
     /**
      * Empty constructor.
@@ -361,6 +365,7 @@ public class SearchBean implements SearchInterface, Serializable {
         resetSearchResults();
         resetSearchParameters(true);
         searchInCurrentItemString = null;
+        customFilterQuery = null;
 
         // After resetting, return to the correct search entry page
         switch (activeSearchType) {
@@ -728,6 +733,7 @@ public class SearchBean implements SearchInterface, Serializable {
         currentSearch.setPage(currentPage);
         currentSearch.setSortString(sortString);
         currentSearch.setFacetString(facets.getCurrentFacetString());
+        currentSearch.setCustomFilterQuery(customFilterQuery);
 
         // Add search hit aggregation parameters, if enabled
         if (DataManager.getInstance().getConfiguration().isAggregateHits() && !searchTerms.isEmpty()) {
@@ -1164,13 +1170,26 @@ public class SearchBean implements SearchInterface, Serializable {
         guiSearchString = "";
     }
 
+    /**
+     * @return the customFilterQuery
+     */
+    public String getCustomFilterQuery() {
+        return customFilterQuery;
+    }
+
+    /**
+     * @param customFilterQuery the customFilterQuery to set
+     */
+    public void setCustomFilterQuery(String customFilterQuery) {
+        this.customFilterQuery = customFilterQuery;
+    }
+
     /** {@inheritDoc} */
     @Override
     public void setSortString(String sortString) {
         if ("-".equals(sortString)) {
             this.sortString = "";
         } else if (sortString != null && "RANDOM".equals(sortString.toUpperCase())) {
-            Random random = new Random();
             this.sortString = new StringBuilder().append("random_").append(random.nextInt(Integer.MAX_VALUE)).toString();
         } else {
             this.sortString = sortString;
@@ -1958,16 +1977,14 @@ public class SearchBean implements SearchInterface, Serializable {
                         .toString();
             }
 
-        } else {
-
-            String facetQuery = StringUtils.isBlank(facets.getCurrentFacetString().replace("-", "")) ? null : facets.getCurrentFacetString();
-            return urls.path(ApiUrls.RECORDS_RSS)
-                    .query("query", currentQuery)
-                    .query("facets", facetQuery)
-                    .query("facetQueryOperator", advancedSearchGroupOperator)
-                    .build();
         }
-
+        
+        String facetQuery = StringUtils.isBlank(facets.getCurrentFacetString().replace("-", "")) ? null : facets.getCurrentFacetString();
+        return urls.path(ApiUrls.RECORDS_RSS)
+                .query("query", currentQuery)
+                .query("facets", facetQuery)
+                .query("facetQueryOperator", advancedSearchGroupOperator)
+                .build();
     }
 
     /**

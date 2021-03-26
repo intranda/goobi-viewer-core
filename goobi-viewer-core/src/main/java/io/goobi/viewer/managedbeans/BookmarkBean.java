@@ -17,6 +17,7 @@ package io.goobi.viewer.managedbeans;
 
 import java.io.Serializable;
 import java.io.UnsupportedEncodingException;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -151,6 +152,7 @@ public class BookmarkBean implements Serializable {
 
         logger.debug("saveBookmarkListAction: {}, ID: {}", bookmarkList.getName(), bookmarkList.getId());
 
+        bookmarkList.setDateUpdated(LocalDateTime.now());
         if (bookmarkList.getId() == null) {
             // New bookmark list
             if (bookmarkList.getOwner() == null) {
@@ -216,6 +218,7 @@ public class BookmarkBean implements Serializable {
 
     /**
      * Shares currentBookmarkList with currentUserGroup.
+     * 
      * @deprecated not used anymore. Replaced by assigning share key
      */
     public void shareCurrentBookmarkListAction() {
@@ -278,10 +281,17 @@ public class BookmarkBean implements Serializable {
      * @return a {@link java.lang.String} object.
      */
     public String saveCurrentBookmarkAction() {
-        logger.trace("name: {}", currentBookmark.getName());
+        logger.trace("saveCurrentBookmarkAction: {}", currentBookmark.getName());
+        if (currentBookmarkList == null) {
+            String msg = ViewerResourceBundle.getTranslation("bookmarkList_addToBookmarkListFailure", null);
+            Messages.error(msg.replace("{0}", "not selected"));
+            return "";
+        }
+        
         UserBean userBean = BeanUtils.getUserBean();
-        if (userBean != null && userBean.getUser() != null && currentBookmarkList != null && StringUtils.isNotEmpty(currentBookmark.getName())) {
+        if (userBean != null && userBean.getUser() != null && StringUtils.isNotEmpty(currentBookmark.getName())) {
             logger.trace("saving bookmark to bookmark list");
+            currentBookmarkList.setDateUpdated(LocalDateTime.now());
             try {
                 if (currentBookmarkList.getItems().contains(currentBookmark)) {
                     // TODO Do not throw error if item already in bookmark list. Instead, offer to edit or remove.
@@ -487,7 +497,8 @@ public class BookmarkBean implements Serializable {
 
         if (StringUtils.isEmpty(name)) {
             ((UIInput) toValidate).setValid(false);
-            FacesMessage message = new FacesMessage(FacesMessage.SEVERITY_ERROR, ViewerResourceBundle.getTranslation("bookmark listNameFailure", null), null);
+            FacesMessage message =
+                    new FacesMessage(FacesMessage.SEVERITY_ERROR, ViewerResourceBundle.getTranslation("bookmark listNameFailure", null), null);
             throw new ValidatorException(message);
         }
 
@@ -501,7 +512,8 @@ public class BookmarkBean implements Serializable {
                     logger.debug("BookmarkList '" + currentBookmarkList.getName() + "' for user '" + userBean.getEmail()
                             + "' could not be added. A bookmark list with this name for this use may already exist.");
                     String msg = ViewerResourceBundle.getTranslation("bookmarkList_createBookmarkListNameExists", null);
-                    FacesMessage message = new FacesMessage(FacesMessage.SEVERITY_ERROR, ViewerResourceBundle.getTranslation(msg.replace("{0}", name), null), null);
+                    FacesMessage message =
+                            new FacesMessage(FacesMessage.SEVERITY_ERROR, ViewerResourceBundle.getTranslation(msg.replace("{0}", name), null), null);
                     throw new ValidatorException(message);
                 }
             }
@@ -827,9 +839,11 @@ public class BookmarkBean implements Serializable {
         }
 
         DataManager.getInstance().getBookmarkManager().getBookmarkList(BeanUtils.getRequest().getSession(false)).ifPresent(bookmarkList -> {
-            String body = SessionStoreBookmarkManager.generateBookmarkListInfo(ViewerResourceBundle.getTranslation(KEY_BOOKMARK_LIST_EMAIL_BODY, null),
-                    ViewerResourceBundle.getTranslation(KEY_BOOKMARK_LIST_EMAIL_ITEM, null), ViewerResourceBundle.getTranslation(KEY_BOOKMARK_LIST_EMAIL_EMPTY_LIST, null),
-                    bookmarkList);
+            String body =
+                    SessionStoreBookmarkManager.generateBookmarkListInfo(ViewerResourceBundle.getTranslation(KEY_BOOKMARK_LIST_EMAIL_BODY, null),
+                            ViewerResourceBundle.getTranslation(KEY_BOOKMARK_LIST_EMAIL_ITEM, null),
+                            ViewerResourceBundle.getTranslation(KEY_BOOKMARK_LIST_EMAIL_EMPTY_LIST, null),
+                            bookmarkList);
             String subject = ViewerResourceBundle.getTranslation(KEY_BOOKMARK_LIST_EMAIL_SUBJECT, null);
             try {
                 NetTools.postMail(Collections.singletonList(getSessionBookmarkListEmail()), subject, body);

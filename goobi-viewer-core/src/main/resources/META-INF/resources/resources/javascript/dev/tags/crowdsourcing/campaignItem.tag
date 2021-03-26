@@ -77,7 +77,7 @@
 	        this.item.setCurrentUser(this.opts.currentuserid, this.opts.currentusername, this.opts.currentuseravatar);
 	    }
 	    this.item.setReviewMode(this.opts.itemstatus && this.opts.itemstatus.toUpperCase() == "REVIEW");
-		fetch(this.item.imageSource + "?mode=simple")
+		fetch(this.item.imageSource)
 		.then( response => response.json() )
 		.then( imageSource => this.initImageView(imageSource))
 		.then( () => {this.loading = false; this.update()})

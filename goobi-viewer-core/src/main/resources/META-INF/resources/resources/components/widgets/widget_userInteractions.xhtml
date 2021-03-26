@@ -121,7 +121,7 @@
                                 <!-- TODO: hide when no mode selected -->
                                 <ui:fragment rendered="#{activeDocumentBean.clearCacheMode != null and activeDocumentBean.clearCacheMode != ''}">
                                     <div class="widget-user-interactions__clear-cache-action">
-                                        <h:commandLink styleClass="btn btn--full" role="button"
+                                        <h:commandLink styleClass="btn btn--default" role="button"
                                             onclick="if ( !confirm( &quot;#{msg['cache_clear__confirmation_text_'.concat(activeDocumentBean.clearCacheMode)]}&quot; ) ) { return false };"
                                             action="#{activeDocumentBean.clearCacheAction}">
                                             #{msg.cache_clear__button}
@@ -135,7 +135,7 @@
 
                     <!-- DELETE RECORD -->
                     <ui:fragment rendered="#{userBean.admin and !activeDocumentBean.viewManager.hasVolumes}">
-                        <ul>
+                        <ul class="widget-user-interactions__delete-record-wrapper">
                         <h4>#{msg.deleteRecord}</h4>
                         <div class="widget-user-interactions__delete-record">
                             <!-- HAS NO URNS -->
