@@ -15,6 +15,7 @@
  */
 package io.goobi.viewer.model.urlresolution;
 
+import java.io.Serializable;
 import java.net.URI;
 import java.nio.file.Path;
 import java.util.Optional;
@@ -46,7 +47,10 @@ import io.goobi.viewer.model.viewer.PageType;
  *
  * @author Florian Alpers
  */
-public class ViewerPath {
+public class ViewerPath implements Serializable {
+
+    private static final long serialVersionUID = 3200000636800001722L;
+
     /**
      * The absolute url of the web-application, e.g. {@code "http://localhost:8080/viewer"}. The {@link #applicationName} is always the last part of
      * this url

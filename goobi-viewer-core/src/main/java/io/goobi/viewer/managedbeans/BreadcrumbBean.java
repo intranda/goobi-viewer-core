@@ -404,7 +404,7 @@ public class BreadcrumbBean implements Serializable {
         // Add collection hierarchy to breadcrumbs, if the record only belongs to one collection
         String collectionHierarchyField = DataManager.getInstance().getConfiguration().getCollectionHierarchyField();
         if (collectionHierarchyField != null) {
-            List<String> collections = viewManager.getTopDocument().getMetadataValues(collectionHierarchyField);
+            List<String> collections = viewManager.getTopStructElement().getMetadataValues(collectionHierarchyField);
             if (collections.size() == 1) {
                 addCollectionHierarchyToBreadcrumb(collections.get(0), collectionHierarchyField,
                         DataManager.getInstance().getConfiguration().getCollectionSplittingChar(collectionHierarchyField));
@@ -413,10 +413,10 @@ public class BreadcrumbBean implements Serializable {
         int weight = WEIGHT_OPEN_DOCUMENT;
         IMetadataValue anchorName = null;
 
-        if (viewManager.getTopDocument().isVolume() && viewManager.getAnchorPi() != null) {
+        if (viewManager.getTopStructElement().isVolume() && viewManager.getAnchorPi() != null) {
             logger.trace("anchor breadcrumb");
             // Anchor breadcrumb
-            StructElement anchorDocument = viewManager.getTopDocument().getParent();
+            StructElement anchorDocument = viewManager.getTopStructElement().getParent();
             anchorName = anchorDocument.getMultiLanguageDisplayLabel();
             for (String language : anchorName.getLanguages()) {
                 String translation = anchorName.getValue(language).orElse("");
@@ -435,10 +435,10 @@ public class BreadcrumbBean implements Serializable {
         if (anchorName != null && anchorName.getValue().equals(name.getValue())) {
             StringBuilder sb = new StringBuilder(name.getValue().isPresent() ? name.getValue().get() : "");
             sb.append(" (");
-            if (viewManager.getTopDocument().getMetadataValue(SolrConstants.CURRENTNO) != null) {
-                sb.append(viewManager.getTopDocument().getMetadataValue(SolrConstants.CURRENTNO));
-            } else if (viewManager.getTopDocument().getMetadataValue(SolrConstants.CURRENTNOSORT) != null) {
-                sb.append(viewManager.getTopDocument().getMetadataValue(SolrConstants.CURRENTNOSORT));
+            if (viewManager.getTopStructElement().getMetadataValue(SolrConstants.CURRENTNO) != null) {
+                sb.append(viewManager.getTopStructElement().getMetadataValue(SolrConstants.CURRENTNO));
+            } else if (viewManager.getTopStructElement().getMetadataValue(SolrConstants.CURRENTNOSORT) != null) {
+                sb.append(viewManager.getTopStructElement().getMetadataValue(SolrConstants.CURRENTNOSORT));
             }
             sb.append(')');
             name.setValue(sb.toString());

@@ -125,10 +125,7 @@ public class TocWriter {
      * @throws io.goobi.viewer.model.toc.export.pdf.WriteTocException if any.
      */
     public void createPdfDocument(OutputStream output, List<TOCElement> elements) throws WriteTocException {
-
-        Document document = new Document();
-        try {
-
+        try (Document document = new Document()) {
             PdfWriter.getInstance(document, output);
             document.addAuthor(getAuthor());
             document.addTitle(getTitle());
@@ -149,7 +146,7 @@ public class TocWriter {
 
             for (TOCElement TOCElement : elements) {
                 Paragraph contentParagraph = new Paragraph(TOCElement.getLabel());
-                contentParagraph.setIndentationLeft(getLevelIndent() * TOCElement.getLevel());
+                contentParagraph.setIndentationLeft((float) getLevelIndent() * TOCElement.getLevel());
                 PdfPCell contentCell = new PdfPCell();
                 contentCell.setBorder(PdfPCell.NO_BORDER);
                 contentCell.addElement(contentParagraph);
@@ -172,8 +169,6 @@ public class TocWriter {
 
         } catch (DocumentException e) {
             throw new WriteTocException(e);
-        } finally {
-            document.close();
         }
     }
 

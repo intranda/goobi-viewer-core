@@ -134,7 +134,7 @@ public class CitationDataProvider implements ItemDataProvider {
      */
     @Override
     public String[] getIds() {
-        return (String[]) itemDataMap.keySet().toArray();
+        return itemDataMap.keySet().toArray(new String[0]);
     }
 
 }

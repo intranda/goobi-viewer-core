@@ -72,11 +72,8 @@ public class EventElement implements Comparable<EventElement>, Serializable {
         logger.debug("new EventElement: {}", (type == null ? "(no type)" : type));
 
         Collection<Object> eventDateValues = doc.getFieldValues(SolrConstants.EVENTDATE);
-        if (eventDateValues != null) {
-            for (Object field : eventDateValues) {
-                displayDate = (String) field;
-                break;
-            }
+        if (eventDateValues != null && !eventDateValues.isEmpty()) {
+            displayDate = (String) eventDateValues.iterator().next();
         }
         dateEndString = (String) doc.getFieldValue(SolrConstants.EVENTDATEEND);
         if (StringUtils.isNotEmpty(dateEndString) && dateEnd == null) {

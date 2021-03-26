@@ -38,7 +38,6 @@ import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.exceptions.ViewerConfigurationException;
 import io.goobi.viewer.managedbeans.SearchBean;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
-import io.goobi.viewer.model.cms.CMSPage;
 import io.goobi.viewer.model.search.SearchFacets;
 import io.goobi.viewer.model.search.SearchFilter;
 import io.goobi.viewer.model.search.SearchInterface;
@@ -184,34 +183,32 @@ public class SearchFunctionality implements Functionality, SearchInterface {
      * @return
      */
     private String getCompleteFilterString(String subtheme) {
-        
+
         String filterString = getPageFacetString();
         String subthemeFilter = getSubthemeFilter(subtheme);
-        
-        if(StringUtils.isNoneBlank(subthemeFilter, filterString)) {
+
+        if (StringUtils.isNoneBlank(subthemeFilter, filterString)) {
             return "+($1) +($2)".replace("$1", filterString).replace("$2", subthemeFilter);
-        } else if(StringUtils.isNotBlank(filterString)) {
+        } else if (StringUtils.isNotBlank(filterString)) {
             return filterString;
-        } else if(StringUtils.isNotBlank(subthemeFilter)) {
+        } else if (StringUtils.isNotBlank(subthemeFilter)) {
             return subthemeFilter;
         } else {
             return "";
         }
     }
 
-
     /**
      * @param subtheme
      * @return
      */
-    private String getSubthemeFilter(String subtheme) {
-        if(StringUtils.isNotBlank(subtheme)) {            
+    private static String getSubthemeFilter(String subtheme) {
+        if (StringUtils.isNotBlank(subtheme)) {
             String subthemeDiscriminatorField = DataManager.getInstance().getConfiguration().getSubthemeDiscriminatorField();
             return subthemeDiscriminatorField + ":" + subtheme;
-        } else {
-            return "";
         }
-        
+
+        return "";
     }
 
     /**
@@ -478,10 +475,15 @@ public class SearchFunctionality implements Functionality, SearchInterface {
      * @return a {@link java.lang.String} object.
      */
     public String getCurrentPagePath() {
+        if (!ViewHistory.getCurrentView(BeanUtils.getRequest()).isPresent()) {
+            return "";
+        }
+
         ViewerPath path = ViewHistory.getCurrentView(BeanUtils.getRequest()).get();
         if (path != null) {
             return path.getApplicationName() + path.getPrettifiedPagePath();
         }
+
         return "";
     }
 

@@ -1177,12 +1177,14 @@ public class ViewManager implements Serializable {
      */
     public void setCurrentImageNo(int currentImageNo) throws IndexUnreachableException, PresentationException, IDDOCNotFoundException {
         logger.trace("setCurrentImageNo: {}", currentImageNo);
-        if (pageLoader != null) {
-            if (currentImageNo < pageLoader.getFirstPageOrder()) {
-                currentImageNo = pageLoader.getFirstPageOrder();
-            } else if (currentImageNo >= pageLoader.getLastPageOrder()) {
-                currentImageNo = pageLoader.getLastPageOrder();
-            }
+        if (pageLoader == null) {
+            return;
+        }
+
+        if (currentImageNo < pageLoader.getFirstPageOrder()) {
+            currentImageNo = pageLoader.getFirstPageOrder();
+        } else if (currentImageNo >= pageLoader.getLastPageOrder()) {
+            currentImageNo = pageLoader.getLastPageOrder();
         }
         this.currentImageOrder = currentImageNo;
         persistentUrl = null;
@@ -1555,7 +1557,7 @@ public class ViewManager implements Serializable {
         if (im % thumb != 0 || answer == 0) {
             answer++;
         }
-        
+
         return String.valueOf(answer);
     }
 
@@ -2882,7 +2884,7 @@ public class ViewManager implements Serializable {
     public StructElement getCurrentStructElement() throws IndexUnreachableException {
         if (currentStructElement == null || currentStructElement.getLuceneId() != currentStructElementIddoc) {
             logger.trace("Creating new currentDocument from IDDOC {}, old currentDocumentIddoc: {}", currentStructElementIddoc,
-                    currentStructElement.getLuceneId());
+                    currentStructElementIddoc);
             currentStructElement = new StructElement(currentStructElementIddoc);
         }
         return currentStructElement;

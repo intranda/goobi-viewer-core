@@ -1978,7 +1978,7 @@ public class SearchBean implements SearchInterface, Serializable {
             }
 
         }
-        
+
         String facetQuery = StringUtils.isBlank(facets.getCurrentFacetString().replace("-", "")) ? null : facets.getCurrentFacetString();
         return urls.path(ApiUrls.RECORDS_RSS)
                 .query("query", currentQuery)
@@ -2043,8 +2043,7 @@ public class SearchBean implements SearchInterface, Serializable {
 
         BiConsumer<HttpServletRequest, Task> task = (request, job) -> {
             if (!facesContext.getResponseComplete()) {
-                try {
-                    SXSSFWorkbook wb = buildExcelSheet(facesContext, finalQuery, currentQuery, locale);
+                try (SXSSFWorkbook wb = buildExcelSheet(facesContext, finalQuery, currentQuery, locale)) {
                     if (wb == null) {
                         job.setError("Failed to create excel sheet");
                     } else if (Thread.interrupted()) {
@@ -2070,8 +2069,10 @@ public class SearchBean implements SearchInterface, Serializable {
                 } catch (TimeoutException | InterruptedException e) {
                     job.setError("Timeout for excel download");
                 } catch (ExecutionException | ViewerConfigurationException e) {
-                    logger.error(e.toString(), e);
+                    logger.error(e.getMessage(), e);
                     job.setError("Failed to create excel sheet");
+                } catch (IOException e) {
+                    logger.error(e.getMessage(), e);
                 }
             } else {
                 job.setError("Response is already committed");
