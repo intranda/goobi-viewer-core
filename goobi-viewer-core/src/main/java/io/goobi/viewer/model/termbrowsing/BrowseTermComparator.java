@@ -70,11 +70,11 @@ public class BrowseTermComparator implements Comparator<BrowseTerm>, Serializabl
 
         String relevantString1 = o1a.getTerm();
         if (StringUtils.isNotEmpty(relevantString1)) {
-            Optional<String> translationValue = o1a.getTranslations().getValue(locale);
+            Optional<String> translationValue = o1a.getTranslations() != null ? o1a.getTranslations().getValue(locale) : Optional.empty();
             if (o1a.getSortTerm() != null) {
                 // sort term
                 relevantString1 = o1a.getSortTerm().toLowerCase();
-            } else if (o1a.getTranslations() != null && translationValue.isPresent()) {
+            } else if (translationValue.isPresent()) {
                 // translated term
                 relevantString1 = translationValue.get();
             } else {
@@ -86,10 +86,10 @@ public class BrowseTermComparator implements Comparator<BrowseTerm>, Serializabl
 
         String relevantString2 = o2a.getTerm();
         if (StringUtils.isNotEmpty(relevantString2)) {
-            Optional<String> translationValue = o2a.getTranslations().getValue(locale);
+            Optional<String> translationValue = o2a.getTranslations() != null ? o2a.getTranslations().getValue(locale) : Optional.empty();
             if (o2a.getSortTerm() != null) {
                 relevantString2 = o2a.getSortTerm().toLowerCase();
-            } else if (o2a.getTranslations() != null && translationValue.isPresent()) {
+            } else if (translationValue.isPresent()) {
                 relevantString2 = translationValue.get();
             } else {
                 relevantString2 = relevantString2.toLowerCase();
