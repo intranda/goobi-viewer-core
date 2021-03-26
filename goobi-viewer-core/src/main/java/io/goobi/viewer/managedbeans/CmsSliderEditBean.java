@@ -95,7 +95,19 @@ public class CmsSliderEditBean implements Serializable {
     public void setSelectedSlider(CMSSlider selectedSlider) {
         this.selectedSlider = selectedSlider;
         readCategories();
+        setSolrField();
         
+    }
+
+    private void setSolrField() {
+        if(this.selectedSlider != null && !this.selectedSlider.getCollections().isEmpty()) {
+            String solrField = this.selectedSlider.getCollections().get(0);
+            solrField = solrField.substring(0, solrField.indexOf("/"));
+            if(this.getAllCollectionFields().contains(solrField)) {
+                this.collectionField = solrField;
+            }
+            
+        }
     }
     
     /**
