@@ -483,10 +483,10 @@ public class BrowseBean implements Serializable {
                     break;
                 }
                 BrowseTerm term = terms.get(i);
-                Optional<String> translation = term.getTranslations().getValue(locale);
-                if (term.getTranslations() != null && translation.isPresent()) {
+                Optional<String> translation = term.getTranslations() != null ? term.getTranslations().getValue(locale) : Optional.empty();
+                if (translation.isPresent()) {
                     // Use translated label, if present
-                    browseTermList.add(term.getTranslations().getValue(locale).get());
+                    browseTermList.add(translation.get());
                 } else {
                     browseTermList.add(term.getTerm());
                 }

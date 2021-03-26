@@ -92,11 +92,11 @@ public class CMSStaticPage {
         String staticPageName = cmsPage.getStaticPageName();
         if (StringUtils.isBlank(staticPageName)) {
             throw new IllegalArgumentException("Can only create a static page from a CMSPage with a non-empty staticPageName");
-        } else {
-            this.id = null;
-            this.pageName = staticPageName.trim();
-            setCmsPage(cmsPage);
         }
+
+        this.id = null;
+        this.pageName = staticPageName.trim();
+        setCmsPage(cmsPage);
     }
 
     /**
@@ -204,7 +204,7 @@ public class CMSStaticPage {
      */
     public void setCmsPageId(Long cmsPageId) {
         this.cmsPageId = cmsPageId;
-        if (!getCmsPageOptional().isPresent() || !getCmsPageOptional().get().getId().equals(cmsPageId)) {
+        if (!getCmsPageOptional().isPresent() || (getCmsPageOptional().isPresent() && !getCmsPageOptional().get().getId().equals(cmsPageId))) {
             updateCmsPage();
         }
     }
@@ -239,9 +239,9 @@ public class CMSStaticPage {
     public boolean equals(Object obj) {
         if (obj != null && obj.getClass().equals(this.getClass())) {
             return ((CMSStaticPage) obj).getPageName().equals(this.getPageName());
-        } else {
-            return false;
         }
+
+        return false;
     }
 
 }

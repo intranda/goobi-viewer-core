@@ -198,12 +198,13 @@ public class ArchiveEntry {
         if (parentNode != null && other.parentNode == null) {
             return false;
         }
-
-        if (other.parentNode != null && !parentNode.getOrderNumber().equals(other.parentNode.getOrderNumber())) {
-            return false;
-        }
-        if (other.parentNode != null && !parentNode.getHierarchyLevel().equals(other.parentNode.getHierarchyLevel())) {
-            return false;
+        if (parentNode != null && other.parentNode != null) {
+            if (!parentNode.getOrderNumber().equals(other.parentNode.getOrderNumber())) {
+                return false;
+            }
+            if (!parentNode.getHierarchyLevel().equals(other.parentNode.getHierarchyLevel())) {
+                return false;
+            }
         }
 
         return true;

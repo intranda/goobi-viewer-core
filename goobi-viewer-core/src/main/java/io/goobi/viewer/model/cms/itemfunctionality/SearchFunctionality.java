@@ -22,6 +22,7 @@ import java.net.URLEncoder;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -475,11 +476,12 @@ public class SearchFunctionality implements Functionality, SearchInterface {
      * @return a {@link java.lang.String} object.
      */
     public String getCurrentPagePath() {
-        if (!ViewHistory.getCurrentView(BeanUtils.getRequest()).isPresent()) {
+        Optional<ViewerPath> viewerPath = ViewHistory.getCurrentView(BeanUtils.getRequest());
+        if (!viewerPath.isPresent()) {
             return "";
         }
 
-        ViewerPath path = ViewHistory.getCurrentView(BeanUtils.getRequest()).get();
+        ViewerPath path = viewerPath.get();
         if (path != null) {
             return path.getApplicationName() + path.getPrettifiedPagePath();
         }
