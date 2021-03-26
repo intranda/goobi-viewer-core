@@ -1545,18 +1545,18 @@ public class ViewManager implements Serializable {
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      */
     public String getImagesSizeThumbnail() throws IndexUnreachableException {
-        if (pageLoader != null) {
-            Double im = (double) pageLoader.getNumPages();
-
-            Double thumb = (double) DataManager.getInstance().getConfiguration().getViewerThumbnailsPerPage();
-            int answer = Double.valueOf(Math.floor(im / thumb)).intValue();
-            if (im % thumb != 0 || answer == 0) {
-                answer++;
-            }
-            return String.valueOf(answer);
+        if (pageLoader == null) {
+            return "0";
         }
 
-        return "0";
+        double im = pageLoader.getNumPages();
+        double thumb = DataManager.getInstance().getConfiguration().getViewerThumbnailsPerPage();
+        int answer = (int) Math.floor(im / thumb);
+        if (im % thumb != 0 || answer == 0) {
+            answer++;
+        }
+        
+        return String.valueOf(answer);
     }
 
     /**
