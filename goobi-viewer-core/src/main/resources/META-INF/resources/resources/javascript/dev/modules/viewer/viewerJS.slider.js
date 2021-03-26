@@ -47,7 +47,7 @@ var viewerJS = ( function( viewer ) {
 	     		swiperConfig: {
 				  direction: 'horizontal',
 				  loop: false,
-			      slidesPerView: 1,
+			      slidesPerView: 2,
 			      spaceBetween: 20,
 			    }
 		  }], 
@@ -103,6 +103,7 @@ var viewerJS = ( function( viewer ) {
 				  loop: true,
 				  simulateTouch: false,
 			      effect: 'fade',
+			      speed: 850,
 			      fadeEffect: {
 			        crossFade: true
 			      },
