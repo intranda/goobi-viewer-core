@@ -38,9 +38,15 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import de.intranda.api.annotation.oa.OpenAnnotation;
+import de.intranda.api.annotation.wa.ImageResource;
+import de.intranda.api.iiif.IIIFUrlResolver;
+import de.intranda.api.iiif.image.v3.ImageInformation3;
 import de.intranda.api.iiif.presentation.enums.AnnotationType;
+import de.intranda.api.iiif.presentation.enums.ViewingHint;
 import de.intranda.api.iiif.presentation.v3.AbstractPresentationModelElement3;
 import de.intranda.api.iiif.presentation.v3.Canvas3;
+import de.intranda.api.iiif.presentation.v3.Collection3;
+import de.intranda.api.iiif.presentation.v3.Manifest3;
 import de.intranda.metadata.multilanguage.IMetadataValue;
 import de.intranda.metadata.multilanguage.Metadata;
 import de.intranda.metadata.multilanguage.MultiLanguageMetadataValue;
@@ -48,6 +54,7 @@ import de.intranda.metadata.multilanguage.SimpleMetadataValue;
 import de.unigoettingen.sub.commons.util.PathConverter;
 import io.goobi.viewer.api.rest.AbstractApiUrlManager;
 import io.goobi.viewer.api.rest.AbstractApiUrlManager.ApiPath;
+import io.goobi.viewer.api.rest.AbstractApiUrlManager.Version;
 import io.goobi.viewer.api.rest.v1.ApiUrls;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.SolrConstants;
@@ -55,6 +62,8 @@ import io.goobi.viewer.controller.SolrSearchIndex;
 import io.goobi.viewer.controller.StringTools;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
+import io.goobi.viewer.exceptions.ViewerConfigurationException;
+import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.messages.Messages;
 import io.goobi.viewer.messages.ViewerResourceBundle;
 import io.goobi.viewer.model.iiif.presentation.v3.builder.LinkingProperty.LinkingTarget;
@@ -82,6 +91,9 @@ public abstract class AbstractBuilder {
     
     protected final DataRetriever dataRetriever = new DataRetriever();
     
+
+    protected final int thumbWidth = DataManager.getInstance().getConfiguration().getThumbnailsWidth();
+    protected final int thumbHeight = DataManager.getInstance().getConfiguration().getThumbnailsHeight();
     /**
      * <p>
      * Constructor for AbstractBuilder.
@@ -370,20 +382,6 @@ public abstract class AbstractBuilder {
      */
     public URI getManifestURI(String pi) {
         String urlString = this.urls.path(RECORDS_RECORD, RECORDS_MANIFEST).params(pi).build();
-        return URI.create(urlString);
-    }
-
-    /**
-     * <p>
-     * getManifestURI.
-     * </p>
-     *
-     * @param pi a {@link java.lang.String} object.
-     * @param mode a {@link io.goobi.viewer.model.iiif.presentation.v2.builder.BuildMode} object.
-     * @return a {@link java.net.URI} object.
-     */
-    public URI getManifestURI(String pi, BuildMode mode) {
-        String urlString = this.urls.path(RECORDS_RECORD, RECORDS_MANIFEST).params(pi).query("mode", mode.name()).build();
         return URI.create(urlString);
     }
 
@@ -679,5 +677,68 @@ public abstract class AbstractBuilder {
             return Collections.emptyList();
         }
     }
+    
+
+
+    protected Manifest3 createRecordLink(String collectionField, String collectionName, StructElement record) {
+        URI id = urls.path(RECORDS_RECORD, RECORDS_MANIFEST).params(collectionField, collectionName).buildURI();
+        Manifest3 manifest = new Manifest3(id);
+        try {
+            manifest.addThumbnail(getThumbnail(record.getPi()));
+        } catch (IndexUnreachableException | PresentationException | ViewerConfigurationException e) {
+            logger.error("Error creating thumbnail for record " + record.getPi());
+        }
+        manifest.setLabel(record.getMultiLanguageDisplayLabel());
+        return manifest;
+    }
+    
+    protected Collection3 createAnchorLink(String collectionField, String collectionName, StructElement record) {
+        URI id = urls.path(RECORDS_RECORD, RECORDS_MANIFEST).params(collectionField, collectionName).buildURI();
+        Collection3 manifest = new Collection3(id, null);
+        manifest.addViewingHint(ViewingHint.multipart);
+        manifest.addThumbnail(getThumbnail(record));
+        manifest.setLabel(record.getMultiLanguageDisplayLabel());
+        return manifest;
+    }
+
+    protected Metadata getRequiredStatement() {
+        Metadata requiredStatement = null;
+        List<String> attributions = DataManager.getInstance().getConfiguration().getIIIFAttribution();
+        if (!attributions.isEmpty()) {
+            IMetadataValue attributionLabel = ViewerResourceBundle.getTranslations("attribution", false);
+            IMetadataValue attributionValue = new SimpleMetadataValue(attributions.stream().collect(Collectors.joining("\n")));
+            requiredStatement = new Metadata(attributionLabel, attributionValue);
+        }
+        return requiredStatement;
+    }
+    
+    protected ImageResource getThumbnail(String pi) throws IndexUnreachableException, PresentationException, ViewerConfigurationException {
+        ImageResource thumb;
+        AbstractApiUrlManager urls = DataManager.getInstance().getRestApiManager().getContentApiManager(Version.v2).orElse(null);
+        if (urls != null) {
+            thumb = new ImageResource(urls.path(RECORDS_RECORD, RECORDS_IMAGE).params(pi).build(), thumbWidth, thumbHeight);
+        } else {
+            thumb = new ImageResource(URI.create(BeanUtils.getImageDeliveryBean().getThumbs().getThumbnailUrl(pi)));
+        }
+        return thumb;
+    }
+    
+    protected ImageResource getThumbnail(StructElement ele) {
+            try {
+                String thumbUrl = BeanUtils.getImageDeliveryBean().getThumbs().getThumbnailUrl(ele);
+                if (StringUtils.isNotBlank(thumbUrl)) {
+                    ImageResource thumb = new ImageResource(new URI(thumbUrl));
+                    if (IIIFUrlResolver.isIIIFImageUrl(thumbUrl)) {
+                        String imageInfoURI = IIIFUrlResolver.getIIIFImageBaseUrl(thumbUrl);
+                        thumb.setService(new ImageInformation3(imageInfoURI));
+                    }
+                    return thumb;
+                }
+            } catch (URISyntaxException e) {
+                logger.warn("Unable to retrieve thumbnail url", e);
+            }
+            return null;
+    }
+
 
 }

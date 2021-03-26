@@ -83,52 +83,11 @@ public class RecordResource {
 
     private final String pi;
 
-
     public RecordResource(@Context HttpServletRequest request,
             @Parameter(description = "Persistent identifier of the record") @PathParam("pi") String pi) {
         this.pi = pi;
         request.setAttribute(FilterTools.ATTRIBUTE_PI, pi);
     }
-
-    @GET
-    @javax.ws.rs.Path(RECORDS_ANNOTATIONS)
-    @Produces({ MediaType.APPLICATION_JSON })
-    @Operation(tags = { "records", "annotations" }, summary = "List annotations for a record")
-    public IAnnotationCollection getAnnotationsForRecord(
-            @Parameter(
-                    description = "annotation format of the response. If it is 'oa' the comments will be delivered as OpenAnnotations, otherwise as W3C-Webannotations") @QueryParam("format") String format)
-            throws PresentationException, IndexUnreachableException {
-
-        ApiPath apiPath = urls.path(RECORDS_RECORD, RECORDS_ANNOTATIONS).params(pi);
-        URI uri = URI.create(apiPath.build());
-        return new WebAnnotationBuilder(urls).getCrowdsourcingAnnotationCollection(uri, pi, false, servletRequest);
-    }
-
-    @GET
-    @javax.ws.rs.Path(RECORDS_COMMENTS)
-    @Produces({ MediaType.APPLICATION_JSON })
-    @Operation(tags = { "records", "annotations" }, summary = "List comments for a record")
-    public IAnnotationCollection getCommentsForRecord(
-            @Parameter(
-                    description = "annotation format of the response. If it is 'oa' the comments will be delivered as OpenAnnotations, otherwise as W3C-Webannotations") @QueryParam("format") String format)
-            throws DAOException {
-
-        ApiPath apiPath = urls.path(RECORDS_RECORD, RECORDS_COMMENTS).params(pi);
-        URI uri = URI.create(apiPath.build());
-        return new AnnotationsResourceBuilder(urls, servletRequest).getWebAnnotationCollectionForRecordComments(pi, uri);
-    }
-
-    @GET
-    @javax.ws.rs.Path(RECORDS_COMMENTS + "/{page}")
-    @Produces({ MediaType.APPLICATION_JSON })
-    @ApiResponse(responseCode = "400", description = "If the page number is out of bounds")
-    public AnnotationPage getCommentPageForRecord(@PathParam("page") Integer page)
-            throws DAOException, IllegalRequestException {
-
-        URI uri = URI.create(urls.path(RECORDS_RECORD, RECORDS_COMMENTS).params(pi).build());
-        return new AnnotationsResourceBuilder(urls, servletRequest).getWebAnnotationPageForRecordComments(pi, uri, page);
-    }
-
 
     @GET
     @javax.ws.rs.Path(RECORDS_MANIFEST)
@@ -140,92 +99,7 @@ public class RecordResource {
                     description = "Build mode for manifest to select type of resources to include. Default is 'iiif' which returns the full IIIF manifest with all resources. 'thumbs' Does not read width and height of canvas resources and 'iiif_simple' ignores all resources from files") @QueryParam("mode") String mode)
             throws ContentNotFoundException, PresentationException, IndexUnreachableException, URISyntaxException, ViewerConfigurationException,
             DAOException {
-//        IIIFPresentation3ResourceBuilder builder = new IIIFPresentation3ResourceBuilder(urls, servletRequest);
-//        BuildMode buildMode = getBuildeMode(mode);
-//        return builder.getManifest(pi, buildMode);
-        return null;
-    }
-
-
-    /**
-     * Endpoint for IIIF Search API service in a manifest. Depending on the given motivation parameters, fulltext (motivation=painting), user comments
-     * (motivation=commenting) and general (crowdsourcing-) annotations (motivation=describing) may be searched.
-     *
-     * @param pi The pi of the manifest to search
-     * @param query The search query; a list of space separated terms. The search is for all complete words which match any of the query terms. Terms
-     *            may contain the wildcard charachter '*' to represent an arbitrary number of characters within the word
-     * @param motivation a space separated list of motivations of annotations to search for. Search for the following motivations is implemented:
-     *            <ul>
-     *            <li>painting: fulltext resources</li>
-     *            <li>non-painting: all supported resources except fulltext</li>
-     *            <li>commenting: user comments</li>
-     *            <li>describing: Crowdsourced or other general annotations</li>
-     *            </ul>
-     * @param date not supported. If this parameter is given, it will be included in the 'ignored' property of the 'within' property of the answer
-     * @param user not supported. If this parameter is given, it will be included in the 'ignored' property of the 'within' property of the answer
-     * @param page the page number for paged result sets. if this is empty, page=1 is assumed
-     * @return a {@link de.intranda.api.iiif.search.SearchResult} containing all annotations matching the query in the 'resources' property
-     * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
-     * @throws io.goobi.viewer.exceptions.PresentationException if any.
-     */
-    @GET
-    @javax.ws.rs.Path(RECORDS_MANIFEST_SEARCH)
-    @Produces({ MediaType.APPLICATION_JSON })
-    public SearchResult searchInManifest(@PathParam("pi") String pi, @QueryParam("q") String query, @QueryParam("motivation") String motivation,
-            @QueryParam("date") String date, @QueryParam("user") String user, @QueryParam("page") Integer page)
-            throws IndexUnreachableException, PresentationException {
-        return new IIIFSearchBuilder(urls, query, pi, servletRequest).setMotivation(motivation).setDate(date).setUser(user).setPage(page).build();
-    }
-
-    /**
-     * <p>
-     * autoCompleteInManifest.
-     * </p>
-     *
-     * @param pi a {@link java.lang.String} object.
-     * @param query a {@link java.lang.String} object.
-     * @param motivation a {@link java.lang.String} object.
-     * @param date a {@link java.lang.String} object.
-     * @param user a {@link java.lang.String} object.
-     * @param page a {@link java.lang.Integer} object.
-     * @return a {@link de.intranda.api.iiif.search.AutoSuggestResult} object.
-     * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
-     * @throws io.goobi.viewer.exceptions.PresentationException if any.
-     */
-    @GET
-    @javax.ws.rs.Path(RECORDS_MANIFEST_AUTOCOMPLETE)
-    @Produces({ MediaType.APPLICATION_JSON })
-    public AutoSuggestResult autoCompleteInManifest(@PathParam("pi") String pi, @QueryParam("q") String query,
-            @QueryParam("motivation") String motivation, @QueryParam("date") String date, @QueryParam("user") String user,
-            @QueryParam("page") Integer page) throws IndexUnreachableException, PresentationException {
-        return new IIIFSearchBuilder(urls, query, pi, servletRequest).setMotivation(motivation)
-                .setDate(date)
-                .setUser(user)
-                .setPage(page)
-                .buildAutoSuggest();
-    }
-
-    /**
-     * @param mode
-     * @return
-     */
-    public static BuildMode getBuildeMode(String mode) {
-        if (StringUtils.isNotBlank(mode)) {
-            switch (mode.toLowerCase()) {
-                case "iiif-simple":
-                case "iiif_simple":
-                case "simple":
-                    return BuildMode.IIIF_SIMPLE;
-                case "iiif-thumbs":
-                case "iiif_thumbs":
-                case "thumbs":
-                case "thumbnails":
-                    return BuildMode.THUMBS;
-                default:
-                    return BuildMode.IIIF;
-            }
-        }
-        return BuildMode.IIIF;
+        return new Manifest3B
     }
 
 }

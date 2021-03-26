@@ -72,8 +72,6 @@ public class CollectionBuilder extends AbstractBuilder {
     public final static String RSS_FEED_LABEL = "Rss feed";
     public final static String RSS_FEED_FORMAT = "Rss feed";
 
-    private final int thumbWidth = DataManager.getInstance().getConfiguration().getThumbnailsWidth();
-    private final int thumbHeight = DataManager.getInstance().getConfiguration().getThumbnailsHeight();
 
     public CollectionBuilder(AbstractApiUrlManager apiUrlManager) {
         super(apiUrlManager);
@@ -121,37 +119,6 @@ public class CollectionBuilder extends AbstractBuilder {
 
     }
 
-    private Manifest3 createRecordLink(String collectionField, String collectionName, StructElement record) {
-        URI id = urls.path(RECORDS_RECORD, RECORDS_MANIFEST).params(collectionField, collectionName).buildURI();
-        Manifest3 manifest = new Manifest3(id);
-        try {
-            manifest.addThumbnail(getThumbnail(record.getPi()));
-        } catch (IndexUnreachableException | PresentationException | ViewerConfigurationException e) {
-            logger.error("Error creating thumbnail for record " + record.getPi());
-        }
-        manifest.setLabel(record.getMultiLanguageDisplayLabel());
-        return manifest;
-    }
-    
-    private Collection3 createAnchorLink(String collectionField, String collectionName, StructElement record) {
-        URI id = urls.path(RECORDS_RECORD, RECORDS_MANIFEST).params(collectionField, collectionName).buildURI();
-        Collection3 manifest = new Collection3(id, null);
-        manifest.addViewingHint(ViewingHint.multipart);
-        manifest.addThumbnail(getThumbnail(record));
-        manifest.setLabel(record.getMultiLanguageDisplayLabel());
-        return manifest;
-    }
-
-    private Metadata getRequiredStatement() {
-        Metadata requiredStatement = null;
-        List<String> attributions = DataManager.getInstance().getConfiguration().getIIIFAttribution();
-        if (!attributions.isEmpty()) {
-            IMetadataValue attributionLabel = ViewerResourceBundle.getTranslations("attribution", false);
-            IMetadataValue attributionValue = new SimpleMetadataValue(attributions.stream().collect(Collectors.joining("\n")));
-            requiredStatement = new Metadata(attributionLabel, attributionValue);
-        }
-        return requiredStatement;
-    }
 
     private Collection3 createCollection(String collectionField, String collectionName) {
         URI id = urls.path(COLLECTIONS, COLLECTIONS_COLLECTION).params(collectionField, collectionName).buildURI();
@@ -201,35 +168,6 @@ public class CollectionBuilder extends AbstractBuilder {
             thumb = new ImageResource(CMSCollection.getDefaultIcon(collectionField));
         }
         return thumb;
-    }
-
-    private ImageResource getThumbnail(String pi) throws IndexUnreachableException, PresentationException, ViewerConfigurationException {
-        ImageResource thumb;
-        AbstractApiUrlManager urls = DataManager.getInstance().getRestApiManager().getContentApiManager(Version.v2).orElse(null);
-        if (urls != null) {
-            thumb = new ImageResource(urls.path(RECORDS_RECORD, RECORDS_IMAGE).params(pi).build(), thumbWidth, thumbHeight);
-        } else {
-            thumb = new ImageResource(URI.create(BeanUtils.getImageDeliveryBean().getThumbs().getThumbnailUrl(pi)));
-        }
-        return thumb;
-
-    }
-    
-    private ImageResource getThumbnail(StructElement ele) {
-            try {
-                String thumbUrl = BeanUtils.getImageDeliveryBean().getThumbs().getThumbnailUrl(ele);
-                if (StringUtils.isNotBlank(thumbUrl)) {
-                    ImageResource thumb = new ImageResource(new URI(thumbUrl));
-                    if (IIIFUrlResolver.isIIIFImageUrl(thumbUrl)) {
-                        String imageInfoURI = IIIFUrlResolver.getIIIFImageBaseUrl(thumbUrl);
-                        thumb.setService(new ImageInformation3(imageInfoURI));
-                    }
-                    return thumb;
-                }
-            } catch (URISyntaxException e) {
-                logger.warn("Unable to retrieve thumbnail url", e);
-            }
-            return null;
     }
 
 }
