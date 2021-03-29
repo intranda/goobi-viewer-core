@@ -55,7 +55,8 @@ import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.model.viewer.PageType;
 import io.goobi.viewer.model.viewer.PhysicalElement;
 import io.goobi.viewer.model.viewer.StructElement;
-import io.goobi.viewer.model.viewer.pageloader.LeanPageLoader;
+import io.goobi.viewer.model.viewer.pageloader.AbstractPageLoader;
+import io.goobi.viewer.model.viewer.pageloader.IPageLoader;
 
 /**
  * <p>
@@ -154,7 +155,7 @@ public class ImageInformationFilter implements ContainerResponseFilter {
      */
     private static Optional<PhysicalElement> getPage(String filename, StructElement element) {
         try {
-            LeanPageLoader pageLoader = new LeanPageLoader(element, 1);
+            IPageLoader pageLoader =  AbstractPageLoader.create(element);
             return Optional.ofNullable(pageLoader.getPageForFileName(filename));
         } catch (PresentationException | IndexUnreachableException | DAOException e) {
             logger.error("Unbale to get page for file " + filename + " in " + element);

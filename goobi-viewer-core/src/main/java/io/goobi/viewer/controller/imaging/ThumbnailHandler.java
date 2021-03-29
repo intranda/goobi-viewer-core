@@ -55,7 +55,8 @@ import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.model.cms.CMSMediaItem;
 import io.goobi.viewer.model.viewer.PhysicalElement;
 import io.goobi.viewer.model.viewer.StructElement;
-import io.goobi.viewer.model.viewer.pageloader.LeanPageLoader;
+import io.goobi.viewer.model.viewer.pageloader.AbstractPageLoader;
+import io.goobi.viewer.model.viewer.pageloader.IPageLoader;
 
 /**
  * Delivers Thumbnail urls for pages and StructElements
@@ -176,14 +177,13 @@ public class ThumbnailHandler {
                     .path(ApiUrls.RECORDS_RECORD, ApiUrls.RECORDS_IMAGE_IIIF)
                     .params(pi, "full", size, "0", "default", "jpg")
                     .build();
-        } else {
-            SolrDocument doc = DataManager.getInstance().getSearchIndex().getDocumentByPI(pi);
-            if (doc != null) {
-                return getThumbnailUrl(doc, width, height);
-            }
-            return null;
         }
-
+        
+        SolrDocument doc = DataManager.getInstance().getSearchIndex().getDocumentByPI(pi);
+        if (doc != null) {
+            return getThumbnailUrl(doc, width, height);
+        }
+        return null;
     }
 
     /**
@@ -312,7 +312,7 @@ public class ThumbnailHandler {
     public PhysicalElement getPage(String pi, int order) throws IndexUnreachableException, PresentationException, DAOException {
         SolrDocument doc = DataManager.getInstance().getSearchIndex().getDocumentByPI(pi);
         StructElement struct = new StructElement(Long.parseLong(doc.getFirstValue(SolrConstants.IDDOC).toString()), doc);
-        LeanPageLoader pageLoader = new LeanPageLoader(struct, 1);
+        IPageLoader pageLoader = AbstractPageLoader.create(struct);
         PhysicalElement page = pageLoader.getPage(order);
         return page;
     }
@@ -934,18 +934,16 @@ public class ThumbnailHandler {
     public static String getCMSMediaImageApiUrl(String filename) {
         if (DataManager.getInstance().getConfiguration().isUseIIIFApiUrlForCmsMediaUrls()) {
             return getCMSMediaImageApiUrl(filename, DataManager.getInstance().getRestApiManager().getContentApiUrl());
-        } else {
-            return getCMSMediaImageApiUrl(filename, DataManager.getInstance().getRestApiManager().getDataApiUrl());
         }
+        return getCMSMediaImageApiUrl(filename, DataManager.getInstance().getRestApiManager().getDataApiUrl());
     }
 
     public static String getCMSMediaImageApiUrl(String filename, String restApiUrl) {
         if (RestApiManager.isLegacyUrl(restApiUrl)) {
             return buildLegacyCMSMediaUrl(restApiUrl, filename);
-        } else {
-            AbstractApiUrlManager urls = new ApiUrls(restApiUrl);
-            return urls.path(CMS_MEDIA, CMS_MEDIA_FILES_FILE).params(StringTools.encodeUrl(filename)).build();
         }
+        AbstractApiUrlManager urls = new ApiUrls(restApiUrl);
+        return urls.path(CMS_MEDIA, CMS_MEDIA_FILES_FILE).params(StringTools.encodeUrl(filename)).build();
     }
 
     /**

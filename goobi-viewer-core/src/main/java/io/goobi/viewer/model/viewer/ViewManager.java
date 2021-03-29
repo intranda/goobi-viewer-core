@@ -95,6 +95,7 @@ import io.goobi.viewer.model.toc.TOC;
 import io.goobi.viewer.model.transkribus.TranskribusJob;
 import io.goobi.viewer.model.transkribus.TranskribusSession;
 import io.goobi.viewer.model.transkribus.TranskribusUtils;
+import io.goobi.viewer.model.viewer.pageloader.AbstractPageLoader;
 import io.goobi.viewer.model.viewer.pageloader.IPageLoader;
 import io.goobi.viewer.model.viewer.pageloader.LeanPageLoader;
 
@@ -3727,7 +3728,7 @@ public class ViewManager implements Serializable {
 
         long iddoc = Long.valueOf((String) doc.getFieldValue(SolrConstants.IDDOC));
         StructElement topDocument = new StructElement(iddoc, doc);
-        ViewManager ret = new ViewManager(topDocument, new LeanPageLoader(topDocument, topDocument.getNumPages()), iddoc, null, null, null);
+        ViewManager ret = new ViewManager(topDocument, AbstractPageLoader.create(topDocument), iddoc, null, null, null);
 
         return ret;
     }

@@ -76,9 +76,8 @@ import io.goobi.viewer.model.viewer.MimeType;
 import io.goobi.viewer.model.viewer.PageType;
 import io.goobi.viewer.model.viewer.PhysicalElement;
 import io.goobi.viewer.model.viewer.StructElement;
-import io.goobi.viewer.model.viewer.pageloader.EagerPageLoader;
+import io.goobi.viewer.model.viewer.pageloader.AbstractPageLoader;
 import io.goobi.viewer.model.viewer.pageloader.IPageLoader;
-import io.goobi.viewer.model.viewer.pageloader.LeanPageLoader;
 
 /**
  * <p>
@@ -125,7 +124,6 @@ public class SequenceBuilder extends AbstractBuilder {
 
         Map<AnnotationType, List<AnnotationList>> annotationMap = new HashMap<>();
 
-        
         Sequence sequence = new Sequence(getSequenceURI(doc.getPi(), null));
 
         sequence.addWithin(manifest);
@@ -133,19 +131,18 @@ public class SequenceBuilder extends AbstractBuilder {
         if (manifest != null) {
             manifest.setSequence(sequence);
         }
-        
-        if(BuildMode.IIIF.equals(buildMode) || BuildMode.THUMBS.equals(buildMode)) {
 
-            IPageLoader pageLoader = new EagerPageLoader(doc);
+        if (BuildMode.IIIF.equals(buildMode) || BuildMode.THUMBS.equals(buildMode)) {
+            IPageLoader pageLoader = AbstractPageLoader.create(doc);
             Map<Integer, Canvas> canvasMap = new HashMap<>();
             for (int i = pageLoader.getFirstPageOrder(); i <= pageLoader.getLastPageOrder(); ++i) {
                 PhysicalElement page = pageLoader.getPage(i);
-    
+
                 Canvas canvas = generateCanvas(doc.getPi(), page);
                 if (canvas != null && getBuildMode().equals(BuildMode.IIIF)) {
                     addSeeAlsos(canvas, page);
                     Map<AnnotationType, AnnotationList> content = addOtherContent(doc, page, canvas, false);
-    
+
                     merge(annotationMap, content);
                     canvasMap.put(i, canvas);
                 }
@@ -153,7 +150,7 @@ public class SequenceBuilder extends AbstractBuilder {
                     sequence.addCanvas(canvas);
                 }
             }
-            
+
             if (getBuildMode().equals(BuildMode.IIIF)) {
                 try {
                     annotationMap.put(AnnotationType.COMMENT, addComments(canvasMap, doc.getPi(), false));
@@ -295,9 +292,10 @@ public class SequenceBuilder extends AbstractBuilder {
      * @return a {@link io.goobi.viewer.model.viewer.PhysicalElement} object.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
+     * @throws PresentationException
      */
-    public PhysicalElement getPage(StructElement doc, int order) throws IndexUnreachableException, DAOException {
-        IPageLoader loader = new LeanPageLoader(doc, 1);
+    public PhysicalElement getPage(StructElement doc, int order) throws IndexUnreachableException, DAOException, PresentationException {
+        IPageLoader loader = AbstractPageLoader.create(doc);
         return loader.getPage(order);
     }
 
