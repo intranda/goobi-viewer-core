@@ -740,18 +740,18 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
      */
     public Boolean isFulltextAccessPermission() throws ViewerConfigurationException {
         if (fulltextAccessPermission == null) {
-            boolean access = false;
+            fulltextAccessPermission = false;
             try {
-                access = AccessConditionUtils.checkAccessPermissionByIdentifierAndLogId(pi, null, IPrivilegeHolder.PRIV_VIEW_FULLTEXT,
+                fulltextAccessPermission = AccessConditionUtils.checkAccessPermissionByIdentifierAndLogId(pi, null, IPrivilegeHolder.PRIV_VIEW_FULLTEXT,
                         BeanUtils.getRequest());
             } catch (IndexUnreachableException | DAOException e) {
                 logger.error(String.format("Cannot check fulltext access for pi %s and pageNo %d: %s", pi, order, e.toString()));
             } catch (RecordNotFoundException e) {
                 logger.error("Record not found in index: {}", pi);
             }
-            return access;
         }
-        return fulltextAccessPermission != null ? fulltextAccessPermission : false;
+        
+        return fulltextAccessPermission;
     }
 
     /**

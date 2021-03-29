@@ -17,6 +17,7 @@ package io.goobi.viewer.controller;
 
 import java.io.IOException;
 import java.io.StringReader;
+import java.security.SecureRandom;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
@@ -30,7 +31,6 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
-import java.util.Random;
 import java.util.Set;
 import java.util.function.BinaryOperator;
 import java.util.regex.Matcher;
@@ -1829,7 +1829,7 @@ public final class SolrSearchIndex {
      * @return Randomized sorting field
      */
     public static String generateRandomSortField() {
-        return "random_" + new Random().nextInt(Integer.MAX_VALUE);
+        return "random_" + new SecureRandom().nextInt(Integer.MAX_VALUE);
     }
 
     /**

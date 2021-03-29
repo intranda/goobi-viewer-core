@@ -161,6 +161,37 @@ public class CMSNavigationItem implements Comparable<CMSNavigationItem> {
         setCmsPage(cmsPage);
     }
 
+    /* (non-Javadoc)
+     * @see java.lang.Object#hashCode()
+     */
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + ((cmsPage == null) ? 0 : cmsPage.hashCode());
+        result = prime * result + ((itemLabel == null) ? 0 : itemLabel.hashCode());
+        result = prime * result + ((pageUrl == null) ? 0 : pageUrl.hashCode());
+        return result;
+    }
+
+    /* (non-Javadoc)
+     * @see java.lang.Object#equals(java.lang.Object)
+     */
+    @Override
+    public boolean equals(Object obj) {
+        if (obj instanceof CMSNavigationItem && ((getParentItem() == null && ((CMSNavigationItem) obj).getParentItem() == null)
+                || (getParentItem() != null && getParentItem().equals(((CMSNavigationItem) obj).getParentItem())))) {
+            if (getCmsPage() != null && getCmsPage().equals(((CMSNavigationItem) obj).getCmsPage())) {
+                return true;
+            } else if (getPageUrl().equals(((CMSNavigationItem) obj).getPageUrl())
+                    && getItemLabel().equals(((CMSNavigationItem) obj).getItemLabel())) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
     /*
      * (non-Javadoc)
      *
@@ -355,8 +386,8 @@ public class CMSNavigationItem implements Comparable<CMSNavigationItem> {
         String url = (isAbsolute(getPageUrl()) || isOnSameRessource(getPageUrl()) ? "" : BeanUtils.getServletPathWithHostAsUrlFromJsfContext() + "/")
                 + getPageUrl();
         //Handle cases where #getPageUrl == '/'
-        if(url.endsWith("//")) {
-            return url.substring(0, url.length()-1);
+        if (url.endsWith("//")) {
+            return url.substring(0, url.length() - 1);
         }
         return url;
     }
@@ -540,22 +571,6 @@ public class CMSNavigationItem implements Comparable<CMSNavigationItem> {
         this.sortingListId = sortingListId;
     }
 
-    /** {@inheritDoc} */
-    @Override
-    public boolean equals(Object other) {
-        if (other instanceof CMSNavigationItem && ((getParentItem() == null && ((CMSNavigationItem) other).getParentItem() == null)
-                || (getParentItem() != null && getParentItem().equals(((CMSNavigationItem) other).getParentItem())))) {
-            if (getCmsPage() != null && getCmsPage().equals(((CMSNavigationItem) other).getCmsPage())) {
-                return true;
-            } else if (getPageUrl().equals(((CMSNavigationItem) other).getPageUrl())
-                    && getItemLabel().equals(((CMSNavigationItem) other).getItemLabel())) {
-                return true;
-            }
-        }
-
-        return false;
-    }
-
     /**
      * <p>
      * isAbsoluteLink.
@@ -715,9 +730,9 @@ public class CMSNavigationItem implements Comparable<CMSNavigationItem> {
     public boolean isOpenInNewWindow() {
         if (StringUtils.isBlank(getPageUrl()) || "#".equals(getPageUrl())) {
             return false;
-        } else {
-            return openInNewWindow;
         }
+
+        return openInNewWindow;
     }
 
     public static enum DisplayRule {
@@ -742,19 +757,19 @@ public class CMSNavigationItem implements Comparable<CMSNavigationItem> {
         }
         return items;
     }
-    
+
     /**
      * @return true if the item links to a cmsPage and that page has a subtheme associated wih it.
      */
     public boolean isAssociatedWithSubtheme() {
         return Optional.ofNullable(cmsPage).map(CMSPage::getSubThemeDiscriminatorValue).filter(StringUtils::isNotBlank).isPresent();
     }
-    
+
     public String getAssociatedSubtheme() {
-        if(cmsPage != null && StringUtils.isNotBlank(cmsPage.getSubThemeDiscriminatorValue())) {
+        if (cmsPage != null && StringUtils.isNotBlank(cmsPage.getSubThemeDiscriminatorValue())) {
             return ViewerResourceBundle.getTranslation(cmsPage.getSubThemeDiscriminatorValue(), null);
         }
-        
+
         return "";
     }
 

@@ -17,6 +17,7 @@ package io.goobi.viewer.model.search;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.security.SecureRandom;
 import java.text.Normalizer;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -94,8 +95,6 @@ import io.goobi.viewer.model.viewer.StringPair;
  */
 public final class SearchHelper {
 
-    private static final Random random = new Random(System.currentTimeMillis());
-
     private static final Logger logger = LoggerFactory.getLogger(SearchHelper.class);
 
     // public static final String[] FULLTEXT_SEARCH_FIELDS = { LuceneConstants.FULLTEXT, LuceneConstants.IDDOC_OWNER,
@@ -126,6 +125,8 @@ public final class SearchHelper {
     public static final String DEFAULT_DOCSTRCT_WHITELIST_FILTER_QUERY = ALL_RECORDS_QUERY + " -IDDOC_PARENT:*";
 
     private static final Object lock = new Object();
+    
+    private static final Random random = new SecureRandom();
 
     /** Constant <code>patternNotBrackets</code> */
     public static Pattern patternNotBrackets = Pattern.compile("NOT\\([^()]*\\)");

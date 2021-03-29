@@ -207,7 +207,7 @@ public class CMSPageTemplate implements Serializable {
         for (CMSContentItem item : contentItems) {
             if (item.getType() == CMSContentItemType.HTML || item.getType() == CMSContentItemType.TEXT) {
                 for (CMSPageLanguageVersion langVersion : page.getLanguageVersions()) {
-                    if (langVersion.getLanguage() != CMSPage.GLOBAL_LANGUAGE) {
+                    if (!CMSPage.GLOBAL_LANGUAGE.equals(langVersion.getLanguage())) {
                         CMSContentItem actualItem = item.clone();
                         actualItem.setOwnerPageLanguageVersion(langVersion);
                         langVersion.getContentItems().add(actualItem);
@@ -489,7 +489,7 @@ public class CMSPageTemplate implements Serializable {
         if (enabled == null) {
             enabled = new CMSPageTemplateEnabled(id);
         }
-         
+
         return enabled;
     }
 

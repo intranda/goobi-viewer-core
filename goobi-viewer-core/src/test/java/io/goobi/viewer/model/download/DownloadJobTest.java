@@ -85,7 +85,7 @@ public class DownloadJobTest extends AbstractDatabaseAndSolrEnabledTest {
      */
     @Test
     public void generateDownloadJobId_shouldGenerateSameIdFromSameCriteria() throws Exception {
-        String hash = "78acb5991aaf0fee0329b673e985ce82";
+        String hash = "07319d093ea0e44a618cdf3accb9576009025f7ea7ed3b6765192f1ddca6a801";
         String crit1 = "PPN123456789";
         String crit2 = "LOG_0000";
         Assert.assertEquals(hash, DownloadJob.generateDownloadJobId(crit1, crit2));

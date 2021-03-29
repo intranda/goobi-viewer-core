@@ -15,8 +15,6 @@
  */
 package io.goobi.viewer.managedbeans;
 
-import java.util.Locale;
-
 import javax.faces.component.UIViewRoot;
 import javax.faces.context.ExternalContext;
 import javax.faces.context.FacesContext;
@@ -84,8 +82,8 @@ public class ActiveDocumentBeanTest extends AbstractDatabaseAndSolrEnabledTest {
         Assert.assertNotEquals(iddocKleiuniv, adb.getViewManager().getCurrentDocumentIddoc());
         Assert.assertNotNull(adb.getViewManager().getTopDocument());
         Assert.assertEquals(adb.getTopDocument(), adb.getViewManager().getTopDocument());
-        Assert.assertNotNull(adb.getViewManager().getCurrentDocument());
-        Assert.assertEquals(adb.getCurrentElement(), adb.getViewManager().getCurrentDocument());
+        Assert.assertNotNull(adb.getViewManager().getCurrentStructElement());
+        Assert.assertEquals(adb.getCurrentElement(), adb.getViewManager().getCurrentStructElement());
         Assert.assertEquals("", adb.getViewManager().getLogId());
     }
 

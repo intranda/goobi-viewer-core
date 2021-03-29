@@ -24,14 +24,18 @@ import java.text.DecimalFormat;
  * </p>
  */
 public abstract class AbstractCalendarItem implements ICalendarItem {
-    
+
     /** Constant <code>dfTwoDigitInteger</code> */
     public static DecimalFormat dfTwoDigitInteger = new DecimalFormat("00");
 
-    protected final String name;
-    protected final int value;
+    protected String name;
+    protected int value;
     protected int hits;
     protected boolean selected = false;
+
+    /** No-arg constructor. */
+    protected AbstractCalendarItem() {
+    }
 
     /**
      * <p>
