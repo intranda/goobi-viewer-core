@@ -54,14 +54,11 @@ import de.unigoettingen.sub.commons.contentlib.imagelib.ImageType.Colortype;
 import de.unigoettingen.sub.commons.contentlib.imagelib.transform.RegionRequest;
 import de.unigoettingen.sub.commons.contentlib.imagelib.transform.Rotation;
 import de.unigoettingen.sub.commons.contentlib.imagelib.transform.Scale;
-import io.goobi.viewer.api.rest.resourcebuilders.TextResourceBuilder;
-import io.goobi.viewer.api.rest.v1.ApiUrls;
 import io.goobi.viewer.controller.ALTOTools;
 import io.goobi.viewer.controller.Configuration;
 import io.goobi.viewer.controller.DataFileTools;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.FileTools;
-import io.goobi.viewer.controller.NetTools;
 import io.goobi.viewer.controller.SolrConstants;
 import io.goobi.viewer.controller.SolrSearchIndex;
 import io.goobi.viewer.controller.imaging.IIIFUrlHandler;
@@ -136,6 +133,8 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
     private int height = 0;
     /** Whether or not this page has image data. */
     private boolean hasImage = false;
+    /** Whether or not this page is to be displayed in a double page view. */
+    private boolean doublePage = false;
     /** Whether or not full-text is available for this page. */
     private boolean fulltextAvailable = false;
 
@@ -179,10 +178,8 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
      * @param mimeType Page mime type
      * @param dataRepository Record date repository
      */
-    public PhysicalElement(String physId, String filePath, int order, String orderLabel, String urn, String purlPart, String pi, String mimeType,
+    PhysicalElement(String physId, String filePath, int order, String orderLabel, String urn, String purlPart, String pi, String mimeType,
             String dataRepository) {
-
-        super();
         this.physId = physId;
         this.filePath = filePath;
         this.order = order;
@@ -202,7 +199,6 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
         if (watermarkTextConfiguration == null) {
             watermarkTextConfiguration = DataManager.getInstance().getConfiguration().getWatermarkTextConfiguration();
         }
-
     }
 
     /**
@@ -692,6 +688,20 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
     }
 
     /**
+     * @return the doublePage
+     */
+    public boolean isDoublePage() {
+        return doublePage;
+    }
+
+    /**
+     * @param doublePage the doublePage to set
+     */
+    public void setDoublePage(boolean doublePage) {
+        this.doublePage = doublePage;
+    }
+
+    /**
      * <p>
      * isFulltextAvailableForPage.
      * </p>
@@ -742,15 +752,16 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
         if (fulltextAccessPermission == null) {
             fulltextAccessPermission = false;
             try {
-                fulltextAccessPermission = AccessConditionUtils.checkAccessPermissionByIdentifierAndLogId(pi, null, IPrivilegeHolder.PRIV_VIEW_FULLTEXT,
-                        BeanUtils.getRequest());
+                fulltextAccessPermission =
+                        AccessConditionUtils.checkAccessPermissionByIdentifierAndLogId(pi, null, IPrivilegeHolder.PRIV_VIEW_FULLTEXT,
+                                BeanUtils.getRequest());
             } catch (IndexUnreachableException | DAOException e) {
                 logger.error(String.format("Cannot check fulltext access for pi %s and pageNo %d: %s", pi, order, e.toString()));
             } catch (RecordNotFoundException e) {
                 logger.error("Record not found in index: {}", pi);
             }
         }
-        
+
         return fulltextAccessPermission;
     }
 

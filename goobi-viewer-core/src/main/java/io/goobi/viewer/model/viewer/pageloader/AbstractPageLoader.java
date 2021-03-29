@@ -38,6 +38,7 @@ import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.messages.ViewerResourceBundle;
 import io.goobi.viewer.model.viewer.PhysicalElement;
+import io.goobi.viewer.model.viewer.PhysicalElementBuilder;
 import io.goobi.viewer.model.viewer.StringPair;
 import io.goobi.viewer.model.viewer.StructElement;
 
@@ -182,7 +183,16 @@ public abstract class AbstractPageLoader implements IPageLoader {
         StringBuilder sbPurlPart = new StringBuilder();
         sbPurlPart.append('/').append(pi).append('/').append(order).append('/');
 
-        PhysicalElement pe = new PhysicalElement(physId, fileName, order, orderLabel, urn, sbPurlPart.toString(), pi, mimeType, dataRepository);
+        PhysicalElement pe = new PhysicalElementBuilder().setPi(pi)
+                .setPhysId(physId)
+                .setFilePath(fileName)
+                .setOrder(order)
+                .setOrderLabel(orderLabel)
+                .setUrn(urn)
+                .setPurlPart(sbPurlPart.toString())
+                .setMimeType(mimeType)
+                .setDataRepository(dataRepository)
+                .build();
 
         if (doc.getFieldValue(SolrConstants.WIDTH) != null) {
             pe.setWidth((Integer) doc.getFieldValue(SolrConstants.WIDTH));
@@ -232,9 +242,14 @@ public abstract class AbstractPageLoader implements IPageLoader {
             pe.setFulltextAvailable((boolean) doc.getFieldValue(SolrConstants.FULLTEXTAVAILABLE));
         }
 
-        // Full-text available
+        // Image available
         if (doc.containsKey(SolrConstants.BOOL_IMAGEAVAILABLE)) {
             pe.setHasImage((boolean) doc.getFieldValue(SolrConstants.BOOL_IMAGEAVAILABLE));
+        }
+        
+        // Double page view
+        if (doc.containsKey(SolrConstants.BOOL_DOUBPLE_PAGE)) {
+            pe.setDoublePage((boolean) doc.getFieldValue(SolrConstants.BOOL_DOUBPLE_PAGE));
         }
 
         return pe;
