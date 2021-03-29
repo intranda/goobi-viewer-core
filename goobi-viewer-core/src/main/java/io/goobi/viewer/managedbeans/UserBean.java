@@ -18,6 +18,7 @@ package io.goobi.viewer.managedbeans;
 import java.io.IOException;
 import java.io.Serializable;
 import java.io.UnsupportedEncodingException;
+import java.security.SecureRandom;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -115,7 +116,7 @@ public class UserBean implements Serializable {
     private String transkribusPassword;
 
     /** Reusable Random object. */
-    Random random = new Random();
+    Random random = new SecureRandom();
 
     // private CompletableFuture<Optional<User>> loginFuture = null;
 

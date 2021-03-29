@@ -3712,11 +3712,15 @@ public class JPADAO implements IDAO {
             emLocal.getTransaction().begin();
             int rows = emLocal
                     .createNativeQuery(
-                            "UPDATE cs_campaign_record_statistic_annotators SET user_id=" + toUser.getId() + " WHERE user_id=" + fromUser.getId())
+                            "UPDATE cs_campaign_record_statistic_annotators SET user_id=? WHERE user_id=?")
+                    .setParameter(1, toUser.getId())
+                    .setParameter(2, fromUser.getId())
                     .executeUpdate();
             rows += emLocal
                     .createNativeQuery(
-                            "UPDATE cs_campaign_record_statistic_reviewers SET user_id=" + toUser.getId() + " WHERE user_id=" + fromUser.getId())
+                            "UPDATE cs_campaign_record_statistic_reviewers SET user_id=? WHERE user_id=?")
+                    .setParameter(1, toUser.getId())
+                    .setParameter(2, fromUser.getId())
                     .executeUpdate();
             emLocal.getTransaction().commit();
             updateCampaignsFromDatabase();
