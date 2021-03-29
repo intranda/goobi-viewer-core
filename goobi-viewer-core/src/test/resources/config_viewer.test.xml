@@ -341,8 +341,10 @@
        
         <!-- docstructNavigation: If enabled=true, browsing to the next and previous docstruct is visible for the configured docstruct types. Default is false. -->
         <docstructNavigation enabled="true">
-            <docstruct>prologue</docstruct>
-            <docstruct>chapter</docstruct>
+            <template name="_DEFAULT">
+                <docstruct>prologue</docstruct>
+                <docstruct>chapter</docstruct>
+            </template>
         </docstructNavigation>
 
 		<!-- pageTypes: Sub-elements of this element can override the URL names 

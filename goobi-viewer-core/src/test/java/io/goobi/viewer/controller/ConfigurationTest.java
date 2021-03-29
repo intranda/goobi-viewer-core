@@ -2940,10 +2940,18 @@ public class ConfigurationTest extends AbstractTest {
      */
     @Test
     public void getDocstructNavigationTypes_shouldReturnAllConfiguredValues() throws Exception {
-        List<String> result = DataManager.getInstance().getConfiguration().getDocstructNavigationTypes();
-        Assert.assertEquals(2, result.size());
-        Assert.assertEquals("prologue", result.get(0));
-        Assert.assertEquals("chapter", result.get(1));
+        {
+            List<String> result = DataManager.getInstance().getConfiguration().getDocstructNavigationTypes("_DEFAULT", true);
+            Assert.assertEquals(2, result.size());
+            Assert.assertEquals("prologue", result.get(0));
+            Assert.assertEquals("chapter", result.get(1));
+        }
+        {
+            List<String> result = DataManager.getInstance().getConfiguration().getDocstructNavigationTypes("notfound", true);
+            Assert.assertEquals(2, result.size());
+            Assert.assertEquals("prologue", result.get(0));
+            Assert.assertEquals("chapter", result.get(1));
+        }
     }
 
 }

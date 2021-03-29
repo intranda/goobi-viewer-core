@@ -35,7 +35,7 @@
         </div>
         
         <!-- DOCSTRUCT NAVIGATION -->
-        <c:if test="#{configurationBean.displayDocstructNavigation}">
+        <c:if test="#{configurationBean.isDisplayDocstructNavigation(activeDocumentBean.viewManager.topStructElement.docStructType, true)}">
             <div>
                 <h:outputLink value="#{activeDocumentBean.previousDocstructUrl}" disabled="#{activeDocumentBean.previousDocstructUrl == ''}">
                     #{msg.previous}

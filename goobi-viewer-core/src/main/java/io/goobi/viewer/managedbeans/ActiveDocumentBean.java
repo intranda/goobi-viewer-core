@@ -1132,7 +1132,8 @@ public class ActiveDocumentBean implements Serializable {
         if (viewManager == null) {
             return null;
         }
-        List<String> docstructTypes = DataManager.getInstance().getConfiguration().getDocstructNavigationTypes();
+        List<String> docstructTypes =
+                DataManager.getInstance().getConfiguration().getDocstructNavigationTypes(viewManager.getTopStructElement().getDocStructType(), true);
         if (docstructTypes.isEmpty()) {
             return null;
         }
@@ -1180,9 +1181,10 @@ public class ActiveDocumentBean implements Serializable {
         if (viewManager == null) {
             return "";
         }
-        List<String> docstructTypes = DataManager.getInstance().getConfiguration().getDocstructNavigationTypes();
+        List<String> docstructTypes =
+                DataManager.getInstance().getConfiguration().getDocstructNavigationTypes(viewManager.getTopStructElement().getDocStructType(), true);
         if (docstructTypes.isEmpty()) {
-            return "";
+            return null;
         }
 
         String currentDocstructIddoc = String.valueOf(viewManager.getCurrentStructElementIddoc());

@@ -976,9 +976,9 @@ public final class Configuration extends AbstractConfiguration {
         List<String> list = getLocalList("collections.collection[@field]");
         if (list == null || list.isEmpty()) {
             return Collections.singletonList("DC");
-        } else {
-            return list;
         }
+
+        return list;
     }
 
     /**
@@ -3737,7 +3737,7 @@ public final class Configuration extends AbstractConfiguration {
         return getLocalList("viewer.watermarkIdField", Collections.singletonList(SolrConstants.DC));
 
     }
-    
+
     /**
      * 
      * @return
@@ -3746,14 +3746,47 @@ public final class Configuration extends AbstractConfiguration {
     public boolean isDocstructNavigationEnabled() {
         return getLocalBoolean("viewer.docstructNavigation[@enabled]", false);
     }
-    
+
     /**
      * 
+     * @param template
+     * @param fallbackToDefaultTemplate
      * @return
      * @should return all configured values
      */
-    public List<String> getDocstructNavigationTypes() {
-        return getLocalList("viewer.docstructNavigation.docstruct", Collections.emptyList());
+    public List<String> getDocstructNavigationTypes(String template, boolean fallbackToDefaultTemplate) {
+        List<HierarchicalConfiguration> templateList = getLocalConfigurationsAt("viewer.docstructNavigation.template");
+        if (templateList == null) {
+            return Collections.emptyList();
+        }
+
+        HierarchicalConfiguration usingTemplate = null;
+        HierarchicalConfiguration defaultTemplate = null;
+        for (Iterator<HierarchicalConfiguration> it = templateList.iterator(); it.hasNext();) {
+            HierarchicalConfiguration subElement = it.next();
+            if (subElement.getString("[@name]").equals(template)) {
+                usingTemplate = subElement;
+                break;
+            } else if ("_DEFAULT".equals(subElement.getString("[@name]"))) {
+                defaultTemplate = subElement;
+            }
+        }
+
+        // If the requested template does not exist in the config, use _DEFAULT
+        if (usingTemplate == null && fallbackToDefaultTemplate) {
+            usingTemplate = defaultTemplate;
+        }
+        if (usingTemplate == null) {
+            return Collections.emptyList();
+        }
+
+        String[] ret = usingTemplate.getStringArray("docstruct");
+        if (ret == null) {
+            logger.warn("Template '{}' contains no docstruct elements.", usingTemplate.getRoot().getName());
+            return Collections.emptyList();
+        }
+
+        return Arrays.asList(ret);
     }
 
     /**
