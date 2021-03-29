@@ -89,8 +89,7 @@ import io.goobi.viewer.model.viewer.PageOrientation;
 import io.goobi.viewer.model.viewer.PageType;
 import io.goobi.viewer.model.viewer.StructElement;
 import io.goobi.viewer.model.viewer.ViewManager;
-import io.goobi.viewer.model.viewer.pageloader.EagerPageLoader;
-import io.goobi.viewer.model.viewer.pageloader.LeanPageLoader;
+import io.goobi.viewer.model.viewer.pageloader.AbstractPageLoader;
 import io.goobi.viewer.modules.IModule;
 
 /**
@@ -339,48 +338,41 @@ public class ActiveDocumentBean implements Serializable {
                     mayChangeHitIndex = true;
                 }
 
-                StructElement topDocument = new StructElement(topDocumentIddoc);
+                StructElement topStructElement = new StructElement(topDocumentIddoc);
 
                 // Exit here if record is not found or has been deleted
-                if (!topDocument.isExists()) {
+                if (!topStructElement.isExists()) {
                     logger.info("IDDOC for the current record '{}' ({}) no longer seems to exist, attempting to retrieve an updated IDDOC...",
-                            topDocument.getPi(), topDocumentIddoc);
-                    topDocumentIddoc = DataManager.getInstance().getSearchIndex().getIddocFromIdentifier(topDocument.getPi());
+                            topStructElement.getPi(), topDocumentIddoc);
+                    topDocumentIddoc = DataManager.getInstance().getSearchIndex().getIddocFromIdentifier(topStructElement.getPi());
                     if (topDocumentIddoc == 0) {
                         logger.warn("New IDDOC for the current record '{}' could not be found. Perhaps this record has been deleted?",
                                 viewManager.getPi());
                         reset();
                         throw new RecordNotFoundException(lastReceivedIdentifier);
                     }
-                } else if (topDocument.isDeleted()) {
-                    logger.debug("Record '{}' is deleted and only available as a trace document.", topDocument.getPi());
+                } else if (topStructElement.isDeleted()) {
+                    logger.debug("Record '{}' is deleted and only available as a trace document.", topStructElement.getPi());
                     reset();
-                    throw new RecordDeletedException(topDocument.getPi());
+                    throw new RecordDeletedException(topStructElement.getPi());
                 }
 
                 // Do not open records who may not be listed for the current user
-                List<String> requiredAccessConditions = topDocument.getMetadataValues(SolrConstants.ACCESSCONDITION);
+                List<String> requiredAccessConditions = topStructElement.getMetadataValues(SolrConstants.ACCESSCONDITION);
                 if (requiredAccessConditions != null && !requiredAccessConditions.isEmpty()) {
                     boolean access = AccessConditionUtils.checkAccessPermission(new HashSet<>(requiredAccessConditions), IPrivilegeHolder.PRIV_LIST,
-                            new StringBuilder().append('+').append(SolrConstants.PI).append(':').append(topDocument.getPi()).toString(),
+                            new StringBuilder().append('+').append(SolrConstants.PI).append(':').append(topStructElement.getPi()).toString(),
                             (HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest());
                     if (!access) {
-                        logger.debug("User may not open {}", topDocument.getPi());
+                        logger.debug("User may not open {}", topStructElement.getPi());
                         throw new RecordNotFoundException(lastReceivedIdentifier);
                     }
 
                 }
 
-                int numPages = topDocument.getNumPages();
-                if (numPages < DataManager.getInstance().getConfiguration().getPageLoaderThreshold()) {
-                    viewManager = new ViewManager(topDocument, new EagerPageLoader(topDocument), topDocumentIddoc, logid,
-                            topDocument.getMetadataValue(SolrConstants.MIMETYPE), imageDelivery);
-                } else {
-                    logger.debug("Record has {} pages, using a lean page loader to limit memory usage.", numPages);
-                    viewManager = new ViewManager(topDocument, new LeanPageLoader(topDocument, numPages), topDocumentIddoc, logid,
-                            topDocument.getMetadataValue(SolrConstants.MIMETYPE), imageDelivery);
-                }
-
+                viewManager = new ViewManager(topStructElement, AbstractPageLoader.create(topStructElement), topDocumentIddoc,
+                        logid,
+                        topStructElement.getMetadataValue(SolrConstants.MIMETYPE), imageDelivery);
                 viewManager.setToc(createTOC());
 
                 HttpSession session = BeanUtils.getSession();
@@ -399,7 +391,7 @@ public class ActiveDocumentBean implements Serializable {
                                 .getRecordLockManager()
                                 .lockRecord(viewManager.getPi(), session.getId(), Integer.valueOf(limit));
                     } else {
-                        logger.debug("No session found, unable to lock limited view record {}", topDocument.getPi());
+                        logger.debug("No session found, unable to lock limited view record {}", topStructElement.getPi());
                         throw new RecordLimitExceededException(lastReceivedIdentifier + ":" + limit);
                     }
                 }

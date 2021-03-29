@@ -32,8 +32,9 @@ import org.slf4j.LoggerFactory;
 
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.SolrConstants;
-import io.goobi.viewer.controller.SolrSearchIndex;
 import io.goobi.viewer.controller.SolrConstants.DocType;
+import io.goobi.viewer.controller.SolrSearchIndex;
+import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.messages.ViewerResourceBundle;
@@ -50,6 +51,27 @@ import io.goobi.viewer.model.viewer.StructElement;
 public abstract class AbstractPageLoader implements IPageLoader {
 
     private static final Logger logger = LoggerFactory.getLogger(AbstractPageLoader.class);
+
+    /**
+     * Creates and returns the appropriate loader instance for the given <code>StructElement</code>.
+     * 
+     * @param topStructElement Top level <code>StructElement</code> of the record
+     * @return
+     * @throws IndexUnreachableException
+     * @throws DAOException
+     * @throws PresentationException
+     * @should return EagerPageLoader if page count below threshold
+     * @should return LeanPageLoder if page count at or above threshold
+     */
+    public static AbstractPageLoader create(StructElement topStructElement)
+            throws IndexUnreachableException, PresentationException, DAOException {
+        int numPages = topStructElement.getNumPages();
+        if (numPages < DataManager.getInstance().getConfiguration().getPageLoaderThreshold()) {
+            return new EagerPageLoader(topStructElement);
+        }
+        logger.debug("Record has {} pages, using a lean page loader to limit memory usage.", numPages);
+        return new LeanPageLoader(topStructElement, numPages);
+    }
 
     /**
      * Replaces the static variable placeholders (the ones that don't change depending on the page) of the given label format with values.
@@ -246,7 +268,7 @@ public abstract class AbstractPageLoader implements IPageLoader {
         if (doc.containsKey(SolrConstants.BOOL_IMAGEAVAILABLE)) {
             pe.setHasImage((boolean) doc.getFieldValue(SolrConstants.BOOL_IMAGEAVAILABLE));
         }
-        
+
         // Double page view
         if (doc.containsKey(SolrConstants.BOOL_DOUBPLE_PAGE)) {
             pe.setDoublePage((boolean) doc.getFieldValue(SolrConstants.BOOL_DOUBPLE_PAGE));
