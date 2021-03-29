@@ -6,8 +6,6 @@
     xmlns:p="http://primefaces.org/ui">
 
     <composite:interface>
-        <composite:attribute name="showGerman" required="false" default="true" />
-        <composite:attribute name="showEnglish" required="false" default="true" />
         <composite:attribute name="showFlags" required="false" default="true" />
         <composite:attribute name="showLabels" required="false" default="true" />
         <composite:attribute name="displayAll" required="false" default="true" />
@@ -41,26 +39,19 @@
 			<h:panelGroup rendered="#{cc.attrs.displayAll == true and cc.attrs.toggleLanguage == true}">
 				<h:form id="changeLocalForm2" prependId="false">
 					<ul>
-						<h:panelGroup rendered="#{navigationHelper.localeString == 'en'}">
-							<li>
-								<h:commandLink rendered="#{cc.attrs.showGerman == true}" styleClass="flag #{navigationHelper.localeString == 'de'?'activeLang_de':''} leftFlag "
-								action="#{navigationHelper.setLocaleString('de')}">
-									<h:outputText value="#{msg.changeLocal_de}" rendered="#{cc.attrs.showLabels == true}" />
-									<h:panelGroup rendered="#{cc.attrs.showFlags == true}"><img src="#{request.contextPath}/resources/themes/#{navigationHelper.theme}/images/lang/flag_de.gif" alt="Flag Icon" />
-                                	</h:panelGroup>
-								</h:commandLink>
-							</li>
-						</h:panelGroup>
-						<h:panelGroup rendered="#{navigationHelper.localeString == 'de'}">
-							<li>	
-								<h:commandLink rendered="#{cc.attrs.showEnglish == true}" styleClass="flag middleFlag #{navigationHelper.localeString == 'en'?'activeLang_en':''}"
-									action="#{navigationHelper.setLocaleString('en')}">
-									<h:outputText value="#{msg.changeLocal_en}" rendered="#{cc.attrs.showLabels == true}" />
-									<h:panelGroup rendered="#{cc.attrs.showFlags == true}"><img src="#{request.contextPath}/resources/themes/#{navigationHelper.theme}/images/lang/flag_en.gif" alt="Flag Icon" />
-                                	</h:panelGroup>
-								</h:commandLink>
-							</li>
-						</h:panelGroup>
+						<ui:repeat var="lang" value="#{navigationHelper.supportedLanguages}" end="1">
+							<h:panelGroup rendered="#{navigationHelper.localeString ne lang}">
+								<li>
+									<h:commandLink styleClass="flag #{navigationHelper.localeString eq lang ?'activeLang':''}"
+									action="#{navigationHelper.setLocaleString(lang)}">
+										<h:outputText value="#{msg['changeLocal_' += lang]}" rendered="#{cc.attrs.showLabels == true}" />
+										<h:panelGroup rendered="#{cc.attrs.showFlags == true}">
+										<img src="#{request.contextPath}/resources/themes/#{navigationHelper.theme}/images/lang/flag_#{lang}.gif" alt="Flag Icon" />
+	                                	</h:panelGroup>
+									</h:commandLink>
+								</li>
+							</h:panelGroup>
+						</ui:repeat>
 					</ul>
 				</h:form>
 			</h:panelGroup>

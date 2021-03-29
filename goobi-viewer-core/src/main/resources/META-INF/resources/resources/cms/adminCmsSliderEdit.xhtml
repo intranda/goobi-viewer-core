@@ -137,6 +137,28 @@
 										<c:choose>
 	
 											<c:when test="#{slider.sourceType == 'COLLECTIONS'}">
+												
+												<div class="#{fn:length(cmsSliderEditBean.allCollectionFields) > 1 ? '' : 'd-none'} form-group form-row">
+						                              <!-- COLLECTION FIELD -->
+						                              <div class="col-2 control-label admin__form-label xx">
+						                                  <label for="SolrFieldSelect">#{msg.cms_collections_solrField}:</label>
+						                              </div>
+						
+						                              <!-- CONTROL -->
+						                              <div class="col-9 admin__form-input">
+						                                  <h:selectOneMenu id="SolrFieldSelect" name="SolrFieldSelect" value="#{cmsSliderEditBean.collectionField}" styleClass="form-control">
+						                                      <f:selectItems value="#{cmsSliderEditBean.allCollectionFields}" />
+						                                      <f:ajax render="collectionsSelect"></f:ajax>
+						                                  </h:selectOneMenu>
+						                                  <span class="admin__form-help-text">#{msg.cms__edit_slider__collections_field__help}</span>
+						                              </div>
+						                              <div class="col-1 admin__form-help-icon">
+						                                  <button type="button" class="btn btn--clean" data-toggle="helptext" aria-label="#{msg.aria_label__help}">
+						                                      <i class="fa fa-question-circle" aria-hidden="true"></i>
+						                                  </button>
+						                              </div>
+						                          </div>
+												
 												<div class="form-group form-row">
 													<div class="col-2 control-label admin__form-label">
 														<label for="collectionsSelect">
@@ -279,12 +301,9 @@
 											</div>
 
 											<div class="col-9 admin__form-input cms-module__option-control">
-
-												<div class="custom-control custom-control--select">
-													<select onchange="setStyle({sliderStyle : this.value});" id="styleSelect" class="form-control" data-value="#{slider.style}" data-options="slider-styles">
-														<option value="" disabled="disabled">#{msg.select}</option>
-													</select>
-												</div>
+												<select onchange="setStyle({sliderStyle : this.value});" id="styleSelect" class="form-control" data-value="#{slider.style}" data-options="slider-styles">
+													<option value="" disabled="disabled">#{msg.select}</option>
+												</select>
 												<span class="admin__form-help-text">#{msg.cms__edit_slider__style__help}</span>
 											</div>
 											<div class="col-1 admin__form-help-icon">
