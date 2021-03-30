@@ -243,17 +243,7 @@ public class ManifestBuilder extends AbstractBuilder {
         
     }
 
-    /**
-     * @param labelIIIFRenderingViewer
-     * @return
-     */
-    private IMetadataValue createLabel(String text) {
-        if(StringUtils.isBlank(text)) {
-            return null;
-        } else {
-            return new SimpleMetadataValue(text);
-        }
-    }
+
 
     /**
      * TODO: config for docStruct types that should be presented as "paged"

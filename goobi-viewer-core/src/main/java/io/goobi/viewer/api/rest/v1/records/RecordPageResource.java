@@ -154,18 +154,12 @@ public class RecordPageResource {
     @Produces({ MediaType.APPLICATION_JSON })
     @Operation(tags = { "records", "annotations" }, summary = "List annotations for a page")
     public IAnnotationCollection getAnnotationsForRecord(
-            @Parameter(description = "Page numer (1-based") @PathParam("pageNo") Integer pageNo,
-            @Parameter(
-                    description = "annotation format of the response. If it is 'oa' the comments will be delivered as OpenAnnotations, otherwise as W3C-Webannotations") @QueryParam("format") String format)
+            @Parameter(description = "Page numer (1-based") @PathParam("pageNo") Integer pageNo)
             throws PresentationException, IndexUnreachableException {
 
         ApiPath apiPath = urls.path(RECORDS_PAGES, RECORDS_PAGES_ANNOTATIONS).params(pi, pageNo);
-        if ("oa".equalsIgnoreCase(format)) {
             URI uri = URI.create(apiPath.query("format", "oa").build());
             return new OpenAnnotationBuilder(urls).getCrowdsourcingAnnotationCollection(uri, pi, pageNo, false, servletRequest);
-        }
-        URI uri = URI.create(apiPath.build());
-        return new WebAnnotationBuilder(urls).getCrowdsourcingAnnotationCollection(uri, pi, pageNo, false, servletRequest);
     }
 
     @GET
@@ -173,31 +167,14 @@ public class RecordPageResource {
     @Produces({ MediaType.APPLICATION_JSON })
     @Operation(tags = { "records", "annotations" }, summary = "List comments for a page")
     public IAnnotationCollection getCommentsForPage(
-            @Parameter(description = "Page numer (1-based") @PathParam("pageNo") Integer pageNo,
-            @Parameter(
-                    description = "annotation format of the response. If it is 'oa' the comments will be delivered as OpenAnnotations, otherwise as W3C-Webannotations") @QueryParam("format") String format)
+            @Parameter(description = "Page numer (1-based") @PathParam("pageNo") Integer pageNo)
             throws DAOException {
 
         ApiPath apiPath = urls.path(RECORDS_RECORD, RECORDS_COMMENTS).params(pi);
-        if ("oa".equalsIgnoreCase(format)) {
             URI uri = URI.create(apiPath.query("format", "oa").build());
             return new AnnotationsResourceBuilder(urls, servletRequest).getOAnnotationListForPageComments(pi, pageNo, uri);
-        }
-        URI uri = URI.create(apiPath.build());
-        return new AnnotationsResourceBuilder(urls, servletRequest).getWebAnnotationCollectionForPageComments(pi, pageNo, uri);
     }
 
-    @GET
-    @javax.ws.rs.Path(RECORDS_PAGES_COMMENTS + "/{page}")
-    @Produces({ MediaType.APPLICATION_JSON })
-    @ApiResponse(responseCode = "400", description = "If the page number is out of bounds")
-    public AnnotationPage getCommentPageForRecord(
-            @Parameter(description = "Page numer (1-based") @PathParam("pageNo") Integer pageNo,
-            @PathParam("page") Integer page) throws DAOException, IllegalRequestException {
-
-        URI uri = URI.create(urls.path(RECORDS_RECORD, RECORDS_COMMENTS).params(pi).build());
-        return new AnnotationsResourceBuilder(urls, servletRequest).getWebAnnotationPageForPageComments(pi, pageNo, uri, page);
-    }
 
     @GET
     @javax.ws.rs.Path(RECORDS_PAGES_TEXT)

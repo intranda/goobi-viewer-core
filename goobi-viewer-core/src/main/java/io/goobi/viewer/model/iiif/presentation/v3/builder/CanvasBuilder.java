@@ -15,6 +15,8 @@
  */
 package io.goobi.viewer.model.iiif.presentation.v3.builder;
 
+import static io.goobi.viewer.api.rest.v2.ApiUrls.*;
+
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -38,7 +40,10 @@ import de.intranda.api.annotation.wa.TextualResource;
 import de.intranda.api.annotation.wa.WebAnnotation;
 import de.intranda.api.annotation.wa.collection.AnnotationPage;
 import de.intranda.api.iiif.image.ImageInformation;
+import de.intranda.api.iiif.presentation.enums.Format;
+import de.intranda.api.iiif.presentation.v3.AbstractPresentationModelElement3;
 import de.intranda.api.iiif.presentation.v3.Canvas3;
+import de.intranda.api.iiif.presentation.v3.LabeledResource;
 import de.intranda.digiverso.ocr.alto.model.structureclasses.logical.AltoDocument;
 import de.intranda.metadata.multilanguage.SimpleMetadataValue;
 import de.unigoettingen.sub.commons.contentlib.exceptions.ContentLibException;
@@ -47,10 +52,13 @@ import de.unigoettingen.sub.commons.util.datasource.media.PageSource.IllegalPath
 import io.goobi.viewer.api.rest.AbstractApiUrlManager;
 import io.goobi.viewer.api.rest.resourcebuilders.TextResourceBuilder;
 import io.goobi.viewer.api.rest.v2.ApiUrls;
+import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.imaging.ImageHandler;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.model.annotation.AltoAnnotationBuilder;
+import io.goobi.viewer.model.iiif.presentation.v3.builder.LinkingProperty.LinkingTarget;
+import io.goobi.viewer.model.viewer.PageType;
 import io.goobi.viewer.model.viewer.PhysicalElement;
 import io.goobi.viewer.model.viewer.StructElement;
 import io.goobi.viewer.model.viewer.pageloader.IPageLoader;
@@ -107,14 +115,32 @@ public class CanvasBuilder extends AbstractBuilder {
                 //not implemented
         }
 
-        //TODO:Add fulltext annotations
         canvas.addAnnotations(getFulltextAnnotationsReference(page));
-        //TODO:Add comments and crowdsourcing annotations
+        canvas.addAnnotations(getCommentAnnotationsReference(page));
+        canvas.addAnnotations(getCrowdsourcingAnnotationsReference(page));
 
+        addRelatedResources(canvas, page);
+        
         return canvas;
 
     }
     
+    /**
+     * @param page
+     * @return
+     */
+    private AnnotationPage getCommentAnnotationsReference(PhysicalElement page) {
+        URI annoPageUri = this.urls.path(ApiUrls.RECORDS_PAGES, ApiUrls.RECORDS_PAGES_COMMENTS).params(page.getPi(), page.getOrder()).buildURI();
+        AnnotationPage annoPage = new AnnotationPage(annoPageUri, false);
+        return annoPage;
+    }
+    
+    private AnnotationPage getCrowdsourcingAnnotationsReference(PhysicalElement page) {
+        URI annoPageUri = this.urls.path(ApiUrls.RECORDS_PAGES, ApiUrls.RECORDS_PAGES_ANNOTATIONS).params(page.getPi(), page.getOrder()).buildURI();
+        AnnotationPage annoPage = new AnnotationPage(annoPageUri, false);
+        return annoPage;
+    }
+
     /**
      * Get a reference to an annotation page containing all fulltext annotations for the given page
      * 
@@ -211,6 +237,39 @@ public class CanvasBuilder extends AbstractBuilder {
             canvas.addMedia(mediaId, new ImageResource(imageId, thumbWidth, thumbHeight));
         }
 
+    }
+    
+    private void addRelatedResources(Canvas3 canvas, PhysicalElement page) {
+        
+        if(DataManager.getInstance().getConfiguration().isVisibleIIIFRenderingViewer()) {
+            PageType pageType = PageType.viewMetadata;
+            if(page.isHasImage() || page.getMimeType().equalsIgnoreCase("video") || page.getMimeType().equalsIgnoreCase("audio")) {
+                pageType = PageType.viewImage;
+            }
+            URI recordURI = UriBuilder.fromPath(urls.getApplicationUrl()).path("{pageType}").path("{pi}").path("{pageNo}").build(pageType.getName(), page.getPi(), page.getOrder());
+            LinkingProperty homepage = new LinkingProperty(LinkingTarget.VIEWER, createLabel(DataManager.getInstance().getConfiguration().getLabelIIIFRenderingViewer()));            
+            canvas.addHomepage(homepage.getResource(recordURI));
+        }
+        
+        if(page.isHasImage() && DataManager.getInstance().getConfiguration().isVisibleIIIFRenderingPDF()) {
+            URI uri = urls.path(RECORDS_FILES_IMAGE, RECORDS_FILES_IMAGE_PDF).params(page.getPi(), page.getFileName()).buildURI();
+            LinkingProperty pdf = new LinkingProperty(LinkingTarget.PDF, createLabel(DataManager.getInstance().getConfiguration().getLabelIIIFRenderingPDF()));            
+            canvas.addRendering(pdf.getResource(uri));
+        }
+
+        if(page.isAltoAvailable() &&  DataManager.getInstance().getConfiguration().isVisibleIIIFRenderingAlto()) {
+            URI uri = urls.path(RECORDS_FILES, RECORDS_FILES_ALTO).params(page.getPi(), getFilename(page.getAltoFileName())).buildURI();
+            LinkingProperty alto = new LinkingProperty(LinkingTarget.ALTO, createLabel(DataManager.getInstance().getConfiguration().getLabelIIIFRenderingAlto()));            
+            canvas.addSeeAlso(alto.getResource(uri));
+        }
+        
+        if(page.isFulltextAvailable() && StringUtils.isNotBlank(page.getFulltextFileName()) && DataManager.getInstance().getConfiguration().isVisibleIIIFRenderingPlaintext()) {
+            URI uri = urls.path(RECORDS_FILES, RECORDS_FILES_PLAINTEXT).params(page.getPi(), getFilename(page.getFulltextFileName())).buildURI();
+            LinkingProperty text = new LinkingProperty(LinkingTarget.PLAINTEXT, createLabel(DataManager.getInstance().getConfiguration().getLabelIIIFRenderingPlaintext()));            
+            canvas.addRendering(text.getResource(uri));
+        }
+
+        
     }
 
 }

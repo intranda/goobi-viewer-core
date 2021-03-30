@@ -226,28 +226,22 @@ public class WebAnnotationBuilder extends AbstractAnnotationBuilder {
      * @throws IndexUnreachableException 
      * @throws PresentationException 
      */
-    public IAnnotationCollection getCrowdsourcingAnnotationCollection(URI uri, String pi, boolean urlsOnly, HttpServletRequest request) throws PresentationException, IndexUnreachableException {
+    public AnnotationPage getCrowdsourcingAnnotationCollection(URI uri, String pi, boolean urlsOnly, HttpServletRequest request) throws PresentationException, IndexUnreachableException {
         List<IAnnotation> annos = getCrowdsourcingAnnotations(pi, urlsOnly, request).values().stream().flatMap(List::stream).collect(Collectors.toList());
-        AnnotationCollection collection = new AnnotationCollection(uri);
-        AnnotationPage page = new AnnotationPage();
-        collection.setFirst(page);
-        collection.setTotalItems(annos.size());
+        AnnotationPage page = new AnnotationPage(uri);
         page.setItems(annos);
-        return collection;
+        return page;
     }
     
-    public IAnnotationCollection getCrowdsourcingAnnotationCollection(URI uri, String pi, Integer pageNo, boolean urlsOnly, HttpServletRequest request) throws PresentationException, IndexUnreachableException {
+    public AnnotationPage getCrowdsourcingAnnotationCollection(URI uri, String pi, Integer pageNo, boolean urlsOnly, HttpServletRequest request) throws PresentationException, IndexUnreachableException {
         List<IAnnotation> annos = getCrowdsourcingAnnotations(pi, urlsOnly, request).entrySet().stream()
         .filter(entry -> ObjectUtils.equals(pageNo, entry.getKey()))
         .map(Entry::getValue)
         .flatMap(List::stream)
         .collect(Collectors.toList());
-        AnnotationCollection collection = new AnnotationCollection(uri);
-        AnnotationPage page = new AnnotationPage();
-        collection.setFirst(page);
-        collection.setTotalItems(annos.size());
+        AnnotationPage page = new AnnotationPage(uri);
         page.setItems(annos);
-        return collection;
+        return page;
     }
 
 

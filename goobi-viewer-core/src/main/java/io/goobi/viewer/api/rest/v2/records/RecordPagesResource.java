@@ -15,10 +15,7 @@
  */
 package io.goobi.viewer.api.rest.v2.records;
 
-import static io.goobi.viewer.api.rest.v2.ApiUrls.RECORDS_PAGES;
-import static io.goobi.viewer.api.rest.v2.ApiUrls.RECORDS_PAGES_CANVAS;
-import static io.goobi.viewer.api.rest.v2.ApiUrls.RECORDS_PAGES_MEDIA;
-import static io.goobi.viewer.api.rest.v2.ApiUrls.RECORDS_PAGES_TEXT;
+import static io.goobi.viewer.api.rest.v2.ApiUrls.*;
 
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -29,6 +26,7 @@ import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.GET;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 
@@ -36,20 +34,26 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import de.intranda.api.annotation.IAnnotation;
+import de.intranda.api.annotation.IAnnotationCollection;
 import de.intranda.api.annotation.wa.collection.AnnotationPage;
 import de.intranda.api.iiif.presentation.IPresentationModelElement;
 import de.unigoettingen.sub.commons.contentlib.exceptions.ContentLibException;
 import de.unigoettingen.sub.commons.contentlib.exceptions.ContentNotFoundException;
+import de.unigoettingen.sub.commons.contentlib.exceptions.IllegalRequestException;
 import de.unigoettingen.sub.commons.contentlib.servlet.rest.CORSBinding;
 import de.unigoettingen.sub.commons.util.datasource.media.PageSource.IllegalPathSyntaxException;
+import io.goobi.viewer.api.rest.AbstractApiUrlManager.ApiPath;
 import io.goobi.viewer.api.rest.bindings.IIIFPresentationBinding;
 import io.goobi.viewer.api.rest.bindings.ViewerRestServiceBinding;
 import io.goobi.viewer.api.rest.filters.FilterTools;
+import io.goobi.viewer.api.rest.resourcebuilders.AnnotationsResourceBuilder;
 import io.goobi.viewer.api.rest.v2.ApiUrls;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.exceptions.ViewerConfigurationException;
+import io.goobi.viewer.model.iiif.presentation.v2.builder.OpenAnnotationBuilder;
+import io.goobi.viewer.model.iiif.presentation.v2.builder.WebAnnotationBuilder;
 import io.goobi.viewer.model.iiif.presentation.v3.builder.CanvasBuilder;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -136,6 +140,31 @@ public class RecordPagesResource {
             throws PresentationException, IndexUnreachableException, URISyntaxException, ViewerConfigurationException,
             DAOException, IllegalPathSyntaxException, ContentLibException {
         return new CanvasBuilder(urls).buildFulltextAnnotations(pi, pageNo);
+    }
+    
+    @GET
+    @javax.ws.rs.Path(RECORDS_PAGES_ANNOTATIONS)
+    @Produces({ MediaType.APPLICATION_JSON })
+    @Operation(tags = { "records", "annotations" }, summary = "List annotations for a page")
+    public AnnotationPage getAnnotationsForRecord(
+            @Parameter(description = "Page numer (1-based") @PathParam("pageNo") Integer pageNo) throws PresentationException, IndexUnreachableException {
+
+        ApiPath apiPath = urls.path(RECORDS_PAGES, RECORDS_PAGES_ANNOTATIONS).params(pi, pageNo);
+
+        URI uri = URI.create(apiPath.build());
+        return new WebAnnotationBuilder(urls).getCrowdsourcingAnnotationCollection(uri, pi, pageNo, false, servletRequest);
+    }
+
+    @GET
+    @javax.ws.rs.Path(RECORDS_PAGES_COMMENTS)
+    @Produces({ MediaType.APPLICATION_JSON })
+    @Operation(tags = { "records", "annotations" }, summary = "List comments for a page")
+    public AnnotationPage getCommentsForPage(
+            @Parameter(description = "Page numer (1-based") @PathParam("pageNo") Integer pageNo) throws DAOException, IllegalRequestException {
+
+        ApiPath apiPath = urls.path(RECORDS_PAGES, RECORDS_PAGES_COMMENTS).params(pi, pageNo);
+        URI uri = URI.create(apiPath.build());
+        return new AnnotationsResourceBuilder(urls, servletRequest).getWebAnnotationPageForPageComments(pi, pageNo, uri);
     }
 
 }

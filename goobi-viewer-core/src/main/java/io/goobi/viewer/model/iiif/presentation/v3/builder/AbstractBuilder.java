@@ -19,6 +19,7 @@ import static io.goobi.viewer.api.rest.v2.ApiUrls.*;
 
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -675,6 +676,25 @@ public abstract class AbstractBuilder {
             }
             return null;
     }
-
+    
+    /**
+     * @param labelIIIFRenderingViewer
+     * @return a simple metadata value with the given text, or null if text is blank
+     */
+    protected IMetadataValue createLabel(String text) {
+        if(StringUtils.isBlank(text)) {
+            return null;
+        } else {
+            return new SimpleMetadataValue(text);
+        }
+    }
+    
+    protected String getFilename(String path) {
+        if(StringUtils.isBlank(path)) {
+            return null;
+        } else {            
+            return Paths.get(path).getFileName().toString();
+        }
+    }
 
 }
