@@ -55,6 +55,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import de.undercouch.citeproc.CSL;
+import de.unigoettingen.sub.commons.contentlib.exceptions.IllegalRequestException;
 import de.unigoettingen.sub.commons.contentlib.imagelib.ImageFileFormat;
 import de.unigoettingen.sub.commons.contentlib.imagelib.transform.Scale;
 import io.goobi.viewer.api.rest.v1.ApiUrls;
@@ -605,6 +606,7 @@ public class ViewManager implements Serializable {
         }
 
         for (DownloadOption option : configuredOptions) {
+            try {
             Dimension dim = option.getBoxSizeInPixel();
             if (dim == DownloadOption.MAX) {
                 Scale scale = new Scale.ScaleToBox(maxSize);
@@ -618,6 +620,9 @@ public class ViewManager implements Serializable {
                 Scale scale = new Scale.ScaleToBox(option.getBoxSizeInPixel());
                 Dimension size = scale.scale(origImageSize);
                 options.add(new DownloadOption(option.getLabel(), getImageFormat(option.getFormat(), imageFilename), size));
+            }
+            } catch(IllegalRequestException e) {
+                //attempting scale beyond original size. Ignore
             }
         }
         return options;
@@ -1083,7 +1088,7 @@ public class ViewManager implements Serializable {
                 // logger.debug("page " + order + ": " + pageLoader.getPage(order).getFileName());
                 return Optional.ofNullable(pageLoader.getPage(order));
             }
-        } catch (IndexUnreachableException | DAOException e) {
+        } catch (IndexUnreachableException e) {
             logger.error("Error getting current page " + e.toString());
         }
 

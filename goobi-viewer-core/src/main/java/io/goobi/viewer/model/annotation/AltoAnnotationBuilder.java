@@ -67,7 +67,7 @@ public class AltoAnnotationBuilder {
      * @param urlOnlyTarget a boolean.
      * @return a {@link java.util.List} object.
      */
-    public List<IAnnotation> createAnnotations(Page alto, String pi, Integer pageNo, IResource target, Granularity granularity, boolean urlOnlyTarget) {
+    public List<AbstractAnnotation> createAnnotations(Page alto, String pi, Integer pageNo, IResource target, Granularity granularity, boolean urlOnlyTarget) {
         List<GeometricData> elementsToInclude = new ArrayList<>();
         switch (granularity) {
             case PAGE:
@@ -87,7 +87,7 @@ public class AltoAnnotationBuilder {
                 break;
         }
 
-        List<IAnnotation> annoList =
+        List<AbstractAnnotation> annoList =
                 elementsToInclude.stream().map(element -> createAnnotation(element, pi, pageNo, target, urlOnlyTarget)).collect(Collectors.toList());
         return annoList;
     }
@@ -103,8 +103,8 @@ public class AltoAnnotationBuilder {
      * @param urlOnlyTarget a boolean.
      * @return a {@link java.util.List} object.
      */
-    public List<IAnnotation> createAnnotations(List<GeometricData> elements, String pi, Integer pageNo, IResource target, boolean urlOnlyTarget) {
-        List<IAnnotation> annoList =
+    public List<AbstractAnnotation> createAnnotations(List<GeometricData> elements, String pi, Integer pageNo, IResource target, boolean urlOnlyTarget) {
+        List<AbstractAnnotation> annoList =
                 elements.stream().map(element -> createAnnotation(element, pi, pageNo, target, urlOnlyTarget)).collect(Collectors.toList());
         return annoList;
     }
@@ -120,7 +120,7 @@ public class AltoAnnotationBuilder {
      * @param urlOnlyTarget a boolean.
      * @return a {@link de.intranda.api.annotation.IAnnotation} object.
      */
-    public IAnnotation createAnnotation(GeometricData element, String pi, Integer pageNo, IResource canvas, boolean urlOnlyTarget) {
+    public AbstractAnnotation createAnnotation(GeometricData element, String pi, Integer pageNo, IResource canvas, boolean urlOnlyTarget) {
         String id = Optional.ofNullable(element.getId()).orElse(buildId(element));
         AbstractAnnotation anno = new OpenAnnotation(createAnnotationId(pi, pageNo, id));
         anno.setMotivation(Motivation.PAINTING);

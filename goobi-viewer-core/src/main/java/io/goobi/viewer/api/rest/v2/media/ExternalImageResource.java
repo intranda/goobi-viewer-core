@@ -128,7 +128,7 @@ public class ExternalImageResource extends ImageResource {
             
         }
         
-        return super.getPdf("full", "max", "0", pi + "_" + filename + ".pdf");
+        return super.getPdf();
     }
     
     @Override

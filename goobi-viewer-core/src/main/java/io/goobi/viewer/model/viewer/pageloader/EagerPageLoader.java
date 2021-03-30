@@ -69,7 +69,7 @@ public class EagerPageLoader extends AbstractPageLoader implements Serializable 
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
-    public EagerPageLoader(StructElement topElement) throws PresentationException, IndexUnreachableException, DAOException {
+    public EagerPageLoader(StructElement topElement) throws PresentationException, IndexUnreachableException {
         pi = topElement.getPi();
         pages = loadAllPages(topElement);
         setFirstAndLastPageOrder();
@@ -184,7 +184,7 @@ public class EagerPageLoader extends AbstractPageLoader implements Serializable 
      * @throws DAOException
      */
     private Map<Integer, PhysicalElement> loadAllPages(StructElement topElement)
-            throws PresentationException, IndexUnreachableException, DAOException {
+            throws PresentationException, IndexUnreachableException {
         Map<Integer, PhysicalElement> ret = new HashMap<>();
 
         if (topElement.isAnchor() || topElement.isGroup()) {

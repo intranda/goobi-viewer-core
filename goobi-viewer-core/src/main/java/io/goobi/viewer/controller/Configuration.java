@@ -4635,11 +4635,11 @@ public final class Configuration extends AbstractConfiguration {
     }
 
     public String getLabelIIIFRenderingPDF() {
-        return getLocalString("webapi.iiif.rendering.pdf.label", "PDF");
+        return getLocalString("webapi.iiif.rendering.pdf.label", null);
     }
 
     public String getLabelIIIFRenderingViewer() {
-        return getLocalString("webapi.iiif.rendering.viewer.label", "Goobi Viewer");
+        return getLocalString("webapi.iiif.rendering.viewer.label", null);
     }
 
     public boolean isVisibleIIIFRenderingPlaintext() {
@@ -4651,11 +4651,11 @@ public final class Configuration extends AbstractConfiguration {
     }
 
     public String getLabelIIIFRenderingPlaintext() {
-        return getLocalString("webapi.iiif.rendering.plaintext.label", "Fulltext");
+        return getLocalString("webapi.iiif.rendering.plaintext.label", null);
     }
 
     public String getLabelIIIFRenderingAlto() {
-        return getLocalString("webapi.iiif.rendering.alto.label", "ALTO");
+        return getLocalString("webapi.iiif.rendering.alto.label", null);
     }
 
     /**

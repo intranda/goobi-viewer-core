@@ -37,6 +37,7 @@ import org.jdom2.JDOMException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import de.intranda.api.annotation.AbstractAnnotation;
 import de.intranda.api.annotation.IAnnotation;
 import de.intranda.api.annotation.SimpleResource;
 import de.intranda.api.annotation.oa.FragmentSelector;
@@ -439,10 +440,10 @@ public class SequenceBuilder extends AbstractBuilder {
                         String altoText = builder.getAltoDocument(doc.getPi(), altoFilename);
                         AltoDocument alto = AltoDocument.getDocumentFromString(altoText);
                         if (alto.getFirstPage() != null && StringUtils.isNotBlank(alto.getFirstPage().getContent())) {
-                            List<IAnnotation> annos =
+                            List<AbstractAnnotation> annos =
                                     new AltoAnnotationBuilder(urls, "oa").createAnnotations(alto.getFirstPage(), doc.getPi(), page.getOrder(), canvas,
                                             AltoAnnotationBuilder.Granularity.LINE, false);
-                            for (IAnnotation annotation : annos) {
+                            for (AbstractAnnotation annotation : annos) {
                                 annoList.addResource(annotation);
                             }
                         }

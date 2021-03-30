@@ -22,6 +22,7 @@ import org.apache.commons.lang3.StringUtils;
 import de.intranda.api.iiif.presentation.content.LinkingContent;
 import de.intranda.api.iiif.presentation.enums.DcType;
 import de.intranda.api.iiif.presentation.enums.Format;
+import de.intranda.api.iiif.presentation.v3.LabeledResource;
 import de.intranda.metadata.multilanguage.IMetadataValue;
 import de.intranda.metadata.multilanguage.SimpleMetadataValue;
 import io.goobi.viewer.messages.ViewerResourceBundle;
@@ -32,29 +33,27 @@ import io.goobi.viewer.messages.ViewerResourceBundle;
  */
 public class LinkingProperty {
 
-    public static enum LinkingType {
-        RENDERING,
-        SEE_ALSO,
-        RELATED,
-        SERVICE;
-    }
     
     public static enum LinkingTarget {
-        PLAINTEXT(Format.TEXT_PLAIN, DcType.TEXT),
-        ALTO(Format.TEXT_XML, DcType.TEXT),
-        PDF(Format.APPLICATION_PDF, DcType.IMAGE),
-        VIEWER(Format.TEXT_HTML, DcType.INTERACTIVE_RESOURCE);
+        PLAINTEXT("Text", Format.TEXT_PLAIN, null),
+        ALTO("Dataset", Format.TEXT_XML, "https://www.loc.gov/alto/"),
+        METS("Dataset", Format.TEXT_XML, "https://www.loc.gov/mets/"),
+        LIDO("Dataset", Format.TEXT_XML, "http://www.lido-schema.org"),
+        TEI("Text", Format.TEXT_XML, "http://www.tei-c.org"),
+        PDF("Text", Format.APPLICATION_PDF, null),
+        VIEWER("Text", Format.TEXT_HTML, null);
         
         public final Format mimeType;
-        public final DcType type;
+        public final String type;
+        public final String profile;
         
-        private LinkingTarget(Format mimeType, DcType type) {
-            this.mimeType = mimeType;
+        private LinkingTarget(String type, Format mimeType, String profile) {
             this.type = type;
+            this.mimeType = mimeType;
+            this.profile = profile;
         }
     }
     
-    public final LinkingType type;
     public final LinkingTarget target;
     public final IMetadataValue label;
     /**
@@ -63,20 +62,15 @@ public class LinkingProperty {
      * @param label
      * @param id
      */
-    public LinkingProperty(LinkingType type, LinkingTarget target, IMetadataValue label) {
+    public LinkingProperty(LinkingTarget target, IMetadataValue label) {
         super();
-        this.type = type;
         this.target = target;
         this.label = label;
     }
     
-    public LinkingContent getLinkingContent(URI id) {
-        LinkingContent link = new LinkingContent(id);
-        link.setFormat(target.mimeType);
-        link.setType(target.type.getLabel());
-        if(label != null && !label.isEmpty()) {            
-            link.setLabel(label);
-        }
-        return link;
+    public LabeledResource getResource(URI id) {
+        
+        return new LabeledResource(id, target.type, target.mimeType.getLabel(), target.profile, label);
+
     }
 }

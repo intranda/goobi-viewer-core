@@ -32,6 +32,8 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
+import javax.ws.rs.core.UriBuilder;
+
 import org.apache.commons.lang3.StringUtils;
 import org.apache.solr.common.SolrDocument;
 import org.slf4j.Logger;
@@ -60,14 +62,16 @@ import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.SolrConstants;
 import io.goobi.viewer.controller.SolrSearchIndex;
 import io.goobi.viewer.controller.StringTools;
+import io.goobi.viewer.controller.imaging.IIIFUrlHandler;
+import io.goobi.viewer.controller.imaging.ThumbnailHandler;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.exceptions.ViewerConfigurationException;
+import io.goobi.viewer.managedbeans.ImageDeliveryBean;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.messages.Messages;
 import io.goobi.viewer.messages.ViewerResourceBundle;
 import io.goobi.viewer.model.iiif.presentation.v3.builder.LinkingProperty.LinkingTarget;
-import io.goobi.viewer.model.iiif.presentation.v3.builder.LinkingProperty.LinkingType;
 import io.goobi.viewer.model.viewer.PageType;
 import io.goobi.viewer.model.viewer.PhysicalElement;
 import io.goobi.viewer.model.viewer.StructElement;
@@ -85,12 +89,13 @@ public abstract class AbstractBuilder {
 
     protected final AbstractApiUrlManager urls;
     
-    private final Map<LinkingProperty.LinkingType, List<LinkingProperty>> linkingProperties = new HashMap<>();
-
     private final List<Locale> translationLocales = DataManager.getInstance().getConfiguration().getIIIFTranslationLocales();
     
     protected final DataRetriever dataRetriever = new DataRetriever();
     
+    private final ThumbnailHandler thumbs;
+    protected final io.goobi.viewer.model.iiif.presentation.v2.builder.AbstractBuilder v1Builder;
+
 
     protected final int thumbWidth = DataManager.getInstance().getConfiguration().getThumbnailsWidth();
     protected final int thumbHeight = DataManager.getInstance().getConfiguration().getThumbnailsHeight();
@@ -106,29 +111,11 @@ public abstract class AbstractBuilder {
             apiUrlManager = DataManager.getInstance().getRestApiManager().getDataApiManager().orElse(null);
         }
         this.urls = apiUrlManager;
-        this.initLinkingProperties();
-    }
-
-    /**
-     *  Read config for rendering linking properties and add configured properties to linkingProperties map
-     */
-    private void initLinkingProperties() {
-        if(DataManager.getInstance().getConfiguration().isVisibleIIIFRenderingPDF()) {
-            IMetadataValue label = getLabel(DataManager.getInstance().getConfiguration().getLabelIIIFRenderingPDF());
-            addRendering(LinkingTarget.PDF, label);
-        }
-        if(DataManager.getInstance().getConfiguration().isVisibleIIIFRenderingViewer()) {
-            IMetadataValue label = getLabel(DataManager.getInstance().getConfiguration().getLabelIIIFRenderingViewer());
-            addRendering(LinkingTarget.VIEWER, label);
-        }
-        if(DataManager.getInstance().getConfiguration().isVisibleIIIFRenderingPlaintext()) {
-            IMetadataValue label = getLabel(DataManager.getInstance().getConfiguration().getLabelIIIFRenderingPlaintext());
-            addRendering(LinkingTarget.PLAINTEXT, label);
-        }
-        if(DataManager.getInstance().getConfiguration().isVisibleIIIFRenderingAlto()) {
-            IMetadataValue label = getLabel(DataManager.getInstance().getConfiguration().getLabelIIIFRenderingAlto());
-            addRendering(LinkingTarget.ALTO, label);
-        }
+        
+        this.thumbs = new ThumbnailHandler(new IIIFUrlHandler(this.urls), DataManager.getInstance().getConfiguration(), ImageDeliveryBean.getStaticImagesPath(this.urls.getApplicationUrl(), DataManager.getInstance().getConfiguration().getTheme()));
+        
+        AbstractApiUrlManager v1Urls = DataManager.getInstance().getRestApiManager().getDataApiManager(Version.v1).orElse(null);
+        v1Builder = new io.goobi.viewer.model.iiif.presentation.v2.builder.AbstractBuilder(v1Urls) {};
     }
 
     /**
@@ -186,15 +173,11 @@ public abstract class AbstractBuilder {
      * @return METS resolver link for the DFG Viewer
      * @param ele a {@link io.goobi.viewer.model.viewer.StructElement} object.
      */
-    public String getMetsResolverUrl(StructElement ele) {
-        try {
-            return urls.getApplicationUrl() + "/metsresolver?id=" + ele.getPi();
-        } catch (Exception e) {
-            logger.error("Could not get METS resolver URL for {}.", ele.getLuceneId());
-            Messages.error("errGetCurrUrl");
-        }
-        return urls.getApplicationUrl() + "/metsresolver?id=" + 0;
+    public URI getMetsResolverUrl(StructElement ele) {
+        
+        return UriBuilder.fromPath(urls.getApplicationUrl()).path("metsresolver").queryParam("id", ele.getPi()).build();
     }
+
 
     /**
      * <p>
@@ -204,14 +187,10 @@ public abstract class AbstractBuilder {
      * @return LIDO resolver link for the DFG Viewer
      * @param ele a {@link io.goobi.viewer.model.viewer.StructElement} object.
      */
-    public String getLidoResolverUrl(StructElement ele) {
-        try {
-            return urls.getApplicationUrl() + "/lidoresolver?id=" + ele.getPi();
-        } catch (Exception e) {
-            logger.error("Could not get LIDO resolver URL for {}.", ele.getLuceneId());
-            Messages.error("errGetCurrUrl");
-        }
-        return urls.getApplicationUrl() + "/lidoresolver?id=" + 0;
+    public URI getLidoResolverUrl(StructElement ele) {
+        
+        return UriBuilder.fromPath(urls.getApplicationUrl()).path("lidoresolver").queryParam("id", ele.getPi()).build();
+
     }
 
     /**
@@ -637,49 +616,6 @@ public abstract class AbstractBuilder {
         return URI.create(uri);
     }
 
-    
-    public AbstractBuilder addSeeAlso(LinkingProperty.LinkingTarget target, IMetadataValue label) {
-        LinkingType type = LinkingType.SEE_ALSO;
-        addLinkingProperty(target, label, type);
-        return this;
-    }
-    
-    public AbstractBuilder addRendering(LinkingProperty.LinkingTarget target, IMetadataValue label) {
-        LinkingType type = LinkingType.RENDERING;
-        addLinkingProperty(target, label, type);
-        return this;
-    }
-
-    private void addLinkingProperty(LinkingProperty.LinkingTarget target, IMetadataValue label, LinkingType type) {
-        LinkingProperty property = new LinkingProperty(type, target, label);
-        List<LinkingProperty> seeAlsos = this.linkingProperties.get(type);
-        if(seeAlsos == null) {
-            seeAlsos = new ArrayList<>();
-            this.linkingProperties.put(type, seeAlsos);
-        }
-        seeAlsos.add(property);
-    }
-    
-    public List<LinkingProperty> getSeeAlsos() {
-        List<LinkingProperty> seeAlsos = this.linkingProperties.get(LinkingType.SEE_ALSO);
-        if(seeAlsos != null) {
-            return seeAlsos;
-        } else {
-            return Collections.emptyList();
-        }
-    }
-    
-    public List<LinkingProperty> getRenderings() {
-        List<LinkingProperty> renderings = this.linkingProperties.get(LinkingType.RENDERING);
-        if(renderings != null) {
-            return renderings;
-        } else {
-            return Collections.emptyList();
-        }
-    }
-    
-
-
     protected Manifest3 createRecordLink(String collectionField, String collectionName, StructElement record) {
         URI id = urls.path(RECORDS_RECORD, RECORDS_MANIFEST).params(collectionField, collectionName).buildURI();
         Manifest3 manifest = new Manifest3(id);
@@ -695,7 +631,7 @@ public abstract class AbstractBuilder {
     protected Collection3 createAnchorLink(String collectionField, String collectionName, StructElement record) {
         URI id = urls.path(RECORDS_RECORD, RECORDS_MANIFEST).params(collectionField, collectionName).buildURI();
         Collection3 manifest = new Collection3(id, null);
-        manifest.addViewingHint(ViewingHint.multipart);
+        manifest.addBehavior(ViewingHint.multipart);
         manifest.addThumbnail(getThumbnail(record));
         manifest.setLabel(record.getMultiLanguageDisplayLabel());
         return manifest;
@@ -725,7 +661,7 @@ public abstract class AbstractBuilder {
     
     protected ImageResource getThumbnail(StructElement ele) {
             try {
-                String thumbUrl = BeanUtils.getImageDeliveryBean().getThumbs().getThumbnailUrl(ele);
+                String thumbUrl = this.thumbs.getThumbnailUrl(ele);
                 if (StringUtils.isNotBlank(thumbUrl)) {
                     ImageResource thumb = new ImageResource(new URI(thumbUrl));
                     if (IIIFUrlResolver.isIIIFImageUrl(thumbUrl)) {

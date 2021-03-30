@@ -44,9 +44,11 @@ import de.intranda.api.annotation.wa.collection.AnnotationPage;
 import de.intranda.api.iiif.presentation.IPresentationModelElement;
 import de.intranda.api.iiif.search.AutoSuggestResult;
 import de.intranda.api.iiif.search.SearchResult;
+import de.unigoettingen.sub.commons.contentlib.exceptions.ContentLibException;
 import de.unigoettingen.sub.commons.contentlib.exceptions.ContentNotFoundException;
 import de.unigoettingen.sub.commons.contentlib.exceptions.IllegalRequestException;
 import de.unigoettingen.sub.commons.contentlib.servlet.rest.CORSBinding;
+import de.unigoettingen.sub.commons.util.datasource.media.PageSource.IllegalPathSyntaxException;
 import io.goobi.viewer.api.rest.AbstractApiUrlManager.ApiPath;
 import io.goobi.viewer.api.rest.bindings.IIIFPresentationBinding;
 import io.goobi.viewer.api.rest.bindings.ViewerRestServiceBinding;
@@ -59,6 +61,7 @@ import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.exceptions.ViewerConfigurationException;
 import io.goobi.viewer.model.iiif.presentation.v2.builder.BuildMode;
 import io.goobi.viewer.model.iiif.presentation.v2.builder.WebAnnotationBuilder;
+import io.goobi.viewer.model.iiif.presentation.v3.builder.ManifestBuilder;
 import io.goobi.viewer.model.iiif.search.IIIFSearchBuilder;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -94,12 +97,10 @@ public class RecordResource {
     @Produces({ MediaType.APPLICATION_JSON })
     @Operation(tags = { "records", "iiif" }, summary = "Get IIIF manifest for record")
     @IIIFPresentationBinding
-    public IPresentationModelElement getManifest(
-            @Parameter(
-                    description = "Build mode for manifest to select type of resources to include. Default is 'iiif' which returns the full IIIF manifest with all resources. 'thumbs' Does not read width and height of canvas resources and 'iiif_simple' ignores all resources from files") @QueryParam("mode") String mode)
-            throws ContentNotFoundException, PresentationException, IndexUnreachableException, URISyntaxException, ViewerConfigurationException,
-            DAOException {
-        return new Manifest3B
+    public IPresentationModelElement getManifest()
+            throws PresentationException, IndexUnreachableException, URISyntaxException, ViewerConfigurationException,
+            DAOException, IllegalPathSyntaxException, ContentLibException {
+        return new ManifestBuilder(urls).build(pi);
     }
 
 }
