@@ -379,22 +379,6 @@ public abstract class AbstractBuilder {
         return URI.create(urlString);
     }
 
-    /**
-     * <p>
-     * getSequenceURI.
-     * </p>
-     *
-     * @param pi a {@link java.lang.String} object.
-     * @param label a {@link java.lang.String} object.
-     * @return a {@link java.net.URI} object.
-     */
-    public URI getSequenceURI(String pi, String label) {
-        if (StringUtils.isBlank(label)) {
-            label = "basic";
-        }
-        String urlString = this.urls.path(RECORDS_PAGES, RECORDS_PAGES_SEQUENCE).params(pi, label).build();
-        return URI.create(urlString);
-    }
 
     /**
      * <p>

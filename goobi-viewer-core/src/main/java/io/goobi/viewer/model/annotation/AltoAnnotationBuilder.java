@@ -33,6 +33,7 @@ import de.intranda.api.annotation.oa.OpenAnnotation;
 import de.intranda.api.annotation.oa.SpecificResource;
 import de.intranda.api.annotation.oa.SpecificResourceURI;
 import de.intranda.api.annotation.oa.TextualResource;
+import de.intranda.api.annotation.wa.WebAnnotation;
 import de.intranda.digiverso.ocr.alto.model.structureclasses.Page;
 import de.intranda.digiverso.ocr.alto.model.superclasses.GeometricData;
 import io.goobi.viewer.api.rest.AbstractApiUrlManager;
@@ -122,11 +123,16 @@ public class AltoAnnotationBuilder {
      */
     public AbstractAnnotation createAnnotation(GeometricData element, String pi, Integer pageNo, IResource canvas, boolean urlOnlyTarget) {
         String id = Optional.ofNullable(element.getId()).orElse(buildId(element));
-        AbstractAnnotation anno = new OpenAnnotation(createAnnotationId(pi, pageNo, id));
-        anno.setMotivation(Motivation.PAINTING);
+        AbstractAnnotation anno;
+        if("oa".equalsIgnoreCase(format)) {            
+            anno = new OpenAnnotation(createAnnotationId(pi, pageNo, id));
+            anno.setBody(new TextualResource(element.getContent()));
+        } else {
+            anno = new WebAnnotation(createAnnotationId(pi, pageNo, id));
+            anno.setBody(new de.intranda.api.annotation.wa.TextualResource(element.getContent()));
+        }
         anno.setTarget(createSpecificResource(canvas, element.getBounds(), urlOnlyTarget));
-        TextualResource body = new TextualResource(element.getContent());
-        anno.setBody(body);
+        anno.setMotivation(Motivation.PAINTING);
         return anno;
     }
     
@@ -148,11 +154,14 @@ public class AltoAnnotationBuilder {
      * @return
      */
     private IResource createSpecificResource(IResource canvas, Rectangle area, boolean urlOnly) {
-        SpecificResource part;
+        IResource part;
         if (urlOnly) {
             part = new SpecificResourceURI(canvas.getId(), new FragmentSelector(area));
-        } else {
+        } else if("oa".equalsIgnoreCase(format))  {
             part = new SpecificResource(canvas.getId(), new FragmentSelector(area));
+        } else {
+            part = new de.intranda.api.annotation.wa.SpecificResource(canvas.getId(), new de.intranda.api.annotation.wa.FragmentSelector(area));
+
         }
         return part;
     }

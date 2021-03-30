@@ -49,6 +49,7 @@ public class FilterTools {
     public static final String ATTRIBUTE_PI = "pi";
     public static final String ATTRIBUTE_FILENAME = "filename";
     public static final String ATTRIBUTE_LOGID = "logid";
+    public static final String ATTRIBUTE_PAGENO = "pageno";
 
     public static final int PRIORITY_REDIRECT = 100;
 

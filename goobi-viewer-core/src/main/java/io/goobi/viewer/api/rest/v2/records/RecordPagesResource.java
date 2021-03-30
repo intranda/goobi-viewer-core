@@ -67,7 +67,7 @@ import io.swagger.v3.oas.annotations.Parameter;
 @CORSBinding
 public class RecordPagesResource {
     
-    private static final Logger logger = LoggerFactory.getLogger(RecordResource.class);
+    private static final Logger logger = LoggerFactory.getLogger(RecordPagesResource.class);
     @Context
     private HttpServletRequest servletRequest;
     @Context
@@ -76,11 +76,16 @@ public class RecordPagesResource {
     private ApiUrls urls;
 
     private final String pi;
+    private final Integer pageNo;
     
     public RecordPagesResource(@Context HttpServletRequest request,
-            @Parameter(description = "Persistent identifier of the record") @PathParam("pi") String pi) {
+            @Parameter(description = "Persistent identifier of the record") @PathParam("pi") String pi,
+            @Parameter(description = "Order of the page") @PathParam("pageNo") Integer pageNo) {
         this.pi = pi;
+        this.pageNo = pageNo;
         request.setAttribute(FilterTools.ATTRIBUTE_PI, pi);
+        request.setAttribute(FilterTools.ATTRIBUTE_PAGENO, pageNo);
+
     }
     
     @GET
@@ -88,8 +93,7 @@ public class RecordPagesResource {
     @Produces({ MediaType.APPLICATION_JSON })
     @Operation(tags = { "records", "iiif" }, summary = "Get IIIF canvas for page")
     @IIIFPresentationBinding
-    public IPresentationModelElement getCanvas(
-            @Parameter(description = "Order of the page") @PathParam("pageNo") Integer pageNo)
+    public IPresentationModelElement getCanvas()
             throws PresentationException, IndexUnreachableException, URISyntaxException, ViewerConfigurationException,
             DAOException, IllegalPathSyntaxException, ContentLibException {
         return new CanvasBuilder(urls).build(pi, pageNo);
@@ -100,8 +104,7 @@ public class RecordPagesResource {
     @Produces({ MediaType.APPLICATION_JSON })
     @Operation(tags = { "records", "iiif" }, summary = "Get media resources for page")
     @IIIFPresentationBinding
-    public AnnotationPage getMedia(
-            @Parameter(description = "Order of the page") @PathParam("pageNo") Integer pageNo)
+    public AnnotationPage getMedia()
             throws PresentationException, IndexUnreachableException, URISyntaxException, ViewerConfigurationException,
             DAOException, IllegalPathSyntaxException, ContentLibException {
         URI itemId = urls.path(RECORDS_PAGES, RECORDS_PAGES_MEDIA).params(pi, pageNo).buildURI();
@@ -117,7 +120,6 @@ public class RecordPagesResource {
     @Operation(tags = { "records", "iiif" }, summary = "Get media resources for page")
     @IIIFPresentationBinding
     public IAnnotation getMediaItem(
-            @Parameter(description = "Order of the page") @PathParam("pageNo") Integer pageNo,
             @Parameter(description = "Identifier string of the annotation") @PathParam("itemid") String itemId)
             throws PresentationException, IndexUnreachableException, URISyntaxException, ViewerConfigurationException,
             DAOException, IllegalPathSyntaxException, ContentLibException {
@@ -135,8 +137,7 @@ public class RecordPagesResource {
     @Produces({ MediaType.APPLICATION_JSON })
     @Operation(tags = { "records", "iiif" }, summary = "Get fulltext annotations for page")
     @IIIFPresentationBinding
-    public AnnotationPage getFulltext(
-            @Parameter(description = "Orde of the page") @PathParam("pageNo") Integer pageNo)
+    public AnnotationPage getFulltext()
             throws PresentationException, IndexUnreachableException, URISyntaxException, ViewerConfigurationException,
             DAOException, IllegalPathSyntaxException, ContentLibException {
         return new CanvasBuilder(urls).buildFulltextAnnotations(pi, pageNo);
@@ -146,8 +147,7 @@ public class RecordPagesResource {
     @javax.ws.rs.Path(RECORDS_PAGES_ANNOTATIONS)
     @Produces({ MediaType.APPLICATION_JSON })
     @Operation(tags = { "records", "annotations" }, summary = "List annotations for a page")
-    public AnnotationPage getAnnotationsForRecord(
-            @Parameter(description = "Page numer (1-based") @PathParam("pageNo") Integer pageNo) throws PresentationException, IndexUnreachableException {
+    public AnnotationPage getAnnotationsForRecord() throws PresentationException, IndexUnreachableException {
 
         ApiPath apiPath = urls.path(RECORDS_PAGES, RECORDS_PAGES_ANNOTATIONS).params(pi, pageNo);
 
@@ -159,8 +159,7 @@ public class RecordPagesResource {
     @javax.ws.rs.Path(RECORDS_PAGES_COMMENTS)
     @Produces({ MediaType.APPLICATION_JSON })
     @Operation(tags = { "records", "annotations" }, summary = "List comments for a page")
-    public AnnotationPage getCommentsForPage(
-            @Parameter(description = "Page numer (1-based") @PathParam("pageNo") Integer pageNo) throws DAOException, IllegalRequestException {
+    public AnnotationPage getCommentsForPage() throws DAOException, IllegalRequestException {
 
         ApiPath apiPath = urls.path(RECORDS_PAGES, RECORDS_PAGES_COMMENTS).params(pi, pageNo);
         URI uri = URI.create(apiPath.build());

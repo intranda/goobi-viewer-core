@@ -314,7 +314,7 @@ public class AnnotationsResourceBuilder {
         } else {
             anno.setTarget(new Manifest3(URI.create(urls.path(RECORDS_RECORD, RECORDS_MANIFEST).params(comment.getPi()).build())));
         }
-        TextualResource body = new TextualResource(comment.getText());
+        IResource body = new de.intranda.api.annotation.wa.TextualResource(comment.getText());
         anno.setBody(body);
         return anno;
     }

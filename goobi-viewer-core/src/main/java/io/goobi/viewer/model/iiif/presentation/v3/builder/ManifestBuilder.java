@@ -43,11 +43,13 @@ import de.intranda.api.iiif.presentation.v3.Collection3;
 import de.intranda.api.iiif.presentation.v3.IPresentationModelElement3;
 import de.intranda.api.iiif.presentation.v3.LabeledResource;
 import de.intranda.api.iiif.presentation.v3.Manifest3;
+import de.intranda.api.iiif.presentation.v3.Range3;
 import de.intranda.api.iiif.search.AutoSuggestService;
 import de.intranda.api.iiif.search.SearchService;
 import de.intranda.metadata.multilanguage.IMetadataValue;
 import de.intranda.metadata.multilanguage.SimpleMetadataValue;
 import de.unigoettingen.sub.commons.contentlib.exceptions.ContentLibException;
+import de.unigoettingen.sub.commons.contentlib.exceptions.ContentNotFoundException;
 import de.unigoettingen.sub.commons.util.datasource.media.PageSource.IllegalPathSyntaxException;
 import io.goobi.viewer.api.rest.AbstractApiUrlManager;
 import io.goobi.viewer.controller.DataManager;
@@ -92,8 +94,41 @@ public class ManifestBuilder extends AbstractBuilder {
         List<StructElement> childDocuments = documents.subList(1, documents.size());
 
         AbstractPresentationModelElement3 manifest = generateManifest(mainDocument);
-
+        
+        if(manifest instanceof Manifest3) {            
+            addPages(mainDocument, (Manifest3) manifest);
+            addStructures(mainDocument, childDocuments, (Manifest3) manifest);
+        } else if (manifest instanceof Collection3){
+            addVolumes(mainDocument, childDocuments, (Collection3) manifest);
+        }
+        
+        
         return manifest;
+    }
+
+    /**
+     * @param mainDocument
+     * @param childDocuments
+     * @param manifest
+     */
+    private void addVolumes(StructElement mainDocument, List<StructElement> childDocuments, Collection3 manifest) {
+        // TODO Auto-generated method stub
+        
+    }
+
+    /**
+     * @param mainDocument
+     * @param childDocuments
+     * @param manifest
+     * @throws ContentNotFoundException 
+     */
+    private void addStructures(StructElement mainDocument, List<StructElement> childDocuments, Manifest3 manifest) throws ContentNotFoundException {
+        RangeBuilder rangeBuilder = new RangeBuilder(urls);
+        Range3 topRange = rangeBuilder.build(mainDocument, childDocuments, null);
+        topRange.getItems().stream()
+        .filter(item -> item instanceof Range3)
+        .map(item -> (Range3)item)
+        .forEach(manifest::addRange);
     }
 
     /**
@@ -129,8 +164,6 @@ public class ManifestBuilder extends AbstractBuilder {
         }
 
         populateData(ele, manifest);
-
-        populateItems(ele, manifest);
         
         return manifest;
     }
@@ -145,20 +178,16 @@ public class ManifestBuilder extends AbstractBuilder {
      * @throws PresentationException 
      * @throws  
      */
-    private void populateItems(StructElement ele, AbstractPresentationModelElement3 manifest) throws PresentationException, IndexUnreachableException, IllegalPathSyntaxException, ContentLibException, URISyntaxException {
+    private void addPages(StructElement ele, Manifest3 manifest) throws PresentationException, IndexUnreachableException, IllegalPathSyntaxException, ContentLibException, URISyntaxException {
         CanvasBuilder canvasBuilder = new CanvasBuilder(urls);
-        if(manifest instanceof Manifest3) {
             IPageLoader pageLoader = new EagerPageLoader(ele);
             for (int order = pageLoader.getFirstPageOrder(); order <= pageLoader.getLastPageOrder(); order++) {
                 PhysicalElement page = pageLoader.getPage(order);
                 if(page != null) {
                     Canvas3 canvas = canvasBuilder.build(page);
-                    ((Manifest3)manifest).addItem(canvas);
+                    manifest.addItem(canvas);
                 }
             }            
-        } else if(manifest instanceof Collection3) {
-            
-        }
     }
 
     /**
