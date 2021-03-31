@@ -177,7 +177,7 @@ public class ActiveDocumentBeanTest extends AbstractDatabaseAndSolrEnabledTest {
         ActiveDocumentBean adb = new ActiveDocumentBean();
         adb.setNavigationHelper(navigationHelper);
         adb.setPersistentIdentifier(PI_KLEIUNIV);
-        adb.setImageToShow("15");
+        adb.setImageToShow("10");
         adb.update();
         Assert.assertEquals("/viewImage_value/PPN517154005/7/", adb.getPreviousPageUrl(3));
     }
@@ -191,7 +191,7 @@ public class ActiveDocumentBeanTest extends AbstractDatabaseAndSolrEnabledTest {
         ActiveDocumentBean adb = new ActiveDocumentBean();
         adb.setNavigationHelper(navigationHelper);
         adb.setPersistentIdentifier(PI_KLEIUNIV);
-        adb.setImageToShow("15");
+        adb.setImageToShow("2");
         try {
             adb.update();
         } catch (IDDOCNotFoundException e) {
@@ -209,7 +209,7 @@ public class ActiveDocumentBeanTest extends AbstractDatabaseAndSolrEnabledTest {
         ActiveDocumentBean adb = new ActiveDocumentBean();
         adb.setNavigationHelper(navigationHelper);
         adb.setPersistentIdentifier(PI_KLEIUNIV);
-        adb.setImageToShow("15");
+        adb.setImageToShow("1");
         adb.update();
         Assert.assertEquals("/viewImage_value/PPN517154005/12/", adb.getPageUrl("12"));
     }

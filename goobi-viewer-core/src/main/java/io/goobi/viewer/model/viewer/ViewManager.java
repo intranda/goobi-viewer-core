@@ -1193,7 +1193,7 @@ public class ViewManager implements Serializable {
             return;
         }
 
-        if (currentPageOrderRange.contains("-")) {
+        if (currentPageOrderRange.contains("-") && currentPageOrderRange.charAt(0) != '-') {
             String[] split = currentPageOrderRange.split("-");
             currentPageOrder = Integer.valueOf(split[0]);
             currentPageOrderSecond = Integer.valueOf(split[1]);
@@ -2385,39 +2385,39 @@ public class ViewManager implements Serializable {
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      */
     public String getPersistentUrl(String urn) throws IndexUnreachableException {
-        String persistentUrl = "";
-        StringBuilder url = new StringBuilder();
         if (StringUtils.isNotEmpty(urn) && !urn.equalsIgnoreCase("NULL")) {
             // URN-based PURL
             if (urn.startsWith("http:") || urn.startsWith("https:")) {
                 // URN is full URL
-                persistentUrl = urn;
-            } else {
-                // Just the URN
-                url.append(DataManager.getInstance().getConfiguration().getUrnResolverUrl()).append(urn);
-                persistentUrl = url.toString();
+                return urn;
             }
-        } else {
-            // Prefer configured target page type for the docstruct type
-            PageType pageType = null;
-            if (topStructElement != null) {
-                boolean anchorOrGroup = topStructElement.isAnchor() || topStructElement.isGroup();
-                pageType = PageType.determinePageType(topStructElement.getDocStructType(), null, anchorOrGroup, isHasPages(), false);
-            }
-            if (pageType == null) {
-                if (isHasPages()) {
-                    pageType = PageType.viewImage;
-                } else {
-                    pageType = PageType.viewMetadata;
-                }
-            }
-            url.append(BeanUtils.getServletPathWithHostAsUrlFromJsfContext());
-            url.append('/').append(pageType.getName()).append('/').append(getPi()).append('/').append(currentPageOrder).append('/');
-            persistentUrl = url.toString();
+            // Just the URN
+            return DataManager.getInstance().getConfiguration().getUrnResolverUrl() + urn;
         }
-        logger.trace("PURL: {}", persistentUrl);
-
-        return persistentUrl;
+        
+        // Prefer configured target page type for the docstruct type
+        PageType pageType = null;
+        if (topStructElement != null) {
+            boolean anchorOrGroup = topStructElement.isAnchor() || topStructElement.isGroup();
+            pageType = PageType.determinePageType(topStructElement.getDocStructType(), null, anchorOrGroup, isHasPages(), false);
+        }
+        if (pageType == null) {
+            if (isHasPages()) {
+                pageType = PageType.viewImage;
+            } else {
+                pageType = PageType.viewMetadata;
+            }
+        }
+        
+        return new StringBuilder().append(BeanUtils.getServletPathWithHostAsUrlFromJsfContext())
+                .append('/')
+                .append(pageType.getName())
+                .append('/')
+                .append(getPi())
+                .append('/')
+                .append(getCurrentPageOrderRange())
+                .append('/')
+                .toString();
     }
 
     /**
@@ -2879,11 +2879,11 @@ public class ViewManager implements Serializable {
     public void setTopStructElement(StructElement topStructElement) {
         this.topStructElement = topStructElement;
     }
-//
-//    @Deprecated
-//    public StructElement getTopDocument() {
-//        return getTopStructElement();
-//    }
+    //
+    //    @Deprecated
+    //    public StructElement getTopDocument() {
+    //        return getTopStructElement();
+    //    }
 
     /**
      * <p>

@@ -958,7 +958,7 @@ public class ActiveDocumentBean implements Serializable {
         }
 
         int page;
-        if (pageOrderRange.contains("-")) {
+        if (pageOrderRange.contains("-") && pageOrderRange.charAt(0) != '-') {
             String[] split = pageOrderRange.split("-");
             page = Integer.valueOf(split[0]);
         } else {
