@@ -415,7 +415,7 @@ public class ViewManager implements Serializable {
      */
     public String getWatermarkUrl(String pageType) throws IndexUnreachableException, DAOException, ViewerConfigurationException {
         return imageDeliveryBean.getFooter()
-                .getWatermarkUrl(Optional.ofNullable(getCurrentPage()), Optional.ofNullable(getTopDocument()),
+                .getWatermarkUrl(Optional.ofNullable(getCurrentPage()), Optional.ofNullable(getTopStructElement()),
                         Optional.ofNullable(PageType.getByName(pageType)))
                 .orElse("");
 
@@ -520,7 +520,7 @@ public class ViewManager implements Serializable {
             if (DataManager.getInstance().getConfiguration().getFooterHeight(pageType, getCurrentPage().getImageType()) > 0) {
                 sb.append("?ignoreWatermark=false");
                 sb.append(imageDeliveryBean.getFooter().getWatermarkTextIfExists(getCurrentPage()).map(text -> "&watermarkText=" + text).orElse(""));
-                sb.append(imageDeliveryBean.getFooter().getFooterIdIfExists(getTopDocument()).map(id -> "&watermarkId=" + id).orElse(""));
+                sb.append(imageDeliveryBean.getFooter().getFooterIdIfExists(getTopStructElement()).map(id -> "&watermarkId=" + id).orElse(""));
             }
         } catch (ViewerConfigurationException e) {
             logger.error("Unable to read watermark config, ignore watermark", e);
@@ -541,7 +541,7 @@ public class ViewManager implements Serializable {
             if (DataManager.getInstance().getConfiguration().getFooterHeight(view, getCurrentPage().getImageType()) > 0) {
                 sb.append("?ignoreWatermark=false");
                 sb.append(imageDeliveryBean.getFooter().getWatermarkTextIfExists(getCurrentPage()).map(text -> "&watermarkText=" + text).orElse(""));
-                sb.append(imageDeliveryBean.getFooter().getFooterIdIfExists(getTopDocument()).map(id -> "&watermarkId=" + id).orElse(""));
+                sb.append(imageDeliveryBean.getFooter().getFooterIdIfExists(getTopStructElement()).map(id -> "&watermarkId=" + id).orElse(""));
             }
         } catch (ViewerConfigurationException e) {
             logger.error("Unable to read watermark config, ignore watermark", e);
@@ -1888,7 +1888,7 @@ public class ViewManager implements Serializable {
      * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
      */
     public String getPdfDownloadLink() throws IndexUnreachableException, PresentationException, ViewerConfigurationException {
-        return imageDeliveryBean.getPdf().getPdfUrl(getTopDocument(), "");
+        return imageDeliveryBean.getPdf().getPdfUrl(getTopStructElement(), "");
     }
 
     /**
@@ -1904,7 +1904,7 @@ public class ViewManager implements Serializable {
         if (currentPage == null) {
             return null;
         }
-        return imageDeliveryBean.getPdf().getPdfUrl(getTopDocument(), currentPage);
+        return imageDeliveryBean.getPdf().getPdfUrl(getTopStructElement(), currentPage);
     }
 
     /**
@@ -1954,7 +1954,7 @@ public class ViewManager implements Serializable {
             //            sb.append(getPi()).append('/').append(page.getFileName()).append('$');
         }
         PhysicalElement[] pageArr = new PhysicalElement[pages.size()];
-        return imageDeliveryBean.getPdf().getPdfUrl(getTopDocument(), pages.toArray(pageArr));
+        return imageDeliveryBean.getPdf().getPdfUrl(getTopStructElement(), pages.toArray(pageArr));
     }
 
     /**
@@ -2879,11 +2879,11 @@ public class ViewManager implements Serializable {
     public void setTopStructElement(StructElement topStructElement) {
         this.topStructElement = topStructElement;
     }
-
-    @Deprecated
-    public StructElement getTopDocument() {
-        return getTopStructElement();
-    }
+//
+//    @Deprecated
+//    public StructElement getTopDocument() {
+//        return getTopStructElement();
+//    }
 
     /**
      * <p>
