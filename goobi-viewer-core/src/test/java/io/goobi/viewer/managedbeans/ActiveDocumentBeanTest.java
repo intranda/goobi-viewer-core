@@ -72,7 +72,7 @@ public class ActiveDocumentBeanTest extends AbstractDatabaseAndSolrEnabledTest {
     public void update_shouldCreateViewManagerCorrectly() throws Exception {
         ActiveDocumentBean adb = new ActiveDocumentBean();
         adb.setPersistentIdentifier(PI_KLEIUNIV);
-        adb.setImageToShow(1);
+        adb.setImageToShow("1");
         adb.update();
         Assert.assertNotNull(adb.getViewManager());
         Assert.assertEquals(PI_KLEIUNIV, adb.getPersistentIdentifier());
@@ -95,7 +95,7 @@ public class ActiveDocumentBeanTest extends AbstractDatabaseAndSolrEnabledTest {
     public void update_shouldUpdateViewManagerCorrectlyIfLOGIDHasChanged() throws Exception {
         ActiveDocumentBean adb = new ActiveDocumentBean();
         adb.setPersistentIdentifier(PI_KLEIUNIV);
-        adb.setImageToShow(1);
+        adb.setImageToShow("1");
         adb.update();
         Assert.assertNotEquals(iddocKleiuniv, adb.getViewManager().getCurrentDocumentIddoc());
         ViewManager oldViewManager = adb.getViewManager();
@@ -118,7 +118,7 @@ public class ActiveDocumentBeanTest extends AbstractDatabaseAndSolrEnabledTest {
     public void update_shouldNotOverrideTopDocumentIddocIfLOGIDHasChanged() throws Exception {
         ActiveDocumentBean adb = new ActiveDocumentBean();
         adb.setPersistentIdentifier(PI_KLEIUNIV);
-        adb.setImageToShow(1);
+        adb.setImageToShow("1");
         adb.update();
 
         adb.setLogid("LOG_0005");
@@ -149,7 +149,7 @@ public class ActiveDocumentBeanTest extends AbstractDatabaseAndSolrEnabledTest {
         ActiveDocumentBean adb = new ActiveDocumentBean();
         adb.setNavigationHelper(navigationHelper);
         adb.setPersistentIdentifier(PI_KLEIUNIV);
-        adb.setImageToShow(10);
+        adb.setImageToShow("10");
         adb.update();
         Assert.assertEquals("/viewImage_value/PPN517154005/13/", adb.getNextPageUrl(3));
     }
@@ -163,7 +163,7 @@ public class ActiveDocumentBeanTest extends AbstractDatabaseAndSolrEnabledTest {
         ActiveDocumentBean adb = new ActiveDocumentBean();
         adb.setNavigationHelper(navigationHelper);
         adb.setPersistentIdentifier(PI_KLEIUNIV);
-        adb.setImageToShow(15);
+        adb.setImageToShow("15");
         adb.update();
         Assert.assertEquals("/viewImage_value/PPN517154005/" + adb.getViewManager().getPageLoader().getLastPageOrder() + "/", adb.getNextPageUrl(3));
     }
@@ -177,7 +177,7 @@ public class ActiveDocumentBeanTest extends AbstractDatabaseAndSolrEnabledTest {
         ActiveDocumentBean adb = new ActiveDocumentBean();
         adb.setNavigationHelper(navigationHelper);
         adb.setPersistentIdentifier(PI_KLEIUNIV);
-        adb.setImageToShow(10);
+        adb.setImageToShow("15");
         adb.update();
         Assert.assertEquals("/viewImage_value/PPN517154005/7/", adb.getPreviousPageUrl(3));
     }
@@ -191,7 +191,7 @@ public class ActiveDocumentBeanTest extends AbstractDatabaseAndSolrEnabledTest {
         ActiveDocumentBean adb = new ActiveDocumentBean();
         adb.setNavigationHelper(navigationHelper);
         adb.setPersistentIdentifier(PI_KLEIUNIV);
-        adb.setImageToShow(2);
+        adb.setImageToShow("15");
         try {
             adb.update();
         } catch (IDDOCNotFoundException e) {
@@ -209,9 +209,9 @@ public class ActiveDocumentBeanTest extends AbstractDatabaseAndSolrEnabledTest {
         ActiveDocumentBean adb = new ActiveDocumentBean();
         adb.setNavigationHelper(navigationHelper);
         adb.setPersistentIdentifier(PI_KLEIUNIV);
-        adb.setImageToShow(1);
+        adb.setImageToShow("15");
         adb.update();
-        Assert.assertEquals("/viewImage_value/PPN517154005/12/", adb.getPageUrl(12));
+        Assert.assertEquals("/viewImage_value/PPN517154005/12/", adb.getPageUrl("12"));
     }
 
     /**
@@ -226,7 +226,7 @@ public class ActiveDocumentBeanTest extends AbstractDatabaseAndSolrEnabledTest {
         // The public release year metadata is only available in docstruct and page Solr docs. Here, it is important that none of the
         // record's docs match the conditional query of the license type anyway.
         adb.setPersistentIdentifier("1045513032");
-        adb.setImageToShow(1);
+        adb.setImageToShow("1");
 
         // Override config setting so that localhost doesn't get full access
         DataManager.getInstance().getConfiguration().overrideValue("accessConditions.fullAccessForLocalhost", false);
@@ -245,7 +245,7 @@ public class ActiveDocumentBeanTest extends AbstractDatabaseAndSolrEnabledTest {
 
         // Record will be released by a moving wall in 2041
         adb.setPersistentIdentifier("557335825");
-        adb.setImageToShow(1);
+        adb.setImageToShow("1");
 
         // Override config setting so that localhost doesn't get full access
         DataManager.getInstance().getConfiguration().overrideValue("accessConditions.fullAccessForLocalhost", false);

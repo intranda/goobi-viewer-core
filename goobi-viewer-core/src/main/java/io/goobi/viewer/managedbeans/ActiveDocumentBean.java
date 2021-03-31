@@ -105,6 +105,8 @@ public class ActiveDocumentBean implements Serializable {
 
     private static int imageContainerWidth = 600;
 
+    private final Object lock = new Object();
+
     @Inject
     private NavigationHelper navigationHelper;
     @Inject
@@ -123,7 +125,7 @@ public class ActiveDocumentBean implements Serializable {
     /** URL parameter 'action'. */
     private String action = "";
     /** URL parameter 'imageToShow'. */
-    private int imageToShow = 1;
+    private String imageToShow = "1";
     /** URL parameter 'logid'. */
     private String logid = "";
     /** URL parameter 'tocCurrentPage'. */
@@ -459,18 +461,18 @@ public class ActiveDocumentBean implements Serializable {
                 }
 
                 // When not aggregating hits, a new page will also be a new search hit in the list
-                if (imageToShow != viewManager.getCurrentImageNo() && !DataManager.getInstance().getConfiguration().isAggregateHits()) {
+                if (imageToShow.equals(viewManager.getCurrentPageOrderRange()) && !DataManager.getInstance().getConfiguration().isAggregateHits()) {
                     mayChangeHitIndex = true;
                 }
 
-                viewManager.setCurrentImageNo(imageToShow);
+                viewManager.setCurrentPageOrderRange(imageToShow);
                 viewManager.updateDropdownSelected();
 
                 // Search hit navigation
                 if (searchBean != null && searchBean.getCurrentSearch() != null) {
                     if (searchBean.getCurrentHitIndex() < 0) {
                         // Determine the index of this element in the search result list. Must be done after re-initializing ViewManager so that the PI is correct!
-                        searchBean.findCurrentHitIndex(getPersistentIdentifier(), imageToShow,
+                        searchBean.findCurrentHitIndex(getPersistentIdentifier(), viewManager.getCurrentPageOrder(),
                                 DataManager.getInstance().getConfiguration().isAggregateHits());
                     } else if (mayChangeHitIndex) {
                         // Modify the current hit index
@@ -682,8 +684,8 @@ public class ActiveDocumentBean implements Serializable {
      *
      * @param imageToShow the imageToShow to set
      */
-    public void setImageToShow(int imageToShow) {
-        synchronized (this) {
+    public void setImageToShow(String imageToShow) {
+        synchronized (lock) {
             this.imageToShow = imageToShow;
             if (viewManager != null) {
                 viewManager.setDropdownSelected(String.valueOf(imageToShow));
@@ -701,8 +703,8 @@ public class ActiveDocumentBean implements Serializable {
      *
      * @return the imageToShow
      */
-    public int getImageToShow() {
-        synchronized (this) {
+    public String getImageToShow() {
+        synchronized (lock) {
             return imageToShow;
         }
     }
@@ -936,12 +938,12 @@ public class ActiveDocumentBean implements Serializable {
      * Returns the navigation URL for the given page type and number.
      *
      * @param pageType a {@link java.lang.String} object.
-     * @param page a int.
+     * @param pageOrderRange Single page number or range
      * @should construct url correctly
      * @return a {@link java.lang.String} object.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      */
-    public String getPageUrl(String pageType, int page) throws IndexUnreachableException {
+    public String getPageUrl(String pageType, String pageOrderRange) throws IndexUnreachableException {
         StringBuilder sbUrl = new StringBuilder();
         //        if (StringUtils.isBlank(pageType)) {
         //            pageType = navigationHelper.getPreferredView();
@@ -953,6 +955,14 @@ public class ActiveDocumentBean implements Serializable {
                 pageType = PageType.viewObject.name();
             }
             logger.trace("current view: {}", pageType);
+        }
+
+        int page;
+        if (pageOrderRange.contains("-")) {
+            String[] split = pageOrderRange.split("-");
+            page = Integer.valueOf(split[0]);
+        } else {
+            page = Integer.valueOf(pageOrderRange);
         }
 
         if (viewManager != null) {
@@ -976,12 +986,12 @@ public class ActiveDocumentBean implements Serializable {
      * getPageUrl.
      * </p>
      *
-     * @param page a int.
+     * @param pageOrderRange Single page number or range
      * @return a {@link java.lang.String} object.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      */
-    public String getPageUrl(int page) throws IndexUnreachableException {
-        return getPageUrl(null, page);
+    public String getPageUrl(String pageOrderRange) throws IndexUnreachableException {
+        return getPageUrl(null, pageOrderRange);
     }
 
     /**
@@ -1000,7 +1010,7 @@ public class ActiveDocumentBean implements Serializable {
         if (StringUtils.isBlank(pageType)) {
             pageType = navigationHelper.getCurrentView();
         }
-        return getPageUrl(pageType);
+        return getPageUrlByType(pageType);
     }
 
     /**
@@ -1012,7 +1022,7 @@ public class ActiveDocumentBean implements Serializable {
      * @return a {@link java.lang.String} object.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      */
-    public String getPageUrl(String pageType) throws IndexUnreachableException {
+    public String getPageUrlByType(String pageType) throws IndexUnreachableException {
         StringBuilder sbUrl = new StringBuilder();
         sbUrl.append(BeanUtils.getServletPathWithHostAsUrlFromJsfContext())
                 .append('/')
@@ -1034,7 +1044,7 @@ public class ActiveDocumentBean implements Serializable {
      */
     public String getFirstPageUrl() throws IndexUnreachableException {
         if (viewManager != null) {
-            return getPageUrl(viewManager.getPageLoader().getFirstPageOrder());
+            return getPageUrl(String.valueOf(viewManager.getPageLoader().getFirstPageOrder()));
         }
 
         return null;
@@ -1050,7 +1060,7 @@ public class ActiveDocumentBean implements Serializable {
      */
     public String getLastPageUrl() throws IndexUnreachableException {
         if (viewManager != null) {
-            return getPageUrl(viewManager.getPageLoader().getLastPageOrder());
+            return getPageUrl(String.valueOf(viewManager.getPageLoader().getFirstPageOrder()));
         }
 
         return null;
@@ -1069,8 +1079,8 @@ public class ActiveDocumentBean implements Serializable {
         if (viewManager != null && viewManager.isDoublePageMode()) {
             step *= 2;
         }
-        int number = imageToShow - step;
-        return getPageUrl(number);
+        int number = viewManager.getCurrentPageOrder() - step;
+        return getPageUrl(String.valueOf(number));
     }
 
     /**
@@ -1086,8 +1096,8 @@ public class ActiveDocumentBean implements Serializable {
         if (viewManager != null && viewManager.isDoublePageMode()) {
             step *= 2;
         }
-        int number = imageToShow + step;
-        return getPageUrl(number);
+        int number = viewManager.getCurrentPageOrder() + step;
+        return getPageUrl(String.valueOf(number));
     }
 
     /**
@@ -1148,7 +1158,7 @@ public class ActiveDocumentBean implements Serializable {
                     // Add LOGID to the URL because ViewManager.currentStructElementIddoc (IDDOC_OWNER) can be incorrect in the index sometimes,
                     // resulting in the URL pointing at the current element
                     prevDocstructUrlCache.put(currentDocstructIddoc,
-                            getPageUrl(navigationHelper.getCurrentPageType().getName(), Integer.valueOf(tocElement.getPageNo()))
+                            getPageUrl(navigationHelper.getCurrentPageType().getName(), tocElement.getPageNo())
                                     + tocElement.getLogId()
                                     + "/");
                     found = true;
@@ -1197,7 +1207,7 @@ public class ActiveDocumentBean implements Serializable {
                     // Add LOGID to the URL because ViewManager.currentStructElementIddoc (IDDOC_OWNER) can be incorrect in the index sometimes,
                     // resulting in the URL pointing at the current element
                     nextDocstructUrlCache.put(currentDocstructIddoc,
-                            getPageUrl(navigationHelper.getCurrentPageType().getName(), Integer.valueOf(tocElement.getPageNo()))
+                            getPageUrl(navigationHelper.getCurrentPageType().getName(), tocElement.getPageNo())
                                     + tocElement.getLogId()
                                     + "/");
                     found = true;

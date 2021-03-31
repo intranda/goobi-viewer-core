@@ -17,12 +17,15 @@ package io.goobi.viewer.model.viewer.pageloader;
 
 import java.util.Locale;
 
+import javax.faces.model.SelectItem;
+
 import org.junit.Assert;
 import org.junit.Test;
 
+import io.goobi.viewer.AbstractTest;
 import io.goobi.viewer.model.viewer.StructElement;
 
-public class AbstractPageLoaderTest {
+public class AbstractPageLoaderTest extends AbstractTest {
 
     /**
      * @see AbstractPageLoader#buildPageLabelTemplate(String, Locale)
@@ -44,5 +47,29 @@ public class AbstractPageLoaderTest {
         StructElement se = new StructElement();
         EagerPageLoader loader = new EagerPageLoader(se);
         Assert.assertEquals("1 of 10", loader.buildPageLabelTemplate("1 {msg.of} 10", null));
+    }
+
+    /**
+     * @see AbstractPageLoader#buildPageSelectItem(String,int,String,Integer,String)
+     * @verifies construct single page item correctly
+     */
+    @Test
+    public void buildPageSelectItem_shouldConstructSinglePageItemCorrectly() throws Exception {
+        SelectItem si = AbstractPageLoader.buildPageSelectItem("{order}: {orderlabel}", 1, "one", null, null);
+        Assert.assertNotNull(si);
+        Assert.assertEquals("1: one", si.getLabel());
+        Assert.assertEquals("1", si.getValue());
+    }
+
+    /**
+     * @see AbstractPageLoader#buildPageSelectItem(String,int,String,Integer,String)
+     * @verifies construct double page item correctly
+     */
+    @Test
+    public void buildPageSelectItem_shouldConstructDoublePageItemCorrectly() throws Exception {
+        SelectItem si = AbstractPageLoader.buildPageSelectItem("{order}: {orderlabel}", 1, "one", 2, "two");
+        Assert.assertNotNull(si);
+        Assert.assertEquals("1-2: one - two", si.getLabel());
+        Assert.assertEquals("1-2", si.getValue());
     }
 }

@@ -97,7 +97,6 @@ import io.goobi.viewer.model.transkribus.TranskribusSession;
 import io.goobi.viewer.model.transkribus.TranskribusUtils;
 import io.goobi.viewer.model.viewer.pageloader.AbstractPageLoader;
 import io.goobi.viewer.model.viewer.pageloader.IPageLoader;
-import io.goobi.viewer.model.viewer.pageloader.LeanPageLoader;
 
 /**
  * Holds information about the currently open record (structure, pages, etc.). Used to reduced the size of ActiveDocumentBean.
@@ -134,7 +133,10 @@ public class ViewManager implements Serializable {
 
     private int rotate = 0;
     private int zoomSlider;
-    private int currentImageOrder = -1;
+    /** Order of the current page. */
+    private int currentPageOrder = -1;
+    /** Number of the second page in double page mode. */
+    private int currentPageOrderSecond = -1;
     private final List<SelectItem> dropdownPages = new ArrayList<>();
     private final List<SelectItem> dropdownFulltext = new ArrayList<>();
     private String dropdownSelected = "";
@@ -308,17 +310,17 @@ public class ViewManager implements Serializable {
      * @throws IndexUnreachableException
      */
     private Optional<PhysicalElement> getCurrentLeftPage() throws IndexUnreachableException, DAOException {
-        boolean actualPageOrderEven = this.currentImageOrder % 2 == 0;
+        boolean actualPageOrderEven = this.currentPageOrder % 2 == 0;
         PageOrientation actualPageOrientation = actualPageOrderEven ? firstPageOrientation.opposite() : firstPageOrientation;
         if (topStructElement != null && topStructElement.isRtl()) {
             actualPageOrientation = actualPageOrientation.opposite();
         }
         if (actualPageOrientation.equals(PageOrientation.left)) {
-            return getPage(this.currentImageOrder);
+            return getPage(this.currentPageOrder);
         } else if (topStructElement != null && topStructElement.isRtl()) {
-            return getPage(this.currentImageOrder + 1);
+            return getPage(this.currentPageOrder + 1);
         } else {
-            return getPage(this.currentImageOrder - 1);
+            return getPage(this.currentPageOrder - 1);
         }
 
     }
@@ -330,17 +332,18 @@ public class ViewManager implements Serializable {
      * @throws IndexUnreachableException
      */
     private Optional<PhysicalElement> getCurrentRightPage() throws IndexUnreachableException, DAOException {
-        boolean actualPageOrderEven = this.currentImageOrder % 2 == 0;
+        // TODO currentImageOrderSecond, if applicable
+        boolean actualPageOrderEven = this.currentPageOrder % 2 == 0;
         PageOrientation actualPageOrientation = actualPageOrderEven ? firstPageOrientation.opposite() : firstPageOrientation;
         if (topStructElement != null && topStructElement.isRtl()) {
             actualPageOrientation = actualPageOrientation.opposite();
         }
         if (actualPageOrientation.equals(PageOrientation.right)) {
-            return getPage(this.currentImageOrder);
+            return getPage(this.currentPageOrder);
         } else if (topStructElement != null && topStructElement.isRtl()) {
-            return getPage(this.currentImageOrder - 1);
+            return getPage(this.currentPageOrder - 1);
         } else {
-            return getPage(this.currentImageOrder + 1);
+            return getPage(this.currentPageOrder + 1);
         }
 
     }
@@ -1063,7 +1066,7 @@ public class ViewManager implements Serializable {
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
     public PhysicalElement getCurrentPage() {
-        return getPage(currentImageOrder).orElse(null);
+        return getPage(currentPageOrder).orElse(null);
     }
 
     /**
@@ -1132,23 +1135,12 @@ public class ViewManager implements Serializable {
     }
 
     /**
-     * <p>
-     * getCurrentImageNo.
-     * </p>
-     *
-     * @return the currentImageNo
-     */
-    public int getCurrentImageNo() {
-        return currentImageOrder;
-    }
-
-    /**
      * Getter for the paginator or the direct page number input field
      *
      * @return currentImageNo
      */
-    public int getCurrentImageNoForPaginator() {
-        return getCurrentImageNo();
+    public String getCurrentImageNoForPaginator() {
+        return getCurrentPageOrderRange();
     }
 
     /**
@@ -1159,9 +1151,24 @@ public class ViewManager implements Serializable {
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @throws IDDOCNotFoundException
      */
-    public void setCurrentImageNoForPaginator(int currentImageNo) throws IndexUnreachableException, PresentationException, IDDOCNotFoundException {
+    public void setCurrentImageNoForPaginator(String currentImageNo) throws IndexUnreachableException, PresentationException, IDDOCNotFoundException {
         logger.trace("setCurrentImageNoForPaginator({})", currentImageNo);
-        setCurrentImageNo(currentImageNo);
+        setCurrentPageOrderRange(currentImageNo);
+    }
+
+    /**
+     * <p>
+     * getCurrentPageOrderRange.
+     * </p>
+     *
+     * @return Current page number or number range
+     */
+    public String getCurrentPageOrderRange() {
+        String ret = String.valueOf(currentPageOrder);
+        if (currentPageOrderSecond != -1) {
+            ret += "-" + currentPageOrderSecond;
+        }
+        return ret;
     }
 
     /**
@@ -1169,36 +1176,47 @@ public class ViewManager implements Serializable {
      * setCurrentImageNo.
      * </p>
      *
-     * @param currentImageNo the currentImageNo to set
+     * @param currentPageOrderRange the currentPageOrderRange to set
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @throws RecordNotFoundException
      * @throws PresentationException
      * @throws IDDOCNotFoundException
      */
-    public void setCurrentImageNo(int currentImageNo) throws IndexUnreachableException, PresentationException, IDDOCNotFoundException {
-        logger.trace("setCurrentImageNo: {}", currentImageNo);
+    public void setCurrentPageOrderRange(String currentPageOrderRange)
+            throws IndexUnreachableException, PresentationException, IDDOCNotFoundException {
+        logger.trace("setCurrentPageOrderRange: {}", currentPageOrderRange);
         if (pageLoader == null) {
             return;
         }
-
-        if (currentImageNo < pageLoader.getFirstPageOrder()) {
-            currentImageNo = pageLoader.getFirstPageOrder();
-        } else if (currentImageNo >= pageLoader.getLastPageOrder()) {
-            currentImageNo = pageLoader.getLastPageOrder();
+        if (currentPageOrderRange == null) {
+            return;
         }
-        this.currentImageOrder = currentImageNo;
+
+        if (currentPageOrderRange.contains("-")) {
+            String[] split = currentPageOrderRange.split("-");
+            currentPageOrder = Integer.valueOf(split[0]);
+            currentPageOrderSecond = Integer.valueOf(split[1]);
+        } else {
+            currentPageOrder = Integer.valueOf(currentPageOrderRange);
+        }
+
+        if (currentPageOrder < pageLoader.getFirstPageOrder()) {
+            currentPageOrder = pageLoader.getFirstPageOrder();
+        } else if (currentPageOrder >= pageLoader.getLastPageOrder()) {
+            currentPageOrder = pageLoader.getLastPageOrder();
+        }
         persistentUrl = null;
 
         if (StringUtils.isEmpty(logId)) {
-            Long iddoc = pageLoader.getOwnerIddocForPage(currentImageNo);
+            Long iddoc = pageLoader.getOwnerIddocForPage(currentPageOrder);
             // Set the currentDocumentIddoc to the IDDOC of the image owner document, but only if no specific document LOGID has been requested
             if (iddoc != null && iddoc > -1) {
                 currentStructElementIddoc = iddoc;
                 logger.trace("currentDocumentIddoc: {} ({})", currentStructElementIddoc, pi);
             } else if (isHasPages()) {
-                logger.warn("currentDocumentIddoc not found for '{}', page {}", pi, currentImageNo);
-                throw new IDDOCNotFoundException("currentElementIddoc not found for '" + pi + "', page " + currentImageNo);
+                logger.warn("currentDocumentIddoc not found for '{}', page {}", pi, currentPageOrderRange);
+                throw new IDDOCNotFoundException("currentElementIddoc not found for '" + pi + "', page " + currentPageOrderRange);
             }
         } else {
             // If a specific LOGID has been requested, look up its IDDOC
@@ -1215,6 +1233,44 @@ public class ViewManager implements Serializable {
         if (currentStructElement == null || currentStructElement.getLuceneId() != currentStructElementIddoc) {
             setCurrentStructElement(new StructElement(currentStructElementIddoc));
         }
+    }
+
+    @Deprecated
+    public String getCurrentImageNo() {
+        return getCurrentPageOrderRange();
+    }
+
+    @Deprecated
+    public void setCurrentImageNo(String currentImageNo) throws IndexUnreachableException, PresentationException, IDDOCNotFoundException {
+        setCurrentPageOrderRange(currentImageNo);
+    }
+
+    /**
+     * @return the currentPageOrder
+     */
+    public int getCurrentPageOrder() {
+        return currentPageOrder;
+    }
+
+    /**
+     * @param currentPageOrder the currentPageOrder to set
+     */
+    public void setCurrentPageOrder(int currentPageOrder) {
+        this.currentPageOrder = currentPageOrder;
+    }
+
+    /**
+     * @return the currentPageOrderSecond
+     */
+    public int getCurrentPageOrderSecond() {
+        return currentPageOrderSecond;
+    }
+
+    /**
+     * @param currentPageOrderSecond the currentPageOrderSecond to set
+     */
+    public void setCurrentPageOrderSecond(int currentPageOrderSecond) {
+        this.currentPageOrderSecond = currentPageOrderSecond;
     }
 
     /**
@@ -1245,8 +1301,8 @@ public class ViewManager implements Serializable {
      */
     public String nextImage() throws IndexUnreachableException, PresentationException, IDDOCNotFoundException {
         //        logger.debug("currentImageNo: {}", currentImageOrder);
-        if (currentImageOrder < pageLoader.getLastPageOrder()) {
-            setCurrentImageNo(currentImageOrder);
+        if (currentPageOrder < pageLoader.getLastPageOrder()) {
+            setCurrentPageOrderRange(String.valueOf(currentPageOrder));
         }
         updateDropdownSelected();
         return null;
@@ -1263,8 +1319,8 @@ public class ViewManager implements Serializable {
      * @throws IDDOCNotFoundException
      */
     public String prevImage() throws IndexUnreachableException, PresentationException, IDDOCNotFoundException {
-        if (currentImageOrder > 0) {
-            setCurrentImageNo(currentImageOrder);
+        if (currentPageOrder > 0) {
+            setCurrentPageOrderRange(String.valueOf(currentPageOrder));
         }
         updateDropdownSelected();
         return "";
@@ -1281,7 +1337,7 @@ public class ViewManager implements Serializable {
      * @throws IDDOCNotFoundException
      */
     public String firstImage() throws IndexUnreachableException, PresentationException, IDDOCNotFoundException {
-        setCurrentImageNo(pageLoader.getFirstPageOrder());
+        setCurrentPageOrderRange(String.valueOf(pageLoader.getFirstPageOrder()));
         updateDropdownSelected();
         return null;
     }
@@ -1297,7 +1353,7 @@ public class ViewManager implements Serializable {
      * @throws IDDOCNotFoundException
      */
     public String lastImage() throws IndexUnreachableException, PresentationException, IDDOCNotFoundException {
-        setCurrentImageNo(pageLoader.getLastPageOrder());
+        setCurrentPageOrderRange(String.valueOf(pageLoader.getLastPageOrder()));
         updateDropdownSelected();
         return null;
     }
@@ -1520,7 +1576,7 @@ public class ViewManager implements Serializable {
      * </p>
      */
     public void updateDropdownSelected() {
-        setDropdownSelected(String.valueOf(currentImageOrder));
+        setDropdownSelected(String.valueOf(currentPageOrder));
     }
 
     /**
@@ -1534,9 +1590,10 @@ public class ViewManager implements Serializable {
      * @throws java.lang.NumberFormatException if any.
      * @throws IDDOCNotFoundException
      */
+    @Deprecated
     public void dropdownAction(ValueChangeEvent event)
             throws NumberFormatException, IndexUnreachableException, PresentationException, IDDOCNotFoundException {
-        setCurrentImageNo(Integer.valueOf((String) event.getNewValue()) - 1);
+        setCurrentPageOrderRange((String) event.getNewValue());
     }
 
     /**
@@ -1576,7 +1633,7 @@ public class ViewManager implements Serializable {
                 StringBuilder sbPath = new StringBuilder();
                 sbPath.append(DataManager.getInstance().getConfiguration().getDfgViewerUrl());
                 sbPath.append(URLEncoder.encode(getMetsResolverUrl(), "utf-8"));
-                sbPath.append("&set[image]=").append(currentImageOrder);
+                sbPath.append("&set[image]=").append(currentPageOrder);
                 return sbPath.toString();
             } catch (UnsupportedEncodingException e) {
                 logger.error("error while encoding url", e);
@@ -2355,7 +2412,7 @@ public class ViewManager implements Serializable {
                 }
             }
             url.append(BeanUtils.getServletPathWithHostAsUrlFromJsfContext());
-            url.append('/').append(pageType.getName()).append('/').append(getPi()).append('/').append(currentImageOrder).append('/');
+            url.append('/').append(pageType.getName()).append('/').append(getPi()).append('/').append(currentPageOrder).append('/');
             persistentUrl = url.toString();
         }
         logger.trace("PURL: {}", persistentUrl);

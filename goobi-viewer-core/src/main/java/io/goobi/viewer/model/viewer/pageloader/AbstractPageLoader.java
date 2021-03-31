@@ -24,6 +24,8 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import javax.faces.model.SelectItem;
+
 import org.apache.commons.lang3.StringUtils;
 import org.apache.solr.common.SolrDocument;
 import org.apache.solr.common.SolrDocumentList;
@@ -275,5 +277,34 @@ public abstract class AbstractPageLoader implements IPageLoader {
         }
 
         return pe;
+    }
+
+    /**
+     * 
+     * @param labelTemplate Label template with placeholders
+     * @param pageNo Page number
+     * @param orderLabel Page label
+     * @param nextPageNo Optional next page number
+     * @param nextOderLabel Optional next page label
+     * @return {@link SelectItem}
+     * @should construct single page item correctly
+     * @should construct double page item correctly
+     */
+    protected static SelectItem buildPageSelectItem(String labelTemplate, int pageNo, String orderLabel, Integer nextPageNo, String nextOderLabel) {
+        if (labelTemplate == null) {
+            throw new IllegalArgumentException("labelTemplate may not be null");
+        }
+
+        SelectItem si = new SelectItem();
+        if (nextPageNo != null && nextOderLabel != null) {
+            si.setLabel(labelTemplate.replace("{order}", pageNo + "-" + nextPageNo)
+                    .replace("{orderlabel}", orderLabel + " - " + nextOderLabel));
+            si.setValue(pageNo + "-" + nextPageNo);
+        } else {
+            si.setLabel(labelTemplate.replace("{order}", String.valueOf(pageNo)).replace("{orderlabel}", orderLabel));
+            si.setValue(String.valueOf(pageNo));
+        }
+
+        return si;
     }
 }

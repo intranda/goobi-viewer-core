@@ -238,15 +238,17 @@ public class ViewManagerTest extends AbstractDatabaseAndSolrEnabledTest {
 
         ViewManager viewManager = new ViewManager(se, AbstractPageLoader.create(se), se.getLuceneId(), null, null, new ImageDeliveryBean());
         try {
-            viewManager.setCurrentImageNo(1);
+            viewManager.setCurrentPageOrderRange("1");
         } catch (IDDOCNotFoundException e) {
         }
         Assert.assertEquals(docstructType, viewManager.getTopStructElement().getDocStructType());
         Assert.assertEquals(pi, viewManager.getPi());
-        Assert.assertEquals(1, viewManager.getCurrentImageNo());
+        Assert.assertEquals(1, viewManager.getCurrentPageOrder());
+        Assert.assertEquals(2, viewManager.getCurrentPageOrderSecond());
+        Assert.assertEquals("1-2", viewManager.getCurrentPageOrderRange());
 
         String purl = viewManager.getPersistentUrl(null);
-        Assert.assertEquals("/toc/PPN123/1/", purl);
+        Assert.assertEquals("/toc/PPN123/1-2/", purl);
     }
 
     /**
