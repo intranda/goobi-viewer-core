@@ -61,8 +61,8 @@ public class TocResourceBuilder {
             throw new ContentNotFoundException("Resource not found: " + pi);
         }
         TOC toc = new TOC();
-        toc.generate(viewManager.getTopDocument(), viewManager.isListAllVolumesInTOC(), viewManager.getMainMimeType(), 1);
-        TocWriter writer = new TocWriter("", viewManager.getTopDocument().getLabel().toUpperCase());
+        toc.generate(viewManager.getTopStructElement(), viewManager.isListAllVolumesInTOC(), viewManager.getMainMimeType(), 1);
+        TocWriter writer = new TocWriter("", viewManager.getTopStructElement().getLabel().toUpperCase());
         writer.setLevelIndent(5);
 
         return writer.getAsText(toc.getTocElements());
