@@ -2821,11 +2821,11 @@ public class ViewManager implements Serializable {
     public void setTopStructElement(StructElement topStructElement) {
         this.topStructElement = topStructElement;
     }
-//
-//    @Deprecated
-//    public StructElement getTopDocument() {
-//        return getTopStructElement();
-//    }
+
+    @Deprecated
+    public StructElement getTopDocument() {
+        return getTopStructElement();
+    }
 
     /**
      * <p>
