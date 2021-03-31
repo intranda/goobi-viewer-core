@@ -428,6 +428,10 @@ public class TocMaker {
             }
             String groupSortField = groupIdField.replace(SolrConstants.GROUPID_, SolrConstants.GROUPORDER_);
             Integer order = (Integer) doc.getFieldValue(groupSortField);
+            if (order == null) {
+                logger.warn("No {} on group member {}", groupSortField, doc.getFieldValue("PI"));
+                order = 0;
+            }
             ret.put(order, doc);
         }
 
@@ -883,12 +887,11 @@ public class TocMaker {
         }
 
         //convert to SImpleMetadataValue if only one value exists
-        if(label.getValues().size() == 1) {
+        if (label.getValues().size() == 1) {
             return new SimpleMetadataValue(label.getValue().orElse(""));
-        } else {            
-            return label;
         }
         
+        return label;
     }
 
     /**
