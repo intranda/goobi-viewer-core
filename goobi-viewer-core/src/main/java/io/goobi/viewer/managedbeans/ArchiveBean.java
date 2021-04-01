@@ -136,46 +136,6 @@ public class ArchiveBean implements Serializable {
     }
 
     /**
-     * @param eadParser
-     * @param databaseName
-     * @throws ClientProtocolException
-     * @throws IOException
-     * @throws HTTPException
-     * @throws IllegalStateException
-     * @throws JDOMException
-     * @deprecated Storing database in application seems ineffective since verifying that database is current takes about as much time as retriving
-     *             the complete database
-     */
-    @Deprecated
-    public void loadDatabaseAndStoreInApplicationScope(BasexEADParser eadParser, String databaseName)
-            throws ClientProtocolException, IOException, HTTPException, IllegalStateException, JDOMException {
-            Document databaseDoc = null;
-            String storageKey = databaseName + "@" + eadParser.getBasexUrl();
-            List<ArchiveResource> dbs;
-            try (Time t1 = DataManager.getInstance().getTiming().takeTime("getPossibleDatabases")) {
-                dbs = eadParser.getPossibleDatabases();
-            }
-            ArchiveResource db = dbs.stream().filter(res -> res.getCombinedName().equals(databaseName)).findAny().orElse(null);
-            if (db == null) {
-                throw new IllegalStateException("Configured default database not found in " + eadParser.getBasexUrl());
-            } else if (storage.contains(storageKey) && !storage.olderThan(storageKey, db.lastModified)) {
-                databaseDoc = (Document) storage.get(storageKey);
-            } else {
-                try (Time t2 = DataManager.getInstance().getTiming().takeTime("retrieveDatabaseDocument")) {
-                    databaseDoc = eadParser.retrieveDatabaseDocument(databaseName);
-                    storage.put(storageKey, databaseDoc);
-                }
-            }
-            HierarchicalConfiguration baseXMetadataConfig = DataManager.getInstance().getConfiguration().getBaseXMetadataConfig();
-            try (Time t3 = DataManager.getInstance().getTiming().takeTime("eadParser.loadDatabase")) {
-                eadParser.readConfiguration(baseXMetadataConfig).loadDatabase(databaseName, databaseDoc);
-            } catch (ConfigurationException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
-            }
-    }
-
-    /**
      * 
      * @return actual root element of the document, even if it's not in the displayed tree
      */
