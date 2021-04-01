@@ -138,7 +138,7 @@ public class RecordFileResource {
     }
 
     /**
-     *@deprecated use {@link RecordsFilesImageResource#getPdf()} instead
+     * @deprecated use {@link RecordsFilesImageResource#getPdf()} instead
      */
     @Deprecated
     @GET
@@ -165,6 +165,7 @@ public class RecordFileResource {
     public StreamingOutput getSourceFile(
             @Parameter(description = "Source file name") @PathParam("filename") String filename)
             throws ContentLibException, PresentationException, IndexUnreachableException, DAOException {
+        filename = StringTools.stripJS(filename);
         Path path = DataFileTools.getDataFilePath(pi, DataManager.getInstance().getConfiguration().getOrigContentFolder(), null, filename);
         if (!Files.isRegularFile(path)) {
             throw new ContentNotFoundException("Source file " + filename + " not found");
@@ -174,7 +175,7 @@ public class RecordFileResource {
         if (!access) {
             throw new ServiceNotAllowedException("Access to source file " + filename + " not allowed");
         }
-        
+
         try {
             String contentType = Files.probeContentType(path);
             logger.trace("content type: {}", contentType);
@@ -193,7 +194,7 @@ public class RecordFileResource {
             }
         };
     }
-    
+
     @GET
     @javax.ws.rs.Path(RECORDS_FILES_CMDI)
     @Operation(tags = { "records" }, summary = "Get cmdi for record file")
@@ -204,10 +205,10 @@ public class RecordFileResource {
             throws ContentLibException, PresentationException, IndexUnreachableException, DAOException, IOException {
         checkFulltextAccessConditions(pi, filename);
 
-        if(lang == null) {
+        if (lang == null) {
             lang = BeanUtils.getLocale().getLanguage();
         }
-        
+
         final Language language = DataManager.getInstance().getLanguageHelper().getLanguage(lang);
         Path cmdiPath = DataFileTools.getDataFolder(pi, DataManager.getInstance().getConfiguration().getCmdiFolder());
         Path filePath = getDocumentLanguageVersion(cmdiPath, language);
@@ -245,7 +246,7 @@ public class RecordFileResource {
             throw new ServiceNotAllowedException("Access to fulltext file " + pi + "/" + filename + " not allowed");
         }
     }
-    
+
     /**
      * Returns the first file on the given folder path that contains the requested language code in its name. ISO-3 files are preferred, with a
      * fallback to ISO-2.
