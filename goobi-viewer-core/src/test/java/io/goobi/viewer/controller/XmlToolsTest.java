@@ -99,7 +99,9 @@ public class XmlToolsTest {
         XmlTools.writeXmlFile(doc, "target");
     }
 
-    /**t
+    /**
+     * t
+     * 
      * @see XmlTools#readXmlFile(Path)
      * @verifies build document from path correctly
      */
@@ -139,5 +141,19 @@ public class XmlToolsTest {
     @Test(expected = FileNotFoundException.class)
     public void readXmlFile_shouldThrowFileNotFoundExceptionIfFileNotFound() throws Exception {
         XmlTools.readXmlFile("notfound.xml");
+    }
+
+    /**
+     * @see XmlTools#transformViaXSLT(Document,String,Map)
+     * @verifies transform xml correctly
+     */
+    @Test
+    public void transformViaXSLT_shouldTransformXmlCorrectly() throws Exception {
+        Document doc = XmlTools
+                .readXmlFile("src/test/resources/data/viewer/tei/DE_2013_Riedel_PolitikUndCo_241__248/DE_2013_Riedel_PolitikUndCo_241__248_eng.xml");
+        Assert.assertNotNull(doc);
+        Document transformed = XmlTools.transformViaXSLT(doc,
+                "src/test/resources/xsl/tei/html5.xsl", null);
+        Assert.assertNotNull(transformed);
     }
 }

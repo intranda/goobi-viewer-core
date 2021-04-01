@@ -61,14 +61,14 @@ import org.slf4j.LoggerFactory;
 public class XmlTools {
 
     private static final Logger logger = LoggerFactory.getLogger(XmlTools.class);
-    
-    private static SAXBuilder getSAXBuilder() {
+
+    static SAXBuilder getSAXBuilder() {
         SAXBuilder builder = new SAXBuilder();
         // Disable access to external entities
-        builder.setFeature("http://apache.org/xml/features/disallow-doctype-decl",true);
+        builder.setFeature("http://apache.org/xml/features/disallow-doctype-decl", true);
         builder.setFeature("http://xml.org/sax/features/external-general-entities", false);
         builder.setFeature("http://xml.org/sax/features/external-parameter-entities", false);
-        
+
         return builder;
     }
 
@@ -163,7 +163,7 @@ public class XmlTools {
         } catch (UnsupportedEncodingException e) {
         }
         ByteArrayInputStream baos = new ByteArrayInputStream(byteArray);
-        
+
         return getSAXBuilder().build(baos);
     }
 
@@ -307,6 +307,7 @@ public class XmlTools {
      * @param stylesheetPath Absolute path to the XSLT stylesheet file
      * @param params Optional transformer parameters
      * @return Transformed document; null in case of errors
+     * @should transform xml correctly
      */
     public static Document transformViaXSLT(Document doc, String stylesheetPath, Map<String, String> params) {
         if (doc == null) {
@@ -320,7 +321,10 @@ public class XmlTools {
             JDOMSource docFrom = new JDOMSource(doc);
             JDOMResult docTo = new JDOMResult();
 
-            Transformer transformer = TransformerFactory.newInstance().newTransformer(new StreamSource(stylesheetPath));
+            TransformerFactory transformerFactory = javax.xml.transform.TransformerFactory.newInstance();
+            transformerFactory.setAttribute(XMLConstants.ACCESS_EXTERNAL_DTD, "");
+            transformerFactory.setAttribute(XMLConstants.ACCESS_EXTERNAL_STYLESHEET, "");
+            Transformer transformer = transformerFactory.newTransformer(new StreamSource(stylesheetPath));
             if (params != null && !params.isEmpty()) {
                 for (String param : params.keySet()) {
                     transformer.setParameter(param, params.get(param));
