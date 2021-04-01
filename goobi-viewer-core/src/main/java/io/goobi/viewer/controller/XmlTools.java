@@ -322,8 +322,8 @@ public class XmlTools {
             JDOMResult docTo = new JDOMResult();
 
             TransformerFactory transformerFactory = javax.xml.transform.TransformerFactory.newInstance();
-            transformerFactory.setAttribute(XMLConstants.ACCESS_EXTERNAL_DTD, "");
-            transformerFactory.setAttribute(XMLConstants.ACCESS_EXTERNAL_STYLESHEET, "");
+            //            transformerFactory.setAttribute(XMLConstants.ACCESS_EXTERNAL_DTD, "");
+            //            transformerFactory.setAttribute(XMLConstants.ACCESS_EXTERNAL_STYLESHEET, "");
             Transformer transformer = transformerFactory.newTransformer(new StreamSource(stylesheetPath));
             if (params != null && !params.isEmpty()) {
                 for (String param : params.keySet()) {
