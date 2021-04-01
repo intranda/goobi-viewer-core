@@ -165,7 +165,9 @@ public class RecordFileResource {
     public StreamingOutput getSourceFile(
             @Parameter(description = "Source file name") @PathParam("filename") String filename)
             throws ContentLibException, PresentationException, IndexUnreachableException, DAOException {
-        filename = StringTools.stripJS(filename);
+        if (!filename.equals(StringTools.stripJS(filename))) {
+            throw new ServiceNotAllowedException("Script detected in input");
+        }
         Path path = DataFileTools.getDataFilePath(pi, DataManager.getInstance().getConfiguration().getOrigContentFolder(), null, filename);
         if (!Files.isRegularFile(path)) {
             throw new ContentNotFoundException("Source file " + filename + " not found");
