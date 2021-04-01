@@ -26,8 +26,6 @@ import org.junit.After;
 import org.junit.Assert;
 import org.junit.Test;
 
-import io.goobi.viewer.controller.XmlTools;
-
 public class XmlToolsTest {
 
     private File tempDir = new File("target/temp");
@@ -101,7 +99,7 @@ public class XmlToolsTest {
         XmlTools.writeXmlFile(doc, "target");
     }
 
-    /**
+    /**t
      * @see XmlTools#readXmlFile(Path)
      * @verifies build document from path correctly
      */
