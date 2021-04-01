@@ -2394,7 +2394,7 @@ public class ViewManager implements Serializable {
             // Just the URN
             return DataManager.getInstance().getConfiguration().getUrnResolverUrl() + urn;
         }
-        
+
         // Prefer configured target page type for the docstruct type
         PageType pageType = null;
         if (topStructElement != null) {
@@ -2408,7 +2408,7 @@ public class ViewManager implements Serializable {
                 pageType = PageType.viewMetadata;
             }
         }
-        
+
         return new StringBuilder().append(BeanUtils.getServletPathWithHostAsUrlFromJsfContext())
                 .append('/')
                 .append(pageType.getName())
@@ -2879,11 +2879,11 @@ public class ViewManager implements Serializable {
     public void setTopStructElement(StructElement topStructElement) {
         this.topStructElement = topStructElement;
     }
-    //
-    //    @Deprecated
-    //    public StructElement getTopDocument() {
-    //        return getTopStructElement();
-    //    }
+
+    @Deprecated
+    public StructElement getTopDocument() {
+        return getTopStructElement();
+    }
 
     /**
      * <p>
