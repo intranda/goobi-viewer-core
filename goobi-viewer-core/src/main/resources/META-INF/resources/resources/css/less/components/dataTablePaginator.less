@@ -37,7 +37,7 @@
             padding-left: 8px;
         }
         .data-table-paginator__total-count {
-            padding-right: 15px;
+            padding-right: 8px;
         }
     }
     &__total-count,
@@ -56,6 +56,26 @@
 #txtMoveTo2,
 input[id*="cmdMoveTo"] {
     display: none;
+}
+
+@{RTL} {
+	.data-table-paginator {
+		&__page-count {
+	        span {}
+	        .data-table-paginator__current-page {
+	            padding-right: 8px;
+	            padding-left: 2px;
+	        }
+	        .data-table-paginator__input {
+	            padding-left: unset;
+	            padding-right: 8px;
+	        }
+	        .data-table-paginator__total-count {
+	            padding-right: unset;
+	            padding-left: 8px;
+	        }
+	    }
+	}
 }
 
 /* BREAKPOINT FOR LARGE DESKTOPS */

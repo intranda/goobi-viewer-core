@@ -352,9 +352,6 @@
 		span {
 			font-size: 1.4rem;
 		}
-		.data-table-paginator__total-count {
-			padding-right: 8px;
-		}
 	}
 	&__table-filter {
 		.input-group > .form-control {
@@ -372,6 +369,7 @@
 			display: flex;
 			padding: 0 1rem;
 			align-items: center;
+			justify-content: center;
 		}
 	}
 	&__table-content {
@@ -504,6 +502,8 @@
 	}
 	&__search-action {
 		font-size: 1.4rem;
+		min-width: 120px;
+		text-align: center;
 	}
 
 	/* SIDEBAR */
@@ -1366,16 +1366,19 @@ html[lang="es"] .admin__radio-switch {
 			width: 18rem;
 		    input {
 				width: 6rem;
-				left: 3.5rem;
+				right: 2rem;
+				left: unset;
+				margin: 0;
 				& ~ input:checked ~ .toggle-outside {
 				}
 				& ~ input:checked ~ .toggle-outside .toggle-inside {
-					left: 3.5rem;
+					left: unset;
+					right: 3.5rem;
 				}
 		    }
 		    input:checked {
 				& ~ .toggle-outside .toggle-inside {
-					left: 0.5rem;
+					right: 0.5rem;
 				}	
 			}
 			input:checked + label {
@@ -1383,25 +1386,61 @@ html[lang="es"] .admin__radio-switch {
 			input:not(:checked) + label:hover {
 			}
 			label {
-			  	width: 3rem;
-			  	text-align: left;
+			  	width: 2rem;
+				margin: 0;
+			  	text-align: right;
 			  	&:last-of-type {
-					margin-left: 6.5rem;
+					margin-left: unset;
+					margin-right: 6.5rem;
 					width: 3.2rem;
-					text-align: right;
+					text-align: left;
 				}
 			}
 			.toggle-outside {
+				padding: 0.25rem;
 				width: 6rem;
-				left: 3.5rem;
+				left: unset;
+				right: 2rem;
 			}
 			.toggle-inside {
 		 		width: 2rem;
 			}
 		}
+		&__language-tabs {
+			.nav-tabs {
+				padding-right: 0;
+			}	
+		}
+		&__language-tab {
+			a {
+			    padding: 1rem 1.7rem;
+			    margin-right: unset;
+			    margin-left: .3rem;
+				&:hover {
+				}
+			}
+			&:first-child,
+			&:first-child.-already-translated {
+				a {
+		    		margin-right: unset;
+		    		margin-left: 1.8rem;
+			    	&:hover {}
+			    }
+		    	&.active a {}
+			}
+		}
+		&__overlay-bar {
+			right: unset;
+			left: 0;
+			&.-showExportOptions {}
+		}
+		// BOOTSTRAP OVERRIDES
+		.mr-3, .mx-3 {
+		    margin-right: unset !important;
+		    margin-left: 1.6rem;
+		}
 	}
 }
-
 
 
 /* BREAKPOINT FOR LARGE DESKTOPS */
