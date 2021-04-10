@@ -711,7 +711,7 @@
 								<ignoredUnusedDeclaredDependency>org.citationstyles:locales</ignoredUnusedDeclaredDependency>
 								<ignoredUnusedDeclaredDependency>org.citationstyles:styles</ignoredUnusedDeclaredDependency>
 								
-								<!-- jersey client is falsely declared as unused blocking maven install -->
+								<!-- jersey client is falsely declared as unused blocking maven install (windows developer system only) -->
 								<ignoredUnusedDeclaredDependency>org.glassfish.jersey.core:jersey-client</ignoredUnusedDeclaredDependency>
 							</ignoredUnusedDeclaredDependencies>
 						</configuration>
