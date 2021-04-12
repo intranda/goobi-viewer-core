@@ -2522,8 +2522,6 @@ riot.tag2('slider', '<div ref="container" class="swiper-container slider-{this.s
 
     this.on( 'updated', function() {
 
-    	console.log("layout = ", this.getLayout());
-
     	if(this.slides && this.slides.length > 0) {
     		if(this.slider) {
     			this.slider.destroy();
