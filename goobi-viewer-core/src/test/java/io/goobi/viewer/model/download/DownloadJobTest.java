@@ -17,13 +17,18 @@ package io.goobi.viewer.model.download;
 
 import static org.junit.Assert.assertEquals;
 
+import java.time.Instant;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 
 import io.goobi.viewer.AbstractDatabaseAndSolrEnabledTest;
 import io.goobi.viewer.controller.Configuration;
@@ -31,8 +36,6 @@ import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.exceptions.DownloadException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
-import io.goobi.viewer.model.download.DownloadJob;
-import io.goobi.viewer.model.download.PDFDownloadJob;
 
 public class DownloadJobTest extends AbstractDatabaseAndSolrEnabledTest {
 
@@ -51,7 +54,7 @@ public class DownloadJobTest extends AbstractDatabaseAndSolrEnabledTest {
     public void cleanupExpiredDownloads_shouldDeleteExpiredJobsCorrectly() throws Exception {
         Assert.assertEquals(2, DataManager.getInstance().getDao().getAllDownloadJobs().size());
 
-        DownloadJob job = new PDFDownloadJob("PI_3", null, new Date(), 3000000);
+        DownloadJob job = new PDFDownloadJob("PI_3", null, LocalDateTime.now(), 3000000);
         Assert.assertTrue(DataManager.getInstance().getDao().addDownloadJob(job));
         Assert.assertEquals(3, DataManager.getInstance().getDao().getAllDownloadJobs().size());
         Long id = job.getId();
@@ -69,7 +72,7 @@ public class DownloadJobTest extends AbstractDatabaseAndSolrEnabledTest {
      */
     @Test
     public void isExpired_shouldReturnCorrectValue() throws Exception {
-        DownloadJob job = new PDFDownloadJob("PI_3", null, new Date(), 0);
+        DownloadJob job = new PDFDownloadJob("PI_3", null, LocalDateTime.now(), 0);
         Thread.sleep(5);
         Assert.assertTrue(job.isExpired());
         job.setTtl(30000);
@@ -82,7 +85,7 @@ public class DownloadJobTest extends AbstractDatabaseAndSolrEnabledTest {
      */
     @Test
     public void generateDownloadJobId_shouldGenerateSameIdFromSameCriteria() throws Exception {
-        String hash = "78acb5991aaf0fee0329b673e985ce82";
+        String hash = "07319d093ea0e44a618cdf3accb9576009025f7ea7ed3b6765192f1ddca6a801";
         String crit1 = "PPN123456789";
         String crit2 = "LOG_0000";
         Assert.assertEquals(hash, DownloadJob.generateDownloadJobId(crit1, crit2));
@@ -123,20 +126,13 @@ public class DownloadJobTest extends AbstractDatabaseAndSolrEnabledTest {
         }
     }
 
-    //    @Test
-    //    public void testCreateEpub() throws PresentationException, IndexUnreachableException {
-    //        String tempPath = "src/test/resources/data/viewer/download_epub";
-    //        try {
-    //            String msg = EPUBDownloadJob.triggerCreation("PPN648829383", "testIdentifier", "src/test/resources/data/viewer/download_epub");
-    //            Assert.assertNull("EPUB not created", msg);
-    //        } finally {
-    //            File tempFolder = new File(tempPath);
-    //            if (tempFolder.isDirectory()) {
-    //                //                try {
-    //                //                    FileUtils.deleteDirectory(tempFolder);
-    //                //                } catch (IOException e) {
-    //                //                }
-    //            }
-    //        }
-    //    }
+    @Test 
+    public void testPutDownloadJobAnswer() throws JsonProcessingException {
+        String pi = "18979459_1830";
+        String logid = "LOG_0004";
+        DownloadJob job = new PDFDownloadJob(pi, logid, LocalDateTime.now(), 1000);
+        job.setMessage("Some message");
+        job.getObservers().add("me@he.re");
+        String jobString = new ObjectMapper().registerModule(new JavaTimeModule()).writeValueAsString(job);
+    }
 }

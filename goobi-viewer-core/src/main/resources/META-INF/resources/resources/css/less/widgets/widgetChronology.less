@@ -84,7 +84,9 @@
 		}
 	}
 }
+
 #chronoSlider {
+
 	height: 1rem;
 	border-radius: 5px;
 	border-color: @lightgray;
@@ -110,6 +112,18 @@
 	    border-color: @gray;
 	    background-color: @middlegray;
 	    cursor: pointer;
+	}
+}
+
+@{RTL} .widget-chronology-slider {
+	&__item {
+		&.chronology-slider-label,
+		&.chronology-slider-actions {
+		}
+		&.chronology-slider-label {
+			margin-right: unset;
+			margin-left: auto;
+		}
 	}
 }
 

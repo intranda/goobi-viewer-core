@@ -56,7 +56,7 @@ import de.intranda.api.iiif.presentation.Collection;
 import de.unigoettingen.sub.commons.contentlib.exceptions.ContentLibException;
 import de.unigoettingen.sub.commons.contentlib.exceptions.IllegalRequestException;
 import io.goobi.viewer.api.rest.AbstractApiUrlManager;
-import io.goobi.viewer.api.rest.ViewerRestServiceBinding;
+import io.goobi.viewer.api.rest.bindings.ViewerRestServiceBinding;
 import io.goobi.viewer.api.rest.model.SuccessMessage;
 import io.goobi.viewer.api.rest.resourcebuilders.AbstractBookmarkResourceBuilder;
 import io.goobi.viewer.api.rest.resourcebuilders.SessionBookmarkResourceBuilder;
@@ -88,7 +88,7 @@ public class BookmarkResource {
     private AbstractBookmarkResourceBuilder builder;
     private HttpServletRequest servletRequest;
     private HttpServletResponse servletResponse;
-    
+
     @Inject
     AbstractApiUrlManager urls;
 
@@ -96,13 +96,13 @@ public class BookmarkResource {
         this.servletRequest = servletRequest;
         this.servletResponse = servletResponse;
         UserBean bean = BeanUtils.getUserBeanFromRequest(servletRequest);
-        if(bean != null) {            
+        if (bean != null) {
             User currentUser = bean.getUser();
-            if(currentUser != null) {
-                builder = new UserBookmarkResourceBuilder(currentUser);             
+            if (currentUser != null) {
+                builder = new UserBookmarkResourceBuilder(currentUser);
             }
         }
-        if(builder == null) {
+        if (builder == null) {
             HttpSession session = servletRequest.getSession();
             builder = new SessionBookmarkResourceBuilder(session);
         }
@@ -143,7 +143,7 @@ public class BookmarkResource {
     @ApiResponse(responseCode = "500", description = "Error querying database")
     public BookmarkList getBookmarkList(
             @Parameter(description = "The id of the bookmark list") @PathParam("listId") Long id)
-            throws DAOException, IOException, RestApiException, IllegalRequestException {
+            throws DAOException, IOException, RestApiException {
         return builder.getBookmarkListById(id);
     }
 
@@ -159,20 +159,20 @@ public class BookmarkResource {
             @Parameter(description = "The id of the bookmark list") @PathParam("listId") Long id,
             BookmarkList list) throws DAOException, IOException, RestApiException, IllegalRequestException {
         BookmarkList orig = getBookmarkList(id);
-        if(StringUtils.isNotBlank(list.getName())) {
+        if (StringUtils.isNotBlank(list.getName())) {
             orig.setName(list.getName());
         }
-        if(StringUtils.isNotBlank(list.getDescription())) {
+        if (StringUtils.isNotBlank(list.getDescription())) {
             orig.setDescription(list.getDescription());
         }
         orig.setIsPublic(list.isIsPublic());
-        if(StringUtils.isNotBlank(list.getShareKey())) {            
+        if (StringUtils.isNotBlank(list.getShareKey())) {
             orig.setShareKey(list.getShareKey());
         }
         builder.updateBookmarkList(orig);
         return orig;
     }
-    
+
     @DELETE
     @Path(USERS_BOOKMARKS_LIST)
     @Produces({ MediaType.APPLICATION_JSON })
@@ -182,10 +182,11 @@ public class BookmarkResource {
     @ApiResponse(responseCode = "400", description = "Not logged in, session bookmark list may not be deleted")
     @ApiResponse(responseCode = "500", description = "Error querying database")
     public SuccessMessage deleteBookmarkList(
-            @Parameter(description = "The id of the bookmark list") @PathParam("listId") Long id) throws DAOException, IOException, RestApiException, IllegalRequestException {
+            @Parameter(description = "The id of the bookmark list") @PathParam("listId") Long id)
+            throws DAOException, IOException, RestApiException, IllegalRequestException {
         return builder.deleteBookmarkList(id);
     }
-    
+
     @POST
     @Path(USERS_BOOKMARKS_LIST)
     @Consumes({ MediaType.APPLICATION_JSON })
@@ -196,12 +197,12 @@ public class BookmarkResource {
     @ApiResponse(responseCode = "500", description = "Error querying database")
     public BookmarkList addItemToBookmarkList(
             @Parameter(description = "The id of the bookmark list.") @PathParam("listId") Long id,
-            Bookmark item) throws DAOException, IOException, RestApiException, IllegalRequestException {
-        builder.addBookmarkToBookmarkList(id, item.getPi(), item.getLogId(), 
+            Bookmark item) throws DAOException, IOException, RestApiException {
+        builder.addBookmarkToBookmarkList(id, item.getPi(), item.getLogId(),
                 Optional.ofNullable(item.getOrder()).map(i -> i.toString()).orElse(null));
         return builder.getBookmarkListById(id);
     }
-    
+
     @GET
     @Path(USERS_BOOKMARKS_ITEM)
     @Produces({ MediaType.APPLICATION_JSON })
@@ -212,16 +213,16 @@ public class BookmarkResource {
     @ApiResponse(responseCode = "500", description = "Error querying database")
     public Bookmark getBookmarkItem(
             @Parameter(description = "The id of the bookmark list") @PathParam("listId") Long listId,
-            @Parameter(description = "The id of the bookmark") @PathParam("bookmarkId") Long bookmarkId) throws RestApiException, IllegalRequestException, DAOException, IOException {
+            @Parameter(description = "The id of the bookmark") @PathParam("bookmarkId") Long bookmarkId)
+            throws RestApiException, DAOException, IOException {
         BookmarkList list = getBookmarkList(listId);
         Bookmark item = list.getItems().stream().filter(i -> i.getId().equals(bookmarkId)).findAny().orElse(null);
-        if(item  != null) {
+        if (item != null) {
             return item;
-        } else {
-            throw new RestApiException("No item found in list " +  listId + "with id" + bookmarkId, HttpServletResponse.SC_NOT_FOUND);
         }
+        throw new RestApiException("No item found in list " + listId + "with id" + bookmarkId, HttpServletResponse.SC_NOT_FOUND);
     }
-    
+
     @DELETE
     @Path(USERS_BOOKMARKS_ITEM)
     @Produces({ MediaType.APPLICATION_JSON })
@@ -232,16 +233,17 @@ public class BookmarkResource {
     @ApiResponse(responseCode = "500", description = "Error querying database")
     public SuccessMessage deleteBookmarkItem(
             @Parameter(description = "The id of the bookmark list") @PathParam("listId") Long listId,
-            @Parameter(description = "The id of the bookmark") @PathParam("bookmarkId") Long bookmarkId) throws RestApiException, IllegalRequestException, DAOException, IOException {
+            @Parameter(description = "The id of the bookmark") @PathParam("bookmarkId") Long bookmarkId)
+            throws RestApiException, DAOException, IOException {
         BookmarkList list = getBookmarkList(listId);
         Bookmark item = list.getItems().stream().filter(i -> i.getId().equals(bookmarkId)).findAny().orElse(null);
-        if(item  != null) {
-            return builder.deleteBookmarkFromBookmarkList(list.getId(), item.getPi(), item.getLogId(), item.getOrder().toString());
-        } else {
-            throw new RestApiException("No item found in list " +  listId + "with id" + bookmarkId, HttpServletResponse.SC_NOT_FOUND);
+        if (item != null) {
+            return builder.deleteBookmarkFromBookmarkList(list.getId(), item.getPi(), item.getLogId(),
+                    Optional.ofNullable(item.getOrder()).map(o -> o.toString()).orElse(null));
         }
+        throw new RestApiException("No item found in list " + listId + "with id" + bookmarkId, HttpServletResponse.SC_NOT_FOUND);
     }
-    
+
     @GET
     @Path(USERS_BOOKMARKS_LIST_IIIF)
     @Produces({ MediaType.APPLICATION_JSON })
@@ -252,10 +254,10 @@ public class BookmarkResource {
     @ApiResponse(responseCode = "500", description = "Error querying database")
     public Collection getBookmarkListAsIIIFCollection(
             @Parameter(description = "The id of the bookmark list") @PathParam("listId") Long id)
-            throws DAOException, IOException, RestApiException, IllegalRequestException {
+            throws DAOException, IOException, RestApiException {
         return builder.getAsCollection(id, urls);
     }
-    
+
     @GET
     @Path(USERS_BOOKMARKS_LIST_MIRADOR)
     @Produces({ MediaType.APPLICATION_JSON })
@@ -266,10 +268,11 @@ public class BookmarkResource {
     @ApiResponse(responseCode = "500", description = "Error querying database")
     public String getBookmarkListForMirador(
             @Parameter(description = "The id of the bookmark list") @PathParam("listId") Long id)
-            throws DAOException, IOException, RestApiException, IllegalRequestException, ViewerConfigurationException, IndexUnreachableException, PresentationException {
+            throws DAOException, IOException, RestApiException, ViewerConfigurationException, IndexUnreachableException,
+            PresentationException {
         return builder.getBookmarkListForMirador(id, urls);
     }
-    
+
     @GET
     @Path(USERS_BOOKMARKS_LIST_RSS)
     @Produces({ MediaType.TEXT_XML })
@@ -280,14 +283,14 @@ public class BookmarkResource {
     @ApiResponse(responseCode = "500", description = "Error querying database")
     public String getBookmarkListAsRSS(
             @Parameter(description = "The id of the bookmark list") @PathParam("listId") Long id,
-            @Parameter(description="Language for RSS metadata")@QueryParam("lang")String language,
+            @Parameter(description = "Language for RSS metadata") @QueryParam("lang") String language,
             @Parameter(description = "Limit for results to return") @QueryParam("max") Integer maxHits)
-            throws DAOException, IOException, RestApiException, ViewerConfigurationException, IndexUnreachableException, PresentationException, ContentLibException {
-       BookmarkList list = getBookmarkList(id);
-       String query = list.generateSolrQueryForItems();
-       return RSSFeed.createRssFeed(language, maxHits, null, query, null, servletRequest);
+            throws DAOException, IOException, RestApiException, ContentLibException {
+        BookmarkList list = getBookmarkList(id);
+        String query = list.generateSolrQueryForItems();
+        return RSSFeed.createRssFeed(language, maxHits, null, query, null, 0, servletRequest);
     }
-    
+
     @GET
     @Path(USERS_BOOKMARKS_LIST_RSS_JSON)
     @Produces({ MediaType.APPLICATION_JSON })
@@ -298,14 +301,14 @@ public class BookmarkResource {
     @ApiResponse(responseCode = "500", description = "Error querying database")
     public Channel getBookmarkListAsRSSJson(
             @Parameter(description = "The id of the bookmark list") @PathParam("listId") Long id,
-            @Parameter(description="Language for RSS metadata")@QueryParam("lang")String language,
+            @Parameter(description = "Language for RSS metadata") @QueryParam("lang") String language,
             @Parameter(description = "Limit for results to return") @QueryParam("max") Integer maxHits)
-            throws DAOException, IOException, RestApiException, ViewerConfigurationException, IndexUnreachableException, PresentationException, ContentLibException {
-       BookmarkList list = getBookmarkList(id);
-       String query = list.generateSolrQueryForItems();
-       return RSSFeed.createRssResponse(language, maxHits, null, query, null, servletRequest);
+            throws DAOException, IOException, RestApiException, ContentLibException {
+        BookmarkList list = getBookmarkList(id);
+        String query = list.generateSolrQueryForItems();
+        return RSSFeed.createRssResponse(language, maxHits, null, query, null, 0, servletRequest);
     }
-    
+
     @GET
     @Path(USERS_BOOKMARKS_PUBLIC)
     @Produces({ MediaType.APPLICATION_JSON })
@@ -314,19 +317,19 @@ public class BookmarkResource {
             summary = "Get all public bookmark lists")
     @ApiResponse(responseCode = "500", description = "Error querying database")
     public List<BookmarkList> getPublicBookmarkLists()
-            throws DAOException, IOException, RestApiException, ViewerConfigurationException, IndexUnreachableException, PresentationException, ContentLibException {
-       return builder.getAllPublicBookmarkLists();
+            throws DAOException, IOException, RestApiException {
+        return builder.getAllPublicBookmarkLists();
     }
-    
+
     @GET
     @Path(USERS_BOOKMARKS_SHARED)
     @Produces({ MediaType.APPLICATION_JSON })
     @Deprecated
     public List<BookmarkList> getSharedBookmarkLists()
-            throws DAOException, IOException, RestApiException, ViewerConfigurationException, IndexUnreachableException, PresentationException, ContentLibException {
-       return builder.getAllSharedBookmarkLists();
+            throws DAOException, IOException, RestApiException, ContentLibException {
+        return builder.getAllSharedBookmarkLists();
     }
-    
+
     @GET
     @Path(USERS_BOOKMARKS_LIST_SHARED)
     @Produces({ MediaType.APPLICATION_JSON })
@@ -337,10 +340,10 @@ public class BookmarkResource {
     @ApiResponse(responseCode = "500", description = "Error querying database")
     public BookmarkList getSharedBookmarkListByKey(
             @Parameter(description = "The share key assigned to the bookmark list") @PathParam("key") String key)
-            throws DAOException, IOException, RestApiException, ViewerConfigurationException, IndexUnreachableException, PresentationException, ContentLibException {
-       return builder.getSharedBookmarkList(key);
+            throws DAOException, RestApiException, ContentLibException {
+        return builder.getSharedBookmarkList(key);
     }
-    
+
     @GET
     @Path(USERS_BOOKMARKS_LIST_SHARED_MIRADOR)
     @Produces({ MediaType.APPLICATION_JSON })
@@ -351,24 +354,24 @@ public class BookmarkResource {
     @ApiResponse(responseCode = "500", description = "Error querying database")
     public String getSharedBookmarkListForMirador(
             @Parameter(description = "The share key assigned to the bookmark list") @PathParam("key") String key)
-            throws DAOException, IOException, RestApiException, ViewerConfigurationException, IndexUnreachableException, PresentationException, ContentLibException {
-       return builder.getSharedBookmarkListForMirador(key, urls);
+            throws DAOException, ViewerConfigurationException, IndexUnreachableException, PresentationException, ContentLibException {
+        return builder.getSharedBookmarkListForMirador(key, urls);
     }
-    
+
     @GET
     @Path(USERS_BOOKMARKS_LIST_SHARED_IIIF)
     @Produces({ MediaType.APPLICATION_JSON })
     @Operation(
             tags = { "bookmarks", "iiif" },
-            summary = "Get a public or shared bookmark list by its share key as a Mirador viewer config")
+            summary = "Get a public or shared bookmark list by its share key as a IIIF collection")
     @ApiResponse(responseCode = "404", description = "Bookmark list not found")
     @ApiResponse(responseCode = "500", description = "Error querying database")
     public Collection getSharedBookmarkListAsCollection(
             @Parameter(description = "The share key assigned to the bookmark list") @PathParam("key") String key)
-            throws DAOException, IOException, RestApiException, ViewerConfigurationException, IndexUnreachableException, PresentationException, ContentLibException {
-       return builder.getAsCollection(key, urls);
+            throws DAOException, ContentLibException {
+        return builder.getAsCollection(key, urls);
     }
-    
+
     @GET
     @Path(USERS_BOOKMARKS_LIST_SHARED_RSS_JSON)
     @Produces({ MediaType.APPLICATION_JSON })
@@ -379,14 +382,14 @@ public class BookmarkResource {
     @ApiResponse(responseCode = "500", description = "Error querying database")
     public Channel getSharedBookmarkListAsRSSJson(
             @Parameter(description = "The share key assigned to the bookmark list") @PathParam("key") String key,
-            @Parameter(description="Language for RSS metadata")@QueryParam("lang")String language,
+            @Parameter(description = "Language for RSS metadata") @QueryParam("lang") String language,
             @Parameter(description = "Limit for results to return") @QueryParam("max") Integer maxHits)
-            throws DAOException, IOException, RestApiException, ViewerConfigurationException, IndexUnreachableException, PresentationException, ContentLibException {
+            throws DAOException, RestApiException, ContentLibException {
         BookmarkList list = getSharedBookmarkListByKey(key);
         String query = list.generateSolrQueryForItems();
-        return RSSFeed.createRssResponse(language, maxHits, null, query, null, servletRequest);
+        return RSSFeed.createRssResponse(language, maxHits, null, query, null, 0, servletRequest);
     }
-    
+
     @GET
     @Path(USERS_BOOKMARKS_LIST_SHARED_RSS)
     @Produces({ MediaType.TEXT_XML })
@@ -397,11 +400,11 @@ public class BookmarkResource {
     @ApiResponse(responseCode = "500", description = "Error querying database")
     public String getSharedBookmarkListAsRSS(
             @Parameter(description = "The share key assigned to the bookmark list") @PathParam("key") String key,
-            @Parameter(description="Language for RSS metadata")@QueryParam("lang")String language,
+            @Parameter(description = "Language for RSS metadata") @QueryParam("lang") String language,
             @Parameter(description = "Limit for results to return") @QueryParam("max") Integer maxHits)
-            throws DAOException, IOException, RestApiException, ViewerConfigurationException, IndexUnreachableException, PresentationException, ContentLibException {
+            throws DAOException, RestApiException, ContentLibException {
         BookmarkList list = getSharedBookmarkListByKey(key);
         String query = list.generateSolrQueryForItems();
-        return RSSFeed.createRssFeed(language, maxHits, null, query, null, servletRequest);
+        return RSSFeed.createRssFeed(language, maxHits, null, query, null, 0, servletRequest);
     }
 }

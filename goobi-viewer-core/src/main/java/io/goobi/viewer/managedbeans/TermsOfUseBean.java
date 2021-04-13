@@ -149,6 +149,17 @@ public class TermsOfUseBean implements Serializable, IPolyglott {
         return isComplete(locale);
     }
 
+    /* (non-Javadoc)
+     * @see io.goobi.viewer.model.misc.IPolyglott#isEmpty(java.util.Locale)
+     */
+    @Override
+    public boolean isEmpty(Locale locale) {
+        Translation title = termsOfUse.getTitle(locale.getLanguage());
+        Translation desc = termsOfUse.getDescription(locale.getLanguage());
+        return (title == null || title.isEmpty()) && (desc == null || desc.isEmpty());
+    }
+    
+
     public String getTitleForDisplay() {
         return this.termsOfUse.getTitleIfExists(BeanUtils.getLocale().getLanguage())
                 .orElse(this.termsOfUse.getTitleIfExists(BeanUtils.getDefaultLocale().getLanguage())
@@ -160,6 +171,7 @@ public class TermsOfUseBean implements Serializable, IPolyglott {
                 .orElse(this.termsOfUse.getDescriptionIfExists(BeanUtils.getDefaultLocale().getLanguage())
                         .orElse(""));
     }
+
 
 
 

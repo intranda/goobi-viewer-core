@@ -19,10 +19,8 @@ import static org.junit.Assert.fail;
 
 import java.io.File;
 import java.io.IOException;
-import java.net.URI;
 import java.net.URISyntaxException;
-import java.nio.file.Path;
-import java.nio.file.Paths;
+import java.net.URLEncoder;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -36,19 +34,24 @@ import org.junit.Test;
 
 import de.unigoettingen.sub.commons.contentlib.exceptions.IllegalRequestException;
 import io.goobi.viewer.AbstractDatabaseEnabledTest;
+import io.goobi.viewer.api.rest.AbstractApiUrlManager;
+import io.goobi.viewer.api.rest.v1.ApiUrls;
 import io.goobi.viewer.controller.Configuration;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.exceptions.DAOException;
+import io.goobi.viewer.exceptions.ViewerConfigurationException;
 import io.goobi.viewer.managedbeans.CmsBean;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.model.cms.CMSContentItem.CMSContentItemType;
 import io.goobi.viewer.model.cms.CMSPageLanguageVersion.CMSPageStatus;
-import io.goobi.viewer.servlets.rest.cms.CMSContentResource;
 
 //@RunWith(PowerMockRunner.class)
 //@PrepareForTest(BeanUtils.class)
 public class CMSPageTest extends AbstractDatabaseEnabledTest {
 
+    AbstractApiUrlManager contentUrls;
+    AbstractApiUrlManager dataUrls;
+    
     /**
      * @throws java.lang.Exception
      */
@@ -56,6 +59,12 @@ public class CMSPageTest extends AbstractDatabaseEnabledTest {
     @Before
     public void setUp() throws Exception {
         super.setUp();
+        
+        contentUrls = DataManager.getInstance().getRestApiManager().getContentApiManager()
+                .orElseThrow(() -> new ViewerConfigurationException("urls.iiif must be configured to current rest api"));
+        dataUrls = DataManager.getInstance().getRestApiManager().getDataApiManager()
+                .orElseThrow(() -> new ViewerConfigurationException("urls.iiif must be configured to current rest api"));
+        
         //        FacesContext facesContext = TestUtils.mockFacesContext();
         //        ServletContext servletContext = (ServletContext) facesContext.getExternalContext().getContext();
         //        Mockito.when(servletContext.getRealPath("/")).thenReturn("src/META-INF/resources/");
@@ -82,9 +91,9 @@ public class CMSPageTest extends AbstractDatabaseEnabledTest {
     @Test
     public void testGetTileGridUrl() {
 
-        String allowedTags = "a$b$cde";
+        String allowedTags = "a,b,cde";
         List<CMSCategory> categories = new ArrayList<>();
-        for (String catName : allowedTags.split("\\$")) {
+        for (String catName : allowedTags.split(",")) {
             categories.add(new CMSCategory(catName));
         }
         boolean preferImportant = true;
@@ -113,9 +122,16 @@ public class CMSPageTest extends AbstractDatabaseEnabledTest {
 
         try {
             String url = page.getTileGridUrl("grid01");
-            String viewerUrl = BeanUtils.getServletPathWithHostAsUrlFromJsfContext();
-            String language = CmsBean.getCurrentLocale().getLanguage();
-            String expecedUrl = viewerUrl + "/rest/tilegrid/" + language + "/" + numTiles + "/" + numTiles + "/" + allowedTags + "/";
+            String expecedUrl = dataUrls
+            .path(ApiUrls.CMS_MEDIA)
+            .query("tags", allowedTags)
+            .query("max", numTiles)
+            .query("prioritySlots", numTiles)
+            .query("random", "true")
+            .build();
+//            String viewerUrl = BeanUtils.getServletPathWithHostAsUrlFromJsfContext();
+//            String language = CmsBean.getCurrentLocale().getLanguage();
+//            String expecedUrl = viewerUrl + "/rest/tilegrid/" + language + "/" + numTiles + "/" + numTiles + "/" + allowedTags + "/";
             //            expecedUrl = expecedUrl.replace("//", "/");
             Assert.assertEquals(expecedUrl, url);
         } catch (IllegalRequestException e) {
@@ -195,18 +211,12 @@ public class CMSPageTest extends AbstractDatabaseEnabledTest {
 
         Assert.assertEquals(textContent, page.getContent(textId));
 
-        String htmlUrl = page.getContent(htmlId);
-        Path htmlUrlPath = Paths.get(new URI(htmlUrl).getPath());
-        String htmlResponse = new CMSContentResource().getContentHtml(Long.parseLong(htmlUrlPath.subpath(3, 4).toString()),
-                htmlUrlPath.subpath(4, 5).toString(), htmlUrlPath.subpath(5, 6).toString());
-        Assert.assertEquals("<span>" + htmlContent + "</span>", htmlResponse);
-
         String contentServerUrl = DataManager.getInstance().getConfiguration().getIIIFApiUrl();
 
-        String filePath = media.getImageURI();
-        filePath = BeanUtils.escapeCriticalUrlChracters(filePath, false);
-
-        String imageUrl = contentServerUrl + "image/-/" + filePath + "/full/max/0/default.jpg";
+        String filename = media.getFileName();
+        filename = URLEncoder.encode(filename, "utf-8");
+        
+        String imageUrl = contentUrls.path(ApiUrls.CMS_MEDIA, ApiUrls.CMS_MEDIA_FILES_FILE).params(filename).build()  + "/full/max/0/default.jpg";
         Assert.assertEquals(imageUrl, page.getContent(imageId).replaceAll("\\?.*", ""));
         Assert.assertEquals(componentName, page.getContent(componentId));
 

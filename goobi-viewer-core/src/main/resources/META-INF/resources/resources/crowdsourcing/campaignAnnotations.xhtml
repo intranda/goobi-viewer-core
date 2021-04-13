@@ -135,9 +135,10 @@
 						$(document).ready(() => {						    
                             riot.mount( "annotationBody", {
                                 currentlang: "#{navigationHelper.localeString}",
-                                resturl: "#{configurationBean.restApiUrl}",
+                                resturl: "#{configurationBean.restApiUrlV1}",
                             } );
 						})
+						console.log("rest url = ", "#{configurationBean.restApiUrlV1}");
                         </script>
 
 					</h:form>

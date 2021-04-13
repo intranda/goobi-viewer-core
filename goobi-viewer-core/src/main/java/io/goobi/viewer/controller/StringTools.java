@@ -97,7 +97,7 @@ public class StringTools {
         if (string == null) {
             return string;
         }
-        
+
         //    string = string.replace("%", "\\u");
         String encodedString = string;
         try {
@@ -472,17 +472,17 @@ public class StringTools {
     }
 
     /**
-     * Creates an MD5 hash of the given String.
+     * Creates an hash of the given String using SHA-256.
      *
      * @param myString a {@link java.lang.String} object.
-     * @return MD5 hash
+     * @return generated hash
      * @should hash string correctly
      */
-    public static String generateMD5(String myString) {
+    public static String generateHash(String myString) {
         String answer = "";
         try {
             byte[] defaultBytes = myString.getBytes("UTF-8");
-            MessageDigest algorithm = MessageDigest.getInstance("MD5");
+            MessageDigest algorithm = MessageDigest.getInstance("SHA-256");
             algorithm.reset();
             algorithm.update(defaultBytes);
             byte messageDigest[] = algorithm.digest();
@@ -503,5 +503,35 @@ public class StringTools {
         }
 
         return answer;
+    }
+
+    /**
+     * @param viewerHomePath
+     * @return
+     */
+    public static String appendTrailingSlash(String path) {
+        if (StringUtils.isBlank(path)) {
+            return path;
+        } else if (path.endsWith("/") || path.endsWith("\\")) {
+            return path;
+        } else {
+            return path + "/";
+        }
+    }
+
+    /**
+     * 
+     * @param value
+     * @return true if value null, empty or starts with 0x1; false otherwise
+     * @should return true if value null or empty
+     * @should return true if value starts with 0x1
+     * @should return false otherwise
+     */
+    public static boolean checkValueEmptyOrInverted(String value) {
+        if (StringUtils.isEmpty(value)) {
+            return true;
+        }
+
+        return value.charAt(0) == 0x1;
     }
 }

@@ -15,6 +15,9 @@
  */
 package io.goobi.viewer.controller;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+
 import java.io.FileNotFoundException;
 import java.util.Collections;
 import java.util.List;
@@ -32,10 +35,12 @@ import org.slf4j.LoggerFactory;
 
 import io.goobi.viewer.AbstractTest;
 import io.goobi.viewer.exceptions.ViewerConfigurationException;
+import io.goobi.viewer.model.download.DownloadOption;
 import io.goobi.viewer.model.maps.GeoMapMarker;
 import io.goobi.viewer.model.metadata.Metadata;
 import io.goobi.viewer.model.metadata.MetadataParameter;
 import io.goobi.viewer.model.metadata.MetadataReplaceRule.MetadataReplaceRuleType;
+import io.goobi.viewer.model.metadata.MetadataView;
 import io.goobi.viewer.model.search.AdvancedSearchFieldConfiguration;
 import io.goobi.viewer.model.security.SecurityQuestion;
 import io.goobi.viewer.model.security.authentication.HttpAuthenticationProvider;
@@ -51,6 +56,7 @@ public class ConfigurationTest extends AbstractTest {
 
     public static final String APPLICATION_ROOT_URL = "https://viewer.goobi.io/";
 
+    @Override
     @Before
     public void setUp() throws Exception {
     }
@@ -88,6 +94,15 @@ public class ConfigurationTest extends AbstractTest {
     @Test
     public void getBrowsingMenuHitsPerPage_shouldReturnCorrectValue() throws Exception {
         Assert.assertEquals(19, DataManager.getInstance().getConfiguration().getBrowsingMenuHitsPerPage());
+    }
+
+    /**
+     * @see Configuration#getBrowsingMenuIndexSizeThreshold()
+     * @verifies return correct value
+     */
+    @Test
+    public void getBrowsingMenuIndexSizeThreshold_shouldReturnCorrectValue() throws Exception {
+        Assert.assertEquals(50000, DataManager.getInstance().getConfiguration().getBrowsingMenuIndexSizeThreshold());
     }
 
     /**
@@ -323,12 +338,27 @@ public class ConfigurationTest extends AbstractTest {
     }
 
     /**
+     * @see Configuration#getMetadataViews()
+     * @verifies return all configured values
+     */
+    @Test
+    public void getMetadataViews_shouldReturnAllConfiguredValues() throws Exception {
+        List<MetadataView> result = DataManager.getInstance().getConfiguration().getMetadataViews();
+        Assert.assertEquals(2, result.size());
+        MetadataView view = result.get(1);
+        Assert.assertEquals(1, view.getIndex());
+        Assert.assertEquals("label__metadata_other", view.getLabel());
+        Assert.assertEquals("_other", view.getUrl());
+        Assert.assertEquals("foo:bar", view.getCondition());
+    }
+
+    /**
      * @see Configuration#getMainMetadataForTemplate(String)
      * @verifies return correct template configuration
      */
     @Test
     public void getMainMetadataForTemplate_shouldReturnCorrectTemplateConfiguration() throws Exception {
-        Assert.assertEquals(1, DataManager.getInstance().getConfiguration().getMainMetadataForTemplate("Chapter").size());
+        Assert.assertEquals(1, DataManager.getInstance().getConfiguration().getMainMetadataForTemplate(0, "Chapter").size());
     }
 
     /**
@@ -337,7 +367,7 @@ public class ConfigurationTest extends AbstractTest {
      */
     @Test
     public void getMainMetadataForTemplate_shouldReturnDefaultTemplateConfigurationIfTemplateNotFound() throws Exception {
-        Assert.assertEquals(6, DataManager.getInstance().getConfiguration().getMainMetadataForTemplate("nonexisting").size());
+        Assert.assertEquals(6, DataManager.getInstance().getConfiguration().getMainMetadataForTemplate(0, "nonexisting").size());
     }
 
     /**
@@ -346,7 +376,7 @@ public class ConfigurationTest extends AbstractTest {
      */
     @Test
     public void getMainMetadataForTemplate_shouldReturnDefaultTemplateIfTemplateIsNull() throws Exception {
-        Assert.assertEquals(6, DataManager.getInstance().getConfiguration().getMainMetadataForTemplate(null).size());
+        Assert.assertEquals(6, DataManager.getInstance().getConfiguration().getMainMetadataForTemplate(0, null).size());
     }
 
     /**
@@ -1131,12 +1161,21 @@ public class ConfigurationTest extends AbstractTest {
     }
 
     /**
-     * @see Configuration#isOriginalContentDownload()
+     * @see Configuration#isOriginalContentDownloads()
      * @verifies return correct value
      */
     @Test
-    public void isDisplaySidebarWidgetDownload_shouldReturnCorrectValue() throws Exception {
-        Assert.assertEquals(true, DataManager.getInstance().getConfiguration().isDisplaySidebarWidgetDownload());
+    public void isDisplaySidebarWidgetDownloads_shouldReturnCorrectValue() throws Exception {
+        Assert.assertEquals(true, DataManager.getInstance().getConfiguration().isDisplaySidebarWidgetDownloads());
+    }
+
+    /**
+     * @see Configuration#getSidebarWidgetDownloadsIntroductionText()
+     * @verifies return correct value
+     */
+    @Test
+    public void getSidebarWidgetDownloadsIntroductionText_shouldReturnCorrectValue() throws Exception {
+        Assert.assertEquals("MASTERVALUE_DOWNLOADS_INTRO", DataManager.getInstance().getConfiguration().getSidebarWidgetDownloadsIntroductionText());
     }
 
     @Test
@@ -1871,6 +1910,15 @@ public class ConfigurationTest extends AbstractTest {
     }
 
     /**
+     * @see Configuration#getAltoCrowdsourcingFolder()
+     * @verifies return correct value
+     */
+    @Test
+    public void getAltoCrowdsourcingFolder_shouldReturnCorrectValue() throws Exception {
+        Assert.assertEquals("alto_crowd", DataManager.getInstance().getConfiguration().getAltoCrowdsourcingFolder());
+    }
+
+    /**
      * @see Configuration#getFulltextFolder()
      * @verifies return correct value
      */
@@ -1880,12 +1928,12 @@ public class ConfigurationTest extends AbstractTest {
     }
 
     /**
-     * @see Configuration#getWcFolder()
+     * @see Configuration#getFulltextCrowdsourcingFolder()
      * @verifies return correct value
      */
     @Test
-    public void getWcFolder_shouldReturnCorrectValue() throws Exception {
-        Assert.assertEquals("wc", DataManager.getInstance().getConfiguration().getWcFolder());
+    public void getFulltextCrowdsourcingFolder_shouldReturnCorrectValue() throws Exception {
+        Assert.assertEquals("fulltext_crowd", DataManager.getInstance().getConfiguration().getFulltextCrowdsourcingFolder());
     }
 
     /**
@@ -2562,30 +2610,12 @@ public class ConfigurationTest extends AbstractTest {
     }
 
     /**
-     * @see Configuration#isDisplaySidebarUsageWidgetLinkToJpegImage()
-     * @verifies return correct value
-     */
-    @Test
-    public void isDisplaySidebarUsageWidgetLinkToJpegImage_shouldReturnCorrectValue() throws Exception {
-        Assert.assertTrue(DataManager.getInstance().getConfiguration().isDisplaySidebarUsageWidgetLinkToJpegImage());
-    }
-
-    /**
-     * @see Configuration#isDisplaySidebarUsageWidgetLinkToTiffImage()
-     * @verifies return correct value
-     */
-    @Test
-    public void isDisplaySidebarUsageWidgetLinkToMasterImage_shouldReturnCorrectValue() throws Exception {
-        Assert.assertTrue(DataManager.getInstance().getConfiguration().isDisplaySidebarUsageWidgetLinkToMasterImage());
-    }
-
-    /**
      * @see Configuration#getMetadataFromSubnodeConfig(HierarchicalConfiguration,boolean)
      * @verifies load replace rules correctly
      */
     @Test
     public void getMetadataFromSubnodeConfig_shouldLoadReplaceRulesCorrectly() throws Exception {
-        List<Metadata> metadataList = DataManager.getInstance().getConfiguration().getMainMetadataForTemplate("_DEFAULT");
+        List<Metadata> metadataList = DataManager.getInstance().getConfiguration().getMainMetadataForTemplate(0, "_DEFAULT");
         Assert.assertEquals(6, metadataList.size());
         Metadata mdTitle = metadataList.get(2);
         Assert.assertEquals("MD_TITLE", mdTitle.getLabel());
@@ -2843,4 +2873,85 @@ public class ConfigurationTest extends AbstractTest {
     public void isDisplayWidgetUsage_shouldReturnCorrectValue() throws Exception {
         Assert.assertFalse(DataManager.getInstance().getConfiguration().isDisplayWidgetUsage());
     }
+
+    /**
+     * @see Configuration#getSidebarWidgetUsageIntroductionText()
+     * @verifies return correct value
+     */
+    @Test
+    public void getSidebarWidgetUsageIntroductionText_shouldReturnCorrectValue() throws Exception {
+        Assert.assertEquals("MASTERVALUE_USAGE_INTRO", DataManager.getInstance().getConfiguration().getSidebarWidgetUsageIntroductionText());
+    }
+
+    /**
+     * @see Configuration#getSidebarWidgetUsageCitationStyles()
+     * @verifies return all configured values
+     */
+    @Test
+    public void getSidebarWidgetUsageCitationStyles_shouldReturnAllConfiguredValues() throws Exception {
+        List<String> result = DataManager.getInstance().getConfiguration().getSidebarWidgetUsageCitationStyles();
+        Assert.assertEquals(3, result.size());
+    }
+
+    /**
+     * @see Configuration#getSidebarWidgetUsagePageDownloadOptions()
+     * @verifies return all configured elements
+     */
+    @Test
+    public void getSidebarWidgetUsagePageDownloadOptions_shouldReturnAllConfiguredElements() throws Exception {
+        List<DownloadOption> result = DataManager.getInstance().getConfiguration().getSidebarWidgetUsagePageDownloadOptions();
+        Assert.assertEquals(5, result.size());
+        DownloadOption option = result.get(4);
+        Assert.assertEquals("label__download_option_large_4096", option.getLabel());
+        Assert.assertEquals("jpg", option.getFormat());
+        Assert.assertEquals("4096" + DownloadOption.TIMES_SYMBOL + "4096", option.getBoxSizeLabel());
+    }
+
+    /**
+     * @see Configuration#getPageSelectDropdownDisplayMinPages()
+     * @verifies return correct value
+     */
+    @Test
+    public void getPageSelectDropdownDisplayMinPages_shouldReturnCorrectValue() throws Exception {
+        Assert.assertEquals(1, DataManager.getInstance().getConfiguration().getPageSelectDropdownDisplayMinPages());
+    }
+
+    @Test
+    public void testGetConfiguredCollectionFields() {
+        List<String> fields = DataManager.getInstance().getConfiguration().getConfiguredCollectionFields();
+        assertEquals(3, fields.size());
+        assertTrue(fields.contains("DC"));
+        assertTrue(fields.contains("MD_KNOWLEDGEFIELD"));
+        assertTrue(fields.contains("MD_HIERARCHICALFIELD"));
+    }
+
+    /**
+     * @see Configuration#isDocstructNavigationEnabled()
+     * @verifies return correct value
+     */
+    @Test
+    public void isDocstructNavigationEnabled_shouldReturnCorrectValue() throws Exception {
+        Assert.assertTrue(DataManager.getInstance().getConfiguration().isDocstructNavigationEnabled());
+    }
+
+    /**
+     * @see Configuration#getDocstructNavigationTypes()
+     * @verifies return all configured values
+     */
+    @Test
+    public void getDocstructNavigationTypes_shouldReturnAllConfiguredValues() throws Exception {
+        {
+            List<String> result = DataManager.getInstance().getConfiguration().getDocstructNavigationTypes("_DEFAULT", true);
+            Assert.assertEquals(2, result.size());
+            Assert.assertEquals("prologue", result.get(0));
+            Assert.assertEquals("chapter", result.get(1));
+        }
+        {
+            List<String> result = DataManager.getInstance().getConfiguration().getDocstructNavigationTypes("notfound", true);
+            Assert.assertEquals(2, result.size());
+            Assert.assertEquals("prologue", result.get(0));
+            Assert.assertEquals("chapter", result.get(1));
+        }
+    }
+
 }

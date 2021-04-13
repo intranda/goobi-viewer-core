@@ -35,7 +35,7 @@
 				<button onclick="{saveAnnotations}" class="crowdsourcing-annotations__options-wrapper__option btn btn--default" id="save">{Crowdsourcing.translate("button__save")}</button>
 				<div>{Crowdsourcing.translate("label__or")}</div>
 				<button if="{item.isReviewActive()}" onclick="{submitForReview}" class="options-wrapper__option btn btn--success" id="review">{Crowdsourcing.translate("action__submit_for_review")}</button>
-				<button if="{!item.isReviewActive()}" onclick="{acceptReview}" class="options-wrapper__option btn btn--success" id="review">{Crowdsourcing.translate("action__accept_review")}</button>
+				<button if="{!item.isReviewActive()}" onclick="{saveAndAcceptReview}" class="options-wrapper__option btn btn--success" id="review">{Crowdsourcing.translate("action__accept_review")}</button>
 				<div>{Crowdsourcing.translate("label__or")}</div>
 				<button if="{this.opts.nextitemurl}" onclick="{skipItem}" class="options-wrapper__option btn btn--link" id="skip">{Crowdsourcing.translate("action__skip_item")}</button>
 			</div>
@@ -77,7 +77,7 @@
 	        this.item.setCurrentUser(this.opts.currentuserid, this.opts.currentusername, this.opts.currentuseravatar);
 	    }
 	    this.item.setReviewMode(this.opts.itemstatus && this.opts.itemstatus.toUpperCase() == "REVIEW");
-		fetch(this.item.imageSource + "?mode=simple")
+		fetch(this.item.imageSource)
 		.then( response => response.json() )
 		.then( imageSource => this.initImageView(imageSource))
 		.then( () => {this.loading = false; this.update()})
@@ -168,6 +168,12 @@
 	            
 	}
 
+	saveAndAcceptReview() {
+	    this.saveToServer()
+	    .then(() => this.setStatus("FINISHED"))
+	    .then(() => this.skipItem());
+	}
+	
 	acceptReview() {
 	    this.setStatus("FINISHED")
 	    .then(() => this.skipItem());

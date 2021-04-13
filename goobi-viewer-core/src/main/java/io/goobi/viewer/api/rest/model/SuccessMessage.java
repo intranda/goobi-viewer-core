@@ -22,7 +22,7 @@ package io.goobi.viewer.api.rest.model;
  *
  * @author Florian Alpers
  */
-public class SuccessMessage {
+public class SuccessMessage implements IResponseMessage {
 
     private final boolean success;
     private final String message;
@@ -72,25 +72,37 @@ public class SuccessMessage {
      *
      * @return the message
      */
+    @Override
     public String getMessage() {
         return message;
     }
 
-    /**
-     * {@inheritDoc}
-     *
-     * Two success messages are equal, of their success properties are equal
+    /* (non-Javadoc)
+     * @see java.lang.Object#hashCode()
+     */
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + (success ? 1231 : 1237);
+        return result;
+    }
+
+    /* (non-Javadoc)
+     * @see java.lang.Object#equals(java.lang.Object)
      */
     @Override
     public boolean equals(Object obj) {
-        if (obj == null) {
+        if (this == obj)
+            return true;
+        if (obj == null)
             return false;
-        }
-        if (obj.getClass().equals(this.getClass())) {
-            return this.success == ((SuccessMessage) obj).success;
-        } else {
+        if (getClass() != obj.getClass())
             return false;
-        }
+        SuccessMessage other = (SuccessMessage) obj;
+        if (success != other.success)
+            return false;
+        return true;
     }
 
 }

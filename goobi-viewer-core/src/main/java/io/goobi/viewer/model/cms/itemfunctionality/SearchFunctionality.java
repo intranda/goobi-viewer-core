@@ -22,6 +22,7 @@ import java.net.URLEncoder;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -38,7 +39,6 @@ import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.exceptions.ViewerConfigurationException;
 import io.goobi.viewer.managedbeans.SearchBean;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
-import io.goobi.viewer.model.cms.CMSPage;
 import io.goobi.viewer.model.search.SearchFacets;
 import io.goobi.viewer.model.search.SearchFilter;
 import io.goobi.viewer.model.search.SearchInterface;
@@ -176,37 +176,41 @@ public class SearchFunctionality implements Functionality, SearchInterface {
             logger.error("Cannot search: SearchBean is null");
             return;
         }
-        String facetString = getSearchBean().getFacets().getCurrentFacetString();
-        searchBean.getFacets().setCurrentFacetString(getCompleteFacetString(facetString, subtheme));
+        searchBean.setCustomFilterQuery(getCompleteFilterString(subtheme));
         searchBean.search();
-        searchBean.getFacets().setCurrentFacetString(facetString);
     }
 
     /**
      * @return
      */
-    private String getCompleteFacetString(String baseFacetString, String subtheme) {
-        StringBuilder sb = new StringBuilder();
-        if (StringUtils.isNotBlank(getPageFacetString())) {
-            String pageFacetString = getPageFacetString().replaceAll("(?i)^(AND|OR)\\s", "");
-            sb.append(pageFacetString);
-        } 
-        if (StringUtils.isNotBlank(subtheme)) {
-            if(sb.length() > 0) {
-                sb.append(";;");
-            }
-            String subthemeDiscriminatorField = DataManager.getInstance().getConfiguration().getSubthemeDiscriminatorField();
-            sb.append(subthemeDiscriminatorField).append(":").append(subtheme);
+    private String getCompleteFilterString(String subtheme) {
+
+        String filterString = getPageFacetString();
+        String subthemeFilter = getSubthemeFilter(subtheme);
+
+        if (StringUtils.isNoneBlank(subthemeFilter, filterString)) {
+            return "+($1) +($2)".replace("$1", filterString).replace("$2", subthemeFilter);
+        } else if (StringUtils.isNotBlank(filterString)) {
+            return filterString;
+        } else if (StringUtils.isNotBlank(subthemeFilter)) {
+            return subthemeFilter;
+        } else {
+            return "";
         }
-        if (StringUtils.isNotBlank(baseFacetString) && !"-".equals(baseFacetString)) {
-            if(sb.length() > 0) {
-                sb.append(";;");
-            }
-            sb.append(baseFacetString);
-        }
-        return sb.toString();
     }
 
+    /**
+     * @param subtheme
+     * @return
+     */
+    private static String getSubthemeFilter(String subtheme) {
+        if (StringUtils.isNotBlank(subtheme)) {
+            String subthemeDiscriminatorField = DataManager.getInstance().getConfiguration().getSubthemeDiscriminatorField();
+            return subthemeDiscriminatorField + ":" + subtheme;
+        }
+
+        return "";
+    }
 
     /**
      * The part of the search url before the page number
@@ -472,10 +476,16 @@ public class SearchFunctionality implements Functionality, SearchInterface {
      * @return a {@link java.lang.String} object.
      */
     public String getCurrentPagePath() {
-        ViewerPath path = ViewHistory.getCurrentView(BeanUtils.getRequest()).get();
+        Optional<ViewerPath> viewerPath = ViewHistory.getCurrentView(BeanUtils.getRequest());
+        if (!viewerPath.isPresent()) {
+            return "";
+        }
+
+        ViewerPath path = viewerPath.get();
         if (path != null) {
             return path.getApplicationName() + path.getPrettifiedPagePath();
         }
+
         return "";
     }
 

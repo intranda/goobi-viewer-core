@@ -19,10 +19,10 @@ import java.io.Serializable;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.time.format.FormatStyle;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Collections;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -41,12 +41,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import io.goobi.viewer.controller.DataManager;
-import io.goobi.viewer.controller.DateTools;
 import io.goobi.viewer.controller.SolrConstants;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.exceptions.ViewerConfigurationException;
+import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.messages.ViewerResourceBundle;
 import io.goobi.viewer.model.calendar.CalendarItemDay;
 import io.goobi.viewer.model.calendar.CalendarItemMonth;
@@ -64,7 +64,7 @@ public class CalendarBean implements Serializable {
 
     private static final long serialVersionUID = 1095535586988646463L;
 
-    private final static int MAX_ALLOWED_YEAR = Calendar.getInstance().get(Calendar.YEAR) + 1000;
+    private final static int MAX_ALLOWED_YEAR = LocalDateTime.now().getYear() + 1000;
     private final static int MIN_ALLOWED_YEAR = -10_000;
 
     private static final Logger logger = LoggerFactory.getLogger(CalendarBean.class);
@@ -560,9 +560,9 @@ public class CalendarBean implements Serializable {
      * getCurrentDate.
      * </p>
      *
-     * @return a {@link java.util.Date} object.
+     * @return a {@link java.time.LocalDateTime} object.
      */
-    public Date getCurrentDate() {
+    public LocalDateTime getCurrentDate() {
         LocalDateTime ldt = LocalDateTime.now();
         if (currentYear != null) {
             ldt = ldt.withYear(currentYear.getValue());
@@ -574,7 +574,14 @@ public class CalendarBean implements Serializable {
             ldt = ldt.withDayOfMonth(currentDay.getValue());
         }
 
-        return DateTools.convertLocalDateTimeToDateViaInstant(ldt, false);
+        return ldt;
+    }
+    
+    public String getCurrentDateAsString() {
+        LocalDateTime ldt = getCurrentDate();
+        DateTimeFormatter formatter = DateTimeFormatter.ofLocalizedDate(FormatStyle.LONG).withLocale(BeanUtils.getLocale());
+        return ldt.format(formatter);
+        
     }
 
     /**

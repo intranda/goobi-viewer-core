@@ -24,6 +24,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.regex.Pattern;
 
@@ -226,8 +227,8 @@ public class BrowseElement implements Serializable {
                         if (StringUtils.isNotEmpty(anchorLabel)) {
                             this.metadataList
                                     .add(position,
-                                            new Metadata(anchorStructElement.getDocStructType(), null,
-                                                    new MetadataParameter().setType(MetadataParameterType.FIELD)
+                                            new Metadata(String.valueOf(anchorStructElement.getLuceneId()), anchorStructElement.getDocStructType(),
+                                                    null, new MetadataParameter().setType(MetadataParameterType.FIELD)
                                                             .setKey(anchorStructElement.getDocStructType()),
                                                     StringTools.intern(anchorLabel), locale));
                             position++;
@@ -244,8 +245,9 @@ public class BrowseElement implements Serializable {
                         topstructLabel = new StringBuilder(topstructLabel).append(" (").append(topStructElement.getVolumeNo()).append(')').toString();
                     }
                     this.metadataList.add(position,
-                            new Metadata(topStructElement.getDocStructType(), null, new MetadataParameter().setType(MetadataParameterType.FIELD)
-                                    .setKey(topStructElement.getDocStructType()),
+                            new Metadata(String.valueOf(topStructElement.getLuceneId()), topStructElement.getDocStructType(), null,
+                                    new MetadataParameter().setType(MetadataParameterType.FIELD)
+                                            .setKey(topStructElement.getDocStructType()),
                                     StringTools.intern(topstructLabel), locale));
                 }
             }
@@ -269,12 +271,7 @@ public class BrowseElement implements Serializable {
         numVolumes = structElement.getNumVolumes();
         docStructType = structElement.getDocStructType();
         dataRepository = structElement.getMetadataValue(SolrConstants.DATAREPOSITORY);
-
-        if (DocType.GROUP.equals(docType)) {
-            label = new SimpleMetadataValue(docType.getLabel(null));
-        } else {
-            label = createMultiLanguageLabel(structElement);
-        }
+        label = createMultiLanguageLabel(structElement);
 
         pi = structElement.getPi();
         if (pi == null) {
@@ -527,7 +524,8 @@ public class BrowseElement implements Serializable {
                             break;
                     }
 
-                    Metadata md = new Metadata(sortField.getOne(), "", new MetadataParameter().setType(type), fieldValue, locale);
+                    Metadata md = new Metadata(String.valueOf(structElement.getLuceneId()), sortField.getOne(), "",
+                            new MetadataParameter().setType(type), fieldValue, locale);
 
                     metadataList.add(md);
                     additionalMetadataList.add(md);
@@ -597,7 +595,8 @@ public class BrowseElement implements Serializable {
                         List<String> fieldValues = structElement.getMetadataFields().get(docFieldName);
                         for (String fieldValue : fieldValues) {
                             // Skip values that are equal to the hit label
-                            if (label.getValue().isPresent() && fieldValue.equals(label.getValue().get())) {
+                            Optional<String> value = label.getValue();
+                            if (value.isPresent() && fieldValue.equals(value.get())) {
                                 continue;
                             }
                             String highlightedValue = SearchHelper.applyHighlightingToPhrase(fieldValue, searchTerms.get(termsFieldName));
@@ -610,8 +609,9 @@ public class BrowseElement implements Serializable {
                                             "$1" + translatedValue + "$3");
                                 }
                                 highlightedValue = SearchHelper.replaceHighlightingPlaceholders(highlightedValue);
-                                metadataList.add(new Metadata(docFieldName, "", highlightedValue));
-                                additionalMetadataList.add(new Metadata(docFieldName, "", highlightedValue));
+                                metadataList.add(new Metadata(String.valueOf(structElement.getLuceneId()), docFieldName, "", highlightedValue));
+                                additionalMetadataList
+                                        .add(new Metadata(String.valueOf(structElement.getLuceneId()), docFieldName, "", highlightedValue));
                                 existingMetadataFields.add(docFieldName);
                                 logger.trace("added existing field: {}", docFieldName);
                             }
@@ -640,8 +640,9 @@ public class BrowseElement implements Serializable {
                                             "$1" + translatedValue + "$3");
                                 }
                                 highlightedValue = SearchHelper.replaceHighlightingPlaceholders(highlightedValue);
-                                metadataList.add(new Metadata(termsFieldName, "", highlightedValue));
-                                additionalMetadataList.add(new Metadata(termsFieldName, "", highlightedValue));
+                                metadataList.add(new Metadata(String.valueOf(structElement.getLuceneId()), termsFieldName, "", highlightedValue));
+                                additionalMetadataList
+                                        .add(new Metadata(String.valueOf(structElement.getLuceneId()), termsFieldName, "", highlightedValue));
                                 existingMetadataFields.add(termsFieldName);
                             }
                         }
@@ -788,12 +789,18 @@ public class BrowseElement implements Serializable {
             if (StringUtils.isEmpty(ret)) {
                 ret = se.getMetadataValue(SolrConstants.TITLE);
             }
-        }
-        if (StringUtils.isEmpty(ret)) {
-            ret = ViewerResourceBundle.getTranslation(se.getDocStructType(), locale);
+            // Fallback to DOCSTRCT
+            if (StringUtils.isEmpty(ret)) {
+                ret = ViewerResourceBundle.getTranslation(se.getDocStructType(), locale);
+                // Fallback to DOCTYPE
+                if (StringUtils.isEmpty(ret)) {
+                    ret = ViewerResourceBundle.getTranslation("doctype_" + se.getMetadataValue(SolrConstants.DOCTYPE), locale);
+                }
+            }
         }
 
         return ret;
+
     }
 
     /**
@@ -998,6 +1005,14 @@ public class BrowseElement implements Serializable {
      */
     public void setVolumeNo(String volumeNo) {
         this.volumeNo = volumeNo;
+    }
+
+    /**
+     * 
+     * @return true if doctype is GROUP; false otherwise
+     */
+    public boolean isGroup() {
+        return DocType.GROUP.equals(docType);
     }
 
     /**
@@ -1247,6 +1262,16 @@ public class BrowseElement implements Serializable {
     }
 
     /**
+     * 
+     * @param field Requested field name
+     * @param locale Requested locale
+     * @return
+     */
+    public List<Metadata> getMetadataListForLocale(String field, Locale locale) {
+        return Metadata.filterMetadata(metadataList, locale != null ? locale.getLanguage() : null, field);
+    }
+
+    /**
      * <p>
      * getMetadataListForLocale.
      * </p>
@@ -1255,7 +1280,7 @@ public class BrowseElement implements Serializable {
      * @return a {@link java.util.List} object.
      */
     public List<Metadata> getMetadataListForLocale(Locale locale) {
-        return Metadata.filterMetadataByLanguage(metadataList, locale != null ? locale.getLanguage() : null);
+        return Metadata.filterMetadata(metadataList, locale != null ? locale.getLanguage() : null, null);
     }
 
     /**

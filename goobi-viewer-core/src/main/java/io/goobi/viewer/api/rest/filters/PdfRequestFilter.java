@@ -16,6 +16,7 @@
 package io.goobi.viewer.api.rest.filters;
 
 import java.io.IOException;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Arrays;
@@ -23,6 +24,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
@@ -43,21 +45,28 @@ import org.slf4j.LoggerFactory;
 import de.unigoettingen.sub.commons.contentlib.exceptions.ServiceNotAllowedException;
 import de.unigoettingen.sub.commons.contentlib.servlet.rest.ContentExceptionMapper.ErrorMessage;
 import de.unigoettingen.sub.commons.contentlib.servlet.rest.ContentServerPdfBinding;
+import io.goobi.viewer.controller.DataFileTools;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.SolrConstants;
 import io.goobi.viewer.controller.SolrSearchIndex;
 import io.goobi.viewer.controller.StringTools;
+import io.goobi.viewer.controller.imaging.WatermarkHandler;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.exceptions.RecordNotFoundException;
+import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.model.security.AccessConditionUtils;
 import io.goobi.viewer.model.security.IPrivilegeHolder;
+import io.goobi.viewer.model.viewer.PhysicalElement;
 import io.goobi.viewer.model.viewer.StringPair;
+import io.goobi.viewer.model.viewer.StructElement;
+import io.goobi.viewer.model.viewer.pageloader.AbstractPageLoader;
 
 /**
  * <p>
- * PdfRequestFilter class.
+ * Request filter for PDF download requests. Checks whether the request has privileges to access the pdf and whether the download quote for the pdf is
+ * reached
  * </p>
  */
 @Provider
@@ -83,42 +92,92 @@ public class PdfRequestFilter implements ContainerRequestFilter {
             Path requestPath = Paths.get(request.getUriInfo().getPath());
             //            String requestPath = request.getUriInfo().getPath();
 
-            String type = requestPath.getName(0).toString();
             String pi = null;
             String divId = null;
             String imageName = null;
             String privName = IPrivilegeHolder.PRIV_DOWNLOAD_PDF;
             if (servletRequest.getAttribute("pi") != null) {
-                pi = (String) servletRequest.getAttribute("pi");
-                divId = (String) servletRequest.getAttribute("divId");
+                pi = (String) servletRequest.getAttribute(FilterTools.ATTRIBUTE_PI);
+                divId = (String) servletRequest.getAttribute(FilterTools.ATTRIBUTE_LOGID);
                 if (servletRequest.getAttribute("filename") != null) {
                     privName = IPrivilegeHolder.PRIV_DOWNLOAD_PAGE_PDF;
                     imageName = (String) servletRequest.getAttribute("filename");
                 }
-            } else {
-                if ("pdf".equalsIgnoreCase(type)) {
-                    //multipage mets pdf
-                    pi = requestPath.getName(2).toString().replace(".xml", "").replaceAll(".XML", "");
-                    if (requestPath.getNameCount() == 5) {
-                        divId = requestPath.getName(3).toString();
-                    }
-                } else if ("image".equalsIgnoreCase(type)) {
-                    //single page pdf
-                    pi = requestPath.getName(1).toString();
-                    imageName = requestPath.getName(2).toString();
-                    privName = IPrivilegeHolder.PRIV_DOWNLOAD_PAGE_PDF;
-                }
             }
             filterForAccessConditions(pi, divId, imageName, privName);
             filterForDownloadQuota(pi, divId, imageName, servletRequest);
-        } catch (ServiceNotAllowedException e) {
-            String mediaType = MediaType.TEXT_XML;
+            addRequestParameters(pi, divId, imageName, request);
+        } catch (ServiceNotAllowedException | IndexUnreachableException | PresentationException | DAOException e) {
+            String mediaType = MediaType.APPLICATION_JSON;
             if (request.getUriInfo() != null && request.getUriInfo().getPath().endsWith("json")) {
                 mediaType = MediaType.APPLICATION_JSON;
             }
             Response response = Response.status(Status.FORBIDDEN).type(mediaType).entity(new ErrorMessage(Status.FORBIDDEN, e, false)).build();
             request.abortWith(response);
         }
+    }
+
+    /**
+     * set watermarkText and watermarkId properties to request object
+     * 
+     * @param pi
+     * @param divId
+     * @param imageName
+     * @param request
+     * @throws PresentationException
+     * @throws IndexUnreachableException
+     * @throws DAOException
+     */
+    private static void addRequestParameters(String pi, String divId, String imageName, ContainerRequestContext request)
+            throws IndexUnreachableException, PresentationException, DAOException {
+        if (StringUtils.isNotBlank(pi)) {
+            WatermarkHandler watermarkHandler = BeanUtils.getImageDeliveryBean().getPdf().getWatermarkHandler();
+            StructElement topDocument = Optional.ofNullable(DataManager.getInstance().getSearchIndex().getDocumentByPI(pi))
+                    .map(StructElement::create)
+                    .orElse(null);
+            if (topDocument != null) {
+                watermarkHandler
+                        .getFooterIdIfExists(topDocument)
+                        .ifPresent(footerId -> request.setProperty("param:watermarkId", footerId));
+                if (StringUtils.isNotBlank(imageName)) {
+                    String actualImageName = getFirstImageName(imageName);
+                    Optional<PhysicalElement> page = Optional.ofNullable(AbstractPageLoader.create(topDocument).getPageForFileName(actualImageName));
+                    page.flatMap(p -> watermarkHandler.getWatermarkTextIfExists(p))
+                            .ifPresent(text -> request.setProperty("param:watermarkText", text));
+
+                    page
+                            .ifPresent(p -> {
+
+                                Path indexedSourceFile = Paths.get(DataFileTools.getSourceFilePath(p.getPi() + ".xml", p.getDataRepository(),
+                                        (actualImageName != null && topDocument.getSourceDocFormat() != null) ? topDocument.getSourceDocFormat()
+                                                : SolrConstants._METS));
+                                if (Files.exists(indexedSourceFile)) {
+                                    request.setProperty("param:metsFile", indexedSourceFile.toUri());
+                                }
+
+                            });
+
+                } else {
+                    Optional.ofNullable(DataManager.getInstance().getSearchIndex().getDocumentByPIAndLogId(pi, divId))
+                            .map(StructElement::create)
+                            .flatMap(doc -> watermarkHandler.getWatermarkTextIfExists(doc))
+                            .ifPresent(text -> request.setProperty("param:watermarkText", text));
+                }
+            }
+        }
+    }
+
+    /**
+     * If the imageName is actually a list of names, return the first name
+     * 
+     * @param imageName
+     * @return
+     */
+    private static String getFirstImageName(String imageName) {
+        if (imageName.contains("$")) {
+            return imageName.split("$")[0];
+        }
+        return imageName;
     }
 
     /**
@@ -280,13 +339,13 @@ public class PdfRequestFilter implements ContainerRequestFilter {
         contentFileName = StringTools.decodeUrl(contentFileName);
         boolean access = false;
         try {
-
             access = AccessConditionUtils.checkAccessPermissionByIdentifierAndLogId(pi, divId, privName, servletRequest);
-
         } catch (IndexUnreachableException e) {
             throw new ServiceNotAllowedException("Serving this image is currently impossibe due to ");
         } catch (DAOException e) {
             throw new ServiceNotAllowedException("Serving this image is currently impossibe due to ");
+        } catch (RecordNotFoundException e) {
+            throw new ServiceNotAllowedException("Record not found in index: " + pi);
         }
 
         if (!access) {

@@ -15,6 +15,14 @@
  */
 package io.goobi.viewer.controller.imaging;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+
+import java.io.UnsupportedEncodingException;
+import java.net.URI;
+import java.net.URLEncoder;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.List;
 
 import org.apache.solr.common.SolrDocument;
@@ -27,12 +35,14 @@ import de.unigoettingen.sub.commons.contentlib.imagelib.transform.Scale;
 import io.goobi.viewer.AbstractTest;
 import io.goobi.viewer.api.rest.v1.ApiUrls;
 import io.goobi.viewer.controller.Configuration;
-import io.goobi.viewer.controller.ConfigurationTest;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.SolrConstants;
 import io.goobi.viewer.controller.SolrConstants.DocType;
 import io.goobi.viewer.controller.SolrConstants.MetadataGroupType;
+import io.goobi.viewer.controller.StringTools;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
+import io.goobi.viewer.managedbeans.utils.BeanUtils;
+import io.goobi.viewer.model.cms.CMSMediaItem;
 import io.goobi.viewer.model.viewer.PhysicalElement;
 import io.goobi.viewer.model.viewer.StructElement;
 
@@ -48,6 +58,7 @@ public class ThumbnailHandlerTest extends AbstractTest {
     /**
      * @throws java.lang.Exception
      */
+    @Override
     @Before
     public void setUp() throws Exception {
         DataManager.getInstance().injectConfiguration(new Configuration("src/test/resources/config_viewer.test.xml"));
@@ -106,7 +117,7 @@ public class ThumbnailHandlerTest extends AbstractTest {
                 urlBox);
 
         String urlFraction = handler.getFullImageUrl(page, new Scale.ScaleToFraction(0.5));
-        Assert.assertEquals("/api/v1/records/1234/files/images/00000001.tif/full/pct%3A50/0/default.tif",
+        Assert.assertEquals("/api/v1/records/1234/files/images/00000001.tif/full/pct:50/0/default.tif",
                 urlFraction);
     }
 
@@ -186,7 +197,7 @@ public class ThumbnailHandlerTest extends AbstractTest {
         StructElement doc = new StructElement(1, solrDoc);
 
         String url = handler.getThumbnailUrl(doc, 200, 300);
-        Assert.assertEquals("/api/v1/image/-/http:U002FU002FexternalU002FiiifU002FimageU002F00000001.tif/full/!200,300/0/default.jpg", url);
+        Assert.assertEquals("/api/v1/images/external/http:U002FU002FexternalU002FiiifU002FimageU002F00000001.tif/full/!200,300/0/default.jpg", url);
     }
 
     @Test
@@ -204,6 +215,110 @@ public class ThumbnailHandlerTest extends AbstractTest {
 
         String url = handler.getThumbnailUrl(doc, 200, 300);
         Assert.assertEquals("http://external/iiif/image/00000001.tif/full/!200,300/0/default.jpg", url);
+    }
+
+    @Test
+    public void testGetCMSMediaImageApiUrl_legacy() throws UnsupportedEncodingException {
+
+        String legacyApiUrl = "https://viewer.goobi.io/rest/";
+
+        String filename = "image.jpg";
+        String viewerHomePath = DataManager.getInstance().getConfiguration().getViewerHome();
+        String cmsMediaFolder = DataManager.getInstance().getConfiguration().getCmsMediaFolder();
+
+        Path filepath = Paths.get(viewerHomePath).resolve(cmsMediaFolder).resolve(filename);
+        //        String fileUrl = PathConverter.toURI(filepath).toString();
+        String fileUrl = "file://" + viewerHomePath + cmsMediaFolder + "/" + filename;
+        String encFilepath = BeanUtils.escapeCriticalUrlChracters(fileUrl);
+        encFilepath = URLEncoder.encode(encFilepath, "utf-8");
+
+        String thumbUrlLegacy = ThumbnailHandler.getCMSMediaImageApiUrl(filename, legacyApiUrl);
+        assertEquals(legacyApiUrl + "image/-/" + encFilepath, thumbUrlLegacy);
+    }
+
+    @Test
+    public void testGetCMSMediaImageApiUrl() {
+
+        String currentApiUrl = "https://viewer.goobi.io/api/v1";
+
+        String filename = "image.jpg";
+
+        String thumbUrlV1 = ThumbnailHandler.getCMSMediaImageApiUrl(filename, currentApiUrl);
+        assertEquals(currentApiUrl + ApiUrls.CMS_MEDIA + ApiUrls.CMS_MEDIA_FILES_FILE.replace("{filename}", filename), thumbUrlV1);
+    }
+    
+    @Test
+    public void testGetCMSMediaImageApiUrl_withSpaces() {
+
+        String currentApiUrl = "https://viewer.goobi.io/api/v1";
+
+        String filename = "Some PDF.pdf";
+        String encFilename = StringTools.encodeUrl(filename);
+
+        String thumbUrlV1 = ThumbnailHandler.getCMSMediaImageApiUrl(filename, currentApiUrl);
+        assertEquals(currentApiUrl + ApiUrls.CMS_MEDIA + ApiUrls.CMS_MEDIA_FILES_FILE.replace("{filename}", encFilename), thumbUrlV1);
+        assertNotNull(URI.create(thumbUrlV1));
+    }
+
+    @Test
+    public void testCMSMediaThumbnailUrl() {
+
+        String currentApiUrl = "https://viewer.goobi.io/api/v1";
+
+        String filename = "image 01.jpg";
+        String escFilename = StringTools.encodeUrl(filename);
+
+        CMSMediaItem item = new CMSMediaItem();
+        item.setFileName(filename);
+
+        String thumbUrlV1 = handler.getThumbnailUrl(item, 100, 200);
+        thumbUrlV1 = thumbUrlV1.replaceAll("\\?.*", "");
+        String iiifPath = ApiUrls.CMS_MEDIA_FILES_FILE_IMAGE_IIIF
+                .replace("{region}", "full")
+                .replace("{size}", "!100,200")
+                .replace("{rotation}", "0")
+                .replace("{quality}", "default")
+                .replace("{format}", "jpg");
+        assertEquals(currentApiUrl + ApiUrls.CMS_MEDIA +
+                ApiUrls.CMS_MEDIA_FILES_FILE.replace("{filename}", escFilename) + iiifPath, thumbUrlV1);
+    }
+
+    /**
+     * @see ThumbnailHandler#getSize(Integer,Integer)
+     * @verifies use width only if height null or zero
+     */
+    @Test
+    public void getSize_shouldUseWidthOnlyIfHeightNullOrZero() throws Exception {
+        Assert.assertEquals("1,", ThumbnailHandler.getSize(1, null));
+        Assert.assertEquals("1,", ThumbnailHandler.getSize(1, 0));
+    }
+
+    /**
+     * @see ThumbnailHandler#getSize(Integer,Integer)
+     * @verifies use height only if width null or zero
+     */
+    @Test
+    public void getSize_shouldUseHeightOnlyIfWidthNullOrZero() throws Exception {
+        Assert.assertEquals(",1", ThumbnailHandler.getSize(null, 1));
+        Assert.assertEquals(",1", ThumbnailHandler.getSize(0, 1));
+    }
+
+    /**
+     * @see ThumbnailHandler#getSize(Integer,Integer)
+     * @verifies use width and height if both non zero
+     */
+    @Test
+    public void getSize_shouldUseWidthAndHeightIfBothNonZero() throws Exception {
+        Assert.assertEquals("!1,1", ThumbnailHandler.getSize(1, 1));
+    }
+
+    /**
+     * @see ThumbnailHandler#getSize(Integer,Integer)
+     * @verifies return max if both zero
+     */
+    @Test
+    public void getSize_shouldReturnMaxIfBothZero() throws Exception {
+        Assert.assertEquals("max", ThumbnailHandler.getSize(0, 0));
     }
 
 }

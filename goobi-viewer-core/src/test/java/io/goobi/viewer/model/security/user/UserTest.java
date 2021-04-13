@@ -15,7 +15,6 @@
  */
 package io.goobi.viewer.model.security.user;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
@@ -29,7 +28,6 @@ import io.goobi.viewer.AbstractDatabaseEnabledTest;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.SolrConstants;
 import io.goobi.viewer.model.security.IPrivilegeHolder;
-import io.goobi.viewer.model.security.user.User;
 
 public class UserTest extends AbstractDatabaseEnabledTest {
 

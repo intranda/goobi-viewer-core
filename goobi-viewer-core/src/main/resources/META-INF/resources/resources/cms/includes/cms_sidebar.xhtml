@@ -22,6 +22,7 @@
 			<c:forEach var="element" items="#{cmsBean.getSidebarElements(true)}">
 				<widgetComponent:widget_custom widget="#{element}" />
 				<widgetComponent:widget_chronology widget="#{element}" />
+				<widgetComponent:widget_searchDrillDown_configurable widget="#{element}" />
 				<widgetComponent:widget_searchDrillDown widget="#{element}" />
 				<widgetComponent:widget_searchField widget="#{element}" />
 				<widgetComponent:widget_browsing widget="#{element}" />

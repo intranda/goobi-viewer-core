@@ -29,11 +29,13 @@
 		<composite:attribute name="urlSuffix" required="false" />
 		<composite:attribute name="rtl" required="false" default="false" />
 		<composite:attribute name="positionBottom" required="false" default="false" />
+		<composite:attribute name="classSuffix" required="false" default="" />
 	</composite:interface>
 
+<composite:implementation>
     <h:panelGroup rendered="#{cc.attrs.itemCount > 1}"
-        styleClass="#{cc.attrs.rtl ? 'numeric-paginator -rtl' : 'numeric-paginator -ltr'}"
-        layout="block">
+        styleClass="#{cc.attrs.rtl ? 'numeric-paginator -rtl' : 'numeric-paginator -ltr'} #{cc.attrs.classSuffix}"
+        layout="block" id="#{cc.clientId}">
         <nav aria-label="#{cc.attrs.positionBottom ? msg.aria_label__pagination_bottom : msg.aria_label__pagination_pages}">
             <ul>
                 <!-- PREV / NEXT (RTL) -->
@@ -153,4 +155,5 @@
         </script>
         
     </h:panelGroup>
+    </composite:implementation>
 </ui:composition>

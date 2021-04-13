@@ -15,8 +15,6 @@
  */
 package io.goobi.viewer.managedbeans;
 
-import java.util.Locale;
-
 import javax.faces.component.UIViewRoot;
 import javax.faces.context.ExternalContext;
 import javax.faces.context.FacesContext;
@@ -57,8 +55,8 @@ public class ActiveDocumentBeanTest extends AbstractDatabaseAndSolrEnabledTest {
 
         Mockito.when(facesContext.getExternalContext()).thenReturn(externalContext);
         //        Mockito.when(externalContext.getContext()).thenReturn(servletContext);
-        Mockito.when(facesContext.getViewRoot()).thenReturn(viewRoot);
-        Mockito.when(viewRoot.getLocale()).thenReturn(Locale.GERMAN);
+        //        Mockito.when(facesContext.getViewRoot()).thenReturn(viewRoot);
+        //        Mockito.when(viewRoot.getLocale()).thenReturn(Locale.GERMAN);
 
         this.navigationHelper = Mockito.mock(NavigationHelper.class);
         Mockito.when(navigationHelper.getCurrentPage()).thenReturn("viewImage_value");
@@ -80,12 +78,12 @@ public class ActiveDocumentBeanTest extends AbstractDatabaseAndSolrEnabledTest {
         Assert.assertEquals(PI_KLEIUNIV, adb.getPersistentIdentifier());
         Assert.assertEquals(PI_KLEIUNIV, adb.getViewManager().getPi());
         Assert.assertEquals(iddocKleiuniv, adb.getTopDocumentIddoc());
-        Assert.assertEquals(iddocKleiuniv, adb.getViewManager().getTopDocumentIddoc());
-        Assert.assertNotEquals(iddocKleiuniv, adb.getViewManager().getCurrentDocumentIddoc());
-        Assert.assertNotNull(adb.getViewManager().getTopDocument());
-        Assert.assertEquals(adb.getTopDocument(), adb.getViewManager().getTopDocument());
-        Assert.assertNotNull(adb.getViewManager().getCurrentDocument());
-        Assert.assertEquals(adb.getCurrentElement(), adb.getViewManager().getCurrentDocument());
+        Assert.assertEquals(iddocKleiuniv, adb.getViewManager().getTopStructElementIddoc());
+        Assert.assertNotEquals(iddocKleiuniv, adb.getViewManager().getCurrentStructElementIddoc());
+        Assert.assertNotNull(adb.getViewManager().getTopStructElement());
+        Assert.assertEquals(adb.getTopDocument(), adb.getViewManager().getTopStructElement());
+        Assert.assertNotNull(adb.getViewManager().getCurrentStructElement());
+        Assert.assertEquals(adb.getCurrentElement(), adb.getViewManager().getCurrentStructElement());
         Assert.assertEquals("", adb.getViewManager().getLogId());
     }
 
@@ -99,15 +97,15 @@ public class ActiveDocumentBeanTest extends AbstractDatabaseAndSolrEnabledTest {
         adb.setPersistentIdentifier(PI_KLEIUNIV);
         adb.setImageToShow(1);
         adb.update();
-        Assert.assertNotEquals(iddocKleiuniv, adb.getViewManager().getCurrentDocumentIddoc());
+        Assert.assertNotEquals(iddocKleiuniv, adb.getViewManager().getCurrentStructElementIddoc());
         ViewManager oldViewManager = adb.getViewManager();
         Assert.assertTrue(oldViewManager == adb.getViewManager());
 
         adb.setLogid("LOG_0003");
         adb.update();
         Assert.assertEquals(PI_KLEIUNIV, adb.getViewManager().getPi());
-        Assert.assertEquals(iddocKleiuniv, adb.getViewManager().getTopDocumentIddoc());
-        Assert.assertNotEquals(iddocKleiuniv, adb.getViewManager().getCurrentDocumentIddoc());
+        Assert.assertEquals(iddocKleiuniv, adb.getViewManager().getTopStructElementIddoc());
+        Assert.assertNotEquals(iddocKleiuniv, adb.getViewManager().getCurrentStructElementIddoc());
         // Assert.assertEquals("LOG_0003", adb.getViewManager().getLogId());
         Assert.assertFalse(oldViewManager == adb.getViewManager());
     }

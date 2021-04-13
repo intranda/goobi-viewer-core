@@ -16,14 +16,20 @@
 package io.goobi.viewer.api.rest.v1.index;
 
 import static io.goobi.viewer.api.rest.v1.ApiUrls.INDEX;
+import static io.goobi.viewer.api.rest.v1.ApiUrls.INDEX_FIELDS;
 import static io.goobi.viewer.api.rest.v1.ApiUrls.INDEX_QUERY;
 import static io.goobi.viewer.api.rest.v1.ApiUrls.INDEX_STATISTICS;
 import static io.goobi.viewer.api.rest.v1.ApiUrls.INDEX_STREAM;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
+import java.util.Optional;
+import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -43,6 +49,7 @@ import org.apache.solr.client.solrj.io.Tuple;
 import org.apache.solr.client.solrj.io.stream.SolrStream;
 import org.apache.solr.client.solrj.io.stream.StreamContext;
 import org.apache.solr.client.solrj.io.stream.TupleStream;
+import org.apache.solr.client.solrj.response.FacetField;
 import org.apache.solr.client.solrj.response.QueryResponse;
 import org.apache.solr.common.SolrDocumentList;
 import org.apache.solr.common.params.ModifiableSolrParams;
@@ -55,17 +62,21 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import de.unigoettingen.sub.commons.contentlib.exceptions.IllegalRequestException;
 import de.unigoettingen.sub.commons.contentlib.servlet.rest.CORSBinding;
-import io.goobi.viewer.api.rest.ViewerRestServiceBinding;
+import io.goobi.viewer.api.rest.bindings.AuthorizationBinding;
+import io.goobi.viewer.api.rest.bindings.ViewerRestServiceBinding;
+import io.goobi.viewer.api.rest.model.RecordsRequestParameters;
+import io.goobi.viewer.api.rest.model.index.SolrFieldInfo;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.JsonTools;
+import io.goobi.viewer.controller.SolrConstants;
 import io.goobi.viewer.controller.SolrSearchIndex;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.exceptions.ViewerConfigurationException;
+import io.goobi.viewer.messages.ViewerResourceBundle;
 import io.goobi.viewer.model.search.SearchHelper;
 import io.goobi.viewer.model.viewer.StringPair;
-import io.goobi.viewer.servlets.rest.content.RecordsRequestParameters;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -87,6 +98,13 @@ public class IndexResource {
     @Context
     private HttpServletResponse servletResponse;
 
+    /**
+     * 
+     * @param query
+     * @return
+     * @throws IndexUnreachableException
+     * @throws PresentationException
+     */
     @GET
     @Path(INDEX_STATISTICS)
     @Produces({ MediaType.APPLICATION_JSON })
@@ -110,6 +128,15 @@ public class IndexResource {
         return json.toString();
     }
 
+    /**
+     * 
+     * @param params
+     * @return
+     * @throws IndexUnreachableException
+     * @throws ViewerConfigurationException
+     * @throws DAOException
+     * @throws IllegalRequestException
+     */
     @POST
     @Path(INDEX_QUERY)
     @Consumes({ MediaType.APPLICATION_JSON })
@@ -158,34 +185,79 @@ public class IndexResource {
             }
             //                        QueryResponse response = DataManager.getInstance().getSearchIndex().search(query, params.offset, count, sortFieldList, null, fieldList );
             QueryResponse response =
-                    DataManager.getInstance().getSearchIndex().search(query, params.offset, count, sortFieldList, null, fieldList, null, paramMap);
+                    DataManager.getInstance()
+                            .getSearchIndex()
+                            .search(query, params.offset, count, sortFieldList, params.facetFields, fieldList, null, paramMap);
 
-            SolrDocumentList result = response.getResults();
-            Map<String, SolrDocumentList> expanded = response.getExpandedResults();
-            logger.trace("hits: {}", result.size());
-            JSONArray jsonArray = null;
-            if (params.jsonFormat != null) {
-                switch (params.jsonFormat) {
-                    case "datecentric":
-                        jsonArray = JsonTools.getDateCentricRecordJsonArray(result, servletRequest);
-                        break;
-                    default:
-                        jsonArray = JsonTools.getRecordJsonArray(result, expanded, servletRequest, params.language);
-                        break;
-                }
-            } else {
-                jsonArray = JsonTools.getRecordJsonArray(result, expanded, servletRequest, params.language);
-            }
-            if (jsonArray == null) {
-                jsonArray = new JSONArray();
-            }
 
-            return jsonArray.toString();
+
+            JSONObject object = new JSONObject();
+            object.put("numFound", response.getResults().getNumFound());
+            object.put("docs", getQueryResults(params, response));
+            getFacetResults(response).ifPresent(facets -> object.put("facets", facets));
+
+            return object.toString();
         } catch (PresentationException e) {
             throw new IllegalRequestException(e.getMessage());
         }
     }
 
+    private Optional<JSONArray> getFacetResults(QueryResponse response) {
+        List<FacetField> facetFields = response.getFacetFields();
+        if (facetFields != null && !facetFields.isEmpty()) {
+            JSONArray facets = new JSONArray();
+            facetFields.forEach(ff -> {
+                JSONObject facet = new JSONObject();
+                facets.put(facet);
+                String facetName = ff.getName();
+                int facetCount = ff.getValueCount();
+                facet.put("field", facetName);
+                facet.put("count", facetCount);
+                JSONArray facetList = new JSONArray();
+                facet.put("values", facetList);
+                ff.getValues().forEach(c -> {
+                    String value = c.getName();
+                    long num = c.getCount();
+                    JSONObject countObject = new JSONObject();
+                    countObject.put("value", value);
+                    countObject.put("count", num);
+                    facetList.put(countObject);
+                });
+            });
+            return Optional.of(facets);
+        }
+        return Optional.empty();
+    }
+
+    private JSONArray getQueryResults(RecordsRequestParameters params, QueryResponse response)
+            throws IndexUnreachableException, PresentationException, DAOException, ViewerConfigurationException {
+        SolrDocumentList result = response.getResults();
+        Map<String, SolrDocumentList> expanded = response.getExpandedResults();
+        logger.trace("hits: {}", result.size());
+        JSONArray jsonArray = null;
+        if (params.jsonFormat != null) {
+            switch (params.jsonFormat) {
+                case "datecentric":
+                    jsonArray = JsonTools.getDateCentricRecordJsonArray(result, servletRequest);
+                    break;
+                default:
+                    jsonArray = JsonTools.getRecordJsonArray(result, expanded, servletRequest, params.language);
+                    break;
+            }
+        } else {
+            jsonArray = JsonTools.getRecordJsonArray(result, expanded, servletRequest, params.language);
+        }
+        if (jsonArray == null) {
+            jsonArray = new JSONArray();
+        }
+        return jsonArray;
+    }
+
+    /**
+     * 
+     * @param expression
+     * @return
+     */
     @POST
     @Path(INDEX_STREAM)
     @Consumes({ MediaType.TEXT_PLAIN })
@@ -204,6 +276,83 @@ public class IndexResource {
         return executeStreamingExpression(expression, solrUrl);
     }
 
+    /**
+     * 
+     * @return
+     * @throws IOException
+     */
+    @GET
+    @Path(INDEX_FIELDS)
+    @Produces({ MediaType.APPLICATION_JSON })
+    @Operation(summary = "Retrieves a JSON list of all existing Solr fields.", tags = { "index" })
+    public List<SolrFieldInfo> getAllIndexFields() throws IOException {
+        logger.trace("getAllIndexFields");
+
+        try {
+            return collectFieldInfo();
+        } catch (DAOException e) {
+            logger.error(e.getMessage());
+            servletResponse.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, e.getMessage());
+        }
+
+        return Collections.emptyList();
+    }
+
+    /**
+     * 
+     * @return
+     * @throws DAOException
+     * @should create list correctly
+     */
+    static List<SolrFieldInfo> collectFieldInfo() throws DAOException {
+        List<String> fieldNames = DataManager.getInstance().getSearchIndex().getAllFieldNames();
+        if (fieldNames == null) {
+            return Collections.emptyList();
+        }
+        logger.trace("{} field names collectied", fieldNames.size());
+        Collections.sort(fieldNames);
+
+        Set<String> reference = new HashSet<>(fieldNames);
+        List<SolrFieldInfo> ret = new ArrayList<>();
+        for (String fieldName : fieldNames) {
+            if (fieldName.startsWith("SORT_") || fieldName.startsWith("FACET_") || fieldName.endsWith("_UNTOKENIZED")) {
+                continue;
+            }
+
+            SolrFieldInfo sfi = new SolrFieldInfo(fieldName);
+            ret.add(sfi);
+
+            sfi.setStored(!SolrConstants.FULLTEXT.equals(fieldName)); // All fields except for FULLTEXT are stored
+
+            String sortFieldName = SearchHelper.sortifyField(fieldName);
+            if (!sortFieldName.equals(fieldName) && reference.contains(sortFieldName)) {
+                sfi.setSortField(sortFieldName);
+            }
+            String facetFieldName = SearchHelper.facetifyField(fieldName);
+            if (!facetFieldName.equals(fieldName) &&reference.contains(facetFieldName)) {
+                sfi.setFacetField(facetFieldName);
+            }
+            String boolFieldName = SearchHelper.boolifyField(fieldName);
+            if (!boolFieldName.equals(fieldName) &&reference.contains(boolFieldName)) {
+                sfi.setBoolField(boolFieldName);
+            }
+            for (Locale locale : ViewerResourceBundle.getAllLocales()) {
+                String translation = ViewerResourceBundle.getTranslation(fieldName, locale, false);
+                if (translation != null && !translation.equals(fieldName)) {
+                    sfi.getTranslations().put(locale.getLanguage(), translation);
+                }
+            }
+        }
+
+        return ret;
+    }
+
+    /**
+     * 
+     * @param expr
+     * @param solrUrl
+     * @return
+     */
     private static StreamingOutput executeStreamingExpression(String expr, String solrUrl) {
         return (out) -> {
             ObjectMapper mapper = new ObjectMapper();

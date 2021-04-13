@@ -39,6 +39,7 @@ public class JsonToolsTest extends AbstractSolrEnabledTest {
         //        Assert.assertEquals(doc.getFieldValues("MD_PERSON_UNTOKENIZED"), json.get("personList"));
         Assert.assertEquals(doc.getFieldValue(SolrConstants.DC), json.get("collection"));
         // URL root depends on the current config state and may vary, so only compare the args
+        String thumbnailUrl = (String) json.get("thumbnailUrl");
         Assert.assertTrue("Thumbnail url was: " + ((String) json.get("thumbnailUrl")), ((String) json.get("thumbnailUrl"))
                 .contains("records/" + PI + "/files/images/" + doc.getFieldValue(SolrConstants.THUMBNAIL) + "/full/!100,120/0/default.jpg"));
         // URL root depends on the current config state and may variate, so only compare the args

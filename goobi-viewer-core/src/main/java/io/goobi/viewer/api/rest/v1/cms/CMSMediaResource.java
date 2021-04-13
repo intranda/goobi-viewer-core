@@ -15,6 +15,14 @@
  */
 package io.goobi.viewer.api.rest.v1.cms;
 
+import static io.goobi.viewer.api.rest.v1.ApiUrls.CMS_MEDIA;
+import static io.goobi.viewer.api.rest.v1.ApiUrls.CMS_MEDIA_FILES;
+import static io.goobi.viewer.api.rest.v1.ApiUrls.CMS_MEDIA_FILES_FILE;
+import static io.goobi.viewer.api.rest.v1.ApiUrls.CMS_MEDIA_FILES_FILE_HTML;
+import static io.goobi.viewer.api.rest.v1.ApiUrls.CMS_MEDIA_FILES_FILE_PDF;
+import static io.goobi.viewer.api.rest.v1.ApiUrls.CMS_MEDIA_ITEM_BY_FILE;
+import static io.goobi.viewer.api.rest.v1.ApiUrls.CMS_MEDIA_ITEM_BY_ID;
+
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
@@ -24,16 +32,21 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
+import java.security.SecureRandom;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
+import java.util.Random;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.Consumes;
+import javax.ws.rs.DELETE;
 import javax.ws.rs.DefaultValue;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
@@ -47,7 +60,6 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.core.StreamingOutput;
 
-import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.glassfish.jersey.media.multipart.FormDataContentDisposition;
@@ -56,14 +68,16 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import de.unigoettingen.sub.commons.contentlib.exceptions.ContentNotFoundException;
+import de.unigoettingen.sub.commons.contentlib.exceptions.IllegalRequestException;
 import de.unigoettingen.sub.commons.contentlib.servlet.rest.CORSBinding;
-import io.goobi.viewer.api.rest.ViewerRestServiceBinding;
+import io.goobi.viewer.api.rest.bindings.ViewerRestServiceBinding;
 import io.goobi.viewer.api.rest.model.MediaItem;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.FileTools;
 import io.goobi.viewer.controller.StringTools;
 import io.goobi.viewer.exceptions.AccessDeniedException;
 import io.goobi.viewer.exceptions.DAOException;
+import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.managedbeans.CmsBean;
 import io.goobi.viewer.managedbeans.UserBean;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
@@ -72,6 +86,8 @@ import io.goobi.viewer.model.cms.CMSCategory;
 import io.goobi.viewer.model.cms.CMSMediaItem;
 import io.goobi.viewer.model.cms.CMSMediaItemMetadata;
 import io.goobi.viewer.model.security.user.User;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 
 /**
  * <p>
@@ -80,15 +96,17 @@ import io.goobi.viewer.model.security.user.User;
  *
  * @author Florian Alpers
  */
-//@javax.ws.rs.Path(CMS_MEDIA)
+@javax.ws.rs.Path(CMS_MEDIA)
 @ViewerRestServiceBinding
 public class CMSMediaResource {
 
+    
     private static final Logger logger = LoggerFactory.getLogger(CMSMediaResource.class);
     @Context
     protected HttpServletRequest servletRequest;
     @Context
     protected HttpServletResponse servletResponse;
+
 
     /**
      * <p>
@@ -101,8 +119,15 @@ public class CMSMediaResource {
      */
     @GET
     @Produces({ MediaType.APPLICATION_JSON })
+    @Operation(
+            tags= {"media"}, 
+            summary = "Get a list of CMS-Media Items")
+
     public MediaList getAllMedia(
-            @QueryParam("tags") String tags) throws DAOException {
+            @Parameter(description="Comma separated list of tags. Only media items with any of these tags will be included")@QueryParam("tags") String tags,
+            @Parameter(description="Maximum number of items to return")@QueryParam("max") Integer maxItems,
+            @Parameter(description="Number of media items marks as 'important' that must be included in the result")@QueryParam("prioritySlots") Integer prioritySlots,
+            @Parameter(description="Set to 'true' to return random items for each call. Otherwise the items will be ordererd by their upload date")@QueryParam("random") Boolean random) throws DAOException {
         List<String> tagList = new ArrayList<>();
         if(StringUtils.isNotBlank(tags)) {
             tagList.addAll(Arrays.stream(StringUtils.split(tags, ",")).map(String::toLowerCase).collect(Collectors.toList()));
@@ -114,12 +139,15 @@ public class CMSMediaResource {
                 .filter(
                         item -> tagList.isEmpty() || 
                         item.getCategories().stream().map(CMSCategory::getName).map(String::toLowerCase).anyMatch(c -> tagList.contains(c)))
+                .sorted(new PriorityComparator(prioritySlots, Boolean.TRUE.equals(random)))
+                .limit(maxItems != null ? maxItems : Integer.MAX_VALUE)
+                .sorted(new PriorityComparator(0, Boolean.TRUE.equals(random)))
                 .collect(Collectors.toList());
         return new MediaList(items);
     }
     
     @GET
-//    @javax.ws.rs.Path(CMS_MEDIA_ITEM)
+    @javax.ws.rs.Path(CMS_MEDIA_ITEM_BY_ID)
     @Produces({ MediaType.APPLICATION_JSON })
     public MediaItem getMediaItem(@PathParam("id")Long id) throws DAOException {
         CMSMediaItem item = DataManager.getInstance().getDao().getCMSMediaItem(id);
@@ -138,15 +166,16 @@ public class CMSMediaResource {
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
     @GET
-    @javax.ws.rs.Path("/get/{id}.pdf")
+    @javax.ws.rs.Path(CMS_MEDIA_FILES_FILE_PDF)
     @Produces("application/pdf")
     @CORSBinding
-    public static StreamingOutput getPDFMediaItemContent(@PathParam("id") Long id, @Context HttpServletResponse response)
+    public static StreamingOutput getPDFMediaItemContent(@PathParam("filename") String filename, @Context HttpServletResponse response)
             throws ContentNotFoundException, DAOException {
-
-        CMSMediaItem item = DataManager.getInstance().getDao().getCMSMediaItem(id);
-        if (item != null && item.getContentType().equals(CMSMediaItem.CONTENT_TYPE_PDF)) {
-            Path path = item.getFilePath();
+        String decFilename = StringTools.decodeUrl(filename);
+        Path path = Paths.get(
+                DataManager.getInstance().getConfiguration().getViewerHome(), 
+                DataManager.getInstance().getConfiguration().getCmsMediaFolder(),
+                decFilename);
             if (Files.exists(path)) {
                 return new StreamingOutput() {
 
@@ -159,9 +188,6 @@ public class CMSMediaResource {
                 };
             }
             throw new ContentNotFoundException("File " + path + " not found in file system");
-        }
-        throw new ContentNotFoundException("No pdf item with id " + id + " found");
-
     }
 
     /**
@@ -175,41 +201,32 @@ public class CMSMediaResource {
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
     @GET
-    @javax.ws.rs.Path("/get/item/{id}")
+    @javax.ws.rs.Path(CMS_MEDIA_FILES_FILE_HTML)
     @Produces({ MediaType.TEXT_HTML })
-    public static String getMediaItemContent(@PathParam("id") Long id) throws ContentNotFoundException, DAOException {
-        CMSMediaItem item = DataManager.getInstance().getDao().getCMSMediaItem(id);
-        if (item == null) {
-            throw new ContentNotFoundException("Resource not found");
-        }
-        String extension = FilenameUtils.getExtension(item.getFileName()).toLowerCase();
-        StringBuilder sbUri = new StringBuilder();
-        sbUri.append(DataManager.getInstance().getConfiguration().getViewerHome())
-                .append(DataManager.getInstance().getConfiguration().getCmsMediaFolder())
-                .append('/')
-                .append(item.getFileName());
-        java.nio.file.Path filePath = Paths.get(sbUri.toString());
-        if (Files.isRegularFile(filePath)) {
-            switch (item.getContentType()) {
-                case CMSMediaItem.CONTENT_TYPE_XML:
-                    try {
-                        String encoding = "windows-1252";
-                        String ret = FileTools.getStringFromFile(filePath.toFile(), encoding, StringTools.DEFAULT_ENCODING);
-                        return StringTools.renameIncompatibleCSSClasses(ret);
-                    } catch (FileNotFoundException e) {
-                        logger.debug(e.getMessage());
-                    } catch (IOException e) {
-                        logger.error(e.getMessage(), e);
-                    }
-                    break;
+    public static String getMediaItemContent(@PathParam("filename") String filename) throws ContentNotFoundException, DAOException {
+        
+        String decFilename = StringTools.decodeUrl(filename);
+        Path path = Paths.get(
+                DataManager.getInstance().getConfiguration().getViewerHome(), 
+                DataManager.getInstance().getConfiguration().getCmsMediaFolder(),
+                decFilename);
+        if (Files.isRegularFile(path)) {
+                try {
+                    String encoding = "windows-1252";
+                    String ret = FileTools.getStringFromFile(path.toFile(), encoding, StringTools.DEFAULT_ENCODING);
+                    return StringTools.renameIncompatibleCSSClasses(ret);
+                } catch (FileNotFoundException e) {
+                    logger.debug(e.getMessage());
+                } catch (IOException e) {
+                    logger.error(e.getMessage(), e);
+                }                
             }
-        }
         throw new ContentNotFoundException("Resource not found");
     }
 
     /**
      * <p>
-     * validateUploadMediaFiles.
+     * Return the media item for the given filename. If no matching media item exists, return a not-found status code
      * </p>
      *
      * @param filename a {@link java.lang.String} object.
@@ -217,7 +234,7 @@ public class CMSMediaResource {
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
     @GET
-    @javax.ws.rs.Path("/upload/{filename}")
+    @javax.ws.rs.Path(CMS_MEDIA_ITEM_BY_FILE)
     @Produces(MediaType.APPLICATION_JSON)
     public Response validateUploadMediaFiles(@PathParam("filename") String filename) throws DAOException {
 
@@ -226,7 +243,39 @@ public class CMSMediaResource {
             MediaItem jsonItem = new MediaItem(item, servletRequest);
             return Response.status(Status.OK).entity(jsonItem).build();
         }
-        return Response.status(Status.OK).entity("{}").build();
+        return Response.status(Status.NOT_FOUND).entity("{}").build();
+    }
+    
+    /**
+     * List all uplodaed media files
+     * @throws PresentationException 
+     * 
+     */
+    @GET
+    @javax.ws.rs.Path(CMS_MEDIA_FILES)
+    @Produces(MediaType.APPLICATION_JSON) 
+    public List<String> getAllFiles() throws PresentationException {
+        Path cmsMediaFolder = Paths.get(DataManager.getInstance().getConfiguration().getViewerHome(),
+                DataManager.getInstance().getConfiguration().getCmsMediaFolder());
+        try(Stream<Path> files = Files.list(cmsMediaFolder)) {
+            return files.filter(Files::isRegularFile).map(Path::getFileName).map(Path::toString).collect(Collectors.toList());
+        } catch (IOException e) {
+            throw new PresentationException("Failed to read uploaded files: " + e.toString());
+        }
+    }
+    
+    @DELETE
+    @javax.ws.rs.Path(CMS_MEDIA_FILES)
+    @Produces(MediaType.APPLICATION_JSON) 
+    public void deleteAllFiles() throws IllegalRequestException {
+        throw new IllegalRequestException("Deleting cms media files is not supported via REST");
+    }
+    
+    @DELETE
+    @javax.ws.rs.Path(CMS_MEDIA_FILES_FILE)
+    @Produces(MediaType.APPLICATION_JSON) 
+    public void deleteFile() throws IllegalRequestException {
+        throw new IllegalRequestException("Deleting cms media files is not supported via REST");
     }
 
     /**
@@ -241,7 +290,7 @@ public class CMSMediaResource {
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
     @POST
-    @javax.ws.rs.Path("/upload")
+    @javax.ws.rs.Path(CMS_MEDIA_FILES)
     @Consumes(MediaType.MULTIPART_FORM_DATA)
     @Produces(MediaType.APPLICATION_JSON)
     public Response uploadMediaFiles(@DefaultValue("true") @FormDataParam("enabled") boolean enabled, @FormDataParam("filename") String filename,
@@ -391,4 +440,66 @@ public class CMSMediaResource {
 
     }
 
+    /**
+     * Comparator that sorts as many items marked as high priority to the beginning of the list as are given in the constructor
+     * The remaining items will be sorted randomly if the random parameter is true or else by the {@link CMSMediaItem#compareTo(CMSMediaItem)} 
+     * 
+     * @author florian
+     *
+     */
+    public static class PriorityComparator implements Comparator<CMSMediaItem> {
+
+        private final int prioritySlots;
+        private final boolean random;
+        private final Random randomizer = new SecureRandom();
+        private final List<CMSMediaItem> priorityList = new ArrayList<>();
+        
+        
+        public PriorityComparator(Integer prioritySlots, boolean random) {
+            this.prioritySlots = prioritySlots == null ? 0 : prioritySlots;
+            this.random = random;
+        }
+        
+        /* (non-Javadoc)
+         * @see java.util.Comparator#compare(java.lang.Object, java.lang.Object)
+         */
+        @Override
+        public int compare(CMSMediaItem a, CMSMediaItem b) {
+            maybeAddToPriorityList(a);
+            maybeAddToPriorityList(b);
+                if(priorityList.contains(a) && !priorityList.contains(b)) {
+                    return -1;
+                } else if(priorityList.contains(b) && !priorityList.contains(a)) {
+                    return 1;
+                } else if(a.getDisplayOrder() != 0 && b.getDisplayOrder() != 0) {
+                    return Integer.compare(a.getDisplayOrder(), b.getDisplayOrder());
+                } else if(a.getDisplayOrder() != 0) {
+                    return -1;
+                } else if(b.getDisplayOrder() != 0) {
+                    return 1;
+                } else if(random) {
+                    return getRandomOrder();
+                } else {
+                    return a.compareTo(b);
+                }
+        }
+
+        /**
+         * @param b
+         */
+        private void maybeAddToPriorityList(CMSMediaItem item) {
+            if(item.isImportant() && priorityList.size() < prioritySlots && !priorityList.contains(item)) {
+                priorityList.add(item);
+            }
+        }
+
+        /**
+         * @return
+         */
+        private int getRandomOrder() {
+            return randomizer.nextBoolean() ? 1 : -1;
+        }
+        
+    }
+    
 }

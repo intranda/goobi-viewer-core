@@ -80,6 +80,7 @@
 		    font-size: 1.4rem;
 		    font-weight: 400;
 		    display: inline;
+		    color: @white;
 		}
 	}
 	&__top-title {
@@ -224,13 +225,20 @@
 	}
 	&__object-block-label {
 		font-style: italic;
-		margin-bottom: 0.7rem;
+		/* margin-bottom: 0.7rem; */
+		margin-top: 1.5rem;
+		
 	}
 	&__object-field-name {
-		flex: 0 0 150px;
 		font-weight: 700;
+		width: 250px;
+		max-width: 250px;
+		flex-shrink: 0;
+		flex: 0 0 250px;
 	}
 	&__object-field-value {
+		margin-left: 1rem;
+		min-width: 145px;
 	}
 	&__object-image {
 		flex: 0 0 40%;
@@ -239,6 +247,7 @@
 		display: flex;
 		justify-content: center;
 		align-items: flex-start;
+		margin-left: auto;
 		img {
 			max-width: 100%;
 		}

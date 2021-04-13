@@ -43,16 +43,18 @@ public enum PageType {
     viewFullscreen("fullscreen"),
     viewObject("object"),
     viewCalendar("calendar"),
-    searchlist("searchlist"),
-    calendarsearch("searchcalendar"),
-    term("term"),
+    searchlist("searchlist", "search"),
+    searchCalendar("searchcalendar", "searchCalendar"),
+    term("term", "searchTermList"),
     expandCollection("expandCollection"),
     firstWorkInCollection("rest/redirect/toFirstWork"),
     sitelinks("sitelinks"),
-    user("user"),
     archive("archive"),
     archives("archives"),
     timematrix("timematrix"),
+    //user
+    user("user"),
+    userSearches("user/searches", "label__user_searches"),
     //admin
     admin("admin"),
     adminUsers("admin/users"),
@@ -86,6 +88,8 @@ public enum PageType {
     adminCmsGeoMaps("admin/cms/maps"),
     adminCmsGeoMapEdit("admin/cms/maps/edit"),
     adminCmsGeoMapNew("admin/cms/maps/new"),
+    adminCmsRecordNotes("admin/cms/recordnotes", "cms__record_notes__title_plural"),
+    adminCmsSliders("admin/cms/slider", "cms__sliders__title"),
     cmsPageOfWork("page"),
     cmsPage("cms"),
     //admin/crowdsourcing
@@ -116,16 +120,31 @@ public enum PageType {
     /** Logger for this class. */
     private static final Logger logger = LoggerFactory.getLogger(PageType.class);
 
-    private final String name;
+    private final String path;
+    private final String label;
     private final PageTypeHandling handling;
 
     private PageType(String name) {
-        this.name = name;
+        this.path = name;
+        this.label = name;
         this.handling = PageTypeHandling.none;
     }
 
     private PageType(String name, PageTypeHandling handling) {
-        this.name = name;
+        this.path = name;
+        this.label = name;
+        this.handling = handling;
+    }
+
+    private PageType(String path, String label) {
+        this.path = path;
+        this.label = label;
+        this.handling = PageTypeHandling.none;
+    }
+
+    private PageType(String path, String label, PageTypeHandling handling) {
+        this.path = path;
+        this.label = label;
         this.handling = handling;
     }
 
@@ -226,21 +245,27 @@ public enum PageType {
      * </p>
      *
      * @param name a {@link java.lang.String} object.
+     * @return a {@link io.goobi.viewer.model.viewer.PageType} object.
      * @should return correct type for raw names
      * @should return correct type for mapped names
      * @should return correct type for enum names
-     * @return a {@link io.goobi.viewer.model.viewer.PageType} object.
+     * @should return correct type if name starts with metadata
      */
     public static PageType getByName(String name) {
         if (name == null) {
             return null;
         }
         for (PageType p : PageType.values()) {
-            if (p.getName().equalsIgnoreCase(name) || p.name.equalsIgnoreCase(name) || p.name().equalsIgnoreCase(name)) {
+            if (p.getName().equalsIgnoreCase(name) || p.path.equalsIgnoreCase(name) || p.label.equalsIgnoreCase(name)
+                    || p.name().equalsIgnoreCase(name)) {
                 return p;
             }
         }
-        //look for configured names
+        // Set type viewMetadata is page name starts with "metadata"
+        if (name.startsWith(PageType.viewMetadata.getName())) {
+            return PageType.viewMetadata;
+        }
+        // look for configured names
         for (PageType p : PageType.values()) {
             String configName = DataManager.getInstance().getConfiguration().getPageType(p);
             if (configName != null && configName.equalsIgnoreCase(name)) {
@@ -258,7 +283,7 @@ public enum PageType {
      * @return a {@link java.lang.String} object.
      */
     public String getRawName() {
-        return name;
+        return path;
     }
 
     /**
@@ -274,7 +299,11 @@ public enum PageType {
             return configName;
         }
 
-        return name;
+        return path;
+    }
+
+    public String getLabel() {
+        return label;
     }
 
     public static enum PageTypeHandling {
@@ -368,7 +397,7 @@ public enum PageType {
             return false;
         }
         pagePath = pagePath.replaceAll("^\\/|\\/$", "");
-        return pagePath.equalsIgnoreCase(this.name()) || pagePath.equalsIgnoreCase(this.name) || pagePath.equalsIgnoreCase(getName());
+        return pagePath.equalsIgnoreCase(this.name()) || pagePath.equalsIgnoreCase(this.path) || pagePath.equalsIgnoreCase(getName());
     }
 
     /**
@@ -384,7 +413,7 @@ public enum PageType {
         if (pagePath == null || StringUtils.isBlank(pagePath.toString())) {
             return false;
         }
-        return ViewerPathBuilder.startsWith(pagePath, this.name()) || ViewerPathBuilder.startsWith(pagePath, this.name)
+        return ViewerPathBuilder.startsWith(pagePath, this.name()) || ViewerPathBuilder.startsWith(pagePath, this.path)
                 || ViewerPathBuilder.startsWith(pagePath, getName());
     }
 

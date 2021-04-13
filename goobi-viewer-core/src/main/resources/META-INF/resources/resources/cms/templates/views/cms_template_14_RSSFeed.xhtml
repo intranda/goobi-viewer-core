@@ -25,6 +25,7 @@
     </ui:define>
 
     <ui:define name="content">
+		<ui:include src="/resources/cms/includes/cms_script.xhtml" />
     	<f:param name="currentPage" value="#{cmsBean.random}" />
     	<f:view contentType="text/html" encoding="utf-8">
 			<div id="templateRSSFeed" class="tpl-rss #{cmsPage.wrapperElementClass}">
@@ -41,14 +42,14 @@
 				<h2>#{cmsPage.title}</h2>
 				
 				<div class="tpl-rss__text">
-                    <ui:include src="#{cmsPage.getContent('text')}" />
+                    <h:outputText escape="false" value="#{cmsPage.getContent('text')}"></h:outputText>
                 </div>
 				
 				<div class="tpl-rss__feed"></div>
 				
 				<script type="text/javascript">
                     $.ajax( {
-                        url: "#{request.contextPath}/rest/rss/#{navigationHelper.localeString}/-/#{cmsPage.getContentItem('rss').elementsPerPage}/",
+                        url: "#{navigationHelper.applicationUrl}api/v1/records/rss/channel.json?max=#{cmsPage.getContentItem('rss').elementsPerPage}&amp;lang=#{navigationHelper.localeString}",
                         type: "GET",
                         datatype: "JSON"
                     } ).then( function( data ) {

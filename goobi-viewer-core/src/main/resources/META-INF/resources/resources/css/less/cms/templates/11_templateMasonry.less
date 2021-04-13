@@ -20,7 +20,7 @@
     }
     .grid-sizer,
     .grid-item {
-        width: calc(~"31.33333333% + 12px");
+		width: calc(~"33.33333% - 4px");
         margin-bottom: 6px;
         overflow: hidden;
         img {
@@ -82,27 +82,20 @@
 /* MODIFICATION */
 
 /* BREAKPOINT FOR LARGE DESKTOPS */
-@media screen and (max-width: @largeBreakpoint) {
-	.tpl-masonry .grid-sizer, 
-	.tpl-masonry .grid-item {
-		width: calc(~"31.33333333% + 9px");
-	}
-}
+@media screen and (max-width: @largeBreakpoint) {}
 
 /* BREAKPOINT FOR DESKTOPS */
 @media screen and (max-width: @mediumBreakpoint) {
 	.tpl-masonry .grid-sizer, 
 	.tpl-masonry .grid-item {
-		width: calc(~"31.33333333% + 5px");
+		width: calc(~"50% - 3px");
 	}
 }
 
 /* BREAKPOINT FOR TABLETS */
 @media screen and (max-width: @smallBreakpoint) {
 	.tpl-masonry .grid-sizer, 
-	.tpl-masonry .grid-item {
-		width: calc(~"31.33333333% + 9px");
-	}
+	.tpl-masonry .grid-item {}
 }
 
 /* BREAKPOINT FOR SMARTPHONES */

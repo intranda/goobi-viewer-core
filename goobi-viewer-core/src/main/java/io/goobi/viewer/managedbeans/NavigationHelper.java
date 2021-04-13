@@ -21,9 +21,9 @@ import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -425,17 +425,19 @@ public class NavigationHelper implements Serializable {
      * @param status a {@link io.goobi.viewer.model.crowdsourcing.campaigns.CampaignRecordStatistic.CampaignRecordStatus} object.
      */
     public void setCrowdsourcingAnnotationPage(Campaign campaign, String pi, CampaignRecordStatus status) {
+        if (campaign == null) {
+            return;
+        }
         String urlActionParam = CampaignRecordStatus.REVIEW.equals(status) ? "review" : "annotate";
         setCurrentPage("crowdsourcingAnnotation", false, true);
-        if (campaign != null) {
-            breadcrumbBean.updateBreadcrumbs(new LabeledLink(campaign.getMenuTitleOrElseTitle(getLocaleString(), true),
-                    BeanUtils.getServletPathWithHostAsUrlFromJsfContext() + "/campaigns/" + campaign.getId() + "/" + urlActionParam + "/",
-                    BreadcrumbBean.WEIGHT_CROWDSOURCING_CAMPAIGN));
+        breadcrumbBean.updateBreadcrumbs(new LabeledLink(campaign.getMenuTitleOrElseTitle(getLocaleString(), true),
+                BeanUtils.getServletPathWithHostAsUrlFromJsfContext() + "/campaigns/" + campaign.getId() + "/" + urlActionParam + "/",
+                BreadcrumbBean.WEIGHT_CROWDSOURCING_CAMPAIGN));
 
-        }
         if (pi != null) {
             breadcrumbBean.updateBreadcrumbs(new LabeledLink(pi,
-                    BeanUtils.getServletPathWithHostAsUrlFromJsfContext() + "/campaigns/" + campaign.getId() + "/" + urlActionParam + "/" + pi + "/",
+                    BeanUtils.getServletPathWithHostAsUrlFromJsfContext() + "/campaigns/" + campaign.getId() + "/" + urlActionParam + "/" + pi
+                            + "/",
                     BreadcrumbBean.WEIGHT_CROWDSOURCING_CAMPAIGN_ITEM));
         }
     }
@@ -598,12 +600,7 @@ public class NavigationHelper implements Serializable {
      * @return a {@link java.util.Iterator} object.
      */
     public Iterator<Locale> getSupportedLocales() {
-        if (FacesContext.getCurrentInstance() != null && FacesContext.getCurrentInstance().getApplication() != null) {
-            return ViewerResourceBundle.getLocalesFromFacesConfig().iterator();
-            //            return FacesContext.getCurrentInstance().getApplication().getSupportedLocales();
-        }
-
-        return null;
+        return ViewerResourceBundle.getAllLocales().iterator();
     }
 
     /**
@@ -977,7 +974,7 @@ public class NavigationHelper implements Serializable {
             if (activeDocumentBean != null && activeDocumentBean.getViewManager() != null && getCurrentPageType().isDocumentPage()) {
                 // If a record is loaded, get the value from the record's value
                 // in discriminatorField
-                subThemeDiscriminatorValue = activeDocumentBean.getViewManager().getTopDocument().getMetadataValue(discriminatorField);
+                subThemeDiscriminatorValue = activeDocumentBean.getViewManager().getTopStructElement().getMetadataValue(discriminatorField);
             } else if (isCmsPage()) {
                 CmsBean cmsBean = BeanUtils.getCmsBean();
                 if (cmsBean != null && cmsBean.getCurrentPage() != null) {
@@ -1260,7 +1257,7 @@ public class NavigationHelper implements Serializable {
      * @return a {@link java.lang.String} object.
      */
     public String getSearchUrl() {
-        return BeanUtils.getServletPathWithHostAsUrlFromJsfContext() + "/" + PageType.search.getName();
+        return getSearchUrl(SearchHelper.SEARCH_TYPE_REGULAR);
     }
 
     /**
@@ -1271,7 +1268,7 @@ public class NavigationHelper implements Serializable {
      * @return a {@link java.lang.String} object.
      */
     public String getAdvancedSearchUrl() {
-        return BeanUtils.getServletPathWithHostAsUrlFromJsfContext() + "/" + PageType.advancedSearch.getName();
+        return getSearchUrl(SearchHelper.SEARCH_TYPE_ADVANCED);
     }
 
     /**
@@ -1436,10 +1433,10 @@ public class NavigationHelper implements Serializable {
     /**
      * Returns the string representation of the given <code>Date</code> based on the current <code>locale</code>.
      *
-     * @param date a {@link java.util.Date} object.
+     * @param date a {@link java.time.LocalDateTime} object.
      * @return a {@link java.lang.String} object.
      */
-    public String getLocalDate(Date date) {
+    public String getLocalDate(LocalDateTime date) {
         return DateTools.getLocalDate(date, locale.getLanguage());
     }
 
@@ -1701,6 +1698,17 @@ public class NavigationHelper implements Serializable {
         return previousUrl;
     }
 
+    public String getCurrentViewPrettyUrl() {
+        HttpServletRequest request = (HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest();
+        String previousUrl = ViewHistory.getCurrentView(request).map(ViewerPath::getCombinedPrettyfiedUrl).orElse("");
+        if (StringUtils.isBlank(previousUrl)) {
+            previousUrl = "/";//getApplicationUrl();
+        } else if (previousUrl.endsWith("/")) {
+            previousUrl = previousUrl.substring(0, previousUrl.length() - 1);
+        }
+        return previousUrl;
+    }
+
     public String getExitUrl() {
         return getExitUrl(getCurrentPageType());
     }
@@ -1854,44 +1862,28 @@ public class NavigationHelper implements Serializable {
     }
 
     /**
-     * <p>
-     * getBuildDate.
-     * </p>
-     *
-     * @param pattern a {@link java.lang.String} object.
-     * @return a {@link java.lang.String} object.
-     */
-    @Deprecated
-    public String getBuildDate(String pattern) {
-        return Version.getBuildDate(pattern);
-    }
-    
-    /**
-     * Get the path to a viewer resource relative to the root path ("/viewer")
-     * If it exists, the resource from the theme, otherwise from the core
-     * If the resource exists neither in theme nor core. An Exception will be thrown
+     * Get the path to a viewer resource relative to the root path ("/viewer") If it exists, the resource from the theme, otherwise from the core If
+     * the resource exists neither in theme nor core. An Exception will be thrown
      * 
-     * @param path  The resource path relative to the first "resources" directory
+     * @param path The resource path relative to the first "resources" directory
      * @return
      */
     public String getResource(String path) {
         FileResourceManager manager = DataManager.getInstance().getFileResourceManager();
-        if(manager != null) {
+        if (manager != null) {
             Path themePath = manager.getThemeResourcePath(path);
-//            Path corePath = manager.getCoreResourcePath(path);
-            if(Files.exists(themePath)) {
-                String ret =  manager.getThemeResourceURI(path).toString();
+            //            Path corePath = manager.getCoreResourcePath(path);
+            if (Files.exists(themePath)) {
+                String ret = manager.getThemeResourceURI(path).toString();
                 return ret;
-            } else {
-//            } else if(Files.exists(corePath)) {
-                String ret = manager.getCoreResourceURI(path).toString();
-                return ret;
-//            } else {
-//                return "";
             }
-        } else {
-            return "";
+            //            } else if(Files.exists(corePath)) {
+            String ret = manager.getCoreResourceURI(path).toString();
+            return ret;
+            //            } else {
+            //                return "";
         }
+        return "";
     }
 
 }

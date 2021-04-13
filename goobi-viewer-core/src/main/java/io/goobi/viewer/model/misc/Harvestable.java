@@ -36,7 +36,7 @@ public interface Harvestable {
      * getDateUpdated.
      * </p>
      *
-     * @return a {@link java.util.Date} object.
+     * @return a {@link java.time.LocalDateTime} object.
      */
     public LocalDateTime getDateUpdated();
 }

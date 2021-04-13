@@ -59,7 +59,6 @@ import io.goobi.viewer.controller.StringTools;
 import io.goobi.viewer.exceptions.ViewerConfigurationException;
 import io.goobi.viewer.managedbeans.CmsMediaBean;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
-import io.goobi.viewer.model.cms.tilegrid.ImageGalleryTile;
 import io.goobi.viewer.model.viewer.BrowseElementInfo;
 
 /**
@@ -69,7 +68,7 @@ import io.goobi.viewer.model.viewer.BrowseElementInfo;
  */
 @Entity
 @Table(name = "cms_media_items")
-public class CMSMediaItem implements BrowseElementInfo, ImageGalleryTile, Comparable<CMSMediaItem> {
+public class CMSMediaItem implements BrowseElementInfo, Comparable<CMSMediaItem> {
 
     /** Logger for this class. */
     private static final Logger logger = LoggerFactory.getLogger(CMSMediaItem.class);
@@ -127,7 +126,7 @@ public class CMSMediaItem implements BrowseElementInfo, ImageGalleryTile, Compar
      */
     public CMSMediaItem(CMSMediaItem orig) {
         if (orig.id != null) {
-            this.id = new Long(orig.id);
+            this.id = orig.id;
         }
         this.fileName = orig.fileName;
         this.link = orig.link;
@@ -398,7 +397,6 @@ public class CMSMediaItem implements BrowseElementInfo, ImageGalleryTile, Compar
     }
 
     /** {@inheritDoc} */
-    @Override
     public List<CMSCategory> getCategories() {
         return this.categories;
     }
@@ -442,7 +440,6 @@ public class CMSMediaItem implements BrowseElementInfo, ImageGalleryTile, Compar
     }
 
     /** {@inheritDoc} */
-    @Override
     public boolean isImportant() {
         return Priority.IMPORTANT.equals(this.priority);
     }
@@ -459,7 +456,6 @@ public class CMSMediaItem implements BrowseElementInfo, ImageGalleryTile, Compar
     }
 
     /** {@inheritDoc} */
-    @Override
     public Priority getPriority() {
         if (priority == null) {
             priority = Priority.DEFAULT;
@@ -635,7 +631,6 @@ public class CMSMediaItem implements BrowseElementInfo, ImageGalleryTile, Compar
      * getName(java.lang.String)
      */
     /** {@inheritDoc} */
-    @Override
     public String getName(String language) {
         if (getMetadataForLanguage(language) != null) {
             return getMetadataForLanguage(language).getName();
@@ -650,7 +645,6 @@ public class CMSMediaItem implements BrowseElementInfo, ImageGalleryTile, Compar
      * getDescription(java.lang.String)
      */
     /** {@inheritDoc} */
-    @Override
     public String getDescription(String language) {
         if (getMetadataForLanguage(language) != null) {
             return getMetadataForLanguage(language).getDescription();
@@ -665,7 +659,6 @@ public class CMSMediaItem implements BrowseElementInfo, ImageGalleryTile, Compar
      * getDisplayOrder()
      */
     /** {@inheritDoc} */
-    @Override
     public int getDisplayOrder() {
         return this.displayOrder;
     }
@@ -775,7 +768,7 @@ public class CMSMediaItem implements BrowseElementInfo, ImageGalleryTile, Compar
         } else if (oTime != null) {
             return 1;
         } else {
-            return 0;
+            return this.getId().compareTo(o.getId());
         }
     }
 
@@ -827,6 +820,11 @@ public class CMSMediaItem implements BrowseElementInfo, ImageGalleryTile, Compar
         List<Selectable<CMSCategory>> wrappedCategories =
                 categories.stream().map(cat -> new Selectable<>(cat, this.getCategories().contains(cat))).collect(Collectors.toList());
         return wrappedCategories;
+    }
+
+    public static enum Priority {
+        IMPORTANT,
+        DEFAULT;
     }
 
 }

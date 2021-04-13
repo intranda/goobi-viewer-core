@@ -66,6 +66,7 @@ var cmsJS = ( function( cms ) {
             } );
             
             cmsJS.createPage.initSortables( _defaults );
+            cmsJS.createSlider.initStyleOptions();
             
             // check preview status and open new tab
             if ( sessionStorage.getItem( 'previewStatus' ) === 'false' ) {
@@ -124,7 +125,7 @@ var cmsJS = ( function( cms ) {
                 return false;
             }
         },
-        
+
         /**
          * Method which disables the preview button by setting a local storage value.
          * 

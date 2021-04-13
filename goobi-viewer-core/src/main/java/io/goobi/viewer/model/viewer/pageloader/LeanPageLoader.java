@@ -60,14 +60,14 @@ public class LeanPageLoader extends AbstractPageLoader implements Serializable {
 
     /**
      * <p>
-     * Constructor for LeanPageLoader.
+     * Package private constructor for LeanPageLoader.
      * </p>
      *
      * @param topElement a {@link io.goobi.viewer.model.viewer.StructElement} object.
      * @param numPages a int.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      */
-    public LeanPageLoader(StructElement topElement, int numPages) throws IndexUnreachableException {
+    LeanPageLoader(StructElement topElement, int numPages) throws IndexUnreachableException {
         this.topElement = topElement;
         this.numPages = numPages;
         setFirstAndLastPageOrder();

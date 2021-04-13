@@ -55,7 +55,7 @@ var viewerJS = ( function( viewer ) {
             }
             
             $.extend( true, _defaults, config );
-            
+
             // hide header
             _hideHeader( true, 5000 );
             
@@ -386,6 +386,10 @@ var viewerJS = ( function( viewer ) {
     	if ( _debug ) {
     		console.log( 'EXECUTE: _setPanelStatus' );
     	}
+    	            
+        let openPanelFromUrl = _getPanelStatusFromUrlParameter();
+        if(_debug)console.log("Open panel url query param: " + openPanelFromUrl);
+            
     	
     	var panelStatus;
     	var fsPanelStatus = sessionStorage.getItem( 'fsPanelStatus' );
@@ -401,14 +405,14 @@ var viewerJS = ( function( viewer ) {
     	if ( !panelStatus ) {
     		panelStatus = {};
     		panelStatus.persistentIdentifier = _defaults.persistentIdentifier;
-    		
+    		let openPanel = openPanelFromUrl ? openPanelFromUrl : _defaults.openPanel;
     		// build panel status object
     		$( '.fullscreen__view-sidebar-accordeon-panel' ).each( function() {
     			var currId = $( this ).attr( 'id' );
     			
     			if ( !panelStatus.hasOwnProperty( currId ) ) {
     				// disable all panels
-    				if(_defaults.openPanel == currId) {
+    				if(openPanel == currId) {
     					panelStatus[ currId ] = true;
     				} else {    					
     					panelStatus[ currId ] = false;
@@ -427,9 +431,7 @@ var viewerJS = ( function( viewer ) {
     				return false;
     			}        	
     		} );
-    		
-    		// write object to session storage  
-    		sessionStorage.setItem( 'fsPanelStatus', JSON.stringify( panelStatus ) );    		
+		
     	}
     	else {
     		
@@ -437,17 +439,42 @@ var viewerJS = ( function( viewer ) {
     			console.log( '--> panelStatus: ', panelStatus );
     		}
     		
+    		
     		$( '.fullscreen__view-sidebar-accordeon-panel' ).each( function() {
     			var currId = $( this ).attr( 'id' );
-    			
+
+				//set active panel status from url query param    			
+	    		if(openPanelFromUrl) {
+	    			if(currId == openPanelFromUrl) {
+	    				panelStatus[ currId ] = true;
+	    			} else {
+	    				panelStatus[ currId ] = false;
+	    			}
+	    		} 
+
     			// show active panels
-    			if ( panelStatus[ currId ] ) {
+	    		if ( panelStatus[ currId ] ) {
     				$( this ).find( '.fullscreen__view-sidebar-accordeon-panel-title' ).addClass( 'in' );
 					$( this ).find( '.fullscreen__view-sidebar-accordeon-panel-body' ).show();
     			}    			        	
     		} );    		
     	}
+    	    		
+		// write object to session storage  
+		sessionStorage.setItem( 'fsPanelStatus', JSON.stringify( panelStatus ) );    
     } 
+
+	function _getPanelStatusFromUrlParameter() {
+		
+		let activetab = viewerJS.helper.getUrlSearchParam("activetab");
+		if(activetab) {
+			if(_debug)console.log("Set active tab from query param ", activetab);
+			//find panel-id
+			let tabId = $(".fs-" + activetab).attr("id");
+			return tabId;
+		}
+	
+	}
 
     /**
      * @description Method to initialize the resizable view.
@@ -564,7 +591,7 @@ var viewerJS = ( function( viewer ) {
     }
    
     /**
-     * @description Method to set key events to navigate through images.
+     * @description Method to set key events to navigate through images, and exit fullscreen mode.
      * @method _handleKeypress
      * @param {Object} event An event object to trigger key events. 
      * */
@@ -608,13 +635,20 @@ var viewerJS = ( function( viewer ) {
                 }
                 break;
             case 39:
+                // jump to last image, if right arrow key was pressed twice
                 if (doubleKeypress && $('.image-controls__action.end a').length) {
                     $('.image-controls__action.end a').get(0).click();
                 }
+                // advance one image at a time, if right arrow key is pressed once
                 else if ($('.image-controls__action.forward a').length) {
                     $('.image-controls__action.forward a').get(0).click();
                 }
                 break;
+            case 27:
+                // exit fullscreen on escape
+                if ($('[data-js="exit-fullscreen"]').length && document.readyState == 'complete') {
+                    $('[data-js="exit-fullscreen"]').get(0).click();
+                }
         };
     }   
     

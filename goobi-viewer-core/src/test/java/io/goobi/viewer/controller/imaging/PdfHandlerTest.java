@@ -24,6 +24,8 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
+import io.goobi.viewer.api.rest.AbstractApiUrlManager;
+import io.goobi.viewer.api.rest.v1.ApiUrls;
 import io.goobi.viewer.controller.Configuration;
 import io.goobi.viewer.controller.ConfigurationTest;
 import io.goobi.viewer.controller.DataManager;
@@ -45,7 +47,8 @@ public class PdfHandlerTest {
     public void setUp() throws Exception {
         DataManager.getInstance().injectConfiguration(new Configuration("src/test/resources/config_viewer.test.xml"));
         Configuration configuration = DataManager.getInstance().getConfiguration();
-        handler = new PdfHandler(new WatermarkHandler(configuration, "http://localhost:8080/viewer/"), DataManager.getInstance().getRestApiManager().getContentApiManager());
+        AbstractApiUrlManager urls = new ApiUrls("https://viewer.goobi.io/api/v1/");
+        handler = new PdfHandler(new WatermarkHandler(configuration, "http://localhost:8080/viewer/"), urls);
     }
 
     /**
@@ -59,12 +62,10 @@ public class PdfHandlerTest {
     public void test() {
         String pi = "1234";
         Optional<String> divId = Optional.ofNullable("LOG_0003");
-        Optional<String> watermarkId = Optional.ofNullable("footerId");
-        Optional<String> watermarkText = Optional.ofNullable("watermark text");
         Optional<String> label = Optional.ofNullable("output-filename.pdf");
 
-        String url = handler.getPdfUrl(pi, divId, watermarkId, watermarkText, label);
+        String url = handler.getPdfUrl(pi, divId, label);
         Assert.assertEquals(ConfigurationTest.APPLICATION_ROOT_URL
-                + "api/v1/records/1234/sections/LOG_0003/pdf/?watermarkText=watermark+text&watermarkId=footerId", url);
+                + "api/v1/records/1234/sections/LOG_0003/pdf/", url);
     }
 }

@@ -21,9 +21,9 @@ import java.io.IOException;
 import java.io.Serializable;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -253,8 +253,7 @@ public class AdminBean implements Serializable {
         if (currentUser.getNickName() != null) {
             currentUser.setNickName(currentUser.getNickName().trim());
         }
-        User nicknameOwner = DataManager.getInstance().getDao().getUserByNickname(currentUser.getNickName()); // This basically resets all changes
-        if (nicknameOwner != null && nicknameOwner.getId() != currentUser.getId()) {
+        if (UserTools.isNicknameInUse(currentUser.getNickName(), currentUser.getId())) {
             Messages.error(ViewerResourceBundle.getTranslation("user_nicknameTaken", null).replace("{0}", currentUser.getNickName().trim()));
             currentUser = copy;
             currentUser.setNickName(copy.getCopy().getNickName());
@@ -513,7 +512,7 @@ public class AdminBean implements Serializable {
     }
 
     /**
-     * 
+     *
      */
     public void resetDirtyUserRolesAction() {
         dirtyUserRoles.clear();
@@ -541,7 +540,7 @@ public class AdminBean implements Serializable {
             return;
         }
 
-        if (currentUserGroup != null || currentUserGroup.getMemberships().contains(currentUserRole)) {
+        if (currentUserGroup != null && currentUserGroup.getMemberships().contains(currentUserRole)) {
             currentUserGroup.getMemberships().add(currentUserRole);
             dirtyUserRoles.put(currentUserRole, "save");
         }
@@ -558,7 +557,7 @@ public class AdminBean implements Serializable {
      */
     public void deleteUserRoleAction(UserRole userRole) throws DAOException {
         logger.trace("deleteUserRoleAction: {}", userRole);
-        if (currentUserGroup != null || currentUserGroup.getMemberships().contains(userRole)) {
+        if (currentUserGroup != null && currentUserGroup.getMemberships().contains(userRole)) {
             currentUserGroup.getMemberships().remove(userRole);
             dirtyUserRoles.put(userRole, "delete");
         }
@@ -598,7 +597,7 @@ public class AdminBean implements Serializable {
                             }
                         } else {
                             // new
-                            if (DataManager.getInstance().getDao().addUserRole(userRole)) {
+                            if (DataManager.getInstance().getDao().addUserRole(currentUserRole)) {
                                 Messages.info("userGroup_memberAddSuccess");
                             } else {
                                 Messages.error("userGroup_memberAddFailure");
@@ -1120,7 +1119,7 @@ public class AdminBean implements Serializable {
         logger.trace("saveCommentAction");
         if (comment.getId() != null) {
             // Set updated timestamp
-            comment.setDateUpdated(new Date());
+            comment.setDateUpdated(LocalDateTime.now());
             logger.trace(comment.getText());
             if (DataManager.getInstance().getDao().updateComment(comment)) {
                 Messages.info("updatedSuccessfully");
@@ -1813,7 +1812,7 @@ public class AdminBean implements Serializable {
     }
 
     public void triggerMessage(String message) {
-        logger.debug("Show message " + message);
+        logger.debug("Show message: {}", message);
         Messages.info(ViewerResourceBundle.getTranslation(message, null));
     }
 

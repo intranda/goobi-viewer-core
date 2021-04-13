@@ -15,10 +15,11 @@
  */
 package io.goobi.viewer.model.iiif.presentation.builder;
 
+import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_ALTO;
+import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_PLAINTEXT;
+import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_RECORD;
+
 import java.net.URI;
-
-import static io.goobi.viewer.api.rest.v1.ApiUrls.*;
-
 import java.net.URISyntaxException;
 import java.time.Instant;
 import java.time.LocalDate;
@@ -53,15 +54,13 @@ import de.unigoettingen.sub.commons.contentlib.imagelib.transform.Rotation;
 import de.unigoettingen.sub.commons.contentlib.imagelib.transform.Scale;
 import io.goobi.viewer.api.rest.AbstractApiUrlManager;
 import io.goobi.viewer.controller.DataManager;
-import io.goobi.viewer.controller.imaging.IIIFUrlHandler;
-import io.goobi.viewer.controller.imaging.ThumbnailHandler;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.exceptions.ViewerConfigurationException;
 import io.goobi.viewer.managedbeans.ImageDeliveryBean;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
-import io.goobi.viewer.messages.ViewerResourceBundle;
+import io.goobi.viewer.model.iiif.presentation.builder.LinkingProperty.LinkingTarget;
 import io.goobi.viewer.model.viewer.StructElement;
 
 /**
@@ -111,9 +110,10 @@ public class ManifestBuilder extends AbstractBuilder {
             manifest = new Collection(getManifestURI(ele.getPi()), ele.getPi());
             manifest.addViewingHint(ViewingHint.multipart);
         } else {
+            ele.setImageNumber(1);
             manifest = new Manifest(getManifestURI(ele.getPi()));
             SearchService search = new SearchService(getSearchServiceURI(manifest.getId()));
-            search.setLabel(ViewerResourceBundle.getTranslations("label__iiif_api_search"));
+            search.setLabel(getLabel("label__iiif_api_search"));
             AutoSuggestService autoComplete = new AutoSuggestService(getAutoSuggestServiceURI(manifest.getId()));
             search.addService(autoComplete);
             manifest.addService(search);
@@ -144,6 +144,21 @@ public class ManifestBuilder extends AbstractBuilder {
 
         addMetadata(manifest, ele);
 
+        addThumbnail(ele, manifest);
+        
+        addLogo(ele, manifest);
+        addLicences(manifest);
+        addNavDate(ele, manifest);
+        addSeeAlsos(manifest, ele);
+        addRenderings(manifest, ele);
+
+        if (getBuildMode().equals(BuildMode.IIIF)) {
+            addCmsPages(ele, manifest);
+        }
+    }
+
+
+    private void addThumbnail(StructElement ele, final AbstractPresentationModelElement manifest) {
         try {
             String thumbUrl = imageDelivery.getThumbs().getThumbnailUrl(ele);
             if (StringUtils.isNotBlank(thumbUrl)) {
@@ -157,114 +172,149 @@ public class ManifestBuilder extends AbstractBuilder {
         } catch (URISyntaxException e) {
             logger.warn("Unable to retrieve thumbnail url", e);
         }
+    }
 
-        if (getBuildMode().equals(BuildMode.IIIF)) {
-            List<String> logoUrl = getLogoUrl();
-            if(logoUrl.isEmpty()) {
-                Optional<String> url = BeanUtils.getImageDeliveryBean().getFooter().getWatermarkUrl(Optional.empty(), Optional.ofNullable(ele), Optional.empty());
-                url.ifPresent(l -> logoUrl.add(l));
-            }
-            for (String url : logoUrl) {
-                ImageContent logo;
-                try {
-                    logo = new ImageContent(new URI(url));
-                    manifest.addLogo(logo);
-                } catch (URISyntaxException e) {
-                    logger.error("Error adding manifest logo from " + url, e);
-                }
-            }
-            
-            for(String license : DataManager.getInstance().getConfiguration().getIIIFLicenses()) {
-                try {
-                    URI uri = new URI(license);
-                    manifest.addLicense(uri);
-                } catch(URISyntaxException e) {
-                    logger.error("Configured license '" + license + "' is not a URI");
-                }
-            }
 
-            String navDateField = DataManager.getInstance().getConfiguration().getIIIFNavDateField();
-            if (StringUtils.isNotBlank(navDateField) && StringUtils.isNotBlank(ele.getMetadataValue(navDateField))) {
-                try {
-                    String eleValue = ele.getMetadataValue(navDateField);
-                    LocalDate date = LocalDate.parse(eleValue);
-                    manifest.setNavDate(Date.from(Instant.from(date.atStartOfDay(ZoneId.of("Z")))));
-                } catch (NullPointerException | DateTimeParseException e) {
-                    logger.warn("Unable to parse {} as Date", ele.getMetadataValue(navDateField));
-                }
-            }
+    private void addCmsPages(StructElement ele, final AbstractPresentationModelElement manifest) {
+        try {
+            DataManager.getInstance()
+                    .getDao()
+                    .getCMSPagesForRecord(ele.getPi(), null)
+                    .stream()
+                    .filter(page -> page.isPublished())
+                    .forEach(page -> {
+                        try {
+                            LinkingContent cmsPage = new LinkingContent(new URI(this.urls.getApplicationUrl() + "/" + page.getUrl()));
+                            cmsPage.setLabel(new SimpleMetadataValue(page.getTitle()));
+                            cmsPage.setFormat(Format.TEXT_HTML);
+                            manifest.addRelated(cmsPage);
+                        } catch (URISyntaxException e) {
+                            logger.error("Unable to retrieve viewer url for {}", ele);
+                        }
+                    });
+        } catch (Throwable e) {
+            logger.warn(e.toString());
+        }
+    }
 
-            if (ele.isLidoRecord()) {
-                /*LIDO*/
-                try {
-                    LinkingContent resolver = new LinkingContent(new URI(getLidoResolverUrl(ele)));
-                    resolver.setFormat(Format.TEXT_XML);
-                    resolver.setLabel(new SimpleMetadataValue("LIDO"));
-                    manifest.addSeeAlso(resolver);
-                } catch (URISyntaxException e) {
-                    logger.error("Unable to retrieve lido resolver url for {}", ele);
-                }
-            } else {
-                /*METS/MODS*/
-                try {
-                    LinkingContent metsResolver = new LinkingContent(new URI(getMetsResolverUrl(ele)));
-                    metsResolver.setFormat(Format.TEXT_XML);
-                    metsResolver.setLabel(new SimpleMetadataValue("METS/MODS"));
-                    manifest.addSeeAlso(metsResolver);
-                } catch (URISyntaxException e) {
-                    logger.error("Unable to retrieve mets resolver url for {}", ele);
-                }
-            }
 
-            /*VIEWER*/
+    private void addNavDate(StructElement ele, final AbstractPresentationModelElement manifest) {
+        String navDateField = DataManager.getInstance().getConfiguration().getIIIFNavDateField();
+        if (StringUtils.isNotBlank(navDateField) && StringUtils.isNotBlank(ele.getMetadataValue(navDateField))) {
             try {
-                String applicationUrl = this.urls.getApplicationUrl();
-                String pageUrl = ele.getUrl();
-                LinkingContent viewerPage = new LinkingContent(new URI(applicationUrl + pageUrl));
-                viewerPage.setLabel(new SimpleMetadataValue("goobi viewer"));
-                manifest.addRendering(viewerPage);
-            } catch (URISyntaxException e) {
-                logger.error("Unable to retrieve viewer url for {}", ele);
-            }
-
-            /*CMS pages*/
-            try {
-                DataManager.getInstance()
-                        .getDao()
-                        .getCMSPagesForRecord(ele.getPi(), null)
-                        .stream()
-                        .filter(page -> page.isPublished())
-                        .forEach(page -> {
-                            try {
-                                LinkingContent cmsPage = new LinkingContent(new URI(this.urls.getApplicationUrl() + "/" + page.getUrl()));
-                                //                    cmsPage.setLabel(new MultiLanguageMetadataValue(page.getLanguageVersions().stream()
-                                //                            .filter(lang -> StringUtils.isNotBlank(lang.getTitle()))
-                                //                            .collect(Collectors.toMap(lang -> lang.getLanguage(), lang -> lang.getTitle()))));
-                                cmsPage.setLabel(new SimpleMetadataValue(page.getTitle()));
-                                cmsPage.setFormat(Format.TEXT_HTML);
-                                manifest.addRelated(cmsPage);
-                            } catch (URISyntaxException e) {
-                                logger.error("Unable to retrieve viewer url for {}", ele);
-                            }
-                        });
-            } catch (Throwable e) {
-                logger.warn(e.toString());
-            }
-
-            if (manifest instanceof Manifest) {
-                /*PDF*/
-                try {
-                    String pdfDownloadUrl = BeanUtils.getImageDeliveryBean().getPdf().getPdfUrl(ele, manifest.getLabel().getValue().orElse(null));
-                    LinkingContent pdfDownload = new LinkingContent(new URI(pdfDownloadUrl));
-                    pdfDownload.setFormat(Format.APPLICATION_PDF);
-                    pdfDownload.setLabel(new SimpleMetadataValue("PDF"));
-                    manifest.addRendering(pdfDownload);
-                } catch (URISyntaxException e) {
-                    logger.error("Unable to retrieve pdf download url for {}", ele);
-                }
-
+                String eleValue = ele.getMetadataValue(navDateField);
+                LocalDate date = LocalDate.parse(eleValue);
+                manifest.setNavDate(Date.from(Instant.from(date.atStartOfDay(ZoneId.of("Z")))));
+            } catch (NullPointerException | DateTimeParseException e) {
+                logger.warn("Unable to parse {} as Date", ele.getMetadataValue(navDateField));
             }
         }
+    }
+
+
+    private void addLicences(final AbstractPresentationModelElement manifest) {
+        for(String license : DataManager.getInstance().getConfiguration().getIIIFLicenses()) {
+            try {
+                URI uri = new URI(license);
+                manifest.addLicense(uri);
+            } catch(URISyntaxException e) {
+                logger.error("Configured license '" + license + "' is not a URI");
+            }
+        }
+    }
+
+
+    private void addLogo(StructElement ele, final AbstractPresentationModelElement manifest)
+            throws ViewerConfigurationException, IndexUnreachableException, DAOException {
+        List<String> logoUrl = getLogoUrl();
+        if(logoUrl.isEmpty()) {
+            Optional<String> url = BeanUtils.getImageDeliveryBean().getFooter().getWatermarkUrl(Optional.empty(), Optional.ofNullable(ele), Optional.empty());
+            url.ifPresent(l -> logoUrl.add(l));
+        }
+        for (String url : logoUrl) {
+            ImageContent logo;
+            try {
+                logo = new ImageContent(new URI(url));
+                manifest.addLogo(logo);
+            } catch (URISyntaxException e) {
+                logger.error("Error adding manifest logo from " + url, e);
+            }
+        }
+    }
+    
+    public void addSeeAlsos(AbstractPresentationModelElement manifest, StructElement ele) {
+
+        if (ele.isLidoRecord()) {
+            /*LIDO*/
+            try {
+                LinkingContent resolver = new LinkingContent(new URI(getLidoResolverUrl(ele)));
+                resolver.setFormat(Format.TEXT_XML);
+                resolver.setLabel(new SimpleMetadataValue("LIDO"));
+                manifest.addSeeAlso(resolver);
+            } catch (URISyntaxException e) {
+                logger.error("Unable to retrieve lido resolver url for {}", ele);
+            }
+        } else {
+            /*METS/MODS*/
+            try {
+                LinkingContent metsResolver = new LinkingContent(new URI(getMetsResolverUrl(ele)));
+                metsResolver.setFormat(Format.TEXT_XML);
+                metsResolver.setLabel(new SimpleMetadataValue("METS/MODS"));
+                manifest.addSeeAlso(metsResolver);
+            } catch (URISyntaxException e) {
+                logger.error("Unable to retrieve mets resolver url for {}", ele);
+            }
+        }
+    }
+    
+    /**
+     * @param page
+     * @param canvas
+     * @throws URISyntaxException
+     */
+    public void addRenderings(AbstractPresentationModelElement manifest, StructElement ele) {
+        
+        this.getRenderings().forEach(link -> {
+            try {
+                URI id = getLinkingPropertyUri(ele, link.target);
+                if(id != null) {                    
+                    manifest.addRendering(link.getLinkingContent(id));
+                }
+            } catch (URISyntaxException | PresentationException | IndexUnreachableException e) {
+                logger.error("Error building linking property url", e);
+            }
+        });
+    }
+    
+    private URI getLinkingPropertyUri(StructElement ele, LinkingTarget target) throws URISyntaxException, PresentationException, IndexUnreachableException {
+
+        if(!LinkingTarget.VIEWER.equals(target) && ele.isAnchor()) {
+            return null;
+        }
+        if(target.equals(LinkingTarget.PDF) && !ele.isHasImages()) {
+            return null;
+        }
+        
+        URI uri = null;
+        switch(target) {
+            case VIEWER:
+                String pageUrl = ele.getUrl();
+                uri = URI.create(pageUrl);
+                if(!uri.isAbsolute()) {
+                    uri = URI.create(this.urls.getApplicationUrl() + pageUrl);
+                }
+                break;
+            case ALTO:
+                uri = this.urls.path(RECORDS_RECORD, RECORDS_ALTO).params(ele.getPi()).buildURI();
+                break;
+            case PLAINTEXT:
+                uri = this.urls.path(RECORDS_RECORD, RECORDS_PLAINTEXT).params(ele.getPi()).buildURI();
+                break;
+            case PDF:
+                String pdfDownloadUrl = BeanUtils.getImageDeliveryBean().getPdf().getPdfUrl(ele, ele.getLabel());
+                uri = URI.create(pdfDownloadUrl);
+        }
+        return uri;
     }
 
     /**

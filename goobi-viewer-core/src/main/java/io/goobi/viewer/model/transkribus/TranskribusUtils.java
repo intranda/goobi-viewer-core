@@ -18,7 +18,6 @@ package io.goobi.viewer.model.transkribus;
 import java.io.IOException;
 import java.net.URLEncoder;
 import java.time.LocalDateTime;
-//import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -109,13 +108,19 @@ public class TranskribusUtils {
                 DataManager.getInstance().getConfiguration().getTranskribusPassword());
         logger.trace(DataManager.getInstance().getConfiguration().getTranskribusUserName() + " - "
                 + DataManager.getInstance().getConfiguration().getTranskribusPassword());
-
+        if (viewerSession == null) {
+            logger.error("No viewer session");
+            return null;
+        }
+        
         // Check and create the default viewer instance collection
         String viewerCollectionId =
-                getCollectionId(restApiUrl, viewerSession.getSessionId(), DataManager.getInstance().getConfiguration().getTranskribusDefaultCollection());
+                getCollectionId(restApiUrl, viewerSession.getSessionId(),
+                        DataManager.getInstance().getConfiguration().getTranskribusDefaultCollection());
         if (viewerCollectionId == null) {
             viewerCollectionId =
-                    createCollection(restApiUrl, viewerSession.getSessionId(), DataManager.getInstance().getConfiguration().getTranskribusDefaultCollection());
+                    createCollection(restApiUrl, viewerSession.getSessionId(),
+                            DataManager.getInstance().getConfiguration().getTranskribusDefaultCollection());
             if (viewerCollectionId == null) {
                 logger.error("Could not create the default collection '{}' for the viewer instance.",
                         DataManager.getInstance().getConfiguration().getTranskribusDefaultCollection());
@@ -197,7 +202,7 @@ public class TranskribusUtils {
         Map<String, String> params = new HashMap<>(2);
         params.put("user", userName);
         params.put("pw", password);
-        String response = NetTools.getWebContentPOST(sbUrl.toString(), params, null);
+        String response = NetTools.getWebContentPOST(sbUrl.toString(), params, null, null, null);
 
         return XmlTools.getDocumentFromString(response, StringTools.DEFAULT_ENCODING);
     }
@@ -288,7 +293,7 @@ public class TranskribusUtils {
         params.put("JSESSIONID", sessionId);
         //        params.put("collName", collectionName);
 
-        return NetTools.getWebContentPOST(sbUrl.toString(), params, null);
+        return NetTools.getWebContentPOST(sbUrl.toString(), params, null, null, null);
     }
 
     /**
@@ -330,7 +335,7 @@ public class TranskribusUtils {
         //        params.put("userid", recipientUserId);
         //        params.put("role", "Editor");
         //        params.put("sendMail", String.valueOf(sendMail));
-        NetTools.getWebContentPOST(sbUrl.toString(), params, null);
+        NetTools.getWebContentPOST(sbUrl.toString(), params, null, null, null);
         // Status 200 means success
         return true;
     }
@@ -375,7 +380,7 @@ public class TranskribusUtils {
         sbUrl.append("?fileName=").append(URLEncoder.encode(metsUrl, StringTools.DEFAULT_ENCODING)).append("&collId=").append(viewerCollectionId);
         Map<String, String> params = new HashMap<>(1);
         params.put("JSESSIONID", session.getSessionId());
-        String response = NetTools.getWebContentPOST(sbUrl.toString(), params, null);
+        String response = NetTools.getWebContentPOST(sbUrl.toString(), params, null, null, null);
         TranskribusJob job = new TranskribusJob();
         job.setPi(pi);
         job.setOwnerId(session.getUserId());

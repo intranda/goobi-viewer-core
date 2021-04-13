@@ -54,15 +54,12 @@ var viewerJS = ( function( viewer ) {
                 }
                 
                 this.config = $.extend( true, {}, _defaults, config );
-                if(!this.config.rest) {
-                    this.config.rest = this.config.root + "/rest/";
-                }
                 this.typePage = this.config.typePage;
                 this.listsNeedUpdate.subscribe( () => this.updateLists());
                 this.listsUpdated.subscribe( (list) => {
                     this.updateAddedStatus();
                 })
-                this.translator = new viewerJS.Translator(this.config.rest.replace("/rest", "/api/v1"), this.config.language);
+                this.translator = new viewerJS.Translator(this.config.rest, this.config.language);
                 this.translator.init(_messageKeys)
                 .then(() => this.updateLists())
                 .then(() => {                    
@@ -211,7 +208,7 @@ var viewerJS = ( function( viewer ) {
                 if($button.length == 0) {
                     return;
                 }
-                $button.css("visibility", "visible");
+                $button.css("display", "flex");
                 var buttonPosition = $button.offset();
                 var buttonSize = {
                         width: $button.width(),
@@ -243,7 +240,7 @@ var viewerJS = ( function( viewer ) {
                     return;
                 }
                 $button.off("click");
-                $button.css("visibility", "hidden");
+                $button.css("display", "none");
                 if(this.sessionBookmarkDropdown) {
                     this.sessionBookmarkDropdown.forEach(component => {
                         component.unmount();
@@ -265,10 +262,10 @@ var viewerJS = ( function( viewer ) {
                         // render bookmarks popup with timeout to finish handling click event first.
                         setTimeout(() => this.renderBookmarksPopup( currPi, currLogid, currPage, currBtn ), 0);
                     } else if(this.contained(currPi, currPage, currLogid)){
-                        this.removeFromBookmarkList(undefined, currPi, undefined, undefined, false )
+                        this.removeFromBookmarkList(0, currPi, undefined, undefined, false )
                         .then( () => this.listsNeedUpdate.next());
                     } else {
-                        this.addToBookmarkList(undefined, currPi, undefined, undefined, false )
+                        this.addToBookmarkList(0, currPi, undefined, undefined, false )
                         .then( () => this.listsNeedUpdate.next());
                     }
                 }.bind(this) );  
@@ -287,13 +284,11 @@ var viewerJS = ( function( viewer ) {
                 });
             },
 
-            action: function(verb, id) {
-                let url = this.config.rest + (this.config.userLoggedIn ? "bookmarks/user" : "bookmarks/session");
+            getUrl: function(id) {
+                let url = this.config.rest + "bookmarks/";
                 if(id !== undefined) {
-                    url += "/get/" + id;
+                    url += (id + "/");
                 };
-                url += "/" + verb + "/";
-
                 return url;
             },
             
@@ -303,9 +298,12 @@ var viewerJS = ( function( viewer ) {
 
             loadBookmarkLists: function() {
                 
-                let url = this.action("get");
+                let url = this.getUrl();
                 
-                return fetch(url, {cache:"no-cache"})
+                return fetch(url, {
+                    cache: "no-cache",
+                    method: "GET"
+                 })
                 .then( data => data.json())
                 .then(json => {
                     if(!Array.isArray(json)) {
@@ -324,15 +322,21 @@ var viewerJS = ( function( viewer ) {
             },
 
 
-            addToBookmarkList: function(listId, pi, page, logid, bookmarkPage) {
+            addToBookmarkList: function(listId, pi, page, logid) {
                 
-                let url = this.action("add", listId) + pi + "/"; 
-                if(bookmarkPage) { 
-                    url += (page ? page : "-") + "/" + (logid ? logid : "-") + "/";
+                let url = this.getUrl(listId) 
+                
+                let item = {
+                    pi: pi,
+                    logId: logid,
+                    order: page
                 }
                 
-             
-                return fetch(url, {method:"POST"})
+                return fetch(url, {
+                    method:"POST",
+                    body: JSON.stringify(item),
+                    headers: {'Content-Type': 'application/json'}
+                })
                 .then( res => res.json())
                 .then(data => {
                     if(data.success === false) {
@@ -345,37 +349,52 @@ var viewerJS = ( function( viewer ) {
                 
             },
 
-            removeFromBookmarkList: function(listId, pi, page, logid, bookmarkPage) {
+            removeFromBookmarkList: function(listId, pi, page, logid) {
                 
-                let url = this.action("delete", listId) + pi + "/";
-                if(bookmarkPage) {
-                    url += (page ? page : "-") + "/" + (logid ? logid : "-") + "/";
+                if(_debug) {
+                    console.log("removeFromBookmarkList, listId", listId);
+                    console.log("removeFromBookmarkList, pi", pi);
+                    console.log("removeFromBookmarkList, page", page);
+                    console.log("removeFromBookmarkList, logid", logid);
                 }
                 
-             
-                return fetch(url, {method:"DELETE"})
-                .then( res => res.json())
-                .then(data => {
-                    if(data.success === false) {
-                        return Promise.reject("Failed to remove bookmark: " + data.message);
-                    } else {
-                        
-                    }
-                })
-                .catch(error => {
-                    console.log(error);
-                })
+                let list = this.getList(listId);
+                let item = this.getItem(list, pi, page, logid);
+                console.log("got from list ", list, item);
+                if(item) {
+                    let url = this.getUrl(listId) + "items/" + item.id + "/";
+                    console.log("fetch ", url);
+                    return fetch(url, {method:"DELETE"})
+                    .then( res => res.json())
+                    .then(data => {
+                        if(data.success === false) {
+                            return Promise.reject("Failed to remove bookmark: " + data.message);
+                        } else {
+                            
+                        }
+                    })
+                    .catch(error => {
+                        console.log(error);
+                    })
+                    
+                } else {
+                    return Promise.reject("Item not found");
+                }
             },
             
             addBookmarkList: function(name) {
                 
-                let url = this.action("add")
-                if(name) {
-                    url +=  name + "/"
+                let url = this.getUrl();
+                let listToAdd = {
+                        name: name
                 }
                 
              
-                return fetch(url, {method:"POST"})
+                return fetch(url, {
+                    method:"POST",
+                    body: JSON.stringify(listToAdd),
+                    headers: {'Content-Type': 'application/json'}
+                 })
                 .then( res => res.json())
                 .then(data => {
                     if(data.success === false) {
@@ -392,12 +411,8 @@ var viewerJS = ( function( viewer ) {
             
             removeBookmarkList: function(id) {
                 
-                let url = this.action("delete")
-                if(id) {                    
-                    url += id + "/";
-                }
+                let url = this.getUrl(id)
                 
-             
                 return fetch(url, {method:"DELETE"})
                 .then( res => res.json())
                 .then(data => {
@@ -414,14 +429,19 @@ var viewerJS = ( function( viewer ) {
             },
             
             getList: function(id) {
-                this.bookmarkLists.find(list => list.id == id);
+                if(this.config.userLoggedIn) {
+                    return this.bookmarkLists.find(list => list.id == id);                    
+                } else {
+                    return this.bookmarkLists[0];
+                }
             },
 
             getItem: function(list, pi, page, logid) {
-                for(item of list.items) {
-                    if(item.pi == pi && (page == undefined  || page == item.order) && (logid == undefined || logid == item.logId)) {
-                        return item;
-                    }
+                if(list) {    
+                    return list.items.find(item => {
+                        return item.pi == pi && (page == undefined  || page == item.order) && (logid == undefined || logid == item.logId);
+                    })
+                    
                 }
                 return undefined;
             },

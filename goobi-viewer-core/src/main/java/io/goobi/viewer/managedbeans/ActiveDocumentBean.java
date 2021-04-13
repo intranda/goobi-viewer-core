@@ -21,9 +21,11 @@ import java.io.Serializable;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 
 import javax.enterprise.context.SessionScoped;
 import javax.faces.context.ExternalContext;
@@ -35,6 +37,7 @@ import javax.servlet.http.HttpSession;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.text.StringEscapeUtils;
+import org.apache.http.client.ClientProtocolException;
 import org.apache.solr.common.SolrDocumentList;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -46,11 +49,13 @@ import de.intranda.metadata.multilanguage.IMetadataValue;
 import de.intranda.metadata.multilanguage.MultiLanguageMetadataValue;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.IndexerTools;
+import io.goobi.viewer.controller.NetTools;
 import io.goobi.viewer.controller.SolrConstants;
-import io.goobi.viewer.controller.SolrSearchIndex;
 import io.goobi.viewer.controller.SolrConstants.DocType;
+import io.goobi.viewer.controller.SolrSearchIndex;
 import io.goobi.viewer.controller.language.Language;
 import io.goobi.viewer.exceptions.DAOException;
+import io.goobi.viewer.exceptions.HTTPException;
 import io.goobi.viewer.exceptions.IDDOCNotFoundException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
@@ -65,6 +70,7 @@ import io.goobi.viewer.messages.ViewerResourceBundle;
 import io.goobi.viewer.model.cms.CMSPage;
 import io.goobi.viewer.model.cms.CMSSidebarElement;
 import io.goobi.viewer.model.download.DownloadJob;
+import io.goobi.viewer.model.download.DownloadOption;
 import io.goobi.viewer.model.download.EPUBDownloadJob;
 import io.goobi.viewer.model.download.PDFDownloadJob;
 import io.goobi.viewer.model.maps.GeoMap;
@@ -83,8 +89,7 @@ import io.goobi.viewer.model.viewer.PageOrientation;
 import io.goobi.viewer.model.viewer.PageType;
 import io.goobi.viewer.model.viewer.StructElement;
 import io.goobi.viewer.model.viewer.ViewManager;
-import io.goobi.viewer.model.viewer.pageloader.EagerPageLoader;
-import io.goobi.viewer.model.viewer.pageloader.LeanPageLoader;
+import io.goobi.viewer.model.viewer.pageloader.AbstractPageLoader;
 import io.goobi.viewer.modules.IModule;
 
 /**
@@ -146,9 +151,19 @@ public class ActiveDocumentBean implements Serializable {
 
     private Boolean deleteRecordKeepTrace;
 
+    private String clearCacheMode;
+
     private CMSSidebarElement mapWidget = null;
 
     private int reloads = 0;
+
+    private boolean downloadImageModalVisible = false;
+
+    private String selectedDownloadOptionLabel;
+    /* Previous docstruct URL cache. TODO Implement differently once other views beside full-screen are used. */
+    private Map<String, String> prevDocstructUrlCache = new HashMap<>();
+    /* Next docstruct URL cache. TODO Implement differently once other views beside full-screen are used. */
+    private Map<String, String> nextDocstructUrlCache = new HashMap<>();
 
     /**
      * Empty constructor.
@@ -220,6 +235,9 @@ public class ActiveDocumentBean implements Serializable {
             nextHit = null;
             group = false;
             mapWidget = null; //mapWidget needs to be reset when PI changes
+            clearCacheMode = null;
+            prevDocstructUrlCache.clear();
+            nextDocstructUrlCache.clear();
 
             // Any cleanup modules need to do when a record is unloaded
             for (IModule module : DataManager.getInstance().getModules()) {
@@ -303,13 +321,13 @@ public class ActiveDocumentBean implements Serializable {
             boolean doublePageMode = false;
             titleBarMetadata.clear();
 
-            if (viewManager != null && viewManager.getCurrentDocument() != null) {
+            if (viewManager != null && viewManager.getCurrentStructElement() != null) {
                 doublePageMode = viewManager.isDoublePageMode();
             }
 
             // Do these steps only if a new document has been loaded
             boolean mayChangeHitIndex = false;
-            if (viewManager == null || viewManager.getTopDocument() == null || viewManager.getTopDocumentIddoc() != topDocumentIddoc) {
+            if (viewManager == null || viewManager.getTopStructElement() == null || viewManager.getTopStructElementIddoc() != topDocumentIddoc) {
                 anchor = false;
                 volume = false;
                 group = false;
@@ -320,48 +338,41 @@ public class ActiveDocumentBean implements Serializable {
                     mayChangeHitIndex = true;
                 }
 
-                StructElement topDocument = new StructElement(topDocumentIddoc);
+                StructElement topStructElement = new StructElement(topDocumentIddoc);
 
                 // Exit here if record is not found or has been deleted
-                if (!topDocument.isExists()) {
+                if (!topStructElement.isExists()) {
                     logger.info("IDDOC for the current record '{}' ({}) no longer seems to exist, attempting to retrieve an updated IDDOC...",
-                            topDocument.getPi(), topDocumentIddoc);
-                    topDocumentIddoc = DataManager.getInstance().getSearchIndex().getIddocFromIdentifier(topDocument.getPi());
+                            topStructElement.getPi(), topDocumentIddoc);
+                    topDocumentIddoc = DataManager.getInstance().getSearchIndex().getIddocFromIdentifier(topStructElement.getPi());
                     if (topDocumentIddoc == 0) {
                         logger.warn("New IDDOC for the current record '{}' could not be found. Perhaps this record has been deleted?",
                                 viewManager.getPi());
                         reset();
                         throw new RecordNotFoundException(lastReceivedIdentifier);
                     }
-                } else if (topDocument.isDeleted()) {
-                    logger.debug("Record '{}' is deleted and only available as a trace document.", topDocument.getPi());
+                } else if (topStructElement.isDeleted()) {
+                    logger.debug("Record '{}' is deleted and only available as a trace document.", topStructElement.getPi());
                     reset();
-                    throw new RecordDeletedException(topDocument.getPi());
+                    throw new RecordDeletedException(topStructElement.getPi());
                 }
 
                 // Do not open records who may not be listed for the current user
-                List<String> requiredAccessConditions = topDocument.getMetadataValues(SolrConstants.ACCESSCONDITION);
+                List<String> requiredAccessConditions = topStructElement.getMetadataValues(SolrConstants.ACCESSCONDITION);
                 if (requiredAccessConditions != null && !requiredAccessConditions.isEmpty()) {
                     boolean access = AccessConditionUtils.checkAccessPermission(new HashSet<>(requiredAccessConditions), IPrivilegeHolder.PRIV_LIST,
-                            new StringBuilder().append('+').append(SolrConstants.PI).append(':').append(topDocument.getPi()).toString(),
+                            new StringBuilder().append('+').append(SolrConstants.PI).append(':').append(topStructElement.getPi()).toString(),
                             (HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest());
                     if (!access) {
-                        logger.debug("User may not open {}", topDocument.getPi());
+                        logger.debug("User may not open {}", topStructElement.getPi());
                         throw new RecordNotFoundException(lastReceivedIdentifier);
                     }
 
                 }
 
-                int numPages = topDocument.getNumPages();
-                if (numPages < DataManager.getInstance().getConfiguration().getPageLoaderThreshold()) {
-                    viewManager = new ViewManager(topDocument, new EagerPageLoader(topDocument), topDocumentIddoc, logid,
-                            topDocument.getMetadataValue(SolrConstants.MIMETYPE), imageDelivery);
-                } else {
-                    logger.debug("Record has {} pages, using a lean page loader to limit memory usage.", numPages);
-                    viewManager = new ViewManager(topDocument, new LeanPageLoader(topDocument, numPages), topDocumentIddoc, logid,
-                            topDocument.getMetadataValue(SolrConstants.MIMETYPE), imageDelivery);
-                }
-
+                viewManager = new ViewManager(topStructElement, AbstractPageLoader.create(topStructElement), topDocumentIddoc,
+                        logid,
+                        topStructElement.getMetadataValue(SolrConstants.MIMETYPE), imageDelivery);
                 viewManager.setToc(createTOC());
 
                 HttpSession session = BeanUtils.getSession();
@@ -371,16 +382,16 @@ public class ActiveDocumentBean implements Serializable {
                             .getRecordLockManager()
                             .removeLocksForSessionId(session.getId(), Collections.singletonList(viewManager.getPi()));
                 }
-                String limit = viewManager.getTopDocument().getMetadataValue(SolrConstants.ACCESSCONDITION_CONCURRENTUSE);
+                String limit = viewManager.getTopStructElement().getMetadataValue(SolrConstants.ACCESSCONDITION_CONCURRENTUSE);
                 // Lock limited view records, if limit exists and record has a license type that has this feature enabled
                 if (limit != null && AccessConditionUtils.isConcurrentViewsLimitEnabledForAnyAccessCondition(
-                        viewManager.getTopDocument().getMetadataValues(SolrConstants.ACCESSCONDITION))) {
+                        viewManager.getTopStructElement().getMetadataValues(SolrConstants.ACCESSCONDITION))) {
                     if (session != null) {
                         DataManager.getInstance()
                                 .getRecordLockManager()
                                 .lockRecord(viewManager.getPi(), session.getId(), Integer.valueOf(limit));
                     } else {
-                        logger.debug("No session found, unable to lock limited view record {}", topDocument.getPi());
+                        logger.debug("No session found, unable to lock limited view record {}", topStructElement.getPi());
                         throw new RecordLimitExceededException(lastReceivedIdentifier + ":" + limit);
                     }
                 }
@@ -412,7 +423,7 @@ public class ActiveDocumentBean implements Serializable {
                     subElementIddoc = Long.valueOf((String) docList.get(0).getFieldValue(SolrConstants.IDDOC));
                     // Re-initialize ViewManager with the new current element
                     PageOrientation firstPageOrientation = viewManager.getFirstPageOrientation();
-                    viewManager = new ViewManager(viewManager.getTopDocument(), viewManager.getPageLoader(), subElementIddoc, logid,
+                    viewManager = new ViewManager(viewManager.getTopStructElement(), viewManager.getPageLoader(), subElementIddoc, logid,
                             viewManager.getMainMimeType(), imageDelivery);
                     viewManager.setFirstPageOrientation(firstPageOrientation);
                 } else {
@@ -420,9 +431,9 @@ public class ActiveDocumentBean implements Serializable {
                 }
             }
 
-            if (viewManager != null && viewManager.getCurrentDocument() != null) {
+            if (viewManager != null && viewManager.getCurrentStructElement() != null) {
                 viewManager.setDoublePageMode(doublePageMode);
-                StructElement structElement = viewManager.getCurrentDocument();
+                StructElement structElement = viewManager.getCurrentStructElement();
                 if (!structElement.isExists()) {
                     logger.trace("StructElement {} is not marked as existing. Record will be reloaded", structElement.getLuceneId());
                     throw new IDDOCNotFoundException(lastReceivedIdentifier + " - " + structElement.getLuceneId());
@@ -438,7 +449,7 @@ public class ActiveDocumentBean implements Serializable {
                 }
 
                 // Populate title bar metadata
-                StructElement topSe = viewManager.getCurrentDocument().getTopStruct();
+                StructElement topSe = viewManager.getCurrentStructElement().getTopStruct();
                 // logger.debug("topSe: " + topSe.getId());
                 for (Metadata md : DataManager.getInstance().getConfiguration().getTitleBarMetadata()) {
                     md.populate(topSe, BeanUtils.getLocale());
@@ -476,7 +487,7 @@ public class ActiveDocumentBean implements Serializable {
             }
 
             // Metadata language versions
-            recordLanguages = viewManager.getTopDocument().getMetadataValues(SolrConstants.LANGUAGE);
+            recordLanguages = viewManager.getTopStructElement().getMetadataValues(SolrConstants.LANGUAGE);
             // If the record has metadata language versions, pre-select the current locale as the record language
             //            if (StringUtils.isBlank(selectedRecordLanguage) && !recordLanguages.isEmpty()) {
             if (StringUtils.isBlank(selectedRecordLanguage) && navigationHelper != null) {
@@ -504,7 +515,7 @@ public class ActiveDocumentBean implements Serializable {
         TOC toc = new TOC();
         synchronized (toc) {
             if (viewManager != null) {
-                toc.generate(viewManager.getTopDocument(), viewManager.isListAllVolumesInTOC(), viewManager.getMainMimeType(), tocCurrentPage);
+                toc.generate(viewManager.getTopStructElement(), viewManager.isListAllVolumesInTOC(), viewManager.getMainMimeType(), tocCurrentPage);
                 // The TOC object will correct values that are too high, so update the local value, if necessary
                 if (toc.getCurrentPage() != this.tocCurrentPage) {
                     this.tocCurrentPage = toc.getCurrentPage();
@@ -537,7 +548,7 @@ public class ActiveDocumentBean implements Serializable {
                     return "";
                 }
 
-                IMetadataValue name = viewManager.getTopDocument().getMultiLanguageDisplayLabel();
+                IMetadataValue name = viewManager.getTopStructElement().getMultiLanguageDisplayLabel();
                 HttpServletRequest request = (HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest();
                 URL url = PrettyContext.getCurrentInstance(request).getRequestURL();
 
@@ -642,7 +653,7 @@ public class ActiveDocumentBean implements Serializable {
      */
     public long getActiveDocumentIddoc() {
         if (viewManager != null) {
-            return viewManager.getTopDocumentIddoc();
+            return viewManager.getTopStructElementIddoc();
         }
 
         return 0;
@@ -658,7 +669,7 @@ public class ActiveDocumentBean implements Serializable {
      */
     public StructElement getCurrentElement() throws IndexUnreachableException {
         if (viewManager != null) {
-            return viewManager.getCurrentDocument();
+            return viewManager.getCurrentStructElement();
         }
 
         return null;
@@ -691,7 +702,9 @@ public class ActiveDocumentBean implements Serializable {
      * @return the imageToShow
      */
     public int getImageToShow() {
-        return imageToShow;
+        synchronized (this) {
+            return imageToShow;
+        }
     }
 
     /**
@@ -702,7 +715,7 @@ public class ActiveDocumentBean implements Serializable {
      * @return the titleBarMetadata
      */
     public List<Metadata> getTitleBarMetadata() {
-        return Metadata.filterMetadataByLanguage(titleBarMetadata, selectedRecordLanguage);
+        return Metadata.filterMetadata(titleBarMetadata, selectedRecordLanguage, null);
     }
 
     /**
@@ -730,11 +743,13 @@ public class ActiveDocumentBean implements Serializable {
      * @return the logid
      */
     public String getLogid() {
-        if (StringUtils.isEmpty(logid)) {
-            return "-";
-        }
+        synchronized (this) {
+            if (StringUtils.isEmpty(logid)) {
+                return "-";
+            }
 
-        return logid;
+            return logid;
+        }
     }
 
     /**
@@ -789,7 +804,9 @@ public class ActiveDocumentBean implements Serializable {
      * @return the action
      */
     public String getAction() {
-        return action;
+        synchronized (this) {
+            return action;
+        }
     }
 
     /**
@@ -867,10 +884,12 @@ public class ActiveDocumentBean implements Serializable {
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      */
     public String getPersistentIdentifier() throws IndexUnreachableException {
-        if (viewManager != null) {
-            return viewManager.getPi();
+        synchronized (this) {
+            if (viewManager != null) {
+                return viewManager.getPi();
+            }
+            return "-";
         }
-        return "-";
     }
 
     /**
@@ -1096,6 +1115,104 @@ public class ActiveDocumentBean implements Serializable {
     }
 
     /**
+     * 
+     * @return
+     * @throws IndexUnreachableException
+     */
+    public String getPreviousDocstructUrl() throws IndexUnreachableException {
+        // logger.trace("getPreviousDocstructUrl");
+        if (viewManager == null) {
+            return null;
+        }
+        List<String> docstructTypes =
+                DataManager.getInstance().getConfiguration().getDocstructNavigationTypes(viewManager.getTopStructElement().getDocStructType(), true);
+        if (docstructTypes.isEmpty()) {
+            return null;
+        }
+
+        String currentDocstructIddoc = String.valueOf(viewManager.getCurrentStructElementIddoc());
+        // Determine docstruct URL and cache it
+        if (prevDocstructUrlCache.get(currentDocstructIddoc) == null) {
+            int currentElementIndex = viewManager.getToc().findTocElementIndexByIddoc(currentDocstructIddoc);
+            if (currentElementIndex == -1) {
+                logger.warn("Current IDDOC not found in TOC: {}", viewManager.getCurrentStructElement().getLuceneId());
+                return null;
+            }
+
+            boolean found = false;
+            for (int i = currentElementIndex - 1; i >= 0; --i) {
+                TOCElement tocElement = viewManager.getToc().getTocElements().get(i);
+                String docstructType = tocElement.getMetadataValue(SolrConstants.DOCSTRCT);
+                if (docstructType != null && docstructTypes.contains(docstructType)) {
+                    logger.trace("Found previous {}: {}", docstructType, tocElement.getLogId());
+                    // Add LOGID to the URL because ViewManager.currentStructElementIddoc (IDDOC_OWNER) can be incorrect in the index sometimes,
+                    // resulting in the URL pointing at the current element
+                    prevDocstructUrlCache.put(currentDocstructIddoc,
+                            getPageUrl(navigationHelper.getCurrentPageType().getName(), Integer.valueOf(tocElement.getPageNo()))
+                                    + tocElement.getLogId()
+                                    + "/");
+                    found = true;
+                    break;
+                }
+            }
+            if (!found) {
+                prevDocstructUrlCache.put(currentDocstructIddoc, "");
+            }
+        }
+
+        return prevDocstructUrlCache.get(currentDocstructIddoc);
+    }
+
+    /**
+     * 
+     * @return
+     * @throws IndexUnreachableException
+     */
+    public String getNextDocstructUrl() throws IndexUnreachableException {
+        // logger.trace("getNextDocstructUrl");
+        if (viewManager == null) {
+            return "";
+        }
+        List<String> docstructTypes =
+                DataManager.getInstance().getConfiguration().getDocstructNavigationTypes(viewManager.getTopStructElement().getDocStructType(), true);
+        if (docstructTypes.isEmpty()) {
+            return null;
+        }
+
+        String currentDocstructIddoc = String.valueOf(viewManager.getCurrentStructElementIddoc());
+        // Determine docstruct URL and cache it
+        if (nextDocstructUrlCache.get(currentDocstructIddoc) == null) {
+            int currentElementIndex = viewManager.getToc().findTocElementIndexByIddoc(currentDocstructIddoc);
+            logger.trace("currentIndexElement: {}", currentElementIndex);
+            if (currentElementIndex == -1) {
+                return null;
+            }
+
+            boolean found = false;
+            for (int i = currentElementIndex + 1; i < viewManager.getToc().getTocElements().size(); ++i) {
+                TOCElement tocElement = viewManager.getToc().getTocElements().get(i);
+                String docstructType = tocElement.getMetadataValue(SolrConstants.DOCSTRCT);
+                if (docstructType != null && docstructTypes.contains(docstructType)) {
+                    logger.trace("Found next {}: {}", docstructType, tocElement.getLogId());
+                    // Add LOGID to the URL because ViewManager.currentStructElementIddoc (IDDOC_OWNER) can be incorrect in the index sometimes,
+                    // resulting in the URL pointing at the current element
+                    nextDocstructUrlCache.put(currentDocstructIddoc,
+                            getPageUrl(navigationHelper.getCurrentPageType().getName(), Integer.valueOf(tocElement.getPageNo()))
+                                    + tocElement.getLogId()
+                                    + "/");
+                    found = true;
+                    break;
+                }
+            }
+            if (!found) {
+                nextDocstructUrlCache.put(currentDocstructIddoc, "");
+            }
+        }
+
+        return nextDocstructUrlCache.get(currentDocstructIddoc);
+    }
+
+    /**
      * <p>
      * getImageUrl.
      * </p>
@@ -1165,7 +1282,7 @@ public class ActiveDocumentBean implements Serializable {
      */
     public StructElement getTopDocument() {
         if (viewManager != null) {
-            return viewManager.getTopDocument();
+            return viewManager.getTopStructElement();
         }
 
         return null;
@@ -1267,7 +1384,9 @@ public class ActiveDocumentBean implements Serializable {
      * @return a int.
      */
     public int getTocCurrentPage() {
-        return tocCurrentPage;
+        synchronized (this) {
+            return tocCurrentPage;
+        }
     }
 
     /**
@@ -1301,7 +1420,7 @@ public class ActiveDocumentBean implements Serializable {
                 if (currentCurrentPage != this.tocCurrentPage && DataManager.getInstance().getConfiguration().getTocAnchorGroupElementsPerPage() > 0
                         && viewManager != null) {
                     viewManager.getToc()
-                            .generate(viewManager.getTopDocument(), viewManager.isListAllVolumesInTOC(), viewManager.getMainMimeType(),
+                            .generate(viewManager.getTopStructElement(), viewManager.isListAllVolumesInTOC(), viewManager.getMainMimeType(),
                                     this.tocCurrentPage);
                 }
             }
@@ -1359,7 +1478,11 @@ public class ActiveDocumentBean implements Serializable {
      */
     public String getTitleBarLabel(String language)
             throws IndexUnreachableException, PresentationException, DAOException, ViewerConfigurationException {
-        if (navigationHelper != null && PageType.getByName(navigationHelper.getCurrentPage()) != null
+        if (navigationHelper == null) {
+            return null;
+        }
+
+        if (PageType.getByName(navigationHelper.getCurrentPage()) != null
                 && PageType.getByName(navigationHelper.getCurrentPage()).isDocumentPage() && viewManager != null) {
             // Prefer the label of the current TOC element
             TOC toc = getToc();
@@ -1367,7 +1490,7 @@ public class ActiveDocumentBean implements Serializable {
                 String label = null;
                 String labelTemplate = "_DEFAULT";
                 if (getViewManager() != null) {
-                    labelTemplate = getViewManager().getTopDocument().getDocStructType();
+                    labelTemplate = getViewManager().getTopStructElement().getDocStructType();
                 }
                 if (DataManager.getInstance().getConfiguration().isDisplayAnchorLabelInTitleBar(labelTemplate)
                         && StringUtils.isNotBlank(viewManager.getAnchorPi())) {
@@ -1383,7 +1506,7 @@ public class ActiveDocumentBean implements Serializable {
                     return label;
                 }
             }
-            String label = viewManager.getTopDocument().getLabel(selectedRecordLanguage);
+            String label = viewManager.getTopStructElement().getLabel(selectedRecordLanguage);
             if (StringUtils.isNotEmpty(label)) {
                 return label;
             }
@@ -1396,13 +1519,17 @@ public class ActiveDocumentBean implements Serializable {
                 }
             }
         }
-        
-        if(navigationHelper.getCurrentPageType() != null) {
+
+        if (navigationHelper.getCurrentPageType() != null) {
             PageType pageType = navigationHelper.getCurrentPageType();
-            return Messages.translate(pageType.getName(), Locale.forLanguageTag(language));
-        } else {
-            return null;
+            if (PageType.other.equals(pageType)) {
+                String pageLabel = navigationHelper.getCurrentPage();
+                return Messages.translate(pageLabel, Locale.forLanguageTag(language));
+            }
+            return Messages.translate(pageType.getLabel(), Locale.forLanguageTag(language));
         }
+
+        return null;
     }
 
     /**
@@ -1459,7 +1586,7 @@ public class ActiveDocumentBean implements Serializable {
      */
     public long getTopDocumentIddoc() {
         if (viewManager != null) {
-            return viewManager.getTopDocumentIddoc();
+            return viewManager.getTopStructElementIddoc();
         }
         return 0;
     }
@@ -1533,6 +1660,43 @@ public class ActiveDocumentBean implements Serializable {
     }
 
     /**
+     * 
+     * @return
+     * @throws ClientProtocolException
+     * @throws IOException
+     * @throws IndexUnreachableException
+     */
+    public String clearCacheAction() throws ClientProtocolException, IOException, IndexUnreachableException {
+        logger.trace("clearCacheAction: {}", clearCacheMode);
+        if (clearCacheMode == null || viewManager == null) {
+            return "";
+        }
+
+        String url = NetTools.buildClearCacheUrl(clearCacheMode, viewManager.getPi(), navigationHelper.getApplicationUrl(),
+                DataManager.getInstance().getConfiguration().getWebApiToken());
+        try {
+            try {
+                String result = NetTools.getWebContentDELETE(url, null, null, null, null);
+                Messages.info("cache_clear__success");
+            } catch (ClientProtocolException e) {
+                logger.error(e.getMessage());
+                Messages.error("cache_clear__failure");
+            } catch (IOException e) {
+                logger.error(e.getMessage());
+                Messages.error("cache_clear__failure");
+                ;
+            } catch (HTTPException e) {
+                logger.error(e.getMessage());
+                Messages.error("cache_clear__failure");
+            }
+        } finally {
+            clearCacheMode = null;
+        }
+
+        return "";
+    }
+
+    /**
      * <p>
      * getCurrentThumbnailPage.
      * </p>
@@ -1540,7 +1704,9 @@ public class ActiveDocumentBean implements Serializable {
      * @return a int.
      */
     public int getCurrentThumbnailPage() {
-        return viewManager != null ? viewManager.getCurrentThumbnailPage() : 1;
+        synchronized (this) {
+            return viewManager != null ? viewManager.getCurrentThumbnailPage() : 1;
+        }
     }
 
     /**
@@ -1758,7 +1924,7 @@ public class ActiveDocumentBean implements Serializable {
             return null;
         }
 
-        List<String> relatedItemIdentifiers = viewManager.getTopDocument().getMetadataValues(identifierField);
+        List<String> relatedItemIdentifiers = viewManager.getTopStructElement().getMetadataValues(identifierField);
         List<SearchHit> ret = SearchHelper.searchWithFulltext(query, 0, SolrSearchIndex.MAX_HITS, null, null, null, null, null, null,
                 navigationHelper.getLocale(), BeanUtils.getRequest());
 
@@ -1775,7 +1941,7 @@ public class ActiveDocumentBean implements Serializable {
      */
     public String getRelatedItemsQueryString(String identifierField) {
         logger.trace("getRelatedItemsQueryString: {}", identifierField);
-        List<String> relatedItemIdentifiers = viewManager.getTopDocument().getMetadataValues(identifierField);
+        List<String> relatedItemIdentifiers = viewManager.getTopStructElement().getMetadataValues(identifierField);
         if (relatedItemIdentifiers.isEmpty()) {
             return null;
         }
@@ -1892,6 +2058,21 @@ public class ActiveDocumentBean implements Serializable {
         this.deleteRecordKeepTrace = deleteRecordKeepTrace;
     }
 
+    /**
+     * @return the clearCacheMode
+     */
+    public String getClearCacheMode() {
+        return clearCacheMode;
+    }
+
+    /**
+     * @param clearCacheMode the clearCacheMode to set
+     */
+    public void setClearCacheMode(String clearCacheMode) {
+        logger.trace("setClearCacheMode: {}", clearCacheMode);
+        this.clearCacheMode = clearCacheMode;
+    }
+
     public CMSSidebarElement getMapWidget() throws PresentationException, DAOException {
         if (this.mapWidget == null) {
             this.mapWidget = generateMapWidget();
@@ -1906,7 +2087,7 @@ public class ActiveDocumentBean implements Serializable {
             if ("-".equals(getPersistentIdentifier())) {
                 return null;
             }
-            
+
             GeoMap map = new GeoMap();
             map.setId(Long.MAX_VALUE);
             map.setType(GeoMapType.SOLR_QUERY);
@@ -1922,6 +2103,56 @@ public class ActiveDocumentBean implements Serializable {
             logger.error("Unable to load geomap", e);
         }
         return widget;
+    }
+
+    /**
+     * 
+     */
+    public void toggleDownloadImageModal() {
+        downloadImageModalVisible = !downloadImageModalVisible;
+    }
+
+    /**
+     * @return the downloadImageModalVisible
+     */
+    public boolean isDownloadImageModalVisible() {
+        return downloadImageModalVisible;
+    }
+
+    /**
+     * 
+     */
+    public DownloadOption getSelectedDownloadOption() {
+        if (selectedDownloadOptionLabel == null) {
+            return null;
+        }
+
+        return DownloadOption.getByLabel(selectedDownloadOptionLabel);
+    }
+
+    /**
+     * @return the selectedDownloadOptionLabel
+     */
+    public String getSelectedDownloadOptionLabel() {
+        return selectedDownloadOptionLabel;
+    }
+
+    /**
+     * @param selectedDownloadOptionLabel the selectedDownloadOptionLabel to set
+     */
+    public void setSelectedDownloadOptionLabel(String selectedDownloadOptionLabel) {
+        logger.trace("setSelectedDownloadOption: {}", selectedDownloadOptionLabel != null ? selectedDownloadOptionLabel.toString() : null);
+        this.selectedDownloadOptionLabel = selectedDownloadOptionLabel;
+    }
+
+    public void setDownloadOptionLabelFromRequestParameter() {
+        Map<String, String> params = FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap();
+
+        String value = params.get("optionvalue");
+        if (StringUtils.isNotBlank(value)) {
+            setSelectedDownloadOptionLabel(value);
+        }
+
     }
 
 }

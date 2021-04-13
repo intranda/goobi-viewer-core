@@ -19,10 +19,8 @@
 				</div>
 			</div>
 		</div>
-		<div class="cms-module__actions crowdsourcing-annotations__annotation-action">
-			<button if="{ !this.opts.item.isReviewMode() }" onClick="{deleteAnnotationFromEvent}" class="crowdsourcing-annotations__delete-annotation btn btn--clean delete">{Crowdsourcing.translate("action__delete_annotation")}
-			</button>
-		</div>
+		<!-- No delete button because metadata annotations should be deleted. Rather metadata fields may be remvoved by 
+		giving them an empty value -->
 	</div>
 	<button if="{showAddAnnotationButton()}" onclick="{addAnnotation}" class="options-wrapper__option btn btn--default" id="add-annotation">{Crowdsourcing.translate("action__add_annotation")}</button>
 	

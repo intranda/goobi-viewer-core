@@ -21,20 +21,14 @@ import java.awt.Dimension;
 import java.awt.Rectangle;
 import java.io.File;
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.Collections;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.stream.Stream;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.xml.stream.XMLStreamException;
 
 import org.apache.commons.io.FileUtils;
-import org.jdom2.JDOMException;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Assert;
@@ -51,6 +45,7 @@ public class ALTOToolsTest extends AbstractTest {
      */
     @BeforeClass
     public static void setUpBeforeClass() throws Exception {
+        AbstractTest.setUpClass();
     }
 
     /**
@@ -63,8 +58,10 @@ public class ALTOToolsTest extends AbstractTest {
     /**
      * @throws java.lang.Exception
      */
+    @Override
     @Before
     public void setUp() throws Exception {
+        super.setUp();
     }
 
     /**

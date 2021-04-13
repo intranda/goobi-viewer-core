@@ -29,6 +29,7 @@
 
     <!-- CONTENT -->
     <ui:define name="content">
+		<ui:include src="/resources/cms/includes/cms_script.xhtml" />
         <f:param name="currentPage" value="#{cmsBean.random}" />
         <f:view contentType="text/html" encoding="utf-8">
             <div id="templateSingleCollection" class="tpl-single-collection #{cmsPage.wrapperElementClass}">
@@ -52,7 +53,7 @@
 
                     <!-- DESCRIPTION -->
                     <div class="tpl-single-collection__description">
-                        <ui:include src="#{cmsPage.getContent('A2')}" />
+                        <h:outputText escape="false" value="#{cmsPage.getContent('A2')}"></h:outputText>
                     </div>
                 </h:panelGroup>
 

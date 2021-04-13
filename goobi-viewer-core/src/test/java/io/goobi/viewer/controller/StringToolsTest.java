@@ -171,11 +171,39 @@ public class StringToolsTest {
     }
 
     /**
-     * @see StringTools#generateMD5(String)
+     * @see StringTools#generateHash(String)
      * @verifies hash string correctly
      */
     @Test
-    public void generateMD5_shouldHashStringCorrectly() throws Exception {
-        Assert.assertEquals("098f6bcd4621d373cade4e832627b4f6", StringTools.generateMD5("test"));
+    public void generateHash_shouldHashStringCorrectly() throws Exception {
+        Assert.assertEquals("9f86d081884c7d659a2feaa0c55ad015a3bf4f1b2b0b822cd15d6c15b0f00a08", StringTools.generateHash("test"));
+    }
+
+    /**
+     * @see StringTools#checkValueEmptyOrInverted(String)
+     * @verifies return true if value null or empty
+     */
+    @Test
+    public void checkValueEmptyOrInverted_shouldReturnTrueIfValueNullOrEmpty() throws Exception {
+        Assert.assertTrue(StringTools.checkValueEmptyOrInverted(null));
+        Assert.assertTrue(StringTools.checkValueEmptyOrInverted(""));
+    }
+
+    /**
+     * @see StringTools#checkValueEmptyOrInverted(String)
+     * @verifies return true if value starts with 0x1
+     */
+    @Test
+    public void checkValueEmptyOrInverted_shouldReturnTrueIfValueStartsWith0x1() throws Exception {
+        Assert.assertTrue(StringTools.checkValueEmptyOrInverted("oof"));
+    }
+
+    /**
+     * @see StringTools#checkValueEmptyOrInverted(String)
+     * @verifies return false otherwise
+     */
+    @Test
+    public void checkValueEmptyOrInverted_shouldReturnFalseOtherwise() throws Exception {
+        Assert.assertFalse(StringTools.checkValueEmptyOrInverted("foo"));
     }
 }

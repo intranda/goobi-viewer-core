@@ -87,8 +87,8 @@ public class CollectionResult {
         return name;
     }
     
-    public void incrementCount() {
-        this.count++;
+    public void incrementCount(long l) {
+        this.count += l;
     }
 
 

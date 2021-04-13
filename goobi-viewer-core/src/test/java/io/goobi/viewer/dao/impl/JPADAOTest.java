@@ -15,6 +15,13 @@
  */
 package io.goobi.viewer.dao.impl;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+
 import java.io.File;
 import java.time.LocalDateTime;
 import java.util.Arrays;
@@ -48,20 +55,23 @@ import io.goobi.viewer.model.cms.CMSPage;
 import io.goobi.viewer.model.cms.CMSPageLanguageVersion;
 import io.goobi.viewer.model.cms.CMSPageLanguageVersion.CMSPageStatus;
 import io.goobi.viewer.model.cms.CMSPageTemplateEnabled;
+import io.goobi.viewer.model.cms.CMSRecordNote;
+import io.goobi.viewer.model.cms.CMSSlider;
+import io.goobi.viewer.model.cms.CMSSlider.SourceType;
 import io.goobi.viewer.model.cms.CMSStaticPage;
 import io.goobi.viewer.model.cms.CMSTemplateManager;
 import io.goobi.viewer.model.crowdsourcing.campaigns.Campaign;
-import io.goobi.viewer.model.crowdsourcing.campaigns.CampaignLogMessage;
 import io.goobi.viewer.model.crowdsourcing.campaigns.Campaign.CampaignVisibility;
+import io.goobi.viewer.model.crowdsourcing.campaigns.CampaignLogMessage;
 import io.goobi.viewer.model.crowdsourcing.campaigns.CampaignRecordStatistic.CampaignRecordStatus;
 import io.goobi.viewer.model.crowdsourcing.questions.Question;
 import io.goobi.viewer.model.crowdsourcing.questions.QuestionType;
 import io.goobi.viewer.model.crowdsourcing.questions.TargetSelector;
 import io.goobi.viewer.model.download.DownloadJob;
 import io.goobi.viewer.model.download.DownloadJob.JobStatus;
-import io.goobi.viewer.model.log.LogMessage;
 import io.goobi.viewer.model.download.EPUBDownloadJob;
 import io.goobi.viewer.model.download.PDFDownloadJob;
+import io.goobi.viewer.model.log.LogMessage;
 import io.goobi.viewer.model.maps.GeoMap;
 import io.goobi.viewer.model.search.Search;
 import io.goobi.viewer.model.search.SearchHelper;
@@ -81,6 +91,12 @@ import io.goobi.viewer.model.security.user.UserRole;
 public class JPADAOTest extends AbstractDatabaseEnabledTest {
 
     public static final int NUM_LICENSE_TYPES = 6;
+
+    String pi = "PI_TEST";
+    String title = "TITLE_TEST";
+    String germanNote = "Bemerkung";
+    String englishNote = "Note";
+    String changed = "CHANGED";
 
     @Override
     @Before
@@ -685,7 +701,7 @@ public class JPADAOTest extends AbstractDatabaseEnabledTest {
         Assert.assertNotNull(comment);
 
         comment.setText("new comment 1 text");
-        Date now = new Date();
+        LocalDateTime now = LocalDateTime.now();
         comment.setDateUpdated(now);
 
         Assert.assertTrue(DataManager.getInstance().getDao().updateComment(comment));
@@ -823,7 +839,7 @@ public class JPADAOTest extends AbstractDatabaseEnabledTest {
         o.setSortString("SORT_FIELD");
         o.setFacetString("DOCSTRCT:Other;;DC:newcol");
         o.setNewHitsNotification(true);
-        Date now = new Date();
+        LocalDateTime now = LocalDateTime.now();
         o.setDateUpdated(now);
         Assert.assertTrue(DataManager.getInstance().getDao().addSearch(o));
         Assert.assertNotNull(o.getId());
@@ -848,7 +864,7 @@ public class JPADAOTest extends AbstractDatabaseEnabledTest {
         Assert.assertNotNull(o);
 
         o.setName("new name");
-        Date now = new Date();
+        LocalDateTime now = LocalDateTime.now();
         o.setDateUpdated(now);
 
         Assert.assertTrue(DataManager.getInstance().getDao().updateSearch(o));
@@ -1094,7 +1110,7 @@ public class JPADAOTest extends AbstractDatabaseEnabledTest {
     @Test
     public void getAllBookmarkListsTest() throws DAOException {
         List<BookmarkList> result = DataManager.getInstance().getDao().getAllBookmarkLists();
-        Assert.assertEquals(2, result.size());
+        Assert.assertEquals(3, result.size());
     }
 
     @Test
@@ -1109,7 +1125,8 @@ public class JPADAOTest extends AbstractDatabaseEnabledTest {
         User user = DataManager.getInstance().getDao().getUser(1);
         Assert.assertNotNull(user);
         List<BookmarkList> boomarkLists = DataManager.getInstance().getDao().getBookmarkLists(user);
-        Assert.assertEquals(1, boomarkLists.size());
+        Assert.assertEquals(2, boomarkLists.size());
+        Assert.assertEquals(Long.valueOf(3), boomarkLists.get(0).getId());
         Assert.assertEquals(user, boomarkLists.get(0).getOwner());
     }
 
@@ -1210,12 +1227,12 @@ public class JPADAOTest extends AbstractDatabaseEnabledTest {
 
     @Test
     public void deleteBookmarkListTest() throws DAOException {
-        Assert.assertEquals(2, DataManager.getInstance().getDao().getAllBookmarkLists().size());
+        Assert.assertEquals(3, DataManager.getInstance().getDao().getAllBookmarkLists().size());
         BookmarkList bl = DataManager.getInstance().getDao().getBookmarkList(1);
         Assert.assertNotNull(bl);
         Assert.assertTrue(DataManager.getInstance().getDao().deleteBookmarkList(bl));
         Assert.assertNull(DataManager.getInstance().getDao().getBookmarkList(1));
-        Assert.assertEquals(1, DataManager.getInstance().getDao().getAllBookmarkLists().size());
+        Assert.assertEquals(2, DataManager.getInstance().getDao().getAllBookmarkLists().size());
     }
 
     @Test
@@ -2034,7 +2051,8 @@ public class JPADAOTest extends AbstractDatabaseEnabledTest {
      */
     @Test
     public void getDownloadJobByIdentifier_shouldReturnCorrectObject() throws Exception {
-        DownloadJob job = DataManager.getInstance().getDao().getDownloadJobByIdentifier("0afb73c418262beb2c88dc40c95831b7");
+        DownloadJob job =
+                DataManager.getInstance().getDao().getDownloadJobByIdentifier("187277c96410b2358a36e2eb6c8ad76f8610a022d2cd95b180b94a76a1cb118a");
         Assert.assertNotNull(job);
         Assert.assertEquals(PDFDownloadJob.class, job.getClass());
         Assert.assertEquals(Long.valueOf(1), job.getId());
@@ -2073,7 +2091,7 @@ public class JPADAOTest extends AbstractDatabaseEnabledTest {
      */
     @Test
     public void addDownloadJob_shouldAddObjectCorrectly() throws Exception {
-        Date now = new Date();
+        LocalDateTime now = LocalDateTime.now();
         PDFDownloadJob job = new PDFDownloadJob("PI_2", "LOG_0002", now, 3600);
         job.generateDownloadIdentifier();
         job.setStatus(JobStatus.WAITING);
@@ -2106,7 +2124,7 @@ public class JPADAOTest extends AbstractDatabaseEnabledTest {
 
         DownloadJob job = DataManager.getInstance().getDao().getDownloadJob(1);
         Assert.assertNotNull(job);
-        Date now = new Date();
+        LocalDateTime now = LocalDateTime.now();
         job.setLastRequested(now);
         job.setStatus(JobStatus.READY);
         job.getObservers().add("newobserver@example.com");
@@ -2272,20 +2290,20 @@ public class JPADAOTest extends AbstractDatabaseEnabledTest {
         Assert.assertNotNull(campaign.getStatistics().get("PI_3"));
         Assert.assertNotNull(campaign.getStatistics().get("PI_4"));
     }
-    
+
     @Test
     public void testLoadCampaignWithLogMessage() throws Exception {
         Campaign campaign = DataManager.getInstance().getDao().getCampaign(1L);
         Assert.assertNotNull(campaign);
         Assert.assertEquals(1, campaign.getLogMessages().size());
-        
+
         CampaignLogMessage message = campaign.getLogMessages().get(0);
         Assert.assertEquals("Eine Nachricht im Log", message.getMessage());
         Assert.assertEquals(new Long(1), message.getCreatorId());
         Assert.assertEquals("PI_1", message.getPi());
         Assert.assertEquals(campaign, message.getCampaign());
     }
-    
+
     @Test
     public void testCampaignUpdate() throws DAOException {
         Campaign campaign = new Campaign();
@@ -2293,29 +2311,27 @@ public class JPADAOTest extends AbstractDatabaseEnabledTest {
         campaign.setId(2L);
         campaign.setSolrQuery("*:*");
         campaign.setDateCreated(LocalDateTime.now());
-        
+
         Campaign campaign2 = DataManager.getInstance().getDao().getCampaign(2L);
 
-        
         Assert.assertTrue(DataManager.getInstance().getDao().updateCampaign(campaign));
         campaign = DataManager.getInstance().getDao().getCampaign(2L);
         Assert.assertEquals("Test titel", campaign.getTitle());
     }
-    
+
     @Test
     public void testUpdateCampaignWithLogMessage() throws Exception {
         Campaign campaign = DataManager.getInstance().getDao().getCampaign(2L);
         Assert.assertNotNull(campaign);
-        
-        LogMessage message = new LogMessage("Test", 1l, new Date(), null);
+
+        LogMessage message = new LogMessage("Test", 1l, LocalDateTime.now(), null);
         campaign.addLogMessage(message, "PI_10");
         Assert.assertEquals("Test", campaign.getLogMessages().get(0).getMessage());
-                
+
         DataManager.getInstance().getDao().updateCampaign(campaign);
         campaign = DataManager.getInstance().getDao().getCampaign(2L);
         Assert.assertEquals("Test", campaign.getLogMessages().get(0).getMessage());
 
-        
     }
 
     /**
@@ -2762,7 +2778,6 @@ public class JPADAOTest extends AbstractDatabaseEnabledTest {
         users = DataManager.getInstance().getDao().getAllUsers(true);
         Assert.assertTrue(users.stream().allMatch(u -> !u.isAgreedToTermsOfUse()));
     }
-    
 
     /**
      * @see JPADAO#createCampaignsFilterQuery(String,Map,Map)
@@ -2841,4 +2856,145 @@ public class JPADAOTest extends AbstractDatabaseEnabledTest {
             Assert.assertEquals("%PPN123%", params.get("targetPIbody"));
         }
     }
+
+    @Test
+    public void testGetAllRecordNotes() throws DAOException {
+        List<CMSRecordNote> notes = DataManager.getInstance().getDao().getAllRecordNotes();
+        assertEquals(3, notes.size());
+
+    }
+
+    @Test
+    public void testGetCMSRecordNotesPaginated() throws DAOException {
+        List<CMSRecordNote> notesP1 = DataManager.getInstance().getDao().getRecordNotes(0, 2, null, false, null);
+        assertEquals(2, notesP1.size());
+        List<CMSRecordNote> notesP2 = DataManager.getInstance().getDao().getRecordNotes(2, 2, null, false, null);
+        assertEquals(1, notesP2.size());
+    }
+
+    @Test
+    public void testGetCMSRecordNote() throws DAOException {
+        CMSRecordNote note = DataManager.getInstance().getDao().getRecordNote(1l);
+        assertNotNull(note);
+        assertEquals("PI1", note.getRecordPi());
+        assertEquals("Titel 1", note.getRecordTitle().getText());
+        assertEquals("Notes 1", note.getNoteTitle().getText(Locale.ENGLISH));
+        assertEquals("Bemerkungen 1", note.getNoteTitle().getText(Locale.GERMAN));
+        assertEquals("<p>First paragraph</p>", note.getNoteText().getText(Locale.ENGLISH));
+        assertEquals("<p>Erster Paragraph</p>", note.getNoteText().getText(Locale.GERMAN));
+    }
+
+    @Test
+    public void testAddCMSRecordNote() throws DAOException {
+
+        CMSRecordNote note = new CMSRecordNote();
+        note.getRecordTitle().setSelectedLocale(Locale.GERMAN);
+        note.setRecordPi(pi);
+        note.getRecordTitle().setText(title);
+
+        assertTrue(DataManager.getInstance().getDao().addRecordNote(note));
+        assertNotNull(note.getId());
+        CMSRecordNote pNote = DataManager.getInstance().getDao().getRecordNote(note.getId());
+        assertNotNull(pNote);
+        assertEquals(title, pNote.getRecordTitle().getText());
+        assertEquals(title, pNote.getRecordTitle().getText(Locale.GERMAN));
+    }
+
+    @Test
+    public void testUpdateRecordNote() throws DAOException {
+
+        CMSRecordNote note = DataManager.getInstance().getDao().getRecordNote(2l);
+        note.getNoteTitle().setText(changed, Locale.GERMAN);
+        note.getNoteText().setText(changed, Locale.GERMAN);
+
+        DataManager.getInstance().getDao().updateRecordNote(note);
+
+        CMSRecordNote pNote = DataManager.getInstance().getDao().getRecordNote(2l);
+        assertEquals(changed, note.getNoteTitle().getText(Locale.GERMAN));
+        assertEquals("Notes 2", note.getNoteTitle().getText(Locale.ENGLISH));
+        assertEquals(changed, note.getNoteText().getText(Locale.GERMAN));
+        assertFalse(note.getNoteText().getValue(Locale.ENGLISH).isPresent());
+    }
+
+    @Test
+    public void testDeleteRecordNote() throws DAOException {
+        assertEquals(3, DataManager.getInstance().getDao().getAllRecordNotes().size());
+        CMSRecordNote note = DataManager.getInstance().getDao().getRecordNote(2l);
+        DataManager.getInstance().getDao().deleteRecordNote(note);
+        assertEquals(2, DataManager.getInstance().getDao().getAllRecordNotes().size());
+        List<CMSRecordNote> remainingNotes = DataManager.getInstance().getDao().getAllRecordNotes();
+        assertNull(DataManager.getInstance().getDao().getRecordNote(2l));
+
+    }
+
+    @Test
+    public void testGetRecordNotesForPi() throws DAOException {
+        assertEquals(2, DataManager.getInstance().getDao().getRecordNotesForPi("PI1", false).size());
+        assertEquals(1, DataManager.getInstance().getDao().getRecordNotesForPi("PI1", true).size());
+        assertEquals(0, DataManager.getInstance().getDao().getRecordNotesForPi("PI5", false).size());
+    }
+
+    @Test
+    public void testGetAllSliders() throws DAOException {
+        List<CMSSlider> sliders = DataManager.getInstance().getDao().getAllSliders();
+        assertEquals(3, sliders.size());
+        assertTrue(sliders.stream().anyMatch(sl -> sl.getName().equals("Query Slider")));
+        assertTrue(sliders.stream().anyMatch(sl -> sl.getDescription().equals("Slider from collections")));
+    }
+
+    @Test
+    public void testGetSlider() throws DAOException {
+        CMSSlider slider = DataManager.getInstance().getDao().getSlider(1l);
+        assertNotNull(slider);
+    }
+
+    @Test
+    public void testAddSlider() throws DAOException {
+        String name = "Test Slider";
+        CMSSlider slider = new CMSSlider(SourceType.COLLECTIONS);
+        slider.setName(name);
+        assertTrue(DataManager.getInstance().getDao().addSlider(slider));
+
+        assertNotNull(slider.getId());
+        CMSSlider loadedSlider = DataManager.getInstance().getDao().getSlider(slider.getId());
+        assertNotNull(loadedSlider);
+        assertFalse(loadedSlider == slider);
+        assertEquals(loadedSlider.getId(), slider.getId());
+        assertEquals(name, loadedSlider.getName());
+    }
+
+    @Test
+    public void testUpdateSlider() throws DAOException {
+        String name = "Test Slider";
+        CMSSlider slider = DataManager.getInstance().getDao().getSlider(1l);
+        assertNotEquals(name, slider.getName());
+
+        slider.setName(name);
+        assertNotEquals(name, DataManager.getInstance().getDao().getSlider(1l).getName());
+
+        DataManager.getInstance().getDao().updateSlider(slider);
+        assertEquals(name, DataManager.getInstance().getDao().getSlider(1l).getName());
+    }
+
+    @Test
+    public void testDeleteSlider() throws DAOException {
+        String name = "Test Slider";
+        CMSSlider slider = new CMSSlider(SourceType.COLLECTIONS);
+        slider.setName(name);
+        assertTrue(DataManager.getInstance().getDao().addSlider(slider));
+        assertNotNull(DataManager.getInstance().getDao().getSlider(slider.getId()));
+
+        assertTrue(DataManager.getInstance().getDao().deleteSlider(slider));
+        assertNull(DataManager.getInstance().getDao().getSlider(slider.getId()));
+
+    }
+
+    @Test
+    public void testGetEmbeddingCmsPage() throws DAOException {
+        CMSSlider slider = DataManager.getInstance().getDao().getSlider(1l);
+        List<CMSPage> pages = DataManager.getInstance().getDao().getPagesUsingSlider(slider);
+        assertEquals(1, pages.size());
+        assertEquals(Long.valueOf(2l), pages.iterator().next().getId());
+    }
+
 }

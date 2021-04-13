@@ -32,7 +32,7 @@ var viewerJS = ( function( viewer ) {
     var _searchListShowThumbs = false;
     var _defaults = {
         contextPath: '',
-        restApiPath: '/rest/search/hit/',
+        restApiPath: '/api/v1/search/hit/',
         hitsPerCall: 20,
         resetSearchSelector: '#resetCurrentSearch',
         searchInputSelector: '#currentSearchInput',
@@ -93,35 +93,29 @@ var viewerJS = ( function( viewer ) {
             
             // show/hide loader for excel export
             $( _defaults.excelExportSelector ).on( 'click', function() {
-                var trigger = $( this );
+                var trigger = $( this ); 
                 var excelLoader = $( _defaults.excelExportLoaderSelector );
                 
                 trigger.hide();
                 excelLoader.show();
                 
-                var url = _defaults.contextPath + '/rest/download/search/waitFor/';
-                var promise = Q( $.ajax( {
-                    url: decodeURI( url ),
-                    type: "GET",
-                    dataType: "text",
-                    async: true
-                } ) );
-                
-                promise.then( function( data ) {
-                    if ( _debug ) {
-                        console.log("Download started");
-                    }
-                    
+                var url = _defaults.contextPath + '/api/v1/tasks/';
+                let downloadFinished = false;
+                rxjs.interval(1000)
+                .pipe(rxjs.operators.flatMap(() => fetch(url)),
+                        rxjs.operators.flatMap(response => response.json()),
+                        rxjs.operators.takeWhile(json => {
+                            let waiting = json.some(job => job.status != "COMPLETE" && job.status != "ERROR");
+                            return waiting;
+                        }),
+                        rxjs.operators.last()
+                )
+                .subscribe((jobs) => {
+                    //console.log("all jobs finished ", jobs.map(j => j.status));
                     excelLoader.hide();
                     trigger.show();
-                } ).catch( function( error ) {
-                    if ( _debug ) {
-                        console.log("Error downloading excel sheet: ", error.responseText);
-                    }
-                    
-                    excelLoader.hide();
-                    trigger.show();
-                });                
+                })
+               
             } );
                         
             // get/set list style from local storage
@@ -131,11 +125,12 @@ var viewerJS = ( function( viewer ) {
             _searchListStyle = sessionStorage.getItem( 'searchListStyle' );
             
             // load thumbnails before appying search list style
-            switch ( _searchListStyle ) {
+            console.log("Load search hits with style " + _searchListStyle);
+            switch ( _searchListStyle ) { 
                 case 'default':
                     $( '.search-list__views button' ).removeClass( 'active' );
                     $( '[data-view="search-list-default"]' ).addClass( 'active' );
-                    $( '.search-list__hits' ).removeClass( 'grid' ).removeClass( 'list' ).fadeIn( 'fast' );
+                    $( '.search-list__hits' ).removeClass( 'grid' ).removeClass( 'list' ).fadeTo(300,1);
                     $( '[data-toggle="hit-content"]' ).show();
                     
                     break;
@@ -162,7 +157,7 @@ var viewerJS = ( function( viewer ) {
                         }
                     } );
                     
-                    $( '.search-list__hits' ).fadeIn( 'fast' );
+                    $( '.search-list__hits' ).fadeTo(300,1);
                     
                     break;
                 case 'list':
@@ -180,7 +175,7 @@ var viewerJS = ( function( viewer ) {
             	$( '.search-list__views button' ).removeClass( 'active' );
             	$( this ).addClass( 'active' );
             	$( '[data-toggle="hit-content"]' ).show();
-            	$( '.search-list__hits' ).hide().removeClass( 'grid' ).removeClass( 'list' );
+            	$( '.search-list__hits' ).fadeTo(300,0).removeClass( 'grid' ).removeClass( 'list' );
             	
             	// set list style in local storage
             	sessionStorage.setItem( 'searchListStyle', 'default' );
@@ -188,14 +183,14 @@ var viewerJS = ( function( viewer ) {
             	// remove header background
             	$( '.search-list__hit-thumbnail' ).css( 'background-image', 'none' );
             	
-            	$( '.search-list__hits' ).fadeIn( 'fast' );
+            	$( '.search-list__hits' ).fadeTo(300,1);
             } );
             // set grid style
             $( '[data-view="search-list-grid"]' ).on( 'click', function() {
                 $( '.search-list__views button' ).removeClass( 'active' );
                 $( this ).addClass( 'active' );
                 $( '[data-toggle="hit-content"]' ).hide();
-                $( '.search-list__hits' ).hide().removeClass( 'list' ).addClass( 'grid' );
+                $( '.search-list__hits' ).fadeTo(300,0).removeClass( 'list' ).addClass( 'grid' );
                 
                 // set list style in local storage
                 sessionStorage.setItem( 'searchListStyle', 'grid' );
@@ -206,19 +201,19 @@ var viewerJS = ( function( viewer ) {
                     $( this ).parents( '.search-list__hit-thumbnail' ).css( 'background-image', 'url("' + imgUrl + '")' );
                 } );
                 
-                $( '.search-list__hits' ).fadeIn( 'fast' );
+                $( '.search-list__hits' ).fadeTo(300,1);
             } );
             // set list style
             $( '[data-view="search-list-list"]' ).on( 'click', function() {
                 $( '.search-list__views button' ).removeClass( 'active' );
                 $( this ).addClass( 'active' );
                 $( '[data-toggle="hit-content"]' ).hide();
-                $( '.search-list__hits' ).hide().removeClass( 'grid' ).addClass( 'list' );
+                $( '.search-list__hits' ).fadeTo(300,0).removeClass( 'grid' ).addClass( 'list' );
                 
                 // set list style in local storage
                 sessionStorage.setItem( 'searchListStyle', 'list' );
                 
-                $( '.search-list__hits' ).fadeIn( 'fast' );
+                $( '.search-list__hits' ).fadeTo(300,1);
             } );
             
             // get child hits            

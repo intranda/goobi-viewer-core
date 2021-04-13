@@ -484,27 +484,53 @@
 		<pattern value="/metadata/#{pi:activeDocumentBean.persistentIdentifier}/" />
 		<view-id value="/viewMetadata.xhtml" />
 		<action onPostback="false">#{activeDocumentBean.open}</action>
+		<action onPostback="false">#{metadataBean.setMetadataViewUrl(null)}</action>
 	</url-mapping>
+    <url-mapping id="metadata1url">
+        <pattern value="/metadata#{metadataBean.metadataViewUrl}/#{pi:activeDocumentBean.persistentIdentifier}/" />
+        <view-id value="/viewMetadata.xhtml" />
+        <action onPostback="false">#{activeDocumentBean.open}</action>
+    </url-mapping>
 	<url-mapping id="metadata2">
 		<pattern value="/metadata/#{pi:activeDocumentBean.persistentIdentifier}/#{imageToShow:activeDocumentBean.imageToShow}/" />
 		<view-id value="/viewMetadata.xhtml" />
 		<action onPostback="false">#{activeDocumentBean.open}</action>
+		<action onPostback="false">#{metadataBean.setMetadataViewUrl(null)}</action>
 	</url-mapping>
+    <url-mapping id="metadata2url">
+        <pattern value="/metadata#{metadataBean.metadataViewUrl}/#{pi:activeDocumentBean.persistentIdentifier}/#{imageToShow:activeDocumentBean.imageToShow}/" />
+        <view-id value="/viewMetadata.xhtml" />
+        <action onPostback="false">#{activeDocumentBean.open}</action>
+    </url-mapping>
 	<url-mapping id="metadata3">
 		<pattern value="/metadata/#{pi:activeDocumentBean.persistentIdentifier}/#{imageToShow:activeDocumentBean.imageToShow}/#{logId:activeDocumentBean.logid}/" />
 		<view-id value="/viewMetadata.xhtml" />
 		<action onPostback="false">#{activeDocumentBean.open}</action>
+		<action onPostback="false">#{metadataBean.setMetadataViewUrl(null)}</action>
 	</url-mapping>
+    <url-mapping id="metadata3url">
+        <pattern value="/metadata#{metadataBean.metadataViewUrl}/#{pi:activeDocumentBean.persistentIdentifier}/#{imageToShow:activeDocumentBean.imageToShow}/#{logId:activeDocumentBean.logid}/" />
+        <view-id value="/viewMetadata.xhtml" />
+        <action onPostback="false">#{activeDocumentBean.open}</action>
+    </url-mapping>
 	<url-mapping id="metadata3active">
 		<pattern value="/!metadata/#{pi:activeDocumentBean.persistentIdentifier}/#{imageToShow:activeDocumentBean.imageToShow}/#{logId:activeDocumentBean.logid}/" />
 		<view-id value="/viewMetadata.xhtml" />
 		<action onPostback="false">#{navigationHelper.setPreferredView('metadata')}</action>
 		<action onPostback="false">#{activeDocumentBean.open}</action>
+		<action onPostback="false">#{metadataBean.setMetadataViewUrl(null)}</action>
 	</url-mapping>
+    <url-mapping id="metadata3activeurl">
+        <pattern value="/!metadata#{metadataBean.metadataViewUrl}/#{pi:activeDocumentBean.persistentIdentifier}/#{imageToShow:activeDocumentBean.imageToShow}/#{logId:activeDocumentBean.logid}/" />
+        <view-id value="/viewMetadata.xhtml" />
+        <action onPostback="false">#{navigationHelper.setPreferredView('metadata')}</action>
+        <action onPostback="false">#{activeDocumentBean.open}</action>
+    </url-mapping>
 	<url-mapping id="metadata4">
 		<pattern value="/metadata/#{action:activeDocumentBean.action}/#{pi:activeDocumentBean.persistentIdentifier}/#{imageToShow:activeDocumentBean.imageToShow}/#{logId:activeDocumentBean.logid}/" />
 		<view-id value="/viewMetadata.xhtml" />
 		<action onPostback="false">#{activeDocumentBean.open}</action>
+		<action onPostback="false">#{metadataBean.setMetadataViewUrl(null)}</action>
 	</url-mapping>
 
 	<!-- THUMBS -->
@@ -867,6 +893,43 @@
         <view-id value="/resources/cms/adminCmsCategory.xhtml" />
         <action onPostback="false">#{navigationHelper.resetTheme}</action>
     </url-mapping>
+    <!-- CMS Record Notes -->
+    <url-mapping id="adminCmsRecordNotes">
+        <pattern value="/admin/cms/recordnotes/" />
+        <view-id value="/resources/cms/adminCmsRecordNotes.xhtml" />
+        <action onPostback="false">#{navigationHelper.resetTheme}</action>
+    </url-mapping>
+    <url-mapping id="adminCmsRecordNoteNew">
+        <pattern value="/admin/cms/recordnotes/new/" />
+        <view-id value="/resources/cms/adminCmsRecordNote.xhtml" />
+        <query-param name="pi" onPostback="false" validatorIds="piInSolrValidator">#{cmsRecordNoteEditBean.recordIdentifier}</query-param>
+        <query-param name="from" onPostback="false" >#{cmsRecordNoteEditBean.returnUrl}</query-param>
+        <action onPostback="false">#{navigationHelper.resetTheme}</action>
+    </url-mapping>
+    <url-mapping id="adminCmsRecordNoteEdit">
+        <pattern value="/admin/cms/recordnotes/edit/#{selectedNoteId}/" />
+        <view-id value="/resources/cms/adminCmsRecordNote.xhtml" />
+        <query-param name="from" onPostback="false" >#{cmsRecordNoteEditBean.returnUrl}</query-param>
+        <action onPostback="false">#{navigationHelper.resetTheme}</action>
+        <action onPostback="false">#{cmsRecordNoteEditBean.setNoteId(selectedNoteId)}</action>
+    </url-mapping>
+        <!-- CMS Sliders -->
+    <url-mapping id="adminCmsSliders">
+        <pattern value="/admin/cms/slider/" />
+        <view-id value="/resources/cms/adminCmsSliders.xhtml" />
+        <action onPostback="false">#{navigationHelper.resetTheme}</action>
+    </url-mapping>
+    <url-mapping id="adminCmsSliderNew">
+        <pattern value="/admin/cms/slider/new/" />
+        <view-id value="/resources/cms/adminCmsSliderEdit.xhtml" />
+        <action onPostback="false">#{navigationHelper.resetTheme}</action>
+    </url-mapping>
+    <url-mapping id="adminCmsSliderEdit">
+        <pattern value="/admin/cms/slider/edit/#{selectedSliderId}/" />
+        <view-id value="/resources/cms/adminCmsSliderEdit.xhtml" />
+        <action onPostback="false">#{navigationHelper.resetTheme}</action>
+        <action onPostback="false">#{cmsSliderEditBean.setSliderId(selectedSliderId)}</action>
+    </url-mapping>
     <!-- CMS GeoMaps -->
     <url-mapping id="adminCmsGeoMaps">
         <pattern value="/admin/cms/maps/" />
@@ -909,6 +972,19 @@
 		<action onPostback="false">#{navigationHelper.resetTheme}</action>
 		<action onPostback="false">#{cmsBean.cmsContextAction(false)}</action>
 	</url-mapping>
+	
+	<url-mapping id="cmsOpenPageWithCollection">
+		<pattern value="/cms/#{page:cmsBean.currentPageId}/expandCollection/#{page:cmsBean.currentPage.collection.topVisibleElement}/" />
+		<view-id value="#{cmsBean.getCurrentPageUrl}" />
+		<action onPostback="false">#{cmsBean.currentPage.collection.populateCollectionList()}</action>
+		<action onPostback="false">#{navigationHelper.resetTheme}</action>
+	</url-mapping>
+	<url-mapping id="cmsOpenPagePreviewWithCollection">
+		<pattern value="/cmspreview/#{page:cmsBean.currentPageId}/expandCollection/#{page:cmsBean.currentPage.collection.topVisibleElement}/" />
+		<view-id value="#{cmsBean.getCurrentPageUrl}" />
+		<action onPostback="false">#{navigationHelper.resetTheme}</action>
+	</url-mapping>
+	
 	<url-mapping id="cmsBrowse3">
 		<pattern value="/cms/#{page:cmsBean.currentPageId}/#{filter:browseBean.currentStringFilter}/#{page:cmsBean.currentPage.listPage}/" />
 		<view-id value="#{cmsBean.getCurrentPageUrl}" />
@@ -942,38 +1018,13 @@
 		<action onPostback="false">#{navigationHelper.resetTheme}</action>
         <action onPostback="false">#{cmsBean.cmsContextAction(false)}</action>
 	</url-mapping>
-	<url-mapping id="cmsOpenPageWithCollection">
-		<pattern value="/cms/#{page:cmsBean.currentPageId}/expandCollection/#{page:cmsBean.currentPage.collection.topVisibleElement}/" />
-		<view-id value="#{cmsBean.getCurrentPageUrl}" />
-		<action onPostback="false">#{cmsBean.currentPage.collection.populateCollectionList()}</action>
-		<action onPostback="false">#{navigationHelper.resetTheme}</action>
-	</url-mapping>
-<!-- 	<url-mapping id="cmsOpenPageWithSearch"> -->
-<!-- 		<pattern -->
-<!-- 			value="/cms/#{page:cmsBean.currentPageId}/search/#{page:cmsBean.currentPage.listPage}/#{currentFacetString:searchBean.facets.currentFacetString}/#{currentHierarchicalFacetString:searchBean.facets.currentHierarchicalFacetString}/" /> -->
-<!-- 		<view-id value="#{cmsBean.getCurrentPageUrl}" /> -->
-<!-- 		<action onPostback="false">#{navigationHelper.resetTheme}</action> -->
-<!-- 		<action onPostback="false">#{cmsBean.cmsContextAction(false)}</action> -->
-<!-- 	</url-mapping> -->
-	<!-- <url-mapping id="cmsOpenPageWithSearchSimple"> -->
-	<!-- <pattern value="/cms/#{page:cmsBean.currentPageId}/search/#{query:cmsBean.currentPage.search.simpleSearchQuery}/#{pageNo:cmsBean.currentPage.search.pageNo}/#{sort:cmsBean.currentPage.search.solrSortFields}/#{currentFacetString:cmsBean.currentPage.search.facetString}/#{dc:cmsBean.currentPage.search.collection}/" 
-		/> -->
-	<!-- <view-id value="#{cmsBean.getCurrentPageUrl}" /> -->
-	<!-- <action onPostback="false">#{navigationHelper.resetTheme}</action> -->
-	<!-- <action onPostback="false">#{cmsBean.cmsContextAction(false)}</action> -->
-	<!-- </url-mapping> -->
 	<url-mapping id="cmsOpenPagePreview">
 		<pattern value="/cmspreview/#{page:cmsBean.currentPageId}/" />
 		<view-id value="#{cmsBean.getCurrentPageUrl}" />
 		<action onPostback="false">#{navigationHelper.resetTheme}</action>
 		<action onPostback="false">#{cmsBean.cmsContextAction}</action>
 	</url-mapping>
-	<url-mapping id="cmsOpenPagePreviewWithCollection">
-		<pattern value="/cmspreview/#{page:cmsBean.currentPageId}/expandCollection/#{page:cmsBean.currentPage.collection.topVisibleElement}/" />
-		<view-id value="#{cmsBean.getCurrentPageUrl}" />
-		<action onPostback="false">#{navigationHelper.resetTheme}</action>
-	</url-mapping>
-	
+
     <!-- ADMIN CROWDSOURCING -->
     <url-mapping id="adminCrowdCampaigns">
         <pattern value="/admin/crowdsourcing/campaigns/" />

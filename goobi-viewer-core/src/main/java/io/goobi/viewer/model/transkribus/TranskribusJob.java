@@ -106,7 +106,7 @@ public class TranskribusJob implements Serializable {
      * subsequent requests. This + TTL is the time of expiration.
      */
     //    @Temporal(TemporalType.TIMESTAMP)
-    @Column(name = "date_created", nullable = false, columnDefinition = "TIMESTAMP")
+    @Column(name = "date_created", nullable = false)
     private LocalDateTime dateCreated;
 
     @Enumerated(EnumType.STRING)

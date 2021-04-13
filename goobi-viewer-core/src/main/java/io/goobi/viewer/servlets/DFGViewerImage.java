@@ -36,6 +36,7 @@ import de.unigoettingen.sub.commons.contentlib.imagelib.ImageType.Colortype;
 import de.unigoettingen.sub.commons.contentlib.imagelib.transform.RegionRequest;
 import de.unigoettingen.sub.commons.contentlib.imagelib.transform.Rotation;
 import de.unigoettingen.sub.commons.contentlib.imagelib.transform.Scale;
+import io.goobi.viewer.api.rest.v1.ApiUrls;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.exceptions.ViewerConfigurationException;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
@@ -89,7 +90,10 @@ public class DFGViewerImage extends HttpServlet implements Serializable {
                 throw new IllegalRequestException("Size parameter must be a number, but is " + widthString);
             }
 
-            String baseUri = DataManager.getInstance().getConfiguration().getRestApiUrl() + "image/" + pi + "/" + id;
+            String baseUri = DataManager.getInstance().getRestApiManager().getContentApiManager()
+                    .map(urls -> urls.path(ApiUrls.RECORDS_FILES_IMAGE).params(pi, id).build())
+                    .orElse(DataManager.getInstance().getConfiguration().getRestApiUrl() + "image/" + pi + "/" + id);
+            
             String uri = BeanUtils.getImageDeliveryBean()
                     .getIiif()
                     .getIIIFImageUrl(baseUri, RegionRequest.FULL, new Scale.ScaleToWidth(width), new Rotation(rotation), Colortype.DEFAULT,

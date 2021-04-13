@@ -15,7 +15,6 @@
  */
 package io.goobi.viewer.faces.converters;
 
-import java.time.Instant;
 import java.time.LocalDate;
 
 import javax.faces.component.UIComponent;
@@ -37,12 +36,11 @@ public class LocalDateConverter implements Converter<LocalDate> {
      */
     @Override
     public LocalDate getAsObject(FacesContext context, UIComponent component, String value) {
-        if(StringUtils.isNotBlank(value)) {            
+        if (StringUtils.isNotBlank(value)) {
             LocalDate date = LocalDate.parse(value);
             return date;
-        } else {
-            return null;
         }
+        return null;
     }
 
     /* (non-Javadoc)
@@ -50,11 +48,10 @@ public class LocalDateConverter implements Converter<LocalDate> {
      */
     @Override
     public String getAsString(FacesContext context, UIComponent component, LocalDate value) {
-        if(value != null) {            
+        if (value != null) {
             return value.toString();
-        } else {
-            return "";
         }
+        return "";
     }
 
 }

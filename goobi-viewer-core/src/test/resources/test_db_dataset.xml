@@ -82,9 +82,13 @@
 
 	<bookshelves bookshelf_id="1" owner_id="1" name="bookmark list 1 name"
 		description="bookmark list 1 desc" public="false"
+		date_updated="2021-02-01 00:00:00.000000000"
         share_key="c548e2ea6915acbfa17c3dc6f453f5b1" />
 	<bookshelves bookshelf_id="2" owner_id="2" name="bookmark list 2 name"
 		description="bookmark list 2 desc" public="true" />
+    <bookshelves bookshelf_id="3" owner_id="1" name="bookmark list 3 name"
+        description="bookmark list 3 desc" public="false"
+        date_updated="2021-03-01 00:00:00.000000000" />
 		
     <bookshelf_items bookshelf_item_id="1" bookshelf_id="1"
         name="bookmark 1 name" description="bookmark 1 desc"
@@ -136,7 +140,7 @@
 	<cms_media_items cms_media_item_id="1" file_name="image1.jpg" />
     <cms_media_items cms_media_item_id="2" file_name="image2.jpg" />
     <cms_media_items cms_media_item_id="3" file_name="image3.jpg" />
-    <cms_media_items cms_media_item_id="4" file_name="image4.jpg" />
+    <cms_media_items cms_media_item_id="4" file_name="image4.JPG" />
     
     <cms_media_item_cms_categories media_item_id="1" category_id="1" /> 
     <cms_media_item_cms_categories media_item_id="1" category_id="2" /> 
@@ -160,6 +164,10 @@
     <cms_geomap_features geomap_id="1" features="{&quot;view&quot;:{&quot;center&quot;:[6.064453125000001,49.57795219958587],&quot;zoom&quot;:5},&quot;geometry&quot;:{&quot;coordinates&quot;:[6.064453125000001,49.57795219958587],&quot;type&quot;:&quot;Point&quot;},&quot;id&quot;:1,&quot;type&quot;:&quot;Feature&quot;,&quot;properties&quot;:{&quot;description&quot;:{&quot;de&quot;:[&quot;Hauptstadt des gleichnamigen Fürstentums. &lt;a target=\&quot;_blank\&quot; href=\&quot;https://en.wikipedia.org/wiki/Luxembourg\&quot;>Wikipedia&lt;\/a>&quot;]},&quot;title&quot;:{&quot;de&quot;:[&quot;Luxemburg&quot;],&quot;en&quot;:[&quot;Luxembourg&quot;],&quot;fr&quot;:[&quot;Luxembourg&quot;]}}}"></cms_geomap_features>
     <cms_geomap_features geomap_id="2" features="{&quot;view&quot;:{&quot;center&quot;:[9.799804687500002,51.449899262572615],&quot;zoom&quot;:5},&quot;geometry&quot;:{&quot;coordinates&quot;:[9.799804687500002,51.449899262572615],&quot;type&quot;:&quot;Point&quot;},&quot;id&quot;:2,&quot;type&quot;:&quot;Feature&quot;,&quot;properties&quot;:{&quot;description&quot;:&quot;&quot;,&quot;title&quot;:{&quot;de&quot;:[&quot;Irgendwo in Deutschland&quot;]}}}"></cms_geomap_features>
     	
+    <cms_sliders source_type="0" slider_id="1" name="Query Slider" description="Slider from solr query" style="base" query="PI:1 PI:2 PI:3" />
+    <cms_sliders source_type="1" slider_id="2" name="Collections Slider" description="Slider from collections" style="base" collections="dcone,dctwo,dcthree" />
+    <cms_sliders source_type="2" slider_id="3" name="CMSPage Slider" description="Slider from solr CMS pages" style="base" categories="tag1,tag2" />
+    
 		
 	<cms_pages cms_page_id="1" template_id="template_simple" date_created="2015-01-13 14:35:00.000000000" date_updated="2015-01-13 14:35:00.000000000"
 	    published="true" use_default_sidebar="false"/>
@@ -191,6 +199,7 @@
     	elements_per_page="5" />
     <cms_content_items cms_content_item_id="5" item_id="C5" type="GEOMAP" geomap_id="1" owner_page_language_version_id="1"/>
     <cms_content_items cms_content_item_id="6" item_id="C6" type="GEOMAP" geomap_id="1" owner_page_language_version_id="3"/>
+    <cms_content_items cms_content_item_id="7" item_id="C7" type="SLIDER" slider_id="1" owner_page_language_version_id="3"/>
     
     <cms_page_cms_categories page_id="1" category_id="4" />
     <cms_page_cms_categories page_id="1" category_id="5" />
@@ -211,9 +220,13 @@
     
     <cms_page_template_enabled cms_page_template_enabled_id="1" template_id="template_disabled" enabled="false" />
     
-    <download_jobs download_job_id="1" type="pdf" identifier="0afb73c418262beb2c88dc40c95831b7" pi="PI_1"
+    <cms_record_notes cms_record_note_id="1" record_pi="PI1" record_title="Titel 1" note_title="{&quot;en&quot;: &quot;Notes 1&quot;, &quot;de&quot;: &quot;Bemerkungen 1&quot;}" note_text="{&quot;en&quot;: &quot;&lt;p&gt;First paragraph&lt;/p&gt;&quot;, &quot;de&quot; : &quot;&lt;p&gt;Erster Paragraph&lt;/p&gt;&quot;}" display_note="true" ></cms_record_notes>
+    <cms_record_notes cms_record_note_id="2" record_pi="PI1" record_title="Titel 1" note_title="{&quot;en&quot;: &quot;Notes 2&quot;, &quot;de&quot;: &quot;Bemerkungen 2&quot;}" note_text="lorem ipsum" display_note="false"></cms_record_notes>
+    <cms_record_notes cms_record_note_id="3" record_pi="PI2" record_title="Titel 2" note_title="{&quot;en&quot;: &quot;Notes 3&quot;, &quot;de&quot;: &quot;Bemerkungen 3&quot;}" note_text="loram ipsum" display_note="true"></cms_record_notes>
+    
+    <download_jobs download_job_id="1" type="pdf" identifier="187277c96410b2358a36e2eb6c8ad76f8610a022d2cd95b180b94a76a1cb118a" pi="PI_1"
         status="WAITING" last_requested="2016-06-01 00:00:00" ttl="3600" />
-    <download_jobs download_job_id="2" type="epub" identifier="ae469e5e54cd18ce6f0a4fae0d6b6bcc" pi="PI_1" logid="LOG_0001"
+    <download_jobs download_job_id="2" type="epub" identifier="4b689c5bd24d94ef88bedfd39d8819f8ef3a3676c52dc4f6acb50c7e8f3aab04" pi="PI_1" logid="LOG_0001"
         status="READY" last_requested="2016-06-06 12:00:00" ttl="3600" />
     
     <download_job_observers download_job_id="1" observer="viewer@intranda.com" />
@@ -252,5 +265,6 @@
     <annotations annotation_id="4" body="&quot;d&quot;" date_created="2019-09-19 00:00:00.000000000" generator_id="3" target="&quot;dd&quot;" target_pi="PI_1" />
     <annotations annotation_id="5" body="&quot;e&quot;" date_created="2019-09-19 00:00:00.000000000" generator_id="3" target="&quot;ee&quot;" target_pi="PI_2" />
     
+
 </dataset>
 

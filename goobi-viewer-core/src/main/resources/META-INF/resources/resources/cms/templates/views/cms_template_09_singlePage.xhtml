@@ -25,6 +25,7 @@
 
 
     <ui:define name="content">
+		<ui:include src="/resources/cms/includes/cms_script.xhtml" />
         <f:view contentType="text/html" encoding="utf-8">
 			<div id="templateSinglePage" class="tpl-single #{cmsPage.wrapperElementClass}">
                 <!-- EDIT PAGE -->
@@ -42,7 +43,7 @@
 				<h2>#{cmsPage.title}</h2>				
 
                 <div class="tpl-single__content">
-                    <ui:include src="#{cmsPage.getContent('text01')}" />
+                    <h:outputText escape="false" value="#{cmsPage.getContent('text01')}"></h:outputText>
                 </div>
             </div>
         </f:view>

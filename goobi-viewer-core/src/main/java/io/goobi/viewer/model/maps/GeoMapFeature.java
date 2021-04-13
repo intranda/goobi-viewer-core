@@ -15,7 +15,8 @@
  */
 package io.goobi.viewer.model.maps;
 
-import org.apache.commons.lang3.ObjectUtils;
+import java.util.Objects;
+
 import org.apache.commons.lang3.StringUtils;
 import org.json.JSONObject;
 
@@ -24,58 +25,63 @@ import org.json.JSONObject;
  *
  */
 public class GeoMapFeature {
-    
+
     private String title;
     private String description;
     private String json;
-    
+
     public GeoMapFeature() {
     }
-    
-    
+
     /**
      * @param jsonString
      */
     public GeoMapFeature(String jsonString) {
         this.json = jsonString;
     }
+
     /**
      * @return the title
      */
     public String getTitle() {
         return title;
     }
+
     /**
      * @param title the title to set
      */
     public void setTitle(String title) {
         this.title = title;
     }
+
     /**
      * @return the description
      */
     public String getDescription() {
         return description;
     }
+
     /**
      * @param description the description to set
      */
     public void setDescription(String description) {
         this.description = description;
     }
+
     /**
      * @return the json
      */
     public String getJson() {
         return json;
     }
+
     /**
      * @param json the json to set
      */
     public void setJson(String json) {
         this.json = json;
     }
-    
+
     public JSONObject getJsonObject() {
         JSONObject object = new JSONObject(this.json);
         JSONObject properties = object.getJSONObject("properties");
@@ -83,10 +89,10 @@ public class GeoMapFeature {
             properties = new JSONObject();
             object.append("properties", properties);
         }
-        if(StringUtils.isNotBlank(this.title)) {
+        if (StringUtils.isNotBlank(this.title)) {
             properties.append("title", this.title);
         }
-        if(StringUtils.isNotBlank(this.description)) {
+        if (StringUtils.isNotBlank(this.description)) {
             properties.append("description", this.description);
         }
         return object;
@@ -99,19 +105,22 @@ public class GeoMapFeature {
     public int hashCode() {
         return this.json == null ? "".hashCode() : this.json.hashCode();
     }
-    
+
     /* (non-Javadoc)
      * @see java.lang.Object#equals(java.lang.Object)
      */
     @Override
     public boolean equals(Object obj) {
-        if(obj.getClass().equals(this.getClass())) {
-            return ObjectUtils.equals(this.json, ((GeoMapFeature)obj).json);
-        } else {
+        if (obj == null) {
             return false;
         }
+        if (obj.getClass().equals(this.getClass())) {
+            return Objects.equals(this.json, ((GeoMapFeature) obj).json);
+        }
+        
+        return false;
     }
-    
+
     /* (non-Javadoc)
      * @see java.lang.Object#toString()
      */

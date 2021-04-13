@@ -25,6 +25,7 @@
     </ui:define>
 
     <ui:define name="content">
+		<ui:include src="/resources/cms/includes/cms_script.xhtml" />
         <f:param name="currentPage" value="#{cmsBean.random}" />
         <f:view contentType="text/html" encoding="utf-8">
             <div id="templateMasonry" class="tpl-masonry #{cmsPage.wrapperElementClass}">
@@ -41,7 +42,7 @@
                 <h2>#{cmsPage.title}</h2>
 
                 <div class="tpl-masonry__text">
-                    <ui:include src="#{cmsPage.getContent('text')}" />
+                    <h:outputText escape="false" value="#{cmsPage.getContent('text')}"></h:outputText>
                 </div>
 
                 <!-- LOADER -->
@@ -65,7 +66,8 @@
 						datatype : "JSON"
 					}).then( function( data ) {
 						var masonryConfig = {
-								$grid : $(".grid")
+								$grid : $(".grid"),
+								language: currentLang
 						};
 
 						cmsJS.masonry.init( masonryConfig, data);

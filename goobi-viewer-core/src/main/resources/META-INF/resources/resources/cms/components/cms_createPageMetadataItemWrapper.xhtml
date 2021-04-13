@@ -34,7 +34,7 @@
                     $(".page-metadata-item-type .fa-question-circle").popover({
                         html : true,
                         title : "#{msg[cmsBean.selectedPage.template.name]}",
-                        content : "#{msg[cmsBean.selectedPage.template.description]}",
+                        content : `#{msg[cmsBean.selectedPage.template.description]}`,
                         placement : "bottom",
                         trigger : "click",
                         container : "body"
@@ -69,13 +69,19 @@
                             <h:outputText value="#{msg.cms_pageMetadata_date}:" />
                         </dt>
                         <dd>
-                            <h:outputText value="#{cmsBean.selectedPage.dateCreated}" />
+                            <h:outputText value="#{cmsBean.selectedPage.dateCreated}">
+                                <f:converter converterId="localDateTimeConverter" />
+                                <f:attribute name="pattern" value="#{navigationHelper.dateTimePattern}" />
+                            </h:outputText>
                         </dd>
                         <dt>
                             <h:outputText value="#{msg.cms_pageMetadata_lastEdited}:" />
                         </dt>
                         <dd>
-                            <h:outputText value="#{cmsBean.selectedPage.dateUpdated}" />
+                            <h:outputText value="#{cmsBean.selectedPage.dateUpdated}">
+                                <f:converter converterId="localDateTimeConverter" />
+                                <f:attribute name="pattern" value="#{navigationHelper.dateTimePattern}" />
+                            </h:outputText>
                         </dd>
                     </dl>
                 </div>

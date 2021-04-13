@@ -49,14 +49,14 @@
                     </div>
 
                     <!-- ELEMENTS -->
-                    <div class="widget-toc__elements">                    
+                    <div class="widget-toc__elements abc">                    
                         <!-- TREE VIEW -->
 		            	<ui:fragment rendered="#{configurationBean.sidebarTocTreeView}">
 							<ul>
 							    <ui:repeat var="group" value="#{activeDocumentBean.toc.groupNames}">
     								<ui:repeat var="tocElement" value="#{activeDocumentBean.toc.getTreeViewForGroup(group)}">
     									<ui:fragment rendered="#{tocElement.visible}">
-    										<li class="widget-toc__element #{tocElement.hasChild == true ? 'parent' : 'child' } #{tocElement.iddoc == activeDocumentBean.viewManager.currentDocumentIddoc ? 'active' : ''}" data-iddoc="iddoc_#{tocElement.iddoc}" style="margin-left: #{tocElement.level * 15}px">
+    										<li class="widget-toc__element #{tocElement.hasChild == true ? 'parent' : 'child' } #{tocElement.iddoc == activeDocumentBean.viewManager.currentDocumentIddoc ? 'active' : ''}" data-iddoc="iddoc_#{tocElement.iddoc}" style="#{navigationHelper.localeString eq 'ar' or navigationHelper.localeString eq 'iw' ? 'margin-right:' : 'margin-left:'} #{tocElement.level * 15}px">
     											<ui:fragment rendered="#{tocElement.visible}">
     												<!-- EXPAND -->
     												<ui:fragment rendered="#{tocElement.hasChild == true}">
@@ -118,7 +118,7 @@
 							<ul>
 								<ui:repeat var="group" value="#{activeDocumentBean.toc.groupNames}">
 									<ui:repeat var="tocElement" value="#{activeDocumentBean.toc.getViewForGroup(group)}">
-										<li class="widget-toc__element #{tocElement.hasChild == true ? 'parent' : 'child' }" data-logid="#{tocElement.logId}" style="margin-left: #{tocElement.level * 15}px">
+										<li class="widget-toc__element #{tocElement.hasChild == true ? 'parent' : 'child' }" data-logid="#{tocElement.logId}" style="#{navigationHelper.localeString eq 'ar' or navigationHelper.localeString eq 'iw' ? 'margin-right:' : 'margin-left:'} #{tocElement.level * 15}px">
 											<!-- LINK -->
 											<div class="widget-toc__element-link #{!configurationBean.sidebarTocTreeView ? 'non-tree-view' : ''} #{configurationBean.sidebarTocPageNumbersVisible ? 'has-pagenumber' : ''}">
 												<h:outputLink rendered="#{tocElement.label != null}"

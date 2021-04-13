@@ -24,6 +24,7 @@
     
 
 	<ui:define name="content">
+		<ui:include src="/resources/cms/includes/cms_script.xhtml" />
     
 		<f:view contentType="text/html" encoding="utf-8">
 			<div id="templateBookmarkLists" class="tpl-bookmarklists #{cmsPage.wrapperElementClass}">
@@ -43,7 +44,7 @@
 				
 				<ui:fragment rendered="#{cmsPage.hasContent('text')}">
                     <div class="tpl-bookmarklists__text">
-    					<ui:include src="#{cmsPage.getContent('text')}" />
+    					<h:outputText escape="false" value="#{cmsPage.getContent('text')}"></h:outputText>
     				</div>
                 </ui:fragment>
 			    <h:form class="tpl-bookmarklists__lists">    	

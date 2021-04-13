@@ -28,6 +28,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.Set;
@@ -45,15 +46,17 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import de.unigoettingen.sub.commons.contentlib.imagelib.ImageType;
-import de.unigoettingen.sub.commons.contentlib.imagelib.transform.Scale;
 import io.goobi.viewer.exceptions.ViewerConfigurationException;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
+import io.goobi.viewer.messages.ViewerResourceBundle;
+import io.goobi.viewer.model.download.DownloadOption;
 import io.goobi.viewer.model.maps.GeoMapMarker;
 import io.goobi.viewer.model.metadata.Metadata;
 import io.goobi.viewer.model.metadata.MetadataParameter;
 import io.goobi.viewer.model.metadata.MetadataParameter.MetadataParameterType;
 import io.goobi.viewer.model.metadata.MetadataReplaceRule;
 import io.goobi.viewer.model.metadata.MetadataReplaceRule.MetadataReplaceRuleType;
+import io.goobi.viewer.model.metadata.MetadataView;
 import io.goobi.viewer.model.search.AdvancedSearchFieldConfiguration;
 import io.goobi.viewer.model.search.SearchFilter;
 import io.goobi.viewer.model.search.SearchHelper;
@@ -401,19 +404,57 @@ public final class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * Returns the list of configured metadata for the main metadata page.
-     *
-     * @param template a {@link java.lang.String} object.
+     * 
+     * @return
+     * @should return all configured values
+     */
+    public List<MetadataView> getMetadataViews() {
+        List<HierarchicalConfiguration> metadataPageList = getLocalConfigurationsAt("metadata.metadataView");
+        if (metadataPageList == null) {
+            metadataPageList = getLocalConfigurationsAt("metadata.mainMetadataList");
+            if (metadataPageList != null) {
+                logger.warn("Old <mainMetadataList> configuration found - please migrate to <metadataView>.");
+                return Collections.singletonList(new MetadataView());
+            }
+            return Collections.emptyList();
+        }
+
+        List<MetadataView> ret = new ArrayList<>(metadataPageList.size());
+        for (HierarchicalConfiguration metadataView : metadataPageList) {
+            int index = metadataView.getInt("[@index]", 0);
+            String label = metadataView.getString("[@label]");
+            String url = metadataView.getString("[@url]", "");
+            String condition = metadataView.getString("[@condition]");
+            MetadataView view = new MetadataView().setIndex(index).setLabel(label).setUrl(url).setCondition(condition);
+            ret.add(view);
+        }
+
+        return ret;
+    }
+
+    /**
+     * 
+     * @param index
+     * @param template
+     * @return List of configured <code>Metadata</code> fields for the given template
      * @should return correct template configuration
      * @should return default template configuration if template not found
      * @should return default template if template is null
-     * @return a {@link java.util.List} object.
      */
-    public List<Metadata> getMainMetadataForTemplate(String template) {
+    public List<Metadata> getMainMetadataForTemplate(int index, String template) {
         logger.trace("getMainMetadataForTemplate: {}", template);
-        List<HierarchicalConfiguration> templateList = getLocalConfigurationsAt("metadata.mainMetadataList.template");
+        List<HierarchicalConfiguration> templateList = getLocalConfigurationsAt("metadata.metadataView(" + index + ").template");
         if (templateList == null) {
-            return Collections.emptyList();
+            templateList = getLocalConfigurationsAt("metadata.metadataView.template");
+            if (templateList == null) {
+                templateList = getLocalConfigurationsAt("metadata.mainMetadataList.template");
+                // Old configuration fallback
+                if (templateList != null) {
+                    logger.warn("Old <mainMetadataList> configuration found - please migrate to <metadataView>.");
+                } else {
+                    return Collections.emptyList();
+                }
+            }
         }
 
         return getMetadataForTemplate(template, templateList, true, false);
@@ -525,6 +566,8 @@ public final class Configuration extends AbstractConfiguration {
         boolean group = sub.getBoolean("[@group]", false);
         int number = sub.getInt("[@number]", -1);
         int type = sub.getInt("[@type]", 0);
+        boolean hideIfOnlyMetadataField = sub.getBoolean("[@hideIfOnlyMetadataField]", false);
+        String citationTemplate = sub.getString("[@citationTemplate]");
         List<HierarchicalConfiguration> params = sub.configurationsAt("param");
         List<MetadataParameter> paramList = null;
         if (params != null) {
@@ -533,6 +576,7 @@ public final class Configuration extends AbstractConfiguration {
                 HierarchicalConfiguration sub2 = it2.next();
                 String fieldType = sub2.getString("[@type]");
                 String source = sub2.getString("[@source]", null);
+                String dest = sub2.getString("[@dest]", null);
                 String key = sub2.getString("[@key]");
                 String altKey = sub2.getString("[@altKey]");
                 String masterValueFragment = sub2.getString("[@value]");
@@ -583,6 +627,7 @@ public final class Configuration extends AbstractConfiguration {
 
                 paramList.add(new MetadataParameter().setType(MetadataParameterType.getByString(fieldType))
                         .setSource(source)
+                        .setDestination(dest)
                         .setKey(key)
                         .setAltKey(altKey)
                         .setMasterValueFragment(masterValueFragment)
@@ -596,7 +641,9 @@ public final class Configuration extends AbstractConfiguration {
             }
         }
 
-        return new Metadata(label, masterValue, type, paramList, group, number);
+        return new Metadata(label, masterValue, type, paramList, group, number)
+                .setHideIfOnlyMetadataField(hideIfOnlyMetadataField)
+                .setCitationTemplate(citationTemplate);
     }
 
     /**
@@ -692,8 +739,17 @@ public final class Configuration extends AbstractConfiguration {
      * @should return correct value
      * @return a boolean.
      */
-    public boolean isDisplaySidebarWidgetDownload() {
+    public boolean isDisplaySidebarWidgetDownloads() {
         return getLocalBoolean("sidebar.sidebarWidgetDownloads[@visible]", false);
+    }
+
+    /**
+     * 
+     * @return
+     * @should return correct value
+     */
+    public String getSidebarWidgetDownloadsIntroductionText() {
+        return getLocalString("sidebar.sidebarWidgetDownloads[@introductionText]", "");
     }
 
     /**
@@ -721,14 +777,22 @@ public final class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * Get the metadata configuration for the license text in the usage widget
-     *
-     * @return the metadata configuration for the license text in the usage widget
+     * 
+     * @return List of available citation style names
+     * @should return all configured values
      */
-    public Metadata getWidgetUsageLicenceTextMetadata() {
+    public List<String> getSidebarWidgetUsageCitationStyles() {
+        return getLocalList("sidebar.sidebarWidgetUsage.citation.styles.style", Collections.emptyList());
+    }
+
+    /**
+     * 
+     * @return
+     */
+    public Metadata getSidebarWidgetUsageCitationSource() {
         HierarchicalConfiguration sub = null;
         try {
-            sub = getLocalConfigurationAt("sidebar.sidebarWidgetUsage.licenseText.metadata");
+            sub = getLocalConfigurationAt("sidebar.sidebarWidgetUsage.citation.source.metadata");
         } catch (IllegalArgumentException e) {
             // no or multiple occurrences 
         }
@@ -736,53 +800,39 @@ public final class Configuration extends AbstractConfiguration {
             Metadata md = getMetadataFromSubnodeConfig(sub, false);
             return md;
         }
+
         return new Metadata();
     }
 
     /**
-     * <p>
-     * isDisplaySidebarUsageWidgetLinkToJpegImage.
-     * </p>
-     *
+     * 
+     * @return
      * @should return correct value
-     * @return a boolean.
      */
-    public boolean isDisplaySidebarUsageWidgetLinkToJpegImage() {
-        return getLocalBoolean("sidebar.sidebarWidgetUsage.page.displayLinkToJpegImage", false);
+    public String getSidebarWidgetUsageIntroductionText() {
+        return getLocalString("sidebar.sidebarWidgetUsage[@introductionText]", "");
     }
 
     /**
-     * <p>
-     * isDisplaySidebarUsageWidgetLinkToMasterImage.
-     * </p>
-     *
-     * @should return correct value
-     * @return a boolean.
+     * Returns a list of configured page download options.
+     * 
+     * @return List of configured <code>DownloadOption</code> items
+     * @should return all configured elements
      */
-    public boolean isDisplaySidebarUsageWidgetLinkToMasterImage() {
-        return getLocalBoolean("sidebar.sidebarWidgetUsage.page.displayLinkToMasterImage", false);
-    }
+    public List<DownloadOption> getSidebarWidgetUsagePageDownloadOptions() {
+        List<HierarchicalConfiguration> configs = getLocalConfigurationsAt("sidebar.sidebarWidgetUsage.page.downloadOptions.option");
+        if (configs == null || configs.isEmpty()) {
+            return Collections.emptyList();
+        }
 
-    /**
-     * <p>
-     * getWidgetUsageMaxJpegSize.
-     * </p>
-     *
-     * @return a {@link java.lang.String} object.
-     */
-    public String getWidgetUsageMaxJpegSize() {
-        return getLocalString("sidebar.sidebarWidgetUsage.page.displayLinkToJpegImage[@maxSize]", Scale.MAX_SIZE);
-    }
+        List<DownloadOption> ret = new ArrayList<>(configs.size());
+        for (HierarchicalConfiguration config : configs) {
+            ret.add(new DownloadOption().setLabel(config.getString("[@label]"))
+                    .setFormat(config.getString("[@format]"))
+                    .setBoxSizeInPixel(config.getString("[@boxSizeInPixel]")));
+        }
 
-    /**
-     * <p>
-     * getWidgetUsageMaxMasterImageSize.
-     * </p>
-     *
-     * @return a {@link java.lang.String} object.
-     */
-    public String getWidgetUsageMaxMasterImageSize() {
-        return getLocalString("sidebar.sidebarWidgetUsage.page.displayLinkToMasterImage[@maxSize]", Scale.MAX_SIZE);
+        return ret;
     }
 
     /**
@@ -805,6 +855,18 @@ public final class Configuration extends AbstractConfiguration {
      */
     public boolean isBrowsingMenuEnabled() {
         return getLocalBoolean("metadata.browsingMenu.enabled", false);
+    }
+
+    /**
+     * <p>
+     * getBrowsingMenuIndexSizeThreshold.
+     * </p>
+     *
+     * @return Solr doc count threshold for browsing term calculation
+     * @should return correct value
+     */
+    public int getBrowsingMenuIndexSizeThreshold() {
+        return getLocalInt("metadata.browsingMenu.indexSizeThreshold", 100000);
     }
 
     /**
@@ -908,6 +970,15 @@ public final class Configuration extends AbstractConfiguration {
         }
 
         return null;
+    }
+
+    public List<String> getConfiguredCollectionFields() {
+        List<String> list = getLocalList("collections.collection[@field]");
+        if (list == null || list.isEmpty()) {
+            return Collections.singletonList("DC");
+        }
+
+        return list;
     }
 
     /**
@@ -1132,6 +1203,11 @@ public final class Configuration extends AbstractConfiguration {
         return urlString;
     }
 
+    /**
+     * url to rest api url for record media files. Always ends with a slash
+     * 
+     * @return
+     */
     public String getIIIFApiUrl() {
         String urlString = getLocalString("urls.iiif", getRestApiUrl());
         if (!urlString.endsWith("/")) {
@@ -1301,7 +1377,7 @@ public final class Configuration extends AbstractConfiguration {
     public List<AdvancedSearchFieldConfiguration> getAdvancedSearchFields() {
         List<HierarchicalConfiguration> fieldList = getLocalConfigurationsAt("search.advanced.searchFields.field");
         if (fieldList == null) {
-            Collections.emptyList();
+            return Collections.emptyList();
         }
 
         List<AdvancedSearchFieldConfiguration> ret = new ArrayList<>(fieldList.size());
@@ -1649,7 +1725,7 @@ public final class Configuration extends AbstractConfiguration {
      * @return a {@link java.lang.String} object.
      */
     public String getOrigContentFolder() {
-        return getLocalString("origContentFolder");
+        return getLocalString("origContentFolder", "source");
     }
 
     /**
@@ -1673,7 +1749,19 @@ public final class Configuration extends AbstractConfiguration {
      * @return a {@link java.lang.String} object.
      */
     public String getAltoFolder() {
-        return getLocalString("altoFolder");
+        return getLocalString("altoFolder", "alto");
+    }
+
+    /**
+     * <p>
+     * getAltoCrowdsourcingFolder.
+     * </p>
+     *
+     * @should return correct value
+     * @return a {@link java.lang.String} object.
+     */
+    public String getAltoCrowdsourcingFolder() {
+        return getLocalString("altoCrowdsourcingFolder", "alto_crowd");
     }
 
     /**
@@ -1685,7 +1773,7 @@ public final class Configuration extends AbstractConfiguration {
      * @return a {@link java.lang.String} object.
      */
     public String getAbbyyFolder() {
-        return getLocalString("abbyyFolder");
+        return getLocalString("abbyyFolder", "abbyy");
     }
 
     /**
@@ -1697,7 +1785,19 @@ public final class Configuration extends AbstractConfiguration {
      * @return a {@link java.lang.String} object.
      */
     public String getFulltextFolder() {
-        return getLocalString("fulltextFolder");
+        return getLocalString("fulltextFolder", "fulltext");
+    }
+
+    /**
+     * <p>
+     * getFulltextCrowdsourcingFolder.
+     * </p>
+     *
+     * @should return correct value
+     * @return a {@link java.lang.String} object.
+     */
+    public String getFulltextCrowdsourcingFolder() {
+        return getLocalString("fulltextCrowdsourcingFolder", "fulltext_crowd");
     }
 
     /**
@@ -1709,7 +1809,7 @@ public final class Configuration extends AbstractConfiguration {
      * @return a {@link java.lang.String} object.
      */
     public String getTeiFolder() {
-        return getLocalString("teiFolder");
+        return getLocalString("teiFolder", "tei");
     }
 
     /**
@@ -1721,19 +1821,7 @@ public final class Configuration extends AbstractConfiguration {
      * @return a {@link java.lang.String} object.
      */
     public String getCmdiFolder() {
-        return getLocalString("cmdiFolder");
-    }
-
-    /**
-     * <p>
-     * getWcFolder.
-     * </p>
-     *
-     * @should return correct value
-     * @return a {@link java.lang.String} object.
-     */
-    public String getWcFolder() {
-        return getLocalString("wcFolder");
+        return getLocalString("cmdiFolder", "cmdi");
     }
 
     /**
@@ -1874,7 +1962,7 @@ public final class Configuration extends AbstractConfiguration {
                     myConfigToUse.getString("user.authenticationProviders.provider(" + i + ")[@relyingPartyIdentifier]", null);
             String samlPublicKeyPath = myConfigToUse.getString("user.authenticationProviders.provider(" + i + ")[@publicKeyPath]", null);
             String samlPrivateKeyPath = myConfigToUse.getString("user.authenticationProviders.provider(" + i + ")[@privateKeyPath]", null);
-            long timeoutMillis = myConfigToUse.getLong("user.authenticationProviders.provider(" + i + ")[@timeout]", 10000);
+            long timeoutMillis = myConfigToUse.getLong("user.authenticationProviders.provider(" + i + ")[@timeout]", 60000);
 
             if (visible) {
                 IAuthenticationProvider provider = null;
@@ -1997,7 +2085,7 @@ public final class Configuration extends AbstractConfiguration {
     public String getSmtpSecurity() {
         return getLocalString("user.smtpSecurity", "none");
     }
-    
+
     /**
      * 
      * @return Configured SMTP port number; -1 if not configured
@@ -3651,6 +3739,57 @@ public final class Configuration extends AbstractConfiguration {
     }
 
     /**
+     * 
+     * @return
+     * @should return correct value
+     */
+    public boolean isDocstructNavigationEnabled() {
+        return getLocalBoolean("viewer.docstructNavigation[@enabled]", false);
+    }
+
+    /**
+     * 
+     * @param template
+     * @param fallbackToDefaultTemplate
+     * @return
+     * @should return all configured values
+     */
+    public List<String> getDocstructNavigationTypes(String template, boolean fallbackToDefaultTemplate) {
+        List<HierarchicalConfiguration> templateList = getLocalConfigurationsAt("viewer.docstructNavigation.template");
+        if (templateList == null) {
+            return Collections.emptyList();
+        }
+
+        HierarchicalConfiguration usingTemplate = null;
+        HierarchicalConfiguration defaultTemplate = null;
+        for (Iterator<HierarchicalConfiguration> it = templateList.iterator(); it.hasNext();) {
+            HierarchicalConfiguration subElement = it.next();
+            if (subElement.getString("[@name]").equals(template)) {
+                usingTemplate = subElement;
+                break;
+            } else if ("_DEFAULT".equals(subElement.getString("[@name]"))) {
+                defaultTemplate = subElement;
+            }
+        }
+
+        // If the requested template does not exist in the config, use _DEFAULT
+        if (usingTemplate == null && fallbackToDefaultTemplate) {
+            usingTemplate = defaultTemplate;
+        }
+        if (usingTemplate == null) {
+            return Collections.emptyList();
+        }
+
+        String[] ret = usingTemplate.getStringArray("docstruct");
+        if (ret == null) {
+            logger.warn("Template '{}' contains no docstruct elements.", usingTemplate.getRoot().getName());
+            return Collections.emptyList();
+        }
+
+        return Arrays.asList(ret);
+    }
+
+    /**
      * <p>
      * getSubthemeMainTheme.
      * </p>
@@ -3697,11 +3836,11 @@ public final class Configuration extends AbstractConfiguration {
      * getTocVolumeSortFieldsForTemplate.
      * </p>
      *
+     * @param template a {@link java.lang.String} object.
+     * @return a {@link java.util.List} object.
      * @should return correct template configuration
      * @should return default template configuration if template not found
      * @should return default template configuration if template is null
-     * @param template a {@link java.lang.String} object.
-     * @return a {@link java.util.List} object.
      */
     public List<StringPair> getTocVolumeSortFieldsForTemplate(String template) {
         HierarchicalConfiguration usingTemplate = null;
@@ -4264,6 +4403,15 @@ public final class Configuration extends AbstractConfiguration {
     }
 
     /**
+     * 
+     * @return
+     * @should return correct value
+     */
+    public int getPageSelectDropdownDisplayMinPages() {
+        return getLocalInt("viewer.pageSelectDropdownDisplayMinPages", 3);
+    }
+
+    /**
      * <p>
      * getTaskManagerServiceUrl.
      * </p>
@@ -4515,6 +4663,52 @@ public final class Configuration extends AbstractConfiguration {
 
     }
 
+    public List<Locale> getIIIFTranslationLocales() {
+        List<Locale> list = getLocalList("webapi.iiif.translations.locale", new ArrayList<>())
+                .stream()
+                .map(Locale::forLanguageTag)
+                .filter(l -> StringUtils.isNotBlank(l.getLanguage()))
+                .collect(Collectors.toList());
+
+        if (list.isEmpty()) {
+            return ViewerResourceBundle.getAllLocales();
+        }
+
+        return list;
+    }
+
+    public boolean isVisibleIIIFRenderingPDF() {
+        return getLocalBoolean("webapi.iiif.rendering.pdf[@visible]", true);
+    }
+
+    public boolean isVisibleIIIFRenderingViewer() {
+        return getLocalBoolean("webapi.iiif.rendering.viewer[@visible]", true);
+    }
+
+    public String getLabelIIIFRenderingPDF() {
+        return getLocalString("webapi.iiif.rendering.pdf.label", "PDF");
+    }
+
+    public String getLabelIIIFRenderingViewer() {
+        return getLocalString("webapi.iiif.rendering.viewer.label", "Goobi Viewer");
+    }
+
+    public boolean isVisibleIIIFRenderingPlaintext() {
+        return getLocalBoolean("webapi.iiif.rendering.plaintext[@visible]", true);
+    }
+
+    public boolean isVisibleIIIFRenderingAlto() {
+        return getLocalBoolean("webapi.iiif.rendering.alto[@visible]", true);
+    }
+
+    public String getLabelIIIFRenderingPlaintext() {
+        return getLocalString("webapi.iiif.rendering.plaintext.label", "Fulltext");
+    }
+
+    public String getLabelIIIFRenderingAlto() {
+        return getLocalString("webapi.iiif.rendering.alto.label", "ALTO");
+    }
+
     /**
      * <p>
      * getSitelinksField.
@@ -4640,7 +4834,7 @@ public final class Configuration extends AbstractConfiguration {
 
     /**
      * <p>
-     * getCORSHeaderValue.
+     * Gets the value configured in webapi.cors. Default is "*"
      * </p>
      *
      * @should return correct value
@@ -4706,11 +4900,11 @@ public final class Configuration extends AbstractConfiguration {
     public String getMapBoxToken() {
         return getLocalString("maps.mapbox.token", "");
     }
-    
+
     public String getMapBoxUser() {
         return getLocalString("maps.mapbox.user", "");
     }
-    
+
     public String getMapBoxStyleId() {
         return getLocalString("maps.mapbox.styleId", "");
     }
@@ -4841,5 +5035,9 @@ public final class Configuration extends AbstractConfiguration {
      */
     public HierarchicalConfiguration getBaseXMetadataConfig() {
         return getLocalConfigurationAt("metadata.basexMetadataList");
+    }
+
+    public boolean isDisplayUserGeneratedContentBelowImage() {
+        return getLocalBoolean("webGuiDisplay.displayUserGeneratedContentBelowImage", false);
     }
 }

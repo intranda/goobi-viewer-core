@@ -27,7 +27,7 @@ import io.goobi.viewer.exceptions.RestApiException;
  *
  * @author Florian Alpers
  */
-public class ErrorMessage {
+public class ErrorMessage implements IResponseMessage {
 
     private final int status;
     private final String message;
@@ -86,6 +86,7 @@ public class ErrorMessage {
      *
      * @return the message
      */
+    @Override
     public String getMessage() {
         return message;
     }

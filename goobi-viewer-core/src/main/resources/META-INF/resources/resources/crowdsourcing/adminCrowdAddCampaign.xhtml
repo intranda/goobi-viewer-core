@@ -450,14 +450,14 @@
 										
 									<!-- FINAL ACTIONS CANCEL + SAVE -->
 									<div class="row no-gutters justify-content-end admin__final-actions mb-0">
-	                                    <h:commandLink id="cancelAddCampaignButton" type="submit" styleClass="btn" value="#{msg.cancel}"
+	                                    <h:commandLink id="cancelAddCampaignButton" type="submit" styleClass="btn admin__cancel-button" value="#{msg.cancel}"
 	                                        action="pretty:adminCrowdCampaigns" immediate="true" />
 	                                    <h:commandLink id="saveAddCampaignButton" styleClass="btn btn--success" value="#{msg.button__save}"
 	                                        action="#{crowdsourcingBean.saveSelectedCampaignAction}" />
 	                                </div>
 	                                
 									</div>
-									<div class="admin__content-side">
+									<div class="admin__content-side -sticky">
 										<!-- VISIBILITY OF CAMPAIGN -->
 										<div class="admin__default-block">
 											<h3>#{msg.admin__crowdsourcing_campaign_settings}</h3>

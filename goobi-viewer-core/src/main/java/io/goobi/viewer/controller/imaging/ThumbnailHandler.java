@@ -15,9 +15,13 @@
  */
 package io.goobi.viewer.controller.imaging;
 
+import static io.goobi.viewer.api.rest.v1.ApiUrls.CMS_MEDIA;
+import static io.goobi.viewer.api.rest.v1.ApiUrls.CMS_MEDIA_FILES_FILE;
+
+import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.nio.file.Path;
+import java.net.URLEncoder;
 import java.util.Arrays;
 import java.util.Optional;
 
@@ -27,27 +31,32 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import de.intranda.api.iiif.IIIFUrlResolver;
-import de.intranda.monitoring.timer.Time;
+import de.unigoettingen.sub.commons.contentlib.exceptions.IllegalRequestException;
 import de.unigoettingen.sub.commons.contentlib.imagelib.ImageFileFormat;
 import de.unigoettingen.sub.commons.contentlib.imagelib.ImageType.Colortype;
 import de.unigoettingen.sub.commons.contentlib.imagelib.transform.Region;
 import de.unigoettingen.sub.commons.contentlib.imagelib.transform.RegionRequest;
 import de.unigoettingen.sub.commons.contentlib.imagelib.transform.Rotation;
 import de.unigoettingen.sub.commons.contentlib.imagelib.transform.Scale;
+import io.goobi.viewer.api.rest.AbstractApiUrlManager;
 import io.goobi.viewer.api.rest.v1.ApiUrls;
 import io.goobi.viewer.controller.Configuration;
 import io.goobi.viewer.controller.DataManager;
+import io.goobi.viewer.controller.RestApiManager;
 import io.goobi.viewer.controller.SolrConstants;
 import io.goobi.viewer.controller.SolrConstants.DocType;
 import io.goobi.viewer.controller.SolrConstants.MetadataGroupType;
+import io.goobi.viewer.controller.StringTools;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.exceptions.ViewerConfigurationException;
+import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.model.cms.CMSMediaItem;
 import io.goobi.viewer.model.viewer.PhysicalElement;
 import io.goobi.viewer.model.viewer.StructElement;
-import io.goobi.viewer.model.viewer.pageloader.LeanPageLoader;
+import io.goobi.viewer.model.viewer.pageloader.AbstractPageLoader;
+import io.goobi.viewer.model.viewer.pageloader.IPageLoader;
 
 /**
  * Delivers Thumbnail urls for pages and StructElements
@@ -143,8 +152,8 @@ public class ThumbnailHandler {
      * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
      */
     public String getThumbnailUrl(String pi) throws IndexUnreachableException, PresentationException, ViewerConfigurationException {
-            return getThumbnailUrl(pi, DataManager.getInstance().getConfiguration().getThumbnailsWidth(),
-                    DataManager.getInstance().getConfiguration().getThumbnailsHeight());
+        return getThumbnailUrl(pi, DataManager.getInstance().getConfiguration().getThumbnailsWidth(),
+                DataManager.getInstance().getConfiguration().getThumbnailsHeight());
     }
 
     /**
@@ -161,22 +170,20 @@ public class ThumbnailHandler {
      */
     public String getThumbnailUrl(String pi, int width, int height)
             throws IndexUnreachableException, PresentationException, ViewerConfigurationException {
-        
-        if(iiifUrlHandler.getUrlManager() != null) {
+
+        if (iiifUrlHandler.getUrlManager() != null) {
             String size = "!" + width + "," + height;
             return iiifUrlHandler.getUrlManager()
                     .path(ApiUrls.RECORDS_RECORD, ApiUrls.RECORDS_IMAGE_IIIF)
                     .params(pi, "full", size, "0", "default", "jpg")
                     .build();
-        } else {            
-            SolrDocument doc = DataManager.getInstance().getSearchIndex().getDocumentByPI(pi);
-            if (doc != null) {
-                return getThumbnailUrl(doc, width, height);
-            }
-            return null;
         }
         
-        
+        SolrDocument doc = DataManager.getInstance().getSearchIndex().getDocumentByPI(pi);
+        if (doc != null) {
+            return getThumbnailUrl(doc, width, height);
+        }
+        return null;
     }
 
     /**
@@ -305,7 +312,7 @@ public class ThumbnailHandler {
     public PhysicalElement getPage(String pi, int order) throws IndexUnreachableException, PresentationException, DAOException {
         SolrDocument doc = DataManager.getInstance().getSearchIndex().getDocumentByPI(pi);
         StructElement struct = new StructElement(Long.parseLong(doc.getFirstValue(SolrConstants.IDDOC).toString()), doc);
-        LeanPageLoader pageLoader = new LeanPageLoader(struct, 1);
+        IPageLoader pageLoader = AbstractPageLoader.create(struct);
         PhysicalElement page = pageLoader.getPage(order);
         return page;
     }
@@ -794,7 +801,9 @@ public class ThumbnailHandler {
             mimeType = Optional.ofNullable(structElement.getMetadataValue(SolrConstants.MIMETYPE));
         }
         if (!mimeType.isPresent()) {
-            mimeType = getFilename(structElement).map(filename -> ImageFileFormat.getImageFileFormatFromFileExtension(filename).getMimeType());
+            mimeType = getFilename(structElement)
+                    .map(filename -> ImageFileFormat.getImageFileFormatFromFileExtension(filename))
+                    .map(ImageFileFormat::getMimeType);
         }
         return mimeType;
     }
@@ -829,91 +838,132 @@ public class ThumbnailHandler {
      */
     public String getThumbnailUrl(Optional<CMSMediaItem> optional, int width, int height) {
         return optional.map(item -> {
-            String imagePath = item.getImageURI();
-            String size = getSize(width, height);
-            String format = "jpg";
-            ImageFileFormat formatType = ImageFileFormat.getImageFileFormatFromFileExtension(imagePath);
-            if (formatType != null && !formatType.getMimeType().matches("(?i)(image\\/(?!png|jpg|gif).*)")) { //match any image-mimetype except jpg and png
-                format = formatType.getFileExtension();
+            try {
+                String filename = item.getFileName();
+                String size = getSize(width, height);
+                ImageFileFormat format = ImageFileFormat.JPG;
+                ImageFileFormat formatType = ImageFileFormat.getImageFileFormatFromFileExtension(filename);
+                if (formatType != null && !formatType.getMimeType().matches("(?i)(image\\/(?!png|jpg|gif).*)")) { //match any image-mimetype except jpg and png
+                    format = formatType;
+                }
+                String imageApiUrl = getCMSMediaImageApiUrl(filename);
+                String url = this.iiifUrlHandler.getIIIFImageUrl(imageApiUrl, RegionRequest.FULL, Scale.getScaleMethod(size), Rotation.NONE,
+                        Colortype.DEFAULT, format);
+                url += "?updated=" + item.getLastModifiedTime();
+                return url;
+            } catch (IllegalRequestException e) {
+                logger.error(e.toString(), e);
+                return "";
             }
-            String imageApiUrl = getCMSMediaImageApiUrl();
-            String url = this.iiifUrlHandler.getIIIFImageUrl(imageApiUrl, imagePath, "-", Region.FULL_IMAGE, size, "0", "default", format);
-            url += "?updated=" + item.getLastModifiedTime();
-            return url;
         }).orElse("");
     }
-    
+
     /**
-     * Get the thumbnailUrl for an image file in the file system
+     * Get the thumbnailUrl for a IIIF image identifier with default size
      * 
-     * @param imagePath
+     * @param baseUri IIIF image identifier
      * @return
      */
-    public String getThumbnailUrl(Path imagePath) {
-        return getThumbnailUrl(imagePath, thumbWidth, thumbHeight);
+    public String getThumbnailUrl(URI baseUri) {
+        return getThumbnailUrl(baseUri, thumbWidth, thumbHeight, false);
     }
-    
+
     /**
-     * Get the square thumbnailUrl for an image file in the file system
+     * Get the thumbnailUrl for a IIIF image identifier
      * 
-     * @param imagePath
+     * @param baseUri IIIF image identifier
+     * @param width thumbnail width
+     * @param height thumbnail height
      * @return
      */
-    public String getSquareThumbnailUrl(Path imagePath) {
-        return getSquareThumbnailUrl(imagePath, thumbWidth);
+    public String getThumbnailUrl(URI baseUri, int width, int height) {
+        return getThumbnailUrl(baseUri, width, height, false);
     }
-    
+
     /**
-     * Get the thumbnailUrl for an image file in the file system
+     * Get the square thumbnailUrl for a IIIF image identifier with default size
      * 
-     * @param imagePath
-     * @param width
-     * @param height
+     * @param baseUri IIIF image identifier
      * @return
      */
-    public String getThumbnailUrl(Path imagePath, int width, int height) {
-            String size = getSize(width, height);
-            String format = "jpg";
-            ImageFileFormat formatType = ImageFileFormat.getImageFileFormatFromFileExtension(imagePath.toString());
-            if (formatType != null && !formatType.getMimeType().matches("(?i)(image\\/(?!png|jpg).*)")) { //match any image-mimetype except jpg and png
-                format = formatType.getFileExtension();
-            }
-            String imageApiUrl = getCMSMediaImageApiUrl();
-            String url = this.iiifUrlHandler.getIIIFImageUrl(imageApiUrl, imagePath.toString(), "-", Region.FULL_IMAGE, size, "0", "default", format);
+    public String getSquareThumbnailUrl(URI baseUri) {
+        return getThumbnailUrl(baseUri, thumbWidth, thumbWidth, true);
+    }
+
+    /**
+     * Get the square thumbnailUrl for a IIIF image identifier
+     * 
+     * @param baseUri IIIF image identifier
+     * @param size thumbnail size
+     * @return
+     */
+    public String getSquareThumbnailUrl(URI baseUri, int size) {
+        return getThumbnailUrl(baseUri, size, size, true);
+    }
+
+    /**
+     * Get the thumbnailUrl for a IIIF image identifier
+     * 
+     * @param baseUri IIIF image identifier
+     * @param width thumbnail width
+     * @param height thumbnail height
+     * @param square true to deliver a square image
+     * @return
+     */
+    public String getThumbnailUrl(URI baseUri, int width, int height, boolean square) {
+        String size = getSize(width, height);
+        ImageFileFormat format = ImageFileFormat.JPG;
+        ImageFileFormat formatType = ImageFileFormat.getImageFileFormatFromFileExtension(baseUri.getPath());
+        if (formatType != null && !formatType.getMimeType().matches("(?i)(image\\/(?!png|jpg).*)")) { //match any image-mimetype except jpg and png
+            format = formatType;
+        }
+        RegionRequest region = square ? RegionRequest.SQUARE : RegionRequest.FULL;
+        try {
+            String url = this.iiifUrlHandler.getIIIFImageUrl(baseUri.toString(), region, Scale.getScaleMethod(size), Rotation.NONE, Colortype.DEFAULT,
+                    format);
             return url;
-
+        } catch (IllegalRequestException e) {
+            logger.error("Error creating thumbnail url", e);
+            return "";
+        }
     }
-    
+
     /**
-     * Get the square thumbnailUrl for an image file in the file system
-     * 
-     * @param imagePath
-     * @param width
-     * @param height
      * @return
      */
-    public String getSquareThumbnailUrl(Path imagePath, int width) {
-            String size = getSize(width, width);
-            String format = "jpg";
-            ImageFileFormat formatType = ImageFileFormat.getImageFileFormatFromFileExtension(imagePath.toString());
-            if (formatType != null && !formatType.getMimeType().matches("(?i)(image\\/(?!png|jpg).*)")) { //match any image-mimetype except jpg and png
-                format = formatType.getFileExtension();
-            }
-            String imageApiUrl = getCMSMediaImageApiUrl();
-            String url = this.iiifUrlHandler.getIIIFImageUrl(imageApiUrl, imagePath.toString(), "-", Region.SQUARE_IMAGE, size, "0", "default", format);
+    public static String getCMSMediaImageApiUrl(String filename) {
+        if (DataManager.getInstance().getConfiguration().isUseIIIFApiUrlForCmsMediaUrls()) {
+            return getCMSMediaImageApiUrl(filename, DataManager.getInstance().getRestApiManager().getContentApiUrl());
+        }
+        return getCMSMediaImageApiUrl(filename, DataManager.getInstance().getRestApiManager().getDataApiUrl());
+    }
+
+    public static String getCMSMediaImageApiUrl(String filename, String restApiUrl) {
+        if (RestApiManager.isLegacyUrl(restApiUrl)) {
+            return buildLegacyCMSMediaUrl(restApiUrl, filename);
+        }
+        AbstractApiUrlManager urls = new ApiUrls(restApiUrl);
+        return urls.path(CMS_MEDIA, CMS_MEDIA_FILES_FILE).params(StringTools.encodeUrl(filename)).build();
+    }
+
+    /**
+     * @param contentApiUrl
+     * @param filename
+     * @return
+     */
+    private static String buildLegacyCMSMediaUrl(String contentApiUrl, String filename) {
+        String viewerHomePath = DataManager.getInstance().getConfiguration().getViewerHome();
+        String cmsMediaFolder = DataManager.getInstance().getConfiguration().getCmsMediaFolder();
+        viewerHomePath = StringTools.appendTrailingSlash(viewerHomePath);
+        cmsMediaFolder = StringTools.appendTrailingSlash(cmsMediaFolder);
+        try {
+            String fileUrl = "file://" + viewerHomePath + cmsMediaFolder + filename;
+            String encFilePath = BeanUtils.escapeCriticalUrlChracters(fileUrl);
+            encFilePath = URLEncoder.encode(encFilePath, "utf-8");
+            String url = contentApiUrl + "image/-/" + encFilePath;
             return url;
-
-    }
-
-    /**
-     * @return
-     */
-    private String getCMSMediaImageApiUrl() {
-        if(DataManager.getInstance().getConfiguration().isUseIIIFApiUrlForCmsMediaUrls()) {
-            return DataManager.getInstance().getConfiguration().getIIIFApiUrl();
-        } else {
-            return DataManager.getInstance().getConfiguration().getRestApiUrl();
-
+        } catch (UnsupportedEncodingException e) {
+            throw new IllegalStateException(e.toString());
         }
     }
 
@@ -988,14 +1038,19 @@ public class ThumbnailHandler {
      * @param width
      * @param height
      * @return
+     * @should use width only if height null or zero
+     * @should use height only if width null or zero
+     * @should use width and height if both non zero
+     * @should return max if both zero
      */
-    private static String getSize(Integer width, Integer height) {
+    static String getSize(Integer width, Integer height) {
         String size = "max";
+        // TODO getSize(null, null) will return "null,"
         if (height == null || (height.equals(0) && width != null && !width.equals(0))) {
             size = width + ",";
         } else if ((width == null || (width.equals(0)) && !height.equals(0))) {
             size = "," + height;
-        } else if (!width.equals(0) && !width.equals(0)) {
+        } else if (!width.equals(0) && !height.equals(0)) {
             size = "!" + width + "," + height;
         }
         return size;

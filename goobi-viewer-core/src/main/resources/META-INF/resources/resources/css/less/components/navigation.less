@@ -83,7 +83,7 @@
         }
         &.level-2, 
         &.level-3, 
-        &.level-4, 
+        &.level-4,
         &.level-5 {
             top: 0;
             left: 100%;
@@ -148,6 +148,32 @@
     }
 }
 
+// ADAPTIONS FOR RIGHT TO LEFT SUPPORT
+@{RTL} .navigation {
+	.caret {
+		margin-left: unset;
+		margin-right: 0.5rem;
+	}
+	 &__submenu {
+        &.level-2, 
+        &.level-3, 
+        &.level-4,
+        &.level-5 {
+			right: 100%;
+			left: unset;
+		}
+		&.level-1,
+        &.level-2, 
+        &.level-3, 
+        &.level-4,
+        &.level-5 {
+        	.caret {
+			}
+		}
+		&-trigger {}
+	 }
+}
+
 /* BREAKPOINT FOR LARGE DESKTOPS */
 @media screen and (max-width: @largeBreakpoint) {}
 
@@ -155,7 +181,23 @@
 @media screen and (max-width: @mediumBreakpoint) {}
 
 /* BREAKPOINT FOR TABLETS */
-@media screen and (max-width: @smallBreakpoint) {}
+@media screen and (max-width: @smallBreakpoint) {
+	@{RTL} .navigation {
+		.caret {
+			margin-left: unset;
+			margin-right: 0.5rem;
+		}
+		 &__submenu {
+	        &.level-2, 
+	        &.level-3, 
+	        &.level-4,
+	        &.level-5 {
+				right: unset;
+			}
+			&-trigger {}
+		 }
+	}
+}
 
 /* BREAKPOINT FOR SMARTPHONES */
 @media screen and (max-width: @xSmallBreakpoint) {}

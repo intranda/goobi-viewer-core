@@ -18,11 +18,6 @@ package io.goobi.viewer.servlets;
 import java.io.IOException;
 import java.io.Serializable;
 import java.nio.charset.Charset;
-import java.text.ParseException;
-import java.time.LocalDateTime;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.GregorianCalendar;
 import java.util.Set;
 
 import javax.servlet.ServletException;
@@ -36,7 +31,6 @@ import org.slf4j.LoggerFactory;
 
 import de.unigoettingen.sub.commons.util.CacheUtils;
 import io.goobi.viewer.Version;
-import io.goobi.viewer.controller.DateTools;
 import io.goobi.viewer.controller.SolrSearchIndex;
 
 /**
@@ -127,171 +121,6 @@ public class ToolServlet extends HttpServlet implements Serializable {
             }
         }
     }
-
-    //    /**
-    //     * @param parameterMap
-    //     */
-    //    private static String performCacheFillerAction(Map<String, String[]> parameterMap) {
-    //        if (parameterMap.containsKey("stop")) {
-    //            if (cacheFiller.getCacheFillerStatus() == Status.DORMANT) {
-    //                return "Cachefiller is not running.";
-    //            } else if (stopCacheFiller()) {
-    //                return "Cachefiller stopped successfully";
-    //            } else {
-    //                return "Failed to stop Cachefiller in time. Last status: " + cacheFiller.getCacheFillerStatus();
-    //            }
-    //        } else if (parameterMap.containsKey("status")) {
-    //            StringBuilder sbAnswer = new StringBuilder("Current Cachefiller status is ").append(cacheFiller.getCacheFillerStatus())
-    //                    .append("\n\n")
-    //                    .append(cacheFiller.getDetailedGeneratorStatus());
-    //            return sbAnswer.toString();
-    //        } else if (parameterMap.containsKey("resetTrace")) {
-    //            File traceFile = cacheFiller.getConfiguredTraceFile();
-    //            if (traceFile != null && traceFile.isFile()) {
-    //                if (traceFile.delete()) {
-    //                    return "Tracefile " + traceFile.getAbsolutePath() + " deleted successfully";
-    //                }
-    //                return "Failed to delete tracefile " + traceFile.getAbsolutePath();
-    //            }
-    //            return "No tracefile found to delete";
-    //        } else if (parameterMap.containsKey("start")) {
-    //            if (cacheFiller.getCacheFillerStatus() != JobManager.Status.DORMANT) {
-    //                String error = "CacheFiller is already running. To start another run, first end current run by using parameter 'stop'";
-    //                logger.error(error);
-    //                return error;
-    //            }
-    //            return startCacheFiller(parameterMap);
-    //        } else {
-    //            StringBuilder info = new StringBuilder(600);
-    //            info.append("intrandaCacheFiller: use the following parameters to control the cacheFiller:\n");
-    //            info.append(
-    //                    "\nstart\t\t\t\tStarts the cacheFiller. Accepts additional parameters, if deviation from default parameters specified in \"config_cacheFiller\" is desired. Sets status to INITIALIZING and then to RUNNING after initialization");
-    //            info.append(
-    //                    "\nstop\t\t\t\tStops all cacheFiller threads. Sets status to TERMINATING and then to DORMANT once all threads have concluded");
-    //            info.append("\nstatus\t\t\t\tRequests the current cacheFiller status and status of all running threads. Initial status is DORMANT");
-    //            info.append("\nresetTrace\t\tDeletes any saved progress");
-    //            return info.toString();
-    //        }
-    //
-    //    }
-
-    //    /**
-    //     * @param parameterMap
-    //     */
-    //    private static String startCacheFiller(Map<String, String[]> parameterMap) {
-    //        parseParameters(parameterMap);
-    //        cacheFiller.fillCache();
-    //        String answer = "Cachefiller started with generators:\n\n";
-    //        answer += cacheFiller.getDetailedGeneratorStatus();
-    //        return answer;
-    //
-    //    }
-
-    //    private static void parseParameters(Map<String, String[]> parameterMap) {
-    //        for (String parameter : parameterMap.keySet()) {
-    //
-    //            String[] values = parameterMap.get(parameter);
-    //
-    //            switch (parameter) {
-    //                case "csec":
-    //                    cacheFiller.setCsec(getBooleanValue(values));
-    //                    break;
-    //                case "reverse":
-    //                    cacheFiller.setReverse(getBooleanValue(values));
-    //                    break;
-    //                case "overwrite":
-    //                    cacheFiller.setOverwriteCache(getBooleanValue(values));
-    //                    break;
-    //                case "thumbnails":
-    //                    cacheFiller.setGenerateThumbnails(getBooleanValue(values));
-    //                    break;
-    //                case "largeImages":
-    //                    cacheFiller.setGenerateLargeImages(getBooleanValue(values));
-    //                    break;
-    //                case "fullscreen":
-    //                    cacheFiller.setGenerateFullscreenImages(getBooleanValue(values));
-    //                    break;
-    //                case "previews":
-    //                    cacheFiller.setGeneratePreviews(getBooleanValue(values));
-    //                    break;
-    //                case "pdfs":
-    //                    cacheFiller.setGeneratePdfs(getBooleanValue(values));
-    //                    break;
-    //                case "startDate":
-    //                    try {
-    //                        cacheFiller.setStartDate(parseDate(values[0]));
-    //                    } catch (ParseException e) {
-    //                        logger.error("Unable to parse date " + values[0]);
-    //                        cacheFiller.setStartDate(null);
-    //                    }
-    //                    break;
-    //                case "traceProgress":
-    //                    cacheFiller.setTrace(getBooleanValue(values));
-    //                    break;
-    //            }
-    //        }
-    //    }
-
-    @Deprecated
-    private static Date parseDate(String dateString) throws ParseException {
-        if (dateString == null) {
-            throw new IllegalArgumentException("dateString may not be null");
-        }
-        dateString = dateString.replaceAll("\\D", "");
-        Date date = null;
-        switch (dateString.length()) {
-            case 8:
-                date = DateTools.convertLocalDateTimeToDateViaInstant(LocalDateTime.parse(dateString, DateTools.formatterISO8601BasicDate), false);
-                break;
-            case 4:
-                date = DateTools.convertLocalDateTimeToDateViaInstant(LocalDateTime.parse(dateString, DateTools.formatterISO8601BasicDateNoYear),
-                        false);
-                Calendar cal = new GregorianCalendar();
-                int year = cal.get(Calendar.YEAR);
-                cal.setTime(date);
-                cal.set(Calendar.YEAR, year);
-                date = cal.getTime();
-                break;
-            default:
-                throw new ParseException("Wrong date format", 0);
-        }
-
-        return date;
-    }
-
-    /**
-     * @param values
-     * @return
-     */
-    private static boolean getBooleanValue(String[] values) {
-        if (values == null || values.length == 0 || values[0].trim().isEmpty()) {
-            return true;
-        }
-
-        return Boolean.valueOf(values[0]);
-    }
-
-    //    /**
-    //     * @return
-    //     */
-    //    private static boolean stopCacheFiller() {
-    //        long maxWaitInSeconds = 10;
-    //        cacheFiller.interrupt();
-    //        long start = System.currentTimeMillis();
-    //        boolean stopped = false;
-    //        while (System.currentTimeMillis() - start < maxWaitInSeconds * 1000) {
-    //            if (cacheFiller.getCacheFillerStatus() == Status.DORMANT) {
-    //                stopped = true;
-    //                break;
-    //            }
-    //            try {
-    //                Thread.sleep(100);
-    //            } catch (InterruptedException e) {
-    //
-    //            }
-    //        }
-    //        return stopped;
-    //    }
 
     /** {@inheritDoc} */
     @Override

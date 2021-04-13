@@ -15,11 +15,23 @@
  */
 package io.goobi.viewer.managedbeans;
 
+import java.util.Arrays;
+import java.util.Iterator;
+import java.util.Locale;
+
+import javax.faces.application.Application;
+import javax.faces.context.ExternalContext;
 import javax.faces.context.FacesContext;
+import javax.servlet.ServletConfig;
+import javax.servlet.ServletContext;
+import javax.servlet.ServletRequest;
+import javax.servlet.ServletResponse;
 
 import org.mockito.Mockito;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
+
+import com.sun.faces.context.ExternalContextFactoryImpl;
 
 public abstract class ContextMocker extends FacesContext {
 
@@ -38,8 +50,13 @@ public abstract class ContextMocker extends FacesContext {
 
     public static FacesContext mockFacesContext() {
         FacesContext context = Mockito.mock(FacesContext.class);
+
+        ExternalContext externalContext = Mockito.mock(ExternalContext.class);
+        Mockito.when(context.getExternalContext()).thenReturn(externalContext);
+        
         setCurrentInstance(context);
         Mockito.doAnswer(RELEASE).when(context).release();
         return context;
     }
+
 }

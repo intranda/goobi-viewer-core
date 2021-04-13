@@ -190,7 +190,7 @@
                             </h:panelGroup>
 
                             <div class="row no-gutters justify-content-end admin__final-actions">
-                                <h:link styleClass="btn" value="#{msg.cancel}"></h:link>
+                                <h:link styleClass="btn admin__cancel-button" value="#{msg.cancel}"></h:link>
                                 <h:commandButton styleClass="btn btn--success" value="#{msg.save}" action="#{createRecordBean.saveRecord}" />
                             </div>
                         </h:form>
@@ -198,7 +198,7 @@
 
                         <script type="text/javascript">
                         var fileUploadConfig = {
-                                postUrl : '#{navigationHelper.applicationUrl}rest/record/dc/#{createRecordBean.uuid}/upload/',
+                                postUrl : '#{navigationHelper.applicationUrl}api/v1/temp/files/#{createRecordBean.uuid}_tif/',
                                 msg : {
                                     buttonUpload : "#{msg.button__upload}",
                                     uploadText : "#{msg.admin__media_upload_text}",

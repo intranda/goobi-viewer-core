@@ -76,7 +76,7 @@ public class IIIFUrlHandlerTest extends AbstractTest {
     public void testUrlFromLocalUrl() {
         fileUrl = "http://localhost/image/filename.tif";
         String url = handler.getIIIFImageUrl(fileUrl, pi, region, size, rotation, quality, format);
-        Assert.assertEquals("/api/v1/image/-/http:U002FU002FlocalhostU002FimageU002Ffilename.tif/full/max/0/default.jpg",
+        Assert.assertEquals("/api/v1/images/external/http:U002FU002FlocalhostU002FimageU002Ffilename.tif/full/max/0/default.jpg",
                 url);
     }
     
@@ -91,7 +91,7 @@ public class IIIFUrlHandlerTest extends AbstractTest {
     public void testUrlFromLocalFileUrl() {
         fileUrl = "file:///image/filename.tif";
         String url = handler.getIIIFImageUrl(fileUrl, pi, region, size, rotation, quality, format);
-        Assert.assertEquals("/api/v1/image/-/file:U002FU002FU002FimageU002Ffilename.tif/full/max/0/default.jpg",
+        Assert.assertEquals("/api/v1/images/external/file:U002FU002FU002FimageU002Ffilename.tif/full/max/0/default.jpg",
                 url);
     }
     
@@ -99,14 +99,14 @@ public class IIIFUrlHandlerTest extends AbstractTest {
     public void testUrlFromLocalFileUrlWithSpace() {
         fileUrl = "file:///image/filename 01.tif";
         String url = handler.getIIIFImageUrl(fileUrl, pi, region, size, rotation, quality, format);
-        Assert.assertEquals("/api/v1/image/-/file:U002FU002FU002FimageU002Ffilename%2001.tif/full/max/0/default.jpg", url);
+        Assert.assertEquals("/api/v1/images/external/file:U002FU002FU002FimageU002Ffilename%2001.tif/full/max/0/default.jpg", url);
     }
 
     @Test
     public void testUrlFromWindowsFileUrl() {
         fileUrl = "file:///C:/opt/digiverso/viewer/cms_media/filename.tif";
         String url = handler.getIIIFImageUrl(fileUrl, pi, region, size, rotation, quality, format);
-        Assert.assertEquals("/api/v1/image/-/file:U002FU002FU002FC:U002FoptU002FdigiversoU002FviewerU002Fcms_mediaU002Ffilename.tif/full/max/0/default.jpg", url);
+        Assert.assertEquals("/api/v1/images/external/file:U002FU002FU002FC:U002FoptU002FdigiversoU002FviewerU002Fcms_mediaU002Ffilename.tif/full/max/0/default.jpg", url);
 
     }
 

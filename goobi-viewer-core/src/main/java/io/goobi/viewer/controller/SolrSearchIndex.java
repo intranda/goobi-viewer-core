@@ -17,6 +17,7 @@ package io.goobi.viewer.controller;
 
 import java.io.IOException;
 import java.io.StringReader;
+import java.security.SecureRandom;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
@@ -27,9 +28,9 @@ import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
-import java.util.Random;
 import java.util.Set;
 import java.util.function.BinaryOperator;
 import java.util.regex.Matcher;
@@ -60,7 +61,6 @@ import org.apache.solr.common.luke.FieldFlag;
 import org.jdom2.Document;
 import org.jdom2.Element;
 import org.jdom2.JDOMException;
-import org.jdom2.input.SAXBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -103,7 +103,7 @@ public final class SolrSearchIndex {
     Map<String, String> dataRepositoryNames = new HashMap<>();
 
     private SolrClient client;
-    
+
     private List<String> solrFields = null;
 
     /**
@@ -263,7 +263,7 @@ public final class SolrSearchIndex {
         if (filterQueries != null && !filterQueries.isEmpty()) {
             for (String fq : filterQueries) {
                 solrQuery.addFilterQuery(fq);
-                logger.trace("adding filter query: {}", fq);
+                // logger.trace("adding filter query: {}", fq);
             }
         }
         if (params != null && !params.isEmpty()) {
@@ -507,6 +507,23 @@ public final class SolrSearchIndex {
         SolrDocumentList hits = search(new StringBuilder(SolrConstants.PI).append(':').append(pi).toString(), 0, 1, null, null, null).getResults();
         if (hits != null && hits.size() > 0) {
             ret = hits.get(0);
+        }
+
+        return ret;
+    }
+
+    public SolrDocument getDocumentByPIAndLogId(String pi, String divId) throws IndexUnreachableException, PresentationException {
+
+        SolrDocument ret = null;
+        if (StringUtils.isNoneBlank(pi, divId)) {
+            // logger.trace("getDocumentByIddoc: {}", iddoc);
+            String query = SolrConstants.PI_TOPSTRUCT + ":" + pi + " AND " + SolrConstants.LOGID + ":" + divId;
+            SolrDocumentList hits = search(query, 0, 1, null, null, null).getResults();
+            if (hits != null && hits.size() > 0) {
+                ret = hits.get(0);
+            }
+        } else if (StringUtils.isNotBlank(pi)) {
+            ret = getDocumentByPI(pi);
         }
 
         return ret;
@@ -1016,9 +1033,7 @@ public final class SolrSearchIndex {
      * @throws PresentationException
      */
     public long getHitCount(String query, List<String> filterQueries) throws IndexUnreachableException, PresentationException {
-        QueryResponse qr =
-                search(query, 0, 0, null, null, null,
-                        filterQueries, null);
+        QueryResponse qr = search(query, 0, 0, null, null, null, filterQueries, null);
         return qr.getResults().getNumFound();
     }
 
@@ -1104,7 +1119,7 @@ public final class SolrSearchIndex {
             String responseBody = NetTools.getWebContentGET(
                     DataManager.getInstance().getConfiguration().getSolrUrl() + "/admin/file/?contentType=text/xml;charset=utf-8&file=schema.xml");
             try (StringReader sr = new StringReader(responseBody)) {
-                return new SAXBuilder().build(sr);
+                return XmlTools.getSAXBuilder().build(sr);
             }
         } catch (ClientProtocolException e) {
             logger.error(e.getMessage(), e);
@@ -1200,9 +1215,13 @@ public final class SolrSearchIndex {
             throws PresentationException, IndexUnreachableException {
         return searchFacetsAndStatistics(query, filterQueries, facetFields, facetMinCount, null, getFieldStatistics);
     }
-    
+
+    /**
+     * 
+     * @return
+     */
     public boolean pingSolrIndex() {
-        if(client != null) {
+        if (client != null) {
             try {
                 SolrPingResponse ping = client.ping();
                 return ping.getStatus() < 400;
@@ -1210,9 +1229,9 @@ public final class SolrSearchIndex {
                 logger.trace("Ping to solr failed " + e.toString());
                 return false;
             }
-        } else {
-            return false;
         }
+
+        return false;
     }
 
     /**
@@ -1224,16 +1243,16 @@ public final class SolrSearchIndex {
      * @param facetMinCount a int.
      * @param facetPrefix The facet field value must start with these characters. Ignored if null or blank
      * @param getFieldStatistics If true, field statistics will be generated for every facet field.
-     * @should generate facets correctly
-     * @should generate field statistics for every facet field if requested
-     * @should not return any docs
      * @return a {@link org.apache.solr.client.solrj.response.QueryResponse} object.
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
+     * @should generate facets correctly
+     * @should generate field statistics for every facet field if requested
+     * @should not return any docs
      */
     public QueryResponse searchFacetsAndStatistics(String query, List<String> filterQueries, List<String> facetFields, int facetMinCount,
-            String facetPrefix,
-            boolean getFieldStatistics) throws PresentationException, IndexUnreachableException {
+            String facetPrefix, boolean getFieldStatistics) throws PresentationException, IndexUnreachableException {
+        logger.trace("searchFacetsAndStatistics: {}", query);
         SolrQuery solrQuery = new SolrQuery(query);
         solrQuery.setStart(0);
         solrQuery.setRows(0);
@@ -1402,18 +1421,18 @@ public final class SolrSearchIndex {
      * </p>
      *
      * @return a {@link java.util.List} object.
-     * @throws DAOException 
+     * @throws DAOException
      * @throws org.apache.solr.client.solrj.SolrServerException if any.
      * @throws java.io.IOException if any.
      */
     public List<String> getAllFieldNames() throws DAOException {
-        try {            
-            if(this.solrFields == null) {            
+        try {
+            if (this.solrFields == null) {
                 LukeRequest lukeRequest = new LukeRequest();
                 lukeRequest.setNumTerms(0);
                 LukeResponse lukeResponse = lukeRequest.process(client);
                 Map<String, FieldInfo> fieldInfoMap = lukeResponse.getFieldInfo();
-                
+
                 List<String> list = new ArrayList<>();
                 for (String name : fieldInfoMap.keySet()) {
                     FieldInfo info = fieldInfoMap.get(name);
@@ -1424,7 +1443,7 @@ public final class SolrSearchIndex {
                 }
                 this.solrFields = list;
             }
-        } catch(IllegalStateException | SolrServerException | IOException  e) {
+        } catch (IllegalStateException | SolrServerException | IOException e) {
             throw new DAOException("Failed to load SOLR field names: " + e.toString());
         }
 
@@ -1504,7 +1523,10 @@ public final class SolrSearchIndex {
         }
 
         List<String> fieldNames =
-                doc.getFieldNames().stream().filter(field -> field.equals(key) || field.startsWith(key + "_LANG_")).collect(Collectors.toList());
+                doc.getFieldNames()
+                        .stream()
+                        .filter(field -> field.equals(key) || field.matches(key + "_LANG_\\w{2,3}"))
+                        .collect(Collectors.toList());
         Map<String, List<String>> map = new HashMap<>(fieldNames.size());
         for (String languageField : fieldNames) {
             String locale = null;
@@ -1727,12 +1749,28 @@ public final class SolrSearchIndex {
      * @return a {@link java.util.Optional} object.
      */
     public static Optional<IMetadataValue> getTranslations(String fieldName, StructElement doc, BinaryOperator<String> combiner) {
+        return getTranslations(fieldName, doc, ViewerResourceBundle.getAllLocales(), combiner);
+    }
+
+    /**
+     * <p>
+     * getTranslations.
+     * </p>
+     *
+     * @param fieldName a {@link java.lang.String} object.
+     * @param doc a {@link io.goobi.viewer.model.viewer.StructElement} object.
+     * @param combiner a {@link java.util.function.BinaryOperator} object.
+     * @return a {@link java.util.Optional} object.
+     */
+    public static Optional<IMetadataValue> getTranslations(String fieldName, StructElement doc, List<Locale> translationLocales,
+            BinaryOperator<String> combiner) {
         Map<String, List<String>> translations = SolrSearchIndex.getMetadataValuesForLanguage(doc, fieldName);
         if (translations.size() > 1) {
             return Optional.of(new MultiLanguageMetadataValue(translations, combiner));
         } else if (!translations.isEmpty()) {
+            String value = translations.values().iterator().next().stream().reduce((s1, s2) -> combiner.apply(s1, s2)).orElse("");
             return Optional.ofNullable(ViewerResourceBundle
-                    .getTranslations(translations.values().iterator().next().stream().reduce((s1, s2) -> combiner.apply(s1, s2)).orElse("")));
+                    .getTranslations(value, translationLocales, false));
         } else {
             return Optional.empty();
         }
@@ -1782,14 +1820,14 @@ public final class SolrSearchIndex {
 
         return conditions.trim();
     }
-    
+
     /**
      * Solr supports dynamic random_* sorting fields. Each value represents one particular order, so a random number is required.
      * 
      * @return Randomized sorting field
      */
     public static String generateRandomSortField() {
-        return "random_" + new Random().nextInt(Integer.MAX_VALUE);
+        return "random_" + new SecureRandom().nextInt(Integer.MAX_VALUE);
     }
 
     /**

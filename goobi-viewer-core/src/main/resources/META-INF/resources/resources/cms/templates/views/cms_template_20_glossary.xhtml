@@ -27,6 +27,7 @@
 
     <!-- CONTENT -->
     <ui:define name="content">
+		<ui:include src="/resources/cms/includes/cms_script.xhtml" />
         <f:param name="currentPage" value="#{cmsBean.random}" />
         <f:view contentType="text/html" encoding="utf-8">
             <div id="templateGlossary" class="tpl-glossary #{cmsPage.wrapperElementClass}">
@@ -44,7 +45,7 @@
 
                 <!-- TEXT -->
                 <div class="tpl-glossary__text">
-                    <ui:include src="#{cmsPage.getContent('text')}" />
+                    <h:outputText escape="false" value="#{cmsPage.getContent('text')}"></h:outputText>
                 </div>
                 
                 <!-- GLOSSARY -->

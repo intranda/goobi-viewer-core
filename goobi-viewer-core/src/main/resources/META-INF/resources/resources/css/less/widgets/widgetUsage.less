@@ -13,7 +13,7 @@
 	&__license-text {
 		margin-bottom: 15px;
 		a {
-			display: inline;
+			display: inline !important;
 		}
 	}
 	/* DOWNLOADS */
@@ -64,8 +64,13 @@
 	}
 	/* PAGE DOWNLOADS */
 	&__page-downloads {
+		display: flex;
+		flex-wrap: wrap;
 		a {}
-		.badge {}
+		.badge {
+			margin-right: 0.4rem;
+			margin-bottom: 0.5rem;
+		}
 	}
 	&__page-download-alto {}
 	&__page-download-fulltext {}
@@ -75,7 +80,9 @@
 			padding-right: 0.5rem;
 		}
 	}
-	&__page-download-jpeg {}
+	&__page-download-jpeg {
+		border: none;
+	}
 	/*IMAGE FRAGMENT */
 	&__image-fragment__wrapper {
 		display: none;
@@ -87,6 +94,96 @@
 	&__citelinks {}
 	&__citelink-work {}
 	&__citelink-page {}
+	&__citerecommendation-dropdown {
+		width: 100%;
+		margin-bottom: 1.2rem;
+	}
+	&__citerecommendation-text-wrapper {
+		display: flex;
+		margin-bottom: 1.4rem;
+		.fa-quote-right {
+			color: @middlegray;
+			font-size: 30px;
+			padding-right: 1.7rem;
+		}
+	}
+	&__citerecommendation-copy-text {
+		cursor: pointer;
+		color: @black;
+		text-decoration: none;
+		&:hover,
+		&:active,
+		&:focus {
+			text-decoration: none;
+			color: @black;
+		}
+	}
+	&__citerecommendation-text-info {
+		width: 100%;
+		font-size: 11px;
+	}
+}
+
+/* MODIFICATION */
+.widget .widget-usage__citerecommendation-copy-text {
+	padding: 0;
+	line-height: 1.4;
+}
+
+/* WIDGET USAGE DOWNLOAD IMAGES SIZES POPOVER */
+#downloadImagePopover {
+	fieldset {}
+	label {
+		padding-left: 1rem;
+		margin-bottom: 0.2rem;
+	}
+	input[type="radio"]:checked + label {
+		font-weight: normal;
+	}
+	.widget-usage {
+		&__download-image-size-option-wrapper {
+			display: flex;
+		}
+		&__download-image-size-input {
+			flex: 0 0 auto;
+			max-width: 20px;
+			min-width: unset;
+		}
+		&__download-image-size-form {
+			label {
+				display: flex;
+			}
+		}
+		&__download-image-size-radio-label {
+		    flex: 0 0 auto;
+		    min-width: 75px;
+	    }
+		&__download-image-size-radio-size {
+		    flex: 0 0 auto;
+		    min-width: 90px;
+	    }
+		&__download-image-size-radio-format {
+		    flex: 0 0 auto;
+		    text-transform: uppercase;
+	    }
+		&__download-image-size-button {
+			margin: 0 auto;
+			display: block;
+			width: 80%;
+			margin-top: 2rem;
+		}
+	}
+}
+
+@{RTL} {
+	.widget-usage {
+		&__page-download-pdf {
+			i {
+				padding-right: unset;
+				padding-left: 0.5rem;
+			}
+		}
+	}
 }
 
 /* BREAKPOINT FOR LARGE DESKTOPS */
@@ -96,7 +193,11 @@
 @media screen and (max-width: @mediumBreakpoint) {}
 
 /* BREAKPOINT FOR TABLETS */
-@media screen and (max-width: @smallBreakpoint) {}
+@media screen and (max-width: @smallBreakpoint) {
+	.widget-usage__download-image-size-radio-label {
+		display: none;
+	}
+}
 
 /* BREAKPOINT FOR SMARTPHONES */
 @media screen and (max-width: @xSmallBreakpoint) {}

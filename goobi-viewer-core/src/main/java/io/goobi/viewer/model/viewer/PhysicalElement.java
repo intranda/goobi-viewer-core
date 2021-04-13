@@ -19,15 +19,14 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.Serializable;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -49,20 +48,20 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import de.intranda.metadata.multilanguage.IMetadataValue;
 import de.unigoettingen.sub.commons.contentlib.exceptions.ContentNotFoundException;
 import de.unigoettingen.sub.commons.contentlib.exceptions.IllegalRequestException;
-import de.unigoettingen.sub.commons.contentlib.exceptions.ServiceNotAllowedException;
 import de.unigoettingen.sub.commons.contentlib.imagelib.ImageFileFormat;
 import de.unigoettingen.sub.commons.contentlib.imagelib.ImageType;
 import de.unigoettingen.sub.commons.contentlib.imagelib.ImageType.Colortype;
 import de.unigoettingen.sub.commons.contentlib.imagelib.transform.RegionRequest;
 import de.unigoettingen.sub.commons.contentlib.imagelib.transform.Rotation;
 import de.unigoettingen.sub.commons.contentlib.imagelib.transform.Scale;
-import de.unigoettingen.sub.commons.contentlib.servlet.model.ContentServerConfiguration;
 import io.goobi.viewer.api.rest.resourcebuilders.TextResourceBuilder;
+import io.goobi.viewer.api.rest.v1.ApiUrls;
 import io.goobi.viewer.controller.ALTOTools;
 import io.goobi.viewer.controller.Configuration;
 import io.goobi.viewer.controller.DataFileTools;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.FileTools;
+import io.goobi.viewer.controller.NetTools;
 import io.goobi.viewer.controller.SolrConstants;
 import io.goobi.viewer.controller.SolrSearchIndex;
 import io.goobi.viewer.controller.imaging.IIIFUrlHandler;
@@ -72,8 +71,8 @@ import io.goobi.viewer.exceptions.AccessDeniedException;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
+import io.goobi.viewer.exceptions.RecordNotFoundException;
 import io.goobi.viewer.exceptions.ViewerConfigurationException;
-import io.goobi.viewer.managedbeans.ConfigurationBean;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.messages.Messages;
 import io.goobi.viewer.messages.ViewerResourceBundle;
@@ -111,6 +110,8 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
     public static int defaultVideoWidth = 320;
     /** Constant <code>defaultVideoHeight=240</code> */
     public static int defaultVideoHeight = 240;
+
+    private final Object lock = new Object();
 
     /** Persistent identifier. */
     private final String pi;
@@ -154,9 +155,6 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
 
     private Map<String, String> fileNames = new HashMap<>();
     private Set<String> accessConditions = new HashSet<>();
-    /** Image footer height. */
-    private Integer imageFooterHeight;
-    private Integer imageFooterHeightRotated;
     /** Comment currently being created/edited. */
     private Comment currentComment;
     /** Textual content of the previously created page comment. Workaround for duplicate posts via browser refresh. */
@@ -666,7 +664,11 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
         if (!hasImage) {
             return false;
         }
-        String filename = FileTools.getFilenameFromPathString(getFileName());
+        String filename = null;
+        try {
+            filename = FileTools.getFilenameFromPathString(getFileName());
+        } catch (FileNotFoundException e) {
+        }
         if (StringUtils.isBlank(filename)) {
             return false;
         }
@@ -702,9 +704,16 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
         if (!fulltextAvailable) {
             return false;
         }
-        String filename = FileTools.getFilenameFromPathString(getFulltextFileName());
+        String filename = null;
+        try {
+            filename = FileTools.getFilenameFromPathString(getFulltextFileName());
+        } catch (FileNotFoundException e) {
+        }
         if (StringUtils.isBlank(filename)) {
-            filename = FileTools.getFilenameFromPathString(getAltoFileName());
+            try {
+                filename = FileTools.getFilenameFromPathString(getAltoFileName());
+            } catch (FileNotFoundException e) {
+            }
         }
         if (StringUtils.isBlank(filename)) {
             return false;
@@ -731,15 +740,18 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
      */
     public Boolean isFulltextAccessPermission() throws ViewerConfigurationException {
         if (fulltextAccessPermission == null) {
-            boolean access = false;
+            fulltextAccessPermission = false;
             try {
-                access = AccessConditionUtils.checkAccessPermissionByIdentifierAndLogId(pi, null, IPrivilegeHolder.PRIV_VIEW_FULLTEXT, BeanUtils.getRequest());
+                fulltextAccessPermission = AccessConditionUtils.checkAccessPermissionByIdentifierAndLogId(pi, null, IPrivilegeHolder.PRIV_VIEW_FULLTEXT,
+                        BeanUtils.getRequest());
             } catch (IndexUnreachableException | DAOException e) {
                 logger.error(String.format("Cannot check fulltext access for pi %s and pageNo %d: %s", pi, order, e.toString()));
+            } catch (RecordNotFoundException e) {
+                logger.error("Record not found in index: {}", pi);
             }
-            return access;
         }
-        return fulltextAccessPermission != null ? fulltextAccessPermission : false;
+        
+        return fulltextAccessPermission;
     }
 
     /**
@@ -763,7 +775,11 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
     public boolean isAltoAvailable() throws IndexUnreachableException, DAOException {
-        String filename = FileTools.getFilenameFromPathString(getAltoFileName());
+        String filename = null;
+        try {
+            filename = FileTools.getFilenameFromPathString(getAltoFileName());
+        } catch (FileNotFoundException e) {
+        }
         if (StringUtils.isBlank(filename)) {
             return false;
         }
@@ -913,7 +929,7 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
             throws AccessDeniedException, FileNotFoundException, IOException, IndexUnreachableException, DAOException, ViewerConfigurationException {
         if (fulltextFileName == null) {
             return null;
-        }else if(!isFulltextAccessPermission()) {
+        } else if (!isFulltextAccessPermission()) {
             throw new AccessDeniedException(String.format("Fulltext access denied for pi %s and pageNo %d", pi, order));
         }
 
@@ -994,14 +1010,12 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
         logger.trace("loadAlto: {}", altoFileName);
         if (altoFileName == null) {
             return null;
-        }else if(!isFulltextAccessPermission()) {
+        } else if (!isFulltextAccessPermission()) {
             throw new AccessDeniedException(String.format("Fulltext access denied for pi %s and pageNo %d", pi, order));
         }
 
         try {
-            TextResourceBuilder builder = new TextResourceBuilder();
-            altoText = builder.getAltoDocument(FileTools.getBottomFolderFromPathString(altoFileName),
-                    FileTools.getFilenameFromPathString(altoFileName));
+            altoText = DataFileTools.loadAlto(altoFileName);
             //Text from alto is always plain text
             textContentType = "text/plain";
             if (altoText != null) {
@@ -1448,59 +1462,6 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
 
     /**
      * <p>
-     * Getter for the field <code>imageFooterHeight</code>.
-     * </p>
-     *
-     * @return a int.
-     */
-    public int getImageFooterHeight() {
-        return getImageFooterHeight(0);
-    }
-
-    /**
-     * <p>
-     * Getter for the field <code>imageFooterHeight</code>.
-     * </p>
-     *
-     * @param rotation a int.
-     * @return a int.
-     */
-    public int getImageFooterHeight(int rotation) {
-        if (imageFooterHeight == null) {
-            try {
-                List<String> watermark = DataManager.getInstance().getConfiguration().getWatermarkTextConfiguration();
-                if (watermark != null && !watermark.isEmpty() && ContentServerConfiguration.getInstance().getWatermarkUse()) {
-                    int watermarkScale = ContentServerConfiguration.getInstance().getWatermarkPercent();
-                    int imageHeight = this.getImageHeight();
-                    int imageWidth = this.getImageWidth();
-                    if (watermarkScale > 0) {
-                        imageFooterHeight = (int) (imageHeight * watermarkScale / 100.0);
-                        imageFooterHeightRotated = (int) (imageWidth * watermarkScale / 100.0);
-                    } else if (ContentServerConfiguration.getInstance().getScaleWatermark()) {
-                        double relHeight = new ConfigurationBean().getRelativeImageFooterHeight();
-                        imageFooterHeight = (int) (imageHeight * relHeight);
-                        imageFooterHeightRotated = (int) (imageWidth * relHeight);
-                    } else {
-                        imageFooterHeight = new ConfigurationBean().getImageFooterHeight();
-                        imageFooterHeightRotated = imageFooterHeight;
-                    }
-                }
-            } catch (Exception e) {
-                imageFooterHeight = 0;
-                imageFooterHeightRotated = 0;
-            }
-            if (imageFooterHeight == null) {
-                imageFooterHeight = 0;
-            }
-            if (imageFooterHeightRotated == null) {
-                imageFooterHeightRotated = 0;
-            }
-        }
-        return rotation % 180 == 90 ? imageFooterHeightRotated : imageFooterHeight;
-    }
-
-    /**
-     * <p>
      * Getter for the field <code>currentComment</code>.
      * </p>
      *
@@ -1577,7 +1538,7 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
      */
     public void updateCommentAction(Comment comment) throws DAOException {
         // Set updated timestamp
-        comment.setDateUpdated(new Date());
+        comment.setDateUpdated(LocalDateTime.now());
         saveCommentAction(comment);
         resetCurrentComment();
     }
@@ -1799,7 +1760,7 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
                     StructElement ele = new StructElement(Long.valueOf((String) doc.getFieldValue(SolrConstants.IDDOC)), doc);
                     IMetadataValue value = TocMaker.buildTocElementLabel(doc);
                     String label = value.getValue(BeanUtils.getLocale()).orElse(value.getValue().orElse(""));
-                    if(StringUtils.isNotBlank(label)) {
+                    if (StringUtils.isNotBlank(label)) {
                         ele.setLabel(label);
                     }
                     containedStructElements.add(ele);
@@ -1810,15 +1771,24 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
         return containedStructElements;
     }
 
+    /**
+     * 
+     * @return
+     * @throws PresentationException
+     * @throws IndexUnreachableException
+     * @throws JsonProcessingException
+     */
     public String getContainedStructElementsAsJson() throws PresentationException, IndexUnreachableException, JsonProcessingException {
-        List<StructElement> elements = getContainedStructElements();
+        synchronized (lock) {
+            List<StructElement> elements = getContainedStructElements();
 
-        ObjectMapper mapper = new ObjectMapper();
-        List<ShapeMetadata> shapes = elements.stream()
-                .filter(ele -> ele.getShapeMetadata() != null && !ele.getShapeMetadata().isEmpty())
-                .flatMap(ele -> ele.getShapeMetadata().stream())
-                .collect(Collectors.toList());
-        String json = mapper.writeValueAsString(shapes);
-        return json;
+            ObjectMapper mapper = new ObjectMapper();
+            List<ShapeMetadata> shapes = elements.stream()
+                    .filter(ele -> ele.getShapeMetadata() != null && !ele.getShapeMetadata().isEmpty())
+                    .flatMap(ele -> ele.getShapeMetadata().stream())
+                    .collect(Collectors.toList());
+            String json = mapper.writeValueAsString(shapes);
+            return json;
+        }
     }
 }

@@ -36,6 +36,7 @@ import org.slf4j.LoggerFactory;
 
 import de.unigoettingen.sub.commons.contentlib.servlet.model.ContentServerConfiguration;
 import io.goobi.viewer.controller.DataManager;
+import io.goobi.viewer.messages.ViewerResourceBundle;
 import io.goobi.viewer.model.security.LicenseType;
 import io.goobi.viewer.model.security.Role;
 import io.goobi.viewer.model.security.user.UserTools;
@@ -54,7 +55,7 @@ public class ContextListener implements ServletContextListener {
     public static final String PRETTY_FACES_CONFIG_PARAM_NAME = "com.ocpsoft.pretty.CONFIG_FILES";
 
     /** Constant <code>prettyConfigFiles="resources/themes/theme-url-mappings.xml"{trunked}</code> */
-    public static volatile String prettyConfigFiles =
+    public volatile String prettyConfigFiles =
             "resources/themes/theme-url-mappings.xml, pretty-standard-config.xml, pretty-config-viewer-module-crowdsourcing.xml";
 
     //    static {
@@ -66,6 +67,7 @@ public class ContextListener implements ServletContextListener {
     public void contextInitialized(ServletContextEvent sce) {
         logger.info("Launching {}", Version.asString());
         DataManager.getInstance();
+        ViewerResourceBundle.init(sce.getServletContext());
         logger.trace("Temp folder: {}", DataManager.getInstance().getConfiguration().getTempFolder());
         try {
             // Add a "member" role, if not yet in the database
@@ -127,7 +129,7 @@ public class ContextListener implements ServletContextListener {
         // Set Pretty config files parameter
         sce.getServletContext().setInitParameter(PRETTY_FACES_CONFIG_PARAM_NAME, prettyConfigFiles);
         logger.debug("Pretty config files: {}", prettyConfigFiles);
-        
+
         //set contentServerConfig
         ContentServerConfiguration.getInstance("contentServerConfig.xml");
     }
@@ -140,8 +142,5 @@ public class ContextListener implements ServletContextListener {
         } catch (Throwable e) {
             logger.error(e.getMessage());
         }
-
-        // Shut all loggers down to prevent memory leaks when re-deploying the context
-        // LogManager.shutdown();
     }
 }

@@ -15,8 +15,8 @@
  */
 package io.goobi.viewer.managedbeans;
 
+import java.time.LocalDateTime;
 import java.util.Collections;
-import java.util.Date;
 import java.util.List;
 
 import javax.faces.model.SelectItem;
@@ -27,6 +27,7 @@ import org.junit.Test;
 
 import io.goobi.viewer.AbstractDatabaseEnabledTest;
 import io.goobi.viewer.controller.DataManager;
+import io.goobi.viewer.controller.DateTools;
 import io.goobi.viewer.model.annotation.Comment;
 import io.goobi.viewer.model.crowdsourcing.campaigns.CampaignRecordStatistic;
 import io.goobi.viewer.model.security.user.User;
@@ -43,10 +44,11 @@ public class AdminBeanTest extends AbstractDatabaseEnabledTest {
         bean.init();
         Assert.assertNotNull(bean.getLazyModelComments());
         Assert.assertEquals(4, bean.getLazyModelComments().getSizeOfDataList());
-        Date prevDate = null;
+        LocalDateTime prevDate = null;
         for (Comment comment : bean.getLazyModelComments().getPaginatorList()) {
             if (prevDate != null) {
-                Assert.assertTrue(prevDate.getTime() >= comment.getDateUpdated().getTime());
+                Assert.assertTrue(DateTools.getMillisFromLocalDateTime(prevDate, false) >= DateTools
+                        .getMillisFromLocalDateTime(comment.getDateUpdated(), false));
             }
             prevDate = comment.getDateUpdated();
         }

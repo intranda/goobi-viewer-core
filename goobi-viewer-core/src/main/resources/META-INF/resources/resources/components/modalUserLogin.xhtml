@@ -138,6 +138,8 @@
 																value="#{msg.login__enter_password}" />
 															<f:passThroughAttribute name="aria-labelledby"
 																value="labelUserPassword" />
+															<f:passThroughAttribute name="current-password"
+																value="on" />
 														</h:inputSecret>
 													</div>
 												</div>
@@ -253,7 +255,10 @@
 													<h:inputSecret id="userCreateAccountPW2"
 														styleClass="col-12 col-lg-9 form-control" type="password"
 														value="#{userBean.passwordTwo}" required="true"
-														requiredMessage="#{msg.newUserPasswordTwoRequired}" />
+														requiredMessage="#{msg.newUserPasswordTwoRequired}">
+														<f:passThroughAttribute name="autocomplete" value="new-password" />
+													</h:inputSecret>
+														
 												</div>
 
 												<ui:fragment rendered="#{userBean.securityQuestion != null}">
@@ -264,7 +269,10 @@
 															styleClass="form-control col-12 col-lg-9"
 															autocomplete="off" value="#{userBean.securityAnswer}"
 															required="true"
-															requiredMessage="#{msg.user__security_question_required_msg}" />
+															requiredMessage="#{msg.user__security_question_required_msg}">
+														<f:passThroughAttribute name="autocomplete" value="new-password" />
+													</h:inputSecret>
+															
 													</div>
 												</ui:fragment>
 
@@ -280,7 +288,7 @@
 																	escape="false" />
 															</textarea>
 														</div>
-														<div id="createAccountAcceptTerms" class="col-12 d-flex align-items-center admin__form-input">
+														<div id="createAccountAcceptTerms" class="col-12 d-flex align-items-center admin__form-input user-login-modal__terms-accept">
 															<label class="mr-3 mb-0">#{msg.admin__terms_of_use__accept}:</label>
 															<div>
 															<viewerComponent:toggleSwitch

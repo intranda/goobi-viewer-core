@@ -27,9 +27,10 @@
                 </h:form>
 
                 <h:panelGroup rendered="#{cmsBean.selectedPage != null}">
-                    <h2 class="admin__content-inner-title clearfix">
-                        #{cmsBean.editMode ? msg.cms_editPage : msg.cms_createPage}: #{msg[cmsBean.selectedPage.template.name]}
-                    
+	                <div class="admin__title-bar">
+	                    <h2 class="admin__title">
+	                        #{cmsBean.editMode ? msg.cms_editPage : msg.cms_createPage}: #{msg[cmsBean.selectedPage.template.name]}
+	                    </h2>
 	                    <!-- EXIT -->
                         <a 
                             href="#{request.contextPath}#{navigationHelper.previousViewUrl}"
@@ -39,7 +40,7 @@
                             title="#{msg.admin__cms_back_to_page}"
                             aria-label="#{msg.admin__cms_back_to_page}">
                         </a>
-                    </h2>
+	                </div>
 
                     <div class="admin__content-inner-content">
                         <div class="row">
@@ -236,6 +237,11 @@
                                                                 <!-- CONTENT TYPE BROWSE -->
                                                                 <ui:fragment rendered="#{contentItem.type == 'GEOMAP'}">
                                                                     <ui:include src="/resources/cms/includes/contentTypes/cms_createPageContentTypeGeoMap.xhtml" />
+                                                                </ui:fragment>
+                                                                
+                                                                <!-- CONTENT TYPE SLIDER -->
+                                                                <ui:fragment rendered="#{contentItem.type == 'SLIDER'}">
+                                                                    <ui:include src="/resources/cms/includes/contentTypes/cms_createPageContentTypeSlider.xhtml" />
                                                                 </ui:fragment>
                                                                 
                                                             </ui:repeat>

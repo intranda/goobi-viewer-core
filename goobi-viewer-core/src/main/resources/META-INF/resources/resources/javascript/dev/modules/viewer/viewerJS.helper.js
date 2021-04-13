@@ -118,7 +118,6 @@ var viewerJS = ( function( viewer ) {
             };
             
             $.extend( true, _defaults, config );
-            
             var modal = '';
             
             modal += '<div class="modal fade" id="' + _defaults.id + '" tabindex="-1" role="dialog" aria-labelledby="' + _defaults.label + '">';
@@ -431,6 +430,9 @@ var viewerJS = ( function( viewer ) {
               })
               return paramMap;
           },
+          getUrlSearchParam: function(key) {
+          	return this.getUrlSearchParamMap().get(key);
+          },
           setUrlSearchParams: function(map) {
               let paramList = [];
               map.forEach((value, key) => {
@@ -486,6 +488,13 @@ var viewerJS = ( function( viewer ) {
         return p.reduce(reducer , o);
     };
     
+    /**
+     * Check if a variable is a string
+     */
+    viewer.isString = function(variable) {
+        return typeof variable === 'string' || variable instanceof String
+    }
+    
     if(!Array.prototype.includes) {
         Array.prototype.includes = function(element) {
             for ( var int = 0; int < this.length; int++ ) {
@@ -517,7 +526,7 @@ var viewerJS = ( function( viewer ) {
     viewer.unique = (value, index, self) => {
         return self.indexOf(value) === index;
     }
-    
+
 
 
     

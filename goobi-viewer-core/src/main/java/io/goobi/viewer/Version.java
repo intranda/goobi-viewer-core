@@ -6,15 +6,17 @@ import java.io.InputStream;
 import java.io.StringWriter;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.TemporalAccessor;
-import java.util.Date;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.json.JSONObject;
+
+import io.goobi.viewer.controller.DateTools;
 
 /**
  * <p>
@@ -31,9 +33,6 @@ public class Version {
     /** Constant <code>BUILDDATE</code> */
     public static final String BUILDDATE;
 
-    @Deprecated
-    private static final String MANIFEST_DATE_PATTERN = "yyyy-MM-dd HH:mm";
-
     static {
         String manifest = getManifestStringFromJar();
         if (StringUtils.isNotBlank(manifest)) {
@@ -44,7 +43,7 @@ public class Version {
         } else {
             APPLICATION_NAME = "goobi-viewer-core";
             VERSION = "unknown";
-            BUILDDATE = new Date().toString();
+            BUILDDATE = LocalDateTime.now().format(DateTools.formatterISO8601DateTimeNoSeconds);
             BUILDVERSION = "unknown";
         }
     }
@@ -88,19 +87,6 @@ public class Version {
         }
 
         return "?";
-    }
-
-    /**
-     * <p>
-     * getBuildDate.
-     * </p>
-     *
-     * @param pattern a {@link java.lang.String} object.
-     * @return a {@link java.lang.String} object.
-     */
-    @Deprecated
-    public static String getBuildDate(String pattern) {
-        return convertDate(BUILDDATE, MANIFEST_DATE_PATTERN, pattern);
     }
 
     /**

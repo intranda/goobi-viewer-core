@@ -114,6 +114,8 @@
                     </c:forEach>
                 </c:forEach>
 
+				<ui:include src="/resources/includes/user/userGeneratedContent.xhtml"></ui:include>
+
                 <!-- USER COMMENTS -->
                 <ui:insert name="userComments">
                     <ui:include src="/resources/includes/user/userComments.xhtml" />
@@ -167,6 +169,8 @@
         <widgetComponent:widget_nerFacetting />
         
         <widgetComponent:widget_searchResultNavigation />
+        
+        <widgetComponent:widget_recordNotes notes="#{cmsRecordNotesBean.getNotesForRecord(activeDocumentBean.viewManager.pi)}" />
         
         <widgetComponent:widget_metadata />
         

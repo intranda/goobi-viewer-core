@@ -16,9 +16,9 @@
 package io.goobi.viewer.model.viewer;
 
 import java.io.Serializable;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
@@ -49,8 +49,8 @@ public class EventElement implements Comparable<EventElement>, Serializable {
     private String type;
     private List<String> dateStringsStart = new ArrayList<>();
     private String dateEndString;
-    private Date dateStart;
-    private Date dateEnd;
+    private LocalDateTime dateStart;
+    private LocalDateTime dateEnd;
     private String displayDate;
     private List<Metadata> metadata;
     private List<Metadata> sidebarMetadata;
@@ -72,15 +72,12 @@ public class EventElement implements Comparable<EventElement>, Serializable {
         logger.debug("new EventElement: {}", (type == null ? "(no type)" : type));
 
         Collection<Object> eventDateValues = doc.getFieldValues(SolrConstants.EVENTDATE);
-        if (eventDateValues != null) {
-            for (Object field : eventDateValues) {
-                displayDate = (String) field;
-                break;
-            }
+        if (eventDateValues != null && !eventDateValues.isEmpty()) {
+            displayDate = (String) eventDateValues.iterator().next();
         }
         dateEndString = (String) doc.getFieldValue(SolrConstants.EVENTDATEEND);
         if (StringUtils.isNotEmpty(dateEndString) && dateEnd == null) {
-            List<Date> dates = DateTools.parseMultipleDatesFromString(dateEndString);
+            List<LocalDateTime> dates = DateTools.parseMultipleDatesFromString(dateEndString);
             if (!dates.isEmpty()) {
                 dateEnd = dates.get(0);
             }
@@ -96,7 +93,7 @@ public class EventElement implements Comparable<EventElement>, Serializable {
                 }
             }
             for (String dateString : dateStringsStart) {
-                List<Date> dates = DateTools.parseMultipleDatesFromString(dateString);
+                List<LocalDateTime> dates = DateTools.parseMultipleDatesFromString(dateString);
                 if (!dates.isEmpty() && dateStart == null) {
                     dateStart = dates.get(0);
                     if (dates.size() > 1 && dateEnd == null) {
@@ -106,7 +103,7 @@ public class EventElement implements Comparable<EventElement>, Serializable {
             }
         }
         checkDates();
-        metadata = DataManager.getInstance().getConfiguration().getMainMetadataForTemplate(type);
+        metadata = DataManager.getInstance().getConfiguration().getMainMetadataForTemplate(0, type);
         populateMetadata(metadata, type, doc, locale);
         sidebarMetadata = DataManager.getInstance().getConfiguration().getSidebarMetadataForTemplate(type);
         populateMetadata(sidebarMetadata, type, doc, locale);
@@ -121,10 +118,10 @@ public class EventElement implements Comparable<EventElement>, Serializable {
     @Override
     public int compareTo(EventElement o) {
         if (o.getDateStart() != null && o.getDateEnd() != null && getDateStart() != null && getDateEnd() != null) {
-            if (o.getDateStart().after(getDateEnd())) {
+            if (o.getDateStart().isAfter(getDateEnd())) {
                 return -1;
             }
-            if (o.getDateEnd().before(getDateStart())) {
+            if (o.getDateEnd().isBefore(getDateStart())) {
                 return 1;
             }
         } else if (getDateStart() == null) {
@@ -167,7 +164,7 @@ public class EventElement implements Comparable<EventElement>, Serializable {
      */
     private void checkDates() {
         if (dateStart == null && displayDate != null) {
-            List<Date> dates = DateTools.parseMultipleDatesFromString(displayDate);
+            List<LocalDateTime> dates = DateTools.parseMultipleDatesFromString(displayDate);
             if (!dates.isEmpty()) {
                 dateStart = dates.get(0);
             }
@@ -246,7 +243,7 @@ public class EventElement implements Comparable<EventElement>, Serializable {
      *
      * @return the dateStart
      */
-    public Date getDateStart() {
+    public LocalDateTime getDateStart() {
         return dateStart;
     }
 
@@ -257,7 +254,7 @@ public class EventElement implements Comparable<EventElement>, Serializable {
      *
      * @param dateStart the dateStart to set
      */
-    public void setDateStart(Date dateStart) {
+    public void setDateStart(LocalDateTime dateStart) {
         this.dateStart = dateStart;
     }
 
@@ -268,7 +265,7 @@ public class EventElement implements Comparable<EventElement>, Serializable {
      *
      * @return the dateEnd
      */
-    public Date getDateEnd() {
+    public LocalDateTime getDateEnd() {
         return dateEnd;
     }
 
@@ -279,7 +276,7 @@ public class EventElement implements Comparable<EventElement>, Serializable {
      *
      * @param dateEnd the dateEnd to set
      */
-    public void setDateEnd(Date dateEnd) {
+    public void setDateEnd(LocalDateTime dateEnd) {
         this.dateEnd = dateEnd;
     }
 
@@ -293,7 +290,7 @@ public class EventElement implements Comparable<EventElement>, Serializable {
     public List<Metadata> getMetadata() {
         ActiveDocumentBean adb = BeanUtils.getActiveDocumentBean();
         if (adb != null) {
-            List<Metadata> ret = Metadata.filterMetadataByLanguage(metadata, adb.getSelectedRecordLanguage());
+            List<Metadata> ret = Metadata.filterMetadata(metadata, adb.getSelectedRecordLanguage(), null);
             return ret;
         }
 

@@ -26,7 +26,6 @@ import java.nio.file.Paths;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Date;
 import java.util.List;
 import java.util.Set;
 
@@ -227,7 +226,7 @@ public class HarvestServlet extends HttpServlet implements Serializable {
                         // Compress to a ZIP
                         FileTools.compressZipFile(tempFiles, zipFile.toFile(), 9);
                         if (Files.isRegularFile(zipFile)) {
-                            String now = DateTools.format(new Date(), DateTools.formatterISO8601BasicDateTime, false);
+                            String now = LocalDateTime.now().format(DateTools.formatterISO8601BasicDateTime);
                             response.setContentType("application/zip");
                             response.setHeader("Content-Disposition",
                                     new StringBuilder("attachment;filename=").append(now + "_" + fileName).toString());
@@ -286,7 +285,7 @@ public class HarvestServlet extends HttpServlet implements Serializable {
                                     if (StringUtils.isNotBlank(message)) {
                                         job.setMessage(message);
                                     }
-                                    job.setLastRequested(new Date());
+                                    job.setLastRequested(LocalDateTime.now());
                                     if (JobStatus.ERROR.equals(djStatus) || JobStatus.READY.equals(djStatus)) {
                                         // Send out the word
                                         job.notifyObservers(djStatus, message);
@@ -298,9 +297,9 @@ public class HarvestServlet extends HttpServlet implements Serializable {
                                 } finally {
                                     if (!DataManager.getInstance().getDao().updateDownloadJob(job)) {
                                         response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-                                        return;
+                                    } else {
+                                        logger.trace("Downloadjob {} updated in database with status {}", job, job.getStatus());
                                     }
-                                    logger.trace("Downloadjob {} updated in database with status {}", job, job.getStatus());
                                 }
                             }
                         }

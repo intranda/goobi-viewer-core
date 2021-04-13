@@ -21,6 +21,7 @@ import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_MANIFEST;
 import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_RECORD;
 
 import java.net.URI;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
@@ -59,7 +60,7 @@ public class ActivityCollectionBuilder {
 
     private final int activitiesPerPage = DataManager.getInstance().getConfiguration().getIIIFDiscoveryAvtivitiesPerPage();
     private Integer numActivities = null;
-    private Date startDate = null;
+    private LocalDateTime startDate = null;
     private final AbstractApiUrlManager urls;
 
     public ActivityCollectionBuilder(AbstractApiUrlManager apiUrlManager) {
@@ -129,7 +130,7 @@ public class ActivityCollectionBuilder {
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      */
-    public ActivityCollectionBuilder setStartDate(Date startDate) throws PresentationException, IndexUnreachableException {
+    public ActivityCollectionBuilder setStartDate(LocalDateTime startDate) throws PresentationException, IndexUnreachableException {
         this.startDate = startDate;
         //reset numActivities because it is affected  by startDate
         this.numActivities = null;
@@ -141,7 +142,7 @@ public class ActivityCollectionBuilder {
      *
      * @return the earliest date of Activities which may be contained in the collection. May return null if no startDate is specified
      */
-    public Date getStartDate() {
+    public LocalDateTime getStartDate() {
         return startDate;
     }
 
@@ -239,7 +240,7 @@ public class ActivityCollectionBuilder {
         return manifest;
     }
 
-    private static int getNumberOfActivities(Date startDate) throws PresentationException, IndexUnreachableException {
+    private static int getNumberOfActivities(LocalDateTime startDate) throws PresentationException, IndexUnreachableException {
         String query = "ISWORK:true";
         query += " " + SearchHelper.getAllSuffixes();
         if (startDate != null) {
@@ -265,11 +266,11 @@ public class ActivityCollectionBuilder {
      * @throws PresentationException
      * @throws IndexUnreachableException
      */
-    private static List<Long> getActivities(Date startDate, int first, int last) throws PresentationException, IndexUnreachableException {
-        return getActivities(startDate).stream().skip(first).limit(last - first + 1).collect(Collectors.toList());
+    private static List<Long> getActivities(LocalDateTime startDate, int first, int last) throws PresentationException, IndexUnreachableException {
+        return getActivities(startDate).stream().skip(first).limit((long) last - first + 1).collect(Collectors.toList());
     }
 
-    private static List<Long> getActivities(Date startDate) throws PresentationException, IndexUnreachableException {
+    private static List<Long> getActivities(LocalDateTime startDate) throws PresentationException, IndexUnreachableException {
         String query = "ISWORK:true";
         query += " " + SearchHelper.getAllSuffixes();
         if (startDate != null) {

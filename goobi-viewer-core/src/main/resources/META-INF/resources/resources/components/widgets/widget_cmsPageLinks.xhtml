@@ -51,7 +51,7 @@
 							</ui:repeat>
 						</ul>
 						<div id="customCollapse-#{cc.attrs.widget.order}" class="collapse">
-							<ui:include src="#{cc.attrs.widget.content}" />
+							<h:outputText escape="false" value="#{cc.attrs.widget.html}"></h:outputText>
 						</div>
 					</h:panelGroup>
 				</div>

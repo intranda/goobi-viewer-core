@@ -51,6 +51,12 @@
 	                             </ui:repeat>
 	                         </ul>
 	                     </div>
+	                                                 
+	                 </h:panelGroup>
+	                 <h:panelGroup rendered="#{browseElement.group}">
+	                     <div class="search-list__hit-docstruct">
+	                         <h:outputText value="#{msg['doctype_'.concat(browseElement.docType)]}" />
+	                     </div>
 	                 </h:panelGroup>
 	
 	                 <!-- VALUES -->
@@ -82,7 +88,7 @@
 	             <h:panelGroup rendered="#{browseElement.anchor}">
 	                 <div class="search-list__hit-info">
 	                     <h:outputText value="#{msg.numVolumes}: " styleClass="search-list__hit-text-label" />
-	                     <h:outputText value="#{browseElement.numVolumes}" />
+	                     <h:outputText value="#{browseElement.numVolumes}" styleClass="search-list__hit-text-value" />
 	                 </div>
 	             </h:panelGroup>
 	         </div>

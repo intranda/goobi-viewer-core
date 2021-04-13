@@ -41,7 +41,6 @@ var viewerJS = ( function( viewer ) {
             if ( $( '.bookmark-navigation__dropdown:visible' ) ) {
                 _bookshelfDropdown = true;
             }
-            
             // user dropdown
             $( '[data-toggle="user-dropdown"]' ).on( 'click', function( event ) {
                 event.stopPropagation();
@@ -49,7 +48,6 @@ var viewerJS = ( function( viewer ) {
                 // hide bookmarkdropdow if exist and hide language dropdown panel
                 if ( _bookshelfDropdown ) {
                     $( '.bookmark-navigation__dropdown' ).hide();
-                    $( '.change-local' ).hide();
                     $( '.bookmark-popup' ).remove();
                 }
                 // hide collection panel if exist

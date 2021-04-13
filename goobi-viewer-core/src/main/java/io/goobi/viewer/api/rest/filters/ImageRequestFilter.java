@@ -19,6 +19,7 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
 
+import javax.annotation.Priority;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.container.ContainerRequestContext;
@@ -51,11 +52,16 @@ import io.goobi.viewer.model.security.AccessConditionUtils;
 
 /**
  * <p>
- * ImageRequestFilter class.
+ * Request filter for image requests. Does two things:
+ * <ol>
+ * <li>Forwards requests to a page number to the actual file</li>
+ * <li>Sets parameters for image delivery in request</li>
+ * </ol>
  * </p>
  */
 @Provider
 @ContentServerImageBinding
+@Priority(FilterTools.PRIORITY_REDIRECT)
 public class ImageRequestFilter implements ContainerRequestFilter {
 
     private static final Logger logger = LoggerFactory.getLogger(ImageRequestFilter.class);
@@ -65,68 +71,24 @@ public class ImageRequestFilter implements ContainerRequestFilter {
     @Context
     private HttpServletResponse servletResponse;
 
-    /** {@inheritDoc} */
     @Override
     public void filter(ContainerRequestContext request) throws IOException {
 
         String mediaType = MediaType.APPLICATION_JSON;
-        if (servletRequest != null && servletRequest.getRequestURI().toLowerCase().contains("xml")) {
-            mediaType = MediaType.TEXT_XML;
-        }
-        
-        try {
 
-            String size;
-            String region;
-            String rotation;
-            String pi;
-            String imageName;
-            if(servletRequest.getAttribute("filename") != null) {
-                //read parameters 
-                pi = (String) servletRequest.getAttribute("pi");
-                imageName = (String) servletRequest.getAttribute("filename");
-                size = (String) servletRequest.getAttribute("size");
-                region = (String) servletRequest.getAttribute("region");
-                rotation = (String) servletRequest.getAttribute("rotation");
-            } else {
-                String requestPath = servletRequest.getRequestURI();
-                requestPath = requestPath.substring(requestPath.indexOf("image/") + 6);
-                // logger.trace("Filtering request {}", requestPath);
-                StringTokenizer tokenizer = new StringTokenizer(requestPath, "/");
-                List<String> pathSegments = tokenizer.getTokenList();
-                pi = pathSegments.get(0);
-                imageName = pathSegments.get(1);
-                imageName = StringTools.decodeUrl(imageName);
-                
-                if (pathSegments.size() > 4) {
-                    region = pathSegments.get(2);
-                    size = pathSegments.get(3);
-                    rotation = pathSegments.get(4);
-                } else {
-                    size = "max";
-                    region = "full";
-                    rotation = "0";
-                }
-            }
-            
-            
-            if (forwardToCanonicalUrl(pi, imageName, servletRequest, servletResponse)) {
-                //if page order is given for image filename, forward to url with correct filename
-                return;
-            }
-            //only for actual image requests, no info requests
-            boolean isThumb = getIsThumbnail(request, size, region);
+        String pi = (String) servletRequest.getAttribute(FilterTools.ATTRIBUTE_PI);
+        String imageName = (String) servletRequest.getAttribute(FilterTools.ATTRIBUTE_FILENAME);
+
+        if (forwardToCanonicalUrl(pi, imageName, servletRequest, servletResponse)) {
+            //if page order is given for image filename, forward to url with correct filename
+            return;
+        }
+        try {
             if (!BeanUtils.getImageDeliveryBean().isExternalUrl(imageName) && !BeanUtils.getImageDeliveryBean().isPublicUrl(imageName)
                     && !BeanUtils.getImageDeliveryBean().isStaticImageUrl(imageName)) {
-                filterForAccessConditions(request, pi, imageName, isThumb);
-                //                filterForImageSize(requestPath, size);
-                FilterTools.filterForConcurrentViewLimit(pi, servletRequest);
-                setRequestParameter(request, isThumb);
+                //filtering for accessConditions is done in AccessConditionRequestFilter
+                setRequestParameter(request, FilterTools.isThumbnail(servletRequest));
             }
-        } catch (ServiceNotAllowedException e) {
-
-            Response response = Response.status(Status.FORBIDDEN).type(mediaType).entity(new ErrorMessage(Status.FORBIDDEN, e, false)).build();
-            request.abortWith(response);
         } catch (ViewerConfigurationException e) {
             Response response = Response.status(Status.INTERNAL_SERVER_ERROR)
                     .type(mediaType)
@@ -134,6 +96,14 @@ public class ImageRequestFilter implements ContainerRequestFilter {
                     .build();
             request.abortWith(response);
         }
+    }
+
+    /**
+     * @param request
+     */
+    public static void addThumbnailCompression(ContainerRequestContext request) {
+        Integer compression = DataManager.getInstance().getConfiguration().getThumbnailsCompression();
+        request.setProperty("param:compression", compression.toString());
     }
 
     /**
@@ -148,12 +118,13 @@ public class ImageRequestFilter implements ContainerRequestFilter {
      * @return a boolean.
      * @throws java.io.IOException if any.
      */
-    public static boolean forwardToCanonicalUrl(String pi, String imageName, HttpServletRequest request, HttpServletResponse response)
+    public boolean forwardToCanonicalUrl(String pi, String imageName, HttpServletRequest request, HttpServletResponse response)
             throws IOException {
         if (imageName != null && !imageName.contains(".") && imageName.matches("\\d+")) {
             try {
                 Optional<String> filename = DataManager.getInstance().getSearchIndex().getFilename(pi, Integer.parseInt(imageName));
                 if (filename.isPresent()) {
+                    request.setAttribute(FilterTools.ATTRIBUTE_FILENAME, filename.get());
                     String redirectURI = request.getRequestURI().replace("/" + imageName + "/", "/" + filename.get() + "/");
                     response.sendRedirect(redirectURI);
                     return true;
@@ -188,99 +159,5 @@ public class ImageRequestFilter implements ContainerRequestFilter {
 
     }
 
-    /**
-     * @param requestPath
-     * @param pathSegments
-     * @throws ServiceNotAllowedException
-     * @throws IndexUnreachableException
-     */
-    private void filterForAccessConditions(ContainerRequestContext request, String pi, String contentFileName, boolean isThumb)
-            throws ServiceNotAllowedException {
-        // logger.trace("filterForAccessConditions: {}", servletRequest.getSession().getId());
-        contentFileName = StringTools.decodeUrl(contentFileName);
-        boolean access = false;
-        try {
-            if (isThumb) {
-                access = AccessConditionUtils.checkAccessPermissionForThumbnail(servletRequest, pi, contentFileName);
-                //                                logger.trace("Checked thumbnail access: {}/{}: {}", pi, contentFileName, access);
-            } else {
-                access = AccessConditionUtils.checkAccessPermissionForImage(servletRequest, pi, contentFileName);
-                //                                logger.trace("Checked image access: {}/{}: {}", pi, contentFileName, access);
-            }
-        } catch (IndexUnreachableException e) {
-            throw new ServiceNotAllowedException("Serving this image is currently impossibe due to ");
-        } catch (DAOException e) {
-            throw new ServiceNotAllowedException("Serving this image is currently impossibe due to ");
-        }
-
-        if (!access) {
-            throw new ServiceNotAllowedException("Serving this image is restricted due to access conditions");
-        }
-    }
-
-    /**
-     * <p>
-     * getIsThumbnail.
-     * </p>
-     *
-     * @param request a {@link javax.ws.rs.container.ContainerRequestContext} object.
-     * @param size a {@link java.lang.String} object.
-     * @param region a {@link java.lang.String} object.
-     * @return a boolean.
-     */
-    public boolean getIsThumbnail(ContainerRequestContext request, String size, String region) {
-        int imageWidth = Integer.MAX_VALUE;
-        try {
-            Scale scale = Scale.getScaleMethod(size);
-            imageWidth = Integer.parseInt(scale.getWidth());
-        } catch (NumberFormatException | IllegalRequestException | NullPointerException e) {
-            //no image width, assume large image
-        }
-
-        boolean isThumb =
-                "full".equalsIgnoreCase(region) && imageWidth <= DataManager.getInstance().getConfiguration().getUnconditionalImageAccessMaxWidth();
-        //add compression if thumbnail image
-        if (isThumb) {
-            Integer compression = DataManager.getInstance().getConfiguration().getThumbnailsCompression();
-            request.setProperty("param:compression", compression.toString());
-        }
-        return isThumb;
-    }
-
-    @Deprecated
-    private static void filterForImageSize(String requestPath, String sizeSegment) throws ServiceNotAllowedException {
-        try {
-            Scale scale = Scale.getScaleMethod(sizeSegment);
-            if (scale instanceof AbsoluteScale) {
-                int maxWidth = DataManager.getInstance().getConfiguration().getViewerMaxImageWidth();
-                int maxHeight = DataManager.getInstance().getConfiguration().getViewerMaxImageHeight();
-                if (maxWidth > 0 && parse(scale.getWidth()) > maxWidth) {
-                    throw new ServiceNotAllowedException("Requested image width may not exceed " + maxWidth + "px");
-                }
-                if (maxHeight > 0 && parse(scale.getHeight()) > maxHeight) {
-                    throw new ServiceNotAllowedException("Requested image height may not exceed " + maxHeight + "px");
-                }
-            } else if (scale instanceof RelativeScale) {
-                int maxScale = DataManager.getInstance().getConfiguration().getViewerMaxImageScale();
-                if (maxScale > 0 && parse(scale.getPercent()) > maxScale) {
-                    throw new ServiceNotAllowedException("Requested image scale may not exceed " + maxScale + "%");
-                }
-            }
-        } catch (IllegalRequestException | NullPointerException | NumberFormatException e) {
-            logger.debug("Cannot deduce scale from " + requestPath);
-        }
-    }
-
-    /**
-     * @param width
-     * @return
-     */
-    private static int parse(String string) {
-        try {
-            return Integer.parseInt(string);
-        } catch (NumberFormatException e) {
-            return 0;
-        }
-    }
 
 }

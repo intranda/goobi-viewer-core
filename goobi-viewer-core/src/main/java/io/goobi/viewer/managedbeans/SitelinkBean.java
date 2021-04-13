@@ -37,6 +37,7 @@ import org.slf4j.LoggerFactory;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.SolrConstants;
 import io.goobi.viewer.controller.SolrSearchIndex;
+import io.goobi.viewer.controller.StringTools;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
@@ -82,9 +83,9 @@ public class SitelinkBean implements Serializable {
      * @param field a {@link java.lang.String} object.
      * @param filterQuery a {@link java.lang.String} object.
      * @return List of facet values for the given field and query
-     * @should return all existing values for the given field
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
+     * @should return all existing values for the given field
      */
     public List<String> getAvailableValuesForField(String field, String filterQuery) throws PresentationException, IndexUnreachableException {
         if (field == null) {
@@ -102,8 +103,8 @@ public class SitelinkBean implements Serializable {
             if (facet != null) {
                 List<String> ret = new ArrayList<>(facet.getValueCount());
                 for (Count count : facet.getValues()) {
-                    // Skip values starting with u0001
-                    if (count.getName().charAt(0) != 0x01) {
+                    // Skip inverted values
+                    if (!StringTools.checkValueEmptyOrInverted(count.getName())) {
                         ret.add(count.getName());
                     }
                 }

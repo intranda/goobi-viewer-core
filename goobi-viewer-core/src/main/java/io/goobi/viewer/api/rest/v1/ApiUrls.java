@@ -27,10 +27,14 @@ import io.goobi.viewer.controller.DataManager;
 public class ApiUrls extends AbstractApiUrlManager {
 
     public static final String API = "/api/v1";
+    
+    public static final String CACHE = "/cache";
+    public static final String CACHE_RECORD = "/{pi}";
 
     public static final String INDEXER = "/indexer";
 
     public static final String INDEX = "/index";
+    public static final String INDEX_FIELDS = "/fields";
     public static final String INDEX_QUERY = "/query";
     public static final String INDEX_STREAM = "/stream";
     public static final String INDEX_STATISTICS = "/statistics";
@@ -94,6 +98,10 @@ public class ApiUrls extends AbstractApiUrlManager {
     public static final String RECORDS_FILES_ALTO = "/alto/{filename}";
     public static final String RECORDS_FILES_CMDI = "/cmdi/{filename}";
     public static final String RECORDS_FILES_TEI = "/tei/{filename}";
+    @Deprecated
+    /**
+     * @deprecated use {@link #RECORDS_FILES_IMAGE}{@link #RECORDS_FILES_IMAGE_PDF} instead
+     */
     public static final String RECORDS_FILES_PDF = "/pdf/{filename}";
     public static final String RECORDS_FILES_SOURCE = "/source/{filename}";
     public static final String RECORDS_FILES_AUDIO = "/audio/{mimetype}/{filename}";
@@ -104,6 +112,17 @@ public class ApiUrls extends AbstractApiUrlManager {
     public static final String RECORDS_FILES_IMAGE_INFO = "/info.json";
     public static final String RECORDS_FILES_IMAGE_IIIF = "/{region}/{size}/{rotation}/{quality}.{format}";
 
+    public static final String RECORDS_FILES_FOOTER = "/records/{pi}/files/footer/{filename}";
+    public static final String RECORDS_FILES_FOOTER_IIIF = "/{region}/{size}/{rotation}/{quality}.{format}";
+
+    public static final String RECORDS_FILES_3D = "/records/{pi}/files/3d/{filename}";
+    public static final String RECORDS_FILES_3D_INFO = "/info.json";
+    public static final String RECORDS_FILES_3D_AUXILIARY_FILE_1 = "/{subfolder}/{auxfilename}";
+    public static final String RECORDS_FILES_3D_AUXILIARY_FILE_1_ALT = "/{subfolder}//{auxfilename}";
+    public static final String RECORDS_FILES_3D_AUXILIARY_FILE_2 = "/{subfolder}/{subsubfolder}/{auxfilename}";
+    public static final String RECORDS_FILES_3D_AUXILIARY_FILE_2_ALT = "//{subfolder}/{subsubfolder}/{auxfilename}";
+
+    
     public static final String COLLECTIONS = "/collections/{field}";
     public static final String COLLECTIONS_COLLECTION = "/{collection}";
     public static final String COLLECTIONS_CONTENTASSIST = "/contentassist";
@@ -116,7 +135,8 @@ public class ApiUrls extends AbstractApiUrlManager {
     public static final String DOWNLOADS_EPUB_SECTION = "/epub/records/{pi}/sections/{divId}";
     public static final String DOWNLOADS_PDF_SECTION = "/pdf/records/{pi}/sections/{divId}";
 
-    public static final String USERS = "/users/{userId}";
+    public static final String USERS = "/users";
+    public static final String USERS_USERID = "/users/{userId}";
 
     public static final String USERS_BOOKMARKS = "/bookmarks";
     public static final String USERS_BOOKMARKS_LIST = "/{listId}";
@@ -133,9 +153,23 @@ public class ApiUrls extends AbstractApiUrlManager {
     public static final String USERS_BOOKMARKS_LIST_SHARED_IIIF = "/shared/{key}/collection.json";
     public static final String USERS_BOOKMARKS_LIST_SHARED_RSS = "/shared/{key}/rss.xml";
     public static final String USERS_BOOKMARKS_LIST_SHARED_RSS_JSON = "/shared/{key}/rss.json";
+    
+    public static final String USERS_CURRENT = "/current";
 
-    public static final String AUTHORITY = "/authorities/{authority}/{id}";
+    public static final String AUTHORITY = "/authority";
+    public static final String AUTHORITY_RESOLVER = "/resolver";
 
+    public static final String OPENSEARCH = "/opensearch";
+    
+    public static final String SEARCH = "/search";
+    public static final String SEARCH_HIT_CHILDREN = "/hit/{id}/{numChildren}";
+
+    public static final String TASKS = "/tasks";
+    public static final String TASKS_TASK = "/{id}";
+    
+    public static final String CONTEXT = "/context";
+    
+    
     public static final String CROWDSOURCING_CAMPAIGN = "/crowdsourcing/campaings/{campaignId}";
     public static final String CROWDSOURCING_CAMPAIGN_ANNOTATIONS = "/annotations";
     public static final String CROWDSOURCING_CAMPAIGN_RECORDS = "/records/{pi}";
@@ -154,6 +188,31 @@ public class ApiUrls extends AbstractApiUrlManager {
     public static final String LOCALIZATION_VOCABS = "/vocabularies";
     public static final String LOCALIZATION_VOCABS_FILE = "/vocabularies/{filename}";
     public static final String LOCALIZATION_TRANSLATIONS = "/translations";
+    
+    public static final String CMS = "/cms";
+    public static final String CMS_MEDIA = "/cms/media";
+    public static final String CMS_MEDIA_ITEM = "/{id}";
+    public static final String CMS_MEDIA_ITEM_BY_ID = "/{id: \\d+}";
+    public static final String CMS_MEDIA_ITEM_BY_FILE = "/{filename: [^\\/]*\\.\\w{1,4}}";
+    public static final String CMS_MEDIA_FILES = "/files";
+    public static final String CMS_MEDIA_FILES_FILE = "/files/{filename}";
+    public static final String CMS_MEDIA_FILES_FILE_PDF = "/files/{filename: (?i)[^\\/]*\\.(pdf)}";
+    public static final String CMS_MEDIA_FILES_FILE_HTML = "/files/{filename: (?i)[^\\/]*\\.(html)}";
+    
+    public static final String CMS_MEDIA_FILES_FILE_IMAGE = "/cms/media/files/{filename: (?i)[^\\/]*\\.(jpe?g|tiff?|png|gif|jp2)}";
+    public static final String CMS_MEDIA_FILES_FILE_IMAGE_IIIF = "/{region}/{size}/{rotation}/{quality}.{format}";
+
+    public static final String TEMP_MEDIA_FILES = "/temp/files";
+    public static final String TEMP_MEDIA_FILES_FOLDER = "/{folder}";
+    public static final String TEMP_MEDIA_FILES_FILE = "/{folder}/{filename}";
+    
+    public static final String TEMP_MEDIA_FILES_FILE_IMAGE = "/temp/files/{folder}/{filename: (?i)[^\\/]*\\.(jpe?g|tiff?|png|gif|jp2)}";
+    public static final String TEMP_MEDIA_FILES_FILE_IIIF = "/{region}/{size}/{rotation}/{quality}.{format}";
+
+    public static final String EXTERNAL_IMAGES = "/images/external/{filename}";
+    public static final String EXTERNAL_IMAGES_IIIF = "/{region}/{size}/{rotation}/{quality}.{format}";
+
+
 
 
     private final String apiUrl;

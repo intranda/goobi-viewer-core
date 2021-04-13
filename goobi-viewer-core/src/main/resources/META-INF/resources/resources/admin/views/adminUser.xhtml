@@ -221,7 +221,7 @@
                             <!-- SAVE / CANCEL BUTTONS FOR EXISTING USERS -->
                             <ui:fragment rendered="#{adminBean.currentUser.active}">
                                 <div class="row no-gutters justify-content-end admin__final-actions">
-                                    <h:commandLink  rendered="#{adminBean.currentUser.id != null}" id="cancelUserButton" styleClass="btn" value="#{msg.cancel}" action="pretty:adminUsers" immediate="true" />
+                                    <h:commandLink  rendered="#{adminBean.currentUser.id != null}" id="cancelUserButton" styleClass="btn admin__cancel-button" value="#{msg.cancel}" action="pretty:adminUsers" immediate="true" />
                                     <h:commandLink id="saveUserButton" styleClass="btn btn--success" value="#{msg.save}" action="#{adminBean.saveUserAction}" />
                                 </div>
                             </ui:fragment>
@@ -242,7 +242,7 @@
                                 </div>
                                 <!-- SAVE / CANCEL BUTTONS FOR NEW USER -->
                                 <div class="row no-gutters justify-content-end admin__final-actions">
-                                    <h:commandLink id="cancelNewUserCreationnButton" styleClass="btn" value="#{msg.cancel}" action="pretty:adminUsers" immediate="true" />
+                                    <h:commandLink id="cancelNewUserCreationnButton" styleClass="btn admin__cancel-button" value="#{msg.cancel}" action="pretty:adminUsers" immediate="true" />
                                     <h:commandLink id="saveNewUserCreationButton" styleClass="btn btn--success" value="#{msg.save}" action="#{adminBean.saveUserAction}" />
                                 </div>
                             </ui:fragment>

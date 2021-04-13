@@ -16,6 +16,7 @@
 package io.goobi.viewer.api.rest.resourcebuilders;
 
 import java.io.IOException;
+import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
@@ -49,11 +50,11 @@ public class UserBookmarkResourceBuilder extends AbstractBookmarkResourceBuilder
     private static final Logger logger = LoggerFactory.getLogger(UserBookmarkResourceBuilder.class);
 
     private final User user;
-    
+
     public UserBookmarkResourceBuilder(User user) {
         this.user = user;
     }
-    
+
     /**
      * Returns all BookmarkList owned by the current user
      *
@@ -62,8 +63,12 @@ public class UserBookmarkResourceBuilder extends AbstractBookmarkResourceBuilder
      * @throws java.io.IOException if any.
      * @throws io.goobi.viewer.exceptions.RestApiException if any.
      */
+    @Override
     public List<BookmarkList> getAllBookmarkLists() throws DAOException, IOException, RestApiException {
-            return DataManager.getInstance().getDao().getBookmarkLists(user);
+        List<BookmarkList> ret = DataManager.getInstance().getDao().getBookmarkLists(user);
+        BookmarkList.sortBookmarkLists(ret);
+
+        return ret;
     }
 
     /**
@@ -75,6 +80,7 @@ public class UserBookmarkResourceBuilder extends AbstractBookmarkResourceBuilder
      * @throws io.goobi.viewer.exceptions.RestApiException if any.
      * @deprecated not used anymore. Replaced by generating share key
      */
+    @Override
     public List<BookmarkList> getAllSharedBookmarkLists() throws DAOException, IOException, RestApiException {
         return DataManager.getInstance()
                 .getDao()
@@ -94,11 +100,12 @@ public class UserBookmarkResourceBuilder extends AbstractBookmarkResourceBuilder
      * @throws java.io.IOException if any.
      * @throws io.goobi.viewer.exceptions.RestApiException if any.
      */
+    @Override
     public BookmarkList getBookmarkListById(Long id) throws DAOException, IOException, RestApiException {
 
         BookmarkList bookmarkList = DataManager.getInstance().getDao().getBookmarkList(id);
 
-        if(bookmarkList == null) {
+        if (bookmarkList == null) {
             throw new RestApiException("No Bookmark list foud with id " + id, HttpServletResponse.SC_NOT_FOUND);
         }
         if (bookmarkList.isIsPublic()) {
@@ -109,13 +116,9 @@ public class UserBookmarkResourceBuilder extends AbstractBookmarkResourceBuilder
         if (user.equals(bookmarkList.getOwner())) {
             logger.trace("Serving bookmark list " + id + " owned by user " + user);
             return bookmarkList;
-        } else {
-            throw new RestApiException("User has no access to bookmark list " + id + " - request refused", HttpServletResponse.SC_FORBIDDEN);
         }
+        throw new RestApiException("User has no access to bookmark list " + id + " - request refused", HttpServletResponse.SC_FORBIDDEN);
     }
-
-
-
 
     /**
      * Adds a new Bookmark with the given pi, LOGID and page number to the current user's bookmark list with the given id Returns 203 if no matching
@@ -130,7 +133,8 @@ public class UserBookmarkResourceBuilder extends AbstractBookmarkResourceBuilder
      * @throws java.io.IOException if any.
      * @throws io.goobi.viewer.exceptions.RestApiException if any.
      */
-    public SuccessMessage addBookmarkToBookmarkList(Long id,String pi, String logId,
+    @Override
+    public SuccessMessage addBookmarkToBookmarkList(Long id, String pi, String logId,
             String pageString) throws DAOException, IOException, RestApiException {
         Optional<BookmarkList> o = getAllBookmarkLists().stream().filter(bs -> bs.getId().equals(id)).findFirst();
         if (!o.isPresent()) {
@@ -160,6 +164,7 @@ public class UserBookmarkResourceBuilder extends AbstractBookmarkResourceBuilder
      * @throws java.io.IOException if any.
      * @throws io.goobi.viewer.exceptions.RestApiException if any.
      */
+    @Override
     public SuccessMessage addBookmarkToBookmarkList(Long id, String pi)
             throws DAOException, IOException, RestApiException {
         return addBookmarkToBookmarkList(id, pi, null, null);
@@ -178,8 +183,9 @@ public class UserBookmarkResourceBuilder extends AbstractBookmarkResourceBuilder
      * @throws java.io.IOException if any.
      * @throws io.goobi.viewer.exceptions.RestApiException if any.
      */
-    public SuccessMessage deleteBookmarkFromBookmarkList(Long id, String pi,  String logId,
-             String pageString) throws DAOException, IOException, RestApiException {
+    @Override
+    public SuccessMessage deleteBookmarkFromBookmarkList(Long id, String pi, String logId,
+            String pageString) throws DAOException, IOException, RestApiException {
         Optional<BookmarkList> o = getAllBookmarkLists().stream().filter(bs -> bs.getId().equals(id)).findFirst();
         if (!o.isPresent()) {
             throw new RestApiException("No bookmark list with id '" + id + "' found for current user", HttpServletResponse.SC_NO_CONTENT);
@@ -208,6 +214,7 @@ public class UserBookmarkResourceBuilder extends AbstractBookmarkResourceBuilder
      * @throws java.io.IOException if any.
      * @throws io.goobi.viewer.exceptions.RestApiException if any.
      */
+    @Override
     public SuccessMessage deleteBookmarkFromBookmarkList(Long id, String pi)
             throws DAOException, IOException, RestApiException {
         return deleteBookmarkFromBookmarkList(id, pi, null, null);
@@ -222,6 +229,7 @@ public class UserBookmarkResourceBuilder extends AbstractBookmarkResourceBuilder
      * @throws java.io.IOException if any.
      * @throws io.goobi.viewer.exceptions.RestApiException if any.
      */
+    @Override
     public SuccessMessage addBookmarkList(String name) throws DAOException, IOException, RestApiException {
 
         if (userHasBookmarkList(user, name)) {
@@ -244,6 +252,7 @@ public class UserBookmarkResourceBuilder extends AbstractBookmarkResourceBuilder
      * @throws java.io.IOException if any.
      * @throws io.goobi.viewer.exceptions.RestApiException if any.
      */
+    @Override
     public SuccessMessage addBookmarkList() throws DAOException, IOException, RestApiException {
         String name = SessionStoreBookmarkManager.generateNewBookmarkListName(getAllBookmarkLists());
         return addBookmarkList(name);
@@ -293,6 +302,7 @@ public class UserBookmarkResourceBuilder extends AbstractBookmarkResourceBuilder
      * @throws java.io.IOException if any.
      * @throws io.goobi.viewer.exceptions.RestApiException if any.
      */
+    @Override
     public SuccessMessage deleteBookmarkList(Long id) throws DAOException, IOException, RestApiException {
 
         Optional<BookmarkList> bookmarkList = getBookmarkList(user, id);
@@ -316,12 +326,13 @@ public class UserBookmarkResourceBuilder extends AbstractBookmarkResourceBuilder
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      */
+    @Override
     public String getBookmarkListForMirador(Long id, AbstractApiUrlManager urls)
             throws DAOException, IOException, RestApiException, ViewerConfigurationException, IndexUnreachableException, PresentationException {
 
         Optional<BookmarkList> bookmarkList = getBookmarkList(user, id);
         if (bookmarkList.isPresent()) {
-            return bookmarkList.get().getMiradorJsonObject(urls.getApplicationUrl());
+            return bookmarkList.get().getMiradorJsonObject(urls.getApplicationUrl(), urls.getApiUrl());
         }
 
         throw new RestApiException("No bookmark list with id '" + id + "' found for user " + user, HttpServletResponse.SC_NOT_FOUND);
@@ -388,7 +399,7 @@ public class UserBookmarkResourceBuilder extends AbstractBookmarkResourceBuilder
      * @param bookmarkList
      * @param user
      * @return
-     * @deprecated  not used anymore. Replaced by assigning share key
+     * @deprecated not used anymore. Replaced by assigning share key
      */
     private boolean isSharedTo(BookmarkList bookmarkList, User user) {
         return bookmarkList.getGroupShares().stream().anyMatch(group -> isInGroup(user, group));
@@ -438,7 +449,7 @@ public class UserBookmarkResourceBuilder extends AbstractBookmarkResourceBuilder
             return false;
         }
     }
-    
+
     /**
      * <p>
      * getAsCollection.
@@ -449,6 +460,7 @@ public class UserBookmarkResourceBuilder extends AbstractBookmarkResourceBuilder
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      * @throws io.goobi.viewer.exceptions.RestApiException if any.
      */
+    @Override
     public Collection getAsCollection(Long id, AbstractApiUrlManager urls) throws DAOException, RestApiException {
 
         Optional<BookmarkList> list = getBookmarkList(user, id);
@@ -458,7 +470,8 @@ public class UserBookmarkResourceBuilder extends AbstractBookmarkResourceBuilder
 
         throw new RestApiException("No bookmark list with id '" + id + "' found for user " + user, HttpServletResponse.SC_NOT_FOUND);
     }
-    
+
+    @Override
     public Collection createCollection(BookmarkList list, AbstractApiUrlManager urls) {
         String url = urls.path(ApiUrls.USERS_BOOKMARKS, ApiUrls.USERS_BOOKMARKS_LIST_IIIF).params(user.getId(), list.getId()).build();
         return createCollection(list, url);
@@ -469,15 +482,12 @@ public class UserBookmarkResourceBuilder extends AbstractBookmarkResourceBuilder
      */
     @Override
     public void updateBookmarkList(BookmarkList bookmarkList) throws IllegalRequestException, DAOException {
-        if(bookmarkList.getOwner() != null && bookmarkList.getOwner().getId() != null && bookmarkList.getOwner().getId().equals(this.user.getId())) {
+        if (bookmarkList.getOwner() != null && bookmarkList.getOwner().getId() != null && bookmarkList.getOwner().getId().equals(this.user.getId())) {
             DataManager.getInstance().getDao().updateBookmarkList(bookmarkList);
-        } else  {
+        } else {
             throw new IllegalRequestException("Cannot update foreign bookmark list");
 
         }
     }
-
-    
-
 
 }

@@ -1,5 +1,7 @@
 package io.goobi.viewer;
 
+import org.junit.Before;
+
 /**
  * This file is part of the Goobi viewer Connector - OAI-PMH and SRU interfaces for digital objects.
  *
@@ -37,7 +39,12 @@ public abstract class AbstractTest {
         //init rest urls
         ApiUrls dataUrls = new ApiUrls(DataManager.getInstance().getConfiguration().getRestApiUrl());
         ApiUrls contentUrls = new ApiUrls(DataManager.getInstance().getConfiguration().getIIIFApiUrl());
-        DataManager.getInstance().setRestApiManager(new RestApiManager(dataUrls, contentUrls));
+        DataManager.getInstance().setRestApiManager(new RestApiManager());
+    }
+    
+    @Before
+    public void setUp() throws Exception {
+        DataManager.getInstance().injectConfiguration(new Configuration("src/test/resources/config_viewer.test.xml"));
     }
 
 }

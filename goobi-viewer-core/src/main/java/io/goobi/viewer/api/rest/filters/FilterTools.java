@@ -22,11 +22,15 @@ import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.solr.common.SolrDocument;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import de.unigoettingen.sub.commons.contentlib.exceptions.IllegalRequestException;
 import de.unigoettingen.sub.commons.contentlib.exceptions.ServiceNotAllowedException;
+import de.unigoettingen.sub.commons.contentlib.imagelib.transform.Scale;
+import io.goobi.viewer.controller.Configuration;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.SolrConstants;
 import io.goobi.viewer.controller.SolrSearchIndex;
@@ -40,6 +44,12 @@ import io.goobi.viewer.model.security.AccessConditionUtils;
 public class FilterTools {
 
     private static final Logger logger = LoggerFactory.getLogger(FilterTools.class);
+
+    public static final String ATTRIBUTE_PI = "pi";
+    public static final String ATTRIBUTE_FILENAME = "filename";
+    public static final String ATTRIBUTE_LOGID = "logid";
+
+    public static final int PRIORITY_REDIRECT = 100;
 
     /**
      * 
@@ -57,15 +67,24 @@ public class FilterTools {
             DataManager.getInstance().getRecordLockManager().removeLocksForSessionId(session.getId(), Collections.singletonList(pi));
         }
         try {
-            SolrDocument doc = DataManager.getInstance()
-                    .getSearchIndex()
-                    .getFirstDoc(SolrConstants.PI + ":" + pi,
-                            Arrays.asList(SolrConstants.ACCESSCONDITION, SolrConstants.ACCESSCONDITION_CONCURRENTUSE));
-            if (doc == null) {
-                throw new RecordNotFoundException("Record not found: " + pi);
+            List<String> limits = DataManager.getInstance().getRecordLockManager().getRecordLimitsCache().get(pi);
+            List<String> accessConditions = DataManager.getInstance().getRecordLockManager().getRecordAccessConditionsCache().get(pi);
+            
+            // Retrieve from Solr if record limits and access conditions not yet in cache
+            if (limits == null || accessConditions == null) {
+                SolrDocument doc = DataManager.getInstance()
+                        .getSearchIndex()
+                        .getFirstDoc(SolrConstants.PI + ":" + pi,
+                                Arrays.asList(SolrConstants.ACCESSCONDITION, SolrConstants.ACCESSCONDITION_CONCURRENTUSE));
+                if (doc == null) {
+                    throw new RecordNotFoundException("Record not found: " + pi);
+                }
+                limits = SolrSearchIndex.getMetadataValues(doc, (SolrConstants.ACCESSCONDITION_CONCURRENTUSE));
+                DataManager.getInstance().getRecordLockManager().getRecordLimitsCache().put(pi, limits);
+                accessConditions = SolrSearchIndex.getMetadataValues(doc, (SolrConstants.ACCESSCONDITION));
+                DataManager.getInstance().getRecordLockManager().getRecordAccessConditionsCache().put(pi, accessConditions);
             }
-            List<String> limits = SolrSearchIndex.getMetadataValues(doc, (SolrConstants.ACCESSCONDITION_CONCURRENTUSE));
-            List<String> accessConditions = SolrSearchIndex.getMetadataValues(doc, (SolrConstants.ACCESSCONDITION));
+
             // Lock limited view records, if limit exists and record has a license type that has this feature enabled
             if (limits != null && !limits.isEmpty() && AccessConditionUtils.isConcurrentViewsLimitEnabledForAnyAccessCondition(
                     accessConditions)) {
@@ -81,5 +100,36 @@ public class FilterTools {
         } catch (RecordLimitExceededException e) {
             throw new ServiceNotAllowedException("Concurrent views limit has been exceeded for record: " + pi);
         }
+    }
+
+    /**
+     * <p>
+     * Check if the request contains a size and region parameter (and is this a IIIF image request) and if so wether they describe a request for a
+     * full image not larger than {@link Configuration#getUnconditionalImageAccessMaxWidth()}.
+     * </p>
+     *
+     * @param request The servlet request for the resource
+     * @return true if the request is for a IIIF image resource which is considered a thumbnail
+     */
+    public static boolean isThumbnail(HttpServletRequest servletRequest) {
+
+        String size = (String) servletRequest.getAttribute("size");
+        String region = (String) servletRequest.getAttribute("region");
+
+        if (StringUtils.isAnyBlank(size, region)) {
+            return false;
+        }
+
+        int imageWidth = Integer.MAX_VALUE;
+        try {
+            Scale scale = Scale.getScaleMethod(size);
+            imageWidth = Integer.parseInt(scale.getWidth());
+        } catch (NumberFormatException | IllegalRequestException | NullPointerException e) {
+            //no image width, assume large image
+        }
+
+        boolean isThumb =
+                "full".equalsIgnoreCase(region) && imageWidth <= DataManager.getInstance().getConfiguration().getUnconditionalImageAccessMaxWidth();
+        return isThumb;
     }
 }

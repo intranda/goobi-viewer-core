@@ -110,7 +110,7 @@
 																				<label>#{msg.cms_sidebarElement_searchField}:</label>
 																				<div class="custom-control custom-control--select">
 																					<h:selectOneMenu value="#{element.searchField}">
-																						<f:selectItems value="#{cmsBean.getLuceneFields(true)}" var="field" itemValue="#{field}" itemLabel="#{field}" />
+																						<f:selectItems value="#{element.searchFieldOptions}" var="field" itemValue="#{field}" itemLabel="#{field}" />
 																						<f:ajax render="baseCollectionMenu" />
 																					</h:selectOneMenu>
 																				</div>

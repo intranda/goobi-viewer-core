@@ -31,6 +31,9 @@ public class ServletUtils {
      * @param request a {@link javax.servlet.http.HttpServletRequest} object.
      */
     public static String getServletPathWithHostAsUrlFromRequest(HttpServletRequest request) {
+        if (request == null) {
+            return "";
+        }
         String scheme = request.getScheme(); // http
         String serverName = request.getServerName(); // hostname.com
         int serverPort = request.getServerPort(); // 80

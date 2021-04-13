@@ -13,7 +13,8 @@ import io.goobi.viewer.controller.DataManager;
 
 /**
  * <p>
- * CORSHeaderFilter class.
+ * Adds an "Access-Control-Allow-Origin" header to a REST response with the value configured in 
+ *  {@link Configuration#getCORSHeaderValue()}
  * </p>
  */
 @Provider

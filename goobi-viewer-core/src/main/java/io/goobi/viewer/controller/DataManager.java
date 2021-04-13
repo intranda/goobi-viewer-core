@@ -15,6 +15,8 @@
  */
 package io.goobi.viewer.controller;
 
+import java.time.Duration;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -28,6 +30,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import de.intranda.monitoring.timer.TimeAnalysis;
+import io.goobi.viewer.api.rest.model.tasks.TaskManager;
 import io.goobi.viewer.controller.language.LanguageHelper;
 import io.goobi.viewer.dao.IDAO;
 import io.goobi.viewer.dao.impl.JPADAO;
@@ -54,7 +57,7 @@ public final class DataManager {
 
     private static final Object lock = new Object();
 
-    private static volatile DataManager instance = null;
+    private static DataManager instance = null;
 
     private final List<IModule> modules = new ArrayList<>();
 
@@ -81,10 +84,12 @@ public final class DataManager {
     private String indexerVersion = "";
 
     private RestApiManager restApiManager;
-    
+
     private TimeAnalysis timing = new TimeAnalysis();
-    
+
     private FileResourceManager fileResourceManager = null;
+
+    private final TaskManager restApiJobManager = new TaskManager(Duration.of(7, ChronoUnit.DAYS));
 
     /**
      * <p>
@@ -453,7 +458,7 @@ public final class DataManager {
     public RecordLockManager getRecordLockManager() {
         return recordLockManager;
     }
-    
+
     /**
      * @return the timing
      */
@@ -466,23 +471,30 @@ public final class DataManager {
      */
     public void resetTiming() {
         this.timing = new TimeAnalysis();
-        
+
     }
-    
+
     public FileResourceManager getFileResourceManager() {
-        if(this.fileResourceManager == null) {
+        if (this.fileResourceManager == null) {
             this.fileResourceManager = createFileResourceManager();
         }
         return this.fileResourceManager;
     }
-    
+
     private FileResourceManager createFileResourceManager() {
-        if(FacesContext.getCurrentInstance() != null) {            
+        if (FacesContext.getCurrentInstance() != null) {
             ServletContext servletContext = (ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext();
             String themeName = getConfiguration().getTheme();
             return new FileResourceManager(servletContext, themeName);
-        } else {
-            throw new IllegalStateException("Must be called from within faces context");
         }
+
+        throw new IllegalStateException("Must be called from within faces context");
+    }
+
+    /**
+     * @return the restApiJobManager
+     */
+    public TaskManager getRestApiJobManager() {
+        return restApiJobManager;
     }
 }

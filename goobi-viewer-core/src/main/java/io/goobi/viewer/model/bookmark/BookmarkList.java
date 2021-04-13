@@ -16,7 +16,9 @@
 package io.goobi.viewer.model.bookmark;
 
 import java.io.Serializable;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import javax.persistence.CascadeType;
@@ -44,7 +46,9 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 
+import io.goobi.viewer.api.rest.v1.ApiUrls;
 import io.goobi.viewer.controller.DataManager;
+import io.goobi.viewer.controller.RestApiManager;
 import io.goobi.viewer.controller.SolrConstants;
 import io.goobi.viewer.controller.SolrConstants.DocType;
 import io.goobi.viewer.controller.StringTools;
@@ -64,7 +68,12 @@ import io.goobi.viewer.model.security.user.UserGroup;
 @Entity
 @Table(name = "bookshelves")
 @JsonInclude(Include.NON_NULL)
-public class BookmarkList implements Serializable {
+public class BookmarkList implements Serializable, Comparable<BookmarkList> {
+
+    /**
+     * 
+     */
+    public static final String MIRADOR_LIB_PATH = "/resources/javascript/libs/mirador/";
 
     private static final long serialVersionUID = -3040539541804852903L;
 
@@ -89,7 +98,11 @@ public class BookmarkList implements Serializable {
     private Boolean isPublic = false;
 
     @Column(name = "share_key", unique = true)
-    public String shareKey;
+    private String shareKey;
+
+    @Column(name = "date_updated")
+    @JsonIgnore
+    private LocalDateTime dateUpdated;
 
     @OneToMany(mappedBy = "bookmarkList", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @PrivateOwned
@@ -161,6 +174,21 @@ public class BookmarkList implements Serializable {
     }
 
     /**
+     * Descending order by dateUpdated.
+     */
+    @Override
+    public int compareTo(BookmarkList o) {
+        if (dateUpdated != null) {
+            if (o.getDateUpdated() == null) {
+                return -1;
+            }
+            return dateUpdated.compareTo(o.getDateUpdated()) * -1;
+        }
+
+        return 1;
+    }
+
+    /**
      * add bookshelf to list and save
      *
      * @param item a {@link io.goobi.viewer.model.bookmark.Bookmark} object.
@@ -219,7 +247,7 @@ public class BookmarkList implements Serializable {
      */
     public String generateSolrQueryForItems() {
         StringBuilder sb = new StringBuilder();
-        if(items.isEmpty()) {
+        if (items.isEmpty()) {
             return "-*:*";
         }
         for (Bookmark item : items) {
@@ -497,7 +525,7 @@ public class BookmarkList implements Serializable {
      * Generates a persistent share key for public sharing via link.
      */
     public void generateShareKey() {
-        setShareKey(StringTools.generateMD5(String.valueOf(System.currentTimeMillis())));
+        setShareKey(StringTools.generateHash(String.valueOf(System.currentTimeMillis())));
     }
 
     /**
@@ -505,6 +533,20 @@ public class BookmarkList implements Serializable {
      */
     public void removeShareKey() {
         setShareKey(null);
+    }
+
+    /**
+     * @return the dateUpdated
+     */
+    public LocalDateTime getDateUpdated() {
+        return dateUpdated;
+    }
+
+    /**
+     * @param dateUpdated the dateUpdated to set
+     */
+    public void setDateUpdated(LocalDateTime dateUpdated) {
+        this.dateUpdated = dateUpdated;
     }
 
     /**
@@ -574,7 +616,7 @@ public class BookmarkList implements Serializable {
      */
     public String getOwnerName() {
         if (getOwner() != null) {
-            return getOwner().getDisplayNameObfuscated();
+            return getOwner().getDisplayName();
         }
         return null;
     }
@@ -591,7 +633,8 @@ public class BookmarkList implements Serializable {
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      */
-    public String getMiradorJsonObject(String applicationRoot) throws ViewerConfigurationException, IndexUnreachableException, PresentationException {
+    public String getMiradorJsonObject(String applicationRoot, String restApiUrl)
+            throws ViewerConfigurationException, IndexUnreachableException, PresentationException {
         // int cols = (int) Math.sqrt(items.size());
         int cols = (int) Math.ceil(Math.sqrt(items.size()));
         int rows = (int) Math.ceil(items.size() / (float) cols);
@@ -599,7 +642,7 @@ public class BookmarkList implements Serializable {
         JSONObject root = new JSONObject();
         root.put("id", "miradorViewer");
         root.put("layout", rows + "x" + cols);
-        root.put("buildPath", applicationRoot + "/resources/javascript/libs/mirador/");
+        root.put("buildPath", applicationRoot + MIRADOR_LIB_PATH);
 
         JSONArray dataArray = new JSONArray();
         JSONArray windowObjectsArray = new JSONArray();
@@ -607,10 +650,16 @@ public class BookmarkList implements Serializable {
         //        int row = 1;
         //        int col = 1;
         for (Bookmark bi : items) {
-            String manifestUrl = new StringBuilder(DataManager.getInstance().getConfiguration().getIIIFApiUrl()).append("iiif/manifests/")
-                    .append(bi.getPi())
-                    .append("/manifest")
-                    .toString();
+            String pi = bi.getPi();
+            String manifestUrl;
+            if (RestApiManager.isLegacyUrl(restApiUrl)) {
+                manifestUrl = getLegacyManifestUrl(pi);
+            } else {
+                manifestUrl = new ApiUrls(restApiUrl)
+                        .path(ApiUrls.RECORDS_RECORD, ApiUrls.RECORDS_MANIFEST)
+                        .params(pi)
+                        .build();
+            }
             boolean sidePanel = DataManager.getInstance().getSearchIndex().getHitCount(queryRoot + bi.getPi()) > 1;
 
             JSONObject dataItem = new JSONObject();
@@ -637,6 +686,18 @@ public class BookmarkList implements Serializable {
         root.put("windowObjects", windowObjectsArray);
 
         return root.toString();
+    }
+
+    /**
+     * @param pi
+     * @return
+     */
+    public String getLegacyManifestUrl(String pi) {
+        String manifestUrl = new StringBuilder(DataManager.getInstance().getConfiguration().getIIIFApiUrl()).append("iiif/manifests/")
+                .append(pi)
+                .append("/manifest")
+                .toString();
+        return manifestUrl;
     }
 
     /**
@@ -669,7 +730,15 @@ public class BookmarkList implements Serializable {
      * @return a {@link java.lang.String} object.
      */
     public String getIIIFCollectionURI() {
-        return DataManager.getInstance().getConfiguration().getRestApiUrl() + "bookmarks/key/" + getShareKey() + "/";
+        if (StringUtils.isBlank(getShareKey())) {
+            return null;
+        }
+
+        return DataManager.getInstance()
+                .getRestApiManager()
+                .getDataApiManager()
+                .map(urls -> urls.path(ApiUrls.USERS_BOOKMARKS, ApiUrls.USERS_BOOKMARKS_LIST_SHARED_IIIF).params(getShareKey()).build())
+                .orElse(DataManager.getInstance().getConfiguration().getRestApiUrl() + "bookmarks/key/" + getShareKey() + "/");
     }
 
     /**
@@ -687,8 +756,43 @@ public class BookmarkList implements Serializable {
     public boolean isOwnedBy(User user) {
         return user != null && user.equals(this.owner);
     }
-        
+
     public long numItemsWithoutImages() {
         return this.getItems().stream().filter(bm -> !bm.isHasImages()).count();
+    }
+
+    /**
+     * 
+     * @param bookmarkLists
+     * @should sort lists correctly
+     */
+    public static void sortBookmarkLists(List<BookmarkList> bookmarkLists) {
+        if (bookmarkLists == null || bookmarkLists.isEmpty()) {
+            return;
+        }
+
+        // If a list has no dateUpdated value, add the latest item date
+        boolean sort = false;
+        for (BookmarkList list : bookmarkLists) {
+            if (list.getDateUpdated() != null || list.getItems() == null || list.getItems().isEmpty()) {
+                continue;
+            }
+            LocalDateTime latest = null;
+            for (Bookmark bookmark : list.getItems()) {
+                if (bookmark.getDateAdded() == null) {
+                    continue;
+                }
+                if (latest == null || bookmark.getDateAdded().isAfter(latest)) {
+                    latest = bookmark.getDateAdded();
+                }
+            }
+            if (latest != null) {
+                list.setDateUpdated(latest);
+                sort = true;
+            }
+        }
+        if (sort) {
+            Collections.sort(bookmarkLists);
+        }
     }
 }

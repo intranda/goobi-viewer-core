@@ -1,0 +1,47 @@
+/* ==============================================================
+   Widget Record Notes (sidenotes and information for objects)
+   ==============================================================*/
+   
+.widget-record-notes {
+	// show edit link only on hover
+	&:hover {
+		.widget-record-notes__action-link {
+			opacity: 1;
+		}
+	}
+	.widget__title {
+	}
+	.widget__body {
+		a {
+			display: inline;
+			&:hover,
+			&:focus,
+			&:active {}
+		}
+	}
+	&__action-link {
+		transition: opacity 0.2s ease;
+		opacity: 0;
+		text-align: right;
+		a {
+			overflow: visible;
+			&:hover,
+			&:focus,
+			&:active {
+			}
+		}
+	}
+}
+
+
+/* BREAKPOINT FOR LARGE DESKTOPS */
+@media screen and (max-width: @largeBreakpoint) {} 
+
+/* BREAKPOINT FOR DESKTOPS */
+@media screen and (max-width: @mediumBreakpoint) {}
+
+/* BREAKPOINT FOR TABLETS */
+@media screen and (max-width: @smallBreakpoint) {}
+
+/* BREAKPOINT FOR SMARTPHONES */
+@media screen and (max-width: @xSmallBreakpoint) {}

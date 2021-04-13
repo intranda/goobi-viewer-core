@@ -19,6 +19,7 @@ import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.net.URLEncoder;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -138,6 +139,22 @@ public abstract class AbstractApiUrlManager {
             }
             return path;
         }
+        
+        public URI buildURI() {
+            return URI.create(this.build());
+        }
+        
+        /**
+         * Check whether the given path matches a path given by this ApiPath, regardless of path parameters and ignoring query parameters
+         * @param path
+         * @return
+         */
+        public boolean matches(String path) {
+            String regex = this.build() + "/?";
+            regex = regex.replaceAll("{.*?}", "([^/]+)");
+            regex = regex.replaceAll("\\?.*", "");
+            return path.replaceAll("\\?.*", "").matches(regex);
+        }
     }
 
     public static class ApiPathParams extends ApiPath {
@@ -173,24 +190,18 @@ public abstract class AbstractApiUrlManager {
                 if (i.hasNext()) {
                     String replacement = i.next().toString();
                     // Escape URLs and colons
-                    if (replacement.contains(":")) {
-                        try {
-                            // logger.trace("Encoding param: {}", replacement);
-                            replacement = URLEncoder.encode(replacement, StringTools.DEFAULT_ENCODING);
-                        } catch (UnsupportedEncodingException e) {
-                            logger.error(e.getMessage());
-                        }
-                    }
                     urlString = urlString.replace(group, replacement);
                 } else {
                     //no further params. Cannot keep replacing
                     break;
                 }
             }
-            Path path = FileTools.getPathFromUrlString(urlString);
-            if (urlString.endsWith("/") && path.getFileName().toString().contains(".")) {
+            
+            //remove trailing slash if the url contains a dot in the last path segment
+            if (urlString.matches(".*\\.\\w+\\/")) {
                 urlString = urlString.substring(0, urlString.length() - 1);
             }
+
 
             return urlString;
         }
@@ -228,7 +239,9 @@ public abstract class AbstractApiUrlManager {
 
         @Override
         public ApiPathQueries query(String key, Object value) {
-            this.queries.put(key, value);
+            if(value != null) {                
+                this.queries.put(key, value);
+            }
             return this;
         }
 

@@ -26,7 +26,7 @@ import java.time.format.DateTimeFormatterBuilder;
 import java.time.format.DateTimeParseException;
 import java.time.temporal.ChronoField;
 import java.util.ArrayList;
-import java.util.Calendar;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
@@ -73,6 +73,8 @@ public class DateTools {
     public static DateTimeFormatter formatterCNDate = DateTimeFormatter.ofPattern("yyyy.MM.dd");
     /** Constant <code>formatterJPDate</code> */
     public static DateTimeFormatter formatterJPDate = DateTimeFormatter.ofPattern("yyyy/MM/dd");;
+    /** Constant <code>formatterISO8601DateTimeNoSeconds</code> */
+    public static DateTimeFormatter formatterISO8601DateTimeNoSeconds = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
     /** Constant <code>formatterDEDateTime</code> */
     public static DateTimeFormatter formatterDEDateTime = DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm:ss");
     /** Constant <code>formatterENDateTime</code> */
@@ -90,6 +92,8 @@ public class DateTools {
     public static DateTimeFormatter formatterISO8601BasicDate = DateTimeFormatter.ofPattern("yyyyMMdd");
     /** Constant <code>formatterBasicDateTime</code> */
     public static DateTimeFormatter formatterISO8601BasicDateTime = DateTimeFormatter.ofPattern("yyyyMMddHHmmss");
+    /** Constant <code>formatterJavaUtilDateToString</code> */
+    public static DateTimeFormatter formatterJavaUtilDateToString = DateTimeFormatter.ofPattern("EEE MMM dd hh:mm:ss zzz yyyy");
 
     /**
      * Converts the given string to a list of Date objects created from the contents of this string (years or whole dates).
@@ -100,68 +104,67 @@ public class DateTools {
      * @should parse dates in parentheses correctly
      * @return a {@link java.util.List} object.
      */
-    public static List<Date> parseMultipleDatesFromString(String dateString) {
-        List<Date> ret = new ArrayList<>();
-
+    public static List<LocalDateTime> parseMultipleDatesFromString(String dateString) {
         // logger.debug("Parsing date string : {}", dateString);
-        if (StringUtils.isNotEmpty(dateString)) {
-            String splittingChar = "/";
-            String[] dateStringSplit = dateString.split(splittingChar);
-            for (String s : dateStringSplit) {
-                s = s.trim();
+        if (StringUtils.isEmpty(dateString)) {
+            return Collections.emptyList();
+        }
 
-                // Check whether this is a well-formed date and not a range or anything
-                {
-                    Date date = parseDateFromString(s);
-                    if (date != null) {
-                        ret.add(date);
-                        continue;
-                    }
-                }
+        List<LocalDateTime> ret = new ArrayList<>();
+        String splittingChar = "/";
+        String[] dateStringSplit = dateString.split(splittingChar);
+        for (String s : dateStringSplit) {
+            s = s.trim();
 
-                // Try finding a complete date in the string (enclosed in parentheses)
-                Pattern p = Pattern.compile(StringTools.REGEX_PARENTHESES);
-                Matcher m = p.matcher(s);
-                if (m.find()) {
-                    s = s.substring(m.start() + 1, m.end() - 1);
-                    logger.trace("Extracted date: {}", s);
-                    Date date = parseDateFromString(s);
-                    if (date != null) {
-                        ret.add(date);
-                        continue;
-                    }
+            // Check whether this is a well-formed date and not a range or anything
+            {
+                LocalDateTime date = parseDateFromString(s);
+                if (date != null) {
+                    ret.add(date);
+                    continue;
                 }
+            }
 
-                // If no complete date was found, just use the year
-                if (s.contains(" ")) {
-                    String[] sSplit = s.split(" ");
-                    s = sSplit[0];
+            // Try finding a complete date in the string (enclosed in parentheses)
+            Pattern p = Pattern.compile(StringTools.REGEX_PARENTHESES);
+            Matcher m = p.matcher(s);
+            if (m.find()) {
+                s = s.substring(m.start() + 1, m.end() - 1);
+                logger.trace("Extracted date: {}", s);
+                LocalDateTime date = parseDateFromString(s);
+                if (date != null) {
+                    ret.add(date);
+                    continue;
                 }
-                try {
-                    int year = Integer.valueOf(s);
-                    Calendar cal = Calendar.getInstance();
-                    cal.set(year, 0, 1, 0, 0, 0);
-                    ret.add(cal.getTime());
-                } catch (NumberFormatException e) {
-                    logger.error("Could not parse year: {}", s);
-                }
+            }
+
+            // If no complete date was found, just use the year
+            if (s.contains(" ")) {
+                String[] sSplit = s.split(" ");
+                s = sSplit[0];
+            }
+            try {
+                int year = Integer.valueOf(s);
+                ret.add(LocalDateTime.of(year, 1, 1, 0, 0));
+            } catch (NumberFormatException e) {
+                logger.error("Could not parse year: {}", s);
             }
         }
 
         return ret;
     }
-    
+
     /**
      * 
      * @param millis
      * @param utc
      * @return
+     * @should create LocalDateTime correctly
      */
     public static LocalDateTime getLocalDateTimeFromMillis(long millis, boolean utc) {
-        Instant instant = Instant.ofEpochMilli(millis);
-        return instant.atZone(utc ? ZoneOffset.UTC : ZoneId.systemDefault()).toLocalDateTime();
+        return Instant.ofEpochMilli(millis).atZone(utc ? ZoneOffset.UTC : ZoneOffset.systemDefault()).toLocalDateTime();
     }
-    
+
     /**
      * 
      * @param ldt
@@ -169,14 +172,14 @@ public class DateTools {
      * @return
      */
     public static Long getMillisFromLocalDateTime(LocalDateTime ldt, boolean utc) {
-        if(ldt == null) {
+        if (ldt == null) {
             return null;
         }
-        
+
         ZonedDateTime zdt = ldt.atZone(utc ? ZoneOffset.UTC : ZoneId.systemDefault());
         return zdt.toInstant().toEpochMilli();
     }
-    
+
     /**
      * 
      * @param dateString
@@ -289,13 +292,8 @@ public class DateTools {
      * @param dateString a {@link java.lang.String} object.
      * @return a {@link java.util.Date} object.
      */
-    public static Date parseDateFromString(String dateString) {
-        LocalDateTime dateTime = parseDateTimeFromString(dateString, false);
-        if (dateTime != null) {
-            return convertLocalDateTimeToDateViaInstant(dateTime, false);
-        }
-
-        return null;
+    public static LocalDateTime parseDateFromString(String dateString) {
+        return parseDateTimeFromString(dateString, false);
     }
 
     /**
@@ -362,38 +360,22 @@ public class DateTools {
     /**
      * Returns the string representation of the given <code>Date</code> based on the given ISO 639-1 language code.
      *
-     * @param date Date to format.
+     * @param date LocalDateTime to format.
      * @param language ISO 639-1 (two-character) language code.
      * @should format date correctly for the given language
      * @should use English format for unknown languages
      * @return a {@link java.lang.String} object.
      */
-    public static String getLocalDate(Date date, String language) {
+    public static String getLocalDate(LocalDateTime date, String language) {
         if (language == null) {
-            return format(convertDateToLocalDateTimeViaInstant(date), formatterENDateTimeNoSeconds, false);
+            return format(date, formatterENDateTimeNoSeconds, false);
         }
         switch (language) {
             case "de":
-                return format(convertDateToLocalDateTimeViaInstant(date), formatterDEDateTimeNoSeconds, false);
+                return format(date, formatterDEDateTimeNoSeconds, false);
             default:
-                return format(convertDateToLocalDateTimeViaInstant(date), formatterENDateTimeNoSeconds, false);
+                return format(date, formatterENDateTimeNoSeconds, false);
         }
-    }
-    
-    /**
-     * Used by old crowdsourcing module versions.
-     * 
-     * @param date
-     * @param locale
-     * @return
-     */
-    @Deprecated
-    public static String formatDate(Date date, Locale locale) {
-        if (date == null) {
-            return null;
-        }
-
-        return formatDate(convertDateToLocalDateTimeViaInstant(date), locale);
     }
 
     /**
@@ -410,7 +392,7 @@ public class DateTools {
         if (locale == null) {
             return format(ldt, formatterENDate, false);
         }
-        
+
         switch (locale.getLanguage()) {
             case "de":
                 return format(ldt, formatterDEDate, false);
@@ -418,17 +400,5 @@ public class DateTools {
             default:
                 return format(ldt, formatterENDate, false);
         }
-    }
-
-    /**
-     * 
-     * @param millis
-     * @param utc
-     * @return
-     * @should create LocalDateTime correctly
-     */
-    public static LocalDateTime createLocalDateTimeFromMillis(long millis, boolean utc) {
-        LocalDateTime date = Instant.ofEpochMilli(millis).atZone(utc ? ZoneOffset.UTC : ZoneOffset.systemDefault()).toLocalDateTime();
-        return date;
     }
 }

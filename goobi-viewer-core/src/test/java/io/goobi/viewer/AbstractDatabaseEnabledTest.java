@@ -53,7 +53,7 @@ public abstract class AbstractDatabaseEnabledTest extends AbstractTest {
 
     @Before
     public void setUp() throws Exception {
-        // databaseTester.setDataSet(new FlatXmlDataSetBuilder().setColumnSensing(true).build(new FileInputStream("resources/test_db_dataset.xml")));
+        super.setUp();
         databaseTester.onSetup();
     }
 

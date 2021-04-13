@@ -15,18 +15,38 @@
  */
 package io.goobi.viewer.model.bookmark;
 
+import static org.junit.Assert.assertEquals;
+
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
+import org.json.JSONArray;
+import org.json.JSONObject;
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Test;
 
 import io.goobi.viewer.AbstractSolrEnabledTest;
-import io.goobi.viewer.model.bookmark.Bookmark;
-import io.goobi.viewer.model.bookmark.BookmarkList;
+import io.goobi.viewer.api.rest.AbstractApiUrlManager;
+import io.goobi.viewer.api.rest.v1.ApiUrls;
+import io.goobi.viewer.controller.DataManager;
+import io.goobi.viewer.exceptions.ViewerConfigurationException;
 
 public class BookmarkListTest extends AbstractSolrEnabledTest {
+
+    AbstractApiUrlManager urls;
+
+    @Override
+    @Before
+    public void setUp() throws Exception {
+        super.setUp();
+        urls = DataManager.getInstance()
+                .getRestApiManager()
+                .getDataApiManager()
+                .orElseThrow(() -> new ViewerConfigurationException("Must configure current rest api url ('/api/v1'in urls.rest"));
+    }
 
     /**
      * @see BookmarkList#generateSolrQueryForItems()
@@ -68,9 +88,25 @@ public class BookmarkListTest extends AbstractSolrEnabledTest {
             bookmarkList.getItems().add(item);
         }
 
-        String json = bookmarkList.getMiradorJsonObject("/viewer");
+        String json = bookmarkList.getMiradorJsonObject(urls.getApplicationUrl(), urls.getApiUrl());
         Assert.assertFalse(StringUtils.isBlank(json));
-        // TODO check json contents
+
+        JSONObject miradorConfig = new JSONObject(json);
+        JSONArray dataList = miradorConfig.getJSONArray("data");
+        assertEquals(16, dataList.length());
+        JSONArray windowObjects = miradorConfig.getJSONArray("windowObjects");
+
+        assertEquals(16, windowObjects.length());
+        assertEquals(urls.getApplicationUrl() + BookmarkList.MIRADOR_LIB_PATH, miradorConfig.getString("buildPath"));
+
+        for (int i = 1; i <= 16; ++i) {
+            JSONObject link = dataList.getJSONObject(i - 1);
+            JSONObject object = windowObjects.getJSONObject(i - 1);
+            String pi = "PI" + i;
+            String url = urls.path(ApiUrls.RECORDS_RECORD, ApiUrls.RECORDS_MANIFEST).params(pi).build();
+            assertEquals(url, link.getString("manifestUri"));
+            assertEquals(url, object.getString("loadedManifest"));
+        }
     }
 
     /**
@@ -87,5 +123,38 @@ public class BookmarkListTest extends AbstractSolrEnabledTest {
         }
 
         Assert.assertEquals("+( PI:PI1 PI:PI2 PI:PI3 PI:PI4)", bookmarkList.getFilterQuery());
+    }
+
+    /**
+     * @see BookmarkList#sortBookmarkLists(List)
+     * @verifies sort lists correctly
+     */
+    @Test
+    public void sortBookmarkLists_shouldSortListCorrectly() throws Exception {
+        List<BookmarkList> lists = new ArrayList<>();
+        {
+            BookmarkList list = new BookmarkList();
+            list.setId(1L);
+            lists.add(list);
+        }
+        {
+            BookmarkList list = new BookmarkList();
+            list.setId(2L);
+            Bookmark bookmark = new Bookmark();
+            bookmark.setDateAdded(LocalDateTime.of(2021, 2, 28, 0, 0));
+            list.getItems().add(bookmark);
+            lists.add(list);
+        }
+        {
+            BookmarkList list = new BookmarkList();
+            list.setId(3L);
+            list.setDateUpdated(LocalDateTime.of(2021, 3, 1, 0, 0));
+            lists.add(list);
+        }
+
+        BookmarkList.sortBookmarkLists(lists);
+        Assert.assertEquals(Long.valueOf(3), lists.get(0).getId());
+        Assert.assertEquals(Long.valueOf(2), lists.get(1).getId());
+        Assert.assertEquals(Long.valueOf(1), lists.get(2).getId());
     }
 }

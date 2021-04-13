@@ -69,7 +69,8 @@
 			}
 			&__user-dropdown-item-icon {
 				min-width: 30px;
-				padding-left: 15px;
+				padding-left: 1.5rem;
+				text-align: center;
 				.fa {
 					color: @blue;
 				}
@@ -143,8 +144,11 @@
 					color: #ffd65b;
 				}
 			}
-			&__bookmarks-icon-list {
+			&__bookmarks-icon-list,
+			&__bookmarks-icon-list a {
 				display: flex;
+				text-decoration: none;
+				align-items: center;
 			}
 			&__bookmarks-counter {
 				padding: 0 0.3rem;
@@ -174,6 +178,29 @@
 			}
 		}
 	}	
+}
+
+@{RTL} {
+	.login-navigation {
+		[data-login="true"] {
+			.login-navigation {
+				&__user-dropdown {
+					right: unset;
+					left: 0;
+				}
+				&__bookmarks-icon-list {
+					a {
+						margin-left: 0.7rem;
+						margin-right: unset;
+					}
+				}
+				&__user-dropdown-item-icon {
+					padding-left: 0;
+					padding-right: 1.5rem;
+				}
+			}
+		}
+	}
 }
 
 /* BREAKPOINT FOR LARGE DESKTOPS */

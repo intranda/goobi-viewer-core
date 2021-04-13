@@ -39,6 +39,21 @@
 
 /* MODIFICATION */
 
+@{RTL} {
+	.tpl-rss {
+		&__item-metadata {
+			dd {
+				margin-right: 0;
+				text-align: right;
+			}
+			dt {
+				float: right;
+				text-align: right;
+			}
+		}
+	}
+}
+
 /* BREAKPOINT FOR LARGE DESKTOPS */
 @media screen and (max-width: @largeBreakpoint) {}
 
@@ -46,7 +61,19 @@
 @media screen and (max-width: @mediumBreakpoint) {}
 
 /* BREAKPOINT FOR TABLETS */
-@media screen and (max-width: @smallBreakpoint) {}
+@media screen and (max-width: @smallBreakpoint) {
+	@{RTL} {
+		.tpl-rss {
+			&__item-metadata {
+				dd {
+				}
+				dt {
+					float: none;
+				}
+			}
+		}
+	}
+}
 
 /* BREAKPOINT FOR SMARTPHONES */
 @media screen and (max-width: @xSmallBreakpoint) {}

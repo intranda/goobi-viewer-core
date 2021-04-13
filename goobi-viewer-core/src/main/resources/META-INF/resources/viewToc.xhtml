@@ -43,6 +43,15 @@
 					<h:form id="tocForm" prependId="false">
 						<!-- MULTI VOLUME TOC -->
 						<h:panelGroup rendered="#{activeDocumentBean.anchor or activeDocumentBean.group}">
+							
+							<div class="toc_metadata">
+								<ui:include
+									src="/resources/includes/metadata/metadataElement.xhtml">
+									<ui:param name="metadataElement"
+										value="#{metadataBean.getTopMetadataElement(0)}" />
+								</ui:include>
+							</div>
+							
 							<div class="toc__multi-volume">
 								<ui:repeat var="group" value="#{activeDocumentBean.toc.groupNames}">
 									<!-- MV GROUP -->

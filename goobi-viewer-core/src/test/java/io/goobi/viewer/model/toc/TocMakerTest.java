@@ -18,17 +18,22 @@ package io.goobi.viewer.model.toc;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 import org.apache.solr.common.SolrDocument;
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
+import de.intranda.metadata.multilanguage.IMetadataValue;
 import io.goobi.viewer.AbstractDatabaseAndSolrEnabledTest;
 import io.goobi.viewer.controller.Configuration;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.SolrConstants;
+import io.goobi.viewer.managedbeans.ContextMocker;
+import io.goobi.viewer.messages.ViewerResourceBundle;
 import io.goobi.viewer.model.viewer.MimeType;
 import io.goobi.viewer.model.viewer.StructElement;
 
@@ -41,7 +46,7 @@ public class TocMakerTest extends AbstractDatabaseAndSolrEnabledTest {
         // Initialize the instance with a custom config file
         DataManager.getInstance().injectConfiguration(new Configuration("src/test/resources/config_viewer.test.xml"));
     }
-
+    
     /**
      * @see TocMaker#getSolrFieldsToFetch()
      * @verifies return both static and configured fields
@@ -218,10 +223,13 @@ public class TocMakerTest extends AbstractDatabaseAndSolrEnabledTest {
      */
     @Test
     public void buildLabel_shouldFillRemainingParametersCorrectlyIfDocstructFallbackUsed() throws Exception {
+
+        
         SolrDocument doc = new SolrDocument();
         doc.setField(SolrConstants.CURRENTNO, "1");
         doc.setField(SolrConstants.DOCSTRCT, "PeriodicalVolume");
-        String label = TocMaker.buildLabel(doc, "PeriodicalVolume").getValue().orElse("");
+        IMetadataValue value = TocMaker.buildLabel(doc, "PeriodicalVolume");
+        String label = value.getValue(Locale.ENGLISH).orElse("");
         Assert.assertEquals("Number 1: Periodical volume", label);
     }
 

@@ -107,7 +107,7 @@ var cmsJS = ( function( cms ) {
         }
         
         // create items
-        data.items.forEach( function( item ) {
+        data.mediaItems.forEach( function( item ) {
             // grid item
             $gridItem = $( '<div />' );
             if ( item.important ) {
@@ -117,39 +117,50 @@ var cmsJS = ( function( cms ) {
                 $gridItem.addClass( 'grid-item' );
             }
             
+            let label = viewerJS.getMetadataValue(item.label, _defaults.language );
+            let description = viewerJS.getMetadataValue(item.description, _defaults.language );
+            
+            let image = item.image["@id"];
+            if(item.image.service) { 
+                image = item.image.service["@id"] + "/full/max/0/default.jpg";
+            }
+            
+
             // grid item title
-            $gridItemTitle = $( '<div />' );
-            if ( item.url !== '' ) {
-                $gridItemTitleLink = $( '<a />' );
-                $gridItemTitleLink.attr( 'href', item.url );
-                $gridItemTitleLink.attr( 'title', item.title );
-            }
-            $gridItemTitle.addClass( 'grid-item-title' );
-            $gridItemTitle.text( item.title );
-            if ( item.url !== '' ) {
-                $gridItemTitleLink.append( $gridItemTitle );
-                $gridItem.append( $gridItemTitleLink );
-            }
-            else {
-                $gridItem.append( $gridItemTitle );
+            if(label) {                
+                $gridItemTitle = $( '<div />' );
+                if ( item.link ) {
+                    $gridItemTitleLink = $( '<a />' );
+                    $gridItemTitleLink.attr( 'href', item.link );
+                    $gridItemTitleLink.attr( 'title', label );
+                }
+                $gridItemTitle.addClass( 'grid-item-title' );
+                $gridItemTitle.text( label );
+                if ( item.link  ) {
+                    $gridItemTitleLink.append( $gridItemTitle );
+                    $gridItem.append( $gridItemTitleLink );
+                }
+                else {
+                    $gridItem.append( $gridItemTitle );
+                }
             }
             
             // grid item caption
-            if ( item.caption !== '' ) {
+            if ( description ) {
                 $gridItemCaption = $( '<div />' );
                 $gridItemCaption.addClass( 'grid-item-caption' );
-                $gridItemCaption.html( item.caption );
+                $gridItemCaption.html( description );
                 
                 // grid item caption heading
                 $gridItemCaptionHeading = $( '<h3 />' );
-                $gridItemCaptionHeading.text( item.title );
+                $gridItemCaptionHeading.text( label );
                 $gridItemCaption.prepend( $gridItemCaptionHeading );
                 
-                if ( item.url !== '' ) {
+                if ( item.link !== '' ) {
                     // grid item caption link
                     $gridItemCaptionLink = $( '<a />' );
-                    $gridItemCaptionLink.attr( 'href', item.url );
-                    $gridItemCaptionLink.attr( 'title', item.title );
+                    $gridItemCaptionLink.attr( 'href', item.link );
+                    $gridItemCaptionLink.attr( 'title', label );
                     
                     // append to grid item
                     $gridItemCaptionLink.append( $gridItemCaption );
@@ -162,15 +173,15 @@ var cmsJS = ( function( cms ) {
             
             // grid item image
             $gridItemImage = $( '<img />' );
-            $gridItemImage.attr( 'src', item.name );
-			$gridItemImage.attr( 'alt', item.alt );
+            $gridItemImage.attr( 'src', image );
+			$gridItemImage.attr( 'alt', label );
             $gridItemImage.addClass( 'img-fluid' );
-            
-            if ( item.url !== '' ) {
+             
+            if ( item.link !== '' ) {
                 // grid item image link
                 $gridItemImageLink = $( '<a />' );
-                $gridItemImageLink.attr( 'href', item.url );
-                $gridItemImageLink.attr( 'title', item.title );
+                $gridItemImageLink.attr( 'href', item.link );
+                $gridItemImageLink.attr( 'title', label );
                 $gridItemImageLink.append( $gridItemImage );
                 $gridItem.append( $gridItemImageLink );
             }

@@ -58,23 +58,49 @@ var viewerJS = ( function( viewer ) {
             
             $.extend( true, _defaults, config );
             
+            let rtl = $( "#chronoSlider" ).closest('[dir="rtl"]').length > 0;
+            
+            var sliderHandle1 = $('.ui-slider-handle').first();
+            var sliderHandle2 = $('.ui-slider-handle').last();
+            
             $( "#chronoSlider" ).slider({
         		range: true,
+        		isRTL: rtl,
 				min: 0,
         		max: _defaults.yearList.length - 1,
 				values: [ _defaults.yearList.indexOf( _defaults.currentMinRangeValue ), _defaults.yearList.indexOf( _defaults.currentMaxRangeValue) ],
         		slide: function( event, ui ) {
+        			
         			$( '.chronology-slider-start input' ).val( _defaults.yearList[ ui.values[ 0 ] ] );
         			$( '.chronology-slider-end input' ).val( _defaults.yearList[ ui.values[ 1 ] ] );
 
-        			// set handler position
-        			if ( ui.values[ 0 ] == ui.values[ 1 ] ) {
-                		$( "#chronoSlider .ui-slider-handle:first" ).css('margin-right', '-10px');
-                		$( "#chronoSlider .ui-slider-handle:last" ).css('margin-left', '0');
-                	}
-        			else {
-        				$( "#chronoSlider .ui-slider-handle:last" ).css('margin-left', '-10px');
+        			if (rtl) {
+        				// RTL
+        				// method used here for handling the RTL position is not pixel-perfect
+						// set handler position
+						if ( ui.values[ 0 ] == ui.values[ 1 ] ) {
+			        		$( "#chronoSlider .ui-slider-handle" ).first().css('margin-right', '0px');
+			        		$( "#chronoSlider .ui-slider-handle" ).last().css('margin-left', '-10px');
+			        		console.log('uebereinander');
+			        	}	else {
+								$( "#chronoSlider .ui-slider-handle" ).last().css('margin-left', '0px');
+							}
+
+        				$( "#chronoSlider .ui-slider-handle" ).first().css('margin-left', '-10px');
+
+
+        				// NOT WORKING YET
+//        				$( "#chronoSlider .ui-slider-handle" ).first().css('margin-left', 1 * $( "#chronoSlider .ui-slider-handle" ).last().width() * ($( "#chronoSlider" ).slider( "values", 1 ) / $( "#chronoSlider" ).slider('option', 'max')));
+//        				$( "#chronoSlider .ui-slider-handle" ).last().css('margin-left', 1 * $( "#chronoSlider .ui-slider-handle" ).first().width() * ($( "#chronoSlider" ).slider( "values", 0 ) / $( "#chronoSlider" ).slider('option', 'max')));
         			}
+        			else {
+        				// LTR
+        				// working JS calculation method for handling slider handle positions (jQuery slider)
+	        			// set handler position
+        				$( "#chronoSlider .ui-slider-handle" ).last().css('margin-left', -1 * $( "#chronoSlider .ui-slider-handle" ).last().width() * ($( "#chronoSlider" ).slider( "values", 1 ) / $( "#chronoSlider" ).slider('option', 'max')));
+        				$( "#chronoSlider .ui-slider-handle" ).first().css('margin-left', -1 * $( "#chronoSlider .ui-slider-handle" ).first().width() * ($( "#chronoSlider" ).slider( "values", 0 ) / $( "#chronoSlider" ).slider('option', 'max')));
+        			}
+
         		},
         		change: function( event, ui ) {
         			var startDate = parseInt( $( '.chronology-slider-start input' ).val() );
@@ -119,12 +145,24 @@ var viewerJS = ( function( viewer ) {
         	_firstHandlePos = parseInt( $( "#chronoSlider .ui-slider-handle:first" ).css('left') );
         	_lastHandlePos = parseInt( $( "#chronoSlider .ui-slider-handle:last" ).css('left') );
         	
-        	$( "#chronoSlider .ui-slider-handle:last" ).css('margin-left', '-10px');
-        	
-        	if ( _firstHandlePos == _lastHandlePos ) {
-        		$( "#chronoSlider .ui-slider-handle:last" ).css('margin-left', '0');	
-        	}
-        	
+			if (rtl) {
+				
+	        	$( "#chronoSlider .ui-slider-handle" ).first().css('margin-left', '-10px');
+	        	$( "#chronoSlider .ui-slider-handle" ).last().css('margin-left', '0px');
+	        	
+	        	if ( _firstHandlePos == _lastHandlePos ) {
+	        		$( "#chronoSlider .ui-slider-handle" ).last().css('margin-left', '-10px');	
+	        	}
+	        	
+	        	// NOT PERFECTLY WORKING YET
+	        	// $( "#chronoSlider .ui-slider-handle" ).first().css('margin-left', 1 * $( "#chronoSlider .ui-slider-handle" ).last().width() * ($( "#chronoSlider" ).slider( "values", 1 ) / $( "#chronoSlider" ).slider('option', 'max')));
+				// $( "#chronoSlider .ui-slider-handle" ).last().css('margin-left', 1 * $( "#chronoSlider .ui-slider-handle" ).first().width() * ($( "#chronoSlider" ).slider( "values", 0 ) / $( "#chronoSlider" ).slider('option', 'max')));
+			}
+			else {
+				$( "#chronoSlider .ui-slider-handle" ).last().css('margin-left', -1 * $( "#chronoSlider .ui-slider-handle" ).last().width() * ($( "#chronoSlider" ).slider( "values", 1 ) / $( "#chronoSlider" ).slider('option', 'max')));
+				$( "#chronoSlider .ui-slider-handle" ).first().css('margin-left', -1 * $( "#chronoSlider .ui-slider-handle" ).first().width() * ($( "#chronoSlider" ).slider( "values", 0 ) / $( "#chronoSlider" ).slider('option', 'max')));
+			}
+
         	// reset slider
         	if ( _defaults.startValue > _defaults.yearList[ 0 ] || _defaults.endValue < _defaults.yearList[ _defaults.yearList.length - 1 ] ) {
         		$( '.chronology-slider-action-reset' ).addClass( 'active' );

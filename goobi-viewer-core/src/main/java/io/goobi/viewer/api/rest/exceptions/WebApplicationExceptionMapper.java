@@ -17,6 +17,7 @@ package io.goobi.viewer.api.rest.exceptions;
 
 import java.io.FileNotFoundException;
 import java.util.Collections;
+import java.util.concurrent.TimeoutException;
 import java.util.stream.Collectors;
 
 import javax.servlet.http.HttpServletRequest;
@@ -34,10 +35,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import de.unigoettingen.sub.commons.contentlib.exceptions.ContentLibException;
-import de.unigoettingen.sub.commons.contentlib.exceptions.ContentNotFoundException;
 import de.unigoettingen.sub.commons.contentlib.servlet.rest.ContentExceptionMapper;
 import de.unigoettingen.sub.commons.contentlib.servlet.rest.ContentExceptionMapper.ErrorMessage;
-import io.goobi.viewer.api.rest.ViewerRestServiceBinding;
+import io.goobi.viewer.api.rest.bindings.ViewerRestServiceBinding;
 import io.goobi.viewer.exceptions.AccessDeniedException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.NotImplementedException;
@@ -78,6 +78,8 @@ public class WebApplicationExceptionMapper implements ExceptionMapper<WebApplica
             status = Status.UNAUTHORIZED;
         } else if (e instanceof ContentLibException) {
             return new ContentExceptionMapper(request, response).toResponse((ContentLibException) e);
+        } else if (e instanceof TimeoutException) {
+            status = Status.INTERNAL_SERVER_ERROR;
         } else if (e instanceof RuntimeException) {
             status = Status.INTERNAL_SERVER_ERROR;
             logger.error("Error on request {};\t ERROR MESSAGE: {} (method: {})", request.getRequestURL(), e.getMessage(), request.getMethod());
@@ -91,7 +93,7 @@ public class WebApplicationExceptionMapper implements ExceptionMapper<WebApplica
             //unknown error. Probably request error
             status = Status.BAD_REQUEST;
             printStackTrace = true;
-            logger.error(e.getMessage());
+            logger.error(e.getMessage(), e);
         }
 
         String mediaType = MediaType.APPLICATION_JSON;

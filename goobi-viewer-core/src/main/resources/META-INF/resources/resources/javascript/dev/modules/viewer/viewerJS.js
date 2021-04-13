@@ -84,7 +84,6 @@ var viewerJS = (function () {
         viewerJS.userLogin.init();
         
         viewerJS.popovers.init();
-        
 	    viewerJS.userDropdown.init();
 	    
 	    //init toggle hide/show
@@ -92,10 +91,10 @@ var viewerJS = (function () {
 
        
         // init bookmarks if enabled
-        if ( bookmarksEnabled ) {
+        if ( bookmarksEnabled ) { 
             viewerJS.bookmarks.init( {
                 root: rootURL,
-                rest: restURL,
+                rest: this.getRestApiUrl(),
                 userLoggedIn: userLoggedIn,
                 language: currentLang
                 
@@ -243,24 +242,7 @@ var viewerJS = (function () {
         // set tinymce language
 
         // init tinymce if it exists
-        if ($('.tinyMCE').length > 0) {
-            this.tinyConfig.language = currentLang;
-            this.tinyConfig.setup = function (ed) {
-                // listen to changes on tinymce input fields
-                ed.on('init', function (e) {
-                    console.log("init ", e);
-                });
-
-                ed.on('change input paste', function (e) {
-                    tinymce.triggerSave();
-                    if (currentPage === 'adminCmsCreatePage') {
-                        createPageConfig.prevBtn.attr('disabled', true);
-                        createPageConfig.prevDescription.show();
-                    }
-                });
-            };
-            viewerJS.tinyMce.init(this.tinyConfig);
-        }
+        viewer.initTinyMCE();
 
         // handle browser bugs
         switch (_defaults.browser) {
@@ -303,9 +285,39 @@ var viewerJS = (function () {
      
 		viewer.initialized.next();
 		viewer.initialized.complete();
-		
+		viewer.setCheckedStatus();
+		viewer.slider.init();
 	// EOL viewerJS function
     };
+    
+    viewer.showLoader = function() {
+        viewer.jsfAjax.complete.pipe(rxjs.operators.first()).subscribe(() => $(".ajax_loader").hide())
+        $(".ajax_loader").show();
+    }
+    
+    viewer.initTinyMCE  = function(event) {
+        //trigger initializazion if either no event was given or if it is a jsf event in status 'success'
+        if(!event || event.status == "success") {            
+            if ($('.tinyMCE').length > 0) {
+                viewer.tinyConfig.language = currentLang;
+                viewer.tinyConfig.setup = function (ed) {
+                    // listen to changes on tinymce input fields
+                    ed.on('init', function (e) {
+                        if(_debug)console.log("init ", e);
+                    });
+                    
+                    ed.on('change input paste', function (e) {
+                        tinymce.triggerSave();
+                        if (currentPage === 'adminCmsCreatePage') {
+                            createPageConfig.prevBtn.attr('disabled', true);
+                            createPageConfig.prevDescription.show();
+                        }
+                    });
+                };
+                viewerJS.tinyMce.init(viewer.tinyConfig);
+            }
+        }
+    }
 
     viewer.initFragmentNavigation = function () {
         if (window.location.hash) {
@@ -388,6 +400,24 @@ var viewerJS = (function () {
             var filter = new viewerJS.listFilter(filterConfig);
         });
     }
+    
+    //for all html elements with attribute "data-checked" add the "checked" attribute - or remove it if the value of "data-checked" is "false"
+    viewer.setCheckedStatus = function() {
+    	$("[data-checked]").each( (index, element) => {
+    		let checked = element.getAttribute("data-checked");
+    		if(checked == "false") {
+    			element.removeAttribute("checked");
+    		} else {
+    			element.setAttribute("checked", null);
+    		}
+    		
+    	});
+    }
+    
+    viewer.getRestApiUrl = function () {
+        return restURL.replace("/rest", "/api/v1");
+    }
+
 
     // init bootstrap 4 popovers
 	$(document).ready(function(){
@@ -399,13 +429,7 @@ var viewerJS = (function () {
 	        //no bootstrap defined
 	    }
 	});
-    
-    /**
-     * Check if a variable is a string
-     */
-    viewer.isString = function(variable) {
-        return typeof variable === 'string' || variable instanceof String
-    }
+
 
     // global object for tinymce config
     viewer.tinyConfig = {};

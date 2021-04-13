@@ -25,8 +25,8 @@ public class DateToolsTest extends AbstractTest {
                 .withHour(13)
                 .withMinute(15)
                 .withSecond(30);
-        Assert.assertEquals("10.07.1980 13:15", DateTools.getLocalDate(DateTools.convertLocalDateTimeToDateViaInstant(date, false), "de"));
-        Assert.assertEquals("07/10/1980 1:15 PM", DateTools.getLocalDate(DateTools.convertLocalDateTimeToDateViaInstant(date, false), "en"));
+        Assert.assertEquals("10.07.1980 13:15", DateTools.getLocalDate(date, "de"));
+        Assert.assertEquals("07/10/1980 1:15 PM", DateTools.getLocalDate(date, "en"));
     }
 
     /**
@@ -42,7 +42,7 @@ public class DateToolsTest extends AbstractTest {
                 .withHour(13)
                 .withMinute(15)
                 .withSecond(30);
-        Assert.assertEquals("07/10/1980 1:15 PM", DateTools.getLocalDate(DateTools.convertLocalDateTimeToDateViaInstant(date, false), "eu"));
+        Assert.assertEquals("07/10/1980 1:15 PM", DateTools.getLocalDate(date, "eu"));
     }
 
     /**
@@ -209,7 +209,7 @@ public class DateToolsTest extends AbstractTest {
      */
     @Test
     public void parseMultipleDatesFromString_shouldParseSingleDateCorrectly() throws Exception {
-        List<Date> result = DateTools.parseMultipleDatesFromString("2018-11-20");
+        List<LocalDateTime> result = DateTools.parseMultipleDatesFromString("2018-11-20");
         Assert.assertEquals(1, result.size());
         Assert.assertEquals("2018-11-20", DateTools.format(result.get(0), DateTools.formatterISO8601Date, false));
     }
@@ -220,7 +220,7 @@ public class DateToolsTest extends AbstractTest {
      */
     @Test
     public void parseMultipleDatesFromString_shouldParseMultipleDatesCorrectly() throws Exception {
-        List<Date> result = DateTools.parseMultipleDatesFromString("2018-11-19 / 2018-11-20");
+        List<LocalDateTime> result = DateTools.parseMultipleDatesFromString("2018-11-19 / 2018-11-20");
         Assert.assertEquals(2, result.size());
         Assert.assertEquals("2018-11-19", DateTools.format(result.get(0), DateTools.formatterISO8601Date, false));
         Assert.assertEquals("2018-11-20", DateTools.format(result.get(1), DateTools.formatterISO8601Date, false));
@@ -232,19 +232,19 @@ public class DateToolsTest extends AbstractTest {
      */
     @Test
     public void parseMultipleDatesFromString_shouldParseDatesInParenthesesCorrectly() throws Exception {
-        List<Date> result = DateTools.parseMultipleDatesFromString("(2018-11-19) / (2018-11-20)");
+        List<LocalDateTime> result = DateTools.parseMultipleDatesFromString("(2018-11-19) / (2018-11-20)");
         Assert.assertEquals(2, result.size());
         Assert.assertEquals("2018-11-19", DateTools.format(result.get(0), DateTools.formatterISO8601Date, false));
         Assert.assertEquals("2018-11-20", DateTools.format(result.get(1), DateTools.formatterISO8601Date, false));
     }
 
     /**
-     * @see DateTools#createLocalDateTimeFromMillis(long,boolean)
+     * @see DateTools#getLocalDateTimeFromMillis(long,boolean)
      * @verifies create LocalDateTime correctly
      */
     @Test
-    public void createLocalDateTimeFromMillis_shouldCreateLocalDateTimeCorrectly() throws Exception {
-        LocalDateTime ldt = DateTools.createLocalDateTimeFromMillis(1603905300000L, true);
+    public void getLocalDateTimeFromMillis_shouldCreateLocalDateTimeCorrectly() throws Exception {
+        LocalDateTime ldt = DateTools.getLocalDateTimeFromMillis(1603905300000L, true);
         Assert.assertNotNull(ldt);
         Assert.assertEquals(2020, ldt.getYear());
         Assert.assertEquals(10, ldt.getMonthValue());

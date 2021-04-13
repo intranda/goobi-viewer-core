@@ -155,7 +155,6 @@
                                                     | #{msg.lastLoginDate}:
                                                     <h:outputText value="#{adminBean.currentLicense.user.lastLogin}">
                                                         <!-- Everything longer than MM in this pattern is treated as character for the month to be displayed -->
-<!--                                                         <f:convertDateTime pattern="dd. MMMMMMMMMMMMMMM YYYY" /> -->
                                                         <f:converter converterId="localDateTimeConverter" />
                                                         <f:attribute name="pattern" value="#{navigationHelper.dateTimePattern}" />
                                                     </h:outputText>
@@ -558,8 +557,9 @@
                                     </div>
                                 </ui:fragment>
                             </h:panelGroup>
-                            <div class="text-right">
-                                <h:commandLink action="pretty:adminRights" value="#{msg.cancel}" styleClass="btn" immediate="true" />
+                            <div
+								class="row no-gutters justify-content-end admin__final-actions">
+                                <h:commandLink action="pretty:adminRights" value="#{msg.cancel}" styleClass="btn admin__cancel-button" immediate="true" />
                                 <h:commandLink action="#{adminBean.saveCurrentLicenseAction}" value="#{msg.save}" styleClass="btn btn--success" />
                             </div>
                         </div>

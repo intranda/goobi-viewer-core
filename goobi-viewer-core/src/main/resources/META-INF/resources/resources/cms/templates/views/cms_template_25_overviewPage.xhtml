@@ -30,6 +30,7 @@
 
 	<!-- CONTENT -->
 	<ui:define name="content">
+		<ui:include src="/resources/cms/includes/cms_script.xhtml" />
 		<f:view contentType="text/html" encoding="utf-8">
 			<div id="templateOverviewPage" class="tpl-overviewpage">
 				<!-- EDIT PAGE -->
@@ -67,7 +68,7 @@
 						<h:form id="overviewMetadataForm" prependId="false">
 							<ui:fragment rendered="true">
 								<ui:repeat
-									value="#{metadataBean.topMetadataElement.getMetadata(cmsPage.getContentItem('metadata').metadataFieldsAsList)}"
+									value="#{metadataBean.getTopMetadataElement(0).getMetadata(cmsPage.getContentItem('metadata').metadataFieldsAsList)}"
 									var="metadata" varStatus="status">
 									<ui:fragment
 										rendered="#{metadata.values != null and !metadata.values.isEmpty()}">

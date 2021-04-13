@@ -18,10 +18,9 @@ package io.goobi.viewer.model.maps;
 import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.net.URLEncoder;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
-import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -39,8 +38,6 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
-import javax.persistence.Temporal;
-import javax.persistence.TemporalType;
 import javax.persistence.Transient;
 
 import org.apache.commons.lang3.StringUtils;
@@ -104,15 +101,13 @@ public class GeoMap {
     @JsonSerialize(using = TranslationListSerializer.class)
     private Set<MapTranslation> translations = new HashSet<>();
 
-    @Temporal(TemporalType.TIMESTAMP)
     @Column(name = "date_created", nullable = false)
     @JsonIgnore
-    private Date dateCreated;
+    private LocalDateTime dateCreated;
 
-    @Temporal(TemporalType.TIMESTAMP)
     @Column(name = "date_updated")
     @JsonIgnore
-    private Date dateUpdated;
+    private LocalDateTime dateUpdated;
 
     @Column(name = "solr_query")
     private String solrQuery = null;
@@ -120,29 +115,29 @@ public class GeoMap {
     @ElementCollection(fetch = FetchType.EAGER)
     @CollectionTable(name = "cms_geomap_features", joinColumns = @JoinColumn(name = "geomap_id"))
     @Column(name = "features", columnDefinition = "LONGTEXT")
-    private List<String> features = new ArrayList<String>();
+    private List<String> features = new ArrayList<>();
 
     @Column(name = "map_type")
     private GeoMapType type = null;
 
     @Column(name = "initial_view")
-    private String initialView = "{" + 
-            "\"zoom\": 5," + 
-            "\"center\": [11.073397, 49.451993]" + 
-        "}";
+    private String initialView = "{" +
+            "\"zoom\": 5," +
+            "\"center\": [11.073397, 49.451993]" +
+            "}";
 
     @Column(name = "marker")
     private String marker = null;
-    
+
     /**
      * SOLR-Field to create the marker title from if the features are generated from a SOLR query
      */
     @Column(name = "marker_title_field")
     private String markerTitleField = "MD_VALUE";
-    
+
     @Transient
     private String featuresAsString = null;
-    
+
     @Transient
     private boolean showPopover = true;
 
@@ -227,28 +222,28 @@ public class GeoMap {
     /**
      * @return the dateCreated
      */
-    public Date getDateCreated() {
+    public LocalDateTime getDateCreated() {
         return dateCreated;
     }
 
     /**
      * @return the dateUpdated
      */
-    public Date getDateUpdated() {
+    public LocalDateTime getDateUpdated() {
         return dateUpdated;
     }
 
     /**
      * @param dateCreated the dateCreated to set
      */
-    public void setDateCreated(Date dateCreated) {
+    public void setDateCreated(LocalDateTime dateCreated) {
         this.dateCreated = dateCreated;
     }
 
     /**
      * @param dateUpdated the dateUpdated to set
      */
-    public void setDateUpdated(Date dateUpdated) {
+    public void setDateUpdated(LocalDateTime dateUpdated) {
         this.dateUpdated = dateUpdated;
     }
 
@@ -293,7 +288,7 @@ public class GeoMap {
         }
         return title;
     }
-    
+
     /**
      * @return the type
      */
@@ -324,7 +319,7 @@ public class GeoMap {
     }
 
     public String getFeaturesAsString() throws PresentationException, IndexUnreachableException {
-        if(this.featuresAsString == null) {
+        if (this.featuresAsString == null) {
             this.featuresAsString = createFeaturesAsString();
         }
         return this.featuresAsString;
@@ -342,7 +337,7 @@ public class GeoMap {
         }
         this.featuresAsString = null;
     }
-    
+
     private String createFeaturesAsString() throws PresentationException, IndexUnreachableException {
         if (getType() != null) {
             switch (getType()) {
@@ -352,19 +347,20 @@ public class GeoMap {
                     return string;
                 case SOLR_QUERY:
                     Collection<GeoMapFeature> features = getFeaturesFromSolrQuery(getSolrQuery());
-                    String ret = features.stream().distinct()
+                    String ret = features.stream()
+                            .distinct()
                             .map(GeoMapFeature::getJsonObject)
                             .map(Object::toString)
                             .collect(Collectors.joining(","));
-                    
+
                     return "[" + ret + "]";
                 default:
                     return "[]";
             }
 
-        } else {
-            return "[]";
         }
+
+        return "[]";
     }
 
     public Collection<GeoMapFeature> getFeaturesFromSolrQuery(String query) throws PresentationException, IndexUnreachableException {
@@ -387,7 +383,7 @@ public class GeoMap {
      * @param docFeatures
      */
     public static Collection<GeoMapFeature> getGeojsonPoints(SolrDocument doc, String metadataField, String titleField, String descriptionField) {
-                
+
         String title = StringUtils.isBlank(titleField) ? null : SolrSearchIndex.getSingleFieldStringValue(doc, titleField);
         String desc = StringUtils.isBlank(descriptionField) ? null : SolrSearchIndex.getSingleFieldStringValue(doc, descriptionField);
         Set<GeoMapFeature> docFeatures = new HashSet<>();
@@ -476,7 +472,7 @@ public class GeoMap {
             URI uri = URI.create(BeanUtils.getServletPathWithHostAsUrlFromJsfContext() + "/oembed?url=" + escLinkURI + "&format=json");
             return uri;
         } catch (UnsupportedEncodingException e) {
-            e.printStackTrace();
+            logger.error(e.getMessage(), e);
         }
 
         return null;
@@ -505,13 +501,14 @@ public class GeoMap {
         }
         return null;
     }
-    
+
     /**
      * @return the markerTitleField
      */
     public String getMarkerTitleField() {
         return markerTitleField;
     }
+
     /**
      * @param markerTitleField the markerTitleField to set
      */
@@ -525,16 +522,16 @@ public class GeoMap {
     public void setShowPopover(boolean showPopover) {
         this.showPopover = showPopover;
     }
-    
+
     /**
      * @return the showPopover
      */
     public boolean isShowPopover() {
         return showPopover;
     }
-    
+
     /**
-     * Resets the cached feature string. 
+     * Resets the cached feature string.
      */
     public void updateFeatures() {
         this.featuresAsString = null;

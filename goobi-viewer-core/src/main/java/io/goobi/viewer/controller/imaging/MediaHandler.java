@@ -36,7 +36,7 @@ public class MediaHandler {
     private AbstractApiUrlManager urls;
 
     public MediaHandler() {
-        this.urls = DataManager.getInstance().getRestApiManager().getContentApiManager();
+        this.urls = DataManager.getInstance().getRestApiManager().getContentApiManager().orElse(null);
     }
     
     /**

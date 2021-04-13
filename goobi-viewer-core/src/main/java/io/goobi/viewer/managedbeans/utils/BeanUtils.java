@@ -15,7 +15,9 @@
  */
 package io.goobi.viewer.managedbeans.utils;
 
+import java.util.Enumeration;
 import java.util.Locale;
+import java.util.Optional;
 
 import javax.enterprise.context.ContextNotActiveException;
 import javax.enterprise.context.spi.CreationalContext;
@@ -33,6 +35,7 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import org.apache.commons.lang3.StringUtils;
+import org.jboss.weld.serialization.spi.helpers.SerializableContextualInstance;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -50,7 +53,7 @@ import io.goobi.viewer.managedbeans.ImageDeliveryBean;
 import io.goobi.viewer.managedbeans.MetadataBean;
 import io.goobi.viewer.managedbeans.NavigationHelper;
 import io.goobi.viewer.managedbeans.SearchBean;
-import io.goobi.viewer.managedbeans.ArchiveBean;
+import io.goobi.viewer.managedbeans.SessionBean;
 import io.goobi.viewer.managedbeans.UserBean;
 import io.goobi.viewer.model.security.user.User;
 import io.goobi.viewer.servlets.utils.ServletUtils;
@@ -83,6 +86,12 @@ public class BeanUtils {
      * @return a {@link javax.servlet.http.HttpServletRequest} object.
      */
     public static HttpServletRequest getRequest() {
+                
+        SessionBean sb = getSessionBean();
+        if(sb != null) {
+            return sb.getRequest();
+        }
+        
         FacesContext context = FacesContext.getCurrentInstance();
         return getRequest(context);
     }
@@ -127,10 +136,17 @@ public class BeanUtils {
             HttpServletRequest request = (HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest();
             if (request != null) {
                 return ServletUtils.getServletPathWithHostAsUrlFromRequest(request);
+            } else {
+                return "";
+            }
+        } else {
+        	HttpServletRequest request = getRequest();
+            if (request != null) {
+                return ServletUtils.getServletPathWithHostAsUrlFromRequest(request);
+            } else {
+            	return "";
             }
         }
-
-        return "";
     }
 
     /**
@@ -381,6 +397,15 @@ public class BeanUtils {
         return (UserBean) getBeanByName("userBean", UserBean.class);
     }
 
+    public static SessionBean getSessionBean() {
+        Object bean = getBeanByName("sessionBean", SessionBean.class);
+        if(bean != null) {
+            return (SessionBean) bean;
+        } else {
+            return new SessionBean();
+        }
+    }
+    
     /**
      * <p>
      * getImageDeliveryBean.
@@ -397,7 +422,10 @@ public class BeanUtils {
                 bean.getThumbs();
             } catch (ContextNotActiveException e) {
                 bean = new ImageDeliveryBean();
-                bean.init(DataManager.getInstance().getConfiguration());
+                bean.init(
+                        DataManager.getInstance().getConfiguration(), 
+                        DataManager.getInstance().getRestApiManager().getDataApiManager().orElse(null),
+                        DataManager.getInstance().getRestApiManager().getContentApiManager().orElse(null));
             }
         }
         return bean;
@@ -435,7 +463,13 @@ public class BeanUtils {
      */
     public static UserBean getUserBeanFromRequest(HttpServletRequest request) {
         if (request != null && request.getSession() != null) {
-            return (UserBean) request.getSession().getAttribute("userBean");
+           Object bean = request.getSession().getAttribute("userBean");
+           if(bean != null) {
+               return (UserBean)bean;
+           } else {
+               return (UserBean) findInstanceInSessionAttributes(request, UserBean.class)
+                       .orElse(null);
+           }
         }
 
         return null;
@@ -470,6 +504,23 @@ public class BeanUtils {
         return escapeCriticalUrlChracters(value, false);
     }
 
+    public static Optional<Object> findInstanceInSessionAttributes(HttpServletRequest request, Class clazz) {
+        Enumeration<String> attributeNames = request.getSession().getAttributeNames();
+        while(attributeNames.hasMoreElements()) {
+            String attributeName = attributeNames.nextElement();
+            Object attributeValue = request.getSession().getAttribute(attributeName);
+            if(attributeValue != null && attributeValue.getClass().equals(clazz)) {
+                return  Optional.of(attributeValue);
+            } else if(attributeValue != null && attributeValue instanceof SerializableContextualInstance) {
+                Object instance = ((SerializableContextualInstance)attributeValue).getInstance();
+                if(instance != null && instance.getClass().equals(clazz)) {
+                    return Optional.of(instance);
+                }
+            }
+        }
+        return Optional.empty();
+    }
+    
     /**
      * <p>
      * escapeCriticalUrlChracters.

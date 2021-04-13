@@ -15,36 +15,21 @@
  */
 package io.goobi.viewer.managedbeans;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
 import java.io.Serializable;
-import java.net.URI;
-import java.net.URISyntaxException;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.faces.annotation.FacesConfig;
-import javax.faces.annotation.ManagedProperty;
 import javax.inject.Named;
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
 
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.w3c.dom.Document;
-import org.w3c.dom.NamedNodeMap;
-import org.w3c.dom.Node;
-import org.xml.sax.SAXException;
 
 import de.unigoettingen.sub.commons.contentlib.imagelib.ImageFileFormat;
 import de.unigoettingen.sub.commons.contentlib.imagelib.ImageType;
-import de.unigoettingen.sub.commons.contentlib.servlet.model.ContentServerConfiguration;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.SolrSearchIndex;
 import io.goobi.viewer.controller.language.Language;
@@ -53,6 +38,7 @@ import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.exceptions.ViewerConfigurationException;
 import io.goobi.viewer.faces.validators.EmailValidator;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
+import io.goobi.viewer.model.download.DownloadOption;
 import io.goobi.viewer.model.search.SearchHelper;
 import io.goobi.viewer.model.viewer.PageType;
 import io.goobi.viewer.modules.IModule;
@@ -108,159 +94,6 @@ public class ConfigurationBean implements Serializable {
      */
     public String getName() {
         return DataManager.getInstance().getConfiguration().getName();
-    }
-
-    /**
-     * Access the height of the image Footer for OpenLayers. With apache commons it is not possible to read the xml root element, therefore this
-     * method uses jdom.
-     *
-     * @return the Height of the Footer
-     */
-    public Double getRelativeImageFooterHeight() {
-        double height = 0;
-
-        if (!ContentServerConfiguration.getInstance().getWatermarkUse()) {
-            return height;
-        }
-
-        // Load Height of the Footer from the config_imageFooter.xml
-        String watermarkConfigFilePath = ContentServerConfiguration.getInstance().getWatermarkConfigFilePath();
-
-        File fileConfigImageFooter = null;
-        try {
-            fileConfigImageFooter = new File(new URI(watermarkConfigFilePath));
-        } catch (URISyntaxException e) {
-            logger.error("Error while reading the watermark attribut from the " + watermarkConfigFilePath + " file.", e);
-        } catch (IllegalArgumentException e) {
-            logger.error(e.getMessage());
-        }
-        logger.debug("Reading path to the file 'config_imageFooter.xml' from the file: {}", watermarkConfigFilePath);
-        try (FileInputStream fis = new FileInputStream(fileConfigImageFooter)) {
-            DocumentBuilderFactory docBuilderFactory = DocumentBuilderFactory.newInstance();
-            docBuilderFactory.setValidating(false);
-            DocumentBuilder docBuilder = docBuilderFactory.newDocumentBuilder();
-            Document xmldoc = docBuilder.parse(fis);
-
-            // iterate over all nodes and read nodes
-            Node topmostelement = xmldoc.getDocumentElement(); // get uppermost
-            if (topmostelement.getNodeName().equals("watermarks")) {
-                Node child = topmostelement.getFirstChild();
-                while (child != null && !"watermark".equals(child.getNodeName())) {
-                    child = child.getNextSibling();
-                }
-                if (child != null) {
-                    topmostelement = child;
-                }
-            }
-            if (!topmostelement.getNodeName().equals("watermark")) {
-                logger.error("Don't get correct xml response - topelement is NOT <watermark>");
-            }
-
-            // iterate over attributes
-            NamedNodeMap nnm = topmostelement.getAttributes();
-            if (nnm != null) {
-                Node heightnode = nnm.getNamedItem("height"); // read heigth
-                Node widthnode = nnm.getNamedItem("width"); // read heigth
-
-                if (heightnode != null && widthnode != null) {
-                    try {
-                        int absHeight = Integer.parseInt(heightnode.getNodeValue());
-                        int absWidth = Integer.parseInt(widthnode.getNodeValue());
-                        height = (double) absHeight / (double) absWidth;
-                        logger.debug("Red '{}px' for the footer from the {} file.", height, watermarkConfigFilePath);
-                    } catch (Exception e) {
-                        logger.error("Invalid value for watermark's height.");
-                    }
-                }
-            }
-        } catch (FileNotFoundException e) {
-            logger.error(e.getMessage());
-        } catch (IOException e) {
-            logger.error("Can't read XML configuration for Watermark stream due to {}", e.getMessage());
-        } catch (ParserConfigurationException e) {
-            logger.error("Can't parse xml configuration file.", e);
-        } catch (SAXException e) {
-            logger.error("Error in xml file.", e);
-        } catch (IllegalArgumentException e) {
-            logger.error(e.getMessage());
-        }
-
-        return height;
-    }
-
-    /**
-     * Access the height of the image Footer for OpenLayers. With apache commons it is not possible to read the xml root element, therefore this
-     * method uses jdom.
-     *
-     * @return the Height of the Footer
-     */
-    public Integer getImageFooterHeight() {
-        int height = 0;
-
-        if (!ContentServerConfiguration.getInstance().getWatermarkUse()) {
-            return height;
-        }
-
-        // Load Height of the Footer from the config_imageFooter.xml
-        String watermarkConfigFilePath = ContentServerConfiguration.getInstance().getWatermarkConfigFilePath();
-        File fileConfigImageFooter = null;
-        try {
-            fileConfigImageFooter = new File(new URI(watermarkConfigFilePath));
-        } catch (URISyntaxException e) {
-            logger.error("Error while reading the watermark attribut from the " + watermarkConfigFilePath + " file.", e);
-        } catch (IllegalArgumentException e) {
-            logger.error(e.getMessage());
-        }
-        logger.debug("Reading path to the file 'config_imageFooter.xml' from the file: {}", watermarkConfigFilePath);
-        try (FileInputStream fis = new FileInputStream(fileConfigImageFooter)) {
-            DocumentBuilderFactory docBuilderFactory = DocumentBuilderFactory.newInstance();
-            docBuilderFactory.setValidating(false);
-            DocumentBuilder docBuilder = docBuilderFactory.newDocumentBuilder();
-            Document xmldoc = docBuilder.parse(fis);
-
-            // iterate over all nodes and read nodes
-            Node topmostelement = xmldoc.getDocumentElement(); // get uppermost
-            if (topmostelement.getNodeName().equals("watermarks")) {
-                Node child = topmostelement.getFirstChild();
-                while (child != null && !"watermark".equals(child.getNodeName())) {
-                    child = child.getNextSibling();
-                }
-                if (child != null) {
-                    topmostelement = child;
-                }
-            }
-            if (!topmostelement.getNodeName().equals("watermark")) {
-                logger.error("Don't get correct xml response - topelement is NOT <watermark>");
-            }
-
-            // iterate over attributes
-            NamedNodeMap nnm = topmostelement.getAttributes();
-            if (nnm != null) {
-                Node heightnode = nnm.getNamedItem("height"); // read heigth
-
-                if (heightnode != null) {
-                    String value = heightnode.getNodeValue();
-                    try {
-                        height = Integer.parseInt(value);
-                        logger.debug("Red '{}px' for the footer from the {} file.", height, watermarkConfigFilePath);
-                    } catch (Exception e) {
-                        logger.error("Invalid value for watermark's height.");
-                    }
-                }
-            }
-        } catch (FileNotFoundException e) {
-            logger.error(e.getMessage());
-        } catch (IOException e) {
-            logger.error("Can't read XML configuration for Watermark stream due to {}", e.getMessage());
-        } catch (ParserConfigurationException e) {
-            logger.error("Can't parse xml configuration file.", e);
-        } catch (SAXException e) {
-            logger.error("Error in xml file.", e);
-        } catch (IllegalArgumentException e) {
-            logger.error(e.getMessage());
-        }
-
-        return height;
     }
 
     /**
@@ -894,7 +727,6 @@ public class ConfigurationBean implements Serializable {
     public boolean isDisplayCrowdsourcingModuleLinks() {
         return DataManager.getInstance().getConfiguration().isDisplayCrowdsourcingModuleLinks();
     }
-    
 
     /**
      * <p>
@@ -909,7 +741,7 @@ public class ConfigurationBean implements Serializable {
         String value = DataManager.getInstance().getConfiguration().getStartYearForTimeline();
         if ("MIN".equals(value)) {
             String subQuery = null;
-            if(StringUtils.isNotBlank(subTheme)) {
+            if (StringUtils.isNotBlank(subTheme)) {
                 subQuery = String.format("+%s:%s", DataManager.getInstance().getConfiguration().getSubthemeDiscriminatorField(), subTheme);
             }
             return SearchHelper.getMinMaxYears(subQuery)[0];
@@ -922,7 +754,6 @@ public class ConfigurationBean implements Serializable {
         }
     }
 
-    
     /**
      * <p>
      * getTimeMatrixEndYear.
@@ -936,7 +767,7 @@ public class ConfigurationBean implements Serializable {
         String value = DataManager.getInstance().getConfiguration().getEndYearForTimeline();
         if ("MAX".equals(value)) {
             String subQuery = null;
-            if(StringUtils.isNotBlank(subTheme)) {
+            if (StringUtils.isNotBlank(subTheme)) {
                 subQuery = String.format("+%s:%s", DataManager.getInstance().getConfiguration().getSubthemeDiscriminatorField(), subTheme);
             }
             return SearchHelper.getMinMaxYears(subQuery)[1];
@@ -1148,6 +979,14 @@ public class ConfigurationBean implements Serializable {
             return steps.get(2);
         }
         return 0;
+    }
+
+    /**
+     * 
+     * @return
+     */
+    public int getPageSelectDropdownDisplayMinPages() {
+        return DataManager.getInstance().getConfiguration().getPageSelectDropdownDisplayMinPages();
     }
 
     /**
@@ -1407,30 +1246,42 @@ public class ConfigurationBean implements Serializable {
      *
      * @return a boolean.
      */
-    public boolean isDisplayWidgetUsage() {
+    public boolean isDisplaySidebarWidgetUsage() {
         return DataManager.getInstance().getConfiguration().isDisplayWidgetUsage();
     }
 
     /**
-     * <p>
-     * isDisplaySidebarUsageWidgetLinkToJpegImage.
-     * </p>
-     *
-     * @return a boolean.
+     * 
+     * @return
+     * @should return correct value
      */
-    public boolean isDisplaySidebarUsageWidgetLinkToJpegImage() {
-        return DataManager.getInstance().getConfiguration().isDisplaySidebarUsageWidgetLinkToJpegImage();
+    public String getSidebarWidgetUsageIntroductionText() {
+        return DataManager.getInstance().getConfiguration().getSidebarWidgetUsageIntroductionText();
     }
 
     /**
-     * <p>
-     * isDisplaySidebarUsageWidgetLinkToMasterImage.
-     * </p>
-     *
-     * @return a boolean.
+     * 
+     * @return List of configured <code>DownloadOption</code> items
      */
-    public boolean isDisplaySidebarUsageWidgetLinkToMasterImage() {
-        return DataManager.getInstance().getConfiguration().isDisplaySidebarUsageWidgetLinkToMasterImage();
+    public List<DownloadOption> getSidebarWidgetUsagePageDownloadOptions() {
+        return DataManager.getInstance().getConfiguration().getSidebarWidgetUsagePageDownloadOptions();
+    }
+
+    /**
+     * 
+     * @return
+     * @should return correct value
+     */
+    public String getSidebarWidgetDownloadsIntroductionText() {
+        return DataManager.getInstance().getConfiguration().getSidebarWidgetDownloadsIntroductionText();
+    }
+
+    /**
+     * 
+     * @return List of available citation style names
+     */
+    public List<String> getSidebarWidgetUsageCitationStyles() {
+        return DataManager.getInstance().getConfiguration().getSidebarWidgetUsageCitationStyles();
     }
 
     /**
@@ -1478,11 +1329,11 @@ public class ConfigurationBean implements Serializable {
     public String getMapBoxToken() {
         return DataManager.getInstance().getConfiguration().getMapBoxToken();
     }
-    
+
     public String getMapBoxUser() {
         return DataManager.getInstance().getConfiguration().getMapBoxUser();
     }
-    
+
     public String getMapBoxStyleId() {
         return DataManager.getInstance().getConfiguration().getMapBoxStyleId();
     }
@@ -1502,12 +1353,26 @@ public class ConfigurationBean implements Serializable {
     public boolean isAnonymousUserEmailAddressValid() {
         return EmailValidator.validateEmailAddress(DataManager.getInstance().getConfiguration().getAnonymousUserEmailAddress());
     }
-    
+
     /**
      * 
      * @return true if default sorting field is 'RANDOM'; false otherwise
      */
     public boolean isDefaultSortFieldRandom() {
         return "RANDOM".equals(DataManager.getInstance().getConfiguration().getDefaultSortField());
+    }
+
+    public boolean isDisplayUserGeneratedContentBelowImage() {
+        return DataManager.getInstance().getConfiguration().isDisplayUserGeneratedContentBelowImage();
+    }
+
+    /**
+     * @param template
+     * @param fallbackToDefaultTemplate
+     * @return true if docstruct navigation is enabled and properly configured; false otherwise
+     */
+    public boolean isDisplayDocstructNavigation(String template, boolean fallbackToDefaultTemplate) {
+        return DataManager.getInstance().getConfiguration().isDocstructNavigationEnabled()
+                && !DataManager.getInstance().getConfiguration().getDocstructNavigationTypes(template, fallbackToDefaultTemplate).isEmpty();
     }
 }

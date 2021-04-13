@@ -33,7 +33,7 @@ import io.goobi.viewer.messages.ViewerResourceBundle;
 
 /**
  * <p>
- * PdfInformationFilter class.
+ * Response filter for PDF info requests. Translates the DocStruct name of the information request
  * </p>
  */
 @Provider

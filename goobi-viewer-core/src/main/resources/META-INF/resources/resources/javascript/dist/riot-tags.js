@@ -5,7 +5,7 @@ riot.tag2('adminmediaupload', '<div class="admin-cms-media__upload-wrapper"><div
         if(this.opts.fileTypes) {
             this.fileTypes = this.opts.fileTypes;
         } else {
-        	this.fileTypes = 'jpg, png, docx, doc, pdf, rtf, html, xhtml, xml';
+        	this.fileTypes = 'jpg, png, tif, jp2, gif, pdf';
         }
         this.isDragover = false;
 
@@ -176,6 +176,7 @@ riot.tag2('adminmediaupload', '<div class="admin-cms-media__upload-wrapper"><div
         }.bind(this)
 
         this.deleteUploadedFile = function(file) {
+            console.log("delete file ", file, this.getFilename(file));
             return fetch(this.opts.postUrl + this.getFilename(file), {
                 method: "DELETE",
        		})
@@ -204,11 +205,12 @@ riot.tag2('adminmediaupload', '<div class="admin-cms-media__upload-wrapper"><div
             };
 
             return fetch(this.opts.postUrl + this.files[i].name, {
-                method: "GET",
+                method: "HEAD",
+                redirect: 'follow'
             })
-            .then(r => r.json())
-            .then( json => {
-                return json.image != undefined
+            .then( response => {
+                console.log("HEAD respnse ", response);
+                return response.status == 200;
             })
             .then(exists => {
                 if(exists) {
@@ -248,12 +250,20 @@ riot.tag2('adminmediaupload', '<div class="admin-cms-media__upload-wrapper"><div
         }.bind(this)
 
         this.getFilename = function(url) {
-            let result = url.match(/_tifU002F(.*)\/(?:full|square)/);
-            if(result && result.length > 1) {
-                return result[1];
-            } else {
-             	return url;
+            console.log("url" + url);
+            console.log("base url " + this.opts.postUrl);
+            let filename = url.replace(this.opts.postUrl, "");
+            console.log("filename " + filename);
+            if(filename.startsWith("/")) {
+                filename = filename.slice(1);
             }
+            console.log("filename " + filename);
+            let filenameEnd = filename.indexOf("/");
+            if(filenameEnd > 0) {
+                filename = filename.slice(0,filenameEnd);
+            }
+            console.log("filename " + filename);
+            return filename;
         }.bind(this)
 });
 
@@ -306,7 +316,7 @@ riot.tag2('authorityresource', '<div class="annotation__body__authority"><div if
 
 	this.on("mount", () => {
 		this.authorityId = this.opts.resource.id;
-	    this.url = this.opts.resturl + "normdata/get/" + this.unicodeEscapeUri(this.authorityId) + "/ANNOTATION/" + this.opts.currentlang + "/"
+	    this.url = this.opts.resturl + "authority/resolver?id=" + this.unicodeEscapeUri(this.authorityId) + "&template=ANNOTATION&lang=" + this.opts.currentlang
 		this.update();
 	    fetch(this.url)
 	    .then(response => {
@@ -442,19 +452,25 @@ this.showLoader = function() {
 }.bind(this)
 
 this.add = function(event) {
-    let list = event.item.bookmarkList
-    this.opts.bookmarks.addToBookmarkList(list.id, this.pi, this.page, this.logid, this.opts.bookmarks.isTypePage())
+    let list = event.item.bookmarkList;
+    let pi = this.pi;
+    let logid = undefined;
+    let page = this.opts.bookmarks.isTypePage() ? this.page : undefined;
+    this.opts.bookmarks.addToBookmarkList(list.id, pi, page, logid)
     .then( () => this.updateLists());
 }.bind(this)
 
 this.remove = function(event) {
     if(this.opts.bookmarks.config.userLoggedIn) {
-	    let list = event.item.bookmarkList
-	    this.opts.bookmarks.removeFromBookmarkList(list.id, this.pi, this.page, this.logid, this.opts.bookmarks.isTypePage())
+	    let list = event.item.bookmarkList;
+	    let pi = this.pi;
+	    let logid = undefined;
+	    let page = this.opts.bookmarks.isTypePage() ? this.page : undefined;
+	    this.opts.bookmarks.removeFromBookmarkList(list.id, pi, page, logid)
 	    .then( () => this.updateLists())
     } else {
         let bookmark = event.item.bookmark;
-        this.opts.bookmarks.removeFromBookmarkList(undefined, bookmark.pi, undefined, undefined, false)
+        this.opts.bookmarks.removeFromBookmarkList(0, bookmark.pi, undefined, undefined)
 	    .then( () => this.updateLists())
     }
 }.bind(this)
@@ -519,7 +535,7 @@ this.on( 'mount', function() {
 });
 
 this.getBookmarkLists = function() {
-    let lists =  this.opts.bookmarks.getBookmarkLists().slice(0,3);
+    let lists =  this.opts.bookmarks.getBookmarkLists().slice(0,5);
     return lists;
 }.bind(this)
 
@@ -547,15 +563,9 @@ this.add = function(event) {
 }.bind(this)
 
 this.remove = function(event) {
-    if(this.opts.bookmarks.config.userLoggedIn) {
 	    let list = event.item.bookmarkList
 	    this.opts.bookmarks.removeFromBookmarkList(list.id, this.pi, this.page, this.logid, this.opts.bookmarks.isTypePage())
 	    .then( () => this.updateLists())
-    } else {
-        let bookmark = event.item.bookmark;
-        this.opts.bookmarks.removeFromBookmarkList(undefined, bookmark.pi, undefined, undefined, false)
-	    .then( () => this.updateLists())
-    }
 }.bind(this)
 
 this.inList = function(list, pi, page, logid) {
@@ -617,7 +627,7 @@ this.msg = function(key) {
 });
 
 
-riot.tag2('bookmarklistsession', '<ul each="{bookmarkList in getBookmarkLists()}" class="{mainClass} list"><li each="{bookmark in bookmarkList.items}"><div class="row no-margin"><div class="col-4 no-padding"><div class="{mainClass}-image" riot-style="background-image: url({bookmark.representativeImageUrl});"></div></div><div class="col-7 no-padding"><h4><a href="{opts.bookmarks.config.root}{bookmark.url}">{bookmark.name}</a></h4></div><div class="col-1 no-padding {mainClass}-remove"><button class="btn btn--clean" type="button" data-bookshelf-type="delete" onclick="{remove}" aria-label="{msg(\'bookmarkList_removeFromBookmarkList\')}"><i class="fa fa-ban" aria-hidden="true"></i></button></div></div></li></ul><div each="{bookmarkList in getBookmarkLists()}" class="{mainClass}-actions"><div if="{mayEmptyList(bookmarkList)}" class="{mainClass}-reset"><button class="btn btn--clean" type="button" data-bookshelf-type="reset" onclick="{deleteList}"><span>{msg(\'bookmarkList_reset\')}</span><i class="fa fa-trash-o" aria-hidden="true"></i></button></div><div if="{maySendList(bookmarkList)}" class="{mainClass}-send"><a href="{sendListUrl(bookmarkList)}"><span>{msg(\'bookmarkList_session_mail_sendList\')}</span><i class="fa fa-paper-plane-o" aria-hidden="true"></i></a></div><div if="{maySearchList(bookmarkList)}" class="{mainClass}-search"><a href="{searchListUrl(bookmarkList)}" data-toggle="tooltip" data-placement="top" data-original-title="" title=""><span>{msg(\'action__search_in_bookmarks\')}</span><i class="fa fa-search" aria-hidden="true"></i></a></div><div if="{mayCompareList(bookmarkList)}" class="{mainClass}-mirador"><a href="{miradorUrl(bookmarkList)}" target="_blank"><span>{msg(\'viewMiradorComparison\')}</span><i class="fa fa-th" aria-hidden="true"></i></a></div></div>', '', '', function(opts) {
+riot.tag2('bookmarklistsession', '<ul each="{bookmarkList in getBookmarkLists()}" class="{mainClass} list"><li each="{bookmark in bookmarkList.items}"><div class="row no-margin {mainClass}-single-entry"><div class="col-11 no-padding {mainClass}-title"><a href="{opts.bookmarks.config.root}{bookmark.url}"><div class="row no-gutters"><div class="col-4 no-padding"><div class="{mainClass}-image" riot-style="background-image: url({bookmark.representativeImageUrl});"></div></div><div class="col-7 no-padding"><h4>{bookmark.name}</h4></div></div></a></div><div class="col-1 no-padding {mainClass}-remove"><button class="btn btn--clean" type="button" data-bookmark-list-type="delete" onclick="{remove}" aria-label="{msg(\'bookmarkList_removeFromBookmarkList\')}"><i class="fa fa-ban" aria-hidden="true"></i></button></div></div></li></ul><div each="{bookmarkList in getBookmarkLists()}" class="{mainClass}-actions"><div if="{mayEmptyList(bookmarkList)}" class="{mainClass}-reset"><button class="btn btn--clean" type="button" data-bookmark-list-type="reset" onclick="{deleteList}"><span>{msg(\'bookmarkList_reset\')}</span><i class="fa fa-trash-o" aria-hidden="true"></i></button></div><div if="{maySendList(bookmarkList)}" class="{mainClass}-send"><a href="{sendListUrl(bookmarkList)}"><span>{msg(\'bookmarkList_session_mail_sendList\')}</span><i class="fa fa-paper-plane-o" aria-hidden="true"></i></a></div><div if="{maySearchList(bookmarkList)}" class="{mainClass}-search"><a href="{searchListUrl(bookmarkList)}" data-toggle="tooltip" data-placement="top" data-original-title="" title=""><span>{msg(\'action__search_in_bookmarks\')}</span><i class="fa fa-search" aria-hidden="true"></i></a></div><div if="{mayCompareList(bookmarkList)}" class="{mainClass}-mirador"><a href="{miradorUrl(bookmarkList)}" target="_blank"><span>{msg(\'viewMiradorComparison\')}</span><i class="fa fa-th" aria-hidden="true"></i></a></div></div>', '', '', function(opts) {
 
 
 this.pi = this.opts.data.pi;
@@ -658,20 +668,13 @@ this.mayEmptyList = function(list) {
 }.bind(this)
 
 this.remove = function(event) {
-    if(this.opts.bookmarks.config.userLoggedIn) {
-	    let list = event.item.bookmarkList
-	    this.opts.bookmarks.removeFromBookmarkList(list.id, this.pi, this.page, this.logid, this.opts.bookmarks.isTypePage())
-	    .then( () => this.updateLists())
-    } else {
         let bookmark = event.item.bookmark;
-        this.opts.bookmarks.removeFromBookmarkList(undefined, bookmark.pi, undefined, undefined, false)
+        this.opts.bookmarks.removeFromBookmarkList(0, bookmark.pi, undefined, undefined, false)
 	    .then( () => this.updateLists())
-    }
 }.bind(this)
 
 this.deleteList = function(event) {
-    let list = event.item.bookmarkList
-    this.opts.bookmarks.removeBookmarkList(list.id)
+    this.opts.bookmarks.removeBookmarkList(0)
     .then( () => this.updateLists());
 }.bind(this)
 
@@ -702,11 +705,7 @@ this.mayCompareList = function(list) {
 }.bind(this)
 
 this.miradorUrl = function(list) {
-    if(list.id != null) {
-    	return this.opts.bookmarks.config.root + "/mirador/id/" + list.id + "/";
-    } else {
-    	return this.opts.bookmarks.config.root + "/mirador/";
-    }
+    	return this.opts.bookmarks.config.root + "/mirador/id/0/";
 }.bind(this)
 
 this.msg = function(key) {
@@ -788,240 +787,6 @@ this.msg = function(key) {
 }.bind(this)
 
 });
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-riot.tag2('slideshow', '<a if="{manifest === undefined}" data-linkid="{opts.pis}"></a><figure class="slideshow" if="{manifest !== undefined}" onmouseenter="{mouseenter}" onmouseleave="{mouseleave}"><div class="slideshow__image"><a href="{getLink(manifest)}" class="remember-scroll-position" data-linkid="{opts.pis}" onclick="{storeScrollPosition}"><img riot-src="{getThumbnail(manifest)}" class="{\'active\' : active}" alt="{getLabel(manifest)}" onload="{setImageActive}"></a></div><figcaption><h4>{getTitleOrLabel(manifest)}</h4><p><span each="{md in metadataList}"> {getMetadataValue(manifest, md)} <br></span></p><div if="{pis.length > 1}" class="slideshow__dots"><ul><li each="{imagepi in pis}"><button class="btn btn--clean {\'active\' : pi === imagepi}" onclick="{setPi}"></button></li></ul></div></figcaption></figure>', '', '', function(opts) {
-
-    	$.fn.isInViewport = function() {
-        	var elementTop = $( this ).offset().top;
-        	var elementBottom = elementTop + $( this ).outerHeight();
-        	var elementHeight = $( this ).outerHeight();
-        	var viewportTop = $( window ).scrollTop();
-        	var viewportBottom = viewportTop + $( window ).height();
-
-        	return elementBottom > (viewportTop + elementHeight) && elementTop < (viewportBottom - elementHeight);
-    	};
-
-    	this.pis = this.opts.pis.split(/[\s,;]+/);
-    	this.pis = this.pis.filter( function( pi ) {
-    		return pi != undefined && pi.length > 0;
-    	} );
-        this.metadataList = this.opts.metadata.split(/[,;]+/);
-        this.manifest = undefined;
-        this.manifests = new Map();
-        this.active = false;
-        this.visible = false;
-        this.mouseover = false;
-
-        this.on( 'mount', function() {
-        	this.loadManifest( this.pis[0] );
-        }.bind( this ));
-
-        this.mouseenter = function() {
-        	this.mouseover = true;
-        }.bind(this)
-
-        this.mouseleave = function() {
-        	this.mouseover = false;
-        }.bind(this)
-
-        this.checkPosition = function() {
-        	var slideshow = $( '#' + this.opts.id + ' figure' );
-
-        	if ( !this.visible && this.pis.length > 1 && slideshow.isInViewport() ) {
-        		this.visible = true;
-            	this.moveSlides( this.pis, true );
-        	}
-        	else if ( this.visible && !slideshow.isInViewport() ) {
-        		this.visible = false;
-        		this.moveSlides( this.pis, false );
-        	}
-        }.bind(this)
-
-        this.moveSlides = function( pis, move ) {
-        	var index = 1;
-
-        	if ( move ) {
-        		clearInterval( this.interval );
-
-        		this.interval = setInterval( function() {
-                	if ( index === pis.length ) {
-                		index = 0;
-                	}
-                	if ( !this.mouseover ) {
-            			this.loadManifest( pis[ index ] );
-                    	index++;
-                	}
-                }.bind( this ), 3000 );
-        	}
-        	else {
-        		clearInterval( this.interval );
-        	}
-        }.bind(this)
-
-        this.setPi = function( event ) {
-        	let pi = event.item.imagepi;
-
-        	if ( pi != this.pi ) {
-        		this.pi = pi;
-
-        		return this.loadManifest( pi );
-        	}
-        }.bind(this)
-
-        this.setImageActive = function() {
-        	this.active = true;
-        	this.update();
-        }.bind(this)
-
-        this.loadManifest = function( pi ) {
-        	let url = this.opts.manifest_base_url.replace( "{pi}", pi );
-        	let json = this.manifests.get( url );
-        	this.pi = pi;
-        	this.active = false;
-        	this.update();
-
-        	if ( !json ) {
-        		$.getJSON( url, function( manifest ) {
-        			if ( manifest ) {
-
-        				this.manifest = manifest;
-        				this.manifests.set( url, manifest );
-        				this.update();
-            			this.checkPosition();
-
-        				$( window ).on( 'resize scroll', function() {
-            				this.checkPosition();
-        				}.bind( this ) );
-        			}
-        		}.bind( this ))
-        		.then(function(data) {
-        		})
-        		.catch(function(error) {
-        			console.error("error laoding ", url, ": ", error);
-        		});
-        	}
-        	else {
-
-            	setTimeout( function() {
-            		this.manifest = json;
-            		this.update();
-            	}.bind( this ), 300 );
-        	}
-        }.bind(this)
-        this.getThumbnail = function( manifest, width, height ) {
-        	if( !manifest.thumbnail.service || ( !width && !height ) ) {
-        		return manifest.thumbnail['@id'];
-        	}
-        	else {
-        		let sizePrefix = width && height ? "!" : "";
-
-        		return manifest.thumbnail.service['@id'] + "/full/" + sizePrefix + width + "," + height + "/0/default.jpg";
-        	}
-        }.bind(this)
-
-        this.getLink = function( manifest ) {
-        	rendering = manifest.rendering;
-
-        	if ( Array.isArray( rendering ) ) {
-        		rendering = rendering.find( ( rend ) => rend.format == "text/html" );
-        	}
-        	if ( rendering ) {
-        		return rendering['@id'];
-        	}
-        	else {
-        		return '';
-        	}
-        }.bind(this)
-
-        this.getTitleOrLabel = function( manifest ) {
-        	var title = this.getMetadataValue( manifest, 'Title' );
-
-        	if(title) {
-        		return title;
-        	} else {
-        		return getLabel( manifest );
-        	}
-        }.bind(this)
-
-        this.getLabel = function( manifest ) {
-        	return this.getValue(manifest.label, this.opts.locale);
-        }.bind(this)
-
-        this.getMetadataValue = function( manifest, metadataLabel ) {
-        	if ( manifest && metadataLabel ) {
-        		let metadata = manifest.metadata.find( ( md ) => {
-        			let label = md.label;
-        			if ( Array.isArray( label ) ) {
-        				label = label.find( (l) => l['@value'].trim() == metadataLabel.trim());
-        				if ( label ) {
-        					label = label['@value']
-        				}
-        			}
-        			return label && label.trim() == metadataLabel.trim();
-        		});
-
-        		if ( metadata ) {
-        			let value = this.getValue( metadata.value, this.opts.locale );
-
-        			return value;
-        		}
-        	}
-        }.bind(this)
-
-        this.getValue = function ( element, locale ) {
-            if ( element ) {
-            	if ( typeof element === 'string' ) {
-            		return element;
-            	}
-        		else if ( Array.isArray( element ) ) {
-            		var fallback;
-
-            		for ( var index in element  ) {
-            			var item = element[index];
-
-            			if ( typeof item === 'string' ) {
-            				return item;
-            			}
-            			else {
-            				var value = item['@value'];
-            				var language = item['@language'];
-
-            				if ( locale == language ) {
-            					return value;
-            				}
-            				else if ( !fallback || language == 'en' ) {
-            					fallback = value;
-            				}
-            			}
-            		}
-
-            		return fallback;
-            	}
-            	else {
-            		return element['@value'];
-            	}
-            }
-        }.bind(this)
-
-        this.storeScrollPosition = function(event) {
-            $target = $(event.target).closest("a");
-            viewerJS.handleScrollPositionClick($target);
-        }.bind(this)
-});
-
 riot.tag2('collectionlist', '<div if="{collections}" each="{collection, index in collections}" class="card-group"><div class="card" role="tablist"><div class="card-header"><div class="card-thumbnail"><img if="{collection.thumbnail}" class="img-fluid" riot-src="{collection.thumbnail[\'@id\']}"></div><h4 class="card-title"><a if="{!hasChildren(collection)}" href="{collection.rendering[0][\'@id\']}">{getValue(collection.label)} ({viewerJS.iiif.getContainedWorks(collection)})</a><a if="{hasChildren(collection)}" class="collapsed" href="#collapse-{this.opts.setindex}-{index}" role="button" data-toggle="collapse" aria-expanded="false"><span>{getValue(collection.label)} ({viewerJS.iiif.getContainedWorks(collection)})</span><i class="fa fa-angle-flip" aria-hidden="true"></i></a></h4><div class="tpl-stacked-collection__actions"><div class="tpl-stacked-collection__info-toggle"><a if="{hasDescription(collection)}" href="#description-{this.opts.setindex}-{index}" role="button" data-toggle="collapse" aria-expanded="false"><i class="fa fa-info-circle" aria-hidden="true"></i></a></div><div class="card-rss"><a href="{viewerJS.iiif.getRelated(collection, \'Rss feed\')[\'@id\']}"><i class="fa fa-rss" aria-hidden="true"></i></a></div></div></div><div if="{hasDescription(collection)}" id="description-{this.opts.setindex}-{index}" class="card-collapse collapse" role="tabcard" aria-expanded="false"><p class="tpl-stacked-collection__long-info"> {getDescription(collection)} </p></div><div if="{hasChildren(collection)}" id="collapse-{this.opts.setindex}-{index}" class="card-collapse collapse" role="tabcard" aria-expanded="false"><div class="card-body"><ul if="{collection.members && collection.members.length > 0}" class="list"><li each="{child in getChildren(collection)}"><a class="card-body__collection" href="{child.rendering[0][\'@id\']}">{getValue(child.label)} ({viewerJS.iiif.getContainedWorks(child)})</a><a class="card-body__rss" href="{viewerJS.iiif.getRelated(child, \'Rss feed\')[\'@id\']}" target="_blank"><i class="fa fa-rss" aria-hidden="true"></i></a></li></ul></div></div></div></div>', '', 'class="tpl-stacked-collection__collection-list"', function(opts) {
 
 this.collections = this.opts.collections;
@@ -1225,7 +990,7 @@ riot.tag2('authorityresourcequestion', '<div if="{this.showInstructions()}" clas
 });
 
 
-riot.tag2('campaignitem', '<div if="{!opts.pi}" class="crowdsourcing-annotations__content-wrapper"> {Crowdsourcing.translate(⁗crowdsourcing__error__no_item_available⁗)} </div><div if="{opts.pi}" class="crowdsourcing-annotations__content-wrapper"><span if="{this.loading}" class="crowdsourcing-annotations__loader-wrapper"><img riot-src="{this.opts.loaderimageurl}"></span><span if="{this.error}" class="crowdsourcing-annotations__loader-wrapper"><span class="error_message">{this.error.message}</span></span></span><div class="crowdsourcing-annotations__content-left"><imageview if="{this.item}" id="mainImage" source="{this.item.getCurrentCanvas()}" item="{this.item}"></imageView><canvaspaginator if="{this.item}" item="{this.item}"></canvasPaginator></div><div if="{this.item}" class="crowdsourcing-annotations__content-right"><div class="crowdsourcing-annotations__questions-wrapper"><div each="{question, index in this.item.questions}" onclick="{setActive}" class="crowdsourcing-annotations__question-wrapper {question.isRegionTarget() ? \'area-selector-question\' : \'\'} {question.active ? \'active\' : \'\'}"><div class="crowdsourcing-annotations__question-wrapper-description">{Crowdsourcing.translate(question.text)}</div><plaintextquestion if="{question.questionType == \'PLAINTEXT\'}" question="{question}" item="{this.item}" index="{index}"></plaintextQuestion><richtextquestion if="{question.questionType == \'RICHTEXT\'}" question="{question}" item="{this.item}" index="{index}"></richtextQuestion><geolocationquestion if="{question.questionType == \'GEOLOCATION_POINT\'}" question="{question}" item="{this.item}" index="{index}"></geoLocationQuestion><authorityresourcequestion if="{question.questionType == \'NORMDATA\'}" question="{question}" item="{this.item}" index="{index}"></authorityResourceQuestion><metadataquestion if="{question.questionType == \'METADATA\'}" question="{question}" item="{this.item}" index="{index}"></metadataQuestion></div></div><campaignitemlog if="{item.showLog}" item="{item}"></campaignItemLog><div if="{!item.isReviewMode()}" class="crowdsourcing-annotations__options-wrapper crowdsourcing-annotations__options-wrapper-annotate"><button onclick="{saveAnnotations}" class="crowdsourcing-annotations__options-wrapper__option btn btn--default" id="save">{Crowdsourcing.translate(⁗button__save⁗)}</button><div>{Crowdsourcing.translate(⁗label__or⁗)}</div><button if="{item.isReviewActive()}" onclick="{submitForReview}" class="options-wrapper__option btn btn--success" id="review">{Crowdsourcing.translate(⁗action__submit_for_review⁗)}</button><button if="{!item.isReviewActive()}" onclick="{acceptReview}" class="options-wrapper__option btn btn--success" id="review">{Crowdsourcing.translate(⁗action__accept_review⁗)}</button><div>{Crowdsourcing.translate(⁗label__or⁗)}</div><button if="{this.opts.nextitemurl}" onclick="{skipItem}" class="options-wrapper__option btn btn--link" id="skip">{Crowdsourcing.translate(⁗action__skip_item⁗)}</button></div><div if="{item.isReviewActive() && item.isReviewMode()}" class="crowdsourcing-annotations__options-wrapper crowdsourcing-annotations__options-wrapper-review"><button onclick="{acceptReview}" class="options-wrapper__option btn btn--success" id="accept">{Crowdsourcing.translate(⁗action__accept_review⁗)}</button><div>{Crowdsourcing.translate(⁗label__or⁗)}</div><button onclick="{rejectReview}" class="options-wrapper__option btn btn--danger" id="reject">{Crowdsourcing.translate(⁗action__reject_review⁗)}</button><div>{Crowdsourcing.translate(⁗label__or⁗)}</div><button if="{this.opts.nextitemurl}" onclick="{skipItem}" class="options-wrapper__option btn btn--link" id="skip">{Crowdsourcing.translate(⁗action__skip_item⁗)}</button></div></div></div>', '', '', function(opts) {
+riot.tag2('campaignitem', '<div if="{!opts.pi}" class="crowdsourcing-annotations__content-wrapper"> {Crowdsourcing.translate(⁗crowdsourcing__error__no_item_available⁗)} </div><div if="{opts.pi}" class="crowdsourcing-annotations__content-wrapper"><span if="{this.loading}" class="crowdsourcing-annotations__loader-wrapper"><img riot-src="{this.opts.loaderimageurl}"></span><span if="{this.error}" class="crowdsourcing-annotations__loader-wrapper"><span class="error_message">{this.error.message}</span></span></span><div class="crowdsourcing-annotations__content-left"><imageview if="{this.item}" id="mainImage" source="{this.item.getCurrentCanvas()}" item="{this.item}"></imageView><canvaspaginator if="{this.item}" item="{this.item}"></canvasPaginator></div><div if="{this.item}" class="crowdsourcing-annotations__content-right"><div class="crowdsourcing-annotations__questions-wrapper"><div each="{question, index in this.item.questions}" onclick="{setActive}" class="crowdsourcing-annotations__question-wrapper {question.isRegionTarget() ? \'area-selector-question\' : \'\'} {question.active ? \'active\' : \'\'}"><div class="crowdsourcing-annotations__question-wrapper-description">{Crowdsourcing.translate(question.text)}</div><plaintextquestion if="{question.questionType == \'PLAINTEXT\'}" question="{question}" item="{this.item}" index="{index}"></plaintextQuestion><richtextquestion if="{question.questionType == \'RICHTEXT\'}" question="{question}" item="{this.item}" index="{index}"></richtextQuestion><geolocationquestion if="{question.questionType == \'GEOLOCATION_POINT\'}" question="{question}" item="{this.item}" index="{index}"></geoLocationQuestion><authorityresourcequestion if="{question.questionType == \'NORMDATA\'}" question="{question}" item="{this.item}" index="{index}"></authorityResourceQuestion><metadataquestion if="{question.questionType == \'METADATA\'}" question="{question}" item="{this.item}" index="{index}"></metadataQuestion></div></div><campaignitemlog if="{item.showLog}" item="{item}"></campaignItemLog><div if="{!item.isReviewMode()}" class="crowdsourcing-annotations__options-wrapper crowdsourcing-annotations__options-wrapper-annotate"><button onclick="{saveAnnotations}" class="crowdsourcing-annotations__options-wrapper__option btn btn--default" id="save">{Crowdsourcing.translate(⁗button__save⁗)}</button><div>{Crowdsourcing.translate(⁗label__or⁗)}</div><button if="{item.isReviewActive()}" onclick="{submitForReview}" class="options-wrapper__option btn btn--success" id="review">{Crowdsourcing.translate(⁗action__submit_for_review⁗)}</button><button if="{!item.isReviewActive()}" onclick="{saveAndAcceptReview}" class="options-wrapper__option btn btn--success" id="review">{Crowdsourcing.translate(⁗action__accept_review⁗)}</button><div>{Crowdsourcing.translate(⁗label__or⁗)}</div><button if="{this.opts.nextitemurl}" onclick="{skipItem}" class="options-wrapper__option btn btn--link" id="skip">{Crowdsourcing.translate(⁗action__skip_item⁗)}</button></div><div if="{item.isReviewActive() && item.isReviewMode()}" class="crowdsourcing-annotations__options-wrapper crowdsourcing-annotations__options-wrapper-review"><button onclick="{acceptReview}" class="options-wrapper__option btn btn--success" id="accept">{Crowdsourcing.translate(⁗action__accept_review⁗)}</button><div>{Crowdsourcing.translate(⁗label__or⁗)}</div><button onclick="{rejectReview}" class="options-wrapper__option btn btn--danger" id="reject">{Crowdsourcing.translate(⁗action__reject_review⁗)}</button><div>{Crowdsourcing.translate(⁗label__or⁗)}</div><button if="{this.opts.nextitemurl}" onclick="{skipItem}" class="options-wrapper__option btn btn--link" id="skip">{Crowdsourcing.translate(⁗action__skip_item⁗)}</button></div></div></div>', '', '', function(opts) {
 
 	this.itemSource = this.opts.restapiurl + "crowdsourcing/campaigns/" + this.opts.campaign + "/" + this.opts.pi + "/";
 	this.annotationSource = this.itemSource + "annotations/";
@@ -1253,7 +1018,7 @@ riot.tag2('campaignitem', '<div if="{!opts.pi}" class="crowdsourcing-annotations
 	        this.item.setCurrentUser(this.opts.currentuserid, this.opts.currentusername, this.opts.currentuseravatar);
 	    }
 	    this.item.setReviewMode(this.opts.itemstatus && this.opts.itemstatus.toUpperCase() == "REVIEW");
-		fetch(this.item.imageSource + "?mode=simple")
+		fetch(this.item.imageSource)
 		.then( response => response.json() )
 		.then( imageSource => this.initImageView(imageSource))
 		.then( () => {this.loading = false; this.update()})
@@ -1341,6 +1106,12 @@ riot.tag2('campaignitem', '<div if="{!opts.pi}" class="crowdsourcing-annotations
 	    .then(() => this.setStatus("REVIEW"))
 	    .then(() => this.skipItem());
 
+	}.bind(this)
+
+	this.saveAndAcceptReview = function() {
+	    this.saveToServer()
+	    .then(() => this.setStatus("FINISHED"))
+	    .then(() => this.skipItem());
 	}.bind(this)
 
 	this.acceptReview = function() {
@@ -1757,7 +1528,7 @@ this.removeFeature = function(feature) {
 });
 
 
-riot.tag2('imagecontrols', '<div class="image_controls"><div class="image-controls__actions"><div class="image-controls__action rotate-left"><a onclick="{rotateLeft}"><i class="image-rotate_left"></i></a></div><div class="image-controls__action rotate-right"><a onclick="{rotateRight}"><i class="image-rotate_right"></i></a></div><div class="image-controls__action zoom-slider-wrapper"><div class="zoom-slider"><div class="zoom-slider-handle"></div></div></div></div></div>', '', '', function(opts) {
+riot.tag2('imagecontrols', '<div class="image_controls"><div class="image-controls__actions"><div class="image-controls__action rotate-left"><a onclick="{rotateLeft}"><i class="image-rotate_left"></i></a></div><div class="image-controls__action rotate-right"><a onclick="{rotateRight}"><i class="image-rotate_right"></i></a></div><div class="image-controls__action zoom-slider-wrapper"><input type="range" min="0" max="1" value="0" step="0.01" class="slider zoom-slider" aria-label="zoom slider"></div></div></div>', '', '', function(opts) {
     this.on( "mount", function() {
 
     } );
@@ -1860,7 +1631,7 @@ riot.tag2('imageview', '<div id="wrapper_{opts.id}" class="imageview_wrapper"><s
 });
 
 
-riot.tag2('metadataquestion', '<div if="{this.showInstructions()}" class="crowdsourcing-annotations__instruction"><label>{Crowdsourcing.translate(⁗crowdsourcing__help__create_rect_on_image⁗)}</label></div><div if="{this.showInactiveInstructions()}" class="crowdsourcing-annotations__single-instruction -inactive"><label>{Crowdsourcing.translate(⁗crowdsourcing__help__make_active⁗)}</label></div><div class="crowdsourcing-annotations__wrapper" id="question_{opts.index}_annotation_{index}" each="{anno, index in this.question.annotations}"><div class="crowdsourcing-annotations__annotation-area"><div if="{this.showAnnotationImages()}" class="crowdsourcing-annotations__annotation-area-image" riot-style="border-color: {anno.getColor()}"><img riot-src="{this.question.getImage(anno)}"></img></div><div class="crowdsourcing-annotations__question-metadata-list"><div each="{field, fieldindex in this.metadataFields}" class="crowdsourcing-annotations__question-metadata-list-item mb-2"><label class="crowdsourcing-annotations__question-metadata-list-item-label">{Crowdsourcing.translate(field)}:</label><div class="crowdsourcing-annotations__question-metadata-list-item-field" if="{this.hasOriginalValue(field)}">{this.getOriginalValue(field)}</div><input class="crowdsourcing-annotations__question-metadata-list-item-input form-control" if="{!this.hasOriginalValue(field)}" disabled="{this.opts.item.isReviewMode() ? \'disabled\' : \'\'}" ref="input_{index}_{fieldindex}" type="text" data-annotationindex="{index}" riot-value="{anno.getValue(field)}" onchange="{setValueFromEvent}"></input></div></div></div><div class="cms-module__actions crowdsourcing-annotations__annotation-action"><button if="{!this.opts.item.isReviewMode()}" onclick="{deleteAnnotationFromEvent}" class="crowdsourcing-annotations__delete-annotation btn btn--clean delete">{Crowdsourcing.translate(⁗action__delete_annotation⁗)} </button></div></div><button if="{showAddAnnotationButton()}" onclick="{addAnnotation}" class="options-wrapper__option btn btn--default" id="add-annotation">{Crowdsourcing.translate(⁗action__add_annotation⁗)}</button>', '', '', function(opts) {
+riot.tag2('metadataquestion', '<div if="{this.showInstructions()}" class="crowdsourcing-annotations__instruction"><label>{Crowdsourcing.translate(⁗crowdsourcing__help__create_rect_on_image⁗)}</label></div><div if="{this.showInactiveInstructions()}" class="crowdsourcing-annotations__single-instruction -inactive"><label>{Crowdsourcing.translate(⁗crowdsourcing__help__make_active⁗)}</label></div><div class="crowdsourcing-annotations__wrapper" id="question_{opts.index}_annotation_{index}" each="{anno, index in this.question.annotations}"><div class="crowdsourcing-annotations__annotation-area"><div if="{this.showAnnotationImages()}" class="crowdsourcing-annotations__annotation-area-image" riot-style="border-color: {anno.getColor()}"><img riot-src="{this.question.getImage(anno)}"></img></div><div class="crowdsourcing-annotations__question-metadata-list"><div each="{field, fieldindex in this.metadataFields}" class="crowdsourcing-annotations__question-metadata-list-item mb-2"><label class="crowdsourcing-annotations__question-metadata-list-item-label">{Crowdsourcing.translate(field)}:</label><div class="crowdsourcing-annotations__question-metadata-list-item-field" if="{this.hasOriginalValue(field)}">{this.getOriginalValue(field)}</div><input class="crowdsourcing-annotations__question-metadata-list-item-input form-control" if="{!this.hasOriginalValue(field)}" disabled="{this.opts.item.isReviewMode() ? \'disabled\' : \'\'}" ref="input_{index}_{fieldindex}" type="text" data-annotationindex="{index}" riot-value="{anno.getValue(field)}" onchange="{setValueFromEvent}"></input></div></div></div></div><button if="{showAddAnnotationButton()}" onclick="{addAnnotation}" class="options-wrapper__option btn btn--default" id="add-annotation">{Crowdsourcing.translate(⁗action__add_annotation⁗)}</button>', '', '', function(opts) {
 
 	this.question = this.opts.question;
 
@@ -2229,7 +2000,7 @@ riot.tag2('fsthumbnailimage', '<div class="fullscreen__view-image-thumb-preloade
     		} );
     	}.bind(this)
 });
-riot.tag2('fsthumbnails', '<div class="fullscreen__view-image-thumbs" ref="thumbnailWrapper"><div each="{thumbnail in thumbnails}" class="fullscreen__view-image-thumb"><figure class="fullscreen__view-image-thumb-image"><a href="{thumbnail.rendering[\'@id\']}"><fsthumbnailimage thumbnail="{thumbnail}" observable="{observable}" root=".fullscreen__view-image-thumbs-wrapper" imgsrc="{thumbnail.thumbnail[\'@id\']}"></fsThumbnailImage></a><figcaption><div class="fullscreen__view-image-thumb-image-order {thumbnail.loaded ? \'in\' : \'\'}">{thumbnail.label}</div></figcaption></figure></div></div>', '', '', function(opts) {
+riot.tag2('fsthumbnails', '<div class="fullscreen__view-image-thumbs" ref="thumbnailWrapper"><div each="{thumbnail in thumbnails}" class="fullscreen__view-image-thumb"><figure class="fullscreen__view-image-thumb-image"><a href="{getViewerPageUrl(thumbnail)[\'@id\']}"><fsthumbnailimage thumbnail="{thumbnail}" observable="{observable}" root=".fullscreen__view-image-thumbs-wrapper" imgsrc="{thumbnail.thumbnail[\'@id\']}"></fsThumbnailImage></a><figcaption><div class="fullscreen__view-image-thumb-image-order {thumbnail.loaded ? \'in\' : \'\'}">{thumbnail.label}</div></figcaption></figure></div></div>', '', '', function(opts) {
         function rmObservable() {
     		riot.observable( this );
     	}
@@ -2295,6 +2066,16 @@ riot.tag2('fsthumbnails', '<div class="fullscreen__view-image-thumbs" ref="thumb
     		thumbnail.loaded = true;
     		this.update();
     	}.bind( this ) );
+
+    	this.getViewerPageUrl = function(thumbnail) {
+    	    if(thumbnail.rendering) {
+    	        if(Array.isArray(thumbnail.rendering)) {
+    	            return thumbnail.rendering.find(render => "text/html" == render.format)
+    	        } else {
+    	            return thumbnail.rendering;
+    	        }
+    	    }
+    	}.bind(this)
 });
 riot.tag2('imagefilters', '<div class="imagefilters__filter-list"><div class="imagefilters__filter" each="{filter in filters}"><span class="imagefilters__label {filter.config.slider ? \'\' : \'imagefilters__label-long\'}">{filter.config.label}</span><input disabled="{filter.disabled ? \'disabled=\' : \'\'}" class="imagefilters__checkbox" if="{filter.config.checkbox}" type="checkbox" onchange="{apply}" checked="{filter.isActive() ? \'checked\' : \'\'}" aria-label="{filter.config.label}"><input disabled="{filter.disabled ? \'disabled=\' : \'\'}" class="imagefilters__slider" title="{filter.getValue()}" if="{filter.config.slider}" type="range" oninput="{apply}" riot-value="{filter.getValue()}" min="{filter.config.min}" max="{filter.config.max}" step="{filter.config.step}" orient="horizontal" aria-label="{filter.config.label}: {filter.getValue()}"></div></div><div class="imagefilters__options"><button type="button" class="btn btn--full" onclick="{resetAll}">{this.config.messages.clearAll}</button></div>', '', '', function(opts) {
 
@@ -2689,6 +2470,404 @@ this.addCloseHandler = function() {
 });
 
 
+riot.tag2('slide_default', '<a class="swiper-link slider-{this.opts.stylename}__link" href="{this.opts.link}" target="{this.opts.link_target}"><h3 class="swiper-heading slider-{this.opts.stylename}__header">{this.opts.label}</h3><div class="swiper-image slider-{this.opts.stylename}__image" riot-style="background-image: url({this.opts.image})"></div><div class="swiper-description slider-{this.opts.stylename}__description">{this.opts.description}</div></a>', '', '', function(opts) {
+});
+riot.tag2('slide_stories', '<div class="slider-{this.opts.stylename}__image" riot-style="background-image: url({this.opts.image})"></div><a class="slider-{this.opts.stylename}__info-link" href="{this.opts.link}"><div class="slider-{this.opts.stylename}__info-symbol"><svg width="6" height="13" viewbox="0 0 6 13" fill="none" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" clip-rule="evenodd" d="M4.664 1.21C4.664 2.134 4.092 2.728 3.168 2.728C2.354 2.728 1.936 2.134 1.936 1.474C1.936 0.506 2.706 0 3.454 0C4.136 0 4.664 0.506 4.664 1.21ZM5.258 11.528C4.664 12.1 3.586 12.584 2.42 12.716C1.386 12.496 0.748 11.792 0.748 10.78C0.748 10.362 0.836 9.658 1.1 8.58C1.276 7.81 1.452 6.534 1.452 5.852C1.452 5.588 1.43 5.302 1.408 5.236C1.144 5.17 0.726 5.104 0.198 5.104L0 4.488C0.572 4.07 1.716 3.718 2.398 3.718C3.542 3.718 4.202 4.312 4.202 5.566C4.202 6.248 4.026 7.194 3.828 8.118C3.542 9.328 3.432 10.12 3.432 10.472C3.432 10.802 3.454 11.022 3.542 11.154C3.96 11.066 4.4 10.868 4.928 10.56L5.258 11.528Z" fill="white"></path></svg></div><div class="slider-single-story__info-phrase">{this.opts.label}</div></a>', '', '', function(opts) {
+});
+
+
+riot.tag2('slider', '<div ref="container" class="swiper-container slider-{this.styleName}__container"><div class="swiper-wrapper slider-{this.styleName}__wrapper"><div each="{slide, index in slides}" class="swiper-slide slider-{this.styleName}__slide" ref="slide_{index}"></div></div><div if="{this.showPaginator}" ref="paginator" class="swiper-pagination slider-{this.styleName}__dots"></div></div>', '', '', function(opts) {
+
+
+	this.showPaginator = true;
+
+    this.on( 'mount', function() {
+		this.style = this.opts.styles.get(this.opts.style);
+
+		this.amendStyle(this.style);
+		this.styleName = this.opts.styles.getStyleNameOrDefault(this.opts.style);
+
+		this.timeout = this.style.timeout ? this.style.timeout : 100000;
+		this.maxSlides = this.style.maxSlides ? this.style.maxSlides : 1000;
+		this.linkTarget = this.opts.linktarget ? this.opts.linktarget : "_self";
+
+    	let pSource;
+    	if(this.opts.sourceelement) {
+    		let sourceElement = document.getElementById(this.opts.sourceelement);
+    		if(sourceElement) {
+    			pSource = Promise.resolve(JSON.parse(sourceElement.textContent));
+
+    		} else {
+    			logger.error("sourceElement was included but no matching dom element found");
+    			return;
+    		}
+    	}  else {
+    		pSource = fetch(this.opts.source)
+        	.then(result => result.json());
+    	}
+    	rxjs.from(pSource)
+    	.pipe(
+    		rxjs.operators.flatMap(source => source),
+    		rxjs.operators.flatMap(uri => fetch(uri), undefined, 5),
+    		rxjs.operators.filter(result => result.status == 200),
+    		rxjs.operators.takeUntil(rxjs.timer(this.timeout)),
+    		rxjs.operators.flatMap(result => result.json()),
+    		rxjs.operators.map(element => this.createSlide(element)),
+    		rxjs.operators.filter(element => element != undefined),
+    		rxjs.operators.take(this.maxSlides),
+    		rxjs.operators.reduce((res, item) => res.concat(item), []),
+    	)
+    	.subscribe(slides => this.setSlides(slides))
+    });
+
+    this.on( 'updated', function() {
+
+    	if(this.slides && this.slides.length > 0) {
+    		if(this.slider) {
+    			this.slider.destroy();
+    		}
+			this.initSlideTags(this.slides);
+    		this.swiper = new Swiper(this.refs.container, this.style.swiperConfig);
+    	}
+    });
+
+    this.setSlides = function(slides) {
+
+    	this.slides = slides;
+    	this.update();
+    }.bind(this)
+
+    this.initSlideTags = function(slides) {
+    	slides.forEach( (slide, index) => {
+    		let tagElement = this.refs["slide_" + index];
+
+    		riot.mount(tagElement, "slide_" + this.getLayout(),  {
+    			stylename: this.styleName,
+   				link: this.getLink(slide),
+   				link_target: this.linkTarget,
+   				image: this.getImage(slide),
+   				label: this.translate(slide.label),
+   				description: this.translate(slide.description),
+    		});
+    	});
+    }.bind(this)
+
+	this.getElements = function(source) {
+		if(viewerJS.iiif.isCollection(source)) {
+			return source.members.filter(member => viewerJS.iiif.isCollection(member));
+		} else {
+			console.error("Cannot get slides from ", source);
+		}
+	}.bind(this)
+
+    this.createSlide = function(element) {
+
+    	if(viewerJS.iiif.isCollection(element) || viewerJS.iiif.isManifest(element)) {
+    		let slide = {
+    				label : element.label,
+    				description : element.description,
+    				image : element.thumbnail,
+    				link : viewerJS.iiif.getId(viewerJS.iiif.getViewerPage(element))
+    		}
+    		return slide;
+    	} else {
+    		return element;
+    	}
+    }.bind(this)
+
+    this.translate = function(text) {
+    	let translation =  viewerJS.iiif.getValue(text, this.opts.language);
+    	if(!translation) {
+    			translation = viewerJS.getMetadataValue(text, this.opts.language);
+    	}
+    	return translation;
+    }.bind(this)
+
+    this.getImage = function(slide) {
+    	let image = slide.image;
+    	if(image == undefined) {
+    		return undefined;
+    	} else if(viewerJS.isString(image)) {
+    		return image;
+    	} else if(image.service && (this.style.imageWidth || this.style.imageHeight)) {
+    		let url = viewerJS.iiif.getId(image.service) + "/full/" + this.getIIIFSize(this.style.imageWidth, this.style.imageHeight) + "/0/default.jpg"
+    		return url;
+    	} else if(image["@id"]) {
+    		return image["@id"]
+    	} else {
+    		return image.id;
+    	}
+    }.bind(this)
+
+    this.getIIIFSize = function(width, height) {
+    	if(width && height) {
+    		return "!" + width + "," + height;
+    	} else if(width) {
+    		return width + ",";
+    	} else if(height) {
+    		return "," + height;
+    	} else {
+    		return "max";
+    	}
+    }.bind(this)
+
+    this.getLink = function(slide) {
+    	if(this.linkTarget == 'none') {
+    		return "";
+    	} else {
+    		return slide.link;
+    	}
+    }.bind(this)
+
+    this.amendStyle = function(styleConfig) {
+    	let swiperConfig = styleConfig.swiperConfig;
+    	if(swiperConfig.pagination) {
+    		swiperConfig.pagination.el = this.refs.paginator;
+    		this.showPaginator = true;
+    	} else {
+    		this.showPaginator = false;
+    	}
+    }.bind(this)
+
+    this.getLayout = function() {
+    	let layout = this.style.layout ? this.style.layout : 'default';
+    	return layout;
+    }.bind(this)
+
+});
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+riot.tag2('slideshow', '<a if="{manifest === undefined}" data-linkid="{opts.pis}"></a><figure class="slideshow" if="{manifest !== undefined}" onmouseenter="{mouseenter}" onmouseleave="{mouseleave}"><div class="slideshow__image"><a href="{getLink(manifest)}" class="remember-scroll-position" data-linkid="{opts.pis}" onclick="{storeScrollPosition}"><img riot-src="{getThumbnail(manifest)}" class="{\'active\' : active}" alt="{getLabel(manifest)}" onload="{setImageActive}"></a></div><figcaption><h4>{getTitleOrLabel(manifest)}</h4><p><span each="{md in metadataList}"> {getMetadataValue(manifest, md)} <br></span></p><div if="{pis.length > 1}" class="slideshow__dots"><ul><li each="{imagepi in pis}"><button class="btn btn--clean {\'active\' : pi === imagepi}" onclick="{setPi}"></button></li></ul></div></figcaption></figure>', '', '', function(opts) {
+
+    	$.fn.isInViewport = function() {
+        	var elementTop = $( this ).offset().top;
+        	var elementBottom = elementTop + $( this ).outerHeight();
+        	var elementHeight = $( this ).outerHeight();
+        	var viewportTop = $( window ).scrollTop();
+        	var viewportBottom = viewportTop + $( window ).height();
+
+        	return elementBottom > (viewportTop + elementHeight) && elementTop < (viewportBottom - elementHeight);
+    	};
+
+    	this.pis = this.opts.pis.split(/[\s,;]+/);
+    	this.pis = this.pis.filter( function( pi ) {
+    		return pi != undefined && pi.length > 0;
+    	} );
+        this.metadataList = this.opts.metadata.split(/[,;]+/);
+        this.manifest = undefined;
+        this.manifests = new Map();
+        this.active = false;
+        this.visible = false;
+        this.mouseover = false;
+
+        this.on( 'mount', function() {
+        	this.loadManifest( this.pis[0] );
+        }.bind( this ));
+
+        this.mouseenter = function() {
+        	this.mouseover = true;
+        }.bind(this)
+
+        this.mouseleave = function() {
+        	this.mouseover = false;
+        }.bind(this)
+
+        this.checkPosition = function() {
+        	var slideshow = $( '#' + this.opts.id + ' figure' );
+
+        	if ( !this.visible && this.pis.length > 1 && slideshow.isInViewport() ) {
+        		this.visible = true;
+            	this.moveSlides( this.pis, true );
+        	}
+        	else if ( this.visible && !slideshow.isInViewport() ) {
+        		this.visible = false;
+        		this.moveSlides( this.pis, false );
+        	}
+        }.bind(this)
+
+        this.moveSlides = function( pis, move ) {
+        	var index = 1;
+
+        	if ( move ) {
+        		clearInterval( this.interval );
+
+        		this.interval = setInterval( function() {
+                	if ( index === pis.length ) {
+                		index = 0;
+                	}
+                	if ( !this.mouseover ) {
+            			this.loadManifest( pis[ index ] );
+                    	index++;
+                	}
+                }.bind( this ), 3000 );
+        	}
+        	else {
+        		clearInterval( this.interval );
+        	}
+        }.bind(this)
+
+        this.setPi = function( event ) {
+        	let pi = event.item.imagepi;
+
+        	if ( pi != this.pi ) {
+        		this.pi = pi;
+
+        		return this.loadManifest( pi );
+        	}
+        }.bind(this)
+
+        this.setImageActive = function() {
+        	this.active = true;
+        	this.update();
+        }.bind(this)
+
+        this.loadManifest = function( pi ) {
+        	let url = this.opts.manifest_base_url.replace( "{pi}", pi );
+        	let json = this.manifests.get( url );
+        	this.pi = pi;
+        	this.active = false;
+        	this.update();
+
+        	if ( !json ) {
+        		$.getJSON( url, function( manifest ) {
+        			if ( manifest ) {
+
+        				this.manifest = manifest;
+        				this.manifests.set( url, manifest );
+        				this.update();
+            			this.checkPosition();
+
+        				$( window ).on( 'resize scroll', function() {
+            				this.checkPosition();
+        				}.bind( this ) );
+        			}
+        		}.bind( this ))
+        		.then(function(data) {
+        		})
+        		.catch(function(error) {
+        			console.error("error loading ", url, ": ", error);
+        		});
+        	}
+        	else {
+
+            	setTimeout( function() {
+            		this.manifest = json;
+            		this.update();
+            	}.bind( this ), 300 );
+        	}
+        }.bind(this)
+        this.getThumbnail = function( manifest, width, height ) {
+        	if( !manifest.thumbnail.service || ( !width && !height ) ) {
+        		return manifest.thumbnail['@id'];
+        	}
+        	else {
+        		let sizePrefix = width && height ? "!" : "";
+
+        		return manifest.thumbnail.service['@id'] + "/full/" + sizePrefix + width + "," + height + "/0/default.jpg";
+        	}
+        }.bind(this)
+
+        this.getLink = function( manifest ) {
+        	rendering = manifest.rendering;
+
+        	if ( Array.isArray( rendering ) ) {
+        		rendering = rendering.find( ( rend ) => rend.format == "text/html" );
+        	}
+        	if ( rendering ) {
+        		return rendering['@id'];
+        	}
+        	else {
+        		return '';
+        	}
+        }.bind(this)
+
+        this.getTitleOrLabel = function( manifest ) {
+        	var title = this.getMetadataValue( manifest, 'Title' );
+
+        	if(title) {
+        		return title;
+        	} else {
+        		return getLabel( manifest );
+        	}
+        }.bind(this)
+
+        this.getLabel = function( manifest ) {
+        	return this.getValue(manifest.label, this.opts.locale);
+        }.bind(this)
+
+        this.getMetadataValue = function( manifest, metadataLabel ) {
+        	if ( manifest && metadataLabel ) {
+        		let metadata = manifest.metadata.find( ( md ) => {
+        			let label = md.label;
+        			if ( Array.isArray( label ) ) {
+        				label = label.find( (l) => l['@value'].trim() == metadataLabel.trim());
+        				if ( label ) {
+        					label = label['@value']
+        				}
+        			}
+        			return label && label.trim() == metadataLabel.trim();
+        		});
+
+        		if ( metadata ) {
+        			let value = this.getValue( metadata.value, this.opts.locale );
+
+        			return value;
+        		}
+        	}
+        }.bind(this)
+
+        this.getValue = function ( element, locale ) {
+            if ( element ) {
+            	if ( typeof element === 'string' ) {
+            		return element;
+            	}
+        		else if ( Array.isArray( element ) ) {
+            		var fallback;
+
+            		for ( var index in element  ) {
+            			var item = element[index];
+
+            			if ( typeof item === 'string' ) {
+            				return item;
+            			}
+            			else {
+            				var value = item['@value'];
+            				var language = item['@language'];
+
+            				if ( locale == language ) {
+            					return value;
+            				}
+            				else if ( !fallback || language == 'en' ) {
+            					fallback = value;
+            				}
+            			}
+            		}
+
+            		return fallback;
+            	}
+            	else {
+            		return element['@value'];
+            	}
+            }
+        }.bind(this)
+
+        this.storeScrollPosition = function(event) {
+            $target = $(event.target).closest("a");
+            viewerJS.handleScrollPositionClick($target);
+        }.bind(this)
+});
 riot.tag2('timematrix', '<div class="timematrix__objects"><div each="{manifest in manifests}" class="timematrix__content"><div class="timematrix__img"><a href="{getViewerUrl(manifest)}"><img riot-src="{getImageUrl(manifest)}" class="timematrix__image" data-viewer-thumbnail="thumbnail" alt="" aria-hidden="true" onerror="this.onerror=null;this.src=\'/viewer/resources/images/access_denied.png\'"><div class="timematrix__text"><p if="{hasTitle(manifest)}" name="timetext" class="timetext">{getDisplayTitle(manifest)}</p></div></a></div></div></div>', '', '', function(opts) {
 	    this.on( 'mount', function() {
 
@@ -2775,9 +2954,11 @@ riot.tag2('timematrix', '<div class="timematrix__objects"><div each="{manifest i
 
 	    this.initSlider = function( sliderSelector, startDate, endDate ) {
 	        let $slider = $( sliderSelector );
+	        let rtl = $( sliderSelector ).closest('[dir="rtl"]').length > 0;
 
 	        $slider.slider( {
 	            range: true,
+	            isRTL: rtl,
 	            min: parseInt( startDate ),
 	            max: parseInt( endDate ),
 	            values: [ startDate, endDate ],

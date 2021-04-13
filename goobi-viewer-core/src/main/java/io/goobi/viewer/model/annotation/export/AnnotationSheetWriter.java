@@ -39,7 +39,7 @@ public class AnnotationSheetWriter {
     public static final String UNKNOWN_RESOURCE_TYPE = "Unknown";
     
     private final ExcelRenderer excelRenderer;
-    private final AnnotationsResourceBuilder annotationBuilder = new AnnotationsResourceBuilder(DataManager.getInstance().getRestApiManager().getDataApiManager(), null);
+    private final AnnotationsResourceBuilder annotationBuilder = new AnnotationsResourceBuilder(DataManager.getInstance().getRestApiManager().getDataApiManager().orElse(null), null);
 
     public AnnotationSheetWriter() {
         this.excelRenderer = new ExcelRenderer(annotationBuilder);

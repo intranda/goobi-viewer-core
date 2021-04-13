@@ -25,6 +25,7 @@
     </ui:define>
 
     <ui:define name="content">
+		<ui:include src="/resources/cms/includes/cms_script.xhtml" />
     	<f:param name="currentPage" value="#{cmsBean.random}" />
     	<f:view contentType="text/html" encoding="utf-8">
 			<div id="templateStckedCollection" class="tpl-stacked-collection #{cmsPage.wrapperElementClass}">
@@ -40,7 +41,7 @@
 
 				<h2>#{cmsPage.title}</h2>
 				<div class="tpl-stacked-collection__text">
-                    <ui:include src="#{cmsPage.getContent('text')}" />
+                    <h:outputText escape="false" value="#{cmsPage.getContent('text')}"></h:outputText>
                 </div>
 				
 				<div class="tpl-stacked-collection__collections">

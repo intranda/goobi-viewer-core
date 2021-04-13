@@ -110,9 +110,12 @@ var cmsJS = ( function( cms ) {
             rssItemImage.attr( 'alt', item.title );
             rssItemImageLink.append( rssItemImage );
             rssItemImageWrapper.append( rssItemImageLink );
-            rssItemColLeft.append( rssItemDocTypeH3 ).append( rssItemImageWrapper );
+            console.log("item image", item.description.image);
+            if(item.description.image) {
+            	rssItemColLeft.append( rssItemImageWrapper );
+			}             
             
-            // right
+            // right  
             rssItemColRight = $( '<div />' ).addClass( 'col-12 col-md-8' );
             
             // create item title

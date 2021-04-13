@@ -43,6 +43,7 @@ public abstract class AbstractSolrEnabledTest extends AbstractTest {
 
     @Before
     public void setUp() throws Exception {
+        super.setUp();
         server = SolrSearchIndex.getNewHttpSolrClient();
         DataManager.getInstance().injectSearchIndex(new SolrSearchIndex(server));
 

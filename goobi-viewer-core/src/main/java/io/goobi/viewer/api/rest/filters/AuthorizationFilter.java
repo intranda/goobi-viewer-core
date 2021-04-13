@@ -28,17 +28,17 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import io.goobi.viewer.api.rest.AuthenticationBinding;
+import io.goobi.viewer.api.rest.bindings.AuthorizationBinding;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.NetTools;
 
 /**
  * <p>
- * AuthorizationFilter class.
+ * Allows requests authorized by an authrization token
  * </p>
  */
 @Provider
-@AuthenticationBinding
+@AuthorizationBinding
 public class AuthorizationFilter implements ContainerRequestFilter {
 
     private static final Logger logger = LoggerFactory.getLogger(AuthorizationFilter.class);
@@ -49,20 +49,23 @@ public class AuthorizationFilter implements ContainerRequestFilter {
     /** {@inheritDoc} */
     @Override
     public void filter(ContainerRequestContext requestContext) throws IOException {
-        String token = requestContext.getHeaderString("token");
-        if (StringUtils.isBlank(token)) {
-            token = req.getParameter("token");
-        }
-
-        String pathInfo = req.getPathInfo();
-        String ip = NetTools.getIpAddress(req);
-
+        
         //  check against configured ip range
-        if (!checkPermissions(ip, token, pathInfo)) {
+        if (!isAuthorized(req)) {
             requestContext.abortWith(Response.status(Response.Status.UNAUTHORIZED)
-                    .entity("You are not allowed to access the REST API from IP " + ip + " or your password is wrong.")
+                    .entity("You are not allowed to access the REST API from IP " + NetTools.getIpAddress(req) + " or your password is wrong.")
                     .build());
         }
+    }
+    
+    public static boolean isAuthorized(HttpServletRequest request) {
+        String token = request.getHeader("token");
+        if (StringUtils.isBlank(token)) {
+            token = request.getParameter("token");
+        }
+        String pathInfo = request.getPathInfo();
+        String ip = NetTools.getIpAddress(request);
+        return checkPermissions(ip, token, pathInfo);
     }
 
     /**

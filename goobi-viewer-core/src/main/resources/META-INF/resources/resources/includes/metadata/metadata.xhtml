@@ -17,7 +17,9 @@
     <!-- METADATA -->
     <div id="metadataElementWrapper" class="metadata">
 	    <div class="metadata__title-wrapper">
-	    	<h2 class="metadata__title">#{activeDocumentBean.viewManager.metadataViewOnly ? activeDocumentBean.viewManager.topDocument.label : msg.bibData}</h2>
+	    	<h2 class="metadata__title">
+	    	    #{activeDocumentBean.viewManager.metadataViewOnly ? activeDocumentBean.viewManager.topDocument.label : msg[metadataViewLabel]}
+	    	</h2>
             <!-- ADD TO BOOKMARK -->
             <ui:fragment rendered="#{configurationBean.bookshelvesEnabled and activeDocumentBean.viewManager.metadataViewOnly}">
                     <button type="button" class="btn btn--icon metadata__bookmark-button"
@@ -31,7 +33,7 @@
                     </button>
             </ui:fragment>
 	    </div>
-        <ui:repeat value="#{metadataBean.metadataElementList}" var="metadataElement" varStatus="status">
+        <ui:repeat value="#{metadataBean.getMetadataElementList(metadataViewIndex)}" var="metadataElement" varStatus="status">
             <ui:include src="/resources/includes/metadata/metadataElement.xhtml">
             	<ui:param name="metadataElement" value="#{metadataElement}"/>
             </ui:include>

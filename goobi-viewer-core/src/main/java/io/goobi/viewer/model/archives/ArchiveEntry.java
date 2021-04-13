@@ -41,13 +41,13 @@ public class ArchiveEntry {
     private boolean displaySearch;
     // true if the validation of all metadata fields was successful
     private boolean valid = true;
-    
+
     private String descriptionLevel;
-    
+
     private boolean visible = true;
-    
+
     private boolean expanded = false;
-    
+
     private String associatedRecordPi;
 
     /* 1. metadata for Identity Statement Area */
@@ -198,12 +198,13 @@ public class ArchiveEntry {
         if (parentNode != null && other.parentNode == null) {
             return false;
         }
-
-        if (!parentNode.getOrderNumber().equals(other.parentNode.getOrderNumber())) {
-            return false;
-        }
-        if (!parentNode.getHierarchyLevel().equals(other.parentNode.getHierarchyLevel())) {
-            return false;
+        if (parentNode != null && other.parentNode != null) {
+            if (!parentNode.getOrderNumber().equals(other.parentNode.getOrderNumber())) {
+                return false;
+            }
+            if (!parentNode.getHierarchyLevel().equals(other.parentNode.getHierarchyLevel())) {
+                return false;
+            }
         }
 
         return true;
@@ -658,7 +659,6 @@ public class ArchiveEntry {
     public void setDescriptionLevel(String descriptionLevel) {
         this.descriptionLevel = descriptionLevel;
     }
-
 
     /**
      * @return the visible

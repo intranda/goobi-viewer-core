@@ -14,13 +14,13 @@
     
     <!-- IMPLEMENTATION -->
     <composite:implementation>
-    	
+        	
     	<ui:param name="currentPageOrder" value="#{activeDocumentBean.viewManager.currentImageNo}"></ui:param>
         <ui:param name="firstPageOrder" value="#{activeDocumentBean.viewManager.firstPageOrder}"></ui:param>
         <ui:param name="lastPageOrder" value="#{activeDocumentBean.viewManager.lastPageOrder}"></ui:param>
         <ui:param name="pageCount" value="#{activeDocumentBean.viewManager.imagesCount}"></ui:param>
-        
-        <nav id="imageControls" aria-label="#{msg.aria_label__nav_image_controls}" class="#{activeDocumentBean.viewManager.topDocument.rtl ? 'image-controls -rtl' : 'image-controls -ltr'}">
+
+		<nav id="imageControls" aria-label="#{msg.aria_label__nav_image_controls}" class="#{activeDocumentBean.viewManager.topDocument.rtl ? 'image-controls -rtl' : 'image-controls -ltr'}">
             <!-- FORM -->
             <h:form id="imageControlsForm" prependId="false">
                 <!-- ACTIONS -->
@@ -125,20 +125,19 @@
                                         </h:outputLink>
                                     </ui:fragment>
                                     <ui:fragment rendered="#{currentPageOrder == firstPageOrder}">
-	                                    <span>
+
 	                                        <ui:fragment rendered="#{!activeDocumentBean.viewManager.topDocument.rtl}">
 	                                            <ui:include src="#{navigationHelper.getResource('images/icons/icon_ic-prev-page.svg')}" />
 	                                        </ui:fragment>
 	                                        <ui:fragment rendered="#{activeDocumentBean.viewManager.topDocument.rtl}">
 	                                            <ui:include src="#{navigationHelper.getResource('images/icons/icon_ic-next-page.svg')}" />
 	                                        </ui:fragment>
-										</span>
                                     </ui:fragment>                           
                                 </li>
                             </ui:fragment>
                             
                             <!-- SELECT TEXT -->
-                            <ui:fragment rendered="#{pageCount gt 2}">
+                            <ui:fragment rendered="#{activeDocumentBean.viewManager.imagesCount ge configurationBean.pageSelectDropdownDisplayMinPages}">
 	                            <ui:fragment rendered="#{navigationHelper.currentPage == 'fulltext' and activeDocumentBean.viewManager.belowFulltextThreshold}">
 	                                <li class="image-controls__action select-text">
 	                                    <span>#{msg.pageSelectDropdown}</span>
@@ -337,7 +336,7 @@
                                     </h:outputLink>
                                 </li>
                             </ui:fragment>
-                            <!-- ZOMMSLIDER -->
+                            <!-- ZOOMSLIDER -->
                             <!-- TODO: rendered Anweisung, wenn pageBrowse in der config aktiv -->
                             <ui:fragment rendered="#{activeDocumentBean.viewManager.currentPage.mimeType == 'image'}">
                                 <li class="image-controls__action zoom-slider-wrapper">
@@ -347,6 +346,17 @@
 <!--                                 	<input type="number" class="zoom-slider-label"/>% -->
 <!--                                 </li> -->
                             </ui:fragment>
+                        </ui:fragment>
+                        <ui:fragment rendered="#{navigationHelper.currentPage == 'fulltext'}">
+                        	<li class="image-controls__action enter-fullscreen">
+                                <h:outputLink value="#{activeDocumentBean.fullscreenImageUrl}?activetab=fulltext" title="#{msg.fullscreen_enter}">
+                                    <ui:include src="#{navigationHelper.getResource('images/icons/icon_ic-fullscreen.svg')}" />
+                                    <span id="fullScreenLabel" class="labeltext">#{msg.enterFullscreen}</span>
+                                    <f:passThroughAttribute name="data-toggle" value="tooltip" />
+                                    <f:passThroughAttribute name="data-placement" value="#{cc.attrs.tooltipPlacement}" />
+                                    <f:passThroughAttribute name="aria-labelledby" value="fullScreenLabel" />
+                                </h:outputLink>
+                            </li>
                         </ui:fragment>
                         
                     </ul>
@@ -358,7 +368,7 @@
                         <!-- CROWDSOURCING TRANSCRIPTION MODULE -->
                         <ui:fragment rendered="#{configurationBean.displayCrowdsourcingModuleLinks}">
                             <ui:fragment rendered="#{navigationHelper.currentPage == 'object'}">
-                                <li class="image-controls__option">
+                                <li class="image-controls__option -ltr">
                                     <a href="#{navigationHelper.applicationUrl}crowd/#{activeDocumentBean.viewManager.pi}/#{activeDocumentBean.viewManager.currentImageNo}">#{msg.action__crowdsourcing_participate}!</a>
                                 </li>
                             </ui:fragment>

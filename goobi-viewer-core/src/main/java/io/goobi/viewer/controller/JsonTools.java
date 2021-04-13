@@ -359,7 +359,7 @@ public class JsonTools {
             JSONObject jsonObj = new JSONObject(json);
             return jsonObj.getString("version") + " (" + jsonObj.getString("git-revision") + ")";
         } catch (JSONException e) {
-            logger.error(e.getMessage());
+            logger.warn(e.getMessage());
             return notAvailableKey;
         }
     }

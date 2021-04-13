@@ -108,11 +108,11 @@ var viewerJS = ( function( viewer ) {
              */
             getChildCollections: function(collection) {
                 if(collection.service && Array.isArray(collection.service)) {
-                    let extents = collection.service.filter( service => service['@context'].endsWith('api/context/collection/extent/context.json') );
+                    let extents = collection.service.filter( service => service['@context'].endsWith('/collection/extent/context.json') );
                     if(extents && extents.length > 0) {
                         return extents[0].children;
                     }
-                } else if(collection.service && collection.service['@context'].endsWith('api/context/collection/extent/context.json')) {
+                } else if(collection.service && collection.service['@context'].endsWith('/collection/extent/context.json')) {
                      return collection.service.children;
                 } else {
                     return 0;
@@ -129,11 +129,11 @@ var viewerJS = ( function( viewer ) {
              */
             getContainedWorks: function(collection) {
                 if(collection.service && Array.isArray(collection.service)) {
-                    let extents = collection.service.filter( service => service['@context'].endsWith('api/context/collection/extent/context.json') );
+                    let extents = collection.service.filter( service => service['@context'].endsWith('/collection/extent/context.json') );
                     if(extents && extents.length > 0) {
                         return extents[0].containedWorks;
                     }
-                } else if(collection.service && collection.service['@context'].endsWith('api/context/collection/extent/context.json')) {
+                } else if(collection.service && collection.service['@context'].endsWith('/collection/extent/context.json')) {
                     return collection.service.containedWorks;
                 } else {
                     return 0;
@@ -146,11 +146,11 @@ var viewerJS = ( function( viewer ) {
              */
             getTags: function(collection, name) {
                 if(collection.service && Array.isArray(collection.service)) {
-                    let tagService = collection.service.filter( service => service['@context'].endsWith('api/context/taglists/context.json')).filter(service => service === undefined || service.name == name);
+                    let tagService = collection.service.filter( service => service['@context'].endsWith('/taglists/context.json')).filter(service => service === undefined || service.name == name);
                     if(tagService && tagService.length > 0) {
                         return tagService[0].tags;
                     }
-                } else if(collection.service && collection.service['@context'].endsWith('api/context/taglists/context.json') && (service === undefined || service.name == name)) {
+                } else if(collection.service && collection.service['@context'].endsWith('/taglists/context.json') && (service === undefined || service.name == name)) {
                     return collection.service.tags;
                 } else {
                     return undefined;
@@ -220,6 +220,23 @@ var viewerJS = ( function( viewer ) {
                 }
             },
             
+            /**
+            * @return the first found element in the "rendering" attribute with format='text/html'. Returns 'undefined' 
+            * if no such element was found
+            */
+            getViewerPage(presentationElement) {
+            	if(!presentationElement.rendering) {
+            		return undefined;
+            	} else if(Array.isArray(presentationElement.rendering)) {
+            		return presentationElement.rendering
+    					.filter(rendering => rendering.format == "text/html")
+    					.shift();
+    			} else if(presentationElement.rendering.format == "text/html"){
+    				return presentationElement.rendering;
+    			} else {
+    				return undefined;
+    			}
+            },
             
             /**
              * @return the object in the service property which @context ends in <name>.context.json, if any
@@ -234,7 +251,32 @@ var viewerJS = ( function( viewer ) {
                 } else {
                     return service;
                 }
-            }
+            },
+            
+            isCollection(element) {
+		    	return (element.type == "Collection" || element["@type"] == "sc:Collection") && element.viewingHint != "multi-part";
+		    },
+		    
+		    isSingleManifest(element) {
+		    	return (element.type == "Manifest" || element["@type"] == "sc:Manifest") ;
+		    },
+		    
+		    isManifest(element) {
+		    	return element.type == "Manifest" || 
+		    	element["@type"] == "sc:Manifest" || 
+		    	(element.type == "Collection" && element.viewingHint == "multi-part") ||
+		    	(element["@type"] == "sc:Collection" && element.viewingHint == "multi-part");
+		    },
+		    
+		    getId(element) {
+			    if(element == undefined) {
+			    	return undefined;
+			    } else if(element.id) {
+		    		return element.id;
+		    	} else {
+		    		return element["@id"];	
+		    	}
+		    },
     }
 
     
