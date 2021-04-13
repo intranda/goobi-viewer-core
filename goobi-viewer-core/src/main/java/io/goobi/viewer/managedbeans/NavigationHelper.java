@@ -974,7 +974,7 @@ public class NavigationHelper implements Serializable {
             if (activeDocumentBean != null && activeDocumentBean.getViewManager() != null && getCurrentPageType().isDocumentPage()) {
                 // If a record is loaded, get the value from the record's value
                 // in discriminatorField
-                subThemeDiscriminatorValue = activeDocumentBean.getViewManager().getTopDocument().getMetadataValue(discriminatorField);
+                subThemeDiscriminatorValue = activeDocumentBean.getViewManager().getTopStructElement().getMetadataValue(discriminatorField);
             } else if (isCmsPage()) {
                 CmsBean cmsBean = BeanUtils.getCmsBean();
                 if (cmsBean != null && cmsBean.getCurrentPage() != null) {

@@ -26,6 +26,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Optional;
 
 import javax.enterprise.context.SessionScoped;
 import javax.inject.Inject;
@@ -482,9 +483,10 @@ public class BrowseBean implements Serializable {
                     break;
                 }
                 BrowseTerm term = terms.get(i);
-                if (term.getTranslations() != null && term.getTranslations().getValue(locale).isPresent()) {
+                Optional<String> translation = term.getTranslations() != null ? term.getTranslations().getValue(locale) : Optional.empty();
+                if (translation.isPresent()) {
                     // Use translated label, if present
-                    browseTermList.add(term.getTranslations().getValue(locale).get());
+                    browseTermList.add(translation.get());
                 } else {
                     browseTermList.add(term.getTerm());
                 }

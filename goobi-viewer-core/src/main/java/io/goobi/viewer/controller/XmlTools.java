@@ -29,6 +29,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import javax.xml.XMLConstants;
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerConfigurationException;
 import javax.xml.transform.TransformerException;
@@ -61,6 +62,16 @@ public class XmlTools {
 
     private static final Logger logger = LoggerFactory.getLogger(XmlTools.class);
 
+    static SAXBuilder getSAXBuilder() {
+        SAXBuilder builder = new SAXBuilder();
+        // Disable access to external entities
+        builder.setFeature("http://apache.org/xml/features/disallow-doctype-decl", true);
+        builder.setFeature("http://xml.org/sax/features/external-general-entities", false);
+        builder.setFeature("http://xml.org/sax/features/external-parameter-entities", false);
+
+        return builder;
+    }
+
     /**
      * <p>
      * readXmlFile.
@@ -76,7 +87,7 @@ public class XmlTools {
      */
     public static Document readXmlFile(String filePath) throws FileNotFoundException, IOException, JDOMException {
         try (FileInputStream fis = new FileInputStream(new File(filePath))) {
-            return new SAXBuilder().build(fis);
+            return getSAXBuilder().build(fis);
         }
     }
 
@@ -92,7 +103,7 @@ public class XmlTools {
      */
     public static Document readXmlFile(URL url) throws FileNotFoundException, IOException, JDOMException {
         try (InputStream is = url.openStream()) {
-            return new SAXBuilder().build(is);
+            return getSAXBuilder().build(is);
         }
     }
 
@@ -110,7 +121,7 @@ public class XmlTools {
      */
     public static Document readXmlFile(Path path) throws FileNotFoundException, IOException, JDOMException {
         try (InputStream is = Files.newInputStream(path)) {
-            return new SAXBuilder().build(is);
+            return getSAXBuilder().build(is);
         }
     }
 
@@ -153,11 +164,7 @@ public class XmlTools {
         }
         ByteArrayInputStream baos = new ByteArrayInputStream(byteArray);
 
-        // Reader reader = new StringReader(hOCRText);
-        SAXBuilder builder = new SAXBuilder();
-        Document document = builder.build(baos);
-
-        return document;
+        return getSAXBuilder().build(baos);
     }
 
     /**
@@ -300,6 +307,7 @@ public class XmlTools {
      * @param stylesheetPath Absolute path to the XSLT stylesheet file
      * @param params Optional transformer parameters
      * @return Transformed document; null in case of errors
+     * @should transform xml correctly
      */
     public static Document transformViaXSLT(Document doc, String stylesheetPath, Map<String, String> params) {
         if (doc == null) {
@@ -313,7 +321,10 @@ public class XmlTools {
             JDOMSource docFrom = new JDOMSource(doc);
             JDOMResult docTo = new JDOMResult();
 
-            Transformer transformer = TransformerFactory.newInstance().newTransformer(new StreamSource(stylesheetPath));
+            TransformerFactory transformerFactory = javax.xml.transform.TransformerFactory.newInstance();
+            //            transformerFactory.setAttribute(XMLConstants.ACCESS_EXTERNAL_DTD, "");
+            //            transformerFactory.setAttribute(XMLConstants.ACCESS_EXTERNAL_STYLESHEET, "");
+            Transformer transformer = transformerFactory.newTransformer(new StreamSource(stylesheetPath));
             if (params != null && !params.isEmpty()) {
                 for (String param : params.keySet()) {
                     transformer.setParameter(param, params.get(param));

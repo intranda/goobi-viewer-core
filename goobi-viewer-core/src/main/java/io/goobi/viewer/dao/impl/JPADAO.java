@@ -3677,11 +3677,13 @@ public class JPADAO implements IDAO {
             emLocal.getTransaction().begin();
             int rows = emLocal
                     .createNativeQuery(
-                            "DELETE FROM cs_campaign_record_statistic_annotators WHERE user_id=" + user.getId())
+                            "DELETE FROM cs_campaign_record_statistic_annotators WHERE user_id=?")
+                    .setParameter(1, user.getId())
                     .executeUpdate();
             rows += emLocal
                     .createNativeQuery(
-                            "DELETE FROM cs_campaign_record_statistic_reviewers WHERE user_id=" + user.getId())
+                            "DELETE FROM cs_campaign_record_statistic_reviewers WHERE user_id=?")
+                    .setParameter(1, user.getId())
                     .executeUpdate();
             emLocal.getTransaction().commit();
             updateCampaignsFromDatabase();
@@ -3710,11 +3712,15 @@ public class JPADAO implements IDAO {
             emLocal.getTransaction().begin();
             int rows = emLocal
                     .createNativeQuery(
-                            "UPDATE cs_campaign_record_statistic_annotators SET user_id=" + toUser.getId() + " WHERE user_id=" + fromUser.getId())
+                            "UPDATE cs_campaign_record_statistic_annotators SET user_id=? WHERE user_id=?")
+                    .setParameter(1, toUser.getId())
+                    .setParameter(2, fromUser.getId())
                     .executeUpdate();
             rows += emLocal
                     .createNativeQuery(
-                            "UPDATE cs_campaign_record_statistic_reviewers SET user_id=" + toUser.getId() + " WHERE user_id=" + fromUser.getId())
+                            "UPDATE cs_campaign_record_statistic_reviewers SET user_id=? WHERE user_id=?")
+                    .setParameter(1, toUser.getId())
+                    .setParameter(2, fromUser.getId())
                     .executeUpdate();
             emLocal.getTransaction().commit();
             updateCampaignsFromDatabase();
@@ -4400,23 +4406,33 @@ public class JPADAO implements IDAO {
         return annotation;
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     * 
+     * @should return correct rows
+     */
     @SuppressWarnings("unchecked")
     @Override
     public List<PersistentAnnotation> getAnnotationsForCampaign(Campaign campaign) throws DAOException {
         preQuery();
-        String query = "SELECT a FROM PersistentAnnotation a";
+        StringBuilder sbQuery = new StringBuilder("SELECT a FROM PersistentAnnotation a");
         if (!campaign.getQuestions().isEmpty()) {
-            query += " WHERE (";
+            sbQuery.append(" WHERE (");
+            int count = 1;
             for (Question question : campaign.getQuestions()) {
-                query += " a.generatorId = :questionId_" + question.getId() + " OR";
+                if (count > 1) {
+                    sbQuery.append(" OR ");
+                }
+                sbQuery.append("a.generatorId = :questionId_").append(count);
+                count++;
             }
-            query = query.substring(0, query.length() - 2); //remove trailing "OR"
-            query += " )";
+            sbQuery.append(")");
         }
-        Query q = getEntityManager().createQuery(query);
+        Query q = getEntityManager().createQuery(sbQuery.toString());
+        int count = 1;
         for (Question question : campaign.getQuestions()) {
-            q.setParameter("questionId_" + question.getId(), question.getId());
+            q.setParameter("questionId_" + count, question.getId());
+            count++;
         }
         // q.setHint("javax.persistence.cache.storeMode", "REFRESH");
         return q.getResultList();
@@ -4504,52 +4520,78 @@ public class JPADAO implements IDAO {
         return (long) q.getResultList().get(0);
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     * 
+     * @should return correct rows
+     */
     @SuppressWarnings("unchecked")
     @Override
     public List<PersistentAnnotation> getAnnotationsForCampaignAndWork(Campaign campaign, String pi) throws DAOException {
         preQuery();
-        String query = "SELECT a FROM PersistentAnnotation a WHERE a.targetPI = :pi";
+        StringBuilder sbQuery = new StringBuilder("SELECT a FROM PersistentAnnotation a WHERE a.targetPI = :pi");
         if (!campaign.getQuestions().isEmpty()) {
-            query += " AND (";
+            sbQuery.append(" AND (");
+            int count = 1;
             for (Question question : campaign.getQuestions()) {
-                query += " a.generatorId = :questionId_" + question.getId() + " OR";
+                if (count > 1) {
+                    sbQuery.append(" OR ");
+                }
+                sbQuery.append("a.generatorId = :questionId_").append(count);
+                count++;
             }
-            query = query.substring(0, query.length() - 2); //remove trailing "OR"
-            query += " )";
+            sbQuery.append(")");
         }
-        Query q = getEntityManager().createQuery(query);
-        for (Question question : campaign.getQuestions()) {
-            q.setParameter("questionId_" + question.getId(), question.getId());
+        Query q = getEntityManager().createQuery(sbQuery.toString());
+        if (!campaign.getQuestions().isEmpty()) {
+            int count = 1;
+            for (Question question : campaign.getQuestions()) {
+                q.setParameter("questionId_" + count, question.getId());
+                count++;
+            }
+
         }
         q.setParameter("pi", pi);
+        for (Question question : campaign.getQuestions()) {
+
+        }
 
         q.setHint("javax.persistence.cache.storeMode", "REFRESH");
         return q.getResultList();
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     * 
+     * @should return correct rows
+     */
     @SuppressWarnings("unchecked")
     @Override
     public List<PersistentAnnotation> getAnnotationsForCampaignAndTarget(Campaign campaign, String pi, Integer page) throws DAOException {
         preQuery();
-        String query = "SELECT a FROM PersistentAnnotation a WHERE a.targetPI = :pi";
+        StringBuilder sbQuery = new StringBuilder("SELECT a FROM PersistentAnnotation a WHERE a.targetPI = :pi");
         if (page != null) {
-            query += " AND a.targetPageOrder = :page";
+            sbQuery.append(" AND a.targetPageOrder = :page");
         } else {
-            query += " AND a.targetPageOrder IS NULL";
+            sbQuery.append(" AND a.targetPageOrder IS NULL");
         }
         if (!campaign.getQuestions().isEmpty()) {
-            query += " AND (";
+            sbQuery.append(" AND (");
+            int count = 1;
             for (Question question : campaign.getQuestions()) {
-                query += " a.generatorId = :questionId_" + question.getId() + " OR";
+                if (count > 1) {
+                    sbQuery.append(" OR ");
+                }
+                sbQuery.append(" a.generatorId = :questionId_").append(count);
+                count++;
             }
-            query = query.substring(0, query.length() - 2); //remove trailing "OR"
-            query += " )";
+            sbQuery.append(" )");
         }
-        Query q = getEntityManager().createQuery(query);
+        Query q = getEntityManager().createQuery(sbQuery.toString());
+        int count = 1;
         for (Question question : campaign.getQuestions()) {
-            q.setParameter("questionId_" + question.getId(), question.getId());
+            q.setParameter("questionId_" + count, question.getId());
+            count++;
         }
         q.setParameter("pi", pi);
         if (page != null) {

@@ -2245,8 +2245,9 @@ public class CmsBean implements Serializable {
                 .collect(Collectors.toList());
 
         for (CMSStaticPage staticPage : getStaticPages()) {
-            if (!staticPage.equals(page) && staticPage.isHasCmsPage() && staticPage.getCmsPageOptional().isPresent()) {
-                allPages.remove(staticPage.getCmsPageOptional().get());
+            Optional<CMSPage> cmsPage = staticPage.getCmsPageOptional();
+            if (!staticPage.equals(page) && staticPage.isHasCmsPage() && cmsPage.isPresent()) {
+                allPages.remove(cmsPage.get());
             }
         }
         return allPages;

@@ -53,10 +53,10 @@
 												</div>
 										</div>
 									</div>
-                                    <div class="col-3 col-sm-2">
+                                    <div class="col-3 col-sm-2 collection__item-end">
 										<!-- TOGGLE DESCRIPTION -->
 										<h:panelGroup rendered="#{msg[browseDcElement.description] != browseDcElement.description || browseDcElement.hasCMSDescription()}">
-											<div class="collection__description-toggle pull-left">
+											<div class="collection__description-toggle">
 												<h:commandLink title="#{msg[browseDcElement.label]}">
 													<h:panelGroup rendered="#{not browseDcElement.showDescription}">
 														<i class="fa fa-angle-down" aria-hidden="true"></i>
@@ -74,7 +74,7 @@
 
 										<!-- RSS FEED -->
 										<h:panelGroup rendered="#{configurationBean.displaySearchRssLinks}">
-											<div class="collection__rss pull-right">
+											<div class="collection__rss">
 												<a href="#{browseDcElement.rssUrl}" title="#{msg[browseDcElement.label]}: #{msg.rssSubscribe}" target="_blank">
 													<i class="fa fa-rss" aria-hidden="true"></i>
 												</a>

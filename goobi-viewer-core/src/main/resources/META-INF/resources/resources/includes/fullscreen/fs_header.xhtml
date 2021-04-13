@@ -33,13 +33,25 @@
             </div>
                             
         </div>
-
+        
+        <!-- DOCSTRUCT NAVIGATION -->
+        <c:if test="#{configurationBean.isDisplayDocstructNavigation(activeDocumentBean.viewManager.topStructElement.docStructType, true)}">
+            <div>
+                <h:outputLink value="#{activeDocumentBean.previousDocstructUrl}" disabled="#{activeDocumentBean.previousDocstructUrl == ''}">
+                    #{msg.previous}
+                </h:outputLink>
+                <h:outputLink value="#{activeDocumentBean.nextDocstructUrl}" disabled="#{activeDocumentBean.nextDocstructUrl == ''}">
+                    #{msg.next}
+                </h:outputLink>
+            </div>
+        </c:if>
+        
         <!-- EXIT -->
         <div class="fullscreen__header-exit">
             <h:outputLink value="#{request.contextPath}#{navigationHelper.exitUrl}" title="#{msg.fullscreen_exit}">
                 <f:passThroughAttribute name="data-toggle" value="tooltip" />
                 <f:passThroughAttribute name="data-placement" value="bottom" />
-                <f:passThroughAttribute name="data-selector" value="exit-fullscreen" />
+                <f:passThroughAttribute name="data-js" value="exit-fullscreen" />
                 <f:passThroughAttribute name="aria-label" value="#{msg.fullscreen_exit}" />
             </h:outputLink>
         </div>

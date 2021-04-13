@@ -338,6 +338,14 @@
             as-is.
             Allowed variables: {order},{orderlabel},{numpages},{msg.xx} (xx being a message key) -->
         <pageSelectionFormat>{order} {msg.of} {numpages}</pageSelectionFormat>     
+       
+        <!-- docstructNavigation: If enabled=true, browsing to the next and previous docstruct is visible for the configured docstruct types. Default is false. -->
+        <docstructNavigation enabled="true">
+            <template name="_DEFAULT">
+                <docstruct>prologue</docstruct>
+                <docstruct>chapter</docstruct>
+            </template>
+        </docstructNavigation>
 
 		<!-- pageTypes: Sub-elements of this element can override the URL names 
 			in the PageType enum. Sub-elements must have the same names as the enum values. -->

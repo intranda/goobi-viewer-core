@@ -153,9 +153,10 @@ public class LogMessage implements Serializable, Comparable<LogMessage> {
         } else {
             try {
                 User user = DataManager.getInstance().getDao().getUser(this.creatorId);
-                this.creator = new UserJsonFacade(user, request);
-                if (this.creator == null) {
+                if (user == null) {
                     this.creator = ANONYMOUS;
+                } else {
+                    this.creator = new UserJsonFacade(user, request);
                 }
             } catch (DAOException e) {
                 logger.error("Error loading user with id " + this.creatorId, e);

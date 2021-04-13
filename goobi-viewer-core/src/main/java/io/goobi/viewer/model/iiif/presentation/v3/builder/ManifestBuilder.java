@@ -53,6 +53,7 @@ import de.unigoettingen.sub.commons.contentlib.exceptions.ContentNotFoundExcepti
 import de.unigoettingen.sub.commons.util.datasource.media.PageSource.IllegalPathSyntaxException;
 import io.goobi.viewer.api.rest.AbstractApiUrlManager;
 import io.goobi.viewer.controller.DataManager;
+import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.exceptions.ViewerConfigurationException;
@@ -60,6 +61,7 @@ import io.goobi.viewer.model.iiif.presentation.v3.builder.LinkingProperty.Linkin
 import io.goobi.viewer.model.viewer.PageType;
 import io.goobi.viewer.model.viewer.PhysicalElement;
 import io.goobi.viewer.model.viewer.StructElement;
+import io.goobi.viewer.model.viewer.pageloader.AbstractPageLoader;
 import io.goobi.viewer.model.viewer.pageloader.EagerPageLoader;
 import io.goobi.viewer.model.viewer.pageloader.IPageLoader;
 
@@ -86,7 +88,7 @@ public class ManifestBuilder extends AbstractBuilder {
 
     }
 
-    public IPresentationModelElement3 build(String pi) throws PresentationException, IndexUnreachableException, ViewerConfigurationException, IllegalPathSyntaxException, ContentLibException, URISyntaxException {
+    public IPresentationModelElement3 build(String pi) throws PresentationException, IndexUnreachableException, ViewerConfigurationException, IllegalPathSyntaxException, ContentLibException, URISyntaxException, DAOException {
 
         List<StructElement> documents = this.dataRetriever.getDocumentWithChildren(pi);
 
@@ -169,6 +171,7 @@ public class ManifestBuilder extends AbstractBuilder {
     }
 
     /**
+     * @throws DAOException 
      * @throws URISyntaxException 
      * @throws ContentLibException 
      * @throws IllegalPathSyntaxException 
@@ -178,9 +181,9 @@ public class ManifestBuilder extends AbstractBuilder {
      * @throws PresentationException 
      * @throws  
      */
-    private void addPages(StructElement ele, Manifest3 manifest) throws PresentationException, IndexUnreachableException, IllegalPathSyntaxException, ContentLibException, URISyntaxException {
+    private void addPages(StructElement ele, Manifest3 manifest) throws PresentationException, IndexUnreachableException, IllegalPathSyntaxException, ContentLibException, URISyntaxException, DAOException {
         CanvasBuilder canvasBuilder = new CanvasBuilder(urls);
-            IPageLoader pageLoader = new EagerPageLoader(ele);
+            IPageLoader pageLoader = AbstractPageLoader.create(ele);
             for (int order = pageLoader.getFirstPageOrder(); order <= pageLoader.getLastPageOrder(); order++) {
                 PhysicalElement page = pageLoader.getPage(order);
                 if(page != null) {

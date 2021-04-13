@@ -77,6 +77,7 @@ import io.goobi.viewer.model.viewer.MimeType;
 import io.goobi.viewer.model.viewer.PageType;
 import io.goobi.viewer.model.viewer.PhysicalElement;
 import io.goobi.viewer.model.viewer.StructElement;
+import io.goobi.viewer.model.viewer.pageloader.AbstractPageLoader;
 import io.goobi.viewer.model.viewer.pageloader.EagerPageLoader;
 import io.goobi.viewer.model.viewer.pageloader.IPageLoader;
 import io.goobi.viewer.model.viewer.pageloader.LeanPageLoader;
@@ -137,7 +138,7 @@ public class SequenceBuilder extends AbstractBuilder {
         
         if(BuildMode.IIIF.equals(buildMode) || BuildMode.THUMBS.equals(buildMode)) {
 
-            IPageLoader pageLoader = new EagerPageLoader(doc);
+            IPageLoader pageLoader = AbstractPageLoader.create(doc);
             Map<Integer, Canvas2> canvasMap = new HashMap<>();
             for (int i = pageLoader.getFirstPageOrder(); i <= pageLoader.getLastPageOrder(); ++i) {
                 PhysicalElement page = pageLoader.getPage(i);
@@ -296,9 +297,10 @@ public class SequenceBuilder extends AbstractBuilder {
      * @return a {@link io.goobi.viewer.model.viewer.PhysicalElement} object.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
+     * @throws PresentationException 
      */
-    public PhysicalElement getPage(StructElement doc, int order) throws IndexUnreachableException, DAOException {
-        IPageLoader loader = new LeanPageLoader(doc, 1);
+    public PhysicalElement getPage(StructElement doc, int order) throws IndexUnreachableException, DAOException, PresentationException {
+        IPageLoader loader = AbstractPageLoader.create(doc);// new LeanPageLoader(doc, 1);
         return loader.getPage(order);
     }
 

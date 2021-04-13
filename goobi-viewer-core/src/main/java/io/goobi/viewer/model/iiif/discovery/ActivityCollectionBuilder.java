@@ -267,7 +267,7 @@ public class ActivityCollectionBuilder {
      * @throws IndexUnreachableException
      */
     private static List<Long> getActivities(LocalDateTime startDate, int first, int last) throws PresentationException, IndexUnreachableException {
-        return getActivities(startDate).stream().skip(first).limit(last - first + 1).collect(Collectors.toList());
+        return getActivities(startDate).stream().skip(first).limit((long) last - first + 1).collect(Collectors.toList());
     }
 
     private static List<Long> getActivities(LocalDateTime startDate) throws PresentationException, IndexUnreachableException {

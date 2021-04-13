@@ -61,6 +61,7 @@ import io.goobi.viewer.model.iiif.presentation.v3.builder.LinkingProperty.Linkin
 import io.goobi.viewer.model.viewer.PageType;
 import io.goobi.viewer.model.viewer.PhysicalElement;
 import io.goobi.viewer.model.viewer.StructElement;
+import io.goobi.viewer.model.viewer.pageloader.AbstractPageLoader;
 import io.goobi.viewer.model.viewer.pageloader.IPageLoader;
 import io.goobi.viewer.model.viewer.pageloader.LeanPageLoader;
 
@@ -85,15 +86,15 @@ public class CanvasBuilder extends AbstractBuilder {
     public Canvas3 build(String pi, int order)
             throws PresentationException, IndexUnreachableException, IllegalPathSyntaxException, ContentLibException, URISyntaxException {
         StructElement topStruct = this.dataRetriever.getDocument(pi);
-        IPageLoader pageLoader = new LeanPageLoader(topStruct, 1);
-        return build(pageLoader.getPage(order));
+        PhysicalElement page = AbstractPageLoader.loadPage(topStruct, order);
+        return build(page);
     }
 
     public AnnotationPage buildFulltextAnnotations(String pi, int order) throws IllegalPathSyntaxException, ContentLibException, URISyntaxException, PresentationException, IndexUnreachableException {
         StructElement topStruct = this.dataRetriever.getDocument(pi);
-        IPageLoader pageLoader = new LeanPageLoader(topStruct, 1);
-        Canvas3 canvas = build(pageLoader.getPage(order));
-        AnnotationPage fulltext = getFulltextAnnotations(canvas, pageLoader.getPage(order));
+        PhysicalElement page = AbstractPageLoader.loadPage(topStruct, order);
+        Canvas3 canvas = build(page);
+        AnnotationPage fulltext = getFulltextAnnotations(canvas, page);
         return fulltext;
     }
     

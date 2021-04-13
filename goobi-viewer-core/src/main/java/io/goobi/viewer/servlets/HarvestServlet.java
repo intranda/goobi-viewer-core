@@ -297,9 +297,9 @@ public class HarvestServlet extends HttpServlet implements Serializable {
                                 } finally {
                                     if (!DataManager.getInstance().getDao().updateDownloadJob(job)) {
                                         response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-                                        return;
+                                    } else {
+                                        logger.trace("Downloadjob {} updated in database with status {}", job, job.getStatus());
                                     }
-                                    logger.trace("Downloadjob {} updated in database with status {}", job, job.getStatus());
                                 }
                             }
                         }

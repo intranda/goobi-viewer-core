@@ -120,7 +120,7 @@ public class CMSPageLanguageVersion {
      */
     public CMSPageLanguageVersion(CMSPageLanguageVersion original, CMSPage ownerPage) {
         if (original.id != null) {
-            this.id = new Long(original.id);
+            this.id = original.id;
         }
         this.ownerPage = ownerPage;
         this.language = original.language;

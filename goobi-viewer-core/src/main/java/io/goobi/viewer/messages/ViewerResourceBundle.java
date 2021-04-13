@@ -33,19 +33,15 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.Enumeration;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.MissingResourceException;
 import java.util.ResourceBundle;
-import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import javax.faces.context.FacesContext;
-import javax.faces.view.facelets.FaceletContext;
 import javax.servlet.ServletContext;
 
 import org.apache.commons.lang3.StringUtils;
@@ -56,13 +52,11 @@ import org.jdom2.Namespace;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import de.intranda.api.iiif.presentation.v2.Collection2;
 import de.intranda.metadata.multilanguage.IMetadataValue;
 import de.intranda.metadata.multilanguage.MultiLanguageMetadataValue;
 import de.intranda.metadata.multilanguage.SimpleMetadataValue;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.SolrConstants;
-import io.goobi.viewer.controller.StringTools;
 import io.goobi.viewer.controller.XmlTools;
 
 /**
@@ -497,14 +491,16 @@ public class ViewerResourceBundle extends ResourceBundle {
      */
     public static List<String> getMessagesValues(Locale locale, String keyPrefix) {
         ResourceBundle rb = loadLocalResourceBundle(locale);
-        List<String> res = new ArrayList<>();
+        if (rb == null) {
+            return Collections.emptyList();
+        }
 
+        List<String> res = new ArrayList<>();
         for (String key : rb.keySet()) {
             if (key.startsWith(keyPrefix)) {
                 res.add(key);
             }
         }
-
         Collections.sort(res);
 
         return res;
@@ -599,9 +595,8 @@ public class ViewerResourceBundle extends ResourceBundle {
             Path facesConfigPath = Paths.get(webContentRoot).resolve("faces-config.xml");
             if (Files.exists(facesConfigPath)) {
                 return getLocalesFromFile(facesConfigPath);
-            } else {
-                throw new FileNotFoundException("Unable to locate faces-config at " + facesConfigPath);
             }
+            throw new FileNotFoundException("Unable to locate faces-config at " + facesConfigPath);
         } catch (Throwable e) {
             logger.error("Error getting locales from faces-config", e);
             return getFacesLocales();
