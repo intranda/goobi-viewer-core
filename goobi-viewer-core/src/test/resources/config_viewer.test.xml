@@ -1200,6 +1200,29 @@
 		<mediaDisplayWidth>600</mediaDisplayWidth>
 		<mediaDisplayHeight>800</mediaDisplayHeight>
 	</cms>
+	
+    <translations>
+        <group type="SOLR_FIELD_NAMES" name="label__translation_group_1"  description="desc__translation_group_1">
+            <key>DC</key>
+            <key>ACCESSCONDITION</key>
+            <key>BOOL_IMAGEAVAILABLE</key>
+            <key>FULLTEXTAVAILABLE</key>
+            <key type="regex">MD_.*</key>
+        </group>
+        <group type="SOLR_FIELD_VALUES" name="label__translation_group_2"  description="desc__translation_group_2">
+            <key>DC</key>
+            <key>DOCSTRCT</key>
+        </group>
+        <group type="CORE_STRINGS" name="label__translation_group_3"  description="desc__translation_group_3">
+            <key>commentChangedNotificationEmailBody</key>
+            <key>commentChangedNotificationEmailSubject</key>
+            <key type="regex">commentNewNotificationEmail.*</key>
+            <key type="regex">feedbackEmail.*</key>
+            <key type="regex">user_activationEmail.*</key>
+            <key type="regex">user_retrieveAccountConfirmationEmail.*</key>
+            <key type="regex">user_retrieveAccountNewPasswordEmail.*</key>
+        </group>
+    </translations>
 
 	<!-- Transkribus settings (enabled: default false) -->
 	<transkribus enabled="true">

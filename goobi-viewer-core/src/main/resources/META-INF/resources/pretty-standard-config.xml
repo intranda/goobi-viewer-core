@@ -815,6 +815,10 @@
         <pattern value="/admin/record/new/" />
         <view-id value="/resources/admin/views/adminCreateRecord.xhtml" />
     </url-mapping>
+    <url-mapping id="adminTranslations">
+        <pattern value="/admin/translations/" />
+        <view-id value="/resources/admin/views/adminTranslations.xhtml" />
+    </url-mapping>
 
 	<!-- CMS ADMIN -->
 	<url-mapping id="adminCms">
