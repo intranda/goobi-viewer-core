@@ -75,6 +75,7 @@ import io.goobi.viewer.model.security.user.User;
 import io.goobi.viewer.model.security.user.UserGroup;
 import io.goobi.viewer.model.security.user.UserRole;
 import io.goobi.viewer.model.security.user.UserTools;
+import io.goobi.viewer.model.translations.TranslationGroup;
 
 /**
  * Administration backend functions.
@@ -1823,5 +1824,15 @@ public class AdminBean implements Serializable {
      */
     public String getMessageKeyForPrivilege(String privilege) {
         return "license_priv_" + privilege.toLowerCase();
+    }
+    
+    /**
+     * 
+     * @return
+     */
+    public List<TranslationGroup> getConfiguredTranslationGroups() {
+        List<TranslationGroup> ret = DataManager.getInstance().getConfiguration().getTranslationGroups();
+        logger.trace("groups: {}", ret.size());
+        return ret;
     }
 }
