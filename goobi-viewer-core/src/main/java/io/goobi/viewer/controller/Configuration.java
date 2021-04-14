@@ -71,9 +71,6 @@ import io.goobi.viewer.model.security.authentication.VuFindProvider;
 import io.goobi.viewer.model.security.authentication.XServiceProvider;
 import io.goobi.viewer.model.termbrowsing.BrowsingMenuFieldConfig;
 import io.goobi.viewer.model.transkribus.TranskribusUtils;
-import io.goobi.viewer.model.translations.TranslationGroup;
-import io.goobi.viewer.model.translations.TranslationGroup.TranslationGroupType;
-import io.goobi.viewer.model.translations.TranslationGroupKey;
 import io.goobi.viewer.model.viewer.DcSortingList;
 import io.goobi.viewer.model.viewer.PageType;
 import io.goobi.viewer.model.viewer.StringPair;
@@ -5042,47 +5039,5 @@ public final class Configuration extends AbstractConfiguration {
 
     public boolean isDisplayUserGeneratedContentBelowImage() {
         return getLocalBoolean("webGuiDisplay.displayUserGeneratedContentBelowImage", false);
-    }
-
-    /**
-     * 
-     * @return
-     * @should read config items correctly
-     */
-    public List<TranslationGroup> getTranslationGroups() {
-        List<TranslationGroup> ret = new ArrayList<>();
-        List<HierarchicalConfiguration> groupNodes = getLocalConfigurationsAt("translations.group");
-        for (HierarchicalConfiguration groupNode : groupNodes) {
-            String typeValue = groupNode.getString("[@type]");
-            if (StringUtils.isBlank(typeValue)) {
-                logger.warn("translations/group/@type may not be empty.");
-                continue;
-            }
-            TranslationGroupType type = TranslationGroupType.getByName(typeValue);
-            if (type == null) {
-                logger.warn("Unknown translations/group/@type: {}", typeValue);
-                continue;
-            }
-            String name = groupNode.getString("[@name]");
-            if (StringUtils.isBlank(name)) {
-                logger.warn("translations/group/@name may not be empty.");
-                continue;
-            }
-            String description = groupNode.getString("[@description]");
-            List<HierarchicalConfiguration> keyNodes = groupNode.configurationsAt("key");
-            TranslationGroup group = TranslationGroup.create(type, name, description, keyNodes.size());
-            for (HierarchicalConfiguration keyNode : keyNodes) {
-                String value = keyNode.getString(".");
-                if (StringUtils.isBlank(value)) {
-                    logger.warn("translations/group/key may not be empty.");
-                    continue;
-                }
-                boolean regex = keyNode.getBoolean("[@regex]", false);
-                group.getKeys().add(TranslationGroupKey.create(type, value, regex));
-            }
-            ret.add(group);
-        }
-
-        return ret;
     }
 }
