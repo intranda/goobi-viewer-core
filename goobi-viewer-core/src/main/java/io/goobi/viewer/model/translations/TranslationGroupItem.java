@@ -19,11 +19,11 @@ import java.util.List;
 
 import io.goobi.viewer.model.translations.TranslationGroup.TranslationGroupType;
 
-public abstract class TranslationGroupKey {
+public abstract class TranslationGroupItem {
 
     protected final String key;
     protected final boolean regex;
-    protected List<String> values;
+    protected List<String> messageKeys;
 
     /**
      * Factory method.
@@ -32,19 +32,20 @@ public abstract class TranslationGroupKey {
      * @param key
      * @param regex
      * @return
+     * @should create correct class instance by type
      */
-    public static TranslationGroupKey create(TranslationGroupType type, String key, boolean regex) {
+    public static TranslationGroupItem create(TranslationGroupType type, String key, boolean regex) {
         if (type == null) {
             throw new IllegalArgumentException("type may not be null");
         }
 
         switch (type) {
             case SOLR_FIELD_NAMES:
-                return new SolrFieldValueTranslationGroupKey(key, regex);
+                return new SolrFieldNameTranslationGroupItem(key, regex);
             case SOLR_FIELD_VALUES:
-                return new SolrFieldValueTranslationGroupKey(key, regex);
+                return new SolrFieldValueTranslationGroupItem(key, regex);
             default:
-                return new MessagesTranslationGroupKey(key, regex);
+                return new MessagesTranslationGroupItem(key, regex);
         }
     }
 
@@ -54,7 +55,7 @@ public abstract class TranslationGroupKey {
      * @param key
      * @param regex
      */
-    protected TranslationGroupKey(String key, boolean regex) {
+    protected TranslationGroupItem(String key, boolean regex) {
         this.key = key;
         this.regex = regex;
     }
@@ -78,22 +79,18 @@ public abstract class TranslationGroupKey {
     }
 
     /**
-     * @return the values
+     * @return the messageKeys
      */
-    public List<String> getValues() {
-        if (values == null) {
-            loadValues();
+    public List<String> getMessageKeys() {
+        if (messageKeys == null) {
+            loadMessageKeys();
         }
 
-        return values;
+        return messageKeys;
     }
 
     /**
-     * @param values the values to set
+     * 
      */
-    public void setValues(List<String> values) {
-        this.values = values;
-    }
-
-    protected abstract void loadValues();
+    protected abstract void loadMessageKeys();
 }

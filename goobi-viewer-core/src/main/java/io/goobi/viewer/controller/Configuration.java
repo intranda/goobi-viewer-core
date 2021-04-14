@@ -73,7 +73,7 @@ import io.goobi.viewer.model.termbrowsing.BrowsingMenuFieldConfig;
 import io.goobi.viewer.model.transkribus.TranskribusUtils;
 import io.goobi.viewer.model.translations.TranslationGroup;
 import io.goobi.viewer.model.translations.TranslationGroup.TranslationGroupType;
-import io.goobi.viewer.model.translations.TranslationGroupKey;
+import io.goobi.viewer.model.translations.TranslationGroupItem;
 import io.goobi.viewer.model.viewer.DcSortingList;
 import io.goobi.viewer.model.viewer.PageType;
 import io.goobi.viewer.model.viewer.StringPair;
@@ -5052,6 +5052,7 @@ public final class Configuration extends AbstractConfiguration {
     public List<TranslationGroup> getTranslationGroups() {
         List<TranslationGroup> ret = new ArrayList<>();
         List<HierarchicalConfiguration> groupNodes = getLocalConfigurationsAt("translations.group");
+        int id = 0;
         for (HierarchicalConfiguration groupNode : groupNodes) {
             String typeValue = groupNode.getString("[@type]");
             if (StringUtils.isBlank(typeValue)) {
@@ -5070,7 +5071,7 @@ public final class Configuration extends AbstractConfiguration {
             }
             String description = groupNode.getString("[@description]");
             List<HierarchicalConfiguration> keyNodes = groupNode.configurationsAt("key");
-            TranslationGroup group = TranslationGroup.create(type, name, description, keyNodes.size());
+            TranslationGroup group = TranslationGroup.create(id, type, name, description, keyNodes.size());
             for (HierarchicalConfiguration keyNode : keyNodes) {
                 String value = keyNode.getString(".");
                 if (StringUtils.isBlank(value)) {
@@ -5078,9 +5079,10 @@ public final class Configuration extends AbstractConfiguration {
                     continue;
                 }
                 boolean regex = keyNode.getBoolean("[@regex]", false);
-                group.getKeys().add(TranslationGroupKey.create(type, value, regex));
+                group.getItems().add(TranslationGroupItem.create(type, value, regex));
             }
             ret.add(group);
+            id++;
         }
 
         return ret;

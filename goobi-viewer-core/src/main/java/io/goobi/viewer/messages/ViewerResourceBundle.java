@@ -38,6 +38,7 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.MissingResourceException;
 import java.util.ResourceBundle;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
@@ -69,6 +70,9 @@ public class ViewerResourceBundle extends ResourceBundle {
     private static final Logger logger = LoggerFactory.getLogger(ViewerResourceBundle.class);
 
     private static final Object lock = new Object();
+
+    private static final String BUNDLE_NAME = "messages";
+
     private static final Map<Locale, ResourceBundle> defaultBundles = new ConcurrentHashMap<>();
     /** Constant <code>localBundles</code> */
     protected static final Map<Locale, ResourceBundle> localBundles = new ConcurrentHashMap<>();
@@ -180,7 +184,7 @@ public class ViewerResourceBundle extends ResourceBundle {
             synchronized (lock) {
                 // Bundle could have been initialized by a different thread in the meanwhile
                 if (!defaultBundles.containsKey(locale)) {
-                    defaultBundles.put(locale, ResourceBundle.getBundle("messages", locale));
+                    defaultBundles.put(locale, ResourceBundle.getBundle(BUNDLE_NAME, locale));
                 }
             }
         }
@@ -237,7 +241,7 @@ public class ViewerResourceBundle extends ResourceBundle {
                 URL resourceURL = file.getParentFile().toURI().toURL();
                 // logger.debug("URL: " + file.getParentFile().toURI().toURL());
                 URLClassLoader urlLoader = new URLClassLoader(new URL[] { resourceURL });
-                return ResourceBundle.getBundle("messages", locale, urlLoader);
+                return ResourceBundle.getBundle(BUNDLE_NAME, locale, urlLoader);
             } catch (Exception e) {
                 // some error while loading bundle from file system; use default bundle now ...
             }
@@ -626,4 +630,16 @@ public class ViewerResourceBundle extends ResourceBundle {
         getAllLocales(servletContext);
     }
 
+    /**
+     * 
+     * @return All message keys in the bundle
+     */
+    public static Set<String> getAllKeys() {
+        ResourceBundle bundle = getBundle(BUNDLE_NAME);
+        if (bundle == null) {
+            logger.error("Reource bundle '{}' not found.", BUNDLE_NAME);
+            return Collections.emptySet();
+        }
+        return bundle.keySet();
+    }
 }

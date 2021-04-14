@@ -15,9 +15,13 @@
  */
 package io.goobi.viewer.model.translations;
 
+import java.util.ArrayList;
 import java.util.Collections;
 
-public class MessagesTranslationGroupKey extends TranslationGroupKey {
+import io.goobi.viewer.controller.StringTools;
+import io.goobi.viewer.messages.ViewerResourceBundle;
+
+public class MessagesTranslationGroupItem extends TranslationGroupItem {
 
     /**
      * Protected constructor.
@@ -25,7 +29,7 @@ public class MessagesTranslationGroupKey extends TranslationGroupKey {
      * @param key
      * @param regex
      */
-    protected MessagesTranslationGroupKey(String key, boolean regex) {
+    protected MessagesTranslationGroupItem(String key, boolean regex) {
         super(key, regex);
     }
 
@@ -33,11 +37,11 @@ public class MessagesTranslationGroupKey extends TranslationGroupKey {
      * @see io.goobi.viewer.model.translations.TranslationGroupKey#loadValues()
      */
     @Override
-    protected void loadValues() {
+    protected void loadMessageKeys() {
         if (regex) {
-            // TODO
+            messageKeys =  StringTools.filterStringsViaRegex(new ArrayList<>(ViewerResourceBundle.getAllKeys()), key);
         } else {
-            values = Collections.singletonList(key);
+            messageKeys = Collections.singletonList(key);
         }
     }
 }

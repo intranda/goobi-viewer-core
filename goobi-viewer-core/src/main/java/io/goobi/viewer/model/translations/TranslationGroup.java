@@ -16,7 +16,10 @@
 package io.goobi.viewer.model.translations;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 /**
  * Translation group configuration item.
@@ -48,42 +51,53 @@ public class TranslationGroup {
         }
     }
 
+    private final int id;
     private final TranslationGroupType type;
     private final String name;
     private final String description;
-    private final List<TranslationGroupKey> keys;
+    private final List<TranslationGroupItem> items;
 
     private Integer translatedKeyCount = null;
 
     /**
      * Factory method.
      * 
+     * @param id unique ID number
      * @param type
      * @param name
      * @param description
      * @param numKeys
      * @return
      */
-    public static TranslationGroup create(TranslationGroupType type, String name, String description, int numKeys) {
-        return new TranslationGroup(type, name, description, numKeys);
+    public static TranslationGroup create(int id, TranslationGroupType type, String name, String description, int numKeys) {
+        return new TranslationGroup(id, type, name, description, numKeys);
     }
 
     /**
      * Private constructor.
      * 
+     * @param id
      * @param type
      * @param name
      * @param description
      * @param numKeys
      */
-    private TranslationGroup(TranslationGroupType type, String name, String description, int numKeys) {
+    private TranslationGroup(int id, TranslationGroupType type, String name, String description, int numKeys) {
         if (numKeys < 0) {
             throw new IllegalArgumentException("numKeys may not be negative");
         }
+        this.id = id;
         this.type = type;
         this.name = name;
         this.description = description;
-        this.keys = new ArrayList<>(numKeys);
+        this.items = new ArrayList<>(numKeys);
+    }
+
+    /**
+     * @return the id
+     */
+    public int getId() {
+        return id;
     }
 
     /**
@@ -110,16 +124,24 @@ public class TranslationGroup {
     /**
      * @return the keys
      */
-    public List<TranslationGroupKey> getKeys() {
-        return keys;
+    public List<TranslationGroupItem> getItems() {
+        return items;
     }
 
     /**
      * 
-     * @return
+     * @return Number of unique message keys across all groups
+     * @should return correct count
      */
-    public int getKeyCount() {
-        return keys.size();
+    public int getMessageKeyCount() {
+        Set<String> returnSet = new HashSet<>();
+        for (TranslationGroupItem item : items) {
+            for (String key : item.getMessageKeys()) {
+                returnSet.add(key);
+            }
+        }
+
+        return returnSet.size();
     }
 
     /**
@@ -129,12 +151,29 @@ public class TranslationGroup {
     public Integer getTranslatedKeyCount() {
         if (translatedKeyCount == null) {
             translatedKeyCount = 0; // TODO
-            for (TranslationGroupKey key : keys) {
+            for (TranslationGroupItem key : items) {
                 if (key.isTranslated()) {
                     translatedKeyCount++;
                 }
             }
         }
         return translatedKeyCount;
+    }
+
+    /**
+     * 
+     * @return Unique message keys across all groups
+     */
+    public List<String> getAllKeys() {
+        Set<String> returnSet = new HashSet<>();
+        for (TranslationGroupItem item : items) {
+            for (String key : item.getMessageKeys()) {
+                returnSet.add(key);
+            }
+        }
+
+        List<String> ret = new ArrayList<>(returnSet);
+        Collections.sort(ret);
+        return ret;
     }
 }

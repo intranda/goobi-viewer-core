@@ -15,32 +15,28 @@
  */
 package io.goobi.viewer.model.translations;
 
-import java.util.ArrayList;
 import java.util.Collections;
 
-import org.apache.solr.client.solrj.response.FacetField;
-import org.apache.solr.client.solrj.response.FacetField.Count;
-import org.apache.solr.client.solrj.response.QueryResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import io.goobi.viewer.controller.DataManager;
-import io.goobi.viewer.exceptions.IndexUnreachableException;
-import io.goobi.viewer.exceptions.PresentationException;
+import io.goobi.viewer.controller.StringTools;
+import io.goobi.viewer.exceptions.DAOException;
 
-public class SolrFieldValueTranslationGroupKey extends TranslationGroupKey {
+public class SolrFieldNameTranslationGroupItem extends TranslationGroupItem {
 
     /** Logger for this class */
-    private static final Logger logger = LoggerFactory.getLogger(SolrFieldValueTranslationGroupKey.class);
+    private static final Logger logger = LoggerFactory.getLogger(SolrFieldNameTranslationGroupItem.class);
 
     /**
      * Protected constructor.
      * 
-     * @param value
+     * @param key
      * @param regex
      */
-    protected SolrFieldValueTranslationGroupKey(String value, boolean regex) {
-        super(value, regex);
+    protected SolrFieldNameTranslationGroupItem(String key, boolean regex) {
+        super(key, regex);
     }
 
     /* (non-Javadoc)
@@ -55,25 +51,15 @@ public class SolrFieldValueTranslationGroupKey extends TranslationGroupKey {
      * @see io.goobi.viewer.model.translations.TranslationGroupKey#loadValues()
      */
     @Override
-    protected void loadValues() {
+    protected void loadMessageKeys() {
         if (regex) {
-            // TODO
-        } else {
             try {
-                QueryResponse qr = DataManager.getInstance()
-                        .getSearchIndex()
-                        .searchFacetsAndStatistics(key + "*:*", null, Collections.singletonList(key), 0, false);
-                FacetField ff = qr.getFacetField(key);
-                values = new ArrayList<>(ff.getValueCount());
-                for (Count value : ff.getValues()) {
-                    values.add(value.getName());
-                }
-                Collections.sort(values);
-            } catch (PresentationException e) {
-                logger.error(e.getMessage());
-            } catch (IndexUnreachableException e) {
+                messageKeys = StringTools.filterStringsViaRegex(DataManager.getInstance().getSearchIndex().getAllFieldNames(), key);
+            } catch (DAOException e) {
                 logger.error(e.getMessage());
             }
+        } else {
+            messageKeys = Collections.singletonList(key);
         }
     }
 }

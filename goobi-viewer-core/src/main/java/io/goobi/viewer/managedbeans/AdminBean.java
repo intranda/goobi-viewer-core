@@ -104,6 +104,7 @@ public class AdminBean implements Serializable {
     private License currentLicense = null;
     private IpRange currentIpRange = null;
     private Comment currentComment = null;
+    private TranslationGroup currentTranslationGroup = null;
 
     private String passwordOne = "";
     private String passwordTwo = "";
@@ -1478,6 +1479,45 @@ public class AdminBean implements Serializable {
     // Lazy models
 
     /**
+     * @return the currentTranslationGroup
+     */
+    public TranslationGroup getCurrentTranslationGroup() {
+        return currentTranslationGroup;
+    }
+
+    /**
+     * @param currentTranslationGroup the currentTranslationGroup to set
+     */
+    public void setCurrentTranslationGroup(TranslationGroup currentTranslationGroup) {
+        this.currentTranslationGroup = currentTranslationGroup;
+    }
+
+    /**
+     * 
+     * @return
+     */
+    public int getCurrentTranslationGroupId() {
+        if (currentTranslationGroup != null) {
+            return DataManager.getInstance().getConfiguration().getTranslationGroups().indexOf(currentTranslationGroup);
+        }
+
+        return -1;
+    }
+
+    /**
+     * 
+     * @param id
+     */
+    public void setCurrentTranslationGroupId(int id) {
+        List<TranslationGroup> groups = DataManager.getInstance().getConfiguration().getTranslationGroups();
+        if (groups.size() > id) {
+            currentTranslationGroup = groups.get(id);
+        } else {
+            logger.error("Translation group ID not found: {}", id);
+        }
+    }
+
+    /**
      * <p>
      * Getter for the field <code>lazyModelUsers</code>.
      * </p>
@@ -1825,7 +1865,7 @@ public class AdminBean implements Serializable {
     public String getMessageKeyForPrivilege(String privilege) {
         return "license_priv_" + privilege.toLowerCase();
     }
-    
+
     /**
      * 
      * @return
