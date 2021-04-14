@@ -1140,6 +1140,7 @@ public class ViewManager implements Serializable {
     public int getCurrentImageNo() {
         return currentImageOrder;
     }
+    
 
     /**
      * Getter for the paginator or the direct page number input field
@@ -1326,6 +1327,20 @@ public class ViewManager implements Serializable {
             return -1;
         }
         return pageLoader.getNumPages();
+    }
+    
+    public int getLastPageOrder() throws IndexUnreachableException {
+        if(pageLoader == null) {
+            return -1;
+        }
+        return pageLoader.getLastPageOrder();
+    }
+    
+    public int getFirstPageOrder() throws IndexUnreachableException {
+        if(pageLoader == null) {
+            return -1;
+        }
+        return pageLoader.getFirstPageOrder();
     }
 
     /**

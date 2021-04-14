@@ -1121,6 +1121,20 @@
 		opacity: 0;
 		z-index: 100;
 	}
+	&__cancel-button {
+		margin-right: 1.5rem;
+		min-width: 120px;
+	}
+	
+// BUTTONS MIN-WIDTH
+.btn--full, 
+.btn--default, 
+.btn--danger, 
+.btn--success {
+	min-width: 130px;
+}
+
+
 
 //	.sticky-top {
 //		position: sticky;
@@ -1438,6 +1452,10 @@ html[lang="es"] .admin__radio-switch {
 		.mr-3, .mx-3 {
 		    margin-right: unset !important;
 		    margin-left: 1.6rem;
+		}
+		&__cancel-button {
+			margin-right: unset;
+			margin-left: 1.5rem;
 		}
 	}
 }
