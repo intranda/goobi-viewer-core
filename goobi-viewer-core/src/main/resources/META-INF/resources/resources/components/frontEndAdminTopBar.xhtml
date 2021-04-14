@@ -64,7 +64,7 @@
             	<ui:fragment rendered="#{userBean.admin}">
 					<h:commandLink styleClass="admin__topbar-frontend-hotfolder-files-action">
 					    <i class="fa fa-spinner fa-pulse" aria-hidden="true"></i>
-					    <span>1.242</span> <span>#{msg.files_in_hotfolder}...</span>
+					    <span>1.242</span> <span>#{msg.admin__files_in_hotfolder}...</span>
 					</h:commandLink>
 				</ui:fragment>
 				
@@ -73,7 +73,7 @@
             	<ui:fragment rendered="#{!userBean.admin}">
 					<div styleClass="admin__topbar-frontend-hotfolder-files-action">
 					    <i class="fa fa-circle-o" aria-hidden="true"></i>
-					    <span>#{msg.no_files_in_hotfolder}</span>
+					    <span>#{msg.admin__no_files_in_hotfolder}</span>
 					</div>
 				</ui:fragment>
 				
