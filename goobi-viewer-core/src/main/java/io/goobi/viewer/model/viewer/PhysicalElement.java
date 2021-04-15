@@ -1187,13 +1187,7 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
      * @return a {@link java.lang.String} object.
      */
     public String getImageUrl() {
-        ImageFileFormat format = ImageFileFormat.JPG;
-        if (ImageFileFormat.PNG.equals(getImageType().getFormat())) {
-            format = ImageFileFormat.PNG;
-        }
-        return new IIIFUrlHandler().getIIIFImageUrl(
-                DataManager.getInstance().getConfiguration().getIIIFApiUrl() + "image/" + pi + "/" + getFileName(), RegionRequest.FULL, Scale.MAX,
-                Rotation.NONE, Colortype.DEFAULT, format);
+        return BeanUtils.getImageDeliveryBean().getThumbs().getThumbnailUrl(this, Scale.MAX);
     }
 
     /**
@@ -1205,13 +1199,9 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
      * @return a {@link java.lang.String} object.
      */
     public String getImageUrl(int size) {
-        ImageFileFormat format = ImageFileFormat.JPG;
-        if (ImageFileFormat.PNG.equals(getImageType().getFormat())) {
-            format = ImageFileFormat.PNG;
-        }
-        return new IIIFUrlHandler().getIIIFImageUrl(
-                DataManager.getInstance().getConfiguration().getIIIFApiUrl() + "image/" + pi + "/" + getFileName(), RegionRequest.FULL,
-                new Scale.ScaleToWidth(size), Rotation.NONE, Colortype.DEFAULT, format);
+        Scale scale = new Scale.ScaleToWidth(size);
+        return BeanUtils.getImageDeliveryBean().getThumbs().getThumbnailUrl(this, scale);
+
     }
 
     /**
