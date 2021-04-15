@@ -123,9 +123,6 @@ public abstract class TranslationGroupItem {
             Map<String, String> translations = new HashMap<>(allLocales.size());
             for (Locale locale : allLocales) {
                 String translation = ViewerResourceBundle.getTranslation(k, locale, false, false);
-                if ("MD_AUTHOR".equals(k)) {
-                    System.out.println(locale.getLanguage() + ": " + translation);
-                }
                 if (translation.equals(k)) {
                     translations.put(locale.getLanguage(), null);
                 } else {
