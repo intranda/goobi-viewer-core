@@ -13,21 +13,26 @@
  *
  * You should have received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
-package io.goobi.viewer.model.translations;
+package io.goobi.viewer.model.translations.admin;
 
+import java.util.ArrayList;
 import java.util.Collections;
+import java.util.List;
 
+import org.apache.solr.client.solrj.response.FacetField;
+import org.apache.solr.client.solrj.response.FacetField.Count;
+import org.apache.solr.client.solrj.response.QueryResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import io.goobi.viewer.controller.DataManager;
-import io.goobi.viewer.controller.StringTools;
-import io.goobi.viewer.exceptions.DAOException;
+import io.goobi.viewer.exceptions.IndexUnreachableException;
+import io.goobi.viewer.exceptions.PresentationException;
 
-public class SolrFieldNameTranslationGroupItem extends TranslationGroupItem {
+public class SolrFieldValueTranslationGroupItem extends TranslationGroupItem {
 
     /** Logger for this class */
-    private static final Logger logger = LoggerFactory.getLogger(SolrFieldNameTranslationGroupItem.class);
+    private static final Logger logger = LoggerFactory.getLogger(SolrFieldValueTranslationGroupItem.class);
 
     /**
      * Protected constructor.
@@ -35,7 +40,7 @@ public class SolrFieldNameTranslationGroupItem extends TranslationGroupItem {
      * @param key
      * @param regex
      */
-    protected SolrFieldNameTranslationGroupItem(String key, boolean regex) {
+    protected SolrFieldValueTranslationGroupItem(String key, boolean regex) {
         super(key, regex);
     }
 
@@ -52,14 +57,21 @@ public class SolrFieldNameTranslationGroupItem extends TranslationGroupItem {
      */
     @Override
     protected void loadMessageKeys() {
-        if (regex) {
-            try {
-                messageKeys = StringTools.filterStringsViaRegex(DataManager.getInstance().getSearchIndex().getAllFieldNames(), key);
-            } catch (DAOException e) {
-                logger.error(e.getMessage());
+        try {
+            QueryResponse qr = DataManager.getInstance()
+                    .getSearchIndex()
+                    .searchFacetsAndStatistics("*:*", null, Collections.singletonList(key), 0, false);
+            FacetField ff = qr.getFacetField(key);
+            List<String> keys = new ArrayList<>(ff.getValueCount());
+            for (Count value : ff.getValues()) {
+                keys.add(value.getName());
             }
-        } else {
-            messageKeys = Collections.singletonList(key);
+            Collections.sort(keys);
+            createMessageKeyStatusMap(keys);
+        } catch (PresentationException e) {
+            logger.error(e.getMessage());
+        } catch (IndexUnreachableException e) {
+            logger.error(e.getMessage());
         }
     }
 }

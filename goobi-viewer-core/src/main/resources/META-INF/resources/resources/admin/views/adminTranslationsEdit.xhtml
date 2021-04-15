@@ -21,15 +21,32 @@
                         <div class="admin__title-bar">
                             <!-- TITLE -->
                             <h2 class="admin__title">#{msg.admin__translations}</h2>
+
                         </div>
 
                         <div class="admin__content-inner-content">
+                            <!-- LEFT SIDE -->
                             <div>
+                                <h3>#{msg.admin__translations}</h3>
+                                TRANSLATE HERE
+                            </div>
+                            <!-- RIGHT SIDE -->
+                            <div>
+                                <h3>#{msg.label__crowdsourcing_campaign_progress}</h3>
+                                (#{adminBean.currentTranslationGroup.translatedKeyCount} von #{adminBean.currentTranslationGroup.messageKeyCount})
+                            </div>
+                            <div>
+                                <h3>#{msg.admin__overview}</h3>
                                 <ui:repeat var="key" value="#{adminBean.currentTranslationGroup.allKeys}">
-                                        <div class="row">
-                                            #{key}
-                                            <br />
-                                        </div>
+                                    <h:panelGroup class="row" rendered="#{key.translationStatus == 'NONE'}" style="background-color: #EEEEEE">
+                                        #{key.key}
+                                    </h:panelGroup>
+                                    <h:panelGroup class="row" rendered="#{key.translationStatus == 'PARTIAL'}" style="background-color: #F7E3B5">
+                                        #{key.key}
+                                    </h:panelGroup>
+                                    <h:panelGroup class="row" rendered="#{key.translationStatus == 'FULL'}" style="background-color: #D4EDDB">
+                                        #{key.key}
+                                    </h:panelGroup>
                                 </ui:repeat>
                             </div>
                         </div>

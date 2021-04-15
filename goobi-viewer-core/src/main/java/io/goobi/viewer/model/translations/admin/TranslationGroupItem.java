@@ -13,17 +13,28 @@
  *
  * You should have received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
-package io.goobi.viewer.model.translations;
+package io.goobi.viewer.model.translations.admin;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
+import java.util.Map;
 
-import io.goobi.viewer.model.translations.TranslationGroup.TranslationGroupType;
+import io.goobi.viewer.messages.ViewerResourceBundle;
+import io.goobi.viewer.model.translations.admin.TranslationGroup.TranslationGroupType;
 
+/**
+ * A single <key> element as part of a translation group.
+ */
 public abstract class TranslationGroupItem {
 
+    /** A single message key or a regular expression for multiple message keys. */
     protected final String key;
+    /** If true, <code>key</code> will contain a regular expression. */
     protected final boolean regex;
-    protected List<String> messageKeys;
+    protected List<MessageKey> messageKeys;
 
     /**
      * Factory method.
@@ -81,7 +92,7 @@ public abstract class TranslationGroupItem {
     /**
      * @return the messageKeys
      */
-    public List<String> getMessageKeys() {
+    public List<MessageKey> getMessageKeys() {
         if (messageKeys == null) {
             loadMessageKeys();
         }
@@ -90,7 +101,35 @@ public abstract class TranslationGroupItem {
     }
 
     /**
-     * 
+     * Populates the message key map by first loading the appropriate keys and then calling <code>createMessageKeyStatusMap</code>. Each subclass will
+     * have its specific data source, so each subclass must implement this method.
      */
     protected abstract void loadMessageKeys();
+
+    /**
+     * Checks the translation status for each of the given keys and populates <code>messageKeys</code> accordingly.
+     * 
+     * @param keys
+     */
+    protected void createMessageKeyStatusMap(List<String> keys) {
+        if (keys == null || keys.isEmpty()) {
+            messageKeys = Collections.emptyList();
+            return;
+        }
+
+        messageKeys = new ArrayList<>(keys.size());
+        for (String k : keys) {
+            List<Locale> allLocales = ViewerResourceBundle.getAllLocales();
+            Map<String, String> translations = new HashMap<>(allLocales.size());
+            for (Locale locale : allLocales) {
+                String translation = ViewerResourceBundle.getTranslation(k, locale, false);
+                if (translation.equals(k)) {
+                    translations.put(key, null);
+                } else {
+                    translations.put(key, translation);
+                }
+            }
+            messageKeys.add(new MessageKey(k, translations));
+        }
+    }
 }

@@ -13,15 +13,22 @@
  *
  * You should have received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
-package io.goobi.viewer.model.translations;
+package io.goobi.viewer.model.translations.admin;
 
-import java.util.ArrayList;
 import java.util.Collections;
+import java.util.List;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.StringTools;
-import io.goobi.viewer.messages.ViewerResourceBundle;
+import io.goobi.viewer.exceptions.DAOException;
 
-public class MessagesTranslationGroupItem extends TranslationGroupItem {
+public class SolrFieldNameTranslationGroupItem extends TranslationGroupItem {
+
+    /** Logger for this class */
+    private static final Logger logger = LoggerFactory.getLogger(SolrFieldNameTranslationGroupItem.class);
 
     /**
      * Protected constructor.
@@ -29,8 +36,16 @@ public class MessagesTranslationGroupItem extends TranslationGroupItem {
      * @param key
      * @param regex
      */
-    protected MessagesTranslationGroupItem(String key, boolean regex) {
+    protected SolrFieldNameTranslationGroupItem(String key, boolean regex) {
         super(key, regex);
+    }
+
+    /* (non-Javadoc)
+     * @see io.goobi.viewer.model.translations.TranslationGroupKey#isTranslated()
+     */
+    @Override
+    public boolean isTranslated() {
+        return false; // TODO
     }
 
     /* (non-Javadoc)
@@ -38,10 +53,17 @@ public class MessagesTranslationGroupItem extends TranslationGroupItem {
      */
     @Override
     protected void loadMessageKeys() {
+        List<String> keys;
         if (regex) {
-            messageKeys =  StringTools.filterStringsViaRegex(new ArrayList<>(ViewerResourceBundle.getAllKeys()), key);
+            try {
+                keys = StringTools.filterStringsViaRegex(DataManager.getInstance().getSearchIndex().getAllFieldNames(), key);
+            } catch (DAOException e) {
+                logger.error(e.getMessage());
+                keys = Collections.emptyList();
+            }
         } else {
-            messageKeys = Collections.singletonList(key);
+            keys = Collections.singletonList(key);
         }
+        createMessageKeyStatusMap(keys);
     }
 }

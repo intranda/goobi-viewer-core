@@ -13,13 +13,15 @@
  *
  * You should have received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
-package io.goobi.viewer.model.translations;
+package io.goobi.viewer.model.translations.admin;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+
+import io.goobi.viewer.model.translations.admin.MessageKey.TranslationStatus;
 
 /**
  * Translation group configuration item.
@@ -56,6 +58,7 @@ public class TranslationGroup {
     private final String name;
     private final String description;
     private final List<TranslationGroupItem> items;
+    protected MessageKey activeMessageKey;
 
     private Integer translatedKeyCount = null;
 
@@ -134,11 +137,9 @@ public class TranslationGroup {
      * @should return correct count
      */
     public int getMessageKeyCount() {
-        Set<String> returnSet = new HashSet<>();
+        Set<MessageKey> returnSet = new HashSet<>();
         for (TranslationGroupItem item : items) {
-            for (String key : item.getMessageKeys()) {
-                returnSet.add(key);
-            }
+            returnSet.addAll(item.getMessageKeys());
         }
 
         return returnSet.size();
@@ -150,13 +151,14 @@ public class TranslationGroup {
      */
     public Integer getTranslatedKeyCount() {
         if (translatedKeyCount == null) {
-            translatedKeyCount = 0; // TODO
-            for (TranslationGroupItem key : items) {
-                if (key.isTranslated()) {
+            translatedKeyCount = 0;
+            for (MessageKey key : getAllKeys()) {
+                if (key.getTranslationStatus().equals(TranslationStatus.FULL)) {
                     translatedKeyCount++;
                 }
             }
         }
+        
         return translatedKeyCount;
     }
 
@@ -164,15 +166,13 @@ public class TranslationGroup {
      * 
      * @return Unique message keys across all groups
      */
-    public List<String> getAllKeys() {
-        Set<String> returnSet = new HashSet<>();
+    public List<MessageKey> getAllKeys() {
+        Set<MessageKey> retSet = new HashSet<>();
         for (TranslationGroupItem item : items) {
-            for (String key : item.getMessageKeys()) {
-                returnSet.add(key);
-            }
+            retSet.addAll(item.getMessageKeys());
         }
 
-        List<String> ret = new ArrayList<>(returnSet);
+        List<MessageKey> ret = new ArrayList<>(retSet);
         Collections.sort(ret);
         return ret;
     }

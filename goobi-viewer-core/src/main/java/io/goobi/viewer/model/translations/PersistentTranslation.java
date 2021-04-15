@@ -13,68 +13,51 @@
  *
  * You should have received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
-package io.goobi.viewer.model.cms;
+package io.goobi.viewer.model.translations;
 
-import javax.persistence.Entity;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
-import javax.persistence.Table;
+import javax.persistence.MappedSuperclass;
 
-import io.goobi.viewer.model.translations.Translation;
 
 /**
- * A persistence object holding a translated String value
+ * @author florian
  *
- * @author Florian Alpers
  */
-@Entity
-@Table(name = "translations")
-public class CMSCollectionTranslation extends Translation {
+@MappedSuperclass
+public class PersistentTranslation<O> extends Translation {
 
     /** Reference to the owning {@link PersistentEntity}. */
     @ManyToOne
-    @JoinColumn(name = "translation_owner_id")
-    private CMSCollection owner;
-
-    /**
-     * <p>
-     * Constructor for CMSCollectionTranslation.
-     * </p>
-     */
-    public CMSCollectionTranslation() {
+    @JoinColumn(name = "owner_id", nullable = false)
+    private O owner;
+    
+    public PersistentTranslation() {
+        super();
     }
-
-    /**
-     * <p>
-     * Constructor for CMSCollectionTranslation.
-     * </p>
-     *
-     * @param language a {@link java.lang.String} object.
-     * @param value a {@link java.lang.String} object.
-     */
-    public CMSCollectionTranslation(String language, String value) {
-        super(language, value);
-    }
-
-    /**
-     * <p>
-     * Getter for the field <code>owner</code>.
-     * </p>
-     *
-     * @return the owner
-     */
-    public CMSCollection getOwner() {
-        return owner;
-    }
-
-    /**
-     * <p>
-     * Setter for the field <code>owner</code>.
-     * </p>
-     *
-     * @param owner the owner to set
-     */
-    public void setOwner(CMSCollection owner) {
+    
+    public PersistentTranslation(O owner) {
         this.owner = owner;
     }
+
+    public PersistentTranslation(Translation t, O owner) {
+        super(t);
+        this.owner = owner;
+    }
+    
+    /**
+     * @return the owner
+     */
+    public O getOwner() {
+        return owner;
+    }
+    
+    /**
+     * @param owner the owner to set
+     */
+    public void setOwner(O owner) {
+        this.owner = owner;
+    }
+    
+
 }

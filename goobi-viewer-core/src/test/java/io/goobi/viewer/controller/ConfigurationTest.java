@@ -46,8 +46,9 @@ import io.goobi.viewer.model.security.SecurityQuestion;
 import io.goobi.viewer.model.security.authentication.HttpAuthenticationProvider;
 import io.goobi.viewer.model.security.authentication.IAuthenticationProvider;
 import io.goobi.viewer.model.security.authentication.OpenIdProvider;
-import io.goobi.viewer.model.translations.TranslationGroup;
-import io.goobi.viewer.model.translations.TranslationGroup.TranslationGroupType;
+import io.goobi.viewer.model.translations.admin.TranslationGroup;
+import io.goobi.viewer.model.translations.admin.TranslationGroupItem;
+import io.goobi.viewer.model.translations.admin.TranslationGroup.TranslationGroupType;
 import io.goobi.viewer.model.viewer.PageType;
 import io.goobi.viewer.model.viewer.StringPair;
 
@@ -2970,14 +2971,18 @@ public class ConfigurationTest extends AbstractTest {
             Assert.assertEquals(TranslationGroupType.SOLR_FIELD_NAMES, group.getType());
             Assert.assertEquals("label__translation_group_1", group.getName());
             Assert.assertEquals("desc__translation_group_1", group.getDescription());
-            Assert.assertEquals(5, group.getKeys().size());
+            Assert.assertEquals(5, group.getItems().size());
+
+            TranslationGroupItem item = group.getItems().get(4);
+            Assert.assertEquals("MD_.*", item.getKey());
+            Assert.assertTrue(item.isRegex());
         }
         {
             TranslationGroup group = result.get(1);
             Assert.assertEquals(TranslationGroupType.SOLR_FIELD_VALUES, group.getType());
             Assert.assertEquals("label__translation_group_2", group.getName());
             Assert.assertEquals("desc__translation_group_2", group.getDescription());
-            Assert.assertEquals(2, group.getKeys().size());
+            Assert.assertEquals(2, group.getItems().size());
         }
     }
 

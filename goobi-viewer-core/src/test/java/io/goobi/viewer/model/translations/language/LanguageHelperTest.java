@@ -13,25 +13,20 @@
  *
  * You should have received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
-package io.goobi.viewer.controller.language;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Locale;
-import java.util.stream.Collectors;
+package io.goobi.viewer.model.translations.language;
 
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
-import io.goobi.viewer.controller.language.LocaleComparator;
+import io.goobi.viewer.model.translations.language.LanguageHelper;
 
 /**
  * @author Florian Alpers
  *
  */
-public class LocaleComparatorTest {
+public class LanguageHelperTest {
 
     /**
      * @throws java.lang.Exception
@@ -49,27 +44,10 @@ public class LocaleComparatorTest {
 
     @Test
     public void test() {
-        List<Locale> locales = new ArrayList<>();
-        locales.add(Locale.FRANCE);
-        locales.add(Locale.ENGLISH);
-        locales.add(Locale.ITALIAN);
-        locales.add(Locale.GERMAN);
-        locales.add(Locale.CHINA);
-
-        List<Locale> germanFirst = locales.stream().sorted(new LocaleComparator(Locale.GERMANY)).collect(Collectors.toList());
-
-        Assert.assertEquals(Locale.GERMAN, germanFirst.get(0));
-        Assert.assertEquals(Locale.ENGLISH, germanFirst.get(1));
-
-        List<Locale> englishFirst = locales.stream().sorted(new LocaleComparator(Locale.US)).collect(Collectors.toList());
-
-        Assert.assertEquals(Locale.ENGLISH, englishFirst.get(0));
-
-        List<Locale> chineseFirst = locales.stream().sorted(new LocaleComparator(Locale.CHINESE)).collect(Collectors.toList());
-
-        Assert.assertEquals(Locale.CHINA, chineseFirst.get(0));
-        Assert.assertEquals(Locale.ENGLISH, chineseFirst.get(1));
-
+        LanguageHelper helper = new LanguageHelper("languages.xml");
+        Assert.assertNotNull(helper.getLanguage("fra"));
+        Assert.assertNotNull(helper.getLanguage("fre"));
+        Assert.assertNotNull(helper.getLanguage("fr"));
     }
 
 }
