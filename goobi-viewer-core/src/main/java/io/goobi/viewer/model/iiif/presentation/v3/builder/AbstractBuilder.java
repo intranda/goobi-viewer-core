@@ -45,15 +45,19 @@ import de.intranda.api.annotation.wa.ImageResource;
 import de.intranda.api.iiif.IIIFUrlResolver;
 import de.intranda.api.iiif.image.v3.ImageInformation3;
 import de.intranda.api.iiif.presentation.enums.AnnotationType;
+import de.intranda.api.iiif.presentation.enums.Format;
 import de.intranda.api.iiif.presentation.enums.ViewingHint;
 import de.intranda.api.iiif.presentation.v3.AbstractPresentationModelElement3;
 import de.intranda.api.iiif.presentation.v3.Canvas3;
 import de.intranda.api.iiif.presentation.v3.Collection3;
+import de.intranda.api.iiif.presentation.v3.IIIFAgent;
+import de.intranda.api.iiif.presentation.v3.LabeledResource;
 import de.intranda.api.iiif.presentation.v3.Manifest3;
 import de.intranda.metadata.multilanguage.IMetadataValue;
 import de.intranda.metadata.multilanguage.Metadata;
 import de.intranda.metadata.multilanguage.MultiLanguageMetadataValue;
 import de.intranda.metadata.multilanguage.SimpleMetadataValue;
+import de.unigoettingen.sub.commons.contentlib.imagelib.ImageFileFormat;
 import de.unigoettingen.sub.commons.util.PathConverter;
 import io.goobi.viewer.api.rest.AbstractApiUrlManager;
 import io.goobi.viewer.api.rest.AbstractApiUrlManager.ApiPath;
@@ -65,6 +69,7 @@ import io.goobi.viewer.controller.SolrSearchIndex;
 import io.goobi.viewer.controller.StringTools;
 import io.goobi.viewer.controller.imaging.IIIFUrlHandler;
 import io.goobi.viewer.controller.imaging.ThumbnailHandler;
+import io.goobi.viewer.controller.model.ProviderConfiguration;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.exceptions.ViewerConfigurationException;
@@ -73,6 +78,7 @@ import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.messages.Messages;
 import io.goobi.viewer.messages.ViewerResourceBundle;
 import io.goobi.viewer.model.iiif.presentation.v3.builder.LinkingProperty.LinkingTarget;
+import io.goobi.viewer.model.metadata.MetadataValue;
 import io.goobi.viewer.model.viewer.PageType;
 import io.goobi.viewer.model.viewer.PhysicalElement;
 import io.goobi.viewer.model.viewer.StructElement;
@@ -264,6 +270,33 @@ public abstract class AbstractBuilder {
                         });
             }
         }
+    }
+    
+
+    /**
+     * @param ele
+     * @param iiifRightsField
+     * @return
+     */
+    protected Optional<String> getSolrFieldValue(StructElement ele, String fieldName) {
+        if(StringUtils.isNotBlank(fieldName)) {            
+            String value = ele.getMetadataValue(fieldName);
+            return Optional.ofNullable(value);
+        } else {
+            return Optional.empty();
+        }
+    }
+    
+    protected Optional<URI> getRightsStatement(StructElement ele) {
+        return getSolrFieldValue(ele, DataManager.getInstance().getConfiguration().getIIIFRightsField())
+        .map(value -> {
+            try {
+                return new URI(value);
+            } catch (URISyntaxException e) {
+                logger.error(e.toString());
+                return null;
+            }
+        });
     }
    
 
@@ -624,13 +657,36 @@ public abstract class AbstractBuilder {
 
     protected Metadata getRequiredStatement() {
         Metadata requiredStatement = null;
-        List<String> attributions = DataManager.getInstance().getConfiguration().getIIIFAttribution();
-        if (!attributions.isEmpty()) {
-            IMetadataValue attributionLabel = ViewerResourceBundle.getTranslations("attribution", false);
-            IMetadataValue attributionValue = new SimpleMetadataValue(attributions.stream().collect(Collectors.joining("\n")));
+        
+        String label = DataManager.getInstance().getConfiguration().getIIIFRequiredLabel();
+        String value = DataManager.getInstance().getConfiguration().getIIIFRequiredValue();
+        if(StringUtils.isNoneBlank(label, value)) {
+            IMetadataValue attributionLabel = ViewerResourceBundle.getTranslations(label, false);
+            IMetadataValue attributionValue = ViewerResourceBundle.getTranslations(value, false);
             requiredStatement = new Metadata(attributionLabel, attributionValue);
+
         }
+
         return requiredStatement;
+    }
+    
+    /**
+     * @param providerConfig
+     * @return
+     */
+    protected IIIFAgent getProvider(ProviderConfiguration providerConfig) {
+        IIIFAgent provider = new IIIFAgent(providerConfig.uri, ViewerResourceBundle.getTranslations(providerConfig.label, false));
+       
+        providerConfig.homepages.forEach(homepageConfig -> {
+            IMetadataValue label = ViewerResourceBundle.getTranslations(homepageConfig.label, false);
+            provider.addHomepage(new LabeledResource(homepageConfig.uri, "Text", Format.TEXT_HTML.getLabel(), label));
+        });
+        
+        providerConfig.logos.forEach(uri -> {
+            provider.addLogo(new ImageResource(uri, ImageFileFormat.getImageFileFormatFromFileExtension(uri.toString()).getMimeType()));
+        });
+        
+        return provider;
     }
     
     protected ImageResource getThumbnail(String pi) throws IndexUnreachableException, PresentationException, ViewerConfigurationException {

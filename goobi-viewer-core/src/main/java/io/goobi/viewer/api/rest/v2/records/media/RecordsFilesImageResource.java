@@ -61,6 +61,7 @@ import io.goobi.viewer.api.rest.v2.ApiUrls;
 import io.goobi.viewer.model.security.IPrivilegeHolder;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.servers.Server;
 
 /**
  * @author florian

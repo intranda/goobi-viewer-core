@@ -43,6 +43,7 @@ public class IIIFPresentationResponseFilter implements ContainerResponseFilter {
     public static final String CONTEXT_PRESENTATION_2 = "http://iiif.io/api/presentation/2/context.json";
     public static final String CONTEXT_PRESENTATION_3 = "http://iiif.io/api/presentation/3/context.json";
     public static final String CONTEXT_SEARCH = "http://iiif.io/api/search/1/context.json";
+    public static final String CONTENT_TYPE_IIIF3 = "application/ld+json;profile=\"http://iiif.io/api/presentation/3/context.json\"";
 
     /* (non-Javadoc)
      * @see javax.ws.rs.container.ContainerResponseFilter#filter(javax.ws.rs.container.ContainerRequestContext, javax.ws.rs.container.ContainerResponseContext)
@@ -58,7 +59,9 @@ public class IIIFPresentationResponseFilter implements ContainerResponseFilter {
             element.setContext(CONTEXT_PRESENTATION_2);
         } else if (responseObject != null && responseObject instanceof AbstractPresentationModelElement3) {
             AbstractPresentationModelElement3 element = (AbstractPresentationModelElement3) responseObject;
-            setResponseCharset(response, "UTF-8");
+            response.getHeaders().remove("Content-Type");
+            response.getHeaders().add("Content-Type", CONTENT_TYPE_IIIF3);
+//            setResponseCharset(response, "UTF-8");
             element.setContext(CONTEXT_PRESENTATION_3);
         } else if (responseObject != null && responseObject instanceof SearchResult) {
             SearchResult element = (SearchResult) responseObject;

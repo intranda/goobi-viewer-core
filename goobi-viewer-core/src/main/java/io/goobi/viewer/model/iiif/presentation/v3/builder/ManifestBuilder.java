@@ -27,6 +27,7 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeParseException;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import javax.ws.rs.core.UriBuilder;
@@ -35,11 +36,14 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import de.intranda.api.iiif.presentation.IPresentationModelElement;
 import de.intranda.api.iiif.presentation.enums.Format;
 import de.intranda.api.iiif.presentation.enums.ViewingHint;
+import de.intranda.api.iiif.presentation.v2.Manifest2;
 import de.intranda.api.iiif.presentation.v3.AbstractPresentationModelElement3;
 import de.intranda.api.iiif.presentation.v3.Canvas3;
 import de.intranda.api.iiif.presentation.v3.Collection3;
+import de.intranda.api.iiif.presentation.v3.IIIFAgent;
 import de.intranda.api.iiif.presentation.v3.IPresentationModelElement3;
 import de.intranda.api.iiif.presentation.v3.LabeledResource;
 import de.intranda.api.iiif.presentation.v3.Manifest3;
@@ -53,6 +57,7 @@ import de.unigoettingen.sub.commons.contentlib.exceptions.ContentNotFoundExcepti
 import de.unigoettingen.sub.commons.util.datasource.media.PageSource.IllegalPathSyntaxException;
 import io.goobi.viewer.api.rest.AbstractApiUrlManager;
 import io.goobi.viewer.controller.DataManager;
+import io.goobi.viewer.controller.model.ProviderConfiguration;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
@@ -114,7 +119,18 @@ public class ManifestBuilder extends AbstractBuilder {
      * @param manifest
      */
     private void addVolumes(StructElement mainDocument, List<StructElement> childDocuments, Collection3 manifest) {
-        // TODO Auto-generated method stub
+        for (StructElement volume : childDocuments) {
+            try {
+                IPresentationModelElement child = generateManifest(volume);
+                if (child instanceof Manifest3) {
+                    //                    addBaseSequence((Manifest)child, volume, child.getId().toString());
+                    manifest.addItem((Manifest3) child);
+                }
+            } catch (ViewerConfigurationException | URISyntaxException | PresentationException | IndexUnreachableException | ContentLibException e) {
+                logger.error("Error creating child manigest for " + volume);
+            }
+
+        }
         
     }
 
@@ -213,17 +229,21 @@ public class ManifestBuilder extends AbstractBuilder {
         manifest.addThumbnail(getThumbnail(ele));
 
         manifest.setRequiredStatement(getRequiredStatement());
-        manifest.setRights(DataManager.getInstance().getConfiguration().getIIIFLicenses().stream().findFirst().map(URI::create).orElse(null));
+        manifest.setRights(getRightsStatement(ele).orElse(null));
         manifest.setNavDate(getNavDate(ele));
         manifest.addBehavior(getViewingBehavior(ele));
         //TODO: add provider from config
-
+        DataManager.getInstance().getConfiguration().getIIIFProvider().forEach(providerConfig -> manifest.addProvider(getProvider(providerConfig)));
+        
         addMetadata(manifest, ele);
 
         addRelatedResources(manifest, ele);
 
         return manifest;
     }
+
+
+
 
     /**
      * @param manifest

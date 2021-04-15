@@ -66,6 +66,7 @@ public class CMSMediaImageResource extends ImageResource {
             @Parameter(description = "Filename of the image") @PathParam("filename") String filename) throws UnsupportedEncodingException {
         super(context, request, response, "", getMediaFileUrl(filename).toString());
         request.setAttribute("filename", this.imageURI.toString());
+        request.setAttribute(ImageResource.IIIF_FORMAT, "iiif2");
         String requestUrl = request.getRequestURI();
         filename = URLEncoder.encode(filename, "utf-8");
         String baseImageUrl = urls.path(ApiUrls.CMS_MEDIA, ApiUrls.CMS_MEDIA_FILES_FILE).params(filename).build();
