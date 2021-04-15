@@ -85,13 +85,12 @@ public class MessageKey implements Comparable<MessageKey> {
     public TranslationStatus getTranslationStatus() {
         boolean full = true;
         boolean partial = false;
-        for (String key : translations.keySet()) {
-            if (translations.get(key) == null || translations.get(key).equals(key)) {
+        for (String lang : translations.keySet()) {
+            if (translations.get(lang) == null || translations.get(lang).equals(lang)) {
                 full = false;
-            } else if (translations.get(key).contains(" zzz")) {
+            } else if (translations.get(lang).contains(" zzz")) {
                 full = false;
                 partial = true;
-                System.out.println("partial: " + translations.get(key));
             }
         }
 

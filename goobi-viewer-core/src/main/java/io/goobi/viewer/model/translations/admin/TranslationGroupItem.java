@@ -122,11 +122,14 @@ public abstract class TranslationGroupItem {
             List<Locale> allLocales = ViewerResourceBundle.getAllLocales();
             Map<String, String> translations = new HashMap<>(allLocales.size());
             for (Locale locale : allLocales) {
-                String translation = ViewerResourceBundle.getTranslation(k, locale, false);
+                String translation = ViewerResourceBundle.getTranslation(k, locale, false, false);
+                if ("MD_AUTHOR".equals(k)) {
+                    System.out.println(locale.getLanguage() + ": " + translation);
+                }
                 if (translation.equals(k)) {
-                    translations.put(key, null);
+                    translations.put(locale.getLanguage(), null);
                 } else {
-                    translations.put(key, translation);
+                    translations.put(locale.getLanguage(), translation);
                 }
             }
             messageKeys.add(new MessageKey(k, translations));
