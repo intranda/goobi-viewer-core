@@ -695,6 +695,30 @@ public class NavigationHelper implements Serializable {
                 return "yyyy-MM-dd";
         }
     }
+    
+    /**
+     * <p>
+     * getDatePatternjQueryDatePicker.
+     * </p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
+    public String getDatePatternjQueryDatePicker() {
+        if (locale == null) {
+            return "yy-MM-dd";
+        }
+
+        switch (locale.getLanguage()) {
+            case "de":
+                return "dd.mm.yy";
+            case "en":
+                return "MM/dd/yy";
+            case "es":
+                return "dd/MM/yy";
+            default:
+                return "yy-MM-dd";
+        }
+    }
 
     /**
      * 

@@ -740,8 +740,8 @@
 		text-align: center;
 	}
 
-	// TOPBAR
-	&__topbar {
+	// TOPBAR BACKEND
+	&__topbar-backend {
 		position: relative;
 		display: flex;
 		width: 100vw;
@@ -765,11 +765,11 @@
 			}
 		}
 	}
-	&__topbar-right {
+	&__topbar-backend-right {
 		margin-left: auto;
 		display: flex;
 	}
-	&__topbar-dropdown {
+	&__topbar-backend-dropdown {
 		opacity: 0;
 		visibility: hidden;
 		position: absolute;
@@ -788,9 +788,12 @@
 			display: block;
             color: @white;
             text-decoration: none;
+            &:hover {
+            	color: @white;
+            }
 		}
 	}		
-	&__topbar-logo-menu {
+	&__topbar-backend-logo-menu {
 		position: relative;
 		flex: 0 0 6rem;
 		display: flex;
@@ -805,13 +808,14 @@
 			fill: @white;
 		}
 	}
-	&__topbar-logo {
+	&__topbar-backend-logo {
 		width: 40px;
 		svg {
 			width: 100%;
+			max-height: 35px;
 		}
 	}		
-	&__topbar-view-frontend-link {
+	&__topbar-backend-view-frontend-link {
 		padding: 0 2rem;
 		color: @white;
 		transition: all 0.2s ease;
@@ -833,7 +837,7 @@
 			color: @white;
 		}
 	}
-	&__topbar-add {
+	&__topbar-backend-add {
 		position: relative;
 		display: flex;
 		justify-content: center;
@@ -852,7 +856,7 @@
 			color: @white;
 		}
 	}
-	&__topbar-language {
+	&__topbar-backend-language {
 		position: relative;
 		display: flex;
 		justify-content: center;
@@ -875,7 +879,7 @@
 			visibility: hidden;
 		}
 	}
-	&__topbar-logout {
+	&__topbar-backend-logout {
 		display: flex;
 		justify-content: center;
 		align-items: stretch;
@@ -887,7 +891,188 @@
 			align-items: stretch;
 		}
 	}
-	&__topbar-logout-link {
+	&__topbar-backend-logout-link {
+		padding: 0 2rem;
+		color: @white;
+		transition: all 0.2s ease;
+		display: flex;
+		justify-content: center;
+		align-items: center;
+		.fa {
+			margin-left: 0.9rem;
+			font-size: 1.6rem;
+		}
+		&:hover {
+			background: #235396;
+            color: white;
+			text-decoration: none;
+		}
+		&:active,
+		&:focus,
+		&:focus-within {
+			color: @white;
+		}
+	}
+	
+	// ADMIN TOPBAR FRONTEND
+	&__topbar-frontend {
+		position: relative;
+		display: flex;
+		width: 100vw;
+		z-index: 2400;
+		height: 3.5rem;
+		background: @blue;
+		color: @white;
+		position: sticky;
+		top: 0;
+		// BOOTSTRAP/BROWSER RESET
+		ul {
+			list-style: none;
+			margin-bottom: 0;
+			padding-left: 0;
+		}
+		.-dropdown {
+			&:hover > ul,
+			&:hover > form > ul {
+				opacity: 1;
+				visibility: visible;
+			}
+		}
+	}
+	&__topbar-frontend-right {
+		margin-left: auto;
+		display: flex;
+	}
+	&__topbar-frontend-dropdown {
+		opacity: 0;
+		visibility: hidden;
+		position: absolute;
+		top: 100%;
+		background: #235396;
+		left: 0;
+		min-width: 250px;
+		transition: all 0.2s ease;
+		li {
+			padding: 0.3rem 0.7rem 0.3rem 2rem;
+            &:hover {
+                background-color: #3365a9;
+            }
+        }
+		a {
+			display: block;
+            color: @white;
+            text-decoration: none;
+            &:hover {
+            	color: @white;
+            }
+		}
+	}		
+	&__topbar-frontend-logo-menu {
+		position: relative;
+		flex: 0 0 6rem;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		fill: @white;
+		transition: all 0.2s ease;
+		cursor: default;
+		&:hover {
+			background: #235396;
+            cursor: pointer;
+			fill: @white;
+		}
+	}
+	&__topbar-frontend-logo {
+		width: 40px;
+		svg {
+			width: 100%;
+		}
+	}		
+	&__topbar-frontend-view-dashboard-link {
+		padding: 0 2rem;
+		color: @white;
+		transition: all 0.2s ease;
+		display: flex;
+		justify-content: center;
+		align-items: center;
+		.fa {
+			margin-right: 0.9rem;
+			font-size: 1.6rem;
+		}
+		&:hover {
+			background: #235396;
+            color: @white;
+			text-decoration: none;
+		}
+		&:active,
+		&:focus,
+		&:focus-within {
+			color: @white;
+		}
+	}
+	&__topbar-frontend-add {
+		position: relative;
+		display: flex;
+		justify-content: center;
+		align-items: center;
+		padding: 0 2rem;
+		transition: all 0.2s ease;
+		cursor: default;
+		.fa {
+			margin-right: 0.9rem;
+			font-size: 1.6rem;
+		}
+		&:hover {
+			background: #235396;
+			text-decoration: none;
+            cursor: pointer;
+			color: @white;
+		}
+	}
+	&__topbar-frontend-hotfolder {
+		position: relative;
+		display: flex;
+		justify-content: center;
+		align-items: center;
+		padding: 0 2rem;
+		transition: all 0.2s ease;
+		cursor: default;
+		.fa {
+			margin-right: 0.9rem;
+			font-size: 1.6rem;
+		}
+		&:hover {
+			background: #235396;
+			text-decoration: none;
+            cursor: pointer;
+			color: @white;
+		}
+	}
+	&__topbar-frontend-hotfolder-files-action {
+		color: @white;
+		&:hover {
+			color: @white;
+			text-decoration: none;
+		}
+		&:active,
+		&:focus,
+		&:focus-within {
+			color: @white;
+		}
+	}
+	&__topbar-frontend-logout {
+		display: flex;
+		justify-content: center;
+		align-items: stretch;
+		margin-right: 4rem;
+		ul {
+		}
+		form, ul, li {
+			display: flex;
+			align-items: stretch;
+		}
+	}
+	&__topbar-frontend-logout-link {
 		padding: 0 2rem;
 		color: @white;
 		transition: all 0.2s ease;
@@ -1335,29 +1520,29 @@ html[lang="es"] .admin__radio-switch {
 			margin-left: unset;
 			margin-right: 250px;
 		}
-		&__topbar-right {
+		&__topbar-backend-right {
 			margin-left: unset;
 			margin-right: auto;
 		}
-		&__topbar {
+		&__topbar-backend {
 			ul {
 				padding-right: 0;
 			}
 		}
-		&__topbar-dropdown {
+		&__topbar-backend-dropdown {
 			left: unset;
 			right: 0;
 			li {
 				padding: .3rem 2rem .3rem .7rem
 			}
 		}
-		&__topbar-add, &__topbar-language, &__topbar-view-frontend-link {
+		&__topbar-backend-add, &__topbar-backend-language, &__topbar-backend-view-frontend-link {
 			.fa {
 				margin-right: unset;
 				margin-left: 0.9rem;
 			}
 		}
-		&__topbar-logout {
+		&__topbar-backend-logout {
 			margin-right: 0;
 			margin-left: 4rem;
 			.fa {
@@ -1465,7 +1650,13 @@ html[lang="es"] .admin__radio-switch {
 @media screen and (max-width: @largeBreakpoint) {} 
 
 /* BREAKPOINT FOR DESKTOPS */
-@media screen and (max-width: @mediumBreakpoint) {}
+@media screen and (max-width: @mediumBreakpoint) {
+	.admin {
+		&__topbar-frontend-add {
+			display: none;
+		}
+	}
+}
 
 /* BREAKPOINT FOR TABLETS */
 @media screen and (max-width: @smallBreakpoint) {}
