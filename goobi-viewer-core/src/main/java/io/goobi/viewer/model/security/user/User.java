@@ -1627,7 +1627,7 @@ public class User implements ILicensee, HttpSessionBindingListener, Serializable
         Set<User> logins = (Set<User>) event.getSession().getServletContext().getAttribute(ATTRIBUTE_LOGINS);
         if (logins != null) {
             logins.remove(this);
-            logger.debug("User removed from context: {}", getId());
+            logger.trace("User removed from context: {}", getId());
         }
     }
 
