@@ -36,7 +36,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 
 import de.intranda.api.iiif.presentation.v2.Range2;
-import io.goobi.viewer.api.rest.AbstractRestApiTest;
+import io.goobi.viewer.api.rest.v1.AbstractRestApiTest;
 
 /**
  * @author florian

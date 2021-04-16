@@ -13,12 +13,12 @@
  *
  * You should have received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
-package io.goobi.viewer.api.rest.v1.records.media;
+package io.goobi.viewer.api.rest.v2.records.media;
 
-import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_FILES_IMAGE;
-import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_FILES_IMAGE_IIIF;
-import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_FILES_IMAGE_INFO;
-import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_FILES_IMAGE_PDF;
+import static io.goobi.viewer.api.rest.v2.ApiUrls.RECORDS_FILES_IMAGE;
+import static io.goobi.viewer.api.rest.v2.ApiUrls.RECORDS_FILES_IMAGE_IIIF;
+import static io.goobi.viewer.api.rest.v2.ApiUrls.RECORDS_FILES_IMAGE_INFO;
+import static io.goobi.viewer.api.rest.v2.ApiUrls.RECORDS_FILES_IMAGE_PDF;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
@@ -31,7 +31,7 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
-import io.goobi.viewer.api.rest.v1.AbstractRestApiTest;
+import io.goobi.viewer.api.rest.v2.AbstractRestApiTest;
 
 /**
  * @author florian
@@ -79,7 +79,7 @@ public class ViewerImageResourceTest extends AbstractRestApiTest {
             assertNotNull("Should return user object as json", response.getEntity());
             String responseString = response.readEntity(String.class);
             JSONObject info = new JSONObject(responseString);
-            assertTrue(info.getString("@id").endsWith(id));
+            assertTrue(info.getString("id").endsWith(id));
         }
     }
 
@@ -95,7 +95,7 @@ public class ViewerImageResourceTest extends AbstractRestApiTest {
             assertNotNull("Should return user object as json", response.getEntity());
             String responseString = response.readEntity(String.class);
             JSONObject info = new JSONObject(responseString);
-            assertTrue("@id should end with '" + id + " but was: " + info.getString("@id"), info.getString("@id").endsWith(id));
+            assertTrue("@id should end with '" + id + " but was: " + info.getString("id"), info.getString("id").endsWith(id));
         }
     }
     
@@ -111,7 +111,7 @@ public class ViewerImageResourceTest extends AbstractRestApiTest {
             assertNotNull("Should return user object as json", response.getEntity());
             String responseString = response.readEntity(String.class);
             JSONObject info = new JSONObject(responseString);
-            assertTrue(info.getString("@id").endsWith(id.replace(" ", "+")));
+            assertTrue(info.getString("id").endsWith(id.replace(" ", "+")));
         }
     }
     

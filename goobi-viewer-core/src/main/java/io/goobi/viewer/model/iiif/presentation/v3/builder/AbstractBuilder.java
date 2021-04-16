@@ -733,7 +733,7 @@ public abstract class AbstractBuilder {
         if(StringUtils.isBlank(path)) {
             return null;
         } else {            
-            return Paths.get(path).getFileName().toString();
+            return StringTools.encodeUrl(Paths.get(path).getFileName().toString());
         }
     }
 

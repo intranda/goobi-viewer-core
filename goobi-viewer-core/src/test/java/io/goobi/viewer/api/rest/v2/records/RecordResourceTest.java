@@ -13,61 +13,77 @@
  *
  * You should have received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
-package io.goobi.viewer.api.rest.v1.localization;
+package io.goobi.viewer.api.rest.v2.records;
 
-import static io.goobi.viewer.api.rest.v1.ApiUrls.LOCALIZATION;
-import static io.goobi.viewer.api.rest.v1.ApiUrls.LOCALIZATION_VOCABS;
-import static io.goobi.viewer.api.rest.v1.ApiUrls.LOCALIZATION_VOCABS_FILE;
+import static io.goobi.viewer.api.rest.v2.ApiUrls.*;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.net.URI;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
+import org.json.JSONObject;
+import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
+import org.mockito.Mockito;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 
-import io.goobi.viewer.api.rest.v1.AbstractRestApiTest;
-import io.goobi.viewer.model.glossary.Glossary;
+import de.intranda.api.annotation.wa.collection.AnnotationCollection;
+import de.intranda.api.annotation.wa.collection.AnnotationPage;
+import io.goobi.viewer.api.rest.v2.AbstractRestApiTest;
+import io.goobi.viewer.api.rest.v2.ApiUrls;
 
 /**
  * @author florian
  *
  */
-public class GlossaryResourceTest extends AbstractRestApiTest{
+public class RecordResourceTest extends AbstractRestApiTest{
 
-    @Test
-    public void testGetGlossaries() throws JsonMappingException, JsonProcessingException {
-        try(Response response = target(urls.path(LOCALIZATION, LOCALIZATION_VOCABS).build())
-                .request()
-                .accept(MediaType.APPLICATION_JSON)
-                .get()) {
-            assertEquals("Should return status 200", 200, response.getStatus());
-            String entity = response.readEntity(String.class);
-            List<Glossary> glossaries = new ArrayList<>();
-            glossaries = mapper.readValue(entity, glossaries.getClass());
-            assertNotNull(glossaries);
-            assertEquals(2, glossaries.size());
-            
-        }
-    }
+    private static final String PI = "74241";
+    private static final String PI_ANNOTATIONS = "PI_1";
+    private static final String PI_NER = "PPN743674162";
     
-    @Test
-    public void testGetGlossaryFile() throws JsonMappingException, JsonProcessingException {
-        try(Response response = target(urls.path(LOCALIZATION, LOCALIZATION_VOCABS_FILE).params("wiener.json").build())
+    /**
+     * @throws java.lang.Exception
+     */
+    @Before
+    public void setUp() throws Exception {
+        super.setUp();
+    }
+
+    /**
+     * @throws java.lang.Exception
+     */
+    @After
+    public void tearDown() throws Exception {
+        super.tearDown();
+    }
+
+    
+    @Test 
+    public void testGetManifest() throws JsonMappingException, JsonProcessingException {
+        String url = urls.path(RECORDS_RECORD, RECORDS_MANIFEST).params(PI).build();
+        try(Response response = target(url)
                 .request()
                 .accept(MediaType.APPLICATION_JSON)
                 .get()) {
             assertEquals("Should return status 200", 200, response.getStatus());
+            assertNotNull("Should return user object as json", response.getEntity());
             String entity = response.readEntity(String.class);
             assertNotNull(entity);
-            
+            JSONObject manifest = new JSONObject(entity);
+            String id = manifest.getString("id");
+            assertEquals(url, id);
+
         }
     }
+
 
 }

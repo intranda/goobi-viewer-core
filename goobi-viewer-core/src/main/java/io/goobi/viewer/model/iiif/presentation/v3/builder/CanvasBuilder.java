@@ -20,6 +20,7 @@ import static io.goobi.viewer.api.rest.v2.ApiUrls.*;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.net.URLEncoder;
 import java.nio.file.Paths;
 import java.util.List;
 
@@ -53,6 +54,7 @@ import io.goobi.viewer.api.rest.AbstractApiUrlManager;
 import io.goobi.viewer.api.rest.resourcebuilders.TextResourceBuilder;
 import io.goobi.viewer.api.rest.v2.ApiUrls;
 import io.goobi.viewer.controller.DataManager;
+import io.goobi.viewer.controller.StringTools;
 import io.goobi.viewer.controller.imaging.ImageHandler;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
@@ -233,7 +235,9 @@ public class CanvasBuilder extends AbstractBuilder {
         }
 
         if (page.isHasImage()) {
-            String imageId = urls.path(ApiUrls.RECORDS_FILES_IMAGE).params(page.getPi(), page.getFileName()).build();
+            String filename = page.getFilename();
+            String escFilename = StringTools.encodeUrl(filename);
+            String imageId = urls.path(ApiUrls.RECORDS_FILES_IMAGE).params(page.getPi(), escFilename).build();
             URI mediaId = urls.path(ApiUrls.RECORDS_PAGES, ApiUrls.RECORDS_PAGES_MEDIA).params(page.getPi(), page.getOrder()).buildURI();
             canvas.addMedia(mediaId, new ImageResource(imageId, thumbWidth, thumbHeight));
         }
@@ -253,7 +257,7 @@ public class CanvasBuilder extends AbstractBuilder {
         }
         
         if(page.isHasImage() && DataManager.getInstance().getConfiguration().isVisibleIIIFRenderingPDF()) {
-            URI uri = urls.path(RECORDS_FILES_IMAGE, RECORDS_FILES_IMAGE_PDF).params(page.getPi(), page.getFileName()).buildURI();
+            URI uri = urls.path(RECORDS_FILES_IMAGE, RECORDS_FILES_IMAGE_PDF).params(page.getPi(), StringTools.encodeUrl(page.getFileName())).buildURI();
             LinkingProperty pdf = new LinkingProperty(LinkingTarget.PDF, createLabel(DataManager.getInstance().getConfiguration().getLabelIIIFRenderingPDF()));            
             canvas.addRendering(pdf.getResource(uri));
         }

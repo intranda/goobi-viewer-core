@@ -13,16 +13,9 @@
  *
  * You should have received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
-package io.goobi.viewer.api.rest.v1.records;
+package io.goobi.viewer.api.rest.v2.records;
 
-import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_FILES;
-import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_FILES_ALTO;
-import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_FILES_PDF;
-import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_FILES_PLAINTEXT;
-import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_FILES_SOURCE;
-import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_FILES_TEI;
-import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_PAGES;
-import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_PAGES_CANVAS;
+import static io.goobi.viewer.api.rest.v2.ApiUrls.*;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
@@ -45,7 +38,7 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
-import io.goobi.viewer.api.rest.v1.AbstractRestApiTest;
+import io.goobi.viewer.api.rest.v2.AbstractRestApiTest;
 
 /**
  * @author florian
@@ -132,33 +125,6 @@ public class RecordFileResourceTest extends AbstractRestApiTest {
         }
     }
 
-    @Test
-    public void testGetPdf() {
-        String url = urls.path(RECORDS_FILES, RECORDS_FILES_PDF).params(PI, FILENAME).build();
-        try (Response response = target(url)
-                .request()
-                .accept("application/pdf")
-                .get()) {
-            assertEquals(response.getStatusInfo().getReasonPhrase(), 200, response.getStatus());
-            assertNotNull("Should return user object as json", response.getEntity());
-            byte[] entity = response.readEntity(byte[].class);
-            assertTrue(entity.length >= 5 * 5 * 8 * 3); //entity is at least as long as the image data
-        }
-    }
-
-    @Test
-    public void testGetImage() {
-        String url = urls.path(RECORDS_FILES, RECORDS_FILES_PDF).params(PI, FILENAME).build();
-        try (Response response = target(url)
-                .request()
-                .accept("application/pdf")
-                .get()) {
-            assertEquals(response.getStatusInfo().getReasonPhrase(), 200, response.getStatus());
-            assertNotNull("Should return user object as json", response.getEntity());
-            byte[] entity = response.readEntity(byte[].class);
-            assertTrue(entity.length >= 5 * 5 * 8 * 3); //entity is at least as long as the image data
-        }
-    }
 
     @Test
     public void testGetSourceFile() {
@@ -209,10 +175,10 @@ public class RecordFileResourceTest extends AbstractRestApiTest {
             assertFalse(renderings.isEmpty());
             List linkList = renderings.toList();
             Map pdfLink = renderings.toList().stream().map(object -> (Map)object)
-                    .filter(map -> "dcTypes:Image".equals(map.get("@type")))
+                    .filter(map -> "Text".equals(map.get("type")))
                     .findAny().orElse(null);
             assertNotNull("No PDF link in canvas", pdfLink);
-            String id = (String) pdfLink.get("@id");
+            String id = (String) pdfLink.get("id");
             Assert.assertTrue("Wrong filename in " + id, id.contains("erdmagnetisches+observatorium+vi_blatt_5.tif"));
         }
     }

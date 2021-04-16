@@ -13,9 +13,8 @@
  *
  * You should have received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
-package io.goobi.viewer.api.rest.v1;
+package io.goobi.viewer.api.rest.v2.cms;
 
-import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_CHANGES;
 import static org.junit.Assert.*;
 
 import javax.ws.rs.core.MediaType;
@@ -25,13 +24,14 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
-import io.goobi.viewer.api.rest.AbstractApiUrlManager.ApiInfo;
+import io.goobi.viewer.api.rest.v2.AbstractRestApiTest;
+import io.goobi.viewer.api.rest.v2.ApiUrls;
 
 /**
  * @author florian
  *
  */
-public class ApplicationResourceTest extends AbstractRestApiTest {
+public class CMSMediaImageResourceTest extends AbstractRestApiTest {
 
     /**
      * @throws java.lang.Exception
@@ -49,18 +49,17 @@ public class ApplicationResourceTest extends AbstractRestApiTest {
         super.tearDown();
     }
 
-    /**
-     * Test method for {@link io.goobi.viewer.api.rest.v1.ApplicationResource#getApiInfo()}.
-     */
     @Test
-    public void testGetApiInfo() {
-        try(Response response = target(urls.path().build())
+    public void testCallImageUrlCapitalSuffix() {
+        String filename = "image4.JPG";
+        String url = urls.path(ApiUrls.CMS_MEDIA, ApiUrls.CMS_MEDIA_FILES_FILE).params(filename).build();
+        try (Response response = target(url)
                 .request()
                 .accept(MediaType.APPLICATION_JSON)
                 .get()) {
-            ApiInfo info = response.readEntity(ApiInfo.class);
-            assertNotNull(info);
-            assertEquals("v1", info.version);
+            String entity = response.readEntity(String.class);
+            //since no file image4.JPG exists, 404 is returned. But that is ok as long as the method was called (otherwise 405 would be thrown)
+            assertEquals("Should return status 404; answer; " + entity, 404, response.getStatus());
         }
     }
 

@@ -13,15 +13,13 @@
  *
  * You should have received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
-package io.goobi.viewer.api.rest.v1.collections;
+package io.goobi.viewer.api.rest.v2.collections;
 
-import static io.goobi.viewer.api.rest.v1.ApiUrls.*;
+import static io.goobi.viewer.api.rest.v2.ApiUrls.COLLECTIONS;
+import static io.goobi.viewer.api.rest.v2.ApiUrls.COLLECTIONS_COLLECTION;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
-
-import java.net.URI;
 
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
@@ -34,7 +32,7 @@ import org.junit.Test;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 
-import io.goobi.viewer.api.rest.v1.AbstractRestApiTest;
+import io.goobi.viewer.api.rest.v2.AbstractRestApiTest;
 
 /**
  * @author florian
@@ -79,8 +77,8 @@ public class CollectionsResourceTest extends AbstractRestApiTest{
             assertEquals("Should return status 200; answer; " + entity, 200, response.getStatus());
             assertNotNull(entity);
             JSONObject collection = new JSONObject(entity);
-            assertEquals(url, collection.getString("@id"));
-            assertTrue(collection.getJSONArray("members").length() > 0);
+            assertEquals(url, collection.getString("id"));
+            assertTrue(collection.getJSONArray("items").length() > 0);
         }
     }
 
@@ -98,8 +96,8 @@ public class CollectionsResourceTest extends AbstractRestApiTest{
             assertEquals("Should return status 200; answer; " + entity, 200, response.getStatus());
             assertNotNull(entity);
             JSONObject collection = new JSONObject(entity);
-            assertEquals(url, collection.getString("@id"));
-            assertEquals(4, collection.getJSONArray("members").length());
+            assertEquals(url, collection.getString("id"));
+            assertEquals(4, collection.getJSONArray("items").length());
         }
     }
 
