@@ -29,7 +29,10 @@
 	                                    href="#{activeDocumentBean.viewManager.pdfStructDownloadLink}" 
 	                                    id="pdfStruct" 
 	                                    class="badge badge-dark widget-usage__struct-download-pdf" 
-	                                    title="#{msg.label__pdf_download_section}" 
+	                                    title="#{msg.label__pdf_download_section}"
+                                        data-toggle="tooltip"
+									    data-placement="top"
+									    data-trigger="hover"
                                         target="_blank" rel="nofollow noopener"
                                         aria-label="#{msg[activeDocumentBean.viewManager.currentStructElement.docStructType]}: #{msg.label__pdf_download}">
                                     	<i class="fa fa-file-pdf-o" aria-hidden="true"></i>
@@ -45,6 +48,9 @@
 	                                    data-id="#{activeDocumentBean.viewManager.currentStructElement.logid}"
 	                                    data-pi="#{activeDocumentBean.viewManager.pi}" 
                                         title="#{msg.label__pdf_download_section}"
+                                        data-toggle="tooltip"
+									    data-placement="top"
+									    data-trigger="hover"
                                         aria-label="#{msg[activeDocumentBean.viewManager.currentStructElement.docStructType]}: #{msg.label__pdf_download}">
 	                                    <i class="fa fa-file-pdf-o" aria-hidden="true"></i>
 	                                    #{msg.label__pdf_download}
@@ -57,6 +63,9 @@
                                     id="risCurrent"
                                     class="badge badge-dark widget-usage__struct-download-ris" 
                                     title="#{msg.risLinkTopstruct}"
+                                    data-toggle="tooltip"
+									data-placement="top"
+									data-trigger="hover"
                                     rel="nofollow"
                                     aria-label="#{msg[activeDocumentBean.viewManager.currentStructElement.docStructType]}: #{msg.risLinkTopstruct}">
                                     #{msg.risLinkTopstruct}
