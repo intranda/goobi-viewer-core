@@ -21,13 +21,18 @@ import static org.junit.Assert.assertTrue;
 import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
+import org.junit.After;
+import org.junit.Assert;
+import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
 import de.intranda.monitoring.timer.Timer;
 import de.intranda.monitoring.timer.TimerOutput;
+import io.goobi.viewer.AbstractSolrEnabledTest;
 import io.goobi.viewer.controller.Configuration;
 import io.goobi.viewer.controller.DataManager;
+import io.goobi.viewer.controller.SolrSearchIndex;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.model.search.CollectionResult;
@@ -37,13 +42,23 @@ import io.goobi.viewer.model.viewer.StructElement;
  * @author florian
  *
  */
-public class DataRetrieverTest {
+public class DataRetrieverTest extends AbstractSolrEnabledTest{
 
     private DataRetriever dataRetriever = new DataRetriever();
     
     @BeforeClass
-    public static void setUpBeforeClass() {
-        DataManager.getInstance().injectConfiguration(new Configuration("src/test/resources/config_viewer.test.xml"));
+    public static void setUpBeforeClass() throws Exception {
+        AbstractSolrEnabledTest.setUpClass();
+    }
+    
+    @Before
+    public void setUp() throws Exception {
+        super.setUp();
+    }
+
+    @After
+    public void tearDown() throws Exception {
+       super.tearDown();
     }
     
     @Test
@@ -54,7 +69,7 @@ public class DataRetrieverTest {
             results.forEach(c -> {
                 assertFalse(c.getName().contains("."));
                 assertTrue(c.getCount() > 0);
-                System.out.println(c.getName() + " / " + c.getChildCount() + " / " + c.getCount());
+//                System.out.println(c.getName() + " / " + c.getChildCount() + " / " + c.getCount());
             });
         }
     }
@@ -62,10 +77,10 @@ public class DataRetrieverTest {
     @Test
     public void testGetChildCollections() throws IndexUnreachableException {
         try (Timer timer = new Timer(TimerOutput.SIMPLE)){            
-            List<CollectionResult> results = dataRetriever.getChildCollections("DC", "handschriften");
+            List<CollectionResult> results = dataRetriever.getChildCollections("DC", "dctext");
             assertFalse(results.isEmpty());
             results.forEach(c -> {
-                System.out.println(c.getName() + " / " + c.getChildCount() + " / " + c.getCount());
+//                System.out.println(c.getName() + " / " + c.getChildCount() + " / " + c.getCount());
                 assertTrue(c.getCount() > 0);
             });
         }
@@ -74,10 +89,10 @@ public class DataRetrieverTest {
     @Test
     public void testGetContainedRecords() throws IndexUnreachableException, PresentationException {
         try (Timer timer = new Timer(TimerOutput.SIMPLE)){            
-            List<StructElement> results = dataRetriever.getContainedRecords("DC", "handschriften.10jahrhundert");
+            List<StructElement> results = dataRetriever.getContainedRecords("DC", "dctext.ocr");
             assertFalse(results.isEmpty());
             results.forEach(ele -> {
-                System.out.println(ele.getLabel() + " (" + (ele.isAnchor() ? "anchor" : "record") + ")");
+//                System.out.println(ele.getLabel() + " (" + (ele.isAnchor() ? "anchor" : "record") + ")");
                 assertTrue(StringUtils.isNotBlank(ele.getLabel()));
             });
         }
