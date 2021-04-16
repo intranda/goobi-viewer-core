@@ -222,16 +222,33 @@ public class TranslationGroup {
         this.selectedEntryIndex = selectedEntryIndex;
     }
 
+    /**
+     * Sets the previous {@link MessageEntry} element in the list active.
+     * 
+     * @should jump to last element when moving past first
+     */
     public void prevEntry() {
-        if (allEntries != null && selectedEntryIndex > 0) {
+        if (allEntries != null && !allEntries.isEmpty()) {
             selectedEntryIndex--;
+            if (selectedEntryIndex == -1) {
+                selectedEntryIndex = allEntries.size() - 1;
+            }
             selectedEntry = allEntries.get(selectedEntryIndex);
         }
+
     }
 
+    /**
+     * Sets the next {@link MessageEntry} element in the list active.
+     * 
+     * @should jump to first element when moving past last
+     */
     public void nextEntry() {
-        if (allEntries != null && selectedEntryIndex < allEntries.size() - 1) {
+        if (allEntries != null && !allEntries.isEmpty()) {
             selectedEntryIndex++;
+            if (selectedEntryIndex == allEntries.size()) {
+                selectedEntryIndex = 0;
+            }
             selectedEntry = allEntries.get(selectedEntryIndex);
         }
     }

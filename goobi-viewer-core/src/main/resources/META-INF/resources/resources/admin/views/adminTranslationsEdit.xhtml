@@ -50,10 +50,16 @@
                                         </fieldset>
                                     </div>
                                     <div class="form-group form-row">
-                                    <h:commandButton value="previous" action="#{adminBean.currentTranslationGroup.prevEntry}">
+                                    <!-- RETURN BUTTON -->
+                                    <h:outputLink  value="#{navigationHelper.applicationUrl}admin/translations/">
+                                        #{msg.admin__translations_return_to_overview}
+                                    </h:outputLink>
+                                    <!-- PREVIOUS BUTTON -->
+                                    <h:commandButton value="#{msg.admin__translations_entry_previous}" action="#{adminBean.currentTranslationGroup.prevEntry}">
                                         <f:ajax render="@form" />
                                     </h:commandButton>
-                                    <h:commandButton value="next" action="#{adminBean.currentTranslationGroup.nextEntry}">
+                                    <!-- NEXT BUTTON -->
+                                    <h:commandButton value="#{msg.admin__translations_entry_next}" action="#{adminBean.currentTranslationGroup.nextEntry}">
                                         <f:ajax render="@form" />
                                     </h:commandButton>
                                     </div>
@@ -65,6 +71,7 @@
                                 </div>
                                 <div class="admin__default-block">
                                     <h3>#{msg.admin__overview}</h3>
+                                    #{msg.admin__translations_overview_description}
                                     <ui:repeat var="entry" value="#{adminBean.currentTranslationGroup.allEntries}">
                                         <h:panelGroup class="row" rendered="#{entry.translationStatus == 'NONE'}" style="background-color: #EEEEEE">
                                             #{entry.key}
