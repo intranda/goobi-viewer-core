@@ -89,6 +89,8 @@ public class RecordsFilesImageResource extends ImageResource {
         request.setAttribute(FilterTools.ATTRIBUTE_PI, pi);
         request.setAttribute(FilterTools.ATTRIBUTE_FILENAME, filename);
         request.setAttribute(AccessConditionRequestFilter.REQUIRED_PRIVILEGE, IPrivilegeHolder.PRIV_VIEW_IMAGES);
+        request.setAttribute(ImageResource.IIIF_VERSION, "3.0");
+
         String requestUrl = request.getRequestURI();
         String baseImageUrl = urls.path(ApiUrls.RECORDS_FILES_IMAGE).params(pi, filename).build();
         String imageRequestPath = requestUrl.replace(baseImageUrl, "");

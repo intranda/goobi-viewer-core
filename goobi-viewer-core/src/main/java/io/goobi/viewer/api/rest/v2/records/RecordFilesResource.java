@@ -135,27 +135,6 @@ public class RecordFilesResource {
         return builder.getFulltextAsTEI(pi, filename);
     }
 
-    /**
-     *@deprecated use {@link RecordsFilesImageResource#getPdf()} instead
-     */
-    @Deprecated
-    @GET
-    @javax.ws.rs.Path(RECORDS_FILES_PDF)
-    @Produces({ "application/pdf" })
-    @Operation(tags = { "records" }, summary = "Non-canonical URL to PDF file")
-    public Response getPDF(
-            @Parameter(description = "Filename containing the text") @PathParam("filename") String filename)
-            throws ContentLibException {
-        logger.trace("getPDF: {}/{}", pi, filename);
-        String url = urls.path(RECORDS_FILES_IMAGE, RECORDS_FILES_IMAGE_PDF).params(pi, filename).build();
-        try {
-            Response resp = Response.seeOther(PathConverter.toURI(url)).build();
-            return resp;
-        } catch (URISyntaxException e) {
-            throw new ContentLibException("Cannot create redirect url to " + url);
-        }
-    }
-
     @GET
     @javax.ws.rs.Path(RECORDS_FILES_SOURCE)
     @Operation(tags = { "records" }, summary = "Get source files of record")

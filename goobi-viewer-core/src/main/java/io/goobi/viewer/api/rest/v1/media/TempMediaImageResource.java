@@ -73,7 +73,6 @@ public class TempMediaImageResource extends ImageResource {
             @Parameter(description = "Filename of the image") @PathParam("filename") String filename) {
         super(context, request, response, "", getMediaFileUrl(folder, filename).toString());
         request.setAttribute("filename", this.imageURI.toString());
-        request.setAttribute(ImageResource.IIIF_FORMAT, "iiif2");
         String requestUrl = request.getRequestURI();
         String baseImageUrl = urls.path(ApiUrls.TEMP_MEDIA_FILES, ApiUrls.TEMP_MEDIA_FILES_FILE).params(folder, filename).build();
         String imageRequestPath = requestUrl.replace(baseImageUrl, "");

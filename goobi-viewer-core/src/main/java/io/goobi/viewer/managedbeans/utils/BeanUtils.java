@@ -424,7 +424,7 @@ public class BeanUtils {
                 bean = new ImageDeliveryBean();
                 bean.init(
                         DataManager.getInstance().getConfiguration(), 
-                        DataManager.getInstance().getRestApiManager().getDataApiManager().orElse(null),
+                        DataManager.getInstance().getRestApiManager().getIIIFDataApiManager(),
                         DataManager.getInstance().getRestApiManager().getContentApiManager().orElse(null));
             }
         }

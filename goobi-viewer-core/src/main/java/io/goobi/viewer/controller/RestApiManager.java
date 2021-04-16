@@ -146,4 +146,30 @@ public class RestApiManager {
         return !restApiUrl.matches(".*/api/v1/?");
     }
 
+    /**
+     * @return the url to the data api to use for IIIF resources
+     */
+    public String getIIIFDataApiUrl() {
+        return getDataApiManager(getVersionToUseForIIIF()).map(AbstractApiUrlManager::getApiUrl)
+                .orElse(getDataApiManager().map(AbstractApiUrlManager::getApiUrl).orElse(null));
+    }
+    
+    public AbstractApiUrlManager getIIIFDataApiManager() {
+        return getDataApiManager(getVersionToUseForIIIF())
+                .orElse(getDataApiManager().orElse(null));
+    }
+    
+    /**
+     * @return
+     */
+    public static Version getVersionToUseForIIIF() {
+        String iiifVersion = DataManager.getInstance().getConfiguration().getIIIFVersionToUse();
+        switch (iiifVersion) {
+            case "3.0":
+                return Version.v2;
+            default:
+                return Version.v1;
+        }
+    }
+
 }

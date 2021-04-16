@@ -5081,4 +5081,13 @@ public final class Configuration extends AbstractConfiguration {
     public boolean isDisplayUserGeneratedContentBelowImage() {
         return getLocalBoolean("webGuiDisplay.displayUserGeneratedContentBelowImage", false);
     }
+
+    /**
+     * config: <code>&#60;iiif use-version="3.0"&#62;&#60;/iiif&#62;</code>
+     * 
+     * @return
+     */
+    public String getIIIFVersionToUse() {
+        return getLocalString("webapi.iiif[@use-version]", "2.1.1");
+    }
 }

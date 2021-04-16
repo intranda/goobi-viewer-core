@@ -150,7 +150,8 @@ public class RecordFileResource {
     @GET
     @javax.ws.rs.Path(RECORDS_FILES_PDF)
     @Produces({ "application/pdf" })
-    @Operation(tags = { "records" }, summary = "Non-canonical URL to PDF file")
+    @Operation(tags = { "records" }, summary = "Non-canonical URL to PDF file",
+    description="This redirects to " + RECORDS_FILES_IMAGE + RECORDS_FILES_IMAGE_PDF + ", which should be used instead")
     public Response getPDF(
             @Parameter(description = "Filename containing the text") @PathParam("filename") String filename)
             throws ContentLibException {

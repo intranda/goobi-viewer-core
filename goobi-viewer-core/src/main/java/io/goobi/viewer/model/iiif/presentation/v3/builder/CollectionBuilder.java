@@ -81,6 +81,7 @@ public class CollectionBuilder extends AbstractBuilder {
 
         URI baseId = urls.path(COLLECTIONS).params(collectionField).buildURI();
         Collection3 baseCollection = new Collection3(baseId, null);
+        baseCollection.setLabel(ViewerResourceBundle.getTranslations("browse", false));
         baseCollection.setRequiredStatement(getRequiredStatement());
 
         List<CollectionResult> collections = dataRetriever.getTopLevelCollections(collectionField);

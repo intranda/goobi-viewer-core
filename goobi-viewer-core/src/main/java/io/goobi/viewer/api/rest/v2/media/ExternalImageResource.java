@@ -86,6 +86,8 @@ public class ExternalImageResource extends ImageResource {
         super(context, request, response, "", imageUrl);
         request.setAttribute(FilterTools.ATTRIBUTE_FILENAME, imageUrl);
         request.setAttribute(AccessConditionRequestFilter.REQUIRED_PRIVILEGE, IPrivilegeHolder.PRIV_VIEW_IMAGES);
+        request.setAttribute(ImageResource.IIIF_VERSION, "3.0");
+
         String requestUrl = request.getRequestURI();
         String baseImageUrl = urls.path(ApiUrls.EXTERNAL_IMAGES).params(imageUrl).build();
         String imageRequestPath = requestUrl.replace(baseImageUrl, "");

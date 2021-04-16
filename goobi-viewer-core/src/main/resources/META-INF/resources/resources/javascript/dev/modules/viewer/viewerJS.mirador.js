@@ -35,6 +35,7 @@ var viewerJS = ( function( viewer ) {
     var _defaults = {
     	root: '',
     	restEndpoint: undefined,
+    	manifestEndpoint: undefined,
     	userLoggedIn: false,
     	bookmarkListId: null,
     };
@@ -64,6 +65,9 @@ var viewerJS = ( function( viewer ) {
             }
             
             $.extend( true, _defaults, config );
+            if(!_defaults.manifestEndpoint) {
+            	_defaults.manifestEndpoint = _defaults.restEndpoint;
+            }
             
             var manifests = _getManifestsFromUrlQuery(_defaults);
             
@@ -190,7 +194,7 @@ var viewerJS = ( function( viewer ) {
 	function _getManifestsFromUrlQuery(_defaults) {
         var manifests = _getQueryVariable("manifest").split("$").filter(man => man.length > 0);
         var pis = _getQueryVariable("pi").split("$").filter(man => man.length > 0);
-        var piManifests = pis.map(pi => _defaults.restEndpoint.replace("api/v1","api/v2") + "records/" + pi + "/manifest/");
+        var piManifests = pis.map(pi => _defaults.manifestEndpoint + "records/" + pi + "/manifest/");
         manifests = manifests.concat(piManifests);
         return manifests;
 	}

@@ -13,7 +13,7 @@
  *
  * You should have received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
-package io.goobi.viewer.api.rest.v1;
+package io.goobi.viewer.api.rest.v2;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -30,6 +30,8 @@ import javax.ws.rs.core.MediaType;
 
 import org.glassfish.jersey.server.ResourceConfig;
 
+import io.goobi.viewer.api.rest.AbstractApiUrlManager;
+import io.goobi.viewer.api.rest.AbstractApiUrlManager.Version;
 import io.goobi.viewer.controller.DataManager;
 import io.swagger.v3.jaxrs2.integration.JaxrsOpenApiContextBuilder;
 import io.swagger.v3.oas.integration.OpenApiConfigurationException;
@@ -57,7 +59,8 @@ public class OpenApiResource {
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     public OpenAPI getOpenApi() {
-        this.openApi = initSwagger(servletConfig, application, DataManager.getInstance().getRestApiManager().getContentApiUrl());
+        this.openApi = initSwagger(servletConfig, application, 
+                DataManager.getInstance().getRestApiManager().getDataApiManager(Version.v2).map(AbstractApiUrlManager::getApiUrl).orElse(null));
         return this.openApi;
     }
     
@@ -67,7 +70,7 @@ public class OpenApiResource {
             SwaggerConfiguration oasConfig = new SwaggerConfiguration()
                     .prettyPrint(true)
                     .readAllResources(false)
-                    .resourcePackages(Stream.of("io.goobi.viewer.api.rest.v1").collect(Collectors.toSet()));
+                    .resourcePackages(Stream.of("io.goobi.viewer.api.rest.v2").collect(Collectors.toSet()));
             
             OpenAPI openApi = new JaxrsOpenApiContextBuilder()
                     .servletConfig(servletConfig)
@@ -98,7 +101,7 @@ public class OpenApiResource {
         Info info = new Info()
                 .title("Goobi viewer API.")
                 .description("This documentation describes the Goobi viewer API.")
-                .version("v1")
+                .version("v2")
                 .contact(new Contact()
                         .email("info@intranda.com"))
                 .license(new License()
