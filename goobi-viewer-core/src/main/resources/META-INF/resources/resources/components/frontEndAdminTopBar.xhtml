@@ -58,25 +58,14 @@
 		<div class="admin__topbar-frontend-right">
             <!-- COUNT HOTFOLDER FILES -->
             <div class="admin__topbar-frontend-hotfolder">
-            
             	<!-- COUNT FILES PROCESSING -->
             	<!-- TO DO: RENDERED CONDITION NUMBER OF FILES GREATER X -->
             	<ui:fragment rendered="#{userBean.admin}">
-					<h:commandLink styleClass="admin__topbar-frontend-hotfolder-files-action">
+					<div class="admin__topbar-frontend-hotfolder-files-action">
 					    <i class="fa fa-spinner fa-pulse" aria-hidden="true"></i>
 					    <span>1.242</span> <span>#{msg.admin__files_in_hotfolder}...</span>
-					</h:commandLink>
-				</ui:fragment>
-				
-            	<!-- NO FILES PROCESSING -->
-            	<!-- TO DO: RENDERED CONDITION NUMBER OF FILES EQUAL ZERO OR TOO SMALL -->
-            	<ui:fragment rendered="#{!userBean.admin}">
-					<div styleClass="admin__topbar-frontend-hotfolder-files-action">
-					    <i class="fa fa-circle-o" aria-hidden="true"></i>
-					    <span>#{msg.admin__no_files_in_hotfolder}</span>
 					</div>
 				</ui:fragment>
-				
             </div>
 		
             <!-- LOGOUT -->

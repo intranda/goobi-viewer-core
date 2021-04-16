@@ -26,7 +26,11 @@
 								<a href="#{activeDocumentBean.viewManager.pdfPageDownloadLink}"
 									id="pdfPage"
 									class="badge badge-dark widget-usage__page-download-pdf"
-                                    title="#{msg.label__pdf_download_image}" target="_blank" rel="nofollow noopener"
+                                    title="#{msg.label__pdf_download_image}"
+                                    data-toggle="tooltip"
+									data-placement="top"
+									data-trigger="hover"
+									target="_blank" rel="nofollow noopener"
                                     aria-label="#{msg.image}: #{msg.label__pdf_download}">
 									<i class="fa fa-file-pdf-o" aria-hidden="true"></i>
 									#{msg.label__pdf_download} </a>
@@ -43,7 +47,11 @@
                                         value="#{msg.imageLink}"
                                         action="#{activeDocumentBean.toggleDownloadImageModal}"
                                         immediate="true"
+                                        title="#{msg.label__img_download_image}"
                                         aria-label="#{msg.image}: #{msg.imageLink}">
+                                        <f:passThroughAttribute name="data-toggle" value="tooltip" />
+                                        <f:passThroughAttribute name="data-placement" value="top" />
+                                        <f:passThroughAttribute name="data-trigger" value="hover" />
                                         <f:passThroughAttribute name="data-popover-element" value="#downloadImagePopover" />
                                         <f:passThroughAttribute name="data-popover-dismiss" value="click-outside" />
                                         <f:passThroughAttribute name="data-popover-placement" value="bottom" />
@@ -62,7 +70,11 @@
 								    <a href="#{activeDocumentBean.viewManager.altoUrl}"
 									   id="altoPage"
 									   class="badge badge-dark widget-usage__page-download-alto"
-                                       title="#{msg.metadata_dl_alto_page}" target="_blank" rel="nofollow noopener"
+                                       title="#{msg.metadata_dl_alto_page}"
+                                       data-toggle="tooltip"
+									   data-placement="top"
+									   data-trigger="hover"
+                                       target="_blank" rel="nofollow noopener"
                                        aria-label="#{msg.image}: #{msg.downloadAltoPageButtonLabel}">
 									   #{msg.downloadAltoPageButtonLabel} </a>
                                 </ui:fragment>
@@ -73,7 +85,11 @@
 								        rendered="#{activeDocumentBean.viewManager.currentPage.teiAvailable}">
 								        <a href="#{activeDocumentBean.viewManager.teiUrl}" id="teiPage"
 									       class="badge badge-dark widget-usage__page-download-tei"
-                                           title="#{msg.downloadPageTei}" target="_blank" rel="nofollow noopener"
+                                           title="#{msg.downloadPageTei}"
+                                           data-toggle="tooltip"
+										   data-placement="top"
+										   data-trigger="hover"
+										 target="_blank" rel="nofollow noopener"
                                            aria-label="#{msg.image}: #{msg.TEI}"> 
                                            #{msg.TEI}
 								        </a>
@@ -85,7 +101,11 @@
 								        <a href="#{activeDocumentBean.viewManager.fulltextUrl}"
 									       id="textPage"
 									       class="badge badge-dark widget-usage__page-download-fulltext"
-                                           title="#{msg.downloadPageFulltext}" target="_blank" rel="nofollow noopener"
+                                           title="#{msg.downloadPageFulltext}"
+	                                       data-toggle="tooltip"
+										   data-placement="top"
+										   data-trigger="hover"
+										   target="_blank" rel="nofollow noopener"
                                            aria-label="#{msg.image}: #{msg.fulltext}">
 									       #{msg.fulltext} </a>
                                     </ui:fragment>
