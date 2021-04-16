@@ -15,36 +15,42 @@
  */
 package io.goobi.viewer.model.translations.admin;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
+/**
+ * Language + translation pair.
+ */
+public class MessageValue {
 
-import io.goobi.viewer.controller.StringTools;
-import io.goobi.viewer.messages.ViewerResourceBundle;
-
-public class MessagesTranslationGroupItem extends TranslationGroupItem {
+    private final String language;
+    private String value;
 
     /**
-     * Protected constructor.
      * 
-     * @param key
-     * @param regex
+     * @param language Language code
      */
-    protected MessagesTranslationGroupItem(String key, boolean regex) {
-        super(key, regex);
+    public MessageValue(String language) {
+        this.language = language;
     }
 
-    /* (non-Javadoc)
-     * @see io.goobi.viewer.model.translations.TranslationGroupKey#loadValues()
+    /**
+     * @return the language
      */
-    @Override
-    protected void loadEntries() {
-        List<String> keys;
-        if (regex) {
-            keys = StringTools.filterStringsViaRegex(new ArrayList<>(ViewerResourceBundle.getAllKeys()), key);
-        } else {
-            keys = Collections.singletonList(key);
-        }
-        createMessageKeyStatusMap(keys);
+    public String getLanguage() {
+        return language;
+    }
+
+    /**
+     * @return the value
+     */
+    public String getValue() {
+        return value;
+    }
+
+    /**
+     * @param value the value to set
+     * @return this
+     */
+    public MessageValue setValue(String value) {
+        this.value = value;
+        return this;
     }
 }

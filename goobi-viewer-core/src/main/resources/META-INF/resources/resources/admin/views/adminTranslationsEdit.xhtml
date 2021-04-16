@@ -15,41 +15,72 @@
 
     <ui:define name="content">
         <f:view contentType="text/html" encoding="utf-8">
-            <div id="adminIpRanges">
+            <div id="adminTranslationsEdit">
                 <h:panelGroup rendered="#{userBean.admin}">
-                    <h:form id="adminIpRangesForm" prependId="false">
+                    <h:form id="adminTranslationsEditForm" prependId="false">
                         <div class="admin__title-bar">
                             <!-- TITLE -->
                             <h2 class="admin__title">#{msg.admin__translations}</h2>
-
                         </div>
-
+                        
                         <div class="admin__content-inner-content">
-                            <!-- LEFT SIDE -->
-                            <div>
-                                <h3>#{msg.admin__translations}</h3>
-                                TRANSLATE HERE
+                            <div class="admin__content-wrapper">
+                                <div class="admin__content-main -sticky">
+                                    <h3>#{msg.admin__translations}</h3>
+                                    <div class="admin__default-block">
+                                        <fieldset>
+                                            <div class="form-group form-row">
+                                                <div class="col-3 control-label admin__form-label">
+                                                    #{msg.value}:
+                                                </div>
+                                                <div class="col-9 admin__form-input">
+                                                    <strong>#{adminBean.currentTranslationGroup.selectedEntry.key}</strong>
+                                                </div>
+                                            </div>
+                                            <ui:repeat var="value" value="#{adminBean.currentTranslationGroup.selectedEntry.values}">
+                                                <div class="form-group form-row">
+                                                    <div class="col-3 control-label admin__form-label">
+                                                        <label for="firstName">#{value.language}:</label>
+                                                    </div>
+                                                    <div class="col-9 admin__form-input">
+                                                        <h:inputTextarea value="#{value.value}" id="value" label="value" styleClass="form-control" />
+                                                    </div>
+                                                </div>
+                                            </ui:repeat>
+                                        </fieldset>
+                                    </div>
+                                    <div class="form-group form-row">
+                                    <h:commandButton value="previous" action="#{adminBean.currentTranslationGroup.prevEntry}">
+                                        <f:ajax render="@form" />
+                                    </h:commandButton>
+                                    <h:commandButton value="next" action="#{adminBean.currentTranslationGroup.nextEntry}">
+                                        <f:ajax render="@form" />
+                                    </h:commandButton>
+                                    </div>
+                                </div>
+                            <div class="admin__content-side">
+                                <div class="admin__default-block">
+                                    <h3>#{msg.label__crowdsourcing_campaign_progress}</h3>
+                                    (#{adminBean.currentTranslationGroup.translatedEntryCount} von #{adminBean.currentTranslationGroup.entryCount})
+                                </div>
+                                <div class="admin__default-block">
+                                    <h3>#{msg.admin__overview}</h3>
+                                    <ui:repeat var="entry" value="#{adminBean.currentTranslationGroup.allEntries}">
+                                        <h:panelGroup class="row" rendered="#{entry.translationStatus == 'NONE'}" style="background-color: #EEEEEE">
+                                            #{entry.key}
+                                        </h:panelGroup>
+                                        <h:panelGroup class="row" rendered="#{entry.translationStatus == 'PARTIAL'}" style="background-color: #F7E3B5">
+                                            #{entry.key}
+                                        </h:panelGroup>
+                                        <h:panelGroup class="row" rendered="#{entry.translationStatus == 'FULL'}" style="background-color: #D4EDDB">
+                                            #{entry.key}
+                                        </h:panelGroup>
+                                    </ui:repeat>
+                                </div>
                             </div>
-                            <!-- RIGHT SIDE -->
-                            <div>
-                                <h3>#{msg.label__crowdsourcing_campaign_progress}</h3>
-                                (#{adminBean.currentTranslationGroup.translatedKeyCount} von #{adminBean.currentTranslationGroup.messageKeyCount})
-                            </div>
-                            <div>
-                                <h3>#{msg.admin__overview}</h3>
-                                <ui:repeat var="key" value="#{adminBean.currentTranslationGroup.allKeys}">
-                                    <h:panelGroup class="row" rendered="#{key.translationStatus == 'NONE'}" style="background-color: #EEEEEE">
-                                        #{key.key}
-                                    </h:panelGroup>
-                                    <h:panelGroup class="row" rendered="#{key.translationStatus == 'PARTIAL'}" style="background-color: #F7E3B5">
-                                        #{key.key}
-                                    </h:panelGroup>
-                                    <h:panelGroup class="row" rendered="#{key.translationStatus == 'FULL'}" style="background-color: #D4EDDB">
-                                        #{key.key}
-                                    </h:panelGroup>
-                                </ui:repeat>
                             </div>
                         </div>
+
                     </h:form>
                 </h:panelGroup>
             </div>

@@ -56,7 +56,7 @@ public class SolrFieldValueTranslationGroupItem extends TranslationGroupItem {
      * @see io.goobi.viewer.model.translations.TranslationGroupKey#loadValues()
      */
     @Override
-    protected void loadMessageKeys() {
+    protected void loadEntries() {
         try {
             QueryResponse qr = DataManager.getInstance()
                     .getSearchIndex()

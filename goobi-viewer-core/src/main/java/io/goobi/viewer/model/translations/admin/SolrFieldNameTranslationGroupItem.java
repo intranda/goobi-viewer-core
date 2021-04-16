@@ -52,7 +52,7 @@ public class SolrFieldNameTranslationGroupItem extends TranslationGroupItem {
      * @see io.goobi.viewer.model.translations.TranslationGroupKey#loadValues()
      */
     @Override
-    protected void loadMessageKeys() {
+    protected void loadEntries() {
         List<String> keys;
         if (regex) {
             try {

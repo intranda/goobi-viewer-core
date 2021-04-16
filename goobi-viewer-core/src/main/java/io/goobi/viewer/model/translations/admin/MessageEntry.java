@@ -15,12 +15,14 @@
  */
 package io.goobi.viewer.model.translations.admin;
 
-import java.util.Map;
+import java.util.List;
+
+import org.apache.commons.lang3.StringUtils;
 
 /**
  * A single message key with all its available translations for admin backend editing.
  */
-public class MessageKey implements Comparable<MessageKey> {
+public class MessageEntry implements Comparable<MessageEntry> {
 
     public enum TranslationStatus {
         NONE,
@@ -28,17 +30,17 @@ public class MessageKey implements Comparable<MessageKey> {
         FULL;
     }
 
-    public final String key;
-    public final Map<String, String> translations;
+    private final String key;
+    private final List<MessageValue> values;
 
     /**
      * 
      * @param key
-     * @param
+     * @param values
      */
-    public MessageKey(String key, Map<String, String> translations) {
+    public MessageEntry(String key, List<MessageValue> values) {
         this.key = key;
-        this.translations = translations;
+        this.values = values;
     }
 
     /* (non-Javadoc)
@@ -63,7 +65,7 @@ public class MessageKey implements Comparable<MessageKey> {
             return false;
         if (getClass() != obj.getClass())
             return false;
-        MessageKey other = (MessageKey) obj;
+        MessageEntry other = (MessageEntry) obj;
         if (key == null) {
             if (other.key != null)
                 return false;
@@ -72,9 +74,11 @@ public class MessageKey implements Comparable<MessageKey> {
         return true;
     }
 
-    /** {@inheritDoc} */
+    /** {@inheritDoc}
+     * @should compare correctly
+     */
     @Override
-    public int compareTo(MessageKey o) {
+    public int compareTo(MessageEntry o) {
         return this.key.compareTo(o.key);
     }
 
@@ -85,10 +89,10 @@ public class MessageKey implements Comparable<MessageKey> {
     public TranslationStatus getTranslationStatus() {
         boolean full = true;
         boolean partial = false;
-        for (String lang : translations.keySet()) {
-            if (translations.get(lang) == null || translations.get(lang).equals(lang)) {
+        for (MessageValue value : values) {
+            if (StringUtils.isEmpty(value.getValue()) || value.getValue().equals(key)) {
                 full = false;
-            } else if (translations.get(lang).contains(" zzz")) {
+            } else if (value.getValue().contains(" zzz")) {
                 full = false;
                 partial = true;
             }
@@ -111,10 +115,9 @@ public class MessageKey implements Comparable<MessageKey> {
     }
 
     /**
-     * @return the translations
+     * @return the values
      */
-    public Map<String, String> getTranslations() {
-        return translations;
+    public List<MessageValue> getValues() {
+        return values;
     }
-
 }

@@ -21,7 +21,11 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import io.goobi.viewer.model.translations.admin.MessageKey.TranslationStatus;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import io.goobi.viewer.ContextListener;
+import io.goobi.viewer.model.translations.admin.MessageEntry.TranslationStatus;
 
 /**
  * Translation group configuration item.
@@ -53,14 +57,19 @@ public class TranslationGroup {
         }
     }
 
+    /** Logger for this class. */
+    private static final Logger logger = LoggerFactory.getLogger(TranslationGroup.class);
+
     private final int id;
     private final TranslationGroupType type;
     private final String name;
     private final String description;
     private final List<TranslationGroupItem> items;
-    protected MessageKey activeMessageKey;
 
-    private Integer translatedKeyCount = null;
+    private List<MessageEntry> allEntries;
+    private MessageEntry selectedEntry;
+    private int selectedEntryIndex = 0;
+    private Integer translatedEntryCount = null;
 
     /**
      * Factory method.
@@ -136,10 +145,10 @@ public class TranslationGroup {
      * @return Number of unique message keys across all groups
      * @should return correct count
      */
-    public int getMessageKeyCount() {
-        Set<MessageKey> returnSet = new HashSet<>();
+    public int getEntryCount() {
+        Set<MessageEntry> returnSet = new HashSet<>();
         for (TranslationGroupItem item : items) {
-            returnSet.addAll(item.getMessageKeys());
+            returnSet.addAll(item.getEntries());
         }
 
         return returnSet.size();
@@ -149,31 +158,81 @@ public class TranslationGroup {
      * 
      * @return
      */
-    public Integer getTranslatedKeyCount() {
-        if (translatedKeyCount == null) {
-            translatedKeyCount = 0;
-            for (MessageKey key : getAllKeys()) {
+    public Integer getTranslatedEntryCount() {
+        if (translatedEntryCount == null) {
+            translatedEntryCount = 0;
+            for (MessageEntry key : getAllEntries()) {
                 if (key.getTranslationStatus().equals(TranslationStatus.FULL)) {
-                    translatedKeyCount++;
+                    translatedEntryCount++;
                 }
             }
         }
-        
-        return translatedKeyCount;
+
+        return translatedEntryCount;
     }
 
     /**
      * 
      * @return Unique message keys across all groups
      */
-    public List<MessageKey> getAllKeys() {
-        Set<MessageKey> retSet = new HashSet<>();
-        for (TranslationGroupItem item : items) {
-            retSet.addAll(item.getMessageKeys());
+    public List<MessageEntry> getAllEntries() {
+        if (allEntries == null) {
+            Set<MessageEntry> retSet = new HashSet<>();
+            for (TranslationGroupItem item : items) {
+                retSet.addAll(item.getEntries());
+            }
+
+            allEntries = new ArrayList<>(retSet);
+            Collections.sort(allEntries);
         }
 
-        List<MessageKey> ret = new ArrayList<>(retSet);
-        Collections.sort(ret);
-        return ret;
+        return allEntries;
+    }
+
+    /**
+     * @return the selectedEntry
+     */
+    public MessageEntry getSelectedEntry() {
+        logger.trace("getSelectedEntry");
+        if (selectedEntry == null && getAllEntries().size() > selectedEntryIndex) {
+            selectedEntry = allEntries.get(selectedEntryIndex);
+        }
+
+        return selectedEntry;
+    }
+
+    /**
+     * @param selectedEntry the selectedEntry to set
+     */
+    public void setSelectedEntry(MessageEntry selectedEntry) {
+        this.selectedEntry = selectedEntry;
+    }
+
+    /**
+     * @return the selectedMessageEntryIndex
+     */
+    public int getSelectedEntryIndex() {
+        return selectedEntryIndex;
+    }
+
+    /**
+     * @param selectedEntryIndex the selectedEntryIndex to set
+     */
+    public void setSelectedEntryIndex(int selectedEntryIndex) {
+        this.selectedEntryIndex = selectedEntryIndex;
+    }
+
+    public void prevEntry() {
+        if (allEntries != null && selectedEntryIndex > 0) {
+            selectedEntryIndex--;
+            selectedEntry = allEntries.get(selectedEntryIndex);
+        }
+    }
+
+    public void nextEntry() {
+        if (allEntries != null && selectedEntryIndex < allEntries.size() - 1) {
+            selectedEntryIndex++;
+            selectedEntry = allEntries.get(selectedEntryIndex);
+        }
     }
 }

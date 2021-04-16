@@ -1501,7 +1501,7 @@ public class AdminBean implements Serializable {
             return DataManager.getInstance().getConfiguration().getTranslationGroups().indexOf(currentTranslationGroup);
         }
 
-        return -1;
+        return 0;
     }
 
     /**
@@ -1510,7 +1510,7 @@ public class AdminBean implements Serializable {
      */
     public void setCurrentTranslationGroupId(int id) {
         List<TranslationGroup> groups = DataManager.getInstance().getConfiguration().getTranslationGroups();
-        if (groups.size() > id) {
+        if (id >= 0 && groups.size() > id) {
             currentTranslationGroup = groups.get(id);
         } else {
             logger.error("Translation group ID not found: {}", id);
