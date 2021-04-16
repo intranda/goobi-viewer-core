@@ -180,6 +180,13 @@ var viewerJS = (function () {
         // init search drilldown filter
         if (_defaults.activateDrilldownFilter) {
             this.initDrillDownFilters();
+            this.jsfAjax.success.subscribe(e => {
+            	let collapseLink = $(e.source).attr("data-collapse-link");
+            	if(collapseLink) {
+            		this.initDrillDownFilters();
+            	}
+            	console.log("ajax success", collapseLink);
+        	});
         }
 
         // disable submit button on feedback

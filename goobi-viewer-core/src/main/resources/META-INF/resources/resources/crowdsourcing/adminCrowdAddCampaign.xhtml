@@ -594,10 +594,29 @@
 	                                                                <label for="pickerDateStart">#{msg.admin__crowdsourcing_campaign_duration_from}:</label>
 	                                                            </div>
 	                                                            <div class="col-8 control-label admin__form-label">
-	                                                                <p:datePicker id="pickerDateStart"
-	                                                                    value="#{crowdsourcingBean.selectedCampaign.dateOnlyStart}"
-	                                                                    pattern="#{navigationHelper.datePattern}" 
-	                                                                    styleClass="admin__campaign-date-picker" />
+<!-- 	                                                                <p:datePicker id="pickerDateStart" -->
+<!-- 	                                                                    value="#{crowdsourcingBean.selectedCampaign.dateOnlyStart}" -->
+<!-- 	                                                                    pattern="#{navigationHelper.datePattern}"  -->
+<!-- 	                                                                    styleClass="admin__campaign-date-picker" /> -->
+	                                                             
+	                                                             <div class="admin__campaign-date-picker">
+	                                                             	<h:inputText
+	                                                             		id="pickerDateStart" 
+	                                                             		name="pickerDateStart" 
+	                                                             		value="#{crowdsourcingBean.selectedCampaign.dateOnlyStart}"
+	                                                             		converter="localDateConverter">
+	                                                             		<f:passThroughAttribute name="data-target" value="datePickerStart" />
+<!-- 	                                                             		<f:converter converterId = "localDateConverter" /> -->
+	                                                             	</h:inputText>
+	                                                             </div>
+	                                                             <!-- TO DO: DATE FORMAT FOR LANGUAGES, localDateConverter NOT COMPATIBLE YET #{navigationHelper.datePatternjQueryDatePicker} -->
+	                                                             <script type="text/javascript">
+	                                                             	$( "[data-target='datePickerStart']" ).datepicker({
+	                                                             		dateFormat: "yy-mm-dd" 
+	                                                             	});
+																 </script>
+																 
+	                                                                    
 	                                                            </div>
 	                                                         </div>
                                                         	<div class="form-row">
@@ -605,12 +624,25 @@
 	                                                                <label for="pickerDateEnd">#{msg.admin__crowdsourcing_campaign_duration_until}:</label>
 																</div>
 																<div class="col-8 control-label admin__form-label">
-	                                                                <p:datePicker id="pickerDateEnd"
-	                                                                    value="#{crowdsourcingBean.selectedCampaign.dateOnlyEnd}"
-	                                                                    pattern="#{navigationHelper.datePattern}" 
-	                                                                    styleClass="admin__campaign-date-picker" />
+																	<div class="admin__campaign-date-picker">
+		                                                             	<h:inputText
+		                                                             		id="pickerDateEnd" 
+		                                                             		name="pickerDateEnd" 
+		                                                             		value="#{crowdsourcingBean.selectedCampaign.dateOnlyEnd}"
+		                                                             		converter="localDateConverter">
+		                                                             		<f:passThroughAttribute name="data-target" value="datePickerEnd" />
+	<!-- 	                                                             		<f:converter converterId = "localDateConverter" /> -->
+		                                                             	</h:inputText>
+		                                                             </div>
+	                                                             </div>
+	                                                             
+	                                                             <!-- TO DO: DATE FORMAT FOR LANGUAGES, localDateConverter NOT COMPATIBLE YET #{navigationHelper.datePatternjQueryDatePicker} -->
+	                                                             <script type="text/javascript">
+	                                                             	$( "[data-target='datePickerEnd']" ).datepicker({
+	                                                             		dateFormat: "yy-mm-dd" 
+	                                                             	});
+																 </script>
 	                                                           </div>
-	                                                       </div>
                                                         </ui:fragment>
                                                     </h:panelGroup>
                                                 </ui:fragment>
@@ -745,6 +777,8 @@
 			</div>
 		</h:panelGroup>
 	</ui:define>
+	
+
 
 	<!-- SIDEBAR -->
 	<ui:define name="sidebar">
