@@ -79,7 +79,7 @@ public class RecordsFilesImageResource extends ImageResource {
      */
     public RecordsFilesImageResource(
             @Context ContainerRequestContext context, @Context HttpServletRequest request, @Context HttpServletResponse response,
-            @Context AbstractApiUrlManager urls,
+            @Context ApiUrls urls,
             @Parameter(description = "Persistent identifier of the record") @PathParam("pi") String pi,
             @Parameter(description = "Filename of the image") @PathParam("filename") String filename) {
         super(context, request, response, pi, filename);
@@ -128,7 +128,7 @@ public class RecordsFilesImageResource extends ImageResource {
             
         }
         
-        return super.getPdf("full", "max", "0", pi + "_" + filename + ".pdf");
+        return super.getPdf();
     }
     
     @Override

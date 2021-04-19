@@ -27,6 +27,7 @@ import de.unigoettingen.sub.commons.contentlib.servlet.rest.ContentServerRespons
  *
  */
 @Provider
+@ContentServerBinding
 public class ImageApiResponseFilter extends ContentServerResponseFilter {
 
 }

@@ -126,7 +126,8 @@ public class TocWriter {
      * @throws io.goobi.viewer.model.toc.export.pdf.WriteTocException if any.
      */
     public void createPdfDocument(OutputStream output, List<TOCElement> elements) throws WriteTocException {
-        try (Document document = new Document()) {
+        Document document = new Document();
+        try  {
             PdfWriter.getInstance(document, output);
             document.addAuthor(getAuthor());
             document.addTitle(getTitle());
@@ -167,9 +168,10 @@ public class TocWriter {
             }
 
             document.add(table);
-
         } catch (DocumentException e) {
             throw new WriteTocException(e);
+        } finally {
+            document.close();
         }
     }
 

@@ -39,9 +39,10 @@ import com.fasterxml.jackson.databind.JsonMappingException;
 
 import de.intranda.api.annotation.wa.collection.AnnotationCollection;
 import de.intranda.api.annotation.wa.collection.AnnotationPage;
-import de.intranda.api.iiif.presentation.Canvas;
-import de.intranda.api.iiif.presentation.Sequence;
-import io.goobi.viewer.api.rest.AbstractRestApiTest;
+import de.intranda.api.iiif.presentation.v2.AnnotationList;
+import de.intranda.api.iiif.presentation.v2.Canvas2;
+import de.intranda.api.iiif.presentation.v2.Sequence;
+import io.goobi.viewer.api.rest.v1.AbstractRestApiTest;
 
 /**
  * @author florian
@@ -118,7 +119,7 @@ public class RecordPageResourceTest extends AbstractRestApiTest {
             assertNotNull("Should return user object as json", response.getEntity());
             String entity = response.readEntity(String.class);
             assertNotNull(entity);
-            Canvas canvas = mapper.readValue(entity, Canvas.class);
+            Canvas2 canvas = mapper.readValue(entity, Canvas2.class);
             assertEquals(URI.create(url), canvas.getId());
         }
     }
@@ -157,30 +158,13 @@ public class RecordPageResourceTest extends AbstractRestApiTest {
             assertEquals("Should return status 200", 200, response.getStatus());
             assertNotNull("Should return user object as json", response.getEntity());
             String entity = response.readEntity(String.class);
-            AnnotationCollection collection = mapper.readValue(entity, AnnotationCollection.class);
+            AnnotationList collection = mapper.readValue(entity, AnnotationList.class);
             assertNotNull(collection);
-            assertEquals(3l, collection.getTotalItems());
+            assertEquals(3, collection.getResources().size());
         }
     }
+    
 
-    /**
-     * Test method for {@link io.goobi.viewer.api.rest.v1.records.RecordResource#getCommentPageForRecord()}.
-     * @throws JsonProcessingException 
-     * @throws JsonMappingException 
-     */
-    @Test
-    public void testGetCommentPageForPage() throws JsonMappingException, JsonProcessingException {
-        try(Response response = target(urls.path(RECORDS_PAGES, RECORDS_PAGES_COMMENTS).params(PI_ANNOTATIONS, PAGENO_ANNOTATIONS).build() + "1/")
-                .request()
-                .accept(MediaType.APPLICATION_JSON)
-                .get()) {
-            assertEquals("Should return status 200", 200, response.getStatus());
-            assertNotNull("Should return user object as json", response.getEntity());
-            String entity = response.readEntity(String.class);
-            AnnotationPage page = mapper.readValue(entity, AnnotationPage.class);
-            assertNotNull(page);
-            assertEquals(3l, page.getItems().size());
-        }
-    }
+
 
 }
