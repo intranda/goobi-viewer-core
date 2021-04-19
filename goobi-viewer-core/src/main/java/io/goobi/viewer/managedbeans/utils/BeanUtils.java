@@ -88,8 +88,12 @@ public class BeanUtils {
     public static HttpServletRequest getRequest() {
                 
         SessionBean sb = getSessionBean();
-        if(sb != null) {
-            return sb.getRequest();
+        try {
+            if(sb != null) {
+                return sb.getRequest();
+            }            
+        } catch(ContextNotActiveException e) {
+            
         }
         
         FacesContext context = FacesContext.getCurrentInstance();

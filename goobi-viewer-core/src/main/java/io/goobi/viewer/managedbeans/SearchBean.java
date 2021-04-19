@@ -2144,10 +2144,14 @@ public class SearchBean implements SearchInterface, Serializable {
     private SXSSFWorkbook buildExcelSheet(final FacesContext facesContext, String finalQuery, String exportQuery, Locale locale)
             throws InterruptedException, ViewerConfigurationException {
         try {
+            HttpServletRequest request = BeanUtils.getRequest(facesContext);
+            if(request == null) {
+                request = BeanUtils.getRequest();
+            }
             Map<String, String> params = SearchHelper.generateQueryParams();
             final SXSSFWorkbook wb = SearchHelper.exportSearchAsExcel(finalQuery, exportQuery, currentSearch.getAllSortFields(),
                     facets.generateFacetFilterQueries(advancedSearchGroupOperator, true), params, searchTerms, locale,
-                    DataManager.getInstance().getConfiguration().isAggregateHits(), BeanUtils.getRequest());
+                    DataManager.getInstance().getConfiguration().isAggregateHits(), request);
             if (Thread.interrupted()) {
                 throw new InterruptedException();
             }
