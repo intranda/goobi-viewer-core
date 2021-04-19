@@ -27,33 +27,77 @@
 
 	<ui:define name="content">
 
-		<style>
-.collapse-container {
-	border: 2px solid gray;
-	margin: 5px;
-}
-</style>
+		<!-- INCLUDED STYLE CSS FOR API PAGE-->
+		<h:outputStylesheet library="css" name="/misc/rest_api.css"  />
 
-
-		<div class="collapse-container">
-			<h3>
-				<span>API v1</span>
-				<button data-toggle="collapse" data-target="#swagger-container-v1">Expand</button>
-			</h3>
-			<div id="swagger-container-v1" class="collapse"></div>
+		<div class="swagger-api__wrapper">
+			<div class="swagger-api__intro-wrapper">
+				<h1 class="swagger-api__heading">Available versions of the Goobi viewer API</h1>
+				<p class="swagger-api__info">Please choose version:</p>
+				<div class="swagger-api__options">
+					<button id="swagger-api__option-v1">API v1</button>
+					<button id="swagger-api__option-v2">API v2</button>
+				</div>
+			</div>
+			
+			<div class="swagger-api__containers">
+				<!-- DYNAMICALLY LOADED CONTENT V1 -->	
+				<div id="swagger-container-v1" class="swagger-api__box-v1"><i class="fa fa-spinner fa-spin"></i></div>
+				
+				<!-- DYNAMICALLY LOADED V2 -->	
+				<div id="swagger-container-v2" class="swagger-api__box-v2"></div>
+			</div>	
 		</div>
 
-		<div class="collapse-container">
-			<h3>
-				<span>API v2</span>
-				<button data-toggle="collapse" data-target="#swagger-container-v2">Expand</button>
-			</h3>
-			<div id="swagger-container-v2" class="collapse"></div>
-		</div>
 
 
 		<script>
+
+		
       //<![CDATA[
+		$(document).ready(function () {
+
+		      $('#swagger-api__option-v1').addClass('-active');
+			  $('#swagger-api__option-v1').click(function () {
+			      $('#swagger-container-v2').hide();
+			      $('#swagger-container-v1').fadeIn('fast');
+			      $(this).addClass('-active');
+			      $('#swagger-api__option-v2').removeClass('-active');
+			  });
+
+			  $('#swagger-api__option-v2').click(function () {
+			      $('#swagger-container-v1').hide();
+			      $('#swagger-container-v2').fadeIn('fast');
+			      $(this).addClass('-active');
+			      $('#swagger-api__option-v1').removeClass('-active');
+			  });
+			  
+		});
+			  
+		    $('#swagger-api__option-v2').one('click', function(e){
+		        e.preventDefault();
+
+		        fetch("#{request.contextPath}/api/v2/openapi.json")
+		        .then(res => res.json())
+		        .then(json => {
+		            console.log("init SwaggerUIBundle with ", json);
+		            const ui = SwaggerUIBundle({
+		        	    dom_id: '#swagger-container-v2',
+		        	    spec: json,
+		        	    //all POST request need to end with "/". Otherwise they won't work because of request forwarding
+		        	    requestInterceptor : request => {
+		        	        if(!request.url.endsWith("/") && !request.url.includes("?")) {
+		        	            request.url = request.url + "/";
+		        	        }
+			                console.log("requesting ", request);
+			                return request;
+			            },
+		        	  });
+		        })
+		        
+		    });
+
+		
 	        fetch("#{request.contextPath}/api/v1/openapi.json")
 	        .then(res => res.json())
 	        .then(json => {
@@ -72,23 +116,7 @@
 	        	  });
 	        })
 	        
-	        fetch("#{request.contextPath}/api/v2/openapi.json")
-	        .then(res => res.json())
-	        .then(json => {
-	            console.log("init SwaggerUIBundle with ", json);
-	            const ui = SwaggerUIBundle({
-	        	    dom_id: '#swagger-container-v2',
-	        	    spec: json,
-	        	    //all POST request need to end with "/". Otherwise they won't work because of request forwarding
-	        	    requestInterceptor : request => {
-	        	        if(!request.url.endsWith("/") && !request.url.includes("?")) {
-	        	            request.url = request.url + "/";
-	        	        }
-		                console.log("requesting ", request);
-		                return request;
-		            },
-	        	  });
-	        })
+
         	
         //]]>
         </script>
