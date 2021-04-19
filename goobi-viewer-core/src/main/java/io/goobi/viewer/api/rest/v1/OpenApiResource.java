@@ -16,6 +16,7 @@
 package io.goobi.viewer.api.rest.v1;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -59,17 +60,18 @@ public class OpenApiResource {
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     public OpenAPI getOpenApi() {
-        this.openApi = initSwagger(servletConfig, application, DataManager.getInstance().getRestApiManager().getDataApiManager(Version.v1).map(AbstractApiUrlManager::getApiUrl).orElse(null));
+        this.openApi = initSwagger(servletConfig, application, getApiUrls());
         return this.openApi;
     }
     
-    private OpenAPI initSwagger(ServletConfig servletConfig, ResourceConfig application, String... apiUrls) {
+    private OpenAPI initSwagger(ServletConfig servletConfig, ResourceConfig application, List<String> apiUrls) {
 
         try {
             SwaggerConfiguration oasConfig = new SwaggerConfiguration()
                     .prettyPrint(true)
                     .readAllResources(false)
                     .resourcePackages(Stream.of("io.goobi.viewer.api.rest.v1").collect(Collectors.toSet()));
+            
             
             OpenAPI openApi = new JaxrsOpenApiContextBuilder()
                     .servletConfig(servletConfig)
@@ -91,6 +93,17 @@ public class OpenApiResource {
         } catch (OpenApiConfigurationException e) {
             throw new RuntimeException(e.getMessage(), e);
         }
+    }
+    
+    private List<String> getApiUrls() {
+
+        return Arrays.asList(
+                DataManager.getInstance().getRestApiManager().getDataApiManager(Version.v1).map(AbstractApiUrlManager::getApiUrl).orElse(null),
+                DataManager.getInstance().getRestApiManager().getContentApiManager(Version.v1).map(AbstractApiUrlManager::getApiUrl).orElse(null))
+                .stream()
+                .filter(url -> url != null)
+                .distinct()
+                .collect(Collectors.toList());
     }
 
     /**

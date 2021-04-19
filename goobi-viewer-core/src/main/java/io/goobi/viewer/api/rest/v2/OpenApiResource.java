@@ -16,7 +16,7 @@
 package io.goobi.viewer.api.rest.v2;
 
 import java.util.ArrayList;
-import java.util.Collections;
+import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -28,12 +28,22 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 
+import org.apache.commons.lang3.StringUtils;
 import org.glassfish.jersey.server.ResourceConfig;
 
 import io.goobi.viewer.api.rest.AbstractApiUrlManager;
 import io.goobi.viewer.api.rest.AbstractApiUrlManager.Version;
+import io.goobi.viewer.api.rest.v2.cms.CMSMediaImageResource3;
+import io.goobi.viewer.api.rest.v2.collections.CollectionsResource;
+import io.goobi.viewer.api.rest.v2.media.ExternalImageResource;
+import io.goobi.viewer.api.rest.v2.records.RecordFilesResource;
+import io.goobi.viewer.api.rest.v2.records.RecordPagesResource;
+import io.goobi.viewer.api.rest.v2.records.RecordResource;
+import io.goobi.viewer.api.rest.v2.records.RecordSectionsResource;
+import io.goobi.viewer.api.rest.v2.records.media.RecordsFilesImageResource;
+import io.goobi.viewer.api.rest.v2.records.media.RecordsImageResource;
 import io.goobi.viewer.controller.DataManager;
-import io.swagger.v3.jaxrs2.integration.JaxrsOpenApiContextBuilder;
+import io.swagger.v3.jaxrs2.Reader;
 import io.swagger.v3.oas.integration.OpenApiConfigurationException;
 import io.swagger.v3.oas.integration.SwaggerConfiguration;
 import io.swagger.v3.oas.models.OpenAPI;
@@ -54,44 +64,65 @@ public class OpenApiResource {
     @Context 
     ServletConfig servletConfig;
     
-    private OpenAPI openApi;
+    private static OpenAPI openApi  = null;
 
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     public OpenAPI getOpenApi() {
-        this.openApi = initSwagger(servletConfig, application, 
-                DataManager.getInstance().getRestApiManager().getDataApiManager(Version.v2).map(AbstractApiUrlManager::getApiUrl).orElse(null));
-        return this.openApi;
+        if(OpenApiResource.openApi == null) {            
+            OpenApiResource.openApi = initSwagger(servletConfig, application, getApiUrls());
+        }
+        return OpenApiResource.openApi;
     }
     
-    private OpenAPI initSwagger(ServletConfig servletConfig, ResourceConfig application, String... apiUrls) {
 
-        try {
+
+    private OpenAPI initSwagger(ServletConfig servletConfig, ResourceConfig application, List<String> apiUrls) {
+            
+            OpenAPI oas = new OpenAPI();
+            oas.info(getInfo());
+            oas.servers(getServers(apiUrls));
+            
             SwaggerConfiguration oasConfig = new SwaggerConfiguration()
+                    .openAPI(oas)
                     .prettyPrint(true)
-                    .readAllResources(false)
-                    .resourcePackages(Stream.of("io.goobi.viewer.api.rest.v2").collect(Collectors.toSet()));
+                    .readAllResources(false);
             
-            OpenAPI openApi = new JaxrsOpenApiContextBuilder()
-                    .servletConfig(servletConfig)
-                    .application(application)
-                    .openApiConfiguration(oasConfig)
-                    .buildContext(true).read();
+            Reader reader = new Reader(oasConfig);
+            OpenAPI openAPI = reader.read(Stream.of(
+                    CMSMediaImageResource3.class, 
+                    CollectionsResource.class,
+                    ExternalImageResource.class,
+                    RecordsFilesImageResource.class,
+                    RecordsImageResource.class,
+                    RecordFilesResource.class,
+                    RecordPagesResource.class,
+                    RecordResource.class,
+                    RecordSectionsResource.class).collect(Collectors.toSet()));
             
-            List<Server> servers = new ArrayList<>();
-            for (String url : apiUrls) {                
+            return openAPI;
+
+    }
+
+    private List<String> getApiUrls() {
+
+        return Arrays.asList(
+                DataManager.getInstance().getRestApiManager().getDataApiManager(Version.v2).map(AbstractApiUrlManager::getApiUrl).orElse(null),
+                DataManager.getInstance().getRestApiManager().getContentApiManager(Version.v2).map(AbstractApiUrlManager::getApiUrl).orElse(null))
+                .stream()
+                .filter(url -> url != null)
+                .distinct()
+                .collect(Collectors.toList());
+    }
+    
+    private List<Server> getServers(List<String> apiUrls) {
+        List<Server> servers = new ArrayList<>();
+        for (String url : apiUrls) {             
                 Server server = new Server();
                 server.setUrl(url);
                 servers.add(server);
-            }
-            openApi.setServers(servers);
-            
-            openApi.setInfo(getInfo());
-            
-            return openApi;
-        } catch (OpenApiConfigurationException e) {
-            throw new RuntimeException(e.getMessage(), e);
         }
+        return servers;
     }
 
     /**

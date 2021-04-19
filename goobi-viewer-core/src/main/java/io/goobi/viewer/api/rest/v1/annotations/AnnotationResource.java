@@ -150,7 +150,7 @@ public class AnnotationResource {
     @POST
     @Consumes({ MediaType.APPLICATION_JSON })
     @Produces({ MediaType.APPLICATION_JSON })
-    @Operation(tags = { "annotations" }, summary = "Get an annotation by its identifier")
+    @Operation(tags = { "annotations" }, summary = "Create a new annotation")
     @ApiResponse(responseCode = "501",
             description = "Persisting this king of annotation or its target is not implemented. Only W3C Web Annotations targeting a manifest, canvas or part of a canvas may be persisted")
     public IAnnotation addAnnotation(IAnnotation anno) throws DAOException, NotImplementedException {
