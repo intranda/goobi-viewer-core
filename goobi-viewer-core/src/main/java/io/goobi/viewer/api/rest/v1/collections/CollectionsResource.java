@@ -15,7 +15,9 @@
  */
 package io.goobi.viewer.api.rest.v1.collections;
 
-import static io.goobi.viewer.api.rest.v1.ApiUrls.*;
+import static io.goobi.viewer.api.rest.v1.ApiUrls.COLLECTIONS;
+import static io.goobi.viewer.api.rest.v1.ApiUrls.COLLECTIONS_COLLECTION;
+import static io.goobi.viewer.api.rest.v1.ApiUrls.COLLECTIONS_CONTENTASSIST;
 
 import java.net.URISyntaxException;
 import java.util.List;
@@ -31,13 +33,13 @@ import javax.ws.rs.core.MediaType;
 
 import org.apache.commons.lang3.StringUtils;
 
-import de.intranda.api.iiif.presentation.Collection;
+import de.intranda.api.iiif.presentation.v2.Collection2;
 import de.unigoettingen.sub.commons.contentlib.exceptions.ContentLibException;
 import de.unigoettingen.sub.commons.contentlib.exceptions.IllegalRequestException;
-import io.goobi.viewer.api.rest.AbstractApiUrlManager;
 import io.goobi.viewer.api.rest.bindings.ViewerRestServiceBinding;
 import io.goobi.viewer.api.rest.resourcebuilders.ContentAssistResourceBuilder;
-import io.goobi.viewer.api.rest.resourcebuilders.IIIFPresentationResourceBuilder;
+import io.goobi.viewer.api.rest.resourcebuilders.IIIFPresentation2ResourceBuilder;
+import io.goobi.viewer.api.rest.v1.ApiUrls;
 import io.goobi.viewer.controller.StringTools;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
@@ -59,7 +61,7 @@ public class CollectionsResource {
     private final HttpServletRequest request;
     
     @Inject
-    AbstractApiUrlManager urls;
+    ApiUrls urls;
 
     public CollectionsResource(
             @Parameter(description="Name of the SOLR field the collection is based on. Typically 'DC'")@PathParam("field")String solrField,
@@ -72,12 +74,12 @@ public class CollectionsResource {
     @Produces({ MediaType.APPLICATION_JSON })
     @Operation(tags = { "iiif" }, summary = "Get all collections as IIIF presentation collection")
     @ApiResponse(responseCode="400", description="No collections available for field")
-    public Collection getAllCollections(
+    public Collection2 getAllCollections(
             @Parameter(description ="Add values of this field to response to allow grouping of results")@QueryParam("grouping")String grouping
                     )
             throws PresentationException, IndexUnreachableException, DAOException, ContentLibException, URISyntaxException, ViewerConfigurationException {
-        IIIFPresentationResourceBuilder builder = new IIIFPresentationResourceBuilder(urls, request);
-        Collection collection;
+        IIIFPresentation2ResourceBuilder builder = new IIIFPresentation2ResourceBuilder(urls, request);
+        Collection2 collection;
         if(StringUtils.isBlank(grouping)) {            
             collection = builder.getCollections(solrField);
         } else {
@@ -95,14 +97,14 @@ public class CollectionsResource {
     @Produces({ MediaType.APPLICATION_JSON })
     @Operation(tags = { "iiif" }, summary = "Get given collection as a IIIF presentation collection")
     @ApiResponse(responseCode="400", description="Invalid collection name or field")
-    public Collection getCollection(
+    public Collection2 getCollection(
             @Parameter(description="Name of the collection. Must be a value of the SOLR field the collection is based on")@PathParam("collection")String collectionName,
             @Parameter(description ="Add values of this field to response to allow grouping of results")@QueryParam("grouping")String grouping
             )
             throws PresentationException, IndexUnreachableException, DAOException, ContentLibException, URISyntaxException, ViewerConfigurationException {
-        IIIFPresentationResourceBuilder builder = new IIIFPresentationResourceBuilder(urls, request);
+        IIIFPresentation2ResourceBuilder builder = new IIIFPresentation2ResourceBuilder(urls, request);
         collectionName = StringTools.decodeUrl(collectionName);
-        Collection collection;
+        Collection2 collection;
         if(StringUtils.isBlank(grouping)) {                   
             collection = builder.getCollection(solrField, collectionName);
         } else {

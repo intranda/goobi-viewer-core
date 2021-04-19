@@ -32,6 +32,7 @@ import org.slf4j.LoggerFactory;
 
 import de.intranda.api.iiif.IIIFUrlResolver;
 import de.unigoettingen.sub.commons.contentlib.exceptions.IllegalRequestException;
+import de.unigoettingen.sub.commons.contentlib.exceptions.ServiceNotImplementedException;
 import de.unigoettingen.sub.commons.contentlib.imagelib.ImageFileFormat;
 import de.unigoettingen.sub.commons.contentlib.imagelib.ImageType.Colortype;
 import de.unigoettingen.sub.commons.contentlib.imagelib.transform.Region;
@@ -851,7 +852,7 @@ public class ThumbnailHandler {
                         Colortype.DEFAULT, format);
                 url += "?updated=" + item.getLastModifiedTime();
                 return url;
-            } catch (IllegalRequestException e) {
+            } catch (IllegalRequestException | ServiceNotImplementedException e) {
                 logger.error(e.toString(), e);
                 return "";
             }
@@ -922,7 +923,7 @@ public class ThumbnailHandler {
             String url = this.iiifUrlHandler.getIIIFImageUrl(baseUri.toString(), region, Scale.getScaleMethod(size), Rotation.NONE, Colortype.DEFAULT,
                     format);
             return url;
-        } catch (IllegalRequestException e) {
+        } catch (IllegalRequestException | ServiceNotImplementedException e) {
             logger.error("Error creating thumbnail url", e);
             return "";
         }

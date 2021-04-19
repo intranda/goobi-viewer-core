@@ -29,6 +29,7 @@ import org.slf4j.LoggerFactory;
 
 import de.unigoettingen.sub.commons.contentlib.exceptions.IllegalRequestException;
 import de.unigoettingen.sub.commons.contentlib.exceptions.ServiceNotAllowedException;
+import de.unigoettingen.sub.commons.contentlib.exceptions.ServiceNotImplementedException;
 import de.unigoettingen.sub.commons.contentlib.imagelib.transform.Scale;
 import io.goobi.viewer.controller.Configuration;
 import io.goobi.viewer.controller.DataManager;
@@ -48,6 +49,7 @@ public class FilterTools {
     public static final String ATTRIBUTE_PI = "pi";
     public static final String ATTRIBUTE_FILENAME = "filename";
     public static final String ATTRIBUTE_LOGID = "logid";
+    public static final String ATTRIBUTE_PAGENO = "pageno";
 
     public static final int PRIORITY_REDIRECT = 100;
 
@@ -124,7 +126,7 @@ public class FilterTools {
         try {
             Scale scale = Scale.getScaleMethod(size);
             imageWidth = Integer.parseInt(scale.getWidth());
-        } catch (NumberFormatException | IllegalRequestException | NullPointerException e) {
+        } catch (NumberFormatException | IllegalRequestException | NullPointerException | ServiceNotImplementedException e) {
             //no image width, assume large image
         }
 

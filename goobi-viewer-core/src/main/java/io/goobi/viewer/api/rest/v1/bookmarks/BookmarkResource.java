@@ -52,15 +52,15 @@ import javax.ws.rs.core.MediaType;
 
 import org.apache.commons.lang3.StringUtils;
 
-import de.intranda.api.iiif.presentation.Collection;
+import de.intranda.api.iiif.presentation.v2.Collection2;
 import de.unigoettingen.sub.commons.contentlib.exceptions.ContentLibException;
 import de.unigoettingen.sub.commons.contentlib.exceptions.IllegalRequestException;
-import io.goobi.viewer.api.rest.AbstractApiUrlManager;
 import io.goobi.viewer.api.rest.bindings.ViewerRestServiceBinding;
 import io.goobi.viewer.api.rest.model.SuccessMessage;
 import io.goobi.viewer.api.rest.resourcebuilders.AbstractBookmarkResourceBuilder;
 import io.goobi.viewer.api.rest.resourcebuilders.SessionBookmarkResourceBuilder;
 import io.goobi.viewer.api.rest.resourcebuilders.UserBookmarkResourceBuilder;
+import io.goobi.viewer.api.rest.v1.ApiUrls;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
@@ -90,7 +90,7 @@ public class BookmarkResource {
     private HttpServletResponse servletResponse;
 
     @Inject
-    AbstractApiUrlManager urls;
+    ApiUrls urls;
 
     public BookmarkResource(@Context HttpServletRequest servletRequest, @Context HttpServletResponse servletResponse) {
         this.servletRequest = servletRequest;
@@ -252,7 +252,7 @@ public class BookmarkResource {
             summary = "Get a bookmarklist owned by the current user by its id and return it as a IIIF Presentation collection resource. If not logged in, the single bookmark list stored in the session is always returned")
     @ApiResponse(responseCode = "404", description = "Bookmark list not found")
     @ApiResponse(responseCode = "500", description = "Error querying database")
-    public Collection getBookmarkListAsIIIFCollection(
+    public Collection2 getBookmarkListAsIIIFCollection(
             @Parameter(description = "The id of the bookmark list") @PathParam("listId") Long id)
             throws DAOException, IOException, RestApiException {
         return builder.getAsCollection(id, urls);
@@ -366,7 +366,7 @@ public class BookmarkResource {
             summary = "Get a public or shared bookmark list by its share key as a IIIF collection")
     @ApiResponse(responseCode = "404", description = "Bookmark list not found")
     @ApiResponse(responseCode = "500", description = "Error querying database")
-    public Collection getSharedBookmarkListAsCollection(
+    public Collection2 getSharedBookmarkListAsCollection(
             @Parameter(description = "The share key assigned to the bookmark list") @PathParam("key") String key)
             throws DAOException, ContentLibException {
         return builder.getAsCollection(key, urls);

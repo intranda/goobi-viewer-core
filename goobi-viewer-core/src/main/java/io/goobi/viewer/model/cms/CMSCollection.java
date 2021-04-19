@@ -531,7 +531,7 @@ public class CMSCollection implements Comparable<CMSCollection>, BrowseElementIn
      * @param solrFieldValue2
      * @return
      */
-    private URI getDefaultIcon(String collectionName) {
+    public static URI getDefaultIcon(String collectionName) {
         return BeanUtils.getImageDeliveryBean()
                 .getThumbs()
                 .getThumbnailPath(DataManager.getInstance().getConfiguration().getDefaultBrowseIcon(collectionName));
