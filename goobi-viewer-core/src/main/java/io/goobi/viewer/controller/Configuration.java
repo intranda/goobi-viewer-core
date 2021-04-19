@@ -566,6 +566,7 @@ public final class Configuration extends AbstractConfiguration {
         boolean group = sub.getBoolean("[@group]", false);
         int number = sub.getInt("[@number]", -1);
         int type = sub.getInt("[@type]", 0);
+        boolean hideIfOnlyMetadataField = sub.getBoolean("[@hideIfOnlyMetadataField]", false);
         String citationTemplate = sub.getString("[@citationTemplate]");
         List<HierarchicalConfiguration> params = sub.configurationsAt("param");
         List<MetadataParameter> paramList = null;
@@ -640,7 +641,9 @@ public final class Configuration extends AbstractConfiguration {
             }
         }
 
-        return new Metadata(label, masterValue, type, paramList, group, number).setCitationTemplate(citationTemplate);
+        return new Metadata(label, masterValue, type, paramList, group, number)
+                .setHideIfOnlyMetadataField(hideIfOnlyMetadataField)
+                .setCitationTemplate(citationTemplate);
     }
 
     /**
@@ -968,15 +971,14 @@ public final class Configuration extends AbstractConfiguration {
 
         return null;
     }
-    
-    
+
     public List<String> getConfiguredCollectionFields() {
         List<String> list = getLocalList("collections.collection[@field]");
-        if(list == null || list.isEmpty()) {
+        if (list == null || list.isEmpty()) {
             return Collections.singletonList("DC");
-        } else {
-            return list;
         }
+
+        return list;
     }
 
     /**
@@ -1375,7 +1377,7 @@ public final class Configuration extends AbstractConfiguration {
     public List<AdvancedSearchFieldConfiguration> getAdvancedSearchFields() {
         List<HierarchicalConfiguration> fieldList = getLocalConfigurationsAt("search.advanced.searchFields.field");
         if (fieldList == null) {
-            Collections.emptyList();
+            return Collections.emptyList();
         }
 
         List<AdvancedSearchFieldConfiguration> ret = new ArrayList<>(fieldList.size());
@@ -1960,7 +1962,7 @@ public final class Configuration extends AbstractConfiguration {
                     myConfigToUse.getString("user.authenticationProviders.provider(" + i + ")[@relyingPartyIdentifier]", null);
             String samlPublicKeyPath = myConfigToUse.getString("user.authenticationProviders.provider(" + i + ")[@publicKeyPath]", null);
             String samlPrivateKeyPath = myConfigToUse.getString("user.authenticationProviders.provider(" + i + ")[@privateKeyPath]", null);
-            long timeoutMillis = myConfigToUse.getLong("user.authenticationProviders.provider(" + i + ")[@timeout]", 10000);
+            long timeoutMillis = myConfigToUse.getLong("user.authenticationProviders.provider(" + i + ")[@timeout]", 60000);
 
             if (visible) {
                 IAuthenticationProvider provider = null;
@@ -3737,6 +3739,57 @@ public final class Configuration extends AbstractConfiguration {
     }
 
     /**
+     * 
+     * @return
+     * @should return correct value
+     */
+    public boolean isDocstructNavigationEnabled() {
+        return getLocalBoolean("viewer.docstructNavigation[@enabled]", false);
+    }
+
+    /**
+     * 
+     * @param template
+     * @param fallbackToDefaultTemplate
+     * @return
+     * @should return all configured values
+     */
+    public List<String> getDocstructNavigationTypes(String template, boolean fallbackToDefaultTemplate) {
+        List<HierarchicalConfiguration> templateList = getLocalConfigurationsAt("viewer.docstructNavigation.template");
+        if (templateList == null) {
+            return Collections.emptyList();
+        }
+
+        HierarchicalConfiguration usingTemplate = null;
+        HierarchicalConfiguration defaultTemplate = null;
+        for (Iterator<HierarchicalConfiguration> it = templateList.iterator(); it.hasNext();) {
+            HierarchicalConfiguration subElement = it.next();
+            if (subElement.getString("[@name]").equals(template)) {
+                usingTemplate = subElement;
+                break;
+            } else if ("_DEFAULT".equals(subElement.getString("[@name]"))) {
+                defaultTemplate = subElement;
+            }
+        }
+
+        // If the requested template does not exist in the config, use _DEFAULT
+        if (usingTemplate == null && fallbackToDefaultTemplate) {
+            usingTemplate = defaultTemplate;
+        }
+        if (usingTemplate == null) {
+            return Collections.emptyList();
+        }
+
+        String[] ret = usingTemplate.getStringArray("docstruct");
+        if (ret == null) {
+            logger.warn("Template '{}' contains no docstruct elements.", usingTemplate.getRoot().getName());
+            return Collections.emptyList();
+        }
+
+        return Arrays.asList(ret);
+    }
+
+    /**
      * <p>
      * getSubthemeMainTheme.
      * </p>
@@ -4983,7 +5036,7 @@ public final class Configuration extends AbstractConfiguration {
     public HierarchicalConfiguration getBaseXMetadataConfig() {
         return getLocalConfigurationAt("metadata.basexMetadataList");
     }
-    
+
     public boolean isDisplayUserGeneratedContentBelowImage() {
         return getLocalBoolean("webGuiDisplay.displayUserGeneratedContentBelowImage", false);
     }

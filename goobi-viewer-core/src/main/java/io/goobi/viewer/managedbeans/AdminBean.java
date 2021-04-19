@@ -38,7 +38,6 @@ import javax.inject.Named;
 
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.http.client.ClientProtocolException;
 import org.jdom2.Attribute;
 import org.jdom2.Document;
 import org.jdom2.Element;
@@ -50,7 +49,6 @@ import org.slf4j.LoggerFactory;
 import de.unigoettingen.sub.commons.util.CacheUtils;
 import io.goobi.viewer.controller.DataFileTools;
 import io.goobi.viewer.controller.DataManager;
-import io.goobi.viewer.controller.NetTools;
 import io.goobi.viewer.controller.SolrConstants;
 import io.goobi.viewer.controller.StringTools;
 import io.goobi.viewer.controller.XmlTools;
@@ -255,8 +253,7 @@ public class AdminBean implements Serializable {
         if (currentUser.getNickName() != null) {
             currentUser.setNickName(currentUser.getNickName().trim());
         }
-        User nicknameOwner = DataManager.getInstance().getDao().getUserByNickname(currentUser.getNickName()); // This basically resets all changes
-        if (nicknameOwner != null && nicknameOwner.getId() != currentUser.getId()) {
+        if (UserTools.isNicknameInUse(currentUser.getNickName(), currentUser.getId())) {
             Messages.error(ViewerResourceBundle.getTranslation("user_nicknameTaken", null).replace("{0}", currentUser.getNickName().trim()));
             currentUser = copy;
             currentUser.setNickName(copy.getCopy().getNickName());
@@ -543,7 +540,7 @@ public class AdminBean implements Serializable {
             return;
         }
 
-        if (currentUserGroup != null || currentUserGroup.getMemberships().contains(currentUserRole)) {
+        if (currentUserGroup != null && currentUserGroup.getMemberships().contains(currentUserRole)) {
             currentUserGroup.getMemberships().add(currentUserRole);
             dirtyUserRoles.put(currentUserRole, "save");
         }
@@ -560,7 +557,7 @@ public class AdminBean implements Serializable {
      */
     public void deleteUserRoleAction(UserRole userRole) throws DAOException {
         logger.trace("deleteUserRoleAction: {}", userRole);
-        if (currentUserGroup != null || currentUserGroup.getMemberships().contains(userRole)) {
+        if (currentUserGroup != null && currentUserGroup.getMemberships().contains(userRole)) {
             currentUserGroup.getMemberships().remove(userRole);
             dirtyUserRoles.put(userRole, "delete");
         }

@@ -61,7 +61,7 @@ public class EagerPageLoader extends AbstractPageLoader implements Serializable 
 
     /**
      * <p>
-     * Constructor for EagerPageLoader.
+     * Package private constructor for EagerPageLoader.
      * </p>
      *
      * @param topElement a {@link io.goobi.viewer.model.viewer.StructElement} object.
@@ -69,7 +69,7 @@ public class EagerPageLoader extends AbstractPageLoader implements Serializable 
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
-    public EagerPageLoader(StructElement topElement) throws PresentationException, IndexUnreachableException, DAOException {
+    EagerPageLoader(StructElement topElement) throws PresentationException, IndexUnreachableException, DAOException {
         pi = topElement.getPi();
         pages = loadAllPages(topElement);
         setFirstAndLastPageOrder();

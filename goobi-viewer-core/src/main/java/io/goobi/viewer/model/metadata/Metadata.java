@@ -77,6 +77,7 @@ public class Metadata implements Serializable {
     private final List<MetadataValue> values = new ArrayList<>();
     private final List<MetadataParameter> params = new ArrayList<>();
     private final boolean group;
+    private boolean hideIfOnlyMetadataField = false;
     private String ownerDocstrctType;
     private String citationTemplate;
     private CitationProcessorWrapper citationProcessorWrapper;
@@ -874,6 +875,22 @@ public class Metadata implements Serializable {
      */
     public boolean isGroup() {
         return group;
+    }
+
+    /**
+     * @return the hideIfOnlyMetadataField
+     */
+    public boolean isHideIfOnlyMetadataField() {
+        return hideIfOnlyMetadataField;
+    }
+
+    /**
+     * @param hideIfOnlyMetadataField the hideIfOnlyMetadataField to set
+     * @return this
+     */
+    public Metadata setHideIfOnlyMetadataField(boolean hideIfOnlyMetadataField) {
+        this.hideIfOnlyMetadataField = hideIfOnlyMetadataField;
+        return this;
     }
 
     /**

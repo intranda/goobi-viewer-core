@@ -152,7 +152,7 @@ public class CmsBean implements Serializable {
     private List<String> solrGroupFields = null;
 
     private List<String> luceneFields = null;
-    
+
     /**
      * <p>
      * init.
@@ -872,60 +872,59 @@ public class CmsBean implements Serializable {
      */
     public void saveSelectedPage() throws DAOException {
         logger.trace("saveSelectedPage");
-        if (userBean == null || userBean == null || !userBean.getUser().isCmsAdmin()) {
+        if (userBean == null || !userBean.getUser().isCmsAdmin() || selectedPage == null) {
             // Only authorized CMS admins may save
             return;
         }
+
         // resetImageDisplay();
-        if (selectedPage != null) {
-            // Validate
-            logger.trace("save sidebar elements");
-            selectedPage.saveSidebarElements();
-            logger.trace("validate page");
-            if (!validatePage(selectedPage, getDefaultLocale().getLanguage())) {
-                logger.warn("Cannot save invalid page");
-                return;
-            }
-            logger.trace("reset item data");
-            selectedPage.resetItemData();
-            writeCategoriesToPage();
+        // Validate
+        logger.trace("save sidebar elements");
+        selectedPage.saveSidebarElements();
+        logger.trace("validate page");
+        if (!validatePage(selectedPage, getDefaultLocale().getLanguage())) {
+            logger.warn("Cannot save invalid page");
+            return;
+        }
+        logger.trace("reset item data");
+        selectedPage.resetItemData();
+        writeCategoriesToPage();
 
-            // Save
-            boolean success = false;
-            selectedPage.setDateUpdated(LocalDateTime.now());
-            logger.trace("update dao");
-            if (selectedPage.getId() != null) {
-                success = DataManager.getInstance().getDao().updateCMSPage(selectedPage);
-            } else {
-                success = DataManager.getInstance().getDao().addCMSPage(selectedPage);
-            }
-            if (success) {
-                Messages.info("cms_pageSaveSuccess");
-                logger.trace("reload cms page");
-                //                selectedPage = getCMSPage(selectedPage.getId());
-                setSelectedPage(selectedPage);
-                //                DataManager.getInstance().getDao().updateCMSPage(selectedPage);
-                logger.trace("update pages");
-                lazyModelPages.update();
+        // Save
+        boolean success = false;
+        selectedPage.setDateUpdated(LocalDateTime.now());
+        logger.trace("update dao");
+        if (selectedPage.getId() != null) {
+            success = DataManager.getInstance().getDao().updateCMSPage(selectedPage);
+        } else {
+            success = DataManager.getInstance().getDao().addCMSPage(selectedPage);
+        }
+        if (success) {
+            Messages.info("cms_pageSaveSuccess");
+            logger.trace("reload cms page");
+            //                selectedPage = getCMSPage(selectedPage.getId());
+            setSelectedPage(selectedPage);
+            //                DataManager.getInstance().getDao().updateCMSPage(selectedPage);
+            logger.trace("update pages");
+            lazyModelPages.update();
 
-                // Re-index related record
-                if (StringUtils.isNotEmpty(selectedPage.getRelatedPI())) {
-                    try {
-                        IndexerTools.reIndexRecord(selectedPage.getRelatedPI());
-                        Messages.info("admin_recordReExported");
-                    } catch (RecordNotFoundException e) {
-                        logger.error(e.getMessage());
-                    }
+            // Re-index related record
+            if (StringUtils.isNotEmpty(selectedPage.getRelatedPI())) {
+                try {
+                    IndexerTools.reIndexRecord(selectedPage.getRelatedPI());
+                    Messages.info("admin_recordReExported");
+                } catch (RecordNotFoundException e) {
+                    logger.error(e.getMessage());
                 }
-            } else {
-                Messages.error("cms_pageSaveFailure");
             }
-            logger.trace("reset collections");
-            resetCollectionsForPage(selectedPage.getId().toString());
-            if (cmsNavigationBean != null) {
-                logger.trace("add navigation item");
-                cmsNavigationBean.getItemManager().addAvailableItem(new SelectableNavigationItem(this.selectedPage));
-            }
+        } else {
+            Messages.error("cms_pageSaveFailure");
+        }
+        logger.trace("reset collections");
+        resetCollectionsForPage(selectedPage.getId().toString());
+        if (cmsNavigationBean != null) {
+            logger.trace("add navigation item");
+            cmsNavigationBean.getItemManager().addAvailableItem(new SelectableNavigationItem(this.selectedPage));
         }
         logger.trace("Done saving page");
     }
@@ -1587,22 +1586,24 @@ public class CmsBean implements Serializable {
                         }
                         return searchAction(item);
                     case SEARCH:
-                        if (resetSearch && searchBean != null) {
-                            //TODO: perform searchBean.resetSearchFilter herer instead of in pretty-config. Needs testing
-                            searchBean.resetSearchAction();
-                            searchBean.setActiveSearchType(item.getSearchType());
-                        }
-                        if (StringUtils.isNotBlank(searchBean.getExactSearchString().replace("-", ""))) {
-                            searchBean.setShowReducedSearchOptions(true);
-                            return searchAction(item);
-                        } else if (item.isDisplayEmptySearchResults() || StringUtils.isNotBlank(searchBean.getFacets().getCurrentFacetString())) {
-                            String searchString = StringUtils.isNotBlank(item.getSolrQuery().replace("-", "")) ? item.getSolrQuery() : "";
-                            //                        searchBean.setSearchString(item.getSolrQuery());
-                            searchBean.setExactSearchString(searchString);
-                            searchBean.setShowReducedSearchOptions(false);
-                            return searchAction(item);
-                        } else {
-                            searchBean.setShowReducedSearchOptions(false);
+                        if (searchBean != null) {
+                            if (resetSearch) {
+                                //TODO: perform searchBean.resetSearchFilter herer instead of in pretty-config. Needs testing
+                                searchBean.resetSearchAction();
+                                searchBean.setActiveSearchType(item.getSearchType());
+                            }
+                            if (StringUtils.isNotBlank(searchBean.getExactSearchString().replace("-", ""))) {
+                                searchBean.setShowReducedSearchOptions(true);
+                                return searchAction(item);
+                            } else if (item.isDisplayEmptySearchResults() || StringUtils.isNotBlank(searchBean.getFacets().getCurrentFacetString())) {
+                                String searchString = StringUtils.isNotBlank(item.getSolrQuery().replace("-", "")) ? item.getSolrQuery() : "";
+                                //                        searchBean.setSearchString(item.getSolrQuery());
+                                searchBean.setExactSearchString(searchString);
+                                searchBean.setShowReducedSearchOptions(false);
+                                return searchAction(item);
+                            } else {
+                                searchBean.setShowReducedSearchOptions(false);
+                            }
                         }
                         break;
                     case COLLECTION:
@@ -2036,7 +2037,7 @@ public class CmsBean implements Serializable {
         CollectionView collection = collections.get(myId);
         return Optional.ofNullable(collection);
     }
-    
+
     /**
      * get a list of all {@link io.goobi.viewer.model.viewer.CollectionView}s with the given solr field which are already loaded via
      * {@link #getCollection(CMSPage)} or {@link #getCollection(String, CMSPage)
@@ -2067,8 +2068,8 @@ public class CmsBean implements Serializable {
 
         return null;
     }
-    
-    public Optional<CollectionView> getCollectionIfStored(CMSPage page) throws PresentationException, IndexUnreachableException, IllegalRequestException {
+
+    public Optional<CollectionView> getCollectionIfStored(CMSPage page) {
         Optional<CMSContentItem> collectionItem =
                 page.getGlobalContentItems().stream().filter(item -> CMSContentItemType.COLLECTION.equals(item.getType())).findFirst();
         if (collectionItem.isPresent()) {
@@ -2112,16 +2113,16 @@ public class CmsBean implements Serializable {
      */
     public List<String> getLuceneFields(boolean includeUntokenized, boolean excludeTokenizedMetadataFields) {
         try {
-            if(this.luceneFields == null)  {                
-                this.luceneFields  = DataManager.getInstance().getSearchIndex().getAllFieldNames();
+            if (this.luceneFields == null) {
+                this.luceneFields = DataManager.getInstance().getSearchIndex().getAllFieldNames();
             }
-            
+
             Stream<String> filteredLuceneFields = this.luceneFields.stream()
                     .filter(name -> !(name.startsWith("_") || name.startsWith("FACET_") || name.startsWith("NORM_")));
-            if(!includeUntokenized) {
+            if (!includeUntokenized) {
                 filteredLuceneFields = filteredLuceneFields.filter(name -> !name.endsWith(SolrConstants._UNTOKENIZED));
             }
-            if(excludeTokenizedMetadataFields) {
+            if (excludeTokenizedMetadataFields) {
                 filteredLuceneFields = filteredLuceneFields.filter(name -> !(name.startsWith("MD_") && !name.endsWith(SolrConstants._UNTOKENIZED)));
             }
             filteredLuceneFields = filteredLuceneFields.sorted();
@@ -2244,8 +2245,9 @@ public class CmsBean implements Serializable {
                 .collect(Collectors.toList());
 
         for (CMSStaticPage staticPage : getStaticPages()) {
-            if (!staticPage.equals(page) && staticPage.isHasCmsPage()) {
-                allPages.remove(staticPage.getCmsPageOptional().get());
+            Optional<CMSPage> cmsPage = staticPage.getCmsPageOptional();
+            if (!staticPage.equals(page) && staticPage.isHasCmsPage() && cmsPage.isPresent()) {
+                allPages.remove(cmsPage.get());
             }
         }
         return allPages;
@@ -2596,19 +2598,22 @@ public class CmsBean implements Serializable {
      * @return a {@link java.util.List} object.
      * @throws org.apache.solr.client.solrj.SolrServerException if any.
      * @throws java.io.IOException if any.
-     * @throws DAOException 
+     * @throws DAOException
      */
     public List<String> getPossibleGroupFields() throws SolrServerException, IOException, DAOException {
-            
-            if (this.solrGroupFields == null) {
-                this.solrGroupFields = DataManager.getInstance().getSearchIndex().getAllFieldNames()
-                        .stream()
-                        .filter(field -> !field.startsWith("SORT_") && !field.startsWith("FACET_") && !field.endsWith("_UNTOKENIZED") && !field.matches(".*_LANG_\\w{2,3}"))
-                        .collect(Collectors.toList());
-//                this.solrGroupFields = DataManager.getInstance().getSearchIndex().getAllGroupFieldNames();
-                Collections.sort(solrGroupFields);
-            }
-            return this.solrGroupFields;
+
+        if (this.solrGroupFields == null) {
+            this.solrGroupFields = DataManager.getInstance()
+                    .getSearchIndex()
+                    .getAllFieldNames()
+                    .stream()
+                    .filter(field -> !field.startsWith("SORT_") && !field.startsWith("FACET_") && !field.endsWith("_UNTOKENIZED")
+                            && !field.matches(".*_LANG_\\w{2,3}"))
+                    .collect(Collectors.toList());
+            //                this.solrGroupFields = DataManager.getInstance().getSearchIndex().getAllGroupFieldNames();
+            Collections.sort(solrGroupFields);
+        }
+        return this.solrGroupFields;
 
     }
 
@@ -2644,7 +2649,7 @@ public class CmsBean implements Serializable {
         if (page == null || page.getDateUpdated() == null) {
             return null;
         }
-        
+
         return DateTools.getMillisFromLocalDateTime(page.getDateUpdated(), false);
     }
 

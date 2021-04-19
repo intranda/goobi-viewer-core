@@ -281,9 +281,15 @@ public class BookmarkBean implements Serializable {
      * @return a {@link java.lang.String} object.
      */
     public String saveCurrentBookmarkAction() {
-        logger.trace("name: {}", currentBookmark.getName());
+        logger.trace("saveCurrentBookmarkAction: {}", currentBookmark.getName());
+        if (currentBookmarkList == null) {
+            String msg = ViewerResourceBundle.getTranslation("bookmarkList_addToBookmarkListFailure", null);
+            Messages.error(msg.replace("{0}", "not selected"));
+            return "";
+        }
+        
         UserBean userBean = BeanUtils.getUserBean();
-        if (userBean != null && userBean.getUser() != null && currentBookmarkList != null && StringUtils.isNotEmpty(currentBookmark.getName())) {
+        if (userBean != null && userBean.getUser() != null && StringUtils.isNotEmpty(currentBookmark.getName())) {
             logger.trace("saving bookmark to bookmark list");
             currentBookmarkList.setDateUpdated(LocalDateTime.now());
             try {

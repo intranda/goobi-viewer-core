@@ -61,7 +61,8 @@ var viewerJS = ( function( viewer ) {
                 var currTrigger = $( this ); 
                 if( $(currTrigger).next( '.navigation__submenu' ).hasClass( 'in' ) ) {
                     //child menu is open
-                    $(currTrigger).next( '.navigation__submenu' ).removeClass( 'in' )
+                    $(currTrigger).next( '.navigation__submenu' ).removeClass( 'in' );
+                    $(currTrigger).parent().removeClass( 'active' );
                 }else if ( $( currTrigger ).parents( '.navigation__submenu' ).hasClass( 'in' ) ) {
                     _resetSubMenus();
                     currTrigger.parent().addClass( 'active' );
@@ -134,6 +135,7 @@ var viewerJS = ( function( viewer ) {
     function _resetSubMenus() {
         $( '.level-2, .level-3, .level-4, .level-5' ).parent().removeClass( 'active' );
         $( '.level-2, .level-3, .level-4, .level-5' ).removeClass( 'in' ).removeClass( 'left' );
+        
     }
     
     /**

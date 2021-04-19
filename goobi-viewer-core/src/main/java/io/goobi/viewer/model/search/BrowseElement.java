@@ -24,6 +24,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.regex.Pattern;
 
@@ -594,7 +595,8 @@ public class BrowseElement implements Serializable {
                         List<String> fieldValues = structElement.getMetadataFields().get(docFieldName);
                         for (String fieldValue : fieldValues) {
                             // Skip values that are equal to the hit label
-                            if (label.getValue().isPresent() && fieldValue.equals(label.getValue().get())) {
+                            Optional<String> value = label.getValue();
+                            if (value.isPresent() && fieldValue.equals(value.get())) {
                                 continue;
                             }
                             String highlightedValue = SearchHelper.applyHighlightingToPhrase(fieldValue, searchTerms.get(termsFieldName));
@@ -1004,7 +1006,7 @@ public class BrowseElement implements Serializable {
     public void setVolumeNo(String volumeNo) {
         this.volumeNo = volumeNo;
     }
-    
+
     /**
      * 
      * @return true if doctype is GROUP; false otherwise
@@ -1258,8 +1260,7 @@ public class BrowseElement implements Serializable {
     public List<Metadata> getMetadataList() {
         return metadataList;
     }
-    
-    
+
     /**
      * 
      * @param field Requested field name

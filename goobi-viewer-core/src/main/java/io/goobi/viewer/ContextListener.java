@@ -55,7 +55,7 @@ public class ContextListener implements ServletContextListener {
     public static final String PRETTY_FACES_CONFIG_PARAM_NAME = "com.ocpsoft.pretty.CONFIG_FILES";
 
     /** Constant <code>prettyConfigFiles="resources/themes/theme-url-mappings.xml"{trunked}</code> */
-    public static volatile String prettyConfigFiles =
+    public volatile String prettyConfigFiles =
             "resources/themes/theme-url-mappings.xml, pretty-standard-config.xml, pretty-config-viewer-module-crowdsourcing.xml";
 
     //    static {

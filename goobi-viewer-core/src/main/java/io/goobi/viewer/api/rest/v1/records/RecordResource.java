@@ -50,7 +50,6 @@ import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
-import javax.ws.rs.POST;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
@@ -60,8 +59,6 @@ import javax.ws.rs.core.StreamingOutput;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.solr.common.SolrDocument;
-import org.apache.solr.common.util.ContentStreamBase.URLStream;
-import org.jdom2.JDOMException;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -82,7 +79,6 @@ import io.goobi.viewer.api.rest.bindings.AccessConditionBinding;
 import io.goobi.viewer.api.rest.bindings.AuthorizationBinding;
 import io.goobi.viewer.api.rest.bindings.IIIFPresentationBinding;
 import io.goobi.viewer.api.rest.bindings.ViewerRestServiceBinding;
-import io.goobi.viewer.api.rest.filters.AccessConditionRequestFilter;
 import io.goobi.viewer.api.rest.filters.FilterTools;
 import io.goobi.viewer.api.rest.model.ner.DocumentReference;
 import io.goobi.viewer.api.rest.resourcebuilders.AnnotationsResourceBuilder;
@@ -133,9 +129,8 @@ public class RecordResource {
 
     private final String pi;
     private final TextResourceBuilder builder = new TextResourceBuilder();
-    
-    private static Thread deleteRecordThread = null;
 
+    private static Thread deleteRecordThread = null;
 
     public RecordResource(@Context HttpServletRequest request,
             @Parameter(description = "Persistent identifier of the record") @PathParam("pi") String pi) {
@@ -148,18 +143,18 @@ public class RecordResource {
      * 
      * @param request
      * @return
-     * @deprecated not used. 
+     * @deprecated not used.
      */
     @Deprecated
     public static String getRequiredPrivilege(HttpServletRequest request, AbstractApiUrlManager urls) {
-        String requestUri =  request.getRequestURI();
+        String requestUri = request.getRequestURI();
         String requestUrl = request.getRequestURL().toString();
-        
-        if(urls.path(RECORDS_RECORD, RECORDS_TOC).matches(requestUrl)) {
+
+        if (urls.path(RECORDS_RECORD, RECORDS_TOC).matches(requestUrl)) {
             return IPrivilegeHolder.PRIV_DOWNLOAD_METADATA;
-        } else if(urls.path(RECORDS_RECORD, RECORDS_METADATA_SOURCE).matches(requestUrl)) {
+        } else if (urls.path(RECORDS_RECORD, RECORDS_METADATA_SOURCE).matches(requestUrl)) {
             return IPrivilegeHolder.PRIV_DOWNLOAD_METADATA;
-        } else if(urls.path(RECORDS_RECORD, RECORDS_MANIFEST).matches(requestUrl)) {
+        } else if (urls.path(RECORDS_RECORD, RECORDS_MANIFEST).matches(requestUrl)) {
             return IPrivilegeHolder.PRIV_GENERATE_IIIF_MANIFEST;
         } else {
             return IPrivilegeHolder.PRIV_LIST;
@@ -348,8 +343,7 @@ public class RecordResource {
     @Operation(tags = { "records" }, summary = "Get entire plaintext of record")
     @CORSBinding
     @IIIFPresentationBinding
-    public String getPlaintext() throws PresentationException, IndexUnreachableException, ServiceNotAllowedException,
-            IOException, DAOException {
+    public String getPlaintext() throws PresentationException, IndexUnreachableException, IOException {
         if (servletResponse != null) {
             servletResponse.setCharacterEncoding(StringTools.DEFAULT_ENCODING);
         }
@@ -362,13 +356,13 @@ public class RecordResource {
     @Produces({ "application/zip" })
     @Operation(tags = { "records" }, summary = "Get entire plaintext of record")
     public StreamingOutput getPlaintextAsZip()
-            throws PresentationException, IndexUnreachableException, IOException, DAOException, ContentLibException {
+            throws PresentationException, IndexUnreachableException, IOException, ContentLibException {
         checkFulltextAccessConditions(pi);
         if (servletResponse != null) {
             servletResponse.setCharacterEncoding(StringTools.DEFAULT_ENCODING);
+            String filename = pi + "_plaintext.zip";
+            servletResponse.addHeader("Content-Disposition", "attachment; filename=\"" + filename + "\"");
         }
-        String filename = pi + "_plaintext.zip";
-        servletResponse.addHeader("Content-Disposition", "attachment; filename=\"" + filename + "\"");
 
         return builder.getFulltextAsZip(pi);
     }
@@ -377,8 +371,7 @@ public class RecordResource {
     @javax.ws.rs.Path(RECORDS_ALTO)
     @Produces({ MediaType.TEXT_XML })
     @Operation(tags = { "records" }, summary = "Get entire alto document for record")
-    public String getAlto() throws PresentationException, IndexUnreachableException, IOException, DAOException,
-            ContentLibException, JDOMException {
+    public String getAlto() throws PresentationException, IndexUnreachableException, IOException, ContentLibException {
         checkFulltextAccessConditions(pi);
         if (servletResponse != null) {
             servletResponse.setCharacterEncoding(StringTools.DEFAULT_ENCODING);
@@ -390,14 +383,13 @@ public class RecordResource {
     @javax.ws.rs.Path(RECORDS_ALTO_ZIP)
     @Produces({ "application/zip" })
     @Operation(tags = { "records" }, summary = "Get entire plaintext of record")
-    public StreamingOutput getAltoAsZip()
-            throws PresentationException, IndexUnreachableException, IOException, DAOException, ContentLibException {
+    public StreamingOutput getAltoAsZip() throws PresentationException, IndexUnreachableException, IOException, ContentLibException {
         checkFulltextAccessConditions(pi);
         if (servletResponse != null) {
             servletResponse.setCharacterEncoding(StringTools.DEFAULT_ENCODING);
+            String filename = pi + "_alto.zip";
+            servletResponse.addHeader("Content-Disposition", "attachment; filename=\"" + filename + "\"");
         }
-        String filename = pi + "_alto.zip";
-        servletResponse.addHeader("Content-Disposition", "attachment; filename=\"" + filename + "\"");
 
         return builder.getAltoAsZip(pi);
     }
@@ -464,13 +456,13 @@ public class RecordResource {
             description = "If possible, directly read a TEI file associated with the record, otherwise convert all fulltexts to TEI documents")
     public StreamingOutput getTeiAsZip(
             @Parameter(description = "perferred language for the TEI file, in ISO-639 format") @QueryParam("lang") String language)
-            throws PresentationException, IndexUnreachableException, IOException, DAOException, ContentLibException {
+            throws PresentationException, IndexUnreachableException, IOException, ContentLibException {
         checkFulltextAccessConditions(pi);
         if (servletResponse != null) {
             servletResponse.setCharacterEncoding(StringTools.DEFAULT_ENCODING);
+            String filename = pi + "_tei.zip";
+            servletResponse.addHeader("Content-Disposition", "attachment; filename=\"" + filename + "\"");
         }
-        String filename = pi + "_tei.zip";
-        servletResponse.addHeader("Content-Disposition", "attachment; filename=\"" + filename + "\"");
 
         if (language == null) {
             language = servletRequest.getLocale().getLanguage();
@@ -559,7 +551,7 @@ public class RecordResource {
         }
         return BuildMode.IIIF;
     }
-    
+
     /**
      * <p>
      * deleteRecord.
@@ -574,9 +566,9 @@ public class RecordResource {
     @CORSBinding
     @AuthorizationBinding
     @Operation(tags = { "records" }, summary = "Delete the record from the SOLR database",
-    description = "Requires an authentication token. This operation may take a while, depending on the indexer queue. If the request aborts before deletion is complete, further deletion requests will be disallowed until the operation completes")
+            description = "Requires an authentication token. This operation may take a while, depending on the indexer queue. If the request aborts before deletion is complete, further deletion requests will be disallowed until the operation completes")
     public String deleteRecord(
-            @Parameter(description = "set true to create a trace document of the delete action")@QueryParam("trace") Boolean createTraceDocument) {
+            @Parameter(description = "set true to create a trace document of the delete action") @QueryParam("trace") Boolean createTraceDocument) {
 
         JSONObject ret = new JSONObject();
 

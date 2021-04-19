@@ -57,7 +57,7 @@ public final class DataManager {
 
     private static final Object lock = new Object();
 
-    private static volatile DataManager instance = null;
+    private static DataManager instance = null;
 
     private final List<IModule> modules = new ArrayList<>();
 

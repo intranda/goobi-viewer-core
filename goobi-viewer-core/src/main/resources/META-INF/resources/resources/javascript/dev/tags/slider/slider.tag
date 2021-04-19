@@ -4,13 +4,7 @@
 
 <div ref="container" class="swiper-container slider-{this.styleName}__container">
 	<div class="swiper-wrapper slider-{this.styleName}__wrapper">
-		<div each="{slide in slides}" class="swiper-slide slider-{this.styleName}__slide">
-			<a class="slider-{this.styleName}__link" href="{getLink(slide)}" target="{this.linkTarget}">
-				<h3 class="slider-{this.styleName}__header">{translate(slide.header)}</h3>
-				<div class="slider-{this.styleName}__image" style="background-image: url({getImage(slide)})">
-				</div>
-				<div class="slider-{this.styleName}__description">{translate(slide.description)}</div>
-			</a>
+		<div each="{slide, index in slides}" class="swiper-slide slider-{this.styleName}__slide" ref="slide_{index}">
 		</div>
 	</div>
 	<div if="{this.showPaginator}" ref="paginator" class="swiper-pagination slider-{this.styleName}__dots"></div>
@@ -22,8 +16,8 @@
 	this.showPaginator = true;
 
     this.on( 'mount', function() {
-    	// console.log("mounting 'slider.tag' ", this.opts);
 		this.style = this.opts.styles.get(this.opts.style);
+//     	console.log("mounting 'slider.tag' ", this.opts, this.style);
 		this.amendStyle(this.style);
 		this.styleName = this.opts.styles.getStyleNameOrDefault(this.opts.style);
     	// console.log("init slider with '" + this.opts.style + "''", this.style);
@@ -61,10 +55,15 @@
     });
     
     this.on( 'updated', function() {
+    	
+    	// console.log("layout = ", this.getLayout());
+    	
+    	
     	if(this.slides && this.slides.length > 0) {
     		if(this.slider) {
     			this.slider.destroy();
     		}
+			this.initSlideTags(this.slides);
     		this.swiper = new Swiper(this.refs.container, this.style.swiperConfig);
     	}
     });
@@ -73,6 +72,24 @@
 //     	console.log("set " + slides.length + " slides");
     	this.slides = slides;
     	this.update();
+    }
+    
+    /**
+    * Mount riot tag for all <slide> elements using a riot tag named "slide_[style.layout]"
+    */
+    initSlideTags(slides) {
+    	slides.forEach( (slide, index) => {
+    		let tagElement = this.refs["slide_" + index];
+//     		console.log("mount slide in ", tagElement);
+    		riot.mount(tagElement, "slide_" + this.getLayout(),  {
+    			stylename: this.styleName,
+   				link: this.getLink(slide),
+   				link_target: this.linkTarget,
+   				image: this.getImage(slide),
+   				label: this.translate(slide.label),
+   				description: this.translate(slide.description),
+    		});
+    	});
     }
     
 	getElements(source) {
@@ -87,7 +104,7 @@
 //     	console.log("got element ", element);
     	if(viewerJS.iiif.isCollection(element) || viewerJS.iiif.isManifest(element)) {
     		let slide = { 
-    				header : element.label,
+    				label : element.label,
     				description : element.description,
     				image : element.thumbnail,
     				link : viewerJS.iiif.getId(viewerJS.iiif.getViewerPage(element))
@@ -150,6 +167,11 @@
     	} else {
     		this.showPaginator = false;
     	}
+    }
+    
+    getLayout() {
+    	let layout = this.style.layout ? this.style.layout : 'default';
+    	return layout;
     }
     
 </script>

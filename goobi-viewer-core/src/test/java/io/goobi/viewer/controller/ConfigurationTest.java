@@ -2915,7 +2915,7 @@ public class ConfigurationTest extends AbstractTest {
     public void getPageSelectDropdownDisplayMinPages_shouldReturnCorrectValue() throws Exception {
         Assert.assertEquals(1, DataManager.getInstance().getConfiguration().getPageSelectDropdownDisplayMinPages());
     }
-    
+
     @Test
     public void testGetConfiguredCollectionFields() {
         List<String> fields = DataManager.getInstance().getConfiguration().getConfiguredCollectionFields();
@@ -2924,4 +2924,34 @@ public class ConfigurationTest extends AbstractTest {
         assertTrue(fields.contains("MD_KNOWLEDGEFIELD"));
         assertTrue(fields.contains("MD_HIERARCHICALFIELD"));
     }
+
+    /**
+     * @see Configuration#isDocstructNavigationEnabled()
+     * @verifies return correct value
+     */
+    @Test
+    public void isDocstructNavigationEnabled_shouldReturnCorrectValue() throws Exception {
+        Assert.assertTrue(DataManager.getInstance().getConfiguration().isDocstructNavigationEnabled());
+    }
+
+    /**
+     * @see Configuration#getDocstructNavigationTypes()
+     * @verifies return all configured values
+     */
+    @Test
+    public void getDocstructNavigationTypes_shouldReturnAllConfiguredValues() throws Exception {
+        {
+            List<String> result = DataManager.getInstance().getConfiguration().getDocstructNavigationTypes("_DEFAULT", true);
+            Assert.assertEquals(2, result.size());
+            Assert.assertEquals("prologue", result.get(0));
+            Assert.assertEquals("chapter", result.get(1));
+        }
+        {
+            List<String> result = DataManager.getInstance().getConfiguration().getDocstructNavigationTypes("notfound", true);
+            Assert.assertEquals(2, result.size());
+            Assert.assertEquals("prologue", result.get(0));
+            Assert.assertEquals("chapter", result.get(1));
+        }
+    }
+
 }

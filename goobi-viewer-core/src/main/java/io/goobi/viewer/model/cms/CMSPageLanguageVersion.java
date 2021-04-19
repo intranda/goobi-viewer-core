@@ -120,7 +120,7 @@ public class CMSPageLanguageVersion {
      */
     public CMSPageLanguageVersion(CMSPageLanguageVersion original, CMSPage ownerPage) {
         if (original.id != null) {
-            this.id = new Long(original.id);
+            this.id = original.id;
         }
         this.ownerPage = ownerPage;
         this.language = original.language;
@@ -408,13 +408,13 @@ public class CMSPageLanguageVersion {
         if (item.getType().equals(CMSContentItemType.HTML) || item.getType().equals(CMSContentItemType.TEXT)) {
             if (!getLanguage().equals(CMSPage.GLOBAL_LANGUAGE)) {
                 addContentItem(item);
-                logger.info("Added new template item '{}' to language version: {}", templateItem.getId(), getLanguage());
+                logger.trace("Added new template item '{}' to language version: {}", templateItem.getId(), getLanguage());
                 return true;
             }
         } else {
             if (getLanguage().equals(CMSPage.GLOBAL_LANGUAGE)) {
                 addContentItem(item);
-                logger.info("Added new template item '{}' to language version: {}", templateItem.getId(), getLanguage());
+                logger.trace("Added new template item '{}' to language version: {}", templateItem.getId(), getLanguage());
                 return true;
             }
         }

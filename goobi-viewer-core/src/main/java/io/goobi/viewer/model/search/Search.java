@@ -895,7 +895,7 @@ public class Search implements Serializable {
         int answer = 0;
         if (hitsPerPage > 0) {
             int hitsPerPageLocal = hitsPerPage;
-            answer = Double.valueOf(Math.floor(hitsCount / hitsPerPageLocal)).intValue();
+            answer = (int) Math.floor((double) hitsCount / hitsPerPageLocal);
             if (hitsCount % hitsPerPageLocal != 0 || answer == 0) {
                 answer++;
             }

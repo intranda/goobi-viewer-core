@@ -6,7 +6,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>io.goobi.viewer</groupId>
 	<artifactId>viewer-core</artifactId>
-	<version>21.03-SNAPSHOT</version>
+	<version>21.04-SNAPSHOT</version>
 	<packaging>jar</packaging>
 
 	<name>Goobi viewer - Core</name>
@@ -81,7 +81,7 @@
 
 		<!-- intranda libraries -->
 		<alto.version>1.5.5</alto.version>
-		<ics.version>2.7.2</ics.version>
+		<ics.version>2.7.3</ics.version>
 		<tei-conversion.version>1.2.0</tei-conversion.version>
 		<iiif-api-model.version>1.11.0</iiif-api-model.version>
 		<normdataimporter.version>1.5.2</normdataimporter.version>
@@ -105,9 +105,9 @@
         <httpclient.version>4.5.13</httpclient.version>
         <httpcore.version>4.4.14</httpcore.version>
         <httpunit.version>1.7.3</httpunit.version>
-        <icu.version>68.2</icu.version>
+        <icu.version>69.1</icu.version>
         <inject.version>1</inject.version>
-        <jackson.version>2.12.2</jackson.version>
+        <jackson.version>2.12.3</jackson.version>
         <jakarta.annotation-api.version>1.3.5</jakarta.annotation-api.version>
         <jakarta.servlet-api.version>4.0.4</jakarta.servlet-api.version>
         <javax.annotation.version>1.3.2</javax.annotation.version>
@@ -128,20 +128,20 @@
         <jsoup.version>1.13.1</jsoup.version>
         <junit.version>4.13.2</junit.version>
         <mariadb-java-client.version>2.3.0</mariadb-java-client.version>
-        <mockito.version>3.8.0</mockito.version>
+        <mockito.version>3.9.0</mockito.version>
         <mockserver.version>5.11.2</mockserver.version>
         <oauth.version>1.0.2</oauth.version>
         <openpdf.version>1.3.25</openpdf.version>
         <poi.version>4.1.2</poi.version>
         <prettyfaces.version>3.3.4-20120314</prettyfaces.version>
-        <primefaces.version>8.0</primefaces.version>
+        <primefaces.version>10.0.0</primefaces.version>
         <rome.version>1.15.0</rome.version>
         <slf4j.version>1.7.30</slf4j.version>
-        <solr.version>8.8.1</solr.version>
+        <solr.version>8.8.2</solr.version>
         <saml-client.version>4.0.0</saml-client.version>
         <swagger.version>2.1.7</swagger.version>
-        <tomcat.version>9.0.44</tomcat.version>
-        <weld-servlet-shaded.version>3.1.6.Final</weld-servlet-shaded.version>
+        <tomcat.version>9.0.45</tomcat.version>
+        <weld-servlet-shaded.version>3.1.7.SP1</weld-servlet-shaded.version>
         <xerces.version>2.12.1</xerces.version>
         <xmlParserAPIs.version>2.6.2</xmlParserAPIs.version>
     </properties>
@@ -710,6 +710,9 @@
 								<!-- org.citationstyles.* are runtime resources for citeproc -->
 								<ignoredUnusedDeclaredDependency>org.citationstyles:locales</ignoredUnusedDeclaredDependency>
 								<ignoredUnusedDeclaredDependency>org.citationstyles:styles</ignoredUnusedDeclaredDependency>
+								
+								<!-- jersey client is falsely declared as unused blocking maven install (windows developer system only) -->
+								<ignoredUnusedDeclaredDependency>org.glassfish.jersey.core:jersey-client</ignoredUnusedDeclaredDependency>
 							</ignoredUnusedDeclaredDependencies>
 						</configuration>
 					</execution>
