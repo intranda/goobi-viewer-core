@@ -42,7 +42,9 @@
                                                 <p class="col-12 admin__boxed-entry-description">#{group.description}</p>
                                             </ui:fragment>
                                             <ui:fragment rendered="#{group.description eq ''}">
-                                                <p class="col-12 admin__boxed-entry-description-empty" aria-disabled="true">(#{msg.admin__label__no_description_available})</p>
+                                                <p class="col-12 admin__boxed-entry-description-empty" aria-disabled="true">
+                                                    (#{msg.admin__label__no_description_available})
+                                                </p>
                                             </ui:fragment>
                                         </div>
                                         <!-- ACTIONS -->
@@ -53,6 +55,7 @@
                                                     aria-label="#{msg.edit}: #{msg[group.name]}">#{msg.edit}</a>
                                             </div>
                                         </div>
+                                        (#{group.fullyTranslatedEntryCount} #{msg.of} #{group.entryCount})
                                     </div>
                                 </ui:repeat>
                             </div>

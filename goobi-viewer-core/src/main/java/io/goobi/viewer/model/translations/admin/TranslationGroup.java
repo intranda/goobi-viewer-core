@@ -15,16 +15,22 @@
  */
 package io.goobi.viewer.model.translations.admin;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
+import org.apache.commons.configuration.ConfigurationException;
+import org.apache.commons.configuration.PropertiesConfiguration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import io.goobi.viewer.ContextListener;
+import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.model.translations.admin.MessageEntry.TranslationStatus;
 
 /**
@@ -69,7 +75,7 @@ public class TranslationGroup {
     private List<MessageEntry> allEntries;
     private MessageEntry selectedEntry;
     private int selectedEntryIndex = 0;
-    private Integer translatedEntryCount = null;
+    private Integer fullyTranslated = null;
 
     /**
      * Factory method.
@@ -155,20 +161,39 @@ public class TranslationGroup {
     }
 
     /**
+     * Returns the number of entries which finished (non-zzz) translations for at least one but less than all languages.
      * 
-     * @return
+     * @return Number of partially translated entries
      */
-    public Integer getTranslatedEntryCount() {
-        if (translatedEntryCount == null) {
-            translatedEntryCount = 0;
+    public Integer getFullyTranslatedEntryCount() {
+        if (fullyTranslated == null) {
+            fullyTranslated = 0;
             for (MessageEntry key : getAllEntries()) {
                 if (key.getTranslationStatus().equals(TranslationStatus.FULL)) {
-                    translatedEntryCount++;
+                    fullyTranslated++;
                 }
             }
         }
 
-        return translatedEntryCount;
+        return fullyTranslated;
+    }
+
+    /**
+     * Returns the number of entries which finished (non-zzz) translations for all languages.
+     * 
+     * @return Number of fully translated entries
+     */
+    public Integer getPartiallyTranslatedEntryCount() {
+        if (fullyTranslated == null) {
+            fullyTranslated = 0;
+            for (MessageEntry key : getAllEntries()) {
+                if (key.getTranslationStatus().equals(TranslationStatus.FULL)) {
+                    fullyTranslated++;
+                }
+            }
+        }
+
+        return getFullyTranslatedEntryCount() - getPartiallyTranslatedEntryCount();
     }
 
     /**
@@ -177,6 +202,7 @@ public class TranslationGroup {
      */
     public List<MessageEntry> getAllEntries() {
         if (allEntries == null) {
+            logger.trace("Loading entries...");
             Set<MessageEntry> retSet = new HashSet<>();
             for (TranslationGroupItem item : items) {
                 retSet.addAll(item.getEntries());
@@ -193,7 +219,6 @@ public class TranslationGroup {
      * @return the selectedEntry
      */
     public MessageEntry getSelectedEntry() {
-        logger.trace("getSelectedEntry");
         if (selectedEntry == null && getAllEntries().size() > selectedEntryIndex) {
             selectedEntry = allEntries.get(selectedEntryIndex);
         }
@@ -206,6 +231,7 @@ public class TranslationGroup {
      */
     public void setSelectedEntry(MessageEntry selectedEntry) {
         this.selectedEntry = selectedEntry;
+        this.selectedEntryIndex = getAllEntries().indexOf(selectedEntry);
     }
 
     /**
@@ -228,14 +254,15 @@ public class TranslationGroup {
      * @should jump to last element when moving past first
      */
     public void prevEntry() {
-        if (allEntries != null && !allEntries.isEmpty()) {
+        saveEntry(selectedEntry);
+
+        if (getAllEntries() != null && !allEntries.isEmpty()) {
             selectedEntryIndex--;
             if (selectedEntryIndex == -1) {
                 selectedEntryIndex = allEntries.size() - 1;
             }
             selectedEntry = allEntries.get(selectedEntryIndex);
         }
-
     }
 
     /**
@@ -244,12 +271,64 @@ public class TranslationGroup {
      * @should jump to first element when moving past last
      */
     public void nextEntry() {
-        if (allEntries != null && !allEntries.isEmpty()) {
+        saveEntry(selectedEntry);
+
+        if (getAllEntries() != null && !allEntries.isEmpty()) {
             selectedEntryIndex++;
             if (selectedEntryIndex == allEntries.size()) {
                 selectedEntryIndex = 0;
             }
             selectedEntry = allEntries.get(selectedEntryIndex);
+        }
+    }
+
+    public static void saveEntry(MessageEntry entry) {
+        if (entry == null) {
+            return;
+        }
+
+        Map<String, PropertiesConfiguration> configMap = new HashMap<>();
+        for (MessageValue value : entry.getValues()) {
+            if (!value.isDirty()) {
+                continue;
+            }
+
+            PropertiesConfiguration config = configMap.get(value.getLanguage());
+
+            // Load config
+            if (config == null) {
+                File file = new File(DataManager.getInstance().getConfiguration().getConfigLocalPath(),
+                        "messages_" + value.getLanguage() + ".properties");
+                if (!file.exists()) {
+                    try {
+                        file.createNewFile();
+                    } catch (IOException e) {
+                        logger.error(e.getMessage(), e);
+                    }
+                }
+
+                config = new PropertiesConfiguration();
+                try {
+                    config.load(file);
+                    configMap.put(value.getLanguage(), config);
+                } catch (ConfigurationException e) {
+                    logger.error(e.getMessage(), e);
+                }
+            }
+
+            config.setProperty(entry.getKey(), value.getValue());
+            logger.trace("value set ({}): {}:{}->{}", config.getFile().getName(), entry.getKey(), value.getLoadedValue(),
+                    config.getProperty(entry.getKey()));
+            value.resetDirtyStatus();
+        }
+
+        for (String key : configMap.keySet()) {
+            try {
+                configMap.get(key).save();
+                logger.trace("File written: {}", configMap.get(key).getFile().getAbsolutePath());
+            } catch (ConfigurationException e) {
+                logger.error(e.getMessage());
+            }
         }
     }
 }

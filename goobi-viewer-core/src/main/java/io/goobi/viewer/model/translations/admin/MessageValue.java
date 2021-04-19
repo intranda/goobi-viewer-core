@@ -15,20 +15,42 @@
  */
 package io.goobi.viewer.model.translations.admin;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 /**
  * Language + translation pair.
  */
 public class MessageValue {
+    
+    /** Logger for this class. */
+    private static final Logger logger = LoggerFactory.getLogger(MessageValue.class);
 
     private final String language;
+    private String loadedValue;
     private String value;
 
     /**
      * 
-     * @param language Language code
+     * @return
      */
-    public MessageValue(String language) {
+    public boolean isDirty() {
+        return value != null && !value.equals(loadedValue);
+    }
+
+    public void resetDirtyStatus() {
+        loadedValue = value;
+    }
+
+    /**
+     * 
+     * @param language Language code
+     * @param value
+     */
+    public MessageValue(String language, String value) {
         this.language = language;
+        this.value = value;
+        this.loadedValue = value;
     }
 
     /**
@@ -47,10 +69,16 @@ public class MessageValue {
 
     /**
      * @param value the value to set
-     * @return this
      */
-    public MessageValue setValue(String value) {
+    public void setValue(String value) {
+        logger.trace("setValue: {}", value);
         this.value = value;
-        return this;
+    }
+
+    /**
+     * @return the loadedValue
+     */
+    public String getLoadedValue() {
+        return loadedValue;
     }
 }

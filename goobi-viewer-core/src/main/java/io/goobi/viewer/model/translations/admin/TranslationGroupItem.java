@@ -122,9 +122,9 @@ public abstract class TranslationGroupItem {
             for (Locale locale : allLocales) {
                 String translation = ViewerResourceBundle.getTranslation(k, locale, false, false);
                 if (translation.equals(k)) {
-                    values.add(new MessageValue(locale.getLanguage()).setValue(null));
+                    values.add(new MessageValue(locale.getLanguage(), null));
                 } else {
-                    values.add(new MessageValue(locale.getLanguage()).setValue(translation));
+                    values.add(new MessageValue(locale.getLanguage(), translation));
                 }
             }
             entries.add(new MessageEntry(k, values));
