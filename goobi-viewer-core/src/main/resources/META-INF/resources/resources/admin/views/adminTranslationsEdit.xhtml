@@ -43,7 +43,9 @@
                                                         <label for="value">#{value.language}:</label>
                                                     </div>
                                                     <div class="col-9 admin__form-input">
-                                                        <h:inputTextarea value="#{value.value}" id="value" label="value" immediate="true" styleClass="form-control" />
+                                                        <h:inputTextarea value="#{value.value}" id="value" label="value" immediate="true" styleClass="form-control">
+                                                            <f:ajax execute="@form" event="valueChange" render="@form"/>
+                                                        </h:inputTextarea>
                                                     </div>
                                                 </div>
                                             </ui:repeat>
@@ -56,11 +58,11 @@
                                     </h:outputLink>
                                     <!-- PREVIOUS BUTTON -->
                                     <h:commandButton value="#{msg.admin__translations_entry_previous}" action="#{adminBean.currentTranslationGroup.prevEntry}">
-                                        <f:ajax execute="@form" />
+                                        <f:ajax render="@form" />
                                     </h:commandButton>
                                     <!-- NEXT BUTTON -->
                                     <h:commandButton value="#{msg.admin__translations_entry_next}" action="#{adminBean.currentTranslationGroup.nextEntry}">
-                                        <f:ajax execute="@form" />
+                                        <f:ajax render="@form" />
                                     </h:commandButton>
                                     </div>
                                 </div>

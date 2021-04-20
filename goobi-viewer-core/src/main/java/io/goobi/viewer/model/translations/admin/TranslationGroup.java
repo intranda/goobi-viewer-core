@@ -27,6 +27,7 @@ import java.util.Set;
 
 import org.apache.commons.configuration.ConfigurationException;
 import org.apache.commons.configuration.PropertiesConfiguration;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -220,7 +221,7 @@ public class TranslationGroup {
      */
     public MessageEntry getSelectedEntry() {
         if (selectedEntry == null && getAllEntries().size() > selectedEntryIndex) {
-            selectedEntry = allEntries.get(selectedEntryIndex);
+            setSelectedEntry(allEntries.get(selectedEntryIndex));
         }
 
         return selectedEntry;
@@ -230,6 +231,9 @@ public class TranslationGroup {
      * @param selectedEntry the selectedEntry to set
      */
     public void setSelectedEntry(MessageEntry selectedEntry) {
+        if (this.selectedEntry != null) {
+            saveEntry(this.selectedEntry);
+        }
         this.selectedEntry = selectedEntry;
         this.selectedEntryIndex = getAllEntries().indexOf(selectedEntry);
     }
@@ -254,14 +258,12 @@ public class TranslationGroup {
      * @should jump to last element when moving past first
      */
     public void prevEntry() {
-        saveEntry(selectedEntry);
-
         if (getAllEntries() != null && !allEntries.isEmpty()) {
             selectedEntryIndex--;
             if (selectedEntryIndex == -1) {
                 selectedEntryIndex = allEntries.size() - 1;
             }
-            selectedEntry = allEntries.get(selectedEntryIndex);
+            setSelectedEntry(allEntries.get(selectedEntryIndex));
         }
     }
 
@@ -271,14 +273,12 @@ public class TranslationGroup {
      * @should jump to first element when moving past last
      */
     public void nextEntry() {
-        saveEntry(selectedEntry);
-
         if (getAllEntries() != null && !allEntries.isEmpty()) {
             selectedEntryIndex++;
             if (selectedEntryIndex == allEntries.size()) {
                 selectedEntryIndex = 0;
             }
-            selectedEntry = allEntries.get(selectedEntryIndex);
+            setSelectedEntry(allEntries.get(selectedEntryIndex));
         }
     }
 
@@ -316,14 +316,19 @@ public class TranslationGroup {
                 }
             }
 
-            config.setProperty(entry.getKey(), value.getValue());
-            logger.trace("value set ({}): {}:{}->{}", config.getFile().getName(), entry.getKey(), value.getLoadedValue(),
-                    config.getProperty(entry.getKey()));
+            if (StringUtils.isNotEmpty(value.getValue())) {
+                config.setProperty(entry.getKey(), value.getValue());
+                logger.trace("value set ({}): {}:{}->{}", config.getFile().getName(), entry.getKey(), value.getLoadedValue(),
+                        config.getProperty(entry.getKey()));
+            }
             value.resetDirtyStatus();
         }
 
         for (String key : configMap.keySet()) {
             try {
+                configMap.get(key)
+                        .setFile(new File(DataManager.getInstance().getConfiguration().getConfigLocalPath(),
+                                "messages_" + key + ".properties"));
                 configMap.get(key).save();
                 logger.trace("File written: {}", configMap.get(key).getFile().getAbsolutePath());
             } catch (ConfigurationException e) {
