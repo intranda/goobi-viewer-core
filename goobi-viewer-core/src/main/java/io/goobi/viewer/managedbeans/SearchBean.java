@@ -1739,7 +1739,7 @@ public class SearchBean implements SearchInterface, Serializable {
         } else {
             String suffix = SearchHelper.getAllSuffixes();
 
-            List<String> values = SearchHelper.getFacetValues(field + ":[* TO *]" + suffix, field, 0);
+            List<String> values = SearchHelper.getFacetValues(field + ":[* TO *]" + suffix, field, 1);
             for (String value : values) {
                 ret.add(new StringPair(value, ViewerResourceBundle.getTranslation(value, null)));
             }
