@@ -159,6 +159,11 @@ public class RestApiManager {
                 .orElse(getDataApiManager().orElse(null));
     }
     
+    public AbstractApiUrlManager getIIIFContentApiManager() {
+        return getContentApiManager(getVersionToUseForIIIF())
+                .orElse(getContentApiManager().orElse(null));
+    }
+    
     /**
      * @return
      */

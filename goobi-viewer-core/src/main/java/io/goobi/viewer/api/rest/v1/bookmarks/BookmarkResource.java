@@ -55,6 +55,7 @@ import org.apache.commons.lang3.StringUtils;
 import de.intranda.api.iiif.presentation.v2.Collection2;
 import de.unigoettingen.sub.commons.contentlib.exceptions.ContentLibException;
 import de.unigoettingen.sub.commons.contentlib.exceptions.IllegalRequestException;
+import io.goobi.viewer.api.rest.bindings.IIIFPresentationBinding;
 import io.goobi.viewer.api.rest.bindings.ViewerRestServiceBinding;
 import io.goobi.viewer.api.rest.model.SuccessMessage;
 import io.goobi.viewer.api.rest.resourcebuilders.AbstractBookmarkResourceBuilder;
@@ -366,6 +367,7 @@ public class BookmarkResource {
             summary = "Get a public or shared bookmark list by its share key as a IIIF collection")
     @ApiResponse(responseCode = "404", description = "Bookmark list not found")
     @ApiResponse(responseCode = "500", description = "Error querying database")
+    @IIIFPresentationBinding
     public Collection2 getSharedBookmarkListAsCollection(
             @Parameter(description = "The share key assigned to the bookmark list") @PathParam("key") String key)
             throws DAOException, ContentLibException {
