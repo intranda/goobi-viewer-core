@@ -774,18 +774,19 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
-    public boolean isAltoAvailable() throws IndexUnreachableException, DAOException {
+    public boolean isAltoAvailable() {
         String filename = null;
         try {
             filename = FileTools.getFilenameFromPathString(getAltoFileName());
-        } catch (FileNotFoundException e) {
-        }
         if (StringUtils.isBlank(filename)) {
             return false;
         }
 
         return AccessConditionUtils.checkAccessPermissionByIdentifierAndFileNameWithSessionMap(BeanUtils.getRequest(), getPi(), filename,
                 IPrivilegeHolder.PRIV_VIEW_FULLTEXT);
+        } catch (FileNotFoundException | IndexUnreachableException | DAOException e) {
+            return false;
+        }
     }
 
     /**
@@ -1187,13 +1188,7 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
      * @return a {@link java.lang.String} object.
      */
     public String getImageUrl() {
-        ImageFileFormat format = ImageFileFormat.JPG;
-        if (ImageFileFormat.PNG.equals(getImageType().getFormat())) {
-            format = ImageFileFormat.PNG;
-        }
-        return new IIIFUrlHandler().getIIIFImageUrl(
-                DataManager.getInstance().getConfiguration().getIIIFApiUrl() + "image/" + pi + "/" + getFileName(), RegionRequest.FULL, Scale.MAX,
-                Rotation.NONE, Colortype.DEFAULT, format);
+        return BeanUtils.getImageDeliveryBean().getThumbs().getThumbnailUrl(this, Scale.MAX);
     }
 
     /**
@@ -1205,13 +1200,9 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
      * @return a {@link java.lang.String} object.
      */
     public String getImageUrl(int size) {
-        ImageFileFormat format = ImageFileFormat.JPG;
-        if (ImageFileFormat.PNG.equals(getImageType().getFormat())) {
-            format = ImageFileFormat.PNG;
-        }
-        return new IIIFUrlHandler().getIIIFImageUrl(
-                DataManager.getInstance().getConfiguration().getIIIFApiUrl() + "image/" + pi + "/" + getFileName(), RegionRequest.FULL,
-                new Scale.ScaleToWidth(size), Rotation.NONE, Colortype.DEFAULT, format);
+        Scale scale = new Scale.ScaleToWidth(size);
+        return BeanUtils.getImageDeliveryBean().getThumbs().getThumbnailUrl(this, scale);
+
     }
 
     /**

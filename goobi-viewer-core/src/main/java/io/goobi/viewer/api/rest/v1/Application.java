@@ -50,7 +50,7 @@ public class Application extends ResourceConfig {
             protected void configure() {
                 String apiUrl = DataManager.getInstance().getConfiguration().getRestApiUrl();
                 apiUrl = apiUrl.replace("/rest", "/api/v1");
-                bind(new ApiUrls(apiUrl)).to(AbstractApiUrlManager.class);
+                bind(new ApiUrls(apiUrl)).to(ApiUrls.class);
             }
         };
         this.init(binder, servletConfig);
@@ -76,10 +76,8 @@ public class Application extends ResourceConfig {
         packages(true, "io.goobi.viewer.api.rest.v1");
         packages(true, "io.goobi.viewer.api.rest.filters");
         packages(true, "io.goobi.viewer.api.rest.exceptions");
-//        packages(true, "de.unigoettingen.sub.commons.contentlib.servlet.rest");
         packages(true, "io.swagger");
         
-//        property(ServerProperties.OUTBOUND_CONTENT_LENGTH_BUFFER, 0);
         
     }
 

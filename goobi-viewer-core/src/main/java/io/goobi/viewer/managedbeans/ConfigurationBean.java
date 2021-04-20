@@ -1111,6 +1111,10 @@ public class ConfigurationBean implements Serializable {
     public String getRestApiUrl() throws ViewerConfigurationException {
         return DataManager.getInstance().getConfiguration().getRestApiUrl();
     }
+    
+    public String getRestApiUrlForIIIFPresention() throws ViewerConfigurationException {
+        return DataManager.getInstance().getRestApiManager().getIIIFDataApiUrl();
+    }
 
     /**
      * <p>

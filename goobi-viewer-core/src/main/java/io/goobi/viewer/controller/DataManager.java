@@ -30,6 +30,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import de.intranda.monitoring.timer.TimeAnalysis;
+import io.goobi.viewer.api.rest.AbstractApiUrlManager.Version;
 import io.goobi.viewer.api.rest.model.tasks.TaskManager;
 import io.goobi.viewer.dao.IDAO;
 import io.goobi.viewer.dao.impl.JPADAO;
@@ -496,5 +497,5 @@ public final class DataManager {
      */
     public TaskManager getRestApiJobManager() {
         return restApiJobManager;
-    }
+    }   
 }

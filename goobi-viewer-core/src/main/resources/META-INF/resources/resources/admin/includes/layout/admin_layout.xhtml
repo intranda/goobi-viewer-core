@@ -59,6 +59,16 @@
 
 			<!-- RIGHT AREA TOPBAR -->
 			<div class="admin__topbar-backend-right">
+	            <div class="admin__topbar-frontend-hotfolder">
+	            	<!-- COUNT FILES PROCESSING -->
+	            	<!-- TO DO: RENDERED CONDITION NUMBER OF FILES GREATER X -->
+	            	<ui:fragment rendered="#{userBean.admin}">
+						<div class="admin__topbar-frontend-hotfolder-files-action">
+						    <i class="fa fa-spinner fa-pulse" aria-hidden="true"></i>
+						    <span>1.242</span> <span>#{msg.admin__files_in_hotfolder}...</span>
+						</div>
+					</ui:fragment>
+	            </div>
 	            <!-- CHANGE LANGUAGE -->
 				<ui:fragment rendered="#{fn:length(navigationHelper.supportedLanguages) > 1}">
 					<div class="admin__topbar-backend-language -dropdown">

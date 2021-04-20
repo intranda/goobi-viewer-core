@@ -21,18 +21,18 @@ import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.SerializerProvider;
 
-import de.intranda.api.serializer.MetadataSerializer;
+import de.intranda.api.serializer.WebAnnotationMetadataValueSerializer;
 import de.intranda.metadata.multilanguage.IMetadataValue;
 import de.intranda.metadata.multilanguage.MultiLanguageMetadataValue;
 
 /**
- * Implementation of {@link MetadataSerializer} which always writes the value as json-object, never as string.
+ * Implementation of {@link WebAnnotationMetadataValueSerializer} which always writes the value as json-object, never as string.
  * This was, language info is always preserved
  * 
  * @author florian
  *
  */
-public class TranslatedTextSerializer extends MetadataSerializer {
+public class TranslatedTextSerializer extends WebAnnotationMetadataValueSerializer {
 
     @Override
     public void serialize(IMetadataValue element, JsonGenerator generator, SerializerProvider provicer) throws IOException, JsonProcessingException {

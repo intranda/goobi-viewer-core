@@ -44,40 +44,35 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import de.intranda.api.annotation.IAnnotationCollection;
-import de.intranda.api.annotation.IResource;
-import de.intranda.api.annotation.SimpleResource;
-import de.intranda.api.annotation.oa.OpenAnnotation;
-import de.intranda.api.annotation.oa.SpecificResource;
-import de.intranda.api.annotation.oa.TextualResource;
 import de.intranda.api.annotation.wa.collection.AnnotationPage;
-import de.intranda.api.iiif.presentation.AnnotationList;
-import de.intranda.api.iiif.presentation.Canvas;
 import de.intranda.api.iiif.presentation.IPresentationModelElement;
-import de.intranda.api.iiif.presentation.Layer;
-import de.intranda.api.iiif.presentation.Sequence;
 import de.intranda.api.iiif.presentation.enums.AnnotationType;
+import de.intranda.api.iiif.presentation.v2.AnnotationList;
+import de.intranda.api.iiif.presentation.v2.Canvas2;
+import de.intranda.api.iiif.presentation.v2.Layer;
+import de.intranda.api.iiif.presentation.v2.Sequence;
 import de.unigoettingen.sub.commons.contentlib.exceptions.ContentNotFoundException;
 import de.unigoettingen.sub.commons.contentlib.exceptions.IllegalRequestException;
 import de.unigoettingen.sub.commons.contentlib.servlet.rest.CORSBinding;
-import io.goobi.viewer.api.rest.AbstractApiUrlManager;
 import io.goobi.viewer.api.rest.AbstractApiUrlManager.ApiPath;
 import io.goobi.viewer.api.rest.bindings.IIIFPresentationBinding;
 import io.goobi.viewer.api.rest.bindings.ViewerRestServiceBinding;
 import io.goobi.viewer.api.rest.model.ner.DocumentReference;
 import io.goobi.viewer.api.rest.resourcebuilders.AnnotationsResourceBuilder;
-import io.goobi.viewer.api.rest.resourcebuilders.IIIFPresentationResourceBuilder;
+import io.goobi.viewer.api.rest.resourcebuilders.IIIFPresentation2ResourceBuilder;
 import io.goobi.viewer.api.rest.resourcebuilders.NERBuilder;
+import io.goobi.viewer.api.rest.v1.ApiUrls;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.exceptions.RecordNotFoundException;
 import io.goobi.viewer.exceptions.ViewerConfigurationException;
 import io.goobi.viewer.messages.ViewerResourceBundle;
-import io.goobi.viewer.model.iiif.presentation.builder.BuildMode;
-import io.goobi.viewer.model.iiif.presentation.builder.ManifestBuilder;
-import io.goobi.viewer.model.iiif.presentation.builder.OpenAnnotationBuilder;
-import io.goobi.viewer.model.iiif.presentation.builder.SequenceBuilder;
-import io.goobi.viewer.model.iiif.presentation.builder.WebAnnotationBuilder;
+import io.goobi.viewer.model.iiif.presentation.v2.builder.BuildMode;
+import io.goobi.viewer.model.iiif.presentation.v2.builder.ManifestBuilder;
+import io.goobi.viewer.model.iiif.presentation.v2.builder.OpenAnnotationBuilder;
+import io.goobi.viewer.model.iiif.presentation.v2.builder.SequenceBuilder;
+import io.goobi.viewer.model.iiif.presentation.v2.builder.WebAnnotationBuilder;
 import io.goobi.viewer.model.security.AccessConditionUtils;
 import io.goobi.viewer.model.security.IPrivilegeHolder;
 import io.goobi.viewer.model.viewer.PhysicalElement;
@@ -101,7 +96,7 @@ public class RecordPageResource {
     @Context
     private HttpServletResponse servletResponse;
     @Inject
-    private AbstractApiUrlManager urls;
+    private ApiUrls urls;
 
     private final String pi;
 
@@ -135,7 +130,7 @@ public class RecordPageResource {
 
             throws ContentNotFoundException, PresentationException, IndexUnreachableException, URISyntaxException,
             ViewerConfigurationException, DAOException, IllegalRequestException {
-        IIIFPresentationResourceBuilder builder = new IIIFPresentationResourceBuilder(urls, servletRequest);
+        IIIFPresentation2ResourceBuilder builder = new IIIFPresentation2ResourceBuilder(urls, servletRequest);
         BuildMode buildMode = RecordResource.getBuildeMode(mode);
         Sequence sequence = builder.getBaseSequence(pi, buildMode, preferedView);
         return sequence;
@@ -150,7 +145,7 @@ public class RecordPageResource {
             @Parameter(description = "Page numer (1-based") @PathParam("pageNo") Integer pageNo)
             throws ContentNotFoundException, PresentationException, IndexUnreachableException, URISyntaxException,
             ViewerConfigurationException, DAOException {
-        IIIFPresentationResourceBuilder builder = new IIIFPresentationResourceBuilder(urls, servletRequest);
+        IIIFPresentation2ResourceBuilder builder = new IIIFPresentation2ResourceBuilder(urls, servletRequest);
         return builder.getCanvas(pi, pageNo);
     }
 
@@ -159,18 +154,12 @@ public class RecordPageResource {
     @Produces({ MediaType.APPLICATION_JSON })
     @Operation(tags = { "records", "annotations" }, summary = "List annotations for a page")
     public IAnnotationCollection getAnnotationsForRecord(
-            @Parameter(description = "Page numer (1-based") @PathParam("pageNo") Integer pageNo,
-            @Parameter(
-                    description = "annotation format of the response. If it is 'oa' the comments will be delivered as OpenAnnotations, otherwise as W3C-Webannotations") @QueryParam("format") String format)
+            @Parameter(description = "Page numer (1-based") @PathParam("pageNo") Integer pageNo)
             throws PresentationException, IndexUnreachableException {
 
         ApiPath apiPath = urls.path(RECORDS_PAGES, RECORDS_PAGES_ANNOTATIONS).params(pi, pageNo);
-        if ("oa".equalsIgnoreCase(format)) {
             URI uri = URI.create(apiPath.query("format", "oa").build());
             return new OpenAnnotationBuilder(urls).getCrowdsourcingAnnotationCollection(uri, pi, pageNo, false, servletRequest);
-        }
-        URI uri = URI.create(apiPath.build());
-        return new WebAnnotationBuilder(urls).getCrowdsourcingAnnotationCollection(uri, pi, pageNo, false, servletRequest);
     }
 
     @GET
@@ -178,31 +167,14 @@ public class RecordPageResource {
     @Produces({ MediaType.APPLICATION_JSON })
     @Operation(tags = { "records", "annotations" }, summary = "List comments for a page")
     public IAnnotationCollection getCommentsForPage(
-            @Parameter(description = "Page numer (1-based") @PathParam("pageNo") Integer pageNo,
-            @Parameter(
-                    description = "annotation format of the response. If it is 'oa' the comments will be delivered as OpenAnnotations, otherwise as W3C-Webannotations") @QueryParam("format") String format)
+            @Parameter(description = "Page numer (1-based") @PathParam("pageNo") Integer pageNo)
             throws DAOException {
 
         ApiPath apiPath = urls.path(RECORDS_RECORD, RECORDS_COMMENTS).params(pi);
-        if ("oa".equalsIgnoreCase(format)) {
             URI uri = URI.create(apiPath.query("format", "oa").build());
             return new AnnotationsResourceBuilder(urls, servletRequest).getOAnnotationListForPageComments(pi, pageNo, uri);
-        }
-        URI uri = URI.create(apiPath.build());
-        return new AnnotationsResourceBuilder(urls, servletRequest).getWebAnnotationCollectionForPageComments(pi, pageNo, uri);
     }
 
-    @GET
-    @javax.ws.rs.Path(RECORDS_PAGES_COMMENTS + "/{page}")
-    @Produces({ MediaType.APPLICATION_JSON })
-    @ApiResponse(responseCode = "400", description = "If the page number is out of bounds")
-    public AnnotationPage getCommentPageForRecord(
-            @Parameter(description = "Page numer (1-based") @PathParam("pageNo") Integer pageNo,
-            @PathParam("page") Integer page) throws DAOException, IllegalRequestException {
-
-        URI uri = URI.create(urls.path(RECORDS_RECORD, RECORDS_COMMENTS).params(pi).build());
-        return new AnnotationsResourceBuilder(urls, servletRequest).getWebAnnotationPageForPageComments(pi, pageNo, uri, page);
-    }
 
     @GET
     @javax.ws.rs.Path(RECORDS_PAGES_TEXT)
@@ -226,7 +198,7 @@ public class RecordPageResource {
             SequenceBuilder builder = new SequenceBuilder(urls);
             StructElement doc = new ManifestBuilder(urls).getDocument(pi);
             PhysicalElement page = builder.getPage(doc, pageNo);
-            Canvas canvas = builder.generateCanvas(doc.getPi(), page);
+            Canvas2 canvas = builder.generateCanvas(doc.getPi(), page);
             annotations = builder.addOtherContent(doc, page, canvas, true);
         } else {
             annotations = new HashMap<>();

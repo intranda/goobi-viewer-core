@@ -604,7 +604,8 @@
 	                                                             		id="pickerDateStart" 
 	                                                             		name="pickerDateStart" 
 	                                                             		value="#{crowdsourcingBean.selectedCampaign.dateOnlyStart}"
-	                                                             		converter="localDateConverter">
+	                                                             		converter="localDateConverter"
+	                                                             		data-format="#{navigationHelper.datePattern}">
 	                                                             		<f:passThroughAttribute name="data-target" value="datePickerStart" />
 <!-- 	                                                             		<f:converter converterId = "localDateConverter" /> -->
 	                                                             	</h:inputText>
@@ -612,7 +613,7 @@
 	                                                             <!-- TO DO: DATE FORMAT FOR LANGUAGES, localDateConverter NOT COMPATIBLE YET #{navigationHelper.datePatternjQueryDatePicker} -->
 	                                                             <script type="text/javascript">
 	                                                             	$( "[data-target='datePickerStart']" ).datepicker({
-	                                                             		dateFormat: "yy-mm-dd" 
+	                                                             		dateFormat: "#{navigationHelper.datePatternjQueryDatePicker}" 
 	                                                             	});
 																 </script>
 																 

@@ -37,7 +37,7 @@ import io.goobi.viewer.controller.DataManager;
 public class ApplicationResource {
 
     @Inject
-    AbstractApiUrlManager urls;
+    ApiUrls urls;
     
     @GET
     @Produces(MediaType.APPLICATION_JSON)

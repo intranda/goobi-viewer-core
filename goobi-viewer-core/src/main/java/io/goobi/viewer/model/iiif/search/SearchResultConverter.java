@@ -68,8 +68,8 @@ import io.goobi.viewer.controller.SolrSearchIndex;
 import io.goobi.viewer.messages.ViewerResourceBundle;
 import io.goobi.viewer.model.annotation.AltoAnnotationBuilder;
 import io.goobi.viewer.model.annotation.Comment;
-import io.goobi.viewer.model.iiif.presentation.builder.AbstractBuilder;
-import io.goobi.viewer.model.iiif.presentation.builder.OpenAnnotationBuilder;
+import io.goobi.viewer.model.iiif.presentation.v2.builder.AbstractBuilder;
+import io.goobi.viewer.model.iiif.presentation.v2.builder.OpenAnnotationBuilder;
 import io.goobi.viewer.model.iiif.search.model.AnnotationResultList;
 import io.goobi.viewer.model.iiif.search.model.SearchTermList;
 import io.goobi.viewer.model.iiif.search.parser.AbstractSearchParser;
@@ -161,7 +161,7 @@ public class SearchResultConverter {
      * Getter for the field <code>presentationBuilder</code>.
      * </p>
      *
-     * @return a {@link io.goobi.viewer.model.iiif.presentation.builder.AbstractBuilder} object.
+     * @return a {@link io.goobi.viewer.model.iiif.presentation.v2.builder.AbstractBuilder} object.
      */
     public AbstractBuilder getPresentationBuilder() {
         return presentationBuilder;

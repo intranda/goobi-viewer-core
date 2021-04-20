@@ -751,6 +751,7 @@
 		color: @white;
 		position: fixed;
 		top: 0;
+		font-size: 1.4rem;
 		// BOOTSTRAP/BROWSER RESET
 		ul {
 			list-style: none;
@@ -925,6 +926,7 @@
 		color: @white;
 		position: sticky;
 		top: 0;
+		font-size: 1.4rem;
 		// BOOTSTRAP/BROWSER RESET
 		ul {
 			list-style: none;
@@ -1042,9 +1044,7 @@
 			font-size: 1.6rem;
 		}
 		&:hover {
-			background: #235396;
 			text-decoration: none;
-            cursor: pointer;
 			color: @white;
 		}
 	}
@@ -1329,6 +1329,9 @@
 //		position: sticky;
 //		bottom: 0;
 //	}
+
+// ***
+// EOL admin__
 }
 
 
@@ -1652,7 +1655,7 @@ html[lang="es"] .admin__radio-switch {
 /* BREAKPOINT FOR DESKTOPS */
 @media screen and (max-width: @mediumBreakpoint) {
 	.admin {
-		&__topbar-frontend-add {
+		&__topbar-frontend {
 			display: none;
 		}
 	}

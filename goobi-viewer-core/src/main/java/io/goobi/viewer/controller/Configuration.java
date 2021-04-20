@@ -46,6 +46,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import de.unigoettingen.sub.commons.contentlib.imagelib.ImageType;
+import io.goobi.viewer.controller.model.ProviderConfiguration;
+import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.exceptions.ViewerConfigurationException;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.messages.ViewerResourceBundle;
@@ -72,8 +74,8 @@ import io.goobi.viewer.model.security.authentication.XServiceProvider;
 import io.goobi.viewer.model.termbrowsing.BrowsingMenuFieldConfig;
 import io.goobi.viewer.model.transkribus.TranskribusUtils;
 import io.goobi.viewer.model.translations.admin.TranslationGroup;
-import io.goobi.viewer.model.translations.admin.TranslationGroupItem;
 import io.goobi.viewer.model.translations.admin.TranslationGroup.TranslationGroupType;
+import io.goobi.viewer.model.translations.admin.TranslationGroupItem;
 import io.goobi.viewer.model.viewer.DcSortingList;
 import io.goobi.viewer.model.viewer.PageType;
 import io.goobi.viewer.model.viewer.StringPair;
@@ -4680,6 +4682,45 @@ public final class Configuration extends AbstractConfiguration {
         return list;
     }
 
+    /**
+     * 
+     * @return The SOLR field containing a rights url for a IIIF3 manifest if one is configured
+     */
+    public String getIIIFRightsField() {
+        return getLocalString("webapi.iiif.rights", null);
+    }
+
+    /**
+     * Uses {@link #getIIIFAttribution()} as fallback;
+     * 
+     * @return the message key to use for the IIIF3 requiredStatement value if the statement should be added to manifests.
+     */
+    public String getIIIFRequiredValue() {
+        return getLocalString("webapi.iiif.requiredStatement.value", getIIIFAttribution().stream().findFirst().orElse(null));
+    }
+
+    /**
+     * 
+     * @return the message key to use for the IIIF3 requiredStatement label. Default is "Attribution"
+     */
+    public String getIIIFRequiredLabel() {
+        return getLocalString("webapi.iiif.requiredStatement.label", "Attribution");
+    }
+
+    /**
+     * 
+     * @return The list of configurations for IIIF3 providers
+     * @throws PresentationException if a provider or a homepage configuration misses the url or label element
+     */
+    public List<ProviderConfiguration> getIIIFProvider() throws PresentationException {
+        List<ProviderConfiguration> provider = new ArrayList<>();
+        List<HierarchicalConfiguration> configs = getLocalConfigurationsAt("webapi.iiif.provider");
+        for (HierarchicalConfiguration config : configs) {
+            provider.add(new ProviderConfiguration(config));
+        }
+        return provider;
+    }
+
     public boolean isVisibleIIIFRenderingPDF() {
         return getLocalBoolean("webapi.iiif.rendering.pdf[@visible]", true);
     }
@@ -4689,11 +4730,11 @@ public final class Configuration extends AbstractConfiguration {
     }
 
     public String getLabelIIIFRenderingPDF() {
-        return getLocalString("webapi.iiif.rendering.pdf.label", "PDF");
+        return getLocalString("webapi.iiif.rendering.pdf.label", null);
     }
 
     public String getLabelIIIFRenderingViewer() {
-        return getLocalString("webapi.iiif.rendering.viewer.label", "Goobi Viewer");
+        return getLocalString("webapi.iiif.rendering.viewer.label", null);
     }
 
     public boolean isVisibleIIIFRenderingPlaintext() {
@@ -4705,11 +4746,11 @@ public final class Configuration extends AbstractConfiguration {
     }
 
     public String getLabelIIIFRenderingPlaintext() {
-        return getLocalString("webapi.iiif.rendering.plaintext.label", "Fulltext");
+        return getLocalString("webapi.iiif.rendering.plaintext.label", null);
     }
 
     public String getLabelIIIFRenderingAlto() {
-        return getLocalString("webapi.iiif.rendering.alto.label", "ALTO");
+        return getLocalString("webapi.iiif.rendering.alto.label", null);
     }
 
     /**
@@ -5042,6 +5083,15 @@ public final class Configuration extends AbstractConfiguration {
 
     public boolean isDisplayUserGeneratedContentBelowImage() {
         return getLocalBoolean("webGuiDisplay.displayUserGeneratedContentBelowImage", false);
+    }
+
+    /**
+     * config: <code>&#60;iiif use-version="3.0"&#62;&#60;/iiif&#62;</code>
+     * 
+     * @return
+     */
+    public String getIIIFVersionToUse() {
+        return getLocalString("webapi.iiif[@use-version]", "2.1.1");
     }
 
     /**
