@@ -23,7 +23,7 @@
                         <div class="admin__title-bar">
                             <!-- TITLE -->
                             <h2 class="admin__title">#{msg[adminBean.currentTranslationGroup.name]}</h2>
-                            <p>#{msg[adminBean.currentTranslationGroup.description]}</p>
+                            <p>#{msg.admin__translations_edit_description}</p>
                         </div>
                         
                         <div class="admin__content-inner-content">
@@ -76,7 +76,7 @@
                                 </div>
                                 <div class="admin__default-block">
                                     <h3>#{msg.admin__overview}</h3>
-                                    #{msg.admin__translations_overview_description}
+                                    #{msg.admin__translations_edit_overview_description}
                                     <ui:repeat var="entry" value="#{adminBean.currentTranslationGroup.allEntries}">
                                         <h:panelGroup class="row" rendered="#{entry.translationStatus == 'NONE'}" style="background-color: #EEEEEE">
                                             <h:commandLink action="#{adminBean.currentTranslationGroup.setSelectedEntry(entry)}" value="#{entry.key}"
