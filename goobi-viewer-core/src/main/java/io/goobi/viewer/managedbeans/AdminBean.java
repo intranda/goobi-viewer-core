@@ -1484,55 +1484,6 @@ public class AdminBean implements Serializable {
     // Lazy models
 
     /**
-     * @return the currentTranslationGroup
-     */
-    public TranslationGroup getCurrentTranslationGroup() {
-        synchronized (TRANSLATION_LOCK) {
-            if (translationGroupsEditorSession != null && !translationGroupsEditorSession.equals(BeanUtils.getSession().getId())) {
-                logger.trace("Translation locked");
-                Messages.error("Translation already in use");
-                return null;
-            }
-
-            return currentTranslationGroup;
-        }
-    }
-
-    /**
-     * @param currentTranslationGroup the currentTranslationGroup to set
-     */
-    public void setCurrentTranslationGroup(TranslationGroup currentTranslationGroup) {
-        this.currentTranslationGroup = currentTranslationGroup;
-    }
-
-    /**
-     * 
-     * @return
-     */
-    public int getCurrentTranslationGroupId() {
-        synchronized (TRANSLATION_LOCK) {
-            if (currentTranslationGroup != null) {
-                return DataManager.getInstance().getConfiguration().getTranslationGroups().indexOf(currentTranslationGroup);
-            }
-
-            return 0;
-        }
-    }
-
-    /**
-     * 
-     * @param id
-     */
-    public void setCurrentTranslationGroupId(int id) {
-        List<TranslationGroup> groups = DataManager.getInstance().getConfiguration().getTranslationGroups();
-        if (id >= 0 && groups.size() > id) {
-            currentTranslationGroup = groups.get(id);
-        } else {
-            logger.error("Translation group ID not found: {}", id);
-        }
-    }
-
-    /**
      * <p>
      * Getter for the field <code>lazyModelUsers</code>.
      * </p>
@@ -1896,13 +1847,72 @@ public class AdminBean implements Serializable {
     }
 
     /**
+     * Saves <code>currentTranslationGroup</code> if it has a selected entry. Resets group to null afterwards.
+     */
+    public void saveAndResetCurrentTranslationGroup() {
+        if (currentTranslationGroup != null) {
+            currentTranslationGroup.saveSelectedEntry();
+            currentTranslationGroup = null;
+        }
+    }
+
+    /**
+     * @return the currentTranslationGroup
+     */
+    public TranslationGroup getCurrentTranslationGroup() {
+        synchronized (TRANSLATION_LOCK) {
+            if (translationGroupsEditorSession != null && !translationGroupsEditorSession.equals(BeanUtils.getSession().getId())) {
+                logger.trace("Translation locked");
+                Messages.error("Translation already in use");
+                return null;
+            }
+
+            return currentTranslationGroup;
+        }
+    }
+
+    /**
+     * @param currentTranslationGroup the currentTranslationGroup to set
+     */
+    public void setCurrentTranslationGroup(TranslationGroup currentTranslationGroup) {
+        this.currentTranslationGroup = currentTranslationGroup;
+    }
+
+    /**
+     * 
+     * @return
+     */
+    public int getCurrentTranslationGroupId() {
+        synchronized (TRANSLATION_LOCK) {
+            if (currentTranslationGroup != null) {
+                return DataManager.getInstance().getConfiguration().getTranslationGroups().indexOf(currentTranslationGroup);
+            }
+
+            return 0;
+        }
+    }
+
+    /**
+     * 
+     * @param id
+     */
+    public void setCurrentTranslationGroupId(int id) {
+        List<TranslationGroup> groups = DataManager.getInstance().getConfiguration().getTranslationGroups();
+        if (id >= 0 && groups.size() > id) {
+            currentTranslationGroup = groups.get(id);
+        } else {
+            logger.error("Translation group ID not found: {}", id);
+        }
+    }
+
+    /**
      * 
      * @return
      */
     public boolean isTranslationLocked() {
         return translationGroupsEditorSession != null && !translationGroupsEditorSession.equals(BeanUtils.getSession().getId());
     }
-    
+
     /**
      * 
      */

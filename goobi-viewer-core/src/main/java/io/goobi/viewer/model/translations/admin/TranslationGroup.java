@@ -274,9 +274,7 @@ public class TranslationGroup {
      * @param selectedEntry the selectedEntry to set
      */
     public void setSelectedEntry(MessageEntry selectedEntry) {
-        if (this.selectedEntry != null) {
-            saveEntry(this.selectedEntry);
-        }
+        saveSelectedEntry();
         this.selectedEntry = selectedEntry;
         this.selectedEntryIndex = getAllEntries().indexOf(selectedEntry);
     }
@@ -326,16 +324,15 @@ public class TranslationGroup {
     }
 
     /**
-     * 
-     * @param entry
+     * Persists the edited values of <code>selectedEntry</code> to all language messages.properties files.
      */
-    public static void saveEntry(MessageEntry entry) {
-        if (entry == null) {
+    public synchronized void saveSelectedEntry() {
+        if (selectedEntry == null) {
             return;
         }
 
         Map<String, PropertiesConfiguration> configMap = new HashMap<>();
-        for (MessageValue value : entry.getValues()) {
+        for (MessageValue value : selectedEntry.getValues()) {
             if (!value.isDirty()) {
                 continue;
             }
@@ -364,9 +361,9 @@ public class TranslationGroup {
             }
 
             if (StringUtils.isNotEmpty(value.getValue())) {
-                config.setProperty(entry.getKey(), value.getValue());
-                logger.trace("value set ({}): {}:{}->{}", config.getFile().getName(), entry.getKey(), value.getLoadedValue(),
-                        config.getProperty(entry.getKey()));
+                config.setProperty(selectedEntry.getKey(), value.getValue());
+                logger.trace("value set ({}): {}:{}->{}", config.getFile().getName(), selectedEntry.getKey(), value.getLoadedValue(),
+                        config.getProperty(selectedEntry.getKey()));
             }
             value.resetDirtyStatus();
         }
