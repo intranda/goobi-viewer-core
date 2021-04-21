@@ -132,17 +132,20 @@ public class AccessConditionRequestFilter implements ContainerRequestFilter {
                 access = AccessConditionUtils.checkAccessPermissionForThumbnail(request, pi, contentFileName);
                 //                                logger.trace("Checked thumbnail access: {}/{}: {}", pi, contentFileName, access);
             } else {
-                String privilege = (String) request.getAttribute(REQUIRED_PRIVILEGE);
-                if(StringUtils.isBlank(privilege)) {
-                    privilege = IPrivilegeHolder.PRIV_LIST;
+                String[] privileges = getRequiredPrivileges(request);
+                if(privileges.length == 0) {
+                    privileges = new String[] {IPrivilegeHolder.PRIV_LIST};
                 }
                 if(StringUtils.isBlank(pi)) {
                     throw new ServiceNotAllowedException("Serving this resource is currently impossible Because no persistent identifier is given");
-                } else if(StringUtils.isNotBlank(contentFileName)) {                    
-                    access = AccessConditionUtils.checkAccessPermissionByIdentifierAndFileNameWithSessionMap(request, pi, contentFileName, privilege);
+                } else if(StringUtils.isNotBlank(contentFileName)) {              
+                    for (String privilege : privileges) {                        
+                        access = AccessConditionUtils.checkAccessPermissionByIdentifierAndFileNameWithSessionMap(request, pi, contentFileName, privilege);
+                    }
                 } else {
-                    access = AccessConditionUtils.checkAccessPermissionByIdentifierAndLogId(pi, logid, privilege, request);
-
+                    for (String privilege : privileges) {  
+                        access = AccessConditionUtils.checkAccessPermissionByIdentifierAndLogId(pi, logid, privilege, request);
+                    }
                 }
             }
         } catch (IndexUnreachableException e) {
@@ -158,15 +161,22 @@ public class AccessConditionRequestFilter implements ContainerRequestFilter {
     }
 
     /**
-     * @param width
+     * Read attribute {@link #REQUIRED_PRIVILEGE} from request and return it as String array. If the attribute doesn't
+     * exist, return an empty array
+     * 
+     * @param request
      * @return
      */
-    private static int parse(String string) {
-        try {
-            return Integer.parseInt(string);
-        } catch (NumberFormatException e) {
-            return 0;
+    public static String[] getRequiredPrivileges(HttpServletRequest request) {
+        Object privileges = request.getAttribute(REQUIRED_PRIVILEGE);
+        if(privileges == null) {
+            return new String[0];
+        } else if(privileges.getClass().isArray()) {
+            return (String[]) privileges;
+        } else {
+            return new String[]{privileges.toString()};
         }
     }
+
 
 }

@@ -53,6 +53,8 @@ import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.exceptions.ViewerConfigurationException;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
+import io.goobi.viewer.model.security.AccessConditionUtils;
+import io.goobi.viewer.model.security.IPrivilegeHolder;
 import io.goobi.viewer.model.viewer.PageType;
 import io.goobi.viewer.model.viewer.PhysicalElement;
 import io.goobi.viewer.model.viewer.StructElement;
@@ -110,17 +112,38 @@ public class ImageInformationFilter implements ContainerResponseFilter {
             imageType = getImageType((ImageInformation) responseObject);
 
             try {
-                List<Integer> imageSizes = getImageSizesFromConfig();
+                boolean mayZoom = isZoomingAllowed(request);
+                List<Integer> imageSizes = getImageSizesFromConfig(mayZoom);
                 setImageSizes((ImageInformation) responseObject, imageSizes);
-                List<ImageTile> tileSizes;
-                tileSizes = getTileSizesFromConfig();
-                setTileSizes((ImageInformation) responseObject, tileSizes);
-                setMaxImageSizes((ImageInformation) responseObject);
+                setMaxImageSizes((ImageInformation) responseObject, mayZoom);
+                if(mayZoom) {                    
+                    List<ImageTile> tileSizes = getTileSizesFromConfig();
+                    setTileSizes((ImageInformation) responseObject, tileSizes);
+                } else {
+                    ((ImageInformation) responseObject).setTiles(null);
+                }
                 //This adds 200 or more ms to the request time. So we ignore this unless it is actually requested
                 //				setWatermark((ImageInformation) responseObject);
             } catch (ViewerConfigurationException e) {
                 logger.error(e.toString());
             }
+        }
+    }
+
+    /**
+     * @param request
+     * @return
+     */
+    private boolean isZoomingAllowed(ContainerRequestContext request) {
+        String pi = (String) servletRequest.getAttribute(FilterTools.ATTRIBUTE_PI);
+        String logid = (String) servletRequest.getAttribute(FilterTools.ATTRIBUTE_LOGID);
+        String filename = (String) servletRequest.getAttribute(FilterTools.ATTRIBUTE_FILENAME);
+        try {
+            boolean access = AccessConditionUtils.checkAccessPermissionByIdentifierAndFileNameWithSessionMap(servletRequest, pi, filename, IPrivilegeHolder.PRIV_ZOOM_IMAGES);
+            return access;
+        } catch (IndexUnreachableException | DAOException e) {
+            logger.error(e.toString(),e);
+            return false;
         }
     }
 
@@ -201,21 +224,28 @@ public class ImageInformationFilter implements ContainerResponseFilter {
         return null;
     }
 
-    private static void setMaxImageSizes(ImageInformation info) {
+    /**
+     * Write 
+     * 
+     * @param info
+     */
+    private static void setMaxImageSizes(ImageInformation info, boolean mayZoom) {
+        
+        Integer maxWidth = mayZoom ? DataManager.getInstance().getConfiguration().getViewerMaxImageWidth()
+                : DataManager.getInstance().getConfiguration().getUnzoomedImageAccessMaxWidth();
+        Integer maxHeight = mayZoom ? DataManager.getInstance().getConfiguration().getViewerMaxImageHeight() : 
+            DataManager.getInstance().getConfiguration().getUnzoomedImageAccessMaxWidth()*info.getHeight()/info.getWidth() ;
+        
         if(info instanceof ImageInformation3) {
-            int maxWidth = DataManager.getInstance().getConfiguration().getViewerMaxImageWidth();
-            int maxHeight = DataManager.getInstance().getConfiguration().getViewerMaxImageHeight();
             ((ImageInformation3) info).setMaxWidth(maxWidth);
             ((ImageInformation3) info).setMaxHeight(maxHeight);
         } else {            
             Optional<ImageProfile> profile = info.getProfiles().stream().filter(p -> p instanceof ImageProfile).map(p -> (ImageProfile) p).findFirst();
             profile.ifPresent(p -> {
-                int maxWidth = DataManager.getInstance().getConfiguration().getViewerMaxImageWidth();
-                int maxHeight = DataManager.getInstance().getConfiguration().getViewerMaxImageHeight();
-                if (maxWidth > 0) {
+                if (maxWidth != null && maxWidth > 0) {
                     p.setMaxWidth(maxWidth);
                 }
-                if (maxHeight > 0) {
+                if (maxHeight != null && maxHeight > 0) {
                     p.setMaxHeight(maxHeight);
                 }
             });
@@ -242,21 +272,28 @@ public class ImageInformationFilter implements ContainerResponseFilter {
     }
 
     /**
+     * @param mayZoom 
      * @param responseObject
      * @return
      * @throws ViewerConfigurationException
      */
-    private List<Integer> getImageSizesFromConfig() throws ViewerConfigurationException {
+    private List<Integer> getImageSizesFromConfig(boolean mayZoom) throws ViewerConfigurationException {
 
         List<String> sizeStrings = DataManager.getInstance().getConfiguration().getImageViewZoomScales(pageType, imageType);
         List<Integer> sizes = new ArrayList<>();
+        int maxWidth = mayZoom ? Integer.MAX_VALUE : DataManager.getInstance().getConfiguration().getUnzoomedImageAccessMaxWidth();
         for (String string : sizeStrings) {
             try {
                 int size = Integer.parseInt(string);
-                sizes.add(size);
+                if(size <= maxWidth) {                    
+                    sizes.add(size);
+                }
             } catch (NullPointerException | NumberFormatException e) {
                 //                logger.warn("Cannot parse " + string + " as int");
             }
+        }
+        if(sizes.isEmpty()) {
+            sizes.add(maxWidth);
         }
         return sizes;
     }
