@@ -79,7 +79,7 @@ public class ExternalImageResource extends ImageResource {
      */
     public ExternalImageResource(
             @Context ContainerRequestContext context, @Context HttpServletRequest request, @Context HttpServletResponse response,
-            @Context AbstractApiUrlManager urls,
+            @Context ApiUrls urls,
             @Parameter(description = "URL of the image") @PathParam("filename") String imageUrl) {
         super(context, request, response, "", imageUrl);
         request.setAttribute(FilterTools.ATTRIBUTE_FILENAME, imageUrl);
@@ -126,14 +126,14 @@ public class ExternalImageResource extends ImageResource {
             
         }
         
-        return super.getPdf("full", "max", "0", pi + "_" + filename + ".pdf");
+        return super.getPdf();
     }
     
     @Override
     @GET
     @Produces({ MediaType.APPLICATION_JSON, MEDIA_TYPE_APPLICATION_JSONLD })
     @ContentServerImageInfoBinding
-    @Operation(tags = { "records", "iiif" }, summary = "IIIF image identifier for the given filename. Returns a IIIF image information object")
+    @Operation(tags = { "records", "iiif" }, summary = "IIIF image identifier for the given filename. Returns a IIIF 2.1.1 image information object")
     public Response redirectToCanonicalImageInfo() throws ContentLibException {
        return super.redirectToCanonicalImageInfo();
     }

@@ -774,18 +774,19 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
-    public boolean isAltoAvailable() throws IndexUnreachableException, DAOException {
+    public boolean isAltoAvailable() {
         String filename = null;
         try {
             filename = FileTools.getFilenameFromPathString(getAltoFileName());
-        } catch (FileNotFoundException e) {
-        }
         if (StringUtils.isBlank(filename)) {
             return false;
         }
 
         return AccessConditionUtils.checkAccessPermissionByIdentifierAndFileNameWithSessionMap(BeanUtils.getRequest(), getPi(), filename,
                 IPrivilegeHolder.PRIV_VIEW_FULLTEXT);
+        } catch (FileNotFoundException | IndexUnreachableException | DAOException e) {
+            return false;
+        }
     }
 
     /**

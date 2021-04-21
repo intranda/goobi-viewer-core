@@ -41,6 +41,7 @@ import org.slf4j.LoggerFactory;
 import de.intranda.api.iiif.image.ImageInformation;
 import de.intranda.api.iiif.image.ImageProfile;
 import de.intranda.api.iiif.image.ImageTile;
+import de.intranda.api.iiif.image.v3.ImageInformation3;
 import de.unigoettingen.sub.commons.contentlib.imagelib.ImageFileFormat;
 import de.unigoettingen.sub.commons.contentlib.imagelib.ImageType;
 import de.unigoettingen.sub.commons.contentlib.servlet.rest.ContentServerImageInfoBinding;
@@ -191,7 +192,7 @@ public class ImageInformationFilter implements ContainerResponseFilter {
      * @return
      */
     private static ImageType getImageType(ImageInformation info) {
-        String id = info.getId();
+        String id = info.getId().toString();
         ImageFileFormat iff = ImageFileFormat.getImageFileFormatFromFileExtension(id);
         if (iff != null) {
             return new ImageType(iff);
@@ -201,17 +202,24 @@ public class ImageInformationFilter implements ContainerResponseFilter {
     }
 
     private static void setMaxImageSizes(ImageInformation info) {
-        Optional<ImageProfile> profile = info.getProfiles().stream().filter(p -> p instanceof ImageProfile).map(p -> (ImageProfile) p).findFirst();
-        profile.ifPresent(p -> {
+        if(info instanceof ImageInformation3) {
             int maxWidth = DataManager.getInstance().getConfiguration().getViewerMaxImageWidth();
             int maxHeight = DataManager.getInstance().getConfiguration().getViewerMaxImageHeight();
-            if (maxWidth > 0) {
-                p.setMaxWidth(maxWidth);
-            }
-            if (maxHeight > 0) {
-                p.setMaxHeight(maxHeight);
-            }
-        });
+            ((ImageInformation3) info).setMaxWidth(maxWidth);
+            ((ImageInformation3) info).setMaxHeight(maxHeight);
+        } else {            
+            Optional<ImageProfile> profile = info.getProfiles().stream().filter(p -> p instanceof ImageProfile).map(p -> (ImageProfile) p).findFirst();
+            profile.ifPresent(p -> {
+                int maxWidth = DataManager.getInstance().getConfiguration().getViewerMaxImageWidth();
+                int maxHeight = DataManager.getInstance().getConfiguration().getViewerMaxImageHeight();
+                if (maxWidth > 0) {
+                    p.setMaxWidth(maxWidth);
+                }
+                if (maxHeight > 0) {
+                    p.setMaxHeight(maxHeight);
+                }
+            });
+        }
     }
 
     /**

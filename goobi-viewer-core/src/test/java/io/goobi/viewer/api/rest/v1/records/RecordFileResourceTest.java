@@ -45,7 +45,7 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
-import io.goobi.viewer.api.rest.AbstractRestApiTest;
+import io.goobi.viewer.api.rest.v1.AbstractRestApiTest;
 
 /**
  * @author florian

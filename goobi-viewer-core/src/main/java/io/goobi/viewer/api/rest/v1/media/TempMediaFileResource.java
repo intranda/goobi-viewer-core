@@ -15,7 +15,10 @@
  */
 package io.goobi.viewer.api.rest.v1.media;
 
-import static io.goobi.viewer.api.rest.v1.ApiUrls.*;
+import static io.goobi.viewer.api.rest.v1.ApiUrls.TEMP_MEDIA_FILES;
+import static io.goobi.viewer.api.rest.v1.ApiUrls.TEMP_MEDIA_FILES_FILE;
+import static io.goobi.viewer.api.rest.v1.ApiUrls.TEMP_MEDIA_FILES_FOLDER;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
@@ -24,7 +27,6 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -53,9 +55,9 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import io.goobi.viewer.api.rest.AbstractApiUrlManager;
 import io.goobi.viewer.api.rest.bindings.AdminLoggedInBinding;
 import io.goobi.viewer.api.rest.bindings.ViewerRestServiceBinding;
+import io.goobi.viewer.api.rest.v1.ApiUrls;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.managedbeans.CreateRecordBean;
@@ -79,7 +81,7 @@ public class TempMediaFileResource {
     @Context
     protected HttpServletResponse servletResponse;
     @Inject
-    AbstractApiUrlManager urls;
+    ApiUrls urls;
 
     /**
      * Upload a file to the hotfolder

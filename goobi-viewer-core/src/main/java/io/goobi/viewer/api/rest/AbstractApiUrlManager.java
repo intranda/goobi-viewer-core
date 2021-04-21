@@ -62,7 +62,6 @@ public abstract class AbstractApiUrlManager {
         if (url.startsWith(within)) {
             return url.substring(within.length());
         }
-
         return url;
     }
 
@@ -290,6 +289,11 @@ public abstract class AbstractApiUrlManager {
             logger.error(e.getMessage());
             return new ApiInfo();
         }
+    }
+    
+    public static enum Version  {
+            v1,
+            v2;
     }
 
 }
