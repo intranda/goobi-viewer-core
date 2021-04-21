@@ -121,10 +121,10 @@ public class RecordPageResource {
     @GET
     @javax.ws.rs.Path(RECORDS_PAGES_SEQUENCE)
     @Produces({ MediaType.APPLICATION_JSON })
-    @Operation(tags = { "records", "iiif" }, summary = "Get IIIF base sequence")
+    @Operation(tags = { "records", "iiif" }, summary = "Get IIIF 2.1.1 base sequence")
     @IIIFPresentationBinding
     public IPresentationModelElement getSequence(@Parameter(
-            description = "Build mode for manifes to select type of resources to include. Default is 'iiif' which returns the full IIIF manifest with all resources. 'thumbs' Does not read width and height of canvas resources and 'iiif_simple' ignores all resources from files") @QueryParam("mode") String mode,
+            description = "Build mode for manifest to select type of resources to include. Default is 'iiif' which returns the full IIIF manifest with all resources. 'thumbs' Does not read width and height of canvas resources and 'iiif_simple' ignores all resources from files") @QueryParam("mode") String mode,
             @Parameter(
                     description = "Set prefered goobi-viewer view for rendering attribute of canvases. Only valid values is 'fullscreen', any other value results in default object/image view being referenced.") @QueryParam("preferedView") String preferedView)
 
@@ -139,7 +139,7 @@ public class RecordPageResource {
     @GET
     @javax.ws.rs.Path(RECORDS_PAGES_CANVAS)
     @Produces({ MediaType.APPLICATION_JSON })
-    @Operation(tags = { "records", "iiif" }, summary = "Get IIIF canvas for a page")
+    @Operation(tags = { "records", "iiif" }, summary = "Get IIIF 2.1.1 canvas for a page")
     @IIIFPresentationBinding
     public IPresentationModelElement getCanvas(
             @Parameter(description = "Page numer (1-based") @PathParam("pageNo") Integer pageNo)

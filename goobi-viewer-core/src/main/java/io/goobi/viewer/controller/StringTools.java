@@ -534,4 +534,22 @@ public class StringTools {
 
         return value.charAt(0) == 0x1;
     }
+
+    /**
+     * Try to parse the given String as integer and return it. If it fails, return an empty optional
+     * 
+     * @param width
+     * @return An Optional containeing the parsed integer , or an empty optional if parsing failed
+     */
+    public static Optional<Integer> toInt(String s) {
+        if(StringUtils.isBlank(s) || !s.matches("\\d+")) {
+            return Optional.empty();
+        } else {
+            try {
+                return Optional.of(Integer.parseInt(s));
+            } catch(NumberFormatException e) {
+                return Optional.empty();
+            }
+        }
+    }
 }

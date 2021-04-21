@@ -131,7 +131,7 @@ public class FilterTools {
         }
 
         boolean isThumb =
-                "full".equalsIgnoreCase(region) && imageWidth <= DataManager.getInstance().getConfiguration().getUnconditionalImageAccessMaxWidth();
+                "full".equalsIgnoreCase(region) && imageWidth <= DataManager.getInstance().getConfiguration().getThumbnailImageAccessMaxWidth();
         return isThumb;
     }
 }

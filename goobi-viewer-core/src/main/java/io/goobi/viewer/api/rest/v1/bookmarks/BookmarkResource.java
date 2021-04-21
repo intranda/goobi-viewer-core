@@ -250,7 +250,7 @@ public class BookmarkResource {
     @Produces({ MediaType.APPLICATION_JSON })
     @Operation(
             tags = { "bookmarks", "iiif" },
-            summary = "Get a bookmarklist owned by the current user by its id and return it as a IIIF Presentation collection resource. If not logged in, the single bookmark list stored in the session is always returned")
+            summary = "Get a bookmarklist owned by the current user by its id and return it as a IIIF Presentation 2.1.1 collection resource. If not logged in, the single bookmark list stored in the session is always returned")
     @ApiResponse(responseCode = "404", description = "Bookmark list not found")
     @ApiResponse(responseCode = "500", description = "Error querying database")
     public Collection2 getBookmarkListAsIIIFCollection(
@@ -364,7 +364,7 @@ public class BookmarkResource {
     @Produces({ MediaType.APPLICATION_JSON })
     @Operation(
             tags = { "bookmarks", "iiif" },
-            summary = "Get a public or shared bookmark list by its share key as a IIIF collection")
+            summary = "Get a public or shared bookmark list by its share key as a IIIF Presentation 2.1.1 collection")
     @ApiResponse(responseCode = "404", description = "Bookmark list not found")
     @ApiResponse(responseCode = "500", description = "Error querying database")
     @IIIFPresentationBinding

@@ -95,7 +95,7 @@ public class RecordResource {
     @GET
     @javax.ws.rs.Path(RECORDS_MANIFEST)
     @Produces({ MediaType.APPLICATION_JSON })
-    @Operation(tags = { "records", "iiif" }, summary = "Get IIIF manifest for record")
+    @Operation(tags = { "records", "iiif" }, summary = "Get IIIF 3.0 manifest for record")
     @IIIFPresentationBinding
     public IPresentationModelElement getManifest()
             throws PresentationException, IndexUnreachableException, URISyntaxException, ViewerConfigurationException,
