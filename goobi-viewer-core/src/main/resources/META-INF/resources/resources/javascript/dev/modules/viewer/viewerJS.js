@@ -185,7 +185,6 @@ var viewerJS = (function () {
             	if(collapseLink) {
             		this.initDrillDownFilters();
             	}
-            	console.log("ajax success", collapseLink);
         	});
         }
 

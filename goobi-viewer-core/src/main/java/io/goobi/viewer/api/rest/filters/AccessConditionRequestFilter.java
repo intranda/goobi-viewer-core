@@ -43,6 +43,7 @@ import de.unigoettingen.sub.commons.contentlib.imagelib.transform.Scale.Absolute
 import de.unigoettingen.sub.commons.contentlib.imagelib.transform.Scale.RelativeScale;
 import de.unigoettingen.sub.commons.contentlib.servlet.rest.ContentExceptionMapper.ErrorMessage;
 import de.unigoettingen.sub.commons.contentlib.servlet.rest.ContentServerImageBinding;
+import de.unigoettingen.sub.commons.contentlib.servlet.rest.ImageResource;
 import io.goobi.viewer.api.rest.bindings.AccessConditionBinding;
 import io.goobi.viewer.controller.Configuration;
 import io.goobi.viewer.controller.DataManager;
@@ -92,6 +93,7 @@ public class AccessConditionRequestFilter implements ContainerRequestFilter {
                 String logid = (String) servletRequest.getAttribute(FilterTools.ATTRIBUTE_LOGID);
                 String filename = (String) servletRequest.getAttribute(FilterTools.ATTRIBUTE_FILENAME);
 
+
             if ( StringUtils.isBlank(filename) || 
                       (!BeanUtils.getImageDeliveryBean().isExternalUrl(filename) 
                     && !BeanUtils.getImageDeliveryBean().isPublicUrl(filename)
@@ -101,8 +103,9 @@ public class AccessConditionRequestFilter implements ContainerRequestFilter {
                 FilterTools.filterForConcurrentViewLimit(pi, servletRequest);
             }
         } catch (ServiceNotAllowedException e) {
-            Response response = Response.status(Status.FORBIDDEN).type(responseMediaType).entity(new ErrorMessage(Status.FORBIDDEN, e, false)).build();
-            request.abortWith(response);
+            servletRequest.setAttribute(ImageResource.REQUEST_ATTRIBUTE_ERROR, e);
+//            Response response = Response.status(Status.FORBIDDEN).type(responseMediaType).entity(new ErrorMessage(Status.FORBIDDEN, e, false)).build();
+//            request.abortWith(response);
         } catch (ViewerConfigurationException e) {
             Response response = Response.status(Status.INTERNAL_SERVER_ERROR)
                     .type(responseMediaType)

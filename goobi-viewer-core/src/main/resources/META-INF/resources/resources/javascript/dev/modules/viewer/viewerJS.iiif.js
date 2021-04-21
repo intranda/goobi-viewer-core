@@ -271,6 +271,8 @@ var viewerJS = ( function( viewer ) {
 		    getId(element) {
 			    if(element == undefined) {
 			    	return undefined;
+			    } else if(viewerJS.isString(element)) {
+			    	return element;
 			    } else if(element.id) {
 		    		return element.id;
 		    	} else {
