@@ -87,17 +87,30 @@ public class RecordsFilesImageResource extends ImageResource {
         request.setAttribute(FilterTools.ATTRIBUTE_FILENAME, filename);
         request.setAttribute(AccessConditionRequestFilter.REQUIRED_PRIVILEGE, IPrivilegeHolder.PRIV_VIEW_IMAGES);
         String requestUrl = request.getRequestURI();
-        String baseImageUrl = urls.path(ApiUrls.RECORDS_FILES_IMAGE).params(pi, filename).build();
-        String imageRequestPath = requestUrl.replace(baseImageUrl, "");
+        String baseImageUrl = RECORDS_FILES_IMAGE.replace("{pi}", pi).replace("{filename}", filename);//urls.path(ApiUrls.RECORDS_FILES_IMAGE).params(pi, filename).build();
+        int baseStartIndex = requestUrl.indexOf(baseImageUrl);
+        int baseEndIndex = baseStartIndex + baseImageUrl.length();
+        String imageRequestPath = requestUrl.substring(baseEndIndex);
 
         List<String> parts = Arrays.stream(imageRequestPath.split("/")).filter(StringUtils::isNotBlank).collect(Collectors.toList());
         if(parts.size() == 4) {
             //image request
+            String region = parts.get(0);
+            String size = parts.get(1);
+            Scale scale = Scale.MAX;
+            try {
+                scale = Scale.getScaleMethod(size);
+            } catch (IllegalRequestException | ServiceNotImplementedException e) {
+            }
+            Optional<Integer> scaleWidth = StringTools.toInt(scale.getWidth());
             request.setAttribute("iiif-info", false);
-            request.setAttribute("iiif-region", parts.get(0));
-            request.setAttribute("iiif-size", parts.get(1));
+            request.setAttribute("iiif-region", region);
+            request.setAttribute("iiif-size", size);
             request.setAttribute("iiif-rotation", parts.get(2));
             request.setAttribute("iiif-format", parts.get(3));
+            if(!(RegionRequest.FULL.equals(region) || RegionRequest.SQUARE.equals(region)) || scaleWidth.orElse(Integer.MAX_VALUE) > DataManager.getInstance().getConfiguration().getUnzoomedImageAccessMaxWidth()) {
+                request.setAttribute(AccessConditionRequestFilter.REQUIRED_PRIVILEGE, new String[] {IPrivilegeHolder.PRIV_VIEW_IMAGES, IPrivilegeHolder.PRIV);
+            }
         } else {
             //image info request
             request.setAttribute("iiif-info", true);
