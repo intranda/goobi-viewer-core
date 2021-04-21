@@ -185,16 +185,7 @@ public class TranslationGroup {
      * @return Number of fully translated entries
      */
     public Integer getPartiallyTranslatedEntryCount() {
-        if (fullyTranslated == null) {
-            fullyTranslated = 0;
-            for (MessageEntry key : getAllEntries()) {
-                if (key.getTranslationStatus().equals(TranslationStatus.FULL)) {
-                    fullyTranslated++;
-                }
-            }
-        }
-
-        return getFullyTranslatedEntryCount() - getPartiallyTranslatedEntryCount();
+        return getEntryCount() - getFullyTranslatedEntryCount();
     }
 
     /**
