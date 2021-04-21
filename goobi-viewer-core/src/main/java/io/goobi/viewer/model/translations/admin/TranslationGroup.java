@@ -236,7 +236,7 @@ public class TranslationGroup {
      * 
      * @return Percentage represented by fully translated entries
      */
-    public double getFullTranslatedEntryCountPercentage() {
+    public double getFullyTranslatedEntryCountPercentage() {
         return getFullyTranslatedEntryCount() * 100.0 / getEntryCount();
     }
 
