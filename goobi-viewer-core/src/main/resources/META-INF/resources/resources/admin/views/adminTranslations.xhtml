@@ -31,33 +31,41 @@
                                 <h:outputText value="#{msg.admin__translations_description_text}" escape="false" />
                             </div>
 
-                            <div class="admin__entry-list -w33">
+                            <div class="admin__entry-list">
                                 <!--  TRANSLATION GROUPS -->
                                 <ui:repeat var="group" value="#{adminBean.configuredTranslationGroups}">
-                                    <div class="admin__boxed-entry -w33">
+                                    <div class="admin__boxed-entry -w100 -std-bottom-pad">
                                         <div class="row">
-                                            <h3 class="col-12">#{group.name}</h3>
-                                        </div>
-                                        <!-- DESCRIPTION -->
-                                        <div class="row">
+                                        	<div class="col-9">
+                                        	<!-- GROUP TITLE -->
+                                            <h3>#{group.name}</h3>
+                                            
+                                       		<!-- DESCRIPTION -->
                                             <ui:fragment rendered="#{group.description ne ''}">
-                                                <p class="col-12 admin__boxed-entry-description">#{group.description}</p>
+                                                <p class="admin__boxed-entry-description">#{group.description}</p>
                                             </ui:fragment>
                                             <ui:fragment rendered="#{group.description eq ''}">
-                                                <p class="col-12 admin__boxed-entry-description-empty" aria-disabled="true">
+                                                <p class="admin__boxed-entry-description-empty" aria-disabled="true">
                                                     (#{msg.admin__label__no_description_available})
                                                 </p>
                                             </ui:fragment>
-                                        </div>
-                                        <!-- ACTIONS -->
-                                        <div class="row admin__boxed-entry-actions">
-                                            <div class="col-3 d-flex">
-                                                <!-- EDIT -->
-                                                <a href="#{navigationHelper.applicationUrl}admin/translations/edit/#{group.id}/"
-                                                    aria-label="#{msg.edit}: #{msg[group.name]}">#{msg.edit}</a>
+                                            
                                             </div>
-                                        </div>
-                                        (#{group.fullyTranslatedEntryCount} #{msg.of} #{group.entryCount})
+                                            
+											<div class="col-3 d-flex justify-content-end">
+												<div class="d-flex flex-column align-items-center">
+												<a class="btn btn--full" href="#{navigationHelper.applicationUrl}admin/translations/edit/#{group.id}/"
+		                                                		aria-label="#{msg.edit}: #{msg[group.name]}">#{msg.admin__translate_now}</a>
+		                                        <div class="admin__translations-overview-number">(#{group.fullyTranslatedEntryCount} #{msg.of} #{group.entryCount})</div>	
+												</div>
+											</div>
+											
+										</div>
+										
+										<div class="admin__boxed-entry-progress">
+											<div class="admin__boxed-entry-progress-complete" style="flex: 0 0 #{group.fullyTranslatedEntryCountPercentage}%; max-width: #{group.fullyTranslatedEntryCountPercentage}%;"></div>
+											<div class="admin__boxed-entry-progress-partially" style="flex: 0 0 #{group.partiallyTranslatedEntryCountPercentage}%; max-width: #{group.partiallyTranslatedEntryCountPercentage}%;"></div>
+										</div>
                                     </div>
                                 </ui:repeat>
                             </div>

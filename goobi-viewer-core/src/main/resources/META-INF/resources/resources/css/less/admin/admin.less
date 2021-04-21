@@ -323,13 +323,31 @@
             }
 	    }
 	}
-	
+	&__boxed-entry-progress {
+		background: #eeeeee;
+		height: 10px;
+		width: 100%;
+		position: absolute;
+		bottom: 0;
+		left: 0;
+		display: flex;
+	}
+	&__boxed-entry-progress-complete {
+		background: #d4edda;
+	}
+	&__boxed-entry-progress-partially {
+		background: rgba(243,208,70,0.4);
+	}
 	&__grab-indicator {
 		padding-top: 6rem;
 	}
 	
 	&__label-required-field {
 		padding-left: 0.5rem;
+		font-size: 1.2rem;
+	}
+	&__translations-overview-number {
+		margin-top: 0.8rem;
 		font-size: 1.2rem;
 	}
 	
