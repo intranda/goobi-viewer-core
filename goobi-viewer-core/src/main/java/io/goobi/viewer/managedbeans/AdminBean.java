@@ -91,6 +91,10 @@ public class AdminBean implements Serializable {
 
     private static final int DEFAULT_ROWS_PER_PAGE = 15;
 
+    private static final Object TRANSLATION_LOCK = new Object();
+
+    private static String translationGroupsEditorSession = null;
+
     private TableDataProvider<User> lazyModelUsers;
     private TableDataProvider<Comment> lazyModelComments;
 
@@ -201,6 +205,7 @@ public class AdminBean implements Serializable {
                 @Override
                 public void resetTotalNumberOfRecords() {
                 }
+
             });
             lazyModelComments.setEntriesPerPage(DEFAULT_ROWS_PER_PAGE);
             lazyModelComments.setFilters("text_owner-nickName_owner-email");
@@ -1482,7 +1487,15 @@ public class AdminBean implements Serializable {
      * @return the currentTranslationGroup
      */
     public TranslationGroup getCurrentTranslationGroup() {
-        return currentTranslationGroup;
+        synchronized (TRANSLATION_LOCK) {
+            if (translationGroupsEditorSession != null && !translationGroupsEditorSession.equals(BeanUtils.getSession().getId())) {
+                logger.trace("Translation locked");
+                Messages.error("Translation already in use");
+                return null;
+            }
+
+            return currentTranslationGroup;
+        }
     }
 
     /**
@@ -1497,11 +1510,18 @@ public class AdminBean implements Serializable {
      * @return
      */
     public int getCurrentTranslationGroupId() {
-        if (currentTranslationGroup != null) {
-            return DataManager.getInstance().getConfiguration().getTranslationGroups().indexOf(currentTranslationGroup);
-        }
+        synchronized (TRANSLATION_LOCK) {
+            if (translationGroupsEditorSession != null && !translationGroupsEditorSession.equals(BeanUtils.getSession().getId())) {
+                logger.trace("Translation locked");
+                Messages.error("Translation already in use");
+                return 0;
+            }
+            if (currentTranslationGroup != null) {
+                return DataManager.getInstance().getConfiguration().getTranslationGroups().indexOf(currentTranslationGroup);
+            }
 
-        return 0;
+            return 0;
+        }
     }
 
     /**
@@ -1871,8 +1891,42 @@ public class AdminBean implements Serializable {
      * @return
      */
     public List<TranslationGroup> getConfiguredTranslationGroups() {
-        List<TranslationGroup> ret = DataManager.getInstance().getConfiguration().getTranslationGroups();
-        logger.trace("groups: {}", ret.size());
-        return ret;
+        synchronized (TRANSLATION_LOCK) {
+            if (isTranslationLocked()) {
+                logger.trace("Translation locked");
+                Messages.error("Translation already in use");
+                return Collections.emptyList();
+            }
+
+            List<TranslationGroup> ret = DataManager.getInstance().getConfiguration().getTranslationGroups();
+            logger.trace("groups: {}", ret.size());
+            setTranslationGroupsEditorSession(BeanUtils.getSession().getId());
+            logger.trace("Locked translation for: {}", translationGroupsEditorSession);
+            return ret;
+        }
     }
+
+    /**
+     * 
+     * @return
+     */
+    public boolean isTranslationLocked() {
+        return translationGroupsEditorSession != null && !translationGroupsEditorSession.equals(BeanUtils.getSession().getId());
+    }
+
+    /**
+     * @return the translationGroupsEditorSession
+     */
+    public static String getTranslationGroupsEditorSession() {
+        return translationGroupsEditorSession;
+    }
+
+    /**
+     * @param translationGroupsEditorSession the translationGroupsEditorSession to set
+     */
+    public static void setTranslationGroupsEditorSession(String translationGroupsEditorSession) {
+        logger.trace("setTranslationGroupsEditorSession: {}", translationGroupsEditorSession);
+        AdminBean.translationGroupsEditorSession = translationGroupsEditorSession;
+    }
+
 }

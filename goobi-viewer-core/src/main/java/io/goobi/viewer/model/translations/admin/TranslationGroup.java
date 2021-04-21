@@ -282,6 +282,10 @@ public class TranslationGroup {
         }
     }
 
+    /**
+     * 
+     * @param entry
+     */
     public static void saveEntry(MessageEntry entry) {
         if (entry == null) {
             return;

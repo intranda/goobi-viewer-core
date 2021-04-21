@@ -16,7 +16,9 @@
     <ui:define name="content">
         <f:view contentType="text/html" encoding="utf-8">
             <div id="adminTranslations">
-                <h:panelGroup rendered="#{userBean.admin}">
+                <h:outputText rendered="#{userBean.admin and adminBean.translationLocked}" value="#{msg.admin__translation_locked}" />
+                
+                <h:panelGroup rendered="#{userBean.admin and !adminBean.translationLocked}">
                     <h:form id="adminTranslations" prependId="false">
                         <div class="admin__title-bar">
                             <!-- TITLE -->
