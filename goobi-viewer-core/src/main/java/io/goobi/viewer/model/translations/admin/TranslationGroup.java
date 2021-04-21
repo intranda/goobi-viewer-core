@@ -295,32 +295,49 @@ public class TranslationGroup {
 
     /**
      * Sets the previous {@link MessageEntry} element in the list active.
-     * 
-     * @should jump to last element when moving past first
      */
     public void prevEntry() {
-        if (getAllEntries() != null && !allEntries.isEmpty()) {
-            selectedEntryIndex--;
-            if (selectedEntryIndex == -1) {
-                selectedEntryIndex = allEntries.size() - 1;
-            }
-            setSelectedEntry(allEntries.get(selectedEntryIndex));
-        }
+        selectEntry(-1);
     }
 
     /**
      * Sets the next {@link MessageEntry} element in the list active.
-     * 
-     * @should jump to first element when moving past last
      */
     public void nextEntry() {
-        if (getAllEntries() != null && !allEntries.isEmpty()) {
-            selectedEntryIndex++;
-            if (selectedEntryIndex == allEntries.size()) {
+        selectEntry(1);
+    }
+
+    /**
+     * 
+     * @param step
+     * @should only select unfinished entries
+     * @should resume at the end when moving past first element
+     * @should resume at the beginning when moving past last element
+     * 
+     */
+    void selectEntry(int step) {
+        if (getAllEntries() == null || getAllEntries().isEmpty()) {
+            return;
+        }
+
+        int startIndex = selectedEntryIndex;
+        MessageEntry entry = selectedEntry;
+        while (entry == null || entry.equals(selectedEntry) || entry.getTranslationStatus().equals(TranslationStatus.FULL)) {
+            selectedEntryIndex += step;
+            // After a full circle (no unfinished entries left), reset to the current entry
+            if (selectedEntryIndex == startIndex) {
+                entry = selectedEntry;
+                break;
+            }
+            if (step < 0 && selectedEntryIndex == -1) {
+                selectedEntryIndex = allEntries.size() - 1;
+            }
+            if (step > 0 && selectedEntryIndex == allEntries.size()) {
                 selectedEntryIndex = 0;
             }
-            setSelectedEntry(allEntries.get(selectedEntryIndex));
+            entry = allEntries.get(selectedEntryIndex);
         }
+        setSelectedEntry(entry);
     }
 
     /**
