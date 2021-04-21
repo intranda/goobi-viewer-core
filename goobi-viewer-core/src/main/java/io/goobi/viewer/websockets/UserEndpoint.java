@@ -33,6 +33,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import io.goobi.viewer.controller.DataManager;
+import io.goobi.viewer.managedbeans.AdminBean;
 
 /**
  * Endpoint that maps HTTP session IDs to connected web sockets.
@@ -111,9 +112,16 @@ public class UserEndpoint {
             @Override
             public void run() {
                 if (sessionClearTimers.containsKey(sessionId)) {
+                    // Remove record locks
                     int count = DataManager.getInstance().getRecordLockManager().removeLocksForSessionId(sessionId, null);
                     // logger.trace("Removed {} record locks for session '{}'.", count, sessionId);
                     sessionClearTimers.remove(sessionId);
+
+                    // Remove translation editing lock
+                    if (sessionId.equals(AdminBean.getTranslationGroupsEditorSession())) {
+                        AdminBean.setTranslationGroupsEditorSession(null);
+                        logger.trace("Removed translation editing lock for session '{}'.", sessionId);
+                    }
                 } else {
                     // logger.trace("Session {} has been refreshed and won't be cleared", sessionId);
                 }

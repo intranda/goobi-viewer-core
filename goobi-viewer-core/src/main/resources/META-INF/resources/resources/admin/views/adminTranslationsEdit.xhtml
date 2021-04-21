@@ -22,7 +22,8 @@
                     <h:form id="adminTranslationsEditForm" prependId="false">
                         <div class="admin__title-bar">
                             <!-- TITLE -->
-                            <h2 class="admin__title">#{msg.admin__translations}</h2>
+                            <h2 class="admin__title">#{msg[adminBean.currentTranslationGroup.name]}</h2>
+                            <p>#{msg[adminBean.currentTranslationGroup.description]}</p>
                         </div>
                         
                         <div class="admin__content-inner-content">
