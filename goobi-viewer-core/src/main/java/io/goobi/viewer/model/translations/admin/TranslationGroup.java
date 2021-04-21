@@ -76,7 +76,8 @@ public class TranslationGroup {
     private List<MessageEntry> allEntries;
     private MessageEntry selectedEntry;
     private int selectedEntryIndex = 0;
-    private Integer fullyTranslated = null;
+    private Integer untranslatedEntryCount;
+    private Integer fullyTranslatedEntryCount = null;
 
     /**
      * Factory method.
@@ -162,21 +163,24 @@ public class TranslationGroup {
     }
 
     /**
+     * 
+     * @return Number of entries with no translations at all
+     */
+    public Integer getUntranslatedEntryCount() {
+        if (untranslatedEntryCount == null) {
+            untranslatedEntryCount = getEntryStatusCount(TranslationStatus.NONE);
+        }
+
+        return untranslatedEntryCount;
+    }
+
+    /**
      * Returns the number of entries which finished (non-zzz) translations for at least one but less than all languages.
      * 
      * @return Number of partially translated entries
      */
-    public Integer getFullyTranslatedEntryCount() {
-        if (fullyTranslated == null) {
-            fullyTranslated = 0;
-            for (MessageEntry key : getAllEntries()) {
-                if (key.getTranslationStatus().equals(TranslationStatus.FULL)) {
-                    fullyTranslated++;
-                }
-            }
-        }
-
-        return fullyTranslated;
+    public Integer getPartiallyTranslatedEntryCount() {
+        return getEntryCount() - getFullyTranslatedEntryCount() - getUntranslatedEntryCount();
     }
 
     /**
@@ -184,8 +188,56 @@ public class TranslationGroup {
      * 
      * @return Number of fully translated entries
      */
-    public Integer getPartiallyTranslatedEntryCount() {
-        return getEntryCount() - getFullyTranslatedEntryCount();
+    public Integer getFullyTranslatedEntryCount() {
+        if (fullyTranslatedEntryCount == null) {
+            fullyTranslatedEntryCount = getEntryStatusCount(TranslationStatus.FULL);
+        }
+
+        return fullyTranslatedEntryCount;
+    }
+
+    /**
+     * 
+     * @param status
+     * @return Count of entries with the given <code>status</code>
+     */
+    int getEntryStatusCount(TranslationStatus status) {
+        if (status == null) {
+            throw new IllegalArgumentException("status may not be null");
+        }
+
+        int count = 0;
+        for (MessageEntry key : getAllEntries()) {
+            if (key.getTranslationStatus().equals(status)) {
+                count++;
+            }
+        }
+
+        return count;
+    }
+
+    /**
+     * 
+     * @return Percentage represented by untranslated entries
+     */
+    public double getUntranslatedEntryCountPercentage() {
+        return getUntranslatedEntryCount() * 100.0 / getEntryCount();
+    }
+
+    /**
+     * 
+     * @return Percentage represented by partially translated entries
+     */
+    public double getPartiallyTranslatedEntryCountPercentage() {
+        return getPartiallyTranslatedEntryCount() * 100.0 / getEntryCount();
+    }
+
+    /**
+     * 
+     * @return Percentage represented by fully translated entries
+     */
+    public double getFullTranslatedEntryCountPercentage() {
+        return getFullyTranslatedEntryCount() * 100.0 / getEntryCount();
     }
 
     /**
