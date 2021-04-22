@@ -36,7 +36,7 @@
                                 <ui:repeat var="group" value="#{adminBean.configuredTranslationGroups}">
                                     <div class="admin__boxed-entry -w100 -std-bottom-pad">
                                         <div class="row">
-                                        	<div class="col-9">
+                                        	<div class="col-12 col-lg-9">
                                         	<!-- GROUP TITLE -->
                                             <h3>#{msg[group.name]}</h3>
                                             
@@ -52,13 +52,23 @@
                                             
                                             </div>
                                             
-											<div class="col-3 d-flex justify-content-end">
+											<div class="col-12 col-lg-3 d-flex justify-content-center justify-content-lg-end">
 												<div class="d-flex flex-column align-items-center">
+												
+												<ui:fragment rendered="#{group.fullyTranslatedEntryCount != group.entryCount}">
 												<a class="btn btn--full" href="#{navigationHelper.applicationUrl}admin/translations/edit/#{group.id}/"
 		                                                		aria-label="#{msg.edit}: #{msg[group.name]}">#{msg.admin__translate_now}</a>
 		                                        <div class="admin__translations-overview-number">(#{group.fullyTranslatedEntryCount} #{msg.of} #{group.entryCount})</div>	
+												</ui:fragment>
+												
+												<ui:fragment rendered="#{group.fullyTranslatedEntryCount == group.entryCount}">
+												<a class="btn btn--default" href="#{navigationHelper.applicationUrl}admin/translations/edit/#{group.id}/"
+		                                                		aria-label="#{msg.edit}: #{msg[group.name]}">#{msg.show}</a>	
+												</ui:fragment>
+												
 												</div>
 											</div>
+											
 											
 										</div>
 										

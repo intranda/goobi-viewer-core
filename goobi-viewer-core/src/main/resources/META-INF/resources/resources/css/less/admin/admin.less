@@ -338,6 +338,54 @@
 	&__boxed-entry-progress-partially {
 		background: rgba(243,208,70,0.4);
 	}
+	&__sidebar-progressbar {
+		background: #eeeeee;
+		height: 10px;
+		width: 100%;
+		display: flex;
+	}
+	&__sidebar-progressbar-complete {
+		background: #d4edda;
+	}
+	&__sidebar-progress-header {
+		display: flex;
+	}
+	&__sidebar-progress-count {
+		text-align: right;
+		margin-left: auto;
+		font-size: 14px;
+		align-self: center;
+	}
+	&__sidebar-progressbar-partially {
+		background: rgba(243,208,70,0.4);
+	}
+	&__translations-all-keys-list div:last-child {
+	    border-bottom: 1px solid #ccc;
+	}
+	&__translations-not-translated,
+	&__translations-partially-translated,
+	&__translations-fully-translated {
+		word-wrap: break-word;
+		padding: 0.5rem 1rem;
+		border-top: 1px solid #ccc;
+		border-left: 1px solid #ccc;
+		border-right: 1px solid #ccc;
+		a {
+			display: block;
+		}
+	}
+	&__translations-not-translated {
+		background-color: #EEEEEE;
+	}
+	&__translations-partially-translated {
+		background-color: #F7E3B5;
+	}
+	&__translations-fully-translated {
+		background-color: #D4EDDB;
+	}	
+	&__translations-selected-key {
+		background-color: @white;
+	}
 	&__grab-indicator {
 		padding-top: 6rem;
 	}
@@ -1327,6 +1375,12 @@
 	&__cancel-button {
 		margin-right: 1.5rem;
 		min-width: 120px;
+	}
+	
+	#msgUnfinishedIdentifier {
+		span {
+			display: none;
+		}
 	}
 	
 // BUTTONS MIN-WIDTH
