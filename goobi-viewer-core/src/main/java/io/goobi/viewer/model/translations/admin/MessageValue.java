@@ -15,6 +15,7 @@
  */
 package io.goobi.viewer.model.translations.admin;
 
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -48,6 +49,14 @@ public class MessageValue {
      */
     public boolean isDisplayGlobalValue() {
         return globalValue != null && !globalValue.equals(value);
+    }
+    
+    /**
+     * 
+     * @return true if value is null or empty or contains 'zzz'; false otherwise
+     */
+    public boolean isDisplayHighlight() {
+        return StringUtils.isBlank(value) || value.contains("zzz");
     }
 
     /**

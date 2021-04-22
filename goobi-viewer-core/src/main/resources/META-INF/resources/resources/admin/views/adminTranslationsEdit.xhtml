@@ -50,7 +50,7 @@
                                                     <div class="col-3 control-label admin__form-label">
                                                         <label for="value">#{msg['changeLocal_long_' += value.language]}:</label>
                                                     </div>
-                                                    <div class="col-9 admin__form-input">
+                                                    <div class="col-9 #{value.displayHighlight ? 'admin__form-input-highlight' : 'admin__form-input'}">
                                                         <h:inputTextarea value="#{value.value}" id="value" label="value" immediate="true" styleClass="form-control">
                                                             <f:ajax execute="@form" event="valueChange" />
                                                         </h:inputTextarea>
