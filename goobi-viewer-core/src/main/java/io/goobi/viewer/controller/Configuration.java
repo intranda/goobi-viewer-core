@@ -2834,15 +2834,23 @@ public final class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * <p>
-     * getUnconditionalImageAccessMaxWidth.
-     * </p>
+     * The maximal image size retrievable with only the permission to view thumbnails
      *
      * @should return correct value
-     * @return a int.
+     * @return the maximal image width
      */
-    public int getUnconditionalImageAccessMaxWidth() {
-        return getLocalInt("accessConditions.unconditionalImageAccessMaxWidth", 120);
+    public int getThumbnailImageAccessMaxWidth() {
+        return getLocalInt("accessConditions.thumbnailImageAccessMaxWidth", getLocalInt("accessConditions.unconditionalImageAccessMaxWidth", 120));
+    }
+    
+    /**
+     * The maximal image size retrievable with the permission to view images but without the permission to zoom images
+     *
+     * @should return correct value
+     * @return the maximal image width, default ist 600
+     */
+    public int getUnzoomedImageAccessMaxWidth() {
+        return getLocalInt("accessConditions.unzoomedImageAccessMaxWidth", 0);
     }
 
     /**

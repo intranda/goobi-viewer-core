@@ -18,7 +18,6 @@ package io.goobi.viewer.api.rest.resourcebuilders;
 import java.io.IOException;
 import java.net.URI;
 import java.util.List;
-import java.util.Optional;
 
 import javax.servlet.http.HttpServletResponse;
 
@@ -27,8 +26,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import de.intranda.api.iiif.presentation.content.ImageContent;
+import de.intranda.api.iiif.presentation.v2.Canvas2;
 import de.intranda.api.iiif.presentation.v2.Collection2;
 import de.intranda.api.iiif.presentation.v2.Manifest2;
+import de.intranda.api.iiif.presentation.v2.Sequence;
 import de.intranda.metadata.multilanguage.SimpleMetadataValue;
 import de.unigoettingen.sub.commons.contentlib.exceptions.ContentNotFoundException;
 import de.unigoettingen.sub.commons.contentlib.exceptions.IllegalRequestException;
@@ -161,18 +162,25 @@ public abstract class AbstractBookmarkResourceBuilder {
         collection.setLabel(new SimpleMetadataValue(list.getName()));
         collection.setDescription(new SimpleMetadataValue(list.getDescription()));
         list.getItems().forEach(item -> {
-            try {
-                URI manifestURI = builder.getManifestURI(item.getPi());
-                Manifest2 manifest = new Manifest2(manifestURI);
-                manifest.setLabel(new SimpleMetadataValue(item.getName()));
-                manifest.addThumbnail(new ImageContent(URI.create(item.getRepresentativeImageUrl())));
-                collection.addManifest(manifest);
-            } catch (PresentationException | IndexUnreachableException | ViewerConfigurationException | DAOException e) {
-                logger.error("Failed to add item " + item.getId() + " to manifest");
-            }
+                try {
+                    URI manifestURI = builder.getManifestURI(item.getPi());
+                    Manifest2 manifest = new Manifest2(manifestURI);
+                    manifest.setLabel(new SimpleMetadataValue(item.getName()));
+                    manifest.addThumbnail(new ImageContent(URI.create(item.getRepresentativeImageUrl())));
+                    collection.addManifest(manifest);
+                    if(item.getOrder() != null) {
+                        Canvas2 canvas = new Canvas2(builder.getCanvasURI(item.getPi(), item.getOrder()));
+                        Sequence sequence = new Sequence(builder.getSequenceURI(item.getPi(), ""));
+                        sequence.setStartCanvas(canvas);
+                        manifest.setSequence(sequence);
+                    }
+                } catch (PresentationException | IndexUnreachableException | ViewerConfigurationException | DAOException e) {
+                    logger.error("Failed to add item " + item.getId() + " to manifest");
+                }
         });
         return collection;
     }
+
     
     /**
      * @param shareKey

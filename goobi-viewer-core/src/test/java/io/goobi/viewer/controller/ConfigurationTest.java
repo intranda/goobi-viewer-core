@@ -1006,8 +1006,13 @@ public class ConfigurationTest extends AbstractTest {
      * @verifies return correct value
      */
     @Test
-    public void getUnconditionalImageAccessMaxWidth_shouldReturnCorrectValue() throws Exception {
-        Assert.assertEquals(1, DataManager.getInstance().getConfiguration().getUnconditionalImageAccessMaxWidth());
+    public void getThumbnailImageAccessMaxWidth_shouldReturnCorrectValue() throws Exception {
+        Assert.assertEquals(1, DataManager.getInstance().getConfiguration().getThumbnailImageAccessMaxWidth());
+    }
+    
+    @Test
+    public void getUnzoomedImageAccessMaxWidth_shouldReturnCorrectValue() throws Exception {
+        Assert.assertEquals(2, DataManager.getInstance().getConfiguration().getUnzoomedImageAccessMaxWidth());
     }
 
     /**

@@ -24,6 +24,7 @@ import java.net.URISyntaxException;
 import java.net.URLEncoder;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import javax.servlet.http.HttpServletRequest;
@@ -47,6 +48,8 @@ import de.intranda.api.iiif.image.ImageInformation;
 import de.intranda.api.iiif.image.v3.ImageInformation3;
 import de.unigoettingen.sub.commons.contentlib.exceptions.ContentLibException;
 import de.unigoettingen.sub.commons.contentlib.exceptions.IllegalRequestException;
+import de.unigoettingen.sub.commons.contentlib.imagelib.transform.Region;
+import de.unigoettingen.sub.commons.contentlib.imagelib.transform.RegionRequest;
 import de.unigoettingen.sub.commons.contentlib.servlet.rest.CORSBinding;
 import de.unigoettingen.sub.commons.contentlib.servlet.rest.ContentServerBinding;
 import de.unigoettingen.sub.commons.contentlib.servlet.rest.ContentServerImageInfoBinding;
@@ -58,6 +61,7 @@ import io.goobi.viewer.api.rest.bindings.AccessConditionBinding;
 import io.goobi.viewer.api.rest.filters.AccessConditionRequestFilter;
 import io.goobi.viewer.api.rest.filters.FilterTools;
 import io.goobi.viewer.api.rest.v2.ApiUrls;
+import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.model.security.IPrivilegeHolder;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -92,17 +96,28 @@ public class RecordsFilesImageResource extends ImageResource {
         request.setAttribute(ImageResource.IIIF_VERSION, "3.0");
 
         String requestUrl = request.getRequestURI();
-        String baseImageUrl = urls.path(ApiUrls.RECORDS_FILES_IMAGE).params(pi, filename).build();
-        String imageRequestPath = requestUrl.replace(baseImageUrl, "");
+        String baseImageUrl = RECORDS_FILES_IMAGE.replace("{pi}", pi).replace("{filename}", filename);
+        int baseStartIndex = requestUrl.indexOf(baseImageUrl);
+        int baseEndIndex = baseStartIndex + baseImageUrl.length();
+        String imageRequestPath = requestUrl.substring(baseEndIndex);
 
         List<String> parts = Arrays.stream(imageRequestPath.split("/")).filter(StringUtils::isNotBlank).collect(Collectors.toList());
         if(parts.size() == 4) {
             //image request
+            String region = parts.get(0);
+            String size = parts.get(1);
+            Optional<Integer> scaleWidth = getRequestedWidth(size);
             request.setAttribute("iiif-info", false);
-            request.setAttribute("iiif-region", parts.get(0));
-            request.setAttribute("iiif-size", parts.get(1));
+            request.setAttribute("iiif-region", region);
+            request.setAttribute("iiif-size", size);
             request.setAttribute("iiif-rotation", parts.get(2));
             request.setAttribute("iiif-format", parts.get(3));
+            int maxUnzoomedImageWidth = DataManager.getInstance().getConfiguration().getUnzoomedImageAccessMaxWidth();
+            if(maxUnzoomedImageWidth > 0 &&
+                    (!(Region.FULL_IMAGE.equals(region) || Region.SQUARE_IMAGE.equals(region)) || 
+                    scaleWidth.orElse(Integer.MAX_VALUE) > maxUnzoomedImageWidth)) {
+                request.setAttribute(AccessConditionRequestFilter.REQUIRED_PRIVILEGE, new String[] {IPrivilegeHolder.PRIV_VIEW_IMAGES, IPrivilegeHolder.PRIV_ZOOM_IMAGES});
+            }
         } else {
             //image info request
             request.setAttribute("iiif-info", true);
@@ -140,7 +155,7 @@ public class RecordsFilesImageResource extends ImageResource {
     @GET
     @Produces({ MediaType.APPLICATION_JSON, MEDIA_TYPE_APPLICATION_JSONLD })
     @ContentServerImageInfoBinding
-    @Operation(tags = { "records", "iiif" }, summary = "IIIF image identifier for the given filename. Returns a IIIF image information object")
+    @Operation(tags = { "records", "iiif" }, summary = "IIIF image identifier for the given filename. Returns a IIIF 3.0 image information object")
     public Response redirectToCanonicalImageInfo() throws ContentLibException {
        return super.redirectToCanonicalImageInfo();
     }

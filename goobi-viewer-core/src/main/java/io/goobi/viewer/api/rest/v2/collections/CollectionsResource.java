@@ -64,7 +64,7 @@ public class CollectionsResource {
     
     @GET
     @Produces({ MediaType.APPLICATION_JSON })
-    @Operation(tags = { "iiif" }, summary = "Get all collections as IIIF presentation collection")
+    @Operation(tags = { "iiif" }, summary = "Get all collections as IIIF Presentation 3.0 collection")
     @ApiResponse(responseCode="400", description="No collections available for field")
     public Collection3 getAllCollections()
             throws PresentationException, IndexUnreachableException, DAOException, ContentLibException, URISyntaxException, ViewerConfigurationException {
@@ -77,7 +77,7 @@ public class CollectionsResource {
     @GET
     @javax.ws.rs.Path(COLLECTIONS_COLLECTION)
     @Produces({ MediaType.APPLICATION_JSON })
-    @Operation(tags = { "iiif" }, summary = "Get given collection as a IIIF presentation collection")
+    @Operation(tags = { "iiif" }, summary = "Get given collection as a IIIF presentation 3.0 collection")
     @ApiResponse(responseCode="400", description="Invalid collection name or field")
     public Collection3 getCollection(
             @Parameter(description="Name of the collection. Must be a value of the SOLR field the collection is based on")@PathParam("collection")String collectionName

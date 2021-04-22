@@ -173,14 +173,14 @@
         </solr>
 	</performance>
 
-	<accessConditions>
-		<!-- unconditionalImageAccesMaxWidth: Access conditions are not applied 
-			to images below this width - Thumbnails -->
-		<unconditionalImageAccessMaxWidth>1</unconditionalImageAccessMaxWidth>
-		<!-- fullAccessForLocalhost: If true, users on localhost will be granted 
-			superuser access. Default is false. -->
-		<fullAccessForLocalhost>true</fullAccessForLocalhost>
-	</accessConditions>
+    <accessConditions>
+        <!-- thumbnailImageAccessMaxWidth: Images up to this size are regarded as 'thumbnails'. Access conditions for viewing images are not applied -->
+        <thumbnailImageAccessMaxWidth>1</thumbnailImageAccessMaxWidth>
+        <!-- unzoomedImageAccessMaxWidth: Images up to this size are regarded as 'unzoomed'. Access conditions for zooming images are not applied -->
+        <unzoomedImageAccessMaxWidth>2</unzoomedImageAccessMaxWidth>
+        <!-- fullAccessForLocalhost: If true, users on localhost will be granted superuser access. Default is false. -->
+        <fullAccessForLocalhost>true</fullAccessForLocalhost>
+    </accessConditions>
 
 	<reCaptcha show="false">
 		<provider name="Google" siteKey="6LetEyITAAAAAEAj7NTxgRXR6S_uhZrk9rn5HyB3" />

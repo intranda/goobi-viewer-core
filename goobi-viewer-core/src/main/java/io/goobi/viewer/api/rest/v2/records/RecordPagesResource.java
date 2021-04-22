@@ -91,7 +91,7 @@ public class RecordPagesResource {
     @GET
     @javax.ws.rs.Path(RECORDS_PAGES_CANVAS)
     @Produces({ MediaType.APPLICATION_JSON })
-    @Operation(tags = { "records", "iiif" }, summary = "Get IIIF canvas for page")
+    @Operation(tags = { "records", "iiif" }, summary = "Get IIIF 3.0 canvas for page")
     @IIIFPresentationBinding
     public IPresentationModelElement getCanvas()
             throws PresentationException, IndexUnreachableException, URISyntaxException, ViewerConfigurationException,

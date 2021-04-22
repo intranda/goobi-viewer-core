@@ -76,6 +76,7 @@ public class CanvasBuilder extends AbstractBuilder {
     private static final Logger logger = LoggerFactory.getLogger(ManifestBuilder.class);
 
     private final ImageHandler images;
+    private final AbstractApiUrlManager imageUrlManager = DataManager.getInstance().getRestApiManager().getIIIFContentApiManager();
 
     /**
      * @param apiUrlManager
@@ -235,10 +236,10 @@ public class CanvasBuilder extends AbstractBuilder {
         }
 
         if (page.isHasImage()) {
-            String filename = page.getFilename();
+            String filename = page.getFileName();
             String escFilename = StringTools.encodeUrl(filename);
-            String imageId = urls.path(ApiUrls.RECORDS_FILES_IMAGE).params(page.getPi(), escFilename).build();
-            URI mediaId = urls.path(ApiUrls.RECORDS_PAGES, ApiUrls.RECORDS_PAGES_MEDIA).params(page.getPi(), page.getOrder()).buildURI();
+            String imageId = imageUrlManager.path(ApiUrls.RECORDS_FILES_IMAGE).params(page.getPi(), escFilename).build();
+            URI mediaId = imageUrlManager.path(ApiUrls.RECORDS_PAGES, ApiUrls.RECORDS_PAGES_MEDIA).params(page.getPi(), page.getOrder()).buildURI();
             canvas.addMedia(mediaId, new ImageResource(imageId, thumbWidth, thumbHeight));
         }
 
