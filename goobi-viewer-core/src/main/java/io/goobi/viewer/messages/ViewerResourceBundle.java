@@ -326,6 +326,18 @@ public class ViewerResourceBundle extends ResourceBundle {
     }
 
     /**
+     * 
+     * @param key
+     * @param locale
+     * @param useFallback
+     * @param cleanup
+     * @return
+     */
+    public static String getTranslation(final String key, Locale locale, boolean useFallback, boolean cleanup) {
+        return getTranslation(key, locale, useFallback, false, cleanup);
+    }
+
+    /**
      * <p>
      * getTranslation.
      * </p>
@@ -333,16 +345,19 @@ public class ViewerResourceBundle extends ResourceBundle {
      * @param key a {@link java.lang.String} object.
      * @param locale a {@link java.util.Locale} object.
      * @param useFallback If true, get default locale translation if there is none for the given locale
-     * @param cleanup
+     * @param reversePriority If true, the global bundle will be checked first, then the local
+     * @param cleanup If true, elements such as 'zzz' will be removed from the translation
      * @return Translated message key
      */
-    public static String getTranslation(final String key, Locale locale, boolean useFallback, boolean cleanup) {
+    public static String getTranslation(final String key, Locale locale, boolean useFallback, boolean reversePriority, boolean cleanup) {
         //        logger.trace("Translation for: {}", key);
         locale = checkAndLoadResourceBundles(locale); // If locale is null, the return value will be the current locale
-        String value = getTranslation(key, defaultBundles.get(locale), localBundles.get(locale), cleanup);
-        if (useFallback && StringUtils.isEmpty(value) && defaultLocale != null && defaultBundles.containsKey(defaultLocale)
+        Map<Locale, ResourceBundle> bundles1 = reversePriority ? localBundles : defaultBundles;
+        Map<Locale, ResourceBundle> bundles2 = reversePriority ? defaultBundles : localBundles;
+        String value = getTranslation(key, bundles1.get(locale), bundles2.get(locale), cleanup);
+        if (useFallback && StringUtils.isEmpty(value) && defaultLocale != null && bundles1.containsKey(defaultLocale)
                 && !defaultLocale.equals(locale)) {
-            value = getTranslation(key, defaultBundles.get(defaultLocale), localBundles.get(defaultLocale), cleanup);
+            value = getTranslation(key, bundles1.get(defaultLocale), bundles2.get(defaultLocale), cleanup);
         }
         if (value == null) {
             value = key;
@@ -357,7 +372,7 @@ public class ViewerResourceBundle extends ResourceBundle {
      * @param key Message key
      * @param fallbackBundle Fallback bundle if no value is found in preferredBundle
      * @param preferredBundle Check for a translation in this bundle first
-     * @param cleanup
+     * @param cleanup If true, elements such as 'zzz' will be removed from the translation
      * @return Translated message key
      */
     protected static String getTranslation(String key, ResourceBundle fallbackBundle, ResourceBundle preferredBundle, boolean cleanup) {

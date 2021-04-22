@@ -309,7 +309,7 @@ public class TranslationGroup {
 
     /**
      * 
-     * @param step
+     * @param step Positive or negative increment
      * @should only select unfinished entries
      * @should resume at the end when moving past first element
      * @should resume at the beginning when moving past last element
@@ -329,9 +329,11 @@ public class TranslationGroup {
                 entry = selectedEntry;
                 break;
             }
+            // Resume from the end if moving past the first entry
             if (step < 0 && selectedEntryIndex == -1) {
                 selectedEntryIndex = allEntries.size() - 1;
             }
+            // Resume from the beginning if moving past the last entry
             if (step > 0 && selectedEntryIndex == allEntries.size()) {
                 selectedEntryIndex = 0;
             }

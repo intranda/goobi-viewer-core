@@ -41,14 +41,6 @@ public class SolrFieldNameTranslationGroupItem extends TranslationGroupItem {
     }
 
     /* (non-Javadoc)
-     * @see io.goobi.viewer.model.translations.TranslationGroupKey#isTranslated()
-     */
-    @Override
-    public boolean isTranslated() {
-        return false; // TODO
-    }
-
-    /* (non-Javadoc)
      * @see io.goobi.viewer.model.translations.TranslationGroupKey#loadValues()
      */
     @Override
