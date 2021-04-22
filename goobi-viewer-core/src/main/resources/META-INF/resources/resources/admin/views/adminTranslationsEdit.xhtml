@@ -48,7 +48,7 @@
                                             <ui:repeat var="value" value="#{adminBean.currentTranslationGroup.selectedEntry.values}">
                                                 <div class="form-group form-row">
                                                     <div class="col-3 control-label admin__form-label">
-                                                        <label for="value">#{value.language}:</label>
+                                                        <label for="value">#{msg[value.language]}:</label>
                                                     </div>
                                                     <div class="col-9 admin__form-input">
                                                         <h:inputTextarea value="#{value.value}" id="value" label="value" immediate="true" styleClass="form-control">
