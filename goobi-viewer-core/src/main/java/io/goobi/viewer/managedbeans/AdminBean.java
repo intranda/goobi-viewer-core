@@ -1899,7 +1899,10 @@ public class AdminBean implements Serializable {
     public void setCurrentTranslationGroupId(int id) {
         List<TranslationGroup> groups = DataManager.getInstance().getConfiguration().getTranslationGroups();
         if (id >= 0 && groups.size() > id) {
-            currentTranslationGroup = groups.get(id);
+            TranslationGroup group = groups.get(id);
+            if (!group.equals(currentTranslationGroup)) {
+                currentTranslationGroup = groups.get(id);
+            }
         } else {
             logger.error("Translation group ID not found: {}", id);
         }
