@@ -56,6 +56,14 @@
                                                         </h:inputTextarea>
                                                     </div>
                                                 </div>
+                                                <ui:fragment rendered="#{value.displayGlobalValue}">
+                                                    <div class="form-group form-row">
+                                                        <div class="col-3 control-label admin__form-label" />
+                                                        <div class="col-9 admin__form-input">
+                                                            #{msg.global}: #{value.globalValue}
+                                                        </div>
+                                                    </div>
+                                                </ui:fragment>
                                             </ui:repeat>
                                         </fieldset>
                                     </div>

@@ -22,17 +22,18 @@ import org.slf4j.LoggerFactory;
  * Language + translation pair.
  */
 public class MessageValue {
-    
+
     /** Logger for this class. */
     private static final Logger logger = LoggerFactory.getLogger(MessageValue.class);
 
     private final String language;
-    private String loadedValue;
+    private final String globalValue;
     private String value;
+    private String loadedValue;
 
     /**
      * 
-     * @return
+     * @return true if <code>value</code> has been changed so that it no longer matches <code>loadedValue</code>; false otherwise
      */
     public boolean isDirty() {
         return value != null && !value.equals(loadedValue);
@@ -43,14 +44,23 @@ public class MessageValue {
     }
 
     /**
+     * @return true if <code>globalValue</code> is set but doesn't equal <code>value</code>; false otherwise
+     */
+    public boolean isDisplayGlobalValue() {
+        return globalValue != null && !globalValue.equals(value);
+    }
+
+    /**
      * 
      * @param language Language code
      * @param value
+     * @param globalValue
      */
-    public MessageValue(String language, String value) {
+    public MessageValue(String language, String value, String globalValue) {
         this.language = language;
         this.value = value;
         this.loadedValue = value;
+        this.globalValue = globalValue;
     }
 
     /**
@@ -58,6 +68,13 @@ public class MessageValue {
      */
     public String getLanguage() {
         return language;
+    }
+
+    /**
+     * @return the globalValue
+     */
+    public String getGlobalValue() {
+        return globalValue;
     }
 
     /**
@@ -71,7 +88,6 @@ public class MessageValue {
      * @param value the value to set
      */
     public void setValue(String value) {
-        logger.trace("setValue: {}", value);
         this.value = value;
     }
 
