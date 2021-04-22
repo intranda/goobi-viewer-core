@@ -60,7 +60,7 @@
                                                     <div class="form-group form-row">
                                                         <div class="col-3 control-label admin__form-label" />
                                                         <div class="col-9 admin__form-input">
-                                                            #{msg.global}: #{value.globalValue}
+                                                            #{msg.admin__translations_global}: #{value.globalValue}
                                                         </div>
                                                     </div>
                                                 </ui:fragment>
@@ -81,12 +81,14 @@
 	                                    </h:outputLink>
 	                                    
 	                                    <!-- PREVIOUS BUTTON -->
-	                                    <h:commandButton styleClass="btn btn--default mr-3" value="#{msg.admin__translations_entry_previous}" action="#{adminBean.currentTranslationGroup.prevEntry}">
+	                                    <h:commandButton styleClass="btn btn--default mr-3" value="#{msg.admin__translations_entry_previous}"
+	                                        action="#{adminBean.currentTranslationGroup.prevEntry}">
 	                                        <f:ajax render="@form" />
 	                                    </h:commandButton>
 	                                    
 	                                    <!-- NEXT BUTTON -->
-	                                    <h:commandButton styleClass="btn btn--full" value="#{msg.admin__translations_entry_next}" action="#{adminBean.currentTranslationGroup.nextEntry}">
+	                                    <h:commandButton styleClass="btn btn--full" value="#{msg.admin__translations_entry_next}"
+	                                        action="#{adminBean.currentTranslationGroup.nextEntry}">
 	                                        <f:ajax render="@form" />
 	                                    </h:commandButton>
 		                            </div>
