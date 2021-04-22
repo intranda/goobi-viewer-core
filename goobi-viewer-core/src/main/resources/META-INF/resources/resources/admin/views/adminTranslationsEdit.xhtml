@@ -107,8 +107,13 @@
 									<div class="admin__form-help-text in mb-2">
 										#{msg.admin__translations_edit_overview_description}
 									</div>
-									<div class="admin__translations-all-keys-list">
-	                                    <ui:repeat var="entry" value="#{adminBean.currentTranslationGroup.allEntries}">
+									<div>
+									   <h:inputText value="#{adminBean.currentTranslationGroup.filterString}">
+									       <f:ajax render="overviewList" />
+									   </h:inputText>
+									</div>
+									<div id="overviewList" class="admin__translations-all-keys-list">
+	                                    <ui:repeat var="entry" value="#{adminBean.currentTranslationGroup.filteredEntries}">
 	                                        <h:panelGroup layout="block" styleClass="admin__translations-not-translated #{entry eq adminBean.currentTranslationGroup.selectedEntry ? 'admin__translations-selected-key' : ''}" rendered="#{entry.translationStatus == 'NONE'}">
 	                                            <h:commandLink action="#{adminBean.currentTranslationGroup.setSelectedEntry(entry)}" value="#{entry.key}">
 	                                                <f:ajax render="@form" />
