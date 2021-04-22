@@ -372,19 +372,40 @@
 		border-right: 1px solid #ccc;
 		a {
 			display: block;
+			color: #444;
+			&:hover,
+			&:active,
+			&:focus {
+				text-decoration: none;
+			}
 		}
 	}
 	&__translations-not-translated {
 		background-color: #EEEEEE;
+		&:hover {
+			background: darken(#EEEEEE, 3%);
+		}
 	}
 	&__translations-partially-translated {
 		background-color: #F7E3B5;
+		&:hover {
+			background: darken(#F7E3B5, 3%);
+		}
 	}
 	&__translations-fully-translated {
 		background-color: #D4EDDB;
+		&:hover {
+			background: darken(#D4EDDB, 3%);
+		}
 	}	
 	&__translations-selected-key {
 		background-color: @white;
+		&:hover {
+			background: @white;
+		}
+		a {
+			color: @blue;
+		}
 	}
 	&__grab-indicator {
 		padding-top: 6rem;
