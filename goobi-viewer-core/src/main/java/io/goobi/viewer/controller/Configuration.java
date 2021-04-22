@@ -2845,10 +2845,10 @@ public final class Configuration extends AbstractConfiguration {
      * The maximal image size retrievable with the permission to view images but without the permission to zoom images
      *
      * @should return correct value
-     * @return the maximal image width
+     * @return the maximal image width, default ist 600
      */
     public int getUnzoomedImageAccessMaxWidth() {
-        return getLocalInt("accessConditions.unzoomedImageAccessMaxWidth", 600);
+        return getLocalInt("accessConditions.unzoomedImageAccessMaxWidth", 0);
     }
 
     /**
