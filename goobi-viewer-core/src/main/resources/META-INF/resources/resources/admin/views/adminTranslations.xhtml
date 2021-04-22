@@ -38,11 +38,11 @@
                                         <div class="row">
                                         	<div class="col-9">
                                         	<!-- GROUP TITLE -->
-                                            <h3>#{group.name}</h3>
+                                            <h3>#{msg[group.name]}</h3>
                                             
                                        		<!-- DESCRIPTION -->
                                             <ui:fragment rendered="#{group.description ne ''}">
-                                                <p class="admin__boxed-entry-description">#{group.description}</p>
+                                                <p class="admin__boxed-entry-description">#{msg[group.description]}</p>
                                             </ui:fragment>
                                             <ui:fragment rendered="#{group.description eq ''}">
                                                 <p class="admin__boxed-entry-description-empty" aria-disabled="true">
