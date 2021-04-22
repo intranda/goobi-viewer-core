@@ -78,6 +78,7 @@ public class TranslationGroup {
     private int selectedEntryIndex = 0;
     private Integer untranslatedEntryCount;
     private Integer fullyTranslatedEntryCount = null;
+    private String filterString;
 
     /**
      * Factory method.
@@ -270,6 +271,25 @@ public class TranslationGroup {
 
     /**
      * 
+     * @return
+     */
+    public List<MessageEntry> getFilteredEntries() {
+        if (StringUtils.isBlank(filterString)) {
+            return getAllEntries();
+        }
+
+        List<MessageEntry> ret = new ArrayList<>(getAllEntries().size());
+        for (MessageEntry entry : getAllEntries()) {
+            if (entry.getKey().toLowerCase().contains(filterString.toLowerCase())) {
+                ret.add(entry);
+            }
+        }
+
+        return ret;
+    }
+
+    /**
+     * 
      * @return Unique message keys across all groups
      */
     public List<MessageEntry> getAllEntries() {
@@ -291,7 +311,7 @@ public class TranslationGroup {
      * @return the selectedEntry
      */
     public MessageEntry getSelectedEntry() {
-        if (selectedEntry == null && getAllEntries().size() > selectedEntryIndex) {
+        if (selectedEntry == null && getFilteredEntries().size() > selectedEntryIndex) {
             setSelectedEntry(allEntries.get(selectedEntryIndex));
         }
 
@@ -304,7 +324,7 @@ public class TranslationGroup {
     public void setSelectedEntry(MessageEntry selectedEntry) {
         saveSelectedEntry();
         this.selectedEntry = selectedEntry;
-        this.selectedEntryIndex = getAllEntries().indexOf(selectedEntry);
+        this.selectedEntryIndex = getFilteredEntries().indexOf(selectedEntry);
     }
 
     /**
@@ -319,6 +339,20 @@ public class TranslationGroup {
      */
     public void setSelectedEntryIndex(int selectedEntryIndex) {
         this.selectedEntryIndex = selectedEntryIndex;
+    }
+
+    /**
+     * @return the filterString
+     */
+    public String getFilterString() {
+        return filterString;
+    }
+
+    /**
+     * @param filterString the filterString to set
+     */
+    public void setFilterString(String filterString) {
+        this.filterString = filterString;
     }
 
     /**
@@ -344,28 +378,33 @@ public class TranslationGroup {
      * 
      */
     void selectEntry(int step) {
-        if (getAllEntries() == null || getAllEntries().isEmpty()) {
+        logger.trace("selectEntry: {}", step);
+        if (getFilteredEntries() == null || getFilteredEntries().isEmpty()) {
             return;
         }
 
+        if (selectedEntryIndex >= getFilteredEntries().size()) {
+            selectedEntryIndex = 0;
+        }
         int startIndex = selectedEntryIndex;
         MessageEntry entry = selectedEntry;
         while (entry == null || entry.equals(selectedEntry) || entry.getTranslationStatus().equals(TranslationStatus.FULL)) {
             selectedEntryIndex += step;
             // After a full circle (no unfinished entries left), reset to the current entry
             if (selectedEntryIndex == startIndex) {
+                logger.trace("circle");
                 entry = selectedEntry;
                 break;
             }
             // Resume from the end if moving past the first entry
             if (step < 0 && selectedEntryIndex == -1) {
-                selectedEntryIndex = allEntries.size() - 1;
+                selectedEntryIndex = getFilteredEntries().size() - 1;
             }
             // Resume from the beginning if moving past the last entry
-            if (step > 0 && selectedEntryIndex == allEntries.size()) {
+            if (step > 0 && selectedEntryIndex == getFilteredEntries().size()) {
                 selectedEntryIndex = 0;
             }
-            entry = allEntries.get(selectedEntryIndex);
+            entry = getFilteredEntries().get(selectedEntryIndex);
         }
         setSelectedEntry(entry);
     }
