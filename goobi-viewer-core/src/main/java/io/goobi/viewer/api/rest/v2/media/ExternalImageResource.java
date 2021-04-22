@@ -111,7 +111,10 @@ public class ExternalImageResource extends ImageResource {
             request.setAttribute("iiif-size", size);
             request.setAttribute("iiif-rotation", parts.get(2));
             request.setAttribute("iiif-format", parts.get(3));
-            if(!(Region.FULL_IMAGE.equals(region) || Region.SQUARE_IMAGE.equals(region)) || scaleWidth.orElse(Integer.MAX_VALUE) > DataManager.getInstance().getConfiguration().getUnzoomedImageAccessMaxWidth()) {
+            int maxUnzoomedImageWidth = DataManager.getInstance().getConfiguration().getUnzoomedImageAccessMaxWidth();
+            if(maxUnzoomedImageWidth > 0 &&
+                    (!(Region.FULL_IMAGE.equals(region) || Region.SQUARE_IMAGE.equals(region)) || 
+                    scaleWidth.orElse(Integer.MAX_VALUE) > maxUnzoomedImageWidth)) {
                 request.setAttribute(AccessConditionRequestFilter.REQUIRED_PRIVILEGE, new String[] {IPrivilegeHolder.PRIV_VIEW_IMAGES, IPrivilegeHolder.PRIV_ZOOM_IMAGES});
             }
         } else {

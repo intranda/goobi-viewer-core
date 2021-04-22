@@ -135,15 +135,19 @@ public class ImageInformationFilter implements ContainerResponseFilter {
      * @return
      */
     private boolean isZoomingAllowed(ContainerRequestContext request) {
-        String pi = (String) servletRequest.getAttribute(FilterTools.ATTRIBUTE_PI);
-        String logid = (String) servletRequest.getAttribute(FilterTools.ATTRIBUTE_LOGID);
-        String filename = (String) servletRequest.getAttribute(FilterTools.ATTRIBUTE_FILENAME);
-        try {
-            boolean access = AccessConditionUtils.checkAccessPermissionByIdentifierAndFileNameWithSessionMap(servletRequest, pi, filename, IPrivilegeHolder.PRIV_ZOOM_IMAGES);
-            return access;
-        } catch (IndexUnreachableException | DAOException e) {
-            logger.error(e.toString(),e);
-            return false;
+        if(DataManager.getInstance().getConfiguration().getUnzoomedImageAccessMaxWidth() > 0) {            
+            String pi = (String) servletRequest.getAttribute(FilterTools.ATTRIBUTE_PI);
+            String logid = (String) servletRequest.getAttribute(FilterTools.ATTRIBUTE_LOGID);
+            String filename = (String) servletRequest.getAttribute(FilterTools.ATTRIBUTE_FILENAME);
+            try {
+                boolean access = AccessConditionUtils.checkAccessPermissionByIdentifierAndFileNameWithSessionMap(servletRequest, pi, filename, IPrivilegeHolder.PRIV_ZOOM_IMAGES);
+                return access;
+            } catch (IndexUnreachableException | DAOException e) {
+                logger.error(e.toString(),e);
+                return false;
+            }
+        } else {
+            return true;
         }
     }
 
