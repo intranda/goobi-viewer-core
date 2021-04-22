@@ -628,12 +628,14 @@ public class ViewManager implements Serializable {
         return options;
     }
 
-    public List<DownloadOption> getDownloadOptionsForCurrentImage() {
+    public List<DownloadOption> getDownloadOptionsForCurrentImage() throws IndexUnreachableException, DAOException {
         PhysicalElement page = getCurrentPage();
         if (page != null && page.isHasImage()) {
             List<DownloadOption> configuredOptions = DataManager.getInstance().getConfiguration().getSidebarWidgetUsagePageDownloadOptions();
             String imageFilename = page.getFilename();
-            Dimension maxSize = new Dimension(DataManager.getInstance().getConfiguration().getViewerMaxImageWidth(),
+            Dimension maxSize = new Dimension(
+                    page.isAccessPermissionImageZoom() ?  DataManager.getInstance().getConfiguration().getViewerMaxImageWidth()
+                            : DataManager.getInstance().getConfiguration().getUnzoomedImageAccessMaxWidth(),
                     DataManager.getInstance().getConfiguration().getViewerMaxImageHeight());
             Dimension imageSize = new Dimension(page.getImageWidth(), page.getImageHeight());
             return getDownloadOptionsForImage(configuredOptions, imageSize, maxSize, imageFilename);
