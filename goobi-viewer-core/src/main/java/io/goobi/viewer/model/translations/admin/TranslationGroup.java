@@ -272,6 +272,8 @@ public class TranslationGroup {
     /**
      * 
      * @return
+     * @should filter by key correctly
+     * @should filter by value correctly
      */
     public List<MessageEntry> getFilteredEntries() {
         if (StringUtils.isBlank(filterString)) {
@@ -279,9 +281,17 @@ public class TranslationGroup {
         }
 
         List<MessageEntry> ret = new ArrayList<>(getAllEntries().size());
+        String filterLowercase = filterString.toLowerCase();
         for (MessageEntry entry : getAllEntries()) {
-            if (entry.getKey().toLowerCase().contains(filterString.toLowerCase())) {
+            if (entry.getKey().toLowerCase().contains(filterLowercase)) {
                 ret.add(entry);
+            } else {
+                for (MessageValue value : entry.getValues()) {
+                    if (value.getValue() != null && value.getValue().toLowerCase().contains(filterLowercase)) {
+                        ret.add(entry);
+                        break;
+                    }
+                }
             }
         }
 
