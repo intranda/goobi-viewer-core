@@ -345,7 +345,10 @@
 		display: flex;
 	}
 	&__sidebar-progressbar-complete {
-		background: #d4edda;
+		background: #62bc77;
+	}
+	&__sidebar-progressbar-partially {
+		background: #ffed5e;
 	}
 	&__sidebar-progress-header {
 		display: flex;
@@ -356,15 +359,13 @@
 		font-size: 14px;
 		align-self: center;
 	}
-	&__sidebar-progressbar-partially {
-		background: rgba(243,208,70,0.4);
-	}
 	&__translations-all-keys-list div:last-child {
 	    border-bottom: 1px solid #ccc;
 	}
 	&__translations-not-translated,
 	&__translations-partially-translated,
 	&__translations-fully-translated {
+		position: relative;
 		word-wrap: break-word;
 		padding: 0.5rem 1rem;
 		border-top: 1px solid #ccc;
@@ -405,7 +406,18 @@
 		}
 		a {
 			color: @blue;
+			font-weight: 700;
 		}
+		&:before {
+			position: absolute;
+			height: 100%;
+			width: 4px;
+			left: -4px;
+			top: 0;
+			content: '';
+			display: block;
+			background: @blue;	
+			}
 	}
 	&__grab-indicator {
 		padding-top: 6rem;

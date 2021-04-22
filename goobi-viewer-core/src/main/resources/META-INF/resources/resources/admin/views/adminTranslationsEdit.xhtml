@@ -133,6 +133,12 @@
 
                     </h:form>
                 </h:panelGroup>
+                <!-- REATTACH HC STICKY AFTER AJAX CALL -->
+                <script>
+                viewerJS.jsfAjax.success.subscribe(function() {
+               		$('.-sticky').hcSticky('refresh', {});
+                });
+                </script>
             </div>
         </f:view>
     </ui:define>
