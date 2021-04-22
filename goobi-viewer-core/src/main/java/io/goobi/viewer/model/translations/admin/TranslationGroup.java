@@ -325,6 +325,9 @@ public class TranslationGroup {
         saveSelectedEntry();
         this.selectedEntry = selectedEntry;
         this.selectedEntryIndex = getFilteredEntries().indexOf(selectedEntry);
+        if (selectedEntryIndex == -1) {
+            selectedEntryIndex = 0;
+        }
     }
 
     /**
@@ -352,6 +355,7 @@ public class TranslationGroup {
      * @param filterString the filterString to set
      */
     public void setFilterString(String filterString) {
+        logger.trace("setFilterString: {}", filterString);
         this.filterString = filterString;
     }
 
@@ -388,8 +392,10 @@ public class TranslationGroup {
         }
         int startIndex = selectedEntryIndex;
         MessageEntry entry = selectedEntry;
+        Set<Integer> selected = new HashSet<>(getFilteredEntries().size());
         while (entry == null || entry.equals(selectedEntry) || entry.getTranslationStatus().equals(TranslationStatus.FULL)) {
             selectedEntryIndex += step;
+            logger.trace("selectedEntryIndex: {}", selectedEntryIndex);
             // After a full circle (no unfinished entries left), reset to the current entry
             if (selectedEntryIndex == startIndex) {
                 logger.trace("circle");
@@ -399,12 +405,21 @@ public class TranslationGroup {
             // Resume from the end if moving past the first entry
             if (step < 0 && selectedEntryIndex == -1) {
                 selectedEntryIndex = getFilteredEntries().size() - 1;
+                logger.trace("left reset: {}", selectedEntryIndex);
             }
             // Resume from the beginning if moving past the last entry
             if (step > 0 && selectedEntryIndex == getFilteredEntries().size()) {
                 selectedEntryIndex = 0;
+                logger.trace("right reset: {}", selectedEntryIndex);
             }
             entry = getFilteredEntries().get(selectedEntryIndex);
+            selected.add(selectedEntryIndex);
+            logger.trace("entry selected: {}", selectedEntryIndex);
+            // If all available entries have already been selected, then all entries are probably fully translated
+            if (selected.size() == getFilteredEntries().size()) {
+                logger.trace("All entries checked, aborting");
+                break;
+            }
         }
         setSelectedEntry(entry);
     }

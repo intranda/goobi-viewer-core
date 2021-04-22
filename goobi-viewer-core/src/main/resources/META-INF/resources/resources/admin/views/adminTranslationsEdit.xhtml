@@ -108,8 +108,8 @@
 										#{msg.admin__translations_edit_overview_description}
 									</div>
 									<div>
-									   <h:inputText value="#{adminBean.currentTranslationGroup.filterString}">
-									       <f:ajax render="overviewList" />
+									   <h:inputText value="#{adminBean.currentTranslationGroup.filterString}" immediate="true">
+									       <f:ajax execute="@form" event="valueChange" render="overviewList" />
 									   </h:inputText>
 									</div>
 									<div id="overviewList" class="admin__translations-all-keys-list">
