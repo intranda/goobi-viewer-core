@@ -47,7 +47,7 @@
                                             </div>
                                             <ui:repeat var="value" value="#{adminBean.currentTranslationGroup.selectedEntry.values}">
                                                 <div class="form-group form-row">
-                                                    <div class="col-3 control-label admin__form-label">
+                                                    <div class="col-3 control-label  #{value.displayHighlight ? 'admin__form-label-highlight' : 'admin__form-label'}">
                                                         <label for="value">#{msg['changeLocal_long_' += value.language]}:</label>
                                                     </div>
                                                     <div class="col-9 #{value.displayHighlight ? 'admin__form-input-highlight' : 'admin__form-input'}">
