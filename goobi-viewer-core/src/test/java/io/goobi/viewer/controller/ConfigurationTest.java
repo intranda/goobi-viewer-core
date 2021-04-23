@@ -2544,8 +2544,8 @@ public class ConfigurationTest extends AbstractTest {
     }
 
     @Test
-    public void isDoublePageModeEnabled_shouldReturnCorrectValue() throws Exception {
-        Assert.assertTrue(DataManager.getInstance().getConfiguration().isDoublePageModeEnabled());
+    public void isDoublePageNavigationEnabled_shouldReturnCorrectValue() throws Exception {
+        Assert.assertTrue(DataManager.getInstance().getConfiguration().isDoublePageNavigationEnabled());
     }
 
     /**
