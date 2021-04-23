@@ -4555,7 +4555,7 @@ public final class Configuration extends AbstractConfiguration {
      * @return a boolean.
      */
     public boolean isDoublePageModeEnabled() {
-        return getLocalBoolean("viewer.doublePageMode.enabled", false);
+        return getLocalBoolean("viewer.doublePageMode[@enabled]", false);
     }
 
     /**
