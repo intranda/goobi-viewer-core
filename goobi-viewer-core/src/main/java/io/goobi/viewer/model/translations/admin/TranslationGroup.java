@@ -271,6 +271,14 @@ public class TranslationGroup {
 
     /**
      * 
+     * @return true if all entries are fully translated; false otherwise
+     */
+    public boolean isFullyTranslated() {
+        return getFullyTranslatedEntryCount() == getEntryCount();
+    }
+
+    /**
+     * 
      * @return
      * @should filter by key correctly
      * @should filter by value correctly
@@ -387,6 +395,7 @@ public class TranslationGroup {
      * 
      * @param step Positive or negative increment
      * @should only select unfinished entries
+     * @should select fully translated entries if all are fully translated
      * @should resume at the end when moving past first element
      * @should resume at the beginning when moving past last element
      * 
@@ -403,7 +412,9 @@ public class TranslationGroup {
         int startIndex = selectedEntryIndex;
         MessageEntry entry = selectedEntry;
         Set<Integer> selected = new HashSet<>(getFilteredEntries().size());
-        while (entry == null || entry.equals(selectedEntry) || entry.getTranslationStatus().equals(TranslationStatus.FULL)) {
+        // Skip currently selected entry or any entries that are already fully translated (unless all are fully translated)
+        while (entry == null || entry.equals(selectedEntry)
+                || (entry.getTranslationStatus().equals(TranslationStatus.FULL) && !isFullyTranslated())) {
             selectedEntryIndex += step;
             logger.trace("selectedEntryIndex: {}", selectedEntryIndex);
             // After a full circle (no unfinished entries left), reset to the current entry
