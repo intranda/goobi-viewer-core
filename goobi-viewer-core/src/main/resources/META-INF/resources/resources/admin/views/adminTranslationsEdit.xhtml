@@ -45,24 +45,19 @@
                                                 </div>
                                             </div>
                                             <ui:repeat var="value" value="#{adminBean.currentTranslationGroup.selectedEntry.values}">
-                                                <div class="form-group form-row">
+                                                <div class="admin__translations-fields form-group form-row">
                                                     <div class="col-3 control-label admin__form-label #{value.displayHighlight ? 'admin__form-label-highlight' : ''}">
                                                         <label for="value">#{msg['changeLocal_long_' += value.language]}:</label>
                                                     </div>
                                                     <div class="col-9 admin__form-input #{value.displayHighlight ? 'admin__form-input-highlight' : ''}">
-                                                        <h:inputTextarea value="#{value.value}" id="value" label="value" immediate="true" styleClass="form-control">
+                                                        <h:inputTextarea value="#{value.value}" id="value" label="value" immediate="true" styleClass="form-control admin__translations-textarea">
                                                             <f:ajax execute="@form" event="blur" />
                                                         </h:inputTextarea>
                                                     </div>
+                                                        <div class="col-3 control-label admin__form-label admin__translations-global-hint" />
+                                                        <div class="col-9 admin__translations-global-key-wrapper admin__translations-global-hint">#{msg.admin__translations_global}: <span class="admin__translations-global-key">#{value.globalValue}</span></div>
                                                 </div>
-                                                <ui:fragment rendered="#{value.displayGlobalValue}">
-                                                    <div class="form-group form-row">
-                                                        <div class="col-3 control-label admin__form-label" />
-                                                        <div class="col-9 admin__translations-global-hint">
-                                                            #{msg.admin__translations_global}: #{value.globalValue}
-                                                        </div>
-                                                    </div>
-                                                </ui:fragment>
+
                                             </ui:repeat>
                                         </fieldset>
                                     </div>
@@ -121,8 +116,6 @@
 					                    </div>
 			                        </div>
 
-
-
 			                        <!-- LIST OF MSG KEYS IN THIS GROUP -->
 									<h:panelGroup id="overviewList" class="admin__translations-all-keys-list">
 	                                    <ui:repeat var="entry" value="#{adminBean.currentTranslationGroup.filteredEntries}">
@@ -152,13 +145,14 @@
                 </h:panelGroup>
                 <!-- REATTACH HC STICKY AFTER AJAX CALL -->
                 <script>
+    			//<![CDATA[
                 viewerJS.jsfAjax.success.subscribe(function() {
                 	/* SIDEBAR STICKY */
                		$('.-sticky').hcSticky('refresh', {});
                		
-        			/* check if translations area contains zzz */
-            		$('textarea').keyup(function() {
-                		$('textarea').each(function(i, obj) {
+        			/* check if translations area contains zzz on ajax load */
+            		$('.admin__translations-textarea').keyup(function() {
+                		$('.admin__translations-textarea').each(function(i, obj) {
                 		    if ($(this).val().indexOf('zzz') > -1 || (!$(this).val())) {
                 		        $(this).parent().addClass('admin__form-input-highlight');
                 		        $(this).parent().siblings('.admin__form-label').addClass('admin__form-label-highlight');
@@ -168,12 +162,64 @@
                 		        $(this).parent().siblings('.admin__form-label').removeClass('admin__form-label-highlight');
                 		    }
                 		});
-          			});
-                });
+                		
+            			/* check if global msg key identical on msg key up*/
+        				var globalKey = $(this).parents('.admin__translations-fields').find('.admin__translations-global-key').text();
 
-    			/* check if translations area contains zzz */
-        		$('textarea').keyup(function() {
-            		$('textarea').each(function(i, obj) {
+    	    			if ((globalKey) != ($(this).val()) && ((globalKey) != "")){
+    	    			  $(this).parents('.admin__translations-fields').find('.admin__translations-global-hint').fadeIn('fast');
+    	    			}
+    	    			else {
+    	    				$(this).parents('.admin__translations-fields').find('.admin__translations-global-hint').fadeOut('fast');
+    	    			}
+                		
+          			});
+        			
+                    /* show global msg keys if it differs on ajax load */
+        			$('.admin__translations-fields').each(function(i, obj) {
+        				var globalKey = $(this).find('.admin__translations-global-key').text();
+        			console.log(globalKey);
+       			  	if (!(globalKey) == "" && (globalKey) != ($(this).find('.admin__translations-textarea').val())) {
+       				    $(this).find('.admin__translations-global-hint').fadeIn('fast');
+       				    console.log('erfolg');
+       				  }
+        			else {
+        				$(this).find('.admin__translations-global-hint').fadeOut('fast');
+        			}
+
+        			}); 
+                });
+  
+                /* show global msg keys if it differs on page load */
+       			$('.admin__translations-fields').each(function(i, obj) {
+       				var globalKey = $(this).find('.admin__translations-global-key').text();
+       			console.log(globalKey);
+
+	       		  if ((globalKey) !== "" && (globalKey) != ($(this).find('.admin__translations-textarea').val())) {
+	       		    $(this).find('.admin__translations-global-hint').fadeIn('fast');
+	       		    console.log('erfolg');
+	       		  }
+       			else {
+       				$(this).find('.admin__translations-global-hint').fadeOut('fast');
+       			}
+
+       			}); 
+
+    			/* check on any key up */
+        		$('.admin__translations-textarea').keyup(function() {
+        			
+        			/* check if global msg key identical on msg key up*/
+    				var globalKey = $(this).parents('.admin__translations-fields').find('.admin__translations-global-key').text();
+
+	    			if ((globalKey) != ($(this).val()) && ((globalKey) != "")){
+	    			  $(this).parents('.admin__translations-fields').find('.admin__translations-global-hint').fadeIn('fast');
+	    			}
+	    			else {
+	    				$(this).parents('.admin__translations-fields').find('.admin__translations-global-hint').fadeOut('fast');
+	    			}
+
+	    			/* check if translations area contains zzz on msg key up*/
+            		$('.admin__translations-textarea').each(function(i, obj) {
             		    if ($(this).val().indexOf('zzz') > -1 || (!$(this).val())) {
             		        $(this).parent().addClass('admin__form-input-highlight');
             		        $(this).parent().siblings('.admin__form-label').addClass('admin__form-label-highlight');
@@ -184,10 +230,10 @@
             		    }
             		});
       			});
-                </script>
-                
-                <script>
+
         		$( document ).ready(function() {
+        			
+        			// SEARCH FUNCTION
         			/* check for input value and show clear button */
         	        if(!$('.admin__translations-search-input').val() == ''){
         				$('.admin__translations-search-clear').show();
@@ -213,6 +259,7 @@
         		});
         		
                 viewerJS.jsfAjax.success.subscribe(function() {
+                	// SEARCH FUNCTION AJAX
         			/* check for input value and show clear button */
         	        if(!$('.admin__translations-search-input').val() == ''){
         				$('.admin__translations-search-clear').show();
@@ -229,6 +276,7 @@
         				$('.admin__table-content').append('<br/><p class="">#{msg.hitsZero}</p>');
         			}
                 });
+                //]]>
                 </script>
 
             </div>
