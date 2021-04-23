@@ -140,6 +140,10 @@
                       </c:if>
                      </div>
                      
+                     <h:inputHidden value="#{archiveBean.displayEntry.associatedRecordPi}">
+                     	<f:passThroughAttribute name="data-name" value="recordPi"/>
+                     </h:inputHidden>
+                     
                       <!-- ASSOCIATED RECORD -->
                       <div class="archives__object-image">
 	                      <h:outputLink
@@ -154,6 +158,8 @@
 	                              </div>
 	                              <!-- TODO view selection, representative page -->
 	                      </h:outputLink>
+                      </div>
+                      <div class="archives__object-thumbnails" source="#{request.contextPath}/api/v2/records/#{archiveBean.displayEntry.associatedRecordPi}/manifest">
                       </div>
                  </h:panelGroup>
 				</div>
