@@ -74,7 +74,9 @@ public class MessageEntry implements Comparable<MessageEntry> {
         return true;
     }
 
-    /** {@inheritDoc}
+    /**
+     * {@inheritDoc}
+     * 
      * @should compare correctly
      */
     @Override
@@ -85,26 +87,34 @@ public class MessageEntry implements Comparable<MessageEntry> {
     /**
      * 
      * @return appropriate {@link TranslationStatus}
+     * @should return none status correctly
+     * @should return partial status correctly
+     * @should return full status correctly
      */
     public TranslationStatus getTranslationStatus() {
-        boolean full = true;
-        boolean partial = false;
+        int full = 0;
+        int none = 0;
         for (MessageValue value : values) {
-            if (StringUtils.isEmpty(value.getValue()) || value.getValue().equals(key)) {
-                full = false;
-            } else if (value.getValue().contains(" zzz")) {
-                full = false;
-                partial = true;
+            switch (value.getTranslationStatus()) {
+                case NONE:
+                    none++;
+                    break;
+                case FULL:
+                    full++;
+                    break;
+                default:
+                    break;
             }
         }
 
-        if (full) {
+        if (none == values.size()) {
+            return TranslationStatus.NONE;
+        }
+        if (full == values.size()) {
             return TranslationStatus.FULL;
         }
-        if (partial) {
-            return TranslationStatus.PARTIAL;
-        }
-        return TranslationStatus.NONE;
+
+        return TranslationStatus.PARTIAL;
     }
 
     /**

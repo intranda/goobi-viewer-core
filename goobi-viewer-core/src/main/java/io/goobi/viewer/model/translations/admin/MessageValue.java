@@ -19,6 +19,8 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import io.goobi.viewer.model.translations.admin.MessageEntry.TranslationStatus;
+
 /**
  * Language + translation pair.
  */
@@ -31,6 +33,19 @@ public class MessageValue {
     private final String globalValue;
     private String value;
     private String loadedValue;
+
+    /**
+     * 
+     * @param language Language code
+     * @param value
+     * @param globalValue
+     */
+    public MessageValue(String language, String value, String globalValue) {
+        this.language = language;
+        this.value = value;
+        this.loadedValue = value;
+        this.globalValue = globalValue;
+    }
 
     /**
      * 
@@ -50,26 +65,34 @@ public class MessageValue {
     public boolean isDisplayGlobalValue() {
         return globalValue != null && !globalValue.equals(value);
     }
-    
+
     /**
      * 
      * @return true if value is null or empty or contains 'zzz'; false otherwise
+     * @should return true if status none of partial
+     * @should return false if status full
      */
     public boolean isDisplayHighlight() {
-        return StringUtils.isBlank(value) || value.contains("zzz");
+        TranslationStatus status = getTranslationStatus();
+        return TranslationStatus.NONE.equals(status) || TranslationStatus.PARTIAL.equals(status);
     }
 
     /**
      * 
-     * @param language Language code
-     * @param value
-     * @param globalValue
+     * @return Translation status of this value
+     * @should return none status correctly
+     * @should return partial status correctly
+     * @should return full status correctly
      */
-    public MessageValue(String language, String value, String globalValue) {
-        this.language = language;
-        this.value = value;
-        this.loadedValue = value;
-        this.globalValue = globalValue;
+    public TranslationStatus getTranslationStatus() {
+        if (StringUtils.isBlank(value)) {
+            return TranslationStatus.NONE;
+        }
+        if (value.contains(" zzz")) {
+            return TranslationStatus.PARTIAL;
+        }
+
+        return TranslationStatus.FULL;
     }
 
     /**
