@@ -4,6 +4,7 @@
                 xmlns:p="http://primefaces.org/ui"
                 xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
                 xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components"
+                xmlns:a="http://xmlns.jcp.org/jsf/passthrough"
                 xmlns:adminWidget="http://xmlns.jcp.org/jsf/composite/admin/widgets"
                 template="/resources/themes/#{navigationHelper.theme}/templateAdmin.html">
 
@@ -38,21 +39,19 @@
                                     <div class="admin__default-block">
                                         <fieldset>
                                             <div class="form-group form-row">
-                                                <div class="col-3 control-label admin__form-label">
-                                                    #{msg.value}:
-                                                </div>
+                                                <div class="col-3 control-label admin__form-label"></div>
                                                 <div class="col-9 admin__form-input">
                                                     <strong>#{adminBean.currentTranslationGroup.selectedEntry.key}</strong>
                                                 </div>
                                             </div>
                                             <ui:repeat var="value" value="#{adminBean.currentTranslationGroup.selectedEntry.values}">
                                                 <div class="form-group form-row">
-                                                    <div class="col-3 control-label admin__form-label">
+                                                    <div class="col-3 control-label admin__form-label #{value.displayHighlight ? 'admin__form-label-highlight' : ''}">
                                                         <label for="value">#{msg['changeLocal_long_' += value.language]}:</label>
                                                     </div>
-                                                    <div class="col-9 #{value.displayHighlight ? 'admin__form-input-highlight' : 'admin__form-input'}">
+                                                    <div class="col-9 admin__form-input #{value.displayHighlight ? 'admin__form-input-highlight' : ''}">
                                                         <h:inputTextarea value="#{value.value}" id="value" label="value" immediate="true" styleClass="form-control">
-                                                            <f:ajax execute="@form" event="valueChange" />
+                                                            <f:ajax execute="@form" event="blur" />
                                                         </h:inputTextarea>
                                                     </div>
                                                 </div>
@@ -107,12 +106,25 @@
 									<div class="admin__form-help-text in mb-2">
 										#{msg.admin__translations_edit_overview_description}
 									</div>
-									<div>
-									   <h:inputText value="#{adminBean.currentTranslationGroup.filterString}" immediate="true">
-									       <f:ajax execute="@form" event="valueChange" render="overviewList" />
+									
+									<!-- FILTER/SEARCH MSG KEYS OF THIS GROUP -->
+			                        <div class="admin__translations-filter-wrapper">
+									   <h:inputText styleClass="form-control admin__translations-search-input" a:placeholder="#{msg.search}" value="#{adminBean.currentTranslationGroup.filterString}" immediate="true">
+									       <f:ajax execute="@form" render="overviewList" />
 									   </h:inputText>
-									</div>
-									<div id="overviewList" class="admin__translations-all-keys-list">
+									   <div class="admin__translations-search-clear">x</div>
+					                    <div class="admin__translations-search-action">
+				                            <h:commandLink styleClass="btn btn--icon btn-filter admin__translations-search-button">
+				                                <i class="fa fa-search" aria-hidden="true"></i>
+				                                <f:ajax execute="@form" render="overviewList" />
+				                            </h:commandLink>
+					                    </div>
+			                        </div>
+
+
+
+			                        <!-- LIST OF MSG KEYS IN THIS GROUP -->
+									<h:panelGroup id="overviewList" class="admin__translations-all-keys-list">
 	                                    <ui:repeat var="entry" value="#{adminBean.currentTranslationGroup.filteredEntries}">
 	                                        <h:panelGroup layout="block" styleClass="admin__translations-not-translated #{entry eq adminBean.currentTranslationGroup.selectedEntry ? 'admin__translations-selected-key' : ''}" rendered="#{entry.translationStatus == 'NONE'}">
 	                                            <h:commandLink action="#{adminBean.currentTranslationGroup.setSelectedEntry(entry)}" value="#{entry.key}">
@@ -130,7 +142,7 @@
 	                                            </h:commandLink>
 	                                        </h:panelGroup>
 	                                    </ui:repeat>
-									</div>
+									</h:panelGroup>
                                 </div>
                             </div>
                             </div>
@@ -141,9 +153,84 @@
                 <!-- REATTACH HC STICKY AFTER AJAX CALL -->
                 <script>
                 viewerJS.jsfAjax.success.subscribe(function() {
+                	/* SIDEBAR STICKY */
                		$('.-sticky').hcSticky('refresh', {});
+               		
+        			/* check if translations area contains zzz */
+            		$('textarea').keyup(function() {
+                		$('textarea').each(function(i, obj) {
+                		    if ($(this).val().indexOf('zzz') > -1 || (!$(this).val())) {
+                		        $(this).parent().addClass('admin__form-input-highlight');
+                		        $(this).parent().siblings('.admin__form-label').addClass('admin__form-label-highlight');
+                		    }
+                		    else {
+                		        $(this).parent().removeClass('admin__form-input-highlight');
+                		        $(this).parent().siblings('.admin__form-label').removeClass('admin__form-label-highlight');
+                		    }
+                		});
+          			});
+                });
+
+    			/* check if translations area contains zzz */
+        		$('textarea').keyup(function() {
+            		$('textarea').each(function(i, obj) {
+            		    if ($(this).val().indexOf('zzz') > -1 || (!$(this).val())) {
+            		        $(this).parent().addClass('admin__form-input-highlight');
+            		        $(this).parent().siblings('.admin__form-label').addClass('admin__form-label-highlight');
+            		    }
+            		    else {
+            		        $(this).parent().removeClass('admin__form-input-highlight');
+            		        $(this).parent().siblings('.admin__form-label').removeClass('admin__form-label-highlight');
+            		    }
+            		});
+      			});
+                </script>
+                
+                <script>
+        		$( document ).ready(function() {
+        			/* check for input value and show clear button */
+        	        if(!$('.admin__translations-search-input').val() == ''){
+        				$('.admin__translations-search-clear').show();
+        	        }
+        			$('.admin__translations-search-clear').click(function(){
+	        				/* clear value on click*/
+	        		    $('.admin__translations-search-input').val("");
+	        		    $('.admin__translations-search-clear').hide();	
+	        			    /* trigger empty search on click */
+	        			    $('.admin__translations-search-button').click();
+        			});
+        			
+        			if($('.admin__table-entry').length == 0) {
+        				$('.admin__table-content').append('<br/><p class="">#{msg.hitsZero}</p>');
+        			}
+        			
+        			$('.admin__translations-search-input').keyup(function() {
+            	        if ($('.admin__translations-search-input').val() == ''){
+            				$('.admin__translations-search-clear').hide();
+                		}
+            	        
+        			});
+        		});
+        		
+                viewerJS.jsfAjax.success.subscribe(function() {
+        			/* check for input value and show clear button */
+        	        if(!$('.admin__translations-search-input').val() == ''){
+        				$('.admin__translations-search-clear').show();
+        	        }
+        			$('.admin__translations-search-clear').click(function(){
+	        				/* clear value on click*/
+	        		    $('.admin__translations-search-input').val("");
+	        		    $('.admin__translations-search-clear').hide();	
+	        			    /* trigger empty search on click */
+	        			    $('.admin__translations-search-button').click();
+        			});
+        			
+        			if($('.admin__table-entry').length == 0) {
+        				$('.admin__table-content').append('<br/><p class="">#{msg.hitsZero}</p>');
+        			}
                 });
                 </script>
+
             </div>
         </f:view>
     </ui:define>
