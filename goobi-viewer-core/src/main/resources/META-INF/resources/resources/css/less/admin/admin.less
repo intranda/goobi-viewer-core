@@ -323,13 +323,189 @@
             }
 	    }
 	}
-	
+	&__boxed-entry-progress {
+		background: #eeeeee;
+		height: 10px;
+		width: 100%;
+		position: absolute;
+		bottom: 0;
+		left: 0;
+		display: flex;
+	}
+	&__boxed-entry-progress-complete {
+		background: #d4edda;
+	}
+	&__boxed-entry-progress-partially {
+		background: rgba(243,208,70,0.4);
+	}
+	&__sidebar-progressbar {
+		background: #C3C4C7;
+		height: 10px;
+		width: 100%;
+		display: flex;
+	}
+	&__dashboard-translations-progress {
+		background: #eeeeee;
+		height: 8px;
+		width: auto;
+		position: relative;
+		bottom: 0;
+		left: 0;
+		display: flex;
+		margin-left: 3.3rem;
+	}
+	&__dashboard-translations-progress-complete {
+		background: #d4edda;
+	}
+	&__dashboard-translations-progress-partially {
+		background: rgba(243,208,70,0.4);
+	}
+	&__translations-not-translated-entry {
+		margin-top: 2rem;
+		margin-bottom: 0.5rem;
+	}
+	&__translations-global-key-wrapper {
+		font-size: 12px;
+		color: #7c7c7c;
+	}
+	&__translations-fields {
+		
+	}
+	&__translations-global-key {
+	}
+	&__translations-global-hint {
+		display: none;
+	}
+	&__translations-filter-wrapper {
+		display: flex;
+		margin-bottom: 1rem;
+		margin-top: 1rem;
+		position: relative;
+	}
+	&__translations-search-action {
+		line-height: 1;
+		color: #555;
+		text-align: center;
+		background-color: #eee;
+		border: 1px solid #ccc;
+		display: flex;
+		padding: 0;
+		align-items: center;
+		justify-content: center;
+		width: 3.5rem;
+		max-width: 3.5rem;
+		flex: 0 0 3.5rem;
+		display: flex;
+		justify-content: center;
+		color: #212529;
+	}
+	&__translations-search-input {
+		padding-right: 2.5rem;
+	}
+	&__translations-search-clear {
+		display: none;
+		cursor: pointer;
+		padding: 1rem;
+		position: absolute;
+		right: 36px;
+		top: 0;
+		font-size: 1.6rem;
+		line-height: 1.1rem;
+	}
+	&__translations-search-button {
+		color: #555;
+		width: 4.5rem;
+		height: 100%;
+		padding: 0;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+	}
+	&__sidebar-progressbar-complete {
+		background: #008A2A;
+	}
+	&__sidebar-progressbar-partially {
+		background: #F4C14A;
+	}
+	&__sidebar-progress-header {
+		display: flex;
+	}
+	&__sidebar-progress-count {
+		text-align: right;
+		margin-left: auto;
+		font-size: 14px;
+		align-self: center;
+	}
+	&__translations-all-keys-list div:last-child {
+	    border-bottom: 1px solid #ccc;
+	}
+	&__translations-not-translated,
+	&__translations-partially-translated,
+	&__translations-fully-translated {
+		position: relative;
+		word-wrap: break-word;
+		padding: 0.5rem 1rem;
+		border-top: 1px solid #ccc;
+		border-left: 1px solid #ccc;
+		border-right: 1px solid #ccc;
+		a {
+			display: block;
+			color: #444;
+			&:hover,
+			&:active,
+			&:focus {
+				text-decoration: none;
+			}
+		}
+	}
+	&__translations-not-translated {
+		background-color: #EEEEEE;
+		&:hover {
+			background: darken(#EEEEEE, 3%);
+		}
+	}
+	&__translations-partially-translated {
+		background-color: #F7E3B5;
+		&:hover {
+			background: darken(#F7E3B5, 3%);
+		}
+	}
+	&__translations-fully-translated {
+		background-color: #D4EDDB;
+		&:hover {
+			background: darken(#D4EDDB, 3%);
+		}
+	}	
+	&__translations-selected-key {
+		background-color: @white;
+		&:hover {
+			background: @white;
+		}
+		a {
+			color: @blue;
+			font-weight: 700;
+		}
+		&:before {
+			position: absolute;
+			height: 100%;
+			width: 4px;
+			left: -4px;
+			top: 0;
+			content: '';
+			display: block;
+			background: @blue;	
+			}
+	}
 	&__grab-indicator {
 		padding-top: 6rem;
 	}
 	
 	&__label-required-field {
 		padding-left: 0.5rem;
+		font-size: 1.2rem;
+	}
+	&__translations-overview-number {
+		margin-top: 0.8rem;
 		font-size: 1.2rem;
 	}
 	
@@ -1309,6 +1485,20 @@
 	&__cancel-button {
 		margin-right: 1.5rem;
 		min-width: 120px;
+	}
+	&__form-input-highlight {
+		.form-control {
+			border-color: @validDanger;
+		}
+	}
+	&__form-label-highlight {
+		color: @validDanger;
+	}
+	
+	#msgUnfinishedIdentifier {
+		span {
+			display: none;
+		}
 	}
 	
 // BUTTONS MIN-WIDTH

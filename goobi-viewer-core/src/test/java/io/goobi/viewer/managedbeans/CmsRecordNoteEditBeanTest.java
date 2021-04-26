@@ -31,7 +31,7 @@ import io.goobi.viewer.AbstractDatabaseEnabledTest;
 import io.goobi.viewer.dao.converter.TranslatedTextConverter;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.model.cms.CMSRecordNote;
-import io.goobi.viewer.model.misc.TranslatedText;
+import io.goobi.viewer.model.translations.TranslatedText;
 
 /**
  * @author florian

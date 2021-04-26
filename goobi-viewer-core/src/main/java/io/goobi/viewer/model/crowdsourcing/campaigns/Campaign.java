@@ -85,11 +85,11 @@ import io.goobi.viewer.model.cms.CategorizableTranslatedSelectable;
 import io.goobi.viewer.model.crowdsourcing.campaigns.CampaignRecordStatistic.CampaignRecordStatus;
 import io.goobi.viewer.model.crowdsourcing.questions.Question;
 import io.goobi.viewer.model.log.LogMessage;
-import io.goobi.viewer.model.misc.IPolyglott;
-import io.goobi.viewer.model.misc.Translation;
 import io.goobi.viewer.model.security.ILicenseType;
 import io.goobi.viewer.model.security.user.User;
 import io.goobi.viewer.model.security.user.UserGroup;
+import io.goobi.viewer.model.translations.IPolyglott;
+import io.goobi.viewer.model.translations.Translation;
 
 /**
  *
@@ -1320,7 +1320,7 @@ public class Campaign implements CMSMediaHolder, ILicenseType, IPolyglott {
     
 
     /* (non-Javadoc)
-     * @see io.goobi.viewer.model.misc.IPolyglott#isEmpty(java.util.Locale)
+     * @see io.goobi.viewer.model.translations.IPolyglott#isEmpty(java.util.Locale)
      */
     @Override
     public boolean isEmpty(Locale locale) {

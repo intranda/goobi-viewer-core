@@ -62,7 +62,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import de.unigoettingen.sub.commons.contentlib.exceptions.IllegalRequestException;
 import de.unigoettingen.sub.commons.contentlib.servlet.rest.CORSBinding;
-import io.goobi.viewer.api.rest.bindings.AuthorizationBinding;
 import io.goobi.viewer.api.rest.bindings.ViewerRestServiceBinding;
 import io.goobi.viewer.api.rest.model.RecordsRequestParameters;
 import io.goobi.viewer.api.rest.model.index.SolrFieldInfo;
@@ -189,8 +188,6 @@ public class IndexResource {
                             .getSearchIndex()
                             .search(query, params.offset, count, sortFieldList, params.facetFields, fieldList, null, paramMap);
 
-
-
             JSONObject object = new JSONObject();
             object.put("numFound", response.getResults().getNumFound());
             object.put("docs", getQueryResults(params, response));
@@ -202,7 +199,7 @@ public class IndexResource {
         }
     }
 
-    private Optional<JSONArray> getFacetResults(QueryResponse response) {
+    private static Optional<JSONArray> getFacetResults(QueryResponse response) {
         List<FacetField> facetFields = response.getFacetFields();
         if (facetFields != null && !facetFields.isEmpty()) {
             JSONArray facets = new JSONArray();
@@ -329,11 +326,11 @@ public class IndexResource {
                 sfi.setSortField(sortFieldName);
             }
             String facetFieldName = SearchHelper.facetifyField(fieldName);
-            if (!facetFieldName.equals(fieldName) &&reference.contains(facetFieldName)) {
+            if (!facetFieldName.equals(fieldName) && reference.contains(facetFieldName)) {
                 sfi.setFacetField(facetFieldName);
             }
             String boolFieldName = SearchHelper.boolifyField(fieldName);
-            if (!boolFieldName.equals(fieldName) &&reference.contains(boolFieldName)) {
+            if (!boolFieldName.equals(fieldName) && reference.contains(boolFieldName)) {
                 sfi.setBoolField(boolFieldName);
             }
             for (Locale locale : ViewerResourceBundle.getAllLocales()) {

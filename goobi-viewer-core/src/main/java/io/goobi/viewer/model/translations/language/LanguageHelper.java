@@ -13,7 +13,7 @@
  *
  * You should have received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
-package io.goobi.viewer.controller.language;
+package io.goobi.viewer.model.translations.language;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -95,7 +95,7 @@ public class LanguageHelper {
      * Gets the language data for the given iso-code 639-1 or 639-2B
      *
      * @param isoCode a {@link java.lang.String} object.
-     * @return a {@link io.goobi.viewer.controller.language.Language} object.
+     * @return a {@link io.goobi.viewer.model.translations.language.Language} object.
      */
     public Language getLanguage(String isoCode) {
         SubnodeConfiguration languageConfig = null;

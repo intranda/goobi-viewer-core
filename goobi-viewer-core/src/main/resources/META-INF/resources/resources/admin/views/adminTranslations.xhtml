@@ -1,0 +1,89 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://xmlns.jcp.org/jsf/html"
+                xmlns:f="http://xmlns.jcp.org/jsf/core"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+                xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components"
+                xmlns:adminWidget="http://xmlns.jcp.org/jsf/composite/admin/widgets"
+                template="/resources/themes/#{navigationHelper.theme}/templateAdmin.html">
+
+    <ui:define name="metadata">
+        <f:metadata>
+            <f:event type="preRenderView" listener="#{navigationHelper.setCurrentPageAdmin('adminTranslations')}" />
+        </f:metadata>
+    </ui:define>
+
+    <ui:define name="content">
+        <f:view contentType="text/html" encoding="utf-8">
+            <div id="adminTranslations">
+                <h:outputText rendered="#{userBean.admin and adminBean.translationLocked}" value="#{msg.admin__translation_locked}" />
+                
+                <h:panelGroup rendered="#{userBean.admin and !adminBean.translationLocked}">
+                    <h:form id="adminTranslations" prependId="false">
+                        <div class="admin__title-bar">
+                            <!-- TITLE -->
+                            <h2 class="admin__title">#{msg.admin__translations}</h2>
+                        </div>
+
+                        <div class="admin__content-inner-content">
+                            <!-- INFO TEXT -->
+                            <div class="admin__info-text">
+                                <h:outputText value="#{msg.admin__translations_description_text}" escape="false" />
+                            </div>
+
+                            <div class="admin__entry-list">
+                                <!--  TRANSLATION GROUPS -->
+                                <ui:repeat var="group" value="#{adminBean.configuredTranslationGroups}">
+                                    <div class="admin__boxed-entry -w100 -std-bottom-pad">
+                                        <div class="row">
+                                        	<div class="col-12 col-lg-9">
+                                        	<!-- GROUP TITLE -->
+                                            <h3>#{msg[group.name]}</h3>
+                                            
+                                       		<!-- DESCRIPTION -->
+                                            <ui:fragment rendered="#{group.description ne ''}">
+                                                <p class="admin__boxed-entry-description">#{msg[group.description]}</p>
+                                            </ui:fragment>
+                                            <ui:fragment rendered="#{group.description eq ''}">
+                                                <p class="admin__boxed-entry-description-empty" aria-disabled="true">
+                                                    (#{msg.admin__label__no_description_available})
+                                                </p>
+                                            </ui:fragment>
+                                            
+                                            </div>
+                                            
+											<div class="col-12 col-lg-3 d-flex justify-content-center justify-content-lg-end">
+												<div class="d-flex flex-column align-items-center">
+												
+												<ui:fragment rendered="#{group.fullyTranslatedEntryCount != group.entryCount}">
+												<a class="btn btn--full" href="#{navigationHelper.applicationUrl}admin/translations/edit/#{group.id}/"
+		                                            aria-label="#{msg.edit}: #{msg[group.name]}">#{msg.admin__translations_translate_now}</a>
+		                                        <div class="admin__translations-overview-number">(#{group.fullyTranslatedEntryCount} #{msg.of} #{group.entryCount})</div>	
+												</ui:fragment>
+												
+												<ui:fragment rendered="#{group.fullyTranslatedEntryCount == group.entryCount}">
+												<a class="btn btn--default" href="#{navigationHelper.applicationUrl}admin/translations/edit/#{group.id}/"
+		                                            aria-label="#{msg.edit}: #{msg[group.name]}">#{msg.show}</a>	
+												</ui:fragment>
+												
+												</div>
+											</div>
+											
+											
+										</div>
+										
+										<div class="admin__boxed-entry-progress">
+											<div class="admin__boxed-entry-progress-complete" style="flex: 0 0 #{group.fullyTranslatedEntryCountPercentage}%; max-width: #{group.fullyTranslatedEntryCountPercentage}%;"></div>
+											<div class="admin__boxed-entry-progress-partially" style="flex: 0 0 #{group.partiallyTranslatedEntryCountPercentage}%; max-width: #{group.partiallyTranslatedEntryCountPercentage}%;"></div>
+										</div>
+                                    </div>
+                                </ui:repeat>
+                            </div>
+                        </div>
+                    </h:form>
+                </h:panelGroup>
+            </div>
+        </f:view>
+    </ui:define>
+
+</ui:composition>
