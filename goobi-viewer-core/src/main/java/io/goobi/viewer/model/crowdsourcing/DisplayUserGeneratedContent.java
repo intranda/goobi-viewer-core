@@ -507,6 +507,7 @@ public class DisplayUserGeneratedContent {
                     this.annotationBody = mapper.readValue(json, de.intranda.api.annotation.oa.TypedResource.class);
                     return true;
                 } catch (JsonProcessingException e1) {
+                    
                     this.annotationBody = new TextualResource(json, HtmlParser.isHtml(json) ? "text/html" : "text/plain");
                 }
 

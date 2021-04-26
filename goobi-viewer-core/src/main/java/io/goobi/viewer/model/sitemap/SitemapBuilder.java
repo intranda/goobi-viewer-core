@@ -51,7 +51,7 @@ public class SitemapBuilder {
         this.servletRequest = request;
     }
 
-    public void updateSitemap(SitemapRequestParameters params) throws AccessDeniedException, IllegalRequestException, InterruptedException, JSONException, PresentationException {
+    public void updateSitemap(SitemapRequestParameters params) throws AccessDeniedException, IllegalRequestException, JSONException, PresentationException {
 
         JSONObject ret = new JSONObject();
 
@@ -111,7 +111,12 @@ public class SitemapBuilder {
             });
 
             workerThread.start();
-            workerThread.join();
+            try {
+                workerThread.join();
+            } catch (InterruptedException e) {
+                workerThread.interrupt();
+                throw new PresentationException("Processing interrupted");
+            }
             if(!Integer.valueOf(HttpServletResponse.SC_OK).equals(ret.getInt("status"))) {
                 throw new PresentationException(ret.getString("message"));
             }
