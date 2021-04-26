@@ -2869,6 +2869,131 @@ riot.tag2('slideshow', '<a if="{manifest === undefined}" data-linkid="{opts.pis}
             viewerJS.handleScrollPositionClick($target);
         }.bind(this)
 });
+
+
+riot.tag2('thumbnails', '<div><div each="{canvas, index in thumbnails}"><a href="{getHomepage(canvas)}"><img alt="{getValue(canvas.label)}" riot-src="{getImage(canvas)}"><label>{getValue(canvas.label)}</label></img></a></div></div>', '', '', function(opts) {
+
+this.thumbnails = [];
+
+this.on("mount", () => {
+	console.log("mount ", this.opts);
+	this.type = opts.type ? opts.type : "items";
+	this.language = opts.language ? opts.language : "en";
+	this.imageSize = opts.imageSize;
+
+	let source = opts.source;
+	if(viewerJS.isString(source)) {
+		fetch(source)
+		.then(response => response.json())
+		.then(json => this.loadThumbnails(json, this.type));
+	} else {
+		this.loadThumbnails(source, this.type);
+	}
+});
+
+this.loadThumbnails = function(source, type) {
+	console.log("Loading thumbnails from ", source);
+
+	switch(type) {
+		case "structures":
+			rxjs.from(source.structures)
+			.pipe(
+					rxjs.operators.map(range => this.getFirstCanvas(range, true)),
+					rxjs.operators.concatMap(canvas => this.loadCanvas(canvas))
+					)
+			.subscribe(item => this.addThumbnail(item));
+			break;
+		case "items":
+		case "default":
+			this.createThumbnails(source.items)
+	}
+
+}.bind(this)
+
+this.addThumbnail = function(item) {
+	console.log("add thumbnail from ", item);
+	this.thumbnails.push(item);
+	this.update();
+}.bind(this)
+
+this.createThumbnails = function(items) {
+	console.log("creating thumbnails from ", items)
+	this.thumbnails = items;
+	this.update();
+}.bind(this)
+
+this.getFirstCanvas = function(range, overwriteLabel) {
+
+	let canvas = undefined;
+	if(range.start) {
+		canvas = range.start;
+	} else if(range.items) {
+		canvas = range.items.find( item => item.type == "Canvas");
+	}
+	if(canvas && overwriteLabel) {
+		canvas.label = range.label;
+	}
+	return canvas;
+}.bind(this)
+
+this.loadCanvas = function(source) {
+	return fetch(viewerJS.iiif.getId(source))
+	.then(response => response.json())
+	.then(canvas => {
+
+		if(source.label) {
+			canvas.label = source.label;
+		}
+		return canvas;
+	})
+}.bind(this)
+
+this.getValue = function(value) {
+	return viewerJS.iiif.getValue(value, this.language, this.language == "en" ? "de" : "en");
+}.bind(this)
+
+this.getImage = function(canvas) {
+	console.log("get image from ", canvas);
+	if(canvas.items) {
+		return canvas.items
+		.filter(page => page.items != undefined)
+		.flatMap(page => page.items)
+		.filter(anno => anno.body != undefined)
+		.map(anno => anno.body)
+		.map(res => this.getImageUrl(res, this.imageSize))
+		.find(url => url != undefined)
+	} else {
+		return undefined;
+	}
+}.bind(this)
+
+this.getImageUrl = function(resource, size) {
+	console.log("get image url ", resource, size);
+	if(size && resource.service && resource.service.length > 0) {
+		let url = resource.service[0].id;
+		return url + "/full/" + size + "/0/default." + this.getExtension(resource.format);
+	} else {
+		return resource.id;
+	}
+}.bind(this)
+
+this.getExtension = function(format) {
+	if(format && format == "image/png") {
+		return "png";
+	} else {
+		return "jpg";
+	}
+}.bind(this)
+
+this.getHomepage = function(canvas) {
+	if(canvas.homepage && canvas.homepage.length > 0) {
+		return canvas.homepage[0].id;
+	} else {
+		return undefined;
+	}
+}.bind(this)
+
+});
 riot.tag2('timematrix', '<div class="timematrix__objects"><div each="{manifest in manifests}" class="timematrix__content"><div class="timematrix__img"><a href="{getViewerUrl(manifest)}"><img riot-src="{getImageUrl(manifest)}" class="timematrix__image" data-viewer-thumbnail="thumbnail" alt="" aria-hidden="true" onerror="this.onerror=null;this.src=\'/viewer/resources/images/access_denied.png\'"><div class="timematrix__text"><p if="{hasTitle(manifest)}" name="timetext" class="timetext">{getDisplayTitle(manifest)}</p></div></a></div></div></div>', '', '', function(opts) {
 	    this.on( 'mount', function() {
 
