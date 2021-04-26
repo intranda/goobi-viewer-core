@@ -1091,13 +1091,13 @@ public class ConfigurationBean implements Serializable {
 
     /**
      * <p>
-     * isDoublePageModeEnabled.
+     * isDoublePageNavigationEnabled.
      * </p>
      *
      * @return a boolean.
      */
-    public boolean isDoublePageModeEnabled() {
-        return DataManager.getInstance().getConfiguration().isDoublePageModeEnabled();
+    public boolean isDoublePageNavigationEnabled() {
+        return DataManager.getInstance().getConfiguration().isDoublePageNavigationEnabled();
     }
 
     /**

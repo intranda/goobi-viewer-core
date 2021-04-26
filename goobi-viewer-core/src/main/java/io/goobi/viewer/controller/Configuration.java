@@ -4548,14 +4548,14 @@ public final class Configuration extends AbstractConfiguration {
 
     /**
      * <p>
-     * isDoublePageModeEnabled.
+     * isDoublePageNavigationEnabled.
      * </p>
      *
      * @should return correct value
      * @return a boolean.
      */
-    public boolean isDoublePageModeEnabled() {
-        return getLocalBoolean("viewer.doublePageMode.enabled", false);
+    public boolean isDoublePageNavigationEnabled() {
+        return getLocalBoolean("viewer.doublePageNavigation[@enabled]", false);
     }
 
     /**
