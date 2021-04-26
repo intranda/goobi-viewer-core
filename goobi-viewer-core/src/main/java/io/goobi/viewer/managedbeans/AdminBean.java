@@ -1838,7 +1838,7 @@ public class AdminBean implements Serializable {
      */
     public boolean isDisplayTranslationsDashboardWidget() {
         for (TranslationGroup group : getConfiguredTranslationGroups()) {
-            if (group.getFullyTranslatedEntryCount() < group.getEntryCount()) {
+            if (!group.isFullyTranslated()) {
                 return true;
             }
         }

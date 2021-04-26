@@ -279,6 +279,20 @@ public class TranslationGroup {
 
     /**
      * 
+     * @return true if all entries in the filtered list are fully translated; false otherwise
+     */
+    public boolean isAllFilteredEntriesFullyTranslated() {
+        for (MessageEntry entry : getFilteredEntries()) {
+            if (!TranslationStatus.FULL.equals(entry.getTranslationStatus())) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    /**
+     * 
      * @return
      * @should filter by key correctly
      * @should filter by value correctly
@@ -414,7 +428,7 @@ public class TranslationGroup {
         Set<Integer> selected = new HashSet<>(getFilteredEntries().size());
         // Skip currently selected entry or any entries that are already fully translated (unless all are fully translated)
         while (entry == null || entry.equals(selectedEntry)
-                || (entry.getTranslationStatus().equals(TranslationStatus.FULL) && !isFullyTranslated())) {
+                || (entry.getTranslationStatus().equals(TranslationStatus.FULL) && !isAllFilteredEntriesFullyTranslated())) {
             selectedEntryIndex += step;
             logger.trace("selectedEntryIndex: {}", selectedEntryIndex);
             // After a full circle (no unfinished entries left), reset to the current entry
@@ -438,6 +452,7 @@ public class TranslationGroup {
             logger.trace("entry selected: {}", selectedEntryIndex);
             // If all available entries have already been selected, then all entries are probably fully translated
             if (selected.size() == getFilteredEntries().size()) {
+                logger.trace("fully: {}", isFullyTranslated());
                 logger.trace("All entries checked, aborting");
                 break;
             }
