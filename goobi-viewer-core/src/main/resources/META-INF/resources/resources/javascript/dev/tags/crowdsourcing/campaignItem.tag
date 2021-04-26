@@ -14,6 +14,7 @@
 	</span>
 		<div class="crowdsourcing-annotations__content-left" >
 			<imageView if="{this.item}" id="mainImage" source="{this.item.getCurrentCanvas()}" item="{this.item}"></imageView>
+			<thumbnails source="{this.item.imageSource}"/>
 			<canvasPaginator if="{this.item}" item="{this.item}"></canvasPaginator>
 		</div>
 		<div if="{this.item}" class="crowdsourcing-annotations__content-right">
