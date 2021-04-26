@@ -2870,7 +2870,7 @@ riot.tag2('slideshow', '<a if="{manifest === undefined}" data-linkid="{opts.pis}
 });
 
 
-riot.tag2('thumbnails', '<div><div each="{canvas, index in thumbnails}"><a href="{getHomepage(canvas)}"><img alt="{getValue(canvas.label)}" riot-src="{getImage(canvas)}"><label>{getValue(canvas.label)}</label></img></a></div></div>', '', '', function(opts) {
+riot.tag2('thumbnails', '<div class="archives__object-thumbnails-image-wrapper" each="{canvas, index in thumbnails}"><a class="archives__object-thumbnails-image-link" href="{getHomepage(canvas)}"><img class="archives__object-thumbnails-image" alt="{getValue(canvas.label)}" riot-src="{getImage(canvas)}"><div class="archives__object-thumbnails-image-overlay"><span class="archives__object-thumbnails-label">{getValue(canvas.label)}</span></div></a></div>', '', '', function(opts) {
 
 this.thumbnails = [];
 

@@ -15,17 +15,14 @@ For ambigious sources, the additional opts.type property determines how the sour
 
 <thumbnails>
 
-<div>
-	<div each="{canvas, index in thumbnails}">
-	
-		<a href="{getHomepage(canvas)}">
-			<img  alt="{getValue(canvas.label)}" src="{getImage(canvas)}">
-			<label>{getValue(canvas.label)}</label>
-			</img>
+	<div class="archives__object-thumbnails-image-wrapper" each="{canvas, index in thumbnails}">
+		<a class="archives__object-thumbnails-image-link" href="{getHomepage(canvas)}">
+			<img class="archives__object-thumbnails-image" alt="{getValue(canvas.label)}" src="{getImage(canvas)}" />
+		<div class="archives__object-thumbnails-image-overlay">
+			<div class="archives__object-thumbnails-label">{getValue(canvas.label)}</div>
+		</div>
 		</a>
-	
 	</div>
-</div>
 
 
 
