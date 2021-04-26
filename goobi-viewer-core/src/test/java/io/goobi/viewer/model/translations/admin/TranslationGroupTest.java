@@ -15,10 +15,14 @@
  */
 package io.goobi.viewer.model.translations.admin;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.junit.Assert;
 import org.junit.Test;
 
 import io.goobi.viewer.AbstractSolrEnabledTest;
+import io.goobi.viewer.model.translations.admin.MessageEntry.TranslationStatus;
 import io.goobi.viewer.model.translations.admin.TranslationGroup.TranslationGroupType;
 
 public class TranslationGroupTest extends AbstractSolrEnabledTest {
@@ -33,5 +37,277 @@ public class TranslationGroupTest extends AbstractSolrEnabledTest {
         group.getItems().add(TranslationGroupItem.create(TranslationGroupType.SOLR_FIELD_NAMES, "DC", false));
         group.getItems().add(TranslationGroupItem.create(TranslationGroupType.SOLR_FIELD_NAMES, "PI", false));
         Assert.assertEquals(2, group.getEntryCount());
+    }
+
+    /**
+     * @see TranslationGroup#getFilteredEntries()
+     * @verifies filter by key correctly
+     */
+    @Test
+    public void getFilteredEntries_shouldFilterByKeyCorrectly() throws Exception {
+        TranslationGroup group = TranslationGroup.create(0, TranslationGroupType.CORE_STRINGS, "group", null, 1);
+        group.getItems().add(TranslationGroupItem.create(TranslationGroupType.SOLR_FIELD_NAMES, "FOO", false));
+        group.getItems().add(TranslationGroupItem.create(TranslationGroupType.SOLR_FIELD_NAMES, "bar", false));
+        group.getItems().add(TranslationGroupItem.create(TranslationGroupType.SOLR_FIELD_NAMES, "ufo", false));
+        group.getItems().add(TranslationGroupItem.create(TranslationGroupType.SOLR_FIELD_NAMES, "unfortunate", false));
+
+        group.setFilterString("fo");
+        List<MessageEntry> filtered = group.getFilteredEntries();
+        Assert.assertEquals(3, filtered.size());
+        Assert.assertEquals("FOO", filtered.get(0).getKey());
+        Assert.assertEquals("ufo", filtered.get(1).getKey());
+        Assert.assertEquals("unfortunate", filtered.get(2).getKey());
+
+    }
+
+    /**
+     * @see TranslationGroup#getFilteredEntries()
+     * @verifies filter by value correctly
+     */
+    @Test
+    public void getFilteredEntries_shouldFilterByValueCorrectly() throws Exception {
+        TranslationGroup group = TranslationGroup.create(0, TranslationGroupType.CORE_STRINGS, "group", null, 1);
+        TranslationGroupItem item = TranslationGroupItem.create(TranslationGroupType.SOLR_FIELD_NAMES, "item", false);
+        group.getItems().add(item);
+        {
+            List<MessageValue> values = new ArrayList<>();
+            values.add(new MessageValue("de", "eins", null));
+            item.getEntries().add(new MessageEntry("1", values));
+        }
+        {
+            List<MessageValue> values = new ArrayList<>();
+            values.add(new MessageValue("de", "zwei", null));
+            item.getEntries().add(new MessageEntry("2", values));
+        }
+        {
+            List<MessageValue> values = new ArrayList<>();
+            values.add(new MessageValue("de", "drei", null));
+            item.getEntries().add(new MessageEntry("3", values));
+        }
+        {
+            List<MessageValue> values = new ArrayList<>();
+            values.add(new MessageValue("de", "vier", null));
+            item.getEntries().add(new MessageEntry("4", values));
+        }
+
+        group.setFilterString("ei");
+        List<MessageEntry> filtered = group.getFilteredEntries();
+        Assert.assertEquals(3, filtered.size());
+        Assert.assertEquals("1", filtered.get(0).getKey());
+        Assert.assertEquals("2", filtered.get(1).getKey());
+        Assert.assertEquals("3", filtered.get(2).getKey());
+    }
+
+    /**
+     * @see TranslationGroup#selectEntry(int)
+     * @verifies only select unfinished entries
+     */
+    @Test
+    public void selectEntry_shouldOnlySelectUnfinishedEntries() throws Exception {
+        TranslationGroup group = TranslationGroup.create(0, TranslationGroupType.SOLR_FIELD_NAMES, "group", null, 1);
+        TranslationGroupItem item = TranslationGroupItem.create(TranslationGroupType.SOLR_FIELD_NAMES, "item", false);
+        group.getItems().add(item);
+        item.getEntries().clear();
+        Assert.assertEquals(0, item.getEntries().size());
+        {
+            List<MessageValue> values = new ArrayList<>();
+            values.add(new MessageValue("en", "one", null));
+            values.add(new MessageValue("de", "eins zzz", null));
+            MessageEntry entry = new MessageEntry("1", values);
+            item.getEntries().add(entry);
+            Assert.assertEquals(TranslationStatus.PARTIAL, entry.getTranslationStatus());
+        }
+        {
+            // partially translated
+            List<MessageValue> values = new ArrayList<>();
+            values.add(new MessageValue("en", "two", null));
+            values.add(new MessageValue("de", "zwei", null));
+            MessageEntry entry = new MessageEntry("2", values);
+            item.getEntries().add(entry);
+            Assert.assertEquals(TranslationStatus.FULL, entry.getTranslationStatus());
+        }
+        {
+            // partially translated
+            List<MessageValue> values = new ArrayList<>();
+            values.add(new MessageValue("en", "three", null));
+            values.add(new MessageValue("de", "drei", null));
+            MessageEntry entry = new MessageEntry("3", values);
+            item.getEntries().add(entry);
+            Assert.assertEquals(TranslationStatus.FULL, entry.getTranslationStatus());
+        }
+        {
+            List<MessageValue> values = new ArrayList<>();
+            values.add(new MessageValue("en", "", null));
+            values.add(new MessageValue("de", "vier", null));
+            MessageEntry entry = new MessageEntry("4", values);
+            item.getEntries().add(entry);
+            Assert.assertEquals(TranslationStatus.PARTIAL, entry.getTranslationStatus());
+        }
+        Assert.assertFalse(group.isAllFilteredEntriesFullyTranslated());
+        
+        group.setSelectedEntry(item.getEntries().get(0));
+        Assert.assertEquals("1", group.getSelectedEntry().getKey());
+        // Next
+        group.selectEntry(1);
+        Assert.assertEquals("4", group.getSelectedEntry().getKey());
+        // Previous
+        group.selectEntry(-1);
+        Assert.assertEquals("1", group.getSelectedEntry().getKey());
+        
+    }
+
+    /**
+     * @see TranslationGroup#selectEntry(int)
+     * @verifies select fully translated entries if all are fully translated
+     */
+    @Test
+    public void selectEntry_shouldSelectFullyTranslatedEntriesIfAllAreFullyTranslated() throws Exception {
+        TranslationGroup group = TranslationGroup.create(0, TranslationGroupType.SOLR_FIELD_NAMES, "group", null, 1);
+        TranslationGroupItem item = TranslationGroupItem.create(TranslationGroupType.SOLR_FIELD_NAMES, "item", false);
+        group.getItems().add(item);
+        item.getEntries().clear();
+        Assert.assertEquals(0, item.getEntries().size());
+        {
+            List<MessageValue> values = new ArrayList<>();
+            values.add(new MessageValue("en", "one", null));
+            values.add(new MessageValue("de", "eins", null));
+            MessageEntry entry = new MessageEntry("1", values);
+            item.getEntries().add(entry);
+            Assert.assertEquals(TranslationStatus.FULL, entry.getTranslationStatus());
+        }
+        {
+            // partially translated
+            List<MessageValue> values = new ArrayList<>();
+            values.add(new MessageValue("en", "two", null));
+            values.add(new MessageValue("de", "zwei", null));
+            MessageEntry entry = new MessageEntry("2", values);
+            item.getEntries().add(entry);
+            Assert.assertEquals(TranslationStatus.FULL, entry.getTranslationStatus());
+        }
+        {
+            // partially translated
+            List<MessageValue> values = new ArrayList<>();
+            values.add(new MessageValue("en", "three", null));
+            values.add(new MessageValue("de", "drei", null));
+            MessageEntry entry = new MessageEntry("3", values);
+            item.getEntries().add(entry);
+            Assert.assertEquals(TranslationStatus.FULL, entry.getTranslationStatus());
+        }
+        {
+            List<MessageValue> values = new ArrayList<>();
+            values.add(new MessageValue("en", "four", null));
+            values.add(new MessageValue("de", "vier", null));
+            MessageEntry entry = new MessageEntry("4", values);
+            item.getEntries().add(entry);
+            Assert.assertEquals(TranslationStatus.FULL, entry.getTranslationStatus());
+        }
+        Assert.assertTrue(group.isAllFilteredEntriesFullyTranslated());
+        
+        group.setSelectedEntry(item.getEntries().get(0));
+        Assert.assertEquals("1", group.getSelectedEntry().getKey());
+        // Next
+        group.selectEntry(1);
+        Assert.assertEquals("2", group.getSelectedEntry().getKey());
+        group.selectEntry(1);
+        Assert.assertEquals("3", group.getSelectedEntry().getKey());
+        group.selectEntry(1);
+        Assert.assertEquals("4", group.getSelectedEntry().getKey());
+        // Previous
+        group.selectEntry(-1);
+        Assert.assertEquals("3", group.getSelectedEntry().getKey());
+        group.selectEntry(-1);
+        Assert.assertEquals("2", group.getSelectedEntry().getKey());
+        group.selectEntry(-1);
+        Assert.assertEquals("1", group.getSelectedEntry().getKey());
+    }
+
+    /**
+     * @see TranslationGroup#selectEntry(int)
+     * @verifies resume at the end when moving past first element
+     */
+    @Test
+    public void selectEntry_shouldResumeAtTheEndWhenMovingPastFirstElement() throws Exception {
+        TranslationGroup group = TranslationGroup.create(0, TranslationGroupType.SOLR_FIELD_NAMES, "group", null, 1);
+        TranslationGroupItem item = TranslationGroupItem.create(TranslationGroupType.SOLR_FIELD_NAMES, "item", false);
+        group.getItems().add(item);
+        item.getEntries().clear();
+        Assert.assertEquals(0, item.getEntries().size());
+        {
+            List<MessageValue> values = new ArrayList<>();
+            values.add(new MessageValue("en", "one", null));
+            values.add(new MessageValue("de", "eins", null));
+            MessageEntry entry = new MessageEntry("1", values);
+            item.getEntries().add(entry);
+            Assert.assertEquals(TranslationStatus.FULL, entry.getTranslationStatus());
+        }
+        {
+            // partially translated
+            List<MessageValue> values = new ArrayList<>();
+            values.add(new MessageValue("en", "two", null));
+            values.add(new MessageValue("de", "zwei", null));
+            MessageEntry entry = new MessageEntry("2", values);
+            item.getEntries().add(entry);
+            Assert.assertEquals(TranslationStatus.FULL, entry.getTranslationStatus());
+        }
+        {
+            // partially translated
+            List<MessageValue> values = new ArrayList<>();
+            values.add(new MessageValue("en", "three", null));
+            values.add(new MessageValue("de", "drei", null));
+            MessageEntry entry = new MessageEntry("3", values);
+            item.getEntries().add(entry);
+            Assert.assertEquals(TranslationStatus.FULL, entry.getTranslationStatus());
+        }
+        Assert.assertTrue(group.isAllFilteredEntriesFullyTranslated());
+        
+        group.setSelectedEntry(item.getEntries().get(2));
+        Assert.assertEquals("3", group.getSelectedEntry().getKey());
+        group.selectEntry(1);
+        Assert.assertEquals("1", group.getSelectedEntry().getKey());
+    }
+
+    /**
+     * @see TranslationGroup#selectEntry(int)
+     * @verifies resume at the beginning when moving past last element
+     */
+    @Test
+    public void selectEntry_shouldResumeAtTheBeginningWhenMovingPastLastElement() throws Exception {
+        TranslationGroup group = TranslationGroup.create(0, TranslationGroupType.SOLR_FIELD_NAMES, "group", null, 1);
+        TranslationGroupItem item = TranslationGroupItem.create(TranslationGroupType.SOLR_FIELD_NAMES, "item", false);
+        group.getItems().add(item);
+        item.getEntries().clear();
+        Assert.assertEquals(0, item.getEntries().size());
+        {
+            List<MessageValue> values = new ArrayList<>();
+            values.add(new MessageValue("en", "one", null));
+            values.add(new MessageValue("de", "eins", null));
+            MessageEntry entry = new MessageEntry("1", values);
+            item.getEntries().add(entry);
+            Assert.assertEquals(TranslationStatus.FULL, entry.getTranslationStatus());
+        }
+        {
+            // partially translated
+            List<MessageValue> values = new ArrayList<>();
+            values.add(new MessageValue("en", "two", null));
+            values.add(new MessageValue("de", "zwei", null));
+            MessageEntry entry = new MessageEntry("2", values);
+            item.getEntries().add(entry);
+            Assert.assertEquals(TranslationStatus.FULL, entry.getTranslationStatus());
+        }
+        {
+            // partially translated
+            List<MessageValue> values = new ArrayList<>();
+            values.add(new MessageValue("en", "three", null));
+            values.add(new MessageValue("de", "drei", null));
+            MessageEntry entry = new MessageEntry("3", values);
+            item.getEntries().add(entry);
+            Assert.assertEquals(TranslationStatus.FULL, entry.getTranslationStatus());
+        }
+        Assert.assertTrue(group.isAllFilteredEntriesFullyTranslated());
+        
+        group.setSelectedEntry(item.getEntries().get(0));
+        Assert.assertEquals("1", group.getSelectedEntry().getKey());
+        group.selectEntry(-1);
+        Assert.assertEquals("3", group.getSelectedEntry().getKey());
     }
 }

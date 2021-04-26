@@ -87,11 +87,11 @@ public class TranslationGroup {
      * @param type
      * @param name
      * @param description
-     * @param numKeys
+     * @param numItems
      * @return
      */
-    public static TranslationGroup create(int id, TranslationGroupType type, String name, String description, int numKeys) {
-        return new TranslationGroup(id, type, name, description, numKeys);
+    public static TranslationGroup create(int id, TranslationGroupType type, String name, String description, int numItems) {
+        return new TranslationGroup(id, type, name, description, numItems);
     }
 
     /**
@@ -101,17 +101,17 @@ public class TranslationGroup {
      * @param type
      * @param name
      * @param description
-     * @param numKeys
+     * @param numItems
      */
-    private TranslationGroup(int id, TranslationGroupType type, String name, String description, int numKeys) {
-        if (numKeys < 0) {
+    private TranslationGroup(int id, TranslationGroupType type, String name, String description, int numItems) {
+        if (numItems < 0) {
             throw new IllegalArgumentException("numKeys may not be negative");
         }
         this.id = id;
         this.type = type;
         this.name = name;
         this.description = description;
-        this.items = new ArrayList<>(numKeys);
+        this.items = new ArrayList<>(numItems);
     }
 
     /* (non-Javadoc)

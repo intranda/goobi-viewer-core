@@ -17,8 +17,6 @@ package io.goobi.viewer.model.translations.admin;
 
 import java.util.List;
 
-import org.apache.commons.lang3.StringUtils;
-
 /**
  * A single message key with all its available translations for admin backend editing.
  */
