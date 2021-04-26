@@ -68,6 +68,8 @@ import de.intranda.api.annotation.wa.collection.AnnotationPage;
 import de.intranda.api.iiif.presentation.IPresentationModelElement;
 import de.intranda.api.iiif.search.AutoSuggestResult;
 import de.intranda.api.iiif.search.SearchResult;
+import de.intranda.monitoring.timer.Timer;
+import de.intranda.monitoring.timer.TimerOutput;
 import de.unigoettingen.sub.commons.contentlib.exceptions.ContentLibException;
 import de.unigoettingen.sub.commons.contentlib.exceptions.ContentNotFoundException;
 import de.unigoettingen.sub.commons.contentlib.exceptions.IllegalRequestException;
@@ -137,29 +139,6 @@ public class RecordResource {
             @Parameter(description = "Persistent identifier of the record") @PathParam("pi") String pi) {
         this.pi = pi;
         request.setAttribute(FilterTools.ATTRIBUTE_PI, pi);
-    }
-
-    /**
-     * Checks the request url for the accessed resource and returns the required access privilege, at least {@link IPrivilegeHolder#PRIV_LIST}
-     * 
-     * @param request
-     * @return
-     * @deprecated not used.
-     */
-    @Deprecated
-    public static String getRequiredPrivilege(HttpServletRequest request, AbstractApiUrlManager urls) {
-        String requestUri = request.getRequestURI();
-        String requestUrl = request.getRequestURL().toString();
-
-        if (urls.path(RECORDS_RECORD, RECORDS_TOC).matches(requestUrl)) {
-            return IPrivilegeHolder.PRIV_DOWNLOAD_METADATA;
-        } else if (urls.path(RECORDS_RECORD, RECORDS_METADATA_SOURCE).matches(requestUrl)) {
-            return IPrivilegeHolder.PRIV_DOWNLOAD_METADATA;
-        } else if (urls.path(RECORDS_RECORD, RECORDS_MANIFEST).matches(requestUrl)) {
-            return IPrivilegeHolder.PRIV_GENERATE_IIIF_MANIFEST;
-        } else {
-            return IPrivilegeHolder.PRIV_LIST;
-        }
     }
 
     @GET
@@ -296,7 +275,7 @@ public class RecordResource {
     @GET
     @javax.ws.rs.Path(RECORDS_MANIFEST)
     @Produces({ MediaType.APPLICATION_JSON })
-    @Operation(tags = { "records", "iiif" }, summary = "Get IIIF manifest for record")
+    @Operation(tags = { "records", "iiif" }, summary = "Get IIIF 2.1.1 manifest for record")
     @IIIFPresentationBinding
     public IPresentationModelElement getManifest(
             @Parameter(
@@ -311,7 +290,7 @@ public class RecordResource {
     @GET
     @javax.ws.rs.Path(RECORDS_LAYER)
     @Produces({ MediaType.APPLICATION_JSON })
-    @Operation(tags = { "records", "iiif" }, summary = "Get a layer within a IIIF manifest")
+    @Operation(tags = { "records", "iiif" }, summary = "Get a layer within a IIIF 2.1.1 manifest")
     @IIIFPresentationBinding
     public IPresentationModelElement getLayer(
             @Parameter(description = "Name of the manifest layer") @PathParam("name") String layerName,
@@ -611,6 +590,7 @@ public class RecordResource {
             try {
                 deleteRecordThread.join();
             } catch (InterruptedException e) {
+                deleteRecordThread.interrupt();
                 logger.error(e.getMessage(), e);
             }
         } else {

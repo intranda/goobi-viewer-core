@@ -125,7 +125,7 @@ public class RecordSectionResource {
     @GET
     @javax.ws.rs.Path(RECORDS_SECTIONS_RANGE)
     @Produces({ MediaType.APPLICATION_JSON })
-    @Operation(tags = {"records", "iiif"}, summary = "Get IIIF range for section")
+    @Operation(tags = {"records", "iiif"}, summary = "Get IIIF 2.1.1 range for section")
     @IIIFPresentationBinding
     public IPresentationModelElement getRange() throws ContentNotFoundException, PresentationException, IndexUnreachableException, URISyntaxException, ViewerConfigurationException, DAOException {
         IIIFPresentation2ResourceBuilder builder = new IIIFPresentation2ResourceBuilder(urls, servletRequest);

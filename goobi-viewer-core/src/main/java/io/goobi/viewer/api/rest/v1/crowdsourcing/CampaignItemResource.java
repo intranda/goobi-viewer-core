@@ -30,7 +30,6 @@ import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
 import javax.ws.rs.PUT;
@@ -45,17 +44,16 @@ import org.apache.solr.common.SolrDocument;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import de.intranda.api.annotation.wa.TextualResource;
 import de.intranda.api.annotation.wa.WebAnnotation;
 import de.unigoettingen.sub.commons.contentlib.exceptions.ContentNotFoundException;
 import de.unigoettingen.sub.commons.contentlib.servlet.rest.CORSBinding;
 import io.goobi.viewer.api.rest.AbstractApiUrlManager;
+import io.goobi.viewer.api.rest.AbstractApiUrlManager.Version;
 import io.goobi.viewer.api.rest.bindings.CrowdsourcingCampaignBinding;
 import io.goobi.viewer.api.rest.bindings.ViewerRestServiceBinding;
 import io.goobi.viewer.api.rest.filters.CrowdsourcingCampaignFilter;
 import io.goobi.viewer.api.rest.resourcebuilders.AnnotationsResourceBuilder;
 import io.goobi.viewer.controller.DataManager;
-import io.goobi.viewer.controller.HtmlParser;
 import io.goobi.viewer.controller.IndexerTools;
 import io.goobi.viewer.dao.IDAO;
 import io.goobi.viewer.exceptions.DAOException;
@@ -67,8 +65,8 @@ import io.goobi.viewer.model.crowdsourcing.campaigns.CampaignItem;
 import io.goobi.viewer.model.crowdsourcing.campaigns.CampaignRecordStatistic.CampaignRecordStatus;
 import io.goobi.viewer.model.iiif.presentation.v2.builder.ManifestBuilder;
 import io.goobi.viewer.model.log.LogMessage;
-import io.goobi.viewer.model.misc.IPolyglott;
 import io.goobi.viewer.model.security.user.User;
+import io.goobi.viewer.model.translations.IPolyglott;
 
 /**
  * Rest resources to create a frontend-view for a campaign to annotate or review a work, and to process the created annotations and/or changes to the
@@ -91,8 +89,7 @@ public class CampaignItemResource {
 
     private static final Logger logger = LoggerFactory.getLogger(CampaignItemResource.class);
 
-    @Inject
-    protected AbstractApiUrlManager urls;
+    protected AbstractApiUrlManager urls = DataManager.getInstance().getRestApiManager().getDataApiManager(Version.v1).orElse(null);
 
     private final Long campaignId;
     

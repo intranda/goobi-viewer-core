@@ -35,13 +35,15 @@
         </div>
         
         <!-- DOCSTRUCT NAVIGATION -->
-        <c:if test="#{configurationBean.isDisplayDocstructNavigation(activeDocumentBean.viewManager.topStructElement.docStructType, true)}">
-            <div>
-                <h:outputLink value="#{activeDocumentBean.previousDocstructUrl}" disabled="#{activeDocumentBean.previousDocstructUrl == ''}">
-                    #{msg.previous}
+        <c:if test="#{configurationBean.isDisplayDocstructNavigation(activeDocumentBean.viewManager.topStructElement.docStructType, true) and (activeDocumentBean.previousDocstructUrl != '' or activeDocumentBean.nextDocstructUrl != '')}">
+            <div class="fullscreen__header-docsctruct-navigation">
+                <h:outputLink styleClass="fullscreen__header-docsctruct-navigation-back"
+                    value="#{activeDocumentBean.previousDocstructUrl}" disabled="#{activeDocumentBean.previousDocstructUrl == ''}">
+					<i class="fa fa-angle-double-left" aria-hidden="true"></i> #{msg.previous}
                 </h:outputLink>
-                <h:outputLink value="#{activeDocumentBean.nextDocstructUrl}" disabled="#{activeDocumentBean.nextDocstructUrl == ''}">
-                    #{msg.next}
+                <h:outputLink styleClass="fullscreen__header-docsctruct-navigation-next"
+                    value="#{activeDocumentBean.nextDocstructUrl}" disabled="#{activeDocumentBean.nextDocstructUrl == ''}">
+                    #{msg.next} <i class="fa fa-angle-double-right" aria-hidden="true"></i>
                 </h:outputLink>
             </div>
         </c:if>

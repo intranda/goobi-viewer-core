@@ -63,9 +63,9 @@ import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.messages.Messages;
 import io.goobi.viewer.model.crowdsourcing.campaigns.Campaign;
-import io.goobi.viewer.model.misc.IPolyglott;
-import io.goobi.viewer.model.misc.TranslatedText;
 import io.goobi.viewer.model.normdata.NormdataAuthority;
+import io.goobi.viewer.model.translations.IPolyglott;
+import io.goobi.viewer.model.translations.TranslatedText;
 
 /**
  * An annotation generator to create a specific type of annotation for a specific question. One or more of these may be contained within a

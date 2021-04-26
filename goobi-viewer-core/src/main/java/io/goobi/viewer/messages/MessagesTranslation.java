@@ -21,7 +21,7 @@ import java.util.Locale;
 
 import org.apache.commons.lang3.StringUtils;
 
-import io.goobi.viewer.model.misc.Translation;
+import io.goobi.viewer.model.translations.Translation;
 
 /**
  * <p>

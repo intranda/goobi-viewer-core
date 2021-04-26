@@ -80,7 +80,7 @@ public class RecordSectionsResource {
     @GET
     @javax.ws.rs.Path(RECORDS_SECTIONS_RANGE)
     @Produces({ MediaType.APPLICATION_JSON })
-    @Operation(tags = { "records", "iiif" }, summary = "IIIF range of the section")
+    @Operation(tags = { "records", "iiif" }, summary = "IIIF 3.0 range of the section")
     @IIIFPresentationBinding
     public Range3 getRange()
             throws PresentationException, IndexUnreachableException, URISyntaxException, ViewerConfigurationException,

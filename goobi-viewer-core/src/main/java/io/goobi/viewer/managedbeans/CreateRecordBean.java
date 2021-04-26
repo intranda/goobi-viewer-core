@@ -36,11 +36,11 @@ import org.slf4j.LoggerFactory;
 
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.LicenseDescription;
-import io.goobi.viewer.controller.language.Language;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.messages.Messages;
 import io.goobi.viewer.messages.ViewerResourceBundle;
 import io.goobi.viewer.model.misc.DCRecordWriter;
+import io.goobi.viewer.model.translations.language.Language;
 
 /**
  * Bean for uploading Dublin Core records.
