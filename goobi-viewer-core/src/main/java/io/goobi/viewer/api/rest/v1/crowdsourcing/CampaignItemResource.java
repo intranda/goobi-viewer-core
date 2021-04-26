@@ -48,6 +48,7 @@ import de.intranda.api.annotation.wa.WebAnnotation;
 import de.unigoettingen.sub.commons.contentlib.exceptions.ContentNotFoundException;
 import de.unigoettingen.sub.commons.contentlib.servlet.rest.CORSBinding;
 import io.goobi.viewer.api.rest.AbstractApiUrlManager;
+import io.goobi.viewer.api.rest.AbstractApiUrlManager.Version;
 import io.goobi.viewer.api.rest.bindings.CrowdsourcingCampaignBinding;
 import io.goobi.viewer.api.rest.bindings.ViewerRestServiceBinding;
 import io.goobi.viewer.api.rest.filters.CrowdsourcingCampaignFilter;
@@ -88,8 +89,7 @@ public class CampaignItemResource {
 
     private static final Logger logger = LoggerFactory.getLogger(CampaignItemResource.class);
 
-    @Inject
-    protected AbstractApiUrlManager urls;
+    protected AbstractApiUrlManager urls = DataManager.getInstance().getRestApiManager().getDataApiManager(Version.v1).orElse(null);
 
     private final Long campaignId;
     

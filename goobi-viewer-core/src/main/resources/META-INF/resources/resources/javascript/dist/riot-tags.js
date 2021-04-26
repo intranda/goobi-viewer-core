@@ -1097,6 +1097,7 @@ riot.tag2('campaignitem', '<div if="{!opts.pi}" class="crowdsourcing-annotations
 	    })
 	    .then(() => {
 	        this.loading = false;
+	        viewerJS.notifications.success(Crowdsourcing.translate("crowdsourcing__save_annotations__success"));
 		    this.update();
 	    });
 	}.bind(this)
