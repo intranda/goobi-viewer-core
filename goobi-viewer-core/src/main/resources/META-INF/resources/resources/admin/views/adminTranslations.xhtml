@@ -57,7 +57,7 @@
 												
 												<ui:fragment rendered="#{group.fullyTranslatedEntryCount != group.entryCount}">
 												<a class="btn btn--full" href="#{navigationHelper.applicationUrl}admin/translations/edit/#{group.id}/"
-		                                            aria-label="#{msg.edit}: #{msg[group.name]}">#{msg.admin__translations_translate}</a>
+		                                            aria-label="#{msg.edit}: #{msg[group.name]}">#{msg.admin__translations_translate_now}</a>
 		                                        <div class="admin__translations-overview-number">(#{group.fullyTranslatedEntryCount} #{msg.of} #{group.entryCount})</div>	
 												</ui:fragment>
 												
