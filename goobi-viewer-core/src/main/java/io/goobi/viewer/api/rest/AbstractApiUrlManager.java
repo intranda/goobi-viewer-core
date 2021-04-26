@@ -255,6 +255,11 @@ public abstract class AbstractApiUrlManager {
         public final String version;
         public final String specification;
 
+        public ApiInfo() {
+            this("", "", "");
+        };
+
+        
         public ApiInfo(String name, String version, String specification) {
             this.name = name;
             this.version = version;
@@ -277,7 +282,7 @@ public abstract class AbstractApiUrlManager {
                     .get(ApiInfo.class);
         } catch (Throwable e) {
             logger.error(e.getMessage());
-            return new ApiInfo("", "", "");
+            return new ApiInfo();
         }
     }
     
