@@ -59,6 +59,8 @@ public class RangeBuilder extends AbstractBuilder {
         Range3 range = new Range3(id);
         range.setLabel(structElement.getMultiLanguageDisplayLabel());
 
+        addMetadata(range, structElement);
+        
         List<StructElement> children = getChildStructs(structures, structElement);
  
         int firstPageNo = getFirstPageNo(structElement);
