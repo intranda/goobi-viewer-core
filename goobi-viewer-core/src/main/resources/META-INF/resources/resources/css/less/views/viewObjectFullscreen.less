@@ -84,6 +84,25 @@
     		}
     	}
     }
+    &__header-docsctruct-navigation {}
+    &__header-docsctruct-navigation-back,
+    &__header-docsctruct-navigation-next {
+    	padding: 0.4rem;
+    	border-radius: 4px;
+    	background: @labelGray;
+    	color: @white;
+    	font-size: 1.4rem;
+    	margin-right: 1rem;
+    	&:hover,
+    	&:focus, 
+    	&:active {
+    		text-decoration: none;
+    		color: @white;
+    		background: @labelHoverGray;
+    	}
+    }
+	&__header-docsctruct-navigation-back {}
+    &__header-docsctruct-navigation-next {}
     &__header-exit {
     	margin-left: auto;
     	a {

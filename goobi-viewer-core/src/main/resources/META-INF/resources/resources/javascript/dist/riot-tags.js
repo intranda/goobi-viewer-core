@@ -1097,6 +1097,7 @@ riot.tag2('campaignitem', '<div if="{!opts.pi}" class="crowdsourcing-annotations
 	    })
 	    .then(() => {
 	        this.loading = false;
+	        viewerJS.notifications.success(Crowdsourcing.translate("crowdsourcing__save_annotations__success"));
 		    this.update();
 	    });
 	}.bind(this)
@@ -2521,8 +2522,6 @@ riot.tag2('slider', '<div ref="container" class="swiper-container slider-{this.s
     });
 
     this.on( 'updated', function() {
-
-    	console.log("layout = ", this.getLayout());
 
     	if(this.slides && this.slides.length > 0) {
     		if(this.slider) {

@@ -34,9 +34,9 @@ import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.messages.Messages;
 import io.goobi.viewer.messages.ViewerResourceBundle;
-import io.goobi.viewer.model.misc.IPolyglott;
-import io.goobi.viewer.model.misc.Translation;
 import io.goobi.viewer.model.security.TermsOfUse;
+import io.goobi.viewer.model.translations.IPolyglott;
+import io.goobi.viewer.model.translations.Translation;
 
 /**
  * @author florian
@@ -150,7 +150,7 @@ public class TermsOfUseBean implements Serializable, IPolyglott {
     }
 
     /* (non-Javadoc)
-     * @see io.goobi.viewer.model.misc.IPolyglott#isEmpty(java.util.Locale)
+     * @see io.goobi.viewer.model.translations.IPolyglott#isEmpty(java.util.Locale)
      */
     @Override
     public boolean isEmpty(Locale locale) {

@@ -9,7 +9,7 @@
 
 	<!-- configFolder: contains local configuration files, i.e. this file with 
 		local modifications that override the global one -->
-	<configFolder>configFolder_value</configFolder>
+	<configFolder>target/configFolder_value</configFolder>
 	<!-- viewerHome: root path of (usually) all viewer data -->
 	<viewerHome>src/test/resources/data/viewer/</viewerHome>
 	<!-- dataRepositoriesHome: root folder for data repositories -->
@@ -173,14 +173,14 @@
         </solr>
 	</performance>
 
-	<accessConditions>
-		<!-- unconditionalImageAccesMaxWidth: Access conditions are not applied 
-			to images below this width - Thumbnails -->
-		<unconditionalImageAccessMaxWidth>1</unconditionalImageAccessMaxWidth>
-		<!-- fullAccessForLocalhost: If true, users on localhost will be granted 
-			superuser access. Default is false. -->
-		<fullAccessForLocalhost>true</fullAccessForLocalhost>
-	</accessConditions>
+    <accessConditions>
+        <!-- thumbnailImageAccessMaxWidth: Images up to this size are regarded as 'thumbnails'. Access conditions for viewing images are not applied -->
+        <thumbnailImageAccessMaxWidth>1</thumbnailImageAccessMaxWidth>
+        <!-- unzoomedImageAccessMaxWidth: Images up to this size are regarded as 'unzoomed'. Access conditions for zooming images are not applied -->
+        <unzoomedImageAccessMaxWidth>2</unzoomedImageAccessMaxWidth>
+        <!-- fullAccessForLocalhost: If true, users on localhost will be granted superuser access. Default is false. -->
+        <fullAccessForLocalhost>true</fullAccessForLocalhost>
+    </accessConditions>
 
 	<reCaptcha show="false">
 		<provider name="Google" siteKey="6LetEyITAAAAAEAj7NTxgRXR6S_uhZrk9rn5HyB3" />
@@ -235,9 +235,7 @@
 		<!-- pageSelectDropdownDisplayMinPages: Minimum number of pages a record needs to possess in order for the drop-down to be displayed. Default is 3. -->
         <pageSelectDropdownDisplayMinPages>1</pageSelectDropdownDisplayMinPages>
 
-		<doublePageMode>
-			<enabled>true</enabled>
-		</doublePageMode>
+		<doublePageNavigation enabled="true" />
 		
         <!--zoomImageView and zoomFullscreenView: define the different viewer options for the standard view and fullscreen view, respecively. Possibilities for
             the "type" attribute are: classic and openlayers "Width" and "height" attributes define the size of the image display, in pixel set the attribute "tileImage"
@@ -1200,6 +1198,29 @@
 		<mediaDisplayWidth>600</mediaDisplayWidth>
 		<mediaDisplayHeight>800</mediaDisplayHeight>
 	</cms>
+	
+    <translations>
+        <group type="SOLR_FIELD_NAMES" name="label__translation_group_1"  description="desc__translation_group_1">
+            <key>DC</key>
+            <key>ACCESSCONDITION</key>
+            <key>BOOL_IMAGEAVAILABLE</key>
+            <key>FULLTEXTAVAILABLE</key>
+            <key regex="true">MD_.*</key>
+        </group>
+        <group type="SOLR_FIELD_VALUES" name="label__translation_group_2"  description="desc__translation_group_2">
+            <key>DC</key>
+            <key>DOCSTRCT</key>
+        </group>
+        <group type="CORE_STRINGS" name="label__translation_group_3"  description="desc__translation_group_3">
+            <key>commentChangedNotificationEmailBody</key>
+            <key>commentChangedNotificationEmailSubject</key>
+            <key regex="true">commentNewNotificationEmail.*</key>
+            <key regex="true">feedbackEmail.*</key>
+            <key regex="true">user_activationEmail.*</key>
+            <key regex="true">user_retrieveAccountConfirmationEmail.*</key>
+            <key regex="true">user_retrieveAccountNewPasswordEmail.*</key>
+        </group>
+    </translations>
 
 	<!-- Transkribus settings (enabled: default false) -->
 	<transkribus enabled="true">

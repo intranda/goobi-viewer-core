@@ -18,8 +18,8 @@ package io.goobi.viewer.model.crowdsourcing.questions;
 import javax.persistence.Entity;
 import javax.persistence.Table;
 
-import io.goobi.viewer.model.misc.PersistentTranslation;
-import io.goobi.viewer.model.misc.Translation;
+import io.goobi.viewer.model.translations.PersistentTranslation;
+import io.goobi.viewer.model.translations.Translation;
 
 /**
  * A persistence object holding a translated String value

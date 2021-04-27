@@ -34,8 +34,8 @@ import javax.persistence.Table;
 import org.apache.commons.lang3.StringUtils;
 import org.eclipse.persistence.annotations.PrivateOwned;
 
-import io.goobi.viewer.model.misc.IPolyglott;
-import io.goobi.viewer.model.misc.Translation;
+import io.goobi.viewer.model.translations.IPolyglott;
+import io.goobi.viewer.model.translations.Translation;
 
 /**
  * @author florian

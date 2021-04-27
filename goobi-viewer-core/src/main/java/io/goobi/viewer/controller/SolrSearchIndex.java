@@ -61,7 +61,6 @@ import org.apache.solr.common.luke.FieldFlag;
 import org.jdom2.Document;
 import org.jdom2.Element;
 import org.jdom2.JDOMException;
-import org.jdom2.input.SAXBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -512,21 +511,20 @@ public final class SolrSearchIndex {
 
         return ret;
     }
-    
+
     public SolrDocument getDocumentByPIAndLogId(String pi, String divId) throws IndexUnreachableException, PresentationException {
-        
+
         SolrDocument ret = null;
-        if(StringUtils.isNoneBlank(pi, divId)) {
+        if (StringUtils.isNoneBlank(pi, divId)) {
             // logger.trace("getDocumentByIddoc: {}", iddoc);
             String query = SolrConstants.PI_TOPSTRUCT + ":" + pi + " AND " + SolrConstants.LOGID + ":" + divId;
             SolrDocumentList hits = search(query, 0, 1, null, null, null).getResults();
             if (hits != null && hits.size() > 0) {
                 ret = hits.get(0);
-            }            
-        } else if(StringUtils.isNotBlank(pi)) {
+            }
+        } else if (StringUtils.isNotBlank(pi)) {
             ret = getDocumentByPI(pi);
         }
-        
 
         return ret;
     }
@@ -1121,7 +1119,7 @@ public final class SolrSearchIndex {
             String responseBody = NetTools.getWebContentGET(
                     DataManager.getInstance().getConfiguration().getSolrUrl() + "/admin/file/?contentType=text/xml;charset=utf-8&file=schema.xml");
             try (StringReader sr = new StringReader(responseBody)) {
-                return new SAXBuilder().build(sr);
+                return XmlTools.getSAXBuilder().build(sr);
             }
         } catch (ClientProtocolException e) {
             logger.error(e.getMessage(), e);
@@ -1232,7 +1230,7 @@ public final class SolrSearchIndex {
                 return false;
             }
         }
-        
+
         return false;
     }
 

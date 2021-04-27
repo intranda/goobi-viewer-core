@@ -79,7 +79,7 @@ public interface IPageLoader {
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
-    public PhysicalElement getPage(int pageOrder) throws IndexUnreachableException, DAOException;
+    public PhysicalElement getPage(int pageOrder) throws IndexUnreachableException;
 
     /**
      * <p>

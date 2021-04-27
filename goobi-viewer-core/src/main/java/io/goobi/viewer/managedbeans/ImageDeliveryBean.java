@@ -35,6 +35,7 @@ import org.slf4j.LoggerFactory;
 
 import de.unigoettingen.sub.commons.util.PathConverter;
 import io.goobi.viewer.api.rest.AbstractApiUrlManager;
+import io.goobi.viewer.api.rest.AbstractApiUrlManager.Version;
 import io.goobi.viewer.controller.Configuration;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.StringTools;
@@ -106,8 +107,9 @@ public class ImageDeliveryBean implements Serializable {
         logger.trace("init");
         try {
             Configuration config = DataManager.getInstance().getConfiguration();
-            AbstractApiUrlManager dataUrlManager = DataManager.getInstance().getRestApiManager().getDataApiManager().orElse(null);
-            AbstractApiUrlManager contentUrlManager = DataManager.getInstance().getRestApiManager().getContentApiManager().orElse(null);
+            AbstractApiUrlManager dataUrlManager = DataManager.getInstance().getRestApiManager().getIIIFDataApiManager();
+            AbstractApiUrlManager contentUrlManager =
+                    DataManager.getInstance().getRestApiManager().getContentApiManager().orElse(null);
             init(config, dataUrlManager, contentUrlManager);
         } catch (NullPointerException e) {
             logger.error("Failed to initialize ImageDeliveryBean: Resources misssing");
@@ -144,9 +146,9 @@ public class ImageDeliveryBean implements Serializable {
 
         iiif = new IIIFUrlHandler(contentUrlManager);
         images = new ImageHandler(contentUrlManager);
-        if(contentUrlManager != null) {
+        if (contentUrlManager != null) {
             objects3d = new Object3DHandler(contentUrlManager);
-        } else {            
+        } else {
             objects3d = new Object3DHandler(config);
         }
         footer = new WatermarkHandler(config, config.getIIIFApiUrl());
@@ -602,5 +604,7 @@ public class ImageDeliveryBean implements Serializable {
     public void setPdf(PdfHandler pdf) {
         this.pdf = pdf;
     }
+
+
 
 }

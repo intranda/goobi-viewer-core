@@ -102,7 +102,7 @@ public class LeanPageLoader extends AbstractPageLoader implements Serializable {
 
     /** {@inheritDoc} */
     @Override
-    public PhysicalElement getPage(int pageOrder) throws IndexUnreachableException, DAOException {
+    public PhysicalElement getPage(int pageOrder) throws IndexUnreachableException {
         if (pageOrder != currentPageNumber && pageOrder >= firstPageOrder && pageOrder <= lastPageOrder) {
             try {
                 currentPage = loadPage(pageOrder, null);
@@ -282,7 +282,7 @@ public class LeanPageLoader extends AbstractPageLoader implements Serializable {
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
-    protected PhysicalElement loadPage(int pageNumber, String fileName) throws PresentationException, IndexUnreachableException, DAOException {
+    protected PhysicalElement loadPage(int pageNumber, String fileName) throws PresentationException, IndexUnreachableException {
         String pi = topElement.getPi();
         if (pageNumber >= 0) {
             logger.trace("Loading page {} for '{}'...", pageNumber, pi);

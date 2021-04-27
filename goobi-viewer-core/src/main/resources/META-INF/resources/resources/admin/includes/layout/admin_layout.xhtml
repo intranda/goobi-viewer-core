@@ -22,13 +22,13 @@
 
     <div class="admin">
     	<!-- ADMIN TOPBAR (ACTION MENU) -->
-    	<div class="admin__topbar" role="navigation" aria-label="#{msg.aria_label__nav_main}">
+    	<div class="admin__topbar-backend" role="navigation" aria-label="#{msg.aria_label__nav_main}">
     	
-    		<div class="admin__topbar-logo-menu -dropdown" aria-label="Topbar logo menu">
-    			<div class="admin__topbar-logo" aria-label="Topbar logo">
+    		<div class="admin__topbar-backend-logo-menu -dropdown" aria-label="Topbar logo menu">
+    			<div class="admin__topbar-backend-logo" aria-label="Topbar logo">
 					<ui:include src="/resources/images/goobi_logo.svg" alt="Goobi Viewer"/>
 				</div>
-    			<ul class="admin__topbar-dropdown" aria-label="Topbar logo menu dropdown">
+    			<ul class="admin__topbar-backend-dropdown" aria-label="Topbar logo menu dropdown">
 	    			<li><a href="https://goobi.io" target="_blank" rel="noopener">#{msg.admin__about_goobi}</a></li>
 	    			<li><a href="https://docs.goobi.io/" target="_blank" rel="noopener">#{msg.admin__documentation}</a></li>
 	    			<li><a href="https://community.goobi.io/" target="_blank" rel="noopener">#{msg.admin__community}</a></li>
@@ -38,15 +38,15 @@
     		</div>
 
 			<!-- GO TO FRONTEND VIEW -->
-            <a class="admin__topbar-view-frontend-link" href="#{request.contextPath}/" title="#{msg.admin__view_frontend}" aria-label="#{msg.admin__view_frontend}">
+            <a class="admin__topbar-backend-view-frontend-link" href="#{request.contextPath}/" title="#{msg.admin__view_frontend}" aria-label="#{msg.admin__view_frontend}">
                 <i class="fa fa-home" aria-hidden="true"></i> #{configurationBean.name}
     		</a>
 
     		<!-- ADD SOMETHING NEW -->
     		<ui:fragment rendered="#{userBean.user.superuser}">
-    		<div class="admin__topbar-add -dropdown">
+    		<div class="admin__topbar-backend-add -dropdown">
 	    		<i class="fa fa-plus" aria-hidden="true"></i><span>#{msg.admin__new}</span>
-	   			<ul class="admin__topbar-dropdown">
+	   			<ul class="admin__topbar-backend-dropdown">
 	    			<li><a href="#{request.contextPath}/admin/cms/pages/templates/" target="_self">#{msg.page}</a></li>
 	    			<li><a href="#{request.contextPath}/admin/users/new/" target="_self">#{msg.admin__user}</a></li>
 	    			<li><a href="#{request.contextPath}/admin/groups/new/" target="_self">#{msg.admin__group}</a></li>
@@ -58,13 +58,23 @@
     		</ui:fragment>
 
 			<!-- RIGHT AREA TOPBAR -->
-			<div class="admin__topbar-right">
+			<div class="admin__topbar-backend-right">
+	            <div class="admin__topbar-frontend-hotfolder">
+	            	<!-- COUNT FILES PROCESSING -->
+	            	<!-- TO DO: RENDERED CONDITION NUMBER OF FILES GREATER X -->
+	            	<ui:fragment rendered="#{userBean.admin}">
+						<div class="admin__topbar-frontend-hotfolder-files-action">
+						    <i class="fa fa-spinner fa-pulse" aria-hidden="true"></i>
+						    <span>#{adminBean.hotfolderFileCount}</span> <span>#{msg.admin__files_in_hotfolder}...</span>
+						</div>
+					</ui:fragment>
+	            </div>
 	            <!-- CHANGE LANGUAGE -->
 				<ui:fragment rendered="#{fn:length(navigationHelper.supportedLanguages) > 1}">
-					<div class="admin__topbar-language -dropdown">
+					<div class="admin__topbar-backend-language -dropdown">
 						<i class="fa fa-globe" aria-hidden="true"></i><span>#{msg.MD_LANGUAGE}</span>
 						<h:form id="changeLocalForm1" prependId="false">
-			                <ul class="admin__topbar-dropdown">
+			                <ul class="admin__topbar-backend-dropdown">
 			                    <ui:repeat var="lang" value="#{navigationHelper.supportedLanguages}">
 			                        <li>
 			                             <h:commandLink styleClass="#{navigationHelper.localeString == lang ?'activeLang':''}">
@@ -79,9 +89,9 @@
 				</ui:fragment>
 
 	            <!-- LOGOUT -->
-	            <div class="admin__topbar-logout">
+	            <div class="admin__topbar-backend-logout">
 	                <h:form>
-						<h:commandLink styleClass="admin__topbar-logout-link" action="#{userBean.logout}">
+						<h:commandLink styleClass="admin__topbar-backend-logout-link" action="#{userBean.logout}">
 						    <span>#{msg.logout}</span>
 						    <i class="fa fa-power-off" aria-hidden="true"></i>
 						</h:commandLink>

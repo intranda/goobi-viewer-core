@@ -324,6 +324,24 @@ public class StructElement extends StructElementStub implements Comparable<Struc
     public boolean isHasParent() {
         return getMetadataValue(SolrConstants.IDDOC_PARENT) != null;
     }
+    
+    public int getNumPages() {
+        String numPages = getMetadataValue(SolrConstants.NUMPAGES);
+        if(StringUtils.isNotBlank(numPages)) {
+            try {
+                return Integer.parseInt(numPages);
+            } catch(NumberFormatException e) {
+                logger.error("Invalid NUMPAGES value: " + numPages);
+            }
+        }
+        try {
+            return super.getNumPages();
+        } catch (IndexUnreachableException e) {
+            logger.error(e.toString());
+
+            return 0;
+        }
+    }
 
     /**
      * Loads and returns the immediate parent StructElement of this element.
@@ -346,6 +364,21 @@ public class StructElement extends StructElementStub implements Comparable<Struc
 
         return parent;
     }
+    
+    public Long getParentLuceneId() {
+        String parentIddoc = getMetadataValue(SolrConstants.IDDOC_PARENT);
+        if(StringUtils.isNotBlank(parentIddoc)) {            
+            try {
+            return Long.valueOf(parentIddoc);
+            } catch (NumberFormatException e) {
+                logger.error("Malformed number with get the parent element for Lucene IDDOC: {}", luceneId);
+                return null;
+            }
+        } else {
+            return null;
+        }
+    }
+
 
     /**
      * Checks whether the Solr document represented by this StructElement has child elements in the index.

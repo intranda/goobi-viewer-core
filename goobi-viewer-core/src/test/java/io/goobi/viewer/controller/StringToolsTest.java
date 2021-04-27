@@ -18,6 +18,7 @@ package io.goobi.viewer.controller;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Arrays;
 import java.util.List;
 
 import org.junit.Assert;
@@ -205,5 +206,19 @@ public class StringToolsTest {
     @Test
     public void checkValueEmptyOrInverted_shouldReturnFalseOtherwise() throws Exception {
         Assert.assertFalse(StringTools.checkValueEmptyOrInverted("foo"));
+    }
+
+    /**
+     * @see StringTools#filterStringsViaRegex(List,String)
+     * @verifies return all matching keys
+     */
+    @Test
+    public void filterStringsViaRegex_shouldReturnAllMatchingKeys() throws Exception {
+        String[] keys = new String[] { "foo", "bar", "key0", "key1", "key2" };
+        List<String> result = StringTools.filterStringsViaRegex(Arrays.asList(keys), "key[0-9]+");
+        Assert.assertEquals(3, result.size());
+        Assert.assertEquals("key0", result.get(0));
+        Assert.assertEquals("key1", result.get(1));
+        Assert.assertEquals("key2", result.get(2));
     }
 }

@@ -35,9 +35,9 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import de.intranda.metadata.multilanguage.IMetadataValue;
 import de.intranda.metadata.multilanguage.MultiLanguageMetadataValue;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
-import io.goobi.viewer.model.misc.IPolyglott;
-import io.goobi.viewer.model.misc.MultiLanguageValue;
-import io.goobi.viewer.model.misc.TranslatedText;
+import io.goobi.viewer.model.translations.IPolyglott;
+import io.goobi.viewer.model.translations.MultiLanguageValue;
+import io.goobi.viewer.model.translations.TranslatedText;
 
 /**
  * @author florian

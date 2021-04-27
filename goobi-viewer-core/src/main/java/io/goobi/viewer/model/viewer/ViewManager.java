@@ -55,6 +55,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import de.undercouch.citeproc.CSL;
+import de.unigoettingen.sub.commons.contentlib.exceptions.IllegalRequestException;
 import de.unigoettingen.sub.commons.contentlib.imagelib.ImageFileFormat;
 import de.unigoettingen.sub.commons.contentlib.imagelib.transform.Scale;
 import io.goobi.viewer.api.rest.v1.ApiUrls;
@@ -609,30 +610,36 @@ public class ViewManager implements Serializable {
         }
 
         for (DownloadOption option : configuredOptions) {
-            Dimension dim = option.getBoxSizeInPixel();
-            if (dim == DownloadOption.MAX) {
-                Scale scale = new Scale.ScaleToBox(maxSize);
-                Dimension size = scale.scale(origImageSize);
-                options.add(new DownloadOption(option.getLabel(), getImageFormat(option.getFormat(), imageFilename), size));
-            } else if (dim.width * dim.height == 0) {
-                continue;
-            } else if ((maxWidth > 0 && maxWidth < dim.width) || (maxHeight > 0 && maxHeight < dim.height)) {
-                continue;
-            } else {
-                Scale scale = new Scale.ScaleToBox(option.getBoxSizeInPixel());
-                Dimension size = scale.scale(origImageSize);
-                options.add(new DownloadOption(option.getLabel(), getImageFormat(option.getFormat(), imageFilename), size));
+            try {
+                Dimension dim = option.getBoxSizeInPixel();
+                if (dim == DownloadOption.MAX) {
+                    Scale scale = new Scale.ScaleToBox(maxSize);
+                    Dimension size = scale.scale(origImageSize);
+                    options.add(new DownloadOption(option.getLabel(), getImageFormat(option.getFormat(), imageFilename), size));
+                } else if (dim.width * dim.height == 0) {
+                    continue;
+                } else if ((maxWidth > 0 && maxWidth < dim.width) || (maxHeight > 0 && maxHeight < dim.height)) {
+                    continue;
+                } else {
+                    Scale scale = new Scale.ScaleToBox(option.getBoxSizeInPixel());
+                    Dimension size = scale.scale(origImageSize);
+                    options.add(new DownloadOption(option.getLabel(), getImageFormat(option.getFormat(), imageFilename), size));
+                }
+            } catch (IllegalRequestException e) {
+                //attempting scale beyond original size. Ignore
             }
         }
         return options;
     }
 
-    public List<DownloadOption> getDownloadOptionsForCurrentImage() {
+    public List<DownloadOption> getDownloadOptionsForCurrentImage() throws IndexUnreachableException, DAOException {
         PhysicalElement page = getCurrentPage();
         if (page != null && page.isHasImage()) {
             List<DownloadOption> configuredOptions = DataManager.getInstance().getConfiguration().getSidebarWidgetUsagePageDownloadOptions();
             String imageFilename = page.getFilename();
-            Dimension maxSize = new Dimension(DataManager.getInstance().getConfiguration().getViewerMaxImageWidth(),
+            Dimension maxSize = new Dimension(
+                    page.isAccessPermissionImageZoom() ? DataManager.getInstance().getConfiguration().getViewerMaxImageWidth()
+                            : DataManager.getInstance().getConfiguration().getUnzoomedImageAccessMaxWidth(),
                     DataManager.getInstance().getConfiguration().getViewerMaxImageHeight());
             Dimension imageSize = new Dimension(page.getImageWidth(), page.getImageHeight());
             return getDownloadOptionsForImage(configuredOptions, imageSize, maxSize, imageFilename);
@@ -1088,7 +1095,7 @@ public class ViewManager implements Serializable {
                 // logger.debug("page " + order + ": " + pageLoader.getPage(order).getFileName());
                 return Optional.ofNullable(pageLoader.getPage(order));
             }
-        } catch (IndexUnreachableException | DAOException e) {
+        } catch (IndexUnreachableException e) {
             logger.error("Error getting current page " + e.toString());
         }
 

@@ -511,11 +511,13 @@ public class LicenseType implements IPrivilegeHolder, ILicenseType {
      * 
      * @return Sorted list of privileges contained in <code>privileges</code>
      */
+    @Override
     public List<String> getSortedPrivileges(Set<String> privileges) {
         List<String> ret = new ArrayList<>(IPrivilegeHolder.PRIVS_RECORD.length);
         for (String priv : Arrays.asList(IPrivilegeHolder.PRIVS_RECORD)) {
             if (privileges.contains(priv)) {
                 ret.add(priv);
+                logger.debug("has priv: {}", priv);
             }
         }
 
@@ -539,7 +541,9 @@ public class LicenseType implements IPrivilegeHolder, ILicenseType {
      * @param privilege
      * @return true if successful; false otherwise
      */
+    @Override
     public boolean addPrivilege(String privilege) {
+        logger.debug("addPrivilege: {}", privilege);
         return privilegesCopy.add(privilege);
     }
 
@@ -549,7 +553,9 @@ public class LicenseType implements IPrivilegeHolder, ILicenseType {
      * @param privilege
      * @return true if successful; false otherwise
      */
+    @Override
     public boolean removePrivilege(String privilege) {
+        logger.debug("removePrivilege: {}", privilege);
         return privilegesCopy.remove(privilege);
     }
 
