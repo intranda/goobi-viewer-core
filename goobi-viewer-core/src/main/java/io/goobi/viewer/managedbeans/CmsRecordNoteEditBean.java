@@ -38,9 +38,9 @@ import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.messages.Messages;
 import io.goobi.viewer.model.cms.CMSRecordNote;
 import io.goobi.viewer.model.metadata.MetadataElement;
-import io.goobi.viewer.model.misc.IPolyglott;
-import io.goobi.viewer.model.misc.TranslatedText;
 import io.goobi.viewer.model.toc.TocMaker;
+import io.goobi.viewer.model.translations.IPolyglott;
+import io.goobi.viewer.model.translations.TranslatedText;
 import io.goobi.viewer.model.viewer.PageType;
 import io.goobi.viewer.model.viewer.StructElement;
 
@@ -221,7 +221,7 @@ public class CmsRecordNoteEditBean implements Serializable, IPolyglott {
     }
 
     /* (non-Javadoc)
-     * @see io.goobi.viewer.model.misc.IPolyglott#isComplete(java.util.Locale)
+     * @see io.goobi.viewer.model.translations.IPolyglott#isComplete(java.util.Locale)
      */
     @Override
     public boolean isComplete(Locale locale) {
@@ -231,7 +231,7 @@ public class CmsRecordNoteEditBean implements Serializable, IPolyglott {
     }
 
     /* (non-Javadoc)
-     * @see io.goobi.viewer.model.misc.IPolyglott#isValid(java.util.Locale)
+     * @see io.goobi.viewer.model.translations.IPolyglott#isValid(java.util.Locale)
      */
     @Override
     public boolean isValid(Locale locale) {
@@ -239,7 +239,7 @@ public class CmsRecordNoteEditBean implements Serializable, IPolyglott {
     }
 
     /* (non-Javadoc)
-     * @see io.goobi.viewer.model.misc.IPolyglott#isEmpty(java.util.Locale)
+     * @see io.goobi.viewer.model.translations.IPolyglott#isEmpty(java.util.Locale)
      */
     @Override
     public boolean isEmpty(Locale locale) {
@@ -247,7 +247,7 @@ public class CmsRecordNoteEditBean implements Serializable, IPolyglott {
     }
 
     /* (non-Javadoc)
-     * @see io.goobi.viewer.model.misc.IPolyglott#getSelectedLocale()
+     * @see io.goobi.viewer.model.translations.IPolyglott#getSelectedLocale()
      */
     @Override
     public Locale getSelectedLocale() {
@@ -255,7 +255,7 @@ public class CmsRecordNoteEditBean implements Serializable, IPolyglott {
     }
 
     /* (non-Javadoc)
-     * @see io.goobi.viewer.model.misc.IPolyglott#setSelectedLocale(java.util.Locale)
+     * @see io.goobi.viewer.model.translations.IPolyglott#setSelectedLocale(java.util.Locale)
      */
     @Override
     public void setSelectedLocale(Locale locale) {

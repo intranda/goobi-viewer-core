@@ -21,7 +21,7 @@ import javax.faces.convert.Converter;
 import javax.faces.convert.FacesConverter;
 
 import io.goobi.viewer.controller.DataManager;
-import io.goobi.viewer.controller.language.Language;
+import io.goobi.viewer.model.translations.language.Language;
 
 /**
  * @author florian

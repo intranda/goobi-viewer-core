@@ -73,6 +73,7 @@ public enum PageType {
     adminUserComments("admin/comments"),
     adminUserTerms("admin/userterms"),
     adminCreateRecord("admin/record/new"),
+    adminTranslations("admin/translations"),
     //admin/cms
     adminCms("admin/cms"),
     adminCmsOverview("admin/cms/pages"),

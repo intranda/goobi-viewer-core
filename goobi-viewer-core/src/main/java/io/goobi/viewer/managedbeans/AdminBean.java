@@ -75,6 +75,7 @@ import io.goobi.viewer.model.security.user.User;
 import io.goobi.viewer.model.security.user.UserGroup;
 import io.goobi.viewer.model.security.user.UserRole;
 import io.goobi.viewer.model.security.user.UserTools;
+import io.goobi.viewer.model.translations.admin.TranslationGroup;
 
 /**
  * Administration backend functions.
@@ -90,6 +91,10 @@ public class AdminBean implements Serializable {
 
     private static final int DEFAULT_ROWS_PER_PAGE = 15;
 
+    private static final Object TRANSLATION_LOCK = new Object();
+
+    private static String translationGroupsEditorSession = null;
+
     private TableDataProvider<User> lazyModelUsers;
     private TableDataProvider<Comment> lazyModelComments;
 
@@ -103,6 +108,7 @@ public class AdminBean implements Serializable {
     private License currentLicense = null;
     private IpRange currentIpRange = null;
     private Comment currentComment = null;
+    private TranslationGroup currentTranslationGroup = null;
 
     private String passwordOne = "";
     private String passwordTwo = "";
@@ -199,6 +205,7 @@ public class AdminBean implements Serializable {
                 @Override
                 public void resetTotalNumberOfRecords() {
                 }
+
             });
             lazyModelComments.setEntriesPerPage(DEFAULT_ROWS_PER_PAGE);
             lazyModelComments.setFilters("text_owner-nickName_owner-email");
@@ -1823,5 +1830,143 @@ public class AdminBean implements Serializable {
      */
     public String getMessageKeyForPrivilege(String privilege) {
         return "license_priv_" + privilege.toLowerCase();
+    }
+
+    /**
+     * 
+     * @return true if at least one group is not fully translated; false otherwise
+     */
+    public boolean isDisplayTranslationsDashboardWidget() {
+        for (TranslationGroup group : getConfiguredTranslationGroups()) {
+            if (!group.isFullyTranslated()) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    /**
+     * 
+     * @return
+     */
+    public List<TranslationGroup> getConfiguredTranslationGroups() {
+        synchronized (TRANSLATION_LOCK) {
+            List<TranslationGroup> ret = DataManager.getInstance().getConfiguration().getTranslationGroups();
+            logger.trace("groups: {}", ret.size());
+            setTranslationGroupsEditorSession(BeanUtils.getSession().getId());
+            logger.trace("Locked translation for: {}", translationGroupsEditorSession);
+            return ret;
+        }
+    }
+
+    /**
+     * Saves <code>currentTranslationGroup</code> if it has a selected entry. Resets group to null afterwards.
+     */
+    public void saveAndResetCurrentTranslationGroup() {
+        if (currentTranslationGroup != null) {
+            currentTranslationGroup.saveSelectedEntry();
+            currentTranslationGroup = null;
+        }
+    }
+
+    /**
+     * @return the currentTranslationGroup
+     */
+    public TranslationGroup getCurrentTranslationGroup() {
+        synchronized (TRANSLATION_LOCK) {
+            if (translationGroupsEditorSession != null && !translationGroupsEditorSession.equals(BeanUtils.getSession().getId())) {
+                logger.trace("Translation locked");
+                Messages.error("Translation already in use");
+                return null;
+            }
+
+            return currentTranslationGroup;
+        }
+    }
+
+    /**
+     * @param currentTranslationGroup the currentTranslationGroup to set
+     */
+    public void setCurrentTranslationGroup(TranslationGroup currentTranslationGroup) {
+        this.currentTranslationGroup = currentTranslationGroup;
+    }
+
+    /**
+     * 
+     * @return
+     */
+    public int getCurrentTranslationGroupId() {
+        synchronized (TRANSLATION_LOCK) {
+            if (currentTranslationGroup != null) {
+                return DataManager.getInstance().getConfiguration().getTranslationGroups().indexOf(currentTranslationGroup);
+            }
+
+            return 0;
+        }
+    }
+
+    /**
+     * 
+     * @param id
+     */
+    public void setCurrentTranslationGroupId(int id) {
+        List<TranslationGroup> groups = DataManager.getInstance().getConfiguration().getTranslationGroups();
+        if (id >= 0 && groups.size() > id) {
+            TranslationGroup group = groups.get(id);
+            if (!group.equals(currentTranslationGroup)) {
+                currentTranslationGroup = groups.get(id);
+            }
+        } else {
+            logger.error("Translation group ID not found: {}", id);
+        }
+    }
+
+    /**
+     * 
+     * @return
+     */
+    public boolean isTranslationLocked() {
+        return translationGroupsEditorSession != null && !translationGroupsEditorSession.equals(BeanUtils.getSession().getId());
+    }
+
+    /**
+     * 
+     */
+    public void lockTranslation() {
+        if (translationGroupsEditorSession == null) {
+            setTranslationGroupsEditorSession(BeanUtils.getSession().getId());
+            logger.trace("Translation locked");
+        }
+    }
+
+    /**
+     * @return the translationGroupsEditorSession
+     */
+    public static String getTranslationGroupsEditorSession() {
+        return translationGroupsEditorSession;
+    }
+
+    /**
+     * @param translationGroupsEditorSession the translationGroupsEditorSession to set
+     */
+    public static void setTranslationGroupsEditorSession(String translationGroupsEditorSession) {
+        logger.trace("setTranslationGroupsEditorSession: {}", translationGroupsEditorSession);
+        AdminBean.translationGroupsEditorSession = translationGroupsEditorSession;
+    }
+    
+    /**
+     * 
+     * @return
+     */
+    public int getHotfolderFileCount() {
+        return DataManager.getInstance().getHotfolderFileCount();
+    }
+    
+    /**
+     * @return {@link TranslationGroup#isHasFileAccess()}
+     */
+    public boolean hasAccessPermissingForTranslationFiles() {
+        return TranslationGroup.isHasFileAccess();
     }
 }

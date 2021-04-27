@@ -22,7 +22,7 @@ import javax.persistence.Table;
 
 import org.eclipse.persistence.internal.descriptors.PersistenceEntity;
 
-import io.goobi.viewer.model.misc.Translation;
+import io.goobi.viewer.model.translations.Translation;
 
 /**
  * @author florian
