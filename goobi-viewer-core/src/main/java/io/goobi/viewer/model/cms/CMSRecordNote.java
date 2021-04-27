@@ -27,7 +27,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import io.goobi.viewer.dao.converter.TranslatedTextConverter;
-import io.goobi.viewer.model.misc.TranslatedText;
+import io.goobi.viewer.model.translations.TranslatedText;
 
 /**
  * Class holding a formatted text related to a single PI which may be edited in the admin/cms-backend and displayed in a (sidebar) widget

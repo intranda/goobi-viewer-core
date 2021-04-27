@@ -49,6 +49,7 @@
         <rule groupId="org.eclipse.persistence" artifactId="org.eclipse.persistence.*">
             <ignoreVersions>
                 <ignoreVersion>3.0.0</ignoreVersion>
+                <ignoreVersion>3.0.1</ignoreVersion>
             </ignoreVersions>
         </rule>
         <rule groupId="org.jboss.weld.servlet" artifactId="weld-servlet-shaded">

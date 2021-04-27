@@ -534,6 +534,27 @@ public class StringTools {
 
         return value.charAt(0) == 0x1;
     }
+    
+    /**
+     * 
+     * @param values All values to check
+     * @return List of values that match <code>regex</code>
+     * @should return all matching values
+     */
+    public static List<String> filterStringsViaRegex(List<String> values, String regex) {
+        if (values == null || values.isEmpty() || StringUtils.isEmpty(regex)) {
+            return Collections.emptyList();
+        }
 
+        List<String> ret = new ArrayList<>();
+        Pattern p = Pattern.compile(regex);
+        for (String key : values) {
+            Matcher m = p.matcher(key);
+            if (m.find()) {
+                ret.add(key);
+            }
+        }
 
+        return ret;
+    }
 }

@@ -1097,6 +1097,7 @@ riot.tag2('campaignitem', '<div if="{!opts.pi}" class="crowdsourcing-annotations
 	    })
 	    .then(() => {
 	        this.loading = false;
+	        viewerJS.notifications.success(Crowdsourcing.translate("crowdsourcing__save_annotations__success"));
 		    this.update();
 	    });
 	}.bind(this)
@@ -2870,7 +2871,7 @@ riot.tag2('slideshow', '<a if="{manifest === undefined}" data-linkid="{opts.pis}
 });
 
 
-riot.tag2('thumbnails', '<div class="archives__object-thumbnails-image-wrapper" each="{canvas, index in thumbnails}"><a class="archives__object-thumbnails-image-link" href="{getHomepage(canvas)}"><img class="archives__object-thumbnails-image" alt="{getValue(canvas.label)}" riot-src="{getImage(canvas)}"><div class="archives__object-thumbnails-image-overlay"><span class="archives__object-thumbnails-label">{getValue(canvas.label)}</span></div></a></div>', '', '', function(opts) {
+riot.tag2('thumbnails', '<div class="archives__object-thumbnails-image-wrapper" each="{canvas, index in thumbnails}"><a class="archives__object-thumbnails-image-link" href="{getHomepage(canvas)}"><img class="archives__object-thumbnails-image" alt="{getValue(canvas.label)}" riot-src="{getImage(canvas)}"><div class="archives__object-thumbnails-image-overlay"><div class="archives__object-thumbnails-label">{getValue(canvas.label)}</div></div></a></div>', '', '', function(opts) {
 
 this.thumbnails = [];
 

@@ -31,7 +31,6 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.NoSuchElementException;
-import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -74,6 +73,9 @@ import io.goobi.viewer.model.security.authentication.VuFindProvider;
 import io.goobi.viewer.model.security.authentication.XServiceProvider;
 import io.goobi.viewer.model.termbrowsing.BrowsingMenuFieldConfig;
 import io.goobi.viewer.model.transkribus.TranskribusUtils;
+import io.goobi.viewer.model.translations.admin.TranslationGroup;
+import io.goobi.viewer.model.translations.admin.TranslationGroup.TranslationGroupType;
+import io.goobi.viewer.model.translations.admin.TranslationGroupItem;
 import io.goobi.viewer.model.viewer.DcSortingList;
 import io.goobi.viewer.model.viewer.PageType;
 import io.goobi.viewer.model.viewer.StringPair;
@@ -4548,14 +4550,14 @@ public final class Configuration extends AbstractConfiguration {
 
     /**
      * <p>
-     * isDoublePageModeEnabled.
+     * isDoublePageNavigationEnabled.
      * </p>
      *
      * @should return correct value
      * @return a boolean.
      */
-    public boolean isDoublePageModeEnabled() {
-        return getLocalBoolean("viewer.doublePageMode.enabled", false);
+    public boolean isDoublePageNavigationEnabled() {
+        return getLocalBoolean("viewer.doublePageNavigation[@enabled]", false);
     }
 
     /**
@@ -4687,7 +4689,7 @@ public final class Configuration extends AbstractConfiguration {
 
         return list;
     }
-    
+
     /**
      * 
      * @return The SOLR field containing a rights url for a IIIF3 manifest if one is configured
@@ -4695,15 +4697,16 @@ public final class Configuration extends AbstractConfiguration {
     public String getIIIFRightsField() {
         return getLocalString("webapi.iiif.rights", null);
     }
-    
+
     /**
      * Uses {@link #getIIIFAttribution()} as fallback;
+     * 
      * @return the message key to use for the IIIF3 requiredStatement value if the statement should be added to manifests.
      */
     public String getIIIFRequiredValue() {
         return getLocalString("webapi.iiif.requiredStatement.value", getIIIFAttribution().stream().findFirst().orElse(null));
     }
-    
+
     /**
      * 
      * @return the message key to use for the IIIF3 requiredStatement label. Default is "Attribution"
@@ -4711,7 +4714,7 @@ public final class Configuration extends AbstractConfiguration {
     public String getIIIFRequiredLabel() {
         return getLocalString("webapi.iiif.requiredStatement.label", "Attribution");
     }
-    
+
     /**
      * 
      * @return The list of configurations for IIIF3 providers
@@ -4719,7 +4722,7 @@ public final class Configuration extends AbstractConfiguration {
      */
     public List<ProviderConfiguration> getIIIFProvider() throws PresentationException {
         List<ProviderConfiguration> provider = new ArrayList<>();
-        List<HierarchicalConfiguration> configs =  getLocalConfigurationsAt("webapi.iiif.provider");
+        List<HierarchicalConfiguration> configs = getLocalConfigurationsAt("webapi.iiif.provider");
         for (HierarchicalConfiguration config : configs) {
             provider.add(new ProviderConfiguration(config));
         }
@@ -5097,5 +5100,49 @@ public final class Configuration extends AbstractConfiguration {
      */
     public String getIIIFVersionToUse() {
         return getLocalString("webapi.iiif[@use-version]", "2.1.1");
+    }
+
+    /**
+     * 
+     * @return
+     * @should read config items correctly
+     */
+    public List<TranslationGroup> getTranslationGroups() {
+        List<TranslationGroup> ret = new ArrayList<>();
+        List<HierarchicalConfiguration> groupNodes = getLocalConfigurationsAt("translations.group");
+        int id = 0;
+        for (HierarchicalConfiguration groupNode : groupNodes) {
+            String typeValue = groupNode.getString("[@type]");
+            if (StringUtils.isBlank(typeValue)) {
+                logger.warn("translations/group/@type may not be empty.");
+                continue;
+            }
+            TranslationGroupType type = TranslationGroupType.getByName(typeValue);
+            if (type == null) {
+                logger.warn("Unknown translations/group/@type: {}", typeValue);
+                continue;
+            }
+            String name = groupNode.getString("[@name]");
+            if (StringUtils.isBlank(name)) {
+                logger.warn("translations/group/@name may not be empty.");
+                continue;
+            }
+            String description = groupNode.getString("[@description]");
+            List<HierarchicalConfiguration> keyNodes = groupNode.configurationsAt("key");
+            TranslationGroup group = TranslationGroup.create(id, type, name, description, keyNodes.size());
+            for (HierarchicalConfiguration keyNode : keyNodes) {
+                String value = keyNode.getString(".");
+                if (StringUtils.isBlank(value)) {
+                    logger.warn("translations/group/key may not be empty.");
+                    continue;
+                }
+                boolean regex = keyNode.getBoolean("[@regex]", false);
+                group.getItems().add(TranslationGroupItem.create(type, value, regex));
+            }
+            ret.add(group);
+            id++;
+        }
+
+        return ret;
     }
 }

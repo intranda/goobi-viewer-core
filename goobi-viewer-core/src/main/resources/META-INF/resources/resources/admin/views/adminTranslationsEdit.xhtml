@@ -1,0 +1,155 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://xmlns.jcp.org/jsf/html"
+                xmlns:f="http://xmlns.jcp.org/jsf/core"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+                xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components"
+                xmlns:a="http://xmlns.jcp.org/jsf/passthrough"
+                xmlns:adminWidget="http://xmlns.jcp.org/jsf/composite/admin/widgets"
+                template="/resources/themes/#{navigationHelper.theme}/templateAdmin.html">
+
+    <ui:define name="metadata">
+        <f:metadata>
+            <f:event type="preRenderView" listener="#{navigationHelper.setCurrentPageAdmin('adminTranslations')}" />
+        </f:metadata>
+    </ui:define>
+
+    <ui:define name="content">
+        <f:view contentType="text/html" encoding="utf-8">
+            <div id="adminTranslationsEdit">
+                <h:outputText rendered="#{userBean.admin and adminBean.translationLocked}" value="#{msg.admin__translation_locked}" />
+                
+                <h:panelGroup rendered="#{userBean.admin and !adminBean.translationLocked}">
+                    <h:form id="adminTranslationsEditForm" prependId="false">
+                        <div class="admin__title-bar">
+                            <!-- TITLE -->
+                            <h2 class="admin__title">#{msg[adminBean.currentTranslationGroup.name]}</h2>
+                        </div>
+
+                            
+                        
+                        <div class="admin__content-inner-content">
+                            <!-- INFO TEXT -->
+                            <div class="admin__info-text">
+                                <h:outputText value="#{msg.admin__translations_edit_description}" escape="false" />
+                            </div>
+                            <div class="admin__content-wrapper">
+                                <div class="admin__content-main -sticky">
+                                    <h3>#{msg.admin__translations}</h3>
+                                    <div class="admin__default-block">
+                                        <fieldset>
+                                            <div class="form-group form-row">
+                                                <div class="col-3 control-label admin__form-label"></div>
+                                                <div class="col-9 admin__form-input">
+                                                    <strong>#{adminBean.currentTranslationGroup.selectedEntry.key}</strong>
+                                                </div>
+                                            </div>
+                                            <ui:repeat var="value" value="#{adminBean.currentTranslationGroup.selectedEntry.values}">
+                                                <div class="admin__translations-fields form-group form-row">
+                                                    <div class="col-3 control-label admin__form-label #{value.displayHighlight ? 'admin__form-label-highlight' : ''}">
+                                                        <label for="value">#{msg['changeLocal_long_' += value.language]}:</label>
+                                                    </div>
+                                                    <div class="col-9 admin__form-input #{value.displayHighlight ? 'admin__form-input-highlight' : ''}">
+                                                        <h:inputTextarea value="#{value.value}" id="value" label="value" immediate="true" styleClass="form-control admin__translations-textarea">
+                                                            <f:ajax execute="@form" event="blur" />
+                                                        </h:inputTextarea>
+                                                    </div>
+                                                        <div class="col-3 control-label admin__form-label admin__translations-global-hint" />
+                                                        <div class="col-9 admin__translations-global-key-wrapper admin__translations-global-hint">#{msg.admin__translations_global}: <span class="admin__translations-global-key">#{value.globalValue}</span></div>
+                                                </div>
+
+                                            </ui:repeat>
+                                        </fieldset>
+                                    </div>
+                                    
+                                    
+
+
+	                                    
+	                                    
+                                    
+		                            <div class="row no-gutters justify-content-end admin__final-actions">
+	                                    <!-- RETURN BUTTON -->
+	                                    <h:outputLink styleClass="btn admin__cancel-button" value="#{navigationHelper.applicationUrl}admin/translations/">
+	                                        #{msg.admin__translations_return_to_overview}
+	                                    </h:outputLink>
+	                                    
+	                                    <!-- PREVIOUS BUTTON -->
+	                                    <h:commandButton styleClass="btn btn--default mr-3" value="#{msg.admin__translations_entry_previous}"
+	                                        action="#{adminBean.currentTranslationGroup.prevEntry}">
+	                                        <f:ajax render="@form" />
+	                                    </h:commandButton>
+	                                    
+	                                    <!-- NEXT BUTTON -->
+	                                    <h:commandButton styleClass="btn btn--full" value="#{msg.admin__translations_entry_next}"
+	                                        action="#{adminBean.currentTranslationGroup.nextEntry}">
+	                                        <f:ajax render="@form" />
+	                                    </h:commandButton>
+		                            </div>
+                                    
+                                </div>
+                            <div class="admin__content-side">
+                                <div class="admin__default-block">
+                                    <h3 class="admin__sidebar-progress-header">#{msg.label__crowdsourcing_campaign_progress} <span class="admin__sidebar-progress-count">(#{adminBean.currentTranslationGroup.fullyTranslatedEntryCount} #{msg.of} #{adminBean.currentTranslationGroup.entryCount})</span></h3>
+                               		<div class="admin__sidebar-progressbar">
+										<div class="admin__sidebar-progressbar-complete" style="flex: 0 0 #{adminBean.currentTranslationGroup.fullyTranslatedEntryCountPercentage}%; max-width: #{group.fullyTranslatedEntryCountPercentage}%;"></div>
+										<div class="admin__sidebar-progressbar-partially" style="flex: 0 0 #{adminBean.currentTranslationGroup.partiallyTranslatedEntryCountPercentage}%; max-width: #{group.partiallyTranslatedEntryCountPercentage}%;"></div>
+									</div>
+                                </div>
+                                <div class="admin__default-block">
+                                    <h3>#{msg.admin__overview}</h3>
+									<div class="admin__form-help-text in mb-2">
+										#{msg.admin__translations_edit_overview_description}
+									</div>
+									
+									<!-- FILTER/SEARCH MSG KEYS OF THIS GROUP -->
+			                        <div class="admin__translations-filter-wrapper">
+									   <h:inputText styleClass="form-control admin__translations-search-input" a:placeholder="#{msg.search}" value="#{adminBean.currentTranslationGroup.filterString}" immediate="true">
+									       <f:ajax execute="@form" render="overviewList" />
+									   </h:inputText>
+									   <div class="admin__translations-search-clear">x</div>
+					                    <div class="admin__translations-search-action">
+				                            <h:commandLink styleClass="btn btn--icon btn-filter admin__translations-search-button">
+				                                <i class="fa fa-search" aria-hidden="true"></i>
+				                                <f:ajax execute="@form" render="overviewList" />
+				                            </h:commandLink>
+					                    </div>
+			                        </div>
+
+			                        <!-- LIST OF MSG KEYS IN THIS GROUP -->
+									<h:panelGroup id="overviewList" class="admin__translations-all-keys-list">
+	                                    <ui:repeat var="entry" value="#{adminBean.currentTranslationGroup.filteredEntries}">
+	                                        <h:panelGroup layout="block" styleClass="admin__translations-not-translated #{entry eq adminBean.currentTranslationGroup.selectedEntry ? 'admin__translations-selected-key' : ''}" rendered="#{entry.translationStatus == 'NONE'}">
+	                                            <h:commandLink action="#{adminBean.currentTranslationGroup.setSelectedEntry(entry)}" value="#{entry.key}">
+	                                                <f:ajax render="@form" />
+	                                            </h:commandLink>
+	                                        </h:panelGroup>
+	                                        <h:panelGroup layout="block" styleClass="admin__translations-partially-translated #{entry eq adminBean.currentTranslationGroup.selectedEntry ? 'admin__translations-selected-key' : ''}" rendered="#{entry.translationStatus == 'PARTIAL'}">
+	                                            <h:commandLink action="#{adminBean.currentTranslationGroup.setSelectedEntry(entry)}" value="#{entry.key}">
+	                                                <f:ajax render="@form" />
+	                                            </h:commandLink>
+	                                        </h:panelGroup>
+	                                        <h:panelGroup layout="block" styleClass="admin__translations-fully-translated #{entry eq adminBean.currentTranslationGroup.selectedEntry ? 'admin__translations-selected-key' : ''}" rendered="#{entry.translationStatus == 'FULL'}">
+	                                            <h:commandLink action="#{adminBean.currentTranslationGroup.setSelectedEntry(entry)}" value="#{entry.key}">
+	                                                <f:ajax render="@form" />
+	                                            </h:commandLink>
+	                                        </h:panelGroup>
+	                                    </ui:repeat>
+									</h:panelGroup>
+                                </div>
+                            </div>
+                            </div>
+                        </div>
+
+                    </h:form>
+                </h:panelGroup>
+                <!-- REATTACH HC STICKY AFTER AJAX CALL -->
+                <script>
+                	adminJS.translationsEdit.init();
+                </script>
+
+            </div>
+        </f:view>
+    </ui:define>
+
+</ui:composition>

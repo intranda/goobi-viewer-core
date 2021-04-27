@@ -42,10 +42,7 @@ public class ApplicationResource {
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     public ApiInfo getApiInfo() {
-        ApiInfo info = new ApiInfo();
-        info.name = "Goobi viewer REST API";
-        info.version = "v1";
-        info.specification = urls.getApiUrl() + "/openapi.json";
+        ApiInfo info = new ApiInfo("Goobi viewer REST API", "v1", urls.getApiUrl() + "/openapi.json");
         return info;
     }
     

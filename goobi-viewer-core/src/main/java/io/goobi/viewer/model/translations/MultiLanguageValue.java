@@ -13,7 +13,7 @@
  *
  * You should have received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
-package io.goobi.viewer.model.misc;
+package io.goobi.viewer.model.translations;
 
 import java.util.Collection;
 import java.util.Locale;
@@ -46,7 +46,7 @@ public class MultiLanguageValue implements IPolyglott {
     }
     
     /* (non-Javadoc)
-     * @see io.goobi.viewer.model.misc.IPolyglott#isComplete(java.util.Locale)
+     * @see io.goobi.viewer.model.translations.IPolyglott#isComplete(java.util.Locale)
      */
     @Override
     public boolean isComplete(Locale locale) {
@@ -55,7 +55,7 @@ public class MultiLanguageValue implements IPolyglott {
     
 
     /* (non-Javadoc)
-     * @see io.goobi.viewer.model.misc.IPolyglott#isValid(java.util.Locale)
+     * @see io.goobi.viewer.model.translations.IPolyglott#isValid(java.util.Locale)
      */
     @Override
     public boolean isValid(Locale locale) {
@@ -63,7 +63,7 @@ public class MultiLanguageValue implements IPolyglott {
     }
 
     /* (non-Javadoc)
-     * @see io.goobi.viewer.model.misc.IPolyglott#getSelectedLocale()
+     * @see io.goobi.viewer.model.translations.IPolyglott#getSelectedLocale()
      */
     @Override
     public Locale getSelectedLocale() {
@@ -71,7 +71,7 @@ public class MultiLanguageValue implements IPolyglott {
     }
 
     /* (non-Javadoc)
-     * @see io.goobi.viewer.model.misc.IPolyglott#setSelectedLocale(java.util.Locale)
+     * @see io.goobi.viewer.model.translations.IPolyglott#setSelectedLocale(java.util.Locale)
      */
     @Override
     public void setSelectedLocale(Locale locale) {
@@ -101,7 +101,7 @@ public class MultiLanguageValue implements IPolyglott {
     }
     
     /* (non-Javadoc)
-     * @see io.goobi.viewer.model.misc.IPolyglott#getLocales()
+     * @see io.goobi.viewer.model.translations.IPolyglott#getLocales()
      */
     @Override
     public Collection<Locale> getLocales() {
@@ -144,7 +144,7 @@ public class MultiLanguageValue implements IPolyglott {
     }
 
     /* (non-Javadoc)
-     * @see io.goobi.viewer.model.misc.IPolyglott#isEmpty(java.util.Locale)
+     * @see io.goobi.viewer.model.translations.IPolyglott#isEmpty(java.util.Locale)
      */
     @Override
     public boolean isEmpty(Locale locale) {

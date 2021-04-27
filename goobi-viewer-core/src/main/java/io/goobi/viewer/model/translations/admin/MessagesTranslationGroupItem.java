@@ -13,51 +13,38 @@
  *
  * You should have received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
-package io.goobi.viewer.model.misc;
+package io.goobi.viewer.model.translations.admin;
 
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.MappedSuperclass;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
+import io.goobi.viewer.controller.StringTools;
+import io.goobi.viewer.messages.ViewerResourceBundle;
 
-/**
- * @author florian
- *
- */
-@MappedSuperclass
-public class PersistentTranslation<O> extends Translation {
+public class MessagesTranslationGroupItem extends TranslationGroupItem {
 
-    /** Reference to the owning {@link PersistentEntity}. */
-    @ManyToOne
-    @JoinColumn(name = "owner_id", nullable = false)
-    private O owner;
-    
-    public PersistentTranslation() {
-        super();
-    }
-    
-    public PersistentTranslation(O owner) {
-        this.owner = owner;
-    }
-
-    public PersistentTranslation(Translation t, O owner) {
-        super(t);
-        this.owner = owner;
-    }
-    
     /**
-     * @return the owner
+     * Protected constructor.
+     * 
+     * @param key
+     * @param regex
      */
-    public O getOwner() {
-        return owner;
+    protected MessagesTranslationGroupItem(String key, boolean regex) {
+        super(key, regex);
     }
-    
-    /**
-     * @param owner the owner to set
-     */
-    public void setOwner(O owner) {
-        this.owner = owner;
-    }
-    
 
+    /* (non-Javadoc)
+     * @see io.goobi.viewer.model.translations.TranslationGroupKey#loadValues()
+     */
+    @Override
+    protected void loadEntries() {
+        List<String> keys;
+        if (regex) {
+            keys = StringTools.filterStringsViaRegex(new ArrayList<>(ViewerResourceBundle.getAllKeys()), key);
+        } else {
+            keys = Collections.singletonList(key);
+        }
+        createMessageKeyStatusMap(keys);
+    }
 }
