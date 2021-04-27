@@ -30,7 +30,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import de.intranda.monitoring.timer.TimeAnalysis;
-import io.goobi.viewer.api.rest.AbstractApiUrlManager.Version;
 import io.goobi.viewer.api.rest.model.tasks.TaskManager;
 import io.goobi.viewer.dao.IDAO;
 import io.goobi.viewer.dao.impl.JPADAO;
@@ -83,6 +82,8 @@ public final class DataManager {
     private Map<String, List<Campaign>> recordCampaignMap = null;
 
     private String indexerVersion = "";
+
+    private int hotfolderFileCount = 0;
 
     private RestApiManager restApiManager;
 
@@ -433,7 +434,20 @@ public final class DataManager {
      */
     public void setIndexerVersion(String indexerVersion) {
         this.indexerVersion = indexerVersion;
-        logger.trace(indexerVersion);
+    }
+
+    /**
+     * @return the hotfolderFileCount
+     */
+    public int getHotfolderFileCount() {
+        return hotfolderFileCount;
+    }
+
+    /**
+     * @param hotfolderFileCount the hotfolderFileCount to set
+     */
+    public void setHotfolderFileCount(int hotfolderFileCount) {
+        this.hotfolderFileCount = hotfolderFileCount;
     }
 
     /**
@@ -497,5 +511,5 @@ public final class DataManager {
      */
     public TaskManager getRestApiJobManager() {
         return restApiJobManager;
-    }   
+    }
 }

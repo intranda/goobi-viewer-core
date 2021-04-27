@@ -1954,4 +1954,19 @@ public class AdminBean implements Serializable {
         logger.trace("setTranslationGroupsEditorSession: {}", translationGroupsEditorSession);
         AdminBean.translationGroupsEditorSession = translationGroupsEditorSession;
     }
+    
+    /**
+     * 
+     * @return
+     */
+    public int getHotfolderFileCount() {
+        return DataManager.getInstance().getHotfolderFileCount();
+    }
+    
+    /**
+     * @return {@link TranslationGroup#isHasFileAccess()}
+     */
+    public boolean hasAccessPermissingForTranslationFiles() {
+        return TranslationGroup.isHasFileAccess();
+    }
 }

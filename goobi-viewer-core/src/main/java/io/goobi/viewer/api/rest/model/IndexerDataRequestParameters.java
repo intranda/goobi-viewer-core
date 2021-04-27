@@ -20,7 +20,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 /**
  * POST request parameters for IndexingResource (indexer ersion).
  */
-public class IndexerVersionRequestParameters {
+public class IndexerDataRequestParameters {
 
     private String application;
     private String version;
@@ -28,6 +28,8 @@ public class IndexerVersionRequestParameters {
     private String buildDate;
     @JsonProperty("git-revision")
     private String gitRevision;
+    @JsonProperty("hotfolder-file-count")
+    private int hotfolderFileCount;
 
     /**
      * @return the application
@@ -84,4 +86,19 @@ public class IndexerVersionRequestParameters {
     public void setGitRevision(String gitRevision) {
         this.gitRevision = gitRevision;
     }
+
+    /**
+     * @return the hotfolderFileCount
+     */
+    public int getHotfolderFileCount() {
+        return hotfolderFileCount;
+    }
+
+    /**
+     * @param hotfolderFileCount the hotfolderFileCount to set
+     */
+    public void setHotfolderFileCount(int hotfolderFileCount) {
+        this.hotfolderFileCount = hotfolderFileCount;
+    }
+
 }
