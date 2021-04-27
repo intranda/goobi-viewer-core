@@ -37,7 +37,7 @@ this.on("mount", () => {
 	console.log("mount ", this.opts);
 	this.type = opts.type ? opts.type : "items";
 	this.language = opts.language ? opts.language : "en";
-	this.imageSize = opts.imageSize;
+	this.imageSize = opts.imagesize;
 	
 	let source = opts.source;
 	if(viewerJS.isString(source)) {
@@ -60,6 +60,9 @@ loadThumbnails(source, type) {
 					rxjs.operators.concatMap(canvas => this.loadCanvas(canvas))
 					)
 			.subscribe(item => this.addThumbnail(item));
+			break;
+		case "sequence":
+			this.createThumbnails(source.sequences[0].canvases);
 			break;
 		case "items":
 		case "default":
@@ -111,7 +114,7 @@ getValue(value) {
 }
 
 getImage(canvas) {
-	console.log("get image from ", canvas);
+// 	console.log("get image from ", canvas);
 	if(canvas.items) {
 		return canvas.items
 		.filter(page => page.items != undefined)
@@ -120,18 +123,20 @@ getImage(canvas) {
 		.map(anno => anno.body)
 		.map(res => this.getImageUrl(res, this.imageSize))
 		.find(url => url != undefined)
+	} else if(canvas.images && canvas.images.length > 0) {
+		return this.getImageUrl(canvas.images[0].resource, this.imageSize);                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          
 	} else {
 		return undefined;
 	}
 }
 
 getImageUrl(resource, size) {
-	console.log("get image url ", resource, size);
-	if(size && resource.service && resource.service.length > 0) {
-		let url = resource.service[0].id;
+// 	console.log("get image url ", resource, size);
+	if(size && resource.service && (!Array.isArray(resource.service) || resource.service.length > 0)) {
+		let url = viewerJS.iiif.getId(viewerJS.iiif.getId(resource.id) ? resource.service[0] : resource.service);
 		return url + "/full/" + size + "/0/default." + this.getExtension(resource.format);
 	} else {
-		return resource.id;
+		return viewerJS.iiif.getId(resource);
 	}
 }
 
