@@ -2877,7 +2877,7 @@ riot.tag2('slideshow', '<a if="{manifest === undefined}" data-linkid="{opts.pis}
 });
 
 
-riot.tag2('thumbnails', '<div><div each="{canvas, index in thumbnails}"><a href="{getHomepage(canvas)}"><img alt="{getValue(canvas.label)}" riot-src="{getImage(canvas)}"><label>{getValue(canvas.label)}</label></img></a></div></div>', '', '', function(opts) {
+riot.tag2('thumbnails', '<div class="archives__object-thumbnails-image-wrapper" each="{canvas, index in thumbnails}"><a class="archives__object-thumbnails-image-link" href="{getLink(canvas)}"><img class="archives__object-thumbnails-image" alt="{getValue(canvas.label)}" riot-src="{getImage(canvas)}"><div class="archives__object-thumbnails-image-overlay"><div class="archives__object-thumbnails-label">{getValue(canvas.label)}</div></div></a></div>', '', '', function(opts) {
 
 this.thumbnails = [];
 
@@ -2940,7 +2940,17 @@ this.getFirstCanvas = function(range, overwriteLabel) {
 		canvas = range.items.find( item => item.type == "Canvas");
 	}
 	if(canvas && overwriteLabel) {
-		canvas.label = range.label;
+		if(this.opts.label) {
+			let md = range.metadata.find(md => viewerJS.iiif.getValue(md.label, "none") == this.opts.label);
+			if(md) {
+				canvas.label = this.getValue(md.value);
+			} else {
+				canvas.label = range.label;
+			}
+		} else {
+			canvas.label = range.label;
+		}
+
 	}
 	return canvas;
 }.bind(this)
@@ -2993,6 +3003,14 @@ this.getExtension = function(format) {
 		return "png";
 	} else {
 		return "jpg";
+	}
+}.bind(this)
+
+this.getLink = function(canvas) {
+	if(this.opts.link) {
+		return this.opts.link(canvas);
+	} else {
+		return this.getHomepage(canvas);
 	}
 }.bind(this)
 
