@@ -2952,7 +2952,7 @@ riot.tag2('slideshow', '<a if="{manifest === undefined}" data-linkid="{opts.pis}
 });
 
 
-riot.tag2('thumbnails', '<div class="thumbnails-image-wrapper {this.opts.index == index ? \'selected\' : \'\'}" each="{canvas, index in thumbnails}" onclick="{handleClickOnImage}"><a class="thumbnails-image-link" href="{getLink(canvas)}"><img class="thumbnails-image" alt="{getValue(canvas.label)}" riot-src="{getImage(canvas)}"><div class="thumbnails-image-overlay"><div class="thumbnails-label">{getValue(canvas.label)}</div></div></a></div>', '', '', function(opts) {
+riot.tag2('thumbnails', '<div ref="thumb" class="thumbnails-image-wrapper {this.opts.index == index ? \'selected\' : \'\'}" each="{canvas, index in thumbnails}" onclick="{handleClickOnImage}"><a class="thumbnails-image-link" href="{getLink(canvas)}"><img class="thumbnails-image" alt="{getValue(canvas.label)}" riot-src="{getImage(canvas)}"><div class="thumbnails-image-overlay"><div class="thumbnails-label">{getValue(canvas.label)}</div></div></a></div>', '', '', function(opts) {
 
 this.thumbnails = [];
 
@@ -2973,8 +2973,9 @@ this.on("mount", () => {
 });
 
 this.on("updated", () => {
-	console.log("updated", this.opts);
-
+	console.log("updated", this.opts, this.refs);
+	let activeThumb = this.refs.thumb[this.opts.index];
+	activeThumb.scrollIntoView({block: "end", behavior: "smooth"});
 });
 
 this.loadThumbnails = function(source, type) {
