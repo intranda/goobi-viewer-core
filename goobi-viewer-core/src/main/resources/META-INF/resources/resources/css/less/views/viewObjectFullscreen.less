@@ -84,7 +84,13 @@
     		}
     	}
     }
-    &__header-docsctruct-navigation {}
+    &__header-docsctruct-navigation {
+    	margin-left: auto;
+    	span {
+    		opacity: 0.4;
+    		cursor: not-allowed;
+    	}
+    }
     &__header-docsctruct-navigation-back,
     &__header-docsctruct-navigation-next {
     	padding: 0.4rem;
@@ -92,7 +98,6 @@
     	background: @labelGray;
     	color: @white;
     	font-size: 1.4rem;
-    	margin-right: 1rem;
     	&:hover,
     	&:focus, 
     	&:active {
@@ -101,7 +106,9 @@
     		background: @labelHoverGray;
     	}
     }
-	&__header-docsctruct-navigation-back {}
+	&__header-docsctruct-navigation-back {
+    	margin-right: 1rem;
+	}
     &__header-docsctruct-navigation-next {}
     &__header-exit {
     	margin-left: auto;
