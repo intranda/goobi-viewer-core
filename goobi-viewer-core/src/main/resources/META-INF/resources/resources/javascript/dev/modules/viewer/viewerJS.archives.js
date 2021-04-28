@@ -29,6 +29,7 @@ var viewerJS = ( function( viewer ) {
     };
  
     viewer.archives = { 
+    	recordPi : "", //pi of the current record. Read from [data-name="recordPi"] and used to create image display and record links
         init: function( config ) {
             if ( _debug ) {
                 console.log( '##############################' );
@@ -37,18 +38,27 @@ var viewerJS = ( function( viewer ) {
                 console.log( 'viewer.archivesSeparate.init: config - ', config );
             }
             this.config = $.extend( true, {}, _defaults, config );
+			$(".archives__object-image").hide();
+            
             
             jQuery(document).ready(($) => {
-
+				
+				this.initImageDisplay();
+				viewerJS.jsfAjax.success.subscribe(() => this.initImageDisplay());
+				
                 if(this.config.initHcSticky) {                    
                     this.initHcStickyWithChromeHack();
                 }
                 viewerJS.jsfAjax.success
                 .subscribe(e => {
-                    if(this.config.initHcSticky) {                        
-                        this.refreshStickyWithChromeHack();
-                    }
-                    this.setLocation(e.source);
+                    $(".archives__object-image").hide();
+                	this.initImageDisplay()
+                	.then(() => {
+	                    if(this.config.initHcSticky) {                        
+	                        this.refreshStickyWithChromeHack();
+	                    }
+	                    this.setLocation(e.source);
+                	});
                 });
                 
                 if(this.config.initSearch) {
@@ -62,6 +72,43 @@ var viewerJS = ( function( viewer ) {
             	
             });            
             
+        },
+        
+        initImageDisplay() {
+        	let $recordPiInput = $('[data-name="recordPi"]');
+        	console.log("record pi", $recordPiInput, $recordPiInput.val());
+        	if($recordPiInput.length > 0) {
+        		let recordPi = $recordPiInput.val();
+        		console.log("record pi is " + recordPi);
+        		if(recordPi != this.recordPi) {
+        			this.recordPi = recordPi;
+        			let manifestUrl = rootURL + "/api/v2/records/" + recordPi + "/manifest/";
+        			return fetch(manifestUrl)
+        			.then(response => response.json())
+        			.then(manifest => {
+        				//if the manifest contains struct elements, show them as thumbnail gallery
+        				if(manifest.structures && manifest.structures.length > 1) {
+				        	riot.mount(".archives__object-thumbnails", "thumbnails", {
+					        	language : currentLang, 
+					        	type: "structures",
+					        	source: manifest,
+					        	imagesize: ",250",
+					        	label: "MD_SHELFMARK",
+					        	link: (canvas) => {
+					        		if(canvas.homepage && canvas.homepage.length > 0) {
+										return canvas.homepage[0].id.replace("/image/", "/fullscreen/");
+									} else {
+										return undefined;
+									}
+					        	} 
+				        	});
+        				} else {
+        					$(".archives__object-image").show();
+        				}
+        			});
+        		}
+        	}
+        	return Promise.resolve();
         },
         
         initTextTree: function() {

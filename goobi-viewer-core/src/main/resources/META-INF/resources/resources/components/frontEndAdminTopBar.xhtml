@@ -59,13 +59,12 @@
             <!-- COUNT HOTFOLDER FILES -->
             <div class="admin__topbar-frontend-hotfolder">
             	<!-- COUNT FILES PROCESSING -->
-            	<!-- TO DO: RENDERED CONDITION NUMBER OF FILES GREATER X -->
-            	<ui:fragment rendered="#{userBean.admin}">
-					<div class="admin__topbar-frontend-hotfolder-files-action">
-					    <i class="fa fa-spinner fa-pulse" aria-hidden="true"></i>
-					    <span>1.242</span> <span>#{msg.admin__files_in_hotfolder}...</span>
-					</div>
-				</ui:fragment>
+                <ui:fragment rendered="#{userBean.admin and adminBean.hotfolderFileCount > 0}">
+                    <div class="admin__topbar-frontend-hotfolder-files-action">
+                        <i class="fa fa-spinner fa-pulse" aria-hidden="true"></i>
+                        <span>#{adminBean.hotfolderFileCount}</span> <span>#{msg.admin__files_in_hotfolder}...</span>
+                    </div>
+                </ui:fragment>
             </div>
 		
             <!-- LOGOUT -->

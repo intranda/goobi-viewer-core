@@ -14,7 +14,13 @@
                    
                     <!-- PAGE -->
 					<ui:fragment
-						rendered="#{!activeDocumentBean.viewManager.bornDigital and activeDocumentBean.viewManager.currentPage.displayImage and (activeDocumentBean.viewManager.currentPage.accessPermissionPdf or activeDocumentBean.viewManager.currentPage.accessPermissionImage or activeDocumentBean.viewManager.currentPage.altoAvailable or activeDocumentBean.viewManager.currentPage.teiAvailable or activeDocumentBean.viewManager.currentPage.displayFulltext)}">
+						rendered="#{!activeDocumentBean.viewManager.bornDigital 
+						and activeDocumentBean.viewManager.currentPage.displayImage 
+						and (activeDocumentBean.viewManager.currentPage.accessPermissionPdf 
+							or activeDocumentBean.viewManager.currentPage.accessPermissionImage 
+							or activeDocumentBean.viewManager.currentPage.altoAvailable 
+							or activeDocumentBean.viewManager.currentPage.teiAvailable 
+							or activeDocumentBean.viewManager.currentPage.displayFulltext)}">
 						<h4 id="titleImage" class="widget-usage__subtitle">#{msg.image}</h4>
 
 						<!-- PAGE DOWNLOADS -->

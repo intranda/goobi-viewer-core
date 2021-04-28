@@ -421,6 +421,7 @@ public class ActiveDocumentBean implements Serializable {
                         .getSearchIndex()
                         .search(query, 1, null, Collections.singletonList(SolrConstants.IDDOC));
                 long subElementIddoc = 0;
+                // TODO check whether creating a new ViewManager can be avoided here
                 if (!docList.isEmpty()) {
                     subElementIddoc = Long.valueOf((String) docList.get(0).getFieldValue(SolrConstants.IDDOC));
                     // Re-initialize ViewManager with the new current element
@@ -428,6 +429,7 @@ public class ActiveDocumentBean implements Serializable {
                     viewManager = new ViewManager(viewManager.getTopStructElement(), viewManager.getPageLoader(), subElementIddoc, logid,
                             viewManager.getMainMimeType(), imageDelivery);
                     viewManager.setFirstPageOrientation(firstPageOrientation);
+                    viewManager.setToc(createTOC());
                 } else {
                     logger.warn("{} not found for LOGID '{}'.", SolrConstants.IDDOC, logid);
                 }
@@ -1128,8 +1130,11 @@ public class ActiveDocumentBean implements Serializable {
      * 
      * @return
      * @throws IndexUnreachableException
+     * @throws ViewerConfigurationException
+     * @throws DAOException
+     * @throws PresentationException
      */
-    public String getPreviousDocstructUrl() throws IndexUnreachableException {
+    public String getPreviousDocstructUrl() throws IndexUnreachableException, PresentationException, DAOException, ViewerConfigurationException {
         // logger.trace("getPreviousDocstructUrl");
         if (viewManager == null) {
             return null;
@@ -1143,7 +1148,7 @@ public class ActiveDocumentBean implements Serializable {
         String currentDocstructIddoc = String.valueOf(viewManager.getCurrentStructElementIddoc());
         // Determine docstruct URL and cache it
         if (prevDocstructUrlCache.get(currentDocstructIddoc) == null) {
-            int currentElementIndex = viewManager.getToc().findTocElementIndexByIddoc(currentDocstructIddoc);
+            int currentElementIndex = getToc().findTocElementIndexByIddoc(currentDocstructIddoc);
             if (currentElementIndex == -1) {
                 logger.warn("Current IDDOC not found in TOC: {}", viewManager.getCurrentStructElement().getLuceneId());
                 return null;
@@ -1158,9 +1163,7 @@ public class ActiveDocumentBean implements Serializable {
                     // Add LOGID to the URL because ViewManager.currentStructElementIddoc (IDDOC_OWNER) can be incorrect in the index sometimes,
                     // resulting in the URL pointing at the current element
                     prevDocstructUrlCache.put(currentDocstructIddoc,
-                            getPageUrl(navigationHelper.getCurrentPageType().getName(), tocElement.getPageNo())
-                                    + tocElement.getLogId()
-                                    + "/");
+                            "/" + viewManager.getPi() + "/" + Integer.valueOf(tocElement.getPageNo()) + "/" + tocElement.getLogId() + "/");
                     found = true;
                     break;
                 }
@@ -1170,15 +1173,23 @@ public class ActiveDocumentBean implements Serializable {
             }
         }
 
-        return prevDocstructUrlCache.get(currentDocstructIddoc);
+        if (StringUtils.isNotEmpty(prevDocstructUrlCache.get(currentDocstructIddoc))) {
+            return BeanUtils.getServletPathWithHostAsUrlFromJsfContext() + "/" + navigationHelper.getCurrentPageType().getName()
+                    + prevDocstructUrlCache.get(currentDocstructIddoc);
+        }
+
+        return "";
     }
 
     /**
      * 
      * @return
      * @throws IndexUnreachableException
+     * @throws ViewerConfigurationException
+     * @throws DAOException
+     * @throws PresentationException
      */
-    public String getNextDocstructUrl() throws IndexUnreachableException {
+    public String getNextDocstructUrl() throws IndexUnreachableException, PresentationException, DAOException, ViewerConfigurationException {
         // logger.trace("getNextDocstructUrl");
         if (viewManager == null) {
             return "";
@@ -1192,7 +1203,7 @@ public class ActiveDocumentBean implements Serializable {
         String currentDocstructIddoc = String.valueOf(viewManager.getCurrentStructElementIddoc());
         // Determine docstruct URL and cache it
         if (nextDocstructUrlCache.get(currentDocstructIddoc) == null) {
-            int currentElementIndex = viewManager.getToc().findTocElementIndexByIddoc(currentDocstructIddoc);
+            int currentElementIndex = getToc().findTocElementIndexByIddoc(currentDocstructIddoc);
             logger.trace("currentIndexElement: {}", currentElementIndex);
             if (currentElementIndex == -1) {
                 return null;
@@ -1207,9 +1218,7 @@ public class ActiveDocumentBean implements Serializable {
                     // Add LOGID to the URL because ViewManager.currentStructElementIddoc (IDDOC_OWNER) can be incorrect in the index sometimes,
                     // resulting in the URL pointing at the current element
                     nextDocstructUrlCache.put(currentDocstructIddoc,
-                            getPageUrl(navigationHelper.getCurrentPageType().getName(), tocElement.getPageNo())
-                                    + tocElement.getLogId()
-                                    + "/");
+                            "/" + viewManager.getPi() + "/" + Integer.valueOf(tocElement.getPageNo()) + "/" + tocElement.getLogId() + "/");
                     found = true;
                     break;
                 }
@@ -1219,7 +1228,12 @@ public class ActiveDocumentBean implements Serializable {
             }
         }
 
-        return nextDocstructUrlCache.get(currentDocstructIddoc);
+        if (StringUtils.isNotEmpty(nextDocstructUrlCache.get(currentDocstructIddoc))) {
+            return BeanUtils.getServletPathWithHostAsUrlFromJsfContext() + "/" + navigationHelper.getCurrentPageType().getName()
+                    + nextDocstructUrlCache.get(currentDocstructIddoc);
+        }
+
+        return "";
     }
 
     /**
