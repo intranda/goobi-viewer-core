@@ -61,8 +61,7 @@
 			<div class="admin__topbar-backend-right">
 	            <div class="admin__topbar-frontend-hotfolder">
 	            	<!-- COUNT FILES PROCESSING -->
-	            	<!-- TO DO: RENDERED CONDITION NUMBER OF FILES GREATER X -->
-	            	<ui:fragment rendered="#{userBean.admin}">
+                    <ui:fragment rendered="#{userBean.admin and adminBean.hotfolderFileCount > 0}">
 						<div class="admin__topbar-frontend-hotfolder-files-action">
 						    <i class="fa fa-spinner fa-pulse" aria-hidden="true"></i>
 						    <span>#{adminBean.hotfolderFileCount}</span> <span>#{msg.admin__hotfolder_file_count}...</span>
