@@ -29,7 +29,8 @@ var viewerJS = ( function( viewer ) {
 
     
     viewer.notifications = {
-		success : (message) => viewer.notifications.notify(message, "success"),
+		success : (message) => viewer.notifications.notify(message, "success"),		
+		error : (message) => viewer.notifications.notify(message, "error"),
 		notify : (message, type) => {
 			if(sweetAlert) {
 				swal("", message, type);

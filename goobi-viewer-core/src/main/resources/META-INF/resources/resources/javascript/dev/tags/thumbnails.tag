@@ -15,11 +15,11 @@ For ambigious sources, the additional opts.type property determines how the sour
 
 <thumbnails>
 
-	<div class="archives__object-thumbnails-image-wrapper" each="{canvas, index in thumbnails}">
-		<a class="archives__object-thumbnails-image-link" href="{getLink(canvas)}">
-			<img class="archives__object-thumbnails-image" alt="{getValue(canvas.label)}" src="{getImage(canvas)}" />
-		<div class="archives__object-thumbnails-image-overlay">
-			<div class="archives__object-thumbnails-label">{getValue(canvas.label)}</div>
+	<div class="thumbnails-image-wrapper {this.opts.index == index ? 'selected' : ''}" each="{canvas, index in thumbnails}" onclick="{handleClickOnImage}">
+		<a class="thumbnails-image-link" href="{getLink(canvas)}">
+			<img class="thumbnails-image" alt="{getValue(canvas.label)}" src="{getImage(canvas)}" />
+		<div class="thumbnails-image-overlay">
+			<div class="thumbnails-label">{getValue(canvas.label)}</div>
 		</div>
 		</a>
 	</div>
@@ -44,6 +44,11 @@ this.on("mount", () => {
 	} else {
 		this.loadThumbnails(source, this.type);
 	}
+});
+
+this.on("updated", () => {
+	console.log("updated", this.opts);
+	//TODO scroll to .thumbnails-image-wrapper[this.opts.index]
 });
 
 loadThumbnails(source, type) {
@@ -169,6 +174,17 @@ getHomepage(canvas) {
 	} else {
 		return undefined;
 	}
+}
+
+handleClickOnImage(event) {
+	if(this.opts.actionlistener) {
+		this.opts.actionlistener.next({
+			action: "clickImage",
+			value: event.item.index
+		})
+	}
+	//updating is handled in actionlistener. set this to prevent double update
+	event.preventUpdate = true;
 }
 
 </script>

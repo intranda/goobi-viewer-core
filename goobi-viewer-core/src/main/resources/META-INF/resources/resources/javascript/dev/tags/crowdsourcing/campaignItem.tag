@@ -8,16 +8,9 @@
 	<span if="{ this.loading }" class="crowdsourcing-annotations__loader-wrapper">
 		<img src="{this.opts.loaderimageurl}" /> 
 	</span>
-	<span if="{this.error}" class="crowdsourcing-annotations__loader-wrapper">
-		<span class="error_message">{this.error.message}</span>
-	</span>
 	</span>
 		<div class="crowdsourcing-annotations__content-left" >
 			<imageView if="{this.item}" id="mainImage" source="{this.item.getCurrentCanvas()}" item="{this.item}"></imageView>
-<!-- 			<div> -->
-<!-- 				<imageControls item="{this.item}"></imageControls> -->
-<!-- 			</div> -->
-			<canvasPaginator if="{this.item}" item="{this.item}"></canvasPaginator>
 		</div> 
 		<div if="{this.item}" class="crowdsourcing-annotations__content-right">
 			<!-- <h1 class="crowdsourcing-annotations__content-right-title">{Crowdsourcing.translate(this.item.translations.title)}</h1>-->
@@ -60,37 +53,34 @@
 		
 	this.on("mount", function() {
 	    fetch(this.itemSource)
-	    .then( response => response.json() )
+	    .then(response => this.handleServerResponse(response))
 	    .then( itemConfig => this.loadItem(itemConfig))
 	    .then( () => this.fetch(this.annotationSource))
-	    .then( response => response.json() )
+	    .then(response => this.handleServerResponse(response))
 	    .then( annotations => this.initAnnotations(annotations))
 	    .then( () => this.item.notifyItemInitialized())
 		.catch( error => {
-		    console.error("ERROR ", error);
-	    	this.error = error;
+		   	this.handleError(error);
+			this.item = undefined;
+	    	this.loading = false;
 	    	this.update();
 		})
 	});
 
 	loadItem(itemConfig) {
 	    this.item = new Crowdsourcing.Item(itemConfig, 0);
+	    console.log("load item ", this.item);
 	    this.item.logEndpoint = this.item.id + "/" + this.opts.pi + "/log/";
 	    if(this.opts.currentuserid) {
 	        this.item.setCurrentUser(this.opts.currentuserid, this.opts.currentusername, this.opts.currentuseravatar);
 	    }
 	    this.item.setReviewMode(this.opts.itemstatus && this.opts.itemstatus.toUpperCase() == "REVIEW");
-		fetch(this.item.imageSource)
-		.then( response => response.json() )
+		this.item.onImageRotated( () => this.update());
+		return fetch(this.item.imageSource)
+		.then(response => this.handleServerResponse(response))
 		.then( imageSource => this.initImageView(imageSource))
 		.then( () => {this.loading = false; this.update()})
-		.catch( error => {
-		    this.loading = false;
-		    console.error("ERROR ", error);  
-		})
-	    
-		this.item.onImageRotated( () => this.update());
-		this.item.onImageViewChanged( () => this.update());
+
 	}
 	
 	initImageView(imageSource) {
@@ -215,6 +205,50 @@
             cache: "no-cache",
             mode: 'cors', // no-cors, cors, *same-origin
 	    })
+	}
+	
+	handleServerResponse(response) {
+   		if(!response.ok){
+   			try {
+   				throw response.json()
+   			} catch(error) {
+   				response.message = error;
+   				throw response;
+   			}
+   		} else {
+   			try {
+   				return response.json();
+   			} catch(error) {
+   				response.message = error;
+   				throw response;
+   			}
+   		}
+	}
+	
+	handleError(error) {
+		 console.error("ERROR", error);
+		    if(viewerJS.isString(error)) {
+		    	viewerJS.notifications.error(error);
+		    } else if(error.message && error.message.then) {
+		    	error.message.then((err) => {
+			    	console.log("error ", err)
+			    	let errorMessage = "Error retrieving data from\n\n";
+			    	errorMessage += error.url + "\n\n";
+			    	if(err.message) {
+			    		errorMessage += "Message = " + err.message + "\n\n";
+			    	}
+			    	errorMessage += "Status = " + error.status;
+			    	viewerJS.notifications.error(errorMessage);
+		    	})
+		    } else {		    	
+		    	let errorMessage = "Error retrieving data from\n\n";
+		    	errorMessage += error.url + "\n\n";
+		    	if(error.message) {
+		    		errorMessage += "Message = " + error.message + "\n\n";
+		    	}
+		    	errorMessage += "Status = " + error.status;
+		    	viewerJS.notifications.error(errorMessage);
+		    } 
 	}
 
 

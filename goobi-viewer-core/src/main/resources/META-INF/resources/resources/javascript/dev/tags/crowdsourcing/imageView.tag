@@ -10,25 +10,32 @@
 		<span if="{this.error}" class="loader_wrapper">
 			<span class="error_message">{this.error.message}</span>
 		</span>
-		<imageControls if="{this.image}" image="{this.image}" item="{this.opts.item}"></imageControls>
-		<thumbnails style="display: {this.opts.item.showThumbs ? 'inline' : 'none'}" source="{this.opts.item.imageSource}" type="sequence" imagesize=",80" label="()=>{}"/>
+		
+		<imageControls if="{this.image}" 
+			image="{this.image}" 
+			item="{this.opts.item}" 
+			actionlistener="{this.actionListener}" 
+			showThumbs="{this.showThumbs}"></imageControls>
+		
+		<thumbnails class="image_thumbnails" style="display: {this.showThumbs ? 'flex' : 'none'}" 
+			source="{{items: this.opts.item.canvases}}"  
+			actionlistener="{this.actionListener}" 
+			imagesize=",120"
+			index="{this.opts.item.currentCanvasIndex}" />
 	
-		<div style="visibility: {this.opts.item.showThumbs ? 'hidden' : 'visible'}" class="image_container">
+		<div class="image_container" style="visibility: {this.showThumbs ? 'hidden' : 'visible'}">
 			<div id="image_{opts.id}" class="image"></div>
 		</div>
 	</div>
+	
+	<canvasPaginator items="{this.opts.item.canvases}" index="{this.opts.item.currentCanvasIndex}" actionlistener="{this.actionListener}" ></canvasPaginator>
 
 	<script>
 
-	getPosition() {
-		let pos_os = this.dataPoint.getPosition();
-		let pos_image = ImageView.CoordinateConversion.scaleToImage(pos_os, this.image.viewer, this.image.getOriginalImageSize());
-		let pos_image_rot = ImageView.CoordinateConversion.convertPointFromImageToRotatedImage(pos_image, this.image.controls.getRotation(), this.image.getOriginalImageSize());
-		return pos_image_rot;
-	}
-	
+	this.showThumbs = false;
 	
 	this.on("mount", function() {
+		console.log("mount image view ", this.opts.item);
 		$("#controls_" + opts.id + " .draw_overlay").on("click", function() {
 			this.drawing=true; 
 		}.bind(this));
@@ -56,8 +63,38 @@
 	    	this.error = error;
 	    	this.update();
 		}
+		
+		this.actionListener = new rxjs.Subject();
+		this.actionListener.subscribe((event) => this.handleImageControlAction(event));
 	})
 	
+	
+	getPosition() {
+		let pos_os = this.dataPoint.getPosition();
+		let pos_image = ImageView.CoordinateConversion.scaleToImage(pos_os, this.image.viewer, this.image.getOriginalImageSize());
+		let pos_image_rot = ImageView.CoordinateConversion.convertPointFromImageToRotatedImage(pos_image, this.image.controls.getRotation(), this.image.getOriginalImageSize());
+		return pos_image_rot;
+	}
+	
+	
+	handleImageControlAction(event) {
+		console.log("event", event);
+		switch(event.action) {
+			case "toggleThumbs":
+				this.showThumbs = event.value;
+				this.update();
+				break;
+			case "rotate":
+		        if(this.opts.item) {
+		            this.opts.item.notifyImageRotated(event.value);
+		        }
+		        break;
+			case "setImageIndex":
+			case "clickImage":
+				this.opts.item.loadImage(event.value);
+				this.update();
+		}
+	}
 	
 	getImageInfo(canvas) {
 	    return canvas.images[0].resource.service["@id"] + "/info.json"
