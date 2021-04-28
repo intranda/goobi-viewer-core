@@ -76,18 +76,15 @@
 	    }
 	    this.item.setReviewMode(this.opts.itemstatus && this.opts.itemstatus.toUpperCase() == "REVIEW");
 		this.item.onImageRotated( () => this.update());
-		this.item.onImageOpen( () => this.update());
-		return fetch(this.item.imageSource)
+		fetch(this.item.imageSource)
 		.then(response => this.handleServerResponse(response))
-		.then( imageSource => this.initImageView(imageSource))
-		.then( () => {this.loading = false; this.update()})
+		.then( imageSource => this.item.initViewer(imageSource))
+		.then( () => this.loading = false)
+		.then( () => this.update())
+		.then( () => this.item.onImageOpen( () => this.update()));
 
 	}
-	
-	initImageView(imageSource) { 
-	    this.item.initViewer(imageSource)
-	    this.update();
-	}
+
 
 	
 	resolveCanvas(source) {

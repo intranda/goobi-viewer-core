@@ -1010,7 +1010,6 @@ riot.tag2('campaignitem', '<div if="{!opts.pi}" class="crowdsourcing-annotations
 	    	this.loading = false;
 	    	this.update();
 		})
-
 	});
 
 	this.loadItem = function(itemConfig) {
@@ -1022,29 +1021,13 @@ riot.tag2('campaignitem', '<div if="{!opts.pi}" class="crowdsourcing-annotations
 	    }
 	    this.item.setReviewMode(this.opts.itemstatus && this.opts.itemstatus.toUpperCase() == "REVIEW");
 		this.item.onImageRotated( () => this.update());
-		return fetch(this.item.imageSource)
+		fetch(this.item.imageSource)
 		.then(response => this.handleServerResponse(response))
-		.then( imageSource => this.initImageView(imageSource))
-		.then( () => {this.loading = false; this.update()})
-<<<<<<< HEAD
+		.then( imageSource => this.item.initViewer(imageSource))
+		.then( () => this.loading = false)
+		.then( () => this.update())
+		.then( () => this.item.onImageOpen( () => this.update()));
 
-=======
-		.catch( error => {
-		    this.loading = false;
-		    console.error("ERROR ", error);
-		})
-
-		this.item.onImageRotated( () => this.update());
-
-        this.item.onImageOpen(function() {
-            this.update();
-        }.bind(this));
->>>>>>> refs/heads/feature_campaigns
-	}.bind(this)
-
-	this.initImageView = function(imageSource) {
-	    this.item.initViewer(imageSource)
-	    this.update();
 	}.bind(this)
 
 	this.resolveCanvas = function(source) {
@@ -1146,7 +1129,7 @@ riot.tag2('campaignitem', '<div if="{!opts.pi}" class="crowdsourcing-annotations
 	            recordStatus: status,
 	            creator: this.item.getCreator().id,
 	    }
-	    return fetch(this.itemSource + (this.item.currentCanvasIndex + 1 ) + "/", {
+	    return fetch(this.itemSource, {
             method: "PUT",
             headers: {
                 'Content-Type': 'application/json',
@@ -1589,10 +1572,8 @@ this.removeFeature = function(feature) {
 });
 
 
-riot.tag2('imagecontrols', '<div class="image_controls"><div class="image-controls__actions"><div class="image-controls__action thumbs {this.showThumbs ? \'in\' : \'\'}"><a onclick="{toggleThumbs}"><i class="image-thumbs"></i></a></div><div if="{this.opts.image && !this.showThumbs}" class="image-controls__action rotate-left"><a onclick="{rotateLeft}"><i class="image-rotate_left"></i></a></div><div if="{this.opts.image && !this.showThumbs}" class="image-controls__action rotate-right"><a onclick="{rotateRight}"><i class="image-rotate_right"></i></a></div><div if="{this.opts.image && !this.showThumbs}" class="image-controls__action zoom-slider-wrapper"><input type="range" min="0" max="1" value="0" step="0.01" class="slider zoom-slider" aria-label="zoom slider"></div></div></div>', '', '', function(opts) {
-    this.on( "mount", function() {
-        this.showThumbs = this.opts.showThumbs ? true : false;
-    } );
+riot.tag2('imagecontrols', '<div class="image_controls"><div class="image-controls__actions"><div class="image-controls__action thumbs {this.opts.showthumbs ? \'in\' : \'\'}"><a onclick="{toggleThumbs}"><i class="image-thumbs"></i></a></div><div if="{this.opts.image && !this.opts.showthumbs}" class="image-controls__action rotate-left"><a onclick="{rotateLeft}"><i class="image-rotate_left"></i></a></div><div if="{this.opts.image && !this.opts.showthumbs}" class="image-controls__action rotate-right"><a onclick="{rotateRight}"><i class="image-rotate_right"></i></a></div><div if="{this.opts.image && !this.opts.showthumbs}" class="image-controls__action zoom-slider-wrapper"><input type="range" min="0" max="1" value="0" step="0.01" class="slider zoom-slider" aria-label="zoom slider"></div></div></div>', '', '', function(opts) {
+
 
     this.rotateRight = function()
     {
@@ -1611,8 +1592,8 @@ riot.tag2('imagecontrols', '<div class="image_controls"><div class="image-contro
     }.bind(this)
 
     this.toggleThumbs = function() {
-    	this.showThumbs = !this.showThumbs;
-    	this.handleAction("toggleThumbs", this.showThumbs)
+    	this.opts.showthumbs = !this.opts.showthumbs;
+    	this.handleAction("toggleThumbs", this.opts.showthumbs)
     }.bind(this)
 
     this.handleAction = function(control, value) {
@@ -1631,7 +1612,7 @@ riot.tag2('imagecontrols', '<div class="image_controls"><div class="image-contro
  * The imageView itself is stored in opts.item.image
  */
 
-riot.tag2('imageview', '<div id="wrapper_{opts.id}" class="imageview_wrapper"><span if="{this.error}" class="loader_wrapper"><span class="error_message">{this.error.message}</span></span><imagecontrols if="{this.image}" image="{this.image}" item="{this.opts.item}" actionlistener="{this.actionListener}" showthumbs="{this.showThumbs}"></imageControls><thumbnails class="image_thumbnails" riot-style="display: {this.showThumbs ? \'flex\' : \'none\'}" source="{{items: this.opts.item.canvases}}" actionlistener="{this.actionListener}" imagesize=",120" index="{this.opts.item.currentCanvasIndex}"></thumbnails><div class="image_container" riot-style="visibility: {this.showThumbs ? \'hidden\' : \'visible\'}"><div id="image_{opts.id}" class="image"></div></div></div><canvaspaginator items="{this.opts.item.canvases}" index="{this.opts.item.currentCanvasIndex}" actionlistener="{this.actionListener}"></canvasPaginator>', '', '', function(opts) {
+riot.tag2('imageview', '<div id="wrapper_{opts.id}" class="imageview_wrapper"><span if="{this.error}" class="loader_wrapper"><span class="error_message">{this.error.message}</span></span><imagecontrols if="{this.image && !this.showThumbs}" image="{this.image}" item="{this.opts.item}" actionlistener="{this.actionListener}" showthumbs="{this.showThumbs}"></imageControls><thumbnails class="image_thumbnails" riot-style="display: {this.showThumbs ? \'flex\' : \'none\'}" source="{{items: this.opts.item.canvases}}" actionlistener="{this.actionListener}" imagesize=",120" index="{this.opts.item.currentCanvasIndex}"></thumbnails><div class="image_container" riot-style="visibility: {this.showThumbs ? \'hidden\' : \'visible\'}"><div id="image_{opts.id}" class="image"></div></div></div><canvaspaginator items="{this.opts.item.canvases}" index="{this.opts.item.currentCanvasIndex}" actionlistener="{this.actionListener}"></canvasPaginator>', '', '', function(opts) {
 
 	this.showThumbs = false;
 
@@ -1656,9 +1637,6 @@ riot.tag2('imageview', '<div id="wrapper_{opts.id}" class="imageview_wrapper"><s
 				}
 				return image;
 			})
-			.then(function() {
-			  	this.update();
-			}.bind(this));
 		} catch(error) {
 		    console.error("ERROR ", error);
 	    	this.error = error;
@@ -1688,10 +1666,10 @@ riot.tag2('imageview', '<div id="wrapper_{opts.id}" class="imageview_wrapper"><s
 		            this.opts.item.notifyImageRotated(event.value);
 		        }
 		        break;
-			case "setImageIndex":
 			case "clickImage":
+				this.showThumbs = false;
+			case "setImageIndex":
 				this.opts.item.loadImage(event.value);
-				this.update();
 		}
 	}.bind(this)
 
@@ -2966,7 +2944,7 @@ riot.tag2('slideshow', '<a if="{manifest === undefined}" data-linkid="{opts.pis}
 });
 
 
-riot.tag2('thumbnails', '<<<<<<< HEAD <div ref="thumb" class="thumbnails-image-wrapper {this.opts.index == index ? \'selected\' : \'\'}" each="{canvas, index in thumbnails}" onclick="{handleClickOnImage}"> ======= <div class="thumbnails-image-wrapper {this.opts.index == index ? \'selected\' : \'\'}" each="{canvas, index in thumbnails}" onclick="{handleClickOnImage}"> >>>>>>> refs/heads/feature_campaigns <a class="thumbnails-image-link" href="{getLink(canvas)}"><img class="thumbnails-image" alt="{getValue(canvas.label)}" riot-src="{getImage(canvas)}"><div class="thumbnails-image-overlay"><div class="thumbnails-label">{getValue(canvas.label)}</div></div></a></div>', '', '', function(opts) {
+riot.tag2('thumbnails', '<div ref="thumb" class="thumbnails-image-wrapper {this.opts.index == index ? \'selected\' : \'\'}" each="{canvas, index in thumbnails}" onclick="{handleClickOnImage}"><a class="thumbnails-image-link" href="{getLink(canvas)}"><img class="thumbnails-image" alt="{getValue(canvas.label)}" riot-src="{getImage(canvas)}"><div class="thumbnails-image-overlay"><div class="thumbnails-label">{getValue(canvas.label)}</div></div></a></div>', '', '', function(opts) {
 
 this.thumbnails = [];
 
@@ -2987,14 +2965,9 @@ this.on("mount", () => {
 });
 
 this.on("updated", () => {
-<<<<<<< HEAD
 	console.log("updated", this.opts, this.refs);
 	let activeThumb = this.refs.thumb[this.opts.index];
 	activeThumb.scrollIntoView({block: "end", behavior: "smooth"});
-=======
-	console.log("updated", this.opts);
-
->>>>>>> refs/heads/feature_campaigns
 });
 
 this.loadThumbnails = function(source, type) {

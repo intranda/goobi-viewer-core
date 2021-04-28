@@ -2,22 +2,22 @@
 
 <div class="image_controls">
 	<div class="image-controls__actions">
-		<div class="image-controls__action thumbs {this.showThumbs ? 'in' : ''}">
+		<div class="image-controls__action thumbs {this.opts.showthumbs ? 'in' : ''}">
 			<a onclick="{toggleThumbs}">
 				<i class="image-thumbs"></i>
 			</a>
 		</div>
-		<div if="{this.opts.image && !this.showThumbs}" class="image-controls__action rotate-left">
+		<div if="{this.opts.image && !this.opts.showthumbs}" class="image-controls__action rotate-left">
 			<a onclick="{rotateLeft}">
 				<i class="image-rotate_left"></i>
 			</a>
 		</div>
-		<div if="{this.opts.image && !this.showThumbs}" class="image-controls__action rotate-right">
+		<div if="{this.opts.image && !this.opts.showthumbs}" class="image-controls__action rotate-right">
 			<a onclick="{rotateRight}">
 				<i class="image-rotate_right"></i>
 			</a>
 		</div>
-        <div if="{this.opts.image && !this.showThumbs}" class="image-controls__action zoom-slider-wrapper">
+        <div if="{this.opts.image && !this.opts.showthumbs}" class="image-controls__action zoom-slider-wrapper">
         	<input type="range" min="0" max="1" value="0" step="0.01" class="slider zoom-slider" aria-label="zoom slider"/>
         </div>
 	</div>
@@ -25,9 +25,7 @@
 
 
 <script>
-    this.on( "mount", function() {
-        this.showThumbs = this.opts.showThumbs ? true : false;
-    } );
+
     
     rotateRight()
     {
@@ -46,8 +44,8 @@
     }
     
     toggleThumbs() {
-    	this.showThumbs = !this.showThumbs;
-    	this.handleAction("toggleThumbs", this.showThumbs)
+    	this.opts.showthumbs = !this.opts.showthumbs;
+    	this.handleAction("toggleThumbs", this.opts.showthumbs)
     }
     
     handleAction(control, value) {

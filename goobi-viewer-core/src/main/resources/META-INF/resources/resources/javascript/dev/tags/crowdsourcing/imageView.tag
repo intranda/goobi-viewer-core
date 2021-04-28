@@ -11,11 +11,11 @@
 			<span class="error_message">{this.error.message}</span>
 		</span>
 		
-		<imageControls if="{this.image}" 
+		<imageControls if="{this.image && !this.showThumbs}" 
 			image="{this.image}" 
 			item="{this.opts.item}" 
 			actionlistener="{this.actionListener}" 
-			showThumbs="{this.showThumbs}"></imageControls>
+			showthumbs="{this.showThumbs}"></imageControls>
 		
 		<thumbnails class="image_thumbnails" style="display: {this.showThumbs ? 'flex' : 'none'}" 
 			source="{{items: this.opts.item.canvases}}"  
@@ -55,9 +55,6 @@
 				}
 				return image;
 			})
-			.then(function() {
-			  	this.update();
-			}.bind(this));
 		} catch(error) {
 		    console.error("ERROR ", error);
 	    	this.error = error;
@@ -89,10 +86,10 @@
 		            this.opts.item.notifyImageRotated(event.value);
 		        }
 		        break;
-			case "setImageIndex":
 			case "clickImage":
+				this.showThumbs = false;
+			case "setImageIndex":
 				this.opts.item.loadImage(event.value);
-				this.update();
 		}
 	}
 	
