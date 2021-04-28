@@ -18,6 +18,7 @@ package io.goobi.viewer.model.crowdsourcing.campaigns;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -30,7 +31,6 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import io.goobi.viewer.model.crowdsourcing.campaigns.CampaignRecordStatistic.CampaignRecordStatus;
 import io.goobi.viewer.model.crowdsourcing.questions.Question;
 import io.goobi.viewer.model.log.LogMessage;
-import io.goobi.viewer.model.security.user.User;
 
 /**
  * An item containing a campaign and a source to be annotated. Used to set up a frontend annotation view in javascript as well as process status
@@ -46,6 +46,8 @@ public class CampaignItem {
     private CampaignRecordStatus recordStatus = null;
     private List<LogMessage> log = null;
     private Map<String, List<String>> metadata = new LinkedHashMap<>();
+    private boolean pageStatisticMode = false;
+    private Map<Integer, String> pageStatusMap = new HashMap<>();
     @JsonProperty("creator")
     private URI creatorURI = null;
 
@@ -165,28 +167,28 @@ public class CampaignItem {
     public void setCreatorURI(URI creatorURI) {
         this.creatorURI = creatorURI;
     }
-    
+
     /**
      * @param log the log to set
      */
     public void setLog(List<LogMessage> log) {
         this.log = log;
     }
-    
+
     /**
      * @return the log
      */
     public List<LogMessage> getLog() {
         return log;
     }
-    
+
     /**
      * @return the metadata
      */
     public Map<String, List<String>> getMetadata() {
         return Collections.unmodifiableMap(this.metadata);
     }
-    
+
     /**
      * @param metadata the metadata to set
      */
@@ -194,4 +196,31 @@ public class CampaignItem {
         this.metadata = metadata;
     }
 
+    /**
+     * @return the pageStatisticMode
+     */
+    public boolean isPageStatisticMode() {
+        return pageStatisticMode;
+    }
+
+    /**
+     * @param pageStatisticMode the pageStatisticMode to set
+     */
+    public void setPageStatisticMode(boolean pageStatisticMode) {
+        this.pageStatisticMode = pageStatisticMode;
+    }
+
+    /**
+     * @return the pageStatusMap
+     */
+    public Map<Integer, String> getPageStatusMap() {
+        return pageStatusMap;
+    }
+
+    /**
+     * @param pageStatusMap the pageStatusMap to set
+     */
+    public void setPageStatusMap(Map<Integer, String> pageStatusMap) {
+        this.pageStatusMap = pageStatusMap;
+    }
 }

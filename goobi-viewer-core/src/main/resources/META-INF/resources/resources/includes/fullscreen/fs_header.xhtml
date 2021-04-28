@@ -39,11 +39,11 @@
             <div class="fullscreen__header-docsctruct-navigation">
                 <h:outputLink styleClass="fullscreen__header-docsctruct-navigation-back"
                     value="#{activeDocumentBean.previousDocstructUrl}" disabled="#{activeDocumentBean.previousDocstructUrl == ''}">
-					<i class="fa fa-angle-double-left" aria-hidden="true"></i> #{msg.previous}
+					<i class="fa fa-angle-double-left" aria-hidden="true"></i> Vorheriges Dokument
                 </h:outputLink>
                 <h:outputLink styleClass="fullscreen__header-docsctruct-navigation-next"
                     value="#{activeDocumentBean.nextDocstructUrl}" disabled="#{activeDocumentBean.nextDocstructUrl == ''}">
-                    #{msg.next} <i class="fa fa-angle-double-right" aria-hidden="true"></i>
+                    Nächstes Dokument <i class="fa fa-angle-double-right" aria-hidden="true"></i>
                 </h:outputLink>
             </div>
         </c:if>

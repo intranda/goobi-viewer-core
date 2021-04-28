@@ -92,7 +92,7 @@ var viewerJS = ( function( viewer ) {
 					        	language : currentLang, 
 					        	type: "structures",
 					        	source: manifest,
-					        	imageSize: ",250",
+					        	imagesize: ",250",
 					        	label: "MD_SHELFMARK",
 					        	link: (canvas) => {
 					        		if(canvas.homepage && canvas.homepage.length > 0) {

@@ -43,7 +43,7 @@ this.on("mount", () => {
 		.then(json => this.loadThumbnails(json, this.type));
 	} else {
 		this.loadThumbnails(source, this.type);
-	}
+	} 
 });
 
 this.on("updated", () => {

@@ -3682,7 +3682,17 @@ public class JPADAO implements IDAO {
                     .executeUpdate();
             rows += emLocal
                     .createNativeQuery(
+                            "DELETE FROM cs_campaign_record_page_statistic_annotators WHERE user_id=?")
+                    .setParameter(1, user.getId())
+                    .executeUpdate();
+            rows += emLocal
+                    .createNativeQuery(
                             "DELETE FROM cs_campaign_record_statistic_reviewers WHERE user_id=?")
+                    .setParameter(1, user.getId())
+                    .executeUpdate();
+            rows += emLocal
+                    .createNativeQuery(
+                            "DELETE FROM cs_campaign_record_page_statistic_reviewers WHERE user_id=?")
                     .setParameter(1, user.getId())
                     .executeUpdate();
             emLocal.getTransaction().commit();
@@ -3718,7 +3728,19 @@ public class JPADAO implements IDAO {
                     .executeUpdate();
             rows += emLocal
                     .createNativeQuery(
+                            "UPDATE cs_campaign_record_page_statistic_annotators SET user_id=? WHERE user_id=?")
+                    .setParameter(1, toUser.getId())
+                    .setParameter(2, fromUser.getId())
+                    .executeUpdate();
+            rows += emLocal
+                    .createNativeQuery(
                             "UPDATE cs_campaign_record_statistic_reviewers SET user_id=? WHERE user_id=?")
+                    .setParameter(1, toUser.getId())
+                    .setParameter(2, fromUser.getId())
+                    .executeUpdate();
+            rows += emLocal
+                    .createNativeQuery(
+                            "UPDATE cs_campaign_record_page_statistic_reviewers SET user_id=? WHERE user_id=?")
                     .setParameter(1, toUser.getId())
                     .setParameter(2, fromUser.getId())
                     .executeUpdate();

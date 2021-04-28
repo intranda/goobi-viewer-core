@@ -1010,6 +1010,7 @@ riot.tag2('campaignitem', '<div if="{!opts.pi}" class="crowdsourcing-annotations
 	    	this.loading = false;
 	    	this.update();
 		})
+
 	});
 
 	this.loadItem = function(itemConfig) {
@@ -1025,7 +1026,20 @@ riot.tag2('campaignitem', '<div if="{!opts.pi}" class="crowdsourcing-annotations
 		.then(response => this.handleServerResponse(response))
 		.then( imageSource => this.initImageView(imageSource))
 		.then( () => {this.loading = false; this.update()})
+<<<<<<< HEAD
 
+=======
+		.catch( error => {
+		    this.loading = false;
+		    console.error("ERROR ", error);
+		})
+
+		this.item.onImageRotated( () => this.update());
+
+        this.item.onImageOpen(function() {
+            this.update();
+        }.bind(this));
+>>>>>>> refs/heads/feature_campaigns
 	}.bind(this)
 
 	this.initImageView = function(imageSource) {
@@ -1132,7 +1146,7 @@ riot.tag2('campaignitem', '<div if="{!opts.pi}" class="crowdsourcing-annotations
 	            recordStatus: status,
 	            creator: this.item.getCreator().id,
 	    }
-	    return fetch(this.itemSource, {
+	    return fetch(this.itemSource + (this.item.currentCanvasIndex + 1 ) + "/", {
             method: "PUT",
             headers: {
                 'Content-Type': 'application/json',
@@ -2952,7 +2966,7 @@ riot.tag2('slideshow', '<a if="{manifest === undefined}" data-linkid="{opts.pis}
 });
 
 
-riot.tag2('thumbnails', '<div ref="thumb" class="thumbnails-image-wrapper {this.opts.index == index ? \'selected\' : \'\'}" each="{canvas, index in thumbnails}" onclick="{handleClickOnImage}"><a class="thumbnails-image-link" href="{getLink(canvas)}"><img class="thumbnails-image" alt="{getValue(canvas.label)}" riot-src="{getImage(canvas)}"><div class="thumbnails-image-overlay"><div class="thumbnails-label">{getValue(canvas.label)}</div></div></a></div>', '', '', function(opts) {
+riot.tag2('thumbnails', '<<<<<<< HEAD <div ref="thumb" class="thumbnails-image-wrapper {this.opts.index == index ? \'selected\' : \'\'}" each="{canvas, index in thumbnails}" onclick="{handleClickOnImage}"> ======= <div class="thumbnails-image-wrapper {this.opts.index == index ? \'selected\' : \'\'}" each="{canvas, index in thumbnails}" onclick="{handleClickOnImage}"> >>>>>>> refs/heads/feature_campaigns <a class="thumbnails-image-link" href="{getLink(canvas)}"><img class="thumbnails-image" alt="{getValue(canvas.label)}" riot-src="{getImage(canvas)}"><div class="thumbnails-image-overlay"><div class="thumbnails-label">{getValue(canvas.label)}</div></div></a></div>', '', '', function(opts) {
 
 this.thumbnails = [];
 
@@ -2973,9 +2987,14 @@ this.on("mount", () => {
 });
 
 this.on("updated", () => {
+<<<<<<< HEAD
 	console.log("updated", this.opts, this.refs);
 	let activeThumb = this.refs.thumb[this.opts.index];
 	activeThumb.scrollIntoView({block: "end", behavior: "smooth"});
+=======
+	console.log("updated", this.opts);
+
+>>>>>>> refs/heads/feature_campaigns
 });
 
 this.loadThumbnails = function(source, type) {

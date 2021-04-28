@@ -80,6 +80,7 @@
                     </ui:insert>                    
                 </h:panelGroup>
                 
+                <!-- VIEW 3D OBJECT -->
                 <h:panelGroup rendered="#{activeDocumentBean.viewManager.currentPage.mimeType == 'object'}">
                     <ui:insert name="viewObject3d">
                         <ui:include src="/resources/includes/object/object3d.xhtml" />        

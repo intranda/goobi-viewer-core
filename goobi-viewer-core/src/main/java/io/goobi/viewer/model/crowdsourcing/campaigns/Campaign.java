@@ -82,6 +82,7 @@ import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.model.cms.CMSMediaHolder;
 import io.goobi.viewer.model.cms.CMSMediaItem;
 import io.goobi.viewer.model.cms.CategorizableTranslatedSelectable;
+import io.goobi.viewer.model.crowdsourcing.campaigns.CampaignRecordPageStatistic.CampaignRecordPageStatus;
 import io.goobi.viewer.model.crowdsourcing.campaigns.CampaignRecordStatistic.CampaignRecordStatus;
 import io.goobi.viewer.model.crowdsourcing.questions.Question;
 import io.goobi.viewer.model.log.LogMessage;
@@ -153,6 +154,24 @@ public class Campaign implements CMSMediaHolder, ILicenseType, IPolyglott {
         }
     }
 
+    /**
+     * Statistics calculation mode (status per record or per record page).
+     */
+    public enum StatisticMode {
+        RECORD("label__crowdsourcing_campaign_statistic_mode_record"),
+        PAGE("label__crowdsourcing_campaign_statistic_mode_page");
+
+        private final String label;
+
+        private StatisticMode(String label) {
+            this.label = label;
+        }
+
+        public String getLabel() {
+            return this.label;
+        }
+    }
+
     private static final Logger logger = LoggerFactory.getLogger(Campaign.class);
 
     private static final String URI_ID_TEMPLATE =
@@ -213,6 +232,10 @@ public class Campaign implements CMSMediaHolder, ILicenseType, IPolyglott {
 
     @Column(name = "review_mode")
     private ReviewMode reviewMode = ReviewMode.REQUIRE_REVIEW;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "statistic_mode")
+    private StatisticMode statisticMode;
 
     @ManyToOne
     @JoinColumn(name = "revewier_user_group_id")
@@ -311,6 +334,7 @@ public class Campaign implements CMSMediaHolder, ILicenseType, IPolyglott {
         this.limitToGroup = orig.limitToGroup;
         this.reviewMode = orig.reviewMode;
         this.reviewerUserGroup = orig.reviewerUserGroup;
+        this.statisticMode = orig.statisticMode;
     }
 
     /**
@@ -401,6 +425,8 @@ public class Campaign implements CMSMediaHolder, ILicenseType, IPolyglott {
      *
      * @param status a {@link java.lang.String} object.
      * @return number of records with the given status
+     * @should do record-based count correctly
+     * @should do page-based count correctly
      */
     public long getNumRecordsForStatus(String status) {
         if (status == null) {
@@ -410,7 +436,23 @@ public class Campaign implements CMSMediaHolder, ILicenseType, IPolyglott {
         long count = 0;
         for (String pi : statistics.keySet()) {
             CampaignRecordStatistic statistic = statistics.get(pi);
-            if (statistic.getStatus().name().equals(status)) {
+            if (statistic == null) {
+                continue;
+            }
+            if (StatisticMode.PAGE.equals(statisticMode)) {
+                // Page-based count
+                boolean match = !statistic.getPageStatistics().isEmpty();
+                for (String key : statistic.getPageStatistics().keySet()) {
+                    if (!statistic.getPageStatistics().get(key).getStatus().name().equals(status)) {
+                        match = false;
+                        break;
+                    }
+                }
+                if (match) {
+                    count++;
+                }
+            } else if (statistic.getStatus() != null && statistic.getStatus().name().equals(status)) {
+                // Record-based count
                 count++;
             }
         }
@@ -446,17 +488,31 @@ public class Campaign implements CMSMediaHolder, ILicenseType, IPolyglott {
     /**
      * Determines the number of distinct users that have created or reviewed annotations in the context of this campaign.
      *
-     * @return number of users
+     * @return number of users who either annotated or reviewed annotations
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
     public long getContributorCount() throws DAOException {
         Set<Long> userIds = new HashSet<>();
-        for (String pi : statistics.keySet()) {
-            for (User u : statistics.get(pi).getAnnotators()) {
-                userIds.add(u.getId());
+        if (StatisticMode.PAGE.equals(statisticMode)) {
+            for (String pi : statistics.keySet()) {
+                for (String key : statistics.get(pi).getPageStatistics().keySet()) {
+                    CampaignRecordPageStatistic pageStatistic = statistics.get(pi).getPageStatistics().get(key);
+                    for (User u : pageStatistic.getAnnotators()) {
+                        userIds.add(u.getId());
+                    }
+                    for (User u : pageStatistic.getReviewers()) {
+                        userIds.add(u.getId());
+                    }
+                }
             }
-            for (User u : statistics.get(pi).getReviewers()) {
-                userIds.add(u.getId());
+        } else {
+            for (String pi : statistics.keySet()) {
+                for (User u : statistics.get(pi).getAnnotators()) {
+                    userIds.add(u.getId());
+                }
+                for (User u : statistics.get(pi).getReviewers()) {
+                    userIds.add(u.getId());
+                }
             }
         }
 
@@ -465,12 +521,22 @@ public class Campaign implements CMSMediaHolder, ILicenseType, IPolyglott {
 
     /**
      * 
-     * @return
+     * @return true if this campaign has at least one annotation; false otherwise
      */
     public boolean isHasAnnotations() {
-        for (String pi : statistics.keySet()) {
-            if (!statistics.get(pi).getAnnotators().isEmpty()) {
-                return true;
+        if (StatisticMode.PAGE.equals(statisticMode)) {
+            for (String pi : statistics.keySet()) {
+                for (String key : statistics.get(pi).getPageStatistics().keySet()) {
+                    if (!statistics.get(pi).getPageStatistics().get(key).getAnnotators().isEmpty()) {
+                        return true;
+                    }
+                }
+            }
+        } else {
+            for (String pi : statistics.keySet()) {
+                if (!statistics.get(pi).getAnnotators().isEmpty()) {
+                    return true;
+                }
             }
         }
 
@@ -1317,7 +1383,6 @@ public class Campaign implements CMSMediaHolder, ILicenseType, IPolyglott {
         return StringUtils.isNotBlank(getTitle(locale.getLanguage(), false));
 
     }
-    
 
     /* (non-Javadoc)
      * @see io.goobi.viewer.model.translations.IPolyglott#isEmpty(java.util.Locale)
@@ -1393,7 +1458,7 @@ public class Campaign implements CMSMediaHolder, ILicenseType, IPolyglott {
      * @return true if
      *         <ul>
      *         <li>the status is {@link io.goobi.viewer.model.crowdsourcing.campaigns.CampaignRecordStatistic.CampaignRecordStatus#REVIEW REVIEW} and
-     *         the user is not contained in the annotaters list</li> or
+     *         the user is not contained in the annotators list</li> or
      *         <li>the status is {@link io.goobi.viewer.model.crowdsourcing.campaigns.CampaignRecordStatistic.CampaignRecordStatus#ANNOTATE ANNOTATE}
      *         and the user is not contained in the reviewers list</li> or
      *         <li>The user is admin</li> or
@@ -1405,6 +1470,7 @@ public class Campaign implements CMSMediaHolder, ILicenseType, IPolyglott {
             if (user.isSuperuser()) {
                 return true;
             }
+            // TODO page-based
             if (status.equals(CampaignRecordStatus.ANNOTATE)) {
                 return !Optional.ofNullable(this.statistics.get(pi)).map(s -> s.getReviewers()).orElse(Collections.emptyList()).contains(user);
             } else if (status.equals(CampaignRecordStatus.REVIEW)) {
@@ -1479,6 +1545,7 @@ public class Campaign implements CMSMediaHolder, ILicenseType, IPolyglott {
      * @return true if record status for the given pi equals status; false otherwise
      */
     private boolean isRecordStatus(String pi, CampaignRecordStatus status) {
+        // TODO page-based
         return Optional.ofNullable(statistics.get(pi)).map(CampaignRecordStatistic::getStatus).orElse(CampaignRecordStatus.ANNOTATE).equals(status);
     }
 
@@ -1537,6 +1604,49 @@ public class Campaign implements CMSMediaHolder, ILicenseType, IPolyglott {
         statistic.setPi(pi);
         statistic.setStatus(status);
         statistic.setDateUpdated(LocalDateTime.now());
+        statistics.put(pi, statistic);
+    }
+
+    /**
+     * 
+     * @param pi
+     * @param page
+     * @param status
+     * @param user
+     */
+    public void setRecordPageStatus(String pi, int page, CampaignRecordPageStatus status, Optional<User> user) {
+        logger.debug("setRecordPageStatus: {}/{}", pi, page);
+        LocalDateTime now = LocalDateTime.now();
+        CampaignRecordStatistic statistic = statistics.get(pi);
+        if (statistic == null) {
+            statistic = new CampaignRecordStatistic();
+            statistic.setPi(pi);
+            statistic.setOwner(this);
+            statistic.setDateCreated(now);
+            statistic.setStatus(CampaignRecordStatus.ANNOTATE);
+        }
+
+        String key = pi + "_" + page;
+        CampaignRecordPageStatistic pageStatistic = statistic.getPageStatistics().get(key);
+        if (pageStatistic == null) {
+            pageStatistic = new CampaignRecordPageStatistic();
+            pageStatistic.setOwner(statistic);
+            pageStatistic.setPi(pi);
+            pageStatistic.setPage(page);
+            pageStatistic.setDateCreated(now);
+            pageStatistic.setKey(key);
+            pageStatistic.setStatus(CampaignRecordPageStatus.ANNOTATE);
+            statistic.getPageStatistics().put(key, pageStatistic);
+        }
+        if (CampaignRecordPageStatus.ANNOTATE.equals(pageStatistic.getStatus())) {
+            user.ifPresent(pageStatistic::addAnnotater);
+        } else {
+            user.ifPresent(pageStatistic::addReviewer);
+        }
+
+        pageStatistic.setStatus(status);
+        pageStatistic.setDateUpdated(now);
+        statistic.setDateUpdated(now);
         statistics.put(pi, statistic);
     }
 
@@ -1617,6 +1727,20 @@ public class Campaign implements CMSMediaHolder, ILicenseType, IPolyglott {
      */
     public void setReviewMode(ReviewMode reviewMode) {
         this.reviewMode = reviewMode;
+    }
+
+    /**
+     * @return the statisticMode
+     */
+    public StatisticMode getStatisticMode() {
+        return statisticMode;
+    }
+
+    /**
+     * @param statisticMode the statisticMode to set
+     */
+    public void setStatisticMode(StatisticMode statisticMode) {
+        this.statisticMode = statisticMode;
     }
 
     /**
@@ -1726,6 +1850,5 @@ public class Campaign implements CMSMediaHolder, ILicenseType, IPolyglott {
     public String toString() {
         return getTitle();
     }
-
 
 }

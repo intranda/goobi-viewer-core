@@ -65,6 +65,7 @@ import io.goobi.viewer.model.crowdsourcing.CrowdsourcingTools;
 import io.goobi.viewer.model.crowdsourcing.campaigns.Campaign;
 import io.goobi.viewer.model.crowdsourcing.campaigns.Campaign.CampaignVisibility;
 import io.goobi.viewer.model.crowdsourcing.campaigns.Campaign.ReviewMode;
+import io.goobi.viewer.model.crowdsourcing.campaigns.Campaign.StatisticMode;
 import io.goobi.viewer.model.crowdsourcing.campaigns.CampaignRecordStatistic.CampaignRecordStatus;
 import io.goobi.viewer.model.crowdsourcing.questions.Question;
 import io.goobi.viewer.model.security.user.User;
@@ -100,10 +101,10 @@ public class CrowdsourcingBean implements Serializable {
      * The campaign being annotated/reviewed
      */
     private Campaign targetCampaign = null;
-    /**
-     * The identifier (PI) of the work currently targeted by this campaign
-     */
+    /** The identifier (PI) of the record currently targeted by this campaign */
     private String targetIdentifier;
+    /** Current page of the current record. */
+    private int targetPage;
 
     /**
      * Initialize all campaigns as lazily loaded list
@@ -730,6 +731,20 @@ public class CrowdsourcingBean implements Serializable {
     }
 
     /**
+     * @return the targetPage
+     */
+    public int getTargetPage() {
+        return targetPage;
+    }
+
+    /**
+     * @param targetPage the targetPage to set
+     */
+    public void setTargetPage(int targetPage) {
+        this.targetPage = targetPage;
+    }
+
+    /**
      * <p>
      * forwardToCrowdsourcingAnnotation.
      * </p>
@@ -798,7 +813,7 @@ public class CrowdsourcingBean implements Serializable {
     public String getRandomItemUrl(Campaign campaign, CampaignRecordStatus status) {
         String mappingId = CampaignRecordStatus.REVIEW.equals(status) ? "crowdCampaignReview1" : "crowdCampaignAnnotate1";
         URL mappedUrl = PrettyContext.getCurrentInstance().getConfig().getMappingById(mappingId).getPatternParser().getMappedURL(campaign.getId());
-        logger.debug("Mapped URL " + mappedUrl);
+        logger.debug("Mapped URL {}", mappedUrl);
         return BeanUtils.getServletPathWithHostAsUrlFromJsfContext() + mappedUrl.toString();
     }
 
@@ -939,4 +954,10 @@ public class CrowdsourcingBean implements Serializable {
         return EnumSet.allOf(ReviewMode.class);
     }
 
+    /**
+     * @return List of enum values
+     */
+    public Set<StatisticMode> getAvailableStatisticModes() {
+        return EnumSet.allOf(StatisticMode.class);
+    }
 }

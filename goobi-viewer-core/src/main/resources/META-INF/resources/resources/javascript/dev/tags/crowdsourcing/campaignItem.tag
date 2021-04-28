@@ -76,6 +76,7 @@
 	    }
 	    this.item.setReviewMode(this.opts.itemstatus && this.opts.itemstatus.toUpperCase() == "REVIEW");
 		this.item.onImageRotated( () => this.update());
+		this.item.onImageOpen( () => this.update());
 		return fetch(this.item.imageSource)
 		.then(response => this.handleServerResponse(response))
 		.then( imageSource => this.initImageView(imageSource))
@@ -83,7 +84,7 @@
 
 	}
 	
-	initImageView(imageSource) {
+	initImageView(imageSource) { 
 	    this.item.initViewer(imageSource)
 	    this.update();
 	}
