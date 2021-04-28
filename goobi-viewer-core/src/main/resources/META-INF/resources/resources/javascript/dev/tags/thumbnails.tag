@@ -15,7 +15,7 @@ For ambigious sources, the additional opts.type property determines how the sour
 
 <thumbnails>
 
-	<div class="thumbnails-image-wrapper {this.opts.index == index ? 'selected' : ''}" each="{canvas, index in thumbnails}" onclick="{handleClickOnImage}">
+	<div ref="thumb" class="thumbnails-image-wrapper {this.opts.index == index ? 'selected' : ''}" each="{canvas, index in thumbnails}" onclick="{handleClickOnImage}">
 		<a class="thumbnails-image-link" href="{getLink(canvas)}">
 			<img class="thumbnails-image" alt="{getValue(canvas.label)}" src="{getImage(canvas)}" />
 		<div class="thumbnails-image-overlay">
@@ -47,8 +47,9 @@ this.on("mount", () => {
 });
 
 this.on("updated", () => {
-	console.log("updated", this.opts);
-	//TODO scroll to .thumbnails-image-wrapper[this.opts.index]
+	console.log("updated", this.opts, this.refs);
+	let activeThumb = this.refs.thumb[this.opts.index];
+	activeThumb.scrollIntoView({block: "end", behavior: "smooth"});
 });
 
 loadThumbnails(source, type) {
