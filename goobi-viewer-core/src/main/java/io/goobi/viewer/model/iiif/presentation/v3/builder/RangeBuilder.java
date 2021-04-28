@@ -59,10 +59,17 @@ public class RangeBuilder extends AbstractBuilder {
         Range3 range = new Range3(id);
         range.setLabel(structElement.getMultiLanguageDisplayLabel());
 
+        addMetadata(range, structElement);
+        
         List<StructElement> children = getChildStructs(structures, structElement);
  
         int firstPageNo = getFirstPageNo(structElement);
         int lastPageNo = getLastPageNumber(structElement, children);
+        
+        //Add a start canvas to always have an image for the range
+        //If the first subrange starts at the same page as the range itself, it gets no canvas items on its own (they are all in the sub ranges)
+        URI startCanvasId = urls.path(ApiUrls.RECORDS_PAGES, ApiUrls.RECORDS_PAGES_CANVAS).params(topElement.getPi(), firstPageNo).buildURI();
+        range.setStart(new Canvas3(startCanvasId));
         
         for (int pageNo = firstPageNo; pageNo <= lastPageNo; pageNo++) {
             URI canvasId = urls.path(ApiUrls.RECORDS_PAGES, ApiUrls.RECORDS_PAGES_CANVAS).params(topElement.getPi(), pageNo).buildURI();
