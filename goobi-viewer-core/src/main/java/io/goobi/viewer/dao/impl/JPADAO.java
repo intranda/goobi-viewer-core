@@ -536,9 +536,9 @@ public class JPADAO implements IDAO {
         }
         Query q = getEntityManager().createQuery(sbQuery.toString());
         if (filters != null) {
-        for (String key : filterKeys) {
-            q.setParameter(key, "%" + filters.get(key).toUpperCase() + "%");
-        }
+            for (String key : filterKeys) {
+                q.setParameter(key, "%" + filters.get(key).toUpperCase() + "%");
+            }
         }
         q.setFirstResult(first);
         q.setMaxResults(pageSize);
@@ -909,9 +909,9 @@ public class JPADAO implements IDAO {
         }
         Query q = getEntityManager().createQuery(sbQuery.toString());
         if (filters != null) {
-        for (String key : filterKeys) {
-            q.setParameter(key, "%" + filters.get(key).toUpperCase() + "%");
-        }
+            for (String key : filterKeys) {
+                q.setParameter(key, "%" + filters.get(key).toUpperCase() + "%");
+            }
         }
         q.setFirstResult(first);
         q.setMaxResults(pageSize);
@@ -1262,9 +1262,9 @@ public class JPADAO implements IDAO {
         }
         Query q = getEntityManager().createQuery(sbQuery.toString());
         if (filters != null) {
-        for (String key : filterKeys) {
-            q.setParameter(key, "%" + filters.get(key).toUpperCase() + "%");
-        }
+            for (String key : filterKeys) {
+                q.setParameter(key, "%" + filters.get(key).toUpperCase() + "%");
+            }
         }
         q.setFirstResult(first);
         q.setMaxResults(pageSize);
@@ -1300,9 +1300,9 @@ public class JPADAO implements IDAO {
         }
         Query q = getEntityManager().createQuery(sbQuery.toString());
         if (filters != null) {
-        for (String key : filterKeys) {
-            q.setParameter(key, "%" + filters.get(key).toUpperCase() + "%");
-        }
+            for (String key : filterKeys) {
+                q.setParameter(key, "%" + filters.get(key).toUpperCase() + "%");
+            }
         }
         q.setFirstResult(first);
         q.setMaxResults(pageSize);
@@ -1564,9 +1564,9 @@ public class JPADAO implements IDAO {
         }
         Query q = getEntityManager().createQuery(sbQuery.toString());
         if (filters != null) {
-        for (String key : filterKeys) {
-            q.setParameter(key, "%" + filters.get(key).toUpperCase() + "%");
-        }
+            for (String key : filterKeys) {
+                q.setParameter(key, "%" + filters.get(key).toUpperCase() + "%");
+            }
         }
         q.setFirstResult(first);
         q.setMaxResults(pageSize);
@@ -1973,9 +1973,9 @@ public class JPADAO implements IDAO {
             q.setParameter("owner", owner);
         }
         if (filters != null) {
-        for (String key : filterKeys) {
-            q.setParameter(key, "%" + filters.get(key).toUpperCase() + "%");
-        }
+            for (String key : filterKeys) {
+                q.setParameter(key, "%" + filters.get(key).toUpperCase() + "%");
+            }
         }
         // q.setHint("javax.persistence.cache.storeMode", "REFRESH");
 
@@ -2028,9 +2028,9 @@ public class JPADAO implements IDAO {
             q.setParameter("owner", owner);
         }
         if (filters != null) {
-        for (String key : filterKeys) {
-            q.setParameter(key, "%" + filters.get(key).toUpperCase() + "%");
-        }
+            for (String key : filterKeys) {
+                q.setParameter(key, "%" + filters.get(key).toUpperCase() + "%");
+            }
         }
         q.setFirstResult(first);
         q.setMaxResults(pageSize);
@@ -3682,7 +3682,8 @@ public class JPADAO implements IDAO {
                     .executeUpdate();
             rows += emLocal
                     .createNativeQuery(
-                            "DELETE FROM cs_campaign_record_page_statistic_annotators WHERE user_id=" + user.getId())
+                            "DELETE FROM cs_campaign_record_page_statistic_annotators WHERE user_id=?")
+                    .setParameter(1, user.getId())
                     .executeUpdate();
             rows += emLocal
                     .createNativeQuery(
@@ -3691,7 +3692,8 @@ public class JPADAO implements IDAO {
                     .executeUpdate();
             rows += emLocal
                     .createNativeQuery(
-                            "DELETE FROM cs_campaign_record_page_statistic_reviewers WHERE user_id=" + user.getId())
+                            "DELETE FROM cs_campaign_record_page_statistic_reviewers WHERE user_id=?")
+                    .setParameter(1, user.getId())
                     .executeUpdate();
             emLocal.getTransaction().commit();
             updateCampaignsFromDatabase();
@@ -3726,8 +3728,9 @@ public class JPADAO implements IDAO {
                     .executeUpdate();
             rows += emLocal
                     .createNativeQuery(
-                            "UPDATE cs_campaign_record_page_statistic_annotators SET user_id=" + toUser.getId() + " WHERE user_id="
-                                    + fromUser.getId())
+                            "UPDATE cs_campaign_record_page_statistic_annotators SET user_id=? WHERE user_id=?")
+                    .setParameter(1, toUser.getId())
+                    .setParameter(2, fromUser.getId())
                     .executeUpdate();
             rows += emLocal
                     .createNativeQuery(
@@ -3737,7 +3740,9 @@ public class JPADAO implements IDAO {
                     .executeUpdate();
             rows += emLocal
                     .createNativeQuery(
-                            "UPDATE cs_campaign_record_page_statistic_reviewers SET user_id=" + toUser.getId() + " WHERE user_id=" + fromUser.getId())
+                            "UPDATE cs_campaign_record_page_statistic_reviewers SET user_id=? WHERE user_id=?")
+                    .setParameter(1, toUser.getId())
+                    .setParameter(2, fromUser.getId())
                     .executeUpdate();
             emLocal.getTransaction().commit();
             updateCampaignsFromDatabase();
@@ -4029,11 +4034,11 @@ public class JPADAO implements IDAO {
     @SuppressWarnings("unchecked")
     public List<CMSCollection> getCMSCollections(String solrField) throws DAOException {
         synchronized (cmsRequestLock) {
-        preQuery();
+            preQuery();
             Query q = getEntityManager().createQuery("SELECT c FROM CMSCollection c WHERE c.solrField = :field");
-        q.setParameter("field", solrField);
-        return q.getResultList();
-    }
+            q.setParameter("field", solrField);
+            return q.getResultList();
+        }
     }
 
     /* (non-Javadoc)
@@ -4562,7 +4567,7 @@ public class JPADAO implements IDAO {
         Query q = getEntityManager().createQuery(sbQuery.toString());
         if (!campaign.getQuestions().isEmpty()) {
             int count = 1;
-        for (Question question : campaign.getQuestions()) {
+            for (Question question : campaign.getQuestions()) {
                 q.setParameter("questionId_" + count, question.getId());
                 count++;
             }
@@ -5138,13 +5143,13 @@ public class JPADAO implements IDAO {
      */
     @Override
     public CMSSlider getSlider(Long id) throws DAOException {
-        if(id == null) {
+        if (id == null) {
             return null;
         }
         preQuery();
         try {
             CMSSlider o = getEntityManager().getReference(CMSSlider.class, id);
-            if(o != null) {
+            if (o != null) {
                 getEntityManager().refresh(o);
             }
             return new CMSSlider(o);
@@ -5207,6 +5212,7 @@ public class JPADAO implements IDAO {
     /* (non-Javadoc)
      * @see io.goobi.viewer.dao.IDAO#getPagesUsingSlider(io.goobi.viewer.model.cms.CMSSlider)
      */
+    @SuppressWarnings("unchecked")
     @Override
     public List<CMSPage> getPagesUsingSlider(CMSSlider slider) throws DAOException {
         preQuery();
@@ -5215,7 +5221,6 @@ public class JPADAO implements IDAO {
                 "SELECT item FROM CMSContentItem item WHERE item.slider = :slider");
         qItems.setParameter("slider", slider);
         List<CMSContentItem> itemList = qItems.getResultList();
-
 
         List<CMSPage> pageList = itemList.stream()
                 .map(CMSContentItem::getOwnerPageLanguageVersion)
