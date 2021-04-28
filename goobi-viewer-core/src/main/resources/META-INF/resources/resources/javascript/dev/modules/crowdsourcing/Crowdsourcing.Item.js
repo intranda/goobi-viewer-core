@@ -67,7 +67,15 @@ var Crowdsourcing = ( function(crowdsourcing) {
         if(firstAreaQuestion) {
             firstAreaQuestion.active = true;
         }
+        
+        this.initWebSocket();
+        
     };
+    
+    crowdsourcing.Item.prototype.initWebSocket = function() {
+ 		this.socket = new viewerJS.WebSocket(window.location.host, window.currentPath, viewerJS.WebSocket.PATH_CAMPAIGN_SOCKET);
+    }
+    
 
     crowdsourcing.Item.prototype.setCurrentUser = function(id, name, avatar) {
         this.currentUser.userId = id;

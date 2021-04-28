@@ -21,7 +21,8 @@
 			source="{{items: this.opts.item.canvases}}"  
 			actionlistener="{this.actionListener}" 
 			imagesize=",120"
-			index="{this.opts.item.currentCanvasIndex}" />
+			index="{this.opts.item.currentCanvasIndex}" 
+			statusmap="{getPageStatusMap()}"/>
 	
 		<div class="image_container" style="visibility: {this.showThumbs ? 'hidden' : 'visible'}">
 			<div id="image_{opts.id}" class="image"></div>
@@ -95,6 +96,17 @@
 	
 	getImageInfo(canvas) {
 	    return canvas.images[0].resource.service["@id"] + "/info.json"
+	}
+	
+	getPageStatusMap() {
+		if(this.opts.item.pageStatisticMode && this.opts.item.pageStatusMap) {
+			let map = new Map();
+			Object.keys(this.opts.item.pageStatusMap).forEach(key => {
+				console.log("set page status ", key , this.opts.item.pageStatusMap[key])
+				map.set(key-1, this.opts.item.pageStatusMap[key].toLowerCase());
+			})
+			return map;
+		}
 	}
 	
 	const imageViewConfig = {

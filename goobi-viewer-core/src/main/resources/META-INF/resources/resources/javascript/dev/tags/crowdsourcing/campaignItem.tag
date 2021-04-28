@@ -67,6 +67,7 @@
 		})
 	});
 
+
 	loadItem(itemConfig) {
 	    this.item = new Crowdsourcing.Item(itemConfig, 0);
 	    console.log("load item ", this.item);
@@ -186,7 +187,7 @@
 	            recordStatus: status,
 	            creator: this.item.getCreator().id,
 	    }
-	    return fetch(this.itemSource, {
+	    return fetch(this.itemSource + (this.item.currentCanvasIndex + 1 ) + "/", {
             method: "PUT",
             headers: {
                 'Content-Type': 'application/json',

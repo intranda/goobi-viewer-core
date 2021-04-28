@@ -1129,7 +1129,7 @@ riot.tag2('campaignitem', '<div if="{!opts.pi}" class="crowdsourcing-annotations
 	            recordStatus: status,
 	            creator: this.item.getCreator().id,
 	    }
-	    return fetch(this.itemSource, {
+	    return fetch(this.itemSource + (this.item.currentCanvasIndex + 1 ) + "/", {
             method: "PUT",
             headers: {
                 'Content-Type': 'application/json',
@@ -1612,7 +1612,7 @@ riot.tag2('imagecontrols', '<div class="image_controls"><div class="image-contro
  * The imageView itself is stored in opts.item.image
  */
 
-riot.tag2('imageview', '<div id="wrapper_{opts.id}" class="imageview_wrapper"><span if="{this.error}" class="loader_wrapper"><span class="error_message">{this.error.message}</span></span><imagecontrols if="{this.image && !this.showThumbs}" image="{this.image}" item="{this.opts.item}" actionlistener="{this.actionListener}" showthumbs="{this.showThumbs}"></imageControls><thumbnails class="image_thumbnails" riot-style="display: {this.showThumbs ? \'flex\' : \'none\'}" source="{{items: this.opts.item.canvases}}" actionlistener="{this.actionListener}" imagesize=",120" index="{this.opts.item.currentCanvasIndex}"></thumbnails><div class="image_container" riot-style="visibility: {this.showThumbs ? \'hidden\' : \'visible\'}"><div id="image_{opts.id}" class="image"></div></div></div><canvaspaginator items="{this.opts.item.canvases}" index="{this.opts.item.currentCanvasIndex}" actionlistener="{this.actionListener}"></canvasPaginator>', '', '', function(opts) {
+riot.tag2('imageview', '<div id="wrapper_{opts.id}" class="imageview_wrapper"><span if="{this.error}" class="loader_wrapper"><span class="error_message">{this.error.message}</span></span><imagecontrols if="{this.image && !this.showThumbs}" image="{this.image}" item="{this.opts.item}" actionlistener="{this.actionListener}" showthumbs="{this.showThumbs}"></imageControls><thumbnails class="image_thumbnails" riot-style="display: {this.showThumbs ? \'flex\' : \'none\'}" source="{{items: this.opts.item.canvases}}" actionlistener="{this.actionListener}" imagesize=",120" index="{this.opts.item.currentCanvasIndex}" statusmap="{getPageStatusMap()}"></thumbnails><div class="image_container" riot-style="visibility: {this.showThumbs ? \'hidden\' : \'visible\'}"><div id="image_{opts.id}" class="image"></div></div></div><canvaspaginator items="{this.opts.item.canvases}" index="{this.opts.item.currentCanvasIndex}" actionlistener="{this.actionListener}"></canvasPaginator>', '', '', function(opts) {
 
 	this.showThumbs = false;
 
@@ -1675,6 +1675,17 @@ riot.tag2('imageview', '<div id="wrapper_{opts.id}" class="imageview_wrapper"><s
 
 	this.getImageInfo = function(canvas) {
 	    return canvas.images[0].resource.service["@id"] + "/info.json"
+	}.bind(this)
+
+	this.getPageStatusMap = function() {
+		if(this.opts.item.pageStatisticMode && this.opts.item.pageStatusMap) {
+			let map = new Map();
+			Object.keys(this.opts.item.pageStatusMap).forEach(key => {
+				console.log("set page status ", key , this.opts.item.pageStatusMap[key])
+				map.set(key-1, this.opts.item.pageStatusMap[key].toLowerCase());
+			})
+			return map;
+		}
 	}.bind(this)
 
 	const imageViewConfig = {
@@ -2944,7 +2955,7 @@ riot.tag2('slideshow', '<a if="{manifest === undefined}" data-linkid="{opts.pis}
 });
 
 
-riot.tag2('thumbnails', '<div ref="thumb" class="thumbnails-image-wrapper {this.opts.index == index ? \'selected\' : \'\'}" each="{canvas, index in thumbnails}" onclick="{handleClickOnImage}"><a class="thumbnails-image-link" href="{getLink(canvas)}"><img class="thumbnails-image" alt="{getValue(canvas.label)}" riot-src="{getImage(canvas)}"><div class="thumbnails-image-overlay"><div class="thumbnails-label">{getValue(canvas.label)}</div></div></a></div>', '', '', function(opts) {
+riot.tag2('thumbnails', '<div ref="thumb" class="thumbnails-image-wrapper {this.opts.index == index ? \'selected\' : \'\'} {getPageStatus(index)}" each="{canvas, index in thumbnails}" onclick="{handleClickOnImage}"><a class="thumbnails-image-link" href="{getLink(canvas)}"><img class="thumbnails-image" alt="{getValue(canvas.label)}" riot-src="{getImage(canvas)}"><div class="thumbnails-image-overlay"><div class="thumbnails-label">{getValue(canvas.label)}</div></div></a></div>', '', '', function(opts) {
 
 this.thumbnails = [];
 
@@ -3104,6 +3115,12 @@ this.handleClickOnImage = function(event) {
 	}
 
 	event.preventUpdate = true;
+}.bind(this)
+
+this.getPageStatus = function(index) {
+	if(this.opts.statusmap) {
+		return this.opts.statusmap.get(index);
+	}
 }.bind(this)
 
 });
