@@ -55,9 +55,11 @@ var Crowdsourcing = ( function(crowdsourcing) {
         this.reviewActive = item.campaign.reviewMode != "NO_REVIEW";
         this.currentUser = {};
         this.imageOpenEvents = new rxjs.Subject();
+        this.toggleImageViewEvents = new rxjs.Subject();
         this.imageRotationEvents = new rxjs.Subject();
         this.annotationRelaodEvents = new rxjs.Subject();
         this.itemInitializedSubject = new rxjs.Subject();
+		this.showThumbs = false;
 
         let firstAreaQuestion = this.questions.find(q => q.isRegionTarget());
         if(firstAreaQuestion) {
@@ -100,12 +102,20 @@ var Crowdsourcing = ( function(crowdsourcing) {
         this.imageRotationEvents.next(byDegrees);
     }
     
+    crowdsourcing.Item.prototype.notifyImageViewChanged = function(viewThumbs) {
+        this.toggleImageViewEvents.next(viewThumbs);
+    }
+    
     crowdsourcing.Item.prototype.onImageRotated = function(eventHandler, errorHandler, completedHandler) {
         this.imageRotationEvents.subscribe(eventHandler, errorHandler, completedHandler);
     }
     
     crowdsourcing.Item.prototype.onImageOpen = function(eventHandler, errorHandler, completedHandler) {
         this.imageOpenEvents.subscribe(eventHandler, errorHandler, completedHandler);
+    }
+    
+    crowdsourcing.Item.prototype.onImageViewChanged = function(eventHandler, errorHandler, completedHandler) {
+        this.toggleImageViewEvents.subscribe(eventHandler, errorHandler, completedHandler);
     }
     
     crowdsourcing.Item.prototype.notifyAnnotationsReload = function() {

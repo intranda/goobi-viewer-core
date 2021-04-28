@@ -6,15 +6,17 @@
 
 	<div if="{opts.pi}" class="crowdsourcing-annotations__content-wrapper">
 	<span if="{ this.loading }" class="crowdsourcing-annotations__loader-wrapper">
-		<img src="{this.opts.loaderimageurl}" />
+		<img src="{this.opts.loaderimageurl}" /> 
 	</span>
 	<span if="{this.error}" class="crowdsourcing-annotations__loader-wrapper">
 		<span class="error_message">{this.error.message}</span>
 	</span>
 	</span>
 		<div class="crowdsourcing-annotations__content-left" >
-<!-- 			<imageView if="{this.item}" id="mainImage" source="{this.item.getCurrentCanvas()}" item="{this.item}"></imageView> -->
-			<thumbnails if="{this.item}" source="{this.item.imageSource}" type="sequence" imagesize="120,"/>
+			<imageView if="{this.item}" id="mainImage" source="{this.item.getCurrentCanvas()}" item="{this.item}"></imageView>
+<!-- 			<div> -->
+<!-- 				<imageControls item="{this.item}"></imageControls> -->
+<!-- 			</div> -->
 			<canvasPaginator if="{this.item}" item="{this.item}"></canvasPaginator>
 		</div> 
 		<div if="{this.item}" class="crowdsourcing-annotations__content-right">
@@ -88,6 +90,7 @@
 		})
 	    
 		this.item.onImageRotated( () => this.update());
+		this.item.onImageViewChanged( () => this.update());
 	}
 	
 	initImageView(imageSource) {

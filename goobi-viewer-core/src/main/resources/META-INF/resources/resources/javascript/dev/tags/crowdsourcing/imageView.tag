@@ -11,8 +11,9 @@
 			<span class="error_message">{this.error.message}</span>
 		</span>
 		<imageControls if="{this.image}" image="{this.image}" item="{this.opts.item}"></imageControls>
+		<thumbnails style="display: {this.opts.item.showThumbs ? 'inline' : 'none'}" source="{this.opts.item.imageSource}" type="sequence" imagesize=",80" label="()=>{}"/>
 	
-		<div class="image_container">
+		<div style="visibility: {this.opts.item.showThumbs ? 'hidden' : 'visible'}" class="image_container">
 			<div id="image_{opts.id}" class="image"></div>
 		</div>
 	</div>
