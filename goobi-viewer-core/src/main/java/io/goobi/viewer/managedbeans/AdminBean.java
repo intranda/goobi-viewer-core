@@ -1962,4 +1962,11 @@ public class AdminBean implements Serializable {
     public int getHotfolderFileCount() {
         return DataManager.getInstance().getHotfolderFileCount();
     }
+    
+    /**
+     * @return {@link TranslationGroup#isHasFileAccess()}
+     */
+    public boolean hasAccessPermissingForTranslationFiles() {
+        return TranslationGroup.isHasFileAccess();
+    }
 }
