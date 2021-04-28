@@ -2871,7 +2871,7 @@ riot.tag2('slideshow', '<a if="{manifest === undefined}" data-linkid="{opts.pis}
 });
 
 
-riot.tag2('thumbnails', '<div class="archives__object-thumbnails-image-wrapper" each="{canvas, index in thumbnails}"><a class="archives__object-thumbnails-image-link" href="{getLink(canvas)}"><img class="archives__object-thumbnails-image" alt="{getValue(canvas.label)}" riot-src="{getImage(canvas)}"><div class="archives__object-thumbnails-image-overlay"><div class="archives__object-thumbnails-label">{getValue(canvas.label)}</div></div></a></div>', '', '', function(opts) {
+riot.tag2('thumbnails', '<div class="thumbnails-image-wrapper {this.opts.index == index ? \'selected\' : \'\'}" each="{canvas, index in thumbnails}" onclick="{handleClickOnImage}"><a class="thumbnails-image-link" href="{getLink(canvas)}"><img class="thumbnails-image" alt="{getValue(canvas.label)}" riot-src="{getImage(canvas)}"><div class="thumbnails-image-overlay"><div class="thumbnails-label">{getValue(canvas.label)}</div></div></a></div>', '', '', function(opts) {
 
 this.thumbnails = [];
 
@@ -2879,7 +2879,7 @@ this.on("mount", () => {
 	console.log("mount ", this.opts);
 	this.type = opts.type ? opts.type : "items";
 	this.language = opts.language ? opts.language : "en";
-	this.imageSize = opts.imageSize;
+	this.imageSize = opts.imagesize;
 
 	let source = opts.source;
 	if(viewerJS.isString(source)) {
@@ -2889,6 +2889,11 @@ this.on("mount", () => {
 	} else {
 		this.loadThumbnails(source, this.type);
 	}
+});
+
+this.on("updated", () => {
+	console.log("updated", this.opts);
+
 });
 
 this.loadThumbnails = function(source, type) {
@@ -2902,6 +2907,9 @@ this.loadThumbnails = function(source, type) {
 					rxjs.operators.concatMap(canvas => this.loadCanvas(canvas))
 					)
 			.subscribe(item => this.addThumbnail(item));
+			break;
+		case "sequence":
+			this.createThumbnails(source.sequences[0].canvases);
 			break;
 		case "items":
 		case "default":
@@ -2963,7 +2971,7 @@ this.getValue = function(value) {
 }.bind(this)
 
 this.getImage = function(canvas) {
-	console.log("get image from ", canvas);
+
 	if(canvas.items) {
 		return canvas.items
 		.filter(page => page.items != undefined)
@@ -2972,18 +2980,20 @@ this.getImage = function(canvas) {
 		.map(anno => anno.body)
 		.map(res => this.getImageUrl(res, this.imageSize))
 		.find(url => url != undefined)
+	} else if(canvas.images && canvas.images.length > 0) {
+		return this.getImageUrl(canvas.images[0].resource, this.imageSize);
 	} else {
 		return undefined;
 	}
 }.bind(this)
 
 this.getImageUrl = function(resource, size) {
-	console.log("get image url ", resource, size);
-	if(size && resource.service && resource.service.length > 0) {
-		let url = resource.service[0].id;
+
+	if(size && resource.service && (!Array.isArray(resource.service) || resource.service.length > 0)) {
+		let url = viewerJS.iiif.getId(viewerJS.iiif.getId(resource.id) ? resource.service[0] : resource.service);
 		return url + "/full/" + size + "/0/default." + this.getExtension(resource.format);
 	} else {
-		return resource.id;
+		return viewerJS.iiif.getId(resource);
 	}
 }.bind(this)
 
@@ -3009,6 +3019,17 @@ this.getHomepage = function(canvas) {
 	} else {
 		return undefined;
 	}
+}.bind(this)
+
+this.handleClickOnImage = function(event) {
+	if(this.opts.actionlistener) {
+		this.opts.actionlistener.next({
+			action: "clickImage",
+			value: event.item.index
+		})
+	}
+
+	event.preventUpdate = true;
 }.bind(this)
 
 });
