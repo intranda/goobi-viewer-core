@@ -132,7 +132,7 @@ public class TaskManager {
                             .orElse(null);
                     try {
                         new SitemapBuilder(request).updateSitemap(params);
-                    } catch (IllegalRequestException | AccessDeniedException | JSONException | InterruptedException | PresentationException e) {
+                    } catch (IllegalRequestException | AccessDeniedException | JSONException | PresentationException e) {
                         job.setError(e.getMessage());
                     }
                 };

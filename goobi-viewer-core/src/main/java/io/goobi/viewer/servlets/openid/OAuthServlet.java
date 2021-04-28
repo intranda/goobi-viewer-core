@@ -63,7 +63,6 @@ import io.goobi.viewer.servlets.utils.ServletUtils;
 /**
  * OpenID Connect business logic.
  */
-@Deprecated
 public class OAuthServlet extends HttpServlet {
 
     private static final long serialVersionUID = 6279885446798463881L;
@@ -73,13 +72,13 @@ public class OAuthServlet extends HttpServlet {
     /** Constant <code>URL="oauth"</code> */
     public static final String URL = "oauth";
 
-    private BCrypt bcrypt = new BCrypt();
+    private static final BCrypt bcrypt = new BCrypt();
 
     /**
-     * This future gets fulfilled once the {@link UserBean} has finished setting up the sessin and redirecting the request. Completing the request
+     * This future gets fulfilled once the {@link UserBean} has finished setting up the session and redirecting the request. Completing the request
      * should wait after the redirect, otherwise it will not have any effect
      */
-    Future<Boolean> redirected = null;
+    private Future<Boolean> redirected = null;
 
     /** {@inheritDoc} */
     @Override
@@ -234,15 +233,14 @@ public class OAuthServlet extends HttpServlet {
                         .setClientSecret(provider.getClientSecret())
                         .setRedirectURI(ServletUtils.getServletPathWithHostAsUrlFromRequest(request) + "/" + URL)
                         .setCode(oar.getCode())
-                        .buildBodyMessage(); {
+                        .buildBodyMessage();
                 OAuthClient oAuthClient = new OAuthClient(new URLConnectionClient());
                 oAuthClient.accessToken(oAuthTokenRequest);
-            }
         }
         return false;// Optional.empty();
     }
 
-    private Optional<User> loginUser(String email, String password) throws AuthenticationProviderException {
+    private static Optional<User> loginUser(String email, String password) throws AuthenticationProviderException {
         if (StringUtils.isNotEmpty(email)) {
             try {
                 User user = DataManager.getInstance().getDao().getUserByEmail(email);

@@ -14,7 +14,7 @@
 		<h:panelGroup rendered="#{metadataBean.getBottomMetadataElement(0).hasSidebarMetadata and not (activeDocumentBean.anchor or activeDocumentBean.group)}">
 
 				<ui:fragment rendered="#{!activeDocumentBean.viewManager.topDocument.lidoRecord}">
-				<div id="widgetMetadata" class="widget">
+				<div id="widgetMetadata" class="widget-metadata">
 					<h3>#{msg.sidebarBibData}</h3>
 					
 					<dl>
@@ -93,7 +93,7 @@
 				</h:panelGroup>
 				
 				<ui:fragment rendered="#{activeDocumentBean.viewManager.topDocument.lidoRecord}">
-                    <div class="widget">
+                    <div class="widget widget-metadata__lido">
                     <ui:repeat value="#{metadataBean.metadataElementList}" var="metadataElement">
                         <h:panelGroup rendered="#{fn:length(metadataElement.metadataList) > 0}">
                             <ui:repeat value="#{metadataElement.metadataTypes}" var="type">
@@ -128,7 +128,7 @@
                 	</div>
                 	
                 	<ui:repeat value="#{metadataBean.events}" var="event" varStatus="status">
-                		<div class="widget">
+                		<div class="widget widget-metadata__events">
                 		<h3>#{event.label}</h3>
                         <ui:repeat value="#{event.metadata}" var="metadata">
                             <h:panelGroup rendered="#{!metadata.blank}">

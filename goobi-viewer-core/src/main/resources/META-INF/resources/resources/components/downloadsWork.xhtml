@@ -23,7 +23,10 @@
                                     href="#{activeDocumentBean.viewManager.metsResolverUrl}"
                                     id="lidomets" 
                                     class="badge badge-dark widget-usage__work-download-lido-mets" 
-                                    title="#{msg.metadata_dl_mets}" 
+                                    title="#{msg.metadata_dl_mets}"
+									data-toggle="tooltip"
+									data-placement="top"
+									data-trigger="hover"
                                     target="_blank" rel="nofollow noopener"
                                     aria-label="#{msg[activeDocumentBean.viewManager.topDocument.docStructType]}: #{msg.downloadMetsButtonLabel}"> 
                                     #{msg.downloadMetsButtonLabel}
@@ -33,7 +36,10 @@
                                     href="#{activeDocumentBean.viewManager.anchorMetsResolverUrl}"
                                     id="metsanchor" 
                                     class="badge badge-dark widget-usage__work-download-mets-anchor" 
-                                    title="#{msg.metadata_dl_metsAnchor}" 
+                                    title="#{msg.metadata_dl_metsAnchor}"
+									data-toggle="tooltip"
+									data-placement="top"
+									data-trigger="hover"
                                     target="_blank" rel="nofollow noopener"
                                     aria-label="#{msg[activeDocumentBean.viewManager.topDocument.docStructType]}: #{msg.downloadAnchorMetsButtonLabel}"> 
                                     #{msg.downloadAnchorMetsButtonLabel}
@@ -47,7 +53,10 @@
                                     href="#{activeDocumentBean.viewManager.lidoResolverUrl}"
                                     id="lidomets" 
                                     class="badge badge-dark widget-usage__work-download-lido-mets" 
-                                    title="#{msg.metadata_dl_lido}" 
+                                    title="#{msg.metadata_dl_lido}"
+									data-toggle="tooltip"
+									data-placement="top"
+									data-trigger="hover"
                                     target="_blank" rel="nofollow noopener"
                                     aria-label="#{msg[activeDocumentBean.viewManager.topDocument.docStructType]}: #{msg.downloadLidoButtonLabel}"> 
                                     #{msg.downloadLidoButtonLabel}
@@ -60,7 +69,10 @@
                                     href="#{activeDocumentBean.viewManager.denkxwebResolverUrl}"
                                     id="denkxweb"
                                     class="badge badge-dark widget-usage__work-download-lido-mets" 
-                                    title="#{msg.metadata_dl_denkxweb}" 
+                                    title="#{msg.metadata_dl_denkxweb}"
+									data-toggle="tooltip"
+									data-placement="top"
+									data-trigger="hover"
                                     target="_blank" rel="nofollow noopener"
                                     aria-label="#{msg[activeDocumentBean.viewManager.topDocument.docStructType]}: #{msg.downloadDenkxwebButtonLabel}"> 
                                     #{msg.downloadDenkxwebButtonLabel}
@@ -73,7 +85,10 @@
                                     href="#{activeDocumentBean.viewManager.dublinCoreResolverUrl}"
                                     id="dublincorexml"
                                     class="badge badge-dark widget-usage__work-download-lido-mets" 
-                                    title="#{msg.metadata_dl_dublincore}" 
+                                    title="#{msg.metadata_dl_dublincore}"
+									data-toggle="tooltip"
+									data-placement="top"
+									data-trigger="hover"
                                     target="_blank" rel="nofollow noopener"
                                     aria-label="#{msg[activeDocumentBean.viewManager.topDocument.docStructType]}: #{msg.downloadDublinCoreButtonLabel}"> 
                                     #{msg.downloadDublinCoreButtonLabel}
@@ -87,6 +102,9 @@
                                     href="#{activeDocumentBean.viewManager.oaiMarcUrl}"
                                     class="badge badge-dark widget-usage__work-download-oai-marc"
                                     title="#{msg.metadata_dl_marc}"
+									data-toggle="tooltip"
+									data-placement="top"
+									data-trigger="hover"
                                     target="_blank" rel="nofollow noopener"
                                     aria-label="#{msg[activeDocumentBean.viewManager.topDocument.docStructType]}: #{msg.marcLink}">
                                     #{msg.marcLink}
@@ -100,6 +118,9 @@
                                     href="#{activeDocumentBean.viewManager.oaiDcUrl}"
                                     class="badge badge-dark widget-usage__work-download-oai-dc"
                                     title="#{msg.metadata_dl_dublinCore}"
+									data-toggle="tooltip"
+									data-placement="top"
+									data-trigger="hover"
                                     target="_blank" rel="nofollow noopener"
                                     aria-label="#{msg[activeDocumentBean.viewManager.topDocument.docStructType]}: #{msg.dcLink}"> 
                                     #{msg.dcLink} 
@@ -111,7 +132,10 @@
                                 <a href="#{configurationBean.restApiUrlV1}records/#{activeDocumentBean.persistentIdentifier}/ris/"
                                     id="ris"
                                     class="badge badge-dark widget-usage__work-download-ris" 
-                                    title="#{msg.risLinkTopstruct}" 
+                                    title="#{msg.risLinkTopstruct}"
+									data-toggle="tooltip"
+									data-placement="top"
+									data-trigger="hover"
                                     rel="nofollow"
                                     aria-label="#{msg[activeDocumentBean.viewManager.topDocument.docStructType]}: #{msg.risLinkTopstruct}"> 
                                     #{msg.risLinkTopstruct} 
@@ -144,7 +168,10 @@
                                         href="#{request.contextPath}/mirador/?pi=#{activeDocumentBean.persistentIdentifier}" 
                                         id="mirador"
                                         class="badge badge-dark widget-usage__work-link-mirador-viewer" 
-                                        title="#{msg.action__view_in_mirador__tooltip}" 
+                                        title="#{msg.action__view_in_mirador__tooltip}"
+										data-toggle="tooltip"
+										data-placement="top"
+										data-trigger="hover"
                                         target="_blank" rel="nofollow noopener"
                                         aria-label="#{msg[activeDocumentBean.viewManager.topDocument.docStructType]}: #{msg.action__view_in_mirador}"> 
                                         #{msg.action__view_in_mirador}
@@ -163,6 +190,9 @@
                                 id="alto" 
                                 class="badge badge-dark widget-usage__work-download-alto" 
                                 title="#{msg.metadata_dl_alto_work}"
+								data-toggle="tooltip"
+								data-placement="top"
+								data-trigger="hover"
                                 target="_blank" rel="nofollow noopener"
                                 aria-label="#{msg[activeDocumentBean.viewManager.topDocument.docStructType]}: #{msg.downloadAltoWorkButtonLabel}"> 
                                 #{msg.downloadAltoWorkButtonLabel}
@@ -176,6 +206,9 @@
                                 id="teiWork" 
                                 class="badge badge-dark widget-usage__work-download-tei" 
                                 title="#{msg.downloadWorkTei}"
+								data-toggle="tooltip"
+								data-placement="top"
+								data-trigger="hover"
                                 target="_blank" rel="nofollow noopener"
                                 aria-label="#{msg[activeDocumentBean.viewManager.topDocument.docStructType]}: #{msg.TEI}">
                                 #{msg.TEI}
@@ -189,6 +222,9 @@
                                 id="textWork" 
                                 class="badge badge-dark widget-usage__work-download-fulltext" 
                                 title="#{msg.downloadWorkFulltext}"
+								data-toggle="tooltip"
+								data-placement="top"
+								data-trigger="hover"
                                 target="_blank" rel="nofollow noopener"
                                 aria-label="#{msg[activeDocumentBean.viewManager.topDocument.docStructType]}: #{msg.fulltext}">
                                 #{msg.fulltext}
@@ -205,7 +241,10 @@
                                     href="#{activeDocumentBean.viewManager.pdfDownloadLink}" 
                                     id="pdfWork" 
                                     class="badge badge-dark widget-usage__work-download-pdf" 
-                                    title="#{msg.label__pdf_download_record}" 
+                                    title="#{msg.label__pdf_download_record}"
+									data-toggle="tooltip"
+									data-placement="top"
+									data-trigger="hover"
                                     target="_blank" rel="nofollow noopener"
                                     aria-label="#{msg[activeDocumentBean.viewManager.topDocument.docStructType]}: #{msg.label__pdf_download}">
                                     <i class="fa fa-file-pdf-o" aria-hidden="true"></i>
@@ -219,8 +258,11 @@
                                     data-type="pdf" 
                                     data-title="#{activeDocumentBean.titleBarLabel}" 
                                     data-id=""
-                                    data-pi="#{activeDocumentBean.viewManager.pi}" 
+                                    data-pi="#{activeDocumentBean.viewManager.pi}"
                                     title="#{msg.label__pdf_download_record}"
+									data-toggle="tooltip"
+									data-placement="top"
+									data-trigger="hover"
                                     aria-label="#{msg[activeDocumentBean.viewManager.topDocument.docStructType]}: #{msg.label__pdf_download}">
                                     <i class="fa fa-file-pdf-o" aria-hidden="true"></i>
                                     #{msg.label__pdf_download}
@@ -238,6 +280,9 @@
                                 data-id=""
                                 data-pi="#{activeDocumentBean.viewManager.pi}" 
                                 title="#{msg.epubDownload}"
+								data-toggle="tooltip"
+								data-placement="top"
+								data-trigger="hover"
                                 aria-label="#{msg[activeDocumentBean.viewManager.topDocument.docStructType]}: #{msg.epub}">
                                 #{msg.epub}
                             </a>
@@ -250,7 +295,10 @@
                                 href="#{activeDocumentBean.viewManager.linkForDFGViewer}"
                                 id="dfgViewer" 
                                 class="badge badge-dark widget-usage__work-link-dfg-viewer" 
-                                title="#{msg.dfgViewerLink}" 
+                                title="#{msg.dfgViewerLink}"
+								data-toggle="tooltip"
+								data-placement="top"
+								data-trigger="hover"
                                 target="_blank" rel="nofollow noopener"
                                 aria-label="#{msg[activeDocumentBean.viewManager.topDocument.docStructType]}: #{msg.dfgViewerLink}"> 
                                #{msg.dfgViewerLink}
@@ -262,7 +310,10 @@
                             <a href="#{activeDocumentBean.viewManager.opacUrl}"
                                 id="opac"
                                 class="badge badge-dark widget-usage__work-link-opac" 
-                                title="#{msg.opacLink}" 
+                                title="#{msg.opacLink}"
+								data-toggle="tooltip"
+								data-placement="top"
+								data-trigger="hover"
                                 target="_blank" rel="nofollow noopener"
                                 aria-label="#{msg[activeDocumentBean.viewManager.topDocument.docStructType]}: #{msg.opacLink}">
                                 #{msg.opacLink} 

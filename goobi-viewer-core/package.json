@@ -20,16 +20,18 @@
     "less-plugin-autoprefix": "^2.0.0",
     "michelangelo": "^0.8.0",
     "pdfjs-dist": "^2.6.347",
-    "webpack": "5.24.2"
+    "webpack": "5.28.0"
   },
   "dependencies": {
     "hc-sticky": "~2.2.6",
-    "mirador": "~3.0.0",
-    "swiper": "*",
     "leaflet": "*",
     "leaflet.markercluster": "*",
+    "mirador": "~3.0.0",
+    "overhang": "*",
     "pixl-xml": "^1.0.13",
     "swagger-ui-dist": "*",
-    "tinymce": "~5.7.0"
+    "sweetalert": "*",
+    "swiper": "*",
+    "tinymce": "~5.7.1"
   }
 }

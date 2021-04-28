@@ -16,6 +16,7 @@
 package io.goobi.viewer.controller;
 
 import java.util.Iterator;
+import java.util.NoSuchElementException;
 
 /**
  * <p>
@@ -67,17 +68,20 @@ public class AlphabetIterator implements Iterator<String> {
     /** {@inheritDoc} */
     @Override
     public String next() {
+        if (!hasNext()) {
+            throw new NoSuchElementException();
+        }
         currentValue = increment(currentValue);
         return String.valueOf(currentValue);
     }
 
-    private char increment(char c) {
-        int i = ((int) c) + 1;
+    private static char increment(char c) {
+        int i = (c) + 1;
         return (char) i;
     }
 
-    private char decrement(char c) {
-        int i = ((int) c) - 1;
+    private static char decrement(char c) {
+        int i = (c) - 1;
         return (char) i;
     }
 

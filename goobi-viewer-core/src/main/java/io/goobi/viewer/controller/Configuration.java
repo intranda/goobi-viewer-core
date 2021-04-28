@@ -46,6 +46,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import de.unigoettingen.sub.commons.contentlib.imagelib.ImageType;
+import io.goobi.viewer.controller.model.ProviderConfiguration;
+import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.exceptions.ViewerConfigurationException;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.messages.ViewerResourceBundle;
@@ -71,6 +73,9 @@ import io.goobi.viewer.model.security.authentication.VuFindProvider;
 import io.goobi.viewer.model.security.authentication.XServiceProvider;
 import io.goobi.viewer.model.termbrowsing.BrowsingMenuFieldConfig;
 import io.goobi.viewer.model.transkribus.TranskribusUtils;
+import io.goobi.viewer.model.translations.admin.TranslationGroup;
+import io.goobi.viewer.model.translations.admin.TranslationGroup.TranslationGroupType;
+import io.goobi.viewer.model.translations.admin.TranslationGroupItem;
 import io.goobi.viewer.model.viewer.DcSortingList;
 import io.goobi.viewer.model.viewer.PageType;
 import io.goobi.viewer.model.viewer.StringPair;
@@ -566,6 +571,7 @@ public final class Configuration extends AbstractConfiguration {
         boolean group = sub.getBoolean("[@group]", false);
         int number = sub.getInt("[@number]", -1);
         int type = sub.getInt("[@type]", 0);
+        boolean hideIfOnlyMetadataField = sub.getBoolean("[@hideIfOnlyMetadataField]", false);
         String citationTemplate = sub.getString("[@citationTemplate]");
         List<HierarchicalConfiguration> params = sub.configurationsAt("param");
         List<MetadataParameter> paramList = null;
@@ -640,7 +646,9 @@ public final class Configuration extends AbstractConfiguration {
             }
         }
 
-        return new Metadata(label, masterValue, type, paramList, group, number).setCitationTemplate(citationTemplate);
+        return new Metadata(label, masterValue, type, paramList, group, number)
+                .setHideIfOnlyMetadataField(hideIfOnlyMetadataField)
+                .setCitationTemplate(citationTemplate);
     }
 
     /**
@@ -968,15 +976,14 @@ public final class Configuration extends AbstractConfiguration {
 
         return null;
     }
-    
-    
+
     public List<String> getConfiguredCollectionFields() {
         List<String> list = getLocalList("collections.collection[@field]");
-        if(list == null || list.isEmpty()) {
+        if (list == null || list.isEmpty()) {
             return Collections.singletonList("DC");
-        } else {
-            return list;
         }
+
+        return list;
     }
 
     /**
@@ -1375,7 +1382,7 @@ public final class Configuration extends AbstractConfiguration {
     public List<AdvancedSearchFieldConfiguration> getAdvancedSearchFields() {
         List<HierarchicalConfiguration> fieldList = getLocalConfigurationsAt("search.advanced.searchFields.field");
         if (fieldList == null) {
-            Collections.emptyList();
+            return Collections.emptyList();
         }
 
         List<AdvancedSearchFieldConfiguration> ret = new ArrayList<>(fieldList.size());
@@ -1960,7 +1967,7 @@ public final class Configuration extends AbstractConfiguration {
                     myConfigToUse.getString("user.authenticationProviders.provider(" + i + ")[@relyingPartyIdentifier]", null);
             String samlPublicKeyPath = myConfigToUse.getString("user.authenticationProviders.provider(" + i + ")[@publicKeyPath]", null);
             String samlPrivateKeyPath = myConfigToUse.getString("user.authenticationProviders.provider(" + i + ")[@privateKeyPath]", null);
-            long timeoutMillis = myConfigToUse.getLong("user.authenticationProviders.provider(" + i + ")[@timeout]", 10000);
+            long timeoutMillis = myConfigToUse.getLong("user.authenticationProviders.provider(" + i + ")[@timeout]", 60000);
 
             if (visible) {
                 IAuthenticationProvider provider = null;
@@ -2827,15 +2834,23 @@ public final class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * <p>
-     * getUnconditionalImageAccessMaxWidth.
-     * </p>
+     * The maximal image size retrievable with only the permission to view thumbnails
      *
      * @should return correct value
-     * @return a int.
+     * @return the maximal image width
      */
-    public int getUnconditionalImageAccessMaxWidth() {
-        return getLocalInt("accessConditions.unconditionalImageAccessMaxWidth", 120);
+    public int getThumbnailImageAccessMaxWidth() {
+        return getLocalInt("accessConditions.thumbnailImageAccessMaxWidth", getLocalInt("accessConditions.unconditionalImageAccessMaxWidth", 120));
+    }
+    
+    /**
+     * The maximal image size retrievable with the permission to view images but without the permission to zoom images
+     *
+     * @should return correct value
+     * @return the maximal image width, default ist 600
+     */
+    public int getUnzoomedImageAccessMaxWidth() {
+        return getLocalInt("accessConditions.unzoomedImageAccessMaxWidth", 0);
     }
 
     /**
@@ -3737,6 +3752,57 @@ public final class Configuration extends AbstractConfiguration {
     }
 
     /**
+     * 
+     * @return
+     * @should return correct value
+     */
+    public boolean isDocstructNavigationEnabled() {
+        return getLocalBoolean("viewer.docstructNavigation[@enabled]", false);
+    }
+
+    /**
+     * 
+     * @param template
+     * @param fallbackToDefaultTemplate
+     * @return
+     * @should return all configured values
+     */
+    public List<String> getDocstructNavigationTypes(String template, boolean fallbackToDefaultTemplate) {
+        List<HierarchicalConfiguration> templateList = getLocalConfigurationsAt("viewer.docstructNavigation.template");
+        if (templateList == null) {
+            return Collections.emptyList();
+        }
+
+        HierarchicalConfiguration usingTemplate = null;
+        HierarchicalConfiguration defaultTemplate = null;
+        for (Iterator<HierarchicalConfiguration> it = templateList.iterator(); it.hasNext();) {
+            HierarchicalConfiguration subElement = it.next();
+            if (subElement.getString("[@name]").equals(template)) {
+                usingTemplate = subElement;
+                break;
+            } else if ("_DEFAULT".equals(subElement.getString("[@name]"))) {
+                defaultTemplate = subElement;
+            }
+        }
+
+        // If the requested template does not exist in the config, use _DEFAULT
+        if (usingTemplate == null && fallbackToDefaultTemplate) {
+            usingTemplate = defaultTemplate;
+        }
+        if (usingTemplate == null) {
+            return Collections.emptyList();
+        }
+
+        String[] ret = usingTemplate.getStringArray("docstruct");
+        if (ret == null) {
+            logger.warn("Template '{}' contains no docstruct elements.", usingTemplate.getRoot().getName());
+            return Collections.emptyList();
+        }
+
+        return Arrays.asList(ret);
+    }
+
+    /**
      * <p>
      * getSubthemeMainTheme.
      * </p>
@@ -4484,14 +4550,14 @@ public final class Configuration extends AbstractConfiguration {
 
     /**
      * <p>
-     * isDoublePageModeEnabled.
+     * isDoublePageNavigationEnabled.
      * </p>
      *
      * @should return correct value
      * @return a boolean.
      */
-    public boolean isDoublePageModeEnabled() {
-        return getLocalBoolean("viewer.doublePageMode.enabled", false);
+    public boolean isDoublePageNavigationEnabled() {
+        return getLocalBoolean("viewer.doublePageNavigation[@enabled]", false);
     }
 
     /**
@@ -4624,6 +4690,45 @@ public final class Configuration extends AbstractConfiguration {
         return list;
     }
 
+    /**
+     * 
+     * @return The SOLR field containing a rights url for a IIIF3 manifest if one is configured
+     */
+    public String getIIIFRightsField() {
+        return getLocalString("webapi.iiif.rights", null);
+    }
+
+    /**
+     * Uses {@link #getIIIFAttribution()} as fallback;
+     * 
+     * @return the message key to use for the IIIF3 requiredStatement value if the statement should be added to manifests.
+     */
+    public String getIIIFRequiredValue() {
+        return getLocalString("webapi.iiif.requiredStatement.value", getIIIFAttribution().stream().findFirst().orElse(null));
+    }
+
+    /**
+     * 
+     * @return the message key to use for the IIIF3 requiredStatement label. Default is "Attribution"
+     */
+    public String getIIIFRequiredLabel() {
+        return getLocalString("webapi.iiif.requiredStatement.label", "Attribution");
+    }
+
+    /**
+     * 
+     * @return The list of configurations for IIIF3 providers
+     * @throws PresentationException if a provider or a homepage configuration misses the url or label element
+     */
+    public List<ProviderConfiguration> getIIIFProvider() throws PresentationException {
+        List<ProviderConfiguration> provider = new ArrayList<>();
+        List<HierarchicalConfiguration> configs = getLocalConfigurationsAt("webapi.iiif.provider");
+        for (HierarchicalConfiguration config : configs) {
+            provider.add(new ProviderConfiguration(config));
+        }
+        return provider;
+    }
+
     public boolean isVisibleIIIFRenderingPDF() {
         return getLocalBoolean("webapi.iiif.rendering.pdf[@visible]", true);
     }
@@ -4633,11 +4738,11 @@ public final class Configuration extends AbstractConfiguration {
     }
 
     public String getLabelIIIFRenderingPDF() {
-        return getLocalString("webapi.iiif.rendering.pdf.label", "PDF");
+        return getLocalString("webapi.iiif.rendering.pdf.label", null);
     }
 
     public String getLabelIIIFRenderingViewer() {
-        return getLocalString("webapi.iiif.rendering.viewer.label", "Goobi Viewer");
+        return getLocalString("webapi.iiif.rendering.viewer.label", null);
     }
 
     public boolean isVisibleIIIFRenderingPlaintext() {
@@ -4649,11 +4754,11 @@ public final class Configuration extends AbstractConfiguration {
     }
 
     public String getLabelIIIFRenderingPlaintext() {
-        return getLocalString("webapi.iiif.rendering.plaintext.label", "Fulltext");
+        return getLocalString("webapi.iiif.rendering.plaintext.label", null);
     }
 
     public String getLabelIIIFRenderingAlto() {
-        return getLocalString("webapi.iiif.rendering.alto.label", "ALTO");
+        return getLocalString("webapi.iiif.rendering.alto.label", null);
     }
 
     /**
@@ -4983,8 +5088,61 @@ public final class Configuration extends AbstractConfiguration {
     public HierarchicalConfiguration getBaseXMetadataConfig() {
         return getLocalConfigurationAt("metadata.basexMetadataList");
     }
-    
+
     public boolean isDisplayUserGeneratedContentBelowImage() {
         return getLocalBoolean("webGuiDisplay.displayUserGeneratedContentBelowImage", false);
+    }
+
+    /**
+     * config: <code>&#60;iiif use-version="3.0"&#62;&#60;/iiif&#62;</code>
+     * 
+     * @return
+     */
+    public String getIIIFVersionToUse() {
+        return getLocalString("webapi.iiif[@use-version]", "2.1.1");
+    }
+
+    /**
+     * 
+     * @return
+     * @should read config items correctly
+     */
+    public List<TranslationGroup> getTranslationGroups() {
+        List<TranslationGroup> ret = new ArrayList<>();
+        List<HierarchicalConfiguration> groupNodes = getLocalConfigurationsAt("translations.group");
+        int id = 0;
+        for (HierarchicalConfiguration groupNode : groupNodes) {
+            String typeValue = groupNode.getString("[@type]");
+            if (StringUtils.isBlank(typeValue)) {
+                logger.warn("translations/group/@type may not be empty.");
+                continue;
+            }
+            TranslationGroupType type = TranslationGroupType.getByName(typeValue);
+            if (type == null) {
+                logger.warn("Unknown translations/group/@type: {}", typeValue);
+                continue;
+            }
+            String name = groupNode.getString("[@name]");
+            if (StringUtils.isBlank(name)) {
+                logger.warn("translations/group/@name may not be empty.");
+                continue;
+            }
+            String description = groupNode.getString("[@description]");
+            List<HierarchicalConfiguration> keyNodes = groupNode.configurationsAt("key");
+            TranslationGroup group = TranslationGroup.create(id, type, name, description, keyNodes.size());
+            for (HierarchicalConfiguration keyNode : keyNodes) {
+                String value = keyNode.getString(".");
+                if (StringUtils.isBlank(value)) {
+                    logger.warn("translations/group/key may not be empty.");
+                    continue;
+                }
+                boolean regex = keyNode.getBoolean("[@regex]", false);
+                group.getItems().add(TranslationGroupItem.create(type, value, regex));
+            }
+            ret.add(group);
+            id++;
+        }
+
+        return ret;
     }
 }

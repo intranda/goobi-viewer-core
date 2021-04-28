@@ -50,7 +50,6 @@ import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
-import javax.ws.rs.POST;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
@@ -60,8 +59,6 @@ import javax.ws.rs.core.StreamingOutput;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.solr.common.SolrDocument;
-import org.apache.solr.common.util.ContentStreamBase.URLStream;
-import org.jdom2.JDOMException;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -71,6 +68,8 @@ import de.intranda.api.annotation.wa.collection.AnnotationPage;
 import de.intranda.api.iiif.presentation.IPresentationModelElement;
 import de.intranda.api.iiif.search.AutoSuggestResult;
 import de.intranda.api.iiif.search.SearchResult;
+import de.intranda.monitoring.timer.Timer;
+import de.intranda.monitoring.timer.TimerOutput;
 import de.unigoettingen.sub.commons.contentlib.exceptions.ContentLibException;
 import de.unigoettingen.sub.commons.contentlib.exceptions.ContentNotFoundException;
 import de.unigoettingen.sub.commons.contentlib.exceptions.IllegalRequestException;
@@ -82,15 +81,15 @@ import io.goobi.viewer.api.rest.bindings.AccessConditionBinding;
 import io.goobi.viewer.api.rest.bindings.AuthorizationBinding;
 import io.goobi.viewer.api.rest.bindings.IIIFPresentationBinding;
 import io.goobi.viewer.api.rest.bindings.ViewerRestServiceBinding;
-import io.goobi.viewer.api.rest.filters.AccessConditionRequestFilter;
 import io.goobi.viewer.api.rest.filters.FilterTools;
 import io.goobi.viewer.api.rest.model.ner.DocumentReference;
 import io.goobi.viewer.api.rest.resourcebuilders.AnnotationsResourceBuilder;
-import io.goobi.viewer.api.rest.resourcebuilders.IIIFPresentationResourceBuilder;
+import io.goobi.viewer.api.rest.resourcebuilders.IIIFPresentation2ResourceBuilder;
 import io.goobi.viewer.api.rest.resourcebuilders.NERBuilder;
 import io.goobi.viewer.api.rest.resourcebuilders.RisResourceBuilder;
 import io.goobi.viewer.api.rest.resourcebuilders.TextResourceBuilder;
 import io.goobi.viewer.api.rest.resourcebuilders.TocResourceBuilder;
+import io.goobi.viewer.api.rest.v1.ApiUrls;
 import io.goobi.viewer.controller.DataFileTools;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.FileTools;
@@ -103,9 +102,9 @@ import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.exceptions.RecordNotFoundException;
 import io.goobi.viewer.exceptions.ViewerConfigurationException;
 import io.goobi.viewer.messages.ViewerResourceBundle;
-import io.goobi.viewer.model.iiif.presentation.builder.BuildMode;
-import io.goobi.viewer.model.iiif.presentation.builder.OpenAnnotationBuilder;
-import io.goobi.viewer.model.iiif.presentation.builder.WebAnnotationBuilder;
+import io.goobi.viewer.model.iiif.presentation.v2.builder.BuildMode;
+import io.goobi.viewer.model.iiif.presentation.v2.builder.OpenAnnotationBuilder;
+import io.goobi.viewer.model.iiif.presentation.v2.builder.WebAnnotationBuilder;
 import io.goobi.viewer.model.iiif.search.IIIFSearchBuilder;
 import io.goobi.viewer.model.security.AccessConditionUtils;
 import io.goobi.viewer.model.security.IPrivilegeHolder;
@@ -129,41 +128,17 @@ public class RecordResource {
     @Context
     private HttpServletResponse servletResponse;
     @Inject
-    private AbstractApiUrlManager urls;
+    private ApiUrls urls;
 
     private final String pi;
     private final TextResourceBuilder builder = new TextResourceBuilder();
-    
-    private static Thread deleteRecordThread = null;
 
+    private static Thread deleteRecordThread = null;
 
     public RecordResource(@Context HttpServletRequest request,
             @Parameter(description = "Persistent identifier of the record") @PathParam("pi") String pi) {
         this.pi = pi;
         request.setAttribute(FilterTools.ATTRIBUTE_PI, pi);
-    }
-
-    /**
-     * Checks the request url for the accessed resource and returns the required access privilege, at least {@link IPrivilegeHolder#PRIV_LIST}
-     * 
-     * @param request
-     * @return
-     * @deprecated not used. 
-     */
-    @Deprecated
-    public static String getRequiredPrivilege(HttpServletRequest request, AbstractApiUrlManager urls) {
-        String requestUri =  request.getRequestURI();
-        String requestUrl = request.getRequestURL().toString();
-        
-        if(urls.path(RECORDS_RECORD, RECORDS_TOC).matches(requestUrl)) {
-            return IPrivilegeHolder.PRIV_DOWNLOAD_METADATA;
-        } else if(urls.path(RECORDS_RECORD, RECORDS_METADATA_SOURCE).matches(requestUrl)) {
-            return IPrivilegeHolder.PRIV_DOWNLOAD_METADATA;
-        } else if(urls.path(RECORDS_RECORD, RECORDS_MANIFEST).matches(requestUrl)) {
-            return IPrivilegeHolder.PRIV_GENERATE_IIIF_MANIFEST;
-        } else {
-            return IPrivilegeHolder.PRIV_LIST;
-        }
     }
 
     @GET
@@ -300,14 +275,14 @@ public class RecordResource {
     @GET
     @javax.ws.rs.Path(RECORDS_MANIFEST)
     @Produces({ MediaType.APPLICATION_JSON })
-    @Operation(tags = { "records", "iiif" }, summary = "Get IIIF manifest for record")
+    @Operation(tags = { "records", "iiif" }, summary = "Get IIIF 2.1.1 manifest for record")
     @IIIFPresentationBinding
     public IPresentationModelElement getManifest(
             @Parameter(
                     description = "Build mode for manifest to select type of resources to include. Default is 'iiif' which returns the full IIIF manifest with all resources. 'thumbs' Does not read width and height of canvas resources and 'iiif_simple' ignores all resources from files") @QueryParam("mode") String mode)
             throws ContentNotFoundException, PresentationException, IndexUnreachableException, URISyntaxException, ViewerConfigurationException,
             DAOException {
-        IIIFPresentationResourceBuilder builder = new IIIFPresentationResourceBuilder(urls, servletRequest);
+        IIIFPresentation2ResourceBuilder builder = new IIIFPresentation2ResourceBuilder(urls, servletRequest);
         BuildMode buildMode = getBuildeMode(mode);
         return builder.getManifest(pi, buildMode);
     }
@@ -315,7 +290,7 @@ public class RecordResource {
     @GET
     @javax.ws.rs.Path(RECORDS_LAYER)
     @Produces({ MediaType.APPLICATION_JSON })
-    @Operation(tags = { "records", "iiif" }, summary = "Get a layer within a IIIF manifest")
+    @Operation(tags = { "records", "iiif" }, summary = "Get a layer within a IIIF 2.1.1 manifest")
     @IIIFPresentationBinding
     public IPresentationModelElement getLayer(
             @Parameter(description = "Name of the manifest layer") @PathParam("name") String layerName,
@@ -323,7 +298,7 @@ public class RecordResource {
                     description = "Build mode for manifes to select type of resources to include. Default is 'iiif' which returns the full IIIF manifest with all resources. 'thumbs' Does not read width and height of canvas resources and 'iiif_simple' ignores all resources from files") @QueryParam("mode") String mode)
             throws ContentNotFoundException, PresentationException, IndexUnreachableException, URISyntaxException, ViewerConfigurationException,
             DAOException, IllegalRequestException, IOException {
-        IIIFPresentationResourceBuilder builder = new IIIFPresentationResourceBuilder(urls, servletRequest);
+        IIIFPresentation2ResourceBuilder builder = new IIIFPresentation2ResourceBuilder(urls, servletRequest);
         BuildMode buildMode = getBuildeMode(mode);
         return builder.getLayer(pi, layerName, buildMode);
     }
@@ -348,8 +323,7 @@ public class RecordResource {
     @Operation(tags = { "records" }, summary = "Get entire plaintext of record")
     @CORSBinding
     @IIIFPresentationBinding
-    public String getPlaintext() throws PresentationException, IndexUnreachableException, ServiceNotAllowedException,
-            IOException, DAOException {
+    public String getPlaintext() throws PresentationException, IndexUnreachableException, IOException {
         if (servletResponse != null) {
             servletResponse.setCharacterEncoding(StringTools.DEFAULT_ENCODING);
         }
@@ -362,13 +336,13 @@ public class RecordResource {
     @Produces({ "application/zip" })
     @Operation(tags = { "records" }, summary = "Get entire plaintext of record")
     public StreamingOutput getPlaintextAsZip()
-            throws PresentationException, IndexUnreachableException, IOException, DAOException, ContentLibException {
+            throws PresentationException, IndexUnreachableException, IOException, ContentLibException {
         checkFulltextAccessConditions(pi);
         if (servletResponse != null) {
             servletResponse.setCharacterEncoding(StringTools.DEFAULT_ENCODING);
+            String filename = pi + "_plaintext.zip";
+            servletResponse.addHeader("Content-Disposition", "attachment; filename=\"" + filename + "\"");
         }
-        String filename = pi + "_plaintext.zip";
-        servletResponse.addHeader("Content-Disposition", "attachment; filename=\"" + filename + "\"");
 
         return builder.getFulltextAsZip(pi);
     }
@@ -377,8 +351,7 @@ public class RecordResource {
     @javax.ws.rs.Path(RECORDS_ALTO)
     @Produces({ MediaType.TEXT_XML })
     @Operation(tags = { "records" }, summary = "Get entire alto document for record")
-    public String getAlto() throws PresentationException, IndexUnreachableException, IOException, DAOException,
-            ContentLibException, JDOMException {
+    public String getAlto() throws PresentationException, IndexUnreachableException, IOException, ContentLibException {
         checkFulltextAccessConditions(pi);
         if (servletResponse != null) {
             servletResponse.setCharacterEncoding(StringTools.DEFAULT_ENCODING);
@@ -390,14 +363,13 @@ public class RecordResource {
     @javax.ws.rs.Path(RECORDS_ALTO_ZIP)
     @Produces({ "application/zip" })
     @Operation(tags = { "records" }, summary = "Get entire plaintext of record")
-    public StreamingOutput getAltoAsZip()
-            throws PresentationException, IndexUnreachableException, IOException, DAOException, ContentLibException {
+    public StreamingOutput getAltoAsZip() throws PresentationException, IndexUnreachableException, IOException, ContentLibException {
         checkFulltextAccessConditions(pi);
         if (servletResponse != null) {
             servletResponse.setCharacterEncoding(StringTools.DEFAULT_ENCODING);
+            String filename = pi + "_alto.zip";
+            servletResponse.addHeader("Content-Disposition", "attachment; filename=\"" + filename + "\"");
         }
-        String filename = pi + "_alto.zip";
-        servletResponse.addHeader("Content-Disposition", "attachment; filename=\"" + filename + "\"");
 
         return builder.getAltoAsZip(pi);
     }
@@ -464,13 +436,13 @@ public class RecordResource {
             description = "If possible, directly read a TEI file associated with the record, otherwise convert all fulltexts to TEI documents")
     public StreamingOutput getTeiAsZip(
             @Parameter(description = "perferred language for the TEI file, in ISO-639 format") @QueryParam("lang") String language)
-            throws PresentationException, IndexUnreachableException, IOException, DAOException, ContentLibException {
+            throws PresentationException, IndexUnreachableException, IOException, ContentLibException {
         checkFulltextAccessConditions(pi);
         if (servletResponse != null) {
             servletResponse.setCharacterEncoding(StringTools.DEFAULT_ENCODING);
+            String filename = pi + "_tei.zip";
+            servletResponse.addHeader("Content-Disposition", "attachment; filename=\"" + filename + "\"");
         }
-        String filename = pi + "_tei.zip";
-        servletResponse.addHeader("Content-Disposition", "attachment; filename=\"" + filename + "\"");
 
         if (language == null) {
             language = servletRequest.getLocale().getLanguage();
@@ -559,7 +531,7 @@ public class RecordResource {
         }
         return BuildMode.IIIF;
     }
-    
+
     /**
      * <p>
      * deleteRecord.
@@ -574,9 +546,9 @@ public class RecordResource {
     @CORSBinding
     @AuthorizationBinding
     @Operation(tags = { "records" }, summary = "Delete the record from the SOLR database",
-    description = "Requires an authentication token. This operation may take a while, depending on the indexer queue. If the request aborts before deletion is complete, further deletion requests will be disallowed until the operation completes")
+            description = "Requires an authentication token. This operation may take a while, depending on the indexer queue. If the request aborts before deletion is complete, further deletion requests will be disallowed until the operation completes")
     public String deleteRecord(
-            @Parameter(description = "set true to create a trace document of the delete action")@QueryParam("trace") Boolean createTraceDocument) {
+            @Parameter(description = "set true to create a trace document of the delete action") @QueryParam("trace") Boolean createTraceDocument) {
 
         JSONObject ret = new JSONObject();
 
@@ -618,6 +590,7 @@ public class RecordResource {
             try {
                 deleteRecordThread.join();
             } catch (InterruptedException e) {
+                deleteRecordThread.interrupt();
                 logger.error(e.getMessage(), e);
             }
         } else {

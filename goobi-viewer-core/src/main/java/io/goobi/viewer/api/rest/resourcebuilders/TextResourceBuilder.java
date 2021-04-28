@@ -69,11 +69,11 @@ import io.goobi.viewer.controller.NetTools;
 import io.goobi.viewer.controller.SolrConstants;
 import io.goobi.viewer.controller.StringTools;
 import io.goobi.viewer.controller.XmlTools;
-import io.goobi.viewer.controller.language.Language;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.exceptions.UncheckedPresentationException;
+import io.goobi.viewer.model.translations.language.Language;
 
 /**
  * @author florian
@@ -148,15 +148,8 @@ public class TextResourceBuilder {
                 logger.error(e.getMessage(), e);
                 throw new PresentationException("Error reading resource");
             }
-        } else {
-            return DataManager.getInstance().getRestApiManager().getContentApiManager()
-            .map(urls -> {
-                return urls.path(ApiUrls.RECORDS_FILES, ApiUrls.RECORDS_FILES_ALTO).params(pi, fileName).build();
-            })
-            .map(url -> NetTools.callUrlGET(url))
-            .map(array -> array[1])
-            .orElseThrow(() -> new ContentNotFoundException("Resource not found"));
-
+        }  else {
+            throw new ContentNotFoundException("Resource not found"); 
         }
 
     }
@@ -380,14 +373,6 @@ public class TextResourceBuilder {
                 } catch (IOException e) {
                     logger.error(e.getMessage(), e);
                 }
-            } else {
-                return DataManager.getInstance().getRestApiManager().getContentApiManager()
-                        .map(urls -> {
-                            return urls.path(ApiUrls.RECORDS_FILES, ApiUrls.RECORDS_FILES_PLAINTEXT).params(pi, fileName).build();
-                        })
-                        .map(url -> NetTools.callUrlGET(url))
-                        .map(array -> array[1])
-                        .orElseThrow(() -> new ContentNotFoundException("Resource not found"));
             }
         }
         throw new ContentNotFoundException("Resource not found");

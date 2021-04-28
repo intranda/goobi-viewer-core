@@ -36,9 +36,9 @@ import org.slf4j.LoggerFactory;
 import de.intranda.api.iiif.discovery.OrderedCollectionPage;
 import de.intranda.api.iiif.presentation.IPresentationModelElement;
 import de.unigoettingen.sub.commons.contentlib.servlet.rest.CORSBinding;
-import io.goobi.viewer.api.rest.AbstractApiUrlManager;
 import io.goobi.viewer.api.rest.bindings.ViewerRestServiceBinding;
-import io.goobi.viewer.api.rest.resourcebuilders.IIIFPresentationResourceBuilder;
+import io.goobi.viewer.api.rest.resourcebuilders.IIIFPresentation2ResourceBuilder;
+import io.goobi.viewer.api.rest.v1.ApiUrls;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
@@ -70,7 +70,7 @@ public class RecordsListResource {
     @Context
     private HttpServletResponse servletResponse;
     @Inject
-    private AbstractApiUrlManager urls;
+    private ApiUrls urls;
 
     @GET
     @Produces({ MediaType.APPLICATION_JSON })
@@ -92,7 +92,7 @@ public class RecordsListResource {
         String finalQuery = createQuery(query, start, end, subtheme);
         logger.trace("final query: {}", finalQuery);
 
-        IIIFPresentationResourceBuilder builder = new IIIFPresentationResourceBuilder(urls, servletRequest);
+        IIIFPresentation2ResourceBuilder builder = new IIIFPresentation2ResourceBuilder(urls, servletRequest);
 
         List<IPresentationModelElement> items = builder.getManifestsForQuery(finalQuery, sort, firstRow, rows);
 

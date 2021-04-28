@@ -255,7 +255,21 @@
 	}
 }
 
-
+@{RTL} {
+	.timematrix__selection #slider-range {
+		margin-left: 15px;
+		margin-right: 15px;
+	}
+	.timematrix__selection #slider-range .ui-slider-handle:last-child::before {
+	    content: "\f105";
+	}
+	.timematrix__selection #slider-range .ui-slider-handle::before {
+	    content: "\f104";
+	}
+	.timematrix__loader {
+		justify-content: left;
+	}
+}
 
 
 /* BREAKPOINT FOR LARGE DESKTOPS */

@@ -17,6 +17,7 @@ package io.goobi.viewer.model.crowdsourcing.campaigns;
 
 import java.io.IOException;
 import java.net.URI;
+import java.security.SecureRandom;
 import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -85,11 +86,11 @@ import io.goobi.viewer.model.crowdsourcing.campaigns.CampaignRecordPageStatistic
 import io.goobi.viewer.model.crowdsourcing.campaigns.CampaignRecordStatistic.CampaignRecordStatus;
 import io.goobi.viewer.model.crowdsourcing.questions.Question;
 import io.goobi.viewer.model.log.LogMessage;
-import io.goobi.viewer.model.misc.IPolyglott;
-import io.goobi.viewer.model.misc.Translation;
 import io.goobi.viewer.model.security.ILicenseType;
 import io.goobi.viewer.model.security.user.User;
 import io.goobi.viewer.model.security.user.UserGroup;
+import io.goobi.viewer.model.translations.IPolyglott;
+import io.goobi.viewer.model.translations.Translation;
 
 /**
  *
@@ -176,6 +177,8 @@ public class Campaign implements CMSMediaHolder, ILicenseType, IPolyglott {
     private static final String URI_ID_TEMPLATE =
             DataManager.getInstance().getConfiguration().getRestApiUrl().replace("/rest", "/api/v1") + "crowdsourcing/campaigns/{id}";
     private static final String URI_ID_REGEX = ".*/crowdsourcing/campaigns/(\\d+)/?$";
+    
+    private static final Random random = new SecureRandom();
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -1382,7 +1385,7 @@ public class Campaign implements CMSMediaHolder, ILicenseType, IPolyglott {
     }
 
     /* (non-Javadoc)
-     * @see io.goobi.viewer.model.misc.IPolyglott#isEmpty(java.util.Locale)
+     * @see io.goobi.viewer.model.translations.IPolyglott#isEmpty(java.util.Locale)
      */
     @Override
     public boolean isEmpty(Locale locale) {
@@ -1409,7 +1412,7 @@ public class Campaign implements CMSMediaHolder, ILicenseType, IPolyglott {
         if (pis.isEmpty()) {
             return "";
         }
-        String pi = pis.get(new Random(System.nanoTime()).nextInt(pis.size()));
+        String pi = pis.get(random.nextInt(pis.size()));
         return pi;
     }
 

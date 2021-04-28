@@ -67,7 +67,6 @@ public class MetadataBean {
     /** List of LIDO events. */
     private List<EventElement> events = new ArrayList<>();
 
-    private int metadataViewIndex;
     private String metadataViewUrl;
     private MetadataView activeMetadataView;
 
@@ -117,14 +116,15 @@ public class MetadataBean {
 
         try {
             Locale locale = BeanUtils.getLocale();
-            MetadataElement metadataElement = new MetadataElement(currentElement, index, locale, activeDocumentBean.getSelectedRecordLanguage());
-            metadataElementList.add(metadataElement);
+            metadataElementList.add(new MetadataElement().init(currentElement, index, locale)
+                    .setSelectedRecordLanguage(activeDocumentBean.getSelectedRecordLanguage()));
 
             // Retrieve any struct elements above the current and generate metadata for each of them
             StructElement se = currentElement;
             while (se.getParent() != null) {
                 se = se.getParent();
-                metadataElementList.add(new MetadataElement(se, index, locale, activeDocumentBean.getSelectedRecordLanguage()));
+                metadataElementList
+                        .add(new MetadataElement().init(se, index, locale).setSelectedRecordLanguage(activeDocumentBean.getSelectedRecordLanguage()));
             }
             Collections.reverse(metadataElementList);
 
@@ -143,14 +143,14 @@ public class MetadataBean {
     }
 
     /**
-     * Convenience method for {@link #getMetadataElementList(int) getMetadataElementList(0)} 
+     * Convenience method for {@link #getMetadataElementList(int) getMetadataElementList(0)}
+     * 
      * @return the first metadata element list
      */
     public List<MetadataElement> getMetadataElementList() {
         return getMetadataElementList(0);
     }
 
-    
     /**
      * <p>
      * Getter for the field <code>metadataElementList</code>.
@@ -219,7 +219,8 @@ public class MetadataBean {
                 if (thumbPage == order || thumbPage + numPages - 1 >= order) {
                     StructElement se = new StructElement(Long.valueOf((String) doc.getFieldValue(SolrConstants.IDDOC)), doc);
                     Locale locale = BeanUtils.getLocale();
-                    MetadataElement metadataElement = new MetadataElement(se, index, locale, activeDocumentBean.getSelectedRecordLanguage());
+                    MetadataElement metadataElement =
+                            new MetadataElement().init(se, index, locale).setSelectedRecordLanguage(activeDocumentBean.getSelectedRecordLanguage());
                     if (allMetadataElementsforPage.get(order) == null) {
                         allMetadataElementsforPage.put(order, new ArrayList<>(docs.size()));
                     }
@@ -281,7 +282,7 @@ public class MetadataBean {
      * @return Message key for the label
      */
     public String getDefaultMetadataLabel() {
-        if (activeDocumentBean != null && activeDocumentBean.getViewManager().getTopDocument().isLidoRecord()) {
+        if (activeDocumentBean != null && activeDocumentBean.getViewManager().getTopStructElement().isLidoRecord()) {
             return "metadata";
         }
 

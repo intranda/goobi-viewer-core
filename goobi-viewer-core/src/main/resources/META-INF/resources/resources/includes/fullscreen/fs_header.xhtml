@@ -34,11 +34,26 @@
                             
         </div>
         
+        <!-- DOCSTRUCT NAVIGATION -->
+        <c:if test="#{configurationBean.isDisplayDocstructNavigation(activeDocumentBean.viewManager.topStructElement.docStructType, true) and (activeDocumentBean.previousDocstructUrl != '' or activeDocumentBean.nextDocstructUrl != '')}">
+            <div class="fullscreen__header-docsctruct-navigation">
+                <h:outputLink styleClass="fullscreen__header-docsctruct-navigation-back"
+                    value="#{activeDocumentBean.previousDocstructUrl}" disabled="#{activeDocumentBean.previousDocstructUrl == ''}">
+					<i class="fa fa-angle-double-left" aria-hidden="true"></i> Vorheriges Dokument
+                </h:outputLink>
+                <h:outputLink styleClass="fullscreen__header-docsctruct-navigation-next"
+                    value="#{activeDocumentBean.nextDocstructUrl}" disabled="#{activeDocumentBean.nextDocstructUrl == ''}">
+                    Nächstes Dokument <i class="fa fa-angle-double-right" aria-hidden="true"></i>
+                </h:outputLink>
+            </div>
+        </c:if>
+        
         <!-- EXIT -->
         <div class="fullscreen__header-exit">
             <h:outputLink value="#{request.contextPath}#{navigationHelper.exitUrl}" title="#{msg.fullscreen_exit}">
                 <f:passThroughAttribute name="data-toggle" value="tooltip" />
                 <f:passThroughAttribute name="data-placement" value="bottom" />
+                <f:passThroughAttribute name="data-js" value="exit-fullscreen" />
                 <f:passThroughAttribute name="aria-label" value="#{msg.fullscreen_exit}" />
             </h:outputLink>
         </div>

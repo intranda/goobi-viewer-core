@@ -211,22 +211,6 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable {
     public CMSPage() {
     }
 
-    /* (non-Javadoc)
-     * @see java.lang.Comparable#compareTo(java.lang.Object)
-     */
-    /** {@inheritDoc} */
-    @Override
-    public int compareTo(CMSPage o) {
-        if (o == null || o.getId() == null) {
-            return -1;
-        }
-        if (id == null) {
-            return 1;
-        }
-
-        return id.compareTo(o.getId());
-    }
-
     /**
      * creates a deep copy of the original CMSPage. Only copies persisted properties and performs initialization for them
      *
@@ -234,14 +218,14 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable {
      */
     public CMSPage(CMSPage original) {
         if (original.id != null) {
-            this.id = Long.valueOf(original.id);
+            this.id = original.id;
         }
         this.templateId = original.templateId;
         this.dateCreated = original.dateCreated;
-        this.dateUpdated =original.dateUpdated;
+        this.dateUpdated = original.dateUpdated;
         this.published = original.published;
         if (original.pageSorting != null) {
-            this.pageSorting = Long.valueOf(original.pageSorting);
+            this.pageSorting = original.pageSorting;
         }
         this.useDefaultSidebar = original.useDefaultSidebar;
         this.persistentUrl = original.persistentUrl;
@@ -275,6 +259,53 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable {
                 this.languageVersions.add(copy);
             }
         }
+    }
+
+    /* (non-Javadoc)
+     * @see java.lang.Object#hashCode()
+     */
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + ((id == null) ? 0 : id.hashCode());
+        return result;
+    }
+
+    /* (non-Javadoc)
+     * @see java.lang.Object#equals(java.lang.Object)
+     */
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj)
+            return true;
+        if (obj == null)
+            return false;
+        if (getClass() != obj.getClass())
+            return false;
+        CMSPage other = (CMSPage) obj;
+        if (id == null) {
+            if (other.id != null)
+                return false;
+        } else if (!id.equals(other.id))
+            return false;
+        return true;
+    }
+
+    /* (non-Javadoc)
+     * @see java.lang.Comparable#compareTo(java.lang.Object)
+     */
+    /** {@inheritDoc} */
+    @Override
+    public int compareTo(CMSPage o) {
+        if (o == null || o.getId() == null) {
+            return -1;
+        }
+        if (id == null) {
+            return 1;
+        }
+
+        return id.compareTo(o.getId());
     }
 
     /**
@@ -763,28 +794,29 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable {
             return getTitle();
         }
     }
-    
+
     public IMetadataValue getTitleTranslations() {
-        Map<String, String> titles = getLanguageVersions().stream().filter(lv -> StringUtils.isNotBlank(lv.getTitle()))
-        .collect(Collectors.toMap(lv -> lv.getLanguage(), lv -> lv.getTitle()));
-        if(titles.size() == 0) {
+        Map<String, String> titles = getLanguageVersions().stream()
+                .filter(lv -> StringUtils.isNotBlank(lv.getTitle()))
+                .collect(Collectors.toMap(lv -> lv.getLanguage(), lv -> lv.getTitle()));
+        if (titles.size() == 0) {
             return new SimpleMetadataValue("");
-        } else if(titles.size() == 1) {
+        } else if (titles.size() == 1) {
             return new SimpleMetadataValue(titles.entrySet().iterator().next().getValue());
         } else {
             return new MultiLanguageMetadataValue(titles);
         }
     }
-    
+
     public IMetadataValue getPreviewTranslations() {
         Map<String, String> previewTexts = getLanguageVersions().stream()
-            .flatMap(lv -> lv.getContentItems().stream())
-            .filter(item -> CMSContentItemType.HTML.equals(item.getType()))
-            .filter(CMSContentItem::isPreview)
-            .collect(Collectors.toMap(item -> item.getOwnerPageLanguageVersion().getLanguage(), item -> item.getHtmlFragment()));
-        if(previewTexts.size() == 0) {
+                .flatMap(lv -> lv.getContentItems().stream())
+                .filter(item -> CMSContentItemType.HTML.equals(item.getType()))
+                .filter(CMSContentItem::isPreview)
+                .collect(Collectors.toMap(item -> item.getOwnerPageLanguageVersion().getLanguage(), item -> item.getHtmlFragment()));
+        if (previewTexts.size() == 0) {
             return new SimpleMetadataValue("");
-        } else if(previewTexts.size() == 1) {
+        } else if (previewTexts.size() == 1) {
             return new SimpleMetadataValue(previewTexts.entrySet().iterator().next().getValue());
         } else {
             return new MultiLanguageMetadataValue(previewTexts);
@@ -1252,23 +1284,23 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable {
                         case CMSMediaItem.CONTENT_TYPE_PDF:
                             boolean useContentApi = DataManager.getInstance().getConfiguration().isUseIIIFApiUrlForCmsMediaUrls();
                             Optional<AbstractApiUrlManager> urls;
-                            if(useContentApi) {
+                            if (useContentApi) {
                                 urls = DataManager.getInstance().getRestApiManager().getContentApiManager();
                             } else {
                                 urls = DataManager.getInstance().getRestApiManager().getDataApiManager();
                             }
-                            
+
                             boolean legacyApi = !urls.isPresent();
-                            if(legacyApi) {
-                                String baseUrl = useContentApi ? DataManager.getInstance().getRestApiManager().getContentApiUrl() : DataManager.getInstance().getRestApiManager().getDataApiUrl();
+                            if (legacyApi) {
+                                String baseUrl = useContentApi ? DataManager.getInstance().getRestApiManager().getContentApiUrl()
+                                        : DataManager.getInstance().getRestApiManager().getDataApiUrl();
                                 URI uri = URI.create(baseUrl + "cms/media/get/"
                                         + item.getMediaItem().getId() + ".pdf");
                                 return uri.toString();
-                            } else {
-                                String filename = item.getMediaItem().getFileName();
-                                filename = URLEncoder.encode(filename, "utf-8");
-                                return urls.get().path(ApiUrls.CMS_MEDIA, ApiUrls.CMS_MEDIA_FILES_FILE).params(filename).build();
                             }
+                            String filename = item.getMediaItem().getFileName();
+                            filename = URLEncoder.encode(filename, "utf-8");
+                            return urls.get().path(ApiUrls.CMS_MEDIA, ApiUrls.CMS_MEDIA_FILES_FILE).params(filename).build();
 
                         default:
                             // Images
@@ -1485,21 +1517,23 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable {
         try {
             CMSContentItem item = getContentItem(itemId);
             if (item != null && item.getType().equals(CMSContentItemType.TILEGRID)) {
-                
+
                 String tags = item.getCategories().stream().map(CMSCategory::getName).collect(Collectors.joining(","));
-                
-                String url = DataManager.getInstance().getRestApiManager().getDataApiManager().map(urls -> urls.path(CMS_MEDIA)
-                        .query("tags", tags)
-                        .query("max", item.getNumberOfTiles())
-                        .query("prioritySlots", item.getNumberOfImportantTiles())
-                        .query("random", "true").build()
-                        ).orElse(getLegacyTileGridUrl(item));
-                
+
+                String url = DataManager.getInstance()
+                        .getRestApiManager()
+                        .getDataApiManager()
+                        .map(urls -> urls.path(CMS_MEDIA)
+                                .query("tags", tags)
+                                .query("max", item.getNumberOfTiles())
+                                .query("prioritySlots", item.getNumberOfImportantTiles())
+                                .query("random", "true")
+                                .build())
+                        .orElse(getLegacyTileGridUrl(item));
+
                 return url;
-  
-            } else {
-                throw new IllegalRequestException("Content item with id '" + itemId + "' is no tile grid item");
             }
+            throw new IllegalRequestException("Content item with id '" + itemId + "' is no tile grid item");
         } catch (CmsElementNotFoundException e) {
             throw new IllegalRequestException("No tile grid item with id '" + itemId + "' found");
         }
@@ -1508,18 +1542,18 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable {
     /**
      * @return
      */
-    private String getLegacyTileGridUrl(CMSContentItem item) {
-      StringBuilder sb = new StringBuilder(BeanUtils.getServletPathWithHostAsUrlFromJsfContext());
-      sb.append("/rest/tilegrid/")
-              .append(CmsBean.getCurrentLocale().getLanguage())
-              .append("/")
-              .append(item.getNumberOfTiles())
-              .append("/")
-              .append(item.getNumberOfImportantTiles())
-              .append("/")
-              .append(item.getCategories().stream().map(CMSCategory::getName).collect(Collectors.joining("$")))
-              .append("/");
-      return sb.toString();
+    private static String getLegacyTileGridUrl(CMSContentItem item) {
+        StringBuilder sb = new StringBuilder(BeanUtils.getServletPathWithHostAsUrlFromJsfContext());
+        sb.append("/rest/tilegrid/")
+                .append(CmsBean.getCurrentLocale().getLanguage())
+                .append("/")
+                .append(item.getNumberOfTiles())
+                .append("/")
+                .append(item.getNumberOfImportantTiles())
+                .append("/")
+                .append(item.getCategories().stream().map(CMSCategory::getName).collect(Collectors.joining("$")))
+                .append("/");
+        return sb.toString();
     }
 
     /**
@@ -1790,8 +1824,8 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable {
     public CollectionView getCollection() throws PresentationException, IndexUnreachableException, IllegalRequestException {
         return BeanUtils.getCmsBean().getCollection(this);
     }
-    
-    public Optional<CollectionView> getCollectionIfLoaded() throws PresentationException, IndexUnreachableException, IllegalRequestException {
+
+    public Optional<CollectionView> getCollectionIfLoaded() {
         return BeanUtils.getCmsBean().getCollectionIfStored(this);
     }
 

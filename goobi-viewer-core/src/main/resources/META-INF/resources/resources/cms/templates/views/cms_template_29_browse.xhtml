@@ -45,8 +45,7 @@
 				<h2>#{cmsPage.title}</h2>                
 				
 				<div class="tpl-browse-terms__content">
-					<ui:include src="#{cmsPage.getContent('text01')}">
-					</ui:include>
+					<h:outputText escape="false" value="#{cmsPage.getContent('text01')}"></h:outputText>
 				</div>
 				
 				<!-- BROWSE TERMS LIST -->

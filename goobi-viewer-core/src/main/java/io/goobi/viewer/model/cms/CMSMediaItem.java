@@ -126,7 +126,7 @@ public class CMSMediaItem implements BrowseElementInfo, Comparable<CMSMediaItem>
      */
     public CMSMediaItem(CMSMediaItem orig) {
         if (orig.id != null) {
-            this.id = new Long(orig.id);
+            this.id = orig.id;
         }
         this.fileName = orig.fileName;
         this.link = orig.link;
@@ -821,7 +821,7 @@ public class CMSMediaItem implements BrowseElementInfo, Comparable<CMSMediaItem>
                 categories.stream().map(cat -> new Selectable<>(cat, this.getCategories().contains(cat))).collect(Collectors.toList());
         return wrappedCategories;
     }
-    
+
     public static enum Priority {
         IMPORTANT,
         DEFAULT;

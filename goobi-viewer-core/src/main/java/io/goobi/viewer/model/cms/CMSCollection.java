@@ -531,7 +531,7 @@ public class CMSCollection implements Comparable<CMSCollection>, BrowseElementIn
      * @param solrFieldValue2
      * @return
      */
-    private URI getDefaultIcon(String collectionName) {
+    public static URI getDefaultIcon(String collectionName) {
         return BeanUtils.getImageDeliveryBean()
                 .getThumbs()
                 .getThumbnailPath(DataManager.getInstance().getConfiguration().getDefaultBrowseIcon(collectionName));
@@ -590,7 +590,7 @@ public class CMSCollection implements Comparable<CMSCollection>, BrowseElementIn
                 .filter(l -> StringUtils.isNotBlank(l.getValue()))
                 .collect(Collectors.toMap(l -> l.getLanguage(), l -> l.getValue()));
         if (labels.isEmpty()) {
-            return ViewerResourceBundle.getTranslations(getSolrField());
+            return ViewerResourceBundle.getTranslations(getSolrFieldValue());
         } else {
             IMetadataValue value = new MultiLanguageMetadataValue(labels);
             return value;

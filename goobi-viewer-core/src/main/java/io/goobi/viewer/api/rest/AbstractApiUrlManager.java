@@ -18,8 +18,6 @@ package io.goobi.viewer.api.rest;
 import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.net.URLEncoder;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -36,9 +34,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.glassfish.jersey.client.ClientProperties;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import io.goobi.viewer.controller.FileTools;
-import io.goobi.viewer.controller.StringTools;
 
 /**
  * @author florian
@@ -62,7 +57,6 @@ public abstract class AbstractApiUrlManager {
         if (url.startsWith(within)) {
             return url.substring(within.length());
         }
-
         return url;
     }
 
@@ -143,18 +137,7 @@ public abstract class AbstractApiUrlManager {
         public URI buildURI() {
             return URI.create(this.build());
         }
-        
-        /**
-         * Check whether the given path matches a path given by this ApiPath, regardless of path parameters and ignoring query parameters
-         * @param path
-         * @return
-         */
-        public boolean matches(String path) {
-            String regex = this.build() + "/?";
-            regex = regex.replaceAll("{.*?}", "([^/]+)");
-            regex = regex.replaceAll("\\?.*", "");
-            return path.replaceAll("\\?.*", "").matches(regex);
-        }
+
     }
 
     public static class ApiPathParams extends ApiPath {
@@ -268,9 +251,20 @@ public abstract class AbstractApiUrlManager {
     }
 
     public static class ApiInfo {
-        public String name = "";
-        public String version = "";
-        public String specification = "";
+        public final String name;
+        public final String version;
+        public final String specification;
+
+        public ApiInfo() {
+            this("", "", "");
+        };
+
+        
+        public ApiInfo(String name, String version, String specification) {
+            this.name = name;
+            this.version = version;
+            this.specification = specification;
+        }
     }
 
     /**
@@ -290,6 +284,11 @@ public abstract class AbstractApiUrlManager {
             logger.error(e.getMessage());
             return new ApiInfo();
         }
+    }
+    
+    public enum Version  {
+            v1,
+            v2;
     }
 
 }

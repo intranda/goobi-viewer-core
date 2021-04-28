@@ -163,6 +163,7 @@
 	    })
 	    .then(() => { 
 	        this.loading = false;
+	        viewerJS.notifications.success(Crowdsourcing.translate("crowdsourcing__save_annotations__success"));
 		    this.update();
 	    });
 	}

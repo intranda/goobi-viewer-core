@@ -9,7 +9,7 @@ function getTomcatDir() {
 	let os = process.platform
 	let xml_string = undefined;
 	if(os.toLowerCase().startsWith("win")) {	    
-	    xml_string = fs.readFileSync("c:/opt/digiverso/viewer/config/config_viewer.xml", "utf-8");
+	    xml_string = fs.readFileSync("c:/digiverso/viewer/config/config_viewer.xml", "utf-8");
 	} else {
 	    xml_string = fs.readFileSync("/opt/digiverso/viewer/config/config_viewer.xml", "utf-8");
 	}
@@ -165,6 +165,8 @@ module.exports = function (grunt) {
                             "hc-sticky/dist/hc-sticky.js" : "hcsticky/",
                             "mirador/dist/mirador.min.js*" : "mirador/",
                             "swiper/swiper-bundle.min.js" : "swiper/",
+                            "overhang/dist/overhang.min.js" : "overhang/",
+                            "sweetalert/dist/sweetalert.min.js" : "sweetalert/"
                         },
                         css : {
                             "leaflet/dist/leaflet.css" : "leaflet/",
@@ -172,6 +174,7 @@ module.exports = function (grunt) {
                             "leaflet.markercluster/dist/MarkerCluster.css" : "leaflet/markercluster",
                             "swagger-ui-dist/swagger-ui.css" : "swagger/",
                             "swiper/swiper-bundle.min.css" :  "swiper/",
+                            "overhang/dist/overhang.min.css" : "overhang/"
                         }
                     }
                 },

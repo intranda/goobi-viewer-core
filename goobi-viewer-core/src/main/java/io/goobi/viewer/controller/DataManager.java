@@ -31,7 +31,6 @@ import org.slf4j.LoggerFactory;
 
 import de.intranda.monitoring.timer.TimeAnalysis;
 import io.goobi.viewer.api.rest.model.tasks.TaskManager;
-import io.goobi.viewer.controller.language.LanguageHelper;
 import io.goobi.viewer.dao.IDAO;
 import io.goobi.viewer.dao.impl.JPADAO;
 import io.goobi.viewer.dao.update.DatabaseUpdater;
@@ -42,6 +41,7 @@ import io.goobi.viewer.model.crowdsourcing.campaigns.Campaign;
 import io.goobi.viewer.model.security.authentication.AuthResponseListener;
 import io.goobi.viewer.model.security.authentication.OpenIdProvider;
 import io.goobi.viewer.model.security.recordlock.RecordLockManager;
+import io.goobi.viewer.model.translations.language.LanguageHelper;
 import io.goobi.viewer.modules.IModule;
 import io.goobi.viewer.modules.interfaces.DefaultURLBuilder;
 import io.goobi.viewer.modules.interfaces.IURLBuilder;
@@ -57,7 +57,7 @@ public final class DataManager {
 
     private static final Object lock = new Object();
 
-    private static volatile DataManager instance = null;
+    private static DataManager instance = null;
 
     private final List<IModule> modules = new ArrayList<>();
 
@@ -82,6 +82,8 @@ public final class DataManager {
     private Map<String, List<Campaign>> recordCampaignMap = null;
 
     private String indexerVersion = "";
+
+    private int hotfolderFileCount = 0;
 
     private RestApiManager restApiManager;
 
@@ -432,7 +434,20 @@ public final class DataManager {
      */
     public void setIndexerVersion(String indexerVersion) {
         this.indexerVersion = indexerVersion;
-        logger.trace(indexerVersion);
+    }
+
+    /**
+     * @return the hotfolderFileCount
+     */
+    public int getHotfolderFileCount() {
+        return hotfolderFileCount;
+    }
+
+    /**
+     * @param hotfolderFileCount the hotfolderFileCount to set
+     */
+    public void setHotfolderFileCount(int hotfolderFileCount) {
+        this.hotfolderFileCount = hotfolderFileCount;
     }
 
     /**

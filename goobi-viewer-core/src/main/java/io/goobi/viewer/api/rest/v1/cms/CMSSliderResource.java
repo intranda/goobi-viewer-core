@@ -15,7 +15,7 @@
  */
 package io.goobi.viewer.api.rest.v1.cms;
 
-import static io.goobi.viewer.api.rest.v1.ApiUrls.CMS_MEDIA;
+import static io.goobi.viewer.api.rest.v1.ApiUrls.*;
 
 import java.net.URI;
 import java.util.ArrayList;
@@ -34,11 +34,12 @@ import org.apache.solr.common.SolrDocumentList;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import de.intranda.api.iiif.presentation.Collection;
+import de.intranda.api.iiif.presentation.v2.Collection2;
 import de.unigoettingen.sub.commons.contentlib.exceptions.ContentNotFoundException;
 import de.unigoettingen.sub.commons.contentlib.exceptions.IllegalRequestException;
 import io.goobi.viewer.api.rest.AbstractApiUrlManager;
 import io.goobi.viewer.api.rest.bindings.ViewerRestServiceBinding;
+import io.goobi.viewer.api.rest.model.MediaItem;
 import io.goobi.viewer.api.rest.v1.ApiUrls;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.SolrConstants;
@@ -49,10 +50,11 @@ import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.model.cms.CMSCategory;
 import io.goobi.viewer.model.cms.CMSCollection;
+import io.goobi.viewer.model.cms.CMSMediaItem;
 import io.goobi.viewer.model.cms.CMSPage;
 import io.goobi.viewer.model.cms.CMSSlider;
-import io.goobi.viewer.model.iiif.presentation.builder.CollectionBuilder;
-import io.goobi.viewer.model.iiif.presentation.builder.ManifestBuilder;
+import io.goobi.viewer.model.iiif.presentation.v2.builder.CollectionBuilder;
+import io.goobi.viewer.model.iiif.presentation.v2.builder.ManifestBuilder;
 
 /**
  * @author florian
@@ -92,6 +94,8 @@ public class CMSSliderResource {
                     return getRecords(slider.getSolrQuery(), MAX_SLIDER_ITEMS);
                 case PAGES:
                     return getPages(slider.getCategories());
+                case MEDIA:
+                    return getMedia(slider.getCategories());
                 default:
                     throw new IllegalRequestException("Cannot create collection for slider " + slider.getName());
             }
@@ -133,10 +137,39 @@ public class CMSSliderResource {
         
     }
     
+    private List<URI> getMedia(List<String> categories) {
+        return categories.stream()
+                .map(this::getCategoryById)
+                .filter(category -> category != null)
+                .flatMap(category -> getMediaForCategory(category).stream())
+                .sorted( (item1,item2) -> Integer.compare(item1.getDisplayOrder(), item2.getDisplayOrder()))
+                .map(this::getApiUrl)
+                .collect(Collectors.toList());
+    }
+    
+    /**
+     * @param category
+     * @return
+     */
+    private List<CMSMediaItem> getMediaForCategory(CMSCategory category) {
+        try {            
+            return DataManager.getInstance().getDao().getCMSMediaItemsByCategory(category);
+        } catch (DAOException e) {
+            logger.error(e.toString(), e);
+            return Collections.emptyList();
+        }
+    }
+
     private URI getApiUrl(CMSPage page) {
         return DataManager.getInstance().getRestApiManager().getDataApiManager()
                 .map(urls -> urls.path("/cms/pages/{pageId}").params(page.getId()).buildURI()).orElse(null);
     }
+    
+    private URI getApiUrl(CMSMediaItem media) {
+        return DataManager.getInstance().getRestApiManager().getDataApiManager()
+                .map(urls -> urls.path(CMS_MEDIA, CMS_MEDIA_ITEM).params(media.getId()).buildURI()).orElse(null);
+    }
+
 
     /**
      * @param solrQuery

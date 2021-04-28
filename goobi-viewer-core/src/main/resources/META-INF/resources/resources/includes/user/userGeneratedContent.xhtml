@@ -11,13 +11,13 @@
     xmlns:widgetComponent="http://xmlns.jcp.org/jsf/composite/components/widgets">
 
 	<!-- USER GENERATED CONTENT -->
-	<h:panelGroup rendered="#{configurationBean.displayUserGeneratedContentBelowImage and contentBean.getUserGeneratedContentsForDisplay(activeDocumentBean.viewManager.currentPage).size() > 0}">
+	<h:panelGroup rendered="#{configurationBean.displayUserGeneratedContentBelowImage and contentBean.getUserGeneratedContentsOfPageForDisplay(activeDocumentBean.viewManager.currentPage).size() > 0}">
 		<div id="view_image_user_generated_content">
 			<h3>#{msgcs.crowdsourcing_userGeneratedContent}</h3>
 
 			<nav id="user_generated_content_nav">
 				<ul>
-					<ui:repeat var="content" value="#{contentBean.getUserGeneratedContentsForDisplay(activeDocumentBean.viewManager.currentPage)}">
+					<ui:repeat var="content" value="#{contentBean.getUserGeneratedContentsOfPageForDisplay(activeDocumentBean.viewManager.currentPage)}">
 						<h:panelGroup rendered="#{content.label == ''?'false':'true'}">
 							<h:panelGroup rendered="#{content.type == 'COMMENT'}">
 								<li id="words-#{content.id}">

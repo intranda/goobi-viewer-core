@@ -32,7 +32,6 @@ import de.unigoettingen.sub.commons.contentlib.imagelib.ImageFileFormat;
 import de.unigoettingen.sub.commons.contentlib.imagelib.ImageType;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.SolrSearchIndex;
-import io.goobi.viewer.controller.language.Language;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.exceptions.ViewerConfigurationException;
@@ -40,6 +39,7 @@ import io.goobi.viewer.faces.validators.EmailValidator;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.model.download.DownloadOption;
 import io.goobi.viewer.model.search.SearchHelper;
+import io.goobi.viewer.model.translations.language.Language;
 import io.goobi.viewer.model.viewer.PageType;
 import io.goobi.viewer.modules.IModule;
 
@@ -1091,13 +1091,13 @@ public class ConfigurationBean implements Serializable {
 
     /**
      * <p>
-     * isDoublePageModeEnabled.
+     * isDoublePageNavigationEnabled.
      * </p>
      *
      * @return a boolean.
      */
-    public boolean isDoublePageModeEnabled() {
-        return DataManager.getInstance().getConfiguration().isDoublePageModeEnabled();
+    public boolean isDoublePageNavigationEnabled() {
+        return DataManager.getInstance().getConfiguration().isDoublePageNavigationEnabled();
     }
 
     /**
@@ -1110,6 +1110,10 @@ public class ConfigurationBean implements Serializable {
      */
     public String getRestApiUrl() throws ViewerConfigurationException {
         return DataManager.getInstance().getConfiguration().getRestApiUrl();
+    }
+    
+    public String getRestApiUrlForIIIFPresention() throws ViewerConfigurationException {
+        return DataManager.getInstance().getRestApiManager().getIIIFDataApiUrl();
     }
 
     /**
@@ -1361,8 +1365,18 @@ public class ConfigurationBean implements Serializable {
     public boolean isDefaultSortFieldRandom() {
         return "RANDOM".equals(DataManager.getInstance().getConfiguration().getDefaultSortField());
     }
-    
+
     public boolean isDisplayUserGeneratedContentBelowImage() {
         return DataManager.getInstance().getConfiguration().isDisplayUserGeneratedContentBelowImage();
+    }
+
+    /**
+     * @param template
+     * @param fallbackToDefaultTemplate
+     * @return true if docstruct navigation is enabled and properly configured; false otherwise
+     */
+    public boolean isDisplayDocstructNavigation(String template, boolean fallbackToDefaultTemplate) {
+        return DataManager.getInstance().getConfiguration().isDocstructNavigationEnabled()
+                && !DataManager.getInstance().getConfiguration().getDocstructNavigationTypes(template, fallbackToDefaultTemplate).isEmpty();
     }
 }

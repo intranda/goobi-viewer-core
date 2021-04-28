@@ -21,14 +21,7 @@ import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.ws.rs.Consumes;
-import javax.ws.rs.POST;
-import javax.ws.rs.Path;
-import javax.ws.rs.Produces;
-import javax.ws.rs.core.Context;
-import javax.ws.rs.core.MediaType;
 
-import org.apache.commons.lang3.StringUtils;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -36,16 +29,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import de.unigoettingen.sub.commons.contentlib.exceptions.IllegalRequestException;
-import de.unigoettingen.sub.commons.contentlib.servlet.rest.CORSBinding;
-import io.goobi.viewer.api.rest.bindings.AuthorizationBinding;
-import io.goobi.viewer.api.rest.bindings.ViewerRestServiceBinding;
 import io.goobi.viewer.api.rest.model.SitemapRequestParameters;
 import io.goobi.viewer.exceptions.AccessDeniedException;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
-import io.goobi.viewer.model.sitemap.Sitemap;
-import io.goobi.viewer.servlets.utils.ServletUtils;
 
 /**
  * Resource for sitemap generation.
@@ -63,7 +51,7 @@ public class SitemapBuilder {
         this.servletRequest = request;
     }
 
-    public void updateSitemap(SitemapRequestParameters params) throws AccessDeniedException, IllegalRequestException, InterruptedException, JSONException, PresentationException {
+    public void updateSitemap(SitemapRequestParameters params) throws AccessDeniedException, IllegalRequestException, JSONException, PresentationException {
 
         JSONObject ret = new JSONObject();
 
@@ -87,8 +75,7 @@ public class SitemapBuilder {
                 @Override
                 public void run() {
                     try {
-                        List<File> sitemapFiles =
-                                sitemap.generate(ServletUtils.getServletPathWithHostAsUrlFromRequest(servletRequest), passOutputPath);
+                        List<File> sitemapFiles = sitemap.generate(servletRequest, passOutputPath);
                         if (sitemapFiles != null) {
                             ret.put("status", HttpServletResponse.SC_OK);
                             ret.put("message", sitemapFiles.size() + " sitemap files created");
@@ -124,7 +111,12 @@ public class SitemapBuilder {
             });
 
             workerThread.start();
-            workerThread.join();
+            try {
+                workerThread.join();
+            } catch (InterruptedException e) {
+                workerThread.interrupt();
+                throw new PresentationException("Processing interrupted");
+            }
             if(!Integer.valueOf(HttpServletResponse.SC_OK).equals(ret.getInt("status"))) {
                 throw new PresentationException(ret.getString("message"));
             }

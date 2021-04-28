@@ -2053,7 +2053,8 @@ public class JPADAOTest extends AbstractDatabaseEnabledTest {
      */
     @Test
     public void getDownloadJobByIdentifier_shouldReturnCorrectObject() throws Exception {
-        DownloadJob job = DataManager.getInstance().getDao().getDownloadJobByIdentifier("0afb73c418262beb2c88dc40c95831b7");
+        DownloadJob job =
+                DataManager.getInstance().getDao().getDownloadJobByIdentifier("187277c96410b2358a36e2eb6c8ad76f8610a022d2cd95b180b94a76a1cb118a");
         Assert.assertNotNull(job);
         Assert.assertEquals(PDFDownloadJob.class, job.getClass());
         Assert.assertEquals(Long.valueOf(1), job.getId());
@@ -2954,7 +2955,7 @@ public class JPADAOTest extends AbstractDatabaseEnabledTest {
         assertEquals(1, DataManager.getInstance().getDao().getRecordNotesForPi("PI1", true).size());
         assertEquals(0, DataManager.getInstance().getDao().getRecordNotesForPi("PI5", false).size());
     }
-    
+
     @Test
     public void testGetAllSliders() throws DAOException {
         List<CMSSlider> sliders = DataManager.getInstance().getDao().getAllSliders();
@@ -2962,20 +2963,20 @@ public class JPADAOTest extends AbstractDatabaseEnabledTest {
         assertTrue(sliders.stream().anyMatch(sl -> sl.getName().equals("Query Slider")));
         assertTrue(sliders.stream().anyMatch(sl -> sl.getDescription().equals("Slider from collections")));
     }
-    
+
     @Test
     public void testGetSlider() throws DAOException {
         CMSSlider slider = DataManager.getInstance().getDao().getSlider(1l);
         assertNotNull(slider);
     }
-    
+
     @Test
     public void testAddSlider() throws DAOException {
         String name = "Test Slider";
         CMSSlider slider = new CMSSlider(SourceType.COLLECTIONS);
         slider.setName(name);
         assertTrue(DataManager.getInstance().getDao().addSlider(slider));
-        
+
         assertNotNull(slider.getId());
         CMSSlider loadedSlider = DataManager.getInstance().getDao().getSlider(slider.getId());
         assertNotNull(loadedSlider);
@@ -2983,20 +2984,20 @@ public class JPADAOTest extends AbstractDatabaseEnabledTest {
         assertEquals(loadedSlider.getId(), slider.getId());
         assertEquals(name, loadedSlider.getName());
     }
-    
+
     @Test
     public void testUpdateSlider() throws DAOException {
         String name = "Test Slider";
         CMSSlider slider = DataManager.getInstance().getDao().getSlider(1l);
         assertNotEquals(name, slider.getName());
-        
+
         slider.setName(name);
         assertNotEquals(name, DataManager.getInstance().getDao().getSlider(1l).getName());
-        
+
         DataManager.getInstance().getDao().updateSlider(slider);
         assertEquals(name, DataManager.getInstance().getDao().getSlider(1l).getName());
     }
-    
+
     @Test
     public void testDeleteSlider() throws DAOException {
         String name = "Test Slider";
@@ -3004,12 +3005,12 @@ public class JPADAOTest extends AbstractDatabaseEnabledTest {
         slider.setName(name);
         assertTrue(DataManager.getInstance().getDao().addSlider(slider));
         assertNotNull(DataManager.getInstance().getDao().getSlider(slider.getId()));
-        
+
         assertTrue(DataManager.getInstance().getDao().deleteSlider(slider));
         assertNull(DataManager.getInstance().getDao().getSlider(slider.getId()));
 
     }
-    
+
     @Test
     public void testGetEmbeddingCmsPage() throws DAOException {
         CMSSlider slider = DataManager.getInstance().getDao().getSlider(1l);

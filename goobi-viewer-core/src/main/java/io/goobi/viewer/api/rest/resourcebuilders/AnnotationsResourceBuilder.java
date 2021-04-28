@@ -15,23 +15,17 @@
  */
 package io.goobi.viewer.api.rest.resourcebuilders;
 
-import static io.goobi.viewer.api.rest.v1.ApiUrls.ANNOTATIONS;
-import static io.goobi.viewer.api.rest.v1.ApiUrls.ANNOTATIONS_ANNOTATION;
-import static io.goobi.viewer.api.rest.v1.ApiUrls.ANNOTATIONS_COMMENT;
-import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_MANIFEST;
-import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_PAGES_CANVAS;
-import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_RECORD;
+import static io.goobi.viewer.api.rest.v1.ApiUrls.*;
 
+import java.awt.Canvas;
 import java.io.IOException;
 import java.net.URI;
-import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
 import javax.servlet.http.HttpServletRequest;
 
-import org.apache.commons.lang3.StringUtils;
 import org.apache.solr.common.SolrDocument;
 import org.jboss.weld.exceptions.IllegalArgumentException;
 import org.slf4j.Logger;
@@ -58,24 +52,22 @@ import de.intranda.api.annotation.wa.WebAnnotation;
 import de.intranda.api.annotation.wa.collection.AnnotationCollection;
 import de.intranda.api.annotation.wa.collection.AnnotationCollectionBuilder;
 import de.intranda.api.annotation.wa.collection.AnnotationPage;
-import de.intranda.api.iiif.presentation.AnnotationList;
-import de.intranda.api.iiif.presentation.Canvas;
-import de.intranda.api.iiif.presentation.Manifest;
+import de.intranda.api.iiif.presentation.v2.AnnotationList;
+import de.intranda.api.iiif.presentation.v2.Canvas2;
+import de.intranda.api.iiif.presentation.v2.Manifest2;
+import de.intranda.api.iiif.presentation.v3.Canvas3;
+import de.intranda.api.iiif.presentation.v3.Manifest3;
 import de.unigoettingen.sub.commons.contentlib.exceptions.IllegalRequestException;
 import io.goobi.viewer.api.rest.AbstractApiUrlManager;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.DateTools;
-import io.goobi.viewer.controller.SolrConstants;
-import io.goobi.viewer.controller.SolrConstants.DocType;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.model.annotation.Comment;
 import io.goobi.viewer.model.annotation.PersistentAnnotation;
-import io.goobi.viewer.model.iiif.presentation.builder.OpenAnnotationBuilder;
-import io.goobi.viewer.model.iiif.presentation.builder.WebAnnotationBuilder;
-import io.goobi.viewer.model.security.AccessConditionUtils;
-import io.goobi.viewer.model.security.IPrivilegeHolder;
+import io.goobi.viewer.model.iiif.presentation.v2.builder.OpenAnnotationBuilder;
+import io.goobi.viewer.model.iiif.presentation.v2.builder.WebAnnotationBuilder;
 
 /**
  * @author florian
@@ -95,12 +87,12 @@ public class AnnotationsResourceBuilder {
     /**
      * Default constructor
      * 
-     * @param urls      TheApiUrlManager handling the creation of annotation urls/ids
-     * @param request   Used to check access to restricted annotations. 
-     * May be null, which prevents delivering any annotations with accessconditions other than OPENACCESS
+     * @param urls TheApiUrlManager handling the creation of annotation urls/ids
+     * @param request Used to check access to restricted annotations. May be null, which prevents delivering any annotations with accessconditions
+     *            other than OPENACCESS
      */
     public AnnotationsResourceBuilder(AbstractApiUrlManager urls, HttpServletRequest request) {
-        if(urls == null) {
+        if (urls == null) {
             throw new IllegalArgumentException("ApiUrlManager must not be null. Configure a rest api with a current ('/api/v1') endpoint");
         }
         this.urls = urls;
@@ -124,7 +116,7 @@ public class AnnotationsResourceBuilder {
         int first = (page - 1) * MAX_ANNOTATIONS_PER_PAGE;
         String sortField = "id";
         List<SolrDocument> data = waBuilder.getAnnotationDocuments(waBuilder.getAnnotationQuery(), first, MAX_ANNOTATIONS_PER_PAGE, null, request);
-//        List<PersistentAnnotation> data = DataManager.getInstance().getDao().getAnnotations(first, MAX_ANNOTATIONS_PER_PAGE, sortField, true, null);
+        //        List<PersistentAnnotation> data = DataManager.getInstance().getDao().getAnnotations(first, MAX_ANNOTATIONS_PER_PAGE, sortField, true, null);
         if (data.isEmpty()) {
             throw new IllegalRequestException("Page number is out of bounds");
         }
@@ -287,39 +279,16 @@ public class AnnotationsResourceBuilder {
         return list;
     }
 
-    public AnnotationCollection getWebAnnotationCollectionForPageComments(String pi, Integer pageNo, URI uri) throws DAOException {
-        List<Comment> data = DataManager.getInstance().getDao().getCommentsForPage(pi, pageNo);
-
-        AnnotationCollectionBuilder builder = new AnnotationCollectionBuilder(uri, data.size());
-        AnnotationCollection collection = builder.setItemsPerPage(MAX_ANNOTATIONS_PER_PAGE).buildCollection();
-        if (data.size() > 0) {
-            try {
-                collection.setFirst(getWebAnnotationPageForPageComments(pi, pageNo, uri, 1));
-            } catch (IllegalRequestException e) {
-                //no items
-            }
-        }
-        return collection;
-    }
-
-    public AnnotationPage getWebAnnotationPageForPageComments(String pi, Integer pageNo, URI uri, Integer page)
+    public AnnotationPage getWebAnnotationPageForPageComments(String pi, Integer pageNo, URI uri)
             throws DAOException, IllegalRequestException {
-        if (page == null || page < 1) {
-            throw new IllegalRequestException("Page number must be at least 1");
-        }
         List<Comment> data = DataManager.getInstance().getDao().getCommentsForPage(pi, pageNo);
-        if (data.isEmpty()) {
-            throw new IllegalRequestException("Page number is out of bounds");
-        }
-        AnnotationCollectionBuilder builder = new AnnotationCollectionBuilder(uri, data.size());
-        AnnotationPage annoPage = builder.setItemsPerPage(data.size())
-                .buildPage(
-                        data.stream()
-                                .map(c -> getAsWebAnnotation(c))
-                                .collect(Collectors.toList()),
-                        page);
+        AnnotationPage page = new AnnotationPage(uri);
+        data.stream()
+        .map(c -> getAsWebAnnotation(c))
+        .collect(Collectors.toList())
+        .forEach(c -> page.addItem(c));
 
-        return annoPage;
+        return page;
     }
 
     public OpenAnnotation getAsOpenAnnotation(Comment comment) {
@@ -327,9 +296,9 @@ public class AnnotationsResourceBuilder {
         anno.setMotivation(Motivation.COMMENTING);
         if (comment.getPage() != null) {
             anno.setTarget(
-                    new Canvas(URI.create(urls.path(RECORDS_RECORD, RECORDS_PAGES_CANVAS).params(comment.getPi(), comment.getPage()).build())));
+                    new Canvas2(URI.create(urls.path(RECORDS_RECORD, RECORDS_PAGES_CANVAS).params(comment.getPi(), comment.getPage()).build())));
         } else {
-            anno.setTarget(new Manifest(URI.create(urls.path(RECORDS_RECORD, RECORDS_MANIFEST).params(comment.getPi()).build())));
+            anno.setTarget(new Manifest2(URI.create(urls.path(RECORDS_RECORD, RECORDS_MANIFEST).params(comment.getPi()).build())));
         }
         TextualResource body = new TextualResource(comment.getText());
         anno.setBody(body);
@@ -341,11 +310,11 @@ public class AnnotationsResourceBuilder {
         anno.setMotivation(de.intranda.api.annotation.wa.Motivation.COMMENTING);
         if (comment.getPage() != null) {
             anno.setTarget(
-                    new Canvas(URI.create(urls.path(RECORDS_RECORD, RECORDS_PAGES_CANVAS).params(comment.getPi(), comment.getPage()).build())));
+                    new Canvas3(URI.create(urls.path(RECORDS_PAGES, RECORDS_PAGES_CANVAS).params(comment.getPi(), comment.getPage()).build())));
         } else {
-            anno.setTarget(new Manifest(URI.create(urls.path(RECORDS_RECORD, RECORDS_MANIFEST).params(comment.getPi()).build())));
+            anno.setTarget(new Manifest3(URI.create(urls.path(RECORDS_RECORD, RECORDS_MANIFEST).params(comment.getPi()).build())));
         }
-        TextualResource body = new TextualResource(comment.getText());
+        IResource body = new de.intranda.api.annotation.wa.TextualResource(comment.getText());
         anno.setBody(body);
         return anno;
     }
@@ -508,22 +477,21 @@ public class AnnotationsResourceBuilder {
     /**
      * @param id
      * @return
-     * @throws IndexUnreachableException 
-     * @throws PresentationException 
+     * @throws IndexUnreachableException
+     * @throws PresentationException
      */
     public Optional<WebAnnotation> getWebAnnotation(Long id) throws PresentationException, IndexUnreachableException {
         return waBuilder.getAnnotationDocument(id, request).map(doc -> waBuilder.createUGCWebAnnotation(doc, false));
     }
-    
+
     /**
      * @param id
      * @return
-     * @throws IndexUnreachableException 
-     * @throws PresentationException 
+     * @throws IndexUnreachableException
+     * @throws PresentationException
      */
     public Optional<OpenAnnotation> getOpenAnnotation(Long id) throws PresentationException, IndexUnreachableException {
         return oaBuilder.getAnnotationDocument(id, request).map(doc -> oaBuilder.createUGCOpenAnnotation(doc, false));
     }
-
 
 }

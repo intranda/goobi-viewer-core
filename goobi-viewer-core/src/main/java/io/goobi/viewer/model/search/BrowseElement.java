@@ -24,6 +24,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.regex.Pattern;
 
@@ -594,7 +595,8 @@ public class BrowseElement implements Serializable {
                         List<String> fieldValues = structElement.getMetadataFields().get(docFieldName);
                         for (String fieldValue : fieldValues) {
                             // Skip values that are equal to the hit label
-                            if (label.getValue().isPresent() && fieldValue.equals(label.getValue().get())) {
+                            Optional<String> value = label.getValue();
+                            if (value.isPresent() && fieldValue.equals(value.get())) {
                                 continue;
                             }
                             String highlightedValue = SearchHelper.applyHighlightingToPhrase(fieldValue, searchTerms.get(termsFieldName));
@@ -1004,7 +1006,7 @@ public class BrowseElement implements Serializable {
     public void setVolumeNo(String volumeNo) {
         this.volumeNo = volumeNo;
     }
-    
+
     /**
      * 
      * @return true if doctype is GROUP; false otherwise
@@ -1260,6 +1262,16 @@ public class BrowseElement implements Serializable {
     }
 
     /**
+     * 
+     * @param field Requested field name
+     * @param locale Requested locale
+     * @return
+     */
+    public List<Metadata> getMetadataListForLocale(String field, Locale locale) {
+        return Metadata.filterMetadata(metadataList, locale != null ? locale.getLanguage() : null, field);
+    }
+
+    /**
      * <p>
      * getMetadataListForLocale.
      * </p>
@@ -1268,7 +1280,7 @@ public class BrowseElement implements Serializable {
      * @return a {@link java.util.List} object.
      */
     public List<Metadata> getMetadataListForLocale(Locale locale) {
-        return Metadata.filterMetadataByLanguage(metadataList, locale != null ? locale.getLanguage() : null);
+        return Metadata.filterMetadata(metadataList, locale != null ? locale.getLanguage() : null, null);
     }
 
     /**

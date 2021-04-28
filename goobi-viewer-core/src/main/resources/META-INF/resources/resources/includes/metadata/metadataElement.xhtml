@@ -9,6 +9,8 @@
 	xmlns:viewer="http://xmlns.jcp.org/jsf/composite/components/partner"
 	xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components"
 	xmlns:widgetComponent="http://xmlns.jcp.org/jsf/composite/components/widgets">
+	
+	    <ui:fragment rendered="#{!metadataElement.skip}">
             <ui:repeat var="type" value="#{metadataElement.metadataTypes}">
                 <!-- METADATA ELEMENT -->
                 <div class="metadata__elements level-#{status.index}">
@@ -61,5 +63,6 @@
                     </div>                    
                 </div>
             </ui:repeat>
+        </ui:fragment>
 </ui:composition>
 

@@ -33,6 +33,7 @@ import org.slf4j.LoggerFactory;
 import de.unigoettingen.sub.commons.contentlib.exceptions.ContentLibException;
 import de.unigoettingen.sub.commons.contentlib.exceptions.ContentNotFoundException;
 import io.goobi.viewer.api.rest.resourcebuilders.TextResourceBuilder;
+import io.goobi.viewer.api.rest.v1.ApiUrls;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
@@ -360,7 +361,7 @@ public class DataFileTools {
     }
 
     /**
-     * Loads plain full-text via the REST service. ALTO is preferred (and converted to plain text, with a plain text fallback.
+     * Loads plain full-text via the REST service. ALTO is is a fallback (and converted to plain text, with a plain text fallback.
      *
      * @param altoFilePath ALTO file path relative to the repository root (e.g. "alto/PPN123/00000001.xml")
      * @param fulltextFilePath plain full-text file path relative to the repository root (e.g. "fulltext/PPN123/00000001.xml")
@@ -380,20 +381,6 @@ public class DataFileTools {
             HttpServletRequest request)
             throws FileNotFoundException, IOException, IndexUnreachableException, DAOException, ViewerConfigurationException {
         TextResourceBuilder builder = new TextResourceBuilder();
-        if (altoFilePath != null) {
-            // ALTO file
-            try {
-                String alto = builder.getAltoDocument(FileTools.getBottomFolderFromPathString(altoFilePath),
-                        FileTools.getFilenameFromPathString(altoFilePath));
-                if (alto != null) {
-                    return ALTOTools.getFullText(alto, mergeLineBreakWords, request);
-                }
-            } catch (ContentNotFoundException e) {
-                throw new FileNotFoundException(e.getMessage());
-            } catch (PresentationException e) {
-                logger.error(e.getMessage());
-            }
-        }
         if (fulltextFilePath != null) {
             // Plain full-text file
             try {
@@ -401,6 +388,35 @@ public class DataFileTools {
                         FileTools.getFilenameFromPathString(fulltextFilePath));
                 if (fulltext != null) {
                     return fulltext;
+                }
+            } catch (ContentNotFoundException e) {
+                //try loading from content api url (same source as image content)
+                try {
+                    String filename = FileTools.getFilenameFromPathString(fulltextFilePath);
+                    String pi = FileTools.getBottomFolderFromPathString(fulltextFilePath);
+                    return DataManager.getInstance()
+                            .getRestApiManager()
+                            .getContentApiManager()
+                            .map(urls -> {
+                                return urls.path(ApiUrls.RECORDS_FILES, ApiUrls.RECORDS_FILES_PLAINTEXT).params(pi, filename).build();
+                            })
+                            .map(url -> NetTools.callUrlGET(url))
+                            .map(array -> array[1])
+                            .orElseThrow(() -> new ContentNotFoundException("Resource not found"));
+                } catch (ContentNotFoundException e1) {
+                    // fall through to loading alto
+                }
+            } catch (PresentationException e) {
+                logger.error(e.getMessage());
+            }
+            
+        }
+        if (altoFilePath != null) {
+            // ALTO file
+            try {
+                String alto = loadAlto(altoFilePath);
+                if (alto != null) {
+                    return ALTOTools.getFullText(alto, mergeLineBreakWords, request);
                 }
             } catch (ContentNotFoundException e) {
                 throw new FileNotFoundException(e.getMessage());
@@ -413,13 +429,26 @@ public class DataFileTools {
     }
 
     public static String loadAlto(String altoFilePath)
-            throws ContentNotFoundException, IndexUnreachableException, DAOException, PresentationException {
+            throws ContentNotFoundException, IndexUnreachableException, PresentationException, FileNotFoundException {
         TextResourceBuilder builder = new TextResourceBuilder();
         if (altoFilePath != null) {
+            String filename = FileTools.getFilenameFromPathString(altoFilePath);
+            String pi = FileTools.getBottomFolderFromPathString(altoFilePath);
             // ALTO file
-            String alto = builder.getAltoDocument(FileTools.getBottomFolderFromPathString(altoFilePath),
-                    FileTools.getFilenameFromPathString(altoFilePath));
-            return alto;
+            try {
+                String alto = builder.getAltoDocument(pi, filename);
+                return alto;
+            } catch (ContentNotFoundException e) {
+                return DataManager.getInstance()
+                        .getRestApiManager()
+                        .getContentApiManager()
+                        .map(urls -> {
+                            return urls.path(ApiUrls.RECORDS_FILES, ApiUrls.RECORDS_FILES_ALTO).params(pi, filename).build();
+                        })
+                        .map(url -> NetTools.callUrlGET(url))
+                        .map(array -> array[1])
+                        .orElseThrow(() -> new ContentNotFoundException("Resource not found"));
+            }
         }
 
         throw new ContentNotFoundException("ALTO file " + altoFilePath + " not found");

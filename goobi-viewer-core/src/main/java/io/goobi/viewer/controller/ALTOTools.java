@@ -18,7 +18,6 @@ package io.goobi.viewer.controller;
 import java.awt.Dimension;
 import java.awt.Rectangle;
 import java.io.ByteArrayInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
@@ -78,21 +77,18 @@ public class ALTOTools {
     private final static String LABEL = "LABEL";
 
     /** Constant <code>TAG_LABEL_IGNORE_REGEX="^\\W+|\\W+$"</code> */
-    public static final String TAG_LABEL_IGNORE_REGEX = "^\\W+|\\W+$";
+    public static final String TAG_LABEL_IGNORE_REGEX = "(^\\W+)|(\\W+$)";
 
     /**
      * Read the plain fulltext from an alto file. Don't merge linebreaks
      * 
-     * @param path
-     * @return
-     * @throws IOException 
-     * @throws  
+     * @param path @return @throws IOException @throws
      */
     public static String getFulltext(Path path, String encoding) throws IOException {
         String altoString = FileTools.getStringFromFile(path.toFile(), encoding);
         return getFullText(altoString, false, null);
     }
-    
+
     /**
      * <p>
      * getFullText.
@@ -216,9 +212,13 @@ public class ALTOTools {
         Map<String, String> neUriMap = new HashMap<>();
         Set<String> usedTags = new HashSet<>();
         StringBuilder strings = new StringBuilder(500);
+        XMLStreamReader parser = null;
         try (InputStream is = new ByteArrayInputStream(useAlto.getBytes(StandardCharsets.UTF_8))) {
             XMLInputFactory factory = XMLInputFactory.newInstance();
-            XMLStreamReader parser = factory.createXMLStreamReader(is);
+            // Disable access to external entities
+            factory.setProperty(XMLInputFactory.IS_SUPPORTING_EXTERNAL_ENTITIES, false);
+            factory.setProperty(XMLInputFactory.SUPPORT_DTD, false);
+            parser = factory.createXMLStreamReader(is);
 
             String prevSubsContent = null;
             while (parser.hasNext()) {
@@ -361,6 +361,10 @@ public class ALTOTools {
                 }
                 parser.next();
             }
+        } finally {
+            if (parser != null) {
+                parser.close();
+            }
         }
         if (strings.length() > 0) {
             strings.deleteCharAt(strings.length() - 1);
@@ -492,7 +496,7 @@ public class ALTOTools {
 
     private static String addWordCoords(int rotation, Dimension pageSize, Word eleWord, List<String> tempList) {
         String coords = ALTOTools.getALTOCoords(eleWord);
-        if (rotation != 0) {
+        if (coords != null && rotation != 0) {
             try {
                 Rectangle wordRect = getRectangle(coords);
                 wordRect = rotate(wordRect, rotation, pageSize);
@@ -507,6 +511,7 @@ public class ALTOTools {
             tempList.add(coords);
             logger.trace("ALTO word found: {} ({})", eleWord.getAttributeValue("CONTENT"), coords);
         }
+
         return coords;
     }
 

@@ -30,7 +30,14 @@ public class CollectionResult {
 
     private final String name;
     private Set<String> facetValues = new HashSet<>();
-    private Long count = 0l; 
+    /**
+     * A counter for all records within the collections or its descendants
+     */
+    private Long recordCount = 0l; 
+    /**
+     * A counter for direct child collections
+     */
+    private Long childCount = 0l;
     
 
     public CollectionResult(String name) {
@@ -44,7 +51,7 @@ public class CollectionResult {
      */
     public CollectionResult(String name, long l) {
         this.name = name;
-        this.count = l;
+        this.recordCount = l;
     }
 
 
@@ -68,7 +75,7 @@ public class CollectionResult {
      * @return the count
      */
     public Long getCount() {
-        return count;
+        return recordCount;
     }
 
 
@@ -76,7 +83,7 @@ public class CollectionResult {
      * @param count the count to set
      */
     public void setCount(Long count) {
-        this.count = count;
+        this.recordCount = count;
     }
 
 
@@ -88,7 +95,19 @@ public class CollectionResult {
     }
     
     public void incrementCount(long l) {
-        this.count += l;
+        this.recordCount += l;
+    }
+    
+    public Long getChildCount() {
+        return this.childCount;
+    }
+    
+    public void setChildCount(Long count) {
+        this.childCount = count;
+    }
+    
+    public void incrementChildCount(long l) {
+        this.childCount += l;
     }
 
 

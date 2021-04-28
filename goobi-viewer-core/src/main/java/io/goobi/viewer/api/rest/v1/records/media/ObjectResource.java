@@ -120,7 +120,7 @@ public class ObjectResource {
             ObjectInfo info = new ObjectInfo(objectURI);
             info.setResources(resourceURIs);
             return info;
-        } catch (IOException | URISyntaxException | InterruptedException e) {
+        } catch (IOException | URISyntaxException  e) {
             throw new PresentationException(e.getMessage(), e);
         }
 
@@ -323,7 +323,7 @@ public class ObjectResource {
      * @throws URISyntaxException
      */
     private static List<URI> getResources(String baseFolder, String baseFilename, String baseURI)
-            throws IOException, InterruptedException, URISyntaxException {
+            throws IOException, URISyntaxException {
         List<URI> resourceURIs = new ArrayList<>();
 
         java.nio.file.Path mtlFilePath = Paths.get(baseFolder, baseFilename + ".mtl");
