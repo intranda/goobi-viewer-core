@@ -17,29 +17,27 @@
 			actionlistener="{this.actionListener}" 
 			showthumbs="{this.showThumbs}"></imageControls>
 		
-		<thumbnails class="image_thumbnails" style="display: {this.showThumbs ? 'flex' : 'none'}" 
+		<thumbnails class="image_thumbnails" style="display: {this.showThumbs ? 'grid' : 'none'}" 
 			source="{{items: this.opts.item.canvases}}"  
 			actionlistener="{this.actionListener}" 
 			imagesize=",200"
 			index="{this.opts.item.currentCanvasIndex}" 
 			statusmap="{getPageStatusMap()}"/>
 	
-		<div class="image_container" style="visibility: {this.showThumbs ? 'hidden' : 'visible'}">
+		<div class="image_container" style="display: {this.showThumbs ? 'none' : 'block'}"  >
 			<div id="image_{opts.id}" class="image"></div>
 		</div>
-	</div>
+		<canvasPaginator if="{!this.showThumbs}" items="{this.opts.item.canvases}" index="{this.opts.item.currentCanvasIndex}" actionlistener="{this.actionListener}" ></canvasPaginator>
+	</div> 
 	
-	<canvasPaginator items="{this.opts.item.canvases}" index="{this.opts.item.currentCanvasIndex}" actionlistener="{this.actionListener}" ></canvasPaginator>
 
 	<script>
-
-	this.showThumbs = false;
+	
+	this.showThumbs = this.opts.item.canvases.length > 1;
 	
 	this.on("mount", function() {
 		//console.log("mount image view ", this.opts.item);
-		$("#controls_" + opts.id + " .draw_overlay").on("click", function() {
-			this.drawing=true; 
-		}.bind(this));
+		$("#controls_" + opts.id + " .draw_overlay").on("click", () => this.drawing = true);
 		try{		    
 			imageViewConfig.image.tileSource = this.getImageInfo(opts.source);
 			this.image = new ImageView.Image(imageViewConfig);

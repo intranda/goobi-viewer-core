@@ -1613,15 +1613,13 @@ riot.tag2('imagecontrols', '<div class="image_controls"><div class="image-contro
  * The imageView itself is stored in opts.item.image
  */
 
-riot.tag2('imageview', '<div id="wrapper_{opts.id}" class="imageview_wrapper"><span if="{this.error}" class="loader_wrapper"><span class="error_message">{this.error.message}</span></span><imagecontrols if="{this.image && !this.showThumbs}" image="{this.image}" item="{this.opts.item}" actionlistener="{this.actionListener}" showthumbs="{this.showThumbs}"></imageControls><thumbnails class="image_thumbnails" riot-style="display: {this.showThumbs ? \'flex\' : \'none\'}" source="{{items: this.opts.item.canvases}}" actionlistener="{this.actionListener}" imagesize=",200" index="{this.opts.item.currentCanvasIndex}" statusmap="{getPageStatusMap()}"></thumbnails><div class="image_container" riot-style="visibility: {this.showThumbs ? \'hidden\' : \'visible\'}"><div id="image_{opts.id}" class="image"></div></div></div><canvaspaginator items="{this.opts.item.canvases}" index="{this.opts.item.currentCanvasIndex}" actionlistener="{this.actionListener}"></canvasPaginator>', '', '', function(opts) {
+riot.tag2('imageview', '<div id="wrapper_{opts.id}" class="imageview_wrapper"><span if="{this.error}" class="loader_wrapper"><span class="error_message">{this.error.message}</span></span><imagecontrols if="{this.image && !this.showThumbs}" image="{this.image}" item="{this.opts.item}" actionlistener="{this.actionListener}" showthumbs="{this.showThumbs}"></imageControls><thumbnails class="image_thumbnails" riot-style="display: {this.showThumbs ? \'grid\' : \'none\'}" source="{{items: this.opts.item.canvases}}" actionlistener="{this.actionListener}" imagesize=",200" index="{this.opts.item.currentCanvasIndex}" statusmap="{getPageStatusMap()}"></thumbnails><div class="image_container" riot-style="display: {this.showThumbs ? \'none\' : \'block\'}"><div id="image_{opts.id}" class="image"></div></div><canvaspaginator if="{!this.showThumbs}" items="{this.opts.item.canvases}" index="{this.opts.item.currentCanvasIndex}" actionlistener="{this.actionListener}"></canvasPaginator></div>', '', '', function(opts) {
 
-	this.showThumbs = false;
+	this.showThumbs = this.opts.item.canvases.length > 1;
 
 	this.on("mount", function() {
 
-		$("#controls_" + opts.id + " .draw_overlay").on("click", function() {
-			this.drawing=true;
-		}.bind(this));
+		$("#controls_" + opts.id + " .draw_overlay").on("click", () => this.drawing = true);
 		try{
 			imageViewConfig.image.tileSource = this.getImageInfo(opts.source);
 			this.image = new ImageView.Image(imageViewConfig);
