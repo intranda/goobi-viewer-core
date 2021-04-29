@@ -165,28 +165,28 @@ public class LeanPageLoader extends AbstractPageLoader implements Serializable {
                 String orderLabel = (String) doc.getFieldValue(SolrConstants.ORDERLABEL);
                 boolean fulltextAvailable =
                         doc.containsKey(SolrConstants.FULLTEXTAVAILABLE) ? (boolean) doc.getFieldValue(SolrConstants.FULLTEXTAVAILABLE) : false;
-                boolean doublePage =
-                        doc.containsKey(SolrConstants.BOOL_DOUBPLE_PAGE) ? (boolean) doc.getFieldValue(SolrConstants.BOOL_DOUBPLE_PAGE) : false;
+                //                boolean doubleImage =
+                //                        doc.containsKey(SolrConstants.BOOL_DOUBLE_IMAGE) ? (boolean) doc.getFieldValue(SolrConstants.BOOL_DOUBLE_IMAGE) : false;
                 StringBuilder sbPurlPart = new StringBuilder();
                 sbPurlPart.append('/').append(pi).append('/').append(order).append('/');
 
                 SelectItem siPage;
-                if (doublePage) {
-                    // Save page number for now and generate the item during the next iteration
-                    previousOrder = order;
-                    previousOrderLabel = orderLabel;
-                    continue;
-                } else if (previousOrder != null) {
-                    // Double page item
-                    siPage = buildPageSelectItem(labelTemplate, previousOrder, previousOrderLabel, order, orderLabel);
-                } else {
-                    siPage = buildPageSelectItem(labelTemplate, order, orderLabel, null, null);
-                }
+                //                if (doubleImage) {
+                //                    // Save page number for now and generate the item during the next iteration
+                //                    previousOrder = order;
+                //                    previousOrderLabel = orderLabel;
+                //                    continue;
+                //                } else if (previousOrder != null) {
+                //                    // Double page item
+                //                    siPage = buildPageSelectItem(labelTemplate, previousOrder, previousOrderLabel, order, orderLabel);
+                //                } else {
+                siPage = buildPageSelectItem(labelTemplate, order, orderLabel, null, null);
+                //                }
                 dropdownPages.add(siPage);
                 if (dropdownFulltext != null && !(recordBelowFulltextThreshold && !fulltextAvailable)) {
                     SelectItem siFull;
                     if (previousOrder != null) {
-                     // Double page item
+                        // Double page item
                         siFull = buildPageSelectItem(labelTemplate, previousOrder, previousOrderLabel, order, orderLabel);
                     } else {
                         siFull = buildPageSelectItem(labelTemplate, order, orderLabel, null, null);

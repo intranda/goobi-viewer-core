@@ -129,8 +129,8 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
     private int height = 0;
     /** Whether or not this page has image data. */
     private boolean hasImage = false;
-    /** Whether or not this page is to be displayed in a double page view. */
-    private boolean doublePage = false;
+    /** Whether or not this page contains an image that spans two pages. */
+    private boolean doubleImage = false;
     /** Whether or not full-text is available for this page. */
     private boolean fulltextAvailable = false;
 
@@ -684,17 +684,19 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
     }
 
     /**
-     * @return the doublePage
+     * @return the doubleImage
      */
-    public boolean isDoublePage() {
-        return doublePage;
+    public boolean isDoubleImage() {
+        // logger.trace("isDoubleImage: {}", doubleImage);
+        return doubleImage;
     }
 
     /**
-     * @param doublePage the doublePage to set
+     * @param doubleImage the doubleImage to set
      */
-    public void setDoublePage(boolean doublePage) {
-        this.doublePage = doublePage;
+    public void setDoubleImage(boolean doubleImage) {
+        logger.trace("setDoubleImage: {}:{}", order, doubleImage);
+        this.doubleImage = doubleImage;
     }
 
     /**
@@ -785,9 +787,9 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
         String filename = null;
         try {
             filename = FileTools.getFilenameFromPathString(getAltoFileName());
-        if (StringUtils.isBlank(filename)) {
-            return false;
-        }
+            if (StringUtils.isBlank(filename)) {
+                return false;
+            }
 
             return AccessConditionUtils.checkAccessPermissionByIdentifierAndFileNameWithSessionMap(BeanUtils.getRequest(), getPi(), filename,
                     IPrivilegeHolder.PRIV_VIEW_FULLTEXT);
@@ -1391,9 +1393,9 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
             logger.trace("FacesContext not found");
 
             return false;
-        } else {
-            return true;
         }
+
+        return true;
     }
 
     /**

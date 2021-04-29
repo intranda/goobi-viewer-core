@@ -1359,7 +1359,7 @@ public class ViewManager implements Serializable {
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @throws IDDOCNotFoundException
      */
-    public String lastImage() throws IndexUnreachableException, PresentationException, IDDOCNotFoundException {
+    public String lastPage() throws IndexUnreachableException, PresentationException, IDDOCNotFoundException {
         setCurrentPageOrderRange(String.valueOf(pageLoader.getLastPageOrder()));
         updateDropdownSelected();
         return null;
@@ -1390,6 +1390,20 @@ public class ViewManager implements Serializable {
             return -1;
         }
         return pageLoader.getNumPages();
+    }
+
+    public int getLastPageOrder() {
+        if (pageLoader == null) {
+            return -1;
+        }
+        return pageLoader.getLastPageOrder();
+    }
+
+    public int getFirstPageOrder() {
+        if (pageLoader == null) {
+            return -1;
+        }
+        return pageLoader.getFirstPageOrder();
     }
 
     /**

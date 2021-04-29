@@ -141,9 +141,9 @@ public class EagerPageLoader extends AbstractPageLoader implements Serializable 
         for (int key : keys) {
             PhysicalElement page = pages.get(key);
             PhysicalElement nextPage = null;
-            if (page.isDoublePage() && pages.get(key + 1) != null) {
-                nextPage = pages.get(key++); // Skip next page since it's displayed together with the current page
-            }
+//            if (page.isDoubleImage() && pages.get(key + 1) != null) {
+//                nextPage = pages.get(key++); // Skip next page since it's displayed together with the current page
+//            }
             SelectItem si = buildPageSelectItem(labelTemplate, page.getOrder(), page.getOrderLabel(), nextPage != null ? nextPage.getOrder() : null,
                     nextPage != null ? nextPage.getOrderLabel() : null);
             dropdownPages.add(si);

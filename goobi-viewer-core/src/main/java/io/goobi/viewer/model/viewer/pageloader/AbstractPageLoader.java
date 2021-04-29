@@ -272,8 +272,8 @@ public abstract class AbstractPageLoader implements IPageLoader {
         }
 
         // Double page view
-        if (doc.containsKey(SolrConstants.BOOL_DOUBPLE_PAGE)) {
-            pe.setDoublePage((boolean) doc.getFieldValue(SolrConstants.BOOL_DOUBPLE_PAGE));
+        if (doc.containsKey(SolrConstants.BOOL_DOUBLE_IMAGE)) {
+            pe.setDoubleImage((boolean) doc.getFieldValue(SolrConstants.BOOL_DOUBLE_IMAGE));
         }
 
         return pe;
