@@ -9,7 +9,7 @@
   },
   "license": "GPL-2.0-or-later",
   "devDependencies": {
-    "grunt": "^1.3.0",
+    "grunt": "^1.4.0",
     "grunt-concurrent": "^3.0.0",
     "grunt-contrib-concat": "*",
     "grunt-contrib-less": "^3.0.0",
@@ -19,14 +19,14 @@
     "grunt-sync": "^0.8.2",
     "less-plugin-autoprefix": "^2.0.0",
     "michelangelo": "^0.8.0",
-    "pdfjs-dist": "^2.6.347",
-    "webpack": "5.28.0"
+    "pdfjs-dist": "^2.7.570",
+    "webpack": "5.36.1"
   },
   "dependencies": {
     "hc-sticky": "~2.2.6",
     "leaflet": "*",
     "leaflet.markercluster": "*",
-    "mirador": "~3.0.0",
+    "mirador": "~3.1.1",
     "overhang": "*",
     "pixl-xml": "^1.0.13",
     "swagger-ui-dist": "*",
